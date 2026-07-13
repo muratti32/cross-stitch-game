@@ -7,15 +7,15 @@ This context defines the playable content and player activity in a catalog-first
 ### System Boundaries
 
 **Game Backend**:
-The independently deployed NestJS, PostgreSQL, and worker system that owns this game's accounts, content, progress, economy, moderation, and Processing Jobs. It shares no runtime, database, or schema with CrossCraft, even when CrossCraft algorithms inform a game-owned implementation.
+The independently deployed API, database, and worker system that owns this game's accounts, content, progress, economy, moderation, and Processing Jobs. It shares no runtime, database, or schema with CrossCraft, even when CrossCraft algorithms inform a game-owned implementation.
 _Avoid_: CrossCraft backend, shared service, common database
 
 **Processing Queue**:
-The BullMQ delivery channel backed by Redis that carries Processing Job identifiers to workers with at-least-once delivery. It may replay work and is never the source of truth for job or domain state; PostgreSQL is.
+The delivery channel that carries Processing Job identifiers to workers with at-least-once delivery. It may replay work and is never the source of truth for job or domain state; the Game Backend's database is.
 _Avoid_: Job database, Pattern state, fire-and-forget queue
 
 **Job Outbox**:
-The PostgreSQL record written atomically with a new Processing Job and later published to the Processing Queue by a retrying dispatcher. It closes the failure window between committing the job and delivering it to Redis.
+The database record written atomically with a new Processing Job and later published by a retrying dispatcher. It closes the failure window between committing the job and delivering it to the Processing Queue.
 _Avoid_: Queue payload, worker log, webhook
 
 **Connectivity State**:
@@ -39,10 +39,6 @@ _Avoid_: Registered Account, recoverable login, advertising identifier
 **Guest Data Risk Notice**:
 The non-blocking warning shown before a Guest Player's first Stitch Coin spend and first Pattern Unlock. It explains that losing the device or app installation may make the Guest Installation Identity, Guest Ledger, local progress, and Likes unrecoverable, and offers signup or sign-in to preserve them. The player may dismiss the notice and continue as Guest.
 _Avoid_: Forced registration, purchase confirmation, account recovery
-
-**Guest Ledger**:
-The Game Backend source of truth for a Guest Installation Identity's Stitch Coin balance, reward grants, spends, and permanent Pattern Unlocks. Every mutation is idempotent and auditable. Offline gameplay may create Pending Coin Rewards, but changing the spendable balance, spending Coin, and acquiring an Unlock require backend reconciliation and connectivity; the client cannot directly mutate the ledger.
-_Avoid_: Local Coin balance, Commerce Ledger, client save data
 
 **Guest Data Reset**:
 The explicit online action that irreversibly closes the current Guest Installation Identity and Guest Ledger, deletes its server session references and the entire matching Local Identity Namespace, removes local progress, Pending Coin Rewards, Pattern Likes, Unlock access, and Offline Pattern Data, then creates a fresh Guest Installation Identity. It requires a destructive confirmation, cannot transfer value, and cannot reactivate the closed identity.
@@ -71,6 +67,32 @@ _Avoid_: Email match, Public Creator Profile, Registered Account merge
 **Auth Identity Link**:
 The explicit addition or removal of an Auth Identity from an already authenticated Registered Account after recent reauthentication. Linking never merges two Registered Accounts or transfers content, balances, purchases, moderation state, or Guest Economy Promotion eligibility. The last remaining Auth Identity cannot be removed, and the first release provides no Registered Account merge.
 _Avoid_: Automatic account merge, social login match, Guest Data Promotion
+
+**Email Sign-In**:
+The passwordless flow that creates or opens a Registered Account by proving access to an email address with a single-use six-digit code that expires after ten minutes. Request and verification attempts are rate-limited, and request responses do not reveal whether the address already has an account. The first release does not use a Magic Link.
+_Avoid_: Email registration, email login, email and password
+
+**Account Deletion Request**:
+The recently reauthenticated, two-stage request that immediately revokes normal sessions, freezes new player-initiated purchases and account writes while required commerce, deletion, and committed-promotion reconciliation continues, applies Account Closure Hold to the Public Creator Profile and Community Patterns, and starts Deletion Recovery Window. Processing Jobs not yet sent to an external provider are cancelled and release their reservations; a fal.ai job already submitted continues toward terminal AI Artwork Delivery or reconciled failure through permitted system writes during the window. Delivered artwork stays private during closure, reappears if deletion is cancelled, and is erased by finalization. An exceptionally unresolved provider job does not extend finalization: it becomes a minimal deletion-reconciliation tombstone and any late output is discarded without creating artwork or value. The flow warns that deleting the game account does not cancel an Apple or Google store subscription and provides the platform's subscription-management route.
+_Avoid_: Sign-out, Local Data Removal, instant erase
+
+**Deletion Recovery Window**:
+The 30-day interval after Account Deletion Request during which the frozen account may reauthenticate only to cancel deletion or reach required subscription-management and support actions. Account Closure Hold remains reversible throughout. Expiry authorizes Account Deletion Finalization; it does not silently extend because an offline device has not checked in.
+_Avoid_: Subscription grace period, suspended account, backup retention
+
+**Account Closure Hold**:
+The reversible non-moderation state applied during Deletion Recovery Window to a closing account's Public Creator Profile and Community Patterns. It removes them from discovery, profile pages, Catalog Share Links, new sessions, revisions, and submissions while preserving existing sessions like Catalog Withdrawal. Cancelling deletion restores the same public identifiers and prior availability; finalization converts the Patterns to Catalog Withdrawal and attribution to Deleted Creator.
+_Avoid_: Review Hold, Creator Restriction, Catalog Withdrawal
+
+**Account Deletion Finalization**:
+The irreversible end of Account Deletion Request after Deletion Recovery Window. It deletes authentication identifiers and private profile data, AI Artwork, Personal Patterns, progress, Likes, blocks, and ordinary private account records; forfeits remaining virtual balances and Unlocks without transferring or refunding them; and applies Catalog Withdrawal to every Community Pattern. Public attribution becomes Deleted Creator, Like aggregates are decremented, pending submissions and appeals close, and every server session or token is revoked immediately. Connected devices delete or cryptographically invalidate their Local Identity Namespace; a fully offline device receives the same instruction at its next app or backend check. Bounded pseudonymous commerce, moderation, security, deletion, and idempotency evidence may remain, while minimal non-regrant and username/profile-reservation tombstones persist for the life of the service. A new registration creates a different account.
+_Avoid_: Account suspension, reversible deactivation, Guest rollback
+
+**Deleted Creator**:
+The non-interactive public tombstone replacing a finalized account's Public Creator Profile wherever an existing Stitching Session must retain attribution. It exposes no avatar, username, account identifier, or profile link; the former permanent username and opaque profile identifier are reserved and never reassigned. The account's Community Patterns are under Catalog Withdrawal and cannot start new sessions.
+_Avoid_: Restricted Creator, anonymous account, reusable username
+
+### Creator Profile and Profile Moderation
 
 **Public Creator Profile**:
 The public identity a Registered Account must create before its first Catalog Submission. It contains a globally unique username that the player can never change, plus an editable display name and optional avatar; Moderator Username Reset is the only exceptional replacement path. Creation and later display-name or avatar changes must pass Profile Safety Check but do not wait for routine human Profile Review. Passing values become public immediately and appear across all of the account's existing Community Patterns rather than being copied into each immutable Pattern; a failed change leaves the last accepted public values untouched. Earlier public values remain only in the Creator Profile Audit. The profile is separate from authentication and never reveals the account's email address or Apple or Google identity data.
@@ -112,29 +134,7 @@ _Avoid_: Creator Restriction, Safety Removal, report, global hide
 The private append-only moderation history of a Public Creator Profile's previous display names, avatars, and any exceptional Moderator Username Reset, including who changed each value, why, and when. It supports investigation and accountability but is never shown as a public profile history; ordinary player-driven username change remains impossible.
 _Avoid_: Public profile history, editable log, Community Pattern metadata
 
-**Email Sign-In**:
-The passwordless flow that creates or opens a Registered Account by proving access to an email address with a single-use six-digit code that expires after ten minutes. Request and verification attempts are rate-limited, and request responses do not reveal whether the address already has an account. The first release does not use a Magic Link.
-_Avoid_: Email registration, email login, email and password
-
-**Account Deletion Request**:
-The recently reauthenticated, two-stage request that immediately revokes normal sessions, freezes new player-initiated purchases and account writes while required commerce, deletion, and committed-promotion reconciliation continues, applies Account Closure Hold to the Public Creator Profile and Community Patterns, and starts Deletion Recovery Window. Processing Jobs not yet sent to an external provider are cancelled and release their reservations; a fal.ai job already submitted continues toward terminal AI Artwork Delivery or reconciled failure through permitted system writes during the window. Delivered artwork stays private during closure, reappears if deletion is cancelled, and is erased by finalization. An exceptionally unresolved provider job does not extend finalization: it becomes a minimal deletion-reconciliation tombstone and any late output is discarded without creating artwork or value. The flow warns that deleting the game account does not cancel an Apple or Google store subscription and provides the platform's subscription-management route.
-_Avoid_: Sign-out, Local Data Removal, instant erase
-
-**Deletion Recovery Window**:
-The 30-day interval after Account Deletion Request during which the frozen account may reauthenticate only to cancel deletion or reach required subscription-management and support actions. Account Closure Hold remains reversible throughout. Expiry authorizes Account Deletion Finalization; it does not silently extend because an offline device has not checked in.
-_Avoid_: Subscription grace period, suspended account, backup retention
-
-**Account Closure Hold**:
-The reversible non-moderation state applied during Deletion Recovery Window to a closing account's Public Creator Profile and Community Patterns. It removes them from discovery, profile pages, Catalog Share Links, new sessions, revisions, and submissions while preserving existing sessions like Catalog Withdrawal. Cancelling deletion restores the same public identifiers and prior availability; finalization converts the Patterns to Catalog Withdrawal and attribution to Deleted Creator.
-_Avoid_: Review Hold, Creator Restriction, Catalog Withdrawal
-
-**Account Deletion Finalization**:
-The irreversible end of Account Deletion Request after Deletion Recovery Window. It deletes authentication identifiers and private profile data, AI Artwork, Personal Patterns, progress, Likes, blocks, and ordinary private account records; forfeits remaining virtual balances and Unlocks without transferring or refunding them; and applies Catalog Withdrawal to every Community Pattern. Public attribution becomes Deleted Creator, Like aggregates are decremented, pending submissions and appeals close, and every server session or token is revoked immediately. Connected devices delete or cryptographically invalidate their Local Identity Namespace; a fully offline device receives the same instruction at its next app or backend check. Bounded pseudonymous commerce, moderation, security, deletion, and idempotency evidence may remain, while minimal non-regrant and username/profile-reservation tombstones persist for the life of the service. A new registration creates a different account.
-_Avoid_: Account suspension, reversible deactivation, Guest rollback
-
-**Deleted Creator**:
-The non-interactive public tombstone replacing a finalized account's Public Creator Profile wherever an existing Stitching Session must retain attribution. It exposes no avatar, username, account identifier, or profile link; the former permanent username and opaque profile identifier are reserved and never reassigned. The account's Community Patterns are under Catalog Withdrawal and cannot start new sessions.
-_Avoid_: Restricted Creator, anonymous account, reusable username
+### Economy and Commerce
 
 **Premium Membership**:
 The paid access held by a Registered Account through a Weekly, Monthly, or Annual Premium Plan. Its first-release benefits are limited to the Membership Credit Grant, Premium Daily Coin Claim, and Premium Theme Collection. It is not required to purchase or spend AI Credit and does not gate Pattern Conversion, photo tools, Progress Sync, Catalog Submission, core play, accessibility, or Official Pattern access.
@@ -161,12 +161,16 @@ A consumable real-money product that a Registered Account may purchase to add AI
 _Avoid_: Stitch Coin Pack, Membership Credit Grant, AI subscription
 
 **Stitch Coin**:
-The backend-authoritative gameplay currency earned through play or Rewarded Ads, received through a Premium Daily Coin Claim, or purchased in a Stitch Coin Pack. A Registered Account holds it in its account balance, while a Guest Player holds it in a Guest Ledger. It is spent online primarily on permanent Pattern Unlocks, remains separate from AI Credit, and can never fund AI Artwork generation.
+The backend-authoritative gameplay currency earned through play or Rewarded Ads, received through a Premium Daily Coin Claim, or purchased in a Stitch Coin Pack. A Registered Account holds it in its account balance, while a Guest Player holds it in a Guest Ledger. In the first release its only spend is the online purchase of permanent Pattern Unlocks; it remains separate from AI Credit and can never fund AI Artwork generation.
 _Avoid_: Coin, gold, point, token
 
 **Stitch Coin Pack**:
 A consumable real-money product that a Registered Account may purchase to add Stitch Coin to its durable balance. The first-release United States products grant 300 Coin for `$1.99`, 900 for `$4.99`, or 2,000 for `$9.99`. They are independent of AI Credit and do not create any exchange or conversion between the two balances; Guest Players cannot purchase them.
 _Avoid_: AI Credit Pack, Premium Membership, currency exchange
+
+**Guest Ledger**:
+The Game Backend source of truth for a Guest Installation Identity's Stitch Coin balance, reward grants, spends, and permanent Pattern Unlocks. Every mutation is idempotent and auditable. Offline gameplay may create Pending Coin Rewards, but changing the spendable balance, spending Coin, and acquiring an Unlock require backend reconciliation and connectivity; the client cannot directly mutate the ledger.
+_Avoid_: Local Coin balance, Commerce Ledger, client save data
 
 **Commerce Ledger**:
 The backend source of truth for verified store transactions, their Commerce Transaction Bindings, normalized Membership Periods, and the account grants they produce. Each provider transaction identifier and paid membership period is recorded idempotently and can produce its grant exactly once; the mobile client cannot mutate paid balances or entitlements directly.
@@ -180,6 +184,10 @@ _Avoid_: Store account, receipt ownership transfer, purchase restore grant
 The normalized, provider-verified paid interval of one Premium subscription, identified independently from delivery retries and plan changes. Exactly one Membership Credit Grant may be attached to each paid period. Premium entitlement is derived from the latest verified subscription status across periods, including trial, grace, billing retry, upgrade, downgrade, expiration, and refund; reversing an older period never deactivates a newer valid period.
 _Avoid_: Store webhook, transaction retry, permanent entitlement
 
+**Membership Credit Grant**:
+The AI Credit added to a Registered Account exactly once for each verified paid Membership Period: 3 credits for Weekly, 15 for Monthly after trial conversion and each renewal, and the full 180-credit Annual allowance at purchase or renewal. Delivery retries and plan-change events cannot duplicate it. It joins the same non-expiring balance as purchased AI Credit and remains available after the membership period ends.
+_Avoid_: Free credit, monthly coin, Premium balance
+
 **Commerce Reversal**:
 The idempotent withdrawal of the original Stitch Coin or AI Credit grant after its store transaction is refunded or charged back. The affected balance may become negative and cannot fund new spending until it again covers the requested cost; existing Pattern Unlocks, AI Artwork, Patterns, and Stitching Sessions are not deleted.
 _Avoid_: Content rollback, account reset, purchase deletion
@@ -188,8 +196,10 @@ _Avoid_: Content rollback, account reset, purchase deletion
 The idempotent response to a refunded or charged-back Membership Period. It reverses only that period's Membership Credit Grant under the same negative-balance rule as a Commerce Reversal; Premium entitlement is recomputed from current verified store status, so a later valid period remains active. Previously claimed Premium daily Stitch Coin and existing Pattern Unlocks or content remain preserved.
 _Avoid_: Subscription cancellation, daily reward rollback, account deletion
 
+### Rewards
+
 **Rewarded Ad**:
-An optional advertisement that a player explicitly starts outside an active Stitching Session. A verified completion consumes 10 Coin from that Reward Day's Ad-Equivalent Coin Pool and grants the same amount; the game does not show forced interstitial ads or banners, and advertising can never grant AI Credit.
+An optional advertisement that a player explicitly starts outside an active Stitching Session. A verified completion consumes 10 Coin from that Reward Day's Ad-Equivalent Coin Pool and grants the same amount. When the pool is exhausted or closed, the Rewarded Ad entry point is disabled and shows the time remaining until the next Reward Day instead of offering an unrewarded advertisement. The game does not show forced interstitial ads or banners, and advertising can never grant AI Credit.
 _Avoid_: Forced ad, commercial break, AI Credit ad
 
 **Daily Rewarded Ad Limit**:
@@ -223,6 +233,12 @@ _Avoid_: Replay reward, completion farming, repeat completion reward
 **Completion Reward Tier**:
 A bounded First Completion Reward category derived only from a Pattern's total number of stitchable cells: Small grants 25 Stitch Coin for 1–3,999 cells, Medium grants 60 for 4,000–14,999, and Large grants 120 for 15,000 or more. DMC Thread Color count does not affect the tier.
 _Avoid_: Difficulty score, color multiplier, uncapped cell reward
+
+**Unlock Earnability Target**:
+The first-release economy guardrail that guaranteed Daily Task Coin alone, without Premium Membership, purchase, or Rewarded Ad, can fund a Small Pattern Unlock within at most three Reward Days, Medium within five, and Large within ten. First Completion Rewards and optional ads may shorten those times but are not required for the target. The first release has no Player Level or level-up Coin reward; the substantial free starting catalog supplies playable content while Coin is earned.
+_Avoid_: Guaranteed daily unlock, ad requirement, level reward
+
+### Guest Data Promotion
 
 **Guest Data Promotion**:
 The one-time, idempotent consumption of a Guest Installation Identity into a target Registered Account reached through signup or sign-in. The backend produces a current Guest Promotion Preview from its ledger state and the device's Guest Promotion Manifest. When the player chooses to confirm it, the device durably records Promotion Handoff before sending the confirmed request; the backend then acquires Promotion Commit Lock and stages and validates the matching Promotion Transfer Package. The Guest identity remains unchanged if any pre-commit step fails or is cancelled. If the target has never received a Guest Economy Promotion, the commit performs that full economic transfer. Otherwise it performs Guest Data-Only Promotion. In both cases the staged package is retryably merged without duplicate records or counts. After backend commit the target account is immediately usable, but the promotion cannot be cancelled or rolled back and the consumed guest identity cannot be reactivated, spend, unlock, or promote again.
@@ -268,9 +284,7 @@ _Avoid_: Safety Removal, deleted Session, transferred Pattern Unlock
 The deterministic reconciliation of Guest and target-account Stitching Sessions for the same Pattern during Guest Data Promotion. Two active sessions combine through Progress Merge into the target account's surviving active session, while the Guest session identity becomes an auditable merged tombstone. If one session is completed and the other active, the completed session remains history and the active session continues as a Replay Session. If both are completed, both immutable history entries remain. First Completion Reward and completion eligibility are deduplicated by player and Pattern in every case.
 _Avoid_: Session overwrite, duplicate active session, completion reset
 
-**Membership Credit Grant**:
-The AI Credit added to a Registered Account exactly once for each verified paid Membership Period: 3 credits for Weekly, 15 for Monthly after trial conversion and each renewal, and the full 180-credit Annual allowance at purchase or renewal. Delivery retries and plan-change events cannot duplicate it. It joins the same non-expiring balance as purchased AI Credit and remains available after the membership period ends.
-_Avoid_: Free credit, monthly coin, Premium balance
+### AI Generation and Source Artwork
 
 **AI Credit Reservation**:
 A temporary hold placed on AI Credit when an AI Artwork request starts. A client or API timeout does not release it. It becomes a charge only through AI Artwork Delivery and is released only after backend reconciliation proves a terminal provider failure, safety rejection, or unusable result. Account Deletion Finalization is the sole disposal exception: an exceptionally unresolved reservation is extinguished with the deleted balance and its later provider output is discarded.
@@ -300,26 +314,104 @@ _Avoid_: Safety-Rejected Generation, failed request, moderation failure
 An AI Generation Request whose result is marked unsafe by the provider safety checker. It produces no AI Artwork, stores no result, releases its AI Credit Reservation, and is never retried automatically.
 _Avoid_: Failed Pattern, rejected artwork, moderated Pattern
 
-### Playable Content
-
 **Artwork Aspect**:
 The shape selected before an AI Generation Request: Square, Portrait 4:3, or Landscape 4:3. Pattern Conversion preserves the selected shape so approved AI Artwork is not forcibly cropped.
 _Avoid_: Image size, Pattern Size, orientation
+
+**Source Artwork**:
+The non-playable visual input used to create a Pattern. It may be an imported photo or artwork produced by the AI image generator.
+_Avoid_: Pattern, level, playable image
+
+**Photo Artwork**:
+Source Artwork imported from a Registered Account's photo. It initially preserves the photo's own shape and can be freely cropped, zoomed, and reframed before approval and Pattern Conversion.
+_Avoid_: Uploaded image, original photo, photo Pattern
+
+**Local Photo Source**:
+The full-resolution photo kept only on the player's device during creation. It is never retained by the game backend and may be discarded after Pattern Conversion or when the local creation flow ends.
+_Avoid_: Retained original, cloud photo, source upload
+
+**Conversion Upload**:
+The cropped and downscaled derivative of Photo Artwork sent temporarily for Pattern Conversion. It is deleted from backend processing storage after conversion succeeds or fails.
+_Avoid_: Original upload, stored photo, Pattern image
+
+**Artwork Framing**:
+The free crop, zoom, and positioning step used to choose the visible area of Photo Artwork before approval. It is available to every Registered Account and is not restricted to the AI Artwork aspect presets, but the chosen frame's aspect ratio is bounded between 1:6 and 6:1 so every framing yields at least one Conversion Profile within the Pattern Size limits.
+_Avoid_: Image editing, re-cropping, Premium crop
+
+**AI Artwork**:
+Source Artwork produced from a Registered Account's AI prompt by spending AI Credit. A successfully delivered result is retained privately until the owner deletes it and remains distinct from every Pattern created from it.
+_Avoid_: AI Pattern, generated Pattern
+
+**AI Artwork Library**:
+The Registered Account's private collection of successfully delivered AI Artwork. Artwork remains available for repeated Pattern Conversion until the owner deletes it; deletion does not alter Patterns already created from that artwork.
+_Avoid_: Gallery, generation history, AI Pattern Library
+
+### Pattern Creation and Conversion
+
+**Pattern Conversion**:
+The unlimited transformation of Source Artwork into a new playable Personal Pattern for a Registered Account only after Artwork Approval. Repeating conversion always creates another Personal Pattern rather than replacing an earlier result.
+_Avoid_: AI generation, image generation
+
+**Conversion Recipe**:
+The immutable provenance stored with a converted Pattern: Conversion Engine version, DMC palette version, Conversion Profile or Custom values, Pattern Size, and DMC Thread Color limit. It explains how the result was produced but does not retain a deleted Local Photo Source.
+_Avoid_: Source Artwork, editable settings, conversion request
+
+**Processing Job**:
+The durable backend record for one long-running AI Generation Request or Pattern Conversion. The API persists it before accepting the work, and an independent worker may resume or retry it without producing more than one terminal result.
+_Avoid_: In-process task, HTTP request, provider queue
+
+**Conversion Engine**:
+The stateless Python and FastAPI service that turns approved Source Artwork into a DMC-mapped stitch grid, palette, preview, and conversion statistics. It owns no account, credit, Processing Job, Pattern, or moderation state; the Game Backend worker owns orchestration and persistence.
+_Avoid_: Game Backend, Pattern owner, conversion worker
+
+**Pattern Size**:
+The width and height of a Pattern's stitch grid. Pattern Conversion preserves the Source Artwork's shape, keeps each axis between 20 and 300 cells, and derives the long edge from the selected short-edge detail.
+_Avoid_: Image size, resolution, canvas size
+
+**Conversion Profile**:
+A player-facing choice that controls Pattern Size and DMC Thread Color count while preserving the Source Artwork's shape. Easy uses a 50-cell short edge and at most 12 colors; Standard uses 100 and at most 20; Detailed uses 150 and at most 30. A profile whose derived long edge would exceed the 300-cell Pattern Size limit for the current framing is unavailable, exactly like out-of-limit Custom Conversion values; the Artwork Framing aspect bound guarantees at least Easy is always selectable.
+_Avoid_: Difficulty, quality, resolution preset
+
+**Custom Conversion**:
+The free Conversion Profile that lets a Registered Account choose Pattern Size within 20–300 cells per axis and a DMC Thread Color limit from 5–60 instead of using Easy, Standard, or Detailed. The Source Artwork's shape remains locked, and values that would push either axis beyond the limit are unavailable.
+_Avoid_: Advanced mode, Premium conversion, custom Pattern
+
+**Personal Pattern**:
+A Registered Account-owned Pattern created by Pattern Conversion or saved as a Derived Personal Pattern. Conversion Engine changes and editor saves never regenerate or replace it. It is private unless the player submits it and it passes Catalog Review.
+_Avoid_: Private Pattern, custom Pattern, user Pattern
+
+**Personal Pattern Editor**:
+The non-destructive editor for adding, removing, or recoloring individual cells and replacing one DMC Thread Color throughout a Personal Pattern. Saving never mutates the source and always creates a Derived Personal Pattern.
+_Avoid_: Pattern Conversion, in-place edit, Source Artwork editor
+
+**Editor Draft**:
+The device-local, automatically persisted working state and complete undo/redo history for editing one source Personal Pattern. Closing or reopening the editor preserves it but creates no Pattern; only explicit Save as New finalizes a Derived Personal Pattern.
+_Avoid_: Personal Pattern, autosaved Pattern, server revision
+
+**Derived Personal Pattern**:
+A new Personal Pattern saved from the Personal Pattern Editor with its own final grid and palette and a lineage reference to the source Personal Pattern. Source Pattern data, Stitching Sessions, and Catalog Submissions remain unchanged.
+_Avoid_: Pattern revision, overwritten Pattern, Catalog Submission version
+
+**Pending Personal Pattern**:
+A Derived Personal Pattern created locally by Save as New while the Registered Account is offline. It has a client-generated UUID, is immediately playable, and synchronizes idempotently as that same Personal Pattern when connectivity returns; Catalog Submission remains unavailable until backend synchronization succeeds.
+_Avoid_: Editor Draft, temporary Pattern, offline Catalog Submission
+
+### Playable Content and Catalog
 
 **Pattern**:
 A playable cross-stitch picture represented by marked cells and DMC Thread Colors. A Pattern may come from the curated catalog, an imported photo, or AI-generated artwork.
 _Avoid_: Level, template, image
 
 **Pattern Artifact**:
-The immutable, schema-versioned package containing a Pattern's dimensions, DMC palette, and cell-to-color grid. Version 1 is a gzip-compressed Protocol Buffers envelope whose row-major byte grid uses `0` for an empty cell and `1..N` for palette indices. A private S3-compatible object store holds the bytes, PostgreSQL stores its object key, checksum, and metadata, and an authorized client downloads it only through a short-lived Artifact Access Grant before verifying the checksum.
+The immutable, schema-versioned package containing a Pattern's dimensions, DMC palette, and cell-to-color grid. Its bytes are stored privately outside the database, and an authorized client downloads it only through a short-lived Artifact Access Grant before verifying its checksum; the binary encoding is fixed by ADR-0018.
 _Avoid_: Grid JSON, cell rows, preview image
 
 **Artifact Access Grant**:
-A short-lived signed URL issued after the Game Backend verifies that a player may download a Pattern Artifact. It permits transfer but changes no ownership or catalog state; Safety Removal prevents new grants for the affected Pattern.
+A short-lived download authorization issued after the Game Backend verifies that a player may download a Pattern Artifact. It permits transfer but changes no ownership or catalog state; Safety Removal prevents new grants for the affected Pattern.
 _Avoid_: Public artifact URL, Pattern Unlock, ownership grant
 
 **Pattern Preview**:
-The WebP image rendered separately to browse or identify a Pattern without downloading its Pattern Artifact. Personal Pattern Previews require an owner-only signed URL; Official and Community Pattern Previews use a public CDN and are purged on Safety Removal.
+The image rendered separately to browse or identify a Pattern without downloading its Pattern Artifact. Personal Pattern Previews require owner-only signed access; Official and Community Pattern Previews are public and are purged on Safety Removal.
 _Avoid_: Source Artwork, Pattern Artifact, screenshot
 
 **DMC Thread Color**:
@@ -346,14 +438,6 @@ _Avoid_: Trending, recently edited, Like ranking
 The non-personalized search over a Pattern's current approved title, its creator's permanent public username, and localized Catalog Tag labels. Results exclude unavailable content and Community Patterns hidden by the searching account's Creator Blocks. The first release has no behavioral recommendation or personalized ranking model.
 _Avoid_: AI recommendations, full Pattern Artifact search, private-content search
 
-**Pattern Like**:
-The single reversible heart action for an Official Pattern or Community Pattern. For a Registered Account it creates or removes one unique account–Pattern relationship, updates the public aggregate Like count, and adds or removes the Pattern from the account's private Liked Patterns collection. A Guest Player's Like remains device-local and does not affect the public count until Guest Data Promotion upserts it exactly once into the target account. The public count is display-only social proof in the first release: it affects neither catalog ranking or recommendations nor Stitch Coin, AI Credit, Premium benefits, or creator compensation.
-_Avoid_: Separate Favorite, rating, completion, anonymous public Like
-
-**First-Release Social Scope**:
-The bounded set of social interactions consisting of Pattern Like, Catalog Share Link, Community Report, Profile Report, and Creator Block. The first release has no comments, creator following, direct messaging, or separate Favorite action.
-_Avoid_: Social network, comment feed, follower graph
-
 **Catalog Category**:
 The single required primary classification assigned to every Official Pattern and Community Pattern. The first-release values are Animals, Nature and Flowers, People, Places and Architecture, Food and Drink, Holidays and Seasons, Fantasy, Geometric and Abstract, Words and Symbols, and Other.
 _Avoid_: Tag, collection, multiple categories
@@ -370,6 +454,10 @@ _Avoid_: Artifact URL, signed download link, private share, exported Pattern
 A Pattern published in the Pattern Catalog by the game operator rather than through a player's Catalog Submission. It may be free or require a Pattern Unlock.
 _Avoid_: Community Pattern, Personal Pattern, sponsored Pattern
 
+**Bundled Starter Pattern**:
+A free Official Pattern whose Pattern Artifact and Pattern Preview ship inside the app package so a player can start stitching immediately, including on a first launch without connectivity. Starting one is the sole exception to online Session Preparation for catalog content: the session becomes Ready from the bundled bytes, its backend session identity and the installation's Guest Installation Identity are created idempotently at first connectivity, and its progress, completion, and rewards then follow the ordinary local-first rules. It never requires a Pattern Unlock and behaves as a normal free Official Pattern in every other way.
+_Avoid_: Offline Catalog Cache, demo Pattern, tutorial-only Pattern
+
 **Pattern Unlock**:
 The permanent backend entitlement to start Stitching Sessions for a non-free Official Pattern after a one-time online Stitch Coin spend from a Registered Account balance or Guest Ledger. Premium Membership does not replace or temporarily grant it. It survives session deletion, replay, and Guest Data Promotion; Community Patterns, undo, Stitch Actions, accessibility features, and other core play capabilities never require it.
 _Avoid_: Rental, Pattern purchase, pay-to-play action
@@ -378,9 +466,15 @@ _Avoid_: Rental, Pattern purchase, pay-to-play action
 The fixed Stitch Coin price of an Official Pattern, derived from the same stitchable-cell ranges as its Completion Reward Tier: Small costs 75, Medium costs 150, and Large costs 300. Popularity and demand do not change the price.
 _Avoid_: Dynamic pricing, popularity price, real-money Pattern price
 
-**Unlock Earnability Target**:
-The first-release economy guardrail that guaranteed Daily Task Coin alone, without Premium Membership, purchase, or Rewarded Ad, can fund a Small Pattern Unlock within at most three Reward Days, Medium within five, and Large within ten. First Completion Rewards and optional ads may shorten those times but are not required for the target. The first release has no Player Level or level-up Coin reward; the substantial free starting catalog supplies playable content while Coin is earned.
-_Avoid_: Guaranteed daily unlock, ad requirement, level reward
+**Community Pattern**:
+The immutable player-created Pattern copy whose Catalog Submission passed Catalog Review and is visible for free in the Pattern Catalog with its owner's Public Creator Profile. Its Pattern Artifact and Pattern Preview never change, while its current public metadata may advance only through an accepted Catalog Metadata Revision whose earlier snapshots remain auditable. An edited Personal Pattern submitted again becomes a new Community Pattern rather than a revision of an existing one; publishing the new Community Pattern does not replace or remove any earlier one. Community Patterns do not require Pattern Unlocks in the first release.
+_Avoid_: Shared Pattern, public Pattern, user post
+
+**Offline Catalog Cache**:
+The last successfully fetched catalog pages stored on-device as public metadata and Pattern Previews only. Offline surfaces clearly mark the data as potentially stale and expose it read-only; they cannot perform a server search, obtain an Artifact Access Grant, or start a new Stitching Session. The cache never contains Pattern Artifacts and is reconciled with current catalog and moderation state when connectivity returns.
+_Avoid_: Offline Pattern Data, offline catalog entitlement, full catalog download
+
+### Stitching Sessions and Progress
 
 **Stitching Session**:
 A player's ongoing attempt to complete one immutable Official, Community, or Personal Pattern. The session references that Pattern and owns only player-specific state such as Session Progress; it is not a copied Pattern, and a later Personal Pattern edit cannot change it. A catalog session begins through idempotent Session Preparation and becomes playable on a device only after reaching Ready Session there; a Personal Pattern already available on-device may start ready.
@@ -414,10 +508,6 @@ _Avoid_: Reset, restart, replay progress
 The verified Pattern Artifact and Pattern Preview atomically stored on-device when Session Preparation succeeds. They make that session a Ready Session, keep it playable without connectivity, and normally remain until the session is deleted. Guest Data-Only Promotion removes them when the target account lacks the paid Official Pattern's Unlock, and Safety Removal applies its stronger deletion rule; catalog browsing never pre-downloads other Pattern Artifacts.
 _Avoid_: Offline Catalog Cache, downloaded Pattern, local Pattern
 
-**Offline Catalog Cache**:
-The last successfully fetched catalog pages stored on-device as public metadata and Pattern Previews only. Offline surfaces clearly mark the data as potentially stale and expose it read-only; they cannot perform a server search, obtain an Artifact Access Grant, or start a new Stitching Session. The cache never contains Pattern Artifacts and is reconciled with current catalog and moderation state when connectivity returns.
-_Avoid_: Offline Pattern Data, offline catalog entitlement, full catalog download
-
 **Session Progress**:
 The durable materialized cell state and revision of an active Stitching Session, derived from its idempotent Progress Operations. Every change is committed locally first so closing the app or losing connectivity does not discard play; a completed session freezes its final revision as read-only history.
 _Avoid_: Save data, completion state, game progress
@@ -437,6 +527,8 @@ _Avoid_: Auto-save, backup, upload queue
 **Progress Merge**:
 The causal combination of idempotent Progress Operations from multiple devices without replacing one device's full state with another's while the Stitching Session remains active. Operations observed later than their base revision apply normally, including Undo. Only concurrent operations for the same cell use the safety-biased rule that completed wins over incomplete; unrelated cells combine independently. Accepted Session Completion is a terminal boundary rather than another merge candidate.
 _Avoid_: Last write wins, overwrite, conflict resolution
+
+### Gameplay Interaction
 
 **Active Thread Color**:
 The DMC Thread Color currently selected by the player for Stitch Actions in a Stitching Session.
@@ -459,7 +551,7 @@ A player action that fills an unfinished Pattern cell whose DMC Thread Color mat
 _Avoid_: Paint, color, mark
 
 **Stitch Interaction Budget**:
-The first-release performance gate measured on the oldest supported iOS and Android reference devices with a `300×300` Pattern and 60-color Thread Palette: a Stitch or Undo Action reaches visible local state within 50 ms at p95, and pan, Anchored Zoom, and Stitch Sweep target 60 frames per second without network, database sync, image conversion, or artifact decompression on the interaction-critical path. Background work yields while an active gesture runs, and failing the reference scenario blocks release.
+The first-release performance gate for stitching interactions, measured on the oldest supported iOS and Android reference devices with a maximum-size Pattern: Stitch and Undo Actions must reach visible local state within the fixed latency budget, and pan, Anchored Zoom, and Stitch Sweep must hold the target frame rate with no network, sync, conversion, or decompression work on the interaction-critical path. Background work yields while an active gesture runs; the concrete scenario, latency, frame-rate, and thermal thresholds are fixed by ADR-0031, and failing them blocks release.
 _Avoid_: Best-effort performance, server tap, average-only benchmark
 
 **Undo Action**:
@@ -490,81 +582,17 @@ _Avoid_: Mistake, wrong stitch, error
 The free, unlimited action that centers the viewport on the next unfinished cell for Active Thread Color and cycles deterministically through remaining matches. It never fills a cell, changes progress, grants a reward, selects the next color, shows an advertisement, or consumes Stitch Coin, AI Credit, or Premium access. The first release provides no auto-fill assistance.
 _Avoid_: Hint currency, auto-stitch, paid help
 
-**Source Artwork**:
-The non-playable visual input used to create a Pattern. It may be an imported photo or artwork produced by the AI image generator.
-_Avoid_: Pattern, level, playable image
+### Social
 
-**Photo Artwork**:
-Source Artwork imported from a Registered Account's photo. It initially preserves the photo's own shape and can be freely cropped, zoomed, and reframed before approval and Pattern Conversion.
-_Avoid_: Uploaded image, original photo, photo Pattern
+**Pattern Like**:
+The single reversible heart action for an Official Pattern or Community Pattern. For a Registered Account it creates or removes one unique account–Pattern relationship, updates the public aggregate Like count, and adds or removes the Pattern from the account's private Liked Patterns collection. A Guest Player's Like remains device-local and does not affect the public count until Guest Data Promotion upserts it exactly once into the target account. The public count is display-only social proof in the first release: it affects neither catalog ranking or recommendations nor Stitch Coin, AI Credit, Premium benefits, or creator compensation.
+_Avoid_: Separate Favorite, rating, completion, anonymous public Like
 
-**Local Photo Source**:
-The full-resolution photo kept only on the player's device during creation. It is never retained by the game backend and may be discarded after Pattern Conversion or when the local creation flow ends.
-_Avoid_: Retained original, cloud photo, source upload
+**First-Release Social Scope**:
+The bounded set of social interactions consisting of Pattern Like, Catalog Share Link, Community Report, Profile Report, and Creator Block. The first release has no comments, creator following, direct messaging, or separate Favorite action.
+_Avoid_: Social network, comment feed, follower graph
 
-**Conversion Upload**:
-The cropped and downscaled derivative of Photo Artwork sent temporarily for Pattern Conversion. It is deleted from backend processing storage after conversion succeeds or fails.
-_Avoid_: Original upload, stored photo, Pattern image
-
-**Artwork Framing**:
-The free crop, zoom, and positioning step used to choose the visible area of Photo Artwork before approval. It is available to every Registered Account and is not restricted to the AI Artwork aspect presets.
-_Avoid_: Image editing, re-cropping, Premium crop
-
-**AI Artwork**:
-Source Artwork produced from a Registered Account's AI prompt by spending AI Credit. A successfully delivered result is retained privately until the owner deletes it and remains distinct from every Pattern created from it.
-_Avoid_: AI Pattern, generated Pattern
-
-**AI Artwork Library**:
-The Registered Account's private collection of successfully delivered AI Artwork. Artwork remains available for repeated Pattern Conversion until the owner deletes it; deletion does not alter Patterns already created from that artwork.
-_Avoid_: Gallery, generation history, AI Pattern Library
-
-**Pattern Conversion**:
-The unlimited transformation of Source Artwork into a new playable Personal Pattern for a Registered Account only after Artwork Approval. Repeating conversion always creates another Personal Pattern rather than replacing an earlier result.
-_Avoid_: AI generation, image generation
-
-**Conversion Recipe**:
-The immutable provenance stored with a converted Pattern: Conversion Engine version, DMC palette version, Conversion Profile or Custom values, Pattern Size, and DMC Thread Color limit. It explains how the result was produced but does not retain a deleted Local Photo Source.
-_Avoid_: Source Artwork, editable settings, conversion request
-
-**Processing Job**:
-The durable backend record for one long-running AI Generation Request or Pattern Conversion. The API persists it before accepting the work, and an independent worker may resume or retry it without producing more than one terminal result.
-_Avoid_: In-process task, HTTP request, provider queue
-
-**Conversion Engine**:
-The stateless Python and FastAPI service that turns approved Source Artwork into a DMC-mapped stitch grid, palette, preview, and conversion statistics. It owns no account, credit, Processing Job, Pattern, or moderation state; the Game Backend worker owns orchestration and persistence.
-_Avoid_: Game Backend, Pattern owner, conversion worker
-
-**Pattern Size**:
-The width and height of a Pattern's stitch grid. Pattern Conversion preserves the Source Artwork's shape, keeps each axis between 20 and 300 cells, and derives the long edge from the selected short-edge detail.
-_Avoid_: Image size, resolution, canvas size
-
-**Conversion Profile**:
-A player-facing choice that controls Pattern Size and DMC Thread Color count while preserving the Source Artwork's shape. Easy uses a 50-cell short edge and at most 12 colors; Standard uses 100 and at most 20; Detailed uses 150 and at most 30.
-_Avoid_: Difficulty, quality, resolution preset
-
-**Custom Conversion**:
-The free Conversion Profile that lets a Registered Account choose Pattern Size within 20–300 cells per axis and a DMC Thread Color limit from 5–60 instead of using Easy, Standard, or Detailed. The Source Artwork's shape remains locked, and values that would push either axis beyond the limit are unavailable.
-_Avoid_: Advanced mode, Premium conversion, custom Pattern
-
-**Personal Pattern**:
-A Registered Account-owned Pattern created by Pattern Conversion or saved as a Derived Personal Pattern. Conversion Engine changes and editor saves never regenerate or replace it. It is private unless the player submits it and it passes Catalog Review.
-_Avoid_: Private Pattern, custom Pattern, user Pattern
-
-**Personal Pattern Editor**:
-The non-destructive editor for adding, removing, or recoloring individual cells and replacing one DMC Thread Color throughout a Personal Pattern. Saving never mutates the source and always creates a Derived Personal Pattern.
-_Avoid_: Pattern Conversion, in-place edit, Source Artwork editor
-
-**Editor Draft**:
-The device-local, automatically persisted working state and complete undo/redo history for editing one source Personal Pattern. Closing or reopening the editor preserves it but creates no Pattern; only explicit Save as New finalizes a Derived Personal Pattern.
-_Avoid_: Personal Pattern, autosaved Pattern, server revision
-
-**Derived Personal Pattern**:
-A new Personal Pattern saved from the Personal Pattern Editor with its own final grid and palette and a lineage reference to the source Personal Pattern. Source Pattern data, Stitching Sessions, and Catalog Submissions remain unchanged.
-_Avoid_: Pattern revision, overwritten Pattern, Catalog Submission version
-
-**Pending Personal Pattern**:
-A Derived Personal Pattern created locally by Save as New while the Registered Account is offline. It has a client-generated UUID, is immediately playable, and synchronizes idempotently as that same Personal Pattern when connectivity returns; Catalog Submission remains unavailable until backend synchronization succeeds.
-_Avoid_: Editor Draft, temporary Pattern, offline Catalog Submission
+### Catalog Publishing and Moderation
 
 **Catalog Submission**:
 A player's explicit request to have an immutable copy of a Personal Pattern reviewed for publication in the Pattern Catalog. The submitting Registered Account must first have a Public Creator Profile. Every submission captures a new copy together with its Catalog Submission Metadata and Publication Rights Declaration, including submissions made after editing a previously submitted Personal Pattern, and passes through Catalog Precheck before human Catalog Review; a pending, quarantined, or rejected submission is not visible in the catalog.
@@ -603,7 +631,7 @@ The non-exclusive, worldwide, royalty-free permission a submitting creator grant
 _Avoid_: Copyright transfer, exclusive ownership, unrestricted content license
 
 **Catalog Precheck**:
-The automated safety, similarity, metadata, and technical analysis performed before human Catalog Review. OpenAI `omni-moderation-latest` analyzes the Catalog Submission's title, description, and Pattern Preview, and perceptual hashing produces a Catalog Similarity Signal for identical or near-identical catalog images; these are moderator-facing evidence and never make the safety, rights, duplication, quality, or publication decision. Catalog Metadata Validation and Catalog Technical Validation separately enforce the non-negotiable invariants that malformed metadata or playable bytes cannot be published. No automated result can approve or publish content.
+The automated safety, similarity, metadata, and technical analysis performed before human Catalog Review. Automated safety moderation analyzes the Catalog Submission's title, description, and Pattern Preview, and perceptual hashing produces a Catalog Similarity Signal for identical or near-identical catalog images; these are moderator-facing evidence and never make the safety, rights, duplication, quality, or publication decision. Catalog Metadata Validation and Catalog Technical Validation separately enforce the non-negotiable invariants that malformed metadata or playable bytes cannot be published. No automated result can approve or publish content.
 _Avoid_: Catalog Review, automatic moderation decision, prompt check
 
 **Catalog Technical Validation**:
@@ -630,10 +658,6 @@ _Avoid_: Hidden moderation label, automated rejection, generic failure
 The submitting player's single opportunity to request another human review of the exact immutable Catalog Submission after its initial rejection. The appeal cannot change the Pattern, Catalog Submission Metadata, or Publication Rights Declaration and is assigned to a different moderator when operationally possible. Acceptance publishes that snapshot as a Community Pattern only if current Catalog Metadata Validation and Catalog Technical Validation both pass; an upheld rejection is final for that submission. Any content change requires a new Catalog Submission rather than another appeal.
 _Avoid_: Resubmission, content edit, repeated appeal
 
-**Community Pattern**:
-The immutable player-created Pattern copy whose Catalog Submission passed Catalog Review and is visible for free in the Pattern Catalog with its owner's Public Creator Profile. Its Pattern Artifact and Pattern Preview never change, while its current public metadata may advance only through an accepted Catalog Metadata Revision whose earlier snapshots remain auditable. An edited Personal Pattern submitted again becomes a new Community Pattern rather than a revision of an existing one; publishing the new Community Pattern does not replace or remove any earlier one. Community Patterns do not require Pattern Unlocks in the first release.
-_Avoid_: Shared Pattern, public Pattern, user post
-
 **Community Report**:
 An in-game signal submitted by a Registered Account that a published Community Pattern may violate safety, legal, or catalog policy. It requires a Community Report Reason, accepts an optional explanation except when the selected reason requires one, and is unique per submitting account and open Post-Publication Review; repeated submissions during that case return the existing report. After closure, a new approved public metadata version or materially new evidence may create a new rate-limited report instead of being blocked forever by the earlier case. A Guest Player may see the report action but must sign in before submitting. The report starts or contributes to a review but never removes or changes the Pattern by itself.
 _Avoid_: Automatic takedown, Catalog Rejection, app-store report
@@ -643,12 +667,16 @@ The mandatory structured reason selected when submitting a Community Report. The
 _Avoid_: Catalog Rejection Reason, free-form-only report, hidden category
 
 **Post-Publication Review**:
-The human moderation review of a published Community Pattern initiated by one or more Community Reports. A moderator may apply Review Hold while evidence is evaluated. The final decision either restores normal catalog availability when no violation is found or applies Safety Removal when the content presents a serious safety, legal, or policy violation.
+The human moderation review of a published Community Pattern initiated by one or more Community Reports. A moderator may apply Review Hold while evidence is evaluated. The final decision restores normal catalog availability when no violation is found, applies Catalog Metadata Remediation when only the current approved metadata violates policy, or applies Safety Removal when the content presents a serious safety, legal, or policy violation.
 _Avoid_: Catalog Review, automatic removal, creator withdrawal
 
 **Review Hold**:
-A temporary moderator-only state applied to a Community Pattern during Post-Publication Review. It removes the Pattern from catalog discovery and prevents new Stitching Sessions, while existing Stitching Sessions and their Offline Pattern Data remain playable until the final human decision. Reports and automated thresholds cannot apply it. The owner may propose a Catalog Metadata Revision, but neither submission nor acceptance can clear the hold outside the moderator's combined Post-Publication Review decision. Clearing the hold restores normal availability; confirming a serious violation applies Safety Removal and closes any pending metadata revision without publication. Applying the hold and reaching the final decision each create a Moderation Notice for the Community Pattern owner.
+A temporary moderator-only state applied to a Community Pattern during Post-Publication Review. It removes the Pattern from catalog discovery and prevents new Stitching Sessions, while existing Stitching Sessions and their Offline Pattern Data remain playable until the final human decision. Reports and automated thresholds cannot apply it. The owner may propose a Catalog Metadata Revision, but neither submission nor acceptance can clear the hold outside the moderator's combined Post-Publication Review decision. Clearing the hold restores normal availability; a metadata-only violation may instead be resolved with Catalog Metadata Remediation; confirming a serious violation applies Safety Removal and closes any pending metadata revision without publication. Applying the hold and reaching the final decision each create a Moderation Notice for the Community Pattern owner.
 _Avoid_: Review Quarantine, Catalog Withdrawal, Safety Removal, automatic hide
+
+**Catalog Metadata Remediation**:
+The moderator action used when Post-Publication Review confirms that a Community Pattern's current approved title, description, Catalog Category, or Catalog Tags violate policy without the playable content warranting Safety Removal. It replaces the violating title or description with a safe neutral default, removes violating Catalog Tags, may reassign the Catalog Category, and records the previous values in the private audit history. The Pattern Artifact, Pattern Preview, catalog availability, existing Stitching Sessions, and Offline Pattern Data remain unchanged, and the owner receives a Moderation Notice. It has no separate appeal because the owner may propose compliant values through an ordinary Catalog Metadata Revision.
+_Avoid_: Safety Removal, Catalog Withdrawal, owner metadata edit, Profile Remediation
 
 **Moderation Notice**:
 The owner-facing record sent through both in-app messaging and email when Review Hold is applied and when Post-Publication Review reaches its final decision. It identifies the affected Community Pattern and explains the moderation reason, but never exposes the identity or account details of any player who submitted a Community Report.
