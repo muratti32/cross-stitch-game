@@ -1,0 +1,3 @@
+# Process imported photos without retaining originals
+
+The full-resolution Local Photo Source remains on the player's device. Photo-based Pattern Conversion sends only a cropped, downscaled Conversion Upload to the game backend, deletes that temporary derivative after the conversion succeeds or fails, and permanently stores only the resulting Pattern grid, DMC palette, and Pattern preview. This minimizes private-photo exposure and storage cost, accepting that a player who later wants a different conversion must select and upload the photo again rather than relying on a backend-retained original.

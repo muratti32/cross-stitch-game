@@ -1,0 +1,9 @@
+# Use deterministic catalog discovery without personalization
+
+First-release catalog discovery consists of four explainable surfaces: operator-curated Staff Picks, New Patterns ordered by first publication time descending, navigation through Catalog Categories and localized Catalog Tags, and Catalog Search across current approved titles, permanent creator usernames, and localized tag labels. An accepted Catalog Metadata Revision does not alter the original publication timestamp or promote a Pattern back into New.
+
+Discovery queries exclude content unavailable because of Review Hold, Account Closure Hold, Catalog Withdrawal, or Safety Removal and apply the requesting Registered Account's Creator Blocks. Public Pattern Like totals do not select or order results. The first release has no behavioral recommendation engine or personalized ranking model.
+
+The client may retain the last successfully fetched discovery pages as Offline Catalog Cache containing only public metadata and Pattern Previews. Offline catalog surfaces mark those pages as potentially stale and allow read-only browsing; they cannot perform a server search, acquire an Artifact Access Grant, or start a new Stitching Session. Reconnection reconciles the cache with current catalog, moderation, and block state.
+
+We accept manual Staff Picks operations, deterministic ordering, language-dependent title search, stale-but-labeled offline pages, cache reconciliation, and less individualized discovery in exchange for predictable catalog behavior, a useful offline browse surface, a clean cold start, lower tracking and infrastructure requirements, and reduced incentives to manipulate public Like totals. Personalization can be evaluated later from explicit product evidence without embedding it in the initial catalog contract.

@@ -1,0 +1,5 @@
+# Record conversion recipes without reprocessing in place
+
+Every Pattern Conversion stores an immutable Conversion Recipe containing the Conversion Engine version, DMC palette version, selected Conversion Profile or Custom values, output Pattern Size, and DMC Thread Color limit. Deploying a new engine, algorithm, or palette never regenerates an existing Pattern in place. If a player converts the same AI Artwork again or supplies another photo derivative, the result is a new Personal Pattern with its own recipe; prior Patterns, Catalog Submissions, and Stitching Sessions remain unchanged.
+
+We accept additional Personal Pattern records and visible differences between engine versions in exchange for stable play, explainable output, safe rollouts, and catalog snapshots that cannot silently change after moderation. The recipe records provenance rather than promising exact reproduction: a Local Photo Source is still deleted under the photo-retention policy, so reconversion from that photo requires the player to select it again on-device.

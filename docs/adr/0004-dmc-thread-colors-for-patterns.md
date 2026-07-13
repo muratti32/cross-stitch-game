@@ -1,0 +1,5 @@
+# Use DMC thread colors for converted patterns
+
+Every Pattern Conversion quantizes the Source Artwork and maps the resulting colors to canonical DMC Thread Colors, following the proven separation in CrossCraft's color-quantization and DMC-matching services while keeping this game's backend and data model independent. The immutable palette order assigns each color one Pattern-local Thread Color Number. That same number is mandatory on unfinished cells at a readable zoom and in the persistent Thread Palette beside the color swatch, completion state, and remaining count. Color is never the sole cue; exposing canonical DMC codes remains optional presentation and does not replace the Pattern-local number.
+
+We accept some deviation from the source artwork's arbitrary digital colors, another stored or deterministically derived cue, zoom-dependent cell labels, and a denser palette in exchange for authentic cross-stitch semantics, stable color identities, accessible color-by-number play, and a palette that can be understood as real thread rather than screen-only RGB values.

@@ -1,0 +1,9 @@
+# Edit personal patterns by derivation
+
+The first release includes a non-destructive Personal Pattern Editor. A player may add or remove cells, assign another DMC Thread Color to individual cells, or replace one DMC color throughout the grid. Saving always creates a Derived Personal Pattern with its own final grid and palette plus a lineage reference to the source Personal Pattern; it never updates the source record in place. Existing Stitching Sessions, Offline Pattern Data, Catalog Submissions, and Community Patterns continue to reference the exact Pattern they started from.
+
+Edits accumulate in an automatically persisted, device-local Editor Draft with a complete undo/redo history. Leaving or reopening the editor preserves that draft but creates no Personal Pattern and changes no server record. Only an explicit Save as New action materializes the current draft as a Derived Personal Pattern, keeping experimentation and durable content creation visibly separate.
+
+Save as New remains available while offline. It assigns a client-generated UUID and creates an immutable Pending Personal Pattern that can start local Stitching Sessions immediately. Synchronization uses that UUID idempotently to create the same Personal Pattern in the backend; Catalog Submission is disabled until the backend acknowledges it.
+
+We accept device-local draft and pending-pattern storage, potentially large undo histories, immutable upload retries, duplicated Pattern grids, lineage records, and a longer personal library in exchange for safe experimentation, offline creation, stable progress, immutable moderation snapshots, and an editing model in which “save” cannot rewrite content another player or session already relies on. A synchronized derived result may be submitted, but each Catalog Submission still takes a new immutable copy and goes through Catalog Review as a new Community Pattern.

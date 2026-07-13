@@ -1,0 +1,9 @@
+# Share public catalog identities with stable Universal Links
+
+Every approved Community Pattern and Public Creator Profile has a stable Catalog Share Link based on an opaque public identifier. The URL opens the matching in-app page when the game is installed. Without the app, it opens a web landing page that exposes only already-public catalog or creator metadata and the Pattern Preview, then offers store links. The share URL never embeds a Pattern Artifact, Artifact Access Grant, private account identifier, or other credential; starting or resuming play still uses the normal backend authorization and artifact-grant flow.
+
+Link resolution respects current availability state. A Community Pattern under Review Hold, Account Closure Hold, Catalog Withdrawal, or Safety Removal returns an unavailable page rather than stale metadata or preview content. Clearing a Review Hold, cancelling account deletion, or accepting a Safety Removal Appeal restores the same stable link because the underlying immutable public identity has not changed.
+
+Account Closure Hold makes the owner's links temporarily unavailable during Deletion Recovery Window. Cancellation restores the same identifiers. Finalization applies Catalog Withdrawal permanently, removes the Public Creator Profile page, and never redirects the reserved identifier or username to a later account; existing sessions show only Deleted Creator attribution without a profile link.
+
+We accept permanent public identifiers, Universal Link and web-fallback infrastructure, moderation-aware link resolution, and preview-cache invalidation in exchange for shareable catalog content without turning object-storage URLs into public capabilities. Stable links preserve attribution and sharing history, while access to playable bytes remains revocable and independently authorized.

@@ -1,0 +1,5 @@
+# Isolate conversion in a stateless Python service
+
+Pattern Conversion delegates image decoding, resampling, color reduction, DMC Thread Color matching, stitch-grid construction, preview rendering, and conversion statistics to a game-owned stateless Python and FastAPI Conversion Engine. A NestJS worker supplies an approved Source Artwork derivative and explicit conversion parameters, then validates and persists the returned result. The Conversion Engine never authenticates players, reserves credits, owns Processing Jobs, writes Patterns, or decides Catalog Review; those responsibilities remain in the Game Backend.
+
+We accept a second runtime, service contract, and independent deployment in exchange for using Python's mature imaging and numerical ecosystem, scaling CPU-heavy conversion separately, and keeping domain and commerce authority out of a compute service. CrossCraft's Python pipeline and DMC quantization are reference material for algorithms and failure cases, but this game owns the implementation, API contract, tests, versioning, and operational lifecycle.

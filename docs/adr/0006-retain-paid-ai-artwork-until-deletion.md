@@ -1,0 +1,3 @@
+# Retain paid AI artwork until its owner deletes it
+
+Every successfully delivered and charged AI Artwork is copied into game-owned private storage and listed in the Registered Account's AI Artwork Library rather than depending on a provider result URL or a one-time preview. The owner may reuse it for unlimited Pattern Conversions and may delete it explicitly; Account Deletion Finalization also removes it. Either deletion removes the Source Artwork but never changes or deletes Patterns already created from it or the immutable Community Pattern snapshots licensed for catalog operation. We accept ongoing private-storage cost in exchange for preserving the paid asset and avoiding a situation where a player spends AI Credit but later loses access to the result.

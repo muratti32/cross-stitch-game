@@ -1,0 +1,9 @@
+# Bound first-release social features to Likes, sharing, and safety controls
+
+The first release exposes one Pattern Like heart action for each Official Pattern and Community Pattern. A Registered Account may Like a Pattern at most once and may reverse that action. The same relationship drives both the public aggregate Like count and the account's private Liked Patterns collection; there is no separate Favorite concept. Guest Likes remain device-local and do not affect the public total until Guest Data Promotion upserts each relationship exactly once into the target Registered Account reached through signup or sign-in. The public aggregate is display-only social proof: it has no effect on catalog ranking, recommendations, Stitch Coin, AI Credit, Premium benefits, or creator compensation.
+
+Other first-release social interactions are limited to Catalog Share Links, Community Reports, Profile Reports, and Creator Blocks. The game has no comments, creator-follow graph, direct messaging, or separate Favorite action.
+
+Account Deletion Finalization removes every Like relationship owned by the deleted account and decrements affected public aggregates idempotently. It also removes Creator Blocks and private liked-collection state; aggregate counts never preserve a hidden personal relationship merely for social proof.
+
+We accept a server-authoritative unique-Like relation, aggregate-count maintenance, guest-promotion reconciliation, deliberately non-incentivized Like totals, and reduced social virality in exchange for one understandable engagement action and a substantially smaller abuse, notification, privacy, economy, and moderation surface. Public Like totals provide lightweight feedback without creating a farming or payout mechanism, while reports and blocks remain independent safety controls rather than engagement signals.

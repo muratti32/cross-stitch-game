@@ -1,0 +1,11 @@
+# Use accessible numbered controls without paid assistance
+
+Every immutable Pattern assigns one Thread Color Number to each DMC Thread Color through its palette order. At a readable cell zoom, unfinished cells show that number; Thread Palette always shows the same number beside its swatch, completion state, and remaining-cell count. Color is never the only signal. The palette stays reachable while stitching, sweeping, panning, zooming, using Undo, or seeking a remaining cell, and tool selection never forces the player to exit a hidden mode merely to change color or correct progress.
+
+Handedness Layout mirrors the interactive tool rail, palette entry edge, Undo, and locator for Left or Right use without mirroring the Pattern or changing gesture semantics. The preference synchronizes for Registered Accounts and stays installation-local for Guests. Controls support platform text scaling and accessible touch targets rather than shrinking the color list into an unreadable strip.
+
+Remaining Cell Locator is free and unlimited. It deterministically centers the next unfinished cell of Active Thread Color but does not fill it, select another color, change progress, grant rewards, show advertising, or consume any currency, credit, membership, or life. The first release deliberately omits auto-fill. Mismatched Tap remains a gentle, non-punitive no-op, and Undo remains free while the session is active.
+
+Thread Palette derives completion from remaining cells. Undoing a cell in a completed color immediately returns that color to incomplete and selectable state, while an already granted Daily Task reward remains idempotently earned. Stitch Sweep is one gesture but emits one Stitch Action and Progress Operation per newly filled eligible cell; Daily Tasks count those successful cell actions, not fingers-down gestures, and skipped cells count nothing.
+
+We accept persistent control-space use, mirrored-layout QA, zoom-dependent labels, large-palette scrolling, and a non-monetized helper in exchange for a clear color-by-number contract, color-independent cues, left-handed accessibility, easy recovery of the last missing cells, and preservation of the calm stitching loop identified as a differentiator in the product research.
