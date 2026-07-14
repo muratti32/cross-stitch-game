@@ -1,4 +1,6 @@
 import * as SQLite from 'expo-sqlite';
+import * as FileSystem from 'expo-file-system/legacy';
+import { getDatabaseFilename, getDatabasePath, shouldAdopt } from './namespaceLogic';
 
 export interface StitchingSession {
   id: string;
@@ -29,28 +31,134 @@ export interface Checkpoint {
   createdAt: string;
 }
 
+let activeIdentity: string | null = null;
 let dbInstance: SQLite.SQLiteDatabase | null = null;
+
+/**
+ * Returns the current active identity.
+ */
+export function getActiveIdentity(): string | null {
+  return activeIdentity;
+}
+
+/**
+ * Namespace manager: openNamespace(identity) returns the DB handle for the active identity.
+ * It closes the existing handle if the identity changes.
+ * 
+ * Note on iOS Storage Protection:
+ * iOS database files created under the Documents/Library directories are protected by
+ * default with iOS hardware-based Data Protection, ensuring encryption while locked.
+ */
+export async function openNamespace(identity: string | null): Promise<SQLite.SQLiteDatabase> {
+  // If we already have a dbInstance open and identity matches, return it
+  if (dbInstance && activeIdentity === identity) {
+    return dbInstance;
+  }
+
+  // Close old database instance if it exists
+  if (dbInstance) {
+    try {
+      await dbInstance.closeAsync();
+    } catch (e) {
+      console.error('Failed to close old database instance:', e);
+    }
+    dbInstance = null;
+  }
+
+  activeIdentity = identity;
+
+  const filename = getDatabaseFilename(identity);
+  dbInstance = await SQLite.openDatabaseAsync(filename);
+
+  // Auto-initialize the newly opened database
+  await initDatabaseForDb(dbInstance);
+
+  return dbInstance;
+}
 
 /**
  * Gets the open database instance, opening it if it doesn't exist yet.
  */
 export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
   if (!dbInstance) {
-    dbInstance = await SQLite.openDatabaseAsync('stitch_wish.db');
+    dbInstance = await openNamespace(activeIdentity);
   }
   return dbInstance;
+}
+
+/**
+ * Adopts the offline/pre-identity database as the target guest's database.
+ * Moves the database file and WAL/SHM files atomically if the pre-identity database exists.
+ */
+export async function adoptPreIdentityDatabase(guestId: string): Promise<void> {
+  const documentDirectory = FileSystem.documentDirectory;
+  if (!documentDirectory) {
+    // Web / mock fallback
+    await openNamespace(guestId);
+    return;
+  }
+
+  const preDbName = getDatabaseFilename(null);
+  const guestDbName = getDatabaseFilename(guestId);
+
+  const preDbPath = getDatabasePath(documentDirectory, preDbName);
+  const guestDbPath = getDatabasePath(documentDirectory, guestDbName);
+
+  const preInfo = await FileSystem.getInfoAsync(preDbPath);
+  const guestInfo = await FileSystem.getInfoAsync(guestDbPath);
+
+  const hasPre = preInfo.exists;
+  const hasGuest = guestInfo.exists;
+
+  if (shouldAdopt(hasPre, hasGuest)) {
+    // 1. Close current dbInstance if open
+    if (dbInstance) {
+      await dbInstance.closeAsync();
+      dbInstance = null;
+    }
+
+    // 2. Rename the database file
+    await FileSystem.moveAsync({
+      from: preDbPath,
+      to: guestDbPath,
+    });
+
+    // 3. Move -wal and -shm files if they exist
+    const walPathFrom = `${preDbPath}-wal`;
+    const walPathTo = `${guestDbPath}-wal`;
+    const shmPathFrom = `${preDbPath}-shm`;
+    const shmPathTo = `${guestDbPath}-shm`;
+
+    const walInfo = await FileSystem.getInfoAsync(walPathFrom);
+    if (walInfo.exists) {
+      try {
+        await FileSystem.moveAsync({ from: walPathFrom, to: walPathTo });
+      } catch (err) {
+        console.error('Failed to move wal file:', err);
+      }
+    }
+
+    const shmInfo = await FileSystem.getInfoAsync(shmPathFrom);
+    if (shmInfo.exists) {
+      try {
+        await FileSystem.moveAsync({ from: shmPathFrom, to: shmPathTo });
+      } catch (err) {
+        console.error('Failed to move shm file:', err);
+      }
+    }
+  }
+
+  // 4. Open the new namespace
+  await openNamespace(guestId);
 }
 
 import { packCompletedBitmap, unpackCompletedBitmap, generateUUID } from './helpers';
 export { packCompletedBitmap, unpackCompletedBitmap, generateUUID };
 
-
 /**
- * Initializes the database tables and runs migrations.
+ * Initializes the database tables and runs migrations for a specific database.
  */
-export async function initDatabase(): Promise<void> {
-  const db = await getDatabase();
-  
+export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void> {
   // Enable WAL mode
   await db.execAsync('PRAGMA journal_mode=WAL;');
   
@@ -117,6 +225,14 @@ export async function initDatabase(): Promise<void> {
       await db.execAsync('PRAGMA user_version = 1;');
     });
   }
+}
+
+/**
+ * Initializes the database tables and runs migrations.
+ */
+export async function initDatabase(): Promise<void> {
+  const db = await getDatabase();
+  await initDatabaseForDb(db);
 }
 
 /**

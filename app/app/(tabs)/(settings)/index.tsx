@@ -7,10 +7,13 @@ import { useHealthCheck } from '@/hooks/useHealthCheck';
 import { Config } from '@/config';
 import { Ionicons } from '@expo/vector-icons';
 import { setHandedness as setHandednessDb } from '@/local-db';
+import { useBackendSession } from '@/hooks/useBackendSession';
+import { shortenGuestId } from '@/identity/identityLogic';
 
 export default function SettingsScreen() {
   const { showGridLines, toggleGridLines, handedness, setHandedness } = useGameplayStore();
   const { data: health, isLoading, error, refetch, isRefetching } = useHealthCheck();
+  const { data: sessionData, isLoading: sessionLoading, error: sessionError } = useBackendSession();
 
   const handleHandednessChange = async (value: 'left' | 'right') => {
     setHandedness(value);
@@ -132,6 +135,40 @@ export default function SettingsScreen() {
             </View>
           </View>
         ) : null}
+      </Card>
+
+      {/* Session Status Section */}
+      <Text style={styles.sectionTitle}>Identity & Session</Text>
+      <Card style={styles.card}>
+        <View style={styles.settingRow}>
+          <View style={styles.settingTextContainer}>
+            <Text style={styles.settingTitle}>Backend Session Status</Text>
+            <Text style={styles.settingDescription}>
+              Validates your active guest registration session via the API.
+            </Text>
+          </View>
+          
+          {sessionLoading ? (
+            <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
+          ) : sessionError ? (
+            <View style={styles.statusBadgeError}>
+              <View style={[styles.statusDot, { backgroundColor: Theme.colors.error }]} />
+              <Text style={styles.errorText}>No Active Session</Text>
+            </View>
+          ) : sessionData ? (
+            <View style={styles.sessionStatusContainer}>
+              <View style={styles.statusBadgeSuccess}>
+                <View style={[styles.statusDot, { backgroundColor: Theme.colors.success }]} />
+                <Text style={styles.successText}>Session Active</Text>
+              </View>
+              <Text style={styles.sessionInfoText}>
+                ID: {shortenGuestId(sessionData.id)} (v{sessionData.tokenVersion})
+              </Text>
+            </View>
+          ) : (
+            <Text style={styles.settingDescription}>Unknown state</Text>
+          )}
+        </View>
       </Card>
 
       {/* Gameplay Preferences */}
@@ -500,5 +537,13 @@ const styles = StyleSheet.create({
   segmentTextActive: {
     fontWeight: Theme.typography.weights.bold,
     color: Theme.colors.textPrimary,
+  },
+  sessionStatusContainer: {
+    alignItems: 'flex-end',
+  },
+  sessionInfoText: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.textSecondary,
+    marginTop: Theme.spacing.xs,
   },
 });
