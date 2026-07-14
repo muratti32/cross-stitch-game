@@ -1,0 +1,207 @@
+import {
+  CELL_SIZE,
+  TILE_CELLS,
+  TILE_SIZE,
+  getTileCoords,
+  getTileBounds,
+  getVisibleTiles,
+  getLodBand,
+  getFitViewport,
+  getAnchoredZoomTransform,
+} from '../tileMath';
+import { RendererState } from '../RendererState';
+
+describe('Stitch Renderer Pure Logic', () => {
+  describe('tileMath', () => {
+    test('getTileCoords maps cells to 32x32 tiles correctly', () => {
+      // Tile 0, 0
+      expect(getTileCoords(0, 0)).toEqual({ tileX: 0, tileY: 0 });
+      expect(getTileCoords(31, 31)).toEqual({ tileX: 0, tileY: 0 });
+
+      // Tile boundaries
+      expect(getTileCoords(32, 0)).toEqual({ tileX: 1, tileY: 0 });
+      expect(getTileCoords(0, 32)).toEqual({ tileX: 0, tileY: 1 });
+      expect(getTileCoords(32, 32)).toEqual({ tileX: 1, tileY: 1 });
+
+      // Farther tiles
+      expect(getTileCoords(65, 10)).toEqual({ tileX: 2, tileY: 0 });
+    });
+
+    test('getTileBounds calculates correct tile bounding box', () => {
+      expect(getTileBounds(0, 0)).toEqual({
+        left: 0,
+        top: 0,
+        right: TILE_SIZE,
+        bottom: TILE_SIZE,
+      });
+
+      expect(getTileBounds(1, 2)).toEqual({
+        left: TILE_SIZE,
+        top: TILE_SIZE * 2,
+        right: TILE_SIZE * 2,
+        bottom: TILE_SIZE * 3,
+      });
+    });
+
+    test('getVisibleTiles computes correct culled tiles and clamps to bounds', () => {
+      // 100x100 pattern (approx 4x4 tiles of 32 cells each)
+      const patternWidth = 100;
+      const patternHeight = 100;
+
+      // Viewport matching first tile perfectly, no offsets
+      const viewport = {
+        translateX: 0,
+        translateY: 0,
+        scale: 1.0,
+        width: TILE_SIZE,
+        height: TILE_SIZE,
+      };
+
+      // With prefetchMargin = 0
+      let visible = getVisibleTiles(viewport, patternWidth, patternHeight, 0);
+      expect(visible).toEqual([{ tileX: 0, tileY: 0 }]);
+
+      // With prefetchMargin = 1, should include neighbors up to clamped boundaries
+      visible = getVisibleTiles(viewport, patternWidth, patternHeight, 1);
+      const expected = [
+        { tileX: 0, tileY: 0 },
+        { tileX: 1, tileY: 0 },
+        { tileX: 0, tileY: 1 },
+        { tileX: 1, tileY: 1 },
+      ];
+      expect(visible).toEqual(expect.arrayContaining(expected));
+      expect(visible.length).toBe(4);
+    });
+
+    test('getLodBand returns correct bands based on cell screen size', () => {
+      // cell screen size = scale * CELL_SIZE (CELL_SIZE = 16)
+      // scale = 0.3 => cell screen size = 4.8px (<6px => 'out')
+      expect(getLodBand(0.3)).toBe('out');
+
+      // scale = 0.5 => cell screen size = 8.0px (6px - 14px => 'mid')
+      expect(getLodBand(0.5)).toBe('mid');
+
+      // scale = 1.0 => cell screen size = 16.0px (>14px => 'readable')
+      expect(getLodBand(1.0)).toBe('readable');
+    });
+
+    test('getFitViewport calculates centered fitting transform correctly', () => {
+      // 100x100 pattern. Content size = 100 * 16 = 1600px
+      const patternWidth = 100;
+      const patternHeight = 100;
+
+      // Viewport size is 800x400. Fit scale should be 400 / 1600 = 0.25
+      const fit = getFitViewport(patternWidth, patternHeight, 800, 400);
+      expect(fit.scale).toBe(0.25);
+
+      // Centered: translateX should be (800 - 1600 * 0.25) / 2 = 200
+      expect(fit.translateX).toBe(200);
+      // translateY should be (400 - 1600 * 0.25) / 2 = 0
+      expect(fit.translateY).toBe(0);
+    });
+
+    test('getAnchoredZoomTransform keeps the anchor screen position fixed', () => {
+      const currentScale = 1.0;
+      const currentTx = -100;
+      const currentTy = -100;
+      const targetScale = 2.0;
+
+      // Anchor point on screen
+      const anchorScreenX = 400;
+      const anchorScreenY = 300;
+
+      const patternWidth = 100;
+      const patternHeight = 100;
+      const viewWidth = 800;
+      const viewHeight = 600;
+
+      const transform = getAnchoredZoomTransform(
+        currentScale,
+        currentTx,
+        currentTy,
+        targetScale,
+        anchorScreenX,
+        anchorScreenY,
+        0.1,
+        3.0,
+        patternWidth,
+        patternHeight,
+        viewWidth,
+        viewHeight
+      );
+
+      expect(transform.scale).toBe(2.0);
+
+      // Verification: the anchor point's mapped pattern coordinate should yield the same screen coordinate after transformation
+      // pattern_pos = (anchor_screen - current_t) / current_scale
+      const patX = (anchorScreenX - currentTx) / currentScale; // (400 - (-100)) / 1 = 500
+      const patY = (anchorScreenY - currentTy) / currentScale; // (300 - (-100)) / 1 = 400
+
+      // new_screen = pattern_pos * target_scale + new_t
+      const newScreenX = patX * transform.scale + transform.translateX;
+      const newScreenY = patY * transform.scale + transform.translateY;
+
+      expect(newScreenX).toBeCloseTo(anchorScreenX);
+      expect(newScreenY).toBeCloseTo(anchorScreenY);
+    });
+  });
+
+  describe('RendererState', () => {
+    test('completing a cell dirties exactly its tile', () => {
+      const state = new RendererState(100, 100);
+
+      // Start all clean (construct marks dirty, so we clear them first)
+      for (let ty = 0; ty < state.tilesY; ty++) {
+        for (let tx = 0; tx < state.tilesX; tx++) {
+          state.checkAndClearCompletedDirty(tx, ty);
+          state.checkAndClearOverlayDirty(tx, ty);
+        }
+      }
+
+      // Complete cell (35, 10) -> lies in tileX = 1, tileY = 0
+      state.setCompleted(35, 10, true);
+
+      // Verify that tile (1, 0) is dirty and others are clean
+      for (let ty = 0; ty < state.tilesY; ty++) {
+        for (let tx = 0; tx < state.tilesX; tx++) {
+          const isCompletedDirty = state.checkAndClearCompletedDirty(tx, ty);
+          const isOverlayDirty = state.checkAndClearOverlayDirty(tx, ty);
+
+          if (tx === 1 && ty === 0) {
+            expect(isCompletedDirty).toBe(true);
+            expect(isOverlayDirty).toBe(true);
+          } else {
+            expect(isCompletedDirty).toBe(false);
+            expect(isOverlayDirty).toBe(false);
+          }
+        }
+      }
+    });
+
+    test('focusCell dirties old and new focus tiles in overlay only', () => {
+      const state = new RendererState(100, 100);
+
+      // Clear initial constructor dirties
+      for (let ty = 0; ty < state.tilesY; ty++) {
+        for (let tx = 0; tx < state.tilesX; tx++) {
+          state.checkAndClearCompletedDirty(tx, ty);
+          state.checkAndClearOverlayDirty(tx, ty);
+        }
+      }
+
+      // Focus cell in tile (0, 0)
+      state.focusCell(5, 5);
+
+      // Focus cell in tile (1, 1) -> cell (35, 35)
+      state.focusCell(35, 35);
+
+      // Verify old focus tile (0, 0) and new focus tile (1, 1) are dirty in overlay
+      expect(state.checkAndClearOverlayDirty(0, 0)).toBe(true);
+      expect(state.checkAndClearOverlayDirty(1, 1)).toBe(true);
+
+      // Completed dirty flags should remain unchanged (clean)
+      expect(state.checkAndClearCompletedDirty(0, 0)).toBe(false);
+      expect(state.checkAndClearCompletedDirty(1, 1)).toBe(false);
+    });
+  });
+});
