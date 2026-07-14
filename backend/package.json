@@ -16,7 +16,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"{src,test}/**/*.ts\" --max-warnings=0",
     "test": "jest --config test/jest.unit.json --runInBand",
-    "test:integration": "jest --config test/jest.integration.json --runInBand",
+    "test:integration": "jest --config test/jest.integration.json --runInBand --forceExit",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:create": "npm run typeorm -- migration:create",
     "migration:generate": "npm run typeorm -- migration:generate -d src/database/data-source.ts",

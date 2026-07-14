@@ -18,7 +18,9 @@ import { RefreshTokensRepository } from './refresh-tokens.repository';
 
 @Module({
   controllers: [AuthController],
-  exports: [AuthSessionService, JwtAuthGuard],
+  // JwtModule is re-exported so modules importing AuthModule (e.g. SessionsModule)
+  // can instantiate JwtAuthGuard via @UseGuards, which depends on JwtService.
+  exports: [AuthSessionService, JwtAuthGuard, JwtModule],
   imports: [
     AppConfigModule,
     TypeOrmModule.forFeature([
