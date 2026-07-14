@@ -1,0 +1,20 @@
+{
+  "clearMocks": true,
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "..",
+  "testEnvironment": "node",
+  "testMatch": [
+    "<rootDir>/src/**/*.integration-spec.ts",
+    "<rootDir>/test/**/*.integration-spec.ts"
+  ],
+  "testTimeout": 120000,
+  "watchman": false,
+  "transform": {
+    "^.+\\.ts$": [
+      "ts-jest",
+      {
+        "tsconfig": "<rootDir>/tsconfig.json"
+      }
+    ]
+  }
+}
