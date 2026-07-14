@@ -1,6 +1,6 @@
 import { getDatabaseFilename, shouldAdopt } from '../../local-db/namespaceLogic';
 import { decodeJwt, calculateRefreshDelay, isTokenOlderThan12Minutes, shortenGuestId } from '../identityLogic';
-import { bootstrap, refreshSession, useIdentityStore, setAccessToken, getAccessToken } from '../guestIdentity';
+import { bootstrap, refreshSession, useIdentityStore, setAccessToken, getAccessToken, resetGuestData, removeLocalData } from '../guestIdentity';
 import { apiFetch } from '../../api/apiFetch';
 
 // Mock expo-secure-store
@@ -34,6 +34,7 @@ jest.mock('../../local-db', () => {
   return {
     openNamespace: jest.fn(async () => {}),
     adoptPreIdentityDatabase: jest.fn(async () => {}),
+    deleteNamespaceFiles: jest.fn(async () => {}),
   };
 });
 
@@ -249,3 +250,111 @@ describe('apiFetch Interception, Refresh and Replay', () => {
     expect(getAccessToken()).toBe('brand-new-access.eyJpZCI6ImcxIiwiaWF0IjoxMDAwLCJleHAiOjE5MDB9.sig');
   });
 });
+
+describe('Guest Data Reset & Local Data Removal flows', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockFetchResponses = [];
+    fetchCallCount = 0;
+    fetchCalls = [];
+    // Reset Zustand store state
+    useIdentityStore.setState({
+      guestId: null,
+      guestCreatedAt: null,
+      isAuthenticated: false,
+      isPending: false,
+      isOfflinePending: false,
+    });
+    setAccessToken(null);
+  });
+
+  test('resetGuestData execution order and short-circuiting on server failure', async () => {
+    const localDb = require('../../local-db');
+    const deleteMock = localDb.deleteNamespaceFiles;
+
+    // Set up a guest in store
+    useIdentityStore.setState({
+      guestId: 'guest_reset_test',
+      isAuthenticated: true,
+    });
+
+    // Make the server call fail (not 204)
+    mockFetchResponses.push({ status: 500, body: { error: 'Server error' } });
+
+    await expect(resetGuestData()).rejects.toThrow();
+
+    // Verify delete namespace was not called because it short-circuited
+    expect(deleteMock).not.toHaveBeenCalled();
+
+    // Now make it succeed
+    mockFetchResponses.push({ status: 204, body: null });
+    // Fetch response for bootstrap() which runs inside resetGuestData
+    mockFetchResponses.push({
+      status: 201,
+      body: {
+        guestId: 'new_guest_fresh',
+        accessToken: 'new_access_token.eyJpZCI6ImcxIiwiaWF0IjoxMDAwLCJleHAiOjE5MDB9.sig',
+        refreshToken: 'new_refresh_token',
+      },
+    });
+
+    const fetchCallIndices: number[] = [];
+    const deleteCallIndices: number[] = [];
+
+    // Track invocation order
+    let callCounter = 0;
+    const originalFetch = global.fetch;
+    global.fetch = jest.fn().mockImplementation((...args) => {
+      fetchCallIndices.push(callCounter++);
+      const res = mockFetchResponses.shift();
+      return {
+        status: res?.status ?? 200,
+        json: async () => res?.body ?? {},
+      } as any;
+    });
+
+    deleteMock.mockImplementation(() => {
+      deleteCallIndices.push(callCounter++);
+      return Promise.resolve();
+    });
+
+    await resetGuestData();
+
+    // Verify fetch (server call) happened before deleteNamespaceFiles
+    expect(fetchCallIndices.length).toBeGreaterThan(0);
+    expect(deleteCallIndices.length).toBe(1);
+    expect(fetchCallIndices[0]).toBeLessThan(deleteCallIndices[0]);
+
+    // Restore original mock
+    global.fetch = originalFetch;
+  });
+
+  test('removeLocalData namespace selection (guest vs pre-identity)', async () => {
+    const localDb = require('../../local-db');
+    const deleteMock = localDb.deleteNamespaceFiles;
+    const openMock = localDb.openNamespace;
+
+    // Case 1: Guest identity exists
+    useIdentityStore.setState({
+      guestId: 'guest_123',
+      isAuthenticated: true,
+    });
+    
+    await removeLocalData();
+    expect(deleteMock).toHaveBeenCalledWith('guest_123');
+    expect(openMock).toHaveBeenCalledWith('guest_123');
+
+    jest.clearAllMocks();
+
+    // Case 2: Pre-identity (no guestId)
+    useIdentityStore.setState({
+      guestId: null,
+      isAuthenticated: false,
+    });
+
+    await removeLocalData();
+    expect(deleteMock).toHaveBeenCalledWith(null);
+    expect(openMock).toHaveBeenCalledWith(null);
+  });
+});
+

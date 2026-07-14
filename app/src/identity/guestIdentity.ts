@@ -3,7 +3,10 @@ import * as SecureStore from 'expo-secure-store';
 import * as Crypto from 'expo-crypto';
 import { Config } from '../config';
 import { decodeJwt, calculateRefreshDelay, bufferToBase64Url } from './identityLogic';
-import { adoptPreIdentityDatabase, openNamespace } from '../local-db';
+import { adoptPreIdentityDatabase, openNamespace, deleteNamespaceFiles } from '../local-db';
+import { apiFetch } from '../api/apiFetch';
+import { useGameplayStore } from '../store';
+import { queryClient } from '../providers';
 
 const SECURE_KEYS = {
   INSTALLATION_KEY: 'stitch_wish.installation_key',
@@ -422,4 +425,64 @@ function hasHttpStatus(err: unknown): err is { status: number } {
 interface TokenResponse {
   accessToken: string;
   refreshToken: string;
+}
+
+/**
+ * Destructively resets the guest data.
+ * Order of execution (resilient):
+ * 1) Call POST /v1/auth/guest/reset via apiFetch (must succeed first; online requirement).
+ * 2) Delete the guest's namespace DB files (db + wal + shm) via expo-file-system.
+ * 3) Purge ALL SecureStore identity keys (installation key, credential secret, guestId, createdAt, refresh token) and memory token.
+ * 4) Run bootstrap() to generate a new installationKey/secret and get a fresh Guest Installation Identity with empty namespace.
+ * 5) Reset in-memory stores (identity store, gameplay store) and TanStack Query cache.
+ */
+export async function resetGuestData(): Promise<void> {
+  const response = await apiFetch('/v1/auth/guest/reset', {
+    method: 'POST',
+  });
+  if (response.status !== 204) {
+    throw new Error(`Failed to reset guest data on server: status ${response.status}`);
+  }
+
+  const guestId = useIdentityStore.getState().guestId;
+  if (guestId) {
+    await deleteNamespaceFiles(guestId);
+  }
+
+  setAccessToken(null);
+  clearRefreshSchedule();
+  resetRetryDelay();
+
+  await SecureStore.deleteItemAsync(SECURE_KEYS.INSTALLATION_KEY);
+  await SecureStore.deleteItemAsync(SECURE_KEYS.CREDENTIAL_SECRET);
+  await SecureStore.deleteItemAsync(SECURE_KEYS.GUEST_ID);
+  await SecureStore.deleteItemAsync(SECURE_KEYS.GUEST_CREATED_AT);
+  await SecureStore.deleteItemAsync(SECURE_KEYS.REFRESH_TOKEN);
+
+  updateStoreState({
+    guestId: null,
+    guestCreatedAt: null,
+    isAuthenticated: false,
+    isPending: false,
+    isOfflinePending: false,
+  });
+
+  await bootstrap();
+
+  useGameplayStore.getState().resetGameplay();
+  queryClient.clear();
+}
+
+/**
+ * Removes local data only, leaving server state untouched.
+ * Deletes the ACTIVE identity's namespace files only (guest namespace if identity exists, else pre-identity db).
+ * Reinitializes an empty namespace and resets in-memory stores.
+ * Works offline.
+ */
+export async function removeLocalData(): Promise<void> {
+  const activeIdentity = useIdentityStore.getState().guestId;
+  await deleteNamespaceFiles(activeIdentity);
+  await openNamespace(activeIdentity);
+  useGameplayStore.getState().resetGameplay();
+  queryClient.clear();
 }

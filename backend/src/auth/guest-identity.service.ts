@@ -85,4 +85,8 @@ export class GuestIdentityService {
   private invalidGuestCredentials(): UnauthorizedException {
     return new UnauthorizedException('Invalid guest credentials');
   }
+
+  async reset(guestId: string): Promise<void> {
+    await this.guestInstallations.reset(guestId);
+  }
 }

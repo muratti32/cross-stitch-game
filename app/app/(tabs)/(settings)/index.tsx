@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Switch, ActivityIndicator, Pressable, Alert, Linking } from 'react-native';
+import { StyleSheet, View, Text, Switch, ActivityIndicator, Pressable, Alert, Linking, Modal, TextInput } from 'react-native';
 import { Screen, Card, Button } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useGameplayStore } from '@/store';
@@ -9,11 +9,64 @@ import { Ionicons } from '@expo/vector-icons';
 import { setHandedness as setHandednessDb } from '@/local-db';
 import { useBackendSession } from '@/hooks/useBackendSession';
 import { shortenGuestId } from '@/identity/identityLogic';
+import { resetGuestData, removeLocalData } from '@/identity/guestIdentity';
 
 export default function SettingsScreen() {
   const { showGridLines, toggleGridLines, handedness, setHandedness } = useGameplayStore();
   const { data: health, isLoading, error, refetch, isRefetching } = useHealthCheck();
   const { data: sessionData, isLoading: sessionLoading, error: sessionError } = useBackendSession();
+
+  const [resetModalVisible, setResetModalVisible] = React.useState(false);
+  const [typedConfirmation, setTypedConfirmation] = React.useState('');
+  const [isResetting, setIsResetting] = React.useState(false);
+  const [isRemovingLocal, setIsRemovingLocal] = React.useState(false);
+
+  const isOffline = !isLoading && (!!error || !health || health.status !== 'ok');
+
+  const handleResetGuestData = async () => {
+    if (typedConfirmation !== 'RESET') {
+      return;
+    }
+    setIsResetting(true);
+    try {
+      await resetGuestData();
+      setResetModalVisible(false);
+      setTypedConfirmation('');
+      Alert.alert('Success', 'Guest data has been fully reset.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      Alert.alert('Reset Failed', `Guest data reset failed: ${msg}. Please try again.`);
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
+  const handleRemoveLocalData = () => {
+    Alert.alert(
+      'Remove Local Data?',
+      'Warning: This will delete your local database files from this device only. Any unsynchronized records will be permanently lost.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            setIsRemovingLocal(true);
+            try {
+              await removeLocalData();
+              Alert.alert('Success', 'Local data has been removed from this device.');
+            } catch (err: unknown) {
+              const msg = err instanceof Error ? err.message : 'Unknown error';
+              Alert.alert('Removal Failed', `Failed to remove local data: ${msg}`);
+            } finally {
+              setIsRemovingLocal(false);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
 
   const handleHandednessChange = async (value: 'left' | 'right') => {
     setHandedness(value);
@@ -237,6 +290,59 @@ export default function SettingsScreen() {
         </View>
       </Card>
 
+      {/* Data Section */}
+      <Text style={styles.sectionTitle}>Data</Text>
+      <Card style={styles.card}>
+        <Pressable
+          disabled={isOffline}
+          onPress={() => setResetModalVisible(true)}
+          style={({ pressed }) => [
+            styles.settingRow,
+            isOffline && styles.rowDisabled,
+            pressed && styles.linkPressed,
+          ]}
+        >
+          <View style={styles.settingTextContainer}>
+            <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>
+              Reset guest data
+            </Text>
+            <Text style={styles.settingDescription}>
+              Irreversibly close the guest identity on the server and wipe all device data.
+            </Text>
+            {isOffline && (
+              <Text style={styles.offlineExplanation}>
+                Offline: Active server connection required to reset guest data.
+              </Text>
+            )}
+          </View>
+          <Ionicons
+            name="trash-outline"
+            size={20}
+            color={isOffline ? Theme.colors.disabledText : Theme.colors.error}
+          />
+        </Pressable>
+
+        <View style={styles.rowDivider} />
+
+        <Pressable
+          onPress={handleRemoveLocalData}
+          style={({ pressed }) => [
+            styles.settingRow,
+            pressed && styles.linkPressed,
+          ]}
+        >
+          <View style={styles.settingTextContainer}>
+            <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>
+              Remove local data
+            </Text>
+            <Text style={styles.settingDescription}>
+              Delete your local identity namespace database from this device.
+            </Text>
+          </View>
+          <Ionicons name="phone-portrait-outline" size={20} color={Theme.colors.error} />
+        </Pressable>
+      </Card>
+
       {/* Links Section */}
       <Text style={styles.sectionTitle}>Information & Links</Text>
       <Card style={styles.card}>
@@ -274,6 +380,81 @@ export default function SettingsScreen() {
         <Text style={styles.appDetailsIdentifier}>Package: com.avk.stitchwish</Text>
         <Text style={styles.appDetailsScheme}>Scheme: stitchwish://</Text>
       </View>
+
+      <Modal
+        visible={resetModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          if (!isResetting) setResetModalVisible(false);
+        }}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Reset Guest Data?</Text>
+            
+            <Text style={styles.modalWarningText}>
+              This action will irreversibly close your guest identity on the server and permanently delete your:
+            </Text>
+
+            <View style={styles.bulletsContainer}>
+              <Text style={styles.bulletItem}>• local progress</Text>
+              <Text style={styles.bulletItem}>• pending rewards</Text>
+              <Text style={styles.bulletItem}>• likes</Text>
+              <Text style={styles.bulletItem}>• unlock access</Text>
+              <Text style={styles.bulletItem}>• offline pattern data</Text>
+            </View>
+
+            <Text style={styles.confirmationInstruction}>
+              Type <Text style={{ fontWeight: 'bold' }}>RESET</Text> below to confirm:
+            </Text>
+
+            <TextInput
+              style={styles.textInput}
+              value={typedConfirmation}
+              onChangeText={setTypedConfirmation}
+              placeholder="RESET"
+              placeholderTextColor={Theme.colors.textSecondary}
+              autoCapitalize="characters"
+              editable={!isResetting}
+            />
+
+            {isResetting ? (
+              <View style={styles.modalLoadingContainer}>
+                <ActivityIndicator size="small" color={Theme.colors.error} />
+                <Text style={styles.modalLoadingText}>Resetting guest data...</Text>
+              </View>
+            ) : (
+              <View style={styles.modalButtonsRow}>
+                <Button
+                  title="Cancel"
+                  onPress={() => {
+                    setResetModalVisible(false);
+                    setTypedConfirmation('');
+                  }}
+                  variant="secondary"
+                  style={styles.modalCancelButton}
+                />
+                <Button
+                  title="Reset Data"
+                  onPress={handleResetGuestData}
+                  disabled={typedConfirmation !== 'RESET' || isOffline}
+                  style={
+                    typedConfirmation === 'RESET' && !isOffline
+                      ? { backgroundColor: Theme.colors.error }
+                      : undefined
+                  }
+                  textStyle={
+                    typedConfirmation === 'RESET' && !isOffline
+                      ? { color: Theme.colors.textLight }
+                      : undefined
+                  }
+                />
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
     </Screen>
   );
 }
@@ -545,5 +726,101 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.xs,
     color: Theme.colors.textSecondary,
     marginTop: Theme.spacing.xs,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Theme.spacing.xl,
+  },
+  modalContent: {
+    backgroundColor: Theme.colors.card,
+    borderRadius: Theme.radii.lg,
+    padding: Theme.spacing.xl,
+    width: '100%',
+    maxWidth: 400,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: Theme.typography.sizes.xl,
+    fontWeight: Theme.typography.weights.bold,
+    color: Theme.colors.error,
+    marginBottom: Theme.spacing.md,
+    textAlign: 'center',
+  },
+  modalWarningText: {
+    fontSize: Theme.typography.sizes.sm,
+    color: Theme.colors.textPrimary,
+    lineHeight: 20,
+    marginBottom: Theme.spacing.md,
+  },
+  bulletsContainer: {
+    backgroundColor: '#FAF8F5',
+    borderRadius: Theme.radii.md,
+    padding: Theme.spacing.md,
+    marginBottom: Theme.spacing.md,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+  },
+  bulletItem: {
+    fontSize: Theme.typography.sizes.sm,
+    color: Theme.colors.textPrimary,
+    lineHeight: 22,
+  },
+  confirmationInstruction: {
+    fontSize: Theme.typography.sizes.sm,
+    color: Theme.colors.textSecondary,
+    marginBottom: Theme.spacing.sm,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+    borderRadius: Theme.radii.md,
+    paddingVertical: Theme.spacing.sm,
+    paddingHorizontal: Theme.spacing.md,
+    fontSize: Theme.typography.sizes.md,
+    color: Theme.colors.textPrimary,
+    backgroundColor: '#FAF8F5',
+    marginBottom: Theme.spacing.lg,
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  modalLoadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Theme.spacing.sm,
+    paddingVertical: Theme.spacing.md,
+  },
+  modalLoadingText: {
+    fontSize: Theme.typography.sizes.sm,
+    color: Theme.colors.textSecondary,
+  },
+  modalButtonsRow: {
+    flexDirection: 'row',
+    gap: Theme.spacing.md,
+  },
+  modalCancelButton: {
+    flex: 1,
+  },
+  modalConfirmButton: {
+    flex: 1,
+    height: 48,
+  },
+  offlineExplanation: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.error,
+    marginTop: Theme.spacing.xs,
+    fontWeight: Theme.typography.weights.semibold,
+  },
+  rowDisabled: {
+    opacity: 0.5,
   },
 });

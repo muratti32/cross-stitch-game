@@ -334,6 +334,51 @@ describe('Stitch Wish backend integration', () => {
     expect(refreshToken.status).toBe(RefreshTokenStatus.Revoked);
   });
 
+  it('resets a guest, revoking all tokens, verifying idempotency, and preventing session issuance with the same key', async () => {
+    const installationKey = randomUUID();
+    const credentialSecret = createCredentialSecret();
+
+    const created = await createGuestThroughApi(
+      httpServer,
+      installationKey,
+      credentialSecret,
+    );
+
+    // reset -> 204
+    await request(httpServer)
+      .post('/v1/auth/guest/reset')
+      .set('Authorization', `Bearer ${created.accessToken}`)
+      .expect(204);
+
+    // idempotent: calling again with still-valid access token (revoked installation) -> 204
+    await request(httpServer)
+      .post('/v1/auth/guest/reset')
+      .set('Authorization', `Bearer ${created.accessToken}`)
+      .expect(204);
+
+    // refresh with old token -> 401
+    await request(httpServer)
+      .post('/v1/auth/refresh')
+      .send({ refreshToken: created.refreshToken })
+      .expect(401);
+
+    // POST /v1/auth/guest same key+secret -> 401
+    await request(httpServer)
+      .post('/v1/auth/guest')
+      .send({ installationKey, credentialSecret })
+      .expect(401);
+
+    // fresh key+secret -> 201 new guestId
+    const freshInstallationKey = randomUUID();
+    const freshCredentialSecret = createCredentialSecret();
+    const freshCreated = await createGuestThroughApi(
+      httpServer,
+      freshInstallationKey,
+      freshCredentialSecret,
+    );
+    expect(freshCreated.guestId).not.toBe(created.guestId);
+  });
+
   it('commits the Processing Job and Job Outbox row together', async () => {
     const processingJobId = await createDemoJobThroughApi(
       httpServer,

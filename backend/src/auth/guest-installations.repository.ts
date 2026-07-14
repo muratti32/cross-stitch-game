@@ -62,4 +62,24 @@ export class GuestInstallationsRepository {
     );
     return returningRows<{ id: string }>(result).length === 1;
   }
+
+  async reset(id: string): Promise<void> {
+    await this.dataSource.transaction(async (manager) => {
+      await manager.query(
+        `UPDATE auth.guest_installations
+         SET status = $2
+         WHERE id = $1 AND status <> $2`,
+        [id, GuestInstallationStatus.Revoked],
+      );
+
+      await manager.query(
+        `UPDATE auth.refresh_tokens
+         SET status = 'revoked'
+         WHERE principal_type = 'guest'
+           AND principal_id = $1
+           AND status <> 'revoked'`,
+        [id],
+      );
+    });
+  }
 }

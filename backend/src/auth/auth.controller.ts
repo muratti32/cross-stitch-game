@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 
@@ -17,6 +18,7 @@ import {
 import { CurrentPrincipal } from './current-principal.decorator';
 import { CreateGuestDto } from './dto/create-guest.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { PrincipalType } from './entities';
 import { GuestIdentityService } from './guest-identity.service';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
@@ -45,6 +47,18 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   logout(@Body() body: RefreshTokenDto): Promise<void> {
     return this.sessions.logout(body.refreshToken);
+  }
+
+  @Post('guest/reset')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async resetGuest(
+    @CurrentPrincipal() principal: AuthPrincipal,
+  ): Promise<void> {
+    if (principal.type !== PrincipalType.Guest) {
+      throw new UnauthorizedException('Principal must be a guest');
+    }
+    await this.guestIdentity.reset(principal.id);
   }
 
   @Get('session')

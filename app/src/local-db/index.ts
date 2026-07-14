@@ -632,3 +632,40 @@ export async function getSessionCompletedCount(
   }
   return count;
 }
+
+/**
+ * Deletes the database files (db, wal, shm) for a given identity from the device.
+ */
+export async function deleteNamespaceFiles(identity: string | null): Promise<void> {
+  if (dbInstance && activeIdentity === identity) {
+    try {
+      await dbInstance.closeAsync();
+    } catch (e) {
+      console.error('Failed to close database instance before deletion:', e);
+    }
+    dbInstance = null;
+    activeIdentity = null;
+  }
+
+  const documentDirectory = FileSystem.documentDirectory;
+  if (!documentDirectory) {
+    return;
+  }
+
+  const filename = getDatabaseFilename(identity);
+  const dbPath = getDatabasePath(documentDirectory, filename);
+  const walPath = `${dbPath}-wal`;
+  const shmPath = `${dbPath}-shm`;
+
+  const paths = [dbPath, walPath, shmPath];
+  for (const path of paths) {
+    try {
+      const info = await FileSystem.getInfoAsync(path);
+      if (info.exists) {
+        await FileSystem.deleteAsync(path, { idempotent: true });
+      }
+    } catch (err) {
+      console.error(`Failed to delete database file at ${path}:`, err);
+    }
+  }
+}
