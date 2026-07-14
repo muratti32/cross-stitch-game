@@ -1,0 +1,49 @@
+import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { AppConfigModule } from '../config/app-config.module';
+import { AppConfigService } from '../config/app-config.service';
+import { AuthController } from './auth.controller';
+import { AuthHashingService } from './auth-hashing.service';
+import { AuthSessionService } from './auth-session.service';
+import {
+  GuestInstallationEntity,
+  RefreshTokenEntity,
+} from './entities';
+import { GuestIdentityService } from './guest-identity.service';
+import { GuestInstallationsRepository } from './guest-installations.repository';
+import { JwtAuthGuard } from './jwt-auth.guard';
+import { RefreshTokensRepository } from './refresh-tokens.repository';
+
+@Module({
+  controllers: [AuthController],
+  exports: [AuthSessionService, JwtAuthGuard],
+  imports: [
+    AppConfigModule,
+    TypeOrmModule.forFeature([
+      GuestInstallationEntity,
+      RefreshTokenEntity,
+    ]),
+    JwtModule.registerAsync({
+      imports: [AppConfigModule],
+      inject: [AppConfigService],
+      useFactory: (config: AppConfigService) => ({
+        secret: config.jwtSecret,
+        signOptions: {
+          algorithm: 'HS256' as const,
+          expiresIn: config.jwtAccessTtlSeconds,
+        },
+      }),
+    }),
+  ],
+  providers: [
+    AuthHashingService,
+    AuthSessionService,
+    GuestIdentityService,
+    GuestInstallationsRepository,
+    JwtAuthGuard,
+    RefreshTokensRepository,
+  ],
+})
+export class AuthModule {}

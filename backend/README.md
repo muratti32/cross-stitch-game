@@ -83,7 +83,7 @@ npm run start:api
 npm run start:worker
 ```
 
-Set `DATABASE_URL`, `REDIS_URL`, and `PORT` through the deployment platform. Do not commit deployed credentials or copy them into `.env.example`.
+Set `DATABASE_URL`, `REDIS_URL`, and `PORT` through the deployment platform. The API deployable additionally requires `JWT_SECRET`; the worker and migration CLI do not need the signing secret. Do not commit deployed credentials or copy them into `.env.example`.
 
 ## Migrations
 
@@ -134,4 +134,8 @@ npm run test:integration
 
 The worker also reconciles dispatched or running PostgreSQL jobs against BullMQ. If Redis loses queue state or a delivery exhausts transient retries, reconciliation republishes the same retained outbox `jobId`; PostgreSQL remains authoritative and the guarded consumer resumes without creating another terminal result.
 
-The module layout keeps shared configuration in `config`, dependency checks in `health`, and queue/outbox infrastructure in `jobs`. Future bounded contexts such as `auth`, `identity`, `catalog`, `economy`, `sessions`, and `events` can be added as peer modules without moving the job infrastructure.
+The module layout keeps shared configuration in `config`, authentication in `auth`, dependency checks in `health`, and queue/outbox infrastructure in `jobs`. Future bounded contexts such as `identity`, `catalog`, `economy`, `sessions`, and `events` can be added as peer modules without moving the existing infrastructure.
+
+## API authentication convention
+
+Guest Installation Identities and future Registered Accounts share short-lived access JWTs and rotating opaque refresh-token families. Apply `JwtAuthGuard` and use `@CurrentPrincipal()` on every future player-authenticated API endpoint. Guest bootstrap, refresh, logout, and health routes remain public because they establish or manage credentials directly; `GET /v1/auth/session` is the guarded end-to-end probe.

@@ -1,10 +1,15 @@
 export type EnvironmentVariables = {
   DATABASE_URL: string;
+  JWT_ACCESS_TTL_SECONDS: number;
+  JWT_SECRET: string | undefined;
   PORT: number;
   REDIS_URL: string;
+  REFRESH_TOKEN_TTL_SECONDS: number;
 };
 
 const DATABASE_PROTOCOLS = new Set(['postgres:', 'postgresql:']);
+const DEFAULT_JWT_ACCESS_TTL_SECONDS = 900;
+const DEFAULT_REFRESH_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60;
 const REDIS_PROTOCOLS = new Set(['redis:', 'rediss:']);
 
 function parseUrl(
@@ -57,6 +62,45 @@ function parsePort(value: unknown): number {
   return port;
 }
 
+function parseOptionalSecret(
+  value: unknown,
+  variableName: string,
+): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (typeof value !== 'string' || value.length < 32) {
+    throw new Error(`${variableName} must be at least 32 characters`);
+  }
+
+  return value;
+}
+
+function parseDurationSeconds(
+  value: unknown,
+  variableName: string,
+  defaultValue: number,
+): number {
+  if (value === undefined || value === '') {
+    return defaultValue;
+  }
+
+  if (
+    (typeof value !== 'string' && typeof value !== 'number') ||
+    (typeof value === 'string' && !/^\d+$/.test(value.trim()))
+  ) {
+    throw new Error(`${variableName} must be a positive integer`);
+  }
+
+  const duration = typeof value === 'number' ? value : Number(value);
+  if (!Number.isSafeInteger(duration) || duration < 1) {
+    throw new Error(`${variableName} must be a positive integer`);
+  }
+
+  return duration;
+}
+
 export function parseEnvironment(
   environment: Record<string, unknown>,
 ): EnvironmentVariables {
@@ -66,8 +110,19 @@ export function parseEnvironment(
       'DATABASE_URL',
       DATABASE_PROTOCOLS,
     ),
+    JWT_ACCESS_TTL_SECONDS: parseDurationSeconds(
+      environment.JWT_ACCESS_TTL_SECONDS,
+      'JWT_ACCESS_TTL_SECONDS',
+      DEFAULT_JWT_ACCESS_TTL_SECONDS,
+    ),
+    JWT_SECRET: parseOptionalSecret(environment.JWT_SECRET, 'JWT_SECRET'),
     PORT: parsePort(environment.PORT),
     REDIS_URL: parseUrl(environment.REDIS_URL, 'REDIS_URL', REDIS_PROTOCOLS),
+    REFRESH_TOKEN_TTL_SECONDS: parseDurationSeconds(
+      environment.REFRESH_TOKEN_TTL_SECONDS,
+      'REFRESH_TOKEN_TTL_SECONDS',
+      DEFAULT_REFRESH_TOKEN_TTL_SECONDS,
+    ),
   };
 }
 

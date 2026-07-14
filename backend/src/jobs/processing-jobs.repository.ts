@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
+import { returningRows } from '../database/query-results';
+
 import {
   DEMO_JOB_EVENT_NAME,
   DEMO_JOB_TYPE,
@@ -99,14 +101,14 @@ export class ProcessingJobsRepository {
       assignments.push(`error_message = $${parameters.length}`);
     }
 
-    const updatedRows = await manager.query<readonly { id: string }[]>(
+    const updatedResult: unknown = await manager.query(
       `UPDATE jobs.processing_jobs
        SET ${assignments.join(', ')}
        WHERE id = $1 AND status = ANY($2::varchar[])
        RETURNING id`,
       parameters,
     );
-    return updatedRows.length === 1;
+    return returningRows<{ id: string }>(updatedResult).length === 1;
   }
 
   markDispatched(

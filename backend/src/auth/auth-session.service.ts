@@ -1,0 +1,103 @@
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { randomUUID } from 'node:crypto';
+
+import { AppConfigService } from '../config/app-config.service';
+import { ACCESS_TOKEN_VERSION } from './auth.constants';
+import { AuthHashingService } from './auth-hashing.service';
+import {
+  AccessTokenPayload,
+  AuthPrincipal,
+  AuthTokenPair,
+} from './auth.types';
+import { PrincipalType } from './entities';
+import { RefreshTokensRepository } from './refresh-tokens.repository';
+
+@Injectable()
+export class AuthSessionService {
+  constructor(
+    private readonly config: AppConfigService,
+    private readonly hashing: AuthHashingService,
+    private readonly jwtService: JwtService,
+    private readonly refreshTokens: RefreshTokensRepository,
+  ) {}
+
+  async issueForGuest(guestId: string): Promise<AuthTokenPair> {
+    const principal: AuthPrincipal = {
+      id: guestId,
+      tokenVersion: ACCESS_TOKEN_VERSION,
+      type: PrincipalType.Guest,
+    };
+    const refreshToken = this.hashing.generateOpaqueRefreshToken();
+    const tokenHash = this.hashing.hashOpaqueToken(refreshToken);
+    const accessToken = await this.signAccessToken(principal);
+
+    const familyCreated = await this.refreshTokens.createFamily(
+      principal.type,
+      principal.id,
+      tokenHash,
+      randomUUID(),
+      this.getRefreshExpiry(),
+    );
+    if (!familyCreated) {
+      throw new UnauthorizedException('Invalid guest credentials');
+    }
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async refresh(refreshToken: string): Promise<AuthTokenPair> {
+    const tokenHash = this.hashing.hashOpaqueToken(refreshToken);
+    const currentPrincipal =
+      await this.refreshTokens.findPrincipalByTokenHash(tokenHash);
+    if (currentPrincipal === null) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    const accessToken = await this.signAccessToken({
+      id: currentPrincipal.principalId,
+      tokenVersion: ACCESS_TOKEN_VERSION,
+      type: currentPrincipal.principalType,
+    });
+    const nextRefreshToken = this.hashing.generateOpaqueRefreshToken();
+    const outcome = await this.refreshTokens.rotate(
+      tokenHash,
+      this.hashing.hashOpaqueToken(nextRefreshToken),
+      this.getRefreshExpiry(),
+    );
+
+    if (outcome.kind !== 'rotated') {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    return {
+      accessToken,
+      refreshToken: nextRefreshToken,
+    };
+  }
+
+  logout(refreshToken: string): Promise<void> {
+    return this.refreshTokens.revokeFamilyByTokenHash(
+      this.hashing.hashOpaqueToken(refreshToken),
+    );
+  }
+
+  private getRefreshExpiry(): Date {
+    return new Date(
+      Date.now() + this.config.refreshTokenTtlSeconds * 1_000,
+    );
+  }
+
+  private signAccessToken(principal: AuthPrincipal): Promise<string> {
+    const payload: AccessTokenPayload = {
+      jti: randomUUID(),
+      principalType: principal.type,
+      sub: principal.id,
+      tokenVersion: principal.tokenVersion,
+    };
+    return this.jwtService.signAsync(payload);
+  }
+}

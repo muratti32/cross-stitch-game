@@ -1,0 +1,3 @@
+export const ACCESS_TOKEN_VERSION = 1;
+export const CREDENTIAL_BCRYPT_ROUNDS = 12;
+export const OPAQUE_REFRESH_TOKEN_BYTES = 32;

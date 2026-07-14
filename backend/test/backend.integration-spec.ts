@@ -6,6 +6,7 @@ import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { Server } from 'node:http';
 import request from 'supertest';
 import {
@@ -15,6 +16,14 @@ import {
 import { DataSource } from 'typeorm';
 
 import { configureApi } from '../src/api/configure-api';
+import {
+  GuestInstallationEntity,
+  GuestInstallationStatus,
+  PrincipalType,
+  RefreshTokenEntity,
+  RefreshTokenStatus,
+} from '../src/auth/entities';
+import { ACCESS_TOKEN_VERSION } from '../src/auth/auth.constants';
 import { createTypeOrmOptions } from '../src/database/typeorm-options';
 import { JobOutboxEntity } from '../src/jobs/entities/job-outbox.entity';
 import { ProcessingJobStatus } from '../src/jobs/entities/processing-job-status.enum';
@@ -45,7 +54,11 @@ describe('Stitch Wish backend integration', () => {
   let consumer: DemoJobConsumerService;
 
   const originalDatabaseUrl = process.env.DATABASE_URL;
+  const originalJwtAccessTtlSeconds = process.env.JWT_ACCESS_TTL_SECONDS;
+  const originalJwtSecret = process.env.JWT_SECRET;
   const originalRedisUrl = process.env.REDIS_URL;
+  const originalRefreshTokenTtlSeconds =
+    process.env.REFRESH_TOKEN_TTL_SECONDS;
   const originalPort = process.env.PORT;
 
   beforeAll(async () => {
@@ -64,7 +77,11 @@ describe('Stitch Wish backend integration', () => {
     }
 
     process.env.DATABASE_URL = postgres.getConnectionUri();
+    process.env.JWT_ACCESS_TTL_SECONDS = '900';
+    process.env.JWT_SECRET =
+      'integration-test-only-not-a-real-jwt-secret';
     process.env.REDIS_URL = `redis://${redis.getHost()}:${redis.getMappedPort(6379)}`;
+    process.env.REFRESH_TOKEN_TTL_SECONDS = '3600';
     process.env.PORT = '3000';
 
     migrationDataSource = new DataSource(
@@ -108,7 +125,16 @@ describe('Stitch Wish backend integration', () => {
       redis === undefined ? Promise.resolve() : redis.stop(),
     ]);
     restoreEnvironment('DATABASE_URL', originalDatabaseUrl);
+    restoreEnvironment(
+      'JWT_ACCESS_TTL_SECONDS',
+      originalJwtAccessTtlSeconds,
+    );
+    restoreEnvironment('JWT_SECRET', originalJwtSecret);
     restoreEnvironment('REDIS_URL', originalRedisUrl);
+    restoreEnvironment(
+      'REFRESH_TOKEN_TTL_SECONDS',
+      originalRefreshTokenTtlSeconds,
+    );
     restoreEnvironment('PORT', originalPort);
 
     const cleanupFailure = [...applicationCleanup, ...containerCleanup].find(
@@ -132,6 +158,180 @@ describe('Stitch Wish backend integration', () => {
       .post('/v1/demo-jobs')
       .send({ message: 'validated', unexpected: true })
       .expect(400);
+  });
+
+  it('returns the same Guest Installation Identity with fresh sessions on retry', async () => {
+    const installationKey = randomUUID();
+    const credentialSecret = createCredentialSecret();
+
+    const first = await createGuestThroughApi(
+      httpServer,
+      installationKey,
+      credentialSecret,
+    );
+    const second = await createGuestThroughApi(
+      httpServer,
+      installationKey,
+      credentialSecret,
+    );
+
+    expect(second.guestId).toBe(first.guestId);
+    expect(second.accessToken).not.toBe(first.accessToken);
+    expect(second.refreshToken).not.toBe(first.refreshToken);
+
+    const count = await dataSource
+      .getRepository(GuestInstallationEntity)
+      .countBy({
+        installationKeyHash: sha256(installationKey.toLowerCase()),
+      });
+    expect(count).toBe(1);
+  });
+
+  it('creates only one Guest Installation Identity under a concurrent retry', async () => {
+    const installationKey = randomUUID();
+    const credentialSecret = createCredentialSecret();
+
+    const [first, second] = await Promise.all([
+      createGuestThroughApi(
+        httpServer,
+        installationKey,
+        credentialSecret,
+      ),
+      createGuestThroughApi(
+        httpServer,
+        installationKey,
+        credentialSecret,
+      ),
+    ]);
+
+    expect(second.guestId).toBe(first.guestId);
+    const count = await dataSource
+      .getRepository(GuestInstallationEntity)
+      .countBy({
+        installationKeyHash: sha256(installationKey.toLowerCase()),
+      });
+    expect(count).toBe(1);
+  });
+
+  it('rejects the wrong credential secret without returning session data', async () => {
+    const installationKey = randomUUID();
+    await createGuestThroughApi(
+      httpServer,
+      installationKey,
+      createCredentialSecret(),
+    );
+
+    const response = await request(httpServer)
+      .post('/v1/auth/guest')
+      .send({
+        credentialSecret: createCredentialSecret(),
+        installationKey,
+      })
+      .expect(401);
+    const body: unknown = response.body;
+
+    expect(readRecord(body, 'accessToken')).toBeUndefined();
+    expect(readRecord(body, 'refreshToken')).toBeUndefined();
+    expect(readRecord(body, 'guestId')).toBeUndefined();
+  });
+
+  it('rotates refresh tokens and revokes the entire family on reuse', async () => {
+    const created = await createGuestThroughApi(
+      httpServer,
+      randomUUID(),
+      createCredentialSecret(),
+    );
+    const refreshed = await refreshThroughApi(
+      httpServer,
+      created.refreshToken,
+    );
+
+    expect(refreshed.refreshToken).not.toBe(created.refreshToken);
+    await request(httpServer)
+      .post('/v1/auth/refresh')
+      .send({ refreshToken: created.refreshToken })
+      .expect(401);
+    await request(httpServer)
+      .post('/v1/auth/refresh')
+      .send({ refreshToken: refreshed.refreshToken })
+      .expect(401);
+
+    const originalToken = await dataSource
+      .getRepository(RefreshTokenEntity)
+      .findOneByOrFail({
+        tokenHash: sha256(created.refreshToken),
+      });
+    const family = await dataSource
+      .getRepository(RefreshTokenEntity)
+      .findBy({ familyId: originalToken.familyId });
+    expect(family).toHaveLength(2);
+    expect(
+      family.every((token) => token.status === RefreshTokenStatus.Revoked),
+    ).toBe(true);
+  });
+
+  it('returns the current principal only for a valid access JWT', async () => {
+    const created = await createGuestThroughApi(
+      httpServer,
+      randomUUID(),
+      createCredentialSecret(),
+    );
+
+    await request(httpServer).get('/v1/auth/session').expect(401);
+    await request(httpServer)
+      .get('/v1/auth/session')
+      .set('Authorization', `Bearer ${created.accessToken}`)
+      .expect(200)
+      .expect({
+        id: created.guestId,
+        tokenVersion: ACCESS_TOKEN_VERSION,
+        type: PrincipalType.Guest,
+      });
+  });
+
+  it('logs out a refresh family idempotently', async () => {
+    const created = await createGuestThroughApi(
+      httpServer,
+      randomUUID(),
+      createCredentialSecret(),
+    );
+
+    await request(httpServer)
+      .post('/v1/auth/logout')
+      .send({ refreshToken: created.refreshToken })
+      .expect(204);
+    await request(httpServer)
+      .post('/v1/auth/logout')
+      .send({ refreshToken: created.refreshToken })
+      .expect(204);
+    await request(httpServer)
+      .post('/v1/auth/refresh')
+      .send({ refreshToken: created.refreshToken })
+      .expect(401);
+  });
+
+  it('rejects refresh and revokes the family for an inactive guest', async () => {
+    const created = await createGuestThroughApi(
+      httpServer,
+      randomUUID(),
+      createCredentialSecret(),
+    );
+    await dataSource.getRepository(GuestInstallationEntity).update(
+      { id: created.guestId },
+      { status: GuestInstallationStatus.Revoked },
+    );
+
+    await request(httpServer)
+      .post('/v1/auth/refresh')
+      .send({ refreshToken: created.refreshToken })
+      .expect(401);
+
+    const refreshToken = await dataSource
+      .getRepository(RefreshTokenEntity)
+      .findOneByOrFail({
+        tokenHash: sha256(created.refreshToken),
+      });
+    expect(refreshToken.status).toBe(RefreshTokenStatus.Revoked);
   });
 
   it('commits the Processing Job and Job Outbox row together', async () => {
@@ -297,6 +497,59 @@ async function createDemoJobThroughApi(
   return id;
 }
 
+interface GuestSessionFixture {
+  accessToken: string;
+  guestId: string;
+  refreshToken: string;
+}
+
+interface RefreshedSessionFixture {
+  accessToken: string;
+  refreshToken: string;
+}
+
+async function createGuestThroughApi(
+  httpServer: Server,
+  installationKey: string,
+  credentialSecret: string,
+): Promise<GuestSessionFixture> {
+  const response = await request(httpServer)
+    .post('/v1/auth/guest')
+    .send({ credentialSecret, installationKey })
+    .expect(201);
+  const body: unknown = response.body;
+
+  return {
+    accessToken: readStringRecord(body, 'accessToken'),
+    guestId: readStringRecord(body, 'guestId'),
+    refreshToken: readStringRecord(body, 'refreshToken'),
+  };
+}
+
+async function refreshThroughApi(
+  httpServer: Server,
+  refreshToken: string,
+): Promise<RefreshedSessionFixture> {
+  const response = await request(httpServer)
+    .post('/v1/auth/refresh')
+    .send({ refreshToken })
+    .expect(200);
+  const body: unknown = response.body;
+
+  return {
+    accessToken: readStringRecord(body, 'accessToken'),
+    refreshToken: readStringRecord(body, 'refreshToken'),
+  };
+}
+
+function createCredentialSecret(): string {
+  return randomBytes(32).toString('base64url');
+}
+
+function sha256(value: string): string {
+  return createHash('sha256').update(value, 'utf8').digest('hex');
+}
+
 async function waitForProcessingJob(
   processingJobs: ProcessingJobsRepository,
   processingJobId: string,
@@ -350,6 +603,14 @@ function readRecord(value: unknown, key: string): unknown {
     throw new TypeError('Expected an object response body');
   }
   return (value as Record<string, unknown>)[key];
+}
+
+function readStringRecord(value: unknown, key: string): string {
+  const result = readRecord(value, key);
+  if (typeof result !== 'string') {
+    throw new TypeError(`Expected ${key} to be a string`);
+  }
+  return result;
 }
 
 function restoreEnvironment(name: string, value: string | undefined): void {

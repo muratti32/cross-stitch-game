@@ -7,8 +7,7 @@ import { createTypeOrmOptions } from './typeorm-options';
 
 const environment = parseEnvironment(process.env);
 
-export const appDataSource = new DataSource(
+// The TypeORM CLI requires exactly one DataSource export from this file.
+export default new DataSource(
   createTypeOrmOptions(environment.DATABASE_URL),
 );
-
-export default appDataSource;
