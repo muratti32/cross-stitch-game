@@ -1,10 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Screen, Button } from '@/components';
 import { Theme } from '@/theme/theme';
 import { createReplaySession } from '@/local-db';
-import { StitchRenderer } from '@/renderer';
+import { StitchRenderer, type StitchRendererRef, nextRemainingCell } from '@/renderer';
 import { useGameplayStore } from '@/store/gameplayStore';
 import { useStitchingSession } from '@/hooks/useStitchingSession';
 import { Ionicons } from '@expo/vector-icons';
@@ -31,14 +31,45 @@ export default function SessionReadyScreen() {
     undo,
   } = useStitchingSession(sessionId);
 
-  const { selectedColorIndex, setSelectedColorIndex } = useGameplayStore();
+  const { selectedColorIndex, setSelectedColorIndex, handedness } = useGameplayStore();
   const initialSelectionDone = useRef(false);
+
+  // Parent revision to trigger canvas updates from parent events
+  const [parentRevision, setParentRevision] = useState(0);
+
+  // Shared values to bridge UI thread gesture layer with state
+  const gridShared = useSharedValue<Uint8Array>(new Uint8Array(0));
+  const completedShared = useSharedValue<Uint8Array>(new Uint8Array(0));
+  const activeColorIndexShared = useSharedValue<number>(0);
+  const isColorCompletedShared = useSharedValue<boolean>(false);
+
+  const rendererRef = useRef<StitchRendererRef>(null);
+  const lastLocatedIndex = useRef<number>(-1);
 
   // Animation values for mismatch shake feedback
   const shakeOffset = useSharedValue(0);
   const animatedShakeStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: shakeOffset.value }],
   }));
+
+  // Sync Shared Values on data load or change
+  useEffect(() => {
+    if (patternData && rendererState) {
+      gridShared.value = patternData.grid;
+      completedShared.value = rendererState.getCompletedArray();
+    }
+  }, [patternData, rendererState]);
+
+  useEffect(() => {
+    activeColorIndexShared.value = selectedColorIndex;
+    lastLocatedIndex.current = -1;
+  }, [selectedColorIndex]);
+
+  useEffect(() => {
+    if (remainingCounts.length > 0) {
+      isColorCompletedShared.value = remainingCounts[selectedColorIndex] === 0;
+    }
+  }, [remainingCounts, selectedColorIndex]);
 
   // Auto-select the first incomplete color on load (once)
   useEffect(() => {
@@ -56,7 +87,14 @@ export default function SessionReadyScreen() {
     if (isSessionCompleted) return; // Read-only
 
     const success = stitchCell(x, y, selectedColorIndex);
-    if (!success) {
+    if (success) {
+      if (patternData) {
+        const idx = y * patternData.width + x;
+        completedShared.value[idx] = 1;
+        completedShared.value = Uint8Array.from(completedShared.value);
+      }
+      setParentRevision((r) => r + 1);
+    } else {
       // Trigger haptic feedback + visual shake
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
       shakeOffset.value = 0;
@@ -67,6 +105,57 @@ export default function SessionReadyScreen() {
         withTiming(8, { duration: 40 }),
         withTiming(0, { duration: 40 })
       );
+    }
+  };
+
+  // Handle sweep stitch events
+  const handleSweepStitch = (x: number, y: number) => {
+    if (isSessionCompleted) return;
+    const success = stitchCell(x, y, selectedColorIndex);
+    if (success && patternData) {
+      const idx = y * patternData.width + x;
+      completedShared.value[idx] = 1;
+      completedShared.value = Uint8Array.from(completedShared.value);
+      setParentRevision((r) => r + 1);
+    }
+  };
+
+  // Handle undo action
+  const handleUndo = () => {
+    if (canUndo) {
+      const success = undo();
+      if (success && rendererState) {
+        completedShared.value = Uint8Array.from(rendererState.getCompletedArray());
+        setParentRevision((r) => r + 1);
+      }
+    }
+  };
+
+  // Handle locator cell navigation
+  const handleLocateNext = () => {
+    if (!patternData || !rendererState) return;
+
+    const completed = rendererState.getCompletedArray();
+    const nextIdx = nextRemainingCell(
+      patternData.grid,
+      completed,
+      patternData.width,
+      patternData.height,
+      selectedColorIndex,
+      lastLocatedIndex.current
+    );
+
+    if (nextIdx !== null) {
+      const cx = nextIdx % patternData.width;
+      const cy = Math.floor(nextIdx / patternData.width);
+
+      lastLocatedIndex.current = nextIdx;
+      rendererState.focusCell(cx, cy);
+      setParentRevision((r) => r + 1);
+
+      if (rendererRef.current) {
+        rendererRef.current.locateCell(cx, cy);
+      }
     }
   };
 
@@ -147,31 +236,64 @@ export default function SessionReadyScreen() {
       {/* Skia Canvas Container */}
       <Animated.View style={[styles.canvasWrapper, animatedShakeStyle]}>
         <StitchRenderer
+          ref={rendererRef}
           pattern={patternData}
           rendererState={rendererState}
           onCellTapped={handleCellTapped}
+          onSweepStitch={handleSweepStitch}
+          gridShared={gridShared}
+          completedShared={completedShared}
+          activeColorIndexShared={activeColorIndexShared}
+          isColorCompletedShared={isColorCompletedShared}
+          parentRevision={parentRevision}
         />
       </Animated.View>
 
-      {/* Floating Undo Button */}
+      {/* Floating Tool Rail */}
       {!isSessionCompleted && (
-        <Pressable
-          style={[styles.floatingUndo, !canUndo && styles.floatingUndoDisabled]}
-          onPress={() => {
-            if (canUndo) {
-              undo();
-            }
-          }}
-          disabled={!canUndo}
-          accessibilityRole="button"
-          accessibilityLabel="Undo last stitch"
+        <View
+          style={[
+            styles.floatingRail,
+            handedness === 'left' ? styles.floatingRailLeft : styles.floatingRailRight,
+          ]}
         >
-          <Ionicons
-            name="arrow-undo-outline"
-            size={24}
-            color={canUndo ? Theme.colors.textPrimary : Theme.colors.disabledText}
-          />
-        </Pressable>
+          {/* Remaining Cell Locator Button */}
+          <Pressable
+            style={[
+              styles.floatingButton,
+              remainingCounts[selectedColorIndex] === 0 && styles.floatingButtonDisabled,
+            ]}
+            onPress={handleLocateNext}
+            disabled={remainingCounts[selectedColorIndex] === 0}
+            accessibilityRole="button"
+            accessibilityLabel="Locate next remaining cell of active thread color"
+          >
+            <Ionicons
+              name="locate-outline"
+              size={24}
+              color={
+                remainingCounts[selectedColorIndex] > 0
+                  ? Theme.colors.textPrimary
+                  : Theme.colors.disabledText
+              }
+            />
+          </Pressable>
+
+          {/* Undo Button */}
+          <Pressable
+            style={[styles.floatingButton, !canUndo && styles.floatingButtonDisabled]}
+            onPress={handleUndo}
+            disabled={!canUndo}
+            accessibilityRole="button"
+            accessibilityLabel="Undo last stitch"
+          >
+            <Ionicons
+              name="arrow-undo-outline"
+              size={24}
+              color={canUndo ? Theme.colors.textPrimary : Theme.colors.disabledText}
+            />
+          </Pressable>
+        </View>
       )}
 
       {/* Bottom Thread Palette dock */}
@@ -180,7 +302,13 @@ export default function SessionReadyScreen() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.paletteScrollContent}
+            contentContainerStyle={[
+              styles.paletteScrollContent,
+              {
+                flexDirection: handedness === 'left' ? 'row' : 'row-reverse',
+                justifyContent: handedness === 'left' ? 'flex-start' : 'flex-end',
+              },
+            ]}
           >
             {patternData.palette.map((color, index) => {
               const isSelected = index === selectedColorIndex;
@@ -336,10 +464,19 @@ const styles = StyleSheet.create({
     flex: 1,
     zIndex: 1,
   },
-  floatingUndo: {
+  floatingRail: {
     position: 'absolute',
-    right: Theme.spacing.lg,
     bottom: 96,
+    gap: Theme.spacing.md,
+    zIndex: 20,
+  },
+  floatingRailRight: {
+    right: Theme.spacing.lg,
+  },
+  floatingRailLeft: {
+    left: Theme.spacing.lg,
+  },
+  floatingButton: {
     width: 48,
     height: 48,
     borderRadius: 24,
@@ -356,7 +493,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-  floatingUndoDisabled: {
+  floatingButtonDisabled: {
     backgroundColor: Theme.colors.disabledBackground,
     borderColor: 'transparent',
     opacity: 0.5,

@@ -8,6 +8,8 @@ import {
   getLodBand,
   getFitViewport,
   getAnchoredZoomTransform,
+  nextRemainingCell,
+  computeEdgePanVelocity,
 } from '../tileMath';
 import { RendererState } from '../RendererState';
 
@@ -202,6 +204,137 @@ describe('Stitch Renderer Pure Logic', () => {
       // Completed dirty flags should remain unchanged (clean)
       expect(state.checkAndClearCompletedDirty(0, 0)).toBe(false);
       expect(state.checkAndClearCompletedDirty(1, 1)).toBe(false);
+    });
+  });
+
+  describe('Stitch Sweep cell eligibility', () => {
+    test('matching color and unfinished cell is eligible', () => {
+      const grid = new Uint8Array([1, 1, 2, 2, 0, 1]);
+      const completed = new Uint8Array([0, 1, 0, 1, 0, 0]);
+
+      const isEligible = (cellX: number, cellY: number, activeColor: number, width: number): boolean => {
+        const idx = cellY * width + cellX;
+        return grid[idx] === activeColor + 1 && completed[idx] === 0;
+      };
+
+      expect(isEligible(0, 0, 0, 3)).toBe(true); // color index 0, unfinished
+      expect(isEligible(1, 0, 0, 3)).toBe(false); // color index 0, completed
+      expect(isEligible(2, 0, 0, 3)).toBe(false); // color index 1, mismatch
+      expect(isEligible(2, 0, 1, 3)).toBe(true); // color index 1, unfinished
+      expect(isEligible(1, 1, 0, 3)).toBe(false); // empty color index 0
+    });
+  });
+
+  describe('One-Op-Per-Cell sweep behavior', () => {
+    test('drag tracking only processes distinct new cells', () => {
+      const grid = new Uint8Array([1, 1, 1]);
+      const completed = new Uint8Array([0, 0, 0]);
+      const mockProcessed: { x: number; y: number }[] = [];
+
+      let lX = -1;
+      let lY = -1;
+
+      const simulateSweepMove = (x: number, y: number) => {
+        if (lX !== x || lY !== y) {
+          const idx = y * 3 + x;
+          const matchesColor = grid[idx] === 1;
+          const isUnfinished = completed[idx] === 0;
+
+          if (matchesColor && isUnfinished) {
+            completed[idx] = 1;
+            lX = x;
+            lY = y;
+            mockProcessed.push({ x, y });
+          }
+        }
+      };
+
+      simulateSweepMove(0, 0);
+      simulateSweepMove(0, 0);
+      simulateSweepMove(1, 0);
+      simulateSweepMove(0, 0); // backtrack should be ignored
+      simulateSweepMove(2, 0);
+
+      expect(mockProcessed).toEqual([
+        { x: 0, y: 0 },
+        { x: 1, y: 0 },
+        { x: 2, y: 0 },
+      ]);
+    });
+  });
+
+  describe('Remaining Cell Locator cycling order', () => {
+    test('deterministic row-major cycle, skips completed, wraps', () => {
+      const grid = new Uint8Array([1, 2, 1, 1, 2, 1]);
+      const completed = new Uint8Array([0, 0, 1, 0, 0, 0]);
+      const width = 3;
+      const height = 2;
+      const activeColor = 0; // value 1 in grid
+
+      let located = nextRemainingCell(grid, completed, width, height, activeColor, -1);
+      expect(located).toBe(0);
+
+      located = nextRemainingCell(grid, completed, width, height, activeColor, 0);
+      expect(located).toBe(3); // index 2 is completed, so it is skipped
+
+      located = nextRemainingCell(grid, completed, width, height, activeColor, 3);
+      expect(located).toBe(5);
+
+      located = nextRemainingCell(grid, completed, width, height, activeColor, 5);
+      expect(located).toBe(0); // wraps around
+
+      located = nextRemainingCell(grid, completed, width, height, 5, -1);
+      expect(located).toBeNull(); // empty color -> null
+    });
+  });
+
+  describe('Edge Auto-Pan vector math', () => {
+    test('calculates correct velocity based on proximity to edges', () => {
+      const containerSize = 400;
+      const margin = 48;
+      const maxSpeed = 10;
+
+      // Far from edges
+      expect(computeEdgePanVelocity(200, containerSize, margin, maxSpeed)).toBe(0);
+
+      // Proximity left
+      expect(computeEdgePanVelocity(24, containerSize, margin, maxSpeed)).toBe(5);
+
+      // At edge 0
+      expect(computeEdgePanVelocity(0, containerSize, margin, maxSpeed)).toBe(maxSpeed);
+
+      // Past edge 0
+      expect(computeEdgePanVelocity(-10, containerSize, margin, maxSpeed)).toBe(maxSpeed);
+
+      // Proximity right
+      expect(computeEdgePanVelocity(376, containerSize, margin, maxSpeed)).toBeCloseTo(-5.0);
+
+      // Exactly at edge right
+      expect(computeEdgePanVelocity(400, containerSize, margin, maxSpeed)).toBe(-maxSpeed);
+    });
+  });
+
+  describe('Handedness preference mapping', () => {
+    test('correctly maps handedness string to layout style settings', () => {
+      const getLayoutForHandedness = (handedness: 'left' | 'right') => {
+        return {
+          flexDirection: handedness === 'left' ? 'row' : 'row-reverse',
+          justifyContent: handedness === 'left' ? 'flex-start' : 'flex-end',
+          railSide: handedness === 'left' ? 'left' : 'right',
+        };
+      };
+
+      expect(getLayoutForHandedness('left')).toEqual({
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        railSide: 'left',
+      });
+
+      expect(getLayoutForHandedness('right')).toEqual({
+        flexDirection: 'row-reverse',
+        justifyContent: 'flex-end',
+        railSide: 'right',
+      });
     });
   });
 });

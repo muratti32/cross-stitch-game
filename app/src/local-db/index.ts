@@ -139,6 +139,31 @@ export async function getDeviceId(): Promise<string> {
 }
 
 /**
+ * Retrieves the player's handedness layout preference, default to 'right'.
+ */
+export async function getHandedness(): Promise<'left' | 'right'> {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{ value: string }>(
+    "SELECT value FROM device_config WHERE key = 'handedness'"
+  );
+  if (row && (row.value === 'left' || row.value === 'right')) {
+    return row.value as 'left' | 'right';
+  }
+  return 'right';
+}
+
+/**
+ * Saves the player's handedness layout preference.
+ */
+export async function setHandedness(handedness: 'left' | 'right'): Promise<void> {
+  const db = await getDatabase();
+  await db.runAsync(
+    "INSERT OR REPLACE INTO device_config (key, value) VALUES ('handedness', ?)",
+    handedness
+  );
+}
+
+/**
  * Gets and increments the global monotonic sequence counter for this device.
  */
 export async function getNextDeviceSeq(): Promise<number> {

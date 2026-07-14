@@ -7,6 +7,8 @@ interface GameplayState {
   setZoomLevel: (level: number) => void;
   showGridLines: boolean;
   toggleGridLines: () => void;
+  handedness: 'left' | 'right';
+  setHandedness: (pref: 'left' | 'right') => void;
   resetGameplay: () => void;
 }
 
@@ -17,5 +19,7 @@ export const useGameplayStore = create<GameplayState>((set) => ({
   setZoomLevel: (level) => set({ zoomLevel: level }),
   showGridLines: true,
   toggleGridLines: () => set((state) => ({ showGridLines: !state.showGridLines })),
-  resetGameplay: () => set({ selectedColorIndex: 0, zoomLevel: 1.0, showGridLines: true }),
+  handedness: 'right',
+  setHandedness: (pref) => set({ handedness: pref }),
+  resetGameplay: () => set({ selectedColorIndex: 0, zoomLevel: 1.0, showGridLines: true, handedness: 'right' }),
 }));

@@ -176,3 +176,53 @@ export function getAnchoredZoomTransform(
 
   return { scale, translateX, translateY };
 }
+
+/**
+ * Cycles deterministically to the next unfinished cell index of the active thread color in row-major order.
+ * Returns the cell index, or null if none exist or color has no cells.
+ */
+export function nextRemainingCell(
+  grid: Uint8Array,
+  completed: Uint8Array,
+  width: number,
+  height: number,
+  activeColor: number,
+  fromIndex: number
+): number | null {
+  const size = width * height;
+  if (size === 0 || grid.length !== size || completed.length !== size) return null;
+
+  const start = (fromIndex + 1) % size;
+
+  for (let i = 0; i < size; i++) {
+    const idx = (start + i) % size;
+    if (grid[idx] === activeColor + 1 && completed[idx] === 0) {
+      return idx;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Proximity to edge velocity calculation.
+ */
+export function computeEdgePanVelocity(
+  fingerPos: number,
+  containerSize: number,
+  edgeMargin: number,
+  maxSpeed: number
+): number {
+  'worklet';
+  if (fingerPos < edgeMargin) {
+    const proximity = Math.max(0, edgeMargin - fingerPos);
+    const ratio = Math.min(1, proximity / edgeMargin);
+    return ratio * maxSpeed;
+  }
+  if (fingerPos > containerSize - edgeMargin) {
+    const proximity = Math.max(0, fingerPos - (containerSize - edgeMargin));
+    const ratio = Math.min(1, proximity / edgeMargin);
+    return -ratio * maxSpeed;
+  }
+  return 0;
+}

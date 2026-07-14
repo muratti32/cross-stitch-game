@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useImperativeHandle } from 'react';
 import { StyleSheet, View, LayoutChangeEvent, Text } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
 import {
@@ -21,21 +21,45 @@ import { createSymbolAtlas, type SymbolAtlas } from './symbolAtlas';
 import { RendererState } from './RendererState';
 import { useRendererGesture } from './useRendererGesture';
 import { PatternData } from '../pattern-artifact';
-import { useDerivedValue } from 'react-native-reanimated';
+import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
 
 export interface StitchRendererProps {
   pattern: PatternData;
   rendererState: RendererState;
   onCellTapped: (x: number, y: number) => void;
+  onSweepStitch?: (x: number, y: number) => void;
+  gridShared: SharedValue<Uint8Array>;
+  completedShared: SharedValue<Uint8Array>;
+  activeColorIndexShared: SharedValue<number>;
+  isColorCompletedShared: SharedValue<boolean>;
+  parentRevision?: number;
 }
 
-export function StitchRenderer({
-  pattern,
-  rendererState,
-  onCellTapped,
-}: StitchRendererProps) {
+export interface StitchRendererRef {
+  locateCell: (cx: number, cy: number) => void;
+}
+
+export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRendererProps>((
+  {
+    pattern,
+    rendererState,
+    onCellTapped,
+    onSweepStitch,
+    gridShared,
+    completedShared,
+    activeColorIndexShared,
+    isColorCompletedShared,
+    parentRevision,
+  },
+  ref
+) => {
   // Local state revision to trigger React re-renders when gameplayState updates
   const [revision, setRevision] = useState(0);
+
+  // Sync parent revision
+  useEffect(() => {
+    setRevision((r) => r + 1);
+  }, [parentRevision]);
 
   // Retrieve current selected color from store
   const { selectedColorIndex } = useGameplayStore();
@@ -65,17 +89,32 @@ export function StitchRenderer({
     translateY,
     gesture,
     setContainerSize,
+    locateCell,
   } = useRendererGesture({
     patternWidth: pattern.width,
     patternHeight: pattern.height,
     maxScale: 3.0, // 48px / 16px = 3.0
     onCellTapped: (x, y) => {
-      // Cell tap handler
       onCellTapped(x, y);
-      // Increment local revision to trigger canvas refresh
       setRevision((r) => r + 1);
     },
+    onSweepStitch: (x, y) => {
+      if (onSweepStitch) {
+        onSweepStitch(x, y);
+      }
+      setRevision((r) => r + 1);
+    },
+    gridShared,
+    completedShared,
+    activeColorIndexShared,
+    isColorCompletedShared,
   });
+
+  useImperativeHandle(ref, () => ({
+    locateCell: (cx, cy) => {
+      locateCell(cx, cy);
+    },
+  }));
 
   // Track the viewport values in React state for culling.
   // We use useAnimatedReaction inside useRendererGesture (conceptually) to throttle this.
@@ -465,7 +504,7 @@ export function StitchRenderer({
       </GestureDetector>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

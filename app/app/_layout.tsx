@@ -3,7 +3,8 @@ import { Slot } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryProvider } from '../src/providers';
 import * as SplashScreen from 'expo-splash-screen';
-import { initDatabase } from '../src/local-db';
+import { initDatabase, getHandedness } from '../src/local-db';
+import { useGameplayStore } from '../src/store/gameplayStore';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -15,6 +16,8 @@ export default function RootLayout() {
     async function prepare() {
       try {
         await initDatabase();
+        const savedHandedness = await getHandedness();
+        useGameplayStore.getState().setHandedness(savedHandedness);
       } catch (e) {
         console.warn('Failed to initialize database:', e);
       } finally {

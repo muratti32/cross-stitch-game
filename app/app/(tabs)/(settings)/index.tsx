@@ -6,10 +6,20 @@ import { useGameplayStore } from '@/store';
 import { useHealthCheck } from '@/hooks/useHealthCheck';
 import { Config } from '@/config';
 import { Ionicons } from '@expo/vector-icons';
+import { setHandedness as setHandednessDb } from '@/local-db';
 
 export default function SettingsScreen() {
-  const { showGridLines, toggleGridLines } = useGameplayStore();
+  const { showGridLines, toggleGridLines, handedness, setHandedness } = useGameplayStore();
   const { data: health, isLoading, error, refetch, isRefetching } = useHealthCheck();
+
+  const handleHandednessChange = async (value: 'left' | 'right') => {
+    setHandedness(value);
+    try {
+      await setHandednessDb(value);
+    } catch (err) {
+      console.error('Failed to save handedness preference to database:', err);
+    }
+  };
 
   const handleLinkPress = (title: string, url?: string) => {
     if (url) {
@@ -140,6 +150,53 @@ export default function SettingsScreen() {
             trackColor={{ false: Theme.colors.disabledBackground, true: Theme.colors.accentSage }}
             thumbColor={showGridLines ? Theme.colors.card : Theme.colors.disabledText}
           />
+        </View>
+        <View style={styles.rowDivider} />
+        <View style={styles.settingRow}>
+          <View style={styles.settingTextContainer}>
+            <Text style={styles.settingTitle}>Handedness Layout</Text>
+            <Text style={styles.settingDescription}>
+              Align interactive controls for left- or right-handed play
+            </Text>
+          </View>
+          <View style={styles.segmentedControl}>
+            <Pressable
+              style={[
+                styles.segmentButton,
+                handedness === 'left' && styles.segmentButtonActive,
+              ]}
+              onPress={() => handleHandednessChange('left')}
+              accessibilityRole="button"
+              accessibilityLabel="Left handed layout"
+            >
+              <Text
+                style={[
+                  styles.segmentText,
+                  handedness === 'left' && styles.segmentTextActive,
+                ]}
+              >
+                Left
+              </Text>
+            </Pressable>
+            <Pressable
+              style={[
+                styles.segmentButton,
+                handedness === 'right' && styles.segmentButtonActive,
+              ]}
+              onPress={() => handleHandednessChange('right')}
+              accessibilityRole="button"
+              accessibilityLabel="Right handed layout"
+            >
+              <Text
+                style={[
+                  styles.segmentText,
+                  handedness === 'right' && styles.segmentTextActive,
+                ]}
+              >
+                Right
+              </Text>
+            </Pressable>
+          </View>
         </View>
       </Card>
 
@@ -412,5 +469,36 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.xs,
     color: Theme.colors.textSecondary,
     opacity: 0.8,
+  },
+  segmentedControl: {
+    flexDirection: 'row',
+    backgroundColor: '#EFECE6',
+    borderRadius: Theme.radii.md,
+    padding: 2,
+    width: 140,
+    height: 36,
+  },
+  segmentButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: Theme.radii.sm,
+  },
+  segmentButtonActive: {
+    backgroundColor: Theme.colors.card,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  segmentText: {
+    fontSize: Theme.typography.sizes.xs,
+    fontWeight: Theme.typography.weights.medium,
+    color: Theme.colors.textSecondary,
+  },
+  segmentTextActive: {
+    fontWeight: Theme.typography.weights.bold,
+    color: Theme.colors.textPrimary,
   },
 });

@@ -1,4 +1,4 @@
-export { StitchRenderer, type StitchRendererProps } from './StitchRenderer';
+export { StitchRenderer, type StitchRendererProps, type StitchRendererRef } from './StitchRenderer';
 export { RendererState } from './RendererState';
 export {
   CELL_SIZE,
@@ -10,6 +10,8 @@ export {
   getLodBand,
   getFitViewport,
   getAnchoredZoomTransform,
+  nextRemainingCell,
+  computeEdgePanVelocity,
   type Viewport,
   type LodBand,
 } from './tileMath';
