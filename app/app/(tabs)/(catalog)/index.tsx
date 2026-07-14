@@ -1,10 +1,13 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
-import { Screen, EmptyState, SectionHeader } from '@/components';
+import { StyleSheet, View, Text, ScrollView, Image } from 'react-native';
+import { Screen, EmptyState, SectionHeader, Card } from '@/components';
 import { Theme } from '@/theme/theme';
 import { Pattern, Category } from '@/types';
+import { BUNDLED_PATTERNS } from '@/bundled-patterns';
+import { useRouter } from 'expo-router';
 
 export default function CatalogScreen() {
+  const router = useRouter();
   // Hard Rule: Mock-free empty states using strict types
   const staffPicks: Pattern[] = [];
   const newPatterns: Pattern[] = [];
@@ -18,6 +21,10 @@ export default function CatalogScreen() {
     console.log('Browsing categories...');
   };
 
+  const handleSelectPattern = (id: string) => {
+    router.push(`/(tabs)/(catalog)/${id}`);
+  };
+
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
       {/* Header section with cozy branding */}
@@ -25,6 +32,35 @@ export default function CatalogScreen() {
         <Text style={styles.appName}>Stitch Wish</Text>
         <Text style={styles.subtitle}>Craft your cozy world, stitch by stitch.</Text>
       </View>
+
+      {/* Starter Patterns Section */}
+      <SectionHeader title="Starter Patterns" />
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.starterScrollContainer}
+      >
+        {BUNDLED_PATTERNS.map((pattern) => (
+          <Card
+            key={pattern.id}
+            style={styles.patternCard}
+            onPress={() => handleSelectPattern(pattern.id)}
+          >
+            <Image source={pattern.previewAsset} style={styles.patternImage} />
+            <View style={styles.patternDetails}>
+              <Text style={styles.patternTitle} numberOfLines={1}>
+                {pattern.title}
+              </Text>
+              <Text style={styles.patternMeta}>
+                {pattern.width}×{pattern.height} • {pattern.colorsCount} colors
+              </Text>
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{pattern.difficulty.toUpperCase()}</Text>
+              </View>
+            </View>
+          </Card>
+        ))}
+      </ScrollView>
 
       {/* Staff Picks Section */}
       <SectionHeader title="Staff Picks" />
@@ -100,8 +136,52 @@ const styles = StyleSheet.create({
     color: Theme.colors.textSecondary,
     marginTop: Theme.spacing.xs,
   },
+  starterScrollContainer: {
+    paddingHorizontal: Theme.spacing.lg,
+    paddingBottom: Theme.spacing.md,
+    gap: Theme.spacing.md,
+  },
+  patternCard: {
+    width: 160,
+    padding: Theme.spacing.sm,
+  },
+  patternImage: {
+    width: 144,
+    height: 144,
+    borderRadius: Theme.radii.md,
+    backgroundColor: '#FAF6F0',
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+  },
+  patternDetails: {
+    marginTop: Theme.spacing.sm,
+  },
+  patternTitle: {
+    fontSize: Theme.typography.sizes.md,
+    fontWeight: Theme.typography.weights.semibold,
+    color: Theme.colors.textPrimary,
+  },
+  patternMeta: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.textSecondary,
+    marginTop: Theme.spacing.xs,
+  },
+  badge: {
+    alignSelf: 'flex-start',
+    backgroundColor: Theme.colors.overlayPressed,
+    paddingHorizontal: Theme.spacing.sm,
+    paddingVertical: 2,
+    borderRadius: Theme.radii.full,
+    marginTop: Theme.spacing.sm,
+  },
+  badgeText: {
+    fontSize: Theme.typography.sizes.xs - 2,
+    fontWeight: Theme.typography.weights.bold,
+    color: Theme.colors.accentTeal,
+  },
   sectionPadding: {
     paddingHorizontal: Theme.spacing.lg,
     marginBottom: Theme.spacing.md,
   },
 });
+
