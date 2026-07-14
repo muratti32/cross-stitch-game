@@ -9,6 +9,7 @@
     "dist",
     "coverage",
     "test",
+    "scripts",
     "**/*.spec.ts",
     "**/*.integration-spec.ts"
   ]

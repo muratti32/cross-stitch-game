@@ -182,6 +182,15 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
     );
   `);
 
+  // Ensure catalog_cache table exists
+  await db.execAsync(`
+    CREATE TABLE IF NOT EXISTS catalog_cache (
+      surface_key TEXT PRIMARY KEY NOT NULL,
+      payload_json TEXT NOT NULL,
+      fetched_at TEXT NOT NULL
+    );
+  `);
+
   // Check database user_version for migration
   const versionRow = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version;');
   const currentVersion = versionRow?.user_version ?? 0;
@@ -668,4 +677,37 @@ export async function deleteNamespaceFiles(identity: string | null): Promise<voi
       console.error(`Failed to delete database file at ${path}:`, err);
     }
   }
+}
+
+export interface CatalogCacheEntry {
+  surfaceKey: string;
+  payloadJson: string;
+  fetchedAt: string;
+}
+
+export async function getCatalogCache(surfaceKey: string): Promise<CatalogCacheEntry | null> {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{
+    surface_key: string;
+    payload_json: string;
+    fetched_at: string;
+  }>('SELECT * FROM catalog_cache WHERE surface_key = ?', surfaceKey);
+
+  if (!row) return null;
+  return {
+    surfaceKey: row.surface_key,
+    payloadJson: row.payload_json,
+    fetchedAt: row.fetched_at,
+  };
+}
+
+export async function setCatalogCache(surfaceKey: string, payloadJson: string): Promise<void> {
+  const db = await getDatabase();
+  const fetchedAt = new Date().toISOString();
+  await db.runAsync(
+    'INSERT OR REPLACE INTO catalog_cache (surface_key, payload_json, fetched_at) VALUES (?, ?, ?)',
+    surfaceKey,
+    payloadJson,
+    fetchedAt
+  );
 }

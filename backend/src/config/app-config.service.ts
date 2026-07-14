@@ -36,4 +36,8 @@ export class AppConfigService {
   get refreshTokenTtlSeconds(): number {
     return this.configService.get('REFRESH_TOKEN_TTL_SECONDS', { infer: true });
   }
+
+  get storageLocalDir(): string {
+    return this.configService.get('STORAGE_LOCAL_DIR', { infer: true });
+  }
 }

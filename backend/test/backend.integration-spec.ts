@@ -16,6 +16,8 @@ import {
 import { DataSource } from 'typeorm';
 
 import { configureApi } from '../src/api/configure-api';
+import { CatalogService } from '../src/catalog/catalog.service';
+import { encodePatternArtifactV1 } from '../src/catalog/pattern-artifact-encoder';
 import {
   GuestInstallationEntity,
   GuestInstallationStatus,
@@ -523,6 +525,212 @@ describe('Stitch Wish backend integration', () => {
     const body: unknown = response.body;
     expect(readRecord(body, 'status')).toBe(ProcessingJobStatus.Completed);
     expect(readRecord(body, 'result')).toEqual(completed.result);
+  });
+
+  describe('catalog', () => {
+    const palette = [
+      { dmcCode: '321', name: 'Christmas Red', rgbHex: '#C51E3A' },
+      { dmcCode: 'B5200', name: 'Snow White', rgbHex: '#FFFFFF' },
+    ];
+
+    function catalogArtifactInput(width: number, height: number) {
+      const grid = new Uint8Array(width * height).fill(1);
+      return { width, height, palette, grid };
+    }
+
+    async function seedCatalogPattern(options: {
+      title: string;
+      creatorName: string;
+      categoryCode: string;
+      tagCodes: string[];
+      status: 'available' | 'withdrawn' | 'removed';
+      publishedAt: Date;
+    }) {
+      const catalog = app.get(CatalogService);
+      const encoded = encodePatternArtifactV1(catalogArtifactInput(20, 20));
+      return catalog.upsertPattern({
+        title: options.title,
+        creatorName: options.creatorName,
+        categoryCode: options.categoryCode,
+        width: 20,
+        height: 20,
+        paletteSize: palette.length,
+        artifactObjectKey: `test/${options.title}/artifact.bin`,
+        artifactChecksum: encoded.checksum,
+        artifactByteLength: encoded.byteLength,
+        artifactSchemaVersion: encoded.schemaVersion,
+        previewObjectKey: `test/${options.title}/preview.png`,
+        unlockPriceTier: null,
+        status: options.status,
+        publishedAt: options.publishedAt,
+        tagCodes: options.tagCodes,
+      });
+    }
+
+    it('upserts patterns idempotently and enforces the five-tag limit', async () => {
+      const catalog = app.get(CatalogService);
+      await catalog.upsertTagLabels('itest-cute', [
+        { locale: 'en', label: 'ITest Cute' },
+      ]);
+
+      const first = await seedCatalogPattern({
+        title: 'ITest Idempotent Fox',
+        creatorName: 'ITest Team',
+        categoryCode: 'animals',
+        tagCodes: ['itest-cute'],
+        status: 'available',
+        publishedAt: new Date('2026-07-01T00:00:00.000Z'),
+      });
+      const second = await seedCatalogPattern({
+        title: 'ITest Idempotent Fox',
+        creatorName: 'ITest Team',
+        categoryCode: 'animals',
+        tagCodes: ['itest-cute'],
+        status: 'available',
+        publishedAt: new Date('2026-07-01T00:00:00.000Z'),
+      });
+      expect(second.id).toBe(first.id);
+
+      await expect(
+        seedCatalogPattern({
+          title: 'ITest Too Many Tags',
+          creatorName: 'ITest Team',
+          categoryCode: 'animals',
+          tagCodes: ['t1', 't2', 't3', 't4', 't5', 't6'],
+          status: 'available',
+          publishedAt: new Date('2026-07-01T00:00:00.000Z'),
+        }),
+      ).rejects.toThrow('at most 5 tags');
+    });
+
+    it('orders New by publication time, immutable under title edits, and excludes unavailable content', async () => {
+      const catalog = app.get(CatalogService);
+      await seedCatalogPattern({
+        title: 'ITest Older Pattern',
+        creatorName: 'ITest Team',
+        categoryCode: 'fantasy',
+        tagCodes: [],
+        status: 'available',
+        publishedAt: new Date('2026-06-01T00:00:00.000Z'),
+      });
+      await seedCatalogPattern({
+        title: 'ITest Newer Pattern',
+        creatorName: 'ITest Team',
+        categoryCode: 'fantasy',
+        tagCodes: [],
+        status: 'available',
+        publishedAt: new Date('2026-06-02T00:00:00.000Z'),
+      });
+      await seedCatalogPattern({
+        title: 'ITest Withdrawn Pattern',
+        creatorName: 'ITest Team',
+        categoryCode: 'fantasy',
+        tagCodes: [],
+        status: 'withdrawn',
+        publishedAt: new Date('2026-06-03T00:00:00.000Z'),
+      });
+
+      const firstPage = await request(httpServer)
+        .get('/v1/catalog/new?limit=50')
+        .expect(200);
+      const titlesBefore = (
+        firstPage.body as { items: { title: string; publishedAt: string }[] }
+      ).items.map((item) => item.title);
+      expect(titlesBefore).not.toContain('ITest Withdrawn Pattern');
+      expect(titlesBefore.indexOf('ITest Newer Pattern')).toBeLessThan(
+        titlesBefore.indexOf('ITest Older Pattern'),
+      );
+
+      // A metadata edit must not promote the pattern back into New.
+      await seedCatalogPattern({
+        title: 'ITest Older Pattern',
+        creatorName: 'ITest Team',
+        categoryCode: 'fantasy',
+        tagCodes: [],
+        status: 'available',
+        publishedAt: new Date('2026-06-01T00:00:00.000Z'),
+      });
+      const afterEdit = await request(httpServer)
+        .get('/v1/catalog/new?limit=50')
+        .expect(200);
+      const titlesAfter = (
+        afterEdit.body as { items: { title: string }[] }
+      ).items.map((item) => item.title);
+      expect(titlesAfter.indexOf('ITest Newer Pattern')).toBeLessThan(
+        titlesAfter.indexOf('ITest Older Pattern'),
+      );
+
+      const catalogCategories = await request(httpServer)
+        .get('/v1/catalog/categories')
+        .expect(200);
+      const fantasy = (
+        catalogCategories.body as { code: string; count: number }[]
+      ).find((category) => category.code === 'fantasy');
+      // Only the two available fantasy patterns count.
+      expect(fantasy?.count).toBeGreaterThanOrEqual(2);
+      const withdrawnDetail = await catalog.searchPatterns(
+        'ITest Withdrawn Pattern',
+        10,
+        'en',
+      );
+      expect(withdrawnDetail).toHaveLength(0);
+    });
+
+    it('serves ordered staff picks and searches title, creator, and tag labels', async () => {
+      const catalog = app.get(CatalogService);
+      await catalog.upsertTagLabels('itest-woodland', [
+        { locale: 'en', label: 'ITest Woodland' },
+      ]);
+      await seedCatalogPattern({
+        title: 'ITest Pick Alpha',
+        creatorName: 'ITest Curator',
+        categoryCode: 'animals',
+        tagCodes: ['itest-woodland'],
+        status: 'available',
+        publishedAt: new Date('2026-06-10T00:00:00.000Z'),
+      });
+      await seedCatalogPattern({
+        title: 'ITest Pick Beta',
+        creatorName: 'ITest Curator',
+        categoryCode: 'animals',
+        tagCodes: [],
+        status: 'available',
+        publishedAt: new Date('2026-06-11T00:00:00.000Z'),
+      });
+      await catalog.setStaffPick('ITest Pick Beta', 'ITest Curator', 101);
+      await catalog.setStaffPick('ITest Pick Alpha', 'ITest Curator', 102);
+
+      const picksResponse = await request(httpServer)
+        .get('/v1/catalog/staff-picks')
+        .expect(200);
+      const pickTitles = (
+        picksResponse.body as { title: string }[]
+      ).map((item) => item.title);
+      expect(pickTitles.indexOf('ITest Pick Beta')).toBeLessThan(
+        pickTitles.indexOf('ITest Pick Alpha'),
+      );
+
+      const byTitle = await request(httpServer)
+        .get('/v1/catalog/search?q=Pick Alpha&locale=en&limit=10')
+        .expect(200);
+      expect((byTitle.body as { title: string }[])[0]?.title).toBe(
+        'ITest Pick Alpha',
+      );
+
+      const byCreator = await request(httpServer)
+        .get('/v1/catalog/search?q=ITest Curator&locale=en&limit=10')
+        .expect(200);
+      expect((byCreator.body as { title: string }[]).length).toBeGreaterThanOrEqual(
+        2,
+      );
+
+      const byTagLabel = await request(httpServer)
+        .get('/v1/catalog/search?q=Woodland&locale=en&limit=10')
+        .expect(200);
+      expect(
+        (byTagLabel.body as { title: string }[]).map((item) => item.title),
+      ).toContain('ITest Pick Alpha');
+    });
   });
 });
 

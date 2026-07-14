@@ -5,6 +5,7 @@ export type EnvironmentVariables = {
   PORT: number;
   REDIS_URL: string;
   REFRESH_TOKEN_TTL_SECONDS: number;
+  STORAGE_LOCAL_DIR: string;
 };
 
 const DATABASE_PROTOCOLS = new Set(['postgres:', 'postgresql:']);
@@ -123,6 +124,11 @@ export function parseEnvironment(
       'REFRESH_TOKEN_TTL_SECONDS',
       DEFAULT_REFRESH_TOKEN_TTL_SECONDS,
     ),
+    STORAGE_LOCAL_DIR:
+      typeof environment.STORAGE_LOCAL_DIR === 'string' &&
+      environment.STORAGE_LOCAL_DIR.trim().length > 0
+        ? environment.STORAGE_LOCAL_DIR.trim()
+        : './storage-dev',
   };
 }
 

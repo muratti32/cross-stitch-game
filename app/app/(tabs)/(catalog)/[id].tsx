@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Image, ActivityIndicator, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Screen, Button, Card } from '@/components';
+import { Screen, Button, Card, CachedImage, EmptyState } from '@/components';
 import { Theme } from '@/theme/theme';
 import { BUNDLED_PATTERNS, loadBundledPattern } from '@/bundled-patterns';
 import { PatternData } from '@/pattern-artifact';
 import { createSession } from '@/local-db';
+import { absolutePreviewUrl, useCatalogPattern } from '@/api/catalog';
 
 export default function PatternDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -18,7 +19,7 @@ export default function PatternDetailScreen() {
   const manifestPattern = BUNDLED_PATTERNS.find((p) => p.id === id);
 
   const loadData = async () => {
-    if (!id) return;
+    if (!id || !manifestPattern) return;
     setLoading(true);
     setError(null);
     try {
@@ -36,14 +37,10 @@ export default function PatternDetailScreen() {
     loadData();
   }, [id]);
 
+  // Server catalog patterns are browsable only in this slice; Session
+  // Preparation (issue #12) adds the download-and-play path.
   if (!manifestPattern) {
-    return (
-      <Screen style={styles.errorContainer}>
-        <Text style={styles.errorTitle}>Pattern Not Found</Text>
-        <Text style={styles.errorText}>The requested pattern does not exist in our catalog.</Text>
-        <Button title="Go Back" onPress={() => router.back()} style={styles.errorButton} />
-      </Screen>
-    );
+    return <ServerPatternDetail id={id} />;
   }
 
   const handleStartStitching = async () => {
@@ -154,11 +151,145 @@ export default function PatternDetailScreen() {
   );
 }
 
+function ServerPatternDetail({ id }: { id: string | undefined }) {
+  const router = useRouter();
+  const pattern = useCatalogPattern(id, true);
+
+  if (pattern.isLoading) {
+    return (
+      <Screen style={styles.errorContainer}>
+        <ActivityIndicator size="large" color={Theme.colors.accentTeal} />
+      </Screen>
+    );
+  }
+
+  if (pattern.isError || !pattern.data) {
+    return (
+      <Screen style={styles.errorContainer}>
+        <EmptyState
+          icon="cloud-offline-outline"
+          title="Pattern Unavailable"
+          body="This pattern could not be loaded. It may have been removed, or you may be offline."
+          actionLabel="Go Back"
+          onAction={() => router.back()}
+          actionVariant="secondary"
+        />
+      </Screen>
+    );
+  }
+
+  const item = pattern.data.data;
+
+  return (
+    <Screen scrollable contentContainerStyle={styles.container}>
+      <View style={styles.headerRow}>
+        <Button
+          variant="secondary"
+          title="← Back"
+          onPress={() => router.back()}
+          style={styles.backButton}
+        />
+      </View>
+
+      <View style={styles.imageContainer}>
+        <CachedImage
+          uri={absolutePreviewUrl(item.previewUrl)}
+          style={styles.previewImage}
+        />
+      </View>
+
+      <View style={styles.infoSection}>
+        <View style={styles.titleRow}>
+          <Text style={styles.title}>{item.title}</Text>
+          {item.unlockPriceTier && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{item.unlockPriceTier.toUpperCase()}</Text>
+            </View>
+          )}
+        </View>
+        <Text style={styles.description}>by {item.creatorName}</Text>
+      </View>
+
+      <Card style={styles.specsCard}>
+        <View style={styles.specItem}>
+          <Text style={styles.specLabel}>Dimensions</Text>
+          <Text style={styles.specValue}>
+            {item.width} × {item.height}
+          </Text>
+        </View>
+        <View style={styles.specDivider} />
+        <View style={styles.specItem}>
+          <Text style={styles.specLabel}>Colors</Text>
+          <Text style={styles.specValue}>{item.paletteSize} Threads</Text>
+        </View>
+        <View style={styles.specDivider} />
+        <View style={styles.specItem}>
+          <Text style={styles.specLabel}>Category</Text>
+          <Text style={styles.specValue}>{item.categoryCode}</Text>
+        </View>
+      </Card>
+
+      {item.tags.length > 0 && (
+        <View style={styles.serverTagRow}>
+          {item.tags.map((tag) => (
+            <View key={tag.code} style={styles.serverTagChip}>
+              <Text style={styles.serverTagText}>#{tag.label}</Text>
+            </View>
+          ))}
+        </View>
+      )}
+
+      <Card style={styles.playSoonCard}>
+        <Text style={styles.playSoonTitle}>Browsing preview</Text>
+        <Text style={styles.playSoonBody}>
+          Downloading and stitching catalog patterns arrives with the sync
+          update. Starter Patterns are playable right now.
+        </Text>
+      </Card>
+    </Screen>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: Theme.spacing.lg,
     paddingTop: Theme.spacing.md,
     paddingBottom: Theme.spacing.xxl,
+  },
+  serverTagRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Theme.spacing.sm,
+    marginBottom: Theme.spacing.xl,
+  },
+  serverTagChip: {
+    paddingVertical: Theme.spacing.xs,
+    paddingHorizontal: Theme.spacing.md,
+    backgroundColor: Theme.colors.card,
+    borderRadius: Theme.radii.full,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+  },
+  serverTagText: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.accentTeal,
+    fontWeight: Theme.typography.weights.medium,
+  },
+  playSoonCard: {
+    padding: Theme.spacing.lg,
+    alignItems: 'center',
+  },
+  playSoonTitle: {
+    fontSize: Theme.typography.sizes.md,
+    fontWeight: Theme.typography.weights.bold,
+    color: Theme.colors.textPrimary,
+    marginBottom: Theme.spacing.xs,
+  },
+  playSoonBody: {
+    fontSize: Theme.typography.sizes.sm,
+    color: Theme.colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
   },
   headerRow: {
     marginBottom: Theme.spacing.md,

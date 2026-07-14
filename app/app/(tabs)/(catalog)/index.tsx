@@ -1,44 +1,67 @@
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView, Image } from 'react-native';
-import { Screen, EmptyState, SectionHeader, Card } from '@/components';
+import { StyleSheet, View, Text, ScrollView, Image, ActivityIndicator, Pressable } from 'react-native';
+import { Screen, EmptyState, SectionHeader, Card, Button, CachedImage } from '@/components';
 import { Theme } from '@/theme/theme';
-import { Pattern, Category } from '@/types';
 import { BUNDLED_PATTERNS } from '@/bundled-patterns';
 import { useRouter } from 'expo-router';
+import {
+  CatalogPatternItem,
+  absolutePreviewUrl,
+  useCatalogCategories,
+  useCatalogTags,
+  useNewPatterns,
+  useStaffPicks,
+} from '@/api/catalog';
 
 export default function CatalogScreen() {
   const router = useRouter();
-  // Hard Rule: Mock-free empty states using strict types
-  const staffPicks: Pattern[] = [];
-  const newPatterns: Pattern[] = [];
-  const categories: Category[] = [];
+  const staffPicks = useStaffPicks();
+  const newPatterns = useNewPatterns();
+  const categories = useCatalogCategories();
+  const tags = useCatalogTags();
 
-  const handleRefreshCatalog = () => {
-    console.log('Refreshing catalog data...');
-  };
-
-  const handleBrowseCategories = () => {
-    console.log('Browsing categories...');
-  };
+  const servedFromCache =
+    staffPicks.data?.fromCache === true ||
+    categories.data?.fromCache === true ||
+    newPatterns.data?.pages[0]?.fromCache === true;
 
   const handleSelectPattern = (id: string) => {
     router.push(`/(tabs)/(catalog)/${id}`);
   };
 
+  const newItems: CatalogPatternItem[] =
+    newPatterns.data?.pages.flatMap((page) => page.data.items) ?? [];
+
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
-      {/* Header section with cozy branding */}
       <View style={styles.header}>
         <Text style={styles.appName}>Stitch Wish</Text>
         <Text style={styles.subtitle}>Craft your cozy world, stitch by stitch.</Text>
       </View>
 
-      {/* Starter Patterns Section */}
+      <Pressable
+        style={({ pressed }) => [styles.searchBar, pressed && styles.searchBarPressed]}
+        onPress={() => router.push('/(tabs)/(catalog)/search')}
+        accessibilityRole="search"
+        accessibilityLabel="Search the pattern catalog"
+      >
+        <Text style={styles.searchBarText}>Search patterns, creators, tags…</Text>
+      </Pressable>
+
+      {servedFromCache && (
+        <View style={styles.offlineBanner}>
+          <Text style={styles.offlineBannerText}>
+            Offline — catalog may be out of date
+          </Text>
+        </View>
+      )}
+
+      {/* Bundled Starter Patterns — always available, even offline */}
       <SectionHeader title="Starter Patterns" />
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.starterScrollContainer}
+        contentContainerStyle={styles.horizontalScroll}
       >
         {BUNDLED_PATTERNS.map((pattern) => (
           <Card
@@ -54,65 +77,202 @@ export default function CatalogScreen() {
               <Text style={styles.patternMeta}>
                 {pattern.width}×{pattern.height} • {pattern.colorsCount} colors
               </Text>
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{pattern.difficulty.toUpperCase()}</Text>
-              </View>
             </View>
           </Card>
         ))}
       </ScrollView>
 
-      {/* Staff Picks Section */}
+      {/* Staff Picks */}
       <SectionHeader title="Staff Picks" />
-      {staffPicks.length === 0 ? (
+      {staffPicks.isLoading ? (
+        <SectionLoading />
+      ) : staffPicks.isError ? (
+        <SectionError onRetry={() => staffPicks.refetch()} />
+      ) : (staffPicks.data?.data.length ?? 0) === 0 ? (
         <View style={styles.sectionPadding}>
           <EmptyState
             icon="star-outline"
             title="No Staff Picks Yet"
-            body="Our hand-picked collection of cozy designs will appear here soon. Keep checking back!"
-            actionLabel="Refresh List"
-            onAction={handleRefreshCatalog}
-            actionVariant="rose"
+            body="Our hand-picked collection of cozy designs will appear here soon."
           />
         </View>
       ) : (
-        null // Will render pattern list when API is integrated
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.horizontalScroll}
+        >
+          {staffPicks.data?.data.map((pattern) => (
+            <ServerPatternCard
+              key={pattern.id}
+              pattern={pattern}
+              onPress={() => handleSelectPattern(pattern.id)}
+            />
+          ))}
+        </ScrollView>
       )}
 
-      {/* New Section */}
+      {/* Categories */}
+      <SectionHeader title="Categories" />
+      {categories.isLoading ? (
+        <SectionLoading />
+      ) : categories.isError ? (
+        <SectionError onRetry={() => categories.refetch()} />
+      ) : (
+        <View style={styles.categoryGrid}>
+          {categories.data?.data.map((category) => (
+            <Card
+              key={category.code}
+              style={styles.categoryCard}
+              onPress={() =>
+                router.push(
+                  `/(tabs)/(catalog)/browse?category=${category.code}&title=${encodeURIComponent(category.label)}`,
+                )
+              }
+            >
+              <Text style={styles.categoryName} numberOfLines={1}>
+                {category.label}
+              </Text>
+              <Text style={styles.categoryCount}>{category.count} patterns</Text>
+            </Card>
+          ))}
+        </View>
+      )}
+
+      {/* Tag chips */}
+      {(tags.data?.data.length ?? 0) > 0 && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.tagRow}
+        >
+          {tags.data?.data.map((tag) => (
+            <Pressable
+              key={tag.code}
+              style={({ pressed }) => [styles.tagChip, pressed && styles.tagChipPressed]}
+              onPress={() =>
+                router.push(
+                  `/(tabs)/(catalog)/browse?tag=${tag.code}&title=${encodeURIComponent(tag.label)}`,
+                )
+              }
+            >
+              <Text style={styles.tagChipText}>#{tag.label}</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      )}
+
+      {/* New Patterns */}
       <SectionHeader title="New Patterns" />
-      {newPatterns.length === 0 ? (
+      {newPatterns.isLoading ? (
+        <SectionLoading />
+      ) : newPatterns.isError ? (
+        <SectionError onRetry={() => newPatterns.refetch()} />
+      ) : newItems.length === 0 ? (
         <View style={styles.sectionPadding}>
           <EmptyState
             icon="time-outline"
             title="New Patterns are Crafting"
-            body="Our artists are hard at work designing new cross-stitch patterns. Fresh arrivals are on the way!"
-            actionLabel="Refresh List"
-            onAction={handleRefreshCatalog}
-            actionVariant="sage"
+            body="Fresh arrivals are on the way!"
           />
         </View>
       ) : (
-        null // Will render pattern list when API is integrated
-      )}
-
-      {/* Categories Section */}
-      <SectionHeader title="Categories" />
-      {categories.length === 0 ? (
         <View style={styles.sectionPadding}>
-          <EmptyState
-            icon="grid-outline"
-            title="No Categories Available"
-            body="Categories like Animals, Cozy Home, Flowers, and Retro Gaming will be loaded once available."
-            actionLabel="Browse All"
-            onAction={handleBrowseCategories}
-            actionVariant="honey"
-          />
+          {newItems.map((pattern) => (
+            <NewPatternRow
+              key={pattern.id}
+              pattern={pattern}
+              onPress={() => handleSelectPattern(pattern.id)}
+            />
+          ))}
+          {newPatterns.hasNextPage && (
+            <Button
+              title={newPatterns.isFetchingNextPage ? 'Loading…' : 'Show more'}
+              variant="secondary"
+              loading={newPatterns.isFetchingNextPage}
+              onPress={() => {
+                void newPatterns.fetchNextPage();
+              }}
+              style={styles.showMoreButton}
+            />
+          )}
         </View>
-      ) : (
-        null // Will render categories grid when API is integrated
       )}
     </Screen>
+  );
+}
+
+function ServerPatternCard({
+  pattern,
+  onPress,
+}: {
+  pattern: CatalogPatternItem;
+  onPress: () => void;
+}) {
+  return (
+    <Card style={styles.patternCard} onPress={onPress}>
+      <CachedImage uri={absolutePreviewUrl(pattern.previewUrl)} style={styles.patternImage} />
+      <View style={styles.patternDetails}>
+        <Text style={styles.patternTitle} numberOfLines={1}>
+          {pattern.title}
+        </Text>
+        <Text style={styles.patternMeta}>
+          {pattern.width}×{pattern.height} • {pattern.paletteSize} colors
+        </Text>
+      </View>
+    </Card>
+  );
+}
+
+function NewPatternRow({
+  pattern,
+  onPress,
+}: {
+  pattern: CatalogPatternItem;
+  onPress: () => void;
+}) {
+  return (
+    <Card style={styles.newRow} onPress={onPress}>
+      <CachedImage uri={absolutePreviewUrl(pattern.previewUrl)} style={styles.newRowImage} />
+      <View style={styles.newRowDetails}>
+        <Text style={styles.patternTitle} numberOfLines={1}>
+          {pattern.title}
+        </Text>
+        <Text style={styles.patternMeta}>
+          {pattern.creatorName} • {pattern.width}×{pattern.height}
+        </Text>
+        <View style={styles.newRowTags}>
+          {pattern.tags.slice(0, 3).map((tag) => (
+            <Text key={tag.code} style={styles.newRowTag}>
+              #{tag.label}
+            </Text>
+          ))}
+        </View>
+      </View>
+    </Card>
+  );
+}
+
+function SectionLoading() {
+  return (
+    <View style={styles.sectionLoading}>
+      <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
+    </View>
+  );
+}
+
+function SectionError({ onRetry }: { onRetry: () => void }) {
+  return (
+    <View style={styles.sectionPadding}>
+      <EmptyState
+        icon="cloud-offline-outline"
+        title="Couldn't Load"
+        body="The catalog could not be reached and nothing is cached yet."
+        actionLabel="Try Again"
+        onAction={onRetry}
+        actionVariant="secondary"
+      />
+    </View>
   );
 }
 
@@ -123,7 +283,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: Theme.spacing.lg,
-    marginBottom: Theme.spacing.lg,
+    marginBottom: Theme.spacing.md,
   },
   appName: {
     fontSize: Theme.typography.sizes.xxxl,
@@ -136,7 +296,40 @@ const styles = StyleSheet.create({
     color: Theme.colors.textSecondary,
     marginTop: Theme.spacing.xs,
   },
-  starterScrollContainer: {
+  searchBar: {
+    marginHorizontal: Theme.spacing.lg,
+    marginBottom: Theme.spacing.md,
+    paddingVertical: Theme.spacing.md,
+    paddingHorizontal: Theme.spacing.lg,
+    backgroundColor: Theme.colors.card,
+    borderRadius: Theme.radii.full,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+  },
+  searchBarPressed: {
+    opacity: 0.7,
+  },
+  searchBarText: {
+    fontSize: Theme.typography.sizes.sm,
+    color: Theme.colors.textSecondary,
+  },
+  offlineBanner: {
+    marginHorizontal: Theme.spacing.lg,
+    marginBottom: Theme.spacing.md,
+    paddingVertical: Theme.spacing.sm,
+    paddingHorizontal: Theme.spacing.md,
+    backgroundColor: Theme.colors.overlayPressed,
+    borderRadius: Theme.radii.md,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+  },
+  offlineBannerText: {
+    fontSize: Theme.typography.sizes.xs,
+    fontWeight: Theme.typography.weights.semibold,
+    color: Theme.colors.textSecondary,
+    textAlign: 'center',
+  },
+  horizontalScroll: {
     paddingHorizontal: Theme.spacing.lg,
     paddingBottom: Theme.spacing.md,
     gap: Theme.spacing.md,
@@ -149,7 +342,7 @@ const styles = StyleSheet.create({
     width: 144,
     height: 144,
     borderRadius: Theme.radii.md,
-    backgroundColor: '#FAF6F0',
+    backgroundColor: Theme.colors.background,
     borderWidth: 1,
     borderColor: Theme.colors.border,
   },
@@ -166,22 +359,84 @@ const styles = StyleSheet.create({
     color: Theme.colors.textSecondary,
     marginTop: Theme.spacing.xs,
   },
-  badge: {
-    alignSelf: 'flex-start',
-    backgroundColor: Theme.colors.overlayPressed,
-    paddingHorizontal: Theme.spacing.sm,
-    paddingVertical: 2,
-    borderRadius: Theme.radii.full,
-    marginTop: Theme.spacing.sm,
-  },
-  badgeText: {
-    fontSize: Theme.typography.sizes.xs - 2,
-    fontWeight: Theme.typography.weights.bold,
-    color: Theme.colors.accentTeal,
-  },
   sectionPadding: {
     paddingHorizontal: Theme.spacing.lg,
     marginBottom: Theme.spacing.md,
   },
+  sectionLoading: {
+    paddingVertical: Theme.spacing.xl,
+    alignItems: 'center',
+  },
+  categoryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: Theme.spacing.lg,
+    gap: Theme.spacing.sm,
+    marginBottom: Theme.spacing.md,
+  },
+  categoryCard: {
+    width: '47%',
+    padding: Theme.spacing.md,
+  },
+  categoryName: {
+    fontSize: Theme.typography.sizes.sm,
+    fontWeight: Theme.typography.weights.semibold,
+    color: Theme.colors.textPrimary,
+  },
+  categoryCount: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.textSecondary,
+    marginTop: Theme.spacing.xs,
+  },
+  tagRow: {
+    paddingHorizontal: Theme.spacing.lg,
+    gap: Theme.spacing.sm,
+    paddingBottom: Theme.spacing.md,
+  },
+  tagChip: {
+    paddingVertical: Theme.spacing.xs,
+    paddingHorizontal: Theme.spacing.md,
+    backgroundColor: Theme.colors.card,
+    borderRadius: Theme.radii.full,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+  },
+  tagChipPressed: {
+    opacity: 0.7,
+  },
+  tagChipText: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.accentTeal,
+    fontWeight: Theme.typography.weights.medium,
+  },
+  newRow: {
+    flexDirection: 'row',
+    padding: Theme.spacing.sm,
+    marginBottom: Theme.spacing.sm,
+  },
+  newRowImage: {
+    width: 72,
+    height: 72,
+    borderRadius: Theme.radii.md,
+    backgroundColor: Theme.colors.background,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+  },
+  newRowDetails: {
+    flex: 1,
+    marginLeft: Theme.spacing.md,
+    justifyContent: 'center',
+  },
+  newRowTags: {
+    flexDirection: 'row',
+    gap: Theme.spacing.sm,
+    marginTop: Theme.spacing.xs,
+  },
+  newRowTag: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.accentTeal,
+  },
+  showMoreButton: {
+    marginTop: Theme.spacing.sm,
+  },
 });
-
