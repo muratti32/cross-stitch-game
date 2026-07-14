@@ -2,6 +2,7 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import { WorkerAppModule } from './app.worker.module';
+import { EmailAuthWorkerRuntimeService } from './auth';
 import { JobsWorkerRuntimeService } from './jobs';
 
 async function bootstrap(): Promise<void> {
@@ -12,6 +13,7 @@ async function bootstrap(): Promise<void> {
 
     const runtime = app.get(JobsWorkerRuntimeService);
     await runtime.start();
+    app.get(EmailAuthWorkerRuntimeService).start();
 
     Logger.log('Backend worker started', 'WorkerBootstrap');
   } catch (error: unknown) {

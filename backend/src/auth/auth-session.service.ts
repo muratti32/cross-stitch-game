@@ -23,10 +23,21 @@ export class AuthSessionService {
   ) {}
 
   async issueForGuest(guestId: string): Promise<AuthTokenPair> {
+    return this.issue(PrincipalType.Guest, guestId);
+  }
+
+  async issueForAccount(accountId: string): Promise<AuthTokenPair> {
+    return this.issue(PrincipalType.Account, accountId);
+  }
+
+  private async issue(
+    principalType: PrincipalType,
+    principalId: string,
+  ): Promise<AuthTokenPair> {
     const principal: AuthPrincipal = {
-      id: guestId,
+      id: principalId,
       tokenVersion: ACCESS_TOKEN_VERSION,
-      type: PrincipalType.Guest,
+      type: principalType,
     };
     const refreshToken = this.hashing.generateOpaqueRefreshToken();
     const tokenHash = this.hashing.hashOpaqueToken(refreshToken);

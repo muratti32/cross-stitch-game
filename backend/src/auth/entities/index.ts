@@ -1,5 +1,9 @@
+export { AuthIdentityEntity } from './auth-identity.entity';
+export { EmailVerificationCodeEntity } from './email-verification-code.entity';
 export { GuestInstallationEntity } from './guest-installation.entity';
 export { GuestInstallationStatus } from './guest-installation-status.enum';
 export { PrincipalType } from './principal-type.enum';
+export { RegisteredAccountEntity } from './registered-account.entity';
+export { RegisteredAccountStatus } from './registered-account-status.enum';
 export { RefreshTokenEntity } from './refresh-token.entity';
 export { RefreshTokenStatus } from './refresh-token-status.enum';

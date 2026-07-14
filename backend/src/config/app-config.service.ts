@@ -52,4 +52,42 @@ export class AppConfigService {
     }
     return secret;
   }
+
+  get resendApiKey(): string | undefined {
+    return this.configService.get('RESEND_API_KEY', { infer: true });
+  }
+
+  get otpSigningSecret(): string {
+    const secret = this.configService.get('OTP_SIGNING_SECRET', {
+      infer: true,
+    });
+    if (secret === undefined) {
+      throw new Error('OTP_SIGNING_SECRET is required for email authentication');
+    }
+    return secret;
+  }
+
+  get emailFromAddress(): string {
+    return this.configService.get('EMAIL_FROM_ADDRESS', { infer: true });
+  }
+
+  get emailOtpTtlSeconds(): number {
+    return this.configService.get('EMAIL_OTP_TTL_SECONDS', { infer: true });
+  }
+
+  get emailOtpMaxAttempts(): number {
+    return this.configService.get('EMAIL_OTP_MAX_ATTEMPTS', { infer: true });
+  }
+
+  get emailOtpRateLimitPerEmail(): number {
+    return this.configService.get('EMAIL_OTP_RATE_LIMIT_PER_EMAIL', {
+      infer: true,
+    });
+  }
+
+  get emailOtpRateLimitPerIp(): number {
+    return this.configService.get('EMAIL_OTP_RATE_LIMIT_PER_IP', {
+      infer: true,
+    });
+  }
 }

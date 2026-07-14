@@ -22,6 +22,10 @@ export interface GuestAuthResponse extends AuthTokenPair {
   guestId: string;
 }
 
+export interface AccountAuthResponse extends AuthTokenPair {
+  accountId: string;
+}
+
 export interface AuthenticatedRequest {
   headers: {
     authorization?: string | readonly string[];

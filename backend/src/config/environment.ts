@@ -8,12 +8,23 @@ export type EnvironmentVariables = {
   STORAGE_LOCAL_DIR: string;
   GRANT_TTL_SECONDS: number;
   GRANT_SIGNING_SECRET: string | undefined;
+  RESEND_API_KEY: string | undefined;
+  OTP_SIGNING_SECRET: string | undefined;
+  EMAIL_FROM_ADDRESS: string;
+  EMAIL_OTP_TTL_SECONDS: number;
+  EMAIL_OTP_MAX_ATTEMPTS: number;
+  EMAIL_OTP_RATE_LIMIT_PER_EMAIL: number;
+  EMAIL_OTP_RATE_LIMIT_PER_IP: number;
 };
 
 const DATABASE_PROTOCOLS = new Set(['postgres:', 'postgresql:']);
 const DEFAULT_JWT_ACCESS_TTL_SECONDS = 900;
 const DEFAULT_REFRESH_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60;
 const DEFAULT_GRANT_TTL_SECONDS = 300;
+const DEFAULT_EMAIL_OTP_TTL_SECONDS = 600;
+const DEFAULT_EMAIL_OTP_MAX_ATTEMPTS = 5;
+const DEFAULT_EMAIL_OTP_RATE_LIMIT_PER_EMAIL = 5;
+const DEFAULT_EMAIL_OTP_RATE_LIMIT_PER_IP = 20;
 const REDIS_PROTOCOLS = new Set(['redis:', 'rediss:']);
 
 function parseUrl(
@@ -105,6 +116,13 @@ function parseDurationSeconds(
   return duration;
 }
 
+function parseRequiredString(value: unknown, variableName: string): string {
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    throw new Error(`${variableName} is required`);
+  }
+  return value.trim();
+}
+
 export function parseEnvironment(
   environment: Record<string, unknown>,
 ): EnvironmentVariables {
@@ -140,6 +158,38 @@ export function parseEnvironment(
     GRANT_SIGNING_SECRET: parseOptionalSecret(
       environment.GRANT_SIGNING_SECRET,
       'GRANT_SIGNING_SECRET',
+    ),
+    RESEND_API_KEY: parseOptionalSecret(
+      environment.RESEND_API_KEY,
+      'RESEND_API_KEY',
+    ),
+    OTP_SIGNING_SECRET: parseOptionalSecret(
+      environment.OTP_SIGNING_SECRET,
+      'OTP_SIGNING_SECRET',
+    ),
+    EMAIL_FROM_ADDRESS: parseRequiredString(
+      environment.EMAIL_FROM_ADDRESS,
+      'EMAIL_FROM_ADDRESS',
+    ),
+    EMAIL_OTP_TTL_SECONDS: parseDurationSeconds(
+      environment.EMAIL_OTP_TTL_SECONDS,
+      'EMAIL_OTP_TTL_SECONDS',
+      DEFAULT_EMAIL_OTP_TTL_SECONDS,
+    ),
+    EMAIL_OTP_MAX_ATTEMPTS: parseDurationSeconds(
+      environment.EMAIL_OTP_MAX_ATTEMPTS,
+      'EMAIL_OTP_MAX_ATTEMPTS',
+      DEFAULT_EMAIL_OTP_MAX_ATTEMPTS,
+    ),
+    EMAIL_OTP_RATE_LIMIT_PER_EMAIL: parseDurationSeconds(
+      environment.EMAIL_OTP_RATE_LIMIT_PER_EMAIL,
+      'EMAIL_OTP_RATE_LIMIT_PER_EMAIL',
+      DEFAULT_EMAIL_OTP_RATE_LIMIT_PER_EMAIL,
+    ),
+    EMAIL_OTP_RATE_LIMIT_PER_IP: parseDurationSeconds(
+      environment.EMAIL_OTP_RATE_LIMIT_PER_IP,
+      'EMAIL_OTP_RATE_LIMIT_PER_IP',
+      DEFAULT_EMAIL_OTP_RATE_LIMIT_PER_IP,
     ),
   };
 }

@@ -230,18 +230,29 @@ export class RefreshTokensRepository {
     principalType: PrincipalType,
     principalId: string,
   ): Promise<boolean> {
-    if (principalType !== PrincipalType.Guest) {
-      return false;
+    if (principalType === PrincipalType.Guest) {
+      const rows = await manager.query<readonly { id: string }[]>(
+        `SELECT id
+         FROM auth.guest_installations
+         WHERE id = $1 AND status = $2
+         FOR SHARE`,
+        [principalId, GuestInstallationStatus.Active],
+      );
+      return rows.length === 1;
     }
 
-    const rows = await manager.query<readonly { id: string }[]>(
-      `SELECT id
-       FROM auth.guest_installations
-       WHERE id = $1 AND status = $2
-       FOR SHARE`,
-      [principalId, GuestInstallationStatus.Active],
-    );
-    return rows.length === 1;
+    if (principalType === PrincipalType.Account) {
+      const rows = await manager.query<readonly { id: string }[]>(
+        `SELECT id
+         FROM auth.registered_accounts
+         WHERE id = $1 AND status = 'active'
+         FOR SHARE`,
+        [principalId],
+      );
+      return rows.length === 1;
+    }
+
+    return false;
   }
 
   private async revokeFamily(

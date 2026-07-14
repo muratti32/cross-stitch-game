@@ -28,3 +28,6 @@ export {
   RefreshTokenPrincipal,
   RefreshTokensRepository,
 } from './refresh-tokens.repository';
+export { EmailAuthModule } from './email-auth.module';
+export { EmailAuthWorkerModule } from './email-auth-worker.module';
+export { EmailAuthWorkerRuntimeService } from './email-auth-worker-runtime.service';

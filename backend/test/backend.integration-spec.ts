@@ -13,7 +13,7 @@ import {
   GenericContainer,
   StartedTestContainer,
 } from 'testcontainers';
-import { DataSource } from 'typeorm';
+import { DataSource, IsNull } from 'typeorm';
 
 import { configureApi } from '../src/api/configure-api';
 import { CatalogService } from '../src/catalog/catalog.service';
@@ -22,12 +22,17 @@ import { LocalObjectStorage } from '../src/catalog/storage/local-object-storage'
 import { SessionsService } from '../src/sessions/sessions.service';
 import { StorageReconcilerService } from '../src/sessions/storage-reconciler.service';
 import {
+  AuthIdentityEntity,
+  EmailVerificationCodeEntity,
   GuestInstallationEntity,
   GuestInstallationStatus,
   PrincipalType,
   RefreshTokenEntity,
   RefreshTokenStatus,
 } from '../src/auth/entities';
+import { EmailOutboxDispatcherService } from '../src/auth/email-outbox-dispatcher.service';
+import { EmailOutboxEntity } from '../src/auth/email-outbox.entity';
+import { LocalEmailSender } from '../src/auth/local-email-sender';
 import { ACCESS_TOKEN_VERSION } from '../src/auth/auth.constants';
 import { createTypeOrmOptions } from '../src/database/typeorm-options';
 import { JobOutboxEntity } from '../src/jobs/entities/job-outbox.entity';
@@ -57,6 +62,8 @@ describe('Stitch Wish backend integration', () => {
   let dispatcher: OutboxDispatcherService;
   let queue: DemoJobsQueueService;
   let consumer: DemoJobConsumerService;
+  let emailDispatcher: EmailOutboxDispatcherService;
+  let localEmailSender: LocalEmailSender;
 
   const originalDatabaseUrl = process.env.DATABASE_URL;
   const originalJwtAccessTtlSeconds = process.env.JWT_ACCESS_TTL_SECONDS;
@@ -65,6 +72,9 @@ describe('Stitch Wish backend integration', () => {
   const originalRefreshTokenTtlSeconds =
     process.env.REFRESH_TOKEN_TTL_SECONDS;
   const originalPort = process.env.PORT;
+  const originalOtpSigningSecret = process.env.OTP_SIGNING_SECRET;
+  const originalEmailFromAddress = process.env.EMAIL_FROM_ADDRESS;
+  const originalResendApiKey = process.env.RESEND_API_KEY;
 
   beforeAll(async () => {
     postgres = await new PostgreSqlContainer('postgres:16-alpine')
@@ -88,6 +98,10 @@ describe('Stitch Wish backend integration', () => {
     process.env.REDIS_URL = `redis://${redis.getHost()}:${redis.getMappedPort(6379)}`;
     process.env.REFRESH_TOKEN_TTL_SECONDS = '3600';
     process.env.PORT = '3000';
+    process.env.OTP_SIGNING_SECRET =
+      'integration-test-only-otp-signing-secret-at-least-32-chars';
+    process.env.EMAIL_FROM_ADDRESS = 'integration@example.test';
+    delete process.env.RESEND_API_KEY;
 
     migrationDataSource = new DataSource(
       createTypeOrmOptions(process.env.DATABASE_URL),
@@ -115,6 +129,8 @@ describe('Stitch Wish backend integration', () => {
     dispatcher = app.get(jobs.OutboxDispatcherService);
     queue = app.get(jobs.DemoJobsQueueService);
     consumer = app.get(jobs.DemoJobConsumerService);
+    emailDispatcher = app.get(EmailOutboxDispatcherService);
+    localEmailSender = app.get(LocalEmailSender);
     await queue.waitUntilReady();
   });
 
@@ -141,6 +157,9 @@ describe('Stitch Wish backend integration', () => {
       originalRefreshTokenTtlSeconds,
     );
     restoreEnvironment('PORT', originalPort);
+    restoreEnvironment('OTP_SIGNING_SECRET', originalOtpSigningSecret);
+    restoreEnvironment('EMAIL_FROM_ADDRESS', originalEmailFromAddress);
+    restoreEnvironment('RESEND_API_KEY', originalResendApiKey);
 
     const cleanupFailure = [...applicationCleanup, ...containerCleanup].find(
       (result) => result.status === 'rejected',
@@ -313,6 +332,132 @@ describe('Stitch Wish backend integration', () => {
       .post('/v1/auth/refresh')
       .send({ refreshToken: created.refreshToken })
       .expect(401);
+  });
+
+  describe('email authentication', () => {
+    it('requests, verifies, opens an account, and issues an account session', async () => {
+      const email = 'email-happy@example.test';
+      await requestEmailOtp(httpServer, email);
+      const code = await dispatchAndReadEmailOtp(email);
+
+      const verified = await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send({ code, email })
+        .expect(200);
+      const response = readRecord(verified.body, 'accountId');
+      expect(typeof response).toBe('string');
+      expect(readStringRecord(verified.body, 'accessToken')).toEqual(expect.any(String));
+      expect(readStringRecord(verified.body, 'refreshToken')).toEqual(expect.any(String));
+
+      const identity = await dataSource
+        .getRepository(AuthIdentityEntity)
+        .findOneByOrFail({ email, provider: 'email' });
+      expect(identity.accountId).toBe(response);
+    });
+
+    it('returns an identical opaque request response for existing and new email addresses', async () => {
+      const existing = 'email-existing@example.test';
+      await requestEmailOtp(httpServer, existing);
+      const existingCode = await dispatchAndReadEmailOtp(existing);
+      await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send({ code: existingCode, email: existing })
+        .expect(200);
+
+      const [existingResponse, newResponse] = await Promise.all([
+        request(httpServer).post('/v1/auth/email/request').send({ email: existing }),
+        request(httpServer)
+          .post('/v1/auth/email/request')
+          .send({ email: 'email-new@example.test' }),
+      ]);
+      expect(existingResponse.status).toBe(202);
+      expect(newResponse.status).toBe(202);
+      expect(existingResponse.body).toEqual({ status: 'sent' });
+      expect(newResponse.body).toEqual(existingResponse.body);
+    });
+
+    it('rejects a consumed code and an expired code', async () => {
+      const consumedEmail = 'email-consumed@example.test';
+      await requestEmailOtp(httpServer, consumedEmail);
+      const consumedCode = await dispatchAndReadEmailOtp(consumedEmail);
+      await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send({ code: consumedCode, email: consumedEmail })
+        .expect(200);
+      await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send({ code: consumedCode, email: consumedEmail })
+        .expect(401);
+
+      const expiredEmail = 'email-expired@example.test';
+      await requestEmailOtp(httpServer, expiredEmail);
+      const expiredCode = await dispatchAndReadEmailOtp(expiredEmail);
+      await dataSource.getRepository(EmailVerificationCodeEntity).update(
+        { email: expiredEmail },
+        { expiresAt: new Date(Date.now() - 1_000) },
+      );
+      await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send({ code: expiredCode, email: expiredEmail })
+        .expect(401);
+    });
+
+    it('supersedes a previous request and re-dispatches the same outbox code', async () => {
+      const email = 'email-supersede@example.test';
+      await requestEmailOtp(httpServer, email);
+      const firstCode = await dispatchAndReadEmailOtp(email);
+      await requestEmailOtp(httpServer, email);
+      const secondCode = await dispatchAndReadEmailOtp(email);
+      expect(secondCode).not.toBe(firstCode);
+      await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send({ code: firstCode, email })
+        .expect(401);
+      await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send({ code: secondCode, email })
+        .expect(200);
+
+      const outbox = await dataSource
+        .getRepository(EmailOutboxEntity)
+        .findOneByOrFail({ toEmail: email });
+      await dataSource.getRepository(EmailOutboxEntity).update(
+        { id: outbox.id },
+        { dispatchedAt: null },
+      );
+      const beforeRedelivery = localEmailSender.getDeliveries().length;
+      await emailDispatcher.dispatchOnce();
+      const redelivered = localEmailSender.getDeliveries()[beforeRedelivery];
+      expect(redelivered?.code).toBe(firstCode);
+      const activeCodes = await dataSource
+        .getRepository(EmailVerificationCodeEntity)
+        .countBy({ email, consumedAt: IsNull(), supersededAt: IsNull() });
+      expect(activeCodes).toBe(0);
+    });
+
+    async function requestEmailOtp(server: Server, email: string): Promise<void> {
+      await request(server)
+        .post('/v1/auth/email/request')
+        .send({ email })
+        .expect(202)
+        .expect({ status: 'sent' });
+    }
+
+    async function dispatchAndReadEmailOtp(email: string): Promise<string> {
+      const deliveryCount = localEmailSender.getDeliveries().length;
+      await emailDispatcher.dispatchOnce();
+      // A single dispatch may also flush unrelated rows left undispatched by
+      // earlier tests, so select the newest delivery for this exact address.
+      const delivery = localEmailSender
+        .getDeliveries()
+        .slice(deliveryCount)
+        .reverse()
+        .find((candidate) => candidate.toEmail === email);
+      if (delivery === undefined) {
+        throw new Error('Email OTP delivery was not recorded');
+      }
+      return delivery.code;
+    }
   });
 
   it('rejects refresh and revokes the family for an inactive guest', async () => {

@@ -2,8 +2,12 @@ import type { DataSourceOptions } from 'typeorm';
 
 import {
   GuestInstallationEntity,
+  AuthIdentityEntity,
+  EmailVerificationCodeEntity,
   RefreshTokenEntity,
+  RegisteredAccountEntity,
 } from '../auth/entities';
+import { EmailOutboxEntity } from '../auth/email-outbox.entity';
 import {
   PatternEntity,
   TagEntity,
@@ -20,6 +24,7 @@ import { CreateAuthSchema1783987200000 } from './migrations/1783987200000-Create
 import { CreateJobsSchema1783900800000 } from './migrations/1783900800000-CreateJobsSchema';
 import { CreateCatalogSchema1784073600000 } from './migrations/1784073600000-CreateCatalogSchema';
 import { CreateSessionsSchema1784160000000 } from './migrations/1784160000000-CreateSessionsSchema';
+import { CreateEmailAuthSchema1784160000001 } from './migrations/1784160000001-CreateEmailAuthSchema';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -27,7 +32,11 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       ProcessingJobEntity,
       JobOutboxEntity,
       GuestInstallationEntity,
+      RegisteredAccountEntity,
+      AuthIdentityEntity,
+      EmailVerificationCodeEntity,
       RefreshTokenEntity,
+      EmailOutboxEntity,
       PatternEntity,
       TagEntity,
       TagLabelEntity,
@@ -41,6 +50,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateAuthSchema1783987200000,
       CreateCatalogSchema1784073600000,
       CreateSessionsSchema1784160000000,
+      CreateEmailAuthSchema1784160000001,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',
