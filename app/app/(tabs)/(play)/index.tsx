@@ -3,18 +3,31 @@ import { StyleSheet, View, Text, Image, FlatList, ActivityIndicator } from 'reac
 import { Screen, EmptyState, Card, Button } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { getSessions, deleteSession, StitchingSession } from '@/local-db';
+import { getSessions, deleteSession, getSessionCompletedCount, StitchingSession } from '@/local-db';
 import { BUNDLED_PATTERNS } from '@/bundled-patterns';
 
 export default function PlayScreen() {
   const router = useRouter();
-  const [sessions, setSessions] = useState<StitchingSession[]>([]);
+  const [sessions, setSessions] = useState<(StitchingSession & { progress: number })[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadSessionsList = async () => {
     try {
       const data = await getSessions();
-      setSessions(data);
+      const sessionsWithProgress = await Promise.all(
+        data.map(async (sess) => {
+          const pattern = BUNDLED_PATTERNS.find((p) => p.id === sess.patternId);
+          if (!pattern) return { ...sess, progress: 0 };
+          const completedCount = await getSessionCompletedCount(sess.id, pattern.width, pattern.height);
+          const totalCount = pattern.cellsCount || (pattern.width * pattern.height);
+          const progress = totalCount > 0 ? Math.floor((completedCount / totalCount) * 100) : 0;
+          return {
+            ...sess,
+            progress,
+          };
+        })
+      );
+      setSessions(sessionsWithProgress);
     } catch (err) {
       console.error('Failed to load stitching sessions:', err);
     } finally {
@@ -46,7 +59,7 @@ export default function PlayScreen() {
     }
   };
 
-  const renderSessionItem = ({ item }: { item: StitchingSession }) => {
+  const renderSessionItem = ({ item }: { item: StitchingSession & { progress: number } }) => {
     const pattern = BUNDLED_PATTERNS.find((p) => p.id === item.patternId);
 
     if (!pattern) {
@@ -74,9 +87,19 @@ export default function PlayScreen() {
             <Text style={styles.sessionTitle} numberOfLines={1}>
               {pattern.title}
             </Text>
-            <View style={styles.readyBadge}>
-              <Text style={styles.readyBadgeText}>Ready</Text>
-            </View>
+            {item.status === 'completed' ? (
+              <View style={[styles.readyBadge, { backgroundColor: 'rgba(122, 154, 130, 0.15)' }]}>
+                <Text style={[styles.readyBadgeText, { color: Theme.colors.accentSage }]}>Done</Text>
+              </View>
+            ) : item.status === 'active' ? (
+              <View style={[styles.readyBadge, { backgroundColor: 'rgba(56, 178, 172, 0.15)' }]}>
+                <Text style={[styles.readyBadgeText, { color: Theme.colors.accentTeal }]}>Active</Text>
+              </View>
+            ) : (
+              <View style={styles.readyBadge}>
+                <Text style={styles.readyBadgeText}>Ready</Text>
+              </View>
+            )}
           </View>
 
           <Text style={styles.sessionMeta}>
@@ -86,17 +109,17 @@ export default function PlayScreen() {
           {/* Progress bar */}
           <View style={styles.progressContainer}>
             <View style={styles.progressBarBg}>
-              <View style={[styles.progressBarFill, { width: '0%' }]} />
+              <View style={[styles.progressBarFill, { width: `${item.progress}%` }]} />
             </View>
-            <Text style={styles.progressText}>0%</Text>
+            <Text style={styles.progressText}>{item.progress}%</Text>
           </View>
         </View>
 
         <View style={styles.actionColumn}>
           <Button
-            title="Open"
+            title={item.status === 'completed' ? 'View' : 'Open'}
             onPress={() => handleOpenSession(item.id)}
-            variant="sage"
+            variant={item.status === 'completed' ? 'secondary' : 'sage'}
             style={styles.openBtn}
           />
           <Button

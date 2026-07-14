@@ -156,37 +156,8 @@ export function useRendererGesture({
       });
     });
 
-  const doubleTapGesture = Gesture.Tap()
-    .numberOfTaps(2)
-    .onEnd((event) => {
-      const curScale = scale.value;
-      // If already zoomed in, zoom out to fit. Otherwise, zoom in to 2.5x (cell-readable)
-      const targetScale = curScale > minScale.value * 1.5 ? minScale.value : Math.min(2.5, maxScale);
-
-      const anchorX = event.x;
-      const anchorY = event.y;
-
-      const nextTx = anchorX - (anchorX - translateX.value) * (targetScale / curScale);
-      const nextTy = anchorY - (anchorY - translateY.value) * (targetScale / curScale);
-
-      scale.value = withTiming(targetScale, { duration: 250 });
-
-      // Animate clamping
-      const contentW = patternWidth * CELL_SIZE * targetScale;
-      const contentH = patternHeight * CELL_SIZE * targetScale;
-      const cW = containerWidth.value;
-      const cH = containerHeight.value;
-
-      const clampedTx = contentW <= cW ? (cW - contentW) / 2 : clamp(nextTx, cW - contentW, 0);
-      const clampedTy = contentH <= cH ? (cH - contentH) / 2 : clamp(nextTy, cH - contentH, 0);
-
-      translateX.value = withTiming(clampedTx, { duration: 250 });
-      translateY.value = withTiming(clampedTy, { duration: 250 });
-    });
-
   const singleTapGesture = Gesture.Tap()
     .numberOfTaps(1)
-    .requireExternalGestureToFail(doubleTapGesture)
     .onEnd((event) => {
       const curScale = scale.value;
       const cellPx = curScale * CELL_SIZE;
@@ -207,11 +178,8 @@ export function useRendererGesture({
       }
     });
 
-  // Compose all gestures. Tap and pan are run in parallel, tap requires failure of double tap
-  const gesture = Gesture.Exclusive(
-    doubleTapGesture,
-    Gesture.Simultaneous(singleTapGesture, Gesture.Simultaneous(pinchGesture, panGesture))
-  );
+  // Compose all gestures simultaneously so pan/pinch and tap don't delay each other
+  const gesture = Gesture.Simultaneous(singleTapGesture, pinchGesture, panGesture);
 
   return {
     scale,

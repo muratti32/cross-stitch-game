@@ -1,65 +1,83 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { StyleSheet, View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Screen, Button } from '@/components';
 import { Theme } from '@/theme/theme';
-import { getSession, StitchingSession } from '@/local-db';
-import { loadBundledPattern } from '@/bundled-patterns';
-import { PatternData } from '@/pattern-artifact';
-import { StitchRenderer, RendererState } from '@/renderer';
+import { createReplaySession } from '@/local-db';
+import { StitchRenderer } from '@/renderer';
 import { useGameplayStore } from '@/store/gameplayStore';
+import { useStitchingSession } from '@/hooks/useStitchingSession';
+import { Ionicons } from '@expo/vector-icons';
+import { BUNDLED_PATTERNS } from '@/bundled-patterns';
+import * as Haptics from 'expo-haptics';
+import Animated, { useSharedValue, useAnimatedStyle, withSequence, withTiming } from 'react-native-reanimated';
 
 export default function SessionReadyScreen() {
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const router = useRouter();
-  const [session, setSession] = useState<StitchingSession | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [patternData, setPatternData] = useState<PatternData | null>(null);
-  const [rendererState, setRendererState] = useState<RendererState | null>(null);
+  
+  const {
+    loading,
+    error,
+    session,
+    patternData,
+    rendererState,
+    remainingCounts,
+    isSessionCompleted,
+    canUndo,
+    totalCellsCount,
+    completedCellsCount,
+    stitchCell,
+    undo,
+  } = useStitchingSession(sessionId);
 
-  const { selectedColorIndex } = useGameplayStore();
+  const { selectedColorIndex, setSelectedColorIndex } = useGameplayStore();
+  const initialSelectionDone = useRef(false);
 
-  const loadSessionAndData = async () => {
-    if (!sessionId) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const activeSession = await getSession(sessionId);
-      if (!activeSession) {
-        setError('Stitching session not found.');
-        setLoading(false);
-        return;
+  // Animation values for mismatch shake feedback
+  const shakeOffset = useSharedValue(0);
+  const animatedShakeStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: shakeOffset.value }],
+  }));
+
+  // Auto-select the first incomplete color on load (once)
+  useEffect(() => {
+    if (!loading && remainingCounts.length > 0 && !initialSelectionDone.current) {
+      initialSelectionDone.current = true;
+      const firstIncompleteIdx = remainingCounts.findIndex((count) => count > 0);
+      if (firstIncompleteIdx !== -1) {
+        setSelectedColorIndex(firstIncompleteIdx);
       }
-      setSession(activeSession);
+    }
+  }, [loading, remainingCounts, setSelectedColorIndex]);
 
-      // Try decoding the pattern artifact here
-      const data = await loadBundledPattern(activeSession.patternId);
-      setPatternData(data);
-      setRendererState(new RendererState(data.width, data.height));
-    } catch (err) {
-      console.error('Failed to open stitching session:', err);
-      setError(
-        err instanceof Error ? err.message : 'Corrupted pattern artifact detected.'
+  // Handle cell taps
+  const handleCellTapped = (x: number, y: number) => {
+    if (isSessionCompleted) return; // Read-only
+
+    const success = stitchCell(x, y, selectedColorIndex);
+    if (!success) {
+      // Trigger haptic feedback + visual shake
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      shakeOffset.value = 0;
+      shakeOffset.value = withSequence(
+        withTiming(-8, { duration: 40 }),
+        withTiming(8, { duration: 40 }),
+        withTiming(-8, { duration: 40 }),
+        withTiming(8, { duration: 40 }),
+        withTiming(0, { duration: 40 })
       );
-    } finally {
-      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    loadSessionAndData();
-  }, [sessionId]);
-
-  const handleCellTapped = (x: number, y: number) => {
-    if (!patternData || !rendererState) return;
-
-    const colorIdx = patternData.grid[y * patternData.width + x];
-    // 0 = empty, 1..N = palette color index + 1
-    if (colorIdx > 0 && colorIdx - 1 === selectedColorIndex) {
-      if (!rendererState.isCompleted(x, y)) {
-        rendererState.setCompleted(x, y, true);
-      }
+  // Replay option when complete
+  const handleReplay = async () => {
+    if (!session) return;
+    try {
+      const newSession = await createReplaySession(session.id);
+      router.replace(`/(tabs)/(play)/${newSession.id}`);
+    } catch (err) {
+      console.error('Failed to create replay session:', err);
     }
   };
 
@@ -67,25 +85,23 @@ export default function SessionReadyScreen() {
     return (
       <Screen style={styles.loaderContainer}>
         <ActivityIndicator size="large" color={Theme.colors.accentTeal} />
-        <Text style={styles.loadingText}>Opening session & preparing fabric...</Text>
+        <Text style={styles.loadingText} allowFontScaling={true}>
+          Opening session & preparing fabric...
+        </Text>
       </Screen>
     );
   }
 
-  if (error || !session) {
+  if (error || !session || !patternData || !rendererState) {
     return (
       <Screen style={styles.errorContainer}>
-        <Text style={styles.errorTitle}>Session Load Failed</Text>
-        <Text style={styles.errorText}>
+        <Text style={styles.errorTitle} allowFontScaling={true}>
+          Session Load Failed
+        </Text>
+        <Text style={styles.errorText} allowFontScaling={true}>
           {error || 'Unable to load your stitching session.'}
         </Text>
         <View style={styles.errorActions}>
-          <Button
-            title="Retry Loading"
-            onPress={loadSessionAndData}
-            variant="rose"
-            style={styles.errorBtn}
-          />
           <Button
             title="Go to Table"
             onPress={() => router.navigate('/(tabs)/(play)')}
@@ -97,11 +113,20 @@ export default function SessionReadyScreen() {
     );
   }
 
-  const selectedColor = patternData ? patternData.palette[selectedColorIndex] : null;
+  const percentComplete = totalCellsCount > 0 
+    ? Math.floor((completedCellsCount / totalCellsCount) * 100) 
+    : 0;
+
+  const selectedColor = patternData.palette[selectedColorIndex];
+  
+  const bPattern = patternData && session
+    ? BUNDLED_PATTERNS.find((p) => p.id === session.patternId)
+    : null;
+  const patternTitle = bPattern?.title || 'Stitch Session';
 
   return (
     <Screen style={styles.fullscreenContainer}>
-      {/* Header Bar */}
+      {/* Progress Header Bar */}
       <View style={styles.header}>
         <Button
           variant="secondary"
@@ -110,27 +135,129 @@ export default function SessionReadyScreen() {
           style={styles.backButton}
         />
         <View style={styles.headerInfo}>
-          <Text style={styles.headerTitle} numberOfLines={1}>
-            {patternData ? `Stitching: ${patternData.palette.length} Colors` : 'Canvas'}
+          <Text style={styles.headerTitle} numberOfLines={1} allowFontScaling={true}>
+            {patternTitle}
           </Text>
-          {selectedColor && (
-            <View style={styles.colorSwatchRow}>
-              <View style={[styles.swatch, { backgroundColor: selectedColor.rgbHex }]} />
-              <Text style={styles.swatchText} numberOfLines={1}>
-                Active: DMC {selectedColor.dmcCode} ({selectedColor.name})
-              </Text>
-            </View>
-          )}
+          <Text style={styles.headerSubtitle} allowFontScaling={true}>
+            {completedCellsCount} / {totalCellsCount} cells ({percentComplete}% complete)
+          </Text>
         </View>
       </View>
 
-      {/* Skia Tile Renderer Canvas */}
-      {patternData && rendererState && (
+      {/* Skia Canvas Container */}
+      <Animated.View style={[styles.canvasWrapper, animatedShakeStyle]}>
         <StitchRenderer
           pattern={patternData}
           rendererState={rendererState}
           onCellTapped={handleCellTapped}
         />
+      </Animated.View>
+
+      {/* Floating Undo Button */}
+      {!isSessionCompleted && (
+        <Pressable
+          style={[styles.floatingUndo, !canUndo && styles.floatingUndoDisabled]}
+          onPress={() => {
+            if (canUndo) {
+              undo();
+            }
+          }}
+          disabled={!canUndo}
+          accessibilityRole="button"
+          accessibilityLabel="Undo last stitch"
+        >
+          <Ionicons
+            name="arrow-undo-outline"
+            size={24}
+            color={canUndo ? Theme.colors.textPrimary : Theme.colors.disabledText}
+          />
+        </Pressable>
+      )}
+
+      {/* Bottom Thread Palette dock */}
+      {!isSessionCompleted && (
+        <View style={styles.paletteDock}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.paletteScrollContent}
+          >
+            {patternData.palette.map((color, index) => {
+              const isSelected = index === selectedColorIndex;
+              const remaining = remainingCounts[index] ?? 0;
+              const isCompleted = remaining === 0;
+
+              return (
+                <Pressable
+                  key={index}
+                  onPress={() => setSelectedColorIndex(index)}
+                  style={[
+                    styles.paletteChip,
+                    isSelected && styles.paletteChipSelected,
+                    isCompleted && styles.paletteChipCompleted,
+                  ]}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Color ${index + 1}: DMC ${color.dmcCode}, ${remaining} stitches remaining`}
+                >
+                  <View style={[styles.chipSwatch, { backgroundColor: color.rgbHex }]}>
+                    {isCompleted && (
+                      <Ionicons name="checkmark" size={14} color="#FFF" />
+                    )}
+                  </View>
+                  <View style={styles.chipInfo}>
+                    <Text style={styles.chipNumber} allowFontScaling={true}>
+                      #{index + 1}
+                    </Text>
+                    <Text style={styles.chipCount} allowFontScaling={true}>
+                      {isCompleted ? 'Done' : `${remaining} left`}
+                    </Text>
+                  </View>
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
+
+      {/* Designed Celebration Moment Overlay */}
+      {isSessionCompleted && (
+        <View style={styles.celebrationOverlay}>
+          <View style={styles.celebrationCard}>
+            <View style={styles.celebrationBadge}>
+              <Ionicons name="sparkles" size={40} color={Theme.colors.accentSage} />
+            </View>
+            <Text style={styles.celebrationTitle} allowFontScaling={true}>
+              Beautifully Crafted!
+            </Text>
+            <Text style={styles.celebrationSubtitle} allowFontScaling={true}>
+              You have completed every single stitch on this fabric.
+            </Text>
+            <View style={styles.statsRow}>
+              <View style={styles.statBox}>
+                <Text style={styles.statVal}>{totalCellsCount}</Text>
+                <Text style={styles.statLbl}>Stitches</Text>
+              </View>
+              <View style={styles.statBox}>
+                <Text style={styles.statVal}>{patternData.palette.length}</Text>
+                <Text style={styles.statLbl}>Colors</Text>
+              </View>
+            </View>
+            <View style={styles.celebrationActions}>
+              <Button
+                title="Stitch Again"
+                onPress={handleReplay}
+                variant="sage"
+                style={styles.celebrationBtn}
+              />
+              <Button
+                title="Back to Catalog"
+                onPress={() => router.navigate('/(tabs)/(catalog)')}
+                variant="secondary"
+                style={styles.celebrationBtn}
+              />
+            </View>
+          </View>
+        </View>
       )}
     </Screen>
   );
@@ -184,6 +311,7 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.colors.card,
     borderBottomWidth: 1,
     borderBottomColor: Theme.colors.border,
+    zIndex: 10,
   },
   backButton: {
     height: 36,
@@ -199,22 +327,174 @@ const styles = StyleSheet.create({
     fontWeight: Theme.typography.weights.bold,
     color: Theme.colors.textPrimary,
   },
-  colorSwatchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 2,
-  },
-  swatch: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.1)',
-    marginRight: 6,
-  },
-  swatchText: {
+  headerSubtitle: {
     fontSize: Theme.typography.sizes.xs,
     color: Theme.colors.textSecondary,
+    marginTop: 1,
+  },
+  canvasWrapper: {
+    flex: 1,
+    zIndex: 1,
+  },
+  floatingUndo: {
+    position: 'absolute',
+    right: Theme.spacing.lg,
+    bottom: 96,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Theme.colors.card,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+    zIndex: 20,
+    // Shadow
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  floatingUndoDisabled: {
+    backgroundColor: Theme.colors.disabledBackground,
+    borderColor: 'transparent',
+    opacity: 0.5,
+  },
+  paletteDock: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: Theme.colors.card,
+    borderTopWidth: 1,
+    borderTopColor: Theme.colors.border,
+    paddingTop: Theme.spacing.sm,
+    paddingBottom: Theme.spacing.lg, // Safe area padding
+    zIndex: 20,
+  },
+  paletteScrollContent: {
+    paddingHorizontal: Theme.spacing.md,
+    gap: Theme.spacing.sm,
+    alignItems: 'center',
+  },
+  paletteChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 48, // 48pt touch target
+    minWidth: 90,
+    paddingHorizontal: Theme.spacing.sm,
+    borderRadius: 24,
+    backgroundColor: Theme.colors.disabledBackground,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  paletteChipSelected: {
+    backgroundColor: Theme.colors.card,
+    borderColor: Theme.colors.accentSage,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  paletteChipCompleted: {
+    opacity: 0.8,
+  },
+  chipSwatch: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: Theme.spacing.xs,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.1)',
+  },
+  chipInfo: {
+    justifyContent: 'center',
+  },
+  chipNumber: {
+    fontSize: Theme.typography.sizes.xs,
+    fontWeight: Theme.typography.weights.semibold,
+    color: Theme.colors.textPrimary,
+    lineHeight: 14,
+  },
+  chipCount: {
+    fontSize: 10,
+    color: Theme.colors.textSecondary,
+    lineHeight: 12,
+  },
+  celebrationOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(26, 23, 20, 0.45)', // Sleek darkened backing
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Theme.spacing.xl,
+    zIndex: 100,
+  },
+  celebrationCard: {
+    width: '100%',
+    maxWidth: 340,
+    backgroundColor: Theme.colors.card,
+    borderRadius: Theme.radii.xl,
+    padding: Theme.spacing.xl,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  celebrationBadge: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: 'rgba(122, 154, 130, 0.15)', // Sage transparent
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Theme.spacing.md,
+  },
+  celebrationTitle: {
+    fontSize: Theme.typography.sizes.lg + 2,
+    fontWeight: Theme.typography.weights.bold,
+    color: Theme.colors.textPrimary,
+    textAlign: 'center',
+    marginBottom: Theme.spacing.xs,
+  },
+  celebrationSubtitle: {
+    fontSize: Theme.typography.sizes.sm,
+    color: Theme.colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: Theme.spacing.lg,
+    paddingHorizontal: Theme.spacing.sm,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-around',
+    marginBottom: Theme.spacing.xl,
+  },
+  statBox: {
+    alignItems: 'center',
+  },
+  statVal: {
+    fontSize: Theme.typography.sizes.lg,
+    fontWeight: Theme.typography.weights.bold,
+    color: Theme.colors.accentSage,
+  },
+  statLbl: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.textSecondary,
+    marginTop: 2,
+  },
+  celebrationActions: {
+    width: '100%',
+    gap: Theme.spacing.md,
+  },
+  celebrationBtn: {
+    width: '100%',
   },
 });
-
