@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Stitch Wish",
+    "slug": "stitch-wish",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "scheme": "stitchwish",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FAF6F0"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.avk.stitchwish"
+    },
+    "android": {
+      "package": "com.avk.stitchwish",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FAF6F0"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-system-ui"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

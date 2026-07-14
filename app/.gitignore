@@ -1,0 +1,17 @@
+node_modules/
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# native build output
+ios/
+android/
+
+# env
+.env
+.env.local
+
+# misc
+.DS_Store
+*.log
