@@ -34,6 +34,32 @@ export class LocalObjectStorage implements ObjectStorage {
     }
   }
 
+  async delete(key: string): Promise<void> {
+    const filePath = path.join(this.storageDir, key);
+    try {
+      await fs.unlink(filePath);
+    } catch (error: unknown) {
+      if (
+        typeof error === 'object' &&
+        error !== null &&
+        (error as { code?: unknown }).code === 'ENOENT'
+      ) {
+        return;
+      }
+      throw error;
+    }
+  }
+
+  async exists(key: string): Promise<boolean> {
+    const filePath = path.join(this.storageDir, key);
+    try {
+      await fs.access(filePath);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   publicUrl(key: string): string {
     return `/v1/catalog-previews/${key}`;
   }

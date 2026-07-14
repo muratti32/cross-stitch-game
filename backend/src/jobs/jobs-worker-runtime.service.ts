@@ -11,11 +11,13 @@ import {
   OUTBOX_RETRY_INTERVAL_MS,
 } from './jobs.constants';
 import { OutboxDispatcherService } from './outbox-dispatcher.service';
+import { StorageReconcilerService } from '../sessions/storage-reconciler.service';
 
 @Injectable()
 export class JobsWorkerRuntimeService implements OnApplicationShutdown {
   private readonly logger = new Logger(JobsWorkerRuntimeService.name);
   private dispatchTimer: NodeJS.Timeout | null = null;
+  private reconcileTimer: NodeJS.Timeout | null = null;
   private activeDispatch: Promise<void> | null = null;
   private running = false;
 
@@ -23,6 +25,7 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     private readonly queue: DemoJobsQueueService,
     private readonly consumer: DemoJobConsumerService,
     private readonly dispatcher: OutboxDispatcherService,
+    private readonly reconciler: StorageReconcilerService,
   ) {}
 
   async start(): Promise<void> {
@@ -34,6 +37,15 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     await this.consumer.start();
     this.running = true;
     this.scheduleDispatch(0);
+
+    this.reconcileTimer = setInterval(() => {
+      this.reconciler.reconcileOnce().catch((error: unknown) => {
+        this.logger.error(
+          `Error running storage reconciler: ${error instanceof Error ? error.message : String(error)}`,
+        );
+      });
+    }, 60000);
+
     this.logger.log('Jobs worker runtime started');
   }
 
@@ -48,6 +60,10 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     if (this.dispatchTimer !== null) {
       clearTimeout(this.dispatchTimer);
       this.dispatchTimer = null;
+    }
+    if (this.reconcileTimer !== null) {
+      clearInterval(this.reconcileTimer);
+      this.reconcileTimer = null;
     }
     if (this.activeDispatch !== null) {
       await this.activeDispatch;

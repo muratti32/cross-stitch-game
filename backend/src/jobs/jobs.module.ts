@@ -11,6 +11,7 @@ import { JobsService } from './jobs.service';
 import { JobsWorkerRuntimeService } from './jobs-worker-runtime.service';
 import { OutboxDispatcherService } from './outbox-dispatcher.service';
 import { ProcessingJobsRepository } from './processing-jobs.repository';
+import { SessionsModule } from '../sessions/sessions.module';
 
 @Module({
   controllers: [JobsController],
@@ -38,7 +39,7 @@ export class JobsModule {}
     JobsWorkerRuntimeService,
     OutboxDispatcherService,
   ],
-  imports: [AppConfigModule, JobsModule],
+  imports: [AppConfigModule, JobsModule, SessionsModule],
   providers: [
     DemoJobConsumerService,
     DemoJobsQueueService,

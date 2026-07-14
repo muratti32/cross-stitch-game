@@ -35,6 +35,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e84c5981-5ec9-4f27-892b-e801f6efb845"
+      }
+    },
+    "owner": "muratti32"
   }
 }

@@ -1,10 +1,15 @@
 import React, { useState, useCallback } from 'react';
 import { StyleSheet, View, Text, Image, FlatList, ActivityIndicator } from 'react-native';
-import { Screen, EmptyState, Card, Button } from '@/components';
+import { Screen, EmptyState, Card, Button, CachedImage } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { getSessions, deleteSession, getSessionCompletedCount, StitchingSession } from '@/local-db';
 import { BUNDLED_PATTERNS } from '@/bundled-patterns';
+import {
+  cancelDownload,
+  retryDownload,
+  useDownloadProgressStore,
+} from '@/session-preparation';
 
 export default function PlayScreen() {
   const router = useRouter();
@@ -17,9 +22,13 @@ export default function PlayScreen() {
       const sessionsWithProgress = await Promise.all(
         data.map(async (sess) => {
           const pattern = BUNDLED_PATTERNS.find((p) => p.id === sess.patternId);
-          if (!pattern) return { ...sess, progress: 0 };
-          const completedCount = await getSessionCompletedCount(sess.id, pattern.width, pattern.height);
-          const totalCount = pattern.cellsCount || (pattern.width * pattern.height);
+          const width = pattern?.width ?? sess.patternWidth ?? 0;
+          const height = pattern?.height ?? sess.patternHeight ?? 0;
+          if (width === 0 || height === 0 || sess.status === 'preparing') {
+            return { ...sess, progress: 0 };
+          }
+          const completedCount = await getSessionCompletedCount(sess.id, width, height);
+          const totalCount = pattern?.cellsCount || width * height;
           const progress = totalCount > 0 ? Math.floor((completedCount / totalCount) * 100) : 0;
           return {
             ...sess,
@@ -61,8 +70,11 @@ export default function PlayScreen() {
 
   const renderSessionItem = ({ item }: { item: StitchingSession & { progress: number } }) => {
     const pattern = BUNDLED_PATTERNS.find((p) => p.id === item.patternId);
+    const displayTitle = pattern?.title ?? item.title ?? 'Pattern';
+    const displayWidth = pattern?.width ?? item.patternWidth ?? 0;
+    const displayHeight = pattern?.height ?? item.patternHeight ?? 0;
 
-    if (!pattern) {
+    if (!pattern && !item.title) {
       return (
         <Card style={styles.sessionCard}>
           <View style={styles.unknownPatternContainer}>
@@ -78,14 +90,30 @@ export default function PlayScreen() {
       );
     }
 
+    if (item.status === 'preparing') {
+      return (
+        <PreparingSessionCard
+          session={item}
+          title={displayTitle}
+          onChanged={loadSessionsList}
+        />
+      );
+    }
+
     return (
       <Card style={styles.sessionCard} onPress={() => handleOpenSession(item.id)}>
-        <Image source={pattern.previewAsset} style={styles.sessionImage} />
-        
+        {pattern ? (
+          <Image source={pattern.previewAsset} style={styles.sessionImage} />
+        ) : item.previewUrl ? (
+          <CachedImage uri={item.previewUrl} style={styles.sessionImage} />
+        ) : (
+          <View style={styles.sessionImage} />
+        )}
+
         <View style={styles.sessionInfo}>
           <View style={styles.titleRow}>
             <Text style={styles.sessionTitle} numberOfLines={1}>
-              {pattern.title}
+              {displayTitle}
             </Text>
             {item.status === 'completed' ? (
               <View style={[styles.readyBadge, { backgroundColor: 'rgba(122, 154, 130, 0.15)' }]}>
@@ -103,7 +131,8 @@ export default function PlayScreen() {
           </View>
 
           <Text style={styles.sessionMeta}>
-            {pattern.width}×{pattern.height} • {pattern.colorsCount} colors
+            {displayWidth}×{displayHeight}
+            {pattern ? ` • ${pattern.colorsCount} colors` : ''}
           </Text>
 
           {/* Progress bar */}
@@ -167,6 +196,118 @@ export default function PlayScreen() {
         )}
       </View>
     </Screen>
+  );
+}
+
+function PreparingSessionCard({
+  session,
+  title,
+  onChanged,
+}: {
+  session: StitchingSession;
+  title: string;
+  onChanged: () => void;
+}) {
+  const progress = useDownloadProgressStore(
+    (state) => state.progress[session.id] ?? 0,
+  );
+  const [busy, setBusy] = useState(false);
+  const failed = !!session.errorNote;
+
+  return (
+    <Card style={styles.sessionCard}>
+      {session.previewUrl ? (
+        <CachedImage uri={session.previewUrl} style={styles.sessionImage} />
+      ) : (
+        <View style={styles.sessionImage} />
+      )}
+
+      <View style={styles.sessionInfo}>
+        <View style={styles.titleRow}>
+          <Text style={styles.sessionTitle} numberOfLines={1}>
+            {title}
+          </Text>
+          <View
+            style={[
+              styles.readyBadge,
+              failed
+                ? { backgroundColor: 'rgba(211, 93, 93, 0.12)' }
+                : { backgroundColor: 'rgba(212, 163, 92, 0.15)' },
+            ]}
+          >
+            <Text
+              style={[
+                styles.readyBadgeText,
+                { color: failed ? Theme.colors.error : Theme.colors.accentHoney },
+              ]}
+            >
+              {failed ? 'Failed' : 'Preparing'}
+            </Text>
+          </View>
+        </View>
+
+        {failed ? (
+          <Text style={styles.preparingErrorText} numberOfLines={2}>
+            {session.errorNote}
+          </Text>
+        ) : (
+          <View style={styles.progressContainer}>
+            <View style={styles.progressBarBg}>
+              <View
+                style={[
+                  styles.progressBarFill,
+                  { width: `${Math.round(progress * 100)}%` },
+                ]}
+              />
+            </View>
+            <Text style={styles.progressText}>
+              {Math.round(progress * 100)}%
+            </Text>
+          </View>
+        )}
+      </View>
+
+      <View style={styles.actionColumn}>
+        {failed && (
+          <Button
+            title="Retry"
+            onPress={() => {
+              void (async () => {
+                setBusy(true);
+                try {
+                  await retryDownload(session.id);
+                } catch {
+                  // error note already persisted by retryDownload
+                } finally {
+                  setBusy(false);
+                  onChanged();
+                }
+              })();
+            }}
+            variant="sage"
+            loading={busy}
+            style={styles.openBtn}
+          />
+        )}
+        <Button
+          title="Cancel"
+          onPress={() => {
+            void (async () => {
+              setBusy(true);
+              try {
+                await cancelDownload(session.id);
+              } finally {
+                setBusy(false);
+                onChanged();
+              }
+            })();
+          }}
+          variant="secondary"
+          style={styles.deleteTextBtn}
+          textStyle={styles.deleteText}
+        />
+      </View>
+    </Card>
   );
 }
 
@@ -300,6 +441,11 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.xs,
     color: Theme.colors.error,
     fontWeight: Theme.typography.weights.medium,
+  },
+  preparingErrorText: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.error,
+    marginTop: Theme.spacing.xs,
   },
   unknownPatternContainer: {
     flex: 1,

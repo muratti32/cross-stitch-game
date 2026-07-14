@@ -355,6 +355,14 @@ async function run() {
       const previewPng = generatePreviewPng(item.width, item.height, item.palette, grid);
       await storage.put(previewKey, previewPng);
 
+      // Register the catalog artifact in object_registry
+      await dataSource.query(
+        `INSERT INTO "storage"."object_registry" ("object_key", "checksum", "byte_length", "state", "missing")
+         VALUES ($1, $2, $3, 'available', false)
+         ON CONFLICT ("object_key") DO UPDATE SET "checksum" = EXCLUDED."checksum", "byte_length" = EXCLUDED."byte_length", "state" = 'available', "missing" = false`,
+        [artifactKey, encoded.checksum, encoded.byteLength],
+      );
+
       // Deterministic fixed date for catalog ordering testing
       const publishedAt = new Date(Date.UTC(2026, 6, 14, 10, 0, SEED_PATTERNS.indexOf(item)));
 

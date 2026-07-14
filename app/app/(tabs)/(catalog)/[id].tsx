@@ -7,6 +7,8 @@ import { BUNDLED_PATTERNS, loadBundledPattern } from '@/bundled-patterns';
 import { PatternData } from '@/pattern-artifact';
 import { createSession } from '@/local-db';
 import { absolutePreviewUrl, useCatalogPattern } from '@/api/catalog';
+import { useIdentityStore } from '@/identity/guestIdentity';
+import { prepareCatalogSession } from '@/session-preparation';
 
 export default function PatternDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -154,6 +156,9 @@ export default function PatternDetailScreen() {
 function ServerPatternDetail({ id }: { id: string | undefined }) {
   const router = useRouter();
   const pattern = useCatalogPattern(id, true);
+  const { isAuthenticated } = useIdentityStore();
+  const [preparing, setPreparing] = useState(false);
+  const [prepareError, setPrepareError] = useState<string | null>(null);
 
   if (pattern.isLoading) {
     return (
@@ -239,13 +244,53 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
         </View>
       )}
 
-      <Card style={styles.playSoonCard}>
-        <Text style={styles.playSoonTitle}>Browsing preview</Text>
-        <Text style={styles.playSoonBody}>
-          Downloading and stitching catalog patterns arrives with the sync
-          update. Starter Patterns are playable right now.
-        </Text>
-      </Card>
+      {prepareError && (
+        <View style={styles.errorBanner}>
+          <Text style={styles.errorBannerText}>{prepareError}</Text>
+        </View>
+      )}
+
+      {isAuthenticated ? (
+        <View style={styles.actionContainer}>
+          <Button
+            title={preparing ? 'Preparing…' : 'Start Stitching'}
+            onPress={() => {
+              void (async () => {
+                try {
+                  setPreparing(true);
+                  setPrepareError(null);
+                  await prepareCatalogSession(item.id, {
+                    title: item.title,
+                    previewUrl: absolutePreviewUrl(item.previewUrl),
+                    width: item.width,
+                    height: item.height,
+                  });
+                  router.navigate('/(tabs)/(play)');
+                } catch (err) {
+                  setPrepareError(
+                    err instanceof Error
+                      ? err.message
+                      : 'Could not start preparation. Check your connection and try again.',
+                  );
+                } finally {
+                  setPreparing(false);
+                }
+              })();
+            }}
+            variant="primary"
+            loading={preparing}
+            style={styles.actionButton}
+          />
+        </View>
+      ) : (
+        <Card style={styles.playSoonCard}>
+          <Text style={styles.playSoonTitle}>Connect to play</Text>
+          <Text style={styles.playSoonBody}>
+            Starting a catalog pattern needs a connection to prepare your
+            session. Starter Patterns are playable right now, even offline.
+          </Text>
+        </Card>
+      )}
     </Screen>
   );
 }

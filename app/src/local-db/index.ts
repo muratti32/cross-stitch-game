@@ -5,12 +5,18 @@ import { getDatabaseFilename, getDatabasePath, shouldAdopt } from './namespaceLo
 export interface StitchingSession {
   id: string;
   patternId: string;
-  source: 'bundled';
+  source: 'bundled' | 'catalog';
   artifactChecksum: string;
   createdAt: string;
-  status: 'ready' | 'active' | 'completed';
+  status: 'preparing' | 'ready' | 'active' | 'completed';
   completedAt?: string | null;
   replayOf?: string | null;
+  remoteSessionId?: string | null;
+  errorNote?: string | null;
+  title?: string | null;
+  previewUrl?: string | null;
+  patternWidth?: number | null;
+  patternHeight?: number | null;
 }
 
 export interface ProgressOperation {
@@ -234,6 +240,35 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
       await db.execAsync('PRAGMA user_version = 1;');
     });
   }
+
+  if (currentVersion < 2) {
+    await db.withTransactionAsync(async () => {
+      await db.execAsync(`
+        ALTER TABLE sessions ADD COLUMN remote_session_id TEXT;
+      `);
+      await db.execAsync(`
+        ALTER TABLE sessions ADD COLUMN error_note TEXT;
+      `);
+      await db.execAsync(`
+        ALTER TABLE sessions ADD COLUMN title TEXT;
+      `);
+      await db.execAsync(`
+        ALTER TABLE sessions ADD COLUMN preview_url TEXT;
+      `);
+      await db.execAsync(`
+        ALTER TABLE sessions ADD COLUMN pattern_width INTEGER;
+      `);
+      await db.execAsync(`
+        ALTER TABLE sessions ADD COLUMN pattern_height INTEGER;
+      `);
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS pending_cancels (
+          remote_session_id TEXT PRIMARY KEY NOT NULL
+        );
+      `);
+      await db.execAsync('PRAGMA user_version = 2;');
+    });
+  }
 }
 
 /**
@@ -310,25 +345,39 @@ export async function getNextDeviceSeq(): Promise<number> {
 /**
  * Creates a new stitching session in the SQLite database.
  */
+export interface SessionPatternMeta {
+  title: string;
+  previewUrl: string | null;
+  width: number;
+  height: number;
+}
+
 export async function createSession(
   patternId: string,
-  checksum: string
+  checksum: string,
+  source: 'bundled' | 'catalog' = 'bundled',
+  status: 'preparing' | 'ready' | 'active' | 'completed' = 'ready',
+  remoteSessionId: string | null = null,
+  patternMeta: SessionPatternMeta | null = null
 ): Promise<StitchingSession> {
   const db = await getDatabase();
   const id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const createdAt = new Date().toISOString();
-  const status = 'ready';
-  const source = 'bundled';
 
   await db.runAsync(
-    `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, status)
-     VALUES (?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, status, remote_session_id, title, preview_url, pattern_width, pattern_height)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     id,
     patternId,
     source,
     checksum,
     createdAt,
-    status
+    status,
+    remoteSessionId,
+    patternMeta?.title ?? null,
+    patternMeta?.previewUrl ?? null,
+    patternMeta?.width ?? null,
+    patternMeta?.height ?? null
   );
 
   return {
@@ -338,6 +387,11 @@ export async function createSession(
     artifactChecksum: checksum,
     createdAt,
     status,
+    remoteSessionId,
+    title: patternMeta?.title ?? null,
+    previewUrl: patternMeta?.previewUrl ?? null,
+    patternWidth: patternMeta?.width ?? null,
+    patternHeight: patternMeta?.height ?? null,
   };
 }
 
@@ -386,6 +440,18 @@ export async function createReplaySession(
 /**
  * Retrieves all stitching sessions from the SQLite database.
  */
+export async function findActiveCatalogSession(
+  patternId: string
+): Promise<StitchingSession | null> {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{ id: string }>(
+    "SELECT id FROM sessions WHERE pattern_id = ? AND source = 'catalog' AND status <> 'completed' ORDER BY created_at DESC",
+    patternId
+  );
+  if (!row) return null;
+  return getSession(row.id);
+}
+
 export async function getSessions(): Promise<StitchingSession[]> {
   const db = await getDatabase();
   const rows = await db.getAllAsync<{
@@ -397,17 +463,29 @@ export async function getSessions(): Promise<StitchingSession[]> {
     status: string;
     completed_at?: string | null;
     replay_of?: string | null;
+    remote_session_id?: string | null;
+    error_note?: string | null;
+    title?: string | null;
+    preview_url?: string | null;
+    pattern_width?: number | null;
+    pattern_height?: number | null;
   }>('SELECT * FROM sessions ORDER BY created_at DESC');
 
   return rows.map((row) => ({
     id: row.id,
     patternId: row.pattern_id,
-    source: row.source as 'bundled',
+    source: row.source as 'bundled' | 'catalog',
     artifactChecksum: row.artifact_checksum,
     createdAt: row.created_at,
-    status: row.status as 'ready' | 'active' | 'completed',
+    status: row.status as 'preparing' | 'ready' | 'active' | 'completed',
     completedAt: row.completed_at,
     replayOf: row.replay_of,
+    remoteSessionId: row.remote_session_id,
+    errorNote: row.error_note,
+    title: row.title ?? null,
+    previewUrl: row.preview_url ?? null,
+    patternWidth: row.pattern_width ?? null,
+    patternHeight: row.pattern_height ?? null,
   }));
 }
 
@@ -425,6 +503,12 @@ export async function getSession(id: string): Promise<StitchingSession | null> {
     status: string;
     completed_at?: string | null;
     replay_of?: string | null;
+    remote_session_id?: string | null;
+    error_note?: string | null;
+    title?: string | null;
+    preview_url?: string | null;
+    pattern_width?: number | null;
+    pattern_height?: number | null;
   }>('SELECT * FROM sessions WHERE id = ?', id);
 
   if (!row) {
@@ -434,12 +518,18 @@ export async function getSession(id: string): Promise<StitchingSession | null> {
   return {
     id: row.id,
     patternId: row.pattern_id,
-    source: row.source as 'bundled',
+    source: row.source as 'bundled' | 'catalog',
     artifactChecksum: row.artifact_checksum,
     createdAt: row.created_at,
-    status: row.status as 'ready' | 'active' | 'completed',
+    status: row.status as 'preparing' | 'ready' | 'active' | 'completed',
     completedAt: row.completed_at,
     replayOf: row.replay_of,
+    remoteSessionId: row.remote_session_id,
+    errorNote: row.error_note,
+    title: row.title ?? null,
+    previewUrl: row.preview_url ?? null,
+    patternWidth: row.pattern_width ?? null,
+    patternHeight: row.pattern_height ?? null,
   };
 }
 
@@ -448,7 +538,7 @@ export async function getSession(id: string): Promise<StitchingSession | null> {
  */
 export async function updateSessionStatus(
   id: string,
-  status: 'ready' | 'active' | 'completed',
+  status: 'preparing' | 'ready' | 'active' | 'completed',
   completedAt?: string | null
 ): Promise<void> {
   const db = await getDatabase();
@@ -462,11 +552,26 @@ export async function updateSessionStatus(
     );
   } else {
     await db.runAsync(
-      'UPDATE sessions SET status = ? WHERE id = ?',
+      'UPDATE sessions SET status = ?, error_note = NULL WHERE id = ?',
       status,
       id
     );
   }
+}
+
+/**
+ * Updates the error note of a session.
+ */
+export async function updateSessionError(
+  id: string,
+  errorNote: string | null
+): Promise<void> {
+  const db = await getDatabase();
+  await db.runAsync(
+    'UPDATE sessions SET error_note = ? WHERE id = ?',
+    errorNote,
+    id
+  );
 }
 
 /**
@@ -709,5 +814,29 @@ export async function setCatalogCache(surfaceKey: string, payloadJson: string): 
     surfaceKey,
     payloadJson,
     fetchedAt
+  );
+}
+
+export async function addPendingCancel(remoteSessionId: string): Promise<void> {
+  const db = await getDatabase();
+  await db.runAsync(
+    'INSERT OR IGNORE INTO pending_cancels (remote_session_id) VALUES (?)',
+    remoteSessionId
+  );
+}
+
+export async function getPendingCancels(): Promise<string[]> {
+  const db = await getDatabase();
+  const rows = await db.getAllAsync<{ remote_session_id: string }>(
+    'SELECT remote_session_id FROM pending_cancels'
+  );
+  return rows.map((row) => row.remote_session_id);
+}
+
+export async function removePendingCancel(remoteSessionId: string): Promise<void> {
+  const db = await getDatabase();
+  await db.runAsync(
+    'DELETE FROM pending_cancels WHERE remote_session_id = ?',
+    remoteSessionId
   );
 }

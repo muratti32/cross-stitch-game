@@ -18,6 +18,9 @@ import { DataSource } from 'typeorm';
 import { configureApi } from '../src/api/configure-api';
 import { CatalogService } from '../src/catalog/catalog.service';
 import { encodePatternArtifactV1 } from '../src/catalog/pattern-artifact-encoder';
+import { LocalObjectStorage } from '../src/catalog/storage/local-object-storage';
+import { SessionsService } from '../src/sessions/sessions.service';
+import { StorageReconcilerService } from '../src/sessions/storage-reconciler.service';
 import {
   GuestInstallationEntity,
   GuestInstallationStatus,
@@ -527,6 +530,208 @@ describe('Stitch Wish backend integration', () => {
     expect(readRecord(body, 'result')).toEqual(completed.result);
   });
 
+  describe('session preparation', () => {
+    const palette = [
+      { dmcCode: '310', name: 'Black', rgbHex: '#000000' },
+      { dmcCode: 'B5200', name: 'Snow White', rgbHex: '#FFFFFF' },
+    ];
+
+    async function seedPreparablePattern(title: string): Promise<{
+      patternId: string;
+      artifactBytes: Buffer;
+      checksum: string;
+    }> {
+      const catalog = app.get(CatalogService);
+      const grid = new Uint8Array(20 * 20).fill(1);
+      const encoded = encodePatternArtifactV1({
+        width: 20,
+        height: 20,
+        palette,
+        grid,
+      });
+      const objectKey = `itest-prep/${title}/artifact.bin`;
+      const storage = app.get(LocalObjectStorage);
+      await storage.put(objectKey, encoded.bytes);
+      const pattern = await catalog.upsertPattern({
+        title,
+        creatorName: 'ITest Prep Team',
+        categoryCode: 'other',
+        width: 20,
+        height: 20,
+        paletteSize: palette.length,
+        artifactObjectKey: objectKey,
+        artifactChecksum: encoded.checksum,
+        artifactByteLength: encoded.byteLength,
+        artifactSchemaVersion: encoded.schemaVersion,
+        previewObjectKey: `itest-prep/${title}/preview.png`,
+        unlockPriceTier: null,
+        status: 'available',
+        publishedAt: new Date('2026-07-01T00:00:00.000Z'),
+        tagCodes: [],
+      });
+      return {
+        patternId: pattern.id,
+        artifactBytes: encoded.bytes,
+        checksum: encoded.checksum,
+      };
+    }
+
+    it('prepare is idempotent and race-safe on (identity, pattern)', async () => {
+      const guest = await createGuestThroughApi(
+        httpServer,
+        randomUUID(),
+        createCredentialSecret(),
+      );
+      const { patternId } = await seedPreparablePattern('ITest Prep Idem');
+
+      const [a, b] = await Promise.all([
+        request(httpServer)
+          .post('/v1/sessions/prepare')
+          .set('Authorization', `Bearer ${guest.accessToken}`)
+          .send({ patternId })
+          .expect(201),
+        request(httpServer)
+          .post('/v1/sessions/prepare')
+          .set('Authorization', `Bearer ${guest.accessToken}`)
+          .send({ patternId })
+          .expect(201),
+      ]);
+      const idA = readStringRecord(a.body, 'sessionId');
+      const idB = readStringRecord(b.body, 'sessionId');
+      expect(idA).toBe(idB);
+
+      const again = await request(httpServer)
+        .post('/v1/sessions/prepare')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201);
+      expect(readStringRecord(again.body, 'sessionId')).toBe(idA);
+    });
+
+    it('grant downloads exact artifact bytes and expired grants fail 403', async () => {
+      const guest = await createGuestThroughApi(
+        httpServer,
+        randomUUID(),
+        createCredentialSecret(),
+      );
+      const { patternId, artifactBytes, checksum } =
+        await seedPreparablePattern('ITest Prep Grant');
+
+      const prepared = await request(httpServer)
+        .post('/v1/sessions/prepare')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201);
+      const grant = readRecord(prepared.body, 'grant') as { url: string };
+
+      const download = await request(httpServer).get(grant.url).expect(200);
+      const downloaded = download.body as Buffer;
+      expect(sha256Buffer(downloaded)).toBe(checksum);
+      expect(Buffer.compare(downloaded, artifactBytes)).toBe(0);
+
+      const sessions = app.get(SessionsService);
+      const pastExp = Math.floor(Date.now() / 1000) - 10;
+      const expiredSig = sessions.signGrant(patternId, pastExp);
+      await request(httpServer)
+        .get(`/v1/artifacts/${patternId}?exp=${pastExp}&sig=${expiredSig}`)
+        .expect(403);
+
+      const sessionId = readStringRecord(prepared.body, 'sessionId');
+      const refreshed = await request(httpServer)
+        .post(`/v1/sessions/${sessionId}/refresh-grant`)
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(201);
+      const freshGrant = readRecord(refreshed.body, 'grant') as { url: string };
+      await request(httpServer).get(freshGrant.url).expect(200);
+    });
+
+    it('cancellation deletes the session only when no device has progress', async () => {
+      const guest = await createGuestThroughApi(
+        httpServer,
+        randomUUID(),
+        createCredentialSecret(),
+      );
+      const { patternId } = await seedPreparablePattern('ITest Prep Cancel');
+
+      const prepared = await request(httpServer)
+        .post('/v1/sessions/prepare')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201);
+      const sessionId = readStringRecord(prepared.body, 'sessionId');
+
+      // No progress: cancel deletes, and repeat cancel is idempotent.
+      await request(httpServer)
+        .delete(`/v1/sessions/${sessionId}`)
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(204);
+      await request(httpServer)
+        .delete(`/v1/sessions/${sessionId}`)
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(204);
+
+      // Recreate; with progress the session must survive cancellation.
+      const second = await request(httpServer)
+        .post('/v1/sessions/prepare')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201);
+      const secondId = readStringRecord(second.body, 'sessionId');
+      expect(secondId).not.toBe(sessionId);
+
+      const sessions = app.get(SessionsService);
+      await sessions.setProgressFlagInternal(secondId, true);
+      await request(httpServer)
+        .delete(`/v1/sessions/${secondId}`)
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(204);
+
+      const third = await request(httpServer)
+        .post('/v1/sessions/prepare')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201);
+      expect(readStringRecord(third.body, 'sessionId')).toBe(secondId);
+    });
+
+    it('reconciler removes stale uploading rows and flags missing objects', async () => {
+      const storage = app.get(LocalObjectStorage);
+      const reconciler = app.get(StorageReconcilerService);
+
+      const staleKey = 'itest-reconcile/stale-upload.bin';
+      await storage.put(staleKey, Buffer.from('stale'));
+      await dataSource.query(
+        `INSERT INTO "storage"."object_registry" ("object_key", "checksum", "byte_length", "state", "created_at", "updated_at")
+         VALUES ($1, 'x', 5, 'uploading', now() - interval '2 days', now() - interval '2 days')
+         ON CONFLICT ("object_key") DO UPDATE SET "state" = 'uploading', "updated_at" = now() - interval '2 days'`,
+        [staleKey],
+      );
+
+      const missingKey = 'itest-reconcile/missing-object.bin';
+      await dataSource.query(
+        `INSERT INTO "storage"."object_registry" ("object_key", "checksum", "byte_length", "state")
+         VALUES ($1, 'y', 5, 'available')
+         ON CONFLICT ("object_key") DO UPDATE SET "state" = 'available'`,
+        [missingKey],
+      );
+
+      await reconciler.reconcileOnce(86400);
+
+      const staleRows: unknown[] = await dataSource.query(
+        'SELECT 1 FROM "storage"."object_registry" WHERE "object_key" = $1',
+        [staleKey],
+      );
+      expect(staleRows).toHaveLength(0);
+      expect(await storage.exists(staleKey)).toBe(false);
+
+      const missingRows: { missing: boolean }[] = await dataSource.query(
+        'SELECT "missing" FROM "storage"."object_registry" WHERE "object_key" = $1',
+        [missingKey],
+      );
+      expect(missingRows[0]?.missing).toBe(true);
+    });
+  });
+
   describe('catalog', () => {
     const palette = [
       { dmcCode: '321', name: 'Christmas Red', rgbHex: '#C51E3A' },
@@ -801,6 +1006,10 @@ function createCredentialSecret(): string {
 
 function sha256(value: string): string {
   return createHash('sha256').update(value, 'utf8').digest('hex');
+}
+
+function sha256Buffer(value: Buffer): string {
+  return createHash('sha256').update(value).digest('hex');
 }
 
 async function waitForProcessingJob(

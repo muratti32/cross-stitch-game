@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stitch-wish-conversion-engine"
+version = "1.0.0"
+description = "Stateless deterministic artwork-to-cross-stitch conversion service"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi==0.116.1",
+  "numpy==2.3.2",
+  "Pillow==11.3.0",
+  "pydantic==2.11.7",
+  "python-multipart==0.0.20",
+  "uvicorn==0.35.0",
+]
+
+[project.optional-dependencies]
+test = [
+  "httpx==0.28.1",
+  "pytest==8.4.1",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+stitch_wish = ["data/*.csv"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+pythonpath = ["src"]
+testpaths = ["tests"]
+

@@ -40,4 +40,16 @@ export class AppConfigService {
   get storageLocalDir(): string {
     return this.configService.get('STORAGE_LOCAL_DIR', { infer: true });
   }
+
+  get grantTtlSeconds(): number {
+    return this.configService.get('GRANT_TTL_SECONDS', { infer: true });
+  }
+
+  get grantSigningSecret(): string {
+    const secret = this.configService.get('GRANT_SIGNING_SECRET', { infer: true });
+    if (secret === undefined) {
+      throw new Error('GRANT_SIGNING_SECRET is required for the API deployable');
+    }
+    return secret;
+  }
 }

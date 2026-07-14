@@ -6,6 +6,7 @@ import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
 import { JobsModule } from './jobs/jobs.module';
 import { CatalogModule } from './catalog/catalog.module';
+import { SessionsModule } from './sessions/sessions.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { CatalogModule } from './catalog/catalog.module';
     HealthModule,
     JobsModule,
     CatalogModule,
+    SessionsModule,
   ],
 })
 export class ApiAppModule {}

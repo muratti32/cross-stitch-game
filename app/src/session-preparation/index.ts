@@ -1,0 +1,283 @@
+import * as FileSystem from 'expo-file-system/legacy';
+import { create } from 'zustand';
+
+import { decodePatternArtifact } from '../pattern-artifact';
+import {
+  updateSessionStatus,
+  updateSessionError,
+  addPendingCancel,
+  removePendingCancel,
+  getActiveIdentity,
+  createSession,
+  findActiveCatalogSession,
+  getSession,
+  deleteSession,
+  StitchingSession,
+} from '../local-db';
+import { apiFetch } from '../api/apiFetch';
+import { Config } from '../config';
+
+interface DownloadProgressState {
+  progress: Record<string, number>;
+  setProgress: (sessionId: string, value: number) => void;
+  clearProgress: (sessionId: string) => void;
+}
+
+export const useDownloadProgressStore = create<DownloadProgressState>((set) => ({
+  progress: {},
+  setProgress: (sessionId, value) =>
+    set((state) => ({
+      progress: { ...state.progress, [sessionId]: value },
+    })),
+  clearProgress: (sessionId) =>
+    set((state) => {
+      const copy = { ...state.progress };
+      delete copy[sessionId];
+      return { progress: copy };
+    }),
+}));
+
+const activeDownloads = new Map<string, FileSystem.DownloadResumable>();
+
+export function getOfflinePatternPath(patternId: string, identity: string | null): string {
+  const baseDir = FileSystem.documentDirectory ?? '';
+  const namespace = identity ? `namespace_guest_${identity}` : 'pre_identity';
+  return `${baseDir}${namespace}/offline-patterns/${patternId}.bin`;
+}
+
+export function base64ToUint8Array(base64: string): Uint8Array {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  const lookup = new Uint8Array(256);
+  for (let i = 0; i < chars.length; i++) {
+    lookup[chars.charCodeAt(i)] = i;
+  }
+  const clean = base64.replace(/[^A-Za-z0-9+/]/g, '');
+  const len = clean.length;
+  let bufferLength = Math.floor(len * 0.75);
+  if (clean[len - 1] === '=') bufferLength--;
+  if (clean[len - 2] === '=') bufferLength--;
+
+  const bytes = new Uint8Array(bufferLength);
+  let p = 0;
+  for (let i = 0; i < len; i += 4) {
+    const encoded1 = lookup[clean.charCodeAt(i)] ?? 0;
+    const encoded2 = lookup[clean.charCodeAt(i + 1)] ?? 0;
+    const encoded3 = lookup[clean.charCodeAt(i + 2)] ?? 0;
+    const encoded4 = lookup[clean.charCodeAt(i + 3)] ?? 0;
+
+    bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
+    if (p < bufferLength) {
+      bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+    }
+    if (p < bufferLength) {
+      bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
+    }
+  }
+  return bytes;
+}
+
+export interface PrepareResponse {
+  sessionId: string;
+  patternId: string;
+  artifact: {
+    checksum: string;
+    byteLength: number;
+    schemaVersion: number;
+  };
+  grant: {
+    url: string;
+    expiresAt: string;
+  };
+}
+
+export interface PreparePatternInfo {
+  title: string;
+  previewUrl: string | null;
+  width: number;
+  height: number;
+}
+
+export async function prepareCatalogSession(
+  patternId: string,
+  patternInfo: PreparePatternInfo,
+): Promise<StitchingSession> {
+  // Prepare is idempotent on (identity, pattern) server-side; mirror that
+  // locally so repeated taps resume the same local session instead of
+  // inserting duplicates.
+  const existing = await findActiveCatalogSession(patternId);
+  if (existing) {
+    if (existing.status === 'preparing') {
+      await retryDownload(existing.id).catch(() => undefined);
+    }
+    return existing;
+  }
+
+  const response = await apiFetch('/v1/sessions/prepare', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ patternId }),
+  });
+
+  if (!response.ok) {
+    if (response.status === 409) {
+      throw new Error('Pattern is not available');
+    }
+    throw new Error(`Failed to prepare session: ${response.status}`);
+  }
+
+  const data = (await response.json()) as PrepareResponse;
+
+  const session = await createSession(
+    patternId,
+    data.artifact.checksum,
+    'catalog',
+    'preparing',
+    data.sessionId,
+    patternInfo,
+  );
+
+  void downloadAndRegister(session.id, patternId, data.grant.url, data.artifact.checksum);
+
+  return session;
+}
+
+export async function retryDownload(localSessionId: string): Promise<void> {
+  const session = await getSession(localSessionId);
+  if (!session || !session.remoteSessionId) {
+    throw new Error('Local session not found or invalid');
+  }
+
+  await updateSessionStatus(localSessionId, 'preparing');
+
+  try {
+    const response = await apiFetch(`/v1/sessions/${session.remoteSessionId}/refresh-grant`, {
+      method: 'POST',
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to refresh grant: ${response.status}`);
+    }
+
+    const data = (await response.json()) as PrepareResponse;
+
+    void downloadAndRegister(localSessionId, session.patternId, data.grant.url, session.artifactChecksum);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    await updateSessionError(localSessionId, msg);
+    throw err;
+  }
+}
+
+export async function cancelDownload(localSessionId: string): Promise<void> {
+  const session = await getSession(localSessionId);
+  if (!session) return;
+
+  const activeDownload = activeDownloads.get(localSessionId);
+  if (activeDownload) {
+    try {
+      await activeDownload.cancelAsync();
+    } catch (e) {
+      console.warn('Failed to cancel active download:', e);
+    }
+    activeDownloads.delete(localSessionId);
+  }
+
+  useDownloadProgressStore.getState().clearProgress(localSessionId);
+
+  const tempPath = `${FileSystem.cacheDirectory}prep_${localSessionId}.tmp`;
+  try {
+    await FileSystem.deleteAsync(tempPath, { idempotent: true });
+  } catch (e) {
+    console.warn('Failed to delete temp file during cancel:', e);
+  }
+
+  const remoteSessionId = session.remoteSessionId;
+  await deleteSession(localSessionId);
+
+  if (remoteSessionId) {
+    try {
+      const response = await apiFetch(`/v1/sessions/${remoteSessionId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        await addPendingCancel(remoteSessionId);
+      }
+    } catch (err) {
+      await addPendingCancel(remoteSessionId);
+    }
+  }
+}
+
+export async function syncPendingCancels(): Promise<void> {
+  const db = await import('../local-db');
+  const pending = await db.getPendingCancels();
+  for (const remoteSessionId of pending) {
+    try {
+      const response = await apiFetch(`/v1/sessions/${remoteSessionId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok || response.status === 404) {
+        await db.removePendingCancel(remoteSessionId);
+      }
+    } catch (err) {
+      // best effort, try again later
+    }
+  }
+}
+
+async function downloadAndRegister(
+  localSessionId: string,
+  patternId: string,
+  grantUrl: string,
+  checksum: string,
+): Promise<void> {
+  const tempPath = `${FileSystem.cacheDirectory}prep_${localSessionId}.tmp`;
+  const identity = getActiveIdentity();
+  const destPath = getOfflinePatternPath(patternId, identity);
+
+  try {
+    const url = grantUrl.startsWith('http') ? grantUrl : `${Config.apiBaseUrl}${grantUrl}`;
+    const downloadResumable = FileSystem.createDownloadResumable(
+      url,
+      tempPath,
+      {},
+      (downloadProgress) => {
+        const progress =
+          downloadProgress.totalBytesExpectedToWrite > 0
+            ? downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite
+            : 0;
+        useDownloadProgressStore.getState().setProgress(localSessionId, progress);
+      },
+    );
+    activeDownloads.set(localSessionId, downloadResumable);
+
+    const result = await downloadResumable.downloadAsync();
+    activeDownloads.delete(localSessionId);
+
+    if (!result || !result.uri) {
+      throw new Error('Download failed');
+    }
+
+    const base64Str = await FileSystem.readAsStringAsync(result.uri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    const bytes = base64ToUint8Array(base64Str);
+
+    decodePatternArtifact(bytes, checksum);
+
+    const destDir = destPath.substring(0, destPath.lastIndexOf('/'));
+    await FileSystem.makeDirectoryAsync(destDir, { intermediates: true });
+    await FileSystem.moveAsync({
+      from: result.uri,
+      to: destPath,
+    });
+
+    useDownloadProgressStore.getState().clearProgress(localSessionId);
+    await updateSessionStatus(localSessionId, 'ready');
+  } catch (error) {
+    activeDownloads.delete(localSessionId);
+    useDownloadProgressStore.getState().clearProgress(localSessionId);
+    const msg = error instanceof Error ? error.message : String(error);
+    await updateSessionError(localSessionId, msg);
+  }
+}

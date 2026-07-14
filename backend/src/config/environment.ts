@@ -6,11 +6,14 @@ export type EnvironmentVariables = {
   REDIS_URL: string;
   REFRESH_TOKEN_TTL_SECONDS: number;
   STORAGE_LOCAL_DIR: string;
+  GRANT_TTL_SECONDS: number;
+  GRANT_SIGNING_SECRET: string | undefined;
 };
 
 const DATABASE_PROTOCOLS = new Set(['postgres:', 'postgresql:']);
 const DEFAULT_JWT_ACCESS_TTL_SECONDS = 900;
 const DEFAULT_REFRESH_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60;
+const DEFAULT_GRANT_TTL_SECONDS = 300;
 const REDIS_PROTOCOLS = new Set(['redis:', 'rediss:']);
 
 function parseUrl(
@@ -129,6 +132,15 @@ export function parseEnvironment(
       environment.STORAGE_LOCAL_DIR.trim().length > 0
         ? environment.STORAGE_LOCAL_DIR.trim()
         : './storage-dev',
+    GRANT_TTL_SECONDS: parseDurationSeconds(
+      environment.GRANT_TTL_SECONDS,
+      'GRANT_TTL_SECONDS',
+      DEFAULT_GRANT_TTL_SECONDS,
+    ),
+    GRANT_SIGNING_SECRET: parseOptionalSecret(
+      environment.GRANT_SIGNING_SECRET,
+      'GRANT_SIGNING_SECRET',
+    ),
   };
 }
 

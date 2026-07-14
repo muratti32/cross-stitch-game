@@ -14,7 +14,15 @@ import {
   ProgressOperation,
   StitchingSession,
 } from '../local-db';
+import * as FileSystem from 'expo-file-system/legacy';
+
 import { loadBundledPattern } from '../bundled-patterns';
+import {
+  base64ToUint8Array,
+  getOfflinePatternPath,
+} from '../session-preparation';
+import { decodePatternArtifact } from '../pattern-artifact';
+import { getActiveIdentity } from '../local-db';
 import { PatternData } from '../pattern-artifact';
 import { RendererState } from '../renderer';
 
@@ -175,7 +183,13 @@ export function useStitchingSession(sessionId: string | undefined) {
         }
 
         // 5. Load Pattern Data
-        const pat = await loadBundledPattern(sess.patternId);
+        const pat =
+          sess.source === 'catalog'
+            ? await loadCatalogPatternFromNamespace(
+                sess.patternId,
+                sess.artifactChecksum,
+              )
+            : await loadBundledPattern(sess.patternId);
 
         // 6. Load Latest Checkpoint
         const checkpoint = await getLatestCheckpoint(sess.id);
@@ -425,6 +439,20 @@ export function useStitchingSession(sessionId: string | undefined) {
     undo,
     flushPendingOps,
   };
+}
+
+// Ready catalog sessions read their verified Offline Pattern Data from the
+// identity namespace; the decoder re-verifies the stored checksum on open.
+async function loadCatalogPatternFromNamespace(
+  patternId: string,
+  checksum: string,
+) {
+  const identity = getActiveIdentity();
+  const path = getOfflinePatternPath(patternId, identity);
+  const base64 = await FileSystem.readAsStringAsync(path, {
+    encoding: FileSystem.EncodingType.Base64,
+  });
+  return decodePatternArtifact(base64ToUint8Array(base64), checksum);
 }
 
 function generateUUID(): string {
