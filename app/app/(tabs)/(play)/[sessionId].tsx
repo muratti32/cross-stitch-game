@@ -563,7 +563,7 @@ const styles = StyleSheet.create({
     lineHeight: 12,
   },
   celebrationOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(26, 23, 20, 0.45)', // Sleek darkened backing
     justifyContent: 'center',
     alignItems: 'center',

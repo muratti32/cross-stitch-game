@@ -32,8 +32,8 @@ Canonical identity and store metadata for the game. Values marked **locked** mus
 | Field | Value | Notes |
 |---|---|---|
 | Framework | Expo (dev client + EAS), Expo Router, `@shopify/react-native-skia` | ADR-0034 |
-| iOS minimum | iOS 15.1 | Expo SDK 54 default |
-| Android minimum | `minSdkVersion 24` (Android 7.0) | Expo SDK 54 default |
+| iOS minimum | iOS 16.4 | Expo SDK 57 default |
+| Android minimum | `minSdkVersion 24` (Android 7.0) | Expo SDK 57 default; compiles and targets Android API 36 |
 | Orientation | Portrait | Grid navigation uses pinch-zoom and pan; portrait is the primary layout, tablets supported in portrait |
 
 ## Languages
