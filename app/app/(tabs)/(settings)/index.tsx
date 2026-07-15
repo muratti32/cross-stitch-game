@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, Switch, ActivityIndicator, Pressable, Alert, Linking, Modal, TextInput } from 'react-native';
-import { Screen, Card, Button } from '@/components';
+import { Screen, Card, Button, AccountSection } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useGameplayStore } from '@/store';
 import { useHealthCheck } from '@/hooks/useHealthCheck';
@@ -223,6 +223,9 @@ export default function SettingsScreen() {
           )}
         </View>
       </Card>
+
+      {/* Registered Account (email sign-in / sign-out) */}
+      <AccountSection />
 
       {/* Gameplay Preferences */}
       <Text style={styles.sectionTitle}>Gameplay Settings</Text>

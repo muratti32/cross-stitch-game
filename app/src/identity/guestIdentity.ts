@@ -14,6 +14,12 @@ const SECURE_KEYS = {
   GUEST_ID: 'stitch_wish.guest_id',
   GUEST_CREATED_AT: 'stitch_wish.guest_created_at',
   REFRESH_TOKEN: 'stitch_wish.refresh_token',
+  // Registered Account (email sign-in). When ACCOUNT_ID is present, the active
+  // session belongs to a Registered Account rather than a Guest Installation.
+  // The account id doubles as the Local Identity Namespace key, so signing back
+  // into the same account reopens its unsynchronized local data.
+  ACCOUNT_ID: 'stitch_wish.account_id',
+  ACCOUNT_EMAIL: 'stitch_wish.account_email',
 };
 
 // Memory-only access token
@@ -123,6 +129,9 @@ function resetRetryDelay(): void {
 export interface IdentityState {
   guestId: string | null;
   guestCreatedAt: string | null;
+  accountId: string | null;
+  accountEmail: string | null;
+  isAccount: boolean;
   isAuthenticated: boolean;
   isPending: boolean;
   isOfflinePending: boolean;
@@ -133,6 +142,9 @@ export interface IdentityState {
 export const useIdentityStore = create<IdentityState>((set) => ({
   guestId: null,
   guestCreatedAt: null,
+  accountId: null,
+  accountEmail: null,
+  isAccount: false,
   isAuthenticated: false,
   isPending: false,
   isOfflinePending: false,
@@ -177,10 +189,52 @@ export async function bootstrap(): Promise<void> {
         await SecureStore.setItemAsync(SECURE_KEYS.CREDENTIAL_SECRET, credentialSecret);
       }
 
-      // 2. Read stored guest identity details
+      // 2. Read stored identity details
       const savedGuestId = await SecureStore.getItemAsync(SECURE_KEYS.GUEST_ID);
       const savedGuestCreatedAt = await SecureStore.getItemAsync(SECURE_KEYS.GUEST_CREATED_AT);
-      const refreshToken = await SecureStore.getItemAsync(SECURE_KEYS.REFRESH_TOKEN);
+      const savedAccountId = await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_ID);
+      const savedAccountEmail = await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_EMAIL);
+      let refreshToken = await SecureStore.getItemAsync(SECURE_KEYS.REFRESH_TOKEN);
+
+      // 2a. Registered Account session takes precedence over Guest. The account
+      // namespace is keyed by accountId, so unsynchronized local data reopens.
+      if (savedAccountId && refreshToken) {
+        try {
+          const tokens = await performRefreshRequest(refreshToken);
+          setAccessToken(tokens.accessToken);
+          await SecureStore.setItemAsync(SECURE_KEYS.REFRESH_TOKEN, tokens.refreshToken);
+
+          await openNamespace(savedAccountId);
+
+          updateStoreState({
+            guestId: null,
+            guestCreatedAt: null,
+            accountId: savedAccountId,
+            accountEmail: savedAccountEmail,
+            isAccount: true,
+            isAuthenticated: true,
+            isPending: false,
+            isOfflinePending: false,
+          });
+
+          resetRetryDelay();
+          return;
+        } catch (err: unknown) {
+          if (hasHttpStatus(err) && err.status === 401) {
+            // Account refresh family revoked/expired. Clear account keys and
+            // fall through to Guest bootstrap so the app remains usable.
+            await SecureStore.deleteItemAsync(SECURE_KEYS.REFRESH_TOKEN);
+            await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_ID);
+            await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_EMAIL);
+            refreshToken = null;
+          } else {
+            // Connectivity error: stay offline-pending and retry.
+            updateStoreState({ isPending: false, isOfflinePending: true });
+            scheduleRetryBootstrap();
+            throw err;
+          }
+        }
+      }
 
       // 3. Try to use existing refresh token if it exists
       if (refreshToken) {
@@ -312,14 +366,31 @@ export async function refreshSession(): Promise<string> {
       setAccessToken(tokens.accessToken);
       await SecureStore.setItemAsync(SECURE_KEYS.REFRESH_TOKEN, tokens.refreshToken);
 
-      const guestId = await SecureStore.getItemAsync(SECURE_KEYS.GUEST_ID);
-      const guestCreatedAt = await SecureStore.getItemAsync(SECURE_KEYS.GUEST_CREATED_AT);
-      updateStoreState({
-        guestId,
-        guestCreatedAt,
-        isAuthenticated: true,
-        isOfflinePending: false,
-      });
+      const accountId = await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_ID);
+      if (accountId) {
+        const accountEmail = await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_EMAIL);
+        updateStoreState({
+          guestId: null,
+          guestCreatedAt: null,
+          accountId,
+          accountEmail,
+          isAccount: true,
+          isAuthenticated: true,
+          isOfflinePending: false,
+        });
+      } else {
+        const guestId = await SecureStore.getItemAsync(SECURE_KEYS.GUEST_ID);
+        const guestCreatedAt = await SecureStore.getItemAsync(SECURE_KEYS.GUEST_CREATED_AT);
+        updateStoreState({
+          guestId,
+          guestCreatedAt,
+          accountId: null,
+          accountEmail: null,
+          isAccount: false,
+          isAuthenticated: true,
+          isOfflinePending: false,
+        });
+      }
 
       return tokens.accessToken;
     } catch (err: unknown) {
@@ -379,6 +450,11 @@ export async function logout(): Promise<void> {
   await SecureStore.deleteItemAsync(SECURE_KEYS.REFRESH_TOKEN);
   await SecureStore.deleteItemAsync(SECURE_KEYS.GUEST_ID);
   await SecureStore.deleteItemAsync(SECURE_KEYS.GUEST_CREATED_AT);
+  // Registered Account sign-out: forget who is signed in, but NEVER delete the
+  // namespace DB files. Unsynchronized local data survives on disk and reopens
+  // when the same account signs back in (namespace keyed by accountId).
+  await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_ID);
+  await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_EMAIL);
 
   // Switch back to pre-identity database namespace
   await openNamespace(null);
@@ -386,7 +462,53 @@ export async function logout(): Promise<void> {
   updateStoreState({
     guestId: null,
     guestCreatedAt: null,
+    accountId: null,
+    accountEmail: null,
+    isAccount: false,
     isAuthenticated: false,
+    isOfflinePending: false,
+  });
+}
+
+export interface EmailAccountSession {
+  accountId: string;
+  email: string;
+  accessToken: string;
+  refreshToken: string;
+}
+
+/**
+ * Adopts a verified Registered Account session (from email OTP verification).
+ * Persists the rotating refresh token and account identity, arms the in-memory
+ * access token with proactive refresh, opens the account's Local Identity
+ * Namespace (keyed by accountId, so previously-signed-in local data reopens),
+ * and flips the identity store to the account principal.
+ */
+export async function adoptEmailAccountSession(
+  session: EmailAccountSession,
+): Promise<void> {
+  clearRefreshSchedule();
+  resetRetryDelay();
+
+  await SecureStore.setItemAsync(SECURE_KEYS.REFRESH_TOKEN, session.refreshToken);
+  await SecureStore.setItemAsync(SECURE_KEYS.ACCOUNT_ID, session.accountId);
+  await SecureStore.setItemAsync(SECURE_KEYS.ACCOUNT_EMAIL, session.email);
+  // A Registered Account supersedes any prior Guest Installation on this device.
+  await SecureStore.deleteItemAsync(SECURE_KEYS.GUEST_ID);
+  await SecureStore.deleteItemAsync(SECURE_KEYS.GUEST_CREATED_AT);
+
+  setAccessToken(session.accessToken);
+
+  await openNamespace(session.accountId);
+
+  updateStoreState({
+    guestId: null,
+    guestCreatedAt: null,
+    accountId: session.accountId,
+    accountEmail: session.email,
+    isAccount: true,
+    isAuthenticated: true,
+    isPending: false,
     isOfflinePending: false,
   });
 }

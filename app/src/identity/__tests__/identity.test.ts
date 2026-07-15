@@ -1,7 +1,10 @@
 import { getDatabaseFilename, shouldAdopt } from '../../local-db/namespaceLogic';
 import { decodeJwt, calculateRefreshDelay, isTokenOlderThan12Minutes, shortenGuestId } from '../identityLogic';
-import { bootstrap, refreshSession, useIdentityStore, setAccessToken, getAccessToken, resetGuestData, removeLocalData } from '../guestIdentity';
+import { bootstrap, refreshSession, useIdentityStore, setAccessToken, getAccessToken, resetGuestData, removeLocalData, logout } from '../guestIdentity';
+import { requestEmailOtp, verifyEmailOtp } from '../emailAuth';
 import { apiFetch } from '../../api/apiFetch';
+
+const DECODABLE_JWT = 'h.eyJpZCI6ImcxIiwiaWF0IjoxMDAwLCJleHAiOjE5MDB9.sig';
 
 // Mock expo-secure-store
 const mockSecureStore: Record<string, string> = {};
@@ -355,6 +358,173 @@ describe('Guest Data Reset & Local Data Removal flows', () => {
     await removeLocalData();
     expect(deleteMock).toHaveBeenCalledWith(null);
     expect(openMock).toHaveBeenCalledWith(null);
+  });
+});
+
+describe('Email Sign-In (Registered Account) flows', () => {
+  const ACCOUNT_ID = 'stitch_wish.account_id';
+  const ACCOUNT_EMAIL = 'stitch_wish.account_email';
+  const REFRESH_TOKEN = 'stitch_wish.refresh_token';
+  const GUEST_ID = 'stitch_wish.guest_id';
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockFetchResponses = [];
+    fetchCallCount = 0;
+    fetchCalls = [];
+    for (const key of Object.keys(mockSecureStore)) {
+      delete mockSecureStore[key];
+    }
+    useIdentityStore.setState({
+      guestId: null,
+      guestCreatedAt: null,
+      accountId: null,
+      accountEmail: null,
+      isAccount: false,
+      isAuthenticated: false,
+      isPending: false,
+      isOfflinePending: false,
+    });
+    setAccessToken(null);
+  });
+
+  test('requestEmailOtp resolves on 202 and throws otherwise', async () => {
+    mockFetchResponses.push({ status: 202, body: { status: 'sent' } });
+    await expect(requestEmailOtp('User@Example.com')).resolves.toBeUndefined();
+    expect(fetchCalls[0].url).toContain('/v1/auth/email/request');
+
+    mockFetchResponses.push({ status: 500, body: {} });
+    await expect(requestEmailOtp('user@example.com')).rejects.toThrow();
+  });
+
+  test('verifyEmailOtp adopts the account session on 200', async () => {
+    const localDb = require('../../local-db');
+    const openMock = localDb.openNamespace;
+    mockSecureStore[GUEST_ID] = 'guest_old';
+
+    mockFetchResponses.push({
+      status: 200,
+      body: {
+        accountId: 'acc_123',
+        accessToken: `access.${DECODABLE_JWT}`,
+        refreshToken: 'refresh_acc',
+      },
+    });
+
+    const result = await verifyEmailOtp('user@example.com', '123456');
+
+    expect(result).toEqual({ kind: 'verified' });
+    expect(mockSecureStore[ACCOUNT_ID]).toBe('acc_123');
+    expect(mockSecureStore[ACCOUNT_EMAIL]).toBe('user@example.com');
+    expect(mockSecureStore[REFRESH_TOKEN]).toBe('refresh_acc');
+    expect(mockSecureStore[GUEST_ID]).toBeUndefined();
+    expect(openMock).toHaveBeenCalledWith('acc_123');
+
+    const state = useIdentityStore.getState();
+    expect(state.isAccount).toBe(true);
+    expect(state.accountId).toBe('acc_123');
+    expect(state.accountEmail).toBe('user@example.com');
+    expect(state.isAuthenticated).toBe(true);
+    expect(getAccessToken()).toBe(`access.${DECODABLE_JWT}`);
+  });
+
+  test('verifyEmailOtp returns rejected on 401 without adopting a session', async () => {
+    mockFetchResponses.push({ status: 401, body: {} });
+
+    const result = await verifyEmailOtp('user@example.com', '000000');
+
+    expect(result).toEqual({ kind: 'rejected' });
+    expect(mockSecureStore[ACCOUNT_ID]).toBeUndefined();
+    expect(mockSecureStore[REFRESH_TOKEN]).toBeUndefined();
+    expect(useIdentityStore.getState().isAccount).toBe(false);
+    expect(getAccessToken()).toBeNull();
+  });
+
+  test('bootstrap resumes an account session from stored ACCOUNT_ID', async () => {
+    const localDb = require('../../local-db');
+    const openMock = localDb.openNamespace;
+    mockSecureStore['stitch_wish.installation_key'] = 'inst';
+    mockSecureStore['stitch_wish.credential_secret'] = 'cred';
+    mockSecureStore[ACCOUNT_ID] = 'acc_777';
+    mockSecureStore[ACCOUNT_EMAIL] = 'saved@example.com';
+    mockSecureStore[REFRESH_TOKEN] = 'refresh_saved';
+
+    mockFetchResponses.push({
+      status: 200,
+      body: { accessToken: `access.${DECODABLE_JWT}`, refreshToken: 'refresh_next' },
+    });
+
+    await bootstrap();
+
+    expect(fetchCallCount).toBe(1);
+    expect(fetchCalls[0].url).toContain('/v1/auth/refresh');
+    expect(openMock).toHaveBeenCalledWith('acc_777');
+    const state = useIdentityStore.getState();
+    expect(state.isAccount).toBe(true);
+    expect(state.accountId).toBe('acc_777');
+    expect(state.accountEmail).toBe('saved@example.com');
+    expect(state.guestId).toBeNull();
+    expect(mockSecureStore[REFRESH_TOKEN]).toBe('refresh_next');
+  });
+
+  test('bootstrap falls back to guest when account refresh is revoked (401)', async () => {
+    mockSecureStore['stitch_wish.installation_key'] = 'inst';
+    mockSecureStore['stitch_wish.credential_secret'] = 'cred';
+    mockSecureStore[ACCOUNT_ID] = 'acc_dead';
+    mockSecureStore[ACCOUNT_EMAIL] = 'dead@example.com';
+    mockSecureStore[REFRESH_TOKEN] = 'refresh_dead';
+
+    // Account refresh rejected
+    mockFetchResponses.push({ status: 401, body: {} });
+    // Guest registration succeeds
+    mockFetchResponses.push({
+      status: 201,
+      body: {
+        guestId: 'guest_fallback',
+        accessToken: `access.${DECODABLE_JWT}`,
+        refreshToken: 'refresh_guest',
+      },
+    });
+
+    await bootstrap();
+
+    expect(mockSecureStore[ACCOUNT_ID]).toBeUndefined();
+    expect(mockSecureStore[ACCOUNT_EMAIL]).toBeUndefined();
+    const state = useIdentityStore.getState();
+    expect(state.isAccount).toBe(false);
+    expect(state.guestId).toBe('guest_fallback');
+    expect(state.isAuthenticated).toBe(true);
+  });
+
+  test('logout of an account clears keys but preserves namespace data', async () => {
+    const localDb = require('../../local-db');
+    const openMock = localDb.openNamespace;
+    const deleteMock = localDb.deleteNamespaceFiles;
+    mockSecureStore[ACCOUNT_ID] = 'acc_signout';
+    mockSecureStore[ACCOUNT_EMAIL] = 'bye@example.com';
+    mockSecureStore[REFRESH_TOKEN] = 'refresh_signout';
+    useIdentityStore.setState({
+      accountId: 'acc_signout',
+      accountEmail: 'bye@example.com',
+      isAccount: true,
+      isAuthenticated: true,
+    });
+
+    // logout POSTs to /v1/auth/logout
+    mockFetchResponses.push({ status: 204, body: null });
+
+    await logout();
+
+    expect(mockSecureStore[ACCOUNT_ID]).toBeUndefined();
+    expect(mockSecureStore[ACCOUNT_EMAIL]).toBeUndefined();
+    expect(mockSecureStore[REFRESH_TOKEN]).toBeUndefined();
+    expect(openMock).toHaveBeenCalledWith(null);
+    expect(deleteMock).not.toHaveBeenCalled();
+    const state = useIdentityStore.getState();
+    expect(state.isAccount).toBe(false);
+    expect(state.accountId).toBeNull();
+    expect(state.accountEmail).toBeNull();
+    expect(state.isAuthenticated).toBe(false);
   });
 });
 
