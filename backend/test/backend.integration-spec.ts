@@ -20,6 +20,7 @@ import { CatalogService } from '../src/catalog/catalog.service';
 import { encodePatternArtifactV1 } from '../src/catalog/pattern-artifact-encoder';
 import { LocalObjectStorage } from '../src/catalog/storage/local-object-storage';
 import { SessionsService } from '../src/sessions/sessions.service';
+import { ProgressCheckpointService } from '../src/sessions/progress-checkpoint.service';
 import { StorageReconcilerService } from '../src/sessions/storage-reconciler.service';
 import {
   AuthIdentityEntity,
@@ -1080,6 +1081,355 @@ describe('Stitch Wish backend integration', () => {
       expect(
         (byTagLabel.body as { title: string }[]).map((item) => item.title),
       ).toContain('ITest Pick Alpha');
+    });
+  });
+
+  describe('progress sync', () => {
+    const palette = [
+      { dmcCode: '310', name: 'Black', rgbHex: '#000000' },
+      { dmcCode: 'B5200', name: 'Snow White', rgbHex: '#FFFFFF' },
+    ];
+
+    interface Ack {
+      opId: string;
+      status: 'applied' | 'duplicate' | 'superseded';
+    }
+    interface ForeignOp {
+      opId: string;
+      deviceId: string;
+      deviceSeq: number;
+      cellIndex: number;
+      desiredState: 'completed' | 'incomplete';
+      baseRevision: number;
+      serverRevision: number;
+      effective: boolean;
+    }
+    interface SyncResult {
+      revision: number;
+      terminalCompleted: boolean;
+      acknowledgements: Ack[];
+      operations: ForeignOp[];
+    }
+    interface IncomingOp {
+      opId: string;
+      deviceSeq: number;
+      cellIndex: number;
+      desiredState: 'completed' | 'incomplete';
+      baseRevision: number;
+    }
+
+    async function createAccount(): Promise<{
+      accountId: string;
+      accessToken: string;
+    }> {
+      const email = `progress-${randomUUID()}@example.test`;
+      await request(httpServer)
+        .post('/v1/auth/email/request')
+        .send({ email })
+        .expect(202);
+      const deliveryCount = localEmailSender.getDeliveries().length;
+      await emailDispatcher.dispatchOnce();
+      const delivery = localEmailSender
+        .getDeliveries()
+        .slice(deliveryCount)
+        .reverse()
+        .find((candidate) => candidate.toEmail === email);
+      if (delivery === undefined) {
+        throw new Error('Email OTP delivery was not recorded');
+      }
+      const verified = await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send({ email, code: delivery.code })
+        .expect(200);
+      return {
+        accountId: readStringRecord(verified.body, 'accountId'),
+        accessToken: readStringRecord(verified.body, 'accessToken'),
+      };
+    }
+
+    async function seedPattern(
+      title: string,
+      width: number,
+      height: number,
+    ): Promise<string> {
+      const catalog = app.get(CatalogService);
+      const grid = new Uint8Array(width * height).fill(1);
+      const encoded = encodePatternArtifactV1({ width, height, palette, grid });
+      const objectKey = `itest-progress/${title}/artifact.bin`;
+      await app.get(LocalObjectStorage).put(objectKey, encoded.bytes);
+      const pattern = await catalog.upsertPattern({
+        title,
+        creatorName: 'ITest Progress Team',
+        categoryCode: 'other',
+        width,
+        height,
+        paletteSize: palette.length,
+        artifactObjectKey: objectKey,
+        artifactChecksum: encoded.checksum,
+        artifactByteLength: encoded.byteLength,
+        artifactSchemaVersion: encoded.schemaVersion,
+        previewObjectKey: `itest-progress/${title}/preview.png`,
+        unlockPriceTier: null,
+        status: 'available',
+        publishedAt: new Date('2026-07-01T00:00:00.000Z'),
+        tagCodes: [],
+      });
+      return pattern.id;
+    }
+
+    async function prepareSession(
+      accessToken: string,
+      patternId: string,
+    ): Promise<string> {
+      const prepared = await request(httpServer)
+        .post('/v1/sessions/prepare')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ patternId })
+        .expect(201);
+      return readStringRecord(prepared.body, 'sessionId');
+    }
+
+    async function postSync(
+      accessToken: string,
+      sessionId: string,
+      deviceId: string,
+      sinceRevision: number,
+      operations: IncomingOp[],
+    ): Promise<SyncResult> {
+      const response = await request(httpServer)
+        .post(`/v1/sessions/${sessionId}/progress/sync`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ deviceId, sinceRevision, operations })
+        .expect(200);
+      return response.body as SyncResult;
+    }
+
+    async function readCellState(
+      sessionId: string,
+      cellIndex: number,
+    ): Promise<'completed' | 'incomplete' | null> {
+      const rows = (await dataSource.query(
+        `SELECT state FROM sessions.session_cell_state
+         WHERE session_id = $1 AND cell_index = $2`,
+        [sessionId, cellIndex],
+      )) as { state: 'completed' | 'incomplete' }[];
+      return rows[0]?.state ?? null;
+    }
+
+    it('converges two devices; a causally later Undo wins over an earlier stitch', async () => {
+      const account = await createAccount();
+      const patternId = await seedPattern('Converge', 2, 2);
+      const sessionId = await prepareSession(account.accessToken, patternId);
+      const devA = randomUUID();
+      const devB = randomUUID();
+
+      const stitch = await postSync(account.accessToken, sessionId, devA, 0, [
+        {
+          opId: randomUUID(),
+          deviceSeq: 1,
+          cellIndex: 0,
+          desiredState: 'completed',
+          baseRevision: 0,
+        },
+      ]);
+      expect(stitch.acknowledgements[0].status).toBe('applied');
+      expect(stitch.revision).toBe(1);
+      expect(await readCellState(sessionId, 0)).toBe('completed');
+
+      // Device B pulls the stitch, then issues a causally-later Undo.
+      const pull = await postSync(account.accessToken, sessionId, devB, 0, []);
+      expect(pull.operations.map((operation) => operation.cellIndex)).toContain(0);
+      expect(pull.revision).toBe(1);
+
+      const undo = await postSync(
+        account.accessToken,
+        sessionId,
+        devB,
+        pull.revision,
+        [
+          {
+            opId: randomUUID(),
+            deviceSeq: 1,
+            cellIndex: 0,
+            desiredState: 'incomplete',
+            baseRevision: 1,
+          },
+        ],
+      );
+      expect(undo.acknowledgements[0].status).toBe('applied');
+      expect(await readCellState(sessionId, 0)).toBe('incomplete');
+
+      // Device A converges by pulling the foreign Undo.
+      const converge = await postSync(account.accessToken, sessionId, devA, 1, []);
+      expect(
+        converge.operations.some(
+          (operation) =>
+            operation.cellIndex === 0 && operation.desiredState === 'incomplete',
+        ),
+      ).toBe(true);
+    });
+
+    it('resolves genuinely concurrent completed-vs-incomplete to completed; unrelated cells merge independently', async () => {
+      const account = await createAccount();
+      const patternId = await seedPattern('Concurrent', 4, 4);
+      const sessionId = await prepareSession(account.accessToken, patternId);
+      const devA = randomUUID();
+      const devB = randomUUID();
+
+      // A completes cell 5.
+      await postSync(account.accessToken, sessionId, devA, 0, [
+        {
+          opId: randomUUID(),
+          deviceSeq: 1,
+          cellIndex: 5,
+          desiredState: 'completed',
+          baseRevision: 0,
+        },
+      ]);
+      // B, unaware (baseRevision 0), concurrently marks cell 5 incomplete.
+      const concurrent = await postSync(account.accessToken, sessionId, devB, 0, [
+        {
+          opId: randomUUID(),
+          deviceSeq: 1,
+          cellIndex: 5,
+          desiredState: 'incomplete',
+          baseRevision: 0,
+        },
+      ]);
+      expect(concurrent.acknowledgements[0].status).toBe('applied');
+      expect(await readCellState(sessionId, 5)).toBe('completed');
+
+      // Unrelated cells merge independently.
+      await postSync(account.accessToken, sessionId, devA, 0, [
+        {
+          opId: randomUUID(),
+          deviceSeq: 2,
+          cellIndex: 10,
+          desiredState: 'completed',
+          baseRevision: 0,
+        },
+      ]);
+      await postSync(account.accessToken, sessionId, devB, 0, [
+        {
+          opId: randomUUID(),
+          deviceSeq: 2,
+          cellIndex: 11,
+          desiredState: 'completed',
+          baseRevision: 0,
+        },
+      ]);
+      expect(await readCellState(sessionId, 10)).toBe('completed');
+      expect(await readCellState(sessionId, 11)).toBe('completed');
+    });
+
+    it('is idempotent: re-uploading an acknowledged batch is a no-op', async () => {
+      const account = await createAccount();
+      const patternId = await seedPattern('Idempotent', 2, 2);
+      const sessionId = await prepareSession(account.accessToken, patternId);
+      const devA = randomUUID();
+      const batch: IncomingOp[] = [
+        {
+          opId: randomUUID(),
+          deviceSeq: 1,
+          cellIndex: 0,
+          desiredState: 'completed',
+          baseRevision: 0,
+        },
+      ];
+
+      const first = await postSync(account.accessToken, sessionId, devA, 0, batch);
+      expect(first.acknowledgements[0].status).toBe('applied');
+
+      const replay = await postSync(account.accessToken, sessionId, devA, 0, batch);
+      expect(replay.acknowledgements[0].status).toBe('duplicate');
+      expect(replay.revision).toBe(first.revision);
+      expect(await readCellState(sessionId, 0)).toBe('completed');
+    });
+
+    it('accepts terminal completion and supersedes late operations without reopening', async () => {
+      const account = await createAccount();
+      const patternId = await seedPattern('Terminal', 2, 2);
+      const sessionId = await prepareSession(account.accessToken, patternId);
+      const devA = randomUUID();
+
+      const ops: IncomingOp[] = [0, 1, 2, 3].map((cellIndex, index) => ({
+        opId: randomUUID(),
+        deviceSeq: index + 1,
+        cellIndex,
+        desiredState: 'completed',
+        baseRevision: 0,
+      }));
+      const applied = await postSync(account.accessToken, sessionId, devA, 0, ops);
+      expect(applied.acknowledgements.every((ack) => ack.status === 'applied')).toBe(
+        true,
+      );
+
+      const completed = await request(httpServer)
+        .post(`/v1/sessions/${sessionId}/progress/complete`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ deviceId: devA })
+        .expect(200);
+      expect((completed.body as { terminalCompleted: boolean }).terminalCompleted).toBe(
+        true,
+      );
+
+      const late = await postSync(account.accessToken, sessionId, devA, applied.revision, [
+        {
+          opId: randomUUID(),
+          deviceSeq: 5,
+          cellIndex: 0,
+          desiredState: 'incomplete',
+          baseRevision: 999,
+        },
+      ]);
+      expect(late.acknowledgements[0].status).toBe('superseded');
+      expect(late.terminalCompleted).toBe(true);
+      expect(await readCellState(sessionId, 0)).toBe('completed');
+    });
+
+    it('rebases a device offline past compaction without double-applying its replayed operations', async () => {
+      const account = await createAccount();
+      const patternId = await seedPattern('Compaction', 2, 2);
+      const sessionId = await prepareSession(account.accessToken, patternId);
+      const devA = randomUUID();
+
+      const ops: IncomingOp[] = [0, 1, 2, 3].map((cellIndex, index) => ({
+        opId: randomUUID(),
+        deviceSeq: index + 1,
+        cellIndex,
+        desiredState: 'completed',
+        baseRevision: 0,
+      }));
+      const applied = await postSync(account.accessToken, sessionId, devA, 0, ops);
+
+      await app.get(ProgressCheckpointService).compactOnce(sessionId);
+      const remaining = (await dataSource.query(
+        `SELECT COUNT(*)::int AS n FROM sessions.progress_operations
+         WHERE session_id = $1`,
+        [sessionId],
+      )) as { n: number }[];
+      expect(remaining[0].n).toBe(0);
+
+      // The offline device replays its already-applied ops verbatim.
+      const replay = await postSync(account.accessToken, sessionId, devA, 0, ops);
+      expect(replay.acknowledgements.every((ack) => ack.status === 'duplicate')).toBe(
+        true,
+      );
+      expect(replay.revision).toBe(applied.revision);
+      for (const cellIndex of [0, 1, 2, 3]) {
+        expect(await readCellState(sessionId, cellIndex)).toBe('completed');
+      }
+
+      // The folded checkpoint carries the completed cells for a rebasing device.
+      const checkpoint = await request(httpServer)
+        .get(`/v1/sessions/${sessionId}/progress/checkpoint`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      const packed = Buffer.from(
+        readStringRecord(checkpoint.body, 'packedBitmapBase64'),
+        'base64',
+      );
+      expect(packed[0] & 0b1111).toBe(0b1111);
     });
   });
 });

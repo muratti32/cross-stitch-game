@@ -19,12 +19,18 @@ import {
   StitchingSessionEntity,
   SessionProgressFlagEntity,
   ObjectRegistryEntity,
+  ProgressOperationEntity,
+  SessionCellStateEntity,
+  SessionCheckpointEntity,
+  SessionDeviceWatermarkEntity,
+  SessionSyncStateEntity,
 } from '../sessions/entities';
 import { CreateAuthSchema1783987200000 } from './migrations/1783987200000-CreateAuthSchema';
 import { CreateJobsSchema1783900800000 } from './migrations/1783900800000-CreateJobsSchema';
 import { CreateCatalogSchema1784073600000 } from './migrations/1784073600000-CreateCatalogSchema';
 import { CreateSessionsSchema1784160000000 } from './migrations/1784160000000-CreateSessionsSchema';
 import { CreateEmailAuthSchema1784160000001 } from './migrations/1784160000001-CreateEmailAuthSchema';
+import { CreateProgressSyncSchema1784246400000 } from './migrations/1784246400000-CreateProgressSyncSchema';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -44,6 +50,11 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       StitchingSessionEntity,
       SessionProgressFlagEntity,
       ObjectRegistryEntity,
+      SessionSyncStateEntity,
+      ProgressOperationEntity,
+      SessionCellStateEntity,
+      SessionDeviceWatermarkEntity,
+      SessionCheckpointEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -51,6 +62,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateCatalogSchema1784073600000,
       CreateSessionsSchema1784160000000,
       CreateEmailAuthSchema1784160000001,
+      CreateProgressSyncSchema1784246400000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',
