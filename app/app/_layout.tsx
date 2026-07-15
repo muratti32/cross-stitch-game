@@ -6,6 +6,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { initDatabase, getHandedness } from '../src/local-db';
 import { useGameplayStore } from '../src/store/gameplayStore';
 import { bootstrap } from '../src/identity/guestIdentity';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -41,10 +42,12 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <QueryProvider>
-        <Slot />
-      </QueryProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <QueryProvider>
+          <Slot />
+        </QueryProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

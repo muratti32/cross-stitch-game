@@ -8,6 +8,7 @@ import { HealthModule } from './health/health.module';
 import { JobsModule } from './jobs/jobs.module';
 import { CatalogModule } from './catalog/catalog.module';
 import { SessionsModule } from './sessions/sessions.module';
+import { ConversionModule } from './conversion';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SessionsModule } from './sessions/sessions.module';
     JobsModule,
     CatalogModule,
     SessionsModule,
+    ConversionModule,
   ],
 })
 export class ApiAppModule {}

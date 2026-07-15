@@ -45,7 +45,8 @@ The JSON response contains:
 - `statistics`: `width`, `height`, `total_stitchable_cells`, `distinct_colors`,
   and `per_color`. Each `per_color` item has the 1-based `palette_index`,
   `dmc_code`, and `count`, in palette order.
-- `engine_version` and the accepted `recipe_version`.
+- `engine_version`, immutable `dmc_palette_version`, and the accepted
+  `recipe_version`.
 
 `GET /v1/health` returns `{"status":"ok","engine_version":"1.0.0"}`.
 

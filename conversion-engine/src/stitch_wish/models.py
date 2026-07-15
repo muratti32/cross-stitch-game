@@ -37,6 +37,7 @@ class ConvertResponse(BaseModel):
     preview_png: str
     statistics: ConversionStatistics
     engine_version: str
+    dmc_palette_version: str
     recipe_version: str
 
 
@@ -48,4 +49,3 @@ class HealthResponse(BaseModel):
 class ErrorResponse(BaseModel):
     error_code: str
     message: str
-

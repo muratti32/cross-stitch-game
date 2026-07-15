@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppConfigModule } from '../config/app-config.module';
@@ -12,6 +12,7 @@ import { JobsWorkerRuntimeService } from './jobs-worker-runtime.service';
 import { OutboxDispatcherService } from './outbox-dispatcher.service';
 import { ProcessingJobsRepository } from './processing-jobs.repository';
 import { SessionsModule } from '../sessions/sessions.module';
+import { ConversionModule } from '../conversion/conversion.module';
 
 @Module({
   controllers: [JobsController],
@@ -39,7 +40,12 @@ export class JobsModule {}
     JobsWorkerRuntimeService,
     OutboxDispatcherService,
   ],
-  imports: [AppConfigModule, JobsModule, SessionsModule],
+  imports: [
+    AppConfigModule,
+    JobsModule,
+    SessionsModule,
+    forwardRef(() => ConversionModule),
+  ],
   providers: [
     DemoJobConsumerService,
     DemoJobsQueueService,

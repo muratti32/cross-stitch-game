@@ -90,4 +90,14 @@ export class AppConfigService {
       infer: true,
     });
   }
+
+  get conversionEngineUrl(): string {
+    return this.configService.get('CONVERSION_ENGINE_URL', { infer: true });
+  }
+
+  get conversionWorkerConcurrency(): number {
+    return this.configService.get('CONVERSION_WORKER_CONCURRENCY', {
+      infer: true,
+    });
+  }
 }

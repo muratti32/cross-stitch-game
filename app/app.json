@@ -35,7 +35,13 @@
         }
       ],
       "expo-status-bar",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Stitch Wish uses your selected photo only on this device to frame a Personal Pattern before conversion."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

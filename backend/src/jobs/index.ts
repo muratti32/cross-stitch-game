@@ -1,4 +1,6 @@
 export {
+  CONVERSION_JOB_EVENT_NAME,
+  CONVERSION_JOB_TYPE,
   DEMO_JOB_EVENT_NAME,
   DEMO_JOB_TYPE,
   DEMO_JOBS_QUEUE_NAME,
@@ -34,6 +36,8 @@ export {
   JsonObject,
   JsonPrimitive,
   JsonValue,
+  ProcessingJobEventName,
+  ProcessingJobQueueResult,
 } from './jobs.types';
 export { OutboxDispatcherService } from './outbox-dispatcher.service';
 export {
@@ -42,4 +46,3 @@ export {
   ProcessingJobClaim,
   ProcessingJobsRepository,
 } from './processing-jobs.repository';
-

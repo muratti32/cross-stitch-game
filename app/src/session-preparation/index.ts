@@ -9,10 +9,11 @@ import {
   removePendingCancel,
   getActiveIdentity,
   createSession,
-  findActiveCatalogSession,
+  findActiveRemotePatternSession,
   getSession,
   deleteSession,
   StitchingSession,
+  PatternSource,
 } from '../local-db';
 import { apiFetch } from '../api/apiFetch';
 import { Config } from '../config';
@@ -101,10 +102,25 @@ export async function prepareCatalogSession(
   patternId: string,
   patternInfo: PreparePatternInfo,
 ): Promise<StitchingSession> {
+  return prepareRemoteSession(patternId, patternInfo, 'catalog');
+}
+
+export async function preparePersonalSession(
+  patternId: string,
+  patternInfo: PreparePatternInfo,
+): Promise<StitchingSession> {
+  return prepareRemoteSession(patternId, patternInfo, 'personal');
+}
+
+async function prepareRemoteSession(
+  patternId: string,
+  patternInfo: PreparePatternInfo,
+  source: Extract<PatternSource, 'catalog' | 'personal'>,
+): Promise<StitchingSession> {
   // Prepare is idempotent on (identity, pattern) server-side; mirror that
   // locally so repeated taps resume the same local session instead of
   // inserting duplicates.
-  const existing = await findActiveCatalogSession(patternId);
+  const existing = await findActiveRemotePatternSession(patternId, source);
   if (existing) {
     if (existing.status === 'preparing') {
       await retryDownload(existing.id).catch(() => undefined);
@@ -130,7 +146,7 @@ export async function prepareCatalogSession(
   const session = await createSession(
     patternId,
     data.artifact.checksum,
-    'catalog',
+    source,
     'preparing',
     data.sessionId,
     patternInfo,
@@ -139,6 +155,29 @@ export async function prepareCatalogSession(
   void downloadAndRegister(session.id, patternId, data.grant.url, data.artifact.checksum);
 
   return session;
+}
+
+export async function waitUntilSessionReady(
+  localSessionId: string,
+  timeoutMilliseconds = 90_000,
+): Promise<StitchingSession> {
+  const deadline = Date.now() + timeoutMilliseconds;
+  while (Date.now() < deadline) {
+    const session = await getSession(localSessionId);
+    if (session === null) {
+      throw new Error('Prepared session disappeared');
+    }
+    if (session.status !== 'preparing') {
+      return session;
+    }
+    if (session.errorNote) {
+      throw new Error(session.errorNote);
+    }
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+  throw new Error(
+    'Pattern is still downloading. Open it from the Play tab shortly.',
+  );
 }
 
 export async function retryDownload(localSessionId: string): Promise<void> {

@@ -222,7 +222,7 @@ export default function SessionReadyScreen() {
   const bPattern = patternData && session
     ? BUNDLED_PATTERNS.find((p) => p.id === session.patternId)
     : null;
-  const patternTitle = bPattern?.title || 'Stitch Session';
+  const patternTitle = bPattern?.title || session.title || 'Stitch Session';
 
   return (
     <Screen style={styles.fullscreenContainer}>

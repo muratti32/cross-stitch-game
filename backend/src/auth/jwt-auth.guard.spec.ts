@@ -27,12 +27,9 @@ function guardWithPayload(
   payload: Record<string, unknown> | Error,
 ): JwtAuthGuard {
   const jwtService = {
-    verifyAsync: jest.fn(async () => {
-      if (payload instanceof Error) {
-        throw payload;
-      }
-      return payload;
-    }),
+    verifyAsync: jest.fn(() =>
+      payload instanceof Error ? Promise.reject(payload) : Promise.resolve(payload),
+    ),
   } as unknown as JwtService;
   return new JwtAuthGuard(jwtService);
 }

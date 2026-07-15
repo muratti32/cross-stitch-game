@@ -6,21 +6,25 @@ import {
   DEMO_JOB_EVENT_NAME,
   DEMO_JOBS_QUEUE_NAME,
 } from './jobs.constants';
-import { DemoJobQueueData, DemoJobQueueResult } from './jobs.types';
+import {
+  DemoJobQueueData,
+  ProcessingJobEventName,
+  ProcessingJobQueueResult,
+} from './jobs.types';
 
 export type DemoBullJob = Job<
   DemoJobQueueData,
-  DemoJobQueueResult,
-  typeof DEMO_JOB_EVENT_NAME
+  ProcessingJobQueueResult,
+  ProcessingJobEventName
 >;
 
 export type DemoBullQueue = Queue<
   DemoJobQueueData,
-  DemoJobQueueResult,
-  typeof DEMO_JOB_EVENT_NAME,
+  ProcessingJobQueueResult,
+  ProcessingJobEventName,
   DemoJobQueueData,
-  DemoJobQueueResult,
-  typeof DEMO_JOB_EVENT_NAME
+  ProcessingJobQueueResult,
+  ProcessingJobEventName
 >;
 
 @Injectable()
@@ -32,11 +36,11 @@ export class DemoJobsQueueService implements OnModuleDestroy {
   constructor(config: AppConfigService) {
     this.processingQueue = new Queue<
       DemoJobQueueData,
-      DemoJobQueueResult,
-      typeof DEMO_JOB_EVENT_NAME,
+      ProcessingJobQueueResult,
+      ProcessingJobEventName,
       DemoJobQueueData,
-      DemoJobQueueResult,
-      typeof DEMO_JOB_EVENT_NAME
+      ProcessingJobQueueResult,
+      ProcessingJobEventName
     >(DEMO_JOBS_QUEUE_NAME, {
       connection: {
         connectTimeout: 5_000,
@@ -66,14 +70,18 @@ export class DemoJobsQueueService implements OnModuleDestroy {
   async publish(
     outboxId: string,
     data: DemoJobQueueData,
+    eventName: ProcessingJobEventName = DEMO_JOB_EVENT_NAME,
   ): Promise<DemoBullJob> {
     const existingJob = await this.processingQueue.getJob(outboxId);
     if (existingJob === undefined) {
-      return this.processingQueue.add(DEMO_JOB_EVENT_NAME, data, {
+      return this.processingQueue.add(eventName, data, {
         jobId: outboxId,
       });
     }
-    if (existingJob.data.processingJobId !== data.processingJobId) {
+    if (
+      existingJob.data.processingJobId !== data.processingJobId ||
+      existingJob.name !== eventName
+    ) {
       throw new Error(
         `BullMQ job ${outboxId} references a different Processing Job`,
       );

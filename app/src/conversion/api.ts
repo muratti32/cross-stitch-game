@@ -1,0 +1,125 @@
+import { Platform } from 'react-native';
+
+import { apiFetch } from '@/api/apiFetch';
+import { Config } from '@/config';
+import type { ConversionProfile } from './profiles';
+
+export interface PersonalPattern {
+  createdAt: string;
+  height: number;
+  id: string;
+  paletteSize: number;
+  previewUrl: string;
+  title: string;
+  width: number;
+}
+
+interface ConversionJob {
+  errorMessage: string | null;
+  id: string;
+  pattern: PersonalPattern | null;
+  status: 'pending' | 'dispatched' | 'running' | 'completed' | 'failed';
+}
+
+export async function createPhotoConversion(input: {
+  maxColors: number;
+  profile: ConversionProfile;
+  shortEdgeCells: number;
+  title: string;
+  uploadUri: string;
+}): Promise<string> {
+  const body = new FormData();
+  body.append('profile', input.profile);
+  body.append('title', input.title);
+  if (input.profile === 'custom') {
+    body.append('shortEdgeCells', String(input.shortEdgeCells));
+    body.append('maxColors', String(input.maxColors));
+  }
+  if (Platform.OS === 'web') {
+    const file = await fetch(input.uploadUri).then((response) => response.blob());
+    body.append('artwork', file, 'conversion-upload.jpg');
+  } else {
+    body.append(
+      'artwork',
+      {
+        name: 'conversion-upload.jpg',
+        type: 'image/jpeg',
+        uri: input.uploadUri,
+      } as unknown as Blob,
+    );
+  }
+
+  const response = await apiFetch('/v1/conversions/photo', {
+    body,
+    method: 'POST',
+  });
+  if (!response.ok) {
+    const message = await readServerMessage(response);
+    throw new Error(message ?? `Conversion request failed (${response.status})`);
+  }
+  const result = (await response.json()) as { id?: unknown };
+  if (typeof result.id !== 'string') {
+    throw new Error('Conversion request response was malformed');
+  }
+  return result.id;
+}
+
+export async function waitForConversion(
+  jobId: string,
+  onStatus?: (status: ConversionJob['status']) => void,
+): Promise<PersonalPattern> {
+  const deadline = Date.now() + 5 * 60 * 1000;
+  while (Date.now() < deadline) {
+    const response = await apiFetch(`/v1/conversions/jobs/${jobId}`);
+    if (!response.ok) {
+      throw new Error(`Could not read Pattern Conversion (${response.status})`);
+    }
+    const job = (await response.json()) as ConversionJob;
+    onStatus?.(job.status);
+    if (job.status === 'completed' && job.pattern !== null) {
+      return withAbsolutePreviewUrl(job.pattern);
+    }
+    if (job.status === 'failed') {
+      throw new Error(job.errorMessage ?? 'Pattern Conversion failed');
+    }
+    await delay(1200);
+  }
+  throw new Error('Pattern Conversion is still processing. Try again shortly.');
+}
+
+export async function listPersonalPatterns(): Promise<PersonalPattern[]> {
+  const response = await apiFetch('/v1/conversions/patterns');
+  if (!response.ok) {
+    throw new Error(`Could not load Personal Patterns (${response.status})`);
+  }
+  const body = (await response.json()) as PersonalPattern[];
+  return body.map(withAbsolutePreviewUrl);
+}
+
+function withAbsolutePreviewUrl(pattern: PersonalPattern): PersonalPattern {
+  return {
+    ...pattern,
+    previewUrl: pattern.previewUrl.startsWith('http')
+      ? pattern.previewUrl
+      : `${Config.apiBaseUrl}${pattern.previewUrl}`,
+  };
+}
+
+async function readServerMessage(response: Response): Promise<string | null> {
+  try {
+    const body = (await response.json()) as { message?: unknown };
+    if (typeof body.message === 'string') {
+      return body.message;
+    }
+    if (Array.isArray(body.message)) {
+      return body.message.filter((item): item is string => typeof item === 'string').join(', ');
+    }
+  } catch {
+    // The status fallback remains actionable when the server has no JSON body.
+  }
+  return null;
+}
+
+function delay(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}

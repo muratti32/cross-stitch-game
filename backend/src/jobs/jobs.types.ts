@@ -21,12 +21,21 @@ export interface DemoJobQueueData {
   processingJobId: string;
 }
 
+export type ProcessingJobEventName =
+  | typeof import('./jobs.constants').DEMO_JOB_EVENT_NAME
+  | typeof import('./jobs.constants').CONVERSION_JOB_EVENT_NAME;
+
 export type DemoJobQueueOutcome =
   | 'completed'
   | 'resumed-and-completed'
   | 'terminal-replay';
 
 export interface DemoJobQueueResult {
+  outcome: DemoJobQueueOutcome;
+  processingJobId: string;
+}
+
+export interface ProcessingJobQueueResult {
   outcome: DemoJobQueueOutcome;
   processingJobId: string;
 }
@@ -45,4 +54,3 @@ export interface DemoJobView {
   createdAt: string;
   updatedAt: string;
 }
-

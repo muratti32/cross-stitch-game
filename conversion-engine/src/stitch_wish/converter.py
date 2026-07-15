@@ -14,6 +14,7 @@ from PIL import Image, ImageFile, UnidentifiedImageError
 from .colors import DmcColor, load_dmc_colors, nearest_dmc
 from .constants import (
     ALPHA_THRESHOLD,
+    DMC_PALETTE_VERSION,
     ENGINE_VERSION,
     MAX_GRID_EDGE,
     MAX_COLORS,
@@ -359,5 +360,6 @@ def convert_image(
             distinct_colors=len(ordered_colors),
         ),
         engine_version=ENGINE_VERSION,
+        dmc_palette_version=DMC_PALETTE_VERSION,
         recipe_version=recipe_version,
     )

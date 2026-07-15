@@ -1,4 +1,6 @@
 export type EnvironmentVariables = {
+  CONVERSION_ENGINE_URL: string;
+  CONVERSION_WORKER_CONCURRENCY: number;
   DATABASE_URL: string;
   JWT_ACCESS_TTL_SECONDS: number;
   JWT_SECRET: string | undefined;
@@ -26,6 +28,7 @@ const DEFAULT_EMAIL_OTP_MAX_ATTEMPTS = 5;
 const DEFAULT_EMAIL_OTP_RATE_LIMIT_PER_EMAIL = 5;
 const DEFAULT_EMAIL_OTP_RATE_LIMIT_PER_IP = 20;
 const REDIS_PROTOCOLS = new Set(['redis:', 'rediss:']);
+const HTTP_PROTOCOLS = new Set(['http:', 'https:']);
 
 function parseUrl(
   value: unknown,
@@ -127,6 +130,20 @@ export function parseEnvironment(
   environment: Record<string, unknown>,
 ): EnvironmentVariables {
   return {
+    CONVERSION_ENGINE_URL:
+      environment.CONVERSION_ENGINE_URL === undefined ||
+      environment.CONVERSION_ENGINE_URL === ''
+        ? 'http://127.0.0.1:8000'
+        : parseUrl(
+            environment.CONVERSION_ENGINE_URL,
+            'CONVERSION_ENGINE_URL',
+            HTTP_PROTOCOLS,
+          ),
+    CONVERSION_WORKER_CONCURRENCY: parseDurationSeconds(
+      environment.CONVERSION_WORKER_CONCURRENCY,
+      'CONVERSION_WORKER_CONCURRENCY',
+      2,
+    ),
     DATABASE_URL: parseUrl(
       environment.DATABASE_URL,
       'DATABASE_URL',

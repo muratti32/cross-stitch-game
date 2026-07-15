@@ -1,30 +1,32 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { Job, Worker } from 'bullmq';
 
 import { AppConfigService } from '../config/app-config.service';
+import { ConversionJobConsumerService } from '../conversion/conversion-job-consumer.service';
 import { ProcessingJobStatus } from './entities';
 import {
-  DEMO_JOB_EVENT_NAME,
+  CONVERSION_JOB_EVENT_NAME,
   DEMO_JOBS_QUEUE_NAME,
 } from './jobs.constants';
 import {
   DemoJobPayload,
   DemoJobQueueData,
-  DemoJobQueueResult,
+  ProcessingJobEventName,
+  ProcessingJobQueueResult,
   DemoJobResult,
 } from './jobs.types';
 import { ProcessingJobsRepository } from './processing-jobs.repository';
 
 type DemoJobWorker = Worker<
   DemoJobQueueData,
-  DemoJobQueueResult,
-  typeof DEMO_JOB_EVENT_NAME
+  ProcessingJobQueueResult,
+  ProcessingJobEventName
 >;
 
 type DemoJobWorkerJob = Job<
   DemoJobQueueData,
-  DemoJobQueueResult,
-  typeof DEMO_JOB_EVENT_NAME
+  ProcessingJobQueueResult,
+  ProcessingJobEventName
 >;
 
 export class ProcessingJobNotReadyError extends Error {
@@ -38,13 +40,17 @@ export class ProcessingJobNotReadyError extends Error {
 export class DemoJobConsumerService {
   private readonly logger = new Logger(DemoJobConsumerService.name);
   private readonly redisUrl: string;
+  private readonly workerConcurrency: number;
   private worker: DemoJobWorker | null = null;
 
   constructor(
     config: AppConfigService,
+    @Inject(forwardRef(() => ConversionJobConsumerService))
+    private readonly conversionJobs: ConversionJobConsumerService,
     private readonly processingJobs: ProcessingJobsRepository,
   ) {
     this.redisUrl = config.redisUrl;
+    this.workerConcurrency = config.conversionWorkerConcurrency;
   }
 
   async start(): Promise<void> {
@@ -54,13 +60,13 @@ export class DemoJobConsumerService {
 
     const worker = new Worker<
       DemoJobQueueData,
-      DemoJobQueueResult,
-      typeof DEMO_JOB_EVENT_NAME
+      ProcessingJobQueueResult,
+      ProcessingJobEventName
     >(
       DEMO_JOBS_QUEUE_NAME,
-      (job: DemoJobWorkerJob) => this.processDelivery(job.data),
+      (job: DemoJobWorkerJob) => this.processQueueDelivery(job),
       {
-        concurrency: 4,
+        concurrency: this.workerConcurrency,
         connection: {
           maxRetriesPerRequest: null,
           url: this.redisUrl,
@@ -82,6 +88,19 @@ export class DemoJobConsumerService {
           `BullMQ demo delivery ${queueJobId} failed: ${error.message}`,
           error.stack,
         );
+        if (
+          job?.name === CONVERSION_JOB_EVENT_NAME &&
+          job.attemptsMade >= (job.opts.attempts ?? 1)
+        ) {
+          void this.conversionJobs
+            .failExhausted(job.data.processingJobId, error.message)
+            .catch((cleanupError: unknown) => {
+              this.logger.error(
+                `Could not finalize exhausted Pattern Conversion ${job.data.processingJobId}: ${errorMessage(cleanupError)}`,
+                errorStack(cleanupError),
+              );
+            });
+        }
       },
     );
 
@@ -106,7 +125,7 @@ export class DemoJobConsumerService {
 
   async processDelivery(
     data: DemoJobQueueData,
-  ): Promise<DemoJobQueueResult> {
+  ): Promise<ProcessingJobQueueResult> {
     const claim = await this.processingJobs.claimForWorker(
       data.processingJobId,
     );
@@ -172,6 +191,15 @@ export class DemoJobConsumerService {
       }
       throw asError(error);
     }
+  }
+
+  private processQueueDelivery(
+    job: DemoJobWorkerJob,
+  ): Promise<ProcessingJobQueueResult> {
+    if (job.name === CONVERSION_JOB_EVENT_NAME) {
+      return this.conversionJobs.processDelivery(job.data.processingJobId);
+    }
+    return this.processDelivery(job.data);
   }
 }
 

@@ -16,6 +16,11 @@ import {
 } from '../catalog/entities';
 import { JobOutboxEntity, ProcessingJobEntity } from '../jobs/entities';
 import {
+  ConversionRecipeEntity,
+  PatternConversionEntity,
+  PersonalPatternEntity,
+} from '../conversion/entities';
+import {
   StitchingSessionEntity,
   SessionProgressFlagEntity,
   ObjectRegistryEntity,
@@ -31,6 +36,7 @@ import { CreateCatalogSchema1784073600000 } from './migrations/1784073600000-Cre
 import { CreateSessionsSchema1784160000000 } from './migrations/1784160000000-CreateSessionsSchema';
 import { CreateEmailAuthSchema1784160000001 } from './migrations/1784160000001-CreateEmailAuthSchema';
 import { CreateProgressSyncSchema1784246400000 } from './migrations/1784246400000-CreateProgressSyncSchema';
+import { CreatePatternConversionSchema1784332800000 } from './migrations/1784332800000-CreatePatternConversionSchema';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -55,6 +61,9 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       SessionCellStateEntity,
       SessionDeviceWatermarkEntity,
       SessionCheckpointEntity,
+      PatternConversionEntity,
+      PersonalPatternEntity,
+      ConversionRecipeEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -63,6 +72,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateSessionsSchema1784160000000,
       CreateEmailAuthSchema1784160000001,
       CreateProgressSyncSchema1784246400000,
+      CreatePatternConversionSchema1784332800000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

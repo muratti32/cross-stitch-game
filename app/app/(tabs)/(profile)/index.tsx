@@ -1,19 +1,71 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Pressable, ActivityIndicator } from 'react-native';
-import { Screen, EmptyState } from '@/components';
+import { Screen, EmptyState, Card, CachedImage, Button } from '@/components';
 import { Theme } from '@/theme/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { shortenGuestId } from '@/identity/identityLogic';
+import { useRouter } from 'expo-router';
+import { listPersonalPatterns, type PersonalPattern } from '@/conversion';
+import { preparePersonalSession, waitUntilSessionReady } from '@/session-preparation';
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<'my-patterns' | 'liked'>('my-patterns');
-  const { guestId, guestCreatedAt, isAuthenticated, isPending, isOfflinePending, bootstrap } = useIdentityStore();
+  const { guestId, guestCreatedAt, accountEmail, isAccount, isAuthenticated, isPending, isOfflinePending, bootstrap } = useIdentityStore();
+  const [personalPatterns, setPersonalPatterns] = useState<PersonalPattern[]>([]);
+  const [patternsLoading, setPatternsLoading] = useState(false);
+  const [openingPatternId, setOpeningPatternId] = useState<string | null>(null);
+  const [patternsError, setPatternsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isAccount || activeTab !== 'my-patterns') {
+      setPersonalPatterns([]);
+      return;
+    }
+    let active = true;
+    setPatternsLoading(true);
+    setPatternsError(null);
+    listPersonalPatterns()
+      .then((patterns) => {
+        if (active) setPersonalPatterns(patterns);
+      })
+      .catch((error: unknown) => {
+        if (active) {
+          setPatternsError(error instanceof Error ? error.message : String(error));
+        }
+      })
+      .finally(() => {
+        if (active) setPatternsLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [activeTab, isAccount]);
 
   const playerStats = {
     coins: 0,
-    creationsCount: 0,
+    creationsCount: personalPatterns.length,
     completedCount: 0,
+  };
+
+  const openPersonalPattern = async (pattern: PersonalPattern) => {
+    setOpeningPatternId(pattern.id);
+    setPatternsError(null);
+    try {
+      const session = await preparePersonalSession(pattern.id, {
+        height: pattern.height,
+        previewUrl: pattern.previewUrl,
+        title: pattern.title,
+        width: pattern.width,
+      });
+      const ready = await waitUntilSessionReady(session.id);
+      router.push(`/(tabs)/(play)/${ready.id}`);
+    } catch (error: unknown) {
+      setPatternsError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setOpeningPatternId(null);
+    }
   };
 
   const handleEditProfile = () => {
@@ -45,8 +97,10 @@ export default function ProfileScreen() {
             <Ionicons name="person" size={48} color={Theme.colors.accentRose} />
           </View>
           
-          <Text style={styles.displayName}>Guest Player</Text>
-          <Text style={styles.username}>@{shortenGuestId(guestId || '')}</Text>
+          <Text style={styles.displayName}>{isAccount ? 'Registered Player' : 'Guest Player'}</Text>
+          <Text style={styles.username}>
+            {isAccount ? accountEmail : `@${shortenGuestId(guestId || '')}`}
+          </Text>
           
           {guestCreatedAt && (
             <Text style={styles.sinceText}>
@@ -108,13 +162,49 @@ export default function ProfileScreen() {
 
       {/* List content / Empty States */}
       <View style={styles.content}>
-        {activeTab === 'my-patterns' ? (
+        {activeTab === 'my-patterns' && !isAccount ? (
+          <EmptyState
+            icon="person-circle-outline"
+            title="Sign in for Personal Patterns"
+            body="A Registered Account is required to create and privately own converted photo patterns."
+            actionLabel="Sign in"
+            onAction={() => router.push('/(tabs)/(settings)/sign-in')}
+            actionVariant="rose"
+          />
+        ) : activeTab === 'my-patterns' && patternsLoading ? (
+          <View style={styles.patternLoader}>
+            <ActivityIndicator color={Theme.colors.accentRose} />
+          </View>
+        ) : activeTab === 'my-patterns' && personalPatterns.length > 0 ? (
+          <View style={styles.patternList}>
+            {personalPatterns.map((pattern) => (
+              <Card key={pattern.id} style={styles.patternCard}>
+                <CachedImage uri={pattern.previewUrl} style={styles.patternPreview} />
+                <View style={styles.patternInfo}>
+                  <Text style={styles.patternTitle} numberOfLines={1}>{pattern.title}</Text>
+                  <Text style={styles.patternMeta}>
+                    {pattern.width}×{pattern.height} · {pattern.paletteSize} colors
+                  </Text>
+                </View>
+                <Button
+                  title="Play"
+                  variant="sage"
+                  loading={openingPatternId === pattern.id}
+                  disabled={openingPatternId !== null}
+                  onPress={() => void openPersonalPattern(pattern)}
+                  style={styles.playButton}
+                />
+              </Card>
+            ))}
+            {patternsError && <Text style={styles.patternError}>{patternsError}</Text>}
+          </View>
+        ) : activeTab === 'my-patterns' ? (
           <EmptyState
             icon="color-palette-outline"
             title="No Personal Creations"
             body="You haven't converted any photos or generated AI art yet. Head over to the Create tab to start your first masterwork!"
             actionLabel="Start Creating"
-            onAction={() => console.log('Navigating to Create tab...')}
+            onAction={() => router.push('/(tabs)/(create)/photo-import')}
             actionVariant="rose"
           />
         ) : (
@@ -237,6 +327,45 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  patternLoader: {
+    paddingVertical: Theme.spacing.xxl,
+  },
+  patternList: {
+    gap: Theme.spacing.md,
+  },
+  patternCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: Theme.spacing.md,
+  },
+  patternPreview: {
+    width: 64,
+    height: 64,
+    borderRadius: Theme.radii.sm,
+    backgroundColor: '#FAF6F0',
+  },
+  patternInfo: {
+    flex: 1,
+    marginHorizontal: Theme.spacing.md,
+  },
+  patternTitle: {
+    fontSize: Theme.typography.sizes.sm,
+    fontWeight: Theme.typography.weights.bold,
+    color: Theme.colors.textPrimary,
+  },
+  patternMeta: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.textSecondary,
+    marginTop: Theme.spacing.xs,
+  },
+  playButton: {
+    height: 36,
+    paddingHorizontal: Theme.spacing.md,
+  },
+  patternError: {
+    color: Theme.colors.error,
+    fontSize: Theme.typography.sizes.sm,
   },
   sinceText: {
     fontSize: Theme.typography.sizes.xs,

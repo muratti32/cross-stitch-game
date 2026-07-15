@@ -10,6 +10,7 @@ Both processes use the same modules, services, entities, and migrations. Postgre
 ## Prerequisites
 
 - Node.js 20 or newer
+- Python 3.12 for the sibling `conversion-engine` service
 - npm
 - Docker with Docker Compose
 
@@ -37,6 +38,16 @@ npm run start:api:dev
 
 ```sh
 npm run start:worker:dev
+```
+
+Photo Pattern Conversion also requires the private Conversion Engine. From the
+repository root, start it in a third terminal (the backend defaults
+`CONVERSION_ENGINE_URL` to `http://127.0.0.1:8000`):
+
+```sh
+cd conversion-engine
+. .venv/bin/activate
+python -m stitch_wish
 ```
 
 The API listens on `http://localhost:3000` by default. Verify the dependencies through the API health endpoint:

@@ -14,6 +14,7 @@ import {
   StartedTestContainer,
 } from 'testcontainers';
 import { DataSource, IsNull } from 'typeorm';
+import { PNG } from 'pngjs';
 
 import { configureApi } from '../src/api/configure-api';
 import { CatalogService } from '../src/catalog/catalog.service';
@@ -44,6 +45,17 @@ import type { DemoJobConsumerService } from '../src/jobs/demo-job-consumer.servi
 import type { DemoJobsQueueService } from '../src/jobs/demo-jobs-queue.service';
 import type { OutboxDispatcherService } from '../src/jobs/outbox-dispatcher.service';
 import type { ProcessingJobsRepository } from '../src/jobs/processing-jobs.repository';
+import {
+  ConversionEngineClient,
+  ConversionEngineRequestError,
+} from '../src/conversion/conversion-engine.client';
+import { ConversionJobConsumerService } from '../src/conversion/conversion-job-consumer.service';
+import {
+  ConversionRecipeEntity,
+  PatternConversionEntity,
+  PersonalPatternEntity,
+} from '../src/conversion/entities';
+import { PatternEntity } from '../src/catalog/entities';
 
 class ForcedRollbackError extends Error {
   constructor() {
@@ -676,6 +688,300 @@ describe('Stitch Wish backend integration', () => {
     expect(readRecord(body, 'result')).toEqual(completed.result);
   });
 
+  describe('photo Pattern Conversion', () => {
+    async function createAccount(): Promise<{
+      accountId: string;
+      accessToken: string;
+    }> {
+      const email = `conversion-${randomUUID()}@example.test`;
+      await request(httpServer)
+        .post('/v1/auth/email/request')
+        .send({ email })
+        .expect(202);
+      const deliveryCount = localEmailSender.getDeliveries().length;
+      await emailDispatcher.dispatchOnce();
+      const delivery = localEmailSender
+        .getDeliveries()
+        .slice(deliveryCount)
+        .reverse()
+        .find((candidate) => candidate.toEmail === email);
+      if (delivery === undefined) {
+        throw new Error('Conversion account OTP was not delivered');
+      }
+      const verified = await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send({ email, code: delivery.code })
+        .expect(200);
+      return {
+        accountId: readStringRecord(verified.body, 'accountId'),
+        accessToken: readStringRecord(verified.body, 'accessToken'),
+      };
+    }
+
+    function framedArtwork(width = 120, height = 80): Buffer {
+      const png = new PNG({ height, width });
+      for (let offset = 0; offset < png.data.length; offset += 4) {
+        png.data[offset] = 32;
+        png.data[offset + 1] = 120;
+        png.data[offset + 2] = 180;
+        png.data[offset + 3] = 255;
+      }
+      return PNG.sync.write(png);
+    }
+
+    function mockSuccessfulEngine() {
+      const preview = framedArtwork(2, 2).toString('base64');
+      return jest
+        .spyOn(app.get(ConversionEngineClient), 'convert')
+        .mockImplementation((input) => {
+          const width = Math.round(input.shortEdgeCells * 1.5);
+          const height = input.shortEdgeCells;
+          return Promise.resolve({
+            dmc_palette_version: 'dmc-itest-v1',
+            engine_version: 'itest-engine-v1',
+            grid: Buffer.alloc(width * height, 1).toString('base64'),
+            palette: [
+              { dmc_code: '995', name: 'Electric Blue Dark', rgb_hex: '#2696B6' },
+            ],
+            preview_png: preview,
+            recipe_version: 'v1',
+            statistics: {
+              distinct_colors: 1,
+              height,
+              total_stitchable_cells: width * height,
+              width,
+            },
+          });
+        });
+    }
+
+    async function requestConversion(
+      accessToken: string,
+      title: string,
+    ): Promise<string> {
+      const response = await request(httpServer)
+        .post('/v1/conversions/photo')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .field('profile', 'easy')
+        .field('title', title)
+        .attach('artwork', framedArtwork(), {
+          contentType: 'image/png',
+          filename: 'approved-frame.png',
+        })
+        .expect(202);
+      return readStringRecord(response.body, 'id');
+    }
+
+    async function runConversion(processingJobId: string): Promise<void> {
+      expect(await processingJobs.markDispatched(processingJobId)).toBe(true);
+      await app
+        .get(ConversionJobConsumerService)
+        .processDelivery(processingJobId);
+    }
+
+    it('creates repeatable private Personal Patterns and prepares them through the normal session path', async () => {
+      const engine = mockSuccessfulEngine();
+      const account = await createAccount();
+      const guest = await createGuestThroughApi(
+        httpServer,
+        randomUUID(),
+        createCredentialSecret(),
+      );
+
+      await request(httpServer)
+        .post('/v1/conversions/photo')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .field('profile', 'easy')
+        .field('title', 'Guest attempt')
+        .attach('artwork', framedArtwork(), {
+          contentType: 'image/png',
+          filename: 'approved-frame.png',
+        })
+        .expect(403);
+
+      const firstJobId = await requestConversion(
+        account.accessToken,
+        'First photo pattern',
+      );
+      const [pendingJob, outbox, conversion] = await Promise.all([
+        processingJobs.findById(firstJobId),
+        dataSource.getRepository(JobOutboxEntity).findOneBy({
+          processingJobId: firstJobId,
+        }),
+        dataSource.getRepository(PatternConversionEntity).findOneBy({
+          processingJobId: firstJobId,
+        }),
+      ]);
+      expect(pendingJob?.status).toBe(ProcessingJobStatus.Pending);
+      expect(outbox).not.toBeNull();
+      expect(conversion?.accountId).toBe(account.accountId);
+      expect(
+        await app
+          .get(LocalObjectStorage)
+          .exists(conversion?.uploadObjectKey ?? ''),
+      ).toBe(true);
+
+      await consumer.start();
+      await dispatcher.dispatchOnce();
+      const completed = await waitForProcessingJob(
+        processingJobs,
+        firstJobId,
+        ProcessingJobStatus.Completed,
+      );
+      expect(completed?.status).toBe(ProcessingJobStatus.Completed);
+      expect(
+        await app
+          .get(LocalObjectStorage)
+          .exists(conversion?.uploadObjectKey ?? ''),
+      ).toBe(false);
+
+      const firstPatternId = readStringRecord(completed?.result, 'patternId');
+      const recipe = await dataSource
+        .getRepository(ConversionRecipeEntity)
+        .findOneByOrFail({ patternId: firstPatternId });
+      expect(recipe).toMatchObject({
+        dmcPaletteVersion: 'dmc-itest-v1',
+        engineVersion: 'itest-engine-v1',
+        height: 50,
+        maxColors: 12,
+        profile: 'easy',
+        shortEdgeCells: 50,
+        width: 75,
+      });
+
+      const ownerList = await request(httpServer)
+        .get('/v1/conversions/patterns')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      const ownerListBody: unknown = ownerList.body;
+      if (!Array.isArray(ownerListBody) || ownerListBody.length !== 1) {
+        throw new Error('Personal Pattern list did not contain one item');
+      }
+      expect(readStringRecord(ownerListBody[0], 'id')).toBe(firstPatternId);
+      const previewUrl = readStringRecord(ownerListBody[0], 'previewUrl');
+      await request(httpServer).get(previewUrl).expect(200).expect('Content-Type', /png/);
+
+      await request(httpServer)
+        .get(`/v1/catalog/patterns/${firstPatternId}`)
+        .expect(404);
+      await request(httpServer)
+        .post('/v1/sessions/prepare')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId: firstPatternId })
+        .expect(404);
+      const prepared = await request(httpServer)
+        .post('/v1/sessions/prepare')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ patternId: firstPatternId })
+        .expect(201);
+      const grant = readRecord(prepared.body, 'grant') as { url: string };
+      await request(httpServer).get(grant.url).expect(200);
+
+      const secondJobId = await requestConversion(
+        account.accessToken,
+        'Second photo pattern',
+      );
+      await runConversion(secondJobId);
+      const secondCompleted = await processingJobs.findById(secondJobId);
+      const secondPatternId = readStringRecord(
+        secondCompleted?.result,
+        'patternId',
+      );
+      expect(secondPatternId).not.toBe(firstPatternId);
+      const [firstPattern, secondPattern, personalCount] = await Promise.all([
+        dataSource.getRepository(PatternEntity).findOneByOrFail({ id: firstPatternId }),
+        dataSource.getRepository(PatternEntity).findOneByOrFail({ id: secondPatternId }),
+        dataSource.getRepository(PersonalPatternEntity).countBy({
+          ownerAccountId: account.accountId,
+        }),
+      ]);
+      expect(firstPattern.artifactChecksum).toBe(secondPattern.artifactChecksum);
+      expect(personalCount).toBe(2);
+
+      const replay = await app
+        .get(ConversionJobConsumerService)
+        .processDelivery(firstJobId);
+      expect(replay.outcome).toBe('terminal-replay');
+      expect(
+        await dataSource.getRepository(PersonalPatternEntity).countBy({
+          ownerAccountId: account.accountId,
+        }),
+      ).toBe(2);
+      engine.mockRestore();
+    });
+
+    it('deletes the temporary Conversion Upload after terminal failure', async () => {
+      const engine = jest
+        .spyOn(app.get(ConversionEngineClient), 'convert')
+        .mockRejectedValue(
+          new ConversionEngineRequestError('malformed artwork', false),
+        );
+      const account = await createAccount();
+      const jobId = await requestConversion(account.accessToken, 'Will fail');
+      const conversion = await dataSource
+        .getRepository(PatternConversionEntity)
+        .findOneByOrFail({ processingJobId: jobId });
+
+      expect(await processingJobs.markDispatched(jobId)).toBe(true);
+      await expect(
+        app.get(ConversionJobConsumerService).processDelivery(jobId),
+      ).rejects.toThrow('malformed artwork');
+      expect((await processingJobs.findById(jobId))?.status).toBe(
+        ProcessingJobStatus.Failed,
+      );
+      expect(
+        await app.get(LocalObjectStorage).exists(conversion.uploadObjectKey),
+      ).toBe(false);
+      expect(
+        await dataSource.getRepository(PersonalPatternEntity).countBy({
+          processingJobId: jobId,
+        }),
+      ).toBe(0);
+      engine.mockRestore();
+    });
+
+    it('resumes a transiently failed job into the same deterministic target', async () => {
+      const engine = mockSuccessfulEngine();
+      engine.mockRejectedValueOnce(
+        new ConversionEngineRequestError('engine at capacity', true),
+      );
+      const account = await createAccount();
+      const jobId = await requestConversion(account.accessToken, 'Retry target');
+      const conversion = await dataSource
+        .getRepository(PatternConversionEntity)
+        .findOneByOrFail({ processingJobId: jobId });
+      expect(await processingJobs.markDispatched(jobId)).toBe(true);
+
+      await expect(
+        app.get(ConversionJobConsumerService).processDelivery(jobId),
+      ).rejects.toThrow('engine at capacity');
+      expect((await processingJobs.findById(jobId))?.status).toBe(
+        ProcessingJobStatus.Running,
+      );
+      expect(
+        await app.get(LocalObjectStorage).exists(conversion.uploadObjectKey),
+      ).toBe(true);
+
+      const resumed = await app
+        .get(ConversionJobConsumerService)
+        .processDelivery(jobId);
+      expect(resumed.outcome).toBe('resumed-and-completed');
+      const completed = await processingJobs.findById(jobId);
+      expect(readStringRecord(completed?.result, 'patternId')).toBe(
+        conversion.targetPatternId,
+      );
+      expect(
+        await dataSource.getRepository(PersonalPatternEntity).countBy({
+          processingJobId: jobId,
+        }),
+      ).toBe(1);
+      expect(
+        await app.get(LocalObjectStorage).exists(conversion.uploadObjectKey),
+      ).toBe(false);
+      engine.mockRestore();
+    });
+  });
+
   describe('session preparation', () => {
     const palette = [
       { dmcCode: '310', name: 'Black', rgbHex: '#000000' },
@@ -1209,11 +1515,13 @@ describe('Stitch Wish backend integration', () => {
       sessionId: string,
       cellIndex: number,
     ): Promise<'completed' | 'incomplete' | null> {
-      const rows = (await dataSource.query(
+      const rows = await dataSource.query<
+        { state: 'completed' | 'incomplete' }[]
+      >(
         `SELECT state FROM sessions.session_cell_state
          WHERE session_id = $1 AND cell_index = $2`,
         [sessionId, cellIndex],
-      )) as { state: 'completed' | 'incomplete' }[];
+      );
       return rows[0]?.state ?? null;
     }
 
@@ -1411,11 +1719,11 @@ describe('Stitch Wish backend integration', () => {
       const applied = await postSync(account.accessToken, sessionId, devA, 0, ops);
 
       await app.get(ProgressCheckpointService).compactOnce(sessionId);
-      const remaining = (await dataSource.query(
+      const remaining = await dataSource.query<{ n: number }[]>(
         `SELECT COUNT(*)::int AS n FROM sessions.progress_operations
          WHERE session_id = $1`,
         [sessionId],
-      )) as { n: number }[];
+      );
       expect(remaining[0].n).toBe(0);
 
       // The offline device replays its already-applied ops verbatim.

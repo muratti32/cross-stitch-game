@@ -4,13 +4,14 @@ import { DataSource, EntityManager } from 'typeorm';
 import { returningRows } from '../database/query-results';
 
 import {
+  CONVERSION_JOB_TYPE,
   DEMO_JOB_EVENT_NAME,
   DEMO_JOB_TYPE,
   DEMO_JOBS_QUEUE_NAME,
 } from './jobs.constants';
 import { JobOutboxEntity, ProcessingJobEntity, ProcessingJobStatus } from './entities';
 import { JobStateTransitionService } from './job-state-transition.service';
-import { DemoJobPayload, JsonObject } from './jobs.types';
+import { DemoJobPayload, JsonObject, ProcessingJobEventName } from './jobs.types';
 
 export interface PendingJobAndOutbox {
   job: ProcessingJobEntity;
@@ -40,16 +41,33 @@ export class ProcessingJobsRepository {
     manager: EntityManager,
     payload: DemoJobPayload,
   ): Promise<PendingJobAndOutbox> {
+    return this.createPendingWithOutboxFor(manager, {
+      eventName: DEMO_JOB_EVENT_NAME,
+      payload,
+      type: DEMO_JOB_TYPE,
+    });
+  }
+
+  async createPendingWithOutboxFor(
+    manager: EntityManager,
+    input: {
+      eventName: ProcessingJobEventName;
+      id?: string;
+      payload: JsonObject;
+      type: typeof DEMO_JOB_TYPE | typeof CONVERSION_JOB_TYPE;
+    },
+  ): Promise<PendingJobAndOutbox> {
     const jobRepository = manager.getRepository(ProcessingJobEntity);
     const outboxRepository = manager.getRepository(JobOutboxEntity);
 
     const job = await jobRepository.save(
       jobRepository.create({
+        id: input.id,
         errorMessage: null,
-        payload,
+        payload: input.payload,
         result: null,
         status: ProcessingJobStatus.Pending,
-        type: DEMO_JOB_TYPE,
+        type: input.type,
       }),
     );
 
@@ -57,7 +75,7 @@ export class ProcessingJobsRepository {
     const outbox = await outboxRepository.save(
       outboxRepository.create({
         dispatchedAt: null,
-        eventName: DEMO_JOB_EVENT_NAME,
+        eventName: input.eventName,
         lastReconciledAt: null,
         payload: outboxPayload,
         processingJobId: job.id,
@@ -152,21 +170,31 @@ export class ProcessingJobsRepository {
     }
   }
 
-  completeFromRunning(id: string, result: JsonObject): Promise<boolean> {
+  completeFromRunning(
+    id: string,
+    result: JsonObject,
+    manager: EntityManager = this.dataSource.manager,
+  ): Promise<boolean> {
     return this.transitionStatus(
       id,
       ProcessingJobStatus.Running,
       ProcessingJobStatus.Completed,
       { errorMessage: null, result },
+      manager,
     );
   }
 
-  failFromRunning(id: string, errorMessage: string): Promise<boolean> {
+  failFromRunning(
+    id: string,
+    errorMessage: string,
+    manager: EntityManager = this.dataSource.manager,
+  ): Promise<boolean> {
     return this.transitionStatus(
       id,
       ProcessingJobStatus.Running,
       ProcessingJobStatus.Failed,
       { errorMessage, result: null },
+      manager,
     );
   }
 }

@@ -8,7 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
 
-from stitch_wish.constants import ENGINE_VERSION, MAX_INPUT_BYTES
+from stitch_wish.constants import DMC_PALETTE_VERSION, ENGINE_VERSION, MAX_INPUT_BYTES
 from stitch_wish import main as main_module
 
 from .conftest import convert_request, image_bytes
@@ -47,6 +47,7 @@ def test_alpha_cells_palette_and_statistics_are_consistent(client: TestClient) -
     assert sum(item["count"] for item in statistics["per_color"]) == 200
     assert max(grid) <= len(payload["palette"])
     assert payload["engine_version"] == ENGINE_VERSION
+    assert payload["dmc_palette_version"] == DMC_PALETTE_VERSION
     assert payload["recipe_version"] == "v1"
     preview = Image.open(io.BytesIO(base64.b64decode(payload["preview_png"])))
     try:

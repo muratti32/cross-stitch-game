@@ -13,6 +13,7 @@ import { StitchingSessionEntity, SessionProgressFlagEntity } from './entities';
 import { PatternEntity } from '../catalog/entities';
 import { AppConfigService } from '../config/app-config.service';
 import type { AuthPrincipal } from '../auth/auth.types';
+import { PrincipalType } from '../auth/entities';
 
 @Injectable()
 export class SessionsService {
@@ -27,7 +28,10 @@ export class SessionsService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async verifyPatternAvailability(patternId: string): Promise<PatternEntity> {
+  async verifyPatternAvailability(
+    principal: AuthPrincipal,
+    patternId: string,
+  ): Promise<PatternEntity> {
     const pattern = await this.patternRepo.findOne({ where: { id: patternId } });
     if (!pattern) {
       throw new NotFoundException('Pattern not found');
@@ -35,13 +39,20 @@ export class SessionsService {
     if (pattern.status !== 'available') {
       throw new ConflictException('Pattern is not available');
     }
+    if (
+      pattern.visibility === 'personal' &&
+      (principal.type !== PrincipalType.Account ||
+        pattern.ownerAccountId !== principal.id)
+    ) {
+      throw new NotFoundException('Pattern not found');
+    }
     // Pattern Unlock enforcement (issue #15) slots in here: a non-null
     // unlockPriceTier will additionally require the identity's Unlock.
     return pattern;
   }
 
   async prepareSession(principal: AuthPrincipal, patternId: string) {
-    const pattern = await this.verifyPatternAvailability(patternId);
+    const pattern = await this.verifyPatternAvailability(principal, patternId);
 
     // Idempotent create-or-return using raw postgres INSERT ... ON CONFLICT
     const result = (await this.dataSource.query(
@@ -99,6 +110,13 @@ export class SessionsService {
 
     const pattern = await this.patternRepo.findOne({ where: { id: session.patternId } });
     if (!pattern) {
+      throw new NotFoundException('Pattern not found');
+    }
+    if (
+      pattern.visibility === 'personal' &&
+      (principal.type !== PrincipalType.Account ||
+        pattern.ownerAccountId !== principal.id)
+    ) {
       throw new NotFoundException('Pattern not found');
     }
 

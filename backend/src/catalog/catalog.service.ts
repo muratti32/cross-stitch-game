@@ -49,7 +49,12 @@ export class CatalogService {
       relations: ['pattern', 'pattern.tags', 'pattern.tags.labels'],
     });
     return picks
-      .filter(pick => pick.pattern && pick.pattern.status === 'available')
+      .filter(
+        (pick) =>
+          pick.pattern &&
+          pick.pattern.status === 'available' &&
+          pick.pattern.visibility === 'catalog',
+      )
       .map(pick => this.formatPattern(pick.pattern, locale));
   }
 
@@ -57,7 +62,8 @@ export class CatalogService {
     const queryBuilder = this.patternRepository.createQueryBuilder('pattern')
       .leftJoinAndSelect('pattern.tags', 'tag')
       .leftJoinAndSelect('tag.labels', 'label')
-      .where('pattern.status = :status', { status: 'available' });
+      .where('pattern.status = :status', { status: 'available' })
+      .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' });
 
     if (cursor) {
       const decoded = decodeCursor(cursor);
@@ -101,6 +107,7 @@ export class CatalogService {
       .select('pattern.categoryCode', 'categoryCode')
       .addSelect('COUNT(pattern.id)', 'count')
       .where('pattern.status = :status', { status: 'available' })
+      .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' })
       .groupBy('pattern.categoryCode')
       .getRawMany<{ categoryCode: string; count: string }>();
 
@@ -142,7 +149,8 @@ export class CatalogService {
     const queryBuilder = this.patternRepository.createQueryBuilder('pattern')
       .leftJoinAndSelect('pattern.tags', 'tag')
       .leftJoinAndSelect('tag.labels', 'label')
-      .where('pattern.status = :status', { status: 'available' });
+      .where('pattern.status = :status', { status: 'available' })
+      .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' });
 
     if (options.category) {
       queryBuilder.andWhere('pattern.categoryCode = :category', { category: options.category });
@@ -197,7 +205,7 @@ export class CatalogService {
 
   async getPatternById(id: string, locale: string = 'en') {
     const pattern = await this.patternRepository.findOne({
-      where: { id, status: 'available' },
+      where: { id, status: 'available', visibility: 'catalog' },
       relations: ['tags', 'tags.labels'],
     });
     if (!pattern) {
@@ -210,7 +218,8 @@ export class CatalogService {
     const queryBuilder = this.patternRepository.createQueryBuilder('pattern')
       .leftJoinAndSelect('pattern.tags', 'tag')
       .leftJoinAndSelect('tag.labels', 'label')
-      .where('pattern.status = :status', { status: 'available' });
+      .where('pattern.status = :status', { status: 'available' })
+      .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' });
 
     if (q) {
       const searchPattern = `%${q}%`;
@@ -273,7 +282,11 @@ export class CatalogService {
 
     // Upsert by title + creatorName
     let pattern = await this.patternRepository.findOne({
-      where: { title: data.title, creatorName: data.creatorName },
+      where: {
+        title: data.title,
+        creatorName: data.creatorName,
+        visibility: 'catalog',
+      },
       relations: ['tags'],
     });
 
@@ -289,6 +302,8 @@ export class CatalogService {
       pattern.previewObjectKey = data.previewObjectKey;
       pattern.unlockPriceTier = data.unlockPriceTier;
       pattern.status = data.status;
+      pattern.visibility = 'catalog';
+      pattern.ownerAccountId = null;
       pattern.tags = tags;
     } else {
       pattern = this.patternRepository.create({
@@ -305,6 +320,8 @@ export class CatalogService {
         previewObjectKey: data.previewObjectKey,
         unlockPriceTier: data.unlockPriceTier,
         status: data.status,
+        visibility: 'catalog',
+        ownerAccountId: null,
         publishedAt: data.publishedAt || new Date(),
         tags,
       });
@@ -315,7 +332,11 @@ export class CatalogService {
 
   async setStaffPick(patternTitle: string, patternCreator: string, position: number) {
     const pattern = await this.patternRepository.findOne({
-      where: { title: patternTitle, creatorName: patternCreator },
+      where: {
+        title: patternTitle,
+        creatorName: patternCreator,
+        visibility: 'catalog',
+      },
     });
     if (!pattern) {
       throw new NotFoundException(`Pattern ${patternTitle} by ${patternCreator} not found`);

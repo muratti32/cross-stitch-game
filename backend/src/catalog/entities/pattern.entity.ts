@@ -11,10 +11,15 @@ import { TagEntity } from './tag.entity';
 
 export type PatternUnlockPriceTier = 'small' | 'medium' | 'large' | null;
 export type PatternStatus = 'available' | 'withdrawn' | 'removed';
+export type PatternVisibility = 'catalog' | 'personal';
 
 @Entity({ name: 'patterns', schema: 'catalog' })
 @Check('CHK_patterns_unlock_price_tier', '"unlock_price_tier" IN (\'small\', \'medium\', \'large\') OR "unlock_price_tier" IS NULL')
 @Check('CHK_patterns_status', '"status" IN (\'available\', \'withdrawn\', \'removed\')')
+@Check(
+  'CHK_patterns_visibility_owner',
+  '("visibility" = \'catalog\' AND "owner_account_id" IS NULL) OR ("visibility" = \'personal\' AND "owner_account_id" IS NOT NULL)',
+)
 export class PatternEntity {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'PK_patterns',
@@ -68,6 +73,12 @@ export class PatternEntity {
     default: 'available',
   })
   status!: PatternStatus;
+
+  @Column({ default: 'catalog', length: 16, type: 'varchar' })
+  visibility!: PatternVisibility;
+
+  @Column({ name: 'owner_account_id', nullable: true, type: 'uuid' })
+  ownerAccountId!: string | null;
 
   @Column({
     name: 'published_at',

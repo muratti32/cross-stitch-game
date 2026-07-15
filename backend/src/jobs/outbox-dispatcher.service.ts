@@ -7,6 +7,7 @@ import {
   ProcessingJobStatus,
 } from './entities';
 import {
+  CONVERSION_JOB_EVENT_NAME,
   DEFAULT_OUTBOX_BATCH_SIZE,
   DEMO_JOB_EVENT_NAME,
   DEMO_JOBS_QUEUE_NAME,
@@ -41,9 +42,13 @@ export class OutboxDispatcherService {
 
       for (const outbox of outboxRows) {
         this.assertSupportedOutbox(outbox);
-        await this.queue.publish(outbox.id, {
-          processingJobId: outbox.processingJobId,
-        });
+        await this.queue.publish(
+          outbox.id,
+          { processingJobId: outbox.processingJobId },
+          outbox.eventName as
+            | typeof DEMO_JOB_EVENT_NAME
+            | typeof CONVERSION_JOB_EVENT_NAME,
+        );
 
         await this.markProcessingJobDispatched(
           outbox.processingJobId,
@@ -96,9 +101,13 @@ export class OutboxDispatcherService {
 
       for (const outbox of outboxRows) {
         this.assertSupportedOutbox(outbox);
-        await this.queue.publish(outbox.id, {
-          processingJobId: outbox.processingJobId,
-        });
+        await this.queue.publish(
+          outbox.id,
+          { processingJobId: outbox.processingJobId },
+          outbox.eventName as
+            | typeof DEMO_JOB_EVENT_NAME
+            | typeof CONVERSION_JOB_EVENT_NAME,
+        );
         const updateResult = await manager
           .getRepository(JobOutboxEntity)
           .update(
@@ -119,7 +128,8 @@ export class OutboxDispatcherService {
   private assertSupportedOutbox(outbox: JobOutboxEntity): void {
     if (
       outbox.queueName !== DEMO_JOBS_QUEUE_NAME ||
-      outbox.eventName !== DEMO_JOB_EVENT_NAME
+      (outbox.eventName !== DEMO_JOB_EVENT_NAME &&
+        outbox.eventName !== CONVERSION_JOB_EVENT_NAME)
     ) {
       throw new Error(
         `Job Outbox ${outbox.id} targets unsupported queue event ${outbox.queueName}/${outbox.eventName}`,

@@ -2,10 +2,12 @@ import * as SQLite from 'expo-sqlite';
 import * as FileSystem from 'expo-file-system/legacy';
 import { getDatabaseFilename, getDatabasePath, shouldAdopt } from './namespaceLogic';
 
+export type PatternSource = 'bundled' | 'catalog' | 'personal';
+
 export interface StitchingSession {
   id: string;
   patternId: string;
-  source: 'bundled' | 'catalog';
+  source: PatternSource;
   artifactChecksum: string;
   createdAt: string;
   status: 'preparing' | 'ready' | 'active' | 'completed';
@@ -421,7 +423,7 @@ export interface SessionPatternMeta {
 export async function createSession(
   patternId: string,
   checksum: string,
-  source: 'bundled' | 'catalog' = 'bundled',
+  source: PatternSource = 'bundled',
   status: 'preparing' | 'ready' | 'active' | 'completed' = 'ready',
   remoteSessionId: string | null = null,
   patternMeta: SessionPatternMeta | null = null
@@ -509,10 +511,18 @@ export async function createReplaySession(
 export async function findActiveCatalogSession(
   patternId: string
 ): Promise<StitchingSession | null> {
+  return findActiveRemotePatternSession(patternId, 'catalog');
+}
+
+export async function findActiveRemotePatternSession(
+  patternId: string,
+  source: 'catalog' | 'personal',
+): Promise<StitchingSession | null> {
   const db = await getDatabase();
   const row = await db.getFirstAsync<{ id: string }>(
-    "SELECT id FROM sessions WHERE pattern_id = ? AND source = 'catalog' AND status <> 'completed' ORDER BY created_at DESC",
-    patternId
+    "SELECT id FROM sessions WHERE pattern_id = ? AND source = ? AND status <> 'completed' ORDER BY created_at DESC",
+    patternId,
+    source,
   );
   if (!row) return null;
   return getSession(row.id);
@@ -540,7 +550,7 @@ export async function getSessions(): Promise<StitchingSession[]> {
   return rows.map((row) => ({
     id: row.id,
     patternId: row.pattern_id,
-    source: row.source as 'bundled' | 'catalog',
+    source: row.source as PatternSource,
     artifactChecksum: row.artifact_checksum,
     createdAt: row.created_at,
     status: row.status as 'preparing' | 'ready' | 'active' | 'completed',
@@ -584,7 +594,7 @@ export async function getSession(id: string): Promise<StitchingSession | null> {
   return {
     id: row.id,
     patternId: row.pattern_id,
-    source: row.source as 'bundled' | 'catalog',
+    source: row.source as PatternSource,
     artifactChecksum: row.artifact_checksum,
     createdAt: row.created_at,
     status: row.status as 'preparing' | 'ready' | 'active' | 'completed',
