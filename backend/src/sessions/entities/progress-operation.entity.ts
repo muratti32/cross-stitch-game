@@ -37,6 +37,11 @@ export class ProgressOperationEntity {
   @Column({ type: 'boolean', default: false })
   superseded!: boolean;
 
+  // The authoritative cell state the merge decided for this op (nextState).
+  // Null for superseded operations, which never change cell state.
+  @Column({ name: 'resolved_state', type: 'varchar', length: 16, nullable: true })
+  resolvedState!: ProgressDesiredState | null;
+
   @Column({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 }

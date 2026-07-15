@@ -27,10 +27,12 @@ export class CreateProgressSyncSchema1784246400000 implements MigrationInterface
         "server_revision" bigint NOT NULL,
         "effective" boolean NOT NULL,
         "superseded" boolean NOT NULL DEFAULT false,
+        "resolved_state" varchar(16),
         "created_at" timestamptz NOT NULL DEFAULT now(),
         CONSTRAINT "PK_progress_operations" PRIMARY KEY ("session_id", "op_id"),
         CONSTRAINT "UQ_progress_operations_device_seq" UNIQUE ("session_id", "device_id", "device_seq"),
-        CONSTRAINT "CHK_progress_operations_desired_state" CHECK ("desired_state" IN ('completed', 'incomplete'))
+        CONSTRAINT "CHK_progress_operations_desired_state" CHECK ("desired_state" IN ('completed', 'incomplete')),
+        CONSTRAINT "CHK_progress_operations_resolved_state" CHECK ("resolved_state" IS NULL OR "resolved_state" IN ('completed', 'incomplete'))
       ) PARTITION BY HASH ("session_id")
     `);
 

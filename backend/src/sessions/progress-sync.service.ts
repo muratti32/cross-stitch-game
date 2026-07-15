@@ -44,6 +44,7 @@ interface PulledOperationRecord {
   deviceSeq: string;
   cellIndex: number;
   desiredState: CellStateValue;
+  resolvedState: CellStateValue;
   baseRevision: string;
   serverRevision: string;
   effective: boolean;
@@ -66,6 +67,7 @@ export interface PulledProgressOperation {
   deviceSeq: number;
   cellIndex: number;
   desiredState: CellStateValue;
+  resolvedState: CellStateValue;
   baseRevision: number;
   serverRevision: number;
   effective: boolean;
@@ -129,6 +131,7 @@ export class ProgressSyncService {
             serverRevision: revision,
             effective: false,
             superseded: true,
+            resolvedState: null,
           });
           acknowledgements.push({ opId: operation.opId, status: 'superseded' });
           continue;
@@ -165,6 +168,7 @@ export class ProgressSyncService {
           serverRevision: revision,
           effective: decision.effective,
           superseded: false,
+          resolvedState: decision.nextState,
         });
         acknowledgements.push({ opId: operation.opId, status: 'applied' });
       }
@@ -176,22 +180,29 @@ export class ProgressSyncService {
         [sessionId, revision],
       );
 
+      // Return every authoritative operation (this device's included) newer than
+      // the caller's watermark, each carrying the merge-resolved cell state so the
+      // client can converge by applying resolved states in server_revision order —
+      // this also corrects the client's own optimistic op when the server resolved
+      // a genuinely-concurrent conflict differently (completed-wins). Superseded
+      // late operations never changed cell state, so they are excluded.
       const pulled = await manager.query<readonly PulledOperationRecord[]>(
         `SELECT op_id AS "opId",
                 device_id AS "deviceId",
                 device_seq AS "deviceSeq",
                 cell_index AS "cellIndex",
                 desired_state AS "desiredState",
+                resolved_state AS "resolvedState",
                 base_revision AS "baseRevision",
                 server_revision AS "serverRevision",
                 effective
          FROM sessions.progress_operations
          WHERE session_id = $1
-           AND device_id <> $2
-           AND server_revision > $3
+           AND superseded = false
+           AND server_revision > $2
          ORDER BY server_revision ASC
          LIMIT 1000`,
-        [sessionId, dto.deviceId, dto.sinceRevision],
+        [sessionId, dto.sinceRevision],
       );
 
       return {
@@ -204,6 +215,7 @@ export class ProgressSyncService {
           deviceSeq: Number(operation.deviceSeq),
           cellIndex: operation.cellIndex,
           desiredState: operation.desiredState,
+          resolvedState: operation.resolvedState,
           baseRevision: Number(operation.baseRevision),
           serverRevision: Number(operation.serverRevision),
           effective: operation.effective,
@@ -385,13 +397,14 @@ export class ProgressSyncService {
       serverRevision: number;
       effective: boolean;
       superseded: boolean;
+      resolvedState: CellStateValue | null;
     },
   ): Promise<void> {
     await manager.query<readonly ExistingOperationRecord[]>(
       `INSERT INTO sessions.progress_operations (
          session_id, op_id, device_id, device_seq, cell_index, desired_state,
-         base_revision, server_revision, effective, superseded
-       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+         base_revision, server_revision, effective, superseded, resolved_state
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
       [
         input.sessionId,
         input.operation.opId,
@@ -403,6 +416,7 @@ export class ProgressSyncService {
         input.serverRevision,
         input.effective,
         input.superseded,
+        input.resolvedState,
       ],
     );
   }

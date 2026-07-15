@@ -1100,6 +1100,7 @@ describe('Stitch Wish backend integration', () => {
       deviceSeq: number;
       cellIndex: number;
       desiredState: 'completed' | 'incomplete';
+      resolvedState: 'completed' | 'incomplete';
       baseRevision: number;
       serverRevision: number;
       effective: boolean;
@@ -1298,6 +1299,13 @@ describe('Stitch Wish backend integration', () => {
       ]);
       expect(concurrent.acknowledgements[0].status).toBe('applied');
       expect(await readCellState(sessionId, 5)).toBe('completed');
+      // The client's own concurrent op resolves to completed authoritatively, so
+      // the pull hands back resolvedState=completed for cell 5 to converge it.
+      const cell5Resolved = concurrent.operations
+        .filter((operation) => operation.cellIndex === 5)
+        .sort((left, right) => left.serverRevision - right.serverRevision)
+        .at(-1);
+      expect(cell5Resolved?.resolvedState).toBe('completed');
 
       // Unrelated cells merge independently.
       await postSync(account.accessToken, sessionId, devA, 0, [
