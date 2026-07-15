@@ -66,7 +66,7 @@ export class JwtAuthGuard implements CanActivate {
     if (
       typeof payload.jti !== 'string' ||
       !isUUID(payload.jti) ||
-      payload.principalType !== PrincipalType.Guest ||
+      !this.isKnownPrincipalType(payload.principalType) ||
       typeof payload.sub !== 'string' ||
       !isUUID(payload.sub) ||
       payload.tokenVersion !== ACCESS_TOKEN_VERSION
@@ -79,6 +79,12 @@ export class JwtAuthGuard implements CanActivate {
       tokenVersion: payload.tokenVersion,
       type: payload.principalType,
     };
+  }
+
+  private isKnownPrincipalType(value: unknown): value is PrincipalType {
+    return (
+      value === PrincipalType.Guest || value === PrincipalType.Account
+    );
   }
 
   private authenticationRequired(): UnauthorizedException {

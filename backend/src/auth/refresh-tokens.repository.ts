@@ -8,6 +8,10 @@ import {
   RefreshTokenStatus,
 } from './entities';
 
+function isKnownPrincipalType(value: PrincipalType): boolean {
+  return value === PrincipalType.Guest || value === PrincipalType.Account;
+}
+
 interface RefreshTokenRecord {
   familyId: string;
   id: string;
@@ -38,10 +42,7 @@ export class RefreshTokensRepository {
     tokenHash: string,
   ): Promise<RefreshTokenPrincipal | null> {
     const token = await this.findByHash(this.dataSource.manager, tokenHash);
-    if (
-      token === null ||
-      token.principalType !== PrincipalType.Guest
-    ) {
+    if (token === null || !isKnownPrincipalType(token.principalType)) {
       return null;
     }
     return {
@@ -118,7 +119,7 @@ export class RefreshTokensRepository {
         return { kind: 'reuse-detected' };
       }
 
-      if (token.principalType !== PrincipalType.Guest) {
+      if (!isKnownPrincipalType(token.principalType)) {
         return { kind: 'invalid' };
       }
 
