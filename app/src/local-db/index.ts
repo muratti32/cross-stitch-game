@@ -26,7 +26,12 @@ export interface ProgressOperation {
   deviceSeq: number;
   cellIndex: number;
   desiredState: 'completed' | 'incomplete';
+  // Local replay ordering baseline (monotonic per session, local revision space).
   baseRevision: number;
+  // Last-known SERVER revision when the op was created. This is what the sync
+  // push sends as baseRevision so the server can judge causality in its own
+  // revision space. Defaults to 0 for offline ops created before any sync.
+  serverBaseRevision?: number;
   createdAt: string;
 }
 
@@ -35,6 +40,18 @@ export interface Checkpoint {
   revision: number;
   packedBitmap: Uint8Array;
   createdAt: string;
+}
+
+/**
+ * Server-authoritative folded progress for an account session. Replaces the
+ * local checkpoint as the reload base once a session has synced at least once.
+ */
+export interface SyncSnapshot {
+  sessionId: string;
+  serverRevision: number;
+  packedBitmap: Uint8Array;
+  terminal: boolean;
+  updatedAt: string;
 }
 
 let activeIdentity: string | null = null;
@@ -269,6 +286,30 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
       await db.execAsync('PRAGMA user_version = 2;');
     });
   }
+
+  if (currentVersion < 3) {
+    await db.withTransactionAsync(async () => {
+      // Progress Sync (account sessions): server-revision baseline stamped on
+      // each op, an ack flag so synced ops are not re-uploaded, and a folded
+      // server-authoritative snapshot that becomes the reload base.
+      await db.execAsync(`
+        ALTER TABLE progress_ops ADD COLUMN server_base_revision INTEGER NOT NULL DEFAULT 0;
+      `);
+      await db.execAsync(`
+        ALTER TABLE progress_ops ADD COLUMN acked INTEGER NOT NULL DEFAULT 0;
+      `);
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS sync_snapshots (
+          session_id TEXT PRIMARY KEY NOT NULL,
+          server_revision INTEGER NOT NULL,
+          packed_bitmap BLOB NOT NULL,
+          terminal INTEGER NOT NULL DEFAULT 0,
+          updated_at TEXT NOT NULL
+        );
+      `);
+      await db.execAsync('PRAGMA user_version = 3;');
+    });
+  }
 }
 
 /**
@@ -340,6 +381,31 @@ export async function getNextDeviceSeq(): Promise<number> {
     nextSeq.toString()
   );
   return nextSeq;
+}
+
+/**
+ * Reads the device's persistent monotonic sequence high-water mark. Unlike
+ * MAX(device_seq) over progress_ops, this never regresses when acknowledged ops
+ * are compacted away after a sync, so the server never mistakes a fresh op for a
+ * replay of an already-applied sequence.
+ */
+export async function getDeviceSeqHigh(): Promise<number> {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{ value: string }>(
+    "SELECT value FROM device_config WHERE key = 'device_seq'"
+  );
+  return row ? parseInt(row.value, 10) : 0;
+}
+
+/**
+ * Persists the device's monotonic sequence high-water mark.
+ */
+export async function setDeviceSeqHigh(value: number): Promise<void> {
+  const db = await getDatabase();
+  await db.runAsync(
+    "INSERT OR REPLACE INTO device_config (key, value) VALUES ('device_seq', ?)",
+    value.toString()
+  );
 }
 
 /**
@@ -593,8 +659,8 @@ export async function insertProgressOpsBatch(ops: ProgressOperation[]): Promise<
   await db.withTransactionAsync(async () => {
     for (const op of ops) {
       await db.runAsync(
-        `INSERT OR IGNORE INTO progress_ops (op_id, session_id, device_id, device_seq, cell_index, desired_state, base_revision, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT OR IGNORE INTO progress_ops (op_id, session_id, device_id, device_seq, cell_index, desired_state, base_revision, server_base_revision, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         op.opId,
         op.sessionId,
         op.deviceId,
@@ -602,6 +668,7 @@ export async function insertProgressOpsBatch(ops: ProgressOperation[]): Promise<
         op.cellIndex,
         op.desiredState,
         op.baseRevision,
+        op.serverBaseRevision ?? 0,
         op.createdAt
       );
     }
@@ -616,22 +683,29 @@ export async function getProgressOps(
   sinceRevision: number = 0
 ): Promise<ProgressOperation[]> {
   const db = await getDatabase();
-  const rows = await db.getAllAsync<{
-    op_id: string;
-    session_id: string;
-    device_id: string;
-    device_seq: number;
-    cell_index: number;
-    desired_state: string;
-    base_revision: number;
-    created_at: string;
-  }>(
+  const rows = await db.getAllAsync<ProgressOpRow>(
     'SELECT * FROM progress_ops WHERE session_id = ? AND base_revision >= ? ORDER BY device_seq ASC',
     sessionId,
     sinceRevision
   );
 
-  return rows.map((row) => ({
+  return rows.map(mapProgressOpRow);
+}
+
+interface ProgressOpRow {
+  op_id: string;
+  session_id: string;
+  device_id: string;
+  device_seq: number;
+  cell_index: number;
+  desired_state: string;
+  base_revision: number;
+  server_base_revision: number | null;
+  created_at: string;
+}
+
+function mapProgressOpRow(row: ProgressOpRow): ProgressOperation {
+  return {
     opId: row.op_id,
     sessionId: row.session_id,
     deviceId: row.device_id,
@@ -639,8 +713,94 @@ export async function getProgressOps(
     cellIndex: row.cell_index,
     desiredState: row.desired_state as 'completed' | 'incomplete',
     baseRevision: row.base_revision,
+    serverBaseRevision: row.server_base_revision ?? 0,
     createdAt: row.created_at,
-  }));
+  };
+}
+
+/**
+ * Returns this device's progress operations that the server has not yet
+ * acknowledged, in creation order (device_seq ascending). These are the ops the
+ * sync engine uploads.
+ */
+export async function getUnackedProgressOps(
+  sessionId: string
+): Promise<ProgressOperation[]> {
+  const db = await getDatabase();
+  const rows = await db.getAllAsync<ProgressOpRow>(
+    'SELECT * FROM progress_ops WHERE session_id = ? AND acked = 0 ORDER BY device_seq ASC',
+    sessionId
+  );
+  return rows.map(mapProgressOpRow);
+}
+
+/**
+ * Marks the given operations as acknowledged by the server so they are not
+ * re-uploaded. Folded server state lives in the sync snapshot, so acknowledged
+ * ops are also removed to keep the local op-log bounded.
+ */
+export async function markProgressOpsAcked(opIds: string[]): Promise<void> {
+  if (opIds.length === 0) return;
+  const db = await getDatabase();
+  await db.withTransactionAsync(async () => {
+    for (const opId of opIds) {
+      await db.runAsync('DELETE FROM progress_ops WHERE op_id = ?', opId);
+    }
+  });
+}
+
+/**
+ * Reads the server-authoritative folded snapshot for a session, if one exists.
+ */
+export async function getSyncSnapshot(
+  sessionId: string
+): Promise<SyncSnapshot | null> {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{
+    session_id: string;
+    server_revision: number;
+    packed_bitmap: Uint8Array | ArrayBuffer | number[];
+    terminal: number;
+    updated_at: string;
+  }>('SELECT * FROM sync_snapshots WHERE session_id = ?', sessionId);
+  if (!row) return null;
+  return {
+    sessionId: row.session_id,
+    serverRevision: row.server_revision,
+    packedBitmap: normalizePackedBitmap(row.packed_bitmap),
+    terminal: row.terminal === 1,
+    updatedAt: row.updated_at,
+  };
+}
+
+/**
+ * Persists the server-authoritative folded snapshot (upsert by session).
+ */
+export async function saveSyncSnapshot(
+  sessionId: string,
+  serverRevision: number,
+  completed: Uint8Array,
+  terminal: boolean
+): Promise<void> {
+  const db = await getDatabase();
+  await db.runAsync(
+    `INSERT OR REPLACE INTO sync_snapshots (session_id, server_revision, packed_bitmap, terminal, updated_at)
+     VALUES (?, ?, ?, ?, ?)`,
+    sessionId,
+    serverRevision,
+    packCompletedBitmap(completed),
+    terminal ? 1 : 0,
+    new Date().toISOString()
+  );
+}
+
+function normalizePackedBitmap(
+  value: Uint8Array | ArrayBuffer | number[]
+): Uint8Array {
+  if (value instanceof Uint8Array) return value;
+  if (value instanceof ArrayBuffer) return new Uint8Array(value);
+  if (Array.isArray(value)) return new Uint8Array(value);
+  return new Uint8Array(0);
 }
 
 /**

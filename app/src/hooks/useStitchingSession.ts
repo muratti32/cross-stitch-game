@@ -2,11 +2,14 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import {
   initDatabase,
-  getDatabase,
   getSession,
   getProgressOps,
+  getUnackedProgressOps,
   getLatestCheckpoint,
+  getSyncSnapshot,
   getDeviceId,
+  getDeviceSeqHigh,
+  setDeviceSeqHigh,
   insertProgressOpsBatch,
   saveCheckpoint,
   updateSessionStatus,
@@ -25,6 +28,9 @@ import { decodePatternArtifact } from '../pattern-artifact';
 import { getActiveIdentity } from '../local-db';
 import { PatternData } from '../pattern-artifact';
 import { RendererState } from '../renderer';
+import { useIdentityStore } from '../identity/guestIdentity';
+import { syncSession, completeSession } from '../sync/progressSyncEngine';
+import { ProgressSyncError } from '../api/progressSync';
 
 export function useStitchingSession(sessionId: string | undefined) {
   const [loading, setLoading] = useState(true);
@@ -40,10 +46,22 @@ export function useStitchingSession(sessionId: string | undefined) {
   const [totalCellsCount, setTotalCellsCount] = useState(0);
   const [completedCellsCount, setCompletedCellsCount] = useState(0);
 
+  // Reactive: a single conflict notice when the server overrode a local op.
+  const [hasSyncConflict, setHasSyncConflict] = useState(false);
+  // Bumped whenever a sync folds server-changed cells into the renderer, so the
+  // canvas can refresh its shared completed bitmap.
+  const [syncTick, setSyncTick] = useState(0);
+
   // Keep references to avoid stale closures in flusher and timer loops
   const deviceIdRef = useRef<string>('');
   const deviceSeqRef = useRef<number>(0);
   const sessionRevisionRef = useRef<number>(0);
+  // Last-known server revision (account sessions). Stamped onto each op so the
+  // server can judge causality; advanced after every successful sync.
+  const serverRevisionRef = useRef<number>(0);
+  const isAccountSessionRef = useRef<boolean>(false);
+  const remoteSessionIdRef = useRef<string | null>(null);
+  const syncInFlightRef = useRef<boolean>(false);
   const pendingOpsRef = useRef<ProgressOperation[]>([]);
   const undoStackRef = useRef<number[]>([]);
   
@@ -118,12 +136,72 @@ export function useStitchingSession(sessionId: string | undefined) {
 
     try {
       await insertProgressOpsBatch(opsToFlush);
+      // Persist the monotonic sequence high-water mark alongside the ops so it
+      // never regresses after sync compaction deletes acknowledged ops.
+      await setDeviceSeqHigh(deviceSeqRef.current);
     } catch (err) {
       console.error('Failed to flush progress operations:', err);
       // Prepend them back if insert failed
       pendingOpsRef.current = [...opsToFlush, ...pendingOpsRef.current];
     }
   }, []);
+
+  // Push local ops + pull authoritative state for account sessions. Never
+  // blocks local play; failures (offline, transient) are swallowed and retried
+  // on the next trigger.
+  const runSync = useCallback(async () => {
+    const sess = sessionRef.current;
+    const rState = rendererStateRef.current;
+    const remoteSessionId = remoteSessionIdRef.current;
+    if (
+      !isAccountSessionRef.current ||
+      !sess ||
+      !rState ||
+      !remoteSessionId ||
+      syncInFlightRef.current
+    ) {
+      return;
+    }
+
+    syncInFlightRef.current = true;
+    try {
+      // Persist buffered ops first so the engine uploads a consistent set.
+      await flushPendingOps();
+
+      const completed = rState.getCompletedArray();
+      const outcome = await syncSession(
+        sess.id,
+        remoteSessionId,
+        deviceIdRef.current,
+        completed,
+      );
+
+      serverRevisionRef.current = outcome.serverRevision;
+
+      // Reflect any server-changed cells back into the live renderer state.
+      if (outcome.changedCells.length > 0 && sess.status !== 'completed') {
+        for (const cellIndex of outcome.changedCells) {
+          const x = cellIndex % (patternDataRef.current?.width ?? 1);
+          const y = Math.floor(cellIndex / (patternDataRef.current?.width ?? 1));
+          rState.setCompleted(x, y, completed[cellIndex] === 1);
+        }
+        updateCountsAndCompletion();
+        setSyncTick((tick) => tick + 1);
+      }
+
+      if (outcome.conflictedCells.length > 0) {
+        setHasSyncConflict(true);
+      }
+    } catch (err) {
+      if (err instanceof ProgressSyncError && err.status === 404) {
+        // Not an account-owned session server-side; stop trying to sync it.
+        isAccountSessionRef.current = false;
+      }
+      // Otherwise stay silent: local play is unaffected and the next trigger retries.
+    } finally {
+      syncInFlightRef.current = false;
+    }
+  }, [flushPendingOps, updateCountsAndCompletion]);
 
   // Save checkpoint helper
   const saveSessionCheckpoint = useCallback(async () => {
@@ -156,13 +234,11 @@ export function useStitchingSession(sessionId: string | undefined) {
 
         // 2. Get Device Config
         deviceIdRef.current = await getDeviceId();
-        
-        // Find highest sequence from progress ops database to continue monotonically
-        const db = await getDatabase();
-        const maxSeqRow = await db.getFirstAsync<{ max_seq: number | null }>(
-          "SELECT MAX(device_seq) as max_seq FROM progress_ops"
-        );
-        deviceSeqRef.current = maxSeqRow?.max_seq ?? 0;
+
+        // Continue from the persistent monotonic sequence high-water mark. This
+        // survives sync compaction (acked ops are deleted) so device_seq never
+        // regresses and collides with a server-side watermark.
+        deviceSeqRef.current = await getDeviceSeqHigh();
 
         if (!sessionId) {
           if (active) setError('Session ID is missing.');
@@ -191,27 +267,47 @@ export function useStitchingSession(sessionId: string | undefined) {
               )
             : await loadBundledPattern(sess.patternId);
 
-        // 6. Load Latest Checkpoint
-        const checkpoint = await getLatestCheckpoint(sess.id);
+        // 6. Determine whether this session syncs (Registered Account + linked
+        //    remote session) and pick the reload base accordingly.
+        const identity = useIdentityStore.getState();
+        const isAccountSession = identity.isAccount && !!sess.remoteSessionId;
+        isAccountSessionRef.current = isAccountSession;
+        remoteSessionIdRef.current = sess.remoteSessionId ?? null;
+
         const cellsLength = pat.width * pat.height;
         let completed: Uint8Array;
-        let revision = 0;
 
-        if (checkpoint) {
-          completed = unpackCompletedBitmap(checkpoint.packedBitmap, cellsLength);
-          revision = checkpoint.revision;
+        const snapshot = isAccountSession ? await getSyncSnapshot(sess.id) : null;
+        if (snapshot) {
+          // Account base: server-authoritative folded snapshot, then this
+          // device's not-yet-acknowledged ops replayed on top.
+          completed = unpackCompletedBitmap(snapshot.packedBitmap, cellsLength);
+          serverRevisionRef.current = snapshot.serverRevision;
+          sessionRevisionRef.current = 0;
+          const unacked = await getUnackedProgressOps(sess.id);
+          for (const op of unacked) {
+            if (op.cellIndex >= 0 && op.cellIndex < cellsLength) {
+              completed[op.cellIndex] = op.desiredState === 'completed' ? 1 : 0;
+            }
+          }
         } else {
-          completed = new Uint8Array(cellsLength);
-        }
-
-        sessionRevisionRef.current = revision;
-
-        // 7. Load and Replay newer operations
-        const ops = await getProgressOps(sess.id, revision);
-        for (const op of ops) {
-          if (op.cellIndex >= 0 && op.cellIndex < cellsLength) {
-            completed[op.cellIndex] = op.desiredState === 'completed' ? 1 : 0;
-            sessionRevisionRef.current++;
+          // Local base: latest local checkpoint + newer local ops (guest sessions
+          // and account sessions that have never synced yet).
+          const checkpoint = await getLatestCheckpoint(sess.id);
+          let revision = 0;
+          if (checkpoint) {
+            completed = unpackCompletedBitmap(checkpoint.packedBitmap, cellsLength);
+            revision = checkpoint.revision;
+          } else {
+            completed = new Uint8Array(cellsLength);
+          }
+          sessionRevisionRef.current = revision;
+          const ops = await getProgressOps(sess.id, revision);
+          for (const op of ops) {
+            if (op.cellIndex >= 0 && op.cellIndex < cellsLength) {
+              completed[op.cellIndex] = op.desiredState === 'completed' ? 1 : 0;
+              sessionRevisionRef.current++;
+            }
           }
         }
 
@@ -274,11 +370,24 @@ export function useStitchingSession(sessionId: string | undefined) {
     };
   }, [flushPendingOps]);
 
-  // AppState listening to flush & checkpoint on background
+  // Opportunistic sync loop (account sessions only; runSync self-gates).
+  useEffect(() => {
+    if (loading) return;
+    runSync();
+    const timer = setInterval(() => {
+      runSync();
+    }, 4000);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [loading, runSync]);
+
+  // AppState listening to flush, checkpoint & sync on background
   useEffect(() => {
     const handleAppStateChange = (nextStatus: AppStateStatus) => {
       if (nextStatus === 'background' || nextStatus === 'inactive') {
         saveSessionCheckpoint();
+        runSync();
       }
     };
 
@@ -286,7 +395,7 @@ export function useStitchingSession(sessionId: string | undefined) {
     return () => {
       sub.remove();
     };
-  }, [saveSessionCheckpoint]);
+  }, [saveSessionCheckpoint, runSync]);
 
   // Flush and save checkpoint on unmount
   useEffect(() => {
@@ -329,6 +438,7 @@ export function useStitchingSession(sessionId: string | undefined) {
         cellIndex,
         desiredState: 'completed',
         baseRevision: baseRev,
+        serverBaseRevision: serverRevisionRef.current,
         createdAt: new Date().toISOString(),
       };
 
@@ -350,10 +460,22 @@ export function useStitchingSession(sessionId: string | undefined) {
         setSession((prev) => prev ? { ...prev, status: 'completed', completedAt: ts } : null);
         setIsSessionCompleted(true);
 
-        // Async write completion checkpoint
+        // Async write completion checkpoint, then finalize server-side.
         (async () => {
           await updateSessionStatus(sess.id, 'completed', ts);
           await saveSessionCheckpoint();
+          if (isAccountSessionRef.current && remoteSessionIdRef.current) {
+            await runSync();
+            try {
+              await completeSession(
+                remoteSessionIdRef.current,
+                deviceIdRef.current,
+              );
+            } catch {
+              // Server may still be catching up on the final ops; the next sync
+              // retries completion. Local completion already stands.
+            }
+          }
         })();
       } else {
         // Trigger flush if buffer gets large
@@ -366,7 +488,7 @@ export function useStitchingSession(sessionId: string | undefined) {
     }
 
     return false; // Mismatched cell
-  }, [flushPendingOps, saveSessionCheckpoint]);
+  }, [flushPendingOps, saveSessionCheckpoint, runSync]);
 
   // Undo action
   const undo = useCallback((): boolean => {
@@ -402,6 +524,7 @@ export function useStitchingSession(sessionId: string | undefined) {
       cellIndex,
       desiredState: 'incomplete',
       baseRevision: baseRev,
+      serverBaseRevision: serverRevisionRef.current,
       createdAt: new Date().toISOString(),
     };
 
@@ -438,6 +561,9 @@ export function useStitchingSession(sessionId: string | undefined) {
     stitchCell,
     undo,
     flushPendingOps,
+    hasSyncConflict,
+    dismissSyncConflict: () => setHasSyncConflict(false),
+    syncTick,
   };
 }
 

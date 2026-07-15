@@ -29,6 +29,9 @@ export default function SessionReadyScreen() {
     completedCellsCount,
     stitchCell,
     undo,
+    hasSyncConflict,
+    dismissSyncConflict,
+    syncTick,
   } = useStitchingSession(sessionId);
 
   const { selectedColorIndex, setSelectedColorIndex, handedness } = useGameplayStore();
@@ -59,6 +62,14 @@ export default function SessionReadyScreen() {
       completedShared.value = rendererState.getCompletedArray();
     }
   }, [patternData, rendererState]);
+
+  // Refresh the canvas when a Progress Sync folds in server-changed cells.
+  useEffect(() => {
+    if (syncTick > 0 && rendererState) {
+      completedShared.value = rendererState.getCompletedArray();
+      setParentRevision((revision) => revision + 1);
+    }
+  }, [syncTick, rendererState]);
 
   useEffect(() => {
     activeColorIndexShared.value = selectedColorIndex;
@@ -232,6 +243,16 @@ export default function SessionReadyScreen() {
           </Text>
         </View>
       </View>
+
+      {/* Progress Sync conflict notice (server resolved a concurrent edit) */}
+      {hasSyncConflict && (
+        <Pressable style={styles.conflictBanner} onPress={dismissSyncConflict}>
+          <Ionicons name="sync-outline" size={16} color={Theme.colors.textPrimary} />
+          <Text style={styles.conflictText}>
+            Synced with another device — some cells were updated. Tap to dismiss.
+          </Text>
+        </Pressable>
+      )}
 
       {/* Skia Canvas Container */}
       <Animated.View style={[styles.canvasWrapper, animatedShakeStyle]}>
@@ -446,6 +467,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: Theme.spacing.sm,
     borderRadius: Theme.radii.md,
     marginRight: Theme.spacing.md,
+  },
+  conflictBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Theme.spacing.xs,
+    paddingHorizontal: Theme.spacing.md,
+    paddingVertical: Theme.spacing.sm,
+    backgroundColor: '#FBF3E4',
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.colors.border,
+    zIndex: 10,
+  },
+  conflictText: {
+    flex: 1,
+    fontSize: Theme.typography.sizes.sm,
+    color: Theme.colors.textPrimary,
   },
   headerInfo: {
     flex: 1,
