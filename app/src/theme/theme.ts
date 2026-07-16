@@ -11,6 +11,12 @@ export const Theme = {
     accentHoney: '#D4A35C',     // Honey Gold thread
     accentTeal: '#2C5E65',      // Deep Teal thread
 
+    // Game navigation surfaces
+    accentHoneySoft: '#F6E7C8', // Raised Honey action surface
+    gameBar: '#FFF9EE',         // Warm framed HUD surface
+    gameBarEdge: '#234C52',     // Dark stitched frame edge
+    gameBarShadow: '#173438',   // Raised control shadow
+
     // Text hierarchy
     textPrimary: '#2E2A25',     // Warm dark brown-slate (less harsh than pure black)
     textSecondary: '#857D75',   // Muted brown-gray
