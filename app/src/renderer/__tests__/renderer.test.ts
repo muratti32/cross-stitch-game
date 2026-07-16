@@ -12,6 +12,8 @@ import {
   computeEdgePanVelocity,
 } from '../tileMath';
 import { RendererState } from '../RendererState';
+import { TilePictureCache, TILE_CACHE_BUDGET } from '../pictureCache';
+import type { SkPicture } from '@shopify/react-native-skia';
 
 describe('Stitch Renderer Pure Logic', () => {
   describe('tileMath', () => {
@@ -335,6 +337,54 @@ describe('Stitch Renderer Pure Logic', () => {
         justifyContent: 'flex-end',
         railSide: 'right',
       });
+    });
+  });
+
+  describe('TilePictureCache (LRU)', () => {
+    const pic = (id: number) => ({ id } as unknown as SkPicture);
+
+    test('get refreshes recency so prune evicts least recently used first', () => {
+      const cache = new TilePictureCache();
+      cache.set('0_0', pic(1));
+      cache.set('1_0', pic(2));
+      cache.set('2_0', pic(3));
+
+      // Touch the oldest entry so it becomes most recently used
+      cache.get('0_0');
+
+      cache.prune(new Set<string>(), 2);
+
+      expect(cache.size).toBe(2);
+      expect(cache.get('1_0')).toBeUndefined(); // LRU evicted
+      expect(cache.get('0_0')).toBeDefined();
+      expect(cache.get('2_0')).toBeDefined();
+    });
+
+    test('prune never evicts protected (visible) keys', () => {
+      const cache = new TilePictureCache();
+      cache.set('0_0', pic(1));
+      cache.set('1_0', pic(2));
+      cache.set('2_0', pic(3));
+
+      cache.prune(new Set(['0_0', '1_0', '2_0']), 1);
+
+      // All keys protected: budget cannot be met, nothing evicted
+      expect(cache.size).toBe(3);
+    });
+
+    test('prune is a no-op when within budget', () => {
+      const cache = new TilePictureCache();
+      cache.set('0_0', pic(1));
+      cache.prune(new Set<string>(), TILE_CACHE_BUDGET);
+      expect(cache.size).toBe(1);
+    });
+
+    test('set replaces existing key without growing the cache', () => {
+      const cache = new TilePictureCache();
+      cache.set('0_0', pic(1));
+      cache.set('0_0', pic(2));
+      expect(cache.size).toBe(1);
+      expect((cache.get('0_0') as unknown as { id: number }).id).toBe(2);
     });
   });
 });

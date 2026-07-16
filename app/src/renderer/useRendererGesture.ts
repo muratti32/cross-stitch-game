@@ -47,11 +47,6 @@ export function useRendererGesture({
   // Clamping scale limit derived dynamically based on fit
   const minScale = useSharedValue(0.05);
 
-  // Saved transform values for gesture relative offsets
-  const savedScale = useSharedValue(1.0);
-  const savedTranslateX = useSharedValue(0.0);
-  const savedTranslateY = useSharedValue(0.0);
-
   // Sweep gesture state tracking
   const isSweepActive = useSharedValue(false);
   const fingerX = useSharedValue(0.0);
@@ -211,27 +206,27 @@ export function useRendererGesture({
     [containerWidth, containerHeight, fitToScreen]
   );
 
-  // Gesture definitions
+  // Gesture definitions.
+  // Pinch and pan both apply incremental deltas on top of the current
+  // transform, so running simultaneously they compose additively instead of
+  // overwriting each other's translation.
   const pinchGesture = Gesture.Pinch()
     .onStart(() => {
       cancelAnimation(scale);
       cancelAnimation(translateX);
       cancelAnimation(translateY);
-      savedScale.value = scale.value;
-      savedTranslateX.value = translateX.value;
-      savedTranslateY.value = translateY.value;
     })
-    .onUpdate((event) => {
-      const s = clamp(savedScale.value * event.scale, minScale.value, maxScale);
-      scale.value = s;
+    .onChange((event) => {
+      const prevScale = scale.value;
+      const s = clamp(prevScale * event.scaleChange, minScale.value, maxScale);
+      const applied = s / prevScale;
 
-      // Focal-anchored zoom math:
+      // Focal-anchored zoom math (per-update ratio, anchored at current focal):
       // screen_pos = focal_pos = pattern_pos * scale + translate
-      // => newTx = focalX - (focalX - savedTx) * (s / savedScale)
-      translateX.value =
-        event.focalX - (event.focalX - savedTranslateX.value) * (s / savedScale.value);
-      translateY.value =
-        event.focalY - (event.focalY - savedTranslateY.value) * (s / savedScale.value);
+      // => newTx = focalX - (focalX - currentTx) * applied
+      translateX.value = event.focalX - (event.focalX - translateX.value) * applied;
+      translateY.value = event.focalY - (event.focalY - translateY.value) * applied;
+      scale.value = s;
 
       clampTranslations(s);
     });
@@ -279,10 +274,8 @@ export function useRendererGesture({
       if (isSweepActive.value) return;
       cancelAnimation(translateX);
       cancelAnimation(translateY);
-      savedTranslateX.value = translateX.value;
-      savedTranslateY.value = translateY.value;
     })
-    .onUpdate((event) => {
+    .onChange((event) => {
       fingerX.value = event.x;
       fingerY.value = event.y;
 
@@ -320,8 +313,8 @@ export function useRendererGesture({
           }
         }
       } else {
-        translateX.value = savedTranslateX.value + event.translationX;
-        translateY.value = savedTranslateY.value + event.translationY;
+        translateX.value += event.changeX;
+        translateY.value += event.changeY;
         clampTranslations(scale.value);
       }
     })

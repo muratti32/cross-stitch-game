@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useImperativeHandle } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useImperativeHandle, useCallback } from 'react';
 import { StyleSheet, View, LayoutChangeEvent, Text } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
 import {
@@ -7,7 +7,6 @@ import {
   Group,
   Picture,
   PaintStyle,
-  type SkPicture,
 } from '@shopify/react-native-skia';
 import { useGameplayStore } from '../store/gameplayStore';
 import {
@@ -21,7 +20,14 @@ import { createSymbolAtlas, type SymbolAtlas } from './symbolAtlas';
 import { RendererState } from './RendererState';
 import { useRendererGesture } from './useRendererGesture';
 import { PatternData } from '../pattern-artifact';
-import { useDerivedValue, type SharedValue } from 'react-native-reanimated';
+import {
+  useDerivedValue,
+  useAnimatedReaction,
+  useSharedValue,
+  runOnJS,
+  type SharedValue,
+} from 'react-native-reanimated';
+import { TilePictureCache, TILE_CACHE_BUDGET } from './pictureCache';
 
 export interface StitchRendererProps {
   pattern: PatternData;
@@ -73,14 +79,14 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     return createSymbolAtlas(pattern.palette.length);
   }, [pattern.palette.length]);
 
-  // Picture Cache Maps
+  // LRU Picture Caches (bounded, pruned when the viewport settles)
   // Key formats:
   // Base: `${tileX}_${tileY}_${lodBand}`
   // Completed: `${tileX}_${tileY}`
   // Overlay: `${tileX}_${tileY}`
-  const baseCache = useRef<Map<string, SkPicture>>(new Map());
-  const completedCache = useRef<Map<string, SkPicture>>(new Map());
-  const overlayCache = useRef<Map<string, SkPicture>>(new Map());
+  const baseCache = useRef<TilePictureCache>(new TilePictureCache());
+  const completedCache = useRef<TilePictureCache>(new TilePictureCache());
+  const overlayCache = useRef<TilePictureCache>(new TilePictureCache());
 
   // Setup gesture handler via Reanimated
   const {
@@ -117,13 +123,19 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
   }));
 
   // Track the viewport values in React state for culling.
-  // We use useAnimatedReaction inside useRendererGesture (conceptually) to throttle this.
-  // In this component, we trigger culling updates based on gesture movement or ended states.
+  // A UI-thread useAnimatedReaction below watches the transform shared values
+  // and pushes throttled updates here; a settle timer marks when movement stops.
   const [cullViewport, setCullViewport] = useState({
     scale: 1.0,
     translateX: 0.0,
     translateY: 0.0,
   });
+
+  // True while the viewport transform is actively changing (gesture or decay).
+  // While moving, missing tile pictures are NOT recorded (ADR-0034: no picture
+  // re-recording inside the gesture); they fill in once the viewport settles.
+  const [viewportMoving, setViewportMoving] = useState(false);
+  const settleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Whenever the active selected color index changes, dirty all overlay tiles.
   useEffect(() => {
@@ -138,7 +150,11 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     containerHeightRef.current = height;
     setContainerSize(width, height);
 
-    // Set initial cull viewport
+    // Set initial cull viewport and sync the reaction baseline so the initial
+    // fit transform is not mistaken for gesture movement.
+    lastSentScale.value = scale.value;
+    lastSentTx.value = translateX.value;
+    lastSentTy.value = translateY.value;
     setCullViewport({
       scale: scale.value,
       translateX: translateX.value,
@@ -161,14 +177,11 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
       },
       pattern.width,
       pattern.height,
-      1 // prefetchMargin of 1 tile
+      2 // prefetchMargin of 2 tiles: hides culling latency during fast scroll
     );
   }, [cullViewport, pattern.width, pattern.height]);
 
-  // Update cull viewport after gesture ends or during large movements.
-  // To keep it reactive, we update it at the end of tap gestures, layout changes,
-  // and we can also update it on a small interval or scroll threshold if desired.
-  // Let's force update cullViewport whenever local revision updates (which happens on tap/stitching).
+  // Update cull viewport whenever local revision updates (tap/stitching).
   useEffect(() => {
     setCullViewport({
       scale: scale.value,
@@ -177,27 +190,63 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     });
   }, [revision]);
 
-  // Also hook into a periodic check or update cullViewport when scale/translations settle
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // If scale or offset shifted significantly from cullViewport, synchronize it
-      const scaleDiff = Math.abs(scale.value - cullViewport.scale);
-      const distDiff = Math.hypot(
-        translateX.value - cullViewport.translateX,
-        translateY.value - cullViewport.translateY
-      );
+  // JS-side receiver for throttled viewport updates from the UI thread.
+  // Each call marks the viewport as moving and re-arms the settle timer; when
+  // no update arrives for the settle window, the viewport is declared settled
+  // and deferred tile recording resumes with the exact final transform.
+  const handleViewportChange = useCallback(
+    (s: number, tx: number, ty: number) => {
+      setViewportMoving(true);
+      setCullViewport({ scale: s, translateX: tx, translateY: ty });
 
-      if (scaleDiff > 0.05 || distDiff > 64.0) {
+      if (settleTimer.current) clearTimeout(settleTimer.current);
+      settleTimer.current = setTimeout(() => {
+        settleTimer.current = null;
+        setViewportMoving(false);
         setCullViewport({
           scale: scale.value,
           translateX: translateX.value,
           translateY: translateY.value,
         });
-      }
-    }, 100);
+      }, 160);
+    },
+    [scale, translateX, translateY]
+  );
 
-    return () => clearInterval(interval);
-  }, [cullViewport, scale, translateX, translateY]);
+  useEffect(() => {
+    return () => {
+      if (settleTimer.current) clearTimeout(settleTimer.current);
+    };
+  }, []);
+
+  // UI-thread reaction: watches the transform shared values and dispatches a
+  // culling update when movement exceeds the threshold, throttled to at most
+  // one dispatch per 100 ms so gestures never queue React re-renders per frame.
+  const lastSentScale = useSharedValue(1.0);
+  const lastSentTx = useSharedValue(0.0);
+  const lastSentTy = useSharedValue(0.0);
+  const lastSentAt = useSharedValue(0);
+
+  useAnimatedReaction(
+    () => [scale.value, translateX.value, translateY.value] as const,
+    ([s, tx, ty]) => {
+      const scaleDiff = Math.abs(s - lastSentScale.value);
+      const dx = tx - lastSentTx.value;
+      const dy = ty - lastSentTy.value;
+      const distDiff = Math.sqrt(dx * dx + dy * dy);
+      if (scaleDiff <= 0.05 && distDiff <= 64.0) return;
+
+      const now = Date.now();
+      if (now - lastSentAt.value < 100) return;
+
+      lastSentAt.value = now;
+      lastSentScale.value = s;
+      lastSentTx.value = tx;
+      lastSentTy.value = ty;
+      runOnJS(handleViewportChange)(s, tx, ty);
+    },
+    [handleViewportChange]
+  );
 
   // Paint objects used inside recordings
   const minorGridPaint = useMemo(() => {
@@ -249,6 +298,13 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
   // Count re-recordings for dev validation
   let completedReRecords = 0;
 
+  // While the viewport is moving, missing tile pictures are not recorded
+  // (blank fabric shows briefly during very fast scroll); dirty tiles from an
+  // active Stitch Sweep still re-record so stitches stay within the 50 ms
+  // stitch-to-visible budget. Pure pan/zoom dirties nothing, so no recording
+  // work runs during those gestures.
+  const canRecordMissing = !viewportMoving;
+
   // Pre-fetch/re-record visible tiles
   const renderedTiles = visibleTiles.map(({ tileX, tileY }) => {
     const baseKey = `${tileX}_${tileY}_${lodBand}`;
@@ -257,7 +313,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
 
     // --- 1. Base Picture (Immutable per LOD band) ---
     let basePic = baseCache.current.get(baseKey);
-    if (!basePic) {
+    if (!basePic && canRecordMissing) {
       const recorder = Skia.PictureRecorder();
       const canvas = recorder.beginRecording(Skia.XYWHRect(0, 0, TILE_SIZE, TILE_SIZE));
 
@@ -313,7 +369,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     const isCompletedDirty = rendererState.checkAndClearCompletedDirty(tileX, tileY);
     let completedPic = completedCache.current.get(completedKey);
 
-    if (!completedPic || isCompletedDirty) {
+    if (isCompletedDirty || (!completedPic && canRecordMissing)) {
       completedReRecords++;
       const recorder = Skia.PictureRecorder();
       const canvas = recorder.beginRecording(Skia.XYWHRect(0, 0, TILE_SIZE, TILE_SIZE));
@@ -355,7 +411,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     const isOverlayDirty = rendererState.checkAndClearOverlayDirty(tileX, tileY);
     let overlayPic = overlayCache.current.get(overlayKey);
 
-    if (!overlayPic || isOverlayDirty) {
+    if (isOverlayDirty || (!overlayPic && canRecordMissing)) {
       const recorder = Skia.PictureRecorder();
       const canvas = recorder.beginRecording(Skia.XYWHRect(0, 0, TILE_SIZE, TILE_SIZE));
 
@@ -443,35 +499,22 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     );
   }
 
-  // --- 4. Bounded Cache Eviction ---
-  // Prune tiles that are no longer in the visible region (plus margin) from the caches
+  // --- 4. Bounded Cache Eviction (LRU) ---
+  // Prune least-recently-used tiles beyond the budget once the viewport
+  // settles; visible tiles are never evicted, and recently visited off-screen
+  // tiles stay warm so scrolling back does not thrash re-recording.
   useEffect(() => {
+    if (viewportMoving) return;
+
     const visibleKeys = new Set(visibleTiles.map((t) => `${t.tileX}_${t.tileY}`));
+    completedCache.current.prune(visibleKeys, TILE_CACHE_BUDGET);
+    overlayCache.current.prune(visibleKeys, TILE_CACHE_BUDGET);
 
-    // Evict completed cache
-    for (const key of completedCache.current.keys()) {
-      if (!visibleKeys.has(key)) {
-        completedCache.current.delete(key);
-      }
-    }
-
-    // Evict overlay cache
-    for (const key of overlayCache.current.keys()) {
-      if (!visibleKeys.has(key)) {
-        overlayCache.current.delete(key);
-      }
-    }
-
-    // Evict base cache (lod band is appended)
     const baseVisibleKeys = new Set(
       visibleTiles.map((t) => `${t.tileX}_${t.tileY}_${lodBand}`)
     );
-    for (const key of baseCache.current.keys()) {
-      if (!baseVisibleKeys.has(key)) {
-        baseCache.current.delete(key);
-      }
-    }
-  }, [visibleTiles, lodBand]);
+    baseCache.current.prune(baseVisibleKeys, TILE_CACHE_BUDGET);
+  }, [visibleTiles, lodBand, viewportMoving]);
 
   // Setup dynamic transform array for Reanimated/Skia
   const skiaTransform = useDerivedValue(() => [
