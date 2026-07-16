@@ -9,14 +9,18 @@
     "scheme": "stitchwish",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.avk.stitchwish"
+      "bundleIdentifier": "com.avk.stitchwish",
+      "appleTeamId": "X25YH9627H"
     },
     "android": {
       "package": "com.avk.stitchwish",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FAF6F0"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -41,7 +45,8 @@
         {
           "photosPermission": "Stitch Wish uses your selected photo only on this device to frame a Personal Pattern before conversion."
         }
-      ]
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true

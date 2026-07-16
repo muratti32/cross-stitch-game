@@ -1,5 +1,5 @@
 import { Asset } from 'expo-asset';
-import * as FileSystem from 'expo-file-system';
+import { File } from 'expo-file-system';
 import { decodePatternArtifact, PatternData } from '../pattern-artifact';
 import manifestJson from '../../assets/bundled-patterns/manifest.json';
 
@@ -67,44 +67,6 @@ export const BUNDLED_PATTERNS: BundledPattern[] = (manifestJson as ManifestJsonE
 });
 
 /**
- * Pure JavaScript base64 decoder to bypass platform differences in atob/btoa.
- */
-function decodeBase64(base64: string): Uint8Array {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-  const lookup = new Uint8Array(256);
-  for (let i = 0; i < chars.length; i++) {
-    lookup[chars.charCodeAt(i)] = i;
-  }
-
-  let len = base64.length;
-  if (base64.endsWith('==')) {
-    len -= 2;
-  } else if (base64.endsWith('=')) {
-    len -= 1;
-  }
-
-  const bytes = new Uint8Array((len * 3) / 4);
-  let p = 0;
-  for (let i = 0; i < len; i += 4) {
-    const charCode0 = base64.charCodeAt(i);
-    const charCode1 = base64.charCodeAt(i + 1);
-    const charCode2 = base64.charCodeAt(i + 2);
-    const charCode3 = base64.charCodeAt(i + 3);
-
-    const chunk =
-      (lookup[charCode0] << 18) |
-      (lookup[charCode1] << 12) |
-      (lookup[charCode2] << 6) |
-      lookup[charCode3];
-
-    if (p < bytes.length) bytes[p++] = (chunk >> 16) & 255;
-    if (p < bytes.length) bytes[p++] = (chunk >> 8) & 255;
-    if (p < bytes.length) bytes[p++] = chunk & 255;
-  }
-  return bytes;
-}
-
-/**
  * Loads a bundled pattern, downloads it via the Expo asset system,
  * reads its binary bytes, verifies its SHA-256 checksum,
  * and decodes it.
@@ -122,11 +84,7 @@ export async function loadBundledPattern(id: string): Promise<PatternData> {
     throw new Error(`Local URI is missing for downloaded asset of pattern ${id}`);
   }
 
-  const base64 = await FileSystem.readAsStringAsync(asset.localUri, {
-    encoding: FileSystem.EncodingType.Base64,
-  });
-
-  const bytes = decodeBase64(base64);
+  const bytes = await new File(asset.localUri).bytes();
 
   // decodePatternArtifact performs SHA-256 validation before parsing
   return decodePatternArtifact(bytes, pattern.checksum);

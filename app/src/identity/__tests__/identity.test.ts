@@ -160,6 +160,40 @@ describe('Guest Identity Client State Machine', () => {
     expect(useIdentityStore.getState().isAuthenticated).toBe(true);
     expect(getAccessToken()).toBe('access_abc.eyJpZCI6ImcxIiwiaWF0IjoxMDAwLCJleHAiOjE5MDB9.sig');
   });
+
+  test('expected connectivity failures do not emit background retry errors', async () => {
+    jest.useFakeTimers();
+    const fetchMock = global.fetch;
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      global.fetch = jest
+        .fn()
+        .mockRejectedValue(new Error('fetch failed: Could not connect to the server.')) as any;
+
+      await expect(bootstrap()).rejects.toThrow('fetch failed');
+      await jest.advanceTimersByTimeAsync(2000);
+
+      expect(consoleErrorSpy).not.toHaveBeenCalledWith(
+        'Background retry bootstrap failed:',
+        expect.anything(),
+      );
+
+      global.fetch = jest.fn().mockResolvedValue({
+        status: 201,
+        json: async () => ({
+          guestId: 'guest_reconnected',
+          accessToken: 'h.eyJpZCI6ImcxIn0.sig',
+          refreshToken: 'refresh_reconnected',
+        }),
+      }) as any;
+      await jest.advanceTimersByTimeAsync(4000);
+    } finally {
+      global.fetch = fetchMock;
+      consoleErrorSpy.mockRestore();
+      jest.useRealTimers();
+    }
+  });
 });
 
 describe('apiFetch Interception, Refresh and Replay', () => {
@@ -290,6 +324,7 @@ describe('Guest Data Reset & Local Data Removal flows', () => {
     expect(deleteMock).not.toHaveBeenCalled();
 
     // Now make it succeed
+    setAccessToken('h.eyJpZCI6ImcxIn0.sig');
     mockFetchResponses.push({ status: 204, body: null });
     // Fetch response for bootstrap() which runs inside resetGuestData
     mockFetchResponses.push({
@@ -303,12 +338,14 @@ describe('Guest Data Reset & Local Data Removal flows', () => {
 
     const fetchCallIndices: number[] = [];
     const deleteCallIndices: number[] = [];
+    const recordedRequests: Array<{ url: unknown; options: any }> = [];
 
     // Track invocation order
     let callCounter = 0;
     const originalFetch = global.fetch;
-    global.fetch = jest.fn().mockImplementation((...args) => {
+    global.fetch = jest.fn().mockImplementation((url, options) => {
       fetchCallIndices.push(callCounter++);
+      recordedRequests.push({ url, options });
       const res = mockFetchResponses.shift();
       return {
         status: res?.status ?? 200,
@@ -327,6 +364,9 @@ describe('Guest Data Reset & Local Data Removal flows', () => {
     expect(fetchCallIndices.length).toBeGreaterThan(0);
     expect(deleteCallIndices.length).toBe(1);
     expect(fetchCallIndices[0]).toBeLessThan(deleteCallIndices[0]);
+    expect(recordedRequests[0].options.headers.get('Authorization')).toBe(
+      'Bearer h.eyJpZCI6ImcxIn0.sig',
+    );
 
     // Restore original mock
     global.fetch = originalFetch;
@@ -527,4 +567,3 @@ describe('Email Sign-In (Registered Account) flows', () => {
     expect(state.isAuthenticated).toBe(false);
   });
 });
-

@@ -1,5 +1,5 @@
 import * as protobuf from 'protobufjs';
-import pako from 'pako';
+import { gzip } from 'pako';
 import { sha256 } from 'js-sha256';
 import {
   encodePatternArtifact,
@@ -122,7 +122,7 @@ describe('Pattern Artifact Codec', () => {
 
     const message = PatternEnvelope.create(invalidVersionPayload);
     const buffer = PatternEnvelope.encode(message).finish();
-    const compressed = pako.gzip(buffer);
+    const compressed = gzip(buffer);
     const checksum = sha256(compressed);
 
     expect(() => {
@@ -176,7 +176,7 @@ describe('Pattern Artifact Codec', () => {
 
     const message = PatternEnvelope.create(invalidDimensionsPayload);
     const buffer = PatternEnvelope.encode(message).finish();
-    const compressed = pako.gzip(buffer);
+    const compressed = gzip(buffer);
     const checksum = sha256(compressed);
 
     expect(() => {

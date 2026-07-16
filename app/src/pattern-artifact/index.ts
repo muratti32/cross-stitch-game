@@ -1,5 +1,5 @@
 import * as protobuf from 'protobufjs';
-import pako from 'pako';
+import { gzip, Inflate } from 'pako';
 import { sha256 } from 'js-sha256';
 
 export type PatternCodecErrorType =
@@ -69,7 +69,7 @@ const MAX_DECOMPRESSED_BYTES = 2 * 1024 * 1024;
 // the cap: pako delivers inflated chunks incrementally and anything beyond the
 // limit is discarded instead of accumulated.
 function ungzipBounded(bytes: Uint8Array, cap: number): Uint8Array {
-  const inflator = new pako.Inflate();
+  const inflator = new Inflate();
   const chunks: Uint8Array[] = [];
   let total = 0;
   let exceeded = false;
@@ -146,7 +146,7 @@ export function encodePatternArtifact(pattern: PatternData): Uint8Array {
 
   const message = PatternEnvelope.create(payload);
   const buffer = PatternEnvelope.encode(message).finish();
-  return pako.gzip(buffer);
+  return gzip(buffer);
 }
 
 /**

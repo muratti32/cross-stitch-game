@@ -4,7 +4,7 @@ import * as Crypto from 'expo-crypto';
 import { Config } from '../config';
 import { decodeJwt, calculateRefreshDelay, bufferToBase64Url } from './identityLogic';
 import { adoptPreIdentityDatabase, openNamespace, deleteNamespaceFiles } from '../local-db';
-import { apiFetch } from '../api/apiFetch';
+import { performAuthenticatedRequest } from '../api/authenticatedRequest';
 import { useGameplayStore } from '../store';
 import { queryClient } from '../providers';
 
@@ -30,6 +30,15 @@ let activeRefreshPromise: Promise<string> | null = null;
 
 let retryDelay = 2000; // ms
 let retryTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+function isConnectivityError(err: unknown): boolean {
+  const message = err instanceof Error ? err.message : String(err);
+  return (
+    message.includes('fetch failed') ||
+    message.includes('Network request failed') ||
+    message.includes('Could not connect to the server')
+  );
+}
 
 /**
  * Returns the memory-only access token.
@@ -107,7 +116,9 @@ function scheduleRetryBootstrap(): void {
   retryTimeoutId = setTimeout(() => {
     retryTimeoutId = null;
     bootstrap().catch((err) => {
-      console.error('Background retry bootstrap failed:', err);
+      if (!isConnectivityError(err)) {
+        console.error('Background retry bootstrap failed:', err);
+      }
     });
   }, retryDelay);
 
@@ -552,16 +563,18 @@ interface TokenResponse {
 /**
  * Destructively resets the guest data.
  * Order of execution (resilient):
- * 1) Call POST /v1/auth/guest/reset via apiFetch (must succeed first; online requirement).
+ * 1) Call POST /v1/auth/guest/reset with the active session (must succeed first; online requirement).
  * 2) Delete the guest's namespace DB files (db + wal + shm) via expo-file-system.
  * 3) Purge ALL SecureStore identity keys (installation key, credential secret, guestId, createdAt, refresh token) and memory token.
  * 4) Run bootstrap() to generate a new installationKey/secret and get a fresh Guest Installation Identity with empty namespace.
  * 5) Reset in-memory stores (identity store, gameplay store) and TanStack Query cache.
  */
 export async function resetGuestData(): Promise<void> {
-  const response = await apiFetch('/v1/auth/guest/reset', {
-    method: 'POST',
-  });
+  const response = await performAuthenticatedRequest(
+    '/v1/auth/guest/reset',
+    { method: 'POST' },
+    { getAccessToken, refreshSession },
+  );
   if (response.status !== 204) {
     throw new Error(`Failed to reset guest data on server: status ${response.status}`);
   }
