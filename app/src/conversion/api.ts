@@ -1,3 +1,4 @@
+import { File } from 'expo-file-system';
 import { Platform } from 'react-native';
 
 import { apiFetch } from '@/api/apiFetch';
@@ -39,14 +40,10 @@ export async function createPhotoConversion(input: {
     const file = await fetch(input.uploadUri).then((response) => response.blob());
     body.append('artwork', file, 'conversion-upload.jpg');
   } else {
-    body.append(
-      'artwork',
-      {
-        name: 'conversion-upload.jpg',
-        type: 'image/jpeg',
-        uri: input.uploadUri,
-      } as unknown as Blob,
-    );
+    // Expo's WinterCG fetch rejects React Native's { uri, name, type } FormData
+    // parts ("Unsupported FormDataPart implementation"), so hand it a File that
+    // implements the Blob interface instead.
+    body.append('artwork', new File(input.uploadUri) as unknown as Blob, 'conversion-upload.jpg');
   }
 
   const response = await apiFetch('/v1/conversions/photo', {

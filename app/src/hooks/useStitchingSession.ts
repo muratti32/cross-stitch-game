@@ -258,14 +258,15 @@ export function useStitchingSession(sessionId: string | undefined) {
           sess.status = 'active';
         }
 
-        // 5. Load Pattern Data
+        // 5. Load Pattern Data. Catalog and personal sessions both download
+        // their artifact into the identity namespace during preparation.
         const pat =
-          sess.source === 'catalog'
-            ? await loadCatalogPatternFromNamespace(
+          sess.source === 'bundled'
+            ? await loadBundledPattern(sess.patternId)
+            : await loadRemotePatternFromNamespace(
                 sess.patternId,
                 sess.artifactChecksum,
-              )
-            : await loadBundledPattern(sess.patternId);
+              );
 
         // 6. Determine whether this session syncs (Registered Account + linked
         //    remote session) and pick the reload base accordingly.
@@ -567,9 +568,10 @@ export function useStitchingSession(sessionId: string | undefined) {
   };
 }
 
-// Ready catalog sessions read their verified Offline Pattern Data from the
-// identity namespace; the decoder re-verifies the stored checksum on open.
-async function loadCatalogPatternFromNamespace(
+// Ready catalog and personal sessions read their verified Offline Pattern
+// Data from the identity namespace; the decoder re-verifies the stored
+// checksum on open.
+async function loadRemotePatternFromNamespace(
   patternId: string,
   checksum: string,
 ) {

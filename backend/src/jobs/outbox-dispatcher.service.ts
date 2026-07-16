@@ -29,19 +29,47 @@ export class OutboxDispatcherService {
     batchSize: number = DEFAULT_OUTBOX_BATCH_SIZE,
   ): Promise<number> {
     this.assertBatchSize(batchSize);
-    return this.runInTransaction('dispatch', async (manager) => {
-      const outboxRows = await manager
-        .getRepository(JobOutboxEntity)
-        .createQueryBuilder('outbox')
-        .where('outbox.dispatched_at IS NULL')
-        .orderBy('outbox.created_at', 'ASC')
-        .setLock('pessimistic_write')
-        .setOnLocked('skip_locked')
-        .take(batchSize)
-        .getMany();
+    const outboxRows = await this.runInTransaction(
+      'dispatch',
+      async (manager) => {
+        const rows = await manager
+          .getRepository(JobOutboxEntity)
+          .createQueryBuilder('outbox')
+          .where('outbox.dispatched_at IS NULL')
+          .orderBy('outbox.created_at', 'ASC')
+          .setLock('pessimistic_write')
+          .setOnLocked('skip_locked')
+          .take(batchSize)
+          .getMany();
 
-      for (const outbox of outboxRows) {
-        this.assertSupportedOutbox(outbox);
+        for (const outbox of rows) {
+          this.assertSupportedOutbox(outbox);
+          await this.markProcessingJobDispatched(
+            outbox.processingJobId,
+            manager,
+          );
+          const updateResult = await manager
+            .getRepository(JobOutboxEntity)
+            .update(
+              { dispatchedAt: IsNull(), id: outbox.id },
+              { dispatchedAt: new Date() },
+            );
+          if (updateResult.affected !== 1) {
+            throw new Error(
+              `Job Outbox ${outbox.id} could not be marked as dispatched`,
+            );
+          }
+        }
+
+        return rows;
+      },
+    );
+
+    // Publish only after the dispatched transition is committed. Publishing
+    // inside the transaction let the worker consume the delivery before the
+    // status was visible, so the claim saw a pending job and had to retry.
+    for (const outbox of outboxRows) {
+      try {
         await this.queue.publish(
           outbox.id,
           { processingJobId: outbox.processingJobId },
@@ -49,26 +77,17 @@ export class OutboxDispatcherService {
             | typeof DEMO_JOB_EVENT_NAME
             | typeof CONVERSION_JOB_EVENT_NAME,
         );
-
-        await this.markProcessingJobDispatched(
-          outbox.processingJobId,
-          manager,
+      } catch (error: unknown) {
+        // The outbox row is durably marked as dispatched, so reconcileOnce
+        // republishes this delivery on the next cycle.
+        this.logger.error(
+          `Publishing Job Outbox ${outbox.id} failed after commit; awaiting reconciliation: ${errorMessage(error)}`,
+          errorStack(error),
         );
-        const updateResult = await manager
-          .getRepository(JobOutboxEntity)
-          .update(
-            { dispatchedAt: IsNull(), id: outbox.id },
-            { dispatchedAt: new Date() },
-          );
-        if (updateResult.affected !== 1) {
-          throw new Error(
-            `Job Outbox ${outbox.id} could not be marked as dispatched`,
-          );
-        }
       }
+    }
 
-      return outboxRows.length;
-    });
+    return outboxRows.length;
   }
 
   async reconcileOnce(
@@ -175,10 +194,10 @@ export class OutboxDispatcherService {
     }
   }
 
-  private async runInTransaction(
+  private async runInTransaction<T>(
     operation: string,
-    work: (manager: EntityManager) => Promise<number>,
-  ): Promise<number> {
+    work: (manager: EntityManager) => Promise<T>,
+  ): Promise<T> {
     const queryRunner = this.dataSource.createQueryRunner();
     let connected = false;
 

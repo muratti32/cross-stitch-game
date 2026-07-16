@@ -62,7 +62,7 @@ export default function PhotoImportScreen() {
   const offsetY = useSharedValue(0);
 
   const aspect = 2 ** logAspect;
-  const maxFrameWidth = Math.min(windowWidth - Theme.spacing.lg * 2, 360);
+  const maxFrameWidth = windowWidth;
   const frameSize = useMemo(() => {
     if (aspect >= 1) {
       return { width: maxFrameWidth, height: maxFrameWidth / aspect };
@@ -225,6 +225,16 @@ export default function PhotoImportScreen() {
         width: pattern.width,
       });
       const readySession = await waitUntilSessionReady(session.id);
+      // Screen stays mounted in the create tab's stack after switching to the
+      // play tab, so clear conversion state and pop back to the Creation Hub.
+      setProcessingStatus(null);
+      setAsset(null);
+      setTitle('My Photo Pattern');
+      setProfile('easy');
+      setCustomShortEdge(80);
+      setCustomColors(20);
+      setLogAspect(0);
+      router.dismissAll();
       router.replace(`/(tabs)/(play)/${readySession.id}`);
     } catch (caught: unknown) {
       setError(caught instanceof Error ? caught.message : String(caught));
@@ -482,7 +492,15 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: Theme.typography.sizes.md, fontWeight: Theme.typography.weights.bold, color: Theme.colors.textPrimary },
   helpText: { fontSize: Theme.typography.sizes.sm, color: Theme.colors.textSecondary, lineHeight: 20, textAlign: 'center' },
   linkText: { color: Theme.colors.accentTeal, fontSize: Theme.typography.sizes.sm, fontWeight: Theme.typography.weights.semibold },
-  frameStage: { minHeight: MAX_FRAME_HEIGHT, alignItems: 'center', justifyContent: 'center', backgroundColor: '#EEE8DF', borderRadius: Theme.radii.lg, overflow: 'hidden' },
+  frameStage: {
+    minHeight: MAX_FRAME_HEIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#EEE8DF',
+    borderRadius: 0,
+    marginHorizontal: -Theme.spacing.lg,
+    overflow: 'hidden',
+  },
   frame: { overflow: 'hidden', backgroundColor: '#D9D1C6' },
   framedImage: { position: 'absolute' },
   frameBorder: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, borderColor: '#FFFFFF', borderWidth: 2 },
