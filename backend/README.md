@@ -94,7 +94,73 @@ npm run start:api
 npm run start:worker
 ```
 
-Set `DATABASE_URL`, `REDIS_URL`, and `PORT` through the deployment platform. The API deployable additionally requires `JWT_SECRET`; the worker and migration CLI do not need the signing secret. Do not commit deployed credentials or copy them into `.env.example`.
+Set `DATABASE_URL`, `REDIS_URL`, and secrets through the deployment platform. The
+API and worker use the same environment contract because the worker also loads
+authentication and session modules. Do not commit deployed credentials or copy
+them into `.env.example`.
+
+## Coolify production deployment
+
+The repository root contains `compose.production.yml` for Coolify's Docker
+Compose build pack. It runs the backend as three separate containers:
+
+- `migrate` applies TypeORM migrations once and exits.
+- `api` serves HTTP on container port 3000.
+- `worker` dispatches email/job outboxes and consumes BullMQ work.
+
+The Conversion Engine runs as a fourth, private service. The Compose file does
+not use `env_file` and does not publish host ports. Coolify detects every
+`${VARIABLE}` reference and injects values configured in its Environment
+Variables panel at runtime.
+
+Create a Docker Compose application in Coolify, select this repository, and set
+the Compose file location to `/compose.production.yml`. Fill these required
+runtime variables in the Coolify console:
+
+| Variable | Purpose |
+|---|---|
+| `DATABASE_URL` | Managed PostgreSQL connection URL |
+| `REDIS_URL` | Managed Redis connection URL |
+| `JWT_SECRET` | Access-token signing secret |
+| `GRANT_SIGNING_SECRET` | Artifact-grant signing secret |
+| `OTP_SIGNING_SECRET` | Email OTP verifier signing secret |
+| `RESEND_API_KEY` | Resend server API key |
+| `EMAIL_FROM_ADDRESS` | Sender on the verified Resend domain |
+
+The Compose `:?` syntax marks these values as required, so Coolify blocks the
+deployment while any is empty. Keep them runtime-only; none is needed during
+the image build. Enable Coolify's `Literal` option when a value contains `$`,
+percent-encode reserved characters inside connection-URL credentials, and do
+not append a shell-style semicolon to `DATABASE_URL`. Generate a different
+value for each signing secret:
+
+```sh
+openssl rand -hex 32
+```
+
+The TTL, rate-limit, conversion concurrency, and log-level variables have safe
+defaults in Compose and remain editable in the Coolify panel.
+
+In Coolify's service list, assign the public domain only to `api`. Because the
+container listens on port 3000, enter the domain with that internal target, for
+example `https://api.example.com:3000`. Coolify terminates TLS and proxies normal
+HTTPS traffic to the container. Do not assign domains to `worker`, `migrate`, or
+`conversion-engine`.
+
+`api` waits for a successful migration container. `worker` additionally waits
+for the Conversion Engine health check. `migrate` is excluded from Coolify's
+ongoing health evaluation because it exits after applying pending migrations.
+Inspect the migration container logs after every deployment; an overall deploy
+message alone does not prove the database schema is current.
+
+The production Compose file deliberately does not create PostgreSQL or Redis.
+Use managed instances with backups, point-in-time recovery, TLS, and monitoring
+as required by `docs/app-metadata.md`.
+
+The current storage implementation is a Docker named volume shared by `api` and
+`worker`. This is durable on one Docker host but is not multi-host object
+storage. Do not scale these containers across hosts until `LocalObjectStorage`
+is replaced by the accepted S3-compatible production implementation.
 
 ## Migrations
 

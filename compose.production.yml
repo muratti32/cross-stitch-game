@@ -1,0 +1,125 @@
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-file: "5"
+    max-size: 10m
+
+x-backend: &backend
+  build:
+    context: ./backend
+    dockerfile: Dockerfile
+    target: runtime
+  environment:
+    CONVERSION_ENGINE_URL: http://conversion-engine:8000
+    CONVERSION_WORKER_CONCURRENCY: "${CONVERSION_WORKER_CONCURRENCY:-1}"
+    DATABASE_URL: "${DATABASE_URL:?}"
+    EMAIL_FROM_ADDRESS: "${EMAIL_FROM_ADDRESS:?}"
+    EMAIL_OTP_MAX_ATTEMPTS: "${EMAIL_OTP_MAX_ATTEMPTS:-5}"
+    EMAIL_OTP_RATE_LIMIT_PER_EMAIL: "${EMAIL_OTP_RATE_LIMIT_PER_EMAIL:-5}"
+    EMAIL_OTP_RATE_LIMIT_PER_IP: "${EMAIL_OTP_RATE_LIMIT_PER_IP:-20}"
+    EMAIL_OTP_TTL_SECONDS: "${EMAIL_OTP_TTL_SECONDS:-600}"
+    GRANT_SIGNING_SECRET: "${GRANT_SIGNING_SECRET:?}"
+    GRANT_TTL_SECONDS: "${GRANT_TTL_SECONDS:-300}"
+    JWT_ACCESS_TTL_SECONDS: "${JWT_ACCESS_TTL_SECONDS:-900}"
+    JWT_SECRET: "${JWT_SECRET:?}"
+    NODE_ENV: production
+    OTP_SIGNING_SECRET: "${OTP_SIGNING_SECRET:?}"
+    PORT: "3000"
+    REDIS_URL: "${REDIS_URL:?}"
+    REFRESH_TOKEN_TTL_SECONDS: "${REFRESH_TOKEN_TTL_SECONDS:-2592000}"
+    RESEND_API_KEY: "${RESEND_API_KEY:?}"
+    STORAGE_LOCAL_DIR: /var/lib/stitch-wish/storage
+  init: true
+  read_only: true
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  tmpfs:
+    - /tmp:rw,noexec,nosuid,size=64m
+  logging: *default-logging
+
+services:
+  migrate:
+    <<: *backend
+    command:
+      - node
+      - node_modules/typeorm/cli.js
+      - migration:run
+      - -d
+      - dist/database/data-source.js
+    exclude_from_hc: true
+    restart: "no"
+
+  conversion-engine:
+    build:
+      context: ./conversion-engine
+      dockerfile: Dockerfile
+    environment:
+      HOST: 0.0.0.0
+      LOG_LEVEL: "${CONVERSION_LOG_LEVEL:-info}"
+      MAX_CONCURRENT_CONVERSIONS: ${MAX_CONCURRENT_CONVERSIONS:-1}
+      PORT: "8000"
+    expose:
+      - "8000"
+    init: true
+    networks:
+      - conversion
+    read_only: true
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=128m
+    logging: *default-logging
+
+  api:
+    <<: *backend
+    command: ["node", "dist/main.api.js"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    expose:
+      - "3000"
+    volumes:
+      - backend-storage:/var/lib/stitch-wish/storage
+    restart: unless-stopped
+    stop_grace_period: 30s
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - >-
+          fetch('http://127.0.0.1:3000/v1/health')
+          .then((response) => { if (!response.ok) process.exit(1); })
+          .catch(() => process.exit(1))
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  worker:
+    <<: *backend
+    command: ["node", "dist/main.worker.js"]
+    depends_on:
+      conversion-engine:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    volumes:
+      - backend-storage:/var/lib/stitch-wish/storage
+    networks:
+      - default
+      - conversion
+    restart: unless-stopped
+    stop_grace_period: 60s
+
+networks:
+  conversion:
+    internal: true
+
+volumes:
+  backend-storage:

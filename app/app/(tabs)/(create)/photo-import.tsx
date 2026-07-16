@@ -124,13 +124,14 @@ export default function PhotoImportScreen() {
     });
   const framingGesture = Gesture.Simultaneous(panGesture, pinchGesture);
 
+  // Animate transforms only: animating width/height/left/top on Fabric makes
+  // iOS decode the bitmap at a stale tiny layout size, rendering it blurry.
   const imageStyle = useAnimatedStyle(() => ({
-    height: baseRenderedHeight * zoom.value,
-    left:
-      (frameSize.width - baseRenderedWidth * zoom.value) / 2 + offsetX.value,
-    top:
-      (frameSize.height - baseRenderedHeight * zoom.value) / 2 + offsetY.value,
-    width: baseRenderedWidth * zoom.value,
+    transform: [
+      { translateX: offsetX.value },
+      { translateY: offsetY.value },
+      { scale: zoom.value },
+    ],
   }));
 
   const pickPhoto = async () => {
@@ -292,7 +293,19 @@ export default function PhotoImportScreen() {
                     { height: frameSize.height, width: frameSize.width },
                   ]}
                 >
-                  <Animated.Image source={{ uri: asset.uri }} style={[styles.framedImage, imageStyle]} />
+                  <Animated.Image
+                    source={{ uri: asset.uri }}
+                    style={[
+                      styles.framedImage,
+                      {
+                        height: baseRenderedHeight,
+                        left: (frameSize.width - baseRenderedWidth) / 2,
+                        top: (frameSize.height - baseRenderedHeight) / 2,
+                        width: baseRenderedWidth,
+                      },
+                      imageStyle,
+                    ]}
+                  />
                   <View pointerEvents="none" style={styles.frameBorder} />
                 </View>
               </GestureDetector>
