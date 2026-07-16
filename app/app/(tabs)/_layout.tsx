@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Theme } from '@/theme/theme';
-import { Platform, StyleSheet, View, type ColorValue } from 'react-native';
+import { Platform, StyleSheet, View, Animated, type ColorValue } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
 type IconName = React.ComponentProps<typeof Ionicons>['name'];
 
@@ -22,35 +23,129 @@ function GameTabIcon({
   variant,
 }: GameTabIconProps) {
   const featured = variant === 'create';
+  
+  // Animation driver
+  const focusAnimation = useRef(new Animated.Value(focused ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.spring(focusAnimation, {
+      toValue: focused ? 1 : 0,
+      useNativeDriver: true,
+      tension: 100,
+      friction: 10,
+    }).start();
+  }, [focused]);
+
+  // Translate and scale interpolations for the entire icon frame
+  const translateY = focusAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: featured ? [-6, -12] : [0, -3],
+  });
+
+  const scale = focusAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.05],
+  });
+
+  // Opacities for cross-fading unfocused/focused states
+  const unfocusedOpacity = focusAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0],
+  });
+
+  const focusedOpacity = focusAnimation;
+
+  // Stitch shape (diamond) animation
+  const stitchScale = focusAnimation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0, 0, 1],
+  });
+
+  const stitchRotate = focusAnimation.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['-135deg', '45deg'],
+  });
+
+  // Resolve frame styling based on active/inactive states and features
+  const unfocusedFrameStyle = featured ? styles.featuredUnfocusedFrame : styles.standardUnfocusedFrame;
+  const focusedFrameStyle = featured ? styles.featuredFocusedFrame : styles[`${variant}FocusedFrame` as const] || styles.catalogFocusedFrame;
+
+  // Resolve icon colors
+  const unfocusedIconColor = featured ? Theme.colors.gameBarEdge : Theme.colors.textSecondary;
+  const focusedIconColor = featured ? Theme.colors.gameBarEdge : Theme.colors.textLight;
 
   return (
-    <View
+    <Animated.View
       style={[
-        styles.iconFrame,
-        featured && styles.featuredIconFrame,
-        focused && styles.focusedIconFrame,
-        focused && (featured ? styles.featuredFocusedIconFrame : styles.standardFocusedIconFrame),
-        focused && styles[`${variant}IconFrame`],
+        featured ? styles.featuredContainer : styles.standardContainer,
+        {
+          transform: [{ translateY }, { scale }],
+        },
       ]}
     >
-      <Ionicons
-        name={focused ? activeIcon : inactiveIcon}
-        size={featured ? 26 : 22}
-        color={focused && variant !== 'create' ? Theme.colors.textLight : color}
+      {/* 1. Unfocused Frame */}
+      <Animated.View
+        style={[
+          StyleSheet.absoluteFill,
+          styles.iconFrameBase,
+          unfocusedFrameStyle,
+          { opacity: unfocusedOpacity },
+        ]}
       />
-      {focused && (
-        <View
-          style={[
-            styles.activeStitch,
-            variant === 'create' && styles.activeStitchDark,
-          ]}
+
+      {/* 2. Focused Frame (Fades in) */}
+      <Animated.View
+        style={[
+          StyleSheet.absoluteFill,
+          styles.iconFrameBase,
+          focusedFrameStyle,
+          { opacity: focusedOpacity },
+        ]}
+      />
+
+      {/* 3. Icon Content Layers (Absolute-centered, decoupled from frame border heights to prevent shifting) */}
+      <Animated.View
+        pointerEvents="none"
+        style={[StyleSheet.absoluteFill, styles.centerContent, { opacity: unfocusedOpacity }]}
+      >
+        <Ionicons
+          name={inactiveIcon}
+          size={featured ? 26 : 22}
+          color={unfocusedIconColor}
         />
-      )}
-    </View>
+      </Animated.View>
+
+      <Animated.View
+        pointerEvents="none"
+        style={[StyleSheet.absoluteFill, styles.centerContent, { opacity: focusedOpacity }]}
+      >
+        <Ionicons
+          name={activeIcon}
+          size={featured ? 26 : 22}
+          color={focusedIconColor}
+        />
+      </Animated.View>
+
+      {/* 4. Active Stitch Overlay (Little diamond stitch in the corner) */}
+      <Animated.View
+        style={[
+          styles.activeStitch,
+          featured && styles.activeStitchDark,
+          {
+            opacity: focusedOpacity,
+            transform: [{ rotate: stitchRotate }, { scale: stitchScale }],
+          },
+        ]}
+      />
+    </Animated.View>
   );
 }
 
 export default function TabsLayout() {
+  const triggerHaptic = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+  };
+
   return (
     <Tabs
       screenOptions={{
@@ -84,6 +179,9 @@ export default function TabsLayout() {
             />
           ),
         }}
+        listeners={{
+          tabPress: triggerHaptic,
+        }}
       />
       <Tabs.Screen
         name="(play)"
@@ -98,6 +196,9 @@ export default function TabsLayout() {
               variant="play"
             />
           ),
+        }}
+        listeners={{
+          tabPress: triggerHaptic,
         }}
       />
       <Tabs.Screen
@@ -114,6 +215,9 @@ export default function TabsLayout() {
             />
           ),
         }}
+        listeners={{
+          tabPress: triggerHaptic,
+        }}
       />
       <Tabs.Screen
         name="(profile)"
@@ -129,6 +233,9 @@ export default function TabsLayout() {
             />
           ),
         }}
+        listeners={{
+          tabPress: triggerHaptic,
+        }}
       />
       <Tabs.Screen
         name="(settings)"
@@ -143,6 +250,9 @@ export default function TabsLayout() {
               variant="settings"
             />
           ),
+        }}
+        listeners={{
+          tabPress: triggerHaptic,
         }}
       />
     </Tabs>
@@ -161,6 +271,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.18,
     shadowRadius: 10,
     elevation: 18,
+    overflow: 'visible',
   },
   tabItem: {
     borderRadius: Theme.radii.lg,
@@ -172,56 +283,74 @@ const styles = StyleSheet.create({
     fontWeight: Theme.typography.weights.bold,
     letterSpacing: 0.2,
   },
-  iconFrame: {
+  standardContainer: {
     width: 36,
     height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: Theme.radii.md,
-    borderColor: Theme.colors.border,
-    borderWidth: 1.5,
-    backgroundColor: Theme.colors.background,
+    position: 'relative',
   },
-  focusedIconFrame: {
-    borderColor: Theme.colors.gameBarEdge,
-  },
-  standardFocusedIconFrame: {
-    borderBottomWidth: 4,
-    transform: [{ translateY: -2 }, { scale: 1.04 }],
-  },
-  featuredFocusedIconFrame: {
-    borderBottomWidth: 5,
-    transform: [{ translateY: -7 }, { scale: 1.04 }],
-  },
-  catalogIconFrame: {
-    backgroundColor: Theme.colors.accentSage,
-  },
-  playIconFrame: {
-    backgroundColor: Theme.colors.accentRose,
-  },
-  createIconFrame: {
-    backgroundColor: Theme.colors.accentHoney,
-  },
-  profileIconFrame: {
-    backgroundColor: Theme.colors.accentTeal,
-  },
-  settingsIconFrame: {
-    backgroundColor: Theme.colors.textSecondary,
-  },
-  featuredIconFrame: {
+  featuredContainer: {
     width: 48,
     height: 48,
+    position: 'relative',
+  },
+  iconFrameBase: {
+    borderWidth: 1.5,
+    overflow: 'hidden',
+  },
+  centerContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  focusedIconFrameBase: {
+    borderWidth: 1.5,
+  },
+  standardUnfocusedFrame: {
+    borderRadius: Theme.radii.md,
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.background,
+  },
+  featuredUnfocusedFrame: {
     borderRadius: Theme.radii.lg,
     borderColor: Theme.colors.gameBarEdge,
     borderWidth: 2,
     borderBottomWidth: 5,
     backgroundColor: Theme.colors.accentHoneySoft,
-    transform: [{ translateY: -7 }],
     shadowColor: Theme.colors.gameBarShadow,
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 6,
+  },
+  featuredFocusedFrame: {
+    borderRadius: Theme.radii.lg,
+    borderColor: Theme.colors.gameBarEdge,
+    borderWidth: 2,
+    borderBottomWidth: 5,
+    backgroundColor: Theme.colors.accentHoney,
+  },
+  catalogFocusedFrame: {
+    borderRadius: Theme.radii.md,
+    borderColor: Theme.colors.gameBarEdge,
+    borderBottomWidth: 4,
+    backgroundColor: Theme.colors.accentSage,
+  },
+  playFocusedFrame: {
+    borderRadius: Theme.radii.md,
+    borderColor: Theme.colors.gameBarEdge,
+    borderBottomWidth: 4,
+    backgroundColor: Theme.colors.accentRose,
+  },
+  profileFocusedFrame: {
+    borderRadius: Theme.radii.md,
+    borderColor: Theme.colors.gameBarEdge,
+    borderBottomWidth: 4,
+    backgroundColor: Theme.colors.accentTeal,
+  },
+  settingsFocusedFrame: {
+    borderRadius: Theme.radii.md,
+    borderColor: Theme.colors.gameBarEdge,
+    borderBottomWidth: 4,
+    backgroundColor: Theme.colors.textSecondary,
   },
   activeStitch: {
     position: 'absolute',
@@ -231,7 +360,6 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 1,
     backgroundColor: Theme.colors.textLight,
-    transform: [{ rotate: '45deg' }],
   },
   activeStitchDark: {
     backgroundColor: Theme.colors.gameBarEdge,
