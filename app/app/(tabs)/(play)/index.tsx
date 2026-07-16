@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, View, Text, Image, FlatList, ActivityIndicator } from 'react-native';
-import { Screen, EmptyState, Card, Button, CachedImage } from '@/components';
+import { StyleSheet, View, Text, Image, FlatList, ActivityIndicator, Alert, Pressable, Dimensions } from 'react-native';
+import { Screen, EmptyState, Card, CachedImage } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { getSessions, deleteSession, getSessionCompletedCount, StitchingSession } from '@/local-db';
@@ -10,6 +10,12 @@ import {
   retryDownload,
   useDownloadProgressStore,
 } from '@/session-preparation';
+import { Ionicons } from '@expo/vector-icons';
+
+const { width: screenWidth } = Dimensions.get('window');
+// Padding horizontal is Theme.spacing.lg (16) * 2 = 32
+// Gap between columns is 12
+const cardWidth = (screenWidth - 32 - 12) / 2;
 
 export default function PlayScreen() {
   const router = useRouter();
@@ -59,13 +65,26 @@ export default function PlayScreen() {
     router.push(`/(tabs)/(play)/${sessionId}`);
   };
 
-  const handleDeleteSession = async (sessionId: string) => {
-    try {
-      await deleteSession(sessionId);
-      await loadSessionsList();
-    } catch (err) {
-      console.error('Failed to delete session:', err);
-    }
+  const handleConfirmDeleteSession = (sessionId: string, title: string) => {
+    Alert.alert(
+      'Delete Progress',
+      `Are you sure you want to delete your progress for "${title}"? This cannot be undone.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteSession(sessionId);
+              await loadSessionsList();
+            } catch (err) {
+              console.error('Failed to delete session:', err);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const renderSessionItem = ({ item }: { item: StitchingSession & { progress: number } }) => {
@@ -77,15 +96,26 @@ export default function PlayScreen() {
     if (!pattern && !item.title) {
       return (
         <Card style={styles.sessionCard}>
-          <View style={styles.unknownPatternContainer}>
-            <Text style={styles.sessionTitle}>Unknown Pattern ({item.patternId})</Text>
-            <Button
-              title="Delete"
-              onPress={() => handleDeleteSession(item.id)}
-              variant="rose"
-              style={styles.deleteBtn}
-            />
+          <View style={[styles.sessionImage, styles.placeholderImageContainer, { height: 110 }]}>
+            <Ionicons name="help-circle-outline" size={32} color={Theme.colors.textSecondary} />
           </View>
+          <View style={styles.sessionDetailsContainer}>
+            <Text style={styles.sessionTitle} numberOfLines={1}>
+              Unknown Pattern
+            </Text>
+            <Text style={styles.sessionMeta}>ID: {item.patternId}</Text>
+          </View>
+          <Pressable
+            onPress={() => handleConfirmDeleteSession(item.id, `Pattern ${item.patternId}`)}
+            style={({ pressed }) => [
+              styles.deleteIconButton,
+              pressed && styles.deleteIconButtonPressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel="Delete session"
+          >
+            <Ionicons name="trash-outline" size={15} color={Theme.colors.error} />
+          </Pressable>
         </Card>
       );
     }
@@ -100,64 +130,91 @@ export default function PlayScreen() {
       );
     }
 
+    // Determine badge and bar styling based on status
+    let badgeBg = 'rgba(133, 125, 117, 0.1)';
+    let badgeText = Theme.colors.textSecondary;
+    let badgeLabel = 'Ready';
+    let progressFillColor = Theme.colors.accentSage;
+
+    if (item.status === 'completed') {
+      badgeBg = 'rgba(122, 154, 130, 0.15)';
+      badgeText = Theme.colors.accentSage;
+      badgeLabel = 'Done';
+      progressFillColor = Theme.colors.accentSage;
+    } else if (item.status === 'active') {
+      badgeBg = 'rgba(44, 94, 101, 0.12)';
+      badgeText = Theme.colors.accentTeal;
+      badgeLabel = 'Active';
+      progressFillColor = Theme.colors.accentTeal;
+    }
+
     return (
       <Card style={styles.sessionCard} onPress={() => handleOpenSession(item.id)}>
-        {pattern ? (
-          <Image source={pattern.previewAsset} style={styles.sessionImage} />
-        ) : item.previewUrl ? (
-          <CachedImage uri={item.previewUrl} style={styles.sessionImage} />
-        ) : (
-          <View style={styles.sessionImage} />
-        )}
+        <View style={styles.imageWrapper}>
+          {pattern ? (
+            <Image source={pattern.previewAsset} style={styles.sessionImage} />
+          ) : item.previewUrl ? (
+            <CachedImage uri={item.previewUrl} style={styles.sessionImage} />
+          ) : (
+            <View style={[styles.sessionImage, styles.placeholderImageContainer]}>
+              <Ionicons name="image-outline" size={32} color={Theme.colors.textSecondary} />
+            </View>
+          )}
 
-        <View style={styles.sessionInfo}>
-          <View style={styles.titleRow}>
-            <Text style={styles.sessionTitle} numberOfLines={1}>
-              {displayTitle}
-            </Text>
-            {item.status === 'completed' ? (
-              <View style={[styles.readyBadge, { backgroundColor: 'rgba(122, 154, 130, 0.15)' }]}>
-                <Text style={[styles.readyBadgeText, { color: Theme.colors.accentSage }]}>Done</Text>
-              </View>
-            ) : item.status === 'active' ? (
-              <View style={[styles.readyBadge, { backgroundColor: 'rgba(56, 178, 172, 0.15)' }]}>
-                <Text style={[styles.readyBadgeText, { color: Theme.colors.accentTeal }]}>Active</Text>
-              </View>
-            ) : (
-              <View style={styles.readyBadge}>
-                <Text style={styles.readyBadgeText}>Ready</Text>
-              </View>
-            )}
-          </View>
+          {/* Absolute Trash Icon Button in top right of image */}
+          <Pressable
+            onPress={() => handleConfirmDeleteSession(item.id, displayTitle)}
+            style={({ pressed }) => [
+              styles.deleteIconButton,
+              pressed && styles.deleteIconButtonPressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel="Delete session"
+          >
+            <Ionicons name="trash-outline" size={15} color={Theme.colors.error} />
+          </Pressable>
 
-          <Text style={styles.sessionMeta}>
-            {displayWidth}×{displayHeight}
-            {pattern ? ` • ${pattern.colorsCount} colors` : ''}
+          {/* Play/View Button overlaying bottom-right of image */}
+          <Pressable
+            onPress={() => handleOpenSession(item.id)}
+            style={({ pressed }) => [
+              styles.imageActionBtn,
+              item.status === 'completed' ? styles.imageActionBtnCompleted : styles.imageActionBtnActive,
+              pressed && styles.imageActionBtnPressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={item.status === 'completed' ? 'View finished craft' : 'Resume stitching'}
+          >
+            <Ionicons
+              name={item.status === 'completed' ? 'eye-outline' : 'play'}
+              size={14}
+              color={item.status === 'completed' ? Theme.colors.accentSage : '#FFFFFF'}
+              style={item.status !== 'completed' ? { marginLeft: 1 } : undefined}
+            />
+          </Pressable>
+        </View>
+
+        <View style={styles.sessionDetailsContainer}>
+          <Text style={styles.sessionTitle} numberOfLines={1}>
+            {displayTitle}
           </Text>
+
+          <View style={styles.metaRow}>
+            <Text style={styles.sessionMeta}>
+              {displayWidth}×{displayHeight}
+            </Text>
+            <View style={[styles.readyBadge, { backgroundColor: badgeBg }]}>
+              <Text style={[styles.readyBadgeText, { color: badgeText }]}>{badgeLabel}</Text>
+            </View>
+          </View>
 
           {/* Progress bar */}
           <View style={styles.progressContainer}>
             <View style={styles.progressBarBg}>
-              <View style={[styles.progressBarFill, { width: `${item.progress}%` }]} />
+              <View style={[styles.progressBarFill, { width: `${item.progress}%`, backgroundColor: progressFillColor }]} />
             </View>
             <Text style={styles.progressText}>{item.progress}%</Text>
           </View>
-        </View>
-
-        <View style={styles.actionColumn}>
-          <Button
-            title={item.status === 'completed' ? 'View' : 'Open'}
-            onPress={() => handleOpenSession(item.id)}
-            variant={item.status === 'completed' ? 'secondary' : 'sage'}
-            style={styles.openBtn}
-          />
-          <Button
-            title="Delete"
-            onPress={() => handleDeleteSession(item.id)}
-            variant="secondary"
-            style={styles.deleteTextBtn}
-            textStyle={styles.deleteText}
-          />
         </View>
       </Card>
     );
@@ -190,6 +247,8 @@ export default function PlayScreen() {
             data={sessions}
             keyExtractor={(item) => item.id}
             renderItem={renderSessionItem}
+            numColumns={2}
+            columnWrapperStyle={styles.columnWrapper}
             contentContainerStyle={styles.listContainer}
             showsVerticalScrollIndicator={false}
           />
@@ -214,25 +273,111 @@ function PreparingSessionCard({
   const [busy, setBusy] = useState(false);
   const failed = !!session.errorNote;
 
+  const handleCancelOrDelete = () => {
+    Alert.alert(
+      failed ? 'Discard Session' : 'Cancel Download',
+      failed
+        ? 'Are you sure you want to discard this failed session?'
+        : 'Are you sure you want to cancel downloading this pattern?',
+      [
+        { text: 'Keep', style: 'cancel' },
+        {
+          text: failed ? 'Discard' : 'Cancel',
+          style: 'destructive',
+          onPress: () => {
+            void (async () => {
+              setBusy(true);
+              try {
+                if (failed) {
+                  await deleteSession(session.id);
+                } else {
+                  await cancelDownload(session.id);
+                }
+              } finally {
+                setBusy(false);
+                onChanged();
+              }
+            })();
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <Card style={styles.sessionCard}>
-      {session.previewUrl ? (
-        <CachedImage uri={session.previewUrl} style={styles.sessionImage} />
-      ) : (
-        <View style={styles.sessionImage} />
-      )}
+      <View style={styles.imageWrapper}>
+        {session.previewUrl ? (
+          <CachedImage uri={session.previewUrl} style={styles.sessionImage} />
+        ) : (
+          <View style={[styles.sessionImage, styles.placeholderImageContainer]}>
+            <Ionicons name="cloud-download-outline" size={32} color={Theme.colors.textSecondary} />
+          </View>
+        )}
 
-      <View style={styles.sessionInfo}>
-        <View style={styles.titleRow}>
-          <Text style={styles.sessionTitle} numberOfLines={1}>
-            {title}
+        {/* Cancel/Discard Button in top right */}
+        <Pressable
+          onPress={handleCancelOrDelete}
+          disabled={busy}
+          style={({ pressed }) => [
+            styles.deleteIconButton,
+            pressed && styles.deleteIconButtonPressed,
+          ]}
+        >
+          <Ionicons
+            name={failed ? 'trash-outline' : 'close-outline'}
+            size={16}
+            color={failed ? Theme.colors.error : Theme.colors.textSecondary}
+          />
+        </Pressable>
+
+        {/* Retry Button in bottom right if failed */}
+        {failed && (
+          <Pressable
+            onPress={() => {
+              void (async () => {
+                setBusy(true);
+                try {
+                  await retryDownload(session.id);
+                } catch {
+                  // error note already persisted by retryDownload
+                } finally {
+                  setBusy(false);
+                  onChanged();
+                }
+              })();
+            }}
+            disabled={busy}
+            style={({ pressed }) => [
+              styles.imageActionBtn,
+              styles.imageActionBtnActive,
+              pressed && styles.imageActionBtnPressed,
+            ]}
+          >
+            <Ionicons name="refresh" size={14} color="#FFFFFF" />
+          </Pressable>
+        )}
+      </View>
+
+      <View style={styles.sessionDetailsContainer}>
+        <Text style={styles.sessionTitle} numberOfLines={1}>
+          {title}
+        </Text>
+
+        <View style={styles.metaRow}>
+          <Text style={styles.sessionMeta}>
+            {session.patternWidth && session.patternHeight
+              ? `${session.patternWidth}×${session.patternHeight}`
+              : 'Preparing'}
           </Text>
           <View
             style={[
               styles.readyBadge,
-              failed
-                ? { backgroundColor: 'rgba(211, 93, 93, 0.12)' }
-                : { backgroundColor: 'rgba(212, 163, 92, 0.15)' },
+              {
+                backgroundColor: failed
+                  ? 'rgba(211, 93, 93, 0.12)'
+                  : 'rgba(212, 163, 92, 0.15)',
+              },
             ]}
           >
             <Text
@@ -247,7 +392,7 @@ function PreparingSessionCard({
         </View>
 
         {failed ? (
-          <Text style={styles.preparingErrorText} numberOfLines={2}>
+          <Text style={styles.preparingErrorText} numberOfLines={1}>
             {session.errorNote}
           </Text>
         ) : (
@@ -256,7 +401,10 @@ function PreparingSessionCard({
               <View
                 style={[
                   styles.progressBarFill,
-                  { width: `${Math.round(progress * 100)}%` },
+                  {
+                    width: `${Math.round(progress * 100)}%`,
+                    backgroundColor: Theme.colors.accentHoney,
+                  },
                 ]}
               />
             </View>
@@ -265,47 +413,6 @@ function PreparingSessionCard({
             </Text>
           </View>
         )}
-      </View>
-
-      <View style={styles.actionColumn}>
-        {failed && (
-          <Button
-            title="Retry"
-            onPress={() => {
-              void (async () => {
-                setBusy(true);
-                try {
-                  await retryDownload(session.id);
-                } catch {
-                  // error note already persisted by retryDownload
-                } finally {
-                  setBusy(false);
-                  onChanged();
-                }
-              })();
-            }}
-            variant="sage"
-            loading={busy}
-            style={styles.openBtn}
-          />
-        )}
-        <Button
-          title="Cancel"
-          onPress={() => {
-            void (async () => {
-              setBusy(true);
-              try {
-                await cancelDownload(session.id);
-              } finally {
-                setBusy(false);
-                onChanged();
-              }
-            })();
-          }}
-          variant="secondary"
-          style={styles.deleteTextBtn}
-          textStyle={styles.deleteText}
-        />
       </View>
     </Card>
   );
@@ -345,112 +452,142 @@ const styles = StyleSheet.create({
     color: Theme.colors.textSecondary,
   },
   listContainer: {
-    gap: Theme.spacing.md,
     paddingBottom: Theme.spacing.xxl,
   },
-  sessionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: Theme.spacing.md,
+  columnWrapper: {
+    justifyContent: 'space-between',
   },
-  sessionImage: {
-    width: 64,
-    height: 64,
-    borderRadius: Theme.radii.sm,
-    backgroundColor: '#FAF6F0',
+  sessionCard: {
+    width: cardWidth,
+    marginBottom: 16,
+    backgroundColor: Theme.colors.card,
+    borderRadius: Theme.radii.lg,
     borderWidth: 1,
     borderColor: Theme.colors.border,
+    overflow: 'hidden',
+    position: 'relative',
+    // shadow
+    shadowColor: '#2E2A25',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  sessionInfo: {
-    flex: 1,
-    marginLeft: Theme.spacing.md,
+  imageWrapper: {
+    width: '100%',
+    height: 110,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  sessionImage: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#FAF6F0',
+  },
+  placeholderImageContainer: {
     justifyContent: 'center',
-  },
-  titleRow: {
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: Theme.spacing.sm,
+    backgroundColor: '#FAF6F0',
+  },
+  sessionDetailsContainer: {
+    padding: 10,
   },
   sessionTitle: {
-    fontSize: Theme.typography.sizes.md,
+    fontSize: 14,
     fontWeight: Theme.typography.weights.semibold,
     color: Theme.colors.textPrimary,
-    flexShrink: 1,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+  sessionMeta: {
+    fontSize: 11,
+    color: Theme.colors.textSecondary,
   },
   readyBadge: {
-    backgroundColor: 'rgba(122, 154, 130, 0.15)', // Sage transparent
-    paddingHorizontal: Theme.spacing.sm,
-    paddingVertical: 2,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
     borderRadius: Theme.radii.full,
   },
   readyBadgeText: {
-    fontSize: Theme.typography.sizes.xs - 2,
+    fontSize: 9,
     fontWeight: Theme.typography.weights.bold,
-    color: Theme.colors.accentSage,
-  },
-  sessionMeta: {
-    fontSize: Theme.typography.sizes.xs,
-    color: Theme.colors.textSecondary,
-    marginTop: 2,
   },
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: Theme.spacing.sm,
-    gap: Theme.spacing.sm,
+    marginTop: 8,
+    gap: 6,
   },
   progressBarBg: {
     flex: 1,
-    height: 6,
+    height: 4,
     backgroundColor: Theme.colors.disabledBackground,
     borderRadius: Theme.radii.full,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: Theme.colors.accentSage,
+    borderRadius: Theme.radii.full,
   },
   progressText: {
-    fontSize: Theme.typography.sizes.xs,
+    fontSize: 10,
     color: Theme.colors.textSecondary,
     fontWeight: Theme.typography.weights.medium,
   },
-  actionColumn: {
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    marginLeft: Theme.spacing.md,
-    gap: 4,
-  },
-  openBtn: {
-    height: 32,
-    paddingHorizontal: Theme.spacing.md,
-    borderRadius: Theme.radii.sm,
-  },
-  deleteBtn: {
-    height: 32,
-    paddingHorizontal: Theme.spacing.md,
-    borderRadius: Theme.radii.sm,
-  },
-  deleteTextBtn: {
+  deleteIconButton: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    width: 24,
     height: 24,
-    backgroundColor: 'transparent',
-    paddingHorizontal: 0,
-    borderWidth: 0,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
   },
-  deleteText: {
-    fontSize: Theme.typography.sizes.xs,
-    color: Theme.colors.error,
-    fontWeight: Theme.typography.weights.medium,
+  deleteIconButtonPressed: {
+    backgroundColor: 'rgba(255, 255, 255, 1)',
+    transform: [{ scale: 0.95 }],
+  },
+  imageActionBtn: {
+    position: 'absolute',
+    bottom: 6,
+    right: 6,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  imageActionBtnActive: {
+    backgroundColor: Theme.colors.accentTeal,
+  },
+  imageActionBtnCompleted: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderWidth: 1,
+    borderColor: Theme.colors.accentSage,
+  },
+  imageActionBtnPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.95 }],
   },
   preparingErrorText: {
-    fontSize: Theme.typography.sizes.xs,
+    fontSize: 10,
     color: Theme.colors.error,
-    marginTop: Theme.spacing.xs,
-  },
-  unknownPatternContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    marginTop: 4,
   },
 });

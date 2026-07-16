@@ -91,7 +91,7 @@ export default function SearchScreen() {
               onPress={() => router.push(`/(tabs)/(catalog)/${item.id}`)}
             >
               <CachedImage
-                uri={absolutePreviewUrl(item.previewUrl)}
+                uri={absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl)}
                 style={styles.resultImage}
               />
               <View style={styles.resultDetails}>

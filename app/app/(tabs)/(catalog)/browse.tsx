@@ -95,7 +95,7 @@ export default function BrowseScreen() {
               onPress={() => router.push(`/(tabs)/(catalog)/${item.id}`)}
             >
               <CachedImage
-                uri={absolutePreviewUrl(item.previewUrl)}
+                uri={absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl)}
                 style={styles.gridImage}
               />
               <Text style={styles.gridTitle} numberOfLines={1}>

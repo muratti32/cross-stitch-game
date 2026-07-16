@@ -211,7 +211,7 @@ function ServerPatternCard({
 }) {
   return (
     <Card style={styles.patternCard} onPress={onPress}>
-      <CachedImage uri={absolutePreviewUrl(pattern.previewUrl)} style={styles.patternImage} />
+      <CachedImage uri={absolutePreviewUrl(pattern.originalImageUrl ?? pattern.previewUrl)} style={styles.patternImage} />
       <View style={styles.patternDetails}>
         <Text style={styles.patternTitle} numberOfLines={1}>
           {pattern.title}
@@ -233,7 +233,7 @@ function NewPatternRow({
 }) {
   return (
     <Card style={styles.newRow} onPress={onPress}>
-      <CachedImage uri={absolutePreviewUrl(pattern.previewUrl)} style={styles.newRowImage} />
+      <CachedImage uri={absolutePreviewUrl(pattern.originalImageUrl ?? pattern.previewUrl)} style={styles.newRowImage} />
       <View style={styles.newRowDetails}>
         <Text style={styles.patternTitle} numberOfLines={1}>
           {pattern.title}

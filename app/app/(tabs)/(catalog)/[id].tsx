@@ -198,7 +198,7 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
 
       <View style={styles.imageContainer}>
         <CachedImage
-          uri={absolutePreviewUrl(item.previewUrl)}
+          uri={absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl)}
           style={styles.previewImage}
         />
       </View>
@@ -261,7 +261,7 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
                   setPrepareError(null);
                   await prepareCatalogSession(item.id, {
                     title: item.title,
-                    previewUrl: absolutePreviewUrl(item.previewUrl),
+                    previewUrl: absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl),
                     width: item.width,
                     height: item.height,
                   });

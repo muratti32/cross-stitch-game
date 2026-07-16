@@ -21,6 +21,7 @@ export interface CatalogPatternItem {
   height: number;
   paletteSize: number;
   previewUrl: string;
+  originalImageUrl?: string;
   unlockPriceTier: UnlockPriceTier;
   publishedAt: string;
 }
