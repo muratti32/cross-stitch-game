@@ -980,6 +980,55 @@ describe('Stitch Wish backend integration', () => {
       ).toBe(false);
       engine.mockRestore();
     });
+
+    it('rejects a duplicate Personal Pattern title with 409 until the user renames', async () => {
+      const engine = mockSuccessfulEngine();
+      const account = await createAccount();
+
+      const completedJobId = await requestConversion(
+        account.accessToken,
+        'Sunset Meadow',
+      );
+      await runConversion(completedJobId);
+
+      async function attemptConversion(title: string) {
+        return request(httpServer)
+          .post('/v1/conversions/photo')
+          .set('Authorization', `Bearer ${account.accessToken}`)
+          .field('profile', 'easy')
+          .field('title', title)
+          .attach('artwork', framedArtwork(), {
+            contentType: 'image/png',
+            filename: 'approved-frame.png',
+          });
+      }
+
+      const exactDuplicate = await attemptConversion('Sunset Meadow');
+      expect(exactDuplicate.status).toBe(409);
+      expect(readStringRecord(exactDuplicate.body, 'message')).toContain(
+        'already have a Personal Pattern named "Sunset Meadow"',
+      );
+
+      const caseInsensitiveDuplicate = await attemptConversion('  sunset meadow ');
+      expect(caseInsensitiveDuplicate.status).toBe(409);
+
+      await requestConversion(account.accessToken, 'Pending Meadow');
+      const pendingDuplicate = await attemptConversion('Pending Meadow');
+      expect(pendingDuplicate.status).toBe(409);
+      expect(readStringRecord(pendingDuplicate.body, 'message')).toContain(
+        'already in progress',
+      );
+
+      const renamedJobId = await requestConversion(
+        account.accessToken,
+        'Sunset Meadow II',
+      );
+      await runConversion(renamedJobId);
+
+      const otherAccount = await createAccount();
+      await requestConversion(otherAccount.accessToken, 'Sunset Meadow');
+      engine.mockRestore();
+    });
   });
 
   describe('session preparation', () => {

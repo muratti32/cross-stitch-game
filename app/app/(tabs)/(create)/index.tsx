@@ -1,16 +1,44 @@
-import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { ActivityIndicator, StyleSheet, View, Text } from 'react-native';
 import { Screen, Card } from '@/components';
 import { Theme } from '@/theme/theme';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
+
+type CreatePath =
+  | '/(tabs)/(create)/photo-import'
+  | '/(tabs)/(create)/ai-generation'
+  | '/(tabs)/(create)/pattern-editor';
 
 export default function CreateScreen() {
   const router = useRouter();
+  const navigationLockRef = useRef(false);
+  const [pendingPath, setPendingPath] = useState<CreatePath | null>(null);
 
-  const handleNavigate = (path: '/(tabs)/(create)/photo-import' | '/(tabs)/(create)/ai-generation' | '/(tabs)/(create)/pattern-editor') => {
-    router.push(path);
+  useFocusEffect(
+    useCallback(() => {
+      navigationLockRef.current = false;
+      setPendingPath(null);
+    }, []),
+  );
+
+  const handleNavigate = (path: CreatePath) => {
+    if (navigationLockRef.current) {
+      return;
+    }
+
+    navigationLockRef.current = true;
+    setPendingPath(path);
+    try {
+      router.push(path);
+    } catch (error) {
+      navigationLockRef.current = false;
+      setPendingPath(null);
+      throw error;
+    }
   };
+
+  const navigationPending = pendingPath !== null;
 
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
@@ -23,6 +51,7 @@ export default function CreateScreen() {
         {/* Photo Import Card */}
         <Card
           style={styles.card}
+          disabled={navigationPending}
           onPress={() => handleNavigate('/(tabs)/(create)/photo-import')}
         >
           <View style={[styles.iconContainer, { backgroundColor: '#FBECEE' }]}>
@@ -34,8 +63,17 @@ export default function CreateScreen() {
               Upload a picture from your camera roll and convert it into a stitchable pattern.
             </Text>
             <View style={styles.actionRow}>
-              <Text style={styles.actionText}>Import photo</Text>
-              <Ionicons name="chevron-forward" size={16} color={Theme.colors.accentTeal} />
+              {pendingPath === '/(tabs)/(create)/photo-import' ? (
+                <>
+                  <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
+                  <Text style={styles.actionText}>Opening…</Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.actionText}>Import photo</Text>
+                  <Ionicons name="chevron-forward" size={16} color={Theme.colors.accentTeal} />
+                </>
+              )}
             </View>
           </View>
         </Card>
@@ -43,6 +81,7 @@ export default function CreateScreen() {
         {/* AI Generation Card */}
         <Card
           style={styles.card}
+          disabled={navigationPending}
           onPress={() => handleNavigate('/(tabs)/(create)/ai-generation')}
         >
           <View style={[styles.iconContainer, { backgroundColor: '#EBF4EF' }]}>
@@ -54,8 +93,17 @@ export default function CreateScreen() {
               Describe a cozy prompt and let artificial intelligence generate a custom pixel design.
             </Text>
             <View style={styles.actionRow}>
-              <Text style={styles.actionText}>Generate design</Text>
-              <Ionicons name="chevron-forward" size={16} color={Theme.colors.accentTeal} />
+              {pendingPath === '/(tabs)/(create)/ai-generation' ? (
+                <>
+                  <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
+                  <Text style={styles.actionText}>Opening…</Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.actionText}>Generate design</Text>
+                  <Ionicons name="chevron-forward" size={16} color={Theme.colors.accentTeal} />
+                </>
+              )}
             </View>
           </View>
         </Card>
@@ -63,6 +111,7 @@ export default function CreateScreen() {
         {/* Pattern Editor Card */}
         <Card
           style={styles.card}
+          disabled={navigationPending}
           onPress={() => handleNavigate('/(tabs)/(create)/pattern-editor')}
         >
           <View style={[styles.iconContainer, { backgroundColor: '#FCFAF0' }]}>
@@ -74,8 +123,17 @@ export default function CreateScreen() {
               Design custom artwork pixel-by-pixel with standard DMC thread color palettes.
             </Text>
             <View style={styles.actionRow}>
-              <Text style={styles.actionText}>Open editor</Text>
-              <Ionicons name="chevron-forward" size={16} color={Theme.colors.accentTeal} />
+              {pendingPath === '/(tabs)/(create)/pattern-editor' ? (
+                <>
+                  <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
+                  <Text style={styles.actionText}>Opening…</Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.actionText}>Open editor</Text>
+                  <Ionicons name="chevron-forward" size={16} color={Theme.colors.accentTeal} />
+                </>
+              )}
             </View>
           </View>
         </Card>

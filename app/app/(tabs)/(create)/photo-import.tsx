@@ -4,7 +4,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -26,6 +26,7 @@ import {
   computeCropRectangle,
   createPhotoConversion,
   downscaledDimensions,
+  listPersonalPatterns,
   PROFILE_OPTIONS,
   resolveSettings,
   type ConversionProfile,
@@ -53,8 +54,13 @@ export default function PhotoImportScreen() {
   const [customColors, setCustomColors] = useState(20);
   const [title, setTitle] = useState('My Photo Pattern');
   const [busy, setBusy] = useState(false);
+  const [pickingPhoto, setPickingPhoto] = useState(false);
   const [processingStatus, setProcessingStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [existingTitles, setExistingTitles] = useState<Set<string> | null>(null);
+  const pickerLockRef = useRef(false);
+
+  const interactionLocked = busy || pickingPhoto;
 
   const zoom = useSharedValue(1);
   const zoomAtStart = useSharedValue(1);
@@ -97,7 +103,32 @@ export default function PhotoImportScreen() {
     }
   }, [profile, settings]);
 
-  const panGesture = Gesture.Pan().onChange((event) => {
+  // Known titles power the inline duplicate warning; the server enforces
+  // uniqueness authoritatively, so a failed fetch just skips the early warning.
+  useEffect(() => {
+    if (!isAccount) {
+      return;
+    }
+    let cancelled = false;
+    listPersonalPatterns()
+      .then((patterns) => {
+        if (!cancelled) {
+          setExistingTitles(new Set(patterns.map((pattern) => normalizeTitle(pattern.title))));
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setExistingTitles(null);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [isAccount]);
+
+  const duplicateTitle = existingTitles?.has(normalizeTitle(title)) ?? false;
+
+  const panGesture = Gesture.Pan().enabled(!interactionLocked).onChange((event) => {
     const renderedWidth = baseRenderedWidth * zoom.value;
     const renderedHeight = baseRenderedHeight * zoom.value;
     const maxX = Math.max(0, (renderedWidth - frameSize.width) / 2);
@@ -106,6 +137,7 @@ export default function PhotoImportScreen() {
     offsetY.value = Math.max(-maxY, Math.min(maxY, offsetY.value + event.changeY));
   });
   const pinchGesture = Gesture.Pinch()
+    .enabled(!interactionLocked)
     .onBegin(() => {
       zoomAtStart.value = zoom.value;
     })
@@ -135,30 +167,51 @@ export default function PhotoImportScreen() {
   }));
 
   const pickPhoto = async () => {
-    setError(null);
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
-      setError('Photo library access is required to choose a Local Photo Source.');
+    if (pickerLockRef.current || busy) {
       return;
     }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: false,
-      exif: false,
-      mediaTypes: ['images'],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      const selected = result.assets[0];
-      if (selected.width < 1 || selected.height < 1) {
-        setError('The selected photo does not report usable dimensions.');
+
+    pickerLockRef.current = true;
+    setPickingPhoto(true);
+    setError(null);
+    try {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        setError('Photo library access is required to choose a Local Photo Source.');
         return;
       }
-      setAsset(selected);
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: false,
+        exif: false,
+        mediaTypes: ['images'],
+        quality: 1,
+      });
+      if (!result.canceled) {
+        const selected = result.assets[0];
+        if (selected.width < 1 || selected.height < 1) {
+          setError('The selected photo does not report usable dimensions.');
+          return;
+        }
+        setAsset(selected);
+      }
+    } catch (caught: unknown) {
+      setError(caught instanceof Error ? caught.message : String(caught));
+    } finally {
+      pickerLockRef.current = false;
+      setPickingPhoto(false);
     }
   };
 
   const approveArtwork = async () => {
-    if (!asset || !settings || title.trim().length === 0) {
+    if (
+      pickerLockRef.current
+      || busy
+      || !asset
+      || !settings
+      || title.trim().length === 0
+      || duplicateTitle
+    ) {
       return;
     }
     setBusy(true);
@@ -227,6 +280,14 @@ export default function PhotoImportScreen() {
       const readySession = await waitUntilSessionReady(session.id);
       // Screen stays mounted in the create tab's stack after switching to the
       // play tab, so clear conversion state and pop back to the Creation Hub.
+      setExistingTitles((previous) => {
+        if (previous === null) {
+          return null;
+        }
+        const next = new Set(previous);
+        next.add(normalizeTitle(pattern.title));
+        return next;
+      });
       setProcessingStatus(null);
       setAsset(null);
       setTitle('My Photo Pattern');
@@ -268,7 +329,7 @@ export default function PhotoImportScreen() {
   return (
     <Screen style={styles.screen}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton} disabled={busy}>
+        <Pressable onPress={() => router.back()} style={styles.backButton} disabled={interactionLocked}>
           <Ionicons name="arrow-back" size={24} color={Theme.colors.accentTeal} />
         </Pressable>
         <View>
@@ -285,14 +346,29 @@ export default function PhotoImportScreen() {
             <Text style={styles.helpText}>
               The full-resolution Local Photo Source stays on this device. Nothing converts until you approve the frame.
             </Text>
-            <Button title="Choose from library" onPress={pickPhoto} variant="rose" />
+            <Button
+              title="Choose from library"
+              onPress={pickPhoto}
+              disabled={busy}
+              loading={pickingPhoto}
+              variant="rose"
+            />
           </Card>
         ) : (
           <>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>Artwork Framing</Text>
-              <Pressable onPress={pickPhoto} disabled={busy}>
-                <Text style={styles.linkText}>Choose another</Text>
+              <Pressable
+                onPress={pickPhoto}
+                disabled={interactionLocked}
+                style={styles.pickerLink}
+              >
+                {pickingPhoto && (
+                  <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
+                )}
+                <Text style={styles.linkText}>
+                  {pickingPhoto ? 'Opening…' : 'Choose another'}
+                </Text>
               </Pressable>
             </View>
             <View style={styles.frameStage}>
@@ -335,7 +411,7 @@ export default function PhotoImportScreen() {
                 minimumTrackTintColor={Theme.colors.accentRose}
                 maximumTrackTintColor={Theme.colors.border}
                 thumbTintColor={Theme.colors.accentRose}
-                disabled={busy}
+                disabled={interactionLocked}
               />
               <View style={styles.boundRow}>
                 <Text style={styles.boundText}>1:6</Text>
@@ -357,7 +433,7 @@ export default function PhotoImportScreen() {
                 return (
                   <Pressable
                     key={option.id}
-                    disabled={!available || busy}
+                    disabled={!available || interactionLocked}
                     onPress={() => setProfile(option.id)}
                     style={[
                       styles.profileCard,
@@ -374,7 +450,7 @@ export default function PhotoImportScreen() {
                 );
               })}
               <Pressable
-                disabled={busy}
+                disabled={interactionLocked}
                 onPress={() => setProfile('custom')}
                 style={[
                   styles.profileCard,
@@ -401,7 +477,7 @@ export default function PhotoImportScreen() {
                   onValueChange={setCustomShortEdge}
                   minimumTrackTintColor={Theme.colors.accentTeal}
                   thumbTintColor={Theme.colors.accentTeal}
-                  disabled={busy}
+                  disabled={interactionLocked}
                 />
                 <View style={styles.labelRow}>
                   <Text style={styles.controlLabel}>DMC color limit</Text>
@@ -415,7 +491,7 @@ export default function PhotoImportScreen() {
                   onValueChange={setCustomColors}
                   minimumTrackTintColor={Theme.colors.accentTeal}
                   thumbTintColor={Theme.colors.accentTeal}
-                  disabled={busy}
+                  disabled={interactionLocked}
                 />
               </Card>
             )}
@@ -426,11 +502,16 @@ export default function PhotoImportScreen() {
                 value={title}
                 onChangeText={setTitle}
                 maxLength={255}
-                editable={!busy}
+                editable={!interactionLocked}
                 style={styles.titleInput}
                 placeholder="My Photo Pattern"
                 placeholderTextColor={Theme.colors.textSecondary}
               />
+              {duplicateTitle && (
+                <Text style={styles.errorText}>
+                  You already have a Personal Pattern named “{title.trim()}”. Choose a different title.
+                </Text>
+              )}
               {settings ? (
                 <Text style={styles.summaryText}>
                   {settings.width}×{settings.height} cells · up to {settings.maxColors} DMC colors
@@ -447,7 +528,7 @@ export default function PhotoImportScreen() {
               <Button
                 title="Approve artwork & convert"
                 onPress={approveArtwork}
-                disabled={busy || settings === null || title.trim().length === 0}
+                disabled={interactionLocked || settings === null || title.trim().length === 0 || duplicateTitle}
                 loading={busy}
                 variant="rose"
               />
@@ -471,6 +552,10 @@ function formatAspect(aspect: number): string {
   return aspect >= 1 ? `${aspect.toFixed(2)}:1` : `1:${(1 / aspect).toFixed(2)}`;
 }
 
+function normalizeTitle(value: string): string {
+  return value.trim().toLowerCase();
+}
+
 const styles = StyleSheet.create({
   screen: { flex: 1, paddingTop: Theme.spacing.lg },
   gateScreen: {
@@ -492,6 +577,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: Theme.typography.sizes.md, fontWeight: Theme.typography.weights.bold, color: Theme.colors.textPrimary },
   helpText: { fontSize: Theme.typography.sizes.sm, color: Theme.colors.textSecondary, lineHeight: 20, textAlign: 'center' },
   linkText: { color: Theme.colors.accentTeal, fontSize: Theme.typography.sizes.sm, fontWeight: Theme.typography.weights.semibold },
+  pickerLink: { flexDirection: 'row', alignItems: 'center', gap: Theme.spacing.xs },
   frameStage: {
     minHeight: MAX_FRAME_HEIGHT,
     alignItems: 'center',

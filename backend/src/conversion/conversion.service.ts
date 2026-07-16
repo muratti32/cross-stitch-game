@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
@@ -19,7 +20,7 @@ import {
 } from '../jobs/jobs.constants';
 import { ProcessingJobsRepository } from '../jobs/processing-jobs.repository';
 import type { JsonObject } from '../jobs/jobs.types';
-import { ProcessingJobStatus } from '../jobs/entities';
+import { ProcessingJobEntity, ProcessingJobStatus } from '../jobs/entities';
 import { CreatePhotoConversionDto } from './dto/create-photo-conversion.dto';
 import {
   ConversionRecipeEntity,
@@ -93,6 +94,7 @@ export class ConversionService {
     if (title.length === 0) {
       throw new BadRequestException('Pattern title cannot be blank');
     }
+    await this.assertTitleAvailable(accountId, title);
 
     const processingJobId = randomUUID();
     const targetPatternId = randomUUID();
@@ -250,6 +252,45 @@ export class ConversionService {
       title: pattern.title,
       width: pattern.width,
     };
+  }
+
+  private async assertTitleAvailable(
+    accountId: string,
+    title: string,
+  ): Promise<void> {
+    const existingPattern = await this.patterns
+      .createQueryBuilder('pattern')
+      .where('pattern.ownerAccountId = :accountId', { accountId })
+      .andWhere("pattern.visibility = 'personal'")
+      .andWhere('LOWER(pattern.title) = LOWER(:title)', { title })
+      .getOne();
+    if (existingPattern !== null) {
+      throw new ConflictException(
+        `You already have a Personal Pattern named "${title}". Choose a different title.`,
+      );
+    }
+    const activeConversion = await this.conversions
+      .createQueryBuilder('conversion')
+      .innerJoin(
+        ProcessingJobEntity,
+        'job',
+        'job.id = conversion.processingJobId',
+      )
+      .where('conversion.accountId = :accountId', { accountId })
+      .andWhere('LOWER(conversion.title) = LOWER(:title)', { title })
+      .andWhere('job.status IN (:...activeStatuses)', {
+        activeStatuses: [
+          ProcessingJobStatus.Pending,
+          ProcessingJobStatus.Dispatched,
+          ProcessingJobStatus.Running,
+        ],
+      })
+      .getOne();
+    if (activeConversion !== null) {
+      throw new ConflictException(
+        `A conversion named "${title}" is already in progress. Choose a different title.`,
+      );
+    }
   }
 
   private requireAccount(principal: AuthPrincipal): string {
