@@ -16,6 +16,7 @@ export const Theme = {
     gameBar: '#FFF9EE',         // Warm framed HUD surface
     gameBarEdge: '#234C52',     // Dark stitched frame edge
     gameBarShadow: '#173438',   // Raised control shadow
+    googleBlue: '#4285F4',      // Google sign-in brand accent
 
     // Text hierarchy
     textPrimary: '#2E2A25',     // Warm dark brown-slate (less harsh than pure black)

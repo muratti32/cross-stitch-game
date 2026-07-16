@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { AuthModule } from './auth/auth.module';
 import { EmailAuthModule } from './auth/email-auth.module';
+import { FirebaseAuthModule } from './auth/firebase-auth.module';
 import { AppConfigModule } from './config/app-config.module';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
@@ -16,6 +17,7 @@ import { ConversionModule } from './conversion';
     DatabaseModule,
     AuthModule,
     EmailAuthModule,
+    FirebaseAuthModule,
     HealthModule,
     JobsModule,
     CatalogModule,

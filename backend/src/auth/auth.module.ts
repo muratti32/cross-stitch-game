@@ -5,11 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppConfigModule } from '../config/app-config.module';
 import { AppConfigService } from '../config/app-config.service';
 import { AuthController } from './auth.controller';
+import { AccountIdentityService } from './account-identity.service';
 import { AuthHashingService } from './auth-hashing.service';
 import { AuthSessionService } from './auth-session.service';
 import {
   GuestInstallationEntity,
+  AuthIdentityEntity,
   RefreshTokenEntity,
+  RegisteredAccountEntity,
 } from './entities';
 import { GuestIdentityService } from './guest-identity.service';
 import { GuestInstallationsRepository } from './guest-installations.repository';
@@ -20,12 +23,14 @@ import { RefreshTokensRepository } from './refresh-tokens.repository';
   controllers: [AuthController],
   // JwtModule is re-exported so modules importing AuthModule (e.g. SessionsModule)
   // can instantiate JwtAuthGuard via @UseGuards, which depends on JwtService.
-  exports: [AuthSessionService, JwtAuthGuard, JwtModule],
+  exports: [AccountIdentityService, AuthSessionService, JwtAuthGuard, JwtModule],
   imports: [
     AppConfigModule,
     TypeOrmModule.forFeature([
       GuestInstallationEntity,
+      AuthIdentityEntity,
       RefreshTokenEntity,
+      RegisteredAccountEntity,
     ]),
     JwtModule.registerAsync({
       imports: [AppConfigModule],
@@ -40,6 +45,7 @@ import { RefreshTokensRepository } from './refresh-tokens.repository';
     }),
   ],
   providers: [
+    AccountIdentityService,
     AuthHashingService,
     AuthSessionService,
     GuestIdentityService,

@@ -12,10 +12,12 @@ import {
 import { RegisteredAccountEntity } from './registered-account.entity';
 
 @Entity({ name: 'auth_identities', schema: 'auth' })
-@Unique('UQ_auth_identities_provider_email', ['provider', 'email'])
 @Unique('UQ_auth_identities_provider_subject', ['provider', 'subject'])
 @Check('CHK_auth_identities_email_lowercase', '"email" = lower("email")')
-@Check('CHK_auth_identities_provider', '"provider" = \'email\'')
+@Check(
+  'CHK_auth_identities_provider',
+  '"provider" IN (\'email\', \'google\', \'apple\')',
+)
 export class AuthIdentityEntity {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'PK_auth_identities',
@@ -33,10 +35,10 @@ export class AuthIdentityEntity {
   account!: RegisteredAccountEntity;
 
   @Column({ length: 32, type: 'varchar' })
-  provider!: 'email';
+  provider!: 'apple' | 'email' | 'google';
 
-  @Column({ length: 254, type: 'varchar' })
-  email!: string;
+  @Column({ length: 254, nullable: true, type: 'varchar' })
+  email!: string | null;
 
   @Column({ length: 254, type: 'varchar' })
   subject!: string;

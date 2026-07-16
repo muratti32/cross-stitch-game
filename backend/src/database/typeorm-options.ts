@@ -37,6 +37,7 @@ import { CreateSessionsSchema1784160000000 } from './migrations/1784160000000-Cr
 import { CreateEmailAuthSchema1784160000001 } from './migrations/1784160000001-CreateEmailAuthSchema';
 import { CreateProgressSyncSchema1784246400000 } from './migrations/1784246400000-CreateProgressSyncSchema';
 import { CreatePatternConversionSchema1784332800000 } from './migrations/1784332800000-CreatePatternConversionSchema';
+import { AddFederatedAuthIdentities1784419200000 } from './migrations/1784419200000-AddFederatedAuthIdentities';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -73,6 +74,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateEmailAuthSchema1784160000001,
       CreateProgressSyncSchema1784246400000,
       CreatePatternConversionSchema1784332800000,
+      AddFederatedAuthIdentities1784419200000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

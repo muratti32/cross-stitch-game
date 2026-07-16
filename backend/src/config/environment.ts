@@ -17,6 +17,8 @@ export type EnvironmentVariables = {
   EMAIL_OTP_MAX_ATTEMPTS: number;
   EMAIL_OTP_RATE_LIMIT_PER_EMAIL: number;
   EMAIL_OTP_RATE_LIMIT_PER_IP: number;
+  FIREBASE_PROJECT_ID: string | undefined;
+  FIREBASE_SERVICE_ACCOUNT_BASE64: string | undefined;
 };
 
 const DATABASE_PROTOCOLS = new Set(['postgres:', 'postgresql:']);
@@ -207,6 +209,18 @@ export function parseEnvironment(
       environment.EMAIL_OTP_RATE_LIMIT_PER_IP,
       'EMAIL_OTP_RATE_LIMIT_PER_IP',
       DEFAULT_EMAIL_OTP_RATE_LIMIT_PER_IP,
+    ),
+    FIREBASE_PROJECT_ID:
+      environment.FIREBASE_PROJECT_ID === undefined ||
+      environment.FIREBASE_PROJECT_ID === ''
+        ? undefined
+        : parseRequiredString(
+            environment.FIREBASE_PROJECT_ID,
+            'FIREBASE_PROJECT_ID',
+          ),
+    FIREBASE_SERVICE_ACCOUNT_BASE64: parseOptionalSecret(
+      environment.FIREBASE_SERVICE_ACCOUNT_BASE64,
+      'FIREBASE_SERVICE_ACCOUNT_BASE64',
     ),
   };
 }

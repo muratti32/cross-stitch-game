@@ -8,13 +8,13 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 /**
- * Settings block for the Registered Account (email sign-in). Shows a sign-in
- * entry point for guests and the signed-in address plus sign-out for accounts.
+ * Settings block for the Registered Account. Shows a sign-in entry point for
+ * guests and private provider details plus sign-out for accounts.
  * Sign-out locks the Local Identity Namespace without deleting unsynchronized
  * data (see identity `logout`), so the same account reopens it on next sign-in.
  */
 export function AccountSection() {
-  const { isAccount, accountEmail, logout } = useIdentityStore();
+  const { isAccount, accountEmail, accountProvider, logout } = useIdentityStore();
   const [isSigningOut, setIsSigningOut] = useState<boolean>(false);
 
   const handleSignOut = () => {
@@ -53,11 +53,11 @@ export function AccountSection() {
             <View style={styles.textContainer}>
               <Text style={styles.settingTitle}>Not signed in</Text>
               <Text style={styles.settingDescription}>
-                Sign in with your email to sync progress across devices.
+                Sign in to sync progress across devices.
               </Text>
             </View>
             <Button
-              title="Sign in with email"
+              title="Sign in"
               variant="primary"
               onPress={() => router.push('/(tabs)/(settings)/sign-in')}
               style={styles.signInButton}
@@ -66,8 +66,20 @@ export function AccountSection() {
         ) : (
           <View>
             <View style={styles.emailRow}>
-              <Ionicons name="mail-outline" size={20} color={Theme.colors.textSecondary} />
-              <Text style={styles.emailText}>{accountEmail}</Text>
+              <Ionicons
+                name={
+                  accountProvider === 'google'
+                    ? 'logo-google'
+                    : accountProvider === 'apple'
+                      ? 'logo-apple'
+                      : 'mail-outline'
+                }
+                size={20}
+                color={Theme.colors.textSecondary}
+              />
+              <Text style={styles.emailText}>
+                {accountEmail ?? providerLabel(accountProvider)}
+              </Text>
             </View>
             <View style={styles.signOutRow}>
               <Pressable
@@ -94,6 +106,12 @@ export function AccountSection() {
       </Card>
     </View>
   );
+}
+
+function providerLabel(provider: 'apple' | 'email' | 'google' | null): string {
+  if (provider === 'apple') return 'Apple account';
+  if (provider === 'google') return 'Google account';
+  return 'Registered account';
 }
 
 const styles = StyleSheet.create({

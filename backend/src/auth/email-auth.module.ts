@@ -13,9 +13,7 @@ import { EMAIL_SENDER, EmailSender } from './email-sender.interface';
 import { LocalEmailSender } from './local-email-sender';
 import { ResendEmailSender } from './resend-email-sender';
 import {
-  AuthIdentityEntity,
   EmailVerificationCodeEntity,
-  RegisteredAccountEntity,
 } from './entities';
 
 @Module({
@@ -25,10 +23,8 @@ import {
     AppConfigModule,
     AuthModule,
     TypeOrmModule.forFeature([
-      AuthIdentityEntity,
       EmailOutboxEntity,
       EmailVerificationCodeEntity,
-      RegisteredAccountEntity,
     ]),
   ],
   providers: [

@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { Screen, Button, Card } from '@/components';
 import { Theme } from '@/theme/theme';
 import { requestEmailOtp, verifyEmailOtp } from '@/identity/emailAuth';
+import {
+  canUseAppleSso,
+  canUseGoogleSso,
+  signInWithAppleSso,
+  signInWithGoogleSso,
+} from '@/identity/firebaseSso';
+import { isFirebaseSsoConfigured } from '@/config';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -14,6 +22,17 @@ export default function SignInScreen() {
   const [resending, setResending] = useState<boolean>(false);
   const [resent, setResent] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [appleAvailable, setAppleAvailable] = useState<boolean>(false);
+  const [socialProvider, setSocialProvider] = useState<'apple' | 'google' | null>(null);
+
+  const firebaseConfigured = isFirebaseSsoConfigured();
+  const googleAvailable = canUseGoogleSso();
+
+  useEffect(() => {
+    canUseAppleSso()
+      .then(setAppleAvailable)
+      .catch(() => setAppleAvailable(false));
+  }, []);
 
   const trimmedEmail = email.trim();
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail);
@@ -73,14 +92,37 @@ export default function SignInScreen() {
     setError(null);
   };
 
+  const onSocialSignIn = async (provider: 'apple' | 'google') => {
+    setError(null);
+    setSocialProvider(provider);
+    try {
+      const result =
+        provider === 'apple'
+          ? await signInWithAppleSso()
+          : await signInWithGoogleSso();
+      if (result.kind === 'signed-in') {
+        router.back();
+      }
+    } catch (signInError) {
+      setError(
+        signInError instanceof Error &&
+          signInError.name === 'FirebaseSsoConfigurationError'
+          ? signInError.message
+          : `Couldn't sign in with ${provider === 'apple' ? 'Apple' : 'Google'}. Please try again.`,
+      );
+    } finally {
+      setSocialProvider(null);
+    }
+  };
+
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
       <Card style={styles.card}>
         {step === 'email' ? (
           <View>
-            <Text style={styles.heading}>Sign in with email</Text>
+            <Text style={styles.heading}>Sign in or create account</Text>
             <Text style={styles.subtitle}>
-              We&apos;ll email you a 6-digit code to sign in. No password needed.
+              Keep your progress available across devices.
             </Text>
 
             {error && (
@@ -89,6 +131,57 @@ export default function SignInScreen() {
                 <Text style={styles.errorText}>{error}</Text>
               </View>
             )}
+
+            {googleAvailable && (
+              <Pressable
+                accessibilityRole="button"
+                disabled={socialProvider !== null || submitting}
+                onPress={() => void onSocialSignIn('google')}
+                style={({ pressed }) => [
+                  styles.googleButton,
+                  pressed && styles.socialButtonPressed,
+                  socialProvider !== null && styles.socialButtonDisabled,
+                ]}
+              >
+                {socialProvider === 'google' ? (
+                  <ActivityIndicator size="small" color={Theme.colors.textPrimary} />
+                ) : (
+                  <Ionicons name="logo-google" size={20} color={Theme.colors.googleBlue} />
+                )}
+                <Text style={styles.googleButtonText}>Continue with Google</Text>
+              </Pressable>
+            )}
+
+            {appleAvailable && (
+              <View
+                pointerEvents={socialProvider === null && !submitting ? 'auto' : 'none'}
+                style={socialProvider !== null && styles.socialButtonDisabled}
+              >
+                <AppleAuthentication.AppleAuthenticationButton
+                  buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+                  buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
+                  cornerRadius={Theme.radii.md}
+                  onPress={() => void onSocialSignIn('apple')}
+                  style={styles.appleButton}
+                />
+              </View>
+            )}
+
+            {(googleAvailable || appleAvailable) && (
+              <View style={styles.dividerRow}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>or use email</Text>
+                <View style={styles.dividerLine} />
+              </View>
+            )}
+
+            {!firebaseConfigured && (
+              <Text style={styles.configurationHint}>
+                Google and Apple sign-in are unavailable in this build.
+              </Text>
+            )}
+
+            <Text style={styles.emailLabel}>Email address</Text>
 
             <TextInput
               style={styles.input}
@@ -190,6 +283,64 @@ const styles = StyleSheet.create({
     marginBottom: Theme.spacing.xl,
     textAlign: 'center',
     lineHeight: 20,
+  },
+  googleButton: {
+    height: 48,
+    borderRadius: Theme.radii.md,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+    backgroundColor: Theme.colors.card,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Theme.spacing.sm,
+    marginBottom: Theme.spacing.md,
+  },
+  googleButtonText: {
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.md,
+    fontWeight: Theme.typography.weights.semibold,
+  },
+  appleButton: {
+    width: '100%',
+    height: 48,
+    marginBottom: Theme.spacing.md,
+  },
+  socialButtonPressed: {
+    opacity: 0.82,
+    transform: [{ scale: 0.99 }],
+  },
+  socialButtonDisabled: {
+    opacity: 0.55,
+  },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Theme.spacing.sm,
+    marginVertical: Theme.spacing.md,
+  },
+  dividerLine: {
+    height: 1,
+    flex: 1,
+    backgroundColor: Theme.colors.border,
+  },
+  dividerText: {
+    color: Theme.colors.textSecondary,
+    fontSize: Theme.typography.sizes.xs,
+    fontWeight: Theme.typography.weights.medium,
+  },
+  configurationHint: {
+    color: Theme.colors.textSecondary,
+    fontSize: Theme.typography.sizes.xs,
+    lineHeight: 17,
+    textAlign: 'center',
+    marginBottom: Theme.spacing.lg,
+  },
+  emailLabel: {
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.sm,
+    fontWeight: Theme.typography.weights.semibold,
+    marginBottom: Theme.spacing.sm,
   },
   input: {
     borderWidth: 1,

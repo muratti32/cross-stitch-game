@@ -26,6 +26,11 @@ export interface AccountAuthResponse extends AuthTokenPair {
   accountId: string;
 }
 
+export interface FederatedAccountAuthResponse extends AccountAuthResponse {
+  email: string | null;
+  provider: 'apple' | 'google';
+}
+
 export interface AuthenticatedRequest {
   headers: {
     authorization?: string | readonly string[];

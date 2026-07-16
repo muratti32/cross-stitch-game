@@ -91,6 +91,16 @@ export class AppConfigService {
     });
   }
 
+  get firebaseProjectId(): string | undefined {
+    return this.configService.get('FIREBASE_PROJECT_ID', { infer: true });
+  }
+
+  get firebaseServiceAccountBase64(): string | undefined {
+    return this.configService.get('FIREBASE_SERVICE_ACCOUNT_BASE64', {
+      infer: true,
+    });
+  }
+
   get conversionEngineUrl(): string {
     return this.configService.get('CONVERSION_ENGINE_URL', { infer: true });
   }

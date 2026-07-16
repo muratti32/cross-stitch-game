@@ -126,6 +126,8 @@ runtime variables in the Coolify console:
 | `OTP_SIGNING_SECRET` | Email OTP verifier signing secret |
 | `RESEND_API_KEY` | Resend server API key |
 | `EMAIL_FROM_ADDRESS` | Sender on the verified Resend domain |
+| `FIREBASE_PROJECT_ID` | Firebase project accepted by the SSO exchange endpoint |
+| `FIREBASE_SERVICE_ACCOUNT_BASE64` | Base64-encoded Firebase Admin service-account JSON; API container only |
 
 The Compose `:?` syntax marks these values as required, so Coolify blocks the
 deployment while any is empty. Keep them runtime-only; none is needed during
@@ -140,6 +142,18 @@ openssl rand -hex 32
 
 The TTL, rate-limit, conversion concurrency, and log-level variables have safe
 defaults in Compose and remain editable in the Coolify panel.
+
+Firebase credentials are intentionally passed only to the `api` service. Encode
+the downloaded service-account JSON as a single line before storing it in the
+deployment secret manager:
+
+```sh
+base64 < firebase-service-account.json | tr -d '\n'
+```
+
+The API verifies Firebase ID tokens and immediately exchanges them for
+game-owned access and rotating refresh tokens. Neither the worker nor the
+migration container needs Firebase Admin credentials.
 
 In Coolify's service list, assign the public domain only to `api`. Because the
 container listens on port 3000, enter the domain with that internal target, for

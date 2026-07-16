@@ -1,6 +1,7 @@
 import { DataSource, EntityManager } from 'typeorm';
 
 import { AppConfigService } from '../config/app-config.service';
+import { AccountIdentityService } from './account-identity.service';
 import { EmailOtpRateLimiterService } from './email-otp-rate-limiter.service';
 import { EmailOtpService } from './email-otp.service';
 import { EmailVerificationCodeEntity } from './entities';
@@ -18,6 +19,7 @@ describe('EmailOtpService', () => {
       config,
       {} as DataSource,
       {} as EmailOtpRateLimiterService,
+      {} as AccountIdentityService,
     );
     const verifier = service.hashCode('000123');
 
@@ -44,6 +46,7 @@ describe('EmailOtpService', () => {
       config,
       dataSource,
       {} as EmailOtpRateLimiterService,
+      {} as AccountIdentityService,
     );
 
     await expect(service.verify('person@example.test', '000123')).resolves.toBeNull();
@@ -89,7 +92,12 @@ describe('EmailOtpService', () => {
       consumeEmail: jest.fn<Promise<boolean>, [string]>().mockResolvedValue(true),
       consumeIp: jest.fn<Promise<boolean>, [string]>().mockResolvedValue(true),
     } as unknown as EmailOtpRateLimiterService;
-    const service = new EmailOtpService(config, dataSource, rateLimiter);
+    const service = new EmailOtpService(
+      config,
+      dataSource,
+      rateLimiter,
+      {} as AccountIdentityService,
+    );
 
     await service.request('PERSON@example.test', '127.0.0.1');
 

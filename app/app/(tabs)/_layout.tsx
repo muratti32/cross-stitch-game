@@ -23,18 +23,67 @@ function GameTabIcon({
   variant,
 }: GameTabIconProps) {
   const featured = variant === 'create';
-  
-  // Animation driver
+
+  // Animation drivers
   const focusAnimation = useRef(new Animated.Value(focused ? 1 : 0)).current;
+  const bounceAnimation = useRef(new Animated.Value(focused ? 1 : 0)).current;
+  const idlePulse = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.spring(focusAnimation, {
       toValue: focused ? 1 : 0,
       useNativeDriver: true,
-      tension: 100,
-      friction: 10,
+      tension: 120,
+      friction: 7,
     }).start();
-  }, [focused]);
+
+    if (focused) {
+      // Restart the pop each time the tab gains focus
+      bounceAnimation.setValue(0);
+      Animated.spring(bounceAnimation, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 180,
+        friction: 5,
+      }).start();
+    } else {
+      Animated.timing(bounceAnimation, {
+        toValue: 0,
+        duration: 120,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [focused, focusAnimation, bounceAnimation]);
+
+  // Featured (Create) tab breathes gently while unfocused to draw attention
+  useEffect(() => {
+    if (!featured || focused) {
+      idlePulse.stopAnimation();
+      idlePulse.setValue(0);
+      return;
+    }
+
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(idlePulse, {
+          toValue: 1,
+          duration: 1100,
+          useNativeDriver: true,
+        }),
+        Animated.timing(idlePulse, {
+          toValue: 0,
+          duration: 1100,
+          useNativeDriver: true,
+        }),
+      ]),
+    );
+    loop.start();
+
+    return () => {
+      loop.stop();
+      idlePulse.setValue(0);
+    };
+  }, [featured, focused, idlePulse]);
 
   // Translate and scale interpolations for the entire icon frame
   const translateY = focusAnimation.interpolate({
@@ -45,6 +94,22 @@ function GameTabIcon({
   const scale = focusAnimation.interpolate({
     inputRange: [0, 1],
     outputRange: [1, 1.05],
+  });
+
+  const idleScale = idlePulse.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.06],
+  });
+
+  // Pop + wobble for the focused icon glyph
+  const iconPopScale = bounceAnimation.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0.6, 1.25, 1],
+  });
+
+  const iconWobble = bounceAnimation.interpolate({
+    inputRange: [0, 0.4, 0.7, 1],
+    outputRange: ['-24deg', '12deg', '-5deg', '0deg'],
   });
 
   // Opacities for cross-fading unfocused/focused states
@@ -71,15 +136,15 @@ function GameTabIcon({
   const focusedFrameStyle = featured ? styles.featuredFocusedFrame : styles[`${variant}FocusedFrame` as const] || styles.catalogFocusedFrame;
 
   // Resolve icon colors
-  const unfocusedIconColor = featured ? Theme.colors.gameBarEdge : Theme.colors.textSecondary;
-  const focusedIconColor = featured ? Theme.colors.gameBarEdge : Theme.colors.textLight;
+  const unfocusedIconColor = featured ? Theme.colors.textPrimary : Theme.colors.textSecondary;
+  const focusedIconColor = featured ? Theme.colors.textPrimary : Theme.colors.textLight;
 
   return (
     <Animated.View
       style={[
         featured ? styles.featuredContainer : styles.standardContainer,
         {
-          transform: [{ translateY }, { scale }],
+          transform: [{ translateY }, { scale }, { scale: idleScale }],
         },
       ]}
     >
@@ -117,7 +182,14 @@ function GameTabIcon({
 
       <Animated.View
         pointerEvents="none"
-        style={[StyleSheet.absoluteFill, styles.centerContent, { opacity: focusedOpacity }]}
+        style={[
+          StyleSheet.absoluteFill,
+          styles.centerContent,
+          {
+            opacity: focusedOpacity,
+            transform: [{ scale: iconPopScale }, { rotate: iconWobble }],
+          },
+        ]}
       >
         <Ionicons
           name={activeIcon}
@@ -146,6 +218,10 @@ export default function TabsLayout() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
   };
 
+  const triggerFeaturedHaptic = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+  };
+
   return (
     <Tabs
       screenOptions={{
@@ -155,6 +231,7 @@ export default function TabsLayout() {
         tabBarActiveBackgroundColor: 'transparent',
         tabBarHideOnKeyboard: true,
         tabBarItemStyle: styles.tabItem,
+        tabBarIconStyle: styles.tabIcon,
         tabBarStyle: {
           ...styles.tabBar,
           height: Platform.OS === 'ios' ? 96 : 78,
@@ -216,7 +293,7 @@ export default function TabsLayout() {
           ),
         }}
         listeners={{
-          tabPress: triggerHaptic,
+          tabPress: triggerFeaturedHaptic,
         }}
       />
       <Tabs.Screen
@@ -262,8 +339,7 @@ export default function TabsLayout() {
 const styles = StyleSheet.create({
   tabBar: {
     backgroundColor: Theme.colors.gameBar,
-    borderTopColor: Theme.colors.gameBarEdge,
-    borderTopWidth: 3,
+    borderTopWidth: 0,
     paddingHorizontal: Theme.spacing.sm,
     paddingTop: Theme.spacing.sm,
     shadowColor: Theme.colors.gameBarShadow,
@@ -277,6 +353,9 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radii.lg,
     marginHorizontal: 2,
     overflow: 'visible',
+  },
+  tabIcon: {
+    marginBottom: Theme.spacing.sm,
   },
   tabLabel: {
     fontSize: 11,
@@ -311,7 +390,7 @@ const styles = StyleSheet.create({
   },
   featuredUnfocusedFrame: {
     borderRadius: Theme.radii.lg,
-    borderColor: Theme.colors.gameBarEdge,
+    borderColor: Theme.colors.textPrimary,
     borderWidth: 2,
     borderBottomWidth: 5,
     backgroundColor: Theme.colors.accentHoneySoft,
@@ -323,32 +402,32 @@ const styles = StyleSheet.create({
   },
   featuredFocusedFrame: {
     borderRadius: Theme.radii.lg,
-    borderColor: Theme.colors.gameBarEdge,
+    borderColor: Theme.colors.textPrimary,
     borderWidth: 2,
     borderBottomWidth: 5,
     backgroundColor: Theme.colors.accentHoney,
   },
   catalogFocusedFrame: {
     borderRadius: Theme.radii.md,
-    borderColor: Theme.colors.gameBarEdge,
+    borderColor: Theme.colors.textPrimary,
     borderBottomWidth: 4,
     backgroundColor: Theme.colors.accentSage,
   },
   playFocusedFrame: {
     borderRadius: Theme.radii.md,
-    borderColor: Theme.colors.gameBarEdge,
+    borderColor: Theme.colors.textPrimary,
     borderBottomWidth: 4,
     backgroundColor: Theme.colors.accentRose,
   },
   profileFocusedFrame: {
     borderRadius: Theme.radii.md,
-    borderColor: Theme.colors.gameBarEdge,
+    borderColor: Theme.colors.textPrimary,
     borderBottomWidth: 4,
     backgroundColor: Theme.colors.accentTeal,
   },
   settingsFocusedFrame: {
     borderRadius: Theme.radii.md,
-    borderColor: Theme.colors.gameBarEdge,
+    borderColor: Theme.colors.textPrimary,
     borderBottomWidth: 4,
     backgroundColor: Theme.colors.textSecondary,
   },
@@ -362,6 +441,6 @@ const styles = StyleSheet.create({
     backgroundColor: Theme.colors.textLight,
   },
   activeStitchDark: {
-    backgroundColor: Theme.colors.gameBarEdge,
+    backgroundColor: Theme.colors.textPrimary,
   },
 });

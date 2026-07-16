@@ -10,7 +10,8 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.avk.stitchwish",
-      "appleTeamId": "X25YH9627H"
+      "appleTeamId": "X25YH9627H",
+      "usesAppleSignIn": true
     },
     "android": {
       "package": "com.avk.stitchwish",
@@ -46,7 +47,29 @@
           "photosPermission": "Stitch Wish uses your selected photo only on this device to frame a Personal Pattern before conversion."
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-apple-authentication",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "extraPods": [
+              {
+                "name": "AppCheckCore",
+                "modular_headers": true
+              },
+              {
+                "name": "GoogleUtilities",
+                "modular_headers": true
+              },
+              {
+                "name": "RecaptchaInterop",
+                "modular_headers": true
+              }
+            ]
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

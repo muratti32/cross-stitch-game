@@ -4,31 +4,33 @@ x-logging: &default-logging
     max-file: "5"
     max-size: 10m
 
+x-backend-environment: &backend-environment
+  CONVERSION_ENGINE_URL: http://conversion-engine:8000
+  CONVERSION_WORKER_CONCURRENCY: "${CONVERSION_WORKER_CONCURRENCY:-1}"
+  DATABASE_URL: "${DATABASE_URL:?}"
+  EMAIL_FROM_ADDRESS: "${EMAIL_FROM_ADDRESS:?}"
+  EMAIL_OTP_MAX_ATTEMPTS: "${EMAIL_OTP_MAX_ATTEMPTS:-5}"
+  EMAIL_OTP_RATE_LIMIT_PER_EMAIL: "${EMAIL_OTP_RATE_LIMIT_PER_EMAIL:-5}"
+  EMAIL_OTP_RATE_LIMIT_PER_IP: "${EMAIL_OTP_RATE_LIMIT_PER_IP:-20}"
+  EMAIL_OTP_TTL_SECONDS: "${EMAIL_OTP_TTL_SECONDS:-600}"
+  GRANT_SIGNING_SECRET: "${GRANT_SIGNING_SECRET:?}"
+  GRANT_TTL_SECONDS: "${GRANT_TTL_SECONDS:-300}"
+  JWT_ACCESS_TTL_SECONDS: "${JWT_ACCESS_TTL_SECONDS:-900}"
+  JWT_SECRET: "${JWT_SECRET:?}"
+  NODE_ENV: production
+  OTP_SIGNING_SECRET: "${OTP_SIGNING_SECRET:?}"
+  PORT: "3000"
+  REDIS_URL: "${REDIS_URL:?}"
+  REFRESH_TOKEN_TTL_SECONDS: "${REFRESH_TOKEN_TTL_SECONDS:-2592000}"
+  RESEND_API_KEY: "${RESEND_API_KEY:?}"
+  STORAGE_LOCAL_DIR: /var/lib/stitch-wish/storage
+
 x-backend: &backend
   build:
     context: ./backend
     dockerfile: Dockerfile
     target: runtime
-  environment:
-    CONVERSION_ENGINE_URL: http://conversion-engine:8000
-    CONVERSION_WORKER_CONCURRENCY: "${CONVERSION_WORKER_CONCURRENCY:-1}"
-    DATABASE_URL: "${DATABASE_URL:?}"
-    EMAIL_FROM_ADDRESS: "${EMAIL_FROM_ADDRESS:?}"
-    EMAIL_OTP_MAX_ATTEMPTS: "${EMAIL_OTP_MAX_ATTEMPTS:-5}"
-    EMAIL_OTP_RATE_LIMIT_PER_EMAIL: "${EMAIL_OTP_RATE_LIMIT_PER_EMAIL:-5}"
-    EMAIL_OTP_RATE_LIMIT_PER_IP: "${EMAIL_OTP_RATE_LIMIT_PER_IP:-20}"
-    EMAIL_OTP_TTL_SECONDS: "${EMAIL_OTP_TTL_SECONDS:-600}"
-    GRANT_SIGNING_SECRET: "${GRANT_SIGNING_SECRET:?}"
-    GRANT_TTL_SECONDS: "${GRANT_TTL_SECONDS:-300}"
-    JWT_ACCESS_TTL_SECONDS: "${JWT_ACCESS_TTL_SECONDS:-900}"
-    JWT_SECRET: "${JWT_SECRET:?}"
-    NODE_ENV: production
-    OTP_SIGNING_SECRET: "${OTP_SIGNING_SECRET:?}"
-    PORT: "3000"
-    REDIS_URL: "${REDIS_URL:?}"
-    REFRESH_TOKEN_TTL_SECONDS: "${REFRESH_TOKEN_TTL_SECONDS:-2592000}"
-    RESEND_API_KEY: "${RESEND_API_KEY:?}"
-    STORAGE_LOCAL_DIR: /var/lib/stitch-wish/storage
+  environment: *backend-environment
   init: true
   read_only: true
   security_opt:
@@ -78,6 +80,10 @@ services:
   api:
     <<: *backend
     command: ["node", "dist/main.api.js"]
+    environment:
+      <<: *backend-environment
+      FIREBASE_PROJECT_ID: "${FIREBASE_PROJECT_ID:?}"
+      FIREBASE_SERVICE_ACCOUNT_BASE64: "${FIREBASE_SERVICE_ACCOUNT_BASE64:?}"
     depends_on:
       migrate:
         condition: service_completed_successfully

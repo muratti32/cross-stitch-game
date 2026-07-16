@@ -2,6 +2,7 @@ import { getDatabaseFilename, shouldAdopt } from '../../local-db/namespaceLogic'
 import { decodeJwt, calculateRefreshDelay, isTokenOlderThan12Minutes, shortenGuestId } from '../identityLogic';
 import { bootstrap, refreshSession, useIdentityStore, setAccessToken, getAccessToken, resetGuestData, removeLocalData, logout } from '../guestIdentity';
 import { requestEmailOtp, verifyEmailOtp } from '../emailAuth';
+import { exchangeFirebaseIdToken } from '../federatedAuth';
 import { apiFetch } from '../../api/apiFetch';
 
 const DECODABLE_JWT = 'h.eyJpZCI6ImcxIiwiaWF0IjoxMDAwLCJleHAiOjE5MDB9.sig';
@@ -404,6 +405,7 @@ describe('Guest Data Reset & Local Data Removal flows', () => {
 describe('Email Sign-In (Registered Account) flows', () => {
   const ACCOUNT_ID = 'stitch_wish.account_id';
   const ACCOUNT_EMAIL = 'stitch_wish.account_email';
+  const ACCOUNT_PROVIDER = 'stitch_wish.account_provider';
   const REFRESH_TOKEN = 'stitch_wish.refresh_token';
   const GUEST_ID = 'stitch_wish.guest_id';
 
@@ -420,6 +422,7 @@ describe('Email Sign-In (Registered Account) flows', () => {
       guestCreatedAt: null,
       accountId: null,
       accountEmail: null,
+      accountProvider: null,
       isAccount: false,
       isAuthenticated: false,
       isPending: false,
@@ -456,6 +459,7 @@ describe('Email Sign-In (Registered Account) flows', () => {
     expect(result).toEqual({ kind: 'verified' });
     expect(mockSecureStore[ACCOUNT_ID]).toBe('acc_123');
     expect(mockSecureStore[ACCOUNT_EMAIL]).toBe('user@example.com');
+    expect(mockSecureStore[ACCOUNT_PROVIDER]).toBe('email');
     expect(mockSecureStore[REFRESH_TOKEN]).toBe('refresh_acc');
     expect(mockSecureStore[GUEST_ID]).toBeUndefined();
     expect(openMock).toHaveBeenCalledWith('acc_123');
@@ -464,6 +468,7 @@ describe('Email Sign-In (Registered Account) flows', () => {
     expect(state.isAccount).toBe(true);
     expect(state.accountId).toBe('acc_123');
     expect(state.accountEmail).toBe('user@example.com');
+    expect(state.accountProvider).toBe('email');
     expect(state.isAuthenticated).toBe(true);
     expect(getAccessToken()).toBe(`access.${DECODABLE_JWT}`);
   });
@@ -478,6 +483,38 @@ describe('Email Sign-In (Registered Account) flows', () => {
     expect(mockSecureStore[REFRESH_TOKEN]).toBeUndefined();
     expect(useIdentityStore.getState().isAccount).toBe(false);
     expect(getAccessToken()).toBeNull();
+  });
+
+  test('exchangeFirebaseIdToken adopts a federated game session', async () => {
+    const localDb = require('../../local-db');
+    const openMock = localDb.openNamespace;
+    mockFetchResponses.push({
+      status: 200,
+      body: {
+        accountId: 'acc_google',
+        accessToken: `access.${DECODABLE_JWT}`,
+        email: 'google@example.com',
+        provider: 'google',
+        refreshToken: 'refresh_google',
+      },
+    });
+
+    await exchangeFirebaseIdToken('firebase-id-token');
+
+    expect(fetchCalls[0].url).toContain('/v1/auth/firebase/exchange');
+    expect(JSON.parse(fetchCalls[0].options.body)).toEqual({
+      idToken: 'firebase-id-token',
+    });
+    expect(mockSecureStore[ACCOUNT_ID]).toBe('acc_google');
+    expect(mockSecureStore[ACCOUNT_EMAIL]).toBe('google@example.com');
+    expect(mockSecureStore[ACCOUNT_PROVIDER]).toBe('google');
+    expect(openMock).toHaveBeenCalledWith('acc_google');
+    expect(useIdentityStore.getState()).toMatchObject({
+      accountId: 'acc_google',
+      accountProvider: 'google',
+      isAccount: true,
+      isAuthenticated: true,
+    });
   });
 
   test('bootstrap resumes an account session from stored ACCOUNT_ID', async () => {
@@ -503,6 +540,7 @@ describe('Email Sign-In (Registered Account) flows', () => {
     expect(state.isAccount).toBe(true);
     expect(state.accountId).toBe('acc_777');
     expect(state.accountEmail).toBe('saved@example.com');
+    expect(state.accountProvider).toBe('email');
     expect(state.guestId).toBeNull();
     expect(mockSecureStore[REFRESH_TOKEN]).toBe('refresh_next');
   });
@@ -542,10 +580,12 @@ describe('Email Sign-In (Registered Account) flows', () => {
     const deleteMock = localDb.deleteNamespaceFiles;
     mockSecureStore[ACCOUNT_ID] = 'acc_signout';
     mockSecureStore[ACCOUNT_EMAIL] = 'bye@example.com';
+    mockSecureStore[ACCOUNT_PROVIDER] = 'apple';
     mockSecureStore[REFRESH_TOKEN] = 'refresh_signout';
     useIdentityStore.setState({
       accountId: 'acc_signout',
       accountEmail: 'bye@example.com',
+      accountProvider: 'apple',
       isAccount: true,
       isAuthenticated: true,
     });
@@ -557,6 +597,7 @@ describe('Email Sign-In (Registered Account) flows', () => {
 
     expect(mockSecureStore[ACCOUNT_ID]).toBeUndefined();
     expect(mockSecureStore[ACCOUNT_EMAIL]).toBeUndefined();
+    expect(mockSecureStore[ACCOUNT_PROVIDER]).toBeUndefined();
     expect(mockSecureStore[REFRESH_TOKEN]).toBeUndefined();
     expect(openMock).toHaveBeenCalledWith(null);
     expect(deleteMock).not.toHaveBeenCalled();
@@ -564,6 +605,7 @@ describe('Email Sign-In (Registered Account) flows', () => {
     expect(state.isAccount).toBe(false);
     expect(state.accountId).toBeNull();
     expect(state.accountEmail).toBeNull();
+    expect(state.accountProvider).toBeNull();
     expect(state.isAuthenticated).toBe(false);
   });
 });

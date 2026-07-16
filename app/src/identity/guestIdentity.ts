@@ -20,7 +20,10 @@ const SECURE_KEYS = {
   // into the same account reopens its unsynchronized local data.
   ACCOUNT_ID: 'stitch_wish.account_id',
   ACCOUNT_EMAIL: 'stitch_wish.account_email',
+  ACCOUNT_PROVIDER: 'stitch_wish.account_provider',
 };
+
+export type AccountProvider = 'apple' | 'email' | 'google';
 
 // Memory-only access token
 let memoryAccessToken: string | null = null;
@@ -142,6 +145,7 @@ export interface IdentityState {
   guestCreatedAt: string | null;
   accountId: string | null;
   accountEmail: string | null;
+  accountProvider: AccountProvider | null;
   isAccount: boolean;
   isAuthenticated: boolean;
   isPending: boolean;
@@ -155,6 +159,7 @@ export const useIdentityStore = create<IdentityState>((set) => ({
   guestCreatedAt: null,
   accountId: null,
   accountEmail: null,
+  accountProvider: null,
   isAccount: false,
   isAuthenticated: false,
   isPending: false,
@@ -205,6 +210,9 @@ export async function bootstrap(): Promise<void> {
       const savedGuestCreatedAt = await SecureStore.getItemAsync(SECURE_KEYS.GUEST_CREATED_AT);
       const savedAccountId = await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_ID);
       const savedAccountEmail = await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_EMAIL);
+      const savedAccountProvider = parseAccountProvider(
+        await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_PROVIDER),
+      );
       let refreshToken = await SecureStore.getItemAsync(SECURE_KEYS.REFRESH_TOKEN);
 
       // 2a. Registered Account session takes precedence over Guest. The account
@@ -222,6 +230,8 @@ export async function bootstrap(): Promise<void> {
             guestCreatedAt: null,
             accountId: savedAccountId,
             accountEmail: savedAccountEmail,
+            accountProvider:
+              savedAccountProvider ?? (savedAccountEmail ? 'email' : null),
             isAccount: true,
             isAuthenticated: true,
             isPending: false,
@@ -237,6 +247,7 @@ export async function bootstrap(): Promise<void> {
             await SecureStore.deleteItemAsync(SECURE_KEYS.REFRESH_TOKEN);
             await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_ID);
             await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_EMAIL);
+            await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_PROVIDER);
             refreshToken = null;
           } else {
             // Connectivity error: stay offline-pending and retry.
@@ -380,11 +391,15 @@ export async function refreshSession(): Promise<string> {
       const accountId = await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_ID);
       if (accountId) {
         const accountEmail = await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_EMAIL);
+        const accountProvider = parseAccountProvider(
+          await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_PROVIDER),
+        );
         updateStoreState({
           guestId: null,
           guestCreatedAt: null,
           accountId,
           accountEmail,
+          accountProvider: accountProvider ?? (accountEmail ? 'email' : null),
           isAccount: true,
           isAuthenticated: true,
           isOfflinePending: false,
@@ -397,6 +412,7 @@ export async function refreshSession(): Promise<string> {
           guestCreatedAt,
           accountId: null,
           accountEmail: null,
+          accountProvider: null,
           isAccount: false,
           isAuthenticated: true,
           isOfflinePending: false,
@@ -466,6 +482,7 @@ export async function logout(): Promise<void> {
   // when the same account signs back in (namespace keyed by accountId).
   await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_ID);
   await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_EMAIL);
+  await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_PROVIDER);
 
   // Switch back to pre-identity database namespace
   await openNamespace(null);
@@ -475,6 +492,7 @@ export async function logout(): Promise<void> {
     guestCreatedAt: null,
     accountId: null,
     accountEmail: null,
+    accountProvider: null,
     isAccount: false,
     isAuthenticated: false,
     isOfflinePending: false,
@@ -488,6 +506,14 @@ export interface EmailAccountSession {
   refreshToken: string;
 }
 
+export interface AccountSession {
+  accountId: string;
+  accessToken: string;
+  email: string | null;
+  provider: AccountProvider;
+  refreshToken: string;
+}
+
 /**
  * Adopts a verified Registered Account session (from email OTP verification).
  * Persists the rotating refresh token and account identity, arms the in-memory
@@ -498,12 +524,31 @@ export interface EmailAccountSession {
 export async function adoptEmailAccountSession(
   session: EmailAccountSession,
 ): Promise<void> {
+  return adoptAccountSession({
+    ...session,
+    provider: 'email',
+  });
+}
+
+/**
+ * Adopts a verified Registered Account session from any accepted provider.
+ * Firebase/provider tokens are not persisted; only the Game Backend session
+ * and private display metadata live on the device.
+ */
+export async function adoptAccountSession(
+  session: AccountSession,
+): Promise<void> {
   clearRefreshSchedule();
   resetRetryDelay();
 
   await SecureStore.setItemAsync(SECURE_KEYS.REFRESH_TOKEN, session.refreshToken);
   await SecureStore.setItemAsync(SECURE_KEYS.ACCOUNT_ID, session.accountId);
-  await SecureStore.setItemAsync(SECURE_KEYS.ACCOUNT_EMAIL, session.email);
+  await SecureStore.setItemAsync(SECURE_KEYS.ACCOUNT_PROVIDER, session.provider);
+  if (session.email === null) {
+    await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_EMAIL);
+  } else {
+    await SecureStore.setItemAsync(SECURE_KEYS.ACCOUNT_EMAIL, session.email);
+  }
   // A Registered Account supersedes any prior Guest Installation on this device.
   await SecureStore.deleteItemAsync(SECURE_KEYS.GUEST_ID);
   await SecureStore.deleteItemAsync(SECURE_KEYS.GUEST_CREATED_AT);
@@ -517,11 +562,18 @@ export async function adoptEmailAccountSession(
     guestCreatedAt: null,
     accountId: session.accountId,
     accountEmail: session.email,
+    accountProvider: session.provider,
     isAccount: true,
     isAuthenticated: true,
     isPending: false,
     isOfflinePending: false,
   });
+}
+
+function parseAccountProvider(value: string | null): AccountProvider | null {
+  return value === 'apple' || value === 'email' || value === 'google'
+    ? value
+    : null;
 }
 
 /**

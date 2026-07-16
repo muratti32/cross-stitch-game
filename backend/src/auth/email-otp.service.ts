@@ -7,6 +7,7 @@ import {
 import { DataSource, EntityManager, IsNull } from 'typeorm';
 
 import { AppConfigService } from '../config/app-config.service';
+import { AccountIdentityService } from './account-identity.service';
 import {
   EmailVerificationCodeEntity,
 } from './entities';
@@ -19,6 +20,7 @@ export class EmailOtpService {
     private readonly config: AppConfigService,
     private readonly dataSource: DataSource,
     private readonly rateLimiter: EmailOtpRateLimiterService,
+    private readonly accountIdentities: AccountIdentityService,
   ) {}
 
   async request(email: string, ip: string): Promise<void> {
@@ -124,7 +126,14 @@ export class EmailOtpService {
         return null;
       }
 
-      return this.createOrOpenAccount(normalizedEmail, manager);
+      return this.accountIdentities.createOrOpenWithManager(
+        {
+          email: normalizedEmail,
+          provider: 'email',
+          subject: normalizedEmail,
+        },
+        manager,
+      );
     });
   }
 
@@ -155,42 +164,6 @@ export class EmailOtpService {
     );
   }
 
-  private async createOrOpenAccount(
-    email: string,
-    manager: EntityManager,
-  ): Promise<string> {
-    // Serialized per-email by the advisory lock held in verify(), so this
-    // read-then-conditional-insert cannot race. The account row is created only
-    // when no identity exists yet — never leaving an orphan account behind on
-    // sign-in to an existing account.
-    const rows: readonly { account_id: string }[] = await manager.query(
-      `WITH existing_identity AS (
-         SELECT "account_id"
-         FROM "auth"."auth_identities"
-         WHERE "provider" = 'email' AND "email" = $1
-       ), new_account AS (
-         INSERT INTO "auth"."registered_accounts" ("status")
-         SELECT 'active'
-         WHERE NOT EXISTS (SELECT 1 FROM existing_identity)
-         RETURNING "id"
-       ), new_identity AS (
-         INSERT INTO "auth"."auth_identities" (
-           "account_id", "provider", "email", "subject"
-         )
-         SELECT "id", 'email', $1, $1 FROM new_account
-         RETURNING "account_id"
-       )
-       SELECT "account_id" FROM existing_identity
-       UNION ALL
-       SELECT "account_id" FROM new_identity`,
-      [email],
-    );
-    const accountId = rows[0]?.account_id;
-    if (accountId === undefined) {
-      throw new Error('Email identity could not be established');
-    }
-    return accountId;
-  }
 }
 
 export function generateEmailOtp(): string {

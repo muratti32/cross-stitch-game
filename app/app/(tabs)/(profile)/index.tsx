@@ -12,7 +12,7 @@ import { preparePersonalSession, waitUntilSessionReady } from '@/session-prepara
 export default function ProfileScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'my-patterns' | 'liked'>('my-patterns');
-  const { guestId, guestCreatedAt, accountEmail, isAccount, isAuthenticated, isPending, isOfflinePending, bootstrap } = useIdentityStore();
+  const { guestId, guestCreatedAt, accountEmail, accountProvider, isAccount, isAuthenticated, isPending, isOfflinePending, bootstrap } = useIdentityStore();
   const [personalPatterns, setPersonalPatterns] = useState<PersonalPattern[]>([]);
   const [patternsLoading, setPatternsLoading] = useState(false);
   const [openingPatternId, setOpeningPatternId] = useState<string | null>(null);
@@ -99,7 +99,9 @@ export default function ProfileScreen() {
           
           <Text style={styles.displayName}>{isAccount ? 'Registered Player' : 'Guest Player'}</Text>
           <Text style={styles.username}>
-            {isAccount ? accountEmail : `@${shortenGuestId(guestId || '')}`}
+            {isAccount
+              ? accountEmail ?? `${accountProvider ?? 'registered'} account`
+              : `@${shortenGuestId(guestId || '')}`}
           </Text>
           
           {guestCreatedAt && (
