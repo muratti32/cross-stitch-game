@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle2 } from 'lucide-react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -60,7 +60,7 @@ export function DraftPublishForm({
     resolver: zodResolver(publishSchema),
   });
 
-  const paid = form.watch('paid');
+  const paid = useWatch({ control: form.control, name: 'paid' });
   const tierHint = deriveUnlockPriceTierHint(paid, draft.stitchableCellCount);
 
   async function handleSubmit(values: PublishValues): Promise<void> {

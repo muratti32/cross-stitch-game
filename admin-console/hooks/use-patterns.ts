@@ -6,12 +6,12 @@ import { api } from '@/lib/client/fetcher';
 import { buildQueryString } from '@/lib/client/query-string';
 import type { AdminPatternDetail, AdminPatternPage, PatternStatus, UpdatePatternMetadataInput } from '@/lib/types';
 
-export interface PatternListParams {
+export type PatternListParams = {
   status?: PatternStatus;
   search?: string;
   page: number;
   pageSize: number;
-}
+};
 
 export function usePatterns(params: PatternListParams) {
   return useQuery({

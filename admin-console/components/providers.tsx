@@ -23,7 +23,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
+      <TooltipProvider delay={200}>{children}</TooltipProvider>
       <Toaster richColors position="top-right" />
     </QueryClientProvider>
   );

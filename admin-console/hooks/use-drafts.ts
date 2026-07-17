@@ -17,11 +17,11 @@ import type {
 const ACTIVE_DRAFT_STATUSES: readonly OfficialPatternDraftStatus[] = ['pending', 'processing'];
 const POLL_INTERVAL_MS = 3_000;
 
-export interface DraftListParams {
+export type DraftListParams = {
   status?: OfficialPatternDraftStatus;
   page: number;
   pageSize: number;
-}
+};
 
 export function useDrafts(params: DraftListParams) {
   return useQuery({

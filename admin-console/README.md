@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Stitch Wish Operator Console
 
-## Getting Started
+Game-owned web console for publishing and managing Official Patterns
+(ADR-0039). Next.js 16 App Router + TypeScript strict + Tailwind + shadcn/ui +
+TanStack Query.
 
-First, run the development server:
+## What it does
+
+- **Login** — operator email + password, then mandatory TOTP MFA (or a
+  recovery code). Tokens live in httpOnly `Secure` `SameSite=Strict` cookies
+  and never reach browser JavaScript; every API call goes through Next Route
+  Handlers that proxy to the backend `/v1/admin/*` endpoints with a
+  transparent refresh-and-retry on 401.
+- **Dashboard** — pattern/draft counts at a glance.
+- **Patterns** — paginated searchable list with status filter tabs; detail
+  page edits metadata (title, creator, category, tags) and runs the explicit
+  withdraw / remove / restore status commands behind confirm dialogs.
+- **Drafts** — upload a PNG/JPEG source image with conversion parameters; the
+  backend converts asynchronously (durable Processing Job per ADR-0013) while
+  the console polls. Ready drafts are reviewed and published with a
+  free-or-paid choice only — the Pattern Unlock Price Tier is always derived
+  from the stitchable-cell count.
+- **Staff Picks** — drag-to-reorder featured list saved as one atomic batch
+  replacement.
+- **Tags** — create Catalog Tags, upsert per-locale labels, deactivate (never
+  delete) referenced tags.
+
+## Running locally
+
+1. Backend must be up (see `../backend`) with the `ADMIN_*` environment
+   variables set, and at least one operator created via
+   `npm run operator:create`.
+2. Copy `.env.example` to `.env.local` and point `ADMIN_API_URL` at the
+   backend (server-only; never exposed to the browser).
+3. `npm install && npm run dev` — if the backend already holds port 3000, run
+   `npm run dev -- --port 3001` and open [http://localhost:3001](http://localhost:3001).
+
+## Verification
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npx tsc --noEmit
+npm run lint
+npm run build
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

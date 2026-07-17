@@ -8,7 +8,6 @@ import { ConfirmActionDialog } from '@/components/common/confirm-action-dialog';
 import { DraftStatusBadge } from '@/components/common/status-badge';
 import { Button } from '@/components/ui/button';
 import { useDiscardDraft } from '@/hooks/use-drafts';
-import { ApiError } from '@/lib/client/fetcher';
 import { formatDateTime } from '@/lib/format';
 import type { OfficialPatternDraftView } from '@/lib/types';
 
