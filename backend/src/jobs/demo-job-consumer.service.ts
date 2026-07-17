@@ -1,12 +1,14 @@
 import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
 import { Job, Worker } from 'bullmq';
 
+import { OfficialPatternDraftJobConsumerService } from '../admin/official-pattern-draft-job-consumer.service';
 import { AppConfigService } from '../config/app-config.service';
 import { ConversionJobConsumerService } from '../conversion/conversion-job-consumer.service';
 import { ProcessingJobStatus } from './entities';
 import {
   CONVERSION_JOB_EVENT_NAME,
   DEMO_JOBS_QUEUE_NAME,
+  OFFICIAL_PATTERN_DRAFT_EVENT_NAME,
 } from './jobs.constants';
 import {
   DemoJobPayload,
@@ -47,6 +49,8 @@ export class DemoJobConsumerService {
     config: AppConfigService,
     @Inject(forwardRef(() => ConversionJobConsumerService))
     private readonly conversionJobs: ConversionJobConsumerService,
+    @Inject(forwardRef(() => OfficialPatternDraftJobConsumerService))
+    private readonly officialPatternDraftJobs: OfficialPatternDraftJobConsumerService,
     private readonly processingJobs: ProcessingJobsRepository,
   ) {
     this.redisUrl = config.redisUrl;
@@ -88,18 +92,26 @@ export class DemoJobConsumerService {
           `BullMQ demo delivery ${queueJobId} failed: ${error.message}`,
           error.stack,
         );
-        if (
-          job?.name === CONVERSION_JOB_EVENT_NAME &&
-          job.attemptsMade >= (job.opts.attempts ?? 1)
-        ) {
-          void this.conversionJobs
-            .failExhausted(job.data.processingJobId, error.message)
-            .catch((cleanupError: unknown) => {
-              this.logger.error(
-                `Could not finalize exhausted Pattern Conversion ${job.data.processingJobId}: ${errorMessage(cleanupError)}`,
-                errorStack(cleanupError),
-              );
-            });
+        if (job !== undefined && job.attemptsMade >= (job.opts.attempts ?? 1)) {
+          if (job.name === CONVERSION_JOB_EVENT_NAME) {
+            void this.conversionJobs
+              .failExhausted(job.data.processingJobId, error.message)
+              .catch((cleanupError: unknown) => {
+                this.logger.error(
+                  `Could not finalize exhausted Pattern Conversion ${job.data.processingJobId}: ${errorMessage(cleanupError)}`,
+                  errorStack(cleanupError),
+                );
+              });
+          } else if (job.name === OFFICIAL_PATTERN_DRAFT_EVENT_NAME) {
+            void this.officialPatternDraftJobs
+              .failExhausted(job.data.processingJobId, error.message)
+              .catch((cleanupError: unknown) => {
+                this.logger.error(
+                  `Could not finalize exhausted Official Pattern Draft ${job.data.processingJobId}: ${errorMessage(cleanupError)}`,
+                  errorStack(cleanupError),
+                );
+              });
+          }
         }
       },
     );
@@ -198,6 +210,9 @@ export class DemoJobConsumerService {
   ): Promise<ProcessingJobQueueResult> {
     if (job.name === CONVERSION_JOB_EVENT_NAME) {
       return this.conversionJobs.processDelivery(job.data.processingJobId);
+    }
+    if (job.name === OFFICIAL_PATTERN_DRAFT_EVENT_NAME) {
+      return this.officialPatternDraftJobs.processDelivery(job.data.processingJobId);
     }
     return this.processDelivery(job.data);
   }

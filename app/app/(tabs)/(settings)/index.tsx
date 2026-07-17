@@ -91,10 +91,16 @@ export default function SettingsScreen() {
     <Screen scrollable contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Settings</Text>
-        <Text style={styles.subtitle}>Configure preferences and inspect backend systems.</Text>
+        <Text style={styles.subtitle}>
+          {__DEV__
+            ? 'Configure preferences and inspect backend systems.'
+            : 'Configure your preferences.'}
+        </Text>
       </View>
 
-      {/* Backend Health Section */}
+      {/* Backend Health Section (dev-only diagnostics) */}
+      {__DEV__ && (
+      <>
       <Text style={styles.sectionTitle}>Service Status</Text>
       <Card style={styles.healthCard}>
         <View style={styles.healthHeader}>
@@ -190,7 +196,7 @@ export default function SettingsScreen() {
         ) : null}
       </Card>
 
-      {/* Session Status Section */}
+      {/* Session Status Section (dev-only diagnostics) */}
       <Text style={styles.sectionTitle}>Identity & Session</Text>
       <Card style={styles.card}>
         <View style={styles.settingRow}>
@@ -223,6 +229,8 @@ export default function SettingsScreen() {
           )}
         </View>
       </Card>
+      </>
+      )}
 
       {/* Registered Account (email sign-in / sign-out) */}
       <AccountSection />
@@ -234,7 +242,7 @@ export default function SettingsScreen() {
           <View style={styles.settingTextContainer}>
             <Text style={styles.settingTitle}>Show Grid Lines</Text>
             <Text style={styles.settingDescription}>
-              Display boundaries between sewing canvas cells (Zustand store)
+              Display boundaries between sewing canvas cells
             </Text>
           </View>
           <Switch
@@ -379,9 +387,14 @@ export default function SettingsScreen() {
       {/* App details card */}
       <View style={styles.appDetails}>
         <Text style={styles.appDetailsText}>Stitch Wish — Cozy Pixel-Art Needlecraft</Text>
-        <Text style={styles.appDetailsVersion}>Version 1.0.0 (Expo SDK 54)</Text>
-        <Text style={styles.appDetailsIdentifier}>Package: com.avk.stitchwish</Text>
-        <Text style={styles.appDetailsScheme}>Scheme: stitchwish://</Text>
+        <Text style={styles.appDetailsVersion}>Version 1.0.0</Text>
+        {__DEV__ && (
+          <>
+            <Text style={styles.appDetailsVersion}>Expo SDK 54</Text>
+            <Text style={styles.appDetailsIdentifier}>Package: com.avk.stitchwish</Text>
+            <Text style={styles.appDetailsScheme}>Scheme: stitchwish://</Text>
+          </>
+        )}
       </View>
 
       <Modal

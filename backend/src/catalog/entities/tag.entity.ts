@@ -1,10 +1,13 @@
-import { Entity, PrimaryColumn, CreateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
 import { TagLabelEntity } from './tag-label.entity';
 
 @Entity({ name: 'tags', schema: 'catalog' })
 export class TagEntity {
   @PrimaryColumn({ type: 'varchar', length: 64 })
   code!: string;
+
+  @Column({ type: 'boolean', default: true })
+  active!: boolean;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;

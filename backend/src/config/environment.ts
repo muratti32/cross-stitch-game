@@ -19,6 +19,11 @@ export type EnvironmentVariables = {
   EMAIL_OTP_RATE_LIMIT_PER_IP: number;
   FIREBASE_PROJECT_ID: string | undefined;
   FIREBASE_SERVICE_ACCOUNT_BASE64: string | undefined;
+  ADMIN_JWT_SECRET: string | undefined;
+  ADMIN_JWT_ACCESS_TTL_SECONDS: number;
+  ADMIN_REFRESH_TOKEN_TTL_SECONDS: number;
+  ADMIN_TOTP_ENC_KEY: string | undefined;
+  ADMIN_TOTP_ISSUER: string;
 };
 
 const DATABASE_PROTOCOLS = new Set(['postgres:', 'postgresql:']);
@@ -31,6 +36,30 @@ const DEFAULT_EMAIL_OTP_RATE_LIMIT_PER_EMAIL = 5;
 const DEFAULT_EMAIL_OTP_RATE_LIMIT_PER_IP = 20;
 const REDIS_PROTOCOLS = new Set(['redis:', 'rediss:']);
 const HTTP_PROTOCOLS = new Set(['http:', 'https:']);
+const DEFAULT_ADMIN_JWT_ACCESS_TTL_SECONDS = 900;
+const DEFAULT_ADMIN_REFRESH_TOKEN_TTL_SECONDS = 12 * 60 * 60;
+const DEFAULT_ADMIN_TOTP_ISSUER = 'Stitch Wish Operator Console';
+const ADMIN_TOTP_ENC_KEY_BYTES = 32;
+
+function parseHexKey(
+  value: unknown,
+  variableName: string,
+  byteLength: number,
+): string | undefined {
+  if (value === undefined || value === '') {
+    return undefined;
+  }
+  if (
+    typeof value !== 'string' ||
+    value.length !== byteLength * 2 ||
+    !/^[0-9a-fA-F]+$/.test(value)
+  ) {
+    throw new Error(
+      `${variableName} must be a ${byteLength * 2}-character hex string (${byteLength} bytes)`,
+    );
+  }
+  return value.toLowerCase();
+}
 
 function parseUrl(
   value: unknown,
@@ -222,6 +251,30 @@ export function parseEnvironment(
       environment.FIREBASE_SERVICE_ACCOUNT_BASE64,
       'FIREBASE_SERVICE_ACCOUNT_BASE64',
     ),
+    ADMIN_JWT_SECRET: parseOptionalSecret(
+      environment.ADMIN_JWT_SECRET,
+      'ADMIN_JWT_SECRET',
+    ),
+    ADMIN_JWT_ACCESS_TTL_SECONDS: parseDurationSeconds(
+      environment.ADMIN_JWT_ACCESS_TTL_SECONDS,
+      'ADMIN_JWT_ACCESS_TTL_SECONDS',
+      DEFAULT_ADMIN_JWT_ACCESS_TTL_SECONDS,
+    ),
+    ADMIN_REFRESH_TOKEN_TTL_SECONDS: parseDurationSeconds(
+      environment.ADMIN_REFRESH_TOKEN_TTL_SECONDS,
+      'ADMIN_REFRESH_TOKEN_TTL_SECONDS',
+      DEFAULT_ADMIN_REFRESH_TOKEN_TTL_SECONDS,
+    ),
+    ADMIN_TOTP_ENC_KEY: parseHexKey(
+      environment.ADMIN_TOTP_ENC_KEY,
+      'ADMIN_TOTP_ENC_KEY',
+      ADMIN_TOTP_ENC_KEY_BYTES,
+    ),
+    ADMIN_TOTP_ISSUER:
+      typeof environment.ADMIN_TOTP_ISSUER === 'string' &&
+      environment.ADMIN_TOTP_ISSUER.trim().length > 0
+        ? environment.ADMIN_TOTP_ISSUER.trim()
+        : DEFAULT_ADMIN_TOTP_ISSUER,
   };
 }
 

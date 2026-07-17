@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { EmailAuthModule } from './auth/email-auth.module';
 import { FirebaseAuthModule } from './auth/firebase-auth.module';
@@ -23,6 +24,7 @@ import { ConversionModule } from './conversion';
     CatalogModule,
     SessionsModule,
     ConversionModule,
+    AdminModule,
   ],
 })
 export class ApiAppModule {}

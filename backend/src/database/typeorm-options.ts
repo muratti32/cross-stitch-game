@@ -30,6 +30,15 @@ import {
   SessionDeviceWatermarkEntity,
   SessionSyncStateEntity,
 } from '../sessions/entities';
+import {
+  OperatorAccountEntity,
+  OperatorRecoveryCodeEntity,
+  OperatorRefreshTokenEntity,
+  OperatorLoginChallengeEntity,
+  OperatorAuditLogEntity,
+  OperatorSecurityEventEntity,
+  OfficialPatternDraftEntity,
+} from '../admin/entities';
 import { CreateAuthSchema1783987200000 } from './migrations/1783987200000-CreateAuthSchema';
 import { CreateJobsSchema1783900800000 } from './migrations/1783900800000-CreateJobsSchema';
 import { CreateCatalogSchema1784073600000 } from './migrations/1784073600000-CreateCatalogSchema';
@@ -38,6 +47,10 @@ import { CreateEmailAuthSchema1784160000001 } from './migrations/1784160000001-C
 import { CreateProgressSyncSchema1784246400000 } from './migrations/1784246400000-CreateProgressSyncSchema';
 import { CreatePatternConversionSchema1784332800000 } from './migrations/1784332800000-CreatePatternConversionSchema';
 import { AddFederatedAuthIdentities1784419200000 } from './migrations/1784419200000-AddFederatedAuthIdentities';
+import { AddCatalogTagActiveFlag1784505600000 } from './migrations/1784505600000-AddCatalogTagActiveFlag';
+import { CreateAdminAuthSchema1784592000000 } from './migrations/1784592000000-CreateAdminAuthSchema';
+import { CreateAdminAuditSchema1784678400000 } from './migrations/1784678400000-CreateAdminAuditSchema';
+import { CreateOfficialPatternDraftsSchema1784764800000 } from './migrations/1784764800000-CreateOfficialPatternDraftsSchema';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -65,6 +78,13 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       PatternConversionEntity,
       PersonalPatternEntity,
       ConversionRecipeEntity,
+      OperatorAccountEntity,
+      OperatorRecoveryCodeEntity,
+      OperatorRefreshTokenEntity,
+      OperatorLoginChallengeEntity,
+      OperatorAuditLogEntity,
+      OperatorSecurityEventEntity,
+      OfficialPatternDraftEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -75,6 +95,10 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateProgressSyncSchema1784246400000,
       CreatePatternConversionSchema1784332800000,
       AddFederatedAuthIdentities1784419200000,
+      AddCatalogTagActiveFlag1784505600000,
+      CreateAdminAuthSchema1784592000000,
+      CreateAdminAuditSchema1784678400000,
+      CreateOfficialPatternDraftsSchema1784764800000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

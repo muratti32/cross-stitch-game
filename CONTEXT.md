@@ -693,3 +693,21 @@ _Avoid_: Catalog Withdrawal, rejection, soft hide
 **Safety Removal Appeal**:
 The Community Pattern owner's single request for another human review of a Safety Removal decision against the same immutable Pattern and moderation record. Safety Removal remains fully effective while the appeal is open, and the appeal is assigned to a different moderator when operationally possible. Acceptance rescinds the removal, restores catalog discovery and Artifact Access Grants, republishes the Pattern Preview, and lets affected sessions download Offline Pattern Data again. An upheld removal is final for that Community Pattern.
 _Avoid_: Catalog Appeal, edited resubmission, temporary restoration
+
+### Operator Console
+
+**Operator Console**:
+The game-owned web application through which an authenticated Operator Account publishes and manages Official Patterns, curates Staff Picks and Catalog Tags, and will later perform catalog and profile moderation. Every state-changing action requires an Operator Account and is recorded in the Operator Audit Log; the console is never reachable with a player identity.
+_Avoid_: Admin panel, player app, third-party CMS
+
+**Operator Account**:
+A multi-factor-protected staff identity that exists only for the Operator Console and its API. It is entirely separate from Registered Accounts, Guest Installation Identities, and the Firebase identity broker; a player credential can never open it and it can never play, own player content, or hold player balances.
+_Avoid_: Registered Account, Firebase user, shared credential
+
+**Official Pattern Draft**:
+The non-public reviewable result produced when an operator uploads a source image for conversion into a stitch grid, DMC palette, and preview. It becomes an Official Pattern only through an explicit, separately audited publish action that fixes its metadata and derives any Pattern Unlock Price Tier from its stitchable-cell count; an unpublished or discarded draft never appears in the Pattern Catalog.
+_Avoid_: Personal Pattern, Community Pattern, published Pattern
+
+**Operator Audit Log**:
+The append-only private record of every Operator Console action and security event, including who acted, what changed, when, and the prior value. Entries can never be edited or deleted, and the log is internal evidence rather than any public history.
+_Avoid_: Application log, public changelog, editable history

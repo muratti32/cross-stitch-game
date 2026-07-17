@@ -110,4 +110,36 @@ export class AppConfigService {
       infer: true,
     });
   }
+
+  get adminJwtSecret(): string {
+    const secret = this.configService.get('ADMIN_JWT_SECRET', { infer: true });
+    if (secret === undefined) {
+      throw new Error('ADMIN_JWT_SECRET is required for the Operator Console API');
+    }
+    return secret;
+  }
+
+  get adminJwtAccessTtlSeconds(): number {
+    return this.configService.get('ADMIN_JWT_ACCESS_TTL_SECONDS', {
+      infer: true,
+    });
+  }
+
+  get adminRefreshTokenTtlSeconds(): number {
+    return this.configService.get('ADMIN_REFRESH_TOKEN_TTL_SECONDS', {
+      infer: true,
+    });
+  }
+
+  get adminTotpEncryptionKey(): string {
+    const key = this.configService.get('ADMIN_TOTP_ENC_KEY', { infer: true });
+    if (key === undefined) {
+      throw new Error('ADMIN_TOTP_ENC_KEY is required for the Operator Console API');
+    }
+    return key;
+  }
+
+  get adminTotpIssuer(): string {
+    return this.configService.get('ADMIN_TOTP_ISSUER', { infer: true });
+  }
 }

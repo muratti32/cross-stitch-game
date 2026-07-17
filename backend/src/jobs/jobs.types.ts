@@ -23,7 +23,8 @@ export interface DemoJobQueueData {
 
 export type ProcessingJobEventName =
   | typeof import('./jobs.constants').DEMO_JOB_EVENT_NAME
-  | typeof import('./jobs.constants').CONVERSION_JOB_EVENT_NAME;
+  | typeof import('./jobs.constants').CONVERSION_JOB_EVENT_NAME
+  | typeof import('./jobs.constants').OFFICIAL_PATTERN_DRAFT_EVENT_NAME;
 
 export type DemoJobQueueOutcome =
   | 'completed'

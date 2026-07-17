@@ -1,10 +1,33 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import { PatternEntity, TagEntity, TagLabelEntity, StaffPickEntity, PatternUnlockPriceTier, PatternStatus } from './entities';
 import { FIXED_CATEGORIES } from './catalog.constants';
 import { encodeCursor, decodeCursor } from './catalog.utils';
 import { LocalObjectStorage } from './storage/local-object-storage';
+
+export interface UpsertPatternInput {
+  // Only used when no existing Pattern matches (title, creatorName); ignored
+  // when updating an existing row, whose id never changes. Lets a caller
+  // (e.g. the Operator Console draft-publish flow) pre-generate the id it
+  // needs for object storage keys before the row exists.
+  id?: string;
+  title: string;
+  creatorName: string;
+  categoryCode: string;
+  width: number;
+  height: number;
+  paletteSize: number;
+  artifactObjectKey: string;
+  artifactChecksum: string;
+  artifactByteLength: number;
+  artifactSchemaVersion: number;
+  previewObjectKey: string;
+  unlockPriceTier: PatternUnlockPriceTier;
+  status: PatternStatus;
+  publishedAt?: Date;
+  tagCodes: string[];
+}
 
 @Injectable()
 export class CatalogService {
@@ -18,6 +41,7 @@ export class CatalogService {
     @InjectRepository(StaffPickEntity)
     private readonly staffPickRepository: Repository<StaffPickEntity>,
     private readonly storage: LocalObjectStorage,
+    private readonly dataSource: DataSource,
   ) {}
 
   private formatPattern(pattern: PatternEntity, locale: string) {
@@ -132,6 +156,7 @@ export class CatalogService {
   async getTags(locale: string = 'en') {
     const tags = await this.tagRepository.find({
       relations: ['labels'],
+      where: { active: true },
     });
     return tags.map(tag => {
       const labelEntity = tag.labels?.find(l => l.locale === locale) ||
@@ -244,23 +269,19 @@ export class CatalogService {
     return patterns.map(p => this.formatPattern(p, locale));
   }
 
-  async upsertPattern(data: {
-    title: string;
-    creatorName: string;
-    categoryCode: string;
-    width: number;
-    height: number;
-    paletteSize: number;
-    artifactObjectKey: string;
-    artifactChecksum: string;
-    artifactByteLength: number;
-    artifactSchemaVersion: number;
-    previewObjectKey: string;
-    unlockPriceTier: PatternUnlockPriceTier;
-    status: PatternStatus;
-    publishedAt?: Date;
-    tagCodes: string[];
-  }) {
+  upsertPattern(data: UpsertPatternInput): Promise<PatternEntity> {
+    return this.dataSource.transaction((manager) =>
+      this.upsertPatternWithManager(data, manager),
+    );
+  }
+
+  // Manager-aware variant so callers that need this write inside a larger
+  // transaction (e.g. the Operator Console's draft-publish flow) can compose
+  // it atomically with their own mutations, instead of committing separately.
+  async upsertPatternWithManager(
+    data: UpsertPatternInput,
+    manager: EntityManager,
+  ): Promise<PatternEntity> {
     if (data.tagCodes.length > 5) {
       throw new BadRequestException('A pattern can have at most 5 tags');
     }
@@ -269,19 +290,22 @@ export class CatalogService {
       throw new BadRequestException(`Invalid category code: ${data.categoryCode}`);
     }
 
+    const tagRepository = manager.getRepository(TagEntity);
+    const patternRepository = manager.getRepository(PatternEntity);
+
     // Find or create tags
     const tags: TagEntity[] = [];
     for (const tagCode of data.tagCodes) {
-      let tag = await this.tagRepository.findOne({ where: { code: tagCode } });
+      let tag = await tagRepository.findOne({ where: { code: tagCode } });
       if (!tag) {
-        tag = this.tagRepository.create({ code: tagCode });
-        await this.tagRepository.save(tag);
+        tag = tagRepository.create({ code: tagCode });
+        await tagRepository.save(tag);
       }
       tags.push(tag);
     }
 
     // Upsert by title + creatorName
-    let pattern = await this.patternRepository.findOne({
+    let pattern = await patternRepository.findOne({
       where: {
         title: data.title,
         creatorName: data.creatorName,
@@ -306,7 +330,8 @@ export class CatalogService {
       pattern.ownerAccountId = null;
       pattern.tags = tags;
     } else {
-      pattern = this.patternRepository.create({
+      pattern = patternRepository.create({
+        id: data.id,
         title: data.title,
         creatorName: data.creatorName,
         categoryCode: data.categoryCode,
@@ -327,7 +352,7 @@ export class CatalogService {
       });
     }
 
-    return await this.patternRepository.save(pattern);
+    return await patternRepository.save(pattern);
   }
 
   async setStaffPick(patternTitle: string, patternCreator: string, position: number) {

@@ -1,6 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import { AdminModule } from '../admin/admin.module';
 import { AppConfigModule } from '../config/app-config.module';
 import { DemoJobConsumerService } from './demo-job-consumer.service';
 import { DemoJobsQueueService } from './demo-jobs-queue.service';
@@ -45,6 +46,7 @@ export class JobsModule {}
     JobsModule,
     SessionsModule,
     forwardRef(() => ConversionModule),
+    forwardRef(() => AdminModule),
   ],
   providers: [
     DemoJobConsumerService,

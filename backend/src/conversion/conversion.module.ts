@@ -20,7 +20,7 @@ import {
 
 @Module({
   controllers: [ConversionController, PersonalPatternPreviewsController],
-  exports: [ConversionJobConsumerService, ConversionService],
+  exports: [ConversionEngineClient, ConversionJobConsumerService, ConversionService],
   imports: [
     TypeOrmModule.forFeature([
       ConversionRecipeEntity,
