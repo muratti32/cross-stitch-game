@@ -12,7 +12,7 @@ import { OperatorMfaDto } from './dto/operator-mfa.dto';
 import { OperatorRefreshTokenDto } from './dto/operator-refresh-token.dto';
 import {
   OperatorAuthService,
-  OperatorMfaRequiredResponse,
+  OperatorLoginResponse,
   OperatorSessionResponse,
 } from './operator-auth.service';
 import { OperatorTokenPair } from './operator-auth.types';
@@ -26,7 +26,7 @@ export class AdminAuthController {
   login(
     @Body() body: OperatorLoginDto,
     @Ip() ip: string,
-  ): Promise<OperatorMfaRequiredResponse> {
+  ): Promise<OperatorLoginResponse> {
     return this.operatorAuth.login(body.email, body.password, ip);
   }
 

@@ -132,6 +132,13 @@ export interface MfaRequiredResponse {
   expiresAt: string;
 }
 
+export interface AuthenticatedResponse {
+  status: 'authenticated';
+  operator: OperatorProfile;
+}
+
+export type LoginResponse = MfaRequiredResponse | AuthenticatedResponse;
+
 export interface MfaSuccessResponse {
   operator: OperatorProfile;
 }

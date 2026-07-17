@@ -4,6 +4,7 @@ import type { JsonObject } from '../../jobs/jobs.types';
 
 export type OperatorSecurityEventType =
   | 'sign_in_failed'
+  | 'mfa_bypassed'
   | 'mfa_succeeded'
   | 'mfa_failed'
   | 'refresh_reuse_detected'

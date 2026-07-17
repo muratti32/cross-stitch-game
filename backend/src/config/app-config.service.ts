@@ -125,6 +125,10 @@ export class AppConfigService {
     });
   }
 
+  get adminMfaEnabled(): boolean {
+    return this.configService.get('ADMIN_MFA_ENABLED', { infer: true });
+  }
+
   get adminRefreshTokenTtlSeconds(): number {
     return this.configService.get('ADMIN_REFRESH_TOKEN_TTL_SECONDS', {
       infer: true,

@@ -63,6 +63,11 @@ export function LoginForm() {
   async function handleCredentialsSubmit(values: CredentialsValues): Promise<void> {
     try {
       const response = await loginMutation.mutateAsync(values);
+      if (response.status === 'authenticated') {
+        router.push('/');
+        router.refresh();
+        return;
+      }
       setStep({ challenge: response.challenge, kind: 'mfa' });
     } catch {
       // Surfaced via loginMutation.error below.

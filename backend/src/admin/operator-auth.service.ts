@@ -37,7 +37,12 @@ export interface OperatorMfaRequiredResponse {
 
 export interface OperatorSessionResponse extends OperatorTokenPair {
   operator: { id: string; email: string; role: string };
+  status: 'authenticated';
 }
+
+export type OperatorLoginResponse =
+  | OperatorMfaRequiredResponse
+  | OperatorSessionResponse;
 
 @Injectable()
 export class OperatorAuthService {
@@ -62,7 +67,7 @@ export class OperatorAuthService {
     email: string,
     password: string,
     ip: string,
-  ): Promise<OperatorMfaRequiredResponse> {
+  ): Promise<OperatorLoginResponse> {
     const normalizedEmail = email.trim().toLowerCase();
     const [emailAllowed, ipAllowed] = await Promise.all([
       this.rateLimiter.consumeLoginAttempt(`email:${normalizedEmail}`),
@@ -87,6 +92,15 @@ export class OperatorAuthService {
         operatorAccountId: operator?.id ?? null,
       });
       throw new UnauthorizedException('Invalid email or password');
+    }
+
+    if (!this.config.adminMfaEnabled) {
+      await this.securityEvents.record({
+        eventType: 'mfa_bypassed',
+        ip,
+        operatorAccountId: operator.id,
+      });
+      return this.issueSession(operator);
     }
 
     const challenge = this.hashing.generateLoginChallenge();
@@ -175,11 +189,7 @@ export class OperatorAuthService {
       operatorAccountId: operator.id,
     });
 
-    const tokens = await this.issueTokens(operator);
-    return {
-      ...tokens,
-      operator: { email: operator.email, id: operator.id, role: operator.role },
-    };
+    return this.issueSession(operator);
   }
 
   async refresh(refreshToken: string, ip: string): Promise<OperatorTokenPair> {
@@ -249,6 +259,17 @@ export class OperatorAuthService {
       throw new UnauthorizedException('Operator account is disabled');
     }
     return { accessToken, refreshToken };
+  }
+
+  private async issueSession(
+    operator: OperatorAccountEntity,
+  ): Promise<OperatorSessionResponse> {
+    const tokens = await this.issueTokens(operator);
+    return {
+      ...tokens,
+      operator: { email: operator.email, id: operator.id, role: operator.role },
+      status: 'authenticated',
+    };
   }
 
   private signAccessToken(operator: OperatorAccountEntity): Promise<string> {

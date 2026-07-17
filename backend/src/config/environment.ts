@@ -21,6 +21,7 @@ export type EnvironmentVariables = {
   FIREBASE_SERVICE_ACCOUNT_BASE64: string | undefined;
   ADMIN_JWT_SECRET: string | undefined;
   ADMIN_JWT_ACCESS_TTL_SECONDS: number;
+  ADMIN_MFA_ENABLED: boolean;
   ADMIN_REFRESH_TOKEN_TTL_SECONDS: number;
   ADMIN_TOTP_ENC_KEY: string | undefined;
   ADMIN_TOTP_ISSUER: string;
@@ -157,6 +158,35 @@ function parseRequiredString(value: unknown, variableName: string): string {
   return value.trim();
 }
 
+function parseBoolean(
+  value: unknown,
+  variableName: string,
+  defaultValue: boolean,
+): boolean {
+  if (value === undefined || value === '') {
+    return defaultValue;
+  }
+  if (value === true || value === 'true') {
+    return true;
+  }
+  if (value === false || value === 'false') {
+    return false;
+  }
+  throw new Error(`${variableName} must be either true or false`);
+}
+
+function parseAdminMfaEnabled(environment: Record<string, unknown>): boolean {
+  const enabled = parseBoolean(
+    environment.ADMIN_MFA_ENABLED,
+    'ADMIN_MFA_ENABLED',
+    true,
+  );
+  if (!enabled && environment.NODE_ENV === 'production') {
+    throw new Error('ADMIN_MFA_ENABLED cannot be false in production');
+  }
+  return enabled;
+}
+
 export function parseEnvironment(
   environment: Record<string, unknown>,
 ): EnvironmentVariables {
@@ -260,6 +290,7 @@ export function parseEnvironment(
       'ADMIN_JWT_ACCESS_TTL_SECONDS',
       DEFAULT_ADMIN_JWT_ACCESS_TTL_SECONDS,
     ),
+    ADMIN_MFA_ENABLED: parseAdminMfaEnabled(environment),
     ADMIN_REFRESH_TOKEN_TTL_SECONDS: parseDurationSeconds(
       environment.ADMIN_REFRESH_TOKEN_TTL_SECONDS,
       'ADMIN_REFRESH_TOKEN_TTL_SECONDS',
