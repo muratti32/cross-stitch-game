@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { PatternEntity, TagEntity, TagLabelEntity, StaffPickEntity, PatternUnlockPriceTier, PatternStatus } from './entities';
 import { FIXED_CATEGORIES } from './catalog.constants';
 import { encodeCursor, decodeCursor } from './catalog.utils';
-import { LocalObjectStorage } from './storage/local-object-storage';
+import { OBJECT_STORAGE, ObjectStorage } from './storage/object-storage.interface';
 
 export interface UpsertPatternInput {
   // Only used when no existing Pattern matches (title, creatorName); ignored
@@ -40,7 +40,7 @@ export class CatalogService {
     private readonly tagLabelRepository: Repository<TagLabelEntity>,
     @InjectRepository(StaffPickEntity)
     private readonly staffPickRepository: Repository<StaffPickEntity>,
-    private readonly storage: LocalObjectStorage,
+    @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
     private readonly dataSource: DataSource,
   ) {}
 

@@ -39,3 +39,44 @@ describe('parseEnvironment admin MFA', () => {
     ).toThrow('ADMIN_MFA_ENABLED must be either true or false');
   });
 });
+
+describe('parseEnvironment R2 object storage', () => {
+  it('leaves R2 fields undefined when omitted, keeping LocalObjectStorage active', () => {
+    const result = parseEnvironment(validEnvironment());
+    expect(result.R2_ACCOUNT_ID).toBeUndefined();
+    expect(result.R2_ACCESS_KEY_ID).toBeUndefined();
+    expect(result.R2_SECRET_ACCESS_KEY).toBeUndefined();
+    expect(result.R2_BUCKET_NAME).toBeUndefined();
+    expect(result.R2_PUBLIC_HOSTNAME).toBeUndefined();
+  });
+
+  it('accepts a fully configured R2 setup', () => {
+    const result = parseEnvironment(
+      validEnvironment({
+        R2_ACCOUNT_ID: 'account123',
+        R2_ACCESS_KEY_ID: 'key123',
+        R2_SECRET_ACCESS_KEY: 'secret123',
+        R2_BUCKET_NAME: 'stitch-wish-patterns',
+        R2_PUBLIC_HOSTNAME: 'cdn.stitchwish.com',
+      }),
+    );
+    expect(result.R2_ACCOUNT_ID).toBe('account123');
+    expect(result.R2_ACCESS_KEY_ID).toBe('key123');
+    expect(result.R2_SECRET_ACCESS_KEY).toBe('secret123');
+    expect(result.R2_BUCKET_NAME).toBe('stitch-wish-patterns');
+    expect(result.R2_PUBLIC_HOSTNAME).toBe('cdn.stitchwish.com');
+  });
+
+  it('rejects a partially configured R2 setup', () => {
+    expect(() =>
+      parseEnvironment(
+        validEnvironment({
+          R2_ACCOUNT_ID: 'account123',
+          R2_BUCKET_NAME: 'stitch-wish-patterns',
+        }),
+      ),
+    ).toThrow(
+      'R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, and R2_BUCKET_NAME must all be set together to enable R2 object storage',
+    );
+  });
+});

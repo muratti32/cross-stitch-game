@@ -1,14 +1,14 @@
-import { Controller, Get, Param, Res, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Inject, Param, Res, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import type { Response } from 'express';
 import { Repository } from 'typeorm';
 import { PatternEntity } from '../entities';
-import { LocalObjectStorage } from './local-object-storage';
+import { OBJECT_STORAGE, ObjectStorage } from './object-storage.interface';
 
 @Controller('catalog-previews')
 export class CatalogPreviewsController {
   constructor(
-    private readonly storage: LocalObjectStorage,
+    @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
     @InjectRepository(PatternEntity)
     private readonly patterns: Repository<PatternEntity>,
   ) {}

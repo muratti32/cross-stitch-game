@@ -1,9 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { createHash } from 'node:crypto';
 import { DataSource } from 'typeorm';
 
 import { encodePatternArtifactV1 } from '../catalog/pattern-artifact-encoder';
-import { LocalObjectStorage } from '../catalog/storage/local-object-storage';
+import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import {
   ConversionEngineClient,
   ConversionEngineRequestError,
@@ -33,7 +33,7 @@ export class OfficialPatternDraftJobConsumerService {
     private readonly dataSource: DataSource,
     private readonly engine: ConversionEngineClient,
     private readonly processingJobs: ProcessingJobsRepository,
-    private readonly storage: LocalObjectStorage,
+    @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
   ) {}
 
   async processDelivery(processingJobId: string): Promise<ProcessingJobQueueResult> {

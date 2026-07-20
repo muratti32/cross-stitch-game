@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Inject,
   Param,
   Query,
   Res,
@@ -12,14 +13,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { SessionsService } from './sessions.service';
-import { LocalObjectStorage } from '../catalog/storage/local-object-storage';
+import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { PatternEntity } from '../catalog/entities';
 
 @Controller('artifacts')
 export class ArtifactsController {
   constructor(
     private readonly sessionsService: SessionsService,
-    private readonly storage: LocalObjectStorage,
+    @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
     @InjectRepository(PatternEntity)
     private readonly patternRepo: Repository<PatternEntity>,
   ) {}

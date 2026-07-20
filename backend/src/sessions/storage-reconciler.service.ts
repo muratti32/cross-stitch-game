@@ -1,8 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan } from 'typeorm';
 import { ObjectRegistryEntity } from './entities/object-registry.entity';
-import { LocalObjectStorage } from '../catalog/storage/local-object-storage';
+import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 
 @Injectable()
 export class StorageReconcilerService {
@@ -11,7 +11,7 @@ export class StorageReconcilerService {
   constructor(
     @InjectRepository(ObjectRegistryEntity)
     private readonly objectRegistryRepo: Repository<ObjectRegistryEntity>,
-    private readonly storage: LocalObjectStorage,
+    @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
   ) {}
 
   async reconcileOnce(thresholdSeconds?: number): Promise<void> {

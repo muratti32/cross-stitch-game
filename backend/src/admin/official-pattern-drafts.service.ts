@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -11,7 +12,7 @@ import { DataSource, EntityManager, Repository } from 'typeorm';
 import { FIXED_CATEGORIES } from '../catalog/catalog.constants';
 import { CatalogService } from '../catalog/catalog.service';
 import { PatternEntity, TagEntity } from '../catalog/entities';
-import { LocalObjectStorage } from '../catalog/storage/local-object-storage';
+import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { calculatePatternSize } from '../conversion/conversion-profile';
 import { readImageDimensions } from '../conversion/image-dimensions';
 import { OFFICIAL_PATTERN_DRAFT_EVENT_NAME, OFFICIAL_PATTERN_DRAFT_JOB_TYPE } from '../jobs/jobs.constants';
@@ -49,7 +50,7 @@ export interface OfficialPatternDraftView {
 export class OfficialPatternDraftsService {
   constructor(
     private readonly dataSource: DataSource,
-    private readonly storage: LocalObjectStorage,
+    @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
     private readonly processingJobs: ProcessingJobsRepository,
     private readonly catalogService: CatalogService,
     private readonly auditLog: OperatorAuditLogService,

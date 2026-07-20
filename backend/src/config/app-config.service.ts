@@ -41,6 +41,26 @@ export class AppConfigService {
     return this.configService.get('STORAGE_LOCAL_DIR', { infer: true });
   }
 
+  get r2AccountId(): string | undefined {
+    return this.configService.get('R2_ACCOUNT_ID', { infer: true });
+  }
+
+  get r2AccessKeyId(): string | undefined {
+    return this.configService.get('R2_ACCESS_KEY_ID', { infer: true });
+  }
+
+  get r2SecretAccessKey(): string | undefined {
+    return this.configService.get('R2_SECRET_ACCESS_KEY', { infer: true });
+  }
+
+  get r2BucketName(): string | undefined {
+    return this.configService.get('R2_BUCKET_NAME', { infer: true });
+  }
+
+  get r2PublicHostname(): string | undefined {
+    return this.configService.get('R2_PUBLIC_HOSTNAME', { infer: true });
+  }
+
   get grantTtlSeconds(): number {
     return this.configService.get('GRANT_TTL_SECONDS', { infer: true });
   }

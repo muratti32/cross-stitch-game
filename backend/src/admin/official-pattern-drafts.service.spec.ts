@@ -2,7 +2,7 @@ import { DataSource, EntityManager } from 'typeorm';
 
 import { CatalogService } from '../catalog/catalog.service';
 import { PatternEntity, TagEntity } from '../catalog/entities';
-import { LocalObjectStorage } from '../catalog/storage/local-object-storage';
+import type { ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { ProcessingJobsRepository } from '../jobs/processing-jobs.repository';
 import { OfficialPatternDraftEntity, OfficialPatternDraftStatus } from './entities';
 import { OfficialPatternDraftsService } from './official-pattern-drafts.service';
@@ -78,7 +78,7 @@ function buildService(draft: OfficialPatternDraftEntity): {
     delete: jest.fn().mockResolvedValue(undefined),
     get: jest.fn().mockResolvedValue(Buffer.from('bytes')),
     put: storagePut,
-  } as unknown as LocalObjectStorage;
+  } as unknown as ObjectStorage;
 
   const upsertPatternWithManager = jest
     .fn()

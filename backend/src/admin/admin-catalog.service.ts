@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
@@ -10,7 +10,7 @@ import {
   TagEntity,
   TagLabelEntity,
 } from '../catalog/entities';
-import { LocalObjectStorage } from '../catalog/storage/local-object-storage';
+import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { MAX_TAG_CODES_PER_PATTERN } from './admin.constants';
 import { OperatorAuditLogService } from './operator-audit-log.service';
 
@@ -52,7 +52,7 @@ export interface StaffPickListItem {
 export class AdminCatalogService {
   constructor(
     private readonly dataSource: DataSource,
-    private readonly storage: LocalObjectStorage,
+    @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
     private readonly auditLog: OperatorAuditLogService,
     @InjectRepository(PatternEntity)
     private readonly patterns: Repository<PatternEntity>,

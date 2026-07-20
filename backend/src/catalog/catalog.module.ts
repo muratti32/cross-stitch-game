@@ -4,8 +4,11 @@ import { PatternEntity, TagEntity, TagLabelEntity, StaffPickEntity } from './ent
 import { CatalogService } from './catalog.service';
 import { CatalogController } from './catalog.controller';
 import { LocalObjectStorage } from './storage/local-object-storage';
+import { R2ObjectStorage } from './storage/r2-object-storage';
+import { OBJECT_STORAGE, ObjectStorage } from './storage/object-storage.interface';
 import { CatalogPreviewsController } from './storage/catalog-previews.controller';
 import { AppConfigModule } from '../config/app-config.module';
+import { AppConfigService } from '../config/app-config.service';
 
 @Module({
   imports: [
@@ -24,10 +27,20 @@ import { AppConfigModule } from '../config/app-config.module';
   providers: [
     CatalogService,
     LocalObjectStorage,
+    R2ObjectStorage,
+    {
+      provide: OBJECT_STORAGE,
+      inject: [AppConfigService, LocalObjectStorage, R2ObjectStorage],
+      useFactory: (
+        config: AppConfigService,
+        local: LocalObjectStorage,
+        r2: R2ObjectStorage,
+      ): ObjectStorage => (config.r2BucketName === undefined ? local : r2),
+    },
   ],
   exports: [
     CatalogService,
-    LocalObjectStorage,
+    OBJECT_STORAGE,
   ],
 })
 export class CatalogModule {}

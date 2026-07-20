@@ -8,6 +8,11 @@ export type EnvironmentVariables = {
   REDIS_URL: string;
   REFRESH_TOKEN_TTL_SECONDS: number;
   STORAGE_LOCAL_DIR: string;
+  R2_ACCOUNT_ID: string | undefined;
+  R2_ACCESS_KEY_ID: string | undefined;
+  R2_SECRET_ACCESS_KEY: string | undefined;
+  R2_BUCKET_NAME: string | undefined;
+  R2_PUBLIC_HOSTNAME: string | undefined;
   GRANT_TTL_SECONDS: number;
   GRANT_SIGNING_SECRET: string | undefined;
   RESEND_API_KEY: string | undefined;
@@ -175,6 +180,49 @@ function parseBoolean(
   throw new Error(`${variableName} must be either true or false`);
 }
 
+function parseOptionalString(value: unknown): string | undefined {
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    return undefined;
+  }
+  return value.trim();
+}
+
+// R2 credentials are all-or-nothing: a partially configured R2 setup would
+// otherwise fail silently by falling back to LocalObjectStorage, masking a
+// deployment misconfiguration. R2_PUBLIC_HOSTNAME stays independent since
+// R2ObjectStorage falls back to the backend proxy path when it's absent.
+function parseR2Config(environment: Record<string, unknown>): {
+  R2_ACCOUNT_ID: string | undefined;
+  R2_ACCESS_KEY_ID: string | undefined;
+  R2_SECRET_ACCESS_KEY: string | undefined;
+  R2_BUCKET_NAME: string | undefined;
+  R2_PUBLIC_HOSTNAME: string | undefined;
+} {
+  const accountId = parseOptionalString(environment.R2_ACCOUNT_ID);
+  const accessKeyId = parseOptionalString(environment.R2_ACCESS_KEY_ID);
+  const secretAccessKey = parseOptionalString(environment.R2_SECRET_ACCESS_KEY);
+  const bucketName = parseOptionalString(environment.R2_BUCKET_NAME);
+  const publicHostname = parseOptionalString(environment.R2_PUBLIC_HOSTNAME);
+
+  const provided = [accountId, accessKeyId, secretAccessKey, bucketName];
+  const anyProvided = provided.some((value) => value !== undefined);
+  const allProvided = provided.every((value) => value !== undefined);
+
+  if (anyProvided && !allProvided) {
+    throw new Error(
+      'R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, and R2_BUCKET_NAME must all be set together to enable R2 object storage',
+    );
+  }
+
+  return {
+    R2_ACCOUNT_ID: accountId,
+    R2_ACCESS_KEY_ID: accessKeyId,
+    R2_SECRET_ACCESS_KEY: secretAccessKey,
+    R2_BUCKET_NAME: bucketName,
+    R2_PUBLIC_HOSTNAME: publicHostname,
+  };
+}
+
 function parseAdminMfaEnabled(environment: Record<string, unknown>): boolean {
   const enabled = parseBoolean(
     environment.ADMIN_MFA_ENABLED,
@@ -228,6 +276,7 @@ export function parseEnvironment(
       environment.STORAGE_LOCAL_DIR.trim().length > 0
         ? environment.STORAGE_LOCAL_DIR.trim()
         : './storage-dev',
+    ...parseR2Config(environment),
     GRANT_TTL_SECONDS: parseDurationSeconds(
       environment.GRANT_TTL_SECONDS,
       'GRANT_TTL_SECONDS',

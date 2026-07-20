@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -12,7 +13,7 @@ import { DataSource, Repository } from 'typeorm';
 import { AuthPrincipal } from '../auth/auth.types';
 import { PrincipalType } from '../auth/entities';
 import { PatternEntity } from '../catalog/entities';
-import { LocalObjectStorage } from '../catalog/storage/local-object-storage';
+import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { AppConfigService } from '../config/app-config.service';
 import {
   CONVERSION_JOB_EVENT_NAME,
@@ -43,7 +44,7 @@ export class ConversionService {
     private readonly config: AppConfigService,
     private readonly dataSource: DataSource,
     private readonly processingJobs: ProcessingJobsRepository,
-    private readonly storage: LocalObjectStorage,
+    @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
     @InjectRepository(PatternConversionEntity)
     private readonly conversions: Repository<PatternConversionEntity>,
     @InjectRepository(PersonalPatternEntity)
