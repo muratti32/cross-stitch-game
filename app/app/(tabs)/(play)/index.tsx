@@ -428,9 +428,10 @@ const styles = StyleSheet.create({
     marginBottom: Theme.spacing.lg,
   },
   title: {
-    fontSize: Theme.typography.sizes.xxl,
+    fontSize: Theme.typography.sizes.xxxl,
     fontWeight: Theme.typography.weights.bold,
-    color: Theme.colors.textPrimary,
+    color: Theme.colors.accentRose,
+    letterSpacing: -0.5,
   },
   subtitle: {
     fontSize: Theme.typography.sizes.sm,
