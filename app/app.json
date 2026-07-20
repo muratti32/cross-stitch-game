@@ -34,7 +34,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/icon.png",
+          "image": "./assets/transparent-heart.png",
           "resizeMode": "contain",
           "backgroundColor": "#FAF6F0"
         }
