@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView, Image, ActivityIndicator, Pressable } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Image, ActivityIndicator, Pressable, RefreshControl } from 'react-native';
 import { Screen, EmptyState, SectionHeader, Card, Button, CachedImage } from '@/components';
 import { Theme } from '@/theme/theme';
 import { BUNDLED_PATTERNS } from '@/bundled-patterns';
@@ -19,6 +19,21 @@ export default function CatalogScreen() {
   const newPatterns = useNewPatterns();
   const categories = useCatalogCategories();
   const tags = useCatalogTags();
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([
+        staffPicks.refetch(),
+        newPatterns.refetch(),
+        categories.refetch(),
+        tags.refetch(),
+      ]);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const servedFromCache =
     staffPicks.data?.fromCache === true ||
@@ -33,7 +48,18 @@ export default function CatalogScreen() {
     newPatterns.data?.pages.flatMap((page) => page.data.items) ?? [];
 
   return (
-    <Screen scrollable contentContainerStyle={styles.container}>
+    <Screen
+      scrollable
+      contentContainerStyle={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          tintColor={Theme.colors.accentTeal}
+          colors={[Theme.colors.accentTeal]}
+        />
+      }
+    >
       <View style={styles.header}>
         <Text style={styles.appName}>Stitch Wish</Text>
         <Text style={styles.subtitle}>Craft your cozy world, stitch by stitch.</Text>
