@@ -8,8 +8,6 @@ import type { NextRequest } from 'next/server';
 import { adminApiUrl } from './env';
 import { clearSession, getAccessToken, getRefreshToken, setTokens } from './session';
 
-type FetchInit = RequestInit & { duplex?: 'half' };
-
 const FORWARDED_REQUEST_HEADERS = ['content-type'];
 
 // Guards against the backend's refresh-token rotation/reuse-detection
@@ -32,14 +30,19 @@ export async function proxyAdminRequest(
     return unauthorizedResponse();
   }
 
-  let upstream = await forward(request, pathSegments, initialAccessToken);
+  // Buffered once: the request body is a single-use stream, and a 401 below
+  // can trigger a second forward() attempt after a token refresh.
+  const body =
+    request.method !== 'GET' && request.method !== 'HEAD' ? await request.arrayBuffer() : null;
+
+  let upstream = await forward(request, pathSegments, initialAccessToken, body);
   if (upstream.status === 401) {
     const refreshed = await refreshSession();
     if (!refreshed) {
       await clearSession();
       return unauthorizedResponse();
     }
-    upstream = await forward(request, pathSegments, await getAccessToken());
+    upstream = await forward(request, pathSegments, await getAccessToken(), body);
   }
   return relay(upstream);
 }
@@ -48,6 +51,7 @@ async function forward(
   request: NextRequest,
   pathSegments: string[],
   accessToken: string | null,
+  body: ArrayBuffer | null,
 ): Promise<Response> {
   const targetUrl = `${adminApiUrl()}/v1/admin/${pathSegments.map(encodeURIComponent).join('/')}${request.nextUrl.search}`;
 
@@ -63,17 +67,12 @@ async function forward(
     headers.set('authorization', `Bearer ${accessToken}`);
   }
 
-  const hasBody = request.method !== 'GET' && request.method !== 'HEAD' && request.body !== null;
-  const init: FetchInit = {
-    body: hasBody ? request.body : undefined,
+  return fetch(targetUrl, {
+    body,
     cache: 'no-store',
     headers,
     method: request.method,
-  };
-  if (hasBody) {
-    init.duplex = 'half';
-  }
-  return fetch(targetUrl, init);
+  });
 }
 
 async function refreshSession(): Promise<boolean> {
