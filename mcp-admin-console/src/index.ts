@@ -388,15 +388,143 @@ server.registerTool(
 );
 
 server.registerTool(
+  'admin_list_staff_picks',
+  {
+    title: 'List Staff Picks',
+    description: 'Lists the operator-curated Staff Picks collection in display order (backend GET /admin/staff-picks).',
+    inputSchema: {},
+  },
+  async () => {
+    try {
+      const result = await client.request('GET', '/staff-picks');
+      return ok(result);
+    } catch (error) {
+      return fail(error);
+    }
+  },
+);
+
+server.registerTool(
+  'admin_add_staff_pick',
+  {
+    title: 'Add (or move) a Pattern in Staff Picks',
+    description:
+      'Adds an available catalog Pattern to Staff Picks, or moves it if already present. The backend ' +
+      'only exposes an atomic full-list replace (PUT /admin/staff-picks) — no single-item add endpoint ' +
+      '(ADR-0039) — so this reads the current ordered list, removes any existing entry for patternId, ' +
+      'inserts it at the given 1-based position (or appends it at the end if position is omitted), and ' +
+      'writes the full list back in one PUT. The Pattern must currently be an available catalog Pattern.',
+    inputSchema: {
+      patternId: z.string().uuid(),
+      position: z
+        .number()
+        .int()
+        .min(1)
+        .optional()
+        .describe('1-based target position; omit to append at the end'),
+    },
+  },
+  async ({ patternId, position }) => {
+    try {
+      const current = (await client.request('GET', '/staff-picks')) as { patternId: string }[];
+      const withoutTarget = current.map((pick) => pick.patternId).filter((id) => id !== patternId);
+      const insertAt =
+        position === undefined ? withoutTarget.length : Math.min(position - 1, withoutTarget.length);
+      const patternIds = [
+        ...withoutTarget.slice(0, insertAt),
+        patternId,
+        ...withoutTarget.slice(insertAt),
+      ];
+      const result = await client.request('PUT', '/staff-picks', { patternIds });
+      return ok(result);
+    } catch (error) {
+      return fail(error);
+    }
+  },
+);
+
+server.registerTool(
   'admin_list_tags',
   {
     title: 'List Catalog Tags',
-    description: 'Lists operator-managed Catalog Tags (code + localized labels) available to attach to Patterns.',
+    description: 'Lists operator-managed Catalog Tags (code + localized labels, active and inactive) available to attach to Patterns.',
     inputSchema: {},
   },
   async () => {
     try {
       const result = await client.request('GET', '/tags');
+      return ok(result);
+    } catch (error) {
+      return fail(error);
+    }
+  },
+);
+
+const tagLabelSchema = z.object({
+  locale: z.string().min(2).max(8).describe('BCP-47-style locale code, e.g. "en" or "en-US"'),
+  label: z.string().min(1).max(255),
+});
+
+server.registerTool(
+  'admin_create_tag',
+  {
+    title: 'Create a new Catalog Tag',
+    description:
+      'Creates a new operator-managed Catalog Tag (backend POST /admin/tags). code must be lowercase ' +
+      'letters, digits, and hyphens only, and must not already exist. labels needs at least one ' +
+      '{locale, label} entry. The new tag is active immediately and can then be attached to Patterns via ' +
+      'tagCodes (max 5 per Pattern) in admin_update_pattern_metadata or admin_publish_pattern_draft.',
+    inputSchema: {
+      code: z.string().max(64).regex(/^[a-z0-9-]+$/, 'code must be lowercase letters, digits, and hyphens only'),
+      labels: z.array(tagLabelSchema).min(1),
+    },
+  },
+  async ({ code, labels }) => {
+    try {
+      const result = await client.request('POST', '/tags', { code, labels });
+      return ok(result);
+    } catch (error) {
+      return fail(error);
+    }
+  },
+);
+
+server.registerTool(
+  'admin_update_tag_labels',
+  {
+    title: "Update a Catalog Tag's localized labels",
+    description:
+      'Replaces the localized labels of an existing Catalog Tag by code (backend PUT ' +
+      '/admin/tags/:code/labels). Needs at least one {locale, label} entry; this is a full replacement ' +
+      'of the label set, not a partial patch. Does not change the tag\'s code or active status.',
+    inputSchema: {
+      code: z.string().min(1).max(64),
+      labels: z.array(tagLabelSchema).min(1),
+    },
+  },
+  async ({ code, labels }) => {
+    try {
+      const result = await client.request('PUT', `/tags/${encodeURIComponent(code)}/labels`, { labels });
+      return ok(result);
+    } catch (error) {
+      return fail(error);
+    }
+  },
+);
+
+server.registerTool(
+  'admin_deactivate_tag',
+  {
+    title: 'Deactivate a Catalog Tag',
+    description:
+      'Deactivates a Catalog Tag by code (backend POST /admin/tags/:code/deactivate). Tags are ' +
+      'deactivated rather than deleted once referenced — this is not reversible through this MCP server; ' +
+      'reactivation, if ever needed, is a direct database/backend concern outside these tools.',
+    inputSchema: { code: z.string().min(1).max(64) },
+  },
+  async ({ code }) => {
+    try {
+      const result = await client.request('POST', `/tags/${encodeURIComponent(code)}/deactivate`);
       return ok(result);
     } catch (error) {
       return fail(error);
