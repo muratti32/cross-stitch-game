@@ -5,3 +5,5 @@ export { EmptyState } from './EmptyState';
 export { SectionHeader } from './SectionHeader';
 export { CachedImage } from './CachedImage';
 export { AccountSection } from './AccountSection';
+export { AnimatedTabBar } from './AnimatedTabBar';
+export { TabButton } from './TabButton';
