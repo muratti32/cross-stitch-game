@@ -5,10 +5,9 @@ import { Screen, Button, Card, CachedImage, EmptyState } from '@/components';
 import { Theme } from '@/theme/theme';
 import { BUNDLED_PATTERNS, loadBundledPattern } from '@/bundled-patterns';
 import { PatternData } from '@/pattern-artifact';
-import { createSession } from '@/local-db';
 import { absolutePreviewUrl, useCatalogPattern } from '@/api/catalog';
 import { useIdentityStore } from '@/identity/guestIdentity';
-import { prepareCatalogSession } from '@/session-preparation';
+import { prepareCatalogSession, prepareBundledSession } from '@/session-preparation';
 
 export default function PatternDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -48,8 +47,8 @@ export default function PatternDetailScreen() {
   const handleStartStitching = async () => {
     try {
       setStitching(true);
-      // Create session in local SQLite database
-      const session = await createSession(manifestPattern.id, manifestPattern.checksum);
+      // Resumes the pattern's active session if one exists, otherwise creates one.
+      const session = await prepareBundledSession(manifestPattern.id, manifestPattern.checksum);
       // Jump straight into stitching instead of the Play tab list
       router.navigate(`/(tabs)/(play)/${session.id}`);
     } catch (err) {

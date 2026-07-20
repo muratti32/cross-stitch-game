@@ -9,7 +9,7 @@ import {
   removePendingCancel,
   getActiveIdentity,
   createSession,
-  findActiveRemotePatternSession,
+  findActiveSessionForPattern,
   getSession,
   deleteSession,
   StitchingSession,
@@ -112,6 +112,21 @@ export async function preparePersonalSession(
   return prepareRemoteSession(patternId, patternInfo, 'personal');
 }
 
+// Bundled patterns skip online Session Preparation (ADR 0037) but still
+// follow the one-active-session-per-pattern rule, so repeated taps resume
+// the same local session instead of inserting duplicates.
+export async function prepareBundledSession(
+  patternId: string,
+  checksum: string,
+): Promise<StitchingSession> {
+  const existing = await findActiveSessionForPattern(patternId, 'bundled');
+  if (existing) {
+    return existing;
+  }
+
+  return createSession(patternId, checksum);
+}
+
 async function prepareRemoteSession(
   patternId: string,
   patternInfo: PreparePatternInfo,
@@ -120,7 +135,7 @@ async function prepareRemoteSession(
   // Prepare is idempotent on (identity, pattern) server-side; mirror that
   // locally so repeated taps resume the same local session instead of
   // inserting duplicates.
-  const existing = await findActiveRemotePatternSession(patternId, source);
+  const existing = await findActiveSessionForPattern(patternId, source);
   if (existing) {
     if (existing.status === 'preparing') {
       await retryDownload(existing.id).catch(() => undefined);

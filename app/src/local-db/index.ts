@@ -505,18 +505,9 @@ export async function createReplaySession(
   };
 }
 
-/**
- * Retrieves all stitching sessions from the SQLite database.
- */
-export async function findActiveCatalogSession(
-  patternId: string
-): Promise<StitchingSession | null> {
-  return findActiveRemotePatternSession(patternId, 'catalog');
-}
-
-export async function findActiveRemotePatternSession(
+export async function findActiveSessionForPattern(
   patternId: string,
-  source: 'catalog' | 'personal',
+  source: PatternSource,
 ): Promise<StitchingSession | null> {
   const db = await getDatabase();
   const row = await db.getFirstAsync<{ id: string }>(
