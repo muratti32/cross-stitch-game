@@ -1,0 +1,16 @@
+# syntax=docker/dockerfile:1
+# Dev-only image: hot-reload via `nest start --watch`, source is bind-mounted
+# by docker-compose.yml at the repo root. Not used for production builds —
+# see Dockerfile for the production multi-stage build.
+FROM node:24-bookworm-slim
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "run", "start:dev"]

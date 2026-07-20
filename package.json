@@ -1,0 +1,5 @@
+{
+    "scripts": {
+        "claude": "CLAUDE_CODE_TASK_LIST_ID=cross-wish claude claude --dangerously-skip-permissions"
+    }
+}

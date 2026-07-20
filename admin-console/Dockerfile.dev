@@ -1,0 +1,16 @@
+# syntax=docker/dockerfile:1
+# Dev-only image: hot-reload via `next dev`, source is bind-mounted by
+# docker-compose.yml at the repo root. No production Dockerfile exists yet
+# for this app.
+FROM node:24-bookworm-slim
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]
