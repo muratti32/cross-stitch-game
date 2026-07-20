@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Tabs } from 'expo-router';
+import { Tabs, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Theme } from '@/theme/theme';
 import { Platform, StyleSheet, View, Animated, type ColorValue } from 'react-native';
@@ -222,6 +222,11 @@ export default function TabsLayout() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
   };
 
+  const resetCatalogOnPress = () => {
+    triggerHaptic();
+    router.dismissTo('/(tabs)/(catalog)');
+  };
+
   return (
     <Tabs
       screenOptions={{
@@ -257,7 +262,7 @@ export default function TabsLayout() {
           ),
         }}
         listeners={{
-          tabPress: triggerHaptic,
+          tabPress: resetCatalogOnPress,
         }}
       />
       <Tabs.Screen
