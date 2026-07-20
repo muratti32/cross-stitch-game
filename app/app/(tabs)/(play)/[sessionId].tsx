@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useNavigation, useFocusEffect } from 'expo-router';
 import { Screen, Button } from '@/components';
 import { Theme } from '@/theme/theme';
 import { createReplaySession } from '@/local-db';
@@ -15,7 +15,21 @@ import Animated, { useSharedValue, useAnimatedStyle, withSequence, withTiming } 
 export default function SessionReadyScreen() {
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const router = useRouter();
-  
+  const navigation = useNavigation();
+
+  // Hide the OS bottom tab bar while a stitching session is focused, so a
+  // finger drifting past the thread palette can't land on another app tab
+  // and bounce the user out of the session mid-stitch.
+  useFocusEffect(
+    React.useCallback(() => {
+      const parentTabs = navigation.getParent();
+      parentTabs?.setOptions({ tabBarStyle: { display: 'none' } });
+      return () => {
+        parentTabs?.setOptions({ tabBarStyle: undefined });
+      };
+    }, [navigation])
+  );
+
   const {
     loading,
     error,
@@ -225,7 +239,7 @@ export default function SessionReadyScreen() {
   const patternTitle = bPattern?.title || session.title || 'Stitch Session';
 
   return (
-    <Screen style={styles.fullscreenContainer}>
+    <Screen style={styles.fullscreenContainer} edges={['top', 'left', 'right', 'bottom']}>
       {/* Progress Header Bar */}
       <View style={styles.header}>
         <Button
@@ -544,7 +558,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: Theme.colors.border,
     paddingTop: Theme.spacing.sm,
-    paddingBottom: Theme.spacing.lg, // Safe area padding
+    paddingBottom: Theme.spacing.lg,
     zIndex: 20,
   },
   paletteScrollContent: {
