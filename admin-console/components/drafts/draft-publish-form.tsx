@@ -108,11 +108,13 @@ export function DraftPublishForm({
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.code} value={category.code}>
-                    {category.label}
-                  </SelectItem>
-                ))}
+                {categories
+                  .filter((category) => category.active)
+                  .map((category) => (
+                    <SelectItem key={category.code} value={category.code}>
+                      {category.label}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           )}

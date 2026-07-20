@@ -2,8 +2,8 @@ import { BadRequestException, Inject, Injectable, NotFoundException } from '@nes
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
-import { FIXED_CATEGORIES } from '../catalog/catalog.constants';
 import {
+  CategoryEntity,
   PatternEntity,
   PatternStatus,
   StaffPickEntity,
@@ -62,6 +62,8 @@ export class AdminCatalogService {
     private readonly tagLabels: Repository<TagLabelEntity>,
     @InjectRepository(StaffPickEntity)
     private readonly staffPicks: Repository<StaffPickEntity>,
+    @InjectRepository(CategoryEntity)
+    private readonly categories: Repository<CategoryEntity>,
   ) {}
 
   async listPatterns(options: {
@@ -121,19 +123,24 @@ export class AdminCatalogService {
         `A pattern can have at most ${MAX_TAG_CODES_PER_PATTERN} tags`,
       );
     }
-    if (!FIXED_CATEGORIES.some((category) => category.code === dto.categoryCode)) {
-      throw new BadRequestException(`Invalid category code: ${dto.categoryCode}`);
-    }
 
     return this.dataSource.transaction(async (manager) => {
       const patternRepository = manager.getRepository(PatternEntity);
       const tagRepository = manager.getRepository(TagEntity);
+      const categoryRepository = manager.getRepository(CategoryEntity);
       const pattern = await patternRepository.findOne({
         relations: ['tags', 'tags.labels'],
         where: { id: patternId, visibility: 'catalog' },
       });
       if (pattern === null) {
         throw new NotFoundException(`Pattern ${patternId} was not found`);
+      }
+
+      const category = await categoryRepository.findOne({
+        where: { active: true, code: dto.categoryCode },
+      });
+      if (category === null) {
+        throw new BadRequestException(`Invalid category code: ${dto.categoryCode}`);
       }
 
       const tags: TagEntity[] = [];
@@ -387,6 +394,110 @@ export class AdminCatalogService {
         requestId,
         targetId: code,
         targetType: 'tag',
+      });
+      return { active: false, code };
+    });
+  }
+
+  async listCategories(): Promise<{ code: string; label: string; active: boolean }[]> {
+    const categories = await this.categories.find({ order: { code: 'ASC' } });
+    return categories.map((category) => ({
+      active: category.active,
+      code: category.code,
+      label: category.label,
+    }));
+  }
+
+  async createCategory(
+    operatorAccountId: string,
+    code: string,
+    label: string,
+    requestId: string | null,
+  ): Promise<{ code: string; label: string; active: boolean }> {
+    return this.dataSource.transaction(async (manager) => {
+      const categoryRepository = manager.getRepository(CategoryEntity);
+
+      const existing = await categoryRepository.findOne({ where: { code } });
+      if (existing !== null) {
+        throw new BadRequestException(`Category code "${code}" already exists`);
+      }
+
+      await categoryRepository.save(categoryRepository.create({ active: true, code, label }));
+
+      const after = { active: true, code, label };
+      await this.auditLog.record(manager, {
+        action: 'category.create',
+        after,
+        before: null,
+        operatorAccountId,
+        outcome: 'success',
+        requestId,
+        targetId: code,
+        targetType: 'category',
+      });
+      return after;
+    });
+  }
+
+  async updateCategoryLabel(
+    operatorAccountId: string,
+    code: string,
+    label: string,
+    requestId: string | null,
+  ): Promise<{ code: string; label: string; active: boolean }> {
+    return this.dataSource.transaction(async (manager) => {
+      const categoryRepository = manager.getRepository(CategoryEntity);
+
+      const category = await categoryRepository.findOne({ where: { code } });
+      if (category === null) {
+        throw new NotFoundException(`Category code "${code}" was not found`);
+      }
+      const before = { active: category.active, code: category.code, label: category.label };
+
+      category.label = label;
+      await categoryRepository.save(category);
+
+      const after = { active: category.active, code, label };
+      await this.auditLog.record(manager, {
+        action: 'category.label.update',
+        after,
+        before,
+        operatorAccountId,
+        outcome: 'success',
+        requestId,
+        targetId: code,
+        targetType: 'category',
+      });
+      return after;
+    });
+  }
+
+  async deactivateCategory(
+    operatorAccountId: string,
+    code: string,
+    requestId: string | null,
+  ): Promise<{ code: string; active: boolean }> {
+    return this.dataSource.transaction(async (manager) => {
+      const categoryRepository = manager.getRepository(CategoryEntity);
+      const category = await categoryRepository.findOne({ where: { code } });
+      if (category === null) {
+        throw new NotFoundException(`Category code "${code}" was not found`);
+      }
+      const wasActive = category.active;
+      if (wasActive) {
+        category.active = false;
+        await categoryRepository.save(category);
+      }
+
+      await this.auditLog.record(manager, {
+        action: 'category.deactivate',
+        after: { active: false, code },
+        before: { active: wasActive, code },
+        operatorAccountId,
+        outcome: 'success',
+        requestId,
+        targetId: code,
+        targetType: 'category',
       });
       return { active: false, code };
     });

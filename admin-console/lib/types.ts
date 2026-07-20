@@ -119,6 +119,7 @@ export interface DiscardDraftResponse {
 export interface Category {
   code: string;
   label: string;
+  active: boolean;
 }
 
 export interface OperatorProfile {

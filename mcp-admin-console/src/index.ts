@@ -15,22 +15,6 @@ import { z } from 'zod';
 
 import { AdminApiError, AdminClient } from './admin-client.js';
 
-// Mirrors backend/src/catalog/catalog.constants.ts FIXED_CATEGORIES. The
-// admin API has no endpoint to list these — they are a fixed enum enforced
-// server-side in admin-catalog.service.ts.
-const CATEGORY_CODES = [
-  'animals',
-  'nature-flowers',
-  'people',
-  'places-architecture',
-  'food-drink',
-  'holidays-seasons',
-  'fantasy',
-  'geometric-abstract',
-  'words-symbols',
-  'other',
-] as const;
-
 function requiredEnv(name: string): string {
   const value = process.env[name];
   if (value === undefined || value.length === 0) {
@@ -189,14 +173,13 @@ server.registerTool(
     title: 'Update a pattern\'s catalog metadata',
     description:
       'Updates title, creatorName, categoryCode, and tagCodes for an existing Pattern (backend PUT ' +
-      '/admin/patterns/:id/metadata). categoryCode must be one of: ' +
-      CATEGORY_CODES.join(', ') +
-      '. This is a full replacement of these fields, not a partial patch.',
+      '/admin/patterns/:id/metadata). categoryCode must be an active Catalog Category code — see ' +
+      'admin_list_categories. This is a full replacement of these fields, not a partial patch.',
     inputSchema: {
       id: z.string().uuid(),
       title: z.string().min(1).max(255),
       creatorName: z.string().min(1).max(255),
-      categoryCode: z.enum(CATEGORY_CODES),
+      categoryCode: z.string().min(1).max(64),
       tagCodes: z.array(z.string()).max(5),
     },
   },
@@ -341,15 +324,14 @@ server.registerTool(
     title: 'Publish a ready draft as an Official Pattern',
     description:
       'Publishes a "ready" draft into the live catalog (backend POST /admin/pattern-drafts/:id/publish). ' +
-      'categoryCode must be one of: ' +
-      CATEGORY_CODES.join(', ') +
-      '. paid=true prices the Pattern by its stitchable-cell count (Pattern Unlock Price Tier); the console ' +
-      'never sets a price directly.',
+      'categoryCode must be an active Catalog Category code — see admin_list_categories. paid=true prices ' +
+      'the Pattern by its stitchable-cell count (Pattern Unlock Price Tier); the console never sets a ' +
+      'price directly.',
     inputSchema: {
       id: z.string().uuid(),
       title: z.string().min(1).max(255),
       creatorName: z.string().min(1).max(255),
-      categoryCode: z.enum(CATEGORY_CODES),
+      categoryCode: z.string().min(1).max(64),
       tagCodes: z.array(z.string()).max(5),
       paid: z.boolean(),
     },
@@ -525,6 +507,91 @@ server.registerTool(
   async ({ code }) => {
     try {
       const result = await client.request('POST', `/tags/${encodeURIComponent(code)}/deactivate`);
+      return ok(result);
+    } catch (error) {
+      return fail(error);
+    }
+  },
+);
+
+server.registerTool(
+  'admin_list_categories',
+  {
+    title: 'List Catalog Categories',
+    description: 'Lists operator-managed Catalog Categories (code + label, active and inactive) available to assign to Patterns.',
+    inputSchema: {},
+  },
+  async () => {
+    try {
+      const result = await client.request('GET', '/categories');
+      return ok(result);
+    } catch (error) {
+      return fail(error);
+    }
+  },
+);
+
+server.registerTool(
+  'admin_create_category',
+  {
+    title: 'Create a new Catalog Category',
+    description:
+      'Creates a new operator-managed Catalog Category (backend POST /admin/categories). code must be ' +
+      'lowercase letters, digits, and hyphens only, and must not already exist. Unlike Catalog Tags, ' +
+      'Category labels are a single value, not localized (ADR-0040). The new category is active ' +
+      'immediately and can then be assigned via categoryCode in admin_update_pattern_metadata or ' +
+      'admin_publish_pattern_draft.',
+    inputSchema: {
+      code: z.string().max(64).regex(/^[a-z0-9-]+$/, 'code must be lowercase letters, digits, and hyphens only'),
+      label: z.string().min(1).max(255),
+    },
+  },
+  async ({ code, label }) => {
+    try {
+      const result = await client.request('POST', '/categories', { code, label });
+      return ok(result);
+    } catch (error) {
+      return fail(error);
+    }
+  },
+);
+
+server.registerTool(
+  'admin_update_category_label',
+  {
+    title: "Update a Catalog Category's label",
+    description:
+      'Replaces the label of an existing Catalog Category by code (backend PUT ' +
+      '/admin/categories/:code/label). Does not change the category\'s code or active status.',
+    inputSchema: {
+      code: z.string().min(1).max(64),
+      label: z.string().min(1).max(255),
+    },
+  },
+  async ({ code, label }) => {
+    try {
+      const result = await client.request('PUT', `/categories/${encodeURIComponent(code)}/label`, { label });
+      return ok(result);
+    } catch (error) {
+      return fail(error);
+    }
+  },
+);
+
+server.registerTool(
+  'admin_deactivate_category',
+  {
+    title: 'Deactivate a Catalog Category',
+    description:
+      'Deactivates a Catalog Category by code (backend POST /admin/categories/:code/deactivate). ' +
+      'Categories are deactivated rather than deleted once referenced — this is not reversible through ' +
+      'this MCP server; reactivation, if ever needed, is a direct database/backend concern outside these ' +
+      'tools.',
+    inputSchema: { code: z.string().min(1).max(64) },
+  },
+  async ({ code }) => {
+    try {
+      const result = await client.request('POST', `/categories/${encodeURIComponent(code)}/deactivate`);
       return ok(result);
     } catch (error) {
       return fail(error);

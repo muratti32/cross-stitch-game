@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PatternEntity, TagEntity, TagLabelEntity, StaffPickEntity } from './entities';
+import { PatternEntity, TagEntity, TagLabelEntity, StaffPickEntity, CategoryEntity } from './entities';
 import { CatalogService } from './catalog.service';
 import { CatalogController } from './catalog.controller';
 import { LocalObjectStorage } from './storage/local-object-storage';
@@ -17,6 +17,7 @@ import { AppConfigService } from '../config/app-config.service';
       TagEntity,
       TagLabelEntity,
       StaffPickEntity,
+      CategoryEntity,
     ]),
     AppConfigModule,
   ],

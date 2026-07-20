@@ -439,7 +439,7 @@ The non-personalized search over a Pattern's current approved title, its creator
 _Avoid_: AI recommendations, full Pattern Artifact search, private-content search
 
 **Catalog Category**:
-The single required primary classification assigned to every Official Pattern and Community Pattern. The first-release values are Animals, Nature and Flowers, People, Places and Architecture, Food and Drink, Holidays and Seasons, Fantasy, Geometric and Abstract, Words and Symbols, and Other.
+The single required, operator-managed primary classification assigned to every Official Pattern and Community Pattern. The first-release seed values are Animals, Nature and Flowers, People, Places and Architecture, Food and Drink, Holidays and Seasons, Fantasy, Geometric and Abstract, Words and Symbols, and Other; operators may add further categories or relabel existing ones from the Operator Console the same way they manage Catalog Tags (ADR-0040). A referenced category is deactivated, never deleted.
 _Avoid_: Tag, collection, multiple categories
 
 **Catalog Tag**:

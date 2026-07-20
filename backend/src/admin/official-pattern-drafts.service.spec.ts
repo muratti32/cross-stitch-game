@@ -1,7 +1,7 @@
 import { DataSource, EntityManager } from 'typeorm';
 
 import { CatalogService } from '../catalog/catalog.service';
-import { PatternEntity, TagEntity } from '../catalog/entities';
+import { CategoryEntity, PatternEntity, TagEntity } from '../catalog/entities';
 import type { ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { ProcessingJobsRepository } from '../jobs/processing-jobs.repository';
 import { OfficialPatternDraftEntity, OfficialPatternDraftStatus } from './entities';
@@ -55,6 +55,9 @@ function buildService(draft: OfficialPatternDraftEntity): {
   const tagFindOne = jest.fn().mockResolvedValue({ code: 'retro' });
   const tagRepository = { findOne: tagFindOne };
 
+  const categoryFindOne = jest.fn().mockResolvedValue({ active: true, code: 'animals' });
+  const categoryRepository = { findOne: categoryFindOne };
+
   const patternFindOne = jest.fn().mockResolvedValue(null);
   const patternRepository = { findOne: patternFindOne, findOneBy: patternFindOne };
 
@@ -63,6 +66,7 @@ function buildService(draft: OfficialPatternDraftEntity): {
       if (entity === OfficialPatternDraftEntity) return draftRepository;
       if (entity === TagEntity) return tagRepository;
       if (entity === PatternEntity) return patternRepository;
+      if (entity === CategoryEntity) return categoryRepository;
       throw new Error(`Unexpected repository requested: ${String(entity)}`);
     },
     query: jest.fn().mockResolvedValue([]),

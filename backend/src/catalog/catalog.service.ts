@@ -1,8 +1,7 @@
 import { Inject, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
-import { PatternEntity, TagEntity, TagLabelEntity, StaffPickEntity, PatternUnlockPriceTier, PatternStatus } from './entities';
-import { FIXED_CATEGORIES } from './catalog.constants';
+import { PatternEntity, TagEntity, TagLabelEntity, StaffPickEntity, CategoryEntity, PatternUnlockPriceTier, PatternStatus } from './entities';
 import { encodeCursor, decodeCursor } from './catalog.utils';
 import { OBJECT_STORAGE, ObjectStorage } from './storage/object-storage.interface';
 
@@ -40,6 +39,8 @@ export class CatalogService {
     private readonly tagLabelRepository: Repository<TagLabelEntity>,
     @InjectRepository(StaffPickEntity)
     private readonly staffPickRepository: Repository<StaffPickEntity>,
+    @InjectRepository(CategoryEntity)
+    private readonly categoryRepository: Repository<CategoryEntity>,
     @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
     private readonly dataSource: DataSource,
   ) {}
@@ -126,21 +127,24 @@ export class CatalogService {
   }
 
   async getCategories() {
-    const counts = await this.patternRepository
-      .createQueryBuilder('pattern')
-      .select('pattern.categoryCode', 'categoryCode')
-      .addSelect('COUNT(pattern.id)', 'count')
-      .where('pattern.status = :status', { status: 'available' })
-      .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' })
-      .groupBy('pattern.categoryCode')
-      .getRawMany<{ categoryCode: string; count: string }>();
+    const [categories, counts] = await Promise.all([
+      this.categoryRepository.find({ order: { code: 'ASC' }, where: { active: true } }),
+      this.patternRepository
+        .createQueryBuilder('pattern')
+        .select('pattern.categoryCode', 'categoryCode')
+        .addSelect('COUNT(pattern.id)', 'count')
+        .where('pattern.status = :status', { status: 'available' })
+        .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' })
+        .groupBy('pattern.categoryCode')
+        .getRawMany<{ categoryCode: string; count: string }>(),
+    ]);
 
     const countMap = new Map<string, number>();
     for (const row of counts) {
       countMap.set(row.categoryCode, parseInt(row.count, 10));
     }
 
-    return FIXED_CATEGORIES.map(category => {
+    return categories.map(category => {
       const count = countMap.get(category.code) || 0;
       return {
         id: category.code,
@@ -285,7 +289,10 @@ export class CatalogService {
     if (data.tagCodes.length > 5) {
       throw new BadRequestException('A pattern can have at most 5 tags');
     }
-    const validCategory = FIXED_CATEGORIES.find(c => c.code === data.categoryCode);
+    const categoryRepository = manager.getRepository(CategoryEntity);
+    const validCategory = await categoryRepository.findOne({
+      where: { active: true, code: data.categoryCode },
+    });
     if (!validCategory) {
       throw new BadRequestException(`Invalid category code: ${data.categoryCode}`);
     }

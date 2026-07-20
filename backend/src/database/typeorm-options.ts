@@ -13,6 +13,7 @@ import {
   TagEntity,
   TagLabelEntity,
   StaffPickEntity,
+  CategoryEntity,
 } from '../catalog/entities';
 import { JobOutboxEntity, ProcessingJobEntity } from '../jobs/entities';
 import {
@@ -51,6 +52,7 @@ import { AddCatalogTagActiveFlag1784505600000 } from './migrations/1784505600000
 import { CreateAdminAuthSchema1784592000000 } from './migrations/1784592000000-CreateAdminAuthSchema';
 import { CreateAdminAuditSchema1784678400000 } from './migrations/1784678400000-CreateAdminAuditSchema';
 import { CreateOfficialPatternDraftsSchema1784764800000 } from './migrations/1784764800000-CreateOfficialPatternDraftsSchema';
+import { CreateCatalogCategoriesSchema1784851200000 } from './migrations/1784851200000-CreateCatalogCategoriesSchema';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -67,6 +69,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       TagEntity,
       TagLabelEntity,
       StaffPickEntity,
+      CategoryEntity,
       StitchingSessionEntity,
       SessionProgressFlagEntity,
       ObjectRegistryEntity,
@@ -99,6 +102,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateAdminAuthSchema1784592000000,
       CreateAdminAuditSchema1784678400000,
       CreateOfficialPatternDraftsSchema1784764800000,
+      CreateCatalogCategoriesSchema1784851200000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

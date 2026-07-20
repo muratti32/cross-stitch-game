@@ -8,6 +8,7 @@ import {
   UploadCloud,
   Star,
   Tags,
+  Shapes,
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
   { href: '/drafts', icon: UploadCloud, label: 'Drafts' },
   { href: '/staff-picks', icon: Star, label: 'Staff Picks' },
   { href: '/tags', icon: Tags, label: 'Tags' },
+  { href: '/categories', icon: Shapes, label: 'Categories' },
 ] as const;
 
 export function SidebarNav() {

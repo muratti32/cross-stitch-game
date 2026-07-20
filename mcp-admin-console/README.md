@@ -3,7 +3,8 @@
 MCP server wrapping the Cross Stitch Game operator console admin API
 (`backend/src/admin/*`, ADR-0039) as tools: login + MFA, list/update/
 withdraw/remove/restore Patterns, create → poll → publish Official Pattern
-drafts from a source image, manage Staff Picks, and manage Catalog Tags.
+drafts from a source image, manage Staff Picks, and manage Catalog Tags and
+Catalog Categories.
 
 ## Setup
 
@@ -68,6 +69,12 @@ process's working directory, so the MCP entry itself just needs to run
    `admin_deactivate_tag` to manage the Catalog Tags usable in `tagCodes`.
    Tags are deactivated rather than deleted once referenced, and deactivation
    is not reversible through these tools.
+9. `admin_list_categories` / `admin_create_category` (code, label) /
+   `admin_update_category_label` / `admin_deactivate_category` to manage the
+   Catalog Categories usable in `categoryCode` (ADR-0040). Unlike Tags,
+   Category labels are a single value, not localized. Categories are
+   deactivated rather than deleted once referenced, and deactivation is not
+   reversible through these tools.
 
 The session lives only in this process's memory; restarting the MCP server
 requires logging in again (automatically if `ADMIN_TOTP_SECRET` is set,

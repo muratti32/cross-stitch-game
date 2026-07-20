@@ -91,11 +91,14 @@ export function PatternMetadataForm({
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.code} value={category.code}>
-                    {category.label}
-                  </SelectItem>
-                ))}
+                {categories
+                  .filter((category) => category.active || category.code === pattern.categoryCode)
+                  .map((category) => (
+                    <SelectItem key={category.code} value={category.code}>
+                      {category.label}
+                      {!category.active && ' (inactive)'}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           )}

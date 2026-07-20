@@ -5,12 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppConfigModule } from '../config/app-config.module';
 import { AppConfigService } from '../config/app-config.service';
 import { CatalogModule } from '../catalog/catalog.module';
-import { PatternEntity, TagEntity, TagLabelEntity, StaffPickEntity } from '../catalog/entities';
+import { PatternEntity, TagEntity, TagLabelEntity, StaffPickEntity, CategoryEntity } from '../catalog/entities';
 import { ConversionModule } from '../conversion/conversion.module';
 import { JobsModule } from '../jobs/jobs.module';
 import { ADMIN_JWT_AUDIENCE, ADMIN_JWT_ISSUER } from './admin.constants';
 import { AdminAuthController } from './admin-auth.controller';
 import { AdminCatalogService } from './admin-catalog.service';
+import { AdminCategoriesController } from './admin-categories.controller';
 import { AdminPatternsController } from './admin-patterns.controller';
 import { AdminStaffPicksController } from './admin-staff-picks.controller';
 import { AdminTagsController } from './admin-tags.controller';
@@ -41,6 +42,7 @@ import { TotpSecretCipherService } from './totp-secret-cipher.service';
 @Module({
   controllers: [
     AdminAuthController,
+    AdminCategoriesController,
     AdminPatternsController,
     AdminStaffPicksController,
     AdminTagsController,
@@ -66,6 +68,7 @@ import { TotpSecretCipherService } from './totp-secret-cipher.service';
       TagEntity,
       TagLabelEntity,
       StaffPickEntity,
+      CategoryEntity,
     ]),
     // A separate JwtModule instance (own secret, issuer, audience) scoped to
     // this module only: OperatorAuthGuard's JwtService can never be the same

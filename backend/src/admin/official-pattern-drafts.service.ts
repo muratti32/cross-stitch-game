@@ -9,9 +9,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { createHash, randomUUID } from 'node:crypto';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
-import { FIXED_CATEGORIES } from '../catalog/catalog.constants';
 import { CatalogService } from '../catalog/catalog.service';
-import { PatternEntity, TagEntity } from '../catalog/entities';
+import { CategoryEntity, PatternEntity, TagEntity } from '../catalog/entities';
 import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { calculatePatternSize } from '../conversion/conversion-profile';
 import { readImageDimensions } from '../conversion/image-dimensions';
@@ -250,10 +249,6 @@ export class OfficialPatternDraftsService {
         `A pattern can have at most ${MAX_TAG_CODES_PER_PATTERN} tags`,
       );
     }
-    if (!FIXED_CATEGORIES.some((category) => category.code === dto.categoryCode)) {
-      throw new BadRequestException(`Invalid category code: ${dto.categoryCode}`);
-    }
-
     const result = await this.dataSource.transaction(async (manager) => {
       const draftRepository = manager.getRepository(OfficialPatternDraftEntity);
       const draft = await draftRepository.findOne({
@@ -295,6 +290,14 @@ export class OfficialPatternDraftsService {
         draft.paletteSize === null
       ) {
         throw new Error(`Ready draft ${draftId} is missing its conversion result`);
+      }
+
+      const categoryRepository = manager.getRepository(CategoryEntity);
+      const category = await categoryRepository.findOne({
+        where: { active: true, code: dto.categoryCode },
+      });
+      if (category === null) {
+        throw new BadRequestException(`Invalid category code: ${dto.categoryCode}`);
       }
 
       const tagRepository = manager.getRepository(TagEntity);
