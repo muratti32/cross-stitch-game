@@ -48,12 +48,17 @@ export function DraftListItem({ draft }: { draft: OfficialPatternDraftView }) {
 
       <div className="flex shrink-0 items-center gap-2">
         {draft.status === 'ready' && (
-          <Button size="sm" render={<Link href={`/drafts/${draft.id}`} />}>
+          <Button size="sm" render={<Link href={`/drafts/${draft.id}`} />} nativeButton={false}>
             Review
           </Button>
         )}
         {draft.status === 'published' && draft.publishedPatternId !== null && (
-          <Button size="sm" variant="secondary" render={<Link href={`/patterns/${draft.publishedPatternId}`} />}>
+          <Button
+            size="sm"
+            variant="secondary"
+            render={<Link href={`/patterns/${draft.publishedPatternId}`} />}
+            nativeButton={false}
+          >
             View Pattern
           </Button>
         )}

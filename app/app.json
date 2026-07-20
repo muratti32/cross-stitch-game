@@ -50,6 +50,13 @@
       "expo-sqlite",
       "expo-apple-authentication",
       [
+        "@sentry/react-native/expo",
+        {
+          "organization": "avk-corp",
+          "project": "stitch-wish"
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "ios": {

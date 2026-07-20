@@ -1,17 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Slot } from 'expo-router';
+import * as Sentry from '@sentry/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryProvider } from '../src/providers';
 import * as SplashScreen from 'expo-splash-screen';
 import { initDatabase, getHandedness } from '../src/local-db';
 import { useGameplayStore } from '../src/store/gameplayStore';
 import { bootstrap } from '../src/identity/guestIdentity';
+import { initSentry, syncSentryPlayerReferenceWithIdentity } from '../src/observability/sentry';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+// Must run before anything else that could throw.
+initSentry();
+syncSentryPlayerReferenceWithIdentity();
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function RootLayout() {
   const [dbReady, setDbReady] = useState(false);
 
   useEffect(() => {
@@ -51,3 +57,5 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+export default Sentry.wrap(RootLayout);

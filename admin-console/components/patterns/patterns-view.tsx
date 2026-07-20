@@ -58,7 +58,7 @@ export function PatternsView() {
         title="Patterns"
         description="Official Patterns published to the catalog."
         actions={
-          <Button render={<Link href="/drafts" />}>
+          <Button render={<Link href="/drafts" />} nativeButton={false}>
             <Plus className="size-4" />
             Add pattern
           </Button>
