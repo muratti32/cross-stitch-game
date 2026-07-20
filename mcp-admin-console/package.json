@@ -1,0 +1,28 @@
+{
+  "name": "mcp-admin-console",
+  "version": "1.0.0",
+  "description": "MCP server that wraps the Cross Stitch Game operator console admin API (login/MFA, Official Pattern drafts, pattern metadata) as tools.",
+  "main": "dist/index.js",
+  "bin": {
+    "mcp-admin-console": "dist/index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "dotenv": "^17.4.2",
+    "otplib": "^12.0.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "typescript": "^7.0.2"
+  }
+}
