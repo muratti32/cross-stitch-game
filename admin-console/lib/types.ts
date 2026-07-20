@@ -47,6 +47,7 @@ export interface StaffPickItem {
   title: string;
   creatorName: string;
   position: number;
+  previewUrl: string;
 }
 
 export interface TagLabel {

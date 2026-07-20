@@ -1,12 +1,14 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Search } from 'lucide-react';
+import Link from 'next/link';
+import { Plus, Search } from 'lucide-react';
 
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
 import { PageHeader } from '@/components/common/page-header';
 import { PaginationBar } from '@/components/common/pagination-bar';
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -55,6 +57,12 @@ export function PatternsView() {
       <PageHeader
         title="Patterns"
         description="Official Patterns published to the catalog."
+        actions={
+          <Button render={<Link href="/drafts" />}>
+            <Plus className="size-4" />
+            Add pattern
+          </Button>
+        }
       />
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">

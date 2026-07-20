@@ -205,14 +205,31 @@ export class OfficialPatternDraftsService {
 
   async getPreviewBytes(id: string): Promise<Buffer> {
     const draft = await this.drafts.findOneBy({ id });
-    if (draft === null || draft.previewObjectKey === null) {
+    if (draft === null) {
       throw new NotFoundException(`Official Pattern Draft ${id} preview was not found`);
     }
-    const bytes = await this.storage.get(draft.previewObjectKey);
+    const previewObjectKey = await this.resolvePreviewObjectKey(draft);
+    if (previewObjectKey === null) {
+      throw new NotFoundException(`Official Pattern Draft ${id} preview was not found`);
+    }
+    const bytes = await this.storage.get(previewObjectKey);
     if (bytes === null) {
       throw new NotFoundException(`Official Pattern Draft ${id} preview was not found`);
     }
     return bytes;
+  }
+
+  // Publishing copies the preview to a permanent catalog object key and
+  // deletes the staged draft-scoped copy, so a published draft's own
+  // previewObjectKey no longer resolves — fall back to the Pattern's key.
+  private async resolvePreviewObjectKey(draft: OfficialPatternDraftEntity): Promise<string | null> {
+    if (draft.status === OfficialPatternDraftStatus.Published && draft.publishedPatternId !== null) {
+      const pattern = await this.dataSource
+        .getRepository(PatternEntity)
+        .findOneBy({ id: draft.publishedPatternId });
+      return pattern?.previewObjectKey ?? null;
+    }
+    return draft.previewObjectKey;
   }
 
   async publishDraft(

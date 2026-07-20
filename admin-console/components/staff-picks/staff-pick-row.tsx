@@ -1,10 +1,12 @@
 'use client';
 
+import Image from 'next/image';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { toConsolePreviewSrc } from '@/lib/preview-url';
 import type { StaffPickItem } from '@/lib/types';
 
 export function StaffPickRow({
@@ -35,6 +37,14 @@ export function StaffPickRow({
         <GripVertical className="size-4" />
       </button>
       <span className="w-6 shrink-0 text-sm font-medium text-muted-foreground">{position}</span>
+      <Image
+        src={toConsolePreviewSrc(pick.previewUrl)}
+        alt={pick.title}
+        width={40}
+        height={40}
+        unoptimized
+        className="size-10 shrink-0 rounded-md border border-border object-cover"
+      />
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium">{pick.title}</p>
         <p className="truncate text-sm text-muted-foreground">{pick.creatorName}</p>

@@ -40,6 +40,14 @@ export interface AdminPatternPage {
   pageSize: number;
 }
 
+export interface StaffPickListItem {
+  patternId: string;
+  title: string;
+  creatorName: string;
+  position: number;
+  previewUrl: string;
+}
+
 @Injectable()
 export class AdminCatalogService {
   constructor(
@@ -187,7 +195,7 @@ export class AdminCatalogService {
     });
   }
 
-  async getStaffPicks(): Promise<{ patternId: string; title: string; creatorName: string; position: number }[]> {
+  async getStaffPicks(): Promise<StaffPickListItem[]> {
     const picks = await this.staffPicks.find({
       order: { position: 'ASC' },
       relations: ['pattern'],
@@ -198,6 +206,7 @@ export class AdminCatalogService {
         creatorName: pick.pattern.creatorName,
         patternId: pick.patternId,
         position: pick.position,
+        previewUrl: this.storage.publicUrl(pick.pattern.previewObjectKey),
         title: pick.pattern.title,
       }));
   }
@@ -206,7 +215,7 @@ export class AdminCatalogService {
     operatorAccountId: string,
     patternIds: string[],
     requestId: string | null,
-  ): Promise<{ patternId: string; title: string; creatorName: string; position: number }[]> {
+  ): Promise<StaffPickListItem[]> {
     return this.dataSource.transaction(async (manager) => {
       const patternRepository = manager.getRepository(PatternEntity);
       const staffPickRepository = manager.getRepository(StaffPickEntity);
@@ -238,6 +247,7 @@ export class AdminCatalogService {
         creatorName: pattern.creatorName,
         patternId: pattern.id,
         position: index + 1,
+        previewUrl: this.storage.publicUrl(pattern.previewObjectKey),
         title: pattern.title,
       }));
 

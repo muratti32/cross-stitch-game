@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Plus, Search } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import { usePatterns } from '@/hooks/use-patterns';
 import { ApiError } from '@/lib/client/fetcher';
+import { toConsolePreviewSrc } from '@/lib/preview-url';
 import type { StaffPickItem } from '@/lib/types';
 
 const RESULT_PAGE_SIZE = 10;
@@ -105,6 +107,14 @@ export function AddStaffPickDialog({
               key={pattern.id}
               className="flex items-center gap-3 border-b border-border p-3 last:border-b-0"
             >
+              <Image
+                src={toConsolePreviewSrc(pattern.previewUrl)}
+                alt={pattern.title}
+                width={40}
+                height={40}
+                unoptimized
+                className="size-10 shrink-0 rounded-md border border-border object-cover"
+              />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{pattern.title}</p>
                 <p className="truncate text-xs text-muted-foreground">{pattern.creatorName}</p>
@@ -118,6 +128,7 @@ export function AddStaffPickDialog({
                     creatorName: pattern.creatorName,
                     patternId: pattern.id,
                     position: pickedIds.length + 1,
+                    previewUrl: pattern.previewUrl,
                     title: pattern.title,
                   })
                 }
