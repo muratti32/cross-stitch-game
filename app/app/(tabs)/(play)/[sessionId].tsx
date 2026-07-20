@@ -204,7 +204,7 @@ export default function SessionReadyScreen() {
         <View style={styles.errorActions}>
           <Button
             title="Go to Table"
-            onPress={() => router.navigate('/(tabs)/(play)')}
+            onPress={() => router.dismissTo('/(tabs)/(play)')}
             variant="secondary"
             style={styles.errorBtn}
           />
@@ -231,7 +231,7 @@ export default function SessionReadyScreen() {
         <Button
           variant="secondary"
           title="← Table"
-          onPress={() => router.navigate('/(tabs)/(play)')}
+          onPress={() => router.dismissTo('/(tabs)/(play)')}
           style={styles.backButton}
         />
         <View style={styles.headerInfo}>

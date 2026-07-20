@@ -49,9 +49,9 @@ export default function PatternDetailScreen() {
     try {
       setStitching(true);
       // Create session in local SQLite database
-      await createSession(manifestPattern.id, manifestPattern.checksum);
-      // Navigate to Play tab
-      router.navigate('/(tabs)/(play)');
+      const session = await createSession(manifestPattern.id, manifestPattern.checksum);
+      // Jump straight into stitching instead of the Play tab list
+      router.navigate(`/(tabs)/(play)/${session.id}`);
     } catch (err) {
       console.error('Failed to start stitching session:', err);
       setError('Failed to create a stitching session. Please try again.');
@@ -259,13 +259,13 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
                 try {
                   setPreparing(true);
                   setPrepareError(null);
-                  await prepareCatalogSession(item.id, {
+                  const session = await prepareCatalogSession(item.id, {
                     title: item.title,
                     previewUrl: absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl),
                     width: item.width,
                     height: item.height,
                   });
-                  router.navigate('/(tabs)/(play)');
+                  router.navigate(`/(tabs)/(play)/${session.id}`);
                 } catch (err) {
                   setPrepareError(
                     err instanceof Error
