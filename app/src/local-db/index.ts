@@ -10,6 +10,7 @@ export interface StitchingSession {
   source: PatternSource;
   artifactChecksum: string;
   createdAt: string;
+  updatedAt: string;
   status: 'preparing' | 'ready' | 'active' | 'completed';
   completedAt?: string | null;
   replayOf?: string | null;
@@ -312,6 +313,20 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
       await db.execAsync('PRAGMA user_version = 3;');
     });
   }
+
+  if (currentVersion < 4) {
+    await db.withTransactionAsync(async () => {
+      // Last-activity timestamp for sorting the Stitching Table by recency
+      // rather than by creation order.
+      await db.execAsync(`
+        ALTER TABLE sessions ADD COLUMN updated_at TEXT;
+      `);
+      await db.execAsync(`
+        UPDATE sessions SET updated_at = created_at WHERE updated_at IS NULL;
+      `);
+      await db.execAsync('PRAGMA user_version = 4;');
+    });
+  }
 }
 
 /**
@@ -433,12 +448,13 @@ export async function createSession(
   const createdAt = new Date().toISOString();
 
   await db.runAsync(
-    `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, status, remote_session_id, title, preview_url, pattern_width, pattern_height)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, remote_session_id, title, preview_url, pattern_width, pattern_height)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     id,
     patternId,
     source,
     checksum,
+    createdAt,
     createdAt,
     status,
     remoteSessionId,
@@ -454,6 +470,7 @@ export async function createSession(
     source,
     artifactChecksum: checksum,
     createdAt,
+    updatedAt: createdAt,
     status,
     remoteSessionId,
     title: patternMeta?.title ?? null,
@@ -483,12 +500,13 @@ export async function createReplaySession(
   const patternId = parent.patternId;
 
   await db.runAsync(
-    `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, status, replay_of)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, replay_of)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     id,
     patternId,
     source,
     checksum,
+    createdAt,
     createdAt,
     status,
     parentSessionId
@@ -500,6 +518,7 @@ export async function createReplaySession(
     source,
     artifactChecksum: checksum,
     createdAt,
+    updatedAt: createdAt,
     status,
     replayOf: parentSessionId,
   };
@@ -527,6 +546,7 @@ export async function getSessions(): Promise<StitchingSession[]> {
     source: string;
     artifact_checksum: string;
     created_at: string;
+    updated_at: string;
     status: string;
     completed_at?: string | null;
     replay_of?: string | null;
@@ -536,7 +556,7 @@ export async function getSessions(): Promise<StitchingSession[]> {
     preview_url?: string | null;
     pattern_width?: number | null;
     pattern_height?: number | null;
-  }>('SELECT * FROM sessions ORDER BY created_at DESC');
+  }>('SELECT * FROM sessions ORDER BY updated_at DESC');
 
   return rows.map((row) => ({
     id: row.id,
@@ -544,6 +564,7 @@ export async function getSessions(): Promise<StitchingSession[]> {
     source: row.source as PatternSource,
     artifactChecksum: row.artifact_checksum,
     createdAt: row.created_at,
+    updatedAt: row.updated_at,
     status: row.status as 'preparing' | 'ready' | 'active' | 'completed',
     completedAt: row.completed_at,
     replayOf: row.replay_of,
@@ -567,6 +588,7 @@ export async function getSession(id: string): Promise<StitchingSession | null> {
     source: string;
     artifact_checksum: string;
     created_at: string;
+    updated_at: string;
     status: string;
     completed_at?: string | null;
     replay_of?: string | null;
@@ -588,6 +610,7 @@ export async function getSession(id: string): Promise<StitchingSession | null> {
     source: row.source as PatternSource,
     artifactChecksum: row.artifact_checksum,
     createdAt: row.created_at,
+    updatedAt: row.updated_at,
     status: row.status as 'preparing' | 'ready' | 'active' | 'completed',
     completedAt: row.completed_at,
     replayOf: row.replay_of,
@@ -609,18 +632,21 @@ export async function updateSessionStatus(
   completedAt?: string | null
 ): Promise<void> {
   const db = await getDatabase();
+  const updatedAt = new Date().toISOString();
   if (status === 'completed') {
-    const ts = completedAt || new Date().toISOString();
+    const ts = completedAt || updatedAt;
     await db.runAsync(
-      'UPDATE sessions SET status = ?, completed_at = ? WHERE id = ?',
+      'UPDATE sessions SET status = ?, completed_at = ?, updated_at = ? WHERE id = ?',
       status,
       ts,
+      updatedAt,
       id
     );
   } else {
     await db.runAsync(
-      'UPDATE sessions SET status = ?, error_note = NULL WHERE id = ?',
+      'UPDATE sessions SET status = ?, error_note = NULL, updated_at = ? WHERE id = ?',
       status,
+      updatedAt,
       id
     );
   }
@@ -657,6 +683,7 @@ export async function deleteSession(id: string): Promise<void> {
 export async function insertProgressOpsBatch(ops: ProgressOperation[]): Promise<void> {
   if (ops.length === 0) return;
   const db = await getDatabase();
+  const latestBySession = new Map<string, string>();
   await db.withTransactionAsync(async () => {
     for (const op of ops) {
       await db.runAsync(
@@ -671,6 +698,17 @@ export async function insertProgressOpsBatch(ops: ProgressOperation[]): Promise<
         op.baseRevision,
         op.serverBaseRevision ?? 0,
         op.createdAt
+      );
+      const latest = latestBySession.get(op.sessionId);
+      if (!latest || op.createdAt > latest) {
+        latestBySession.set(op.sessionId, op.createdAt);
+      }
+    }
+    for (const [sessionId, updatedAt] of latestBySession) {
+      await db.runAsync(
+        'UPDATE sessions SET updated_at = ? WHERE id = ?',
+        updatedAt,
+        sessionId
       );
     }
   });

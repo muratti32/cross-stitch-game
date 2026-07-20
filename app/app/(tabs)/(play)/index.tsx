@@ -220,40 +220,49 @@ export default function PlayScreen() {
     );
   };
 
+  const header = (
+    <View style={styles.header}>
+      <Text style={styles.title}>Stitching Table</Text>
+      <Text style={styles.subtitle}>Pick up where you left off or resume a recent craft.</Text>
+    </View>
+  );
+
   return (
     <Screen style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Stitching Table</Text>
-        <Text style={styles.subtitle}>Pick up where you left off or resume a recent craft.</Text>
-      </View>
-
-      <View style={styles.content}>
-        {loading ? (
+      {loading ? (
+        <>
+          {header}
           <View style={styles.loaderContainer}>
             <ActivityIndicator size="large" color={Theme.colors.accentTeal} />
             <Text style={styles.loadingText}>Loading your stitches...</Text>
           </View>
-        ) : sessions.length === 0 ? (
-          <EmptyState
-            icon="play-circle-outline"
-            title="No Active Crafts"
-            body="Your stitching frame is currently empty. Browse the pattern catalog to find something beautiful to stitch!"
-            actionLabel="Browse Catalog"
-            onAction={handleStartStitching}
-            actionVariant="primary"
-          />
-        ) : (
-          <FlatList
-            data={sessions}
-            keyExtractor={(item) => item.id}
-            renderItem={renderSessionItem}
-            numColumns={2}
-            columnWrapperStyle={styles.columnWrapper}
-            contentContainerStyle={styles.listContainer}
-            showsVerticalScrollIndicator={false}
-          />
-        )}
-      </View>
+        </>
+      ) : sessions.length === 0 ? (
+        <>
+          {header}
+          <View style={styles.sectionPadding}>
+            <EmptyState
+              icon="play-circle-outline"
+              title="No Active Crafts"
+              body="Your stitching frame is currently empty. Browse the pattern catalog to find something beautiful to stitch!"
+              actionLabel="Browse Catalog"
+              onAction={handleStartStitching}
+              actionVariant="primary"
+            />
+          </View>
+        </>
+      ) : (
+        <FlatList
+          data={sessions}
+          keyExtractor={(item) => item.id}
+          renderItem={renderSessionItem}
+          numColumns={2}
+          ListHeaderComponent={header}
+          columnWrapperStyle={styles.columnWrapper}
+          contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
     </Screen>
   );
 }
@@ -421,11 +430,11 @@ function PreparingSessionCard({
 const styles = StyleSheet.create({
   container: {
     paddingTop: Theme.spacing.xl,
-    paddingHorizontal: Theme.spacing.lg,
     flex: 1,
   },
   header: {
-    marginBottom: Theme.spacing.lg,
+    paddingHorizontal: Theme.spacing.lg,
+    marginBottom: Theme.spacing.md,
   },
   title: {
     fontSize: Theme.typography.sizes.xxxl,
@@ -438,13 +447,14 @@ const styles = StyleSheet.create({
     color: Theme.colors.textSecondary,
     marginTop: Theme.spacing.xs,
   },
-  content: {
-    flex: 1,
+  sectionPadding: {
+    paddingHorizontal: Theme.spacing.lg,
   },
   loaderContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: Theme.spacing.lg,
     paddingVertical: Theme.spacing.xxl,
   },
   loadingText: {
@@ -457,6 +467,7 @@ const styles = StyleSheet.create({
   },
   columnWrapper: {
     justifyContent: 'space-between',
+    paddingHorizontal: Theme.spacing.lg,
   },
   sessionCard: {
     width: cardWidth,
