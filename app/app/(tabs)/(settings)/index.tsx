@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, Switch, ActivityIndicator, Pressable, Alert, Linking, Modal, TextInput } from 'react-native';
 import { Screen, Card, Button, AccountSection } from '@/components';
+import { router } from 'expo-router';
 import { Theme } from '@/theme/theme';
 import { useGameplayStore } from '@/store';
 import { useHealthCheck } from '@/hooks/useHealthCheck';
@@ -228,6 +229,17 @@ export default function SettingsScreen() {
             <Text style={styles.settingDescription}>Unknown state</Text>
           )}
         </View>
+      </Card>
+
+      <Text style={styles.sectionTitle}>Developer</Text>
+      <Card style={styles.card}>
+        <Pressable
+          onPress={() => router.push('/(tabs)/(settings)/debug')}
+          style={({ pressed }) => [styles.linkRow, pressed && styles.linkPressed]}
+        >
+          <Text style={styles.linkText}>Debug / Diagnostics</Text>
+          <Ionicons name="chevron-forward" size={16} color={Theme.colors.textSecondary} />
+        </Pressable>
       </Card>
       </>
       )}
