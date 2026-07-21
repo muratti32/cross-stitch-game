@@ -1,38 +1,180 @@
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import stitchRose from '../assets/stitch_rose.jpg'
+import stitchCat from '../assets/stitch_cat.jpg'
+import stitchLandscape from '../assets/stitch_landscape.jpg'
 
-// Decorative cross-stitch grid for the hero phone mockup
-const GRID_PATTERN = [
-  // [row, col, color-class]
-  [0,0,'c-red'],[0,1,'c-red'],[0,5,'c-blue'],[0,6,'c-blue'],
-  [1,0,'c-red'],[1,2,'c-red'],[1,4,'c-blue'],[1,6,'c-blue'],
-  [2,1,'c-red'],[2,2,'c-red'],[2,3,'c-green'],[2,4,'c-blue'],[2,5,'c-blue'],
-  [3,2,'c-green'],[3,3,'c-green'],[3,4,'c-green'],
-  [4,1,'c-gold'],[4,2,'c-green'],[4,3,'c-green'],[4,4,'c-green'],[4,5,'c-gold'],
-  [5,0,'c-gold'],[5,1,'c-gold'],[5,5,'c-gold'],[5,6,'c-gold'],
-  [6,0,'c-blue'],[6,2,'c-gold'],[6,4,'c-gold'],[6,6,'c-red'],
-  [7,1,'c-blue'],[7,2,'c-blue'],[7,4,'c-red'],[7,5,'c-red'],
-] as [number, number, string][]
+// Heart pattern for 12x12 grid auto-stitching
+const DEFAULT_PATTERN: [number, number, string][] = [
+  [2,4,'c-red'], [2,5,'c-red'], [2,7,'c-red'], [2,8,'c-red'],
+  [3,3,'c-red'], [3,4,'c-red'], [3,5,'c-red'], [3,6,'c-red'], [3,7,'c-red'], [3,8,'c-red'], [3,9,'c-red'],
+  [4,2,'c-red'], [4,3,'c-red'], [4,4,'c-red'], [4,5,'c-red'], [4,6,'c-red'], [4,7,'c-red'], [4,8,'c-red'], [4,9,'c-red'], [4,10,'c-red'],
+  [5,2,'c-red'], [5,3,'c-red'], [5,4,'c-red'], [5,5,'c-red'], [5,6,'c-red'], [5,7,'c-red'], [5,8,'c-red'], [5,9,'c-red'], [5,10,'c-red'],
+  [6,3,'c-red'], [6,4,'c-red'], [6,5,'c-red'], [6,6,'c-red'], [6,7,'c-red'], [6,8,'c-red'], [6,9,'c-red'],
+  [7,4,'c-red'], [7,5,'c-red'], [7,6,'c-red'], [7,7,'c-red'], [7,8,'c-red'],
+  [8,5,'c-red'], [8,6,'c-red'], [8,7,'c-red'],
+  [9,6,'c-red'],
+  // Gold accents / sparkles
+  [1,1,'c-gold'], [2,2,'c-gold'], [1,10,'c-gold'], [2,9,'c-gold'],
+  // Blue stars
+  [10,1,'c-blue'], [9,2,'c-blue'],
+  // Green leaves
+  [10,10,'c-green'], [9,9,'c-green']
+]
 
 function HeroPhoneMockup() {
-  const cells: React.ReactNode[] = []
-  for (let r = 0; r < 8; r++) {
-    for (let c = 0; c < 8; c++) {
-      const match = GRID_PATTERN.find(([gr, gc]) => gr === r && gc === c)
+  const [grid, setGrid] = useState<Record<string, string>>({})
+  const [selectedColor, setSelectedColor] = useState<string>('c-red')
+  const [isMouseDown, setIsMouseDown] = useState<boolean>(false)
+  const [isAutoStitching, setIsAutoStitching] = useState<boolean>(true)
+
+  // Auto-stitch the heart pattern on page load
+  useEffect(() => {
+    let timer: any
+    let index = 0
+    const speed = 40 // ms per stitch
+
+    setGrid({})
+    setIsAutoStitching(true)
+
+    const stitchNext = () => {
+      if (index >= DEFAULT_PATTERN.length) {
+        setIsAutoStitching(false)
+        return
+      }
+      const [r, c, color] = DEFAULT_PATTERN[index]
+      setGrid(prev => ({
+        ...prev,
+        [`${r}-${c}`]: color
+      }))
+      index++
+      timer = setTimeout(stitchNext, speed)
+    }
+
+    timer = setTimeout(stitchNext, 800)
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Listen to mouseup globally to stop painting
+  useEffect(() => {
+    const handleMouseUp = () => setIsMouseDown(false)
+    window.addEventListener('mouseup', handleMouseUp)
+    return () => window.removeEventListener('mouseup', handleMouseUp)
+  }, [])
+
+  const handleCellAction = (r: number, c: number) => {
+    const key = `${r}-${c}`
+    setGrid(prev => {
+      const next = { ...prev }
+      if (selectedColor === 'eraser') {
+        delete next[key]
+      } else {
+        next[key] = selectedColor
+      }
+      return next
+    })
+  }
+
+  const handleMouseDownCell = (r: number, c: number) => {
+    setIsMouseDown(true)
+    handleCellAction(r, c)
+  }
+
+  const handleMouseEnterCell = (r: number, c: number) => {
+    if (isMouseDown) {
+      handleCellAction(r, c)
+    }
+  }
+
+  const clearCanvas = () => {
+    setGrid({})
+    setIsAutoStitching(false)
+  }
+
+  const colors = [
+    { class: 'c-red', hex: 'var(--color-red)', label: 'Red' },
+    { class: 'c-blue', hex: 'var(--color-blue)', label: 'Blue' },
+    { class: 'c-green', hex: 'var(--color-green)', label: 'Green' },
+    { class: 'c-gold', hex: 'var(--color-gold)', label: 'Gold' },
+  ]
+
+  const cells = []
+  for (let r = 0; r < 12; r++) {
+    for (let c = 0; c < 12; c++) {
+      const colorClass = grid[`${r}-${c}`]
+      let cellColor = ''
+      if (colorClass === 'c-red') cellColor = 'var(--color-red)'
+      else if (colorClass === 'c-blue') cellColor = 'var(--color-blue)'
+      else if (colorClass === 'c-green') cellColor = 'var(--color-green)'
+      else if (colorClass === 'c-gold') cellColor = 'var(--color-gold)'
+
       cells.push(
         <div
           key={`${r}-${c}`}
-          className={`hero__cell${match ? ` filled ${match[2]}` : ''}`}
+          className={`hero__cell${colorClass ? ' filled' : ''}`}
+          style={{ color: cellColor }}
+          onMouseDown={() => handleMouseDownCell(r, c)}
+          onMouseEnter={() => handleMouseEnterCell(r, c)}
+          onTouchStart={(e) => {
+            e.preventDefault()
+            handleCellAction(r, c)
+          }}
           aria-hidden="true"
         />
       )
     }
   }
+
   return (
     <div className="hero__phone">
       <div className="hero__phone-frame" aria-hidden="true">
+        <div className="hero__phone-notch" />
         <div className="hero__phone-screen">
-          <div className="hero__grid" style={{ gridTemplateColumns: 'repeat(8,20px)', gridTemplateRows: 'repeat(8,20px)' }}>
+          {/* Status bar */}
+          <div className="phone-status">
+            <span className="phone-status__time">09:41</span>
+            <div className="phone-status__icons">
+              <span style={{ fontSize: 9 }}>📶</span>
+              <span style={{ fontSize: 9, marginLeft: 3 }}>🔋</span>
+            </div>
+          </div>
+
+          {/* Game Title Bar */}
+          <div className="phone-header">
+            <span className="phone-header__appname">🧵 Stitch Wish</span>
+            <button className="phone-header__btn" onClick={clearCanvas}>Reset</button>
+          </div>
+
+          {/* Stitch Grid */}
+          <div 
+            className="hero__grid" 
+            style={{ gridTemplateColumns: 'repeat(12,14px)', gridTemplateRows: 'repeat(12,14px)' }}
+          >
             {cells}
+          </div>
+
+          {/* Color Palette toolbar */}
+          <div className="phone-toolbar">
+            <div className="phone-palette">
+              {colors.map(col => (
+                <button
+                  key={col.class}
+                  onClick={() => setSelectedColor(col.class)}
+                  className={`phone-palette__color ${selectedColor === col.class ? 'active' : ''}`}
+                  style={{ backgroundColor: col.hex }}
+                  title={col.label}
+                />
+              ))}
+              <button
+                onClick={() => setSelectedColor('eraser')}
+                className={`phone-palette__eraser ${selectedColor === 'eraser' ? 'active' : ''}`}
+                title="Eraser"
+              >
+                🧹
+              </button>
+            </div>
+            <div className="phone-toolbar__tip">
+              {isAutoStitching ? 'Auto stitching...' : 'Tap & drag on canvas to stitch!'}
+            </div>
           </div>
         </div>
       </div>
@@ -72,62 +214,143 @@ const features = [
     icon: '🧵',
     color: 'red',
     title: 'Beautiful Patterns',
-    text: 'Stitch from a curated catalog of official designs, or create your own from photos and AI-generated artwork.',
+    text: 'Stitch from a curated catalog of official designs, or convert your own digital memories into cross-stitch boards.',
   },
   {
     icon: '📱',
     color: 'blue',
     title: 'Play Anywhere',
-    text: 'Local-first design means your sessions are always available — even without an internet connection.',
+    text: 'Local-first engineering ensures your projects, progress, and library are fully available offline.',
   },
   {
     icon: '🎨',
     color: 'green',
-    title: 'Real DMC Colors',
-    text: 'Every pattern uses authentic DMC thread colors. A true cross-stitcher\'s palette in the palm of your hand.',
+    title: 'Authentic DMC Colors',
+    text: 'Stitch with the exact colors of DMC cotton floss threads. A physical crafter\'s palette rendered digitally.',
   },
   {
     icon: '✨',
     color: 'gold',
     title: 'Create with AI',
-    text: 'Turn any idea into a stitch-able pattern using the built-in AI artwork generator. No crafting experience needed.',
+    text: 'Unleash your imagination. Describe anything and watch the built-in AI transform it into a stitchable pattern canvas.',
   },
 ]
 
 const screenshotPreviews = [
-  { label: 'Pattern Catalog', colors: ['#C44B3E','#4A7C9E','#5A9E6F'] },
-  { label: 'Stitching Session', colors: ['#C44B3E','#C49A3E','#4A7C9E'] },
-  { label: 'My Patterns', colors: ['#5A9E6F','#C44B3E','#4A7C9E'] },
-  { label: 'AI Artwork', colors: ['#4A7C9E','#5A9E6F','#C49A3E'] },
+  { label: 'Blooming Rose', img: stitchRose, level: 'DMC 817 • 12 Colors', complexity: 'Easy' },
+  { label: 'Sleeping Kitten', img: stitchCat, level: 'DMC 743 • 8 Colors', complexity: 'Medium' },
+  { label: 'Starry Night', img: stitchLandscape, level: 'DMC 825 • 18 Colors', complexity: 'Hard' },
 ]
 
-function MiniGridPreview({ colors }: { colors: string[] }) {
-  const SIZE = 10
-  const cells = []
-  for (let i = 0; i < SIZE * SIZE; i++) {
-    const r = Math.floor(i / SIZE), c = i % SIZE
-    const dist = Math.sqrt((r - SIZE / 2) ** 2 + (c - SIZE / 2) ** 2)
-    const colorIdx = dist < 2 ? 0 : dist < 4 ? 1 : dist < 6 ? 2 : -1
-    cells.push(
-      <div
-        key={i}
-        className="mini-cell"
-        style={{
-          width: 14,
-          height: 14,
-          background: colorIdx >= 0 ? colors[colorIdx] : '#DDD3C3',
-          borderRadius: 2,
-        }}
-        aria-hidden="true"
-      />
-    )
+function AISimulator() {
+  const [prompt, setPrompt] = useState('A cute orange kitten holding a blue balloon')
+  const [status, setStatus] = useState<'idle' | 'analyzing' | 'mapping' | 'success'>('idle')
+  const [progress, setProgress] = useState(0)
+
+  const handleGenerate = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (status !== 'idle') return
+
+    setStatus('analyzing')
+    setProgress(15)
+
+    setTimeout(() => {
+      setStatus('mapping')
+      setProgress(60)
+    }, 1200)
+
+    setTimeout(() => {
+      setProgress(100)
+      setStatus('success')
+    }, 2500)
   }
+
+  const resetSimulator = () => {
+    setStatus('idle')
+    setProgress(0)
+  }
+
   return (
-    <div
-      style={{ display: 'grid', gridTemplateColumns: `repeat(${SIZE},14px)`, gap: 2 }}
-      aria-hidden="true"
-    >
-      {cells}
+    <div className="ai-sim animate-fade-in delay-2">
+      <div className="ai-sim__content">
+        <h3 className="ai-sim__title">Try the AI Pattern Generator</h3>
+        <p className="ai-sim__subtitle">
+          Type an idea below to preview how our neural network converts concepts into structured DMC color charts.
+        </p>
+
+        {status === 'idle' && (
+          <form onSubmit={handleGenerate} className="ai-sim__form">
+            <input
+              type="text"
+              className="ai-sim__input"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="e.g., A cozy cabin under northern lights, pixel art"
+              required
+            />
+            <button type="submit" className="btn btn--primary">
+              Generate Pattern
+            </button>
+          </form>
+        )}
+
+        {(status === 'analyzing' || status === 'mapping') && (
+          <div className="ai-sim__status-wrap">
+            <div className="ai-sim__loader">
+              <div className="ai-sim__loader-bar" style={{ width: `${progress}%` }} />
+            </div>
+            <p className="ai-sim__status-text">
+              {status === 'analyzing' && '🪄 Imagining artwork and sketching pixels...'}
+              {status === 'mapping' && '🧵 Mapping colors to DMC thread charts...'}
+            </p>
+          </div>
+        )}
+
+        {status === 'success' && (
+          <div className="ai-sim__result">
+            <div className="ai-sim__result-meta">
+              <div>
+                <strong>Generated Pattern:</strong> "{prompt}"
+              </div>
+              <div>
+                <span className="badge badge--success">Chart Ready</span>
+              </div>
+            </div>
+
+            <div className="ai-sim__chart-grid">
+              <div className="ai-sim__pixel-preview">
+                {/* Simulated generated pattern */}
+                <div className="ai-sim__pixel-art">
+                  {Array.from({ length: 64 }).map((_, i) => {
+                    const colors = ['#C44B3E', '#4A7C9E', '#C49A3E', '#5A9E6F', '#735F4C']
+                    const randCol = colors[(i + prompt.length) % colors.length]
+                    return (
+                      <div
+                        key={i}
+                        className="ai-sim__pixel-cell"
+                        style={{ backgroundColor: randCol }}
+                      />
+                    )
+                  })}
+                </div>
+              </div>
+              <div className="ai-sim__thread-list">
+                <h4>Required Threads (DMC)</h4>
+                <ul>
+                  <li><span className="thread-chip" style={{ background: 'var(--color-red)' }} /> DMC 817 (Red) — 420 sts</li>
+                  <li><span className="thread-chip" style={{ background: 'var(--color-blue)' }} /> DMC 825 (Blue) — 285 sts</li>
+                  <li><span className="thread-chip" style={{ background: 'var(--color-gold)' }} /> DMC 729 (Gold) — 110 sts</li>
+                  <li><span className="thread-chip" style={{ background: 'var(--color-green)' }} /> DMC 319 (Green) — 90 sts</li>
+                </ul>
+              </div>
+            </div>
+
+            <button onClick={resetSimulator} className="btn btn--secondary btn--sm" style={{ marginTop: '1rem' }}>
+              Create Another
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -135,44 +358,50 @@ function MiniGridPreview({ colors }: { colors: string[] }) {
 export function HomePage() {
   return (
     <main id="main-content">
+      {/* Decorative floaters in background */}
+      <div className="hero__floater floater-1" aria-hidden="true">✕</div>
+      <div className="hero__floater floater-2" aria-hidden="true">✕</div>
+      <div className="hero__floater floater-3" aria-hidden="true">✦</div>
+      <div className="hero__floater floater-4" aria-hidden="true">✦</div>
+
       {/* ── Hero ─────────────────────────────────────────── */}
       <section className="hero section" aria-label="Hero">
         <div className="container hero__inner">
-          <div>
-            <span className="hero__eyebrow">Cross-stitch art game</span>
+          <div className="animate-fade-in">
+            <span className="hero__eyebrow">A Cozy Crafting Retreat</span>
             <h1 className="hero__title">
               Stitch your world,<br />
               <em>one X at a time.</em>
             </h1>
             <p className="hero__subtitle">
-              Stitch Wish brings the calm joy of cross-stitch to your phone.
-              Browse gorgeous patterns, stitch offline, and create your own
-              masterpieces with real DMC colors.
+              Stitch Wish brings the peaceful, quiet joy of needlepoint cross-stitching directly to your phone. 
+              Relax with gorgeous charts, stitch offline, and generate bespoke patterns with AI.
             </p>
             <div className="hero__cta">
               <StoreBadge store="apple" />
               <StoreBadge store="google" />
             </div>
           </div>
-          <HeroPhoneMockup />
+          <div className="animate-fade-in delay-1">
+            <HeroPhoneMockup />
+          </div>
         </div>
       </section>
 
       {/* ── Features ─────────────────────────────────────── */}
-      <section className="features section" aria-label="Features" id="features">
+      <section className="features section animate-fade-in delay-2" aria-label="Features" id="features">
         <div className="container">
           <header className="features__header">
             <span className="section-tag">Why Stitch Wish?</span>
-            <h2 className="section-title">Everything you need to stitch</h2>
+            <h2 className="section-title">Mindful Crafting in Your Pocket</h2>
             <p className="section-subtitle">
-              A relaxing, beautifully crafted experience designed for both
-              beginners and seasoned cross-stitchers.
+              A peaceful, meticulously detailed experience designed to help you decompress.
             </p>
           </header>
 
           <div className="features__grid">
-            {features.map((f) => (
-              <article key={f.title} className="feature-card">
+            {features.map((f, idx) => (
+              <article key={f.title} className={`feature-card animate-fade-in delay-${(idx % 4) + 1}`}>
                 <div className={`feature-card__icon feature-card__icon--${f.color}`} aria-hidden="true">
                   {f.icon}
                 </div>
@@ -184,35 +413,48 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* ── Screenshots ──────────────────────────────────── */}
-      <section className="screenshots section" aria-label="App screenshots" id="screenshots">
+      {/* ── Screenshots / Showcase ──────────────────────── */}
+      <section className="screenshots section animate-fade-in delay-3" aria-label="App screenshots" id="screenshots">
         <div className="container">
           <header className="features__header">
-            <span className="section-tag">In-App Preview</span>
-            <h2 className="section-title">See it in action</h2>
+            <span className="section-tag">Premium Catalog</span>
+            <h2 className="section-title">Hand-Stitched Masterpieces</h2>
             <p className="section-subtitle">
-              Beautifully designed screens that make stitching a joy.
+              Browse through a cozy gallery of pre-rendered, high-fidelity stitch designs ready for your needle.
             </p>
           </header>
 
-          <div className="screenshots__track" role="list" aria-label="App screen previews">
-            {screenshotPreviews.map((s) => (
-              <div key={s.label} className="screenshot-card" role="listitem">
-                <MiniGridPreview colors={s.colors} />
-                <span className="screenshot-card__label">{s.label}</span>
+          <div className="screenshots__hoops-wrapper">
+            {screenshotPreviews.map((s, idx) => (
+              <div key={s.label} className={`showcase-card animate-fade-in delay-${idx + 1}`}>
+                <div className="embroidery-hoop" aria-hidden="true">
+                  <img src={s.img} alt={s.label} className="embroidery-hoop__canvas" />
+                  <div className="embroidery-hoop__texture" />
+                </div>
+                <div className="showcase-card__details">
+                  <span className="showcase-card__complexity">{s.complexity}</span>
+                  <h3 className="showcase-card__title">{s.label}</h3>
+                  <span className="showcase-card__subtitle">{s.level}</span>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* ── AI Interactive Demo ─────────────────────────── */}
+      <section className="ai-demo section" aria-label="AI Generator Demo">
+        <div className="container">
+          <AISimulator />
+        </div>
+      </section>
+
       {/* ── CTA Banner ───────────────────────────────────── */}
-      <section className="cta-banner section" aria-label="Download call to action">
+      <section className="cta-banner section" aria-label="Download call to action" id="download">
         <div className="container cta-banner__inner">
-          <h2 className="cta-banner__title">Start stitching today</h2>
+          <h2 className="cta-banner__title">Find your creative calm today</h2>
           <p className="cta-banner__subtitle">
-            Free to download. Hundreds of patterns waiting for you.
-            No experience needed.
+            Free to download on iOS and Android. Start stitching your first pattern in minutes.
           </p>
           <div className="cta-banner__badges">
             <StoreBadge store="apple" />

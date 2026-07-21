@@ -1,0 +1,16 @@
+# syntax=docker/dockerfile:1
+# Dev-only image: hot-reload via `vite dev`, source is bind-mounted by
+# docker-compose.yml at the repo root. No production Dockerfile exists yet.
+FROM node:24-bookworm-slim
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+EXPOSE 5173
+
+# --host exposes Vite's dev server to the Docker network (0.0.0.0)
+CMD ["npm", "run", "dev", "--", "--host"]

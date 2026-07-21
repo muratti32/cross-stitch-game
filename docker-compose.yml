@@ -118,8 +118,27 @@ services:
     depends_on:
       - api
 
+  website:
+    build:
+      context: ./website
+      dockerfile: Dockerfile.dev
+    env_file:
+      - ./website/.env
+    environment:
+      VITE_API_URL: http://localhost:3000
+      VITE_ADMIN_CONSOLE_URL: http://localhost:3001
+    working_dir: /app
+    volumes:
+      - ./website:/app
+      - website-node-modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    # website is a public marketing site; no dependency on api is required
+    # for the dev server itself (account deletion POSTs directly from the browser)
+
 volumes:
   postgres-data:
   redis-data:
   backend-node-modules:
   admin-console-node-modules:
+  website-node-modules:

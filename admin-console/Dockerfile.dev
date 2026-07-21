@@ -13,4 +13,6 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"]
+# --hostname 0.0.0.0 is required so Next.js binds to all interfaces inside
+# the container, not just 127.0.0.1 (which Docker cannot reach from the host).
+CMD ["npm", "run", "dev", "--", "--hostname", "0.0.0.0"]
