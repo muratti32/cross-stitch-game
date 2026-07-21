@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { StyleSheet, View, Text, Image, FlatList, ActivityIndicator, Alert, Pressable, Dimensions } from 'react-native';
 import { Screen, EmptyState, Card, CachedImage } from '@/components';
 import { Theme } from '@/theme/theme';
+import { useTabBarSpace } from '@/theme/tabBar';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { getSessions, deleteSession, getSessionCompletedCount, StitchingSession } from '@/local-db';
 import { BUNDLED_PATTERNS } from '@/bundled-patterns';
@@ -19,6 +20,7 @@ const cardWidth = (screenWidth - 32 - 12) / 2;
 
 export default function PlayScreen() {
   const router = useRouter();
+  const tabBarSpace = useTabBarSpace();
   const [sessions, setSessions] = useState<(StitchingSession & { progress: number })[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -228,7 +230,7 @@ export default function PlayScreen() {
   );
 
   return (
-    <Screen style={styles.container}>
+    <Screen style={styles.container} clearsTabBar={false}>
       {loading ? (
         <>
           {header}
@@ -259,7 +261,7 @@ export default function PlayScreen() {
           numColumns={2}
           ListHeaderComponent={header}
           columnWrapperStyle={styles.columnWrapper}
-          contentContainerStyle={styles.listContainer}
+          contentContainerStyle={[styles.listContainer, { paddingBottom: tabBarSpace }]}
           showsVerticalScrollIndicator={false}
         />
       )}

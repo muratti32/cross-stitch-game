@@ -15,6 +15,18 @@ export default function appConfig(_context: ConfigContext): ExpoConfig {
     ]);
   }
 
+  // AdMob (ADR-0033). App IDs are baked into the native projects at build time
+  // by this config plugin; they come from EXPO_PUBLIC_ADMOB_*_APP_ID so each
+  // environment (dev test IDs vs real console IDs) prebuilds with its own value.
+  const androidAppId = process.env.EXPO_PUBLIC_ADMOB_ANDROID_APP_ID;
+  const iosAppId = process.env.EXPO_PUBLIC_ADMOB_IOS_APP_ID;
+  if (androidAppId !== undefined && iosAppId !== undefined) {
+    plugins.push([
+      'react-native-google-mobile-ads',
+      { androidAppId, iosAppId },
+    ]);
+  }
+
   return {
     ...staticConfig,
     plugins,

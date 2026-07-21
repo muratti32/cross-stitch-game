@@ -10,12 +10,14 @@ import {
 import { useRouter } from 'expo-router';
 import { Screen, Card, Button, EmptyState, CachedImage } from '@/components';
 import { Theme } from '@/theme/theme';
+import { useTabBarSpace } from '@/theme/tabBar';
 import { absolutePreviewUrl, useCatalogSearch } from '@/api/catalog';
 
 const DEBOUNCE_MS = 300;
 
 export default function SearchScreen() {
   const router = useRouter();
+  const tabBarSpace = useTabBarSpace();
   const [input, setInput] = useState('');
   const [query, setQuery] = useState('');
 
@@ -28,7 +30,7 @@ export default function SearchScreen() {
   const active = query.trim().length >= 2;
 
   return (
-    <Screen>
+    <Screen clearsTabBar={false}>
       <View style={styles.headerRow}>
         <Button
           variant="secondary"
@@ -84,7 +86,7 @@ export default function SearchScreen() {
         <FlatList
           data={search.data}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={[styles.listContent, { paddingBottom: tabBarSpace }]}
           renderItem={({ item }) => (
             <Card
               style={styles.resultRow}

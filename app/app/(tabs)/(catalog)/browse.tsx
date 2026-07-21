@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, FlatList, ActivityIndicator } from 'react-nativ
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Screen, Card, Button, EmptyState, CachedImage } from '@/components';
 import { Theme } from '@/theme/theme';
+import { useTabBarSpace } from '@/theme/tabBar';
 import {
   CatalogPatternItem,
   absolutePreviewUrl,
@@ -16,6 +17,7 @@ export default function BrowseScreen() {
     title?: string;
   }>();
   const router = useRouter();
+  const tabBarSpace = useTabBarSpace();
   const browse = usePatternsBrowse({ category, tag });
 
   const items: CatalogPatternItem[] =
@@ -23,7 +25,7 @@ export default function BrowseScreen() {
   const fromCache = browse.data?.pages[0]?.fromCache === true;
 
   return (
-    <Screen>
+    <Screen clearsTabBar={false}>
       <View style={styles.headerRow}>
         <Button
           variant="secondary"
@@ -73,7 +75,7 @@ export default function BrowseScreen() {
           keyExtractor={(item) => item.id}
           numColumns={2}
           columnWrapperStyle={styles.gridRow}
-          contentContainerStyle={styles.gridContent}
+          contentContainerStyle={[styles.gridContent, { paddingBottom: tabBarSpace }]}
           onEndReachedThreshold={0.4}
           onEndReached={() => {
             if (browse.hasNextPage && !browse.isFetchingNextPage) {

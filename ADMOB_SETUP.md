@@ -4,7 +4,7 @@ Bu dosya, `docs/adr/0033-verify-rewarded-ads-with-admob-server-side-verification
 
 ## Şu ana kadar yapılan
 
-Sadece proje ayarları (kod değil) hazırlandı:
+Proje ayarları:
 
 - `app/.env.example` ve `app/.env` içine `EXPO_PUBLIC_ADMOB_*` değişkenleri eklendi.
 - Şu an bu değişkenlerde Google'ın resmi **test** ID'leri duruyor (gerçek hesap gerektirmez, local geliştirmede ve development build'lerde reklamlar test modunda çalışır):
@@ -13,7 +13,19 @@ Sadece proje ayarları (kod değil) hazırlandı:
   - `EXPO_PUBLIC_ADMOB_ANDROID_REWARDED_AD_UNIT_ID`
   - `EXPO_PUBLIC_ADMOB_IOS_REWARDED_AD_UNIT_ID`
 
-**Henüz yapılmadı** (ayrı bir kod/uygulama işi, bu görevin kapsamı dışında bırakıldı): `react-native-google-mobile-ads` SDK kurulumu, `app.json`'a native config plugin eklenmesi, Rewarded Ad'i tetikleyen ekran/hook, ve backend'deki SSV (server-side verification) callback endpoint'i. Bu dosyadaki adımları tamamladıktan sonra bu implementasyonu ayrıca isteyebilirsin.
+**Client-side kod entegrasyonu tamamlandı** (ADR-0033, sadece Rewarded, non-personalized/no-ATT):
+
+- `react-native-google-mobile-ads` SDK kuruldu (`app/package.json`).
+- Native config plugin `app/app.config.ts`'e eklendi — App ID'ler `EXPO_PUBLIC_ADMOB_*_APP_ID`'den build-time'da native projelere gömülür. `android/`+`ios/` gitignored olduğu için her `expo prebuild` / EAS build'de otomatik uygulanır; elle native düzenleme yok.
+- `app/src/config/index.ts`: `admob` config + `getRewardedAdUnitId(platform)`.
+- `app/src/ads/index.ts`: `initializeAdMob()` (idempotent, web/ID yoksa no-op) + `isAdMobAvailable()`. SDK, root layout'ta arka planda warm-up ediliyor.
+- `app/src/hooks/useRewardedAd.ts`: Rewarded Ad load/show/reload state-machine, `requestNonPersonalizedAdsOnly: true`, SSV `customData` (opaque backend player id), `onEarnedReward`. Kapanışta oto-reload.
+- Test: `app/src/hooks/__tests__/useRewardedAd.test.tsx` (5 test, native module mock'lu).
+
+**Henüz yapılmadı:**
+
+- **Rewarded Ad'i tetikleyen UI ekranı** — uygulamada henüz coin/reward yüzeyi yok; coin ekranı gelince `useRewardedAd` oraya bağlanacak.
+- **Backend SSV callback endpoint'i** — backend'de coin/pool/ledger/reward domaini henüz implemente değil (bkz. adım 5). SSV callback grant edecek altyapı olmadan yazılamaz; önce coin economy backend'de kurulmalı. Client, `/v1/auth/session` → `id` değerini SSV `customData` olarak geçmeye hazır.
 
 ## Senin yapman gerekenler
 

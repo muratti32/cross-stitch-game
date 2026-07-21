@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Theme } from '@/theme/theme';
 import { TabButton } from './TabButton';
+import { TAB_BAR_HEIGHT } from '@/theme/tabBar';
 
 export interface AnimatedTabBarProps {
   state: {
@@ -96,6 +97,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: Theme.spacing.lg,
     right: Theme.spacing.lg,
+    minHeight: TAB_BAR_HEIGHT,
     backgroundColor: 'rgba(255, 255, 255, 0.93)',
     borderRadius: 30,
     paddingTop: 4,

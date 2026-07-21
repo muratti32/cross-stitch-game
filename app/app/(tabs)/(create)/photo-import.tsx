@@ -22,6 +22,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { Button, Card, Screen } from '@/components';
+import { useTabBarSpace } from '@/theme/tabBar';
 import {
   computeCropRectangle,
   createPhotoConversion,
@@ -45,6 +46,7 @@ const LOG_ASPECT_LIMIT = Math.log2(6);
 
 export default function PhotoImportScreen() {
   const router = useRouter();
+  const tabBarSpace = useTabBarSpace();
   const { width: windowWidth } = useWindowDimensions();
   const isAccount = useIdentityStore((state) => state.isAccount);
   const [asset, setAsset] = useState<ImagePicker.ImagePickerAsset | null>(null);
@@ -327,7 +329,7 @@ export default function PhotoImportScreen() {
   }
 
   return (
-    <Screen style={styles.screen}>
+    <Screen style={styles.screen} clearsTabBar={false}>
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.backButton} disabled={interactionLocked}>
           <Ionicons name="arrow-back" size={24} color={Theme.colors.accentTeal} />
@@ -338,7 +340,7 @@ export default function PhotoImportScreen() {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: tabBarSpace }]} showsVerticalScrollIndicator={false}>
         {asset === null ? (
           <Card style={styles.pickerCard}>
             <Ionicons name="images-outline" size={52} color={Theme.colors.accentRose} />

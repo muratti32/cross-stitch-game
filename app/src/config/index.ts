@@ -18,6 +18,14 @@ export const Config = {
     environment:
       process.env.EXPO_PUBLIC_SENTRY_ENVIRONMENT || (__DEV__ ? 'development' : 'production'),
   },
+  admob: {
+    // Rewarded-ad-only (ADR-0033). App IDs are consumed at build time by the
+    // native config plugin (see app.config.ts); the ad unit IDs below are read
+    // at runtime to request the Rewarded Ad. These are Google's public test IDs
+    // in dev and the real per-environment IDs in TestFlight/production builds.
+    androidRewardedAdUnitId: process.env.EXPO_PUBLIC_ADMOB_ANDROID_REWARDED_AD_UNIT_ID,
+    iosRewardedAdUnitId: process.env.EXPO_PUBLIC_ADMOB_IOS_REWARDED_AD_UNIT_ID,
+  },
 };
 
 export function isSentryConfigured(): boolean {
@@ -38,4 +46,14 @@ export function isGoogleSsoConfigured(): boolean {
       Config.google.iosClientId &&
       Config.google.webClientId,
   );
+}
+
+/**
+ * The Rewarded Ad unit ID for the current platform, or undefined when AdMob is
+ * not configured for it (e.g. web, where the SDK is unavailable).
+ */
+export function getRewardedAdUnitId(platform: 'android' | 'ios'): string | undefined {
+  return platform === 'ios'
+    ? Config.admob.iosRewardedAdUnitId
+    : Config.admob.androidRewardedAdUnitId;
 }

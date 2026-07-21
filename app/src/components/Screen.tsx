@@ -3,6 +3,7 @@ import { StyleSheet, View, ScrollView, ViewStyle, StyleProp, RefreshControlProps
 import { SafeAreaView, Edge } from 'react-native-safe-area-context';
 import { Theme } from '../theme/theme';
 import { StatusBar } from 'expo-status-bar';
+import { useTabBarSpace } from '@/theme/tabBar';
 
 interface ScreenProps {
   children: React.ReactNode;
@@ -11,6 +12,7 @@ interface ScreenProps {
   scrollable?: boolean;
   edges?: Edge[];
   refreshControl?: React.ReactElement<RefreshControlProps>;
+  clearsTabBar?: boolean;
 }
 
 export function Screen({
@@ -20,21 +22,30 @@ export function Screen({
   scrollable = false,
   edges = ['top', 'left', 'right'],
   refreshControl,
+  clearsTabBar = true,
 }: ScreenProps) {
+  const tabBarSpace = useTabBarSpace();
+
   return (
     <SafeAreaView style={styles.safeArea} edges={edges}>
       <StatusBar style="dark" />
       {scrollable ? (
         <ScrollView
           style={[styles.container, style]}
-          contentContainerStyle={[styles.scrollContent, contentContainerStyle]}
+          contentContainerStyle={[
+            styles.scrollContent,
+            contentContainerStyle,
+            clearsTabBar && { paddingBottom: tabBarSpace },
+          ]}
           showsVerticalScrollIndicator={false}
           refreshControl={refreshControl}
         >
           {children}
         </ScrollView>
       ) : (
-        <View style={[styles.container, style]}>{children}</View>
+        <View style={[styles.container, style, clearsTabBar && { paddingBottom: tabBarSpace }]}>
+          {children}
+        </View>
       )}
     </SafeAreaView>
   );
@@ -49,6 +60,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 100,
   },
 });
+

@@ -7,6 +7,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { initDatabase, getHandedness } from '../src/local-db';
 import { useGameplayStore } from '../src/store/gameplayStore';
 import { bootstrap } from '../src/identity/guestIdentity';
+import { initializeAdMob } from '../src/ads';
 import { initSentry, syncSentryPlayerReferenceWithIdentity } from '../src/observability/sentry';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -29,6 +30,14 @@ function RootLayout() {
         // Trigger lazy guest identity bootstrap in the background (non-blocking)
         bootstrap().catch((err) => {
           console.log('Background identity bootstrap deferred (offline):', err.message);
+        });
+        // Warm up the AdMob SDK in the background so the first Rewarded Ad
+        // request is fast (ADR-0033). No-op on web / when unconfigured.
+        initializeAdMob().catch((err: unknown) => {
+          console.log(
+            'AdMob initialization deferred:',
+            err instanceof Error ? err.message : String(err),
+          );
         });
       } catch (e) {
         console.warn('Failed to initialize database:', e);

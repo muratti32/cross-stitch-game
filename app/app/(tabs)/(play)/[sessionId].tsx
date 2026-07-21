@@ -239,7 +239,7 @@ export default function SessionReadyScreen() {
   const patternTitle = bPattern?.title || session.title || 'Stitch Session';
 
   return (
-    <Screen style={styles.fullscreenContainer} edges={['top', 'left', 'right', 'bottom']}>
+    <Screen style={styles.fullscreenContainer} edges={['top', 'left', 'right', 'bottom']} clearsTabBar={false}>
       {/* Progress Header Bar */}
       <View style={styles.header}>
         <Button
