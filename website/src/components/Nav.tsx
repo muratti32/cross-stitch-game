@@ -14,7 +14,7 @@ export function Nav() {
             <rect x="6"  y="6"  width="8" height="8" rx="1" fill="none" stroke="#DDD3C3" strokeWidth="1"/>
             <rect x="18" y="6"  width="8" height="8" rx="1" fill="none" stroke="#DDD3C3" strokeWidth="1"/>
             <rect x="6"  y="18" width="8" height="8" rx="1" fill="none" stroke="#DDD3C3" strokeWidth="1"/>
-            <rect x="18" y="18" width="8" height="8" rx="1" fill="none" stroke="#4A7C9E" strokeWidth="1" fill-opacity="0.2" style={{fill:'rgba(74,124,158,0.2)'}}/>
+            <rect x="18" y="18" width="8" height="8" rx="1" fill="rgba(74,124,158,0.2)" stroke="#4A7C9E" strokeWidth="1" fillOpacity="0.2"/>
           </svg>
           Stitch Wish
         </Link>
