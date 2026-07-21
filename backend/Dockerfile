@@ -41,16 +41,11 @@ USER node
 EXPOSE 3000
 STOPSIGNAL SIGTERM
 
-CMD ["node", "dist/main.api.js"]
-
-# Deployment target stages for orchestrators that drive the process via the
-# image's default command (e.g. Coolify Dockerfile apps, which ignore a custom
-# start command). Docker Compose keeps targeting `runtime` and sets an explicit
-# command per service, so these stages do not affect the compose topology.
-FROM runtime AS api
-# TypeORM (a production dependency) runs pending migrations before the API boots.
-# migration:run is idempotent — already-applied migrations are skipped.
-CMD ["sh", "-c", "node node_modules/typeorm/cli.js migration:run -d dist/database/data-source.js && node dist/main.api.js"]
-
-FROM runtime AS worker
-CMD ["node", "dist/main.worker.js"]
+# Default command dispatches on PROCESS_ROLE so a single image serves both the
+# API and the worker for orchestrators that drive the container via the image's
+# default command (e.g. Coolify Dockerfile apps, which ignore a custom start
+# command). PROCESS_ROLE=worker runs the queue worker; anything else (default)
+# runs pending TypeORM migrations — idempotent, already-applied ones are skipped
+# — then the API. Docker Compose targets `runtime` and sets an explicit command
+# per service, so it overrides this CMD and is unaffected.
+CMD ["sh", "-c", "if [ \"$PROCESS_ROLE\" = worker ]; then exec node dist/main.worker.js; else node node_modules/typeorm/cli.js migration:run -d dist/database/data-source.js && exec node dist/main.api.js; fi"]
