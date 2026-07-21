@@ -30,6 +30,8 @@ export type EnvironmentVariables = {
   ADMIN_REFRESH_TOKEN_TTL_SECONDS: number;
   ADMIN_TOTP_ENC_KEY: string | undefined;
   ADMIN_TOTP_ISSUER: string;
+  ADMOB_SSV_KEYS_URL: string;
+  ADMOB_SSV_ALLOWED_AD_UNITS: readonly string[];
 };
 
 const DATABASE_PROTOCOLS = new Set(['postgres:', 'postgresql:']);
@@ -46,6 +48,8 @@ const DEFAULT_ADMIN_JWT_ACCESS_TTL_SECONDS = 900;
 const DEFAULT_ADMIN_REFRESH_TOKEN_TTL_SECONDS = 12 * 60 * 60;
 const DEFAULT_ADMIN_TOTP_ISSUER = 'Stitch Wish Operator Console';
 const ADMIN_TOTP_ENC_KEY_BYTES = 32;
+const DEFAULT_ADMOB_SSV_KEYS_URL =
+  'https://gstatic.com/admob/reward/verifier-keys.json';
 
 function parseHexKey(
   value: unknown,
@@ -185,6 +189,16 @@ function parseOptionalString(value: unknown): string | undefined {
     return undefined;
   }
   return value.trim();
+}
+
+function parseCommaList(value: unknown): readonly string[] {
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    return [];
+  }
+  return value
+    .split(',')
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0);
 }
 
 // R2 credentials are all-or-nothing: a partially configured R2 setup would
@@ -355,6 +369,18 @@ export function parseEnvironment(
       environment.ADMIN_TOTP_ISSUER.trim().length > 0
         ? environment.ADMIN_TOTP_ISSUER.trim()
         : DEFAULT_ADMIN_TOTP_ISSUER,
+    ADMOB_SSV_KEYS_URL:
+      environment.ADMOB_SSV_KEYS_URL === undefined ||
+      environment.ADMOB_SSV_KEYS_URL === ''
+        ? DEFAULT_ADMOB_SSV_KEYS_URL
+        : parseUrl(
+            environment.ADMOB_SSV_KEYS_URL,
+            'ADMOB_SSV_KEYS_URL',
+            HTTP_PROTOCOLS,
+          ),
+    ADMOB_SSV_ALLOWED_AD_UNITS: parseCommaList(
+      environment.ADMOB_SSV_ALLOWED_AD_UNITS,
+    ),
   };
 }
 

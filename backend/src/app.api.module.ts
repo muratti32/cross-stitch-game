@@ -11,6 +11,7 @@ import { JobsModule } from './jobs/jobs.module';
 import { CatalogModule } from './catalog/catalog.module';
 import { SessionsModule } from './sessions/sessions.module';
 import { ConversionModule } from './conversion';
+import { EconomyModule } from './economy/economy.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ConversionModule } from './conversion';
     CatalogModule,
     SessionsModule,
     ConversionModule,
+    EconomyModule,
     AdminModule,
   ],
 })

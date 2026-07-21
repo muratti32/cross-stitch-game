@@ -22,10 +22,19 @@ Proje ayarları:
 - `app/src/hooks/useRewardedAd.ts`: Rewarded Ad load/show/reload state-machine, `requestNonPersonalizedAdsOnly: true`, SSV `customData` (opaque backend player id), `onEarnedReward`. Kapanışta oto-reload.
 - Test: `app/src/hooks/__tests__/useRewardedAd.test.tsx` (5 test, native module mock'lu).
 
+**Backend coin economy — AdMob slice tamamlandı** (ADR-0011 + ADR-0026 + ADR-0033, `backend/src/economy/`):
+
+- Yeni `economy` şeması (migration `1784937600000-CreateEconomySchema`): `coin_balances`, `coin_ledger_entries` (append-only, `source_key` UNIQUE = idempotency), `reward_day_pools` (30 coin/gün + 3 ad limiti).
+- `CoinLedgerRepository.grantAdReward` — tek DB transaction'da idempotent grant: aynı `transaction_id` tekrar gelince double-grant yok; pool/limit dolunca grant 0 (ADR-0033 "grants nothing, consumes nothing").
+- `AdMobSsvVerifierService` — Google verifier key'leriyle ECDSA-SHA256 imza doğrulama (key rotation + cache).
+- Endpoint'ler: `GET /v1/admob/ssv` (public, AdMob çağırır) + `GET /v1/economy/balance`, `GET /v1/economy/reward-day` (JWT'li, client için).
+- customData formatı: `"<type>:<id>"` (`guest:<uuid>` / `account:<uuid>`) — sadece opaque player kimliği.
+- Test: verifier + grant unit (11) + integration (idempotency, pool exhaustion, read endpoints).
+
 **Henüz yapılmadı:**
 
-- **Rewarded Ad'i tetikleyen UI ekranı** — uygulamada henüz coin/reward yüzeyi yok; coin ekranı gelince `useRewardedAd` oraya bağlanacak.
-- **Backend SSV callback endpoint'i** — backend'de coin/pool/ledger/reward domaini henüz implemente değil (bkz. adım 5). SSV callback grant edecek altyapı olmadan yazılamaz; önce coin economy backend'de kurulmalı. Client, `/v1/auth/session` → `id` değerini SSV `customData` olarak geçmeye hazır.
+- **Rewarded Ad'i tetikleyen UI ekranı** — client'ta henüz coin/reward yüzeyi yok. Ekran gelince `useRewardedAd`'e `serverSideVerification.customData = `${principalType}:${principalId}`` (kimlik `/v1/auth/session` → `id`'den) geçilecek; bakiye/limit `GET /v1/economy/*`'den okunacak.
+- **Sonraki economy fazları** — Daily Tasks, First Completion Rewards, Pattern Unlock spend, Coin Packs, Premium Daily Claim, Guest Economy Promotion henüz yok (AdMob slice kapsamı dışıydı).
 
 ## Senin yapman gerekenler
 
@@ -53,9 +62,11 @@ Test ID'lerini yalnızca local/development build'lerde bırak; TestFlight/intern
 - AdMob konsolunda **Privacy & messaging** bölümünden bir consent mesajı (GDPR/EEA-UK) oluştur.
 - ADR-0033 ve `docs/app-metadata.md`'deki gizlilik duruşuna göre: ilk sürüm **non-personalized / no-IDFA** reklam dağıtımı kullanıyor, yani App Tracking Transparency (ATT) izni istenmiyor. Consent mesajı ayarlarında kişiselleştirilmemiş reklamlara uygun seçenekleri işaretle.
 
-### 5. Server-Side Verification (SSV) — şimdilik atla
-- AdMob konsolunda Rewarded ad unit ayarlarında bir "Ad Reward" callback URL'i girme alanı var. **Bu adımı backend SSV endpoint'i implement edilene kadar boş bırak** — henüz backend'de bu callback'i karşılayan bir uç nokta yok (bkz. ADR-0033: imza doğrulama, idempotent coin grant).
-- Backend implementasyonu tamamlandığında callback URL'ini (`https://<backend-domain>/v1/admob/ssv` gibi) ve varsa paylaşılan bir doğrulama parametresini konsola gireceğiz.
+### 5. Server-Side Verification (SSV) — backend hazır
+- Backend SSV endpoint'i implement edildi: `GET /v1/admob/ssv` (imza doğrulama + idempotent 10 coin grant, ADR-0033).
+- AdMob konsolunda Rewarded ad unit ayarlarında "Ad Reward" callback URL alanına deploy'daki backend domain'iyle **`https://<backend-domain>/v1/admob/ssv`** yaz.
+- Ayrı bir paylaşılan secret gerekmez; doğrulama AdMob'un public ECDSA key'leriyle imza üzerinden yapılır (`ADMOB_SSV_KEYS_URL` default'u Google'ın gstatic endpoint'i).
+- Client, ad gösterirken SSV `customData`'ya `"<type>:<id>"` (opaque backend player kimliği) geçmeli; UI ekranı bağlandığında devreye girer.
 
 ### 6. Store gizlilik beyanları
 - **Apple App Store**: App Privacy bölümünde AdMob'un topladığı veri kategorilerini (reklam verisi, cihaz tanımlayıcıları vb.) beyan et. Non-personalized ads kullanıldığı için "Data Used to Track You" kısmına dikkat — ADR gereği cross-app tracking yapılmıyor.
@@ -69,6 +80,6 @@ Test ID'lerini yalnızca local/development build'lerde bırak; TestFlight/intern
 
 1 → 2 → 3 önce (test modundan çıkmak ve gerçek reklam göstermek için şart).
 4 (UMP) store submission'dan önce şart.
-5 (SSV) backend işi bitene kadar bekleyebilir.
+5 (SSV) backend endpoint'i hazır; konsola callback URL'i (`/v1/admob/ssv`) girilmesi kaldı (deploy sonrası).
 6 store'a gönderim öncesi şart.
 7 dokümantasyon — istediğin an yapılabilir.

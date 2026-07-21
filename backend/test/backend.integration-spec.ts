@@ -35,6 +35,7 @@ import {
 import { EmailOutboxDispatcherService } from '../src/auth/email-outbox-dispatcher.service';
 import { EmailOutboxEntity } from '../src/auth/email-outbox.entity';
 import { LocalEmailSender } from '../src/auth/local-email-sender';
+import { EMAIL_SENDER } from '../src/auth/email-sender.interface';
 import { ACCESS_TOKEN_VERSION } from '../src/auth/auth.constants';
 import { createTypeOrmOptions } from '../src/database/typeorm-options';
 import { JobOutboxEntity } from '../src/jobs/entities/job-outbox.entity';
@@ -56,6 +57,8 @@ import {
   PersonalPatternEntity,
 } from '../src/conversion/entities';
 import { PatternEntity } from '../src/catalog/entities';
+import { CoinLedgerRepository } from '../src/economy/coin-ledger.repository';
+import { utcRewardDay } from '../src/economy/reward-day';
 
 class ForcedRollbackError extends Error {
   constructor() {
@@ -128,9 +131,19 @@ describe('Stitch Wish backend integration', () => {
       import('../src/app.api.module'),
       import('../src/jobs'),
     ]);
+    // Keep email delivery hermetic: ConfigModule.forRoot reloads .env during
+    // app.init() and would re-populate a real RESEND_API_KEY (deleted above),
+    // steering the factory to the live Resend sender. Force the local sender so
+    // the suite never touches the network regardless of the developer's .env.
     const moduleRef = await Test.createTestingModule({
       imports: [ApiAppModule, jobs.JobsWorkerModule],
-    }).compile();
+    })
+      .overrideProvider(EMAIL_SENDER)
+      .useFactory({
+        factory: (local: LocalEmailSender) => local,
+        inject: [LocalEmailSender],
+      })
+      .compile();
 
     app = moduleRef.createNestApplication();
     configureApi(app);
@@ -1795,6 +1808,194 @@ describe('Stitch Wish backend integration', () => {
         'base64',
       );
       expect(packed[0] & 0b1111).toBe(0b1111);
+    });
+
+    async function syncAllCellsAndComplete(
+      accessToken: string,
+      sessionId: string,
+      deviceId: string,
+      cellCount: number,
+    ): Promise<{
+      firstCompletionReward?: { amount: number; balance: number };
+      terminalCompleted: boolean;
+    }> {
+      const ops: IncomingOp[] = Array.from(
+        { length: cellCount },
+        (_unused, cellIndex) => ({
+          opId: randomUUID(),
+          deviceSeq: cellIndex + 1,
+          cellIndex,
+          desiredState: 'completed',
+          baseRevision: 0,
+        }),
+      );
+      await postSync(accessToken, sessionId, deviceId, 0, ops);
+      const completed = await request(httpServer)
+        .post(`/v1/sessions/${sessionId}/progress/complete`)
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ deviceId })
+        .expect(200);
+      return completed.body as {
+        firstCompletionReward?: { amount: number; balance: number };
+        terminalCompleted: boolean;
+      };
+    }
+
+    it('mints the First Completion Reward once for a catalog pattern; a Replay Session does not repeat it', async () => {
+      const account = await createAccount();
+      const patternId = await seedPattern('FirstCompletion', 2, 2); // 4 cells → Small
+      const ledger = app.get(CoinLedgerRepository);
+      const principal = { type: 'account', id: account.accountId } as const;
+
+      const first = await prepareSession(account.accessToken, patternId);
+      const firstResult = await syncAllCellsAndComplete(
+        account.accessToken,
+        first,
+        randomUUID(),
+        4,
+      );
+      expect(firstResult.firstCompletionReward).toEqual({
+        amount: 25,
+        balance: 25,
+      });
+      expect(await ledger.getBalance(principal)).toBe(25);
+
+      // A Replay Session is a fresh active session on the same Pattern; it must
+      // never re-mint the First Completion Reward (ADR-0011).
+      const replay = await prepareSession(account.accessToken, patternId);
+      expect(replay).not.toBe(first);
+      const replayResult = await syncAllCellsAndComplete(
+        account.accessToken,
+        replay,
+        randomUUID(),
+        4,
+      );
+      expect(replayResult.terminalCompleted).toBe(true);
+      expect(replayResult.firstCompletionReward).toBeUndefined();
+      expect(await ledger.getBalance(principal)).toBe(25);
+    });
+
+    it('never mints the First Completion Reward for a Personal Pattern', async () => {
+      const account = await createAccount();
+      const patternId = await seedPattern('PersonalNoReward', 2, 2);
+      // Personal Patterns are unlimited and never mint the reward (ADR-0011).
+      await dataSource.query(
+        `UPDATE catalog.patterns
+         SET visibility = 'personal', owner_account_id = $1
+         WHERE id = $2`,
+        [account.accountId, patternId],
+      );
+      const ledger = app.get(CoinLedgerRepository);
+      const principal = { type: 'account', id: account.accountId } as const;
+
+      const sessionId = await prepareSession(account.accessToken, patternId);
+      const result = await syncAllCellsAndComplete(
+        account.accessToken,
+        sessionId,
+        randomUUID(),
+        4,
+      );
+      expect(result.terminalCompleted).toBe(true);
+      expect(result.firstCompletionReward).toBeUndefined();
+      expect(await ledger.getBalance(principal)).toBe(0);
+    });
+  });
+
+  describe('rewarded ad coin economy', () => {
+    async function newGuest(): Promise<GuestSessionFixture> {
+      return createGuestThroughApi(
+        httpServer,
+        randomUUID(),
+        createCredentialSecret(),
+      );
+    }
+
+    it('grants a verified rewarded ad exactly once per transaction id', async () => {
+      const guest = await newGuest();
+      const ledger = app.get(CoinLedgerRepository);
+      const principal = { type: 'guest', id: guest.guestId } as const;
+      const rewardDay = utcRewardDay();
+
+      const first = await ledger.grantAdReward(
+        principal,
+        rewardDay,
+        'ad:txn-1',
+      );
+      expect(first).toMatchObject({
+        granted: true,
+        amount: 10,
+        balance: 10,
+        adsCompleted: 1,
+        coinsConsumed: 10,
+        replayed: false,
+      });
+
+      // A replayed AdMob callback with the same transaction id must not
+      // double-grant (ADR-0033 idempotency).
+      const replay = await ledger.grantAdReward(
+        principal,
+        rewardDay,
+        'ad:txn-1',
+      );
+      expect(replay.replayed).toBe(true);
+      expect(replay.balance).toBe(10);
+      expect(await ledger.getBalance(principal)).toBe(10);
+    });
+
+    it('caps the Reward Day at 30 coin across three ads and grants nothing after', async () => {
+      const guest = await newGuest();
+      const ledger = app.get(CoinLedgerRepository);
+      const principal = { type: 'guest', id: guest.guestId } as const;
+      const rewardDay = utcRewardDay();
+
+      await ledger.grantAdReward(principal, rewardDay, 'ad:a');
+      await ledger.grantAdReward(principal, rewardDay, 'ad:b');
+      const third = await ledger.grantAdReward(principal, rewardDay, 'ad:c');
+      expect(third).toMatchObject({
+        granted: true,
+        balance: 30,
+        adsCompleted: 3,
+        coinsConsumed: 30,
+      });
+
+      // Fourth ad of the day: verified, recorded for idempotency, but grants
+      // nothing and consumes nothing.
+      const fourth = await ledger.grantAdReward(principal, rewardDay, 'ad:d');
+      expect(fourth).toMatchObject({
+        granted: false,
+        amount: 0,
+        balance: 30,
+      });
+      expect(await ledger.getBalance(principal)).toBe(30);
+    });
+
+    it('exposes balance and reward-day status to the authenticated player', async () => {
+      const guest = await newGuest();
+      const ledger = app.get(CoinLedgerRepository);
+      const principal = { type: 'guest', id: guest.guestId } as const;
+      await ledger.grantAdReward(principal, utcRewardDay(), 'ad:read-1');
+
+      const balance = await request(httpServer)
+        .get('/v1/economy/balance')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(200);
+      expect(balance.body).toEqual({ balance: 10 });
+
+      const rewardDay = await request(httpServer)
+        .get('/v1/economy/reward-day')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(200);
+      expect(rewardDay.body).toMatchObject({
+        balance: 10,
+        adsRemaining: 2,
+        coinsRemaining: 20,
+      });
+      expect(typeof readStringRecord(rewardDay.body, 'resetsAt')).toBe('string');
+    });
+
+    it('requires authentication for coin reads', async () => {
+      await request(httpServer).get('/v1/economy/balance').expect(401);
+      await request(httpServer).get('/v1/economy/reward-day').expect(401);
     });
   });
 });

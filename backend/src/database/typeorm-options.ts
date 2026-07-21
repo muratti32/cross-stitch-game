@@ -40,6 +40,11 @@ import {
   OperatorSecurityEventEntity,
   OfficialPatternDraftEntity,
 } from '../admin/entities';
+import {
+  CoinBalanceEntity,
+  CoinLedgerEntryEntity,
+  RewardDayPoolEntity,
+} from '../economy/entities';
 import { CreateAuthSchema1783987200000 } from './migrations/1783987200000-CreateAuthSchema';
 import { CreateJobsSchema1783900800000 } from './migrations/1783900800000-CreateJobsSchema';
 import { CreateCatalogSchema1784073600000 } from './migrations/1784073600000-CreateCatalogSchema';
@@ -53,6 +58,8 @@ import { CreateAdminAuthSchema1784592000000 } from './migrations/1784592000000-C
 import { CreateAdminAuditSchema1784678400000 } from './migrations/1784678400000-CreateAdminAuditSchema';
 import { CreateOfficialPatternDraftsSchema1784764800000 } from './migrations/1784764800000-CreateOfficialPatternDraftsSchema';
 import { CreateCatalogCategoriesSchema1784851200000 } from './migrations/1784851200000-CreateCatalogCategoriesSchema';
+import { CreateEconomySchema1784937600000 } from './migrations/1784937600000-CreateEconomySchema';
+import { AddFirstCompletionReason1785024000000 } from './migrations/1785024000000-AddFirstCompletionReason';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -88,6 +95,9 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       OperatorAuditLogEntity,
       OperatorSecurityEventEntity,
       OfficialPatternDraftEntity,
+      CoinBalanceEntity,
+      CoinLedgerEntryEntity,
+      RewardDayPoolEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -103,6 +113,8 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateAdminAuditSchema1784678400000,
       CreateOfficialPatternDraftsSchema1784764800000,
       CreateCatalogCategoriesSchema1784851200000,
+      CreateEconomySchema1784937600000,
+      AddFirstCompletionReason1785024000000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

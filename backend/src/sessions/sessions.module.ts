@@ -22,6 +22,7 @@ import { ProgressSyncService } from './progress-sync.service';
 import { CatalogModule } from '../catalog/catalog.module';
 import { AuthModule } from '../auth/auth.module';
 import { AppConfigModule } from '../config/app-config.module';
+import { EconomyModule } from '../economy/economy.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AppConfigModule } from '../config/app-config.module';
     CatalogModule,
     AuthModule,
     AppConfigModule,
+    EconomyModule,
   ],
   controllers: [
     SessionsController,

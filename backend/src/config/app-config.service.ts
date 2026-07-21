@@ -166,4 +166,14 @@ export class AppConfigService {
   get adminTotpIssuer(): string {
     return this.configService.get('ADMIN_TOTP_ISSUER', { infer: true });
   }
+
+  get admobSsvKeysUrl(): string {
+    return this.configService.get('ADMOB_SSV_KEYS_URL', { infer: true });
+  }
+
+  get admobSsvAllowedAdUnits(): readonly string[] {
+    return this.configService.get('ADMOB_SSV_ALLOWED_AD_UNITS', {
+      infer: true,
+    });
+  }
 }

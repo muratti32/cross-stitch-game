@@ -13,6 +13,7 @@ import type {
   ProgressSyncDto,
 } from './progress-sync.dto';
 import { ProgressCheckpointService } from './progress-checkpoint.service';
+import { CoinLedgerRepository } from '../economy/coin-ledger.repository';
 
 interface SessionRecord {
   id: string;
@@ -53,6 +54,8 @@ interface PulledOperationRecord {
 interface PatternProgressRecord {
   width: number;
   height: number;
+  visibility: string;
+  patternId: string;
   completedCount: string;
 }
 
@@ -80,9 +83,20 @@ export interface ProgressSyncResult {
   operations: PulledProgressOperation[];
 }
 
+export interface FirstCompletionRewardSummary {
+  amount: number;
+  balance: number;
+}
+
 export interface ProgressCompleteResult {
   revision: number;
   terminalCompleted: true;
+  /**
+   * Present only when this call minted the First Completion Reward (ADR-0011):
+   * an eligible catalog Pattern completed for the first time by this account.
+   * Absent on replays, already-completed sessions, and Personal Patterns.
+   */
+  firstCompletionReward?: FirstCompletionRewardSummary;
 }
 
 @Injectable()
@@ -90,6 +104,7 @@ export class ProgressSyncService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly checkpointService: ProgressCheckpointService,
+    private readonly coinLedger: CoinLedgerRepository,
   ) {}
 
   async sync(
@@ -243,12 +258,14 @@ export class ProgressSyncService {
       const progressRows = await manager.query<readonly PatternProgressRecord[]>(
         `SELECT p.width,
                 p.height,
+                p.visibility,
+                p.id AS "patternId",
                 COUNT(c.cell_index) FILTER (WHERE c.state = 'completed') AS "completedCount"
          FROM sessions.stitching_sessions s
          INNER JOIN catalog.patterns p ON p.id = s.pattern_id
          LEFT JOIN sessions.session_cell_state c ON c.session_id = s.id
          WHERE s.id = $1
-         GROUP BY p.width, p.height`,
+         GROUP BY p.width, p.height, p.visibility, p.id`,
         [sessionId],
       );
       const progress = progressRows[0];
@@ -270,7 +287,31 @@ export class ProgressSyncService {
       );
       await this.checkpointService.writeCheckpoint(manager, sessionId, true);
 
-      return { revision: Number(syncState.revision), terminalCompleted: true };
+      // First Completion Reward (ADR-0011): only eligible catalog Patterns mint
+      // it; Personal Patterns never do. Idempotent per (account, pattern) via
+      // the ledger source key, so a Replay Session cannot repeat it. Runs in
+      // this transaction so the coin commits atomically with the completion.
+      let firstCompletionReward: FirstCompletionRewardSummary | undefined;
+      if (progress.visibility === 'catalog') {
+        const grant = await this.coinLedger.grantFirstCompletion(
+          manager,
+          { type: 'account', id: principal.id },
+          progress.patternId,
+          progress.width * progress.height,
+        );
+        if (grant.granted) {
+          firstCompletionReward = {
+            amount: grant.amount,
+            balance: grant.balance,
+          };
+        }
+      }
+
+      return {
+        revision: Number(syncState.revision),
+        terminalCompleted: true,
+        firstCompletionReward,
+      };
     });
   }
 
