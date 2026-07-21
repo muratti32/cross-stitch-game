@@ -382,6 +382,28 @@ export async function setHandedness(handedness: 'left' | 'right'): Promise<void>
 }
 
 /**
+ * Checks if the player has seen the guest data risk notice.
+ */
+export async function hasSeenGuestDataRiskNotice(): Promise<boolean> {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{ value: string }>(
+    "SELECT value FROM device_config WHERE key = 'guest_data_risk_notice_seen'"
+  );
+  return row?.value === '1';
+}
+
+/**
+ * Marks that the player has seen the guest data risk notice.
+ */
+export async function markGuestDataRiskNoticeSeen(): Promise<void> {
+  const db = await getDatabase();
+  await db.runAsync(
+    "INSERT OR REPLACE INTO device_config (key, value) VALUES ('guest_data_risk_notice_seen', '1')"
+  );
+}
+
+
+/**
  * Gets and increments the global monotonic sequence counter for this device.
  */
 export async function getNextDeviceSeq(): Promise<number> {

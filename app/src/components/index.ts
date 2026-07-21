@@ -7,3 +7,5 @@ export { CachedImage } from './CachedImage';
 export { AccountSection } from './AccountSection';
 export { AnimatedTabBar } from './AnimatedTabBar';
 export { TabButton } from './TabButton';
+export { GuestDataRiskNotice } from './GuestDataRiskNotice';
+

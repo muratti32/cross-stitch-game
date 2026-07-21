@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Image, ActivityIndicator, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Screen, Button, Card, CachedImage, EmptyState } from '@/components';
+import { Screen, Button, Card, CachedImage, EmptyState, GuestDataRiskNotice } from '@/components';
 import { Theme } from '@/theme/theme';
 import { BUNDLED_PATTERNS, loadBundledPattern } from '@/bundled-patterns';
 import { PatternData } from '@/pattern-artifact';
 import { absolutePreviewUrl, useCatalogPattern } from '@/api/catalog';
 import { useIdentityStore } from '@/identity/guestIdentity';
-import { prepareCatalogSession, prepareBundledSession } from '@/session-preparation';
+import { prepareCatalogSession, prepareBundledSession, UnlockRequiredError } from '@/session-preparation';
+import { useCoinBalance, useUnlockedPatternIds, useUnlockPattern, InsufficientCoinError, unlockPriceForTier } from '@/api/economy';
+import { hasSeenGuestDataRiskNotice, markGuestDataRiskNoticeSeen } from '@/local-db';
 
 export default function PatternDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -155,9 +157,18 @@ export default function PatternDetailScreen() {
 function ServerPatternDetail({ id }: { id: string | undefined }) {
   const router = useRouter();
   const pattern = useCatalogPattern(id, true);
-  const { isAuthenticated } = useIdentityStore();
+  const { isAuthenticated, isAccount } = useIdentityStore();
+  const isGuest = isAuthenticated && !isAccount;
+
+  const { data: balance, isLoading: balanceLoading } = useCoinBalance();
+  const { data: unlockedIds, isLoading: unlocksLoading } = useUnlockedPatternIds();
+  const unlockMutation = useUnlockPattern();
+
   const [preparing, setPreparing] = useState(false);
   const [prepareError, setPrepareError] = useState<string | null>(null);
+  const [noticeVisible, setNoticeVisible] = useState(false);
+  const [insufficientError, setInsufficientError] = useState<{ price: number; balance: number } | null>(null);
+  const [unlockCTAOverride, setUnlockCTAOverride] = useState(false);
 
   if (pattern.isLoading) {
     return (
@@ -183,6 +194,78 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
   }
 
   const item = pattern.data.data;
+  const tier = item.unlockPriceTier;
+  const price = tier ? unlockPriceForTier(tier) : 0;
+  const owned = (tier === null || (unlockedIds ?? []).includes(item.id)) && !unlockCTAOverride;
+
+  const handleStartStitching = async () => {
+    try {
+      setPreparing(true);
+      setPrepareError(null);
+      const session = await prepareCatalogSession(item.id, {
+        title: item.title,
+        previewUrl: absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl),
+        width: item.width,
+        height: item.height,
+      });
+      router.navigate(`/(tabs)/(play)/${session.id}`);
+    } catch (err) {
+      if (err instanceof UnlockRequiredError) {
+        setUnlockCTAOverride(true);
+      } else {
+        setPrepareError(
+          err instanceof Error
+            ? err.message
+            : 'Could not start preparation. Check your connection and try again.',
+        );
+      }
+    } finally {
+      setPreparing(false);
+    }
+  };
+
+  const executeUnlock = async () => {
+    try {
+      setPreparing(true);
+      setPrepareError(null);
+      setInsufficientError(null);
+      await unlockMutation.mutateAsync(item.id);
+      setUnlockCTAOverride(false);
+      
+      const session = await prepareCatalogSession(item.id, {
+        title: item.title,
+        previewUrl: absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl),
+        width: item.width,
+        height: item.height,
+      });
+      router.navigate(`/(tabs)/(play)/${session.id}`);
+    } catch (err) {
+      if (err instanceof InsufficientCoinError) {
+        setInsufficientError({ price: err.price, balance: err.balance });
+      } else {
+        setPrepareError(
+          err instanceof Error
+            ? err.message
+            : 'Unlock failed. Check your connection and try again.'
+        );
+      }
+    } finally {
+      setPreparing(false);
+    }
+  };
+
+  const handleUnlockTap = async () => {
+    setPrepareError(null);
+    setInsufficientError(null);
+    if (isGuest) {
+      const hasSeen = await hasSeenGuestDataRiskNotice();
+      if (!hasSeen) {
+        setNoticeVisible(true);
+        return;
+      }
+    }
+    await executeUnlock();
+  };
 
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
@@ -251,35 +334,62 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
 
       {isAuthenticated ? (
         <View style={styles.actionContainer}>
-          <Button
-            title={preparing ? 'Preparing…' : 'Start Stitching'}
-            onPress={() => {
-              void (async () => {
-                try {
-                  setPreparing(true);
-                  setPrepareError(null);
-                  const session = await prepareCatalogSession(item.id, {
-                    title: item.title,
-                    previewUrl: absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl),
-                    width: item.width,
-                    height: item.height,
-                  });
-                  router.navigate(`/(tabs)/(play)/${session.id}`);
-                } catch (err) {
-                  setPrepareError(
-                    err instanceof Error
-                      ? err.message
-                      : 'Could not start preparation. Check your connection and try again.',
-                  );
-                } finally {
-                  setPreparing(false);
-                }
-              })();
-            }}
-            variant="primary"
-            loading={preparing}
-            style={styles.actionButton}
-          />
+          {insufficientError ? (
+            <Card style={styles.insufficientPanel}>
+              <Text style={styles.insufficientTitle}>Insufficient Coins</Text>
+              <Text style={styles.insufficientBody}>
+                This pattern costs {insufficientError.price} Stitch Coins, but you only have {insufficientError.balance} Coins.
+                {"\n\n"}
+                Shortfall: {insufficientError.price - insufficientError.balance} Coins.
+                {"\n\n"}
+                Earn Stitch Coins by completing other patterns! First Completion rewards are live.
+              </Text>
+              <Button
+                title="Find patterns to stitch"
+                onPress={() => router.navigate('/(tabs)/(catalog)')}
+                variant="primary"
+                style={styles.actionButton}
+              />
+              <Button
+                title="Back"
+                onPress={() => setInsufficientError(null)}
+                variant="secondary"
+                style={[styles.actionButton, { marginTop: Theme.spacing.sm }]}
+              />
+            </Card>
+          ) : owned ? (
+            <Button
+              title={preparing ? 'Preparing…' : 'Start Stitching'}
+              onPress={handleStartStitching}
+              variant="primary"
+              loading={preparing || unlocksLoading}
+              disabled={unlocksLoading || preparing}
+              style={styles.actionButton}
+            />
+          ) : (
+            <Card style={styles.unlockCard}>
+              <View style={styles.coinRow}>
+                <View style={styles.priceContainer}>
+                  <Text style={styles.priceLabel}>Price</Text>
+                  <Text style={styles.priceText}>{price} 🪙</Text>
+                </View>
+                <View style={styles.balanceContainer}>
+                  <Text style={styles.balanceLabel}>Your Balance</Text>
+                  <Text style={styles.balanceText}>
+                    {balanceLoading ? '...' : `${balance ?? 0} 🪙`}
+                  </Text>
+                </View>
+              </View>
+              <Button
+                title={`Unlock for ${price} Coin`}
+                onPress={handleUnlockTap}
+                variant="primary"
+                loading={unlockMutation.isPending || preparing}
+                disabled={unlocksLoading || balanceLoading || unlockMutation.isPending || preparing}
+                style={styles.actionButton}
+              />
+            </Card>
+          )}
         </View>
       ) : (
         <Card style={styles.playSoonCard}>
@@ -290,6 +400,22 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
           </Text>
         </Card>
       )}
+
+      <GuestDataRiskNotice
+        visible={noticeVisible}
+        onProceed={async () => {
+          await markGuestDataRiskNoticeSeen();
+          setNoticeVisible(false);
+          await executeUnlock();
+        }}
+        onSignIn={() => {
+          setNoticeVisible(false);
+          router.push('/(tabs)/(settings)/sign-in');
+        }}
+        onDismiss={() => {
+          setNoticeVisible(false);
+        }}
+      />
     </Screen>
   );
 }
@@ -515,5 +641,69 @@ const styles = StyleSheet.create({
   },
   errorButton: {
     width: 150,
+  },
+  insufficientPanel: {
+    padding: Theme.spacing.lg,
+    backgroundColor: Theme.colors.card,
+    borderRadius: Theme.radii.lg,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+  },
+  insufficientTitle: {
+    fontSize: Theme.typography.sizes.lg,
+    fontWeight: Theme.typography.weights.bold,
+    color: Theme.colors.error,
+    marginBottom: Theme.spacing.sm,
+    textAlign: 'center',
+  },
+  insufficientBody: {
+    fontSize: Theme.typography.sizes.sm,
+    color: Theme.colors.textSecondary,
+    lineHeight: 20,
+    marginBottom: Theme.spacing.lg,
+    textAlign: 'center',
+  },
+  unlockCard: {
+    padding: Theme.spacing.lg,
+    backgroundColor: Theme.colors.card,
+    borderRadius: Theme.radii.lg,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+  },
+  coinRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: Theme.spacing.lg,
+    backgroundColor: Theme.colors.background,
+    borderRadius: Theme.radii.md,
+    padding: Theme.spacing.md,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+  },
+  priceContainer: {
+    alignItems: 'flex-start',
+  },
+  balanceContainer: {
+    alignItems: 'flex-end',
+  },
+  priceLabel: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.textSecondary,
+    marginBottom: 4,
+  },
+  priceText: {
+    fontSize: Theme.typography.sizes.lg,
+    fontWeight: Theme.typography.weights.bold,
+    color: Theme.colors.textPrimary,
+  },
+  balanceLabel: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.textSecondary,
+    marginBottom: 4,
+  },
+  balanceText: {
+    fontSize: Theme.typography.sizes.lg,
+    fontWeight: Theme.typography.weights.bold,
+    color: Theme.colors.accentTeal,
   },
 });

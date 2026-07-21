@@ -1,6 +1,5 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import { create } from 'zustand';
-
 import { decodePatternArtifact } from '../pattern-artifact';
 import {
   updateSessionStatus,
@@ -17,6 +16,13 @@ import {
 } from '../local-db';
 import { apiFetch } from '../api/apiFetch';
 import { Config } from '../config';
+
+export class UnlockRequiredError extends Error {
+  constructor(readonly patternId: string, readonly price: number) {
+    super('unlock_required');
+    this.name = 'UnlockRequiredError';
+  }
+}
 
 interface DownloadProgressState {
   progress: Record<string, number>;
@@ -150,6 +156,12 @@ async function prepareRemoteSession(
   });
 
   if (!response.ok) {
+    if (response.status === 403) {
+      const body = await response.json().catch(() => null);
+      if (body?.code === 'unlock_required') {
+        throw new UnlockRequiredError(body.patternId ?? patternId, body.price ?? 0);
+      }
+    }
     if (response.status === 409) {
       throw new Error('Pattern is not available');
     }
