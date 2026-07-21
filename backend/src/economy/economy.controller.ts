@@ -1,4 +1,5 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { IsUUID } from 'class-validator';
 
 import { CurrentPrincipal, JwtAuthGuard } from '../auth';
 import type { AuthPrincipal } from '../auth/auth.types';
@@ -7,6 +8,12 @@ import {
   EconomyReadService,
   RewardDayView,
 } from './economy-read.service';
+import { PatternUnlockService } from './pattern-unlock.service';
+
+class UnlockRequestDto {
+  @IsUUID()
+  patternId!: string;
+}
 
 /**
  * Read-only coin state for the authenticated player. The client can never
@@ -16,7 +23,10 @@ import {
 @Controller('economy')
 @UseGuards(JwtAuthGuard)
 export class EconomyController {
-  constructor(private readonly economyRead: EconomyReadService) {}
+  constructor(
+    private readonly economyRead: EconomyReadService,
+    private readonly patternUnlock: PatternUnlockService,
+  ) {}
 
   @Get('balance')
   async getBalance(
@@ -30,5 +40,18 @@ export class EconomyController {
     @CurrentPrincipal() principal: AuthPrincipal,
   ): Promise<RewardDayView> {
     return this.economyRead.getRewardDay(principal);
+  }
+
+  @Post('unlocks')
+  async unlock(
+    @CurrentPrincipal() p: AuthPrincipal,
+    @Body() dto: UnlockRequestDto,
+  ) {
+    return this.patternUnlock.unlock(p, dto.patternId);
+  }
+
+  @Get('unlocks')
+  async unlocks(@CurrentPrincipal() p: AuthPrincipal) {
+    return this.patternUnlock.listUnlocks(p);
   }
 }

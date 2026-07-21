@@ -7,6 +7,8 @@ import {
   DAILY_AD_LIMIT,
   DAILY_POOL_COIN,
   firstCompletionReward,
+  unlockPrice,
+  UnlockPriceTier,
 } from './economy.constants';
 import { CoinLedgerReason } from './entities';
 
@@ -44,6 +46,18 @@ export interface FirstCompletionGrantResult {
   balance: number;
   /** True when the reward for this (principal, pattern) already existed. */
   replayed: boolean;
+}
+
+export interface UnlockSpendResult {
+  alreadyUnlocked: boolean;   // true when the entitlement already existed (no charge)
+  price: number;              // tier price
+  balance: number;            // balance after (or current on already-unlocked)
+}
+
+export class InsufficientCoinError extends Error {
+  constructor(readonly price: number, readonly balance: number) {
+    super('insufficient_balance');
+  }
 }
 
 interface ClaimRow {
@@ -251,6 +265,119 @@ export class CoinLedgerRepository {
       balance: Number(balanceRows[0].balance),
       replayed: false,
     };
+  }
+
+  /**
+   * Spend Stitch Coin to unlock a pattern. Server-authoritative price mapping,
+   * idempotency latch, balance checking and debiting are all handled within a
+   * single transaction (ADR-0011).
+   */
+  async spendPatternUnlock(
+    principal: LedgerPrincipal,
+    patternId: string,
+    tier: UnlockPriceTier,
+  ): Promise<UnlockSpendResult> {
+    const price = unlockPrice(tier);
+    return this.dataSource.transaction(async (manager) => {
+      // 1. Claim the entitlement latch
+      const claim = returningRows<{ pattern_id: string }>(
+        await manager.query(
+          `INSERT INTO economy.pattern_unlocks (principal_type, principal_id, pattern_id)
+           VALUES ($1, $2, $3)
+           ON CONFLICT ON CONSTRAINT "PK_pattern_unlocks" DO NOTHING
+           RETURNING pattern_id`,
+          [principal.type, principal.id, patternId],
+        ),
+      );
+
+      if (claim.length === 0) {
+        const balance = await this.readBalance(manager, principal);
+        return { alreadyUnlocked: true, price, balance };
+      }
+
+      // 2. Lock and read the balance row FOR UPDATE
+      const balanceRows = await manager.query<readonly BalanceRow[]>(
+        `SELECT balance FROM economy.coin_balances
+         WHERE principal_type = $1 AND principal_id = $2
+         FOR UPDATE`,
+        [principal.type, principal.id],
+      );
+      const balance = balanceRows.length === 0 ? 0 : Number(balanceRows[0].balance);
+
+      if (balance < price) {
+        throw new InsufficientCoinError(price, balance);
+      }
+
+      // 3. Write debit ledger entry
+      const sourceKey = `unlock:${principal.type}:${principal.id}:${patternId}`;
+      await manager.query(
+        `INSERT INTO economy.coin_ledger_entries
+           (principal_type, principal_id, amount, reason, source_key, granted, metadata)
+         VALUES ($1, $2, $3, $4, $5, true, $6)
+         ON CONFLICT ON CONSTRAINT "UQ_coin_ledger_entries_source_key" DO NOTHING`,
+        [
+          principal.type,
+          principal.id,
+          -price,
+          CoinLedgerReason.UnlockSpend,
+          sourceKey,
+          { patternId, tier, price },
+        ],
+      );
+
+      // 4. Update balance (debit is a negative amount)
+      const updatedBalanceRows = returningRows<BalanceRow>(
+        await manager.query(
+          `INSERT INTO economy.coin_balances (principal_type, principal_id, balance)
+           VALUES ($1, $2, $3)
+           ON CONFLICT ON CONSTRAINT "PK_coin_balances"
+             DO UPDATE SET balance = economy.coin_balances.balance + EXCLUDED.balance,
+                           updated_at = now()
+           RETURNING balance`,
+          [principal.type, principal.id, -price],
+        ),
+      );
+
+      return {
+        alreadyUnlocked: false,
+        price,
+        balance: Number(updatedBalanceRows[0].balance),
+      };
+    });
+  }
+
+  /**
+   * List all unlocked pattern IDs for the given principal.
+   */
+  async listUnlockedPatternIds(
+    principal: LedgerPrincipal,
+  ): Promise<string[]> {
+    const rows = await this.dataSource.query<{ pattern_id: string }[]>(
+      `SELECT pattern_id
+       FROM economy.pattern_unlocks
+       WHERE principal_type = $1 AND principal_id = $2
+       ORDER BY created_at`,
+      [principal.type, principal.id],
+    );
+    return rows.map((r) => r.pattern_id);
+  }
+
+  /**
+   * Check if a pattern is unlocked for the given principal.
+   */
+  async isPatternUnlocked(
+    manager: EntityManager,
+    principal: LedgerPrincipal,
+    patternId: string,
+  ): Promise<boolean> {
+    const rows = await manager.query<{ unlocked: boolean }[]>(
+      `SELECT EXISTS(
+        SELECT 1 FROM economy.pattern_unlocks
+        WHERE principal_type = $1 AND principal_id = $2 AND pattern_id = $3
+      ) AS unlocked`,
+      [principal.type, principal.id, patternId],
+    );
+    return rows[0]?.unlocked ?? false;
   }
 
   async getBalance(principal: LedgerPrincipal): Promise<number> {

@@ -1998,6 +1998,198 @@ describe('Stitch Wish backend integration', () => {
       await request(httpServer).get('/v1/economy/reward-day').expect(401);
     });
   });
+
+  describe('pattern unlock coin spend', () => {
+    const unlockPalette = [
+      { dmcCode: '310', name: 'Black', rgbHex: '#000000' },
+      { dmcCode: 'B5200', name: 'Snow White', rgbHex: '#FFFFFF' },
+    ];
+
+    async function newGuest(): Promise<GuestSessionFixture> {
+      return createGuestThroughApi(
+        httpServer,
+        randomUUID(),
+        createCredentialSecret(),
+      );
+    }
+
+    async function seedPaidPattern(
+      title: string,
+      tier: 'small' | 'medium' | 'large' | null,
+      width: number,
+      height: number,
+    ): Promise<string> {
+      const catalog = app.get(CatalogService);
+      const grid = new Uint8Array(width * height).fill(1);
+      const encoded = encodePatternArtifactV1({
+        width,
+        height,
+        palette: unlockPalette,
+        grid,
+      });
+      const objectKey = `itest-unlock/${title}/artifact.bin`;
+      await app.get(LocalObjectStorage).put(objectKey, encoded.bytes);
+      const pattern = await catalog.upsertPattern({
+        title,
+        creatorName: 'ITest Unlock Team',
+        categoryCode: 'other',
+        width,
+        height,
+        paletteSize: unlockPalette.length,
+        artifactObjectKey: objectKey,
+        artifactChecksum: encoded.checksum,
+        artifactByteLength: encoded.byteLength,
+        artifactSchemaVersion: encoded.schemaVersion,
+        previewObjectKey: `itest-unlock/${title}/preview.png`,
+        unlockPriceTier: tier,
+        status: 'available',
+        publishedAt: new Date('2026-07-01T00:00:00.000Z'),
+        tagCodes: [],
+      });
+      return pattern.id;
+    }
+
+    async function seedGuestBalance(
+      guestId: string,
+      balance: number,
+    ): Promise<void> {
+      await dataSource.query(
+        `INSERT INTO economy.coin_balances (principal_type, principal_id, balance)
+         VALUES ('guest', $1, $2)
+         ON CONFLICT ON CONSTRAINT "PK_coin_balances"
+           DO UPDATE SET balance = EXCLUDED.balance, updated_at = now()`,
+        [guestId, balance],
+      );
+    }
+
+    async function countUnlockLedgerEntries(guestId: string): Promise<number> {
+      const rows = await dataSource.query<{ count: string }[]>(
+        `SELECT COUNT(*) AS count FROM economy.coin_ledger_entries
+         WHERE principal_type = 'guest' AND principal_id = $1
+           AND reason = 'unlock_spend'`,
+        [guestId],
+      );
+      return Number(rows[0].count);
+    }
+
+    it('unlocks a paid Pattern once, debits the tier price, and replays idempotently', async () => {
+      const guest = await newGuest();
+      const patternId = await seedPaidPattern('Unlock Small', 'small', 5, 5);
+      await seedGuestBalance(guest.guestId, 100);
+
+      // Small tier = 75 coin (ADR-0011); 100 - 75 = 25.
+      const first = await request(httpServer)
+        .post('/v1/economy/unlocks')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201);
+      expect(first.body).toEqual({
+        patternId,
+        alreadyUnlocked: false,
+        balance: 25,
+      });
+
+      const owned = await request(httpServer)
+        .get('/v1/economy/unlocks')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(200);
+      expect(owned.body).toEqual({ patternIds: [patternId] });
+
+      const balance = await request(httpServer)
+        .get('/v1/economy/balance')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(200);
+      expect(balance.body).toEqual({ balance: 25 });
+
+      // Replay: permanent entitlement, no second charge.
+      const replay = await request(httpServer)
+        .post('/v1/economy/unlocks')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201);
+      expect(replay.body).toEqual({
+        patternId,
+        alreadyUnlocked: true,
+        balance: 25,
+      });
+      expect(await countUnlockLedgerEntries(guest.guestId)).toBe(1);
+    });
+
+    it('rejects a paid unlock with insufficient balance (409) and mutates nothing', async () => {
+      const guest = await newGuest();
+      const patternId = await seedPaidPattern('Unlock Large', 'large', 10, 10);
+      await seedGuestBalance(guest.guestId, 50);
+
+      const rejected = await request(httpServer)
+        .post('/v1/economy/unlocks')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(409);
+      expect(rejected.body).toMatchObject({
+        code: 'insufficient_balance',
+        price: 300,
+        balance: 50,
+      });
+
+      const owned = await request(httpServer)
+        .get('/v1/economy/unlocks')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(200);
+      expect(owned.body).toEqual({ patternIds: [] });
+
+      const balance = await request(httpServer)
+        .get('/v1/economy/balance')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(200);
+      expect(balance.body).toEqual({ balance: 50 });
+      expect(await countUnlockLedgerEntries(guest.guestId)).toBe(0);
+    });
+
+    it('rejects unlocking a free Pattern with 400 pattern_free', async () => {
+      const guest = await newGuest();
+      const patternId = await seedPaidPattern('Unlock Free', null, 3, 3);
+      await seedGuestBalance(guest.guestId, 500);
+
+      const rejected = await request(httpServer)
+        .post('/v1/economy/unlocks')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(400);
+      expect(rejected.body).toMatchObject({ code: 'pattern_free' });
+    });
+
+    it('Session Preparation rejects a locked Pattern until it is unlocked', async () => {
+      const guest = await newGuest();
+      const patternId = await seedPaidPattern('Gate Small', 'small', 4, 4);
+
+      const locked = await request(httpServer)
+        .post('/v1/sessions/prepare')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(403);
+      expect(locked.body).toMatchObject({
+        code: 'unlock_required',
+        patternId,
+        price: 75,
+      });
+
+      await seedGuestBalance(guest.guestId, 75);
+      await request(httpServer)
+        .post('/v1/economy/unlocks')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201);
+
+      const prepared = await request(httpServer)
+        .post('/v1/sessions/prepare')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201);
+      expect(readStringRecord(prepared.body, 'sessionId')).toEqual(
+        expect.any(String),
+      );
+    });
+  });
 });
 
 async function createDemoJobThroughApi(

@@ -14,6 +14,8 @@ import { PatternEntity } from '../catalog/entities';
 import { AppConfigService } from '../config/app-config.service';
 import type { AuthPrincipal } from '../auth/auth.types';
 import { PrincipalType } from '../auth/entities';
+import { CoinLedgerRepository } from '../economy/coin-ledger.repository';
+import { unlockPrice } from '../economy/economy.constants';
 
 @Injectable()
 export class SessionsService {
@@ -26,6 +28,7 @@ export class SessionsService {
     private readonly patternRepo: Repository<PatternEntity>,
     private readonly configService: AppConfigService,
     private readonly dataSource: DataSource,
+    private readonly coinLedger: CoinLedgerRepository,
   ) {}
 
   async verifyPatternAvailability(
@@ -48,6 +51,24 @@ export class SessionsService {
     }
     // Pattern Unlock enforcement (issue #15) slots in here: a non-null
     // unlockPriceTier will additionally require the identity's Unlock.
+    if (pattern.unlockPriceTier !== null) {
+      const ledgerPrincipal = {
+        type: principal.type === PrincipalType.Account ? ('account' as const) : ('guest' as const),
+        id: principal.id,
+      };
+      const owned = await this.coinLedger.isPatternUnlocked(
+        this.dataSource.manager,
+        ledgerPrincipal,
+        patternId,
+      );
+      if (!owned) {
+        throw new ForbiddenException({
+          code: 'unlock_required',
+          patternId,
+          price: unlockPrice(pattern.unlockPriceTier),
+        });
+      }
+    }
     return pattern;
   }
 

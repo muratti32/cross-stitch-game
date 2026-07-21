@@ -6,6 +6,7 @@ import type {
   StitchingSessionEntity,
 } from './entities';
 import type { PatternEntity } from '../catalog/entities';
+import type { CoinLedgerRepository } from '../economy/coin-ledger.repository';
 
 function grantOnlyService(): SessionsService {
   const config = {
@@ -18,6 +19,7 @@ function grantOnlyService(): SessionsService {
     null as unknown as Repository<PatternEntity>,
     config,
     null as unknown as DataSource,
+    null as unknown as CoinLedgerRepository,
   );
 }
 

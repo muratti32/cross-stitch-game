@@ -46,3 +46,8 @@ export function firstCompletionReward(cells: number): number {
   }
   return FIRST_COMPLETION_TIER_COIN.small;
 }
+
+// Stitch Coin pattern unlock price tier mapping fixed by ADR-0011.
+export const UNLOCK_PRICE_TIER_COIN = { small: 75, medium: 150, large: 300 } as const;
+export type UnlockPriceTier = keyof typeof UNLOCK_PRICE_TIER_COIN; // 'small'|'medium'|'large'
+export function unlockPrice(tier: UnlockPriceTier): number { return UNLOCK_PRICE_TIER_COIN[tier]; }

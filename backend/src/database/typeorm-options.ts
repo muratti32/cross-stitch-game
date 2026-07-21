@@ -44,6 +44,7 @@ import {
   CoinBalanceEntity,
   CoinLedgerEntryEntity,
   RewardDayPoolEntity,
+  PatternUnlockEntity,
 } from '../economy/entities';
 import { CreateAuthSchema1783987200000 } from './migrations/1783987200000-CreateAuthSchema';
 import { CreateJobsSchema1783900800000 } from './migrations/1783900800000-CreateJobsSchema';
@@ -60,6 +61,7 @@ import { CreateOfficialPatternDraftsSchema1784764800000 } from './migrations/178
 import { CreateCatalogCategoriesSchema1784851200000 } from './migrations/1784851200000-CreateCatalogCategoriesSchema';
 import { CreateEconomySchema1784937600000 } from './migrations/1784937600000-CreateEconomySchema';
 import { AddFirstCompletionReason1785024000000 } from './migrations/1785024000000-AddFirstCompletionReason';
+import { CreatePatternUnlocks1785110400000 } from './migrations/1785110400000-CreatePatternUnlocks';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -98,6 +100,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CoinBalanceEntity,
       CoinLedgerEntryEntity,
       RewardDayPoolEntity,
+      PatternUnlockEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -115,6 +118,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateCatalogCategoriesSchema1784851200000,
       CreateEconomySchema1784937600000,
       AddFirstCompletionReason1785024000000,
+      CreatePatternUnlocks1785110400000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',
