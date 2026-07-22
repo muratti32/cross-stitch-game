@@ -12,6 +12,7 @@ import { CatalogModule } from './catalog/catalog.module';
 import { SessionsModule } from './sessions/sessions.module';
 import { ConversionModule } from './conversion';
 import { EconomyModule } from './economy/economy.module';
+import { PromotionModule } from './promotion/promotion.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { EconomyModule } from './economy/economy.module';
     SessionsModule,
     ConversionModule,
     EconomyModule,
+    PromotionModule,
     AdminModule,
   ],
 })

@@ -2797,6 +2797,170 @@ describe('Stitch Wish backend integration', () => {
       expect(Number(countB5200?.action_count)).toBe(8);
     });
   });
+
+  describe('Guest Data Promotion stage 1', () => {
+    const palette = [
+      { dmcCode: '310', name: 'Black', rgbHex: '#000000' },
+      { dmcCode: 'B5200', name: 'Snow White', rgbHex: '#FFFFFF' },
+    ];
+
+    async function seedPattern(
+      title: string,
+      width: number,
+      height: number,
+    ): Promise<string> {
+      const catalog = app.get(CatalogService);
+      const grid = new Uint8Array(width * height).fill(1);
+      const encoded = encodePatternArtifactV1({ width, height, palette, grid });
+      const objectKey = `itest-promo/${title}/artifact.bin`;
+      await app.get(LocalObjectStorage).put(objectKey, encoded.bytes);
+      const pattern = await catalog.upsertPattern({
+        title,
+        creatorName: 'ITest Promo Team',
+        categoryCode: 'other',
+        width,
+        height,
+        paletteSize: palette.length,
+        artifactObjectKey: objectKey,
+        artifactChecksum: encoded.checksum,
+        artifactByteLength: encoded.byteLength,
+        artifactSchemaVersion: encoded.schemaVersion,
+        previewObjectKey: `itest-promo/${title}/preview.png`,
+        unlockPriceTier: 'small',
+        status: 'available',
+        publishedAt: new Date('2026-07-01T00:00:00.000Z'),
+        tagCodes: [],
+      });
+      return pattern.id;
+    }
+
+    async function createAccount(): Promise<{
+      accountId: string;
+      accessToken: string;
+    }> {
+      const email = `promo-${randomUUID()}@example.test`;
+      await request(httpServer)
+        .post('/v1/auth/email/request')
+        .send({ email })
+        .expect(202);
+      const deliveryCount = localEmailSender.getDeliveries().length;
+      await emailDispatcher.dispatchOnce();
+      const delivery = localEmailSender
+        .getDeliveries()
+        .slice(deliveryCount)
+        .reverse()
+        .find((candidate) => candidate.toEmail === email);
+      if (delivery === undefined) {
+        throw new Error('Email OTP delivery was not recorded');
+      }
+      const verified = await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send({ email, code: delivery.code })
+        .expect(200);
+      return {
+        accountId: readStringRecord(verified.body, 'accountId'),
+        accessToken: readStringRecord(verified.body, 'accessToken'),
+      };
+    }
+
+    it('handles preview, lock, stage package, and cancellation flow', async () => {
+      const credentialSecret = createCredentialSecret();
+      const installationKey = randomUUID();
+      const guest = await createGuestThroughApi(httpServer, installationKey, credentialSecret);
+      const account = await createAccount();
+
+      // 1. Generate preview
+      const previewRes = await request(httpServer)
+        .post('/v1/promotion/preview')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          guestId: guest.guestId,
+          guestCredential: credentialSecret,
+          manifestChecksum: 'manifest-chk-123',
+          manifest: {
+            progress: {},
+            completions: {},
+            likes: {},
+            pendingRewards: {
+              'daily_task:123': {}
+            }
+          }
+        })
+        .expect(200);
+
+      expect(previewRes.body.guestId).toBe(guest.guestId);
+      expect(previewRes.body.promotionMode).toBe('economy');
+      expect(previewRes.body.signature).toBeDefined();
+
+      const previewData = {
+        guestId: previewRes.body.guestId,
+        accountId: previewRes.body.accountId,
+        manifestChecksum: previewRes.body.manifestChecksum,
+        promotionMode: previewRes.body.promotionMode,
+        guestLedgerBalance: previewRes.body.guestLedgerBalance,
+        expiry: previewRes.body.expiry,
+      };
+
+      // 2. Lock guest identity
+      const lockRes = await request(httpServer)
+        .post('/v1/promotion/lock')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          previewData,
+          signature: previewRes.body.signature,
+        })
+        .expect(200);
+
+      expect(lockRes.body.lockToken).toBeDefined();
+
+      // 3. Verify guest mutations are blocked
+      // Try pattern unlock
+      await request(httpServer)
+        .post('/v1/economy/unlocks')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId: randomUUID() })
+        .expect(409); // Conflict: Locked!
+
+      // 4. Stage Promotion Transfer Package
+      const stageRes = await request(httpServer)
+        .post('/v1/promotion/stage-package')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          guestId: guest.guestId,
+          lockToken: lockRes.body.lockToken,
+          manifestChecksum: 'manifest-chk-123',
+          packageData: { progress: 'some-data' },
+          checksum: 'package-checksum-456',
+        })
+        .expect(200);
+
+      expect(stageRes.body.status).toBe('staged');
+
+      // 5. Cancel promotion
+      await request(httpServer)
+        .post('/v1/promotion/cancel')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ guestId: guest.guestId })
+        .expect(200);
+
+      // 6. Verify guest mutations are unblocked now
+      // Seed a pattern to unlock
+      const patternId = await seedPattern('PromoUnlockTest', 2, 2);
+
+      // Credit guest ledger balance first so they can unlock
+      await dataSource.query(
+        `INSERT INTO economy.coin_balances (principal_type, principal_id, balance)
+         VALUES ('guest', $1, 100)`,
+        [guest.guestId]
+      );
+
+      await request(httpServer)
+        .post('/v1/economy/unlocks')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201); // Created (unlocked)!
+    });
+  });
 });
 
 async function createDemoJobThroughApi(

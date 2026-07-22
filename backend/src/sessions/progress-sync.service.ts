@@ -14,6 +14,7 @@ import type {
 } from './progress-sync.dto';
 import { ProgressCheckpointService } from './progress-checkpoint.service';
 import { CoinLedgerRepository } from '../economy/coin-ledger.repository';
+import { PromotionService } from '../promotion/promotion.service';
 
 interface SessionRecord {
   id: string;
@@ -105,6 +106,7 @@ export class ProgressSyncService {
     private readonly dataSource: DataSource,
     private readonly checkpointService: ProgressCheckpointService,
     private readonly coinLedger: CoinLedgerRepository,
+    private readonly promotionService: PromotionService,
   ) {}
 
   async sync(
@@ -112,6 +114,7 @@ export class ProgressSyncService {
     sessionId: string,
     dto: ProgressSyncDto,
   ): Promise<ProgressSyncResult> {
+    await this.promotionService.assertNotLocked(principal.id, principal.type);
     return this.dataSource.transaction(async (manager) => {
       await this.requireAccountSession(manager, principal, sessionId);
       await this.lockSession(manager, sessionId);
@@ -244,6 +247,7 @@ export class ProgressSyncService {
     sessionId: string,
     dto: CompleteProgressDto,
   ): Promise<ProgressCompleteResult> {
+    await this.promotionService.assertNotLocked(principal.id, principal.type);
     void dto;
     return this.dataSource.transaction(async (manager) => {
       await this.requireAccountSession(manager, principal, sessionId);

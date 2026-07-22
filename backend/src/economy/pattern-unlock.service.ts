@@ -10,6 +10,7 @@ import { Repository } from 'typeorm';
 import type { AuthPrincipal } from '../auth/auth.types';
 import { PrincipalType } from '../auth/entities';
 import { PatternEntity } from '../catalog/entities';
+import { PromotionService } from '../promotion/promotion.service';
 import { CoinLedgerRepository, InsufficientCoinError } from './coin-ledger.repository';
 
 /**
@@ -22,12 +23,14 @@ export class PatternUnlockService {
     private readonly ledger: CoinLedgerRepository,
     @InjectRepository(PatternEntity)
     private readonly patternRepo: Repository<PatternEntity>,
+    private readonly promotionService: PromotionService,
   ) {}
 
   async unlock(
     principal: AuthPrincipal,
     patternId: string,
   ): Promise<{ patternId: string; alreadyUnlocked: boolean; balance: number }> {
+    await this.promotionService.assertNotLocked(principal.id, principal.type);
     const pattern = await this.patternRepo.findOne({ where: { id: patternId } });
     if (!pattern) {
       throw new NotFoundException('Pattern not found');

@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { AppConfigModule } from '../config/app-config.module';
 import { PatternEntity } from '../catalog/entities';
+import { PromotionModule } from '../promotion/promotion.module';
 import { AdMobSsvController } from './admob-ssv.controller';
 import { AdMobSsvVerifierService } from './admob-ssv-verifier.service';
 import { CoinLedgerRepository } from './coin-ledger.repository';
@@ -20,6 +21,7 @@ import { DailyTaskService } from './daily-task.service';
     TypeOrmModule.forFeature([PatternEntity, PatternUnlockEntity]),
     AuthModule,
     AppConfigModule,
+    PromotionModule,
   ],
   controllers: [AdMobSsvController, EconomyController, DailyTaskController],
   providers: [

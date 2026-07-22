@@ -48,6 +48,10 @@ import {
   GameplayEventEntity,
   DailyColorActionCountEntity,
 } from '../economy/entities';
+import {
+  PromotionLockEntity,
+  PromotionTransferPackageEntity,
+} from '../promotion/entities';
 import { CreateAuthSchema1783987200000 } from './migrations/1783987200000-CreateAuthSchema';
 import { CreateJobsSchema1783900800000 } from './migrations/1783900800000-CreateJobsSchema';
 import { CreateCatalogSchema1784073600000 } from './migrations/1784073600000-CreateCatalogSchema';
@@ -66,6 +70,7 @@ import { AddFirstCompletionReason1785024000000 } from './migrations/178502400000
 import { CreatePatternUnlocks1785110400000 } from './migrations/1785110400000-CreatePatternUnlocks';
 import { CreateDailyTasks1785196800000 } from './migrations/1785196800000-CreateDailyTasks';
 import { AddPersonalPatternLineage1785283200000 } from './migrations/1785283200000-AddPersonalPatternLineage';
+import { CreatePromotionSchema1785369600000 } from './migrations/1785369600000-CreatePromotionSchema';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -107,6 +112,8 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       PatternUnlockEntity,
       GameplayEventEntity,
       DailyColorActionCountEntity,
+      PromotionLockEntity,
+      PromotionTransferPackageEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -127,6 +134,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreatePatternUnlocks1785110400000,
       CreateDailyTasks1785196800000,
       AddPersonalPatternLineage1785283200000,
+      CreatePromotionSchema1785369600000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

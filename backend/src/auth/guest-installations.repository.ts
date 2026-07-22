@@ -30,6 +30,20 @@ export class GuestInstallationsRepository {
     return rows[0] ?? null;
   }
 
+  async findOneById(id: string): Promise<GuestInstallationRecord | null> {
+    const rows = await this.dataSource.query<
+      readonly GuestInstallationRecord[]
+    >(
+      `SELECT id,
+              credential_hash AS "credentialHash",
+              status
+       FROM auth.guest_installations
+       WHERE id = $1`,
+      [id],
+    );
+    return rows[0] ?? null;
+  }
+
   async insertIfAbsent(
     installationKeyHash: string,
     credentialHash: string,

@@ -23,6 +23,7 @@ import { CatalogModule } from '../catalog/catalog.module';
 import { AuthModule } from '../auth/auth.module';
 import { AppConfigModule } from '../config/app-config.module';
 import { EconomyModule } from '../economy/economy.module';
+import { PromotionModule } from '../promotion/promotion.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { EconomyModule } from '../economy/economy.module';
     AuthModule,
     AppConfigModule,
     EconomyModule,
+    PromotionModule,
   ],
   controllers: [
     SessionsController,
