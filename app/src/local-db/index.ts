@@ -158,6 +158,22 @@ export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
   return dbInstance;
 }
 
+let transactionQueue = Promise.resolve();
+
+async function runInTransaction(
+  db: SQLite.SQLiteDatabase,
+  action: () => Promise<void>
+): Promise<void> {
+  const next = transactionQueue.then(async () => {
+    return db.withTransactionAsync(action);
+  });
+  transactionQueue = next.then(
+    () => {},
+    () => {}
+  );
+  return next;
+}
+
 /**
  * Adopts the offline/pre-identity database as the target guest's database.
  * Moves the database file and WAL/SHM files atomically if the pre-identity database exists.
@@ -268,7 +284,7 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
   const currentVersion = versionRow?.user_version ?? 0;
 
   if (currentVersion < 1) {
-    await db.withTransactionAsync(async () => {
+    await runInTransaction(db, async () => {
       // 1. Add new columns to sessions table
       await db.execAsync(`
         ALTER TABLE sessions ADD COLUMN completed_at TEXT;
@@ -308,7 +324,7 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
   }
 
   if (currentVersion < 2) {
-    await db.withTransactionAsync(async () => {
+    await runInTransaction(db, async () => {
       await db.execAsync(`
         ALTER TABLE sessions ADD COLUMN remote_session_id TEXT;
       `);
@@ -337,7 +353,7 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
   }
 
   if (currentVersion < 3) {
-    await db.withTransactionAsync(async () => {
+    await runInTransaction(db, async () => {
       // Progress Sync (account sessions): server-revision baseline stamped on
       // each op, an ack flag so synced ops are not re-uploaded, and a folded
       // server-authoritative snapshot that becomes the reload base.
@@ -361,7 +377,7 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
   }
 
   if (currentVersion < 4) {
-    await db.withTransactionAsync(async () => {
+    await runInTransaction(db, async () => {
       // Last-activity timestamp for sorting the Stitching Table by recency
       // rather than by creation order.
       await db.execAsync(`
@@ -375,7 +391,7 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
   }
 
   if (currentVersion < 5) {
-    await db.withTransactionAsync(async () => {
+    await runInTransaction(db, async () => {
       await db.execAsync(`
         CREATE TABLE IF NOT EXISTS gameplay_events (
           event_id TEXT PRIMARY KEY NOT NULL,
@@ -398,7 +414,7 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
   }
 
   if (currentVersion < 6) {
-    await db.withTransactionAsync(async () => {
+    await runInTransaction(db, async () => {
       // The undo/redo history is stored as a bounded array of FULL grid+palette snapshots (not an operation/diff log),
       // because Save-as-New edits include both single-cell recolors and "replace one DMC color throughout the whole grid"
       // bulk edits, and computing precise inverse operations for both correctly is unnecessary complexity when a capped
@@ -810,7 +826,7 @@ export async function insertProgressOpsBatch(ops: ProgressOperation[]): Promise<
   if (ops.length === 0) return;
   const db = await getDatabase();
   const latestBySession = new Map<string, string>();
-  await db.withTransactionAsync(async () => {
+  await runInTransaction(db, async () => {
     for (const op of ops) {
       await db.runAsync(
         `INSERT OR IGNORE INTO progress_ops (op_id, session_id, device_id, device_seq, cell_index, desired_state, base_revision, server_base_revision, created_at)
@@ -907,7 +923,7 @@ export async function getUnackedProgressOps(
 export async function markProgressOpsAcked(opIds: string[]): Promise<void> {
   if (opIds.length === 0) return;
   const db = await getDatabase();
-  await db.withTransactionAsync(async () => {
+  await runInTransaction(db, async () => {
     for (const opId of opIds) {
       await db.runAsync('DELETE FROM progress_ops WHERE op_id = ?', opId);
     }
@@ -917,7 +933,7 @@ export async function markProgressOpsAcked(opIds: string[]): Promise<void> {
 export async function insertGameplayEventsBatch(events: GameplayEvent[]): Promise<void> {
   if (events.length === 0) return;
   const db = await getDatabase();
-  await db.withTransactionAsync(async () => {
+  await runInTransaction(db, async () => {
     for (const event of events) {
       await db.runAsync(
         `INSERT OR IGNORE INTO gameplay_events (event_id, session_id, kind, dmc_code, client_seq, occurred_at)
@@ -959,7 +975,7 @@ export async function getUnackedGameplayEvents(limit: number): Promise<GameplayE
 export async function markGameplayEventsAcked(eventIds: string[]): Promise<void> {
   if (eventIds.length === 0) return;
   const db = await getDatabase();
-  await db.withTransactionAsync(async () => {
+  await runInTransaction(db, async () => {
     for (const eventId of eventIds) {
       await db.runAsync('DELETE FROM gameplay_events WHERE event_id = ?', eventId);
     }
