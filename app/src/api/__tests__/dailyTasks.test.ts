@@ -1,4 +1,4 @@
-import { postGameplayEvents, DailyTaskSyncError } from '../dailyTasks';
+import { postGameplayEvents, DailyTaskSyncError, fetchDailyTaskBoard } from '../dailyTasks';
 
 // Mock the authenticated fetch wrapper so no network/identity is touched.
 jest.mock('../apiFetch', () => ({
@@ -85,5 +85,29 @@ describe('dailyTasks economy client', () => {
     await expect(postGameplayEvents(mockPayload)).rejects.toThrow(
       'Gameplay event flush failed: status 400',
     );
+  });
+
+  test('fetchDailyTaskBoard returns the parsed board on success', async () => {
+    const board = {
+      rewardDay: '2026-07-22',
+      resetsAt: '2026-07-23T00:00:00.000Z',
+      balance: 40,
+      tasks: [
+        { key: 'cells_100' as const, target: 100, progress: 13, completed: false, granted: false },
+        { key: 'three_colors_10' as const, target: 3, progress: 0, completed: false, granted: false },
+        { key: 'color_completion' as const, target: 1, progress: 1, completed: true, granted: true },
+      ],
+    };
+    apiFetch.mockResolvedValue(jsonResponse(200, board));
+
+    await expect(fetchDailyTaskBoard()).resolves.toEqual(board);
+    expect(apiFetch).toHaveBeenCalledWith('/v1/economy/daily-tasks');
+  });
+
+  test('fetchDailyTaskBoard throws DailyTaskSyncError carrying the status on a non-ok response', async () => {
+    apiFetch.mockResolvedValue(jsonResponse(403, { message: 'Guest account forbidden' }));
+
+    await expect(fetchDailyTaskBoard()).rejects.toBeInstanceOf(DailyTaskSyncError);
+    await expect(fetchDailyTaskBoard()).rejects.toMatchObject({ status: 403 });
   });
 });

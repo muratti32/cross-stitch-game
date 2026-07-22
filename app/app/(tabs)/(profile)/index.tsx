@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Pressable, ActivityIndicator } from 'react-native';
-import { Screen, EmptyState, Card, CachedImage, Button } from '@/components';
+import { Screen, EmptyState, Card, CachedImage, Button, DailyTasksCard } from '@/components';
 import { Theme } from '@/theme/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { useIdentityStore } from '@/identity/guestIdentity';
+import { useCoinBalance } from '@/api/economy';
 import { shortenGuestId } from '@/identity/identityLogic';
 import { useRouter } from 'expo-router';
 import { listPersonalPatterns, type PersonalPattern } from '@/conversion';
@@ -13,6 +14,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'my-patterns' | 'liked'>('my-patterns');
   const { guestId, guestCreatedAt, accountEmail, accountProvider, isAccount, isAuthenticated, isPending, isOfflinePending, bootstrap } = useIdentityStore();
+  const { data: coinBalance } = useCoinBalance();
   const [personalPatterns, setPersonalPatterns] = useState<PersonalPattern[]>([]);
   const [patternsLoading, setPatternsLoading] = useState(false);
   const [openingPatternId, setOpeningPatternId] = useState<string | null>(null);
@@ -44,7 +46,7 @@ export default function ProfileScreen() {
   }, [activeTab, isAccount]);
 
   const playerStats = {
-    coins: 0,
+    coins: coinBalance ?? 0,
     creationsCount: personalPatterns.length,
     completedCount: 0,
   };
@@ -140,6 +142,8 @@ export default function ProfileScreen() {
           <Text style={styles.statLabel}>Creations</Text>
         </View>
       </View>
+
+      <DailyTasksCard enabled={isAccount} />
 
       {/* Tab Switcher */}
       <View style={styles.tabBar}>

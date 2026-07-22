@@ -1,6 +1,7 @@
 import { flushGameplayEvents } from '../gameplayEventEngine';
 import * as localDb from '../../local-db';
 import * as api from '../../api/dailyTasks';
+import { queryClient } from '../../providers';
 
 jest.mock('../../local-db', () => ({
   getUnackedGameplayEvents: jest.fn(),
@@ -130,5 +131,66 @@ describe('flushGameplayEvents', () => {
     expect(mockedDb.getUnackedGameplayEvents).toHaveBeenCalledTimes(1);
     expect(mockedApi.postGameplayEvents).toHaveBeenCalledTimes(1);
     expect(mockedDb.markGameplayEventsAcked).not.toHaveBeenCalled();
+  });
+
+  it('invalidates the dailyTasks query once after a successful flush', async () => {
+    const mockEvents = [
+      {
+        eventId: 'e1',
+        sessionId: 's1',
+        kind: 'stitch_action' as const,
+        dmcCode: '310',
+        clientSeq: 1,
+        occurredAt: '2026-07-22T10:41:52Z',
+      },
+    ];
+    mockedDb.getUnackedGameplayEvents.mockResolvedValueOnce(mockEvents);
+    mockedApi.postGameplayEvents.mockResolvedValueOnce(undefined);
+    mockedDb.markGameplayEventsAcked.mockResolvedValueOnce(undefined);
+
+    const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
+
+    await flushGameplayEvents();
+
+    expect(invalidateSpy).toHaveBeenCalledTimes(1);
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['economy', 'dailyTasks'] });
+
+    invalidateSpy.mockRestore();
+  });
+
+  it('does not invalidate the dailyTasks query when there is nothing queued', async () => {
+    mockedDb.getUnackedGameplayEvents.mockResolvedValueOnce([]);
+
+    const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
+
+    await flushGameplayEvents();
+
+    expect(invalidateSpy).not.toHaveBeenCalled();
+
+    invalidateSpy.mockRestore();
+  });
+
+  it('does not invalidate the dailyTasks query when postGameplayEvents rejects', async () => {
+    const mockEvents = [
+      {
+        eventId: 'e1',
+        sessionId: 's1',
+        kind: 'stitch_action' as const,
+        dmcCode: '310',
+        clientSeq: 1,
+        occurredAt: '2026-07-22T10:41:52Z',
+      },
+    ];
+    const error = new Error('Network error');
+    mockedDb.getUnackedGameplayEvents.mockResolvedValueOnce(mockEvents);
+    mockedApi.postGameplayEvents.mockRejectedValueOnce(error);
+
+    const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
+
+    await expect(flushGameplayEvents()).rejects.toThrow(error);
+
+    expect(invalidateSpy).not.toHaveBeenCalled();
+
+    invalidateSpy.mockRestore();
   });
 });
