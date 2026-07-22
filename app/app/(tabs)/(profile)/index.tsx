@@ -200,6 +200,12 @@ export default function ProfileScreen() {
                   onPress={() => void openPersonalPattern(pattern)}
                   style={styles.playButton}
                 />
+                <Button
+                  title="Edit"
+                  variant="secondary"
+                  onPress={() => router.push(`/(tabs)/(create)/pattern-editor?patternId=${pattern.id}`)}
+                  style={styles.patternEditButton}
+                />
               </Card>
             ))}
             {patternsError && <Text style={styles.patternError}>{patternsError}</Text>}
@@ -368,6 +374,11 @@ const styles = StyleSheet.create({
   playButton: {
     height: 36,
     paddingHorizontal: Theme.spacing.md,
+  },
+  patternEditButton: {
+    height: 36,
+    paddingHorizontal: Theme.spacing.md,
+    marginLeft: Theme.spacing.sm,
   },
   patternError: {
     color: Theme.colors.error,

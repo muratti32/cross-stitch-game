@@ -3,6 +3,13 @@ import { Config } from '@/config';
 import { decodePatternArtifact } from '@/pattern-artifact';
 import type { PatternData } from '@/pattern-artifact';
 
+export class ApiError extends Error {
+  constructor(message: string, public readonly status: number) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
 export interface DmcColor {
   dmcCode: string;
   name: string;
@@ -82,7 +89,7 @@ export async function createDerivedPattern(
   });
   if (!response.ok) {
     const message = await readServerMessage(response);
-    throw new Error(message ?? `Create derived pattern failed (${response.status})`);
+    throw new ApiError(message ?? `Create derived pattern failed (${response.status})`, response.status);
   }
   const body = (await response.json()) as CreateDerivedPatternResult;
   return withAbsolutePreviewUrl(body);

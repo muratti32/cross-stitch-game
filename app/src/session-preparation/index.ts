@@ -83,6 +83,31 @@ export function base64ToUint8Array(base64: string): Uint8Array {
   return bytes;
 }
 
+export function uint8ArrayToBase64(bytes: Uint8Array): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  let result = '';
+  let i = 0;
+  for (; i + 2 < bytes.length; i += 3) {
+    result += chars[bytes[i] >> 2];
+    result += chars[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
+    result += chars[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
+    result += chars[bytes[i + 2] & 63];
+  }
+  const remaining = bytes.length - i;
+  if (remaining === 1) {
+    result += chars[bytes[i] >> 2];
+    result += chars[(bytes[i] & 3) << 4];
+    result += '==';
+  } else if (remaining === 2) {
+    result += chars[bytes[i] >> 2];
+    result += chars[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
+    result += chars[(bytes[i + 1] & 15) << 2];
+    result += '=';
+  }
+  return result;
+}
+
+
 export interface PrepareResponse {
   sessionId: string;
   patternId: string;
