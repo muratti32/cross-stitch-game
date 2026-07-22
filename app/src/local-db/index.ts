@@ -38,6 +38,17 @@ export interface ProgressOperation {
   createdAt: string;
 }
 
+export type GameplayEventKind = 'stitch_action' | 'color_completion';
+
+export interface GameplayEvent {
+  eventId: string;
+  sessionId: string;
+  kind: GameplayEventKind;
+  dmcCode: string;
+  clientSeq: number;
+  occurredAt: string;
+}
+
 export interface Checkpoint {
   sessionId: string;
   revision: number;
@@ -325,6 +336,29 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
         UPDATE sessions SET updated_at = created_at WHERE updated_at IS NULL;
       `);
       await db.execAsync('PRAGMA user_version = 4;');
+    });
+  }
+
+  if (currentVersion < 5) {
+    await db.withTransactionAsync(async () => {
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS gameplay_events (
+          event_id TEXT PRIMARY KEY NOT NULL,
+          session_id TEXT NOT NULL,
+          kind TEXT NOT NULL,
+          dmc_code TEXT NOT NULL,
+          client_seq INTEGER NOT NULL,
+          occurred_at TEXT NOT NULL,
+          acked INTEGER NOT NULL DEFAULT 0
+        );
+      `);
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS gameplay_event_seq (
+          session_id TEXT PRIMARY KEY NOT NULL,
+          seq INTEGER NOT NULL
+        );
+      `);
+      await db.execAsync('PRAGMA user_version = 5;');
     });
   }
 }
@@ -808,6 +842,76 @@ export async function markProgressOpsAcked(opIds: string[]): Promise<void> {
       await db.runAsync('DELETE FROM progress_ops WHERE op_id = ?', opId);
     }
   });
+}
+
+export async function insertGameplayEventsBatch(events: GameplayEvent[]): Promise<void> {
+  if (events.length === 0) return;
+  const db = await getDatabase();
+  await db.withTransactionAsync(async () => {
+    for (const event of events) {
+      await db.runAsync(
+        `INSERT OR IGNORE INTO gameplay_events (event_id, session_id, kind, dmc_code, client_seq, occurred_at)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        event.eventId,
+        event.sessionId,
+        event.kind,
+        event.dmcCode,
+        event.clientSeq,
+        event.occurredAt,
+      );
+    }
+  });
+}
+
+export async function getUnackedGameplayEvents(limit: number): Promise<GameplayEvent[]> {
+  const db = await getDatabase();
+  const rows = await db.getAllAsync<{
+    event_id: string;
+    session_id: string;
+    kind: string;
+    dmc_code: string;
+    client_seq: number;
+    occurred_at: string;
+  }>(
+    'SELECT event_id, session_id, kind, dmc_code, client_seq, occurred_at FROM gameplay_events WHERE acked = 0 ORDER BY rowid ASC LIMIT ?',
+    limit,
+  );
+  return rows.map((row) => ({
+    eventId: row.event_id,
+    sessionId: row.session_id,
+    kind: row.kind as GameplayEventKind,
+    dmcCode: row.dmc_code,
+    clientSeq: row.client_seq,
+    occurredAt: row.occurred_at,
+  }));
+}
+
+export async function markGameplayEventsAcked(eventIds: string[]): Promise<void> {
+  if (eventIds.length === 0) return;
+  const db = await getDatabase();
+  await db.withTransactionAsync(async () => {
+    for (const eventId of eventIds) {
+      await db.runAsync('DELETE FROM gameplay_events WHERE event_id = ?', eventId);
+    }
+  });
+}
+
+export async function getGameplaySeqHigh(sessionId: string): Promise<number> {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{ seq: number }>(
+    'SELECT seq FROM gameplay_event_seq WHERE session_id = ?',
+    sessionId,
+  );
+  return row?.seq ?? 0;
+}
+
+export async function setGameplaySeqHigh(sessionId: string, value: number): Promise<void> {
+  const db = await getDatabase();
+  await db.runAsync(
+    'INSERT OR REPLACE INTO gameplay_event_seq (session_id, seq) VALUES (?, ?)',
+    sessionId,
+    value,
+  );
 }
 
 /**

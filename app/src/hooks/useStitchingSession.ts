@@ -16,7 +16,12 @@ import {
   unpackCompletedBitmap,
   ProgressOperation,
   StitchingSession,
+  GameplayEvent,
+  getGameplaySeqHigh,
+  setGameplaySeqHigh,
+  insertGameplayEventsBatch,
 } from '../local-db';
+import { flushGameplayEvents } from '../sync/gameplayEventEngine';
 import * as FileSystem from 'expo-file-system/legacy';
 
 import { loadBundledPattern } from '../bundled-patterns';
@@ -64,6 +69,8 @@ export function useStitchingSession(sessionId: string | undefined) {
   const syncInFlightRef = useRef<boolean>(false);
   const pendingOpsRef = useRef<ProgressOperation[]>([]);
   const undoStackRef = useRef<number[]>([]);
+  const gameplayClientSeqRef = useRef<number>(0);
+  const pendingGameplayEventsRef = useRef<GameplayEvent[]>([]);
   
   const sessionRef = useRef<StitchingSession | null>(null);
   const patternDataRef = useRef<PatternData | null>(null);
@@ -146,6 +153,34 @@ export function useStitchingSession(sessionId: string | undefined) {
     }
   }, []);
 
+  const flushPendingGameplayEvents = useCallback(async () => {
+    const eventsToFlush = [...pendingGameplayEventsRef.current];
+    if (eventsToFlush.length === 0) return;
+    pendingGameplayEventsRef.current = [];
+
+    try {
+      await insertGameplayEventsBatch(eventsToFlush);
+      const sess = sessionRef.current;
+      if (sess) {
+        await setGameplaySeqHigh(sess.id, gameplayClientSeqRef.current);
+      }
+    } catch (err) {
+      console.error('Failed to flush gameplay events to local db:', err);
+      pendingGameplayEventsRef.current = [...eventsToFlush, ...pendingGameplayEventsRef.current];
+    }
+  }, []);
+
+  const flushGameplayEventsToServer = useCallback(async () => {
+    if (!isAccountSessionRef.current) return;
+    try {
+      await flushPendingGameplayEvents();
+      await flushGameplayEvents();
+    } catch {
+      // Stay queued locally (nothing is deleted from local-db until a 201
+      // response); the next sync trigger retries.
+    }
+  }, [flushPendingGameplayEvents]);
+
   // Push local ops + pull authoritative state for account sessions. Never
   // blocks local play; failures (offline, transient) are swallowed and retried
   // on the next trigger.
@@ -165,6 +200,7 @@ export function useStitchingSession(sessionId: string | undefined) {
 
     syncInFlightRef.current = true;
     try {
+      await flushGameplayEventsToServer();
       // Persist buffered ops first so the engine uploads a consistent set.
       await flushPendingOps();
 
@@ -201,7 +237,7 @@ export function useStitchingSession(sessionId: string | undefined) {
     } finally {
       syncInFlightRef.current = false;
     }
-  }, [flushPendingOps, updateCountsAndCompletion]);
+  }, [flushPendingOps, updateCountsAndCompletion, flushGameplayEventsToServer]);
 
   // Save checkpoint helper
   const saveSessionCheckpoint = useCallback(async () => {
@@ -251,6 +287,8 @@ export function useStitchingSession(sessionId: string | undefined) {
           if (active) setError('Stitching session not found.');
           return;
         }
+
+        gameplayClientSeqRef.current = await getGameplaySeqHigh(sess.id);
 
         // 4. Update status to active if ready
         if (sess.status === 'ready') {
@@ -364,12 +402,13 @@ export function useStitchingSession(sessionId: string | undefined) {
   useEffect(() => {
     const timer = setInterval(() => {
       flushPendingOps();
+      flushPendingGameplayEvents();
     }, 500);
 
     return () => {
       clearInterval(timer);
     };
-  }, [flushPendingOps]);
+  }, [flushPendingOps, flushPendingGameplayEvents]);
 
   // Opportunistic sync loop (account sessions only; runSync self-gates).
   useEffect(() => {
@@ -449,6 +488,34 @@ export function useStitchingSession(sessionId: string | undefined) {
 
       // O(1) incremental counters — no grid scan on the stitch path
       remainingCountsRef.current[colorIdx - 1]--;
+
+      if (isAccountSessionRef.current) {
+        const dmcCode = pat.palette[activeColorIndex].dmcCode;
+        const occurredAt = new Date().toISOString();
+
+        gameplayClientSeqRef.current++;
+        pendingGameplayEventsRef.current.push({
+          eventId: generateUUID(),
+          sessionId: sess.id,
+          kind: 'stitch_action',
+          dmcCode,
+          clientSeq: gameplayClientSeqRef.current,
+          occurredAt,
+        });
+
+        if (remainingCountsRef.current[colorIdx - 1] === 0) {
+          gameplayClientSeqRef.current++;
+          pendingGameplayEventsRef.current.push({
+            eventId: generateUUID(),
+            sessionId: sess.id,
+            kind: 'color_completion',
+            dmcCode,
+            clientSeq: gameplayClientSeqRef.current,
+            occurredAt,
+          });
+        }
+      }
+
       completedCellsRef.current++;
       setRemainingCounts([...remainingCountsRef.current]);
       setCompletedCellsCount(completedCellsRef.current);

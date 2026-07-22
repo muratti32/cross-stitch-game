@@ -562,6 +562,10 @@ _Avoid_: Paid correction, reset, delete progress
 A gesture that begins by pressing an eligible cell and produces one distinct Stitch Action and Progress Operation for every unfinished matching cell crossed while dragging. Non-matching and already completed cells produce no action, so Daily Tasks count newly filled cells rather than sweep gestures. An ordinary drag before the sweep begins remains a viewport pan.
 _Avoid_: Paint mode, drag fill, continuous stitch
 
+**Gameplay Event**:
+A pseudonymous first-party record of a discrete player action or milestone — a Stitch Action, Thread Color Completion, session start, or funnel step — carrying only opaque identities and batched to the Game Backend over the existing sync channel per ADR-0035. Daily Task progress and product analytics are both queried from the same event stream; a Gameplay Event is evidence, not a reward grant or a Progress Operation.
+_Avoid_: Analytics ping, telemetry event, Progress Operation, Pending Coin Reward
+
 **Edge Auto-Pan**:
 The viewport movement triggered when an active Stitch Sweep approaches a screen edge, allowing the player to continue stitching beyond the currently visible area without lifting their finger.
 _Avoid_: Auto-scroll, follow finger, edge scroll

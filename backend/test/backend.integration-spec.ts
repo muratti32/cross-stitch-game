@@ -2468,6 +2468,103 @@ describe('Stitch Wish backend integration', () => {
         granted: false,
       });
     });
+
+    it('processes a realistic mixed stitch sweep and updates tasks & database tables correctly', async () => {
+      const account = await createAccount();
+      const patternId = await seedPattern('Daily Sweep test', 10, 10);
+      const sessionId = await prepareSession(account.accessToken, patternId);
+
+      const events = [];
+      let seq = 0;
+      // 5 stitch actions for '310'
+      for (let i = 0; i < 5; i++) {
+        events.push({
+          eventId: randomUUID(),
+          kind: 'stitch_action',
+          sessionId,
+          dmcCode: '310',
+          clientSeq: seq++,
+          occurredAt: new Date().toISOString(),
+        });
+      }
+      // 8 stitch actions for 'B5200'
+      for (let i = 0; i < 8; i++) {
+        events.push({
+          eventId: randomUUID(),
+          kind: 'stitch_action',
+          sessionId,
+          dmcCode: 'B5200',
+          clientSeq: seq++,
+          occurredAt: new Date().toISOString(),
+        });
+      }
+      // 1 color_completion event for '310'
+      events.push({
+        eventId: randomUUID(),
+        kind: 'color_completion',
+        sessionId,
+        dmcCode: '310',
+        clientSeq: seq++,
+        occurredAt: new Date().toISOString(),
+      });
+
+      const response = await request(httpServer)
+        .post('/v1/economy/daily-tasks/events')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ events })
+        .expect(201);
+
+      // Also assert the response body's tasks array shows color_completion granted true,
+      // and cells_100/three_colors_10 not yet completed (since neither threshold was reached).
+      const colorCompTask = response.body.tasks.find((t: any) => t.key === 'color_completion');
+      expect(colorCompTask).toMatchObject({
+        progress: 1,
+        completed: true,
+        granted: true,
+      });
+
+      const cellsTask = response.body.tasks.find((t: any) => t.key === 'cells_100');
+      expect(cellsTask).toMatchObject({
+        progress: 13,
+        completed: false,
+        granted: false,
+      });
+
+      const threeColorsTask = response.body.tasks.find((t: any) => t.key === 'three_colors_10');
+      expect(threeColorsTask).toMatchObject({
+        progress: 0,
+        completed: false,
+        granted: false,
+      });
+
+      // Query economy.gameplay_events for the session's principal and assert the correct row count
+      // and that the color_completion kind row's dmc_code matches.
+      const dbEvents = await dataSource.query<{ kind: string; dmc_code: string }[]>(
+        `SELECT kind, dmc_code FROM economy.gameplay_events
+         WHERE principal_type = 'account' AND principal_id = $1`,
+        [account.accountId],
+      );
+      expect(dbEvents).toHaveLength(14);
+      const colorCompRow = dbEvents.find((row) => row.kind === 'color_completion');
+      expect(colorCompRow).toBeDefined();
+      expect(colorCompRow?.dmc_code).toBe('310');
+
+      // Query economy.daily_color_action_counts and assert action_count per dmc_code matches
+      // how many stitch_action events were sent for that color.
+      const colorCounts = await dataSource.query<{ dmc_code: string; action_count: number }[]>(
+        `SELECT dmc_code, action_count FROM economy.daily_color_action_counts
+         WHERE principal_type = 'account' AND principal_id = $1`,
+        [account.accountId],
+      );
+      expect(colorCounts).toHaveLength(2);
+      const count310 = colorCounts.find((row) => row.dmc_code === '310');
+      expect(count310).toBeDefined();
+      expect(Number(count310?.action_count)).toBe(5);
+
+      const countB5200 = colorCounts.find((row) => row.dmc_code === 'B5200');
+      expect(countB5200).toBeDefined();
+      expect(Number(countB5200?.action_count)).toBe(8);
+    });
   });
 });
 
