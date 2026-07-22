@@ -8,6 +8,7 @@ import { JobsModule } from '../jobs/jobs.module';
 import {
   ConversionController,
   PersonalPatternPreviewsController,
+  PersonalPatternArtifactsController,
 } from './conversion.controller';
 import { ConversionEngineClient } from './conversion-engine.client';
 import { ConversionJobConsumerService } from './conversion-job-consumer.service';
@@ -19,7 +20,11 @@ import {
 } from './entities';
 
 @Module({
-  controllers: [ConversionController, PersonalPatternPreviewsController],
+  controllers: [
+    ConversionController,
+    PersonalPatternPreviewsController,
+    PersonalPatternArtifactsController,
+  ],
   exports: [ConversionEngineClient, ConversionJobConsumerService, ConversionService],
   imports: [
     TypeOrmModule.forFeature([

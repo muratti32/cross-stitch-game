@@ -77,6 +77,14 @@ export class ConversionController {
   listDmcColors() {
     return DMC_COLORS;
   }
+
+  @Get('personal-patterns/:id/artifact-grant')
+  getPersonalPatternArtifactGrant(
+    @CurrentPrincipal() principal: AuthPrincipal,
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ) {
+    return this.conversions.getPersonalPatternArtifactGrant(principal, id);
+  }
 }
 
 @Controller('personal-pattern-previews')
@@ -97,6 +105,28 @@ export class PersonalPatternPreviewsController {
     );
     response.setHeader('Cache-Control', 'private, max-age=300');
     response.setHeader('Content-Type', 'image/png');
+    response.send(bytes);
+  }
+}
+
+@Controller('personal-pattern-artifacts')
+export class PersonalPatternArtifactsController {
+  constructor(private readonly conversions: ConversionService) {}
+
+  @Get(':id')
+  async getArtifact(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Query('exp') exp: string,
+    @Query('sig') signature: string,
+    @Res() response: Response,
+  ): Promise<void> {
+    const bytes = await this.conversions.getSignedArtifact(
+      id,
+      Number(exp),
+      signature,
+    );
+    response.setHeader('Cache-Control', 'private, max-age=300');
+    response.setHeader('Content-Type', 'application/octet-stream');
     response.send(bytes);
   }
 }

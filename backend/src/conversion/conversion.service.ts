@@ -403,6 +403,51 @@ export class ConversionService {
     return bytes;
   }
 
+  async getPersonalPatternArtifactGrant(principal: AuthPrincipal, patternId: string) {
+    const accountId = this.requireAccount(principal);
+    const pattern = await this.patterns.findOneBy({
+      id: patternId,
+      ownerAccountId: accountId,
+      visibility: 'personal',
+    });
+    if (pattern === null) {
+      throw new NotFoundException('Personal Pattern not found');
+    }
+    const exp = Math.floor(Date.now() / 1000) + this.config.grantTtlSeconds;
+    const signature = this.signPreviewGrant(pattern.id, exp);
+    return {
+      artifactUrl: `/v1/personal-pattern-artifacts/${pattern.id}?exp=${exp}&sig=${signature}`,
+      checksum: pattern.artifactChecksum,
+      byteLength: pattern.artifactByteLength,
+      schemaVersion: pattern.artifactSchemaVersion,
+      width: pattern.width,
+      height: pattern.height,
+      title: pattern.title,
+    };
+  }
+
+  async getSignedArtifact(
+    patternId: string,
+    exp: number,
+    signature: string,
+  ): Promise<Buffer> {
+    if (!this.verifyPreviewGrant(patternId, exp, signature)) {
+      throw new ForbiddenException('Invalid or expired artifact grant');
+    }
+    const pattern = await this.patterns.findOneBy({
+      id: patternId,
+      visibility: 'personal',
+    });
+    if (pattern === null) {
+      throw new NotFoundException('Personal Pattern artifact not found');
+    }
+    const bytes = await this.storage.get(pattern.artifactObjectKey);
+    if (bytes === null) {
+      throw new NotFoundException('Personal Pattern artifact not found');
+    }
+    return bytes;
+  }
+
   private async getPersonalPattern(accountId: string, patternId: string) {
     const [pattern, recipe] = await Promise.all([
       this.patterns.findOneBy({

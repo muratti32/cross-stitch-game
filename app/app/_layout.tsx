@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import { Slot } from 'expo-router';
 import * as Sentry from '@sentry/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -10,6 +11,7 @@ import { bootstrap } from '../src/identity/guestIdentity';
 import { initializeAdMob } from '../src/ads';
 import { initSentry, syncSentryPlayerReferenceWithIdentity } from '../src/observability/sentry';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { syncPendingPersonalPatterns } from '../src/pattern-editor/sync';
 
 // Must run before anything else that could throw.
 initSentry();
@@ -39,6 +41,12 @@ function RootLayout() {
             err instanceof Error ? err.message : String(err),
           );
         });
+        syncPendingPersonalPatterns().catch((err: unknown) => {
+          console.log(
+            'Pending Personal Pattern sync deferred:',
+            err instanceof Error ? err.message : String(err),
+          );
+        });
       } catch (e) {
         console.warn('Failed to initialize database:', e);
       } finally {
@@ -50,6 +58,18 @@ function RootLayout() {
       }
     }
     prepare();
+  }, []);
+
+  useEffect(() => {
+    const handleAppStateChange = (nextStatus: AppStateStatus) => {
+      if (nextStatus === 'active') {
+        syncPendingPersonalPatterns().catch(() => undefined);
+      }
+    };
+    const sub = AppState.addEventListener('change', handleAppStateChange);
+    return () => {
+      sub.remove();
+    };
   }, []);
 
   if (!dbReady) {

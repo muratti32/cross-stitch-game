@@ -1167,6 +1167,48 @@ describe('Stitch Wish backend integration', () => {
         rgbHex: expect.stringMatching(/^#[0-9A-F]{6}$/),
       });
     });
+
+    it('issues an artifact-download grant for an owned Personal Pattern and serves the correct bytes', async () => {
+      const engine = mockSuccessfulEngine();
+      const account = await createAccount();
+      const jobId = await requestConversion(account.accessToken, 'Artifact Test');
+      await runConversion(jobId);
+      const completed = await processingJobs.findById(jobId);
+      const patternId = readStringRecord(completed?.result, 'patternId');
+
+      const grant = await request(httpServer)
+        .get(`/v1/conversions/personal-patterns/${patternId}/artifact-grant`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+
+      expect(grant.body).toMatchObject({
+        artifactUrl: expect.stringContaining(`/v1/personal-pattern-artifacts/${patternId}`),
+        checksum: expect.any(String),
+        byteLength: expect.any(Number),
+        schemaVersion: expect.any(Number),
+        width: expect.any(Number),
+        height: expect.any(Number),
+        title: 'Artifact Test',
+      });
+
+      const artifactUrl = readStringRecord(grant.body, 'artifactUrl');
+      const response = await request(httpServer)
+        .get(artifactUrl)
+        .expect(200)
+        .expect('Content-Type', /octet-stream/);
+
+      const hash = createHash('sha256').update(response.body).digest('hex');
+      expect(hash).toBe(grant.body.checksum);
+
+      // Other account gets 404
+      const otherAccount = await createAccount();
+      await request(httpServer)
+        .get(`/v1/conversions/personal-patterns/${patternId}/artifact-grant`)
+        .set('Authorization', `Bearer ${otherAccount.accessToken}`)
+        .expect(404);
+
+      engine.mockRestore();
+    });
   });
 
   describe('session preparation', () => {

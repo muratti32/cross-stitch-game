@@ -68,6 +68,41 @@ export interface SyncSnapshot {
   updatedAt: string;
 }
 
+export interface PaletteEntry {
+  dmcCode: string;
+  name: string;
+  rgbHex: string;
+}
+
+export interface EditorDraftSnapshot {
+  gridBase64: string;
+  palette: PaletteEntry[];
+}
+
+export interface EditorDraftHistory {
+  snapshots: EditorDraftSnapshot[];
+  cursor: number;
+}
+
+export interface EditorDraft {
+  sourcePatternId: string;
+  width: number;
+  height: number;
+  history: EditorDraftHistory;
+  updatedAt: string;
+}
+
+export interface PendingPersonalPattern {
+  patternId: string;
+  sourcePatternId: string;
+  title: string;
+  width: number;
+  height: number;
+  palette: PaletteEntry[];
+  gridBase64: string;
+  createdAt: string;
+}
+
 let activeIdentity: string | null = null;
 let dbInstance: SQLite.SQLiteDatabase | null = null;
 
@@ -359,6 +394,41 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
         );
       `);
       await db.execAsync('PRAGMA user_version = 5;');
+    });
+  }
+
+  if (currentVersion < 6) {
+    await db.withTransactionAsync(async () => {
+      // The undo/redo history is stored as a bounded array of FULL grid+palette snapshots (not an operation/diff log),
+      // because Save-as-New edits include both single-cell recolors and "replace one DMC color throughout the whole grid"
+      // bulk edits, and computing precise inverse operations for both correctly is unnecessary complexity when a capped
+      // snapshot array gives correct, simple undo/redo at an acceptable storage cost for a single in-progress draft.
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS editor_drafts (
+          source_pattern_id TEXT PRIMARY KEY NOT NULL,
+          width INTEGER NOT NULL,
+          height INTEGER NOT NULL,
+          history_json TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        );
+      `);
+
+      // pending_personal_patterns intentionally has NO sync_status column: rows are deleted immediately upon
+      // successful sync (mirroring the existing pending_cancels outbox table's delete-on-ack idiom in this same file)
+      // — a row's mere EXISTENCE means "not yet synced".
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS pending_personal_patterns (
+          pattern_id TEXT PRIMARY KEY NOT NULL,
+          source_pattern_id TEXT NOT NULL,
+          title TEXT NOT NULL,
+          width INTEGER NOT NULL,
+          height INTEGER NOT NULL,
+          palette_json TEXT NOT NULL,
+          grid_base64 TEXT NOT NULL,
+          created_at TEXT NOT NULL
+        );
+      `);
+      await db.execAsync('PRAGMA user_version = 6;');
     });
   }
 }
@@ -1164,4 +1234,94 @@ export async function removePendingCancel(remoteSessionId: string): Promise<void
     'DELETE FROM pending_cancels WHERE remote_session_id = ?',
     remoteSessionId
   );
+}
+
+export async function getEditorDraft(sourcePatternId: string): Promise<EditorDraft | null> {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{
+    source_pattern_id: string;
+    width: number;
+    height: number;
+    history_json: string;
+    updated_at: string;
+  }>('SELECT * FROM editor_drafts WHERE source_pattern_id = ?', sourcePatternId);
+
+  if (!row) return null;
+  return {
+    sourcePatternId: row.source_pattern_id,
+    width: row.width,
+    height: row.height,
+    history: JSON.parse(row.history_json),
+    updatedAt: row.updated_at,
+  };
+}
+
+export async function saveEditorDraft(
+  sourcePatternId: string,
+  width: number,
+  height: number,
+  history: EditorDraftHistory,
+): Promise<void> {
+  const db = await getDatabase();
+  const updatedAt = new Date().toISOString();
+  const historyJson = JSON.stringify(history);
+  await db.runAsync(
+    'INSERT OR REPLACE INTO editor_drafts (source_pattern_id, width, height, history_json, updated_at) VALUES (?, ?, ?, ?, ?)',
+    sourcePatternId,
+    width,
+    height,
+    historyJson,
+    updatedAt,
+  );
+}
+
+export async function deleteEditorDraft(sourcePatternId: string): Promise<void> {
+  const db = await getDatabase();
+  await db.runAsync('DELETE FROM editor_drafts WHERE source_pattern_id = ?', sourcePatternId);
+}
+
+export async function addPendingPersonalPattern(record: PendingPersonalPattern): Promise<void> {
+  const db = await getDatabase();
+  const paletteJson = JSON.stringify(record.palette);
+  await db.runAsync(
+    'INSERT OR IGNORE INTO pending_personal_patterns (pattern_id, source_pattern_id, title, width, height, palette_json, grid_base64, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    record.patternId,
+    record.sourcePatternId,
+    record.title,
+    record.width,
+    record.height,
+    paletteJson,
+    record.gridBase64,
+    record.createdAt,
+  );
+}
+
+export async function getPendingPersonalPatterns(): Promise<PendingPersonalPattern[]> {
+  const db = await getDatabase();
+  const rows = await db.getAllAsync<{
+    pattern_id: string;
+    source_pattern_id: string;
+    title: string;
+    width: number;
+    height: number;
+    palette_json: string;
+    grid_base64: string;
+    created_at: string;
+  }>('SELECT * FROM pending_personal_patterns');
+
+  return rows.map((row) => ({
+    patternId: row.pattern_id,
+    sourcePatternId: row.source_pattern_id,
+    title: row.title,
+    width: row.width,
+    height: row.height,
+    palette: JSON.parse(row.palette_json),
+    gridBase64: row.grid_base64,
+    createdAt: row.created_at,
+  }));
+}
+
+export async function removePendingPersonalPattern(patternId: string): Promise<void> {
+  const db = await getDatabase();
+  await db.runAsync('DELETE FROM pending_personal_patterns WHERE pattern_id = ?', patternId);
 }
