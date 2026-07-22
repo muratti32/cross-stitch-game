@@ -2190,6 +2190,285 @@ describe('Stitch Wish backend integration', () => {
       );
     });
   });
+
+  describe('Daily Tasks', () => {
+    const dailyPalette = [
+      { dmcCode: '310', name: 'Black', rgbHex: '#000000' },
+      { dmcCode: 'B5200', name: 'Snow White', rgbHex: '#FFFFFF' },
+      { dmcCode: '321', name: 'Red', rgbHex: '#FF0000' },
+      { dmcCode: '333', name: 'Blue', rgbHex: '#0000FF' },
+    ];
+
+    async function createAccount(): Promise<{
+      accountId: string;
+      accessToken: string;
+    }> {
+      const email = `daily-${randomUUID()}@example.test`;
+      await request(httpServer)
+        .post('/v1/auth/email/request')
+        .send({ email })
+        .expect(202);
+      const deliveryCount = localEmailSender.getDeliveries().length;
+      await emailDispatcher.dispatchOnce();
+      const delivery = localEmailSender
+        .getDeliveries()
+        .slice(deliveryCount)
+        .reverse()
+        .find((candidate) => candidate.toEmail === email);
+      if (delivery === undefined) {
+        throw new Error('Email OTP delivery was not recorded');
+      }
+      const verified = await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send({ email, code: delivery.code })
+        .expect(200);
+      return {
+        accountId: readStringRecord(verified.body, 'accountId'),
+        accessToken: readStringRecord(verified.body, 'accessToken'),
+      };
+    }
+
+    async function seedPattern(
+      title: string,
+      width: number,
+      height: number,
+    ): Promise<string> {
+      const catalog = app.get(CatalogService);
+      const grid = new Uint8Array(width * height).fill(1);
+      const encoded = encodePatternArtifactV1({ width, height, palette: dailyPalette, grid });
+      const objectKey = `itest-daily/${title}/artifact.bin`;
+      await app.get(LocalObjectStorage).put(objectKey, encoded.bytes);
+      const pattern = await catalog.upsertPattern({
+        title,
+        creatorName: 'ITest Daily Team',
+        categoryCode: 'other',
+        width,
+        height,
+        paletteSize: dailyPalette.length,
+        artifactObjectKey: objectKey,
+        artifactChecksum: encoded.checksum,
+        artifactByteLength: encoded.byteLength,
+        artifactSchemaVersion: encoded.schemaVersion,
+        previewObjectKey: `itest-daily/${title}/preview.png`,
+        unlockPriceTier: null,
+        status: 'available',
+        publishedAt: new Date('2026-07-01T00:00:00.000Z'),
+        tagCodes: [],
+      });
+      return pattern.id;
+    }
+
+    async function prepareSession(
+      accessToken: string,
+      patternId: string,
+    ): Promise<string> {
+      const prepared = await request(httpServer)
+        .post('/v1/sessions/prepare')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ patternId })
+        .expect(201);
+      return readStringRecord(prepared.body, 'sessionId');
+    }
+
+    it('processes 100 stitch actions in one session and grants cells_100', async () => {
+      const account = await createAccount();
+      const patternId = await seedPattern('Daily 100 cells', 10, 10);
+      const sessionId = await prepareSession(account.accessToken, patternId);
+
+      const events = [];
+      for (let i = 0; i < 100; i++) {
+        events.push({
+          eventId: randomUUID(),
+          kind: 'stitch_action',
+          sessionId,
+          dmcCode: '310',
+          clientSeq: i,
+          occurredAt: new Date().toISOString(),
+        });
+      }
+
+      const response = await request(httpServer)
+        .post('/v1/economy/daily-tasks/events')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ events })
+        .expect(201);
+
+      expect(response.body.balance).toBe(10);
+      const task = response.body.tasks.find((t: any) => t.key === 'cells_100');
+      expect(task).toMatchObject({
+        progress: 100,
+        completed: true,
+        granted: true,
+      });
+
+      const replay = await request(httpServer)
+        .post('/v1/economy/daily-tasks/events')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ events })
+        .expect(201);
+
+      expect(replay.body.balance).toBe(10);
+    });
+
+    it('processes 10 stitch actions in 3 distinct colors (30 events) and grants three_colors_10', async () => {
+      const account = await createAccount();
+      const patternId = await seedPattern('Daily 3 colors', 10, 10);
+      const sessionId = await prepareSession(account.accessToken, patternId);
+
+      const events = [];
+      const colors = ['310', 'B5200', '321'];
+      let seq = 0;
+      for (const color of colors) {
+        for (let i = 0; i < 10; i++) {
+          events.push({
+            eventId: randomUUID(),
+            kind: 'stitch_action',
+            sessionId,
+            dmcCode: color,
+            clientSeq: seq++,
+            occurredAt: new Date().toISOString(),
+          });
+        }
+      }
+
+      const response = await request(httpServer)
+        .post('/v1/economy/daily-tasks/events')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ events })
+        .expect(201);
+
+      expect(response.body.balance).toBe(10);
+
+      const threeColorsTask = response.body.tasks.find((t: any) => t.key === 'three_colors_10');
+      expect(threeColorsTask).toMatchObject({
+        progress: 3,
+        completed: true,
+        granted: true,
+      });
+
+      const cellsTask = response.body.tasks.find((t: any) => t.key === 'cells_100');
+      expect(cellsTask).toMatchObject({
+        progress: 30,
+        completed: false,
+        granted: false,
+      });
+    });
+
+    it('processes one color_completion and grants color_completion task', async () => {
+      const account = await createAccount();
+      const patternId = await seedPattern('Daily color completion', 5, 5);
+      const sessionId = await prepareSession(account.accessToken, patternId);
+
+      const events = [
+        {
+          eventId: randomUUID(),
+          kind: 'color_completion',
+          sessionId,
+          dmcCode: '310',
+          clientSeq: 0,
+          occurredAt: new Date().toISOString(),
+        },
+      ];
+
+      const response = await request(httpServer)
+        .post('/v1/economy/daily-tasks/events')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ events })
+        .expect(201);
+
+      expect(response.body.balance).toBe(10);
+      const task = response.body.tasks.find((t: any) => t.key === 'color_completion');
+      expect(task).toMatchObject({
+        progress: 1,
+        completed: true,
+        granted: true,
+      });
+    });
+
+    it('skips events referencing a sessionId NOT owned by the account', async () => {
+      const account1 = await createAccount();
+      const account2 = await createAccount();
+      const patternId = await seedPattern('Daily Session Ownership', 5, 5);
+      const sessionId1 = await prepareSession(account1.accessToken, patternId);
+
+      const events = [
+        {
+          eventId: randomUUID(),
+          kind: 'color_completion',
+          sessionId: sessionId1,
+          dmcCode: '310',
+          clientSeq: 0,
+          occurredAt: new Date().toISOString(),
+        },
+      ];
+
+      const response = await request(httpServer)
+        .post('/v1/economy/daily-tasks/events')
+        .set('Authorization', `Bearer ${account2.accessToken}`)
+        .send({ events })
+        .expect(201);
+
+      expect(response.body.balance).toBe(0);
+      const task = response.body.tasks.find((t: any) => t.key === 'color_completion');
+      expect(task).toMatchObject({
+        progress: 0,
+        completed: false,
+        granted: false,
+      });
+    });
+
+    it('getBoard returns correct progress and status details', async () => {
+      const account = await createAccount();
+      const patternId = await seedPattern('Daily Board test', 5, 5);
+      const sessionId = await prepareSession(account.accessToken, patternId);
+
+      const events = [];
+      for (let i = 0; i < 5; i++) {
+        events.push({
+          eventId: randomUUID(),
+          kind: 'stitch_action',
+          sessionId,
+          dmcCode: '333',
+          clientSeq: i,
+          occurredAt: new Date().toISOString(),
+        });
+      }
+
+      await request(httpServer)
+        .post('/v1/economy/daily-tasks/events')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ events })
+        .expect(201);
+
+      const boardResponse = await request(httpServer)
+        .get('/v1/economy/daily-tasks')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+
+      expect(boardResponse.body.tasks).toHaveLength(3);
+      expect(boardResponse.body.tasks[0]).toMatchObject({
+        key: 'cells_100',
+        target: 100,
+        progress: 5,
+        completed: false,
+        granted: false,
+      });
+      expect(boardResponse.body.tasks[1]).toMatchObject({
+        key: 'three_colors_10',
+        target: 3,
+        progress: 0,
+        completed: false,
+        granted: false,
+      });
+      expect(boardResponse.body.tasks[2]).toMatchObject({
+        key: 'color_completion',
+        target: 1,
+        progress: 0,
+        completed: false,
+        granted: false,
+      });
+    });
+  });
 });
 
 async function createDemoJobThroughApi(

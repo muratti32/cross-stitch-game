@@ -9,6 +9,8 @@ import {
   firstCompletionReward,
   unlockPrice,
   UnlockPriceTier,
+  DAILY_TASK_COIN,
+  DailyTaskKey,
 } from './economy.constants';
 import { CoinLedgerReason } from './entities';
 
@@ -46,6 +48,13 @@ export interface FirstCompletionGrantResult {
   balance: number;
   /** True when the reward for this (principal, pattern) already existed. */
   replayed: boolean;
+}
+
+export interface DailyTaskGrantResult {
+  granted: boolean;   // true when this call minted the task reward
+  amount: number;     // 10 on grant, 0 on replay
+  balance: number;    // balance after (or current on replay)
+  replayed: boolean;  // true when the task was already granted this Reward Day
 }
 
 export interface UnlockSpendResult {
@@ -265,6 +274,89 @@ export class CoinLedgerRepository {
       balance: Number(balanceRows[0].balance),
       replayed: false,
     };
+  }
+
+  async grantDailyTask(
+    manager: EntityManager,
+    principal: LedgerPrincipal,
+    rewardDay: string,
+    taskKey: DailyTaskKey,
+  ): Promise<DailyTaskGrantResult> {
+    const amount = DAILY_TASK_COIN;
+    const sourceKey = `daily_task:${principal.type}:${principal.id}:${rewardDay}:${taskKey}`;
+
+    const claim = returningRows<ClaimRow>(
+      await manager.query(
+        `INSERT INTO economy.coin_ledger_entries
+           (principal_type, principal_id, amount, reason, source_key, granted, metadata)
+         VALUES ($1, $2, $3, $4, $5, true, $6)
+         ON CONFLICT ON CONSTRAINT "UQ_coin_ledger_entries_source_key" DO NOTHING
+         RETURNING id`,
+        [
+          principal.type,
+          principal.id,
+          amount,
+          CoinLedgerReason.DailyTask,
+          sourceKey,
+          { rewardDay, taskKey },
+        ],
+      ),
+    );
+
+    if (claim.length === 0) {
+      const balance = await this.readBalance(manager, principal);
+      return { granted: false, amount: 0, balance, replayed: true };
+    }
+
+    const balanceRows = returningRows<BalanceRow>(
+      await manager.query(
+        `INSERT INTO economy.coin_balances (principal_type, principal_id, balance)
+         VALUES ($1, $2, $3)
+         ON CONFLICT ON CONSTRAINT "PK_coin_balances"
+           DO UPDATE SET balance = economy.coin_balances.balance + EXCLUDED.balance,
+                         updated_at = now()
+         RETURNING balance`,
+        [principal.type, principal.id, amount],
+      ),
+    );
+
+    return {
+      granted: true,
+      amount,
+      balance: Number(balanceRows[0].balance),
+      replayed: false,
+    };
+  }
+
+  async grantedDailyTaskKeys(
+    manager: EntityManager,
+    principal: LedgerPrincipal,
+    rewardDay: string,
+  ): Promise<Set<string>> {
+    const rows = await manager.query<{ source_key: string }[]>(
+      `SELECT source_key
+       FROM economy.coin_ledger_entries
+       WHERE principal_type = $1
+         AND principal_id = $2
+         AND reason = $3
+         AND source_key LIKE $4`,
+      [
+        principal.type,
+        principal.id,
+        CoinLedgerReason.DailyTask,
+        `daily_task:${principal.type}:${principal.id}:${rewardDay}:%`,
+      ],
+    );
+
+    const keys = new Set<string>();
+    for (const r of rows) {
+      const parts = r.source_key.split(':');
+      const last = parts[parts.length - 1];
+      if (last) {
+        keys.add(last);
+      }
+    }
+    return keys;
   }
 
   /**

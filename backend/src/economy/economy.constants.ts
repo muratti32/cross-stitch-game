@@ -51,3 +51,20 @@ export function firstCompletionReward(cells: number): number {
 export const UNLOCK_PRICE_TIER_COIN = { small: 75, medium: 150, large: 300 } as const;
 export type UnlockPriceTier = keyof typeof UNLOCK_PRICE_TIER_COIN; // 'small'|'medium'|'large'
 export function unlockPrice(tier: UnlockPriceTier): number { return UNLOCK_PRICE_TIER_COIN[tier]; }
+
+/** Coin auto-granted for completing one Daily Task (ADR-0011). */
+export const DAILY_TASK_COIN = 10;
+/** Task cells_100: total successful Stitch Actions required in a Reward Day. */
+export const DAILY_TASK_CELLS_TARGET = 100;
+/** Task three_colors_10: Stitch Actions needed in a single DMC color to count it. */
+export const DAILY_TASK_COLOR_ACTIONS_MIN = 10;
+/** Task three_colors_10: distinct qualifying DMC colors required. */
+export const DAILY_TASK_DISTINCT_COLORS_TARGET = 3;
+
+export type DailyTaskKey = 'cells_100' | 'three_colors_10' | 'color_completion';
+export const DAILY_TASK_KEYS: readonly DailyTaskKey[] = [
+  'cells_100',
+  'three_colors_10',
+  'color_completion',
+];
+

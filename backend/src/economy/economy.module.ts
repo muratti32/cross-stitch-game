@@ -12,6 +12,8 @@ import { EconomyReadService } from './economy-read.service';
 import { RewardGrantService } from './reward-grant.service';
 import { PatternUnlockService } from './pattern-unlock.service';
 import { PatternUnlockEntity } from './entities';
+import { DailyTaskController } from './daily-task.controller';
+import { DailyTaskService } from './daily-task.service';
 
 @Module({
   imports: [
@@ -19,13 +21,14 @@ import { PatternUnlockEntity } from './entities';
     AuthModule,
     AppConfigModule,
   ],
-  controllers: [AdMobSsvController, EconomyController],
+  controllers: [AdMobSsvController, EconomyController, DailyTaskController],
   providers: [
     CoinLedgerRepository,
     AdMobSsvVerifierService,
     RewardGrantService,
     EconomyReadService,
     PatternUnlockService,
+    DailyTaskService,
   ],
   exports: [CoinLedgerRepository, PatternUnlockService],
 })
