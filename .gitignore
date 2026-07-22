@@ -1,0 +1,8 @@
+*.ipa
+*.aab
+*.apk
+.expo/
+.gradle/
+app/android/build/
+app/android/app/build/
+app/ios/build/

@@ -8,7 +8,9 @@
     "ios": "npx expo run:ios --device",
     "web": "expo start --web",
     "ts:check": "tsc --noEmit",
-    "test": "jest"
+    "test": "jest",
+    "build:preview:android": "eas build --local --profile preview --platform android",
+    "build:preview:ios": "eas build --local --profile preview --platform ios"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
