@@ -1,6 +1,7 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import { create } from 'zustand';
-import { decodePatternArtifact } from '../pattern-artifact';
+import { sha256 } from 'js-sha256';
+import { decodePatternArtifact, encodePatternArtifact, type PatternData } from '../pattern-artifact';
 import {
   updateSessionStatus,
   updateSessionError,
@@ -13,6 +14,7 @@ import {
   deleteSession,
   StitchingSession,
   PatternSource,
+  PendingPersonalPattern,
 } from '../local-db';
 import { apiFetch } from '../api/apiFetch';
 import { Config } from '../config';
@@ -141,6 +143,47 @@ export async function preparePersonalSession(
   patternInfo: PreparePatternInfo,
 ): Promise<StitchingSession> {
   return prepareRemoteSession(patternId, patternInfo, 'personal');
+}
+
+// An offline-created Pending Personal Pattern already has its full grid+palette
+// known locally (written by the editor's Save-as-New offline fallback), so it
+// can be encoded into the same artifact format used for synced patterns and
+// played immediately, with zero network round-trip. Once the backend sync
+// succeeds later, this local session is unaffected; it simply has no
+// remoteSessionId, so progress stays local-only for it (the same degraded
+// mode 'bundled' sessions always run in).
+export async function preparePendingPersonalSession(
+  pending: PendingPersonalPattern,
+): Promise<StitchingSession> {
+  const existing = await findActiveSessionForPattern(pending.patternId, 'personal');
+  if (existing) {
+    return existing;
+  }
+
+  const patternData: PatternData = {
+    schemaVersion: 1,
+    width: pending.width,
+    height: pending.height,
+    palette: pending.palette,
+    grid: base64ToUint8Array(pending.gridBase64),
+  };
+  const bytes = encodePatternArtifact(patternData);
+  const checksum = sha256(bytes);
+
+  const identity = getActiveIdentity();
+  const destPath = getOfflinePatternPath(pending.patternId, identity);
+  const destDir = destPath.substring(0, destPath.lastIndexOf('/'));
+  await FileSystem.makeDirectoryAsync(destDir, { intermediates: true });
+  await FileSystem.writeAsStringAsync(destPath, uint8ArrayToBase64(bytes), {
+    encoding: FileSystem.EncodingType.Base64,
+  });
+
+  return createSession(pending.patternId, checksum, 'personal', 'ready', null, {
+    title: pending.title,
+    previewUrl: null,
+    width: pending.width,
+    height: pending.height,
+  });
 }
 
 // Bundled patterns skip online Session Preparation (ADR 0037) but still

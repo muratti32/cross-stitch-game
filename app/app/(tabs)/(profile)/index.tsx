@@ -8,7 +8,8 @@ import { useCoinBalance } from '@/api/economy';
 import { shortenGuestId } from '@/identity/identityLogic';
 import { useRouter } from 'expo-router';
 import { listPersonalPatterns, type PersonalPattern } from '@/conversion';
-import { preparePersonalSession, waitUntilSessionReady } from '@/session-preparation';
+import { preparePersonalSession, preparePendingPersonalSession, waitUntilSessionReady } from '@/session-preparation';
+import { getPendingPersonalPatterns, type PendingPersonalPattern } from '@/local-db';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -19,18 +20,29 @@ export default function ProfileScreen() {
   const [patternsLoading, setPatternsLoading] = useState(false);
   const [openingPatternId, setOpeningPatternId] = useState<string | null>(null);
   const [patternsError, setPatternsError] = useState<string | null>(null);
+  const [pendingPatterns, setPendingPatterns] = useState<PendingPersonalPattern[]>([]);
+  const [openingPendingId, setOpeningPendingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isAccount || activeTab !== 'my-patterns') {
       setPersonalPatterns([]);
+      setPendingPatterns([]);
       return;
     }
     let active = true;
     setPatternsLoading(true);
     setPatternsError(null);
-    listPersonalPatterns()
-      .then((patterns) => {
-        if (active) setPersonalPatterns(patterns);
+    Promise.all([listPersonalPatterns(), getPendingPersonalPatterns()])
+      .then(([patterns, pending]) => {
+        if (!active) return;
+        setPersonalPatterns(patterns);
+        // A pattern that has already synced to the backend is dropped from the
+        // pending list so it is never rendered twice while this screen is
+        // still mounted (the local pending_personal_patterns row is deleted by
+        // the sync outbox on success, but this effect only refetches on
+        // activeTab/isAccount changes, not on that background completion).
+        const syncedIds = new Set(patterns.map((p) => p.id));
+        setPendingPatterns(pending.filter((p) => !syncedIds.has(p.patternId)));
       })
       .catch((error: unknown) => {
         if (active) {
@@ -47,7 +59,7 @@ export default function ProfileScreen() {
 
   const playerStats = {
     coins: coinBalance ?? 0,
-    creationsCount: personalPatterns.length,
+    creationsCount: personalPatterns.length + pendingPatterns.length,
     completedCount: 0,
   };
 
@@ -67,6 +79,20 @@ export default function ProfileScreen() {
       setPatternsError(error instanceof Error ? error.message : String(error));
     } finally {
       setOpeningPatternId(null);
+    }
+  };
+
+  const openPendingPersonalPattern = async (pending: PendingPersonalPattern) => {
+    setOpeningPendingId(pending.patternId);
+    setPatternsError(null);
+    try {
+      const session = await preparePendingPersonalSession(pending);
+      const ready = await waitUntilSessionReady(session.id);
+      router.push(`/(tabs)/(play)/${ready.id}`);
+    } catch (error: unknown) {
+      setPatternsError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setOpeningPendingId(null);
     }
   };
 
@@ -181,8 +207,33 @@ export default function ProfileScreen() {
           <View style={styles.patternLoader}>
             <ActivityIndicator color={Theme.colors.accentRose} />
           </View>
-        ) : activeTab === 'my-patterns' && personalPatterns.length > 0 ? (
+        ) : activeTab === 'my-patterns' && (personalPatterns.length > 0 || pendingPatterns.length > 0) ? (
           <View style={styles.patternList}>
+            {pendingPatterns.map((pending) => (
+              <Card key={pending.patternId} style={styles.patternCard}>
+                <View style={[styles.patternPreview, styles.patternPendingPreview]}>
+                  <Ionicons name="cloud-offline-outline" size={28} color={Theme.colors.textSecondary} />
+                </View>
+                <View style={styles.patternInfo}>
+                  <Text style={styles.patternTitle} numberOfLines={1}>{pending.title}</Text>
+                  <Text style={styles.patternMeta}>
+                    {pending.width}×{pending.height} · {pending.palette.length} colors
+                  </Text>
+                  <View style={styles.patternPendingBadge}>
+                    <Ionicons name="sync-outline" size={12} color={Theme.colors.error} />
+                    <Text style={styles.patternPendingBadgeText}>Pending sync</Text>
+                  </View>
+                </View>
+                <Button
+                  title="Play"
+                  variant="sage"
+                  loading={openingPendingId === pending.patternId}
+                  disabled={openingPendingId !== null}
+                  onPress={() => void openPendingPersonalPattern(pending)}
+                  style={styles.playButton}
+                />
+              </Card>
+            ))}
             {personalPatterns.map((pattern) => (
               <Card key={pattern.id} style={styles.patternCard}>
                 <CachedImage uri={pattern.previewUrl} style={styles.patternPreview} />
@@ -379,6 +430,21 @@ const styles = StyleSheet.create({
     height: 36,
     paddingHorizontal: Theme.spacing.md,
     marginLeft: Theme.spacing.sm,
+  },
+  patternPendingPreview: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  patternPendingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: Theme.spacing.xs,
+  },
+  patternPendingBadgeText: {
+    fontSize: Theme.typography.sizes.xs,
+    fontWeight: Theme.typography.weights.medium,
+    color: Theme.colors.error,
   },
   patternError: {
     color: Theme.colors.error,
