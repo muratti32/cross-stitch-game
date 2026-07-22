@@ -24,6 +24,14 @@ export function AnimatedTabBar({
   const insets = useSafeAreaInsets();
   const horizontalPadding = Theme.spacing.sm;
 
+  const activeRoute = state.routes[state.index];
+  const activeDescriptor = descriptors[activeRoute.key];
+  const activeOptions = activeDescriptor?.options;
+
+  if (activeOptions?.tabBarStyle?.display === 'none') {
+    return null;
+  }
+
   const containerStyle = useMemo(
     () => [
       styles.container,
