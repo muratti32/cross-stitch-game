@@ -1042,6 +1042,131 @@ describe('Stitch Wish backend integration', () => {
       await requestConversion(otherAccount.accessToken, 'Sunset Meadow');
       engine.mockRestore();
     });
+
+    it('derives a Personal Pattern from an edit, idempotently, with lineage', async () => {
+      const engine = mockSuccessfulEngine();
+      const account = await createAccount();
+      const sourceJobId = await requestConversion(account.accessToken, 'Editable Source');
+      await runConversion(sourceJobId);
+      const sourceCompleted = await processingJobs.findById(sourceJobId);
+      const sourcePatternId = readStringRecord(sourceCompleted?.result, 'patternId');
+
+      const clientPatternId = randomUUID();
+      const grid = Buffer.from([1, 0, 1, 0]);
+      const derivePayload = {
+        patternId: clientPatternId,
+        sourcePatternId,
+        title: 'Edited Copy',
+        width: 2,
+        height: 2,
+        palette: [{ dmcCode: '310', name: 'Black', rgbHex: '#000000' }],
+        grid: grid.toString('base64'),
+      };
+
+      const first = await request(httpServer)
+        .post('/v1/conversions/personal-patterns/derived')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send(derivePayload)
+        .expect(201);
+      expect(readStringRecord(first.body, 'id')).toBe(clientPatternId);
+      expect(first.body).toMatchObject({ alreadyExists: false, title: 'Edited Copy', width: 2, height: 2 });
+
+      const derivedPersonal = await dataSource
+        .getRepository(PersonalPatternEntity)
+        .findOneByOrFail({ patternId: clientPatternId });
+      expect(derivedPersonal.processingJobId).toBeNull();
+      expect(derivedPersonal.derivedFromPatternId).toBe(sourcePatternId);
+
+      const previewUrl = readStringRecord(first.body, 'previewUrl');
+      await request(httpServer).get(previewUrl).expect(200).expect('Content-Type', /png/);
+
+      // Idempotent replay: same clientPatternId, no duplicate row, alreadyExists true.
+      const replay = await request(httpServer)
+        .post('/v1/conversions/personal-patterns/derived')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send(derivePayload)
+        .expect(201);
+      expect(replay.body).toMatchObject({ alreadyExists: true, id: clientPatternId });
+      expect(
+        await dataSource.getRepository(PatternEntity).countBy({ id: clientPatternId }),
+      ).toBe(1);
+
+      // The derived pattern now appears in the owner's Personal Pattern list
+      // alongside the source, and the list endpoint does not 404 despite the
+      // derived pattern having no Conversion Recipe row.
+      const list = await request(httpServer)
+        .get('/v1/conversions/patterns')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      const ids = (list.body as Array<{ id: string }>).map((p) => p.id).sort();
+      expect(ids).toEqual([sourcePatternId, clientPatternId].sort());
+
+      engine.mockRestore();
+    });
+
+    it('rejects deriving from a Pattern the caller does not own', async () => {
+      const engine = mockSuccessfulEngine();
+      const owner = await createAccount();
+      const stranger = await createAccount();
+      const jobId = await requestConversion(owner.accessToken, 'Not Yours');
+      await runConversion(jobId);
+      const completed = await processingJobs.findById(jobId);
+      const sourcePatternId = readStringRecord(completed?.result, 'patternId');
+
+      await request(httpServer)
+        .post('/v1/conversions/personal-patterns/derived')
+        .set('Authorization', `Bearer ${stranger.accessToken}`)
+        .send({
+          patternId: randomUUID(),
+          sourcePatternId,
+          title: 'Stolen Copy',
+          width: 2,
+          height: 2,
+          palette: [{ dmcCode: '310', name: 'Black', rgbHex: '#000000' }],
+          grid: Buffer.from([1, 0, 1, 0]).toString('base64'),
+        })
+        .expect(404);
+      engine.mockRestore();
+    });
+
+    it('rejects a malformed derive grid with 400', async () => {
+      const engine = mockSuccessfulEngine();
+      const account = await createAccount();
+      const jobId = await requestConversion(account.accessToken, 'Malformed Target');
+      await runConversion(jobId);
+      const completed = await processingJobs.findById(jobId);
+      const sourcePatternId = readStringRecord(completed?.result, 'patternId');
+
+      await request(httpServer)
+        .post('/v1/conversions/personal-patterns/derived')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          patternId: randomUUID(),
+          sourcePatternId,
+          title: 'Bad Grid',
+          width: 2,
+          height: 2,
+          palette: [{ dmcCode: '310', name: 'Black', rgbHex: '#000000' }],
+          grid: Buffer.from([1, 0, 1]).toString('base64'), // wrong length for 2x2
+        })
+        .expect(400);
+      engine.mockRestore();
+    });
+
+    it('serves the canonical DMC color catalog to authenticated principals', async () => {
+      const account = await createAccount();
+      const response = await request(httpServer)
+        .get('/v1/conversions/dmc-colors')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      expect(Array.isArray(response.body)).toBe(true);
+      expect((response.body as unknown[]).length).toBeGreaterThan(400);
+      expect(response.body[0]).toMatchObject({
+        dmcCode: expect.any(String),
+        name: expect.any(String),
+        rgbHex: expect.stringMatching(/^#[0-9A-F]{6}$/),
+      });
+    });
   });
 
   describe('session preparation', () => {

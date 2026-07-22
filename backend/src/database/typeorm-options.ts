@@ -65,6 +65,7 @@ import { CreateEconomySchema1784937600000 } from './migrations/1784937600000-Cre
 import { AddFirstCompletionReason1785024000000 } from './migrations/1785024000000-AddFirstCompletionReason';
 import { CreatePatternUnlocks1785110400000 } from './migrations/1785110400000-CreatePatternUnlocks';
 import { CreateDailyTasks1785196800000 } from './migrations/1785196800000-CreateDailyTasks';
+import { AddPersonalPatternLineage1785283200000 } from './migrations/1785283200000-AddPersonalPatternLineage';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -125,6 +126,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddFirstCompletionReason1785024000000,
       CreatePatternUnlocks1785110400000,
       CreateDailyTasks1785196800000,
+      AddPersonalPatternLineage1785283200000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

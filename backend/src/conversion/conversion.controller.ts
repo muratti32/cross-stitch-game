@@ -21,6 +21,8 @@ import { CurrentPrincipal, JwtAuthGuard } from '../auth';
 import type { AuthPrincipal } from '../auth/auth.types';
 import { ConversionService, UploadedArtwork } from './conversion.service';
 import { CreatePhotoConversionDto } from './dto/create-photo-conversion.dto';
+import { CreateDerivedPatternDto } from './dto/create-derived-pattern.dto';
+import { DMC_COLORS } from './dmc-colors.data';
 
 @Controller('conversions')
 @UseGuards(JwtAuthGuard)
@@ -60,6 +62,20 @@ export class ConversionController {
   @Get('patterns')
   listPatterns(@CurrentPrincipal() principal: AuthPrincipal) {
     return this.conversions.listPersonalPatterns(principal);
+  }
+
+  @Post('personal-patterns/derived')
+  @HttpCode(HttpStatus.CREATED)
+  createDerivedPattern(
+    @CurrentPrincipal() principal: AuthPrincipal,
+    @Body() body: CreateDerivedPatternDto,
+  ) {
+    return this.conversions.createDerivedPattern(principal, body);
+  }
+
+  @Get('dmc-colors')
+  listDmcColors() {
+    return DMC_COLORS;
   }
 }
 

@@ -23,6 +23,9 @@ import { ProcessingJobsRepository } from '../jobs/processing-jobs.repository';
 import type { JsonObject } from '../jobs/jobs.types';
 import { ProcessingJobEntity, ProcessingJobStatus } from '../jobs/entities';
 import { CreatePhotoConversionDto } from './dto/create-photo-conversion.dto';
+import { CreateDerivedPatternDto } from './dto/create-derived-pattern.dto';
+import { renderPatternPreviewPng } from './pattern-preview-renderer';
+import { encodePatternArtifactV1 } from '../catalog/pattern-artifact-encoder';
 import {
   ConversionRecipeEntity,
   PatternConversionEntity,
@@ -187,6 +190,186 @@ export class ConversionService {
     };
   }
 
+  async createDerivedPattern(
+    principal: AuthPrincipal,
+    dto: CreateDerivedPatternDto,
+  ): Promise<{
+    id: string;
+    title: string;
+    width: number;
+    height: number;
+    previewUrl: string;
+    alreadyExists: boolean;
+  }> {
+    const accountId = this.requireAccount(principal);
+
+    // 2. Idempotent replay short-circuit
+    const existing = await this.patterns.findOneBy({ id: dto.patternId });
+    if (existing !== null) {
+      if (existing.ownerAccountId !== accountId || existing.visibility !== 'personal') {
+        throw new ConflictException('This identifier is already in use');
+      }
+      const exp = Math.floor(Date.now() / 1000) + this.config.grantTtlSeconds;
+      const signature = this.signPreviewGrant(existing.id, exp);
+      return {
+        id: existing.id,
+        title: existing.title,
+        width: existing.width,
+        height: existing.height,
+        previewUrl: `/v1/personal-pattern-previews/${existing.id}?exp=${exp}&sig=${signature}`,
+        alreadyExists: true,
+      };
+    }
+
+    // 3. Validate source
+    const sourcePersonal = await this.personalPatterns.findOneBy({
+      patternId: dto.sourcePatternId,
+      ownerAccountId: accountId,
+    });
+    if (sourcePersonal === null) {
+      throw new NotFoundException('Source Personal Pattern not found');
+    }
+
+    // 4. Validate title
+    const title = dto.title.trim();
+    if (title.length === 0) {
+      throw new BadRequestException('Pattern title cannot be blank');
+    }
+    await this.assertTitleAvailable(accountId, title);
+
+    // 5. Decode grid
+    if (!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(dto.grid)) {
+      throw new BadRequestException('Grid is not valid base64');
+    }
+    const grid = Buffer.from(dto.grid, 'base64');
+    if (grid.length !== dto.width * dto.height) {
+      throw new BadRequestException(
+        `Grid length ${grid.length} does not match dimensions ${dto.width}x${dto.height}`,
+      );
+    }
+
+    // 6 & 7. Encode artifact + render preview
+    let artifact: ReturnType<typeof encodePatternArtifactV1>;
+    let preview: Buffer;
+    try {
+      artifact = encodePatternArtifactV1({
+        width: dto.width,
+        height: dto.height,
+        palette: dto.palette,
+        grid,
+      });
+      preview = renderPatternPreviewPng({
+        width: dto.width,
+        height: dto.height,
+        palette: dto.palette,
+        grid,
+      });
+    } catch (error: unknown) {
+      throw new BadRequestException(error instanceof Error ? error.message : String(error));
+    }
+
+    // 8. Stage to R2 & register in ObjectRegistryEntity
+    const artifactKey = `personal-patterns/${dto.patternId}/artifact-v1.bin`;
+    const previewKey = `personal-patterns/${dto.patternId}/preview.png`;
+    const artifactChecksum = artifact.checksum;
+    const previewChecksum = sha256(preview);
+
+    const registryRepo = this.dataSource.getRepository(ObjectRegistryEntity);
+
+    // Stage artifact
+    await registryRepo.upsert(
+      {
+        byteLength: artifact.byteLength,
+        checksum: artifactChecksum,
+        missing: false,
+        objectKey: artifactKey,
+        state: 'uploading',
+      },
+      ['objectKey'],
+    );
+    await this.storage.put(artifactKey, artifact.bytes, 'application/octet-stream');
+    await registryRepo.update(
+      { objectKey: artifactKey },
+      { missing: false, state: 'verified' },
+    );
+
+    // Stage preview
+    await registryRepo.upsert(
+      {
+        byteLength: preview.length,
+        checksum: previewChecksum,
+        missing: false,
+        objectKey: previewKey,
+        state: 'uploading',
+      },
+      ['objectKey'],
+    );
+    await this.storage.put(previewKey, preview, 'image/png');
+    await registryRepo.update(
+      { objectKey: previewKey },
+      { missing: false, state: 'verified' },
+    );
+
+    // 9. Database transaction
+    await this.dataSource.transaction(async (manager) => {
+      await manager
+        .createQueryBuilder()
+        .insert()
+        .into(PatternEntity)
+        .values({
+          id: dto.patternId,
+          title,
+          creatorName: 'You',
+          categoryCode: 'other',
+          width: dto.width,
+          height: dto.height,
+          paletteSize: dto.palette.length,
+          artifactObjectKey: artifactKey,
+          artifactChecksum,
+          artifactByteLength: artifact.byteLength,
+          artifactSchemaVersion: artifact.schemaVersion,
+          previewObjectKey: previewKey,
+          unlockPriceTier: null,
+          status: 'available',
+          visibility: 'personal',
+          ownerAccountId: accountId,
+          publishedAt: new Date(),
+        })
+        .orIgnore()
+        .execute();
+
+      await manager
+        .createQueryBuilder()
+        .insert()
+        .into(PersonalPatternEntity)
+        .values({
+          patternId: dto.patternId,
+          ownerAccountId: accountId,
+          processingJobId: null,
+          derivedFromPatternId: dto.sourcePatternId,
+        })
+        .orIgnore()
+        .execute();
+
+      await manager.getRepository(ObjectRegistryEntity).update(
+        [{ objectKey: artifactKey }, { objectKey: previewKey }],
+        { missing: false, state: 'available' },
+      );
+    });
+
+    // 10. Build and return response
+    const exp = Math.floor(Date.now() / 1000) + this.config.grantTtlSeconds;
+    const signature = this.signPreviewGrant(dto.patternId, exp);
+    return {
+      id: dto.patternId,
+      title,
+      width: dto.width,
+      height: dto.height,
+      previewUrl: `/v1/personal-pattern-previews/${dto.patternId}?exp=${exp}&sig=${signature}`,
+      alreadyExists: false,
+    };
+  }
+
   async listPersonalPatterns(principal: AuthPrincipal) {
     const accountId = this.requireAccount(principal);
     const rows = await this.personalPatterns.find({
@@ -229,7 +412,7 @@ export class ConversionService {
       }),
       this.recipes.findOneBy({ patternId }),
     ]);
-    if (pattern === null || recipe === null) {
+    if (pattern === null) {
       throw new NotFoundException('Personal Pattern not found');
     }
     const exp = Math.floor(Date.now() / 1000) + this.config.grantTtlSeconds;
@@ -240,7 +423,7 @@ export class ConversionService {
       id: pattern.id,
       paletteSize: pattern.paletteSize,
       previewUrl: `/v1/personal-pattern-previews/${pattern.id}?exp=${exp}&sig=${signature}`,
-      recipe: {
+      recipe: recipe === null ? null : {
         dmcPaletteVersion: recipe.dmcPaletteVersion,
         engineVersion: recipe.engineVersion,
         height: recipe.height,
