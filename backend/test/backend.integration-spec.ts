@@ -2189,6 +2189,70 @@ describe('Stitch Wish backend integration', () => {
         expect.any(String),
       );
     });
+
+    it('unlock survives session cancellation and replay with no re-charge', async () => {
+      const guest = await newGuest();
+      const patternId = await seedPaidPattern('Unlock Permanence', 'small', 4, 4);
+      await seedGuestBalance(guest.guestId, 75);
+
+      // Unlock once: balance debited to 0.
+      await request(httpServer)
+        .post('/v1/economy/unlocks')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201);
+
+      const firstPrepare = await request(httpServer)
+        .post('/v1/sessions/prepare')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201);
+      const firstSessionId = readStringRecord(firstPrepare.body, 'sessionId');
+
+      // Cancel/delete the session (no progress recorded yet).
+      await request(httpServer)
+        .delete(`/v1/sessions/${firstSessionId}`)
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(204);
+
+      // Replay: prepare the same Pattern again. The unlock must still be
+      // honored (no 403 unlock_required) even though the session was deleted.
+      const secondPrepare = await request(httpServer)
+        .post('/v1/sessions/prepare')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201);
+      expect(readStringRecord(secondPrepare.body, 'sessionId')).toEqual(
+        expect.any(String),
+      );
+
+      // The entitlement is still listed and the balance was never re-charged.
+      const owned = await request(httpServer)
+        .get('/v1/economy/unlocks')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(200);
+      expect(owned.body).toEqual({ patternIds: [patternId] });
+
+      const balance = await request(httpServer)
+        .get('/v1/economy/balance')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(200);
+      expect(balance.body).toEqual({ balance: 0 });
+
+      // A repeat unlock call after cancellation/replay is still idempotent:
+      // still exactly one ledger debit total for this guest.
+      const repeatUnlock = await request(httpServer)
+        .post('/v1/economy/unlocks')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201);
+      expect(repeatUnlock.body).toEqual({
+        patternId,
+        alreadyUnlocked: true,
+        balance: 0,
+      });
+      expect(await countUnlockLedgerEntries(guest.guestId)).toBe(1);
+    });
   });
 
   describe('Daily Tasks', () => {
