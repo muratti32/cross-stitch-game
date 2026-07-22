@@ -12,6 +12,9 @@
       "bundleIdentifier": "com.avk.stitchwish",
       "appleTeamId": "X25YH9627H",
       "usesAppleSignIn": true,
+      "associatedDomains": [
+        "applinks:stitchwish.avkdesign.net"
+      ],
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -24,6 +27,28 @@
       },
       "permissions": [
         "android.permission.RECORD_AUDIO"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "stitchwish.avkdesign.net",
+              "pathPrefix": "/pattern"
+            },
+            {
+              "scheme": "https",
+              "host": "stitchwish.avkdesign.net",
+              "pathPrefix": "/profile"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
       ]
     },
     "web": {

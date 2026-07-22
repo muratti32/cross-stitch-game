@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "X25YH9627H.com.avk.stitchwish",
+        "paths": [
+          "/pattern/*",
+          "/profile/*"
+        ]
+      }
+    ]
+  }
+}
