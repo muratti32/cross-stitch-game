@@ -28,6 +28,8 @@ import { loadBundledPattern } from '../bundled-patterns';
 import {
   base64ToUint8Array,
   getOfflinePatternPath,
+  retryDownload,
+  waitUntilSessionReady,
 } from '../session-preparation';
 import { decodePatternArtifact } from '../pattern-artifact';
 import { getActiveIdentity } from '../local-db';
@@ -298,13 +300,34 @@ export function useStitchingSession(sessionId: string | undefined) {
 
         // 5. Load Pattern Data. Catalog and personal sessions both download
         // their artifact into the identity namespace during preparation.
-        const pat =
-          sess.source === 'bundled'
-            ? await loadBundledPattern(sess.patternId)
-            : await loadRemotePatternFromNamespace(
+        let pat: PatternData;
+        if (sess.source === 'bundled') {
+          pat = await loadBundledPattern(sess.patternId);
+        } else {
+          try {
+            pat = await loadRemotePatternFromNamespace(
+              sess.patternId,
+              sess.artifactChecksum,
+            );
+          } catch (loadErr) {
+            if (loadErr instanceof OfflinePatternMissingError) {
+              // The .bin file was purged from disk. Re-download it and wait.
+              console.warn(
+                `Offline pattern file missing for ${sess.patternId}, triggering re-download…`,
+              );
+              await retryDownload(sess.id);
+              const refreshedSess = await waitUntilSessionReady(sess.id);
+              // Session status may have changed; update our local reference.
+              sess.status = refreshedSess.status;
+              pat = await loadRemotePatternFromNamespace(
                 sess.patternId,
                 sess.artifactChecksum,
               );
+            } else {
+              throw loadErr;
+            }
+          }
+        }
 
         // 6. Determine whether this session syncs (Registered Account + linked
         //    remote session) and pick the reload base accordingly.
@@ -635,6 +658,13 @@ export function useStitchingSession(sessionId: string | undefined) {
   };
 }
 
+class OfflinePatternMissingError extends Error {
+  constructor(readonly path: string) {
+    super(`Offline pattern file not found: ${path}`);
+    this.name = 'OfflinePatternMissingError';
+  }
+}
+
 // Ready catalog and personal sessions read their verified Offline Pattern
 // Data from the identity namespace; the decoder re-verifies the stored
 // checksum on open.
@@ -644,6 +674,12 @@ async function loadRemotePatternFromNamespace(
 ) {
   const identity = getActiveIdentity();
   const path = getOfflinePatternPath(patternId, identity);
+
+  const info = await FileSystem.getInfoAsync(path);
+  if (!info.exists) {
+    throw new OfflinePatternMissingError(path);
+  }
+
   const base64 = await FileSystem.readAsStringAsync(path, {
     encoding: FileSystem.EncodingType.Base64,
   });
