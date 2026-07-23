@@ -1,4 +1,6 @@
 import {
+  forwardRef,
+  Inject,
   Injectable,
   Logger,
   OnApplicationShutdown,
@@ -12,12 +14,14 @@ import {
 } from './jobs.constants';
 import { OutboxDispatcherService } from './outbox-dispatcher.service';
 import { StorageReconcilerService } from '../sessions/storage-reconciler.service';
+import { AiArtworkService } from '../ai-artwork/ai-artwork.service';
 
 @Injectable()
 export class JobsWorkerRuntimeService implements OnApplicationShutdown {
   private readonly logger = new Logger(JobsWorkerRuntimeService.name);
   private dispatchTimer: NodeJS.Timeout | null = null;
   private reconcileTimer: NodeJS.Timeout | null = null;
+  private aiArtworkReconcileTimer: NodeJS.Timeout | null = null;
   private activeDispatch: Promise<void> | null = null;
   private running = false;
 
@@ -26,6 +30,8 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     private readonly consumer: DemoJobConsumerService,
     private readonly dispatcher: OutboxDispatcherService,
     private readonly reconciler: StorageReconcilerService,
+    @Inject(forwardRef(() => AiArtworkService))
+    private readonly aiArtworks: AiArtworkService,
   ) {}
 
   async start(): Promise<void> {
@@ -46,6 +52,11 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
       });
     }, 60000);
 
+    void this.reconcileAiArtworks();
+    this.aiArtworkReconcileTimer = setInterval(() => {
+      void this.reconcileAiArtworks();
+    }, 15000);
+
     this.logger.log('Jobs worker runtime started');
   }
 
@@ -64,6 +75,10 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     if (this.reconcileTimer !== null) {
       clearInterval(this.reconcileTimer);
       this.reconcileTimer = null;
+    }
+    if (this.aiArtworkReconcileTimer !== null) {
+      clearInterval(this.aiArtworkReconcileTimer);
+      this.aiArtworkReconcileTimer = null;
     }
     if (this.activeDispatch !== null) {
       await this.activeDispatch;
@@ -109,6 +124,17 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
       );
     } finally {
       this.scheduleDispatch(nextDelay);
+    }
+  }
+
+  private async reconcileAiArtworks(): Promise<void> {
+    try {
+      await this.aiArtworks.reconcilePending();
+    } catch (error: unknown) {
+      this.logger.error(
+        `Error reconciling AI Artworks: ${errorMessage(error)}`,
+        errorStack(error),
+      );
     }
   }
 }

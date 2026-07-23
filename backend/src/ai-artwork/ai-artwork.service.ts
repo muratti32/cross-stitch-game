@@ -13,7 +13,7 @@ import { ApproveAiArtworkDto } from './dto/approve-ai-artwork.dto';
 import { CreateAiArtworkDto } from './dto/create-ai-artwork.dto';
 import { AiArtworkEntity, AiCreditReservationEntity } from './entities';
 import { PromptModerationService } from './prompt-moderation.service';
-import { FalArtworkProviderService } from './fal-artwork-provider.service';
+import { FalArtworkProviderService, FalArtworkSubmissionRejectedError } from './fal-artwork-provider.service';
 
 @Injectable()
 export class AiArtworkService {
@@ -43,10 +43,22 @@ export class AiArtworkService {
     const a = await this.artworks.findOneBy({ processingJobId: jobId }); if (!a) throw new Error('AI artwork input is missing');
     if (a.status === 'delivered' || a.status === 'safety_rejected' || a.status === 'failed') return;
     if (a.providerRequestId) { await this.reconcile(a.providerRequestId); return; }
-    await this.artworks.update({ id: a.id }, { status: 'submitting' });
     const base = process.env.FAL_WEBHOOK_BASE_URL; const secret = process.env.FAL_WEBHOOK_SECRET;
     if (!base || !secret) throw new Error('fal.ai webhook is not configured');
-    const requestId = await this.fal.submit(a.prompt, a.aspect, `${base.replace(/\/$/, '')}/v1/ai-artworks/fal/webhook?jobId=${jobId}&key=${a.providerRequestKey}&token=${encodeURIComponent(secret)}`);
+    // A submit response can be lost after fal accepted the request. In that
+    // ambiguous state we wait for the webhook instead of generating twice.
+    if (a.status === 'submitting') return;
+    await this.artworks.update({ id: a.id }, { status: 'submitting' });
+    let requestId: string;
+    try {
+      requestId = await this.fal.submit(a.prompt, a.aspect, `${base.replace(/\/$/, '')}/v1/ai-artworks/fal/webhook?jobId=${jobId}&key=${a.providerRequestKey}&token=${encodeURIComponent(secret)}`);
+    } catch (error: unknown) {
+      if (error instanceof FalArtworkSubmissionRejectedError) {
+        await this.release(a, 'failed', error.message);
+        return;
+      }
+      throw error;
+    }
     await this.attachRequest(jobId, requestId);
   }
   async webhook(jobId: string, providerRequestKey: string, requestId: string) { const artwork = await this.artworks.findOneBy({ processingJobId: jobId }); if (!artwork || artwork.providerRequestKey !== providerRequestKey) throw new NotFoundException(); await this.attachRequest(jobId, requestId); await this.reconcile(requestId); }
@@ -57,14 +69,14 @@ export class AiArtworkService {
     if (result.unsafe) return this.release(a, 'safety_rejected', 'Provider safety rejection');
     const image = await fetch(result.url); if (!image.ok) throw new Error('Could not copy fal.ai output'); const bytes = Buffer.from(await image.arrayBuffer()); const contentType = image.headers.get('content-type')?.split(';')[0] ?? 'image/png'; const key = `ai-artworks/${a.accountId}/${a.id}/source`;
     await this.storage.put(key, bytes, contentType);
-    await this.dataSource.transaction(async (m) => { const current = await m.getRepository(AiArtworkEntity).findOne({ where: { id: a.id }, lock: { mode: 'pessimistic_write' } }); if (!current || current.status === 'delivered') return; await m.getRepository(AiArtworkEntity).update({ id: a.id }, { status: 'delivered', imageObjectKey: key, imageContentType: contentType, imageChecksum: createHash('sha256').update(bytes).digest('hex'), imageByteLength: String(bytes.length) }); await this.capture(m, current); await this.jobs.completeFromRunning(a.processingJobId, { artworkId: a.id }, m); });
+    await this.dataSource.transaction(async (m) => { const current = await m.getRepository(AiArtworkEntity).findOne({ where: { id: a.id }, lock: { mode: 'pessimistic_write' } }); if (!current || current.status !== 'submitted' || current.providerRequestId !== requestId) return; await m.getRepository(AiArtworkEntity).update({ id: a.id }, { status: 'delivered', imageObjectKey: key, imageContentType: contentType, imageChecksum: createHash('sha256').update(bytes).digest('hex'), imageByteLength: String(bytes.length) }); await this.capture(m, current); await this.jobs.completeFromRunning(a.processingJobId, { artworkId: a.id }, m); });
   }
   async reconcilePending() { const rows = await this.artworks.find({ where: { status: 'submitted' } }); for (const a of rows) if (a.providerRequestId) await this.reconcile(a.providerRequestId); }
-  async failExhausted(jobId: string, reason: string) { const a = await this.artworks.findOneBy({ processingJobId: jobId }); if (a && !a.providerRequestId) await this.release(a, 'failed', reason); }
-  private async attachRequest(jobId: string, requestId: string) { await this.dataSource.transaction(async (m) => { const a = await m.getRepository(AiArtworkEntity).findOne({ where: { processingJobId: jobId }, lock: { mode: 'pessimistic_write' } }); if (!a) throw new NotFoundException(); if (a.providerRequestId && a.providerRequestId !== requestId) throw new ConflictException('Provider request mismatch'); await m.getRepository(AiArtworkEntity).update({ id: a.id }, { providerRequestId: requestId, status: 'submitted' }); }); }
+  async failExhausted(jobId: string, reason: string) { const a = await this.artworks.findOneBy({ processingJobId: jobId }); if (a?.status === 'pending') await this.release(a, 'failed', reason); }
+  private async attachRequest(jobId: string, requestId: string) { await this.dataSource.transaction(async (m) => { const a = await m.getRepository(AiArtworkEntity).findOne({ where: { processingJobId: jobId }, lock: { mode: 'pessimistic_write' } }); if (!a) throw new NotFoundException(); if (a.providerRequestId && a.providerRequestId !== requestId) throw new ConflictException('Provider request mismatch'); if (a.status === 'delivered' || a.status === 'failed' || a.status === 'safety_rejected' || a.status === 'deleted') return; await m.getRepository(AiArtworkEntity).update({ id: a.id }, { providerRequestId: requestId, status: 'submitted' }); }); }
   private async capture(m: EntityManager, artwork: AiArtworkEntity) { const r = await m.getRepository(AiCreditReservationEntity).findOne({ where: { processingJobId: artwork.processingJobId }, lock: { mode: 'pessimistic_write' } }); if (!r || r.status !== 'reserved') return; await m.query(`INSERT INTO economy.ai_credit_ledger_entries (principal_type, principal_id, amount, reason, source_key, granted, metadata) VALUES ('account',$1,-1,$2,$3,true,NULL)`, [artwork.accountId, AiCreditLedgerReason.AiArtworkDelivery, `ai-artwork:${artwork.processingJobId}`]); await m.query(`INSERT INTO economy.ai_credit_balances (principal_type, principal_id, balance) VALUES ('account',$1,-1) ON CONFLICT ON CONSTRAINT "PK_ai_credit_balances" DO UPDATE SET balance=economy.ai_credit_balances.balance-1, updated_at=now()`, [artwork.accountId]); await m.getRepository(AiCreditReservationEntity).update({ id: r.id }, { status: 'captured' }); }
   private async release(a: AiArtworkEntity, status: 'failed' | 'safety_rejected', reason: string) { await this.dataSource.transaction(async (m) => { const r = await m.getRepository(AiCreditReservationEntity).findOne({ where: { processingJobId: a.processingJobId }, lock: { mode: 'pessimistic_write' } }); if (r?.status === 'reserved') await m.getRepository(AiCreditReservationEntity).update({ id: r.id }, { status: 'released' }); await m.getRepository(AiArtworkEntity).update({ id: a.id }, { status, failureReason: reason }); await this.jobs.failFromRunning(a.processingJobId, reason, m); }); }
-  private async recordAttempt(accountId: string) { await this.dataSource.transaction(async (m) => { const rows = await m.query<readonly { count: string }[]>(`SELECT count(*)::text AS count FROM ai.prompt_safety_attempts WHERE account_id=$1 AND created_at > now() - interval '10 minutes' FOR UPDATE`, [accountId]); if (Number(rows[0]?.count ?? 0) >= 10) throw new HttpException('AI generation rate limit reached', 429); await m.query('INSERT INTO ai.prompt_safety_attempts (account_id) VALUES ($1)', [accountId]); }); }
+  private async recordAttempt(accountId: string) { await this.dataSource.transaction(async (m) => { await m.query('SELECT id FROM auth.registered_accounts WHERE id=$1 FOR UPDATE', [accountId]); const rows = await m.query<readonly { count: string }[]>(`SELECT count(*)::text AS count FROM ai.prompt_safety_attempts WHERE account_id=$1 AND created_at > now() - interval '10 minutes'`, [accountId]); if (Number(rows[0]?.count ?? 0) >= 10) throw new HttpException('AI generation rate limit reached', 429); await m.query('INSERT INTO ai.prompt_safety_attempts (account_id) VALUES ($1)', [accountId]); }); }
   private account(p: AuthPrincipal) { if (p.type !== PrincipalType.Account) throw new ForbiddenException('Registered Account required'); return p.id; }
   private async owned(p: AuthPrincipal, id: string) { const a = await this.artworks.findOneBy({ id }); if (!a || a.accountId !== this.account(p)) throw new NotFoundException('AI Artwork not found'); return a; }
   private view(a: AiArtworkEntity) { const exp = Math.floor(Date.now()/1000)+300; const sig = createHmac('sha256', process.env.GRANT_SIGNING_SECRET ?? '').update(`${a.id}.${exp}`).digest('hex'); return { id: a.id, aspect: a.aspect, status: a.status, failureReason: a.failureReason, createdAt: a.createdAt.toISOString(), imageUrl: a.status === 'delivered' ? `/v1/ai-artworks/images/${a.id}?exp=${exp}&sig=${sig}` : null }; }
