@@ -34,6 +34,7 @@ export type EnvironmentVariables = {
   ADMOB_SSV_ALLOWED_AD_UNITS: readonly string[];
   REVENUECAT_WEBHOOK_AUTH_TOKEN: string | undefined;
   AD_ATTEMPT_TTL_SECONDS: number;
+  OPENAI_MODERATION_ENABLED: boolean;
 };
 
 const DATABASE_PROTOCOLS = new Set(['postgres:', 'postgresql:']);
@@ -252,6 +253,22 @@ function parseAdminMfaEnabled(environment: Record<string, unknown>): boolean {
   return enabled;
 }
 
+function parseOpenAiModerationEnabled(
+  environment: Record<string, unknown>,
+): boolean {
+  const enabled = parseBoolean(
+    environment.OPENAI_MODERATION_ENABLED,
+    'OPENAI_MODERATION_ENABLED',
+    true,
+  );
+  if (!enabled && environment.NODE_ENV === 'production') {
+    throw new Error(
+      'OPENAI_MODERATION_ENABLED cannot be false in production',
+    );
+  }
+  return enabled;
+}
+
 export function parseEnvironment(
   environment: Record<string, unknown>,
 ): EnvironmentVariables {
@@ -393,6 +410,7 @@ export function parseEnvironment(
       'AD_ATTEMPT_TTL_SECONDS',
       DEFAULT_AD_ATTEMPT_TTL_SECONDS,
     ),
+    OPENAI_MODERATION_ENABLED: parseOpenAiModerationEnabled(environment),
   };
 }
 

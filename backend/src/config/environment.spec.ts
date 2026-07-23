@@ -40,6 +40,44 @@ describe('parseEnvironment admin MFA', () => {
   });
 });
 
+describe('parseEnvironment OpenAI moderation', () => {
+  it('keeps moderation enabled when the flag is omitted', () => {
+    expect(
+      parseEnvironment(validEnvironment()).OPENAI_MODERATION_ENABLED,
+    ).toBe(true);
+  });
+
+  it('allows moderation to be disabled for local development', () => {
+    expect(
+      parseEnvironment(
+        validEnvironment({
+          OPENAI_MODERATION_ENABLED: 'false',
+          NODE_ENV: 'development',
+        }),
+      ).OPENAI_MODERATION_ENABLED,
+    ).toBe(false);
+  });
+
+  it('rejects disabling moderation in production', () => {
+    expect(() =>
+      parseEnvironment(
+        validEnvironment({
+          OPENAI_MODERATION_ENABLED: 'false',
+          NODE_ENV: 'production',
+        }),
+      ),
+    ).toThrow('OPENAI_MODERATION_ENABLED cannot be false in production');
+  });
+
+  it('rejects ambiguous flag values', () => {
+    expect(() =>
+      parseEnvironment(
+        validEnvironment({ OPENAI_MODERATION_ENABLED: 'off' }),
+      ),
+    ).toThrow('OPENAI_MODERATION_ENABLED must be either true or false');
+  });
+});
+
 describe('parseEnvironment R2 object storage', () => {
   it('leaves R2 fields undefined when omitted, keeping LocalObjectStorage active', () => {
     const result = parseEnvironment(validEnvironment());

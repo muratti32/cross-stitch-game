@@ -1,8 +1,14 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 
+import { AppConfigService } from '../config';
+
 @Injectable()
 export class PromptModerationService {
+  constructor(private readonly config: AppConfigService) {}
+
   async isFlagged(prompt: string): Promise<boolean> {
+    if (!this.config.openAiModerationEnabled) return false;
+
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) throw new ServiceUnavailableException('Prompt Safety Check is unavailable');
     let response: Response;

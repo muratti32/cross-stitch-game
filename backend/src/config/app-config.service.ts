@@ -186,5 +186,8 @@ export class AppConfigService {
   get adAttemptTtlSeconds(): number {
     return this.configService.get('AD_ATTEMPT_TTL_SECONDS', { infer: true });
   }
-}
 
+  get openAiModerationEnabled(): boolean {
+    return this.configService.get('OPENAI_MODERATION_ENABLED', { infer: true });
+  }
+}
