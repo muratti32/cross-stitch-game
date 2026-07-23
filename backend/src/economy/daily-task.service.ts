@@ -1,4 +1,4 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable, ForbiddenException, Logger } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
 import { AuthPrincipal } from '../auth/auth.types';
@@ -31,6 +31,8 @@ export interface DailyTaskBoardView {
 
 @Injectable()
 export class DailyTaskService {
+  private readonly logger = new Logger(DailyTaskService.name);
+
   constructor(
     private readonly dataSource: DataSource,
     private readonly ledger: CoinLedgerRepository,
@@ -52,7 +54,6 @@ export class DailyTaskService {
 
     return this.buildBoard(rewardDay, balance, progress, grantedKeys);
   }
-
   async ingest(principal: AuthPrincipal, events: GameplayEventDto[]): Promise<DailyTaskBoardView> {
     if (principal.type !== PrincipalType.Account) {
       throw new ForbiddenException('Daily Tasks are available to registered accounts only');
@@ -61,8 +62,6 @@ export class DailyTaskService {
     const ledgerPrincipal = toLedgerPrincipal(principal);
 
     return this.dataSource.transaction(async (manager) => {
-      const rewardDay = utcRewardDay();
-
       // Gather distinct sessionIds from events
       const sessionIds = Array.from(new Set(events.map(e => e.sessionId)));
       let ownedSessionIds = new Set<string>();
@@ -77,13 +76,69 @@ export class DailyTaskService {
         ownedSessionIds = new Set(ownedRows.map(r => r.id));
       }
 
-      // For each owned event:
+      const invalidEventIds = new Set<string>();
+      const nowMs = Date.now();
+
+      // Check future events
       for (const event of events) {
-        if (!ownedSessionIds.has(event.sessionId)) {
+        if (event.occurredAt) {
+          const occurredAtVal = new Date(event.occurredAt);
+          if (occurredAtVal.getTime() > nowMs + 60000) { // 60 seconds tolerance for clock skew
+            invalidEventIds.add(event.eventId);
+            this.logger.warn(`Rejecting event ${event.eventId} because occurredAt is in the future: ${event.occurredAt}`);
+          }
+        }
+      }
+
+      // Group stitch actions by sessionId to apply the velocity check
+      const stitchActionsBySession = new Map<string, GameplayEventDto[]>();
+      for (const event of events) {
+        if (event.kind === 'stitch_action' && ownedSessionIds.has(event.sessionId) && !invalidEventIds.has(event.eventId)) {
+          let list = stitchActionsBySession.get(event.sessionId);
+          if (!list) {
+            list = [];
+            stitchActionsBySession.set(event.sessionId, list);
+          }
+          list.push(event);
+        }
+      }
+
+      // Velocity Check (AC for Gap 2): Reject stitch actions that are denser than physically plausible.
+      // We define the physical limit of manual stitching at 50 milliseconds (0.05 seconds) per stitch.
+      // Any consecutive stitch actions in the same session with a time delta less than 50ms are dropped/skipped.
+      for (const [sessionId, sessionEvents] of stitchActionsBySession.entries()) {
+        const sorted = [...sessionEvents].sort((a, b) => {
+          const aTime = a.occurredAt ? new Date(a.occurredAt).getTime() : nowMs;
+          const bTime = b.occurredAt ? new Date(b.occurredAt).getTime() : nowMs;
+          return aTime - bTime;
+        });
+
+        for (let i = 1; i < sorted.length; i++) {
+          const prev = sorted[i - 1];
+          const curr = sorted[i];
+          const prevTime = prev.occurredAt ? new Date(prev.occurredAt).getTime() : nowMs;
+          const currTime = curr.occurredAt ? new Date(curr.occurredAt).getTime() : nowMs;
+          if (currTime - prevTime < 50) {
+            invalidEventIds.add(curr.eventId);
+            this.logger.warn(
+              `Rejecting event ${curr.eventId} in session ${sessionId} due to velocity limit (delta: ${currTime - prevTime}ms)`
+            );
+          }
+        }
+      }
+
+      const affectedRewardDays = new Set<string>();
+
+      // For each owned, valid event:
+      for (const event of events) {
+        if (!ownedSessionIds.has(event.sessionId) || invalidEventIds.has(event.eventId)) {
           continue;
         }
 
         const occurredAtVal = event.occurredAt ? new Date(event.occurredAt) : null;
+        // Derive each event's Reward Day from its own evidence (occurredAt) if present, otherwise fallback to server time
+        const eventRewardDay = occurredAtVal ? utcRewardDay(occurredAtVal) : utcRewardDay();
+        affectedRewardDays.add(eventRewardDay);
 
         const insertResult = await manager.query<{ event_id: string }[]>(
           `INSERT INTO economy.gameplay_events
@@ -95,7 +150,7 @@ export class DailyTaskService {
             event.eventId,
             ledgerPrincipal.type,
             ledgerPrincipal.id,
-            rewardDay,
+            eventRewardDay,
             event.kind,
             event.sessionId,
             event.dmcCode,
@@ -118,51 +173,51 @@ export class DailyTaskService {
             [
               ledgerPrincipal.type,
               ledgerPrincipal.id,
-              rewardDay,
+              eventRewardDay,
               event.dmcCode,
             ]
           );
         }
       }
 
-      // Compute progress for rewardDay
-      const progress = await this.readProgress(manager, principal, rewardDay);
+      // Check completions and grant daily tasks for all affected days
+      for (const affectedDay of affectedRewardDays) {
+        const progress = await this.readProgress(manager, principal, affectedDay);
 
-      // Check completions
-      const cells_100_completed = progress.totalActions >= DAILY_TASK_CELLS_TARGET;
-      const three_colors_10_completed = progress.distinctColorsAtThreshold >= DAILY_TASK_DISTINCT_COLORS_TARGET;
-      const color_completion_completed = progress.hasColorCompletion;
+        const cells_100_completed = progress.totalActions >= DAILY_TASK_CELLS_TARGET;
+        const three_colors_10_completed = progress.distinctColorsAtThreshold >= DAILY_TASK_DISTINCT_COLORS_TARGET;
+        const color_completion_completed = progress.hasColorCompletion;
 
-      // Get already granted keys
-      const granted = await this.ledger.grantedDailyTaskKeys(manager, ledgerPrincipal, rewardDay);
+        const granted = await this.ledger.grantedDailyTaskKeys(manager, ledgerPrincipal, affectedDay);
 
-      // Fetch the latest balance transactionally
-      const balanceRows = await manager.query<{ balance: string }[]>(
-        `SELECT balance FROM economy.coin_balances WHERE principal_type = $1 AND principal_id = $2`,
-        [ledgerPrincipal.type, ledgerPrincipal.id]
-      );
-      let currentBalance = balanceRows.length === 0 ? 0 : Number(balanceRows[0].balance);
+        for (const key of DAILY_TASK_KEYS) {
+          let isCompleted = false;
+          if (key === 'cells_100') {
+            isCompleted = cells_100_completed;
+          } else if (key === 'three_colors_10') {
+            isCompleted = three_colors_10_completed;
+          } else if (key === 'color_completion') {
+            isCompleted = color_completion_completed;
+          }
 
-      for (const key of DAILY_TASK_KEYS) {
-        let isCompleted = false;
-        if (key === 'cells_100') {
-          isCompleted = cells_100_completed;
-        } else if (key === 'three_colors_10') {
-          isCompleted = three_colors_10_completed;
-        } else if (key === 'color_completion') {
-          isCompleted = color_completion_completed;
-        }
-
-        if (isCompleted && !granted.has(key)) {
-          const result = await this.ledger.grantDailyTask(manager, ledgerPrincipal, rewardDay, key);
-          if (result.granted) {
-            granted.add(key);
-            currentBalance = result.balance;
+          if (isCompleted && !granted.has(key)) {
+            await this.ledger.grantDailyTask(manager, ledgerPrincipal, affectedDay, key);
           }
         }
       }
 
-      return this.buildBoard(rewardDay, currentBalance, progress, granted);
+      // Build and return the board for the current server reward day
+      const currentRewardDay = utcRewardDay();
+      const finalProgress = await this.readProgress(manager, principal, currentRewardDay);
+      const finalGranted = await this.ledger.grantedDailyTaskKeys(manager, ledgerPrincipal, currentRewardDay);
+
+      const balanceRows = await manager.query<{ balance: string }[]>(
+        `SELECT balance FROM economy.coin_balances WHERE principal_type = $1 AND principal_id = $2`,
+        [ledgerPrincipal.type, ledgerPrincipal.id]
+      );
+      const currentBalance = balanceRows.length === 0 ? 0 : Number(balanceRows[0].balance);
+
+      return this.buildBoard(currentRewardDay, currentBalance, finalProgress, finalGranted);
     });
   }
 

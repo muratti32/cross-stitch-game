@@ -16,6 +16,8 @@ describe('PromotionService', () => {
   let transferPackageRepo: Repository<PromotionTransferPackageEntity>;
   let coinBalanceRepo: Repository<CoinBalanceEntity>;
   let coinLedgerEntryRepo: Repository<CoinLedgerEntryEntity>;
+  let managerFindOne: jest.Mock;
+  let managerQuery: jest.Mock;
 
   beforeEach(() => {
     config = { jwtSecret: 'test-secret' } as any;
@@ -26,16 +28,27 @@ describe('PromotionService', () => {
     coinBalanceRepo = { findOne: jest.fn() } as any;
     coinLedgerEntryRepo = { findOne: jest.fn() } as any;
 
+    managerFindOne = jest.fn();
+    managerQuery = jest.fn();
+
     const dataSource = {
+      // generatePreview() validates Pending Coin Rewards outside of a
+      // transaction via `this.dataSource.manager` (validatePendingReward is
+      // shared with commitPromotion's transactional manager) — expose the
+      // same fakes here so both call sites are driven by these mocks.
+      manager: {
+        findOne: managerFindOne,
+        query: managerQuery,
+      },
       transaction: jest.fn(async (isoOrWork: any, maybeWork?: any) => {
         const work = typeof isoOrWork === 'function' ? isoOrWork : maybeWork;
         return work({
-          findOne: jest.fn(),
+          findOne: managerFindOne,
           count: jest.fn(),
           save: jest.fn(),
           insert: jest.fn(),
           createQueryBuilder: jest.fn(),
-          query: jest.fn(),
+          query: managerQuery,
         });
       }),
     } as any;
@@ -57,12 +70,18 @@ describe('PromotionService', () => {
       const guestId = 'guest-uuid';
       const accountId = 'account-uuid';
       const guest = { id: guestId, status: 'active', credentialHash: 'hash' };
-      
+      const sourceKey = `daily_task:guest:${guestId}:2026-01-01:cells_100`;
+
       jest.spyOn(guestInstallationsRepo, 'findOneById').mockResolvedValue(guest as any);
       jest.spyOn(authHashing, 'verifyCredentialSecret').mockResolvedValue(true);
       jest.spyOn(transferPackageRepo, 'count').mockResolvedValue(0);
       jest.spyOn(coinBalanceRepo, 'findOne').mockResolvedValue({ balance: 50 } as any);
-      jest.spyOn(coinLedgerEntryRepo, 'findOne').mockResolvedValue(null);
+      // Not already granted, and the guest's own recorded progress meets the
+      // cells_100 threshold — so this pending reward validates for real.
+      managerFindOne.mockResolvedValue(null);
+      managerQuery
+        .mockResolvedValueOnce([{ action_count: 100 }]) // daily_color_action_counts
+        .mockResolvedValueOnce([{ exists: false }]); // gameplay_events color_completion check
 
       const result = await service.generatePreview(accountId, {
         guestId,
@@ -73,7 +92,7 @@ describe('PromotionService', () => {
           completions: {},
           likes: {},
           pendingRewards: {
-            'daily_task:123': {}
+            [sourceKey]: {}
           }
         }
       });
@@ -82,7 +101,7 @@ describe('PromotionService', () => {
       expect(result.accountId).toBe(accountId);
       expect(result.promotionMode).toBe('economy');
       expect(result.guestLedgerBalance).toBe(50);
-      expect(result.validatedPendingRewards).toContain('daily_task:123');
+      expect(result.validatedPendingRewards).toContain(sourceKey);
       expect(result.signature).toBeDefined();
     });
 
@@ -90,12 +109,13 @@ describe('PromotionService', () => {
       const guestId = 'guest-uuid';
       const accountId = 'account-uuid';
       const guest = { id: guestId, status: 'active', credentialHash: 'hash' };
-      
+      const sourceKey = `daily_task:guest:${guestId}:2026-01-01:cells_100`;
+
       jest.spyOn(guestInstallationsRepo, 'findOneById').mockResolvedValue(guest as any);
       jest.spyOn(authHashing, 'verifyCredentialSecret').mockResolvedValue(true);
       jest.spyOn(transferPackageRepo, 'count').mockResolvedValue(0);
       jest.spyOn(coinBalanceRepo, 'findOne').mockResolvedValue(null);
-      jest.spyOn(coinLedgerEntryRepo, 'findOne').mockResolvedValue({ id: 'existing' } as any);
+      managerFindOne.mockResolvedValue({ id: 'existing' } as any);
 
       const result = await service.generatePreview(accountId, {
         guestId,
@@ -106,13 +126,43 @@ describe('PromotionService', () => {
           completions: {},
           likes: {},
           pendingRewards: {
-            'daily_task:123': {}
+            [sourceKey]: {}
           }
         }
       });
 
       expect(result.validatedPendingRewards).toHaveLength(0);
-      expect(result.rejectedPendingRewards['daily_task:123']).toBe('already_granted');
+      expect(result.rejectedPendingRewards[sourceKey]).toBe('already_granted');
+    });
+
+    it('rejects a pending reward whose sourceKey does not belong to the promoting guest', async () => {
+      const guestId = 'guest-uuid';
+      const accountId = 'account-uuid';
+      const guest = { id: guestId, status: 'active', credentialHash: 'hash' };
+      const fabricatedKey = 'daily_task:guest:someone-elses-guest-id:2026-01-01:cells_100';
+
+      jest.spyOn(guestInstallationsRepo, 'findOneById').mockResolvedValue(guest as any);
+      jest.spyOn(authHashing, 'verifyCredentialSecret').mockResolvedValue(true);
+      jest.spyOn(transferPackageRepo, 'count').mockResolvedValue(0);
+      jest.spyOn(coinBalanceRepo, 'findOne').mockResolvedValue(null);
+      managerFindOne.mockResolvedValue(null);
+
+      const result = await service.generatePreview(accountId, {
+        guestId,
+        guestCredential: 'password',
+        manifestChecksum: 'checksum',
+        manifest: {
+          progress: {},
+          completions: {},
+          likes: {},
+          pendingRewards: {
+            [fabricatedKey]: {}
+          }
+        }
+      });
+
+      expect(result.validatedPendingRewards).toHaveLength(0);
+      expect(result.rejectedPendingRewards[fabricatedKey]).toBe('ownership_mismatch');
     });
 
     it('reverts to data-only promotion if account already had economy promotion', async () => {

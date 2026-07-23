@@ -2514,7 +2514,7 @@ describe('Stitch Wish backend integration', () => {
           sessionId,
           dmcCode: '310',
           clientSeq: i,
-          occurredAt: new Date().toISOString(),
+          occurredAt: new Date(Date.now() - (100 - i) * 1000).toISOString(),
         });
       }
 
@@ -2557,7 +2557,7 @@ describe('Stitch Wish backend integration', () => {
             sessionId,
             dmcCode: color,
             clientSeq: seq++,
-            occurredAt: new Date().toISOString(),
+            occurredAt: new Date(Date.now() - (30 - seq) * 1000).toISOString(),
           });
         }
       }
@@ -2661,7 +2661,7 @@ describe('Stitch Wish backend integration', () => {
           sessionId,
           dmcCode: '333',
           clientSeq: i,
-          occurredAt: new Date().toISOString(),
+          occurredAt: new Date(Date.now() - (5 - i) * 1000).toISOString(),
         });
       }
 
@@ -2715,7 +2715,7 @@ describe('Stitch Wish backend integration', () => {
           sessionId,
           dmcCode: '310',
           clientSeq: seq++,
-          occurredAt: new Date().toISOString(),
+          occurredAt: new Date(Date.now() - (14 - seq) * 1000).toISOString(),
         });
       }
       // 8 stitch actions for 'B5200'
@@ -2726,7 +2726,7 @@ describe('Stitch Wish backend integration', () => {
           sessionId,
           dmcCode: 'B5200',
           clientSeq: seq++,
-          occurredAt: new Date().toISOString(),
+          occurredAt: new Date(Date.now() - (14 - seq) * 1000).toISOString(),
         });
       }
       // 1 color_completion event for '310'
@@ -2795,6 +2795,96 @@ describe('Stitch Wish backend integration', () => {
       const countB5200 = colorCounts.find((row) => row.dmc_code === 'B5200');
       expect(countB5200).toBeDefined();
       expect(Number(countB5200?.action_count)).toBe(8);
+    });
+
+    it('attributes an offline event to the Reward Day it occurred on, not the day it is flushed (issue #44)', async () => {
+      const account = await createAccount();
+      const patternId = await seedPattern('Daily Reward Day Boundary', 5, 5);
+      const sessionId = await prepareSession(account.accessToken, patternId);
+
+      const now = new Date();
+      const yesterdayUtc = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate() - 1,
+        12, 0, 0,
+      ));
+      const yesterdayRewardDay = yesterdayUtc.toISOString().slice(0, 10);
+      const todayRewardDay = now.toISOString().slice(0, 10);
+
+      const response = await request(httpServer)
+        .post('/v1/economy/daily-tasks/events')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          events: [{
+            eventId: randomUUID(),
+            kind: 'color_completion',
+            sessionId,
+            dmcCode: '310',
+            clientSeq: 0,
+            occurredAt: yesterdayUtc.toISOString(),
+          }],
+        })
+        .expect(201);
+
+      // The returned board reflects today's Reward Day, which this backdated
+      // event never touches.
+      expect(response.body.rewardDay).toBe(todayRewardDay);
+      const todayTask = response.body.tasks.find((t: any) => t.key === 'color_completion');
+      expect(todayTask).toMatchObject({ progress: 0, completed: false, granted: false });
+
+      const dbEvents = await dataSource.query<{ reward_day: string }[]>(
+        `SELECT reward_day::text AS reward_day FROM economy.gameplay_events
+         WHERE principal_type = 'account' AND principal_id = $1`,
+        [account.accountId],
+      );
+      expect(dbEvents).toHaveLength(1);
+      expect(dbEvents[0].reward_day).toBe(yesterdayRewardDay);
+
+      const ledgerRows = await dataSource.query<{ source_key: string; granted: boolean }[]>(
+        `SELECT source_key, granted FROM economy.coin_ledger_entries
+         WHERE principal_type = 'account' AND principal_id = $1 AND reason = 'daily_task'`,
+        [account.accountId],
+      );
+      expect(ledgerRows).toHaveLength(1);
+      expect(ledgerRows[0].source_key).toBe(
+        `daily_task:account:${account.accountId}:${yesterdayRewardDay}:color_completion`,
+      );
+      expect(ledgerRows[0].granted).toBe(true);
+    });
+
+    it('rejects a burst of stitch actions denser than physically plausible (velocity guard, issue #44)', async () => {
+      const account = await createAccount();
+      const patternId = await seedPattern('Daily Velocity Guard', 10, 10);
+      const sessionId = await prepareSession(account.accessToken, patternId);
+
+      // 100 stitch actions all reported at the identical instant: physically
+      // impossible for manual stitching. Only the first survives the guard.
+      const sameInstant = new Date().toISOString();
+      const events = Array.from({ length: 100 }, (_, i) => ({
+        eventId: randomUUID(),
+        kind: 'stitch_action',
+        sessionId,
+        dmcCode: '310',
+        clientSeq: i,
+        occurredAt: sameInstant,
+      }));
+
+      const response = await request(httpServer)
+        .post('/v1/economy/daily-tasks/events')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ events })
+        .expect(201);
+
+      const cellsTask = response.body.tasks.find((t: any) => t.key === 'cells_100');
+      expect(cellsTask).toMatchObject({ progress: 1, completed: false, granted: false });
+
+      const dbEvents = await dataSource.query<{ event_id: string }[]>(
+        `SELECT event_id FROM economy.gameplay_events
+         WHERE principal_type = 'account' AND principal_id = $1`,
+        [account.accountId],
+      );
+      expect(dbEvents).toHaveLength(1);
     });
   });
 
@@ -3172,6 +3262,173 @@ describe('Stitch Wish backend integration', () => {
 
       const cellState = await dataSource.query(`SELECT state FROM sessions.session_cell_state WHERE session_id = $1 AND cell_index = 0`, [accountSessionId]);
       expect(cellState[0].state).toBe('completed');
+    });
+
+    it('rejects a fabricated or unowned pending-reward sourceKey and mints nothing for it (issue #44)', async () => {
+      const credentialSecret = createCredentialSecret();
+      const installationKey = randomUUID();
+      const guest = await createGuestThroughApi(httpServer, installationKey, credentialSecret);
+      const account = await createAccount();
+
+      const otherGuestId = randomUUID(); // not this guest's own identity
+      const fabricatedKey = `daily_task:guest:${otherGuestId}:2026-01-01:cells_100`;
+      const malformedKey = 'not-a-real-pending-reward-key';
+
+      const previewRes = await request(httpServer)
+        .post('/v1/promotion/preview')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          guestId: guest.guestId,
+          guestCredential: credentialSecret,
+          manifestChecksum: 'chk-fabricated-1',
+          manifest: {
+            progress: {}, completions: {}, likes: {},
+            pendingRewards: {
+              [fabricatedKey]: {},
+              [malformedKey]: {},
+            },
+          },
+        })
+        .expect(200);
+
+      expect(previewRes.body.validatedPendingRewards).toEqual([]);
+      expect(previewRes.body.rejectedPendingRewards[fabricatedKey]).toBe('ownership_mismatch');
+      expect(previewRes.body.rejectedPendingRewards[malformedKey]).toBe('invalid_format');
+
+      // A malicious client could try to bypass preview entirely and hand commit
+      // a forged validatedPendingRewards list directly (the signature only
+      // covers the core preview fields, not this list). Commit must
+      // independently re-validate every sourceKey and mint nothing for either.
+      const previewData = {
+        guestId: previewRes.body.guestId,
+        accountId: previewRes.body.accountId,
+        manifestChecksum: previewRes.body.manifestChecksum,
+        promotionMode: previewRes.body.promotionMode,
+        guestLedgerBalance: previewRes.body.guestLedgerBalance,
+        expiry: previewRes.body.expiry,
+        validatedPendingRewards: [fabricatedKey, malformedKey],
+      };
+
+      const lockRes = await request(httpServer)
+        .post('/v1/promotion/lock')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ previewData, signature: previewRes.body.signature })
+        .expect(200);
+
+      await request(httpServer)
+        .post('/v1/promotion/stage-package')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          guestId: guest.guestId,
+          lockToken: lockRes.body.lockToken,
+          manifestChecksum: 'chk-fabricated-1',
+          packageData: {},
+          checksum: 'pkg-chk-fabricated-1',
+        })
+        .expect(200);
+
+      await request(httpServer)
+        .post('/v1/promotion/commit')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ previewData, signature: previewRes.body.signature })
+        .expect(200);
+
+      const mintedRows = await dataSource.query(
+        `SELECT 1 FROM economy.coin_ledger_entries WHERE source_key IN ($1, $2)`,
+        [fabricatedKey, malformedKey],
+      );
+      expect(mintedRows).toHaveLength(0);
+
+      const accountBal = await dataSource.query<{ balance: string }[]>(
+        `SELECT balance FROM economy.coin_balances WHERE principal_type = 'account' AND principal_id = $1`,
+        [account.accountId],
+      );
+      expect(accountBal.length === 0 ? 0 : Number(accountBal[0].balance)).toBe(0);
+    });
+
+    it('recomputes the server-authoritative tier amount for a validated pending First Completion reward (issue #44)', async () => {
+      const credentialSecret = createCredentialSecret();
+      const installationKey = randomUUID();
+      const guest = await createGuestThroughApi(httpServer, installationKey, credentialSecret);
+      const account = await createAccount();
+
+      // Medium tier: 4,000-14,999 cells (ADR-0011). 64x64 = 4,096 cells.
+      const patternId = await seedPattern('Promo Medium Completion', 64, 64);
+
+      // Simulate the guest having actually completed this Pattern while offline.
+      await dataSource.query(
+        `INSERT INTO sessions.stitching_sessions (principal_type, principal_id, pattern_id, status)
+         VALUES ('guest', $1, $2, 'completed')`,
+        [guest.guestId, patternId],
+      );
+
+      const pendingSourceKey = `first_completion:guest:${guest.guestId}:${patternId}`;
+
+      const previewRes = await request(httpServer)
+        .post('/v1/promotion/preview')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          guestId: guest.guestId,
+          guestCredential: credentialSecret,
+          manifestChecksum: 'chk-medium-1',
+          manifest: {
+            progress: {}, completions: {}, likes: {},
+            pendingRewards: { [pendingSourceKey]: {} },
+          },
+        })
+        .expect(200);
+
+      expect(previewRes.body.validatedPendingRewards).toEqual([pendingSourceKey]);
+      expect(previewRes.body.rejectedPendingRewards).toEqual({});
+
+      const previewData = {
+        guestId: previewRes.body.guestId,
+        accountId: previewRes.body.accountId,
+        manifestChecksum: previewRes.body.manifestChecksum,
+        promotionMode: previewRes.body.promotionMode,
+        guestLedgerBalance: previewRes.body.guestLedgerBalance,
+        expiry: previewRes.body.expiry,
+        validatedPendingRewards: previewRes.body.validatedPendingRewards,
+      };
+
+      const lockRes = await request(httpServer)
+        .post('/v1/promotion/lock')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ previewData, signature: previewRes.body.signature })
+        .expect(200);
+
+      await request(httpServer)
+        .post('/v1/promotion/stage-package')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          guestId: guest.guestId,
+          lockToken: lockRes.body.lockToken,
+          manifestChecksum: 'chk-medium-1',
+          packageData: {},
+          checksum: 'pkg-chk-medium-1',
+        })
+        .expect(200);
+
+      await request(httpServer)
+        .post('/v1/promotion/commit')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ previewData, signature: previewRes.body.signature })
+        .expect(200);
+
+      const ledgerRow = await dataSource.query<{ amount: string; reason: string; granted: boolean }[]>(
+        `SELECT amount, reason, granted FROM economy.coin_ledger_entries WHERE source_key = $1`,
+        [pendingSourceKey],
+      );
+      expect(ledgerRow).toHaveLength(1);
+      expect(ledgerRow[0].reason).toBe('first_completion');
+      expect(Number(ledgerRow[0].amount)).toBe(60); // Medium tier, not the old hardcoded Small (25)
+      expect(ledgerRow[0].granted).toBe(true);
+
+      const accountBal = await dataSource.query<{ balance: string }[]>(
+        `SELECT balance FROM economy.coin_balances WHERE principal_type = 'account' AND principal_id = $1`,
+        [account.accountId],
+      );
+      expect(Number(accountBal[0].balance)).toBe(60);
     });
   });
 });

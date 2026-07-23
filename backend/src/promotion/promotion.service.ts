@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, UnauthorizedException, ConflictException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, EntityManager } from 'typeorm';
 import { createHmac, randomUUID } from 'crypto';
 
 import { AppConfigService } from '../config/app-config.service';
@@ -11,6 +11,15 @@ import { CoinBalanceEntity, CoinLedgerEntryEntity, CoinLedgerReason, PatternUnlo
 import { PromotionPreviewRequestDto } from './dto/promotion-preview.dto';
 import { PromotionPackageRequestDto } from './dto/promotion-package.dto';
 import { PromotionCommitRequestDto } from './dto/promotion-commit.dto';
+import {
+  DAILY_TASK_CELLS_TARGET,
+  DAILY_TASK_COLOR_ACTIONS_MIN,
+  DAILY_TASK_DISTINCT_COLORS_TARGET,
+  DAILY_TASK_KEYS,
+  DAILY_TASK_COIN,
+  DailyTaskKey,
+  firstCompletionReward,
+} from '../economy/economy.constants';
 
 @Injectable()
 export class PromotionService {
@@ -62,18 +71,18 @@ export class PromotionService {
     const validatedPendingRewards: string[] = [];
     const rejectedPendingRewards: Record<string, string> = {};
 
-    if (manifest.pendingRewards) {
-      for (const [sourceKey, _evidence] of Object.entries(manifest.pendingRewards)) {
-        // Check if this sourceKey already exists in the coin ledger
-        const existing = await this.coinLedgerEntryRepo.findOne({
-          where: { sourceKey }
-        });
-        if (existing) {
-          rejectedPendingRewards[sourceKey] = 'already_granted';
-          continue;
+    if (manifest.pendingRewards && promotionMode === 'economy') {
+      for (const sourceKey of Object.keys(manifest.pendingRewards)) {
+        const validation = await this.validatePendingReward(this.dataSource.manager, guestId, sourceKey);
+        if (validation.valid) {
+          validatedPendingRewards.push(sourceKey);
+        } else {
+          rejectedPendingRewards[sourceKey] = validation.reason || 'invalid_evidence';
         }
-
-        validatedPendingRewards.push(sourceKey);
+      }
+    } else if (manifest.pendingRewards && promotionMode === 'data-only') {
+      for (const sourceKey of Object.keys(manifest.pendingRewards)) {
+        rejectedPendingRewards[sourceKey] = 'promotion_mode_data_only';
       }
     }
 
@@ -310,12 +319,13 @@ export class PromotionService {
             // Grant validated pending coin rewards
             if (previewData.validatedPendingRewards) {
               for (const sourceKey of previewData.validatedPendingRewards) {
-                let amount = 10;
-                let reason = CoinLedgerReason.DailyTask;
-                if (sourceKey.startsWith('first_completion:')) {
-                  reason = CoinLedgerReason.FirstCompletion;
-                  amount = 25; // default Small completes tier
+                const validation = await this.validatePendingReward(manager, guestId, sourceKey);
+                if (!validation.valid) {
+                  continue;
                 }
+
+                const amount = validation.amount!;
+                const reason = validation.ledgerReason!;
 
                 const insertResult = await manager.createQueryBuilder()
                   .insert()
@@ -332,10 +342,15 @@ export class PromotionService {
                   .execute();
 
                 if (insertResult.raw && insertResult.raw.length > 0) {
+                  // Upsert: an account with no prior grant has no coin_balances
+                  // row yet, so a bare UPDATE would silently match zero rows
+                  // and never surface the coin this ledger entry just minted.
                   await manager.query(
-                    `UPDATE economy.coin_balances
-                     SET balance = balance + $2
-                     WHERE principal_type = 'account' AND principal_id = $1`,
+                    `INSERT INTO economy.coin_balances (principal_type, principal_id, balance)
+                     VALUES ('account', $1, $2)
+                     ON CONFLICT ON CONSTRAINT "PK_coin_balances"
+                       DO UPDATE SET balance = economy.coin_balances.balance + EXCLUDED.balance,
+                                     updated_at = now()`,
                     [accountId, String(amount)]
                   );
                 }
@@ -559,13 +574,158 @@ export class PromotionService {
     }
   }
 
+  private async validatePendingReward(
+    manager: EntityManager,
+    guestId: string,
+    sourceKey: string,
+  ): Promise<{ valid: boolean; reason?: string; amount?: number; ledgerReason?: CoinLedgerReason }> {
+    // 1. Check if this sourceKey already exists in the coin ledger
+    const existing = await manager.findOne(CoinLedgerEntryEntity, {
+      where: { sourceKey }
+    });
+    if (existing) {
+      return { valid: false, reason: 'already_granted' };
+    }
+
+    if (sourceKey.startsWith('daily_task:')) {
+      const parts = sourceKey.split(':');
+      if (parts.length !== 5) {
+        return { valid: false, reason: 'invalid_format' };
+      }
+      const [prefix, type, id, rewardDay, taskKey] = parts;
+      if (type !== 'guest' || id !== guestId) {
+        return { valid: false, reason: 'ownership_mismatch' };
+      }
+      if (!DAILY_TASK_KEYS.includes(taskKey as DailyTaskKey)) {
+        return { valid: false, reason: 'invalid_format' };
+      }
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(rewardDay)) {
+        return { valid: false, reason: 'invalid_format' };
+      }
+      if (new Date(rewardDay) > new Date()) {
+        return { valid: false, reason: 'implausible_evidence' };
+      }
+
+      // Check Guest progress in database
+      const colorCounts = await manager.query<{ action_count: number }[]>(
+        `SELECT action_count
+         FROM economy.daily_color_action_counts
+         WHERE principal_type = 'guest'
+           AND principal_id = $1
+           AND reward_day = $2`,
+        [guestId, rewardDay],
+      );
+
+      let totalActions = 0;
+      let distinctColorsAtThreshold = 0;
+      for (const row of colorCounts) {
+        const count = Number(row.action_count);
+        totalActions += count;
+        if (count >= DAILY_TASK_COLOR_ACTIONS_MIN) {
+          distinctColorsAtThreshold += 1;
+        }
+      }
+
+      const completionRows = await manager.query<{ exists: boolean }[]>(
+        `SELECT EXISTS(
+           SELECT 1
+           FROM economy.gameplay_events
+           WHERE principal_type = 'guest'
+             AND principal_id = $1
+             AND reward_day = $2
+             AND kind = 'color_completion'
+         ) AS "exists"`,
+        [guestId, rewardDay],
+      );
+      const hasColorCompletion = completionRows[0]?.exists ?? false;
+
+      let isCompleted = false;
+      if (taskKey === 'cells_100') {
+        isCompleted = totalActions >= DAILY_TASK_CELLS_TARGET;
+      } else if (taskKey === 'three_colors_10') {
+        isCompleted = distinctColorsAtThreshold >= DAILY_TASK_DISTINCT_COLORS_TARGET;
+      } else if (taskKey === 'color_completion') {
+        isCompleted = hasColorCompletion;
+      }
+
+      if (!isCompleted) {
+        return { valid: false, reason: 'implausible_evidence' };
+      }
+
+      return {
+        valid: true,
+        amount: DAILY_TASK_COIN,
+        ledgerReason: CoinLedgerReason.DailyTask,
+      };
+    }
+
+    if (sourceKey.startsWith('first_completion:')) {
+      const parts = sourceKey.split(':');
+      if (parts.length !== 4) {
+        return { valid: false, reason: 'invalid_format' };
+      }
+      const [prefix, type, id, patternId] = parts;
+      if (type !== 'guest' || id !== guestId) {
+        return { valid: false, reason: 'ownership_mismatch' };
+      }
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(patternId)) {
+        return { valid: false, reason: 'invalid_format' };
+      }
+
+      // Query pattern to confirm eligibility. Personal Patterns never mint
+      // First Completion (ADR-0011) — only catalog Patterns qualify, matching
+      // the online grant path's `visibility === 'catalog'` check.
+      const patterns = await manager.query<{ width: number; height: number; visibility: string }[]>(
+        `SELECT width, height, visibility FROM catalog.patterns WHERE id = $1`,
+        [patternId]
+      );
+      if (patterns.length === 0 || patterns[0].visibility !== 'catalog') {
+        return { valid: false, reason: 'pattern_ineligible' };
+      }
+
+      // Query guest session to confirm completion
+      const completedSessions = await manager.query<{ exists: boolean }[]>(
+        `SELECT EXISTS(
+           SELECT 1 FROM sessions.stitching_sessions
+           WHERE principal_type = 'guest'
+             AND principal_id = $1
+             AND pattern_id = $2
+             AND status = 'completed'
+         ) AS "exists"`,
+        [guestId, patternId]
+      );
+      if (!(completedSessions[0]?.exists ?? false)) {
+        return { valid: false, reason: 'implausible_evidence' };
+      }
+
+      const cells = patterns[0].width * patterns[0].height;
+      const amount = firstCompletionReward(cells);
+
+      return {
+        valid: true,
+        amount,
+        ledgerReason: CoinLedgerReason.FirstCompletion,
+      };
+    }
+
+    return { valid: false, reason: 'invalid_format' };
+  }
+
   private signData(data: any): string {
     const payload = JSON.stringify(data);
     return createHmac('sha256', this.config.jwtSecret).update(payload).digest('hex');
   }
 
   private verifySignature(data: any, signature: string): boolean {
-    const expected = this.signData(data);
+    const signatureData = {
+      guestId: data.guestId,
+      accountId: data.accountId,
+      manifestChecksum: data.manifestChecksum,
+      promotionMode: data.promotionMode,
+      guestLedgerBalance: data.guestLedgerBalance,
+      expiry: data.expiry,
+    };
+    const expected = this.signData(signatureData);
     return expected === signature;
   }
 }
