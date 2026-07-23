@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import {
   createHmac,
   randomInt,
@@ -84,6 +84,45 @@ export class EmailOtpService {
     });
   }
 
+  async verifyOtpOnly(
+    normalizedEmail: string,
+    code: string,
+    manager: EntityManager,
+  ): Promise<boolean> {
+    const verification = await manager
+      .getRepository(EmailVerificationCodeEntity)
+      .createQueryBuilder('verification')
+      .where('verification.email = :email', { email: normalizedEmail })
+      .andWhere('verification.consumed_at IS NULL')
+      .andWhere('verification.superseded_at IS NULL')
+      .orderBy('verification.created_at', 'DESC')
+      .setLock('pessimistic_write')
+      .getOne();
+    if (verification === null) {
+      return false;
+    }
+
+    if (
+      verification.expiresAt.getTime() <= Date.now() ||
+      verification.attempts >= verification.maxAttempts
+    ) {
+      return false;
+    }
+
+    if (!this.matchesVerifier(code, verification.codeVerifier)) {
+      await this.incrementAttempts(verification.id, manager);
+      return false;
+    }
+
+    const consumed = await manager
+      .getRepository(EmailVerificationCodeEntity)
+      .update(
+        { consumedAt: IsNull(), id: verification.id },
+        { consumedAt: new Date() },
+      );
+    return consumed.affected === 1;
+  }
+
   async verify(email: string, code: string): Promise<string | null> {
     const normalizedEmail = normalizeEmail(email);
     return this.dataSource.transaction(async (manager) => {
@@ -91,42 +130,38 @@ export class EmailOtpService {
         'SELECT pg_advisory_xact_lock(hashtextextended($1, 0))',
         [normalizedEmail],
       );
-      const verification = await manager
-        .getRepository(EmailVerificationCodeEntity)
-        .createQueryBuilder('verification')
-        .where('verification.email = :email', { email: normalizedEmail })
-        .andWhere('verification.consumed_at IS NULL')
-        .andWhere('verification.superseded_at IS NULL')
-        .orderBy('verification.created_at', 'DESC')
-        .setLock('pessimistic_write')
-        .getOne();
-      if (verification === null) {
+      const ok = await this.verifyOtpOnly(normalizedEmail, code, manager);
+      if (!ok) {
         return null;
       }
-
-      if (
-        verification.expiresAt.getTime() <= Date.now() ||
-        verification.attempts >= verification.maxAttempts
-      ) {
-        return null;
-      }
-
-      if (!this.matchesVerifier(code, verification.codeVerifier)) {
-        await this.incrementAttempts(verification.id, manager);
-        return null;
-      }
-
-      const consumed = await manager
-        .getRepository(EmailVerificationCodeEntity)
-        .update(
-          { consumedAt: IsNull(), id: verification.id },
-          { consumedAt: new Date() },
-        );
-      if (consumed.affected !== 1) {
-        return null;
-      }
-
       return this.accountIdentities.createOrOpenWithManager(
+        {
+          email: normalizedEmail,
+          provider: 'email',
+          subject: normalizedEmail,
+        },
+        manager,
+      );
+    });
+  }
+
+  async verifyAndLink(
+    accountId: string,
+    email: string,
+    code: string,
+  ): Promise<void> {
+    const normalizedEmail = normalizeEmail(email);
+    await this.dataSource.transaction(async (manager) => {
+      await manager.query(
+        'SELECT pg_advisory_xact_lock(hashtextextended($1, 0))',
+        [normalizedEmail],
+      );
+      const ok = await this.verifyOtpOnly(normalizedEmail, code, manager);
+      if (!ok) {
+        throw new UnauthorizedException('Invalid email verification code');
+      }
+      await this.accountIdentities.linkWithManager(
+        accountId,
         {
           email: normalizedEmail,
           provider: 'email',

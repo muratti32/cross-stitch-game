@@ -78,6 +78,7 @@ export class JwtAuthGuard implements CanActivate {
       id: payload.sub,
       tokenVersion: payload.tokenVersion,
       type: payload.principalType,
+      authTime: typeof payload.authTime === 'number' ? payload.authTime : undefined,
     };
   }
 

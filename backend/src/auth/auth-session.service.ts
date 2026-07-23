@@ -41,7 +41,8 @@ export class AuthSessionService {
     };
     const refreshToken = this.hashing.generateOpaqueRefreshToken();
     const tokenHash = this.hashing.hashOpaqueToken(refreshToken);
-    const accessToken = await this.signAccessToken(principal);
+    const authTime = Math.floor(Date.now() / 1000);
+    const accessToken = await this.signAccessToken(principal, authTime);
 
     const familyCreated = await this.refreshTokens.createFamily(
       principal.type,
@@ -68,11 +69,16 @@ export class AuthSessionService {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
+    const authTime = await this.refreshTokens.getFamilyAuthTime(tokenHash);
+    if (authTime === null) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
     const accessToken = await this.signAccessToken({
       id: currentPrincipal.principalId,
       tokenVersion: ACCESS_TOKEN_VERSION,
       type: currentPrincipal.principalType,
-    });
+    }, authTime);
     const nextRefreshToken = this.hashing.generateOpaqueRefreshToken();
     const outcome = await this.refreshTokens.rotate(
       tokenHash,
@@ -102,12 +108,13 @@ export class AuthSessionService {
     );
   }
 
-  private signAccessToken(principal: AuthPrincipal): Promise<string> {
+  private signAccessToken(principal: AuthPrincipal, authTime?: number): Promise<string> {
     const payload: AccessTokenPayload = {
       jti: randomUUID(),
       principalType: principal.type,
       sub: principal.id,
       tokenVersion: principal.tokenVersion,
+      authTime,
     };
     return this.jwtService.signAsync(payload);
   }

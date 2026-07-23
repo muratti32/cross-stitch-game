@@ -51,6 +51,21 @@ export class RefreshTokensRepository {
     };
   }
 
+  async getFamilyAuthTime(tokenHash: string): Promise<number | null> {
+    const token = await this.findByHash(this.dataSource.manager, tokenHash);
+    if (token === null) {
+      return null;
+    }
+    const rows = await this.dataSource.manager.query<{ createdAt: Date }[]>(
+      `SELECT MIN(created_at) AS "createdAt"
+       FROM auth.refresh_tokens
+       WHERE family_id = $1`,
+      [token.familyId],
+    );
+    const date = rows[0]?.createdAt;
+    return date ? Math.floor(new Date(date).getTime() / 1000) : null;
+  }
+
   async createFamily(
     principalType: PrincipalType,
     principalId: string,

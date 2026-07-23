@@ -20,6 +20,7 @@ import { configureApi } from '../src/api/configure-api';
 import { CatalogService } from '../src/catalog/catalog.service';
 import { encodePatternArtifactV1 } from '../src/catalog/pattern-artifact-encoder';
 import { LocalObjectStorage } from '../src/catalog/storage/local-object-storage';
+import { OBJECT_STORAGE } from '../src/catalog/storage/object-storage.interface';
 import { SessionsService } from '../src/sessions/sessions.service';
 import { ProgressCheckpointService } from '../src/sessions/progress-checkpoint.service';
 import { StorageReconcilerService } from '../src/sessions/storage-reconciler.service';
@@ -36,6 +37,8 @@ import { EmailOutboxDispatcherService } from '../src/auth/email-outbox-dispatche
 import { EmailOutboxEntity } from '../src/auth/email-outbox.entity';
 import { LocalEmailSender } from '../src/auth/local-email-sender';
 import { EMAIL_SENDER } from '../src/auth/email-sender.interface';
+import { FIREBASE_IDENTITY_VERIFIER } from '../src/auth/firebase-identity-verifier';
+import { JwtService } from '@nestjs/jwt';
 import { ACCESS_TOKEN_VERSION } from '../src/auth/auth.constants';
 import { createTypeOrmOptions } from '../src/database/typeorm-options';
 import { JobOutboxEntity } from '../src/jobs/entities/job-outbox.entity';
@@ -81,6 +84,10 @@ describe('Stitch Wish backend integration', () => {
   let emailDispatcher: EmailOutboxDispatcherService;
   let localEmailSender: LocalEmailSender;
 
+  const GOOGLE_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.google';
+  const APPLE_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.apple';
+  const BOUND_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.bound';
+
   const originalDatabaseUrl = process.env.DATABASE_URL;
   const originalJwtAccessTtlSeconds = process.env.JWT_ACCESS_TTL_SECONDS;
   const originalJwtSecret = process.env.JWT_SECRET;
@@ -117,7 +124,13 @@ describe('Stitch Wish backend integration', () => {
     process.env.OTP_SIGNING_SECRET =
       'integration-test-only-otp-signing-secret-at-least-32-chars';
     process.env.EMAIL_FROM_ADDRESS = 'integration@example.test';
+    process.env.EMAIL_OTP_RATE_LIMIT_PER_IP = '100000';
     delete process.env.RESEND_API_KEY;
+    delete process.env.R2_BUCKET_NAME;
+    delete process.env.R2_ACCOUNT_ID;
+    delete process.env.R2_ACCESS_KEY_ID;
+    delete process.env.R2_SECRET_ACCESS_KEY;
+    delete process.env.R2_PUBLIC_HOSTNAME;
 
     migrationDataSource = new DataSource(
       createTypeOrmOptions(process.env.DATABASE_URL),
@@ -131,10 +144,11 @@ describe('Stitch Wish backend integration', () => {
       import('../src/app.api.module'),
       import('../src/jobs'),
     ]);
-    // Keep email delivery hermetic: ConfigModule.forRoot reloads .env during
-    // app.init() and would re-populate a real RESEND_API_KEY (deleted above),
-    // steering the factory to the live Resend sender. Force the local sender so
-    // the suite never touches the network regardless of the developer's .env.
+    // Keep email delivery and object storage hermetic: ConfigModule.forRoot
+    // reloads .env during app.init() and would re-populate real RESEND_API_KEY /
+    // R2_* credentials (deleted above), steering the factories to the live
+    // Resend sender / R2 bucket. Force the local providers so the suite never
+    // touches the network regardless of the developer's .env.
     const moduleRef = await Test.createTestingModule({
       imports: [ApiAppModule, jobs.JobsWorkerModule],
     })
@@ -142,6 +156,38 @@ describe('Stitch Wish backend integration', () => {
       .useFactory({
         factory: (local: LocalEmailSender) => local,
         inject: [LocalEmailSender],
+      })
+      .overrideProvider(OBJECT_STORAGE)
+      .useFactory({
+        factory: (local: LocalObjectStorage) => local,
+        inject: [LocalObjectStorage],
+      })
+      .overrideProvider(FIREBASE_IDENTITY_VERIFIER)
+      .useValue({
+        verify: jest.fn((idToken: string) => {
+          if (idToken === GOOGLE_JWT) {
+            return Promise.resolve({
+              email: 'google-user@example.com',
+              provider: 'google',
+              subject: 'google-sub-789',
+            });
+          }
+          if (idToken === APPLE_JWT) {
+            return Promise.resolve({
+              email: 'apple-user@example.com',
+              provider: 'apple',
+              subject: 'apple-sub-789',
+            });
+          }
+          if (idToken === BOUND_JWT) {
+            return Promise.resolve({
+              email: 'bound-user@example.com',
+              provider: 'google',
+              subject: 'already-bound-sub',
+            });
+          }
+          return Promise.reject(new Error('Invalid token'));
+        }),
       })
       .compile();
 
@@ -338,15 +384,25 @@ describe('Stitch Wish backend integration', () => {
     );
 
     await request(httpServer).get('/v1/auth/session').expect(401);
-    await request(httpServer)
+    const beforeIssuance = Math.floor(Date.now() / 1_000);
+    const session = await request(httpServer)
       .get('/v1/auth/session')
       .set('Authorization', `Bearer ${created.accessToken}`)
-      .expect(200)
-      .expect({
-        id: created.guestId,
-        tokenVersion: ACCESS_TOKEN_VERSION,
-        type: PrincipalType.Guest,
-      });
+      .expect(200);
+    expect(session.body).toMatchObject({
+      id: created.guestId,
+      tokenVersion: ACCESS_TOKEN_VERSION,
+      type: PrincipalType.Guest,
+    });
+    const authTime = readRecord(session.body, 'authTime');
+    expect(typeof authTime).toBe('number');
+    expect(authTime as number).toBeGreaterThanOrEqual(beforeIssuance);
+    expect(Object.keys(session.body).sort()).toEqual([
+      'authTime',
+      'id',
+      'tokenVersion',
+      'type',
+    ]);
   });
 
   it('logs out a refresh family idempotently', async () => {
@@ -369,6 +425,30 @@ describe('Stitch Wish backend integration', () => {
       .send({ refreshToken: created.refreshToken })
       .expect(401);
   });
+
+  async function requestEmailOtp(server: Server, email: string): Promise<void> {
+    await request(server)
+      .post('/v1/auth/email/request')
+      .send({ email })
+      .expect(202)
+      .expect({ status: 'sent' });
+  }
+
+  async function dispatchAndReadEmailOtp(email: string): Promise<string> {
+    const deliveryCount = localEmailSender.getDeliveries().length;
+    await emailDispatcher.dispatchOnce();
+    // A single dispatch may also flush unrelated rows left undispatched by
+    // earlier tests, so select the newest delivery for this exact address.
+    const delivery = localEmailSender
+      .getDeliveries()
+      .slice(deliveryCount)
+      .reverse()
+      .find((candidate) => candidate.toEmail === email);
+    if (delivery === undefined) {
+      throw new Error('Email OTP delivery was not recorded');
+    }
+    return delivery.code;
+  }
 
   describe('email authentication', () => {
     it('requests, verifies, opens an account, and issues an account session', async () => {
@@ -470,30 +550,148 @@ describe('Stitch Wish backend integration', () => {
         .countBy({ email, consumedAt: IsNull(), supersededAt: IsNull() });
       expect(activeCodes).toBe(0);
     });
+  });
 
-    async function requestEmailOtp(server: Server, email: string): Promise<void> {
-      await request(server)
-        .post('/v1/auth/email/request')
-        .send({ email })
-        .expect(202)
-        .expect({ status: 'sent' });
-    }
+  describe('auth identity linking', () => {
+    it('links and unlinks Apple/Google and Email identities with reauth check', async () => {
+      // 1. Create a registered account via Email OTP
+      const email = `link-test-${randomUUID()}@example.test`;
+      await requestEmailOtp(httpServer, email);
+      const code = await dispatchAndReadEmailOtp(email);
+      const verified = await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send({ code, email })
+        .expect(200);
 
-    async function dispatchAndReadEmailOtp(email: string): Promise<string> {
-      const deliveryCount = localEmailSender.getDeliveries().length;
-      await emailDispatcher.dispatchOnce();
-      // A single dispatch may also flush unrelated rows left undispatched by
-      // earlier tests, so select the newest delivery for this exact address.
-      const delivery = localEmailSender
-        .getDeliveries()
-        .slice(deliveryCount)
-        .reverse()
-        .find((candidate) => candidate.toEmail === email);
-      if (delivery === undefined) {
-        throw new Error('Email OTP delivery was not recorded');
-      }
-      return delivery.code;
-    }
+      const accountId = readStringRecord(verified.body, 'accountId');
+      const accessToken = readStringRecord(verified.body, 'accessToken');
+
+      // 2. Link a Google provider using Firebase token
+      await request(httpServer)
+        .post('/v1/auth/identities/link/firebase')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ idToken: GOOGLE_JWT })
+        .expect(204);
+
+      // Verify it was added to database
+      const googleIdentity = await dataSource
+        .getRepository(AuthIdentityEntity)
+        .findOneByOrFail({ accountId, provider: 'google', subject: 'google-sub-789' });
+      expect(googleIdentity.email).toBe('google-user@example.com');
+
+      // 3. Link an Apple provider using Firebase token
+      await request(httpServer)
+        .post('/v1/auth/identities/link/firebase')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ idToken: APPLE_JWT })
+        .expect(204);
+
+      // Verify it was added to database
+      const appleIdentity = await dataSource
+        .getRepository(AuthIdentityEntity)
+        .findOneByOrFail({ accountId, provider: 'apple', subject: 'apple-sub-789' });
+      expect(appleIdentity.email).toBe('apple-user@example.com');
+
+      // 4. Try to link an already bound Google provider (should fail with Conflict 409)
+      const email2 = `link-test-2-${randomUUID()}@example.test`;
+      await requestEmailOtp(httpServer, email2);
+      const code2 = await dispatchAndReadEmailOtp(email2);
+      const verified2 = await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send({ code: code2, email: email2 })
+        .expect(200);
+      const accessToken2 = readStringRecord(verified2.body, 'accessToken');
+
+      await request(httpServer)
+        .post('/v1/auth/identities/link/firebase')
+        .set('Authorization', `Bearer ${accessToken2}`)
+        .send({ idToken: BOUND_JWT })
+        .expect(204);
+
+      await request(httpServer)
+        .post('/v1/auth/identities/link/firebase')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ idToken: BOUND_JWT })
+        .expect(409);
+
+      // 5. Try to link with an expired reauth token (should fail 401)
+      const jwtService = app.get(JwtService);
+      const expiredToken = await jwtService.signAsync({
+        jti: randomUUID(),
+        principalType: PrincipalType.Account,
+        sub: accountId,
+        tokenVersion: ACCESS_TOKEN_VERSION,
+        authTime: Math.floor(Date.now() / 1000) - 600, // 10 minutes ago
+      });
+
+      await request(httpServer)
+        .post('/v1/auth/identities/link/firebase')
+        .set('Authorization', `Bearer ${expiredToken}`)
+        .send({ idToken: GOOGLE_JWT })
+        .expect(401);
+
+      // 6. Unlink Google identity (should succeed)
+      await request(httpServer)
+        .post('/v1/auth/identities/unlink')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ provider: 'google', subject: 'google-sub-789' })
+        .expect(204);
+
+      // Verify database
+      const checkGoogle = await dataSource
+        .getRepository(AuthIdentityEntity)
+        .findOneBy({ accountId, provider: 'google', subject: 'google-sub-789' });
+      expect(checkGoogle).toBeNull();
+
+      // 7. Unlink Apple identity (should succeed)
+      await request(httpServer)
+        .post('/v1/auth/identities/unlink')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ provider: 'apple', subject: 'apple-sub-789' })
+        .expect(204);
+
+      // Verify database
+      const checkApple = await dataSource
+        .getRepository(AuthIdentityEntity)
+        .findOneBy({ accountId, provider: 'apple', subject: 'apple-sub-789' });
+      expect(checkApple).toBeNull();
+
+      // 8. Try to unlink the last remaining identity (email) (should fail 400)
+      await request(httpServer)
+        .post('/v1/auth/identities/unlink')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ provider: 'email', subject: email })
+        .expect(400);
+
+      // 9. Link a new email address (should succeed)
+      const newEmail = `link-email-${randomUUID()}@example.test`;
+      await requestEmailOtp(httpServer, newEmail);
+      const newEmailCode = await dispatchAndReadEmailOtp(newEmail);
+
+      await request(httpServer)
+        .post('/v1/auth/identities/link/email')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ email: newEmail, code: newEmailCode })
+        .expect(204);
+
+      // Verify database has new email linked
+      await dataSource
+        .getRepository(AuthIdentityEntity)
+        .findOneByOrFail({ accountId, provider: 'email', subject: newEmail });
+
+      // 10. Unlink the original email address (should succeed now that we have two identities)
+      await request(httpServer)
+        .post('/v1/auth/identities/unlink')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .send({ provider: 'email', subject: email })
+        .expect(204);
+
+      // Verify database
+      const checkOriginalEmail = await dataSource
+        .getRepository(AuthIdentityEntity)
+        .findOneBy({ accountId, provider: 'email', subject: email });
+      expect(checkOriginalEmail).toBeNull();
+    });
   });
 
   it('rejects refresh and revokes the family for an inactive guest', async () => {

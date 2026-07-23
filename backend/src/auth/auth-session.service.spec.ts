@@ -23,6 +23,10 @@ describe('AuthSessionService', () => {
     Promise<RefreshTokenPrincipal | null>,
     [string]
   >;
+  let getFamilyAuthTime: jest.Mock<
+    Promise<number | null>,
+    [string]
+  >;
   let revokeFamilyByTokenHash: jest.Mock<Promise<void>, [string]>;
   let rotate: jest.Mock<
     Promise<RefreshRotationOutcome>,
@@ -43,6 +47,9 @@ describe('AuthSessionService', () => {
         principalId: guestId,
         principalType: PrincipalType.Guest,
       });
+    getFamilyAuthTime = jest
+      .fn<Promise<number | null>, [string]>()
+      .mockResolvedValue(1783987200);
     revokeFamilyByTokenHash = jest
       .fn<Promise<void>, [string]>()
       .mockResolvedValue();
@@ -61,6 +68,7 @@ describe('AuthSessionService', () => {
     const repository = {
       createFamily,
       findPrincipalByTokenHash,
+      getFamilyAuthTime,
       revokeFamilyByTokenHash,
       rotate,
     } as unknown as RefreshTokensRepository;

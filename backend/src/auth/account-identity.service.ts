@@ -1,5 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
+
+import { AuthIdentityEntity } from './entities';
 
 export type AuthIdentityProvider = 'apple' | 'email' | 'google';
 
@@ -64,6 +71,72 @@ export class AccountIdentityService {
       throw new Error('Auth identity could not be established');
     }
     return accountId;
+  }
+
+  link(accountId: string, identity: VerifiedAuthIdentity): Promise<void> {
+    return this.dataSource.transaction((manager) =>
+      this.linkWithManager(accountId, identity, manager),
+    );
+  }
+
+  async linkWithManager(
+    accountId: string,
+    identity: VerifiedAuthIdentity,
+    manager: EntityManager,
+  ): Promise<void> {
+    const email = normalizeOptionalEmail(identity.email);
+
+    const lockKey = `${identity.provider}:${identity.subject}`;
+    await manager.query(
+      'SELECT pg_advisory_xact_lock(hashtextextended($1, 0))',
+      [lockKey],
+    );
+
+    const existing = await manager.getRepository(AuthIdentityEntity).findOne({
+      where: { provider: identity.provider, subject: identity.subject },
+    });
+
+    if (existing) {
+      if (existing.accountId === accountId) {
+        return;
+      }
+      throw new ConflictException(
+        'Provider identity is already bound to another account',
+      );
+    }
+
+    const newIdentity = manager.getRepository(AuthIdentityEntity).create({
+      accountId,
+      provider: identity.provider,
+      subject: identity.subject,
+      email,
+    });
+    await manager.getRepository(AuthIdentityEntity).save(newIdentity);
+  }
+
+  async unlink(
+    accountId: string,
+    provider: 'apple' | 'email' | 'google',
+    subject: string,
+  ): Promise<void> {
+    await this.dataSource.transaction(async (manager) => {
+      const identities = await manager.getRepository(AuthIdentityEntity).find({
+        where: { accountId },
+      });
+
+      if (identities.length <= 1) {
+        throw new BadRequestException('Cannot remove the last remaining identity');
+      }
+
+      const target = identities.find(
+        (id) => id.provider === provider && id.subject === subject,
+      );
+      if (!target) {
+        throw new NotFoundException('Identity not found on this account');
+      }
+
+      await manager.getRepository(AuthIdentityEntity).remove(target);
+    });
   }
 }
 

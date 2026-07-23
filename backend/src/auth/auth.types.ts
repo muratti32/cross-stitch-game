@@ -5,12 +5,14 @@ export interface AccessTokenPayload {
   principalType: PrincipalType;
   sub: string;
   tokenVersion: number;
+  authTime?: number;
 }
 
 export interface AuthPrincipal {
   id: string;
   tokenVersion: number;
   type: PrincipalType;
+  authTime?: number;
 }
 
 export interface AuthTokenPair {
