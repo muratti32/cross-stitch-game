@@ -5,12 +5,14 @@ import { OfficialPatternDraftJobConsumerService } from '../admin/official-patter
 import { AppConfigService } from '../config/app-config.service';
 import { ConversionJobConsumerService } from '../conversion/conversion-job-consumer.service';
 import { AiArtworkJobConsumerService } from '../ai-artwork/ai-artwork-job-consumer.service';
+import { CatalogPrecheckJobConsumerService } from '../catalog/catalog-precheck-job-consumer.service';
 import { ProcessingJobStatus } from './entities';
 import {
   CONVERSION_JOB_EVENT_NAME,
   DEMO_JOBS_QUEUE_NAME,
   OFFICIAL_PATTERN_DRAFT_EVENT_NAME,
   AI_ARTWORK_JOB_EVENT_NAME,
+  CATALOG_PRECHECK_EVENT_NAME,
 } from './jobs.constants';
 import {
   DemoJobPayload,
@@ -54,6 +56,8 @@ export class DemoJobConsumerService {
     @Inject(forwardRef(() => OfficialPatternDraftJobConsumerService))
     private readonly officialPatternDraftJobs: OfficialPatternDraftJobConsumerService,
     private readonly aiArtworkJobs: AiArtworkJobConsumerService,
+    @Inject(forwardRef(() => CatalogPrecheckJobConsumerService))
+    private readonly catalogPrecheckJobs: CatalogPrecheckJobConsumerService,
     private readonly processingJobs: ProcessingJobsRepository,
   ) {
     this.redisUrl = config.redisUrl;
@@ -116,6 +120,8 @@ export class DemoJobConsumerService {
               });
           } else if (job.name === AI_ARTWORK_JOB_EVENT_NAME) {
             void this.aiArtworkJobs.failExhausted(job.data.processingJobId, error.message);
+          } else if (job.name === CATALOG_PRECHECK_EVENT_NAME) {
+            void this.catalogPrecheckJobs.failExhausted(job.data.processingJobId, error.message);
           }
         }
       },
@@ -221,6 +227,9 @@ export class DemoJobConsumerService {
     }
     if (job.name === AI_ARTWORK_JOB_EVENT_NAME) {
       return this.aiArtworkJobs.processDelivery(job.data.processingJobId);
+    }
+    if (job.name === CATALOG_PRECHECK_EVENT_NAME) {
+      return this.catalogPrecheckJobs.processDelivery(job.data.processingJobId);
     }
     return this.processDelivery(job.data);
   }

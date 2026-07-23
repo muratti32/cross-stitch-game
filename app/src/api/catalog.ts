@@ -24,6 +24,10 @@ export interface CatalogPatternItem {
   originalImageUrl?: string;
   unlockPriceTier: UnlockPriceTier;
   publishedAt: string;
+  description?: string | null;
+  sourceLanguage?: string | null;
+  creatorProfileId?: string | null;
+  creatorUsername?: string | null;
 }
 
 export interface CatalogPage {

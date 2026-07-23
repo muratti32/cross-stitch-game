@@ -35,7 +35,7 @@ import {
       PatternEntity,
     ]),
     AuthModule,
-    CatalogModule,
+    forwardRef(() => CatalogModule),
     forwardRef(() => JobsModule),
     SupportModule,
   ],

@@ -236,6 +236,20 @@ export default function ProfileScreen() {
         </Pressable>
       )}
 
+      {isAccount && creatorProfile !== null && (
+        <Pressable
+          onPress={() => router.push('/(tabs)/(profile)/submissions')}
+          style={({ pressed }) => [styles.submissionsButton, pressed && styles.pressedButton]}
+        >
+          <Ionicons name="file-tray-full-outline" size={18} color={Theme.colors.accentTeal} />
+          <View style={styles.submissionsButtonText}>
+            <Text style={styles.submissionsButtonTitle}>Catalog Submissions</Text>
+            <Text style={styles.submissionsButtonSubtitle}>Track reviews, decisions, and appeals</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Theme.colors.textSecondary} />
+        </Pressable>
+      )}
+
       <DailyTasksCard enabled={isAuthenticated && !isPending && !isOfflinePending} />
       <RewardedAdCard enabled={!isPending && !isOfflinePending} />
 
@@ -325,6 +339,16 @@ export default function ProfileScreen() {
                   onPress={() => router.push(`/(tabs)/(create)/pattern-editor?patternId=${pattern.id}`)}
                   style={styles.patternEditButton}
                 />
+                {creatorProfile !== null && (
+                  <Pressable
+                    accessibilityLabel={`Submit ${pattern.title} to the Community Catalog`}
+                    accessibilityRole="button"
+                    onPress={() => router.push(`/(tabs)/(profile)/submit-pattern?patternId=${pattern.id}`)}
+                    style={({ pressed }) => [styles.patternSubmitButton, pressed && styles.pressedButton]}
+                  >
+                    <Ionicons name="cloud-upload-outline" size={19} color={Theme.colors.accentRose} />
+                  </Pressable>
+                )}
               </Card>
             ))}
             {patternsError && <Text style={styles.patternError}>{patternsError}</Text>}
@@ -517,6 +541,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: Theme.spacing.md,
     marginLeft: Theme.spacing.sm,
   },
+  patternSubmitButton: {
+    alignItems: 'center',
+    borderColor: Theme.colors.accentRose,
+    borderRadius: Theme.radii.lg,
+    borderWidth: 1.5,
+    height: 36,
+    justifyContent: 'center',
+    marginLeft: Theme.spacing.sm,
+    width: 36,
+  },
   patternPendingPreview: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -588,5 +622,33 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.md,
     fontWeight: Theme.typography.weights.semibold,
     color: Theme.colors.accentRose,
+  },
+  submissionsButton: {
+    alignItems: 'center',
+    backgroundColor: Theme.colors.card,
+    borderColor: Theme.colors.border,
+    borderRadius: Theme.radii.lg,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: Theme.spacing.sm,
+    marginBottom: Theme.spacing.lg,
+    paddingHorizontal: Theme.spacing.lg,
+    paddingVertical: Theme.spacing.md,
+  },
+  submissionsButtonText: {
+    flex: 1,
+  },
+  submissionsButtonTitle: {
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.sm,
+    fontWeight: Theme.typography.weights.semibold,
+  },
+  submissionsButtonSubtitle: {
+    color: Theme.colors.textSecondary,
+    fontSize: Theme.typography.sizes.xs,
+    marginTop: Theme.spacing.xs,
+  },
+  pressedButton: {
+    opacity: 0.75,
   },
 });

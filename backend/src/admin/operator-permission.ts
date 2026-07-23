@@ -7,6 +7,7 @@ export type OperatorPermission =
   | 'catalog.staffpick.manage'
   | 'catalog.tag.manage'
   | 'catalog.category.manage'
+  | 'catalog.submission.review'
   | 'support.reference.lookup';
 
 export const ALL_OPERATOR_PERMISSIONS: readonly OperatorPermission[] = [
@@ -16,6 +17,7 @@ export const ALL_OPERATOR_PERMISSIONS: readonly OperatorPermission[] = [
   'catalog.staffpick.manage',
   'catalog.tag.manage',
   'catalog.category.manage',
+  'catalog.submission.review',
   'support.reference.lookup',
 ];
 

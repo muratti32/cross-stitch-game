@@ -99,7 +99,7 @@ export interface DecodedPatternArtifact {
 }
 
 export function decodePatternArtifactV1(bytes: Buffer): DecodedPatternArtifact {
-  const decompressed = zlib.gunzipSync(bytes);
+  const decompressed = zlib.gunzipSync(bytes, { maxOutputLength: 2 * 1024 * 1024 });
   const message = PatternEnvelope.decode(decompressed) as unknown as {
     schemaVersion: number;
     width: number;

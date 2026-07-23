@@ -294,7 +294,15 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
             </View>
           )}
         </View>
-        <Text style={styles.description}>by {item.creatorName}</Text>
+        <Text style={styles.description}>
+          by {item.creatorName}{item.creatorUsername ? ` · @${item.creatorUsername}` : ''}
+        </Text>
+        {item.description ? <Text style={styles.catalogDescription}>{item.description}</Text> : null}
+        {item.sourceLanguage ? (
+          <Text style={styles.sourceLanguage}>
+            Source language: {item.sourceLanguage === 'en' ? 'English' : item.sourceLanguage}
+          </Text>
+        ) : null}
       </View>
 
       <Card style={styles.specsCard}>
@@ -519,6 +527,17 @@ const styles = StyleSheet.create({
     color: Theme.colors.textSecondary,
     lineHeight: 22,
     marginTop: Theme.spacing.xs,
+  },
+  catalogDescription: {
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.sm,
+    lineHeight: 21,
+    marginTop: Theme.spacing.md,
+  },
+  sourceLanguage: {
+    color: Theme.colors.textSecondary,
+    fontSize: Theme.typography.sizes.xs,
+    marginTop: Theme.spacing.sm,
   },
   specsCard: {
     flexDirection: 'row',

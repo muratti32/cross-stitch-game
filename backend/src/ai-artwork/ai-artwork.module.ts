@@ -11,5 +11,5 @@ import { FalArtworkProviderService } from './fal-artwork-provider.service';
 import { AiArtworkEntity, AiCreditReservationEntity } from './entities';
 import { PromptModerationService } from './prompt-moderation.service';
 import { SupportModule } from '../support/support.module';
-@Module({ imports: [TypeOrmModule.forFeature([AiArtworkEntity, AiCreditReservationEntity]), AuthModule, CatalogModule, SupportModule, forwardRef(() => JobsModule), forwardRef(() => ConversionModule)], controllers: [AiArtworkController], providers: [AiArtworkService, AiArtworkJobConsumerService, PromptModerationService, FalArtworkProviderService], exports: [AiArtworkJobConsumerService, AiArtworkService] })
+@Module({ imports: [TypeOrmModule.forFeature([AiArtworkEntity, AiCreditReservationEntity]), AuthModule, forwardRef(() => CatalogModule), SupportModule, forwardRef(() => JobsModule), forwardRef(() => ConversionModule)], controllers: [AiArtworkController], providers: [AiArtworkService, AiArtworkJobConsumerService, PromptModerationService, FalArtworkProviderService], exports: [AiArtworkJobConsumerService, AiArtworkService] })
 export class AiArtworkModule {}

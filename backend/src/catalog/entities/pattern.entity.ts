@@ -4,10 +4,13 @@ import {
   Column,
   CreateDateColumn,
   ManyToMany,
+  ManyToOne,
+  JoinColumn,
   JoinTable,
   Check,
 } from 'typeorm';
 import { TagEntity } from './tag.entity';
+import { CreatorProfileEntity } from '../../creator-profile/entities';
 
 export type PatternUnlockPriceTier = 'small' | 'medium' | 'large' | null;
 export type PatternStatus = 'available' | 'withdrawn' | 'removed';
@@ -28,6 +31,12 @@ export class PatternEntity {
 
   @Column({ type: 'varchar', length: 255 })
   title!: string;
+
+  @Column({ nullable: true, type: 'text' })
+  description!: string | null;
+
+  @Column({ length: 16, name: 'source_language', nullable: true, type: 'varchar' })
+  sourceLanguage!: string | null;
 
   @Column({ name: 'creator_name', type: 'varchar', length: 255 })
   creatorName!: string;
@@ -79,6 +88,16 @@ export class PatternEntity {
 
   @Column({ name: 'owner_account_id', nullable: true, type: 'uuid' })
   ownerAccountId!: string | null;
+
+  @Column({ name: 'creator_profile_id', nullable: true, type: 'uuid' })
+  creatorProfileId!: string | null;
+
+  @ManyToOne(() => CreatorProfileEntity, { nullable: true, onDelete: 'RESTRICT' })
+  @JoinColumn({
+    foreignKeyConstraintName: 'FK_patterns_creator_profile',
+    name: 'creator_profile_id',
+  })
+  creatorProfile!: CreatorProfileEntity | null;
 
   @Column({
     name: 'published_at',

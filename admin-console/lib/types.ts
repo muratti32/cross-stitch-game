@@ -165,3 +165,67 @@ export interface ResolvedSupportReference {
   principal: { type: 'account' | 'guest'; id: string };
   records: ResolvedSupportRecord[];
 }
+
+export type CatalogSubmissionStatus =
+  | 'precheck_pending'
+  | 'review_pending'
+  | 'quarantined'
+  | 'precheck_failed'
+  | 'rejected'
+  | 'appeal_pending'
+  | 'appeal_upheld'
+  | 'accepted';
+
+export type CatalogRejectionReason =
+  | 'safety'
+  | 'publication_rights'
+  | 'duplicate_or_spam'
+  | 'technical_invalidity'
+  | 'quality_standard';
+
+export interface CatalogSubmissionReview {
+  accountId: string;
+  appealed: boolean;
+  categoryCode: string;
+  communityPatternId: string | null;
+  createdAt: string;
+  creatorProfileId: string;
+  description: string;
+  height: number;
+  id: string;
+  initialModeratorId: string | null;
+  licenseVersion: string;
+  metadataErrors: string[];
+  metadataValid: boolean | null;
+  moderationEvidence: unknown;
+  paletteSize: number;
+  previewUrl: string;
+  rejectionNote: string | null;
+  rejectionReason: CatalogRejectionReason | null;
+  rightsDeclared: boolean;
+  rightsDeclaredAt: string;
+  similarityEvidence: unknown;
+  sourceLanguage: string;
+  sourcePatternId: string;
+  status: CatalogSubmissionStatus;
+  tagCodes: string[];
+  technicalErrors: string[];
+  technicalValid: boolean | null;
+  title: string;
+  updatedAt: string;
+  width: number;
+}
+
+export interface CatalogReviewDecision {
+  createdAt: string;
+  decision: 'accepted' | 'rejected';
+  note: string | null;
+  operatorAccountId: string;
+  rejectionReason: CatalogRejectionReason | null;
+  reviewRound: 'initial' | 'appeal';
+}
+
+export interface CatalogSubmissionReviewDetail extends CatalogSubmissionReview {
+  appeal: { createdAt: string; note: string | null } | null;
+  decisions: CatalogReviewDecision[];
+}

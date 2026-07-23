@@ -15,6 +15,7 @@ import { ProcessingJobsRepository } from './processing-jobs.repository';
 import { SessionsModule } from '../sessions/sessions.module';
 import { ConversionModule } from '../conversion/conversion.module';
 import { AiArtworkModule } from '../ai-artwork/ai-artwork.module';
+import { CatalogModule } from '../catalog/catalog.module';
 
 @Module({
   controllers: [JobsController],
@@ -49,6 +50,7 @@ export class JobsModule {}
     forwardRef(() => ConversionModule),
     forwardRef(() => AdminModule),
     forwardRef(() => AiArtworkModule),
+    forwardRef(() => CatalogModule),
   ],
   providers: [
     DemoJobConsumerService,

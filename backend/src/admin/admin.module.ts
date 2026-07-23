@@ -11,6 +11,7 @@ import { JobsModule } from '../jobs/jobs.module';
 import { SupportModule } from '../support/support.module';
 import { ADMIN_JWT_AUDIENCE, ADMIN_JWT_ISSUER } from './admin.constants';
 import { AdminAuthController } from './admin-auth.controller';
+import { AdminCatalogSubmissionsController } from './admin-catalog-submissions.controller';
 import { AdminCatalogService } from './admin-catalog.service';
 import { AdminCategoriesController } from './admin-categories.controller';
 import { AdminPatternsController } from './admin-patterns.controller';
@@ -44,6 +45,7 @@ import { TotpSecretCipherService } from './totp-secret-cipher.service';
 @Module({
   controllers: [
     AdminAuthController,
+    AdminCatalogSubmissionsController,
     AdminCategoriesController,
     AdminPatternsController,
     AdminStaffPicksController,
@@ -94,7 +96,7 @@ import { TotpSecretCipherService } from './totp-secret-cipher.service';
         },
       }),
     }),
-    CatalogModule,
+    forwardRef(() => CatalogModule),
     ConversionModule,
     forwardRef(() => JobsModule),
     SupportModule,

@@ -46,10 +46,15 @@ export class CatalogService {
   ) {}
 
   private formatPattern(pattern: PatternEntity, locale: string) {
+    const creatorName = pattern.creatorProfile?.displayName ?? pattern.creatorName;
     return {
       id: pattern.id,
       title: pattern.title,
-      creatorName: pattern.creatorName,
+      description: pattern.description,
+      sourceLanguage: pattern.sourceLanguage,
+      creatorName,
+      creatorProfileId: pattern.creatorProfile?.id ?? null,
+      creatorUsername: pattern.creatorProfile?.username ?? null,
       categoryCode: pattern.categoryCode,
       tags: (pattern.tags || []).map(tag => {
         const labelEntity = tag.labels?.find(l => l.locale === locale) ||
@@ -71,7 +76,7 @@ export class CatalogService {
   async getStaffPicks(locale: string = 'en') {
     const picks = await this.staffPickRepository.find({
       order: { position: 'ASC' },
-      relations: ['pattern', 'pattern.tags', 'pattern.tags.labels'],
+      relations: ['pattern', 'pattern.creatorProfile', 'pattern.tags', 'pattern.tags.labels'],
     });
     return picks
       .filter(
@@ -87,6 +92,7 @@ export class CatalogService {
     const queryBuilder = this.patternRepository.createQueryBuilder('pattern')
       .leftJoinAndSelect('pattern.tags', 'tag')
       .leftJoinAndSelect('tag.labels', 'label')
+      .leftJoinAndSelect('pattern.creatorProfile', 'creatorProfile')
       .where('pattern.status = :status', { status: 'available' })
       .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' });
 
@@ -178,6 +184,7 @@ export class CatalogService {
     const queryBuilder = this.patternRepository.createQueryBuilder('pattern')
       .leftJoinAndSelect('pattern.tags', 'tag')
       .leftJoinAndSelect('tag.labels', 'label')
+      .leftJoinAndSelect('pattern.creatorProfile', 'creatorProfile')
       .where('pattern.status = :status', { status: 'available' })
       .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' });
 
@@ -235,7 +242,7 @@ export class CatalogService {
   async getPatternById(id: string, locale: string = 'en') {
     const pattern = await this.patternRepository.findOne({
       where: { id, status: 'available', visibility: 'catalog' },
-      relations: ['tags', 'tags.labels'],
+      relations: ['creatorProfile', 'tags', 'tags.labels'],
     });
     if (!pattern) {
       throw new NotFoundException(`Pattern with ID ${id} not found`);
@@ -247,13 +254,14 @@ export class CatalogService {
     const queryBuilder = this.patternRepository.createQueryBuilder('pattern')
       .leftJoinAndSelect('pattern.tags', 'tag')
       .leftJoinAndSelect('tag.labels', 'label')
+      .leftJoinAndSelect('pattern.creatorProfile', 'creatorProfile')
       .where('pattern.status = :status', { status: 'available' })
       .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' });
 
     if (q) {
       const searchPattern = `%${q}%`;
       queryBuilder.andWhere(
-        '(pattern.title ILIKE :searchPattern OR pattern.creatorName ILIKE :searchPattern OR EXISTS (' +
+        '(pattern.title ILIKE :searchPattern OR pattern.creatorName ILIKE :searchPattern OR creatorProfile.username ILIKE :searchPattern OR EXISTS (' +
           'SELECT 1 FROM catalog.pattern_tags pt ' +
           'JOIN catalog.tag_labels tl ON tl.tag_code = pt.tag_code ' +
           'WHERE pt.pattern_id = pattern.id ' +

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import {
@@ -38,7 +38,7 @@ import { PromotionModule } from '../promotion/promotion.module';
       SessionCheckpointEntity,
       PatternEntity,
     ]),
-    CatalogModule,
+    forwardRef(() => CatalogModule),
     AuthModule,
     AppConfigModule,
     EconomyModule,

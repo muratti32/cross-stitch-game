@@ -89,6 +89,12 @@ import {
   CreatorProfileEntity,
 } from '../creator-profile/entities';
 import { CreateCreatorProfiles1786060800000 } from './migrations/1786060800000-CreateCreatorProfiles';
+import {
+  CatalogAppealEntity,
+  CatalogReviewDecisionEntity,
+  CatalogSubmissionEntity,
+} from '../catalog/entities';
+import { CreateCatalogSubmissions1786147200000 } from './migrations/1786147200000-CreateCatalogSubmissions';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -142,6 +148,9 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       SupportReferenceRecordEntity,
       CreatorProfileEntity,
       CreatorProfileAuditEntity,
+      CatalogSubmissionEntity,
+      CatalogAppealEntity,
+      CatalogReviewDecisionEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -171,6 +180,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateAiArtworkSchema1785881600000,
       CreateSupportReferences1785974400000,
       CreateCreatorProfiles1786060800000,
+      CreateCatalogSubmissions1786147200000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

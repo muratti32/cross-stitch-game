@@ -1,6 +1,15 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PatternEntity, TagEntity, TagLabelEntity, StaffPickEntity, CategoryEntity } from './entities';
+import {
+  CatalogAppealEntity,
+  CatalogReviewDecisionEntity,
+  CatalogSubmissionEntity,
+  PatternEntity,
+  TagEntity,
+  TagLabelEntity,
+  StaffPickEntity,
+  CategoryEntity,
+} from './entities';
 import { CatalogService } from './catalog.service';
 import { CatalogController } from './catalog.controller';
 import { LocalObjectStorage } from './storage/local-object-storage';
@@ -9,6 +18,13 @@ import { OBJECT_STORAGE, ObjectStorage } from './storage/object-storage.interfac
 import { CatalogPreviewsController } from './storage/catalog-previews.controller';
 import { AppConfigModule } from '../config/app-config.module';
 import { AppConfigService } from '../config/app-config.service';
+import { AuthModule } from '../auth/auth.module';
+import { JobsModule } from '../jobs/jobs.module';
+import { CreatorProfileEntity } from '../creator-profile/entities';
+import { CatalogSubmissionController } from './catalog-submission.controller';
+import { CatalogSubmissionService } from './catalog-submission.service';
+import { CatalogPrecheckService } from './catalog-precheck.service';
+import { CatalogPrecheckJobConsumerService } from './catalog-precheck-job-consumer.service';
 
 @Module({
   imports: [
@@ -18,15 +34,25 @@ import { AppConfigService } from '../config/app-config.service';
       TagLabelEntity,
       StaffPickEntity,
       CategoryEntity,
+      CatalogSubmissionEntity,
+      CatalogAppealEntity,
+      CatalogReviewDecisionEntity,
+      CreatorProfileEntity,
     ]),
     AppConfigModule,
+    AuthModule,
+    forwardRef(() => JobsModule),
   ],
   controllers: [
     CatalogController,
     CatalogPreviewsController,
+    CatalogSubmissionController,
   ],
   providers: [
     CatalogService,
+    CatalogSubmissionService,
+    CatalogPrecheckService,
+    CatalogPrecheckJobConsumerService,
     LocalObjectStorage,
     R2ObjectStorage,
     {
@@ -41,6 +67,8 @@ import { AppConfigService } from '../config/app-config.service';
   ],
   exports: [
     CatalogService,
+    CatalogSubmissionService,
+    CatalogPrecheckJobConsumerService,
     OBJECT_STORAGE,
   ],
 })

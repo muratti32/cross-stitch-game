@@ -3,3 +3,6 @@ export * from './tag.entity';
 export * from './tag-label.entity';
 export * from './staff-pick.entity';
 export * from './category.entity';
+export * from './catalog-submission.entity';
+export * from './catalog-appeal.entity';
+export * from './catalog-review-decision.entity';

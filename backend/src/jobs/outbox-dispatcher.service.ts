@@ -13,6 +13,7 @@ import {
   DEMO_JOBS_QUEUE_NAME,
   OFFICIAL_PATTERN_DRAFT_EVENT_NAME,
   AI_ARTWORK_JOB_EVENT_NAME,
+  CATALOG_PRECHECK_EVENT_NAME,
 } from './jobs.constants';
 import { DemoJobsQueueService } from './demo-jobs-queue.service';
 import { ProcessingJobsRepository } from './processing-jobs.repository';
@@ -79,7 +80,8 @@ export class OutboxDispatcherService {
             | typeof DEMO_JOB_EVENT_NAME
             | typeof CONVERSION_JOB_EVENT_NAME
             | typeof OFFICIAL_PATTERN_DRAFT_EVENT_NAME
-            | typeof AI_ARTWORK_JOB_EVENT_NAME,
+            | typeof AI_ARTWORK_JOB_EVENT_NAME
+            | typeof CATALOG_PRECHECK_EVENT_NAME,
         );
       } catch (error: unknown) {
         // The outbox row is durably marked as dispatched, so reconcileOnce
@@ -131,7 +133,8 @@ export class OutboxDispatcherService {
             | typeof DEMO_JOB_EVENT_NAME
             | typeof CONVERSION_JOB_EVENT_NAME
             | typeof OFFICIAL_PATTERN_DRAFT_EVENT_NAME
-            | typeof AI_ARTWORK_JOB_EVENT_NAME,
+            | typeof AI_ARTWORK_JOB_EVENT_NAME
+            | typeof CATALOG_PRECHECK_EVENT_NAME,
         );
         const updateResult = await manager
           .getRepository(JobOutboxEntity)
@@ -156,7 +159,8 @@ export class OutboxDispatcherService {
       (outbox.eventName !== DEMO_JOB_EVENT_NAME &&
         outbox.eventName !== CONVERSION_JOB_EVENT_NAME &&
         outbox.eventName !== OFFICIAL_PATTERN_DRAFT_EVENT_NAME &&
-        outbox.eventName !== AI_ARTWORK_JOB_EVENT_NAME)
+        outbox.eventName !== AI_ARTWORK_JOB_EVENT_NAME &&
+        outbox.eventName !== CATALOG_PRECHECK_EVENT_NAME)
     ) {
       throw new Error(
         `Job Outbox ${outbox.id} targets unsupported queue event ${outbox.queueName}/${outbox.eventName}`,
