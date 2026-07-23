@@ -9,3 +9,4 @@ export { AiCreditBalanceEntity } from './ai-credit-balance.entity';
 export { AiCreditLedgerEntryEntity } from './ai-credit-ledger-entry.entity';
 export { AiCreditLedgerReason } from './ai-credit-ledger-reason.enum';
 export { CommerceTransactionBindingEntity } from './commerce-transaction-binding.entity';
+export { AdAttemptEntity } from './ad-attempt.entity';

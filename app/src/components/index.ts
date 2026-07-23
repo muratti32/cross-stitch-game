@@ -9,3 +9,4 @@ export { AnimatedTabBar } from './AnimatedTabBar';
 export { TabButton } from './TabButton';
 export { GuestDataRiskNotice } from './GuestDataRiskNotice';
 export { DailyTasksCard } from './DailyTasksCard';
+export { RewardedAdCard } from './RewardedAdCard';

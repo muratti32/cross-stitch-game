@@ -33,6 +33,7 @@ export type EnvironmentVariables = {
   ADMOB_SSV_KEYS_URL: string;
   ADMOB_SSV_ALLOWED_AD_UNITS: readonly string[];
   REVENUECAT_WEBHOOK_AUTH_TOKEN: string | undefined;
+  AD_ATTEMPT_TTL_SECONDS: number;
 };
 
 const DATABASE_PROTOCOLS = new Set(['postgres:', 'postgresql:']);
@@ -51,6 +52,7 @@ const DEFAULT_ADMIN_TOTP_ISSUER = 'Stitch Wish Operator Console';
 const ADMIN_TOTP_ENC_KEY_BYTES = 32;
 const DEFAULT_ADMOB_SSV_KEYS_URL =
   'https://gstatic.com/admob/reward/verifier-keys.json';
+const DEFAULT_AD_ATTEMPT_TTL_SECONDS = 300;
 
 function parseHexKey(
   value: unknown,
@@ -385,6 +387,11 @@ export function parseEnvironment(
     REVENUECAT_WEBHOOK_AUTH_TOKEN: parseOptionalSecret(
       environment.REVENUECAT_WEBHOOK_AUTH_TOKEN,
       'REVENUECAT_WEBHOOK_AUTH_TOKEN',
+    ),
+    AD_ATTEMPT_TTL_SECONDS: parseDurationSeconds(
+      environment.AD_ATTEMPT_TTL_SECONDS,
+      'AD_ATTEMPT_TTL_SECONDS',
+      DEFAULT_AD_ATTEMPT_TTL_SECONDS,
     ),
   };
 }

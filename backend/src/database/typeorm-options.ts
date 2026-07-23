@@ -50,6 +50,7 @@ import {
   AiCreditBalanceEntity,
   AiCreditLedgerEntryEntity,
   CommerceTransactionBindingEntity,
+  AdAttemptEntity,
 } from '../economy/entities';
 import {
   PromotionLockEntity,
@@ -77,6 +78,7 @@ import { CreatePromotionSchema1785369600000 } from './migrations/1785369600000-C
 import { WidenLedgerReasonForPromotion1785456000000 } from './migrations/1785456000000-WidenLedgerReasonForPromotion';
 import { WidenPackageStatusForNeedsAttention1785542400000 } from './migrations/1785542400000-WidenPackageStatusForNeedsAttention';
 import { CreateCommerceLedger1785628800000 } from './migrations/1785628800000-CreateCommerceLedger';
+import { CreateAdAttempts1785715200000 } from './migrations/1785715200000-CreateAdAttempts';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -123,6 +125,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AiCreditBalanceEntity,
       AiCreditLedgerEntryEntity,
       CommerceTransactionBindingEntity,
+      AdAttemptEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -147,6 +150,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       WidenLedgerReasonForPromotion1785456000000,
       WidenPackageStatusForNeedsAttention1785542400000,
       CreateCommerceLedger1785628800000,
+      CreateAdAttempts1785715200000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

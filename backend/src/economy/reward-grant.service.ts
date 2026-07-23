@@ -10,10 +10,8 @@ import {
   CoinLedgerRepository,
   LedgerPrincipal,
 } from './coin-ledger.repository';
+import { AdAttemptRepository } from './ad-attempt.repository';
 import { utcRewardDay } from './reward-day';
-
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export interface AdRewardCallbackResult extends AdRewardGrantResult {
   transactionId: string;
@@ -32,6 +30,7 @@ export class RewardGrantService {
     private readonly verifier: AdMobSsvVerifierService,
     private readonly ledger: CoinLedgerRepository,
     private readonly config: AppConfigService,
+    private readonly adAttempts: AdAttemptRepository,
   ) {}
 
   async processAdCallback(rawQuery: string): Promise<AdRewardCallbackResult> {
@@ -42,9 +41,24 @@ export class RewardGrantService {
       throw new BadRequestException('SSV callback is missing a transaction id');
     }
 
-    const principal = this.resolvePrincipal(reward.customData);
-    const rewardDay = utcRewardDay();
     const sourceKey = `ad:${reward.transactionId}`;
+    const existing = await this.ledger.findExistingAdGrant(sourceKey);
+    if (existing !== null) {
+      return this.replayResult(existing, reward.transactionId);
+    }
+
+    const principal = await this.adAttempts.consume(reward.customData);
+    if (principal === null) {
+      const existingAfterConsume = await this.ledger.findExistingAdGrant(sourceKey);
+      if (existingAfterConsume !== null) {
+        return this.replayResult(existingAfterConsume, reward.transactionId);
+      }
+      throw new BadRequestException(
+        'SSV callback nonce is invalid, expired, or already used',
+      );
+    }
+
+    const rewardDay = utcRewardDay();
 
     const result = await this.ledger.grantAdReward(
       principal,
@@ -59,6 +73,33 @@ export class RewardGrantService {
     return { ...result, transactionId: reward.transactionId };
   }
 
+  private async replayResult(
+    existing: {
+      principal: LedgerPrincipal;
+      granted: boolean;
+      amount: number;
+    },
+    transactionId: string,
+  ): Promise<AdRewardCallbackResult> {
+    const [balance, status] = await Promise.all([
+      this.ledger.getBalance(existing.principal),
+      this.ledger.getRewardDayStatus(existing.principal, utcRewardDay()),
+    ]);
+    const result: AdRewardCallbackResult = {
+      granted: existing.granted,
+      amount: existing.amount,
+      balance,
+      adsCompleted: status.adsCompleted,
+      coinsConsumed: status.coinsConsumed,
+      replayed: true,
+      transactionId,
+    };
+    this.logger.log(
+      `AdMob SSV ${transactionId}: granted=${result.granted} amount=${result.amount} replayed=${result.replayed}`,
+    );
+    return result;
+  }
+
   private assertKnownAdUnit(reward: AdMobSsvReward): void {
     const allowed = this.config.admobSsvAllowedAdUnits;
     if (allowed.length > 0 && !allowed.includes(reward.adUnit)) {
@@ -66,19 +107,5 @@ export class RewardGrantService {
         'SSV callback references an unexpected ad unit',
       );
     }
-  }
-
-  private resolvePrincipal(customData: string): LedgerPrincipal {
-    // customData carries only the opaque backend player identity as `type:id`
-    // (ADR-0033) — never email, provider ids, or other personal data.
-    const separator = customData.indexOf(':');
-    const type = separator < 0 ? '' : customData.slice(0, separator);
-    const id = separator < 0 ? '' : customData.slice(separator + 1);
-
-    if ((type !== 'guest' && type !== 'account') || !UUID_PATTERN.test(id)) {
-      throw new BadRequestException('SSV callback custom data is invalid');
-    }
-
-    return { type, id };
   }
 }

@@ -182,5 +182,9 @@ export class AppConfigService {
       infer: true,
     });
   }
+
+  get adAttemptTtlSeconds(): number {
+    return this.configService.get('AD_ATTEMPT_TTL_SECONDS', { infer: true });
+  }
 }
 

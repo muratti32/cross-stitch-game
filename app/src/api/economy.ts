@@ -91,3 +91,47 @@ export function useUnlockPattern() {
     },
   });
 }
+
+export interface RewardDayView {
+  balance: number;
+  adsRemaining: number;
+  coinsRemaining: number;
+  resetsAt: string;
+}
+
+export async function fetchRewardDay(): Promise<RewardDayView> {
+  const res = await apiFetch('/v1/economy/reward-day');
+  if (!res.ok) {
+    throw new Error('Failed to fetch reward day: ' + res.status);
+  }
+  return (await res.json()) as RewardDayView;
+}
+
+export function useRewardDay() {
+  return useQuery({
+    queryKey: ['economy', 'reward-day'],
+    queryFn: fetchRewardDay,
+  });
+}
+
+export interface AdAttempt {
+  nonce: string;
+  expiresAt: string;
+}
+
+export async function openAdAttempt(): Promise<AdAttempt> {
+  const res = await apiFetch('/v1/economy/ad-attempts', {
+    method: 'POST',
+  });
+  if (!res.ok) {
+    throw new Error('Failed to open ad attempt: ' + res.status);
+  }
+  return (await res.json()) as AdAttempt;
+}
+
+export function useOpenAdAttempt() {
+  return useMutation({
+    mutationFn: openAdAttempt,
+  });
+}
+

@@ -9,6 +9,7 @@ import {
   RewardDayView,
 } from './economy-read.service';
 import { PatternUnlockService } from './pattern-unlock.service';
+import { AdAttemptService } from './ad-attempt.service';
 
 class UnlockRequestDto {
   @IsUUID()
@@ -26,7 +27,15 @@ export class EconomyController {
   constructor(
     private readonly economyRead: EconomyReadService,
     private readonly patternUnlock: PatternUnlockService,
+    private readonly adAttemptService: AdAttemptService,
   ) {}
+
+  @Post('ad-attempts')
+  async createAdAttempt(
+    @CurrentPrincipal() principal: AuthPrincipal,
+  ): Promise<{ nonce: string; expiresAt: string }> {
+    return this.adAttemptService.openAttempt(principal);
+  }
 
   @Get('balance')
   async getBalance(

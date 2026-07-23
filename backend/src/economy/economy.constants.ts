@@ -68,3 +68,6 @@ export const DAILY_TASK_KEYS: readonly DailyTaskKey[] = [
   'color_completion',
 ];
 
+export const AD_PLACEMENT_REWARDED = 'rewarded_ad';
+
+

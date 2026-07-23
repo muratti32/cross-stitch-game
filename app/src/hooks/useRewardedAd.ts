@@ -8,14 +8,15 @@ import {
   type ServerSideVerificationOptions,
 } from 'react-native-google-mobile-ads';
 import { getRewardedAdUnitId } from '../config';
-import { initializeAdMob, isAdMobAvailable } from '../ads';
+import { initializeAdMob, isAdMobAvailable, hasAdsConsent } from '../ads';
 
 export type RewardedAdStatus =
-  | 'unavailable' // No ad unit for this platform (e.g. web) — never loads.
+  | 'unavailable' // No ad unit for this platform (e.g. web) or consent denied — never loads.
   | 'loading' // A Rewarded Ad is being fetched.
   | 'loaded' // Ready to show.
   | 'showing' // Currently presented to the player.
   | 'error'; // Last load/show failed; a reload has been scheduled.
+
 
 export interface UseRewardedAdOptions {
   /**
@@ -127,6 +128,10 @@ export function useRewardedAd(options: UseRewardedAdOptions = {}): UseRewardedAd
     initializeAdMob()
       .then(() => {
         if (!cancelled) {
+          if (hasAdsConsent() === false) {
+            setStatus('unavailable');
+            return;
+          }
           rewarded.load();
         }
       })

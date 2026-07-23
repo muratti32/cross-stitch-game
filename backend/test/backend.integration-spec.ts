@@ -2377,6 +2377,49 @@ describe('Stitch Wish backend integration', () => {
       await request(httpServer).get('/v1/economy/balance').expect(401);
       await request(httpServer).get('/v1/economy/reward-day').expect(401);
     });
+
+    it('requires authentication for creating ad attempts', async () => {
+      await request(httpServer).post('/v1/economy/ad-attempts').expect(401);
+    });
+
+    it('creates an ad attempt nonce when pool has capacity', async () => {
+      const guest = await newGuest();
+      const res = await request(httpServer)
+        .post('/v1/economy/ad-attempts')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(201);
+
+      expect(res.body.nonce).toBeDefined();
+      expect(typeof res.body.nonce).toBe('string');
+      expect(res.body.expiresAt).toBeDefined();
+
+      const rows = await dataSource.query(
+        `SELECT principal_type, principal_id, placement FROM economy.ad_attempts WHERE nonce = $1`,
+        [res.body.nonce],
+      );
+      expect(rows).toHaveLength(1);
+      expect(rows[0]).toEqual({
+        principal_type: 'guest',
+        principal_id: guest.guestId,
+        placement: 'rewarded_ad',
+      });
+    });
+
+    it('rejects ad attempts when daily limits are exhausted', async () => {
+      const guest = await newGuest();
+      const ledger = app.get(CoinLedgerRepository);
+      const principal = { type: 'guest', id: guest.guestId } as const;
+      const rewardDay = utcRewardDay();
+
+      await ledger.grantAdReward(principal, rewardDay, 'ad:exhaust-1');
+      await ledger.grantAdReward(principal, rewardDay, 'ad:exhaust-2');
+      await ledger.grantAdReward(principal, rewardDay, 'ad:exhaust-3');
+
+      await request(httpServer)
+        .post('/v1/economy/ad-attempts')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(409);
+    });
   });
 
 

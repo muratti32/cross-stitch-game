@@ -20,6 +20,8 @@ import { DailyTaskService } from './daily-task.service';
 import { RevenueCatWebhookController } from './revenuecat-webhook.controller';
 import { RevenueCatWebhookVerifierService } from './revenuecat-webhook-verifier.service';
 import { RevenueCatWebhookService } from './revenuecat-webhook.service';
+import { AdAttemptRepository } from './ad-attempt.repository';
+import { AdAttemptService } from './ad-attempt.service';
 
 @Module({
   imports: [
@@ -44,6 +46,8 @@ import { RevenueCatWebhookService } from './revenuecat-webhook.service';
     DailyTaskService,
     RevenueCatWebhookVerifierService,
     RevenueCatWebhookService,
+    AdAttemptRepository,
+    AdAttemptService,
   ],
 
   exports: [

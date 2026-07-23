@@ -83,6 +83,13 @@ interface LedgerOutcomeRow {
   granted: boolean;
 }
 
+interface ExistingAdGrantRow {
+  principal_type: LedgerPrincipal['type'];
+  principal_id: string;
+  granted: boolean;
+  amount: string;
+}
+
 interface BalanceRow {
   balance: string;
 }
@@ -474,6 +481,28 @@ export class CoinLedgerRepository {
 
   async getBalance(principal: LedgerPrincipal): Promise<number> {
     return this.readBalance(this.dataSource.manager, principal);
+  }
+
+  async findExistingAdGrant(sourceKey: string): Promise<{
+    principal: LedgerPrincipal;
+    granted: boolean;
+    amount: number;
+  } | null> {
+    const rows = await this.dataSource.query<readonly ExistingAdGrantRow[]>(
+      `SELECT principal_type, principal_id, granted, amount
+       FROM economy.coin_ledger_entries
+       WHERE source_key = $1`,
+      [sourceKey],
+    );
+    const row = rows[0];
+    if (!row) {
+      return null;
+    }
+    return {
+      principal: { type: row.principal_type, id: row.principal_id },
+      granted: row.granted,
+      amount: Number(row.amount),
+    };
   }
 
   async getRewardDayStatus(

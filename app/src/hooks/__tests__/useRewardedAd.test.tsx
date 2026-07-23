@@ -1,6 +1,7 @@
 import React from 'react';
 import TestRenderer, { act } from 'react-test-renderer';
 import { useRewardedAd as useRewardedAdImpl } from '../useRewardedAd';
+import { __resetAdMobGlobals } from '../../ads';
 
 // Provide the ad unit IDs without depending on env-load timing. Both src/ads and
 // the hook read getRewardedAdUnitId from this module.
@@ -43,16 +44,22 @@ jest.mock('react-native-google-mobile-ads', () => {
     show,
   };
   const createForAdRequest = jest.fn(() => ad);
+  const AdsConsent = {
+    gatherConsent: jest.fn(() => Promise.resolve({ canRequestAds: true })),
+    reset: jest.fn(),
+  };
   return {
     __esModule: true,
     default: () => ({ initialize: () => Promise.resolve([]) }),
     RewardedAd: { createForAdRequest },
     RewardedAdEventType,
     AdEventType,
+    AdsConsent,
     __mock: {
       load,
       show,
       createForAdRequest,
+      AdsConsent,
       setLoaded: (value: boolean) => {
         state.loaded = value;
       },
@@ -65,6 +72,8 @@ jest.mock('react-native-google-mobile-ads', () => {
         load.mockClear();
         show.mockClear();
         createForAdRequest.mockClear();
+        AdsConsent.gatherConsent.mockClear();
+        AdsConsent.gatherConsent.mockResolvedValue({ canRequestAds: true });
       },
     },
   };
@@ -75,6 +84,10 @@ const admobMock = require('react-native-google-mobile-ads').__mock as {
   load: jest.Mock;
   show: jest.Mock;
   createForAdRequest: jest.Mock;
+  AdsConsent: {
+    gatherConsent: jest.Mock;
+    reset: jest.Mock;
+  };
   setLoaded: (value: boolean) => void;
   fire: (type: string, payload?: unknown) => void;
   reset: () => void;
@@ -85,6 +98,7 @@ const useRewardedAd: UseRewardedAd = useRewardedAdImpl;
 
 beforeEach(() => {
   admobMock.reset();
+  __resetAdMobGlobals();
 });
 
 type HookValue = ReturnType<UseRewardedAd>;
@@ -189,5 +203,12 @@ describe('useRewardedAd', () => {
 
     expect(current().status).toBe('error');
     expect(current().error).toEqual(new Error('no-fill'));
+  });
+
+  it('transitions to unavailable when UMP consent is denied', async () => {
+    admobMock.AdsConsent.gatherConsent.mockResolvedValue({ canRequestAds: false });
+    const { current } = await mountHook();
+
+    expect(current().status).toBe('unavailable');
   });
 });
