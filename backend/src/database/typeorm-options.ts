@@ -78,6 +78,7 @@ import { CreatePromotionSchema1785369600000 } from './migrations/1785369600000-C
 import { WidenLedgerReasonForPromotion1785456000000 } from './migrations/1785456000000-WidenLedgerReasonForPromotion';
 import { WidenPackageStatusForNeedsAttention1785542400000 } from './migrations/1785542400000-WidenPackageStatusForNeedsAttention';
 import { CreateCommerceLedger1785628800000 } from './migrations/1785628800000-CreateCommerceLedger';
+import { CreatePremiumMembership1785801600000 } from './migrations/1785801600000-CreatePremiumMembership';
 import { CreateAdAttempts1785715200000 } from './migrations/1785715200000-CreateAdAttempts';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
@@ -151,6 +152,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       WidenPackageStatusForNeedsAttention1785542400000,
       CreateCommerceLedger1785628800000,
       CreateAdAttempts1785715200000,
+      CreatePremiumMembership1785801600000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

@@ -10,12 +10,20 @@ import { useStitchingSession } from '@/hooks/useStitchingSession';
 import { Ionicons } from '@expo/vector-icons';
 import { BUNDLED_PATTERNS } from '@/bundled-patterns';
 import * as Haptics from 'expo-haptics';
-import Animated, { useSharedValue, useAnimatedStyle, withSequence, withTiming } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
+import { useActiveMembershipTheme } from '@/membership/themes';
 
 export default function SessionReadyScreen() {
   const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
   const router = useRouter();
   const navigation = useNavigation();
+  const { theme } = useActiveMembershipTheme();
 
   // Hide the OS bottom tab bar while a stitching session is focused, so a
   // finger drifting past the thread palette can't land on another app tab
@@ -68,6 +76,23 @@ export default function SessionReadyScreen() {
   const animatedShakeStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: shakeOffset.value }],
   }));
+  const celebrationPulse = useSharedValue(1);
+  const celebrationAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: celebrationPulse.value }],
+  }));
+
+  useEffect(() => {
+    celebrationPulse.value =
+      isSessionCompleted && theme.premium
+        ? withRepeat(
+            withSequence(
+              withTiming(1.12, { duration: 700 }),
+              withTiming(1, { duration: 700 }),
+            ),
+            -1,
+          )
+        : withTiming(1, { duration: 150 });
+  }, [isSessionCompleted, theme.id]);
 
   // Sync Shared Values on data load or change
   useEffect(() => {
@@ -281,6 +306,7 @@ export default function SessionReadyScreen() {
           activeColorIndexShared={activeColorIndexShared}
           isColorCompletedShared={isColorCompletedShared}
           parentRevision={parentRevision}
+          theme={theme}
         />
       </Animated.View>
 
@@ -385,10 +411,16 @@ export default function SessionReadyScreen() {
       {/* Designed Celebration Moment Overlay */}
       {isSessionCompleted && (
         <View style={styles.celebrationOverlay}>
-          <View style={styles.celebrationCard}>
-            <View style={styles.celebrationBadge}>
-              <Ionicons name="sparkles" size={40} color={Theme.colors.accentSage} />
-            </View>
+          <View style={[styles.celebrationCard, { backgroundColor: theme.celebrationSurface }]}>
+            <Animated.View
+              style={[
+                styles.celebrationBadge,
+                { backgroundColor: `${theme.celebrationAccent}26` },
+                celebrationAnimatedStyle,
+              ]}
+            >
+              <Ionicons name="sparkles" size={40} color={theme.celebrationAccent} />
+            </Animated.View>
             <Text style={styles.celebrationTitle} allowFontScaling={true}>
               Beautifully Crafted!
             </Text>
@@ -397,11 +429,11 @@ export default function SessionReadyScreen() {
             </Text>
             <View style={styles.statsRow}>
               <View style={styles.statBox}>
-                <Text style={styles.statVal}>{totalCellsCount}</Text>
+                <Text style={[styles.statVal, { color: theme.celebrationAccent }]}>{totalCellsCount}</Text>
                 <Text style={styles.statLbl}>Stitches</Text>
               </View>
               <View style={styles.statBox}>
-                <Text style={styles.statVal}>{patternData.palette.length}</Text>
+                <Text style={[styles.statVal, { color: theme.celebrationAccent }]}>{patternData.palette.length}</Text>
                 <Text style={styles.statLbl}>Colors</Text>
               </View>
             </View>

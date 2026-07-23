@@ -12,4 +12,5 @@ export enum CoinLedgerReason {
   GuestPromotion = 'guest_promotion',
   CoinPackPurchase = 'coin_pack_purchase',
   CommerceReversal = 'commerce_reversal',
+  PremiumDailyClaim = 'premium_daily_claim',
 }

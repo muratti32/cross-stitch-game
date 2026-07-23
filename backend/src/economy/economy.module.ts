@@ -22,6 +22,9 @@ import { RevenueCatWebhookVerifierService } from './revenuecat-webhook-verifier.
 import { RevenueCatWebhookService } from './revenuecat-webhook.service';
 import { AdAttemptRepository } from './ad-attempt.repository';
 import { AdAttemptService } from './ad-attempt.service';
+import { MembershipController } from './membership.controller';
+import { MembershipRepository } from './membership.repository';
+import { MembershipService } from './membership.service';
 
 @Module({
   imports: [
@@ -35,6 +38,7 @@ import { AdAttemptService } from './ad-attempt.service';
     EconomyController,
     DailyTaskController,
     RevenueCatWebhookController,
+    MembershipController,
   ],
   providers: [
     CoinLedgerRepository,
@@ -48,6 +52,8 @@ import { AdAttemptService } from './ad-attempt.service';
     RevenueCatWebhookService,
     AdAttemptRepository,
     AdAttemptService,
+    MembershipRepository,
+    MembershipService,
   ],
 
   exports: [

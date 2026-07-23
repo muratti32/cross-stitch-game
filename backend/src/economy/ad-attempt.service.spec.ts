@@ -18,12 +18,14 @@ describe('AdAttemptService', () => {
   function makeService(options: {
     adsCompleted: number;
     coinsConsumed: number;
+    premiumClaimed?: boolean;
     createResult?: { nonce: string; expiresAt: Date };
     ttlSeconds?: number;
   }) {
     const status = {
       adsCompleted: options.adsCompleted,
       coinsConsumed: options.coinsConsumed,
+      premiumClaimed: options.premiumClaimed ?? false,
     };
     const ledger = {
       getRewardDayStatus: jest.fn().mockResolvedValue(status),
@@ -86,6 +88,17 @@ describe('AdAttemptService', () => {
     await expect(service.openAttempt(principal)).rejects.toThrow(
       ConflictException,
     );
+    expect(adAttempts.create).not.toHaveBeenCalled();
+  });
+
+  it('throws ConflictException after Premium Daily Coin Claim closes the pool', async () => {
+    const { service, adAttempts } = makeService({
+      adsCompleted: 0,
+      coinsConsumed: 30,
+      premiumClaimed: true,
+    });
+
+    await expect(service.openAttempt(principal)).rejects.toThrow(ConflictException);
     expect(adAttempts.create).not.toHaveBeenCalled();
   });
 });

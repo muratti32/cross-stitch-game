@@ -9,6 +9,17 @@ import { useAiCreditBalance } from '@/api/commerce';
 import { useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
 import Purchases, { PurchasesPackage } from 'react-native-purchases';
+import { useMembership, usePremiumDailyClaim } from '@/api/membership';
+import {
+  MEMBERSHIP_THEMES,
+  useActiveMembershipTheme,
+} from '@/membership/themes';
+
+const PREMIUM_PLAN_DESCRIPTIONS: Record<string, { label: string; credits: number; trial: boolean }> = {
+  premium_weekly: { label: 'Weekly Premium', credits: 3, trial: false },
+  premium_monthly: { label: 'Monthly Premium', credits: 15, trial: true },
+  premium_annual: { label: 'Annual Premium', credits: 180, trial: false },
+};
 
 const COIN_PACK_DESCRIPTIONS: Record<string, { coins: number }> = {
   'coin_pack_300': { coins: 300 },
@@ -24,6 +35,7 @@ const AI_CREDIT_PACK_DESCRIPTIONS: Record<string, { credits: number }> = {
 
 interface PackItem {
   id: string;
+  productId: string;
   package: PurchasesPackage;
   amount: number;
   label: string;
@@ -35,6 +47,9 @@ export default function CommerceScreen() {
   const { isAccount } = useIdentityStore();
   const { data: coinBalance } = useCoinBalance();
   const { data: aiCreditBalance } = useAiCreditBalance();
+  const { data: membership } = useMembership();
+  const dailyClaim = usePremiumDailyClaim();
+  const { theme, themeAccess, selectTheme } = useActiveMembershipTheme();
 
   const [offerings, setOfferings] = useState<PackItem[]>([]);
   const [loadingOfferings, setLoadingOfferings] = useState(true);
@@ -63,12 +78,29 @@ export default function CommerceScreen() {
       const packages = data.current.availablePackages;
       const coinPacks: PackItem[] = [];
       const aiPacks: PackItem[] = [];
+      const premiumPlans: PackItem[] = [];
 
       for (const pkg of packages) {
-        const desc = COIN_PACK_DESCRIPTIONS[pkg.identifier];
-        if (desc) {
+        const productId = matchingProductId(pkg, PREMIUM_PLAN_DESCRIPTIONS);
+        const desc = productId ? PREMIUM_PLAN_DESCRIPTIONS[productId] : undefined;
+        if (desc && productId) {
+          premiumPlans.push({
+            id: pkg.identifier,
+            productId,
+            package: pkg,
+            amount: desc.credits,
+            label: desc.label,
+          });
+        }
+      }
+
+      for (const pkg of packages) {
+        const productId = matchingProductId(pkg, COIN_PACK_DESCRIPTIONS);
+        const desc = productId ? COIN_PACK_DESCRIPTIONS[productId] : undefined;
+        if (desc && productId) {
           coinPacks.push({
             id: pkg.identifier,
+            productId,
             package: pkg,
             amount: desc.coins,
             label: `${desc.coins} Coins`,
@@ -77,10 +109,12 @@ export default function CommerceScreen() {
       }
 
       for (const pkg of packages) {
-        const desc = AI_CREDIT_PACK_DESCRIPTIONS[pkg.identifier];
-        if (desc) {
+        const productId = matchingProductId(pkg, AI_CREDIT_PACK_DESCRIPTIONS);
+        const desc = productId ? AI_CREDIT_PACK_DESCRIPTIONS[productId] : undefined;
+        if (desc && productId) {
           aiPacks.push({
             id: pkg.identifier,
+            productId,
             package: pkg,
             amount: desc.credits,
             label: `${desc.credits} AI Credits`,
@@ -88,7 +122,7 @@ export default function CommerceScreen() {
         }
       }
 
-      setOfferings([...coinPacks, ...aiPacks]);
+      setOfferings([...premiumPlans, ...coinPacks, ...aiPacks]);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Failed to load offerings';
       setOfferingsError(message);
@@ -132,6 +166,7 @@ export default function CommerceScreen() {
   const refetchBalances = async () => {
     await queryClient.refetchQueries({ queryKey: ['economy', 'balance'] });
     await queryClient.refetchQueries({ queryKey: ['economy', 'aiCreditBalance'] });
+    await queryClient.refetchQueries({ queryKey: ['commerce', 'membership'] });
   };
 
   const handleRestorePurchases = useCallback(async () => {
@@ -170,8 +205,9 @@ export default function CommerceScreen() {
     );
   }
 
-  const coinPacks = offerings.filter(p => Object.keys(COIN_PACK_DESCRIPTIONS).includes(p.id));
-  const aiPacks = offerings.filter(p => Object.keys(AI_CREDIT_PACK_DESCRIPTIONS).includes(p.id));
+  const premiumPlans = offerings.filter(p => p.productId in PREMIUM_PLAN_DESCRIPTIONS);
+  const coinPacks = offerings.filter(p => p.productId in COIN_PACK_DESCRIPTIONS);
+  const aiPacks = offerings.filter(p => p.productId in AI_CREDIT_PACK_DESCRIPTIONS);
 
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
@@ -197,6 +233,92 @@ export default function CommerceScreen() {
           </View>
         </View>
       </View>
+
+      <Card style={styles.membershipCard}>
+        <View style={styles.membershipHeader}>
+          <View style={styles.membershipTitleRow}>
+            <Ionicons name="diamond-outline" size={22} color={Theme.colors.accentRose} />
+            <Text style={styles.membershipTitle}>Premium Membership</Text>
+          </View>
+          {membership?.active && (
+            <View style={styles.activeBadge}>
+              <Text style={styles.activeBadgeText}>
+                {membership.lifecycle === 'trial' ? 'TRIAL' : 'ACTIVE'}
+              </Text>
+            </View>
+          )}
+        </View>
+        <Text style={styles.membershipDescription}>
+          AI Credits each paid period, one daily shared-pool Coin claim, and cosmetic themes.
+        </Text>
+        {membership?.active && (
+          <>
+            <Text style={styles.membershipMeta}>
+              {membership.plan ? `${capitalize(membership.plan)} plan` : 'Premium'}
+              {membership.expiresAt
+                ? ` · current period ends ${new Date(membership.expiresAt).toLocaleDateString()}`
+                : ''}
+            </Text>
+            <Button
+              title={
+                membership.dailyClaim.claimed
+                  ? 'Daily Coin Claimed'
+                  : membership.dailyClaim.coinsAvailable > 0
+                    ? `Claim ${membership.dailyClaim.coinsAvailable} Coins`
+                    : "Complete Today's Claim"
+              }
+              onPress={() => dailyClaim.mutate()}
+              disabled={membership.dailyClaim.claimed || dailyClaim.isPending}
+              loading={dailyClaim.isPending}
+              variant="honey"
+              style={styles.dailyClaimButton}
+            />
+            {dailyClaim.data && !dailyClaim.isPending && (
+              <Text style={styles.claimResult}>
+                {dailyClaim.data.amount > 0
+                  ? `${dailyClaim.data.amount} Coins added.`
+                  : "Today's pool was already exhausted; the claim is recorded."}
+              </Text>
+            )}
+            {dailyClaim.error && (
+              <Text style={styles.claimError}>{dailyClaim.error.message}</Text>
+            )}
+          </>
+        )}
+
+        <Text style={styles.themeTitle}>Theme Collection</Text>
+        <View style={styles.themeRow}>
+          {MEMBERSHIP_THEMES.map((candidate) => {
+            const locked = candidate.premium && !themeAccess;
+            const selected = theme.id === candidate.id;
+            return (
+              <Pressable
+                key={candidate.id}
+                onPress={() => {
+                  if (!locked) void selectTheme(candidate.id);
+                }}
+                disabled={locked}
+                style={[
+                  styles.themeOption,
+                  { backgroundColor: candidate.gridBackground },
+                  selected && styles.themeOptionSelected,
+                  locked && styles.themeOptionLocked,
+                ]}
+              >
+                <Ionicons
+                  name={locked ? 'lock-closed-outline' : 'color-palette-outline'}
+                  size={18}
+                  color={candidate.celebrationAccent}
+                />
+                <Text style={styles.themeOptionText}>{candidate.name}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        {!themeAccess && (
+          <Text style={styles.themeHelp}>Premium themes automatically revert to Classic Linen when access ends.</Text>
+        )}
+      </Card>
 
       {/* Error Message */}
       {purchaseError && (
@@ -233,6 +355,41 @@ export default function CommerceScreen() {
         </View>
       ) : (
         <>
+          {premiumPlans.length > 0 && (
+            <>
+              <Text style={styles.sectionTitle}>Premium Plans</Text>
+              <View style={styles.packsList}>
+                {premiumPlans.map((item) => {
+                  const description = PREMIUM_PLAN_DESCRIPTIONS[item.productId];
+                  return (
+                    <Card key={item.id} style={styles.packCard}>
+                      <View style={styles.packInfo}>
+                        <View style={styles.packTextGroup}>
+                          <Text style={styles.packLabel}>{item.label}</Text>
+                          <Text style={styles.packDetail}>
+                            {description.credits} AI Credits per paid period
+                            {description.trial
+                              ? ' · eligible players: 7-day trial, 0 trial credits'
+                              : ''}
+                          </Text>
+                          <Text style={styles.packPrice}>{item.package.product.priceString}</Text>
+                        </View>
+                      </View>
+                      <Button
+                        title={purchasingPackageId === item.id ? '' : 'Choose'}
+                        onPress={() => void handlePurchase(item.package)}
+                        variant="rose"
+                        loading={purchasingPackageId === item.id}
+                        disabled={purchasingPackageId !== null}
+                        style={styles.buyButton}
+                      />
+                    </Card>
+                  );
+                })}
+              </View>
+            </>
+          )}
+
           {/* Coin Packs */}
           {coinPacks.length > 0 && (
             <>
@@ -311,6 +468,17 @@ export default function CommerceScreen() {
   );
 }
 
+function matchingProductId(
+  pkg: PurchasesPackage,
+  catalog: Readonly<Record<string, unknown>>,
+): string | null {
+  return [pkg.identifier, pkg.product.identifier].find((candidate) => candidate in catalog) ?? null;
+}
+
+function capitalize(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: Theme.spacing.lg,
@@ -346,6 +514,98 @@ const styles = StyleSheet.create({
     fontWeight: Theme.typography.weights.bold,
     color: Theme.colors.textPrimary,
     marginTop: Theme.spacing.xs,
+  },
+  membershipCard: {
+    marginBottom: Theme.spacing.lg,
+    gap: Theme.spacing.sm,
+  },
+  membershipHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  membershipTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Theme.spacing.sm,
+  },
+  membershipTitle: {
+    fontSize: Theme.typography.sizes.lg,
+    fontWeight: Theme.typography.weights.bold,
+    color: Theme.colors.textPrimary,
+  },
+  activeBadge: {
+    backgroundColor: '#EDF7EF',
+    borderRadius: Theme.radii.full,
+    paddingHorizontal: Theme.spacing.sm,
+    paddingVertical: Theme.spacing.xs,
+  },
+  activeBadgeText: {
+    fontSize: 10,
+    fontWeight: Theme.typography.weights.bold,
+    color: Theme.colors.success,
+  },
+  membershipDescription: {
+    fontSize: Theme.typography.sizes.sm,
+    color: Theme.colors.textSecondary,
+    lineHeight: 20,
+  },
+  membershipMeta: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.textPrimary,
+    fontWeight: Theme.typography.weights.semibold,
+  },
+  dailyClaimButton: {
+    marginTop: Theme.spacing.sm,
+  },
+  claimResult: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.success,
+    textAlign: 'center',
+  },
+  claimError: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.error,
+    textAlign: 'center',
+  },
+  themeTitle: {
+    fontSize: Theme.typography.sizes.sm,
+    fontWeight: Theme.typography.weights.bold,
+    color: Theme.colors.textPrimary,
+    marginTop: Theme.spacing.md,
+  },
+  themeRow: {
+    flexDirection: 'row',
+    gap: Theme.spacing.sm,
+  },
+  themeOption: {
+    flex: 1,
+    minHeight: 72,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Theme.spacing.xs,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+    borderRadius: Theme.radii.md,
+    padding: Theme.spacing.xs,
+  },
+  themeOptionSelected: {
+    borderWidth: 2,
+    borderColor: Theme.colors.accentRose,
+  },
+  themeOptionLocked: {
+    opacity: 0.5,
+  },
+  themeOptionText: {
+    fontSize: 10,
+    fontWeight: Theme.typography.weights.semibold,
+    color: Theme.colors.textPrimary,
+    textAlign: 'center',
+  },
+  themeHelp: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.textSecondary,
+    lineHeight: 16,
   },
   errorBanner: {
     flexDirection: 'row',
@@ -443,6 +703,11 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.md,
     fontWeight: Theme.typography.weights.semibold,
     color: Theme.colors.textPrimary,
+  },
+  packDetail: {
+    fontSize: Theme.typography.sizes.xs,
+    color: Theme.colors.textSecondary,
+    lineHeight: 16,
   },
   packPrice: {
     fontSize: Theme.typography.sizes.sm,

@@ -17,6 +17,8 @@ export interface RewardDayView {
   adsRemaining: number;
   /** Coin still available in today's Ad-Equivalent Coin Pool (0–30). */
   coinsRemaining: number;
+  /** Premium claim closes the shared pool for the rest of this Reward Day. */
+  premiumClaimed: boolean;
   /** ISO-8601 instant of the next 00:00 UTC Reward Day reset. */
   resetsAt: string;
 }
@@ -54,6 +56,7 @@ export class EconomyReadService {
       balance,
       adsRemaining: Math.max(0, DAILY_AD_LIMIT - status.adsCompleted),
       coinsRemaining: Math.max(0, DAILY_POOL_COIN - status.coinsConsumed),
+      premiumClaimed: status.premiumClaimed,
       resetsAt: nextRewardDayResetAt().toISOString(),
     };
   }

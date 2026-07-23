@@ -97,6 +97,7 @@ export interface RewardDayView {
   adsRemaining: number;
   coinsRemaining: number;
   resetsAt: string;
+  premiumClaimed: boolean;
 }
 
 export async function fetchRewardDay(): Promise<RewardDayView> {
@@ -134,4 +135,3 @@ export function useOpenAdAttempt() {
     mutationFn: openAdAttempt,
   });
 }
-

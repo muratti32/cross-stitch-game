@@ -37,6 +37,7 @@ export interface AdRewardGrantResult {
 export interface RewardDayPoolStatus {
   adsCompleted: number;
   coinsConsumed: number;
+  premiumClaimed: boolean;
 }
 
 export interface FirstCompletionGrantResult {
@@ -76,6 +77,7 @@ interface ClaimRow {
 interface PoolRow {
   coins_consumed: number;
   ads_completed: number;
+  premium_claimed: boolean;
 }
 
 interface LedgerOutcomeRow {
@@ -146,21 +148,27 @@ export class CoinLedgerRepository {
         [principal.type, principal.id, rewardDay],
       );
       const poolRows = await manager.query<readonly PoolRow[]>(
-        `SELECT coins_consumed, ads_completed
+        `SELECT coins_consumed, ads_completed, premium_claimed
          FROM economy.reward_day_pools
          WHERE principal_type = $1 AND principal_id = $2 AND reward_day = $3
          FOR UPDATE`,
         [principal.type, principal.id, rewardDay],
       );
-      const pool = poolRows[0] ?? { coins_consumed: 0, ads_completed: 0 };
+      const pool = poolRows[0] ?? {
+        coins_consumed: 0,
+        ads_completed: 0,
+        premium_claimed: false,
+      };
 
       const hasCapacity =
+        !pool.premium_claimed &&
         pool.ads_completed < DAILY_AD_LIMIT &&
         pool.coins_consumed + amount <= DAILY_POOL_COIN;
 
       if (!hasCapacity) {
-        const rejection =
-          pool.ads_completed >= DAILY_AD_LIMIT
+        const rejection = pool.premium_claimed
+          ? 'pool_closed'
+          : pool.ads_completed >= DAILY_AD_LIMIT
             ? 'ad_limit_reached'
             : 'pool_exhausted';
         await manager.query(
@@ -187,7 +195,7 @@ export class CoinLedgerRepository {
                  ads_completed = ads_completed + 1,
                  updated_at = now()
            WHERE principal_type = $1 AND principal_id = $2 AND reward_day = $3
-           RETURNING coins_consumed, ads_completed`,
+           RETURNING coins_consumed, ads_completed, premium_claimed`,
           [principal.type, principal.id, rewardDay, amount],
         ),
       );
@@ -510,15 +518,20 @@ export class CoinLedgerRepository {
     rewardDay: string,
   ): Promise<RewardDayPoolStatus> {
     const rows = await this.dataSource.query<readonly PoolRow[]>(
-      `SELECT coins_consumed, ads_completed
+      `SELECT coins_consumed, ads_completed, premium_claimed
        FROM economy.reward_day_pools
        WHERE principal_type = $1 AND principal_id = $2 AND reward_day = $3`,
       [principal.type, principal.id, rewardDay],
     );
-    const pool = rows[0] ?? { coins_consumed: 0, ads_completed: 0 };
+    const pool = rows[0] ?? {
+      coins_consumed: 0,
+      ads_completed: 0,
+      premium_claimed: false,
+    };
     return {
       adsCompleted: pool.ads_completed,
       coinsConsumed: pool.coins_consumed,
+      premiumClaimed: pool.premium_claimed,
     };
   }
 
@@ -566,15 +579,20 @@ export class CoinLedgerRepository {
     rewardDay: string,
   ): Promise<RewardDayPoolStatus> {
     const rows = await manager.query<readonly PoolRow[]>(
-      `SELECT coins_consumed, ads_completed
+      `SELECT coins_consumed, ads_completed, premium_claimed
        FROM economy.reward_day_pools
        WHERE principal_type = $1 AND principal_id = $2 AND reward_day = $3`,
       [principal.type, principal.id, rewardDay],
     );
-    const pool = rows[0] ?? { coins_consumed: 0, ads_completed: 0 };
+    const pool = rows[0] ?? {
+      coins_consumed: 0,
+      ads_completed: 0,
+      premium_claimed: false,
+    };
     return {
       adsCompleted: pool.ads_completed,
       coinsConsumed: pool.coins_consumed,
+      premiumClaimed: pool.premium_claimed,
     };
   }
 }

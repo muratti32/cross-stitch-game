@@ -31,6 +31,7 @@ export class AdAttemptService {
     );
 
     if (
+      status.premiumClaimed ||
       DAILY_AD_LIMIT - status.adsCompleted <= 0 ||
       DAILY_POOL_COIN - status.coinsConsumed < AD_REWARD_COIN
     ) {

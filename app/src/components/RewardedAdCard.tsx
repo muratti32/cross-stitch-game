@@ -116,7 +116,7 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
 
   const resetsIn = formatTimeRemaining(data.resetsAt);
 
-  if (data.adsRemaining <= 0 || data.coinsRemaining < AD_REWARD_COIN) {
+  if (data.premiumClaimed || data.adsRemaining <= 0 || data.coinsRemaining < AD_REWARD_COIN) {
     return (
       <Card style={styles.card}>
         <View style={styles.header}>
@@ -128,7 +128,9 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
         </View>
         <Text style={styles.resetText}>{resetsIn}</Text>
         <Text style={styles.disabledTextContent}>
-          You've claimed all ad rewards for today. Come back tomorrow!
+          {data.premiumClaimed
+            ? 'Your Premium daily claim closed today\'s shared coin pool.'
+            : 'You\'ve claimed all ad rewards for today. Come back tomorrow!'}
         </Text>
       </Card>
     );

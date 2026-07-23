@@ -28,6 +28,10 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { TilePictureCache, TILE_CACHE_BUDGET } from './pictureCache';
+import {
+  DEFAULT_MEMBERSHIP_THEME,
+  type MembershipTheme,
+} from '../membership/themes';
 
 export interface StitchRendererProps {
   pattern: PatternData;
@@ -39,6 +43,7 @@ export interface StitchRendererProps {
   activeColorIndexShared: SharedValue<number>;
   isColorCompletedShared: SharedValue<boolean>;
   parentRevision?: number;
+  theme?: MembershipTheme;
 }
 
 export interface StitchRendererRef {
@@ -56,6 +61,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     activeColorIndexShared,
     isColorCompletedShared,
     parentRevision,
+    theme = DEFAULT_MEMBERSHIP_THEME,
   },
   ref
 ) => {
@@ -251,19 +257,19 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
   // Paint objects used inside recordings
   const minorGridPaint = useMemo(() => {
     const p = Skia.Paint();
-    p.setColor(Skia.Color('#E6E1D8'));
+    p.setColor(Skia.Color(theme.minorGridColor));
     p.setStyle(PaintStyle.Stroke);
     p.setStrokeWidth(0.5);
     return p;
-  }, []);
+  }, [theme.minorGridColor]);
 
   const majorGridPaint = useMemo(() => {
     const p = Skia.Paint();
-    p.setColor(Skia.Color('#B6AE9F'));
+    p.setColor(Skia.Color(theme.majorGridColor));
     p.setStyle(PaintStyle.Stroke);
     p.setStrokeWidth(1.0);
     return p;
-  }, []);
+  }, [theme.majorGridColor]);
 
   const spritePaint = useMemo(() => {
     const p = Skia.Paint();
@@ -286,11 +292,11 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
   const focusPaint = useMemo(() => {
     const p = Skia.Paint();
     p.setAntiAlias(true);
-    p.setColor(Skia.Color('#FF4500')); // Vivid orange-red
+    p.setColor(Skia.Color(theme.celebrationAccent));
     p.setStyle(PaintStyle.Stroke);
     p.setStrokeWidth(1.5);
     return p;
-  }, []);
+  }, [theme.celebrationAccent]);
 
   // Compute LOD zoom band
   const lodBand = getLodBand(cullViewport.scale);
@@ -307,9 +313,9 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
 
   // Pre-fetch/re-record visible tiles
   const renderedTiles = visibleTiles.map(({ tileX, tileY }) => {
-    const baseKey = `${tileX}_${tileY}_${lodBand}`;
-    const completedKey = `${tileX}_${tileY}`;
-    const overlayKey = `${tileX}_${tileY}`;
+    const baseKey = `${theme.id}_${tileX}_${tileY}_${lodBand}`;
+    const completedKey = `${theme.id}_${tileX}_${tileY}`;
+    const overlayKey = `${theme.id}_${tileX}_${tileY}`;
 
     // --- 1. Base Picture (Immutable per LOD band) ---
     let basePic = baseCache.current.get(baseKey);
@@ -385,18 +391,42 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
               if (colorIdx > 0) {
                 const colorHex = pattern.palette[colorIdx - 1].rgbHex;
                 stitchPaint.setColor(Skia.Color(colorHex));
-                stitchPaint.setStyle(PaintStyle.Fill);
-
-                // Draw filled square with a tiny 0.5px gap to make individual stitches look distinct
-                canvas.drawRect(
-                  Skia.XYWHRect(
-                    cx * CELL_SIZE + 0.5,
-                    cy * CELL_SIZE + 0.5,
-                    CELL_SIZE - 1.0,
-                    CELL_SIZE - 1.0
-                  ),
-                  stitchPaint
-                );
+                const left = cx * CELL_SIZE;
+                const top = cy * CELL_SIZE;
+                if (theme.stitchAppearance === 'cross') {
+                  stitchPaint.setStyle(PaintStyle.Stroke);
+                  stitchPaint.setStrokeWidth(2.25);
+                  canvas.drawLine(
+                    left + 2.5,
+                    top + 2.5,
+                    left + CELL_SIZE - 2.5,
+                    top + CELL_SIZE - 2.5,
+                    stitchPaint,
+                  );
+                  canvas.drawLine(
+                    left + CELL_SIZE - 2.5,
+                    top + 2.5,
+                    left + 2.5,
+                    top + CELL_SIZE - 2.5,
+                    stitchPaint,
+                  );
+                } else if (theme.stitchAppearance === 'rounded') {
+                  stitchPaint.setStyle(PaintStyle.Fill);
+                  canvas.drawRRect(
+                    Skia.RRectXY(
+                      Skia.XYWHRect(left + 1, top + 1, CELL_SIZE - 2, CELL_SIZE - 2),
+                      3,
+                      3,
+                    ),
+                    stitchPaint,
+                  );
+                } else {
+                  stitchPaint.setStyle(PaintStyle.Fill);
+                  canvas.drawRect(
+                    Skia.XYWHRect(left + 0.5, top + 0.5, CELL_SIZE - 1, CELL_SIZE - 1),
+                    stitchPaint,
+                  );
+                }
               }
             }
           }
@@ -506,15 +536,17 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
   useEffect(() => {
     if (viewportMoving) return;
 
-    const visibleKeys = new Set(visibleTiles.map((t) => `${t.tileX}_${t.tileY}`));
+    const visibleKeys = new Set(
+      visibleTiles.map((t) => `${theme.id}_${t.tileX}_${t.tileY}`),
+    );
     completedCache.current.prune(visibleKeys, TILE_CACHE_BUDGET);
     overlayCache.current.prune(visibleKeys, TILE_CACHE_BUDGET);
 
     const baseVisibleKeys = new Set(
-      visibleTiles.map((t) => `${t.tileX}_${t.tileY}_${lodBand}`)
+      visibleTiles.map((t) => `${theme.id}_${t.tileX}_${t.tileY}_${lodBand}`)
     );
     baseCache.current.prune(baseVisibleKeys, TILE_CACHE_BUDGET);
-  }, [visibleTiles, lodBand, viewportMoving]);
+  }, [visibleTiles, lodBand, viewportMoving, theme.id]);
 
   // Setup dynamic transform array for Reanimated/Skia
   const skiaTransform = useDerivedValue(() => [
@@ -524,7 +556,10 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
   ]);
 
   return (
-    <View style={styles.container} onLayout={handleLayout}>
+    <View
+      style={[styles.container, { backgroundColor: theme.gridBackground }]}
+      onLayout={handleLayout}
+    >
       <GestureDetector gesture={gesture}>
         <Canvas style={styles.canvas}>
           {/* Offscreen Fabric Base Background */}
@@ -552,7 +587,6 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FAF6F0', // Premium Aida fabric color
     overflow: 'hidden',
   },
   canvas: {

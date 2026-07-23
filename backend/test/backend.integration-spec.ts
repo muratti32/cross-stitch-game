@@ -3428,6 +3428,132 @@ describe('Stitch Wish backend integration', () => {
         })
         .expect(200, { status: 'ok' });
     });
+
+    it('derives Premium Membership from periods and shares the daily Coin pool', async () => {
+      const account = await newRegisteredAccount();
+      const originalTransactionId = `premium-original-${randomUUID()}`;
+      const oldTransactionId = `premium-weekly-${randomUUID()}`;
+      const newTransactionId = `premium-monthly-${randomUUID()}`;
+      const now = Date.now();
+      const webhook = (event: Record<string, unknown>) =>
+        request(httpServer)
+          .post('/v1/commerce/revenuecat/webhook')
+          .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+          .send({ event });
+      const baseEvent = {
+        app_user_id: account.accountId,
+        original_transaction_id: originalTransactionId,
+        environment: 'SANDBOX',
+        period_type: 'NORMAL',
+      };
+
+      // An older Weekly paid period grants exactly three credits.
+      await webhook({
+        ...baseEvent,
+        id: `event-${randomUUID()}`,
+        type: 'INITIAL_PURCHASE',
+        transaction_id: oldTransactionId,
+        product_id: 'premium_weekly',
+        event_timestamp_ms: now - 8 * 86_400_000,
+        purchased_at_ms: now - 8 * 86_400_000,
+        expiration_at_ms: now - 60_000,
+      }).expect(200, { status: 'ok' });
+
+      const renewalEvent = {
+        ...baseEvent,
+        id: `event-${randomUUID()}`,
+        type: 'RENEWAL',
+        transaction_id: newTransactionId,
+        product_id: 'premium_monthly',
+        event_timestamp_ms: now - 30_000,
+        purchased_at_ms: now - 60_000,
+        expiration_at_ms: now + 30 * 86_400_000,
+        is_trial_conversion: true,
+      };
+      await webhook(renewalEvent).expect(200, { status: 'ok' });
+      await webhook(renewalEvent).expect(200, { status: 'ok' });
+
+      // A delayed expiration for the older transaction cannot turn off the
+      // later monthly period even though it arrives after the renewal.
+      await webhook({
+        ...baseEvent,
+        id: `event-${randomUUID()}`,
+        type: 'EXPIRATION',
+        transaction_id: oldTransactionId,
+        product_id: 'premium_weekly',
+        event_timestamp_ms: now - 10_000,
+        purchased_at_ms: now - 8 * 86_400_000,
+        expiration_at_ms: now - 60_000,
+      }).expect(200, { status: 'ok' });
+
+      const membership = await request(httpServer)
+        .get('/v1/commerce/membership')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      expect(membership.body).toMatchObject({
+        active: true,
+        plan: 'monthly',
+        lifecycle: 'active',
+        themeAccess: true,
+      });
+
+      const creditsBeforeRefund = await request(httpServer)
+        .get('/v1/economy/ai-credit-balance')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      expect(creditsBeforeRefund.body.balance).toBe(18);
+
+      // Refund only the older Weekly period. Its three credits are reversed,
+      // while the newer Monthly entitlement remains active.
+      const refundEvent = {
+        ...baseEvent,
+        id: `event-${randomUUID()}`,
+        type: 'CANCELLATION',
+        cancel_reason: 'CUSTOMER_SUPPORT',
+        transaction_id: oldTransactionId,
+        product_id: 'premium_weekly',
+        event_timestamp_ms: now,
+        purchased_at_ms: now - 8 * 86_400_000,
+        expiration_at_ms: now - 60_000,
+      };
+      await webhook(refundEvent).expect(200, { status: 'ok' });
+      await webhook(refundEvent).expect(200, { status: 'ok' });
+
+      const creditsAfterRefund = await request(httpServer)
+        .get('/v1/economy/ai-credit-balance')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      expect(creditsAfterRefund.body.balance).toBe(15);
+
+      const ledger = app.get(CoinLedgerRepository);
+      const principal = { type: 'account' as const, id: account.accountId };
+      const rewardDay = utcRewardDay();
+      await ledger.grantAdReward(
+        principal,
+        rewardDay,
+        `ad:premium-order-${randomUUID()}`,
+      );
+
+      const claim = await request(httpServer)
+        .post('/v1/commerce/membership/daily-claim')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(201);
+      expect(claim.body).toMatchObject({ amount: 20, coinsConsumed: 30, replayed: false });
+
+      const replay = await request(httpServer)
+        .post('/v1/commerce/membership/daily-claim')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(201);
+      expect(replay.body).toMatchObject({ amount: 20, coinsConsumed: 30, replayed: true });
+
+      const adAfterClaim = await ledger.grantAdReward(
+        principal,
+        rewardDay,
+        `ad:after-premium-claim-${randomUUID()}`,
+      );
+      expect(adAfterClaim).toMatchObject({ granted: false, amount: 0 });
+      expect(await ledger.getBalance(principal)).toBe(30);
+    });
   });
 
   describe('Guest Data Promotion stage 1', () => {
