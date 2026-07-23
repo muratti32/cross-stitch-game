@@ -5,3 +5,4 @@ export * from './economy';
 export * from './dailyTasks';
 export * from './progressSync';
 export * from './promotion';
+export * from './creatorProfile';

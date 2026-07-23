@@ -84,6 +84,11 @@ import { CreateAiArtworkSchema1785881600000 } from './migrations/1785881600000-C
 import { AiArtworkEntity, AiCreditReservationEntity } from '../ai-artwork/entities';
 import { SupportReferenceEntity, SupportReferenceRecordEntity } from '../support/entities';
 import { CreateSupportReferences1785974400000 } from './migrations/1785974400000-CreateSupportReferences';
+import {
+  CreatorProfileAuditEntity,
+  CreatorProfileEntity,
+} from '../creator-profile/entities';
+import { CreateCreatorProfiles1786060800000 } from './migrations/1786060800000-CreateCreatorProfiles';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -135,6 +140,8 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AiCreditReservationEntity,
       SupportReferenceEntity,
       SupportReferenceRecordEntity,
+      CreatorProfileEntity,
+      CreatorProfileAuditEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -163,6 +170,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreatePremiumMembership1785801600000,
       CreateAiArtworkSchema1785881600000,
       CreateSupportReferences1785974400000,
+      CreateCreatorProfiles1786060800000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

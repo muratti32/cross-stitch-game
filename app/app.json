@@ -73,7 +73,7 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Stitch Wish uses your selected photo only on this device to frame a Personal Pattern before conversion."
+          "photosPermission": "Stitch Wish uses selected photos to frame Personal Patterns or upload a public creator profile photo you choose."
         }
       ],
       "expo-sqlite",

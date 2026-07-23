@@ -15,6 +15,7 @@ import { EconomyModule } from './economy/economy.module';
 import { PromotionModule } from './promotion/promotion.module';
 import { AiArtworkModule } from './ai-artwork/ai-artwork.module';
 import { SupportModule } from './support/support.module';
+import { CreatorProfileModule } from './creator-profile';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { SupportModule } from './support/support.module';
     PromotionModule,
     AiArtworkModule,
     SupportModule,
+    CreatorProfileModule,
     AdminModule,
   ],
 })

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Pressable, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, Text, Pressable, ActivityIndicator, Image } from 'react-native';
 import { Screen, EmptyState, Card, CachedImage, Button, DailyTasksCard, RewardedAdCard } from '@/components';
 import { Theme } from '@/theme/theme';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,13 +10,16 @@ import { useRouter } from 'expo-router';
 import { listPersonalPatterns, type PersonalPattern } from '@/conversion';
 import { preparePersonalSession, preparePendingPersonalSession, waitUntilSessionReady } from '@/session-preparation';
 import { getPendingPersonalPatterns, type PendingPersonalPattern } from '@/local-db';
+import { useCreatorProfile } from '@/api/creatorProfile';
 
 
 export default function ProfileScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'my-patterns' | 'liked'>('my-patterns');
-  const { guestId, guestCreatedAt, accountEmail, accountProvider, isAccount, isAuthenticated, isPending, isOfflinePending, bootstrap } = useIdentityStore();
+  const { guestId, guestCreatedAt, accountId, isAccount, isAuthenticated, isPending, isOfflinePending, bootstrap } = useIdentityStore();
   const { data: coinBalance } = useCoinBalance();
+  const creatorProfileQuery = useCreatorProfile(accountId, isAccount && isAuthenticated && !isPending);
+  const creatorProfile = creatorProfileQuery.data ?? null;
   const [personalPatterns, setPersonalPatterns] = useState<PersonalPattern[]>([]);
   const [patternsLoading, setPatternsLoading] = useState(false);
   const [openingPatternId, setOpeningPatternId] = useState<string | null>(null);
@@ -98,7 +101,7 @@ export default function ProfileScreen() {
   };
 
   const handleEditProfile = () => {
-    console.log('Editing profile...');
+    router.push('/(tabs)/(profile)/public-profile');
   };
 
   return (
@@ -120,25 +123,74 @@ export default function ProfileScreen() {
             <Text style={styles.retryButtonText}>Retry Connection</Text>
           </Pressable>
         </View>
+      ) : isAccount && creatorProfileQuery.isLoading ? (
+        <View style={styles.profileCard}>
+          <ActivityIndicator size="large" color={Theme.colors.accentRose} />
+          <Text style={styles.profileStatusText}>Loading public profile...</Text>
+        </View>
+      ) : isAccount && creatorProfileQuery.isError ? (
+        <View style={styles.profileCard}>
+          <View style={styles.avatarContainer}>
+            <Ionicons name="cloud-offline-outline" size={48} color={Theme.colors.error} />
+          </View>
+          <Text style={styles.displayName}>Public profile unavailable</Text>
+          <Text style={styles.profileHelpText}>Check your connection and try again.</Text>
+          <Pressable onPress={() => void creatorProfileQuery.refetch()} style={styles.retryButton}>
+            <Text style={styles.retryButtonText}>Try Again</Text>
+          </Pressable>
+        </View>
+      ) : isAccount && creatorProfile === null ? (
+        <View style={styles.profileCard}>
+          <View style={styles.avatarContainer}>
+            <Ionicons name="person-add-outline" size={44} color={Theme.colors.accentRose} />
+          </View>
+          <Text style={styles.displayName}>Create your public profile</Text>
+          <Text style={styles.profileHelpText}>
+            Choose the permanent username shown with your community patterns. Your account details stay private.
+          </Text>
+          <Pressable onPress={handleEditProfile} style={styles.editButton}>
+            <Text style={styles.editButtonText}>Create Public Profile</Text>
+          </Pressable>
+        </View>
+      ) : isAccount && creatorProfile !== null ? (
+        <View style={styles.profileCard}>
+          <View style={styles.avatarContainer}>
+            {creatorProfile.avatarUrl === null ? (
+              <Ionicons name="person" size={48} color={Theme.colors.accentRose} />
+            ) : (
+              <Image source={{ uri: creatorProfile.avatarUrl }} style={styles.avatarImage} />
+            )}
+          </View>
+
+          <Text style={styles.displayName}>{creatorProfile.displayName}</Text>
+          <Text style={styles.username}>@{creatorProfile.username}</Text>
+          <Text style={styles.sinceText}>
+            Creator since {new Date(creatorProfile.createdAt).toLocaleDateString()}
+          </Text>
+
+          <Pressable onPress={handleEditProfile} style={styles.editButton}>
+            <Text style={styles.editButtonText}>Edit Public Profile</Text>
+          </Pressable>
+
+          {isOfflinePending && (
+            <View style={styles.offlineBadge}>
+              <Ionicons name="alert-circle-outline" size={14} color={Theme.colors.error} />
+              <Text style={styles.offlineBadgeText}>Offline — pending sync</Text>
+            </View>
+          )}
+        </View>
       ) : (
         <View style={styles.profileCard}>
           <View style={styles.avatarContainer}>
             <Ionicons name="person" size={48} color={Theme.colors.accentRose} />
           </View>
-          
-          <Text style={styles.displayName}>{isAccount ? 'Registered Player' : 'Guest Player'}</Text>
-          <Text style={styles.username}>
-            {isAccount
-              ? accountEmail ?? `${accountProvider ?? 'registered'} account`
-              : `@${shortenGuestId(guestId || '')}`}
-          </Text>
-          
+          <Text style={styles.displayName}>Guest Player</Text>
+          <Text style={styles.username}>@{shortenGuestId(guestId || '')}</Text>
           {guestCreatedAt && (
             <Text style={styles.sinceText}>
               Playing since {new Date(guestCreatedAt).toLocaleDateString()}
             </Text>
           )}
-
           {isOfflinePending && (
             <View style={styles.offlineBadge}>
               <Ionicons name="alert-circle-outline" size={14} color={Theme.colors.error} />
@@ -326,6 +378,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Theme.spacing.md,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    height: '100%',
+    width: '100%',
   },
   displayName: {
     fontSize: Theme.typography.sizes.lg,
@@ -349,6 +406,19 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.sm,
     fontWeight: Theme.typography.weights.semibold,
     color: Theme.colors.accentTeal,
+  },
+  profileStatusText: {
+    color: Theme.colors.textSecondary,
+    fontSize: Theme.typography.sizes.sm,
+    marginTop: Theme.spacing.md,
+  },
+  profileHelpText: {
+    color: Theme.colors.textSecondary,
+    fontSize: Theme.typography.sizes.sm,
+    lineHeight: 20,
+    marginBottom: Theme.spacing.md,
+    marginTop: Theme.spacing.sm,
+    textAlign: 'center',
   },
   statsContainer: {
     flexDirection: 'row',
