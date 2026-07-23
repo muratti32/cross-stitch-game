@@ -6,6 +6,8 @@ export const CONVERSION_JOB_EVENT_NAME = 'pattern-conversion.requested' as const
 export const OFFICIAL_PATTERN_DRAFT_JOB_TYPE = 'official-pattern-draft' as const;
 export const OFFICIAL_PATTERN_DRAFT_EVENT_NAME =
   'official-pattern-draft.requested' as const;
+export const AI_ARTWORK_JOB_TYPE = 'ai-artwork-generation' as const;
+export const AI_ARTWORK_JOB_EVENT_NAME = 'ai-artwork-generation.requested' as const;
 
 export const DEFAULT_OUTBOX_BATCH_SIZE = 25;
 export const DEFAULT_OUTBOX_POLL_INTERVAL_MS = 500;

@@ -1,58 +1,22 @@
-import React from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
-import { Screen, EmptyState } from '@/components';
-import { Theme } from '@/theme/theme';
-import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import { ActivityIndicator, Image, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, Card, Screen } from '@/components';
+import { approveAiArtwork, deleteAiArtwork, generateAiArtwork, listAiArtworks, type AiArtwork, type ArtworkAspect } from '@/ai-artwork';
+import { waitForConversion } from '@/conversion';
+import { useIdentityStore } from '@/identity/guestIdentity';
+import { preparePersonalSession, waitUntilSessionReady } from '@/session-preparation';
+import { Theme } from '@/theme/theme';
 
+const aspects: Array<[ArtworkAspect, string]> = [['square', 'Square'], ['portrait_4_3', 'Portrait 4:3'], ['landscape_4_3', 'Landscape 4:3']];
 export default function AiGenerationScreen() {
-  const router = useRouter();
-
-  return (
-    <Screen style={styles.container}>
-      <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={Theme.colors.accentTeal} />
-        </Pressable>
-        <Text style={styles.title}>AI Generator</Text>
-      </View>
-      <View style={styles.content}>
-        <EmptyState
-          icon="sparkles-outline"
-          title="AI Generator is Coming Soon"
-          body="Soon you will be able to describe your dream cozy design in text, and our custom AI models will generate an original pixel-art stitch pattern for you!"
-          actionLabel="Back to Creation Hub"
-          onAction={() => router.back()}
-          actionVariant="sage"
-        />
-      </View>
-    </Screen>
-  );
+  const router = useRouter(); const isAccount = useIdentityStore((s) => s.isAccount); const [prompt, setPrompt] = useState(''); const [aspect, setAspect] = useState<ArtworkAspect>('square'); const [items, setItems] = useState<AiArtwork[]>([]); const [busy, setBusy] = useState(false); const [error, setError] = useState<string | null>(null);
+  const load = useCallback(() => { if (!isAccount) return; listAiArtworks().then(setItems).catch((e: unknown) => setError(e instanceof Error ? e.message : String(e))); }, [isAccount]);
+  useFocusEffect(useCallback(() => { load(); const timer = setInterval(load, 4000); return () => clearInterval(timer); }, [load]));
+  const generate = async () => { if (!prompt.trim() || busy) return; setBusy(true); setError(null); try { await generateAiArtwork(prompt.trim(), aspect); setPrompt(''); load(); } catch (e) { setError(e instanceof Error ? e.message : String(e)); } finally { setBusy(false); } };
+  const approve = async (item: AiArtwork) => { setBusy(true); setError(null); try { const job = await approveAiArtwork(item.id, 'My AI Pattern'); const pattern = await waitForConversion(job.id); const session = await preparePersonalSession(pattern.id, pattern); const ready = await waitUntilSessionReady(session.id); router.dismissAll(); router.replace(`/(tabs)/(play)/${ready.id}`); } catch (e) { setError(e instanceof Error ? e.message : String(e)); } finally { setBusy(false); } };
+  if (!isAccount) return <Screen style={styles.center}><Text style={styles.title}>Registered Account Required</Text><Text style={styles.body}>AI artwork and its library stay private to your account.</Text><Button title="Sign in" onPress={() => router.push('/(tabs)/(settings)/sign-in')} /></Screen>;
+  return <Screen scrollable contentContainerStyle={styles.container}><View style={styles.header}><Pressable onPress={() => router.back()}><Ionicons name="arrow-back" size={24} color={Theme.colors.accentTeal}/></Pressable><Text style={styles.title}>AI Generator</Text></View><Card style={styles.card}><Text style={styles.label}>Describe your artwork</Text><TextInput value={prompt} onChangeText={setPrompt} multiline style={styles.input} placeholder="A cozy cottage garden at sunset…"/><View style={styles.aspects}>{aspects.map(([value, label]) => <Pressable key={value} style={[styles.aspect, aspect === value && styles.selected]} onPress={() => setAspect(value)}><Text>{label}</Text></Pressable>)}</View><Button title={busy ? 'Working…' : 'Generate — 1 AI Credit'} onPress={generate} disabled={busy || !prompt.trim()} /></Card>{error && <Text style={styles.error}>{error}</Text>}<Text style={styles.library}>Your AI Artwork Library</Text>{items.map((item) => <Card key={item.id} style={styles.item}>{item.imageUrl ? <Image source={{ uri: item.imageUrl }} style={styles.image}/> : <View style={styles.placeholder}><ActivityIndicator/></View>}<View style={styles.itemBody}><Text style={styles.status}>{item.status.replace('_', ' ')}</Text>{item.failureReason && <Text style={styles.error}>{item.failureReason}</Text>}{item.status === 'delivered' && <Button title="Approve into Pattern" onPress={() => approve(item)} disabled={busy}/>}<Pressable onPress={() => deleteAiArtwork(item.id).then(load)}><Text style={styles.delete}>Delete</Text></Pressable></View></Card>)}</Screen>;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: Theme.spacing.xl,
-    paddingHorizontal: Theme.spacing.lg,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: Theme.spacing.xxl,
-    gap: Theme.spacing.md,
-  },
-  backButton: {
-    padding: Theme.spacing.xs,
-  },
-  title: {
-    fontSize: Theme.typography.sizes.xl,
-    fontWeight: Theme.typography.weights.bold,
-    color: Theme.colors.textPrimary,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingBottom: Theme.spacing.xxl,
-  },
-});
+const styles = StyleSheet.create({ container:{padding:Theme.spacing.lg,gap:Theme.spacing.md},center:{padding:Theme.spacing.xl,justifyContent:'center',gap:Theme.spacing.md},header:{flexDirection:'row',gap:Theme.spacing.md,alignItems:'center'},title:{fontSize:Theme.typography.sizes.xl,fontWeight:Theme.typography.weights.bold,color:Theme.colors.textPrimary},body:{color:Theme.colors.textSecondary},card:{gap:Theme.spacing.md},label:{fontWeight:Theme.typography.weights.semibold},input:{minHeight:90,borderWidth:1,borderColor:'#ddd',borderRadius:Theme.radii.sm,padding:Theme.spacing.sm,textAlignVertical:'top'},aspects:{flexDirection:'row',flexWrap:'wrap',gap:Theme.spacing.xs},aspect:{padding:Theme.spacing.sm,borderWidth:1,borderColor:'#ddd',borderRadius:Theme.radii.sm},selected:{borderColor:Theme.colors.accentTeal,backgroundColor:'#e8f6f4'},library:{fontSize:Theme.typography.sizes.md,fontWeight:Theme.typography.weights.bold,marginTop:Theme.spacing.md},item:{flexDirection:'row',gap:Theme.spacing.md},image:{width:100,height:100,borderRadius:Theme.radii.sm},placeholder:{width:100,height:100,alignItems:'center',justifyContent:'center',backgroundColor:'#f1f1f1'},itemBody:{flex:1,gap:Theme.spacing.sm},status:{textTransform:'capitalize',fontWeight:Theme.typography.weights.semibold},delete:{color:Theme.colors.accentRose,fontWeight:Theme.typography.weights.semibold},error:{color:'#a22'} });

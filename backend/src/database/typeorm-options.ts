@@ -80,6 +80,8 @@ import { WidenPackageStatusForNeedsAttention1785542400000 } from './migrations/1
 import { CreateCommerceLedger1785628800000 } from './migrations/1785628800000-CreateCommerceLedger';
 import { CreatePremiumMembership1785801600000 } from './migrations/1785801600000-CreatePremiumMembership';
 import { CreateAdAttempts1785715200000 } from './migrations/1785715200000-CreateAdAttempts';
+import { CreateAiArtworkSchema1785881600000 } from './migrations/1785881600000-CreateAiArtworkSchema';
+import { AiArtworkEntity, AiCreditReservationEntity } from '../ai-artwork/entities';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -127,6 +129,8 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AiCreditLedgerEntryEntity,
       CommerceTransactionBindingEntity,
       AdAttemptEntity,
+      AiArtworkEntity,
+      AiCreditReservationEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -153,6 +157,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateCommerceLedger1785628800000,
       CreateAdAttempts1785715200000,
       CreatePremiumMembership1785801600000,
+      CreateAiArtworkSchema1785881600000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

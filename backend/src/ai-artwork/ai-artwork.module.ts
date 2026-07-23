@@ -1,0 +1,14 @@
+import { Module, forwardRef } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from '../auth/auth.module';
+import { CatalogModule } from '../catalog/catalog.module';
+import { ConversionModule } from '../conversion/conversion.module';
+import { JobsModule } from '../jobs/jobs.module';
+import { AiArtworkController } from './ai-artwork.controller';
+import { AiArtworkJobConsumerService } from './ai-artwork-job-consumer.service';
+import { AiArtworkService } from './ai-artwork.service';
+import { FalArtworkProviderService } from './fal-artwork-provider.service';
+import { AiArtworkEntity, AiCreditReservationEntity } from './entities';
+import { PromptModerationService } from './prompt-moderation.service';
+@Module({ imports: [TypeOrmModule.forFeature([AiArtworkEntity, AiCreditReservationEntity]), AuthModule, CatalogModule, forwardRef(() => JobsModule), ConversionModule], controllers: [AiArtworkController], providers: [AiArtworkService, AiArtworkJobConsumerService, PromptModerationService, FalArtworkProviderService], exports: [AiArtworkJobConsumerService, AiArtworkService] })
+export class AiArtworkModule {}

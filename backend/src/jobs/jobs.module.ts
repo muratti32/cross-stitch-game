@@ -14,6 +14,7 @@ import { OutboxDispatcherService } from './outbox-dispatcher.service';
 import { ProcessingJobsRepository } from './processing-jobs.repository';
 import { SessionsModule } from '../sessions/sessions.module';
 import { ConversionModule } from '../conversion/conversion.module';
+import { AiArtworkModule } from '../ai-artwork/ai-artwork.module';
 
 @Module({
   controllers: [JobsController],
@@ -47,6 +48,7 @@ export class JobsModule {}
     SessionsModule,
     forwardRef(() => ConversionModule),
     forwardRef(() => AdminModule),
+    forwardRef(() => AiArtworkModule),
   ],
   providers: [
     DemoJobConsumerService,

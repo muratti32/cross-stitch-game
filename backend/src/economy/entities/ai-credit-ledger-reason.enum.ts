@@ -3,4 +3,5 @@ export enum AiCreditLedgerReason {
   CommerceReversal = 'commerce_reversal',
   MembershipCreditGrant = 'membership_credit_grant',
   MembershipReversal = 'membership_reversal',
+  AiArtworkDelivery = 'ai_artwork_delivery',
 }

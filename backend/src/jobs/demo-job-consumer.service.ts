@@ -4,11 +4,13 @@ import { Job, Worker } from 'bullmq';
 import { OfficialPatternDraftJobConsumerService } from '../admin/official-pattern-draft-job-consumer.service';
 import { AppConfigService } from '../config/app-config.service';
 import { ConversionJobConsumerService } from '../conversion/conversion-job-consumer.service';
+import { AiArtworkJobConsumerService } from '../ai-artwork/ai-artwork-job-consumer.service';
 import { ProcessingJobStatus } from './entities';
 import {
   CONVERSION_JOB_EVENT_NAME,
   DEMO_JOBS_QUEUE_NAME,
   OFFICIAL_PATTERN_DRAFT_EVENT_NAME,
+  AI_ARTWORK_JOB_EVENT_NAME,
 } from './jobs.constants';
 import {
   DemoJobPayload,
@@ -51,6 +53,7 @@ export class DemoJobConsumerService {
     private readonly conversionJobs: ConversionJobConsumerService,
     @Inject(forwardRef(() => OfficialPatternDraftJobConsumerService))
     private readonly officialPatternDraftJobs: OfficialPatternDraftJobConsumerService,
+    private readonly aiArtworkJobs: AiArtworkJobConsumerService,
     private readonly processingJobs: ProcessingJobsRepository,
   ) {
     this.redisUrl = config.redisUrl;
@@ -111,6 +114,8 @@ export class DemoJobConsumerService {
                   errorStack(cleanupError),
                 );
               });
+          } else if (job.name === AI_ARTWORK_JOB_EVENT_NAME) {
+            void this.aiArtworkJobs.failExhausted(job.data.processingJobId, error.message);
           }
         }
       },
@@ -213,6 +218,9 @@ export class DemoJobConsumerService {
     }
     if (job.name === OFFICIAL_PATTERN_DRAFT_EVENT_NAME) {
       return this.officialPatternDraftJobs.processDelivery(job.data.processingJobId);
+    }
+    if (job.name === AI_ARTWORK_JOB_EVENT_NAME) {
+      return this.aiArtworkJobs.processDelivery(job.data.processingJobId);
     }
     return this.processDelivery(job.data);
   }
