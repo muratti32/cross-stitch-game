@@ -8,23 +8,26 @@ import {
   Unique,
 } from 'typeorm';
 
-import { CoinLedgerReason } from './coin-ledger-reason.enum';
+import { AiCreditLedgerReason } from './ai-credit-ledger-reason.enum';
 
-@Entity({ name: 'coin_ledger_entries', schema: 'economy' })
-@Unique('UQ_coin_ledger_entries_source_key', ['sourceKey'])
-@Index('IDX_coin_ledger_entries_principal', [
+@Entity({ name: 'ai_credit_ledger_entries', schema: 'economy' })
+@Unique('UQ_ai_credit_ledger_entries_source_key', ['sourceKey'])
+@Index('IDX_ai_credit_ledger_entries_principal', [
   'principalType',
   'principalId',
   'createdAt',
 ])
 @Check(
-  'CHK_coin_ledger_entries_principal_type',
+  'CHK_ai_credit_ledger_entries_principal_type',
   '"principal_type" IN (\'guest\', \'account\')',
 )
-@Check('CHK_coin_ledger_entries_reason', '"reason" IN (\'ad_reward\', \'first_completion\', \'unlock_spend\', \'daily_task\', \'guest_promotion\', \'coin_pack_purchase\', \'commerce_reversal\')')
-export class CoinLedgerEntryEntity {
+@Check(
+  'CHK_ai_credit_ledger_entries_reason',
+  '"reason" IN (\'pack_purchase\', \'commerce_reversal\')',
+)
+export class AiCreditLedgerEntryEntity {
   @PrimaryGeneratedColumn('uuid', {
-    primaryKeyConstraintName: 'PK_coin_ledger_entries',
+    primaryKeyConstraintName: 'PK_ai_credit_ledger_entries',
   })
   id!: string;
 
@@ -39,7 +42,7 @@ export class CoinLedgerEntryEntity {
   amount!: string;
 
   @Column({ type: 'varchar', length: 32 })
-  reason!: CoinLedgerReason;
+  reason!: AiCreditLedgerReason;
 
   @Column({ name: 'source_key', type: 'varchar', length: 255 })
   sourceKey!: string;

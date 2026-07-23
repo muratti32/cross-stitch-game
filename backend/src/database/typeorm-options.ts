@@ -47,6 +47,9 @@ import {
   PatternUnlockEntity,
   GameplayEventEntity,
   DailyColorActionCountEntity,
+  AiCreditBalanceEntity,
+  AiCreditLedgerEntryEntity,
+  CommerceTransactionBindingEntity,
 } from '../economy/entities';
 import {
   PromotionLockEntity,
@@ -73,6 +76,7 @@ import { AddPersonalPatternLineage1785283200000 } from './migrations/17852832000
 import { CreatePromotionSchema1785369600000 } from './migrations/1785369600000-CreatePromotionSchema';
 import { WidenLedgerReasonForPromotion1785456000000 } from './migrations/1785456000000-WidenLedgerReasonForPromotion';
 import { WidenPackageStatusForNeedsAttention1785542400000 } from './migrations/1785542400000-WidenPackageStatusForNeedsAttention';
+import { CreateCommerceLedger1785628800000 } from './migrations/1785628800000-CreateCommerceLedger';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -116,6 +120,9 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       DailyColorActionCountEntity,
       PromotionLockEntity,
       PromotionTransferPackageEntity,
+      AiCreditBalanceEntity,
+      AiCreditLedgerEntryEntity,
+      CommerceTransactionBindingEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -139,6 +146,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreatePromotionSchema1785369600000,
       WidenLedgerReasonForPromotion1785456000000,
       WidenPackageStatusForNeedsAttention1785542400000,
+      CreateCommerceLedger1785628800000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

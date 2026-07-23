@@ -10,4 +10,6 @@ export enum CoinLedgerReason {
   UnlockSpend = 'unlock_spend',
   DailyTask = 'daily_task',
   GuestPromotion = 'guest_promotion',
+  CoinPackPurchase = 'coin_pack_purchase',
+  CommerceReversal = 'commerce_reversal',
 }

@@ -35,6 +35,13 @@ export class EconomyController {
     return this.economyRead.getBalance(principal);
   }
 
+  @Get('ai-credit-balance')
+  async getAiCreditBalance(
+    @CurrentPrincipal() principal: AuthPrincipal,
+  ): Promise<{ balance: number }> {
+    return this.economyRead.getAiCreditBalance(principal);
+  }
+
   @Get('reward-day')
   async getRewardDay(
     @CurrentPrincipal() principal: AuthPrincipal,

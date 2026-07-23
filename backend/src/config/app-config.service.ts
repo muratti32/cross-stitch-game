@@ -176,4 +176,11 @@ export class AppConfigService {
       infer: true,
     });
   }
+
+  get revenueCatWebhookAuthToken(): string | undefined {
+    return this.configService.get('REVENUECAT_WEBHOOK_AUTH_TOKEN', {
+      infer: true,
+    });
+  }
 }
+

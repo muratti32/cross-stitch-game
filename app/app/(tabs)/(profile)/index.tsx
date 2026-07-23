@@ -11,6 +11,7 @@ import { listPersonalPatterns, type PersonalPattern } from '@/conversion';
 import { preparePersonalSession, preparePendingPersonalSession, waitUntilSessionReady } from '@/session-preparation';
 import { getPendingPersonalPatterns, type PendingPersonalPattern } from '@/local-db';
 
+
 export default function ProfileScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'my-patterns' | 'liked'>('my-patterns');
@@ -153,9 +154,9 @@ export default function ProfileScreen() {
           <Text style={styles.statValue}>{playerStats.coins}</Text>
           <Text style={styles.statLabel}>Stitch Coins</Text>
         </View>
-        
+
         <View style={styles.statDivider} />
-        
+
         <View style={styles.statBox}>
           <Text style={styles.statValue}>{playerStats.completedCount}</Text>
           <Text style={styles.statLabel}>Stitched</Text>
@@ -168,6 +169,20 @@ export default function ProfileScreen() {
           <Text style={styles.statLabel}>Creations</Text>
         </View>
       </View>
+
+      {/* Purchase Button */}
+      {isAccount && (
+        <Pressable
+          onPress={() => router.push('/(tabs)/(profile)/commerce')}
+          style={({ pressed }) => [
+            styles.purchaseButton,
+            pressed && { opacity: 0.7 }
+          ]}
+        >
+          <Ionicons name="bag-outline" size={18} color={Theme.colors.accentRose} />
+          <Text style={styles.purchaseButtonText}>Get Coins & AI Credits</Text>
+        </Pressable>
+      )}
 
       <DailyTasksCard enabled={isAccount} />
 
@@ -484,5 +499,23 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.sm,
     fontWeight: Theme.typography.weights.semibold,
     color: Theme.colors.error,
+  },
+  purchaseButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Theme.colors.card,
+    borderRadius: Theme.radii.lg,
+    borderWidth: 1,
+    borderColor: Theme.colors.accentRose,
+    paddingVertical: Theme.spacing.md,
+    paddingHorizontal: Theme.spacing.lg,
+    marginBottom: Theme.spacing.lg,
+    gap: Theme.spacing.sm,
+  },
+  purchaseButtonText: {
+    fontSize: Theme.typography.sizes.md,
+    fontWeight: Theme.typography.weights.semibold,
+    color: Theme.colors.accentRose,
   },
 });

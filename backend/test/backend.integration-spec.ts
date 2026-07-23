@@ -61,6 +61,7 @@ import {
 } from '../src/conversion/entities';
 import { PatternEntity } from '../src/catalog/entities';
 import { CoinLedgerRepository } from '../src/economy/coin-ledger.repository';
+import { CommerceLedgerRepository } from '../src/economy/commerce-ledger.repository';
 import { utcRewardDay } from '../src/economy/reward-day';
 
 class ForcedRollbackError extends Error {
@@ -98,6 +99,7 @@ describe('Stitch Wish backend integration', () => {
   const originalOtpSigningSecret = process.env.OTP_SIGNING_SECRET;
   const originalEmailFromAddress = process.env.EMAIL_FROM_ADDRESS;
   const originalResendApiKey = process.env.RESEND_API_KEY;
+  const originalRevenueCatWebhookAuthToken = process.env.REVENUECAT_WEBHOOK_AUTH_TOKEN;
 
   beforeAll(async () => {
     postgres = await new PostgreSqlContainer('postgres:16-alpine')
@@ -125,6 +127,8 @@ describe('Stitch Wish backend integration', () => {
       'integration-test-only-otp-signing-secret-at-least-32-chars';
     process.env.EMAIL_FROM_ADDRESS = 'integration@example.test';
     process.env.EMAIL_OTP_RATE_LIMIT_PER_IP = '100000';
+    process.env.REVENUECAT_WEBHOOK_AUTH_TOKEN =
+      'integration-test-only-revenuecat-webhook-auth-token-at-least-32-chars';
     delete process.env.RESEND_API_KEY;
     delete process.env.R2_BUCKET_NAME;
     delete process.env.R2_ACCOUNT_ID;
@@ -242,6 +246,7 @@ describe('Stitch Wish backend integration', () => {
     restoreEnvironment('OTP_SIGNING_SECRET', originalOtpSigningSecret);
     restoreEnvironment('EMAIL_FROM_ADDRESS', originalEmailFromAddress);
     restoreEnvironment('RESEND_API_KEY', originalResendApiKey);
+    restoreEnvironment('REVENUECAT_WEBHOOK_AUTH_TOKEN', originalRevenueCatWebhookAuthToken);
 
     const cleanupFailure = [...applicationCleanup, ...containerCleanup].find(
       (result) => result.status === 'rejected',
@@ -2374,6 +2379,7 @@ describe('Stitch Wish backend integration', () => {
     });
   });
 
+
   describe('pattern unlock coin spend', () => {
     const unlockPalette = [
       { dmcCode: '310', name: 'Black', rgbHex: '#000000' },
@@ -3093,6 +3099,291 @@ describe('Stitch Wish backend integration', () => {
         [account.accountId],
       );
       expect(dbEvents).toHaveLength(1);
+    });
+  });
+
+  describe('Commerce and RevenueCat Webhook', () => {
+    async function newRegisteredAccount(): Promise<{ accountId: string; accessToken: string }> {
+      const email = `rc-test-${randomUUID()}@example.test`;
+      await requestEmailOtp(httpServer, email);
+      const code = await dispatchAndReadEmailOtp(email);
+      const verified = await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send({ code, email })
+        .expect(200);
+
+      const accountId = readStringRecord(verified.body, 'accountId');
+      const accessToken = readStringRecord(verified.body, 'accessToken');
+      return { accountId, accessToken };
+    }
+
+    const WEBHOOK_TOKEN = 'integration-test-only-revenuecat-webhook-auth-token-at-least-32-chars';
+
+    it('CommerceLedgerRepository processes purchases and reversals idempotently', async () => {
+      const account1 = await newRegisteredAccount();
+      const account2 = await newRegisteredAccount();
+
+      const commerceLedger = app.get(CommerceLedgerRepository);
+
+      // (a) fresh purchase grants coin
+      const coinTxId = `rc-coin-${randomUUID()}`;
+      const coinResult = await commerceLedger.processPurchase({
+        environment: 'sandbox',
+        providerTransactionId: coinTxId,
+        accountId: account1.accountId,
+        productId: 'coin_pack_300',
+      });
+      expect(coinResult).toEqual({
+        outcome: 'granted',
+        currency: 'coin',
+        amount: 300,
+        balance: 300,
+      });
+
+      // (b) fresh purchase grants AI credit
+      const aiTxId = `rc-ai-${randomUUID()}`;
+      const aiResult = await commerceLedger.processPurchase({
+        environment: 'sandbox',
+        providerTransactionId: aiTxId,
+        accountId: account1.accountId,
+        productId: 'ai_credit_pack_5',
+      });
+      expect(aiResult).toEqual({
+        outcome: 'granted',
+        currency: 'ai_credit',
+        amount: 5,
+        balance: 5,
+      });
+
+      // (c) duplicate webhook delivery for the same transaction+account is idempotent (no double balance)
+      const duplicateResult = await commerceLedger.processPurchase({
+        environment: 'sandbox',
+        providerTransactionId: aiTxId,
+        accountId: account1.accountId,
+        productId: 'ai_credit_pack_5',
+      });
+      expect(duplicateResult).toEqual({
+        outcome: 'replayed_same_account',
+        currency: 'ai_credit',
+        amount: 5,
+        balance: 5,
+      });
+
+      // (d) a second account attempting to claim an already-bound transaction is rejected and gets zero balance change
+      const fraudulentResult = await commerceLedger.processPurchase({
+        environment: 'sandbox',
+        providerTransactionId: aiTxId,
+        accountId: account2.accountId,
+        productId: 'ai_credit_pack_5',
+      });
+      expect(fraudulentResult).toEqual({
+        outcome: 'rejected_other_account',
+        currency: 'ai_credit',
+        amount: 0,
+        balance: null,
+      });
+
+      // (e) unknown product_id returns unknown_product and grants nothing
+      const unknownResult = await commerceLedger.processPurchase({
+        environment: 'sandbox',
+        providerTransactionId: `rc-unk-${randomUUID()}`,
+        accountId: account1.accountId,
+        productId: 'invalid_pack_id',
+      });
+      expect(unknownResult).toEqual({
+        outcome: 'unknown_product',
+        currency: null,
+        amount: 0,
+        balance: null,
+      });
+
+      // (f) reversal withdraws exactly the granted amount and can drive balance negative
+      const aiReversal = await commerceLedger.processReversal({
+        environment: 'sandbox',
+        providerTransactionId: aiTxId,
+      });
+      expect(aiReversal).toEqual({
+        applied: true,
+        currency: 'ai_credit',
+        amount: 5,
+        balance: 0,
+      });
+
+      // Let's do a reversal for coin that drives balance negative!
+      await dataSource.query(
+        `UPDATE economy.coin_balances SET balance = 0 WHERE principal_type = 'account' AND principal_id = $1`,
+        [account1.accountId],
+      );
+
+      const coinReversal = await commerceLedger.processReversal({
+        environment: 'sandbox',
+        providerTransactionId: coinTxId,
+      });
+      expect(coinReversal).toEqual({
+        applied: true,
+        currency: 'coin',
+        amount: 300,
+        balance: -300,
+      });
+
+      // (g) reversal is idempotent under duplicate REFUND webhooks
+      const duplicateReversal = await commerceLedger.processReversal({
+        environment: 'sandbox',
+        providerTransactionId: coinTxId,
+      });
+      expect(duplicateReversal).toEqual({
+        applied: false,
+        currency: 'coin',
+        amount: 0,
+        balance: -300,
+      });
+
+      // (h) reversal for a transaction with no binding is a safe no-op
+      const unboundReversal = await commerceLedger.processReversal({
+        environment: 'sandbox',
+        providerTransactionId: `rc-unbound-${randomUUID()}`,
+      });
+      expect(unboundReversal).toEqual({
+        applied: false,
+        currency: null,
+        amount: 0,
+        balance: null,
+      });
+    });
+
+    it('handles webhooks and authenticates correctly', async () => {
+      const account = await newRegisteredAccount();
+      const transactionId = `webhook-tx-${randomUUID()}`;
+
+      // 1. Unauthorized webhook -> 401
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .send({
+          event: {
+            type: 'NON_RENEWING_PURCHASE',
+            app_user_id: account.accountId,
+            transaction_id: transactionId,
+            product_id: 'coin_pack_900',
+            environment: 'SANDBOX',
+          },
+        })
+        .expect(401);
+
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', 'Bearer invalid_token')
+        .send({
+          event: {
+            type: 'NON_RENEWING_PURCHASE',
+            app_user_id: account.accountId,
+            transaction_id: transactionId,
+            product_id: 'coin_pack_900',
+            environment: 'SANDBOX',
+          },
+        })
+        .expect(401);
+
+      // 2. NON_RENEWING_PURCHASE happy path -> balance increases
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+        .send({
+          event: {
+            type: 'NON_RENEWING_PURCHASE',
+            app_user_id: account.accountId,
+            transaction_id: transactionId,
+            product_id: 'coin_pack_900',
+            environment: 'SANDBOX',
+          },
+        })
+        .expect(200, { status: 'ok' });
+
+      // Check balance
+      const coinBalRes = await request(httpServer)
+        .get('/v1/economy/balance')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      expect(coinBalRes.body.balance).toBe(900);
+
+      // 3. Duplicate delivery -> same balance, no double-grant
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+        .send({
+          event: {
+            type: 'NON_RENEWING_PURCHASE',
+            app_user_id: account.accountId,
+            transaction_id: transactionId,
+            product_id: 'coin_pack_900',
+            environment: 'SANDBOX',
+          },
+        })
+        .expect(200, { status: 'ok' });
+
+      const coinBalRes2 = await request(httpServer)
+        .get('/v1/economy/balance')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      expect(coinBalRes2.body.balance).toBe(900);
+
+      // Test AI credit balance endpoint and webhook
+      const aiTxId = `webhook-ai-tx-${randomUUID()}`;
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+        .send({
+          event: {
+            type: 'NON_RENEWING_PURCHASE',
+            app_user_id: account.accountId,
+            transaction_id: aiTxId,
+            product_id: 'ai_credit_pack_20',
+            environment: 'SANDBOX',
+          },
+        })
+        .expect(200, { status: 'ok' });
+
+      const aiBalRes = await request(httpServer)
+        .get('/v1/economy/ai-credit-balance')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      expect(aiBalRes.body.balance).toBe(20);
+
+      // 4. REFUND after a grant -> balance decreases by the granted amount
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+        .send({
+          event: {
+            type: 'REFUND',
+            app_user_id: account.accountId,
+            transaction_id: transactionId,
+            product_id: 'coin_pack_900',
+            environment: 'SANDBOX',
+          },
+        })
+        .expect(200, { status: 'ok' });
+
+      const coinBalRes3 = await request(httpServer)
+        .get('/v1/economy/balance')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      expect(coinBalRes3.body.balance).toBe(0);
+
+      // 5. REFUND with no prior binding -> 200, no-op
+      const unboundTxId = `unbound-tx-${randomUUID()}`;
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+        .send({
+          event: {
+            type: 'REFUND',
+            app_user_id: account.accountId,
+            transaction_id: unboundTxId,
+            product_id: 'coin_pack_900',
+            environment: 'SANDBOX',
+          },
+        })
+        .expect(200, { status: 'ok' });
     });
   });
 

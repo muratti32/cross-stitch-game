@@ -32,6 +32,7 @@ export type EnvironmentVariables = {
   ADMIN_TOTP_ISSUER: string;
   ADMOB_SSV_KEYS_URL: string;
   ADMOB_SSV_ALLOWED_AD_UNITS: readonly string[];
+  REVENUECAT_WEBHOOK_AUTH_TOKEN: string | undefined;
 };
 
 const DATABASE_PROTOCOLS = new Set(['postgres:', 'postgresql:']);
@@ -381,8 +382,13 @@ export function parseEnvironment(
     ADMOB_SSV_ALLOWED_AD_UNITS: parseCommaList(
       environment.ADMOB_SSV_ALLOWED_AD_UNITS,
     ),
+    REVENUECAT_WEBHOOK_AUTH_TOKEN: parseOptionalSecret(
+      environment.REVENUECAT_WEBHOOK_AUTH_TOKEN,
+      'REVENUECAT_WEBHOOK_AUTH_TOKEN',
+    ),
   };
 }
+
 
 export function validateEnvironment(
   environment: Record<string, unknown>,

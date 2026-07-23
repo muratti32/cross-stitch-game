@@ -59,6 +59,7 @@
       "expo-router",
       "expo-system-ui",
       "expo-secure-store",
+      "react-native-purchases",
       [
         "expo-splash-screen",
         {

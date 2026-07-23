@@ -5,4 +5,7 @@ export { RewardDayPoolEntity } from './reward-day-pool.entity';
 export { PatternUnlockEntity } from './pattern-unlock.entity';
 export { GameplayEventEntity } from './gameplay-event.entity';
 export { DailyColorActionCountEntity } from './daily-color-action-count.entity';
-
+export { AiCreditBalanceEntity } from './ai-credit-balance.entity';
+export { AiCreditLedgerEntryEntity } from './ai-credit-ledger-entry.entity';
+export { AiCreditLedgerReason } from './ai-credit-ledger-reason.enum';
+export { CommerceTransactionBindingEntity } from './commerce-transaction-binding.entity';

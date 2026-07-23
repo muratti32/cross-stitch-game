@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import type { AuthPrincipal } from '../auth/auth.types';
 import { PrincipalType } from '../auth/entities';
 import { CoinLedgerRepository, LedgerPrincipal } from './coin-ledger.repository';
+import { CommerceLedgerRepository } from './commerce-ledger.repository';
 import { DAILY_AD_LIMIT, DAILY_POOL_COIN } from './economy.constants';
 import { nextRewardDayResetAt, utcRewardDay } from './reward-day';
 
@@ -26,10 +27,19 @@ export interface RewardDayView {
  */
 @Injectable()
 export class EconomyReadService {
-  constructor(private readonly ledger: CoinLedgerRepository) {}
+  constructor(
+    private readonly ledger: CoinLedgerRepository,
+    private readonly commerceLedger: CommerceLedgerRepository,
+  ) {}
 
   async getBalance(principal: AuthPrincipal): Promise<CoinBalanceView> {
     const balance = await this.ledger.getBalance(toLedgerPrincipal(principal));
+    return { balance };
+  }
+
+  async getAiCreditBalance(principal: AuthPrincipal): Promise<{ balance: number }> {
+    const ledgerPrincipal = toLedgerPrincipal(principal);
+    const balance = await this.commerceLedger.getAiCreditBalance(ledgerPrincipal.id);
     return { balance };
   }
 
