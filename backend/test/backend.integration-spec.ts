@@ -160,6 +160,16 @@ describe('Stitch Wish backend integration', () => {
     await queue.waitUntilReady();
   });
 
+  beforeEach(async () => {
+    const rows: { count: string }[] = await dataSource.query(
+      'SELECT count(*) FROM notifications.email_outbox WHERE dispatched_at IS NULL',
+    );
+    // eslint-disable-next-line no-console
+    console.log(
+      `[DEBUG backlog] before "${expect.getState().currentTestName}": ${rows[0]?.count}`,
+    );
+  });
+
   afterAll(async () => {
     const applicationCleanup = await Promise.allSettled([
       app === undefined ? Promise.resolve() : app.close(),
