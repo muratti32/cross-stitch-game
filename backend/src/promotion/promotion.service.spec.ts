@@ -26,7 +26,22 @@ describe('PromotionService', () => {
     coinBalanceRepo = { findOne: jest.fn() } as any;
     coinLedgerEntryRepo = { findOne: jest.fn() } as any;
 
+    const dataSource = {
+      transaction: jest.fn(async (isoOrWork: any, maybeWork?: any) => {
+        const work = typeof isoOrWork === 'function' ? isoOrWork : maybeWork;
+        return work({
+          findOne: jest.fn(),
+          count: jest.fn(),
+          save: jest.fn(),
+          insert: jest.fn(),
+          createQueryBuilder: jest.fn(),
+          query: jest.fn(),
+        });
+      }),
+    } as any;
+
     service = new PromotionService(
+      dataSource,
       config,
       authHashing,
       guestInstallationsRepo,

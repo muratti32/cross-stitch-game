@@ -7,11 +7,36 @@ import { PromotionService } from './promotion.service';
 import { PromotionPreviewRequestDto } from './dto/promotion-preview.dto';
 import { PromotionLockRequestDto } from './dto/promotion-lock.dto';
 import { PromotionPackageRequestDto } from './dto/promotion-package.dto';
+import { PromotionCommitRequestDto } from './dto/promotion-commit.dto';
 
 class PromotionCancelRequestDto {
   @IsUUID()
   @IsNotEmpty()
   guestId!: string;
+}
+
+class PromotionDrainSessionDto {
+  @IsUUID()
+  @IsNotEmpty()
+  guestId!: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  patternId!: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  guestSessionId!: string;
+}
+
+class PromotionDrainLikeDto {
+  @IsUUID()
+  @IsNotEmpty()
+  guestId!: string;
+
+  @IsUUID()
+  @IsNotEmpty()
+  patternId!: string;
 }
 
 @Controller('promotion')
@@ -57,5 +82,41 @@ export class PromotionController {
     @Body() dto: PromotionCancelRequestDto,
   ) {
     return this.promotionService.cancelPromotion(principal.id, dto.guestId);
+  }
+
+  @Post('commit')
+  @HttpCode(HttpStatus.OK)
+  async commit(
+    @CurrentPrincipal() principal: AuthPrincipal,
+    @Body() dto: PromotionCommitRequestDto,
+  ) {
+    return this.promotionService.commitPromotion(principal.id, dto);
+  }
+
+  @Post('drain/session')
+  @HttpCode(HttpStatus.OK)
+  async drainSession(
+    @CurrentPrincipal() principal: AuthPrincipal,
+    @Body() dto: PromotionDrainSessionDto,
+  ) {
+    return this.promotionService.drainSession(
+      principal.id,
+      dto.guestId,
+      dto.patternId,
+      dto.guestSessionId,
+    );
+  }
+
+  @Post('drain/like')
+  @HttpCode(HttpStatus.OK)
+  async drainLike(
+    @CurrentPrincipal() principal: AuthPrincipal,
+    @Body() dto: PromotionDrainLikeDto,
+  ) {
+    return this.promotionService.drainLike(
+      principal.id,
+      dto.guestId,
+      dto.patternId,
+    );
   }
 }

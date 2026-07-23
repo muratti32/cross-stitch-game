@@ -9,4 +9,5 @@ export enum CoinLedgerReason {
   FirstCompletion = 'first_completion',
   UnlockSpend = 'unlock_spend',
   DailyTask = 'daily_task',
+  GuestPromotion = 'guest_promotion',
 }

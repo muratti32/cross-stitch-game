@@ -2961,6 +2961,219 @@ describe('Stitch Wish backend integration', () => {
         .expect(201); // Created (unlocked)!
     });
   });
+
+  describe('Guest Data Promotion stage 2', () => {
+    const palette = [
+      { dmcCode: '310', name: 'Black', rgbHex: '#000000' },
+      { dmcCode: 'B5200', name: 'Snow White', rgbHex: '#FFFFFF' },
+    ];
+
+    async function seedPattern(
+      title: string,
+      width: number,
+      height: number,
+    ): Promise<string> {
+      const catalog = app.get(CatalogService);
+      const grid = new Uint8Array(width * height).fill(1);
+      const encoded = encodePatternArtifactV1({ width, height, palette, grid });
+      const objectKey = `itest-promo2/${title}/artifact.bin`;
+      await app.get(LocalObjectStorage).put(objectKey, encoded.bytes);
+      const pattern = await catalog.upsertPattern({
+        title,
+        creatorName: 'ITest Promo 2 Team',
+        categoryCode: 'other',
+        width,
+        height,
+        paletteSize: palette.length,
+        artifactObjectKey: objectKey,
+        artifactChecksum: encoded.checksum,
+        artifactByteLength: encoded.byteLength,
+        artifactSchemaVersion: encoded.schemaVersion,
+        previewObjectKey: `itest-promo2/${title}/preview.png`,
+        unlockPriceTier: 'small',
+        status: 'available',
+        publishedAt: new Date('2026-07-01T00:00:00.000Z'),
+        tagCodes: [],
+      });
+      return pattern.id;
+    }
+
+    async function createAccount(): Promise<{
+      accountId: string;
+      accessToken: string;
+    }> {
+      const email = `promo2-${randomUUID()}@example.test`;
+      await request(httpServer)
+        .post('/v1/auth/email/request')
+        .send({ email })
+        .expect(202);
+      const deliveryCount = localEmailSender.getDeliveries().length;
+      await emailDispatcher.dispatchOnce();
+      const delivery = localEmailSender
+        .getDeliveries()
+        .slice(deliveryCount)
+        .reverse()
+        .find((candidate) => candidate.toEmail === email);
+      if (delivery === undefined) {
+        throw new Error('Email OTP delivery was not recorded');
+      }
+      const verified = await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send({ email, code: delivery.code })
+        .expect(200);
+      return {
+        accountId: readStringRecord(verified.body, 'accountId'),
+        accessToken: readStringRecord(verified.body, 'accessToken'),
+      };
+    }
+
+    it('processes full commit, balance transfer, locks, and session merges', async () => {
+      const credentialSecret = createCredentialSecret();
+      const installationKey = randomUUID();
+      const guest = await createGuestThroughApi(httpServer, installationKey, credentialSecret);
+      const account = await createAccount();
+
+      // Seed guest balance
+      await dataSource.query(
+        `INSERT INTO economy.coin_balances (principal_type, principal_id, balance)
+         VALUES ('guest', $1, 150)`,
+        [guest.guestId]
+      );
+
+      // 1. Generate preview
+      const previewRes = await request(httpServer)
+        .post('/v1/promotion/preview')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          guestId: guest.guestId,
+          guestCredential: credentialSecret,
+          manifestChecksum: 'chk-manifest-1',
+          manifest: { progress: {}, completions: {}, likes: {}, pendingRewards: {} }
+        })
+        .expect(200);
+
+      expect(previewRes.body.promotionMode).toBe('economy');
+      expect(previewRes.body.guestLedgerBalance).toBe(150);
+
+      const previewData = {
+        guestId: previewRes.body.guestId,
+        accountId: previewRes.body.accountId,
+        manifestChecksum: previewRes.body.manifestChecksum,
+        promotionMode: previewRes.body.promotionMode,
+        guestLedgerBalance: previewRes.body.guestLedgerBalance,
+        expiry: previewRes.body.expiry,
+      };
+
+      // 2. Lock
+      const lockRes = await request(httpServer)
+        .post('/v1/promotion/lock')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          previewData,
+          signature: previewRes.body.signature,
+        })
+        .expect(200);
+
+      // 3. Stage
+      await request(httpServer)
+        .post('/v1/promotion/stage-package')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          guestId: guest.guestId,
+          lockToken: lockRes.body.lockToken,
+          manifestChecksum: 'chk-manifest-1',
+          packageData: { sessions: [] },
+          checksum: 'pkg-chk-1',
+        })
+        .expect(200);
+
+      // 4. Commit
+      const commitRes = await request(httpServer)
+        .post('/v1/promotion/commit')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          previewData,
+          signature: previewRes.body.signature,
+        })
+        .expect(200);
+
+      expect(commitRes.body.status).toBe('committed');
+
+      // 5. Verify balances
+      const guestBal = await dataSource.query(`SELECT balance FROM economy.coin_balances WHERE principal_id = $1`, [guest.guestId]);
+      expect(Number(guestBal[0].balance)).toBe(0);
+
+      const accountBal = await dataSource.query(`SELECT balance FROM economy.coin_balances WHERE principal_id = $1`, [account.accountId]);
+      expect(Number(accountBal[0].balance)).toBe(150);
+
+      // 6. Verify second economy promotion goes to data-only
+      const credentialSecret2 = createCredentialSecret();
+      const guest2 = await createGuestThroughApi(httpServer, randomUUID(), credentialSecret2);
+      const previewRes2 = await request(httpServer)
+        .post('/v1/promotion/preview')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          guestId: guest2.guestId,
+          guestCredential: credentialSecret2,
+          manifestChecksum: 'chk-manifest-2',
+          manifest: { progress: {}, completions: {}, likes: {}, pendingRewards: {} }
+        })
+        .expect(200);
+      expect(previewRes2.body.promotionMode).toBe('data-only');
+
+      // 7. Test Session Merge (active+active)
+      const patternId = await seedPattern('MergePattern', 2, 2);
+
+      // Create guest session
+      const gSessionRes = await dataSource.query(
+        `INSERT INTO sessions.stitching_sessions (principal_type, principal_id, pattern_id, status)
+         VALUES ('guest', $1, $2, 'active') RETURNING id`,
+        [guest.guestId, patternId]
+      );
+      const guestSessionId = gSessionRes[0].id;
+
+      // Create target account session
+      const aSessionRes = await dataSource.query(
+        `INSERT INTO sessions.stitching_sessions (principal_type, principal_id, pattern_id, status)
+         VALUES ('account', $1, $2, 'active') RETURNING id`,
+        [account.accountId, patternId]
+      );
+      const accountSessionId = aSessionRes[0].id;
+
+      // Seed progress operations
+      await dataSource.query(
+        `INSERT INTO sessions.progress_operations (session_id, op_id, device_id, device_seq, cell_index, desired_state, base_revision, server_revision, effective)
+         VALUES ($1, $2, $3, 1, 0, 'completed', 0, 1, true)`,
+        [guestSessionId, randomUUID(), randomUUID()]
+      );
+
+      await dataSource.query(
+        `INSERT INTO sessions.session_cell_state (session_id, cell_index, state, revision)
+         VALUES ($1, 0, 'completed', 1)`,
+        [guestSessionId]
+      );
+
+      // Drain session
+      const drainRes = await request(httpServer)
+        .post('/v1/promotion/drain/session')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          guestId: guest.guestId,
+          patternId,
+          guestSessionId,
+        })
+        .expect(200);
+
+      expect(drainRes.body.status).toBe('merged');
+
+      // Verify guest session is deleted and merged
+      const gSessCount = await dataSource.query(`SELECT 1 FROM sessions.stitching_sessions WHERE id = $1`, [guestSessionId]);
+      expect(gSessCount).toHaveLength(0);
+
+      const cellState = await dataSource.query(`SELECT state FROM sessions.session_cell_state WHERE session_id = $1 AND cell_index = 0`, [accountSessionId]);
+      expect(cellState[0].state).toBe('completed');
+    });
+  });
 });
 
 async function createDemoJobThroughApi(

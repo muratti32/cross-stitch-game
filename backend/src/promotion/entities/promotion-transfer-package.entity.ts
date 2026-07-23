@@ -21,7 +21,7 @@ export class PromotionTransferPackageEntity {
   expiry!: Date;
 
   @Column({ length: 16, default: 'staged' })
-  status!: 'staged' | 'committed' | 'cancelled';
+  status!: 'staged' | 'committed' | 'cancelled' | 'needs_attention';
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;

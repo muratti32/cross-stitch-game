@@ -71,6 +71,8 @@ import { CreatePatternUnlocks1785110400000 } from './migrations/1785110400000-Cr
 import { CreateDailyTasks1785196800000 } from './migrations/1785196800000-CreateDailyTasks';
 import { AddPersonalPatternLineage1785283200000 } from './migrations/1785283200000-AddPersonalPatternLineage';
 import { CreatePromotionSchema1785369600000 } from './migrations/1785369600000-CreatePromotionSchema';
+import { WidenLedgerReasonForPromotion1785456000000 } from './migrations/1785456000000-WidenLedgerReasonForPromotion';
+import { WidenPackageStatusForNeedsAttention1785542400000 } from './migrations/1785542400000-WidenPackageStatusForNeedsAttention';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -135,6 +137,8 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateDailyTasks1785196800000,
       AddPersonalPatternLineage1785283200000,
       CreatePromotionSchema1785369600000,
+      WidenLedgerReasonForPromotion1785456000000,
+      WidenPackageStatusForNeedsAttention1785542400000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

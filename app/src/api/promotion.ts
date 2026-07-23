@@ -101,3 +101,45 @@ export async function cancelPromotion(guestId: string): Promise<{ status: string
 
   return (await res.json()) as { status: string };
 }
+
+export async function commitPromotion(previewData: any, signature: string): Promise<{ status: string }> {
+  const res = await apiFetch('/v1/promotion/commit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ previewData, signature }),
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to commit promotion: ' + res.status);
+  }
+
+  return (await res.json()) as { status: string };
+}
+
+export async function drainSession(guestId: string, patternId: string, guestSessionId: string): Promise<any> {
+  const res = await apiFetch('/v1/promotion/drain/session', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ guestId, patternId, guestSessionId }),
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to drain session: ' + res.status);
+  }
+
+  return await res.json();
+}
+
+export async function drainLike(guestId: string, patternId: string): Promise<any> {
+  const res = await apiFetch('/v1/promotion/drain/like', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ guestId, patternId }),
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to drain like: ' + res.status);
+  }
+
+  return await res.json();
+}
