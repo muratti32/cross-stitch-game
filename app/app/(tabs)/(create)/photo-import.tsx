@@ -255,7 +255,7 @@ export default function PhotoImportScreen() {
       }
 
       setProcessingStatus('Uploading only the cropped, downscaled frame…');
-      const jobId = await createPhotoConversion({
+      const pendingConversion = await createPhotoConversion({
         maxColors: exactSettings.maxColors,
         profile,
         shortEdgeCells: exactSettings.shortEdgeCells,
@@ -265,13 +265,13 @@ export default function PhotoImportScreen() {
       await FileSystem.deleteAsync(uploadUri, { idempotent: true });
       uploadUri = null;
 
-      const pattern = await waitForConversion(jobId, (status) => {
+      const pattern = await waitForConversion(pendingConversion.id, (status) => {
         setProcessingStatus(
           status === 'pending' || status === 'dispatched'
             ? 'Waiting for the conversion worker…'
             : 'Building the stitch grid and DMC palette…',
         );
-      });
+      }, pendingConversion.supportReference);
       setProcessingStatus('Preparing the Personal Pattern for play…');
       const session = await preparePersonalSession(pattern.id, {
         height: pattern.height,

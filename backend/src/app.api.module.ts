@@ -14,6 +14,7 @@ import { ConversionModule } from './conversion';
 import { EconomyModule } from './economy/economy.module';
 import { PromotionModule } from './promotion/promotion.module';
 import { AiArtworkModule } from './ai-artwork/ai-artwork.module';
+import { SupportModule } from './support/support.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AiArtworkModule } from './ai-artwork/ai-artwork.module';
     EconomyModule,
     PromotionModule,
     AiArtworkModule,
+    SupportModule,
     AdminModule,
   ],
 })

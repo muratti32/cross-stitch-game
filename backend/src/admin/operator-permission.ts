@@ -6,7 +6,8 @@ export type OperatorPermission =
   | 'catalog.pattern.manage'
   | 'catalog.staffpick.manage'
   | 'catalog.tag.manage'
-  | 'catalog.category.manage';
+  | 'catalog.category.manage'
+  | 'support.reference.lookup';
 
 export const ALL_OPERATOR_PERMISSIONS: readonly OperatorPermission[] = [
   'catalog.pattern.read',
@@ -15,6 +16,7 @@ export const ALL_OPERATOR_PERMISSIONS: readonly OperatorPermission[] = [
   'catalog.staffpick.manage',
   'catalog.tag.manage',
   'catalog.category.manage',
+  'support.reference.lookup',
 ];
 
 // Explicit role -> permission mapping from day one, even while `owner` is the

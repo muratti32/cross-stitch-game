@@ -5,6 +5,7 @@ import { AuthModule } from '../auth/auth.module';
 import { PatternEntity } from '../catalog/entities';
 import { CatalogModule } from '../catalog/catalog.module';
 import { JobsModule } from '../jobs/jobs.module';
+import { SupportModule } from '../support/support.module';
 import {
   ConversionController,
   PersonalPatternPreviewsController,
@@ -36,6 +37,7 @@ import {
     AuthModule,
     CatalogModule,
     forwardRef(() => JobsModule),
+    SupportModule,
   ],
   providers: [
     ConversionEngineClient,

@@ -22,13 +22,18 @@ interface ConversionJob {
   status: 'pending' | 'dispatched' | 'running' | 'completed' | 'failed';
 }
 
+export interface PendingConversion {
+  id: string;
+  supportReference: string;
+}
+
 export async function createPhotoConversion(input: {
   maxColors: number;
   profile: ConversionProfile;
   shortEdgeCells: number;
   title: string;
   uploadUri: string;
-}): Promise<string> {
+}): Promise<PendingConversion> {
   const body = new FormData();
   body.append('profile', input.profile);
   body.append('title', input.title);
@@ -54,16 +59,17 @@ export async function createPhotoConversion(input: {
     const message = await readServerMessage(response);
     throw new Error(message ?? `Conversion request failed (${response.status})`);
   }
-  const result = (await response.json()) as { id?: unknown };
-  if (typeof result.id !== 'string') {
+  const result = (await response.json()) as { id?: unknown; supportReference?: unknown };
+  if (typeof result.id !== 'string' || typeof result.supportReference !== 'string') {
     throw new Error('Conversion request response was malformed');
   }
-  return result.id;
+  return { id: result.id, supportReference: result.supportReference };
 }
 
 export async function waitForConversion(
   jobId: string,
   onStatus?: (status: ConversionJob['status']) => void,
+  supportReference?: string,
 ): Promise<PersonalPattern> {
   const deadline = Date.now() + 5 * 60 * 1000;
   while (Date.now() < deadline) {
@@ -77,11 +83,15 @@ export async function waitForConversion(
       return withAbsolutePreviewUrl(job.pattern);
     }
     if (job.status === 'failed') {
-      throw new Error(job.errorMessage ?? 'Pattern Conversion failed');
+      throw new Error(withSupportReference(job.errorMessage ?? 'Pattern Conversion failed', supportReference));
     }
     await delay(1200);
   }
-  throw new Error('Pattern Conversion is still processing. Try again shortly.');
+  throw new Error(withSupportReference('Pattern Conversion is still processing. Try again shortly.', supportReference));
+}
+
+function withSupportReference(message: string, supportReference: string | undefined): string {
+  return supportReference === undefined ? message : `${message}\nSupport Reference: ${supportReference}`;
 }
 
 export async function listPersonalPatterns(): Promise<PersonalPattern[]> {

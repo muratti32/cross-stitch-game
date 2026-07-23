@@ -14,17 +14,18 @@ import { CreateAiArtworkDto } from './dto/create-ai-artwork.dto';
 import { AiArtworkEntity, AiCreditReservationEntity } from './entities';
 import { PromptModerationService } from './prompt-moderation.service';
 import { FalArtworkProviderService, FalArtworkSubmissionRejectedError } from './fal-artwork-provider.service';
+import { SupportReferenceService } from '../support/support-reference.service';
 
 @Injectable()
 export class AiArtworkService {
-  constructor(private readonly dataSource: DataSource, private readonly jobs: ProcessingJobsRepository, private readonly moderation: PromptModerationService, private readonly fal: FalArtworkProviderService, private readonly conversions: ConversionService, @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage, @InjectRepository(AiArtworkEntity) private readonly artworks: Repository<AiArtworkEntity>) {}
+  constructor(private readonly dataSource: DataSource, private readonly jobs: ProcessingJobsRepository, private readonly moderation: PromptModerationService, private readonly fal: FalArtworkProviderService, private readonly conversions: ConversionService, private readonly supportReferences: SupportReferenceService, @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage, @InjectRepository(AiArtworkEntity) private readonly artworks: Repository<AiArtworkEntity>) {}
   async create(principal: AuthPrincipal, dto: CreateAiArtworkDto) {
     const accountId = this.account(principal); const prompt = dto.prompt.trim();
     if (!prompt) throw new UnprocessableEntityException('Prompt cannot be blank');
     await this.recordAttempt(accountId);
     if (await this.moderation.isFlagged(prompt)) throw new UnprocessableEntityException('Prompt Safety Rejection');
     const id = randomUUID(); const jobId = randomUUID();
-    await this.dataSource.transaction(async (m) => {
+    const supportReference = await this.dataSource.transaction(async (m) => {
       const balances = await m.query<readonly { balance: string }[]>(`SELECT balance FROM economy.ai_credit_balances WHERE principal_type='account' AND principal_id=$1 FOR UPDATE`, [accountId]);
       const balance = Number(balances[0]?.balance ?? 0);
       const holds = await m.query<readonly { holds: string }[]>(`SELECT COALESCE(count(*),0)::text AS holds FROM ai.ai_credit_reservations WHERE account_id=$1 AND status='reserved'`, [accountId]);
@@ -32,11 +33,19 @@ export class AiArtworkService {
       await this.jobs.createPendingWithOutboxFor(m, { id: jobId, eventName: AI_ARTWORK_JOB_EVENT_NAME, type: AI_ARTWORK_JOB_TYPE, payload: { artworkId: id } });
       await m.getRepository(AiCreditReservationEntity).save({ accountId, processingJobId: jobId, status: 'reserved' });
       await m.getRepository(AiArtworkEntity).save({ id, accountId, processingJobId: jobId, prompt, aspect: dto.aspect, status: 'pending', providerRequestKey: randomUUID(), providerRequestId: null, imageObjectKey: null, imageContentType: null, imageChecksum: null, imageByteLength: null, failureReason: null });
+      return this.supportReferences.create(m, {
+        principalId: accountId,
+        principalType: 'account',
+        records: [
+          { id, type: 'ai_artwork' },
+          { id: jobId, type: 'processing_job' },
+        ],
+      });
     });
-    return { id, jobId, status: 'pending' as const };
+    return { id, jobId, status: 'pending' as const, supportReference };
   }
-  async list(principal: AuthPrincipal) { const accountId = this.account(principal); const rows = await this.artworks.find({ where: { accountId }, order: { createdAt: 'DESC' } }); return rows.filter((x) => x.status !== 'deleted').map((x) => this.view(x)); }
-  async getJob(principal: AuthPrincipal, id: string) { const a = await this.owned(principal, id); const job = await this.jobs.findById(a.processingJobId); if (!job) throw new NotFoundException(); return { ...this.view(a), jobStatus: job.status, errorMessage: job.errorMessage }; }
+  async list(principal: AuthPrincipal) { const accountId = this.account(principal); const rows = await this.artworks.find({ where: { accountId }, order: { createdAt: 'DESC' } }); const visible = rows.filter((x) => x.status !== 'deleted'); const codes = await this.supportReferences.findCodesForRecords('ai_artwork', visible.map((x) => x.id)); return visible.map((x) => this.view(x, codes.get(x.id) ?? null)); }
+  async getJob(principal: AuthPrincipal, id: string) { const a = await this.owned(principal, id); const job = await this.jobs.findById(a.processingJobId); if (!job) throw new NotFoundException(); const supportReference = await this.supportReferences.findCodeForRecord('ai_artwork', a.id); return { ...this.view(a, supportReference), jobStatus: job.status, errorMessage: job.errorMessage }; }
   async delete(principal: AuthPrincipal, id: string) { const a = await this.owned(principal, id); if (a.status === 'deleted') return; if (a.imageObjectKey) await this.storage.delete(a.imageObjectKey); await this.artworks.update({ id }, { status: 'deleted', imageObjectKey: null }); }
   async approve(principal: AuthPrincipal, id: string, dto: ApproveAiArtworkDto) { const a = await this.owned(principal, id); if (a.status !== 'delivered' || !a.imageObjectKey || !a.imageContentType) throw new ConflictException('Artwork is not ready for approval'); const bytes = await this.storage.get(a.imageObjectKey); if (!bytes) throw new ConflictException('Artwork bytes are unavailable'); return this.conversions.createPhotoConversion(principal, dto, { buffer: bytes, mimetype: a.imageContentType, size: bytes.length }); }
   async process(jobId: string): Promise<void> {
@@ -79,6 +88,6 @@ export class AiArtworkService {
   private async recordAttempt(accountId: string) { await this.dataSource.transaction(async (m) => { await m.query('SELECT id FROM auth.registered_accounts WHERE id=$1 FOR UPDATE', [accountId]); const rows = await m.query<readonly { count: string }[]>(`SELECT count(*)::text AS count FROM ai.prompt_safety_attempts WHERE account_id=$1 AND created_at > now() - interval '10 minutes'`, [accountId]); if (Number(rows[0]?.count ?? 0) >= 10) throw new HttpException('AI generation rate limit reached', 429); await m.query('INSERT INTO ai.prompt_safety_attempts (account_id) VALUES ($1)', [accountId]); }); }
   private account(p: AuthPrincipal) { if (p.type !== PrincipalType.Account) throw new ForbiddenException('Registered Account required'); return p.id; }
   private async owned(p: AuthPrincipal, id: string) { const a = await this.artworks.findOneBy({ id }); if (!a || a.accountId !== this.account(p)) throw new NotFoundException('AI Artwork not found'); return a; }
-  private view(a: AiArtworkEntity) { const exp = Math.floor(Date.now()/1000)+300; const sig = createHmac('sha256', process.env.GRANT_SIGNING_SECRET ?? '').update(`${a.id}.${exp}`).digest('hex'); return { id: a.id, aspect: a.aspect, status: a.status, failureReason: a.failureReason, createdAt: a.createdAt.toISOString(), imageUrl: a.status === 'delivered' ? `/v1/ai-artworks/images/${a.id}?exp=${exp}&sig=${sig}` : null }; }
+  private view(a: AiArtworkEntity, supportReference: string | null = null) { const exp = Math.floor(Date.now()/1000)+300; const sig = createHmac('sha256', process.env.GRANT_SIGNING_SECRET ?? '').update(`${a.id}.${exp}`).digest('hex'); return { id: a.id, aspect: a.aspect, status: a.status, failureReason: a.failureReason, supportReference, createdAt: a.createdAt.toISOString(), imageUrl: a.status === 'delivered' ? `/v1/ai-artworks/images/${a.id}?exp=${exp}&sig=${sig}` : null }; }
   async image(id: string, exp: number, sig: string) { const expected = createHmac('sha256', process.env.GRANT_SIGNING_SECRET ?? '').update(`${id}.${exp}`).digest('hex'); if (exp < Math.floor(Date.now()/1000) || sig.length !== expected.length || !timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) throw new ForbiddenException(); const a = await this.artworks.findOneBy({ id, status: 'delivered' }); if (!a?.imageObjectKey) throw new NotFoundException(); const bytes = await this.storage.get(a.imageObjectKey); if (!bytes) throw new NotFoundException(); return { bytes, contentType: a.imageContentType ?? 'image/png' }; }
 }

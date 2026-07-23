@@ -1,8 +1,8 @@
 # Stitch Wish Operator Console
 
-Game-owned web console for publishing and managing Official Patterns
-(ADR-0039). Next.js 16 App Router + TypeScript strict + Tailwind + shadcn/ui +
-TanStack Query.
+Game-owned web console for Official Pattern operations and Support Reference
+investigation (ADR-0039). Next.js 16 App Router + TypeScript strict + Tailwind
++ shadcn/ui + TanStack Query.
 
 ## What it does
 
@@ -24,6 +24,9 @@ TanStack Query.
   replacement.
 - **Tags** — create Catalog Tags, upsert per-locale labels, deactivate (never
   delete) referenced tags.
+- **Support References** — resolve a player-provided opaque code to its owned
+  server records; every lookup requires a reason and writes an operator audit
+  record.
 
 ## Running locally
 

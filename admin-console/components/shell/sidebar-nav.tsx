@@ -9,6 +9,7 @@ import {
   Star,
   Tags,
   Shapes,
+  SearchCheck,
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
   { href: '/staff-picks', icon: Star, label: 'Staff Picks' },
   { href: '/tags', icon: Tags, label: 'Tags' },
   { href: '/categories', icon: Shapes, label: 'Categories' },
+  { href: '/support-references', icon: SearchCheck, label: 'Support References' },
 ] as const;
 
 export function SidebarNav() {

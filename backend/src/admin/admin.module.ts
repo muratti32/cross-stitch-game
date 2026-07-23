@@ -8,12 +8,14 @@ import { CatalogModule } from '../catalog/catalog.module';
 import { PatternEntity, TagEntity, TagLabelEntity, StaffPickEntity, CategoryEntity } from '../catalog/entities';
 import { ConversionModule } from '../conversion/conversion.module';
 import { JobsModule } from '../jobs/jobs.module';
+import { SupportModule } from '../support/support.module';
 import { ADMIN_JWT_AUDIENCE, ADMIN_JWT_ISSUER } from './admin.constants';
 import { AdminAuthController } from './admin-auth.controller';
 import { AdminCatalogService } from './admin-catalog.service';
 import { AdminCategoriesController } from './admin-categories.controller';
 import { AdminPatternsController } from './admin-patterns.controller';
 import { AdminStaffPicksController } from './admin-staff-picks.controller';
+import { AdminSupportReferencesController } from './admin-support-references.controller';
 import { AdminTagsController } from './admin-tags.controller';
 import {
   OperatorAccountEntity,
@@ -45,6 +47,7 @@ import { TotpSecretCipherService } from './totp-secret-cipher.service';
     AdminCategoriesController,
     AdminPatternsController,
     AdminStaffPicksController,
+    AdminSupportReferencesController,
     AdminTagsController,
     OfficialPatternDraftsController,
   ],
@@ -94,6 +97,7 @@ import { TotpSecretCipherService } from './totp-secret-cipher.service';
     CatalogModule,
     ConversionModule,
     forwardRef(() => JobsModule),
+    SupportModule,
   ],
   providers: [
     AdminCatalogService,

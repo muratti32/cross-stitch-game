@@ -34,6 +34,7 @@ import {
 import { readImageDimensions } from './image-dimensions';
 import { resolveConversionSettings } from './conversion-profile';
 import { ObjectRegistryEntity } from '../sessions/entities';
+import { SupportReferenceService } from '../support/support-reference.service';
 
 export interface UploadedArtwork {
   buffer: Buffer;
@@ -47,6 +48,7 @@ export class ConversionService {
     private readonly config: AppConfigService,
     private readonly dataSource: DataSource,
     private readonly processingJobs: ProcessingJobsRepository,
+    private readonly supportReferences: SupportReferenceService,
     @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
     @InjectRepository(PatternConversionEntity)
     private readonly conversions: Repository<PatternConversionEntity>,
@@ -62,7 +64,7 @@ export class ConversionService {
     principal: AuthPrincipal,
     dto: CreatePhotoConversionDto,
     artwork: UploadedArtwork | undefined,
-  ): Promise<{ id: string; status: 'pending' }> {
+  ): Promise<{ id: string; status: 'pending'; supportReference: string }> {
     const accountId = this.requireAccount(principal);
     if (artwork === undefined || artwork.size === 0 || artwork.buffer.length === 0) {
       throw new BadRequestException('A framed artwork upload is required');
@@ -106,6 +108,7 @@ export class ConversionService {
     const uploadObjectKey = `conversion-uploads/${processingJobId}.${extension}`;
     const uploadChecksum = sha256(artwork.buffer);
 
+    let supportReference: string;
     await this.dataSource.getRepository(ObjectRegistryEntity).save({
       byteLength: artwork.size,
       checksum: uploadChecksum,
@@ -123,7 +126,7 @@ export class ConversionService {
         { objectKey: uploadObjectKey },
         { state: 'verified' },
       );
-      await this.dataSource.transaction(async (manager) => {
+      supportReference = await this.dataSource.transaction(async (manager) => {
         const payload: JsonObject = { conversionId: processingJobId };
         await this.processingJobs.createPendingWithOutboxFor(manager, {
           eventName: CONVERSION_JOB_EVENT_NAME,
@@ -150,6 +153,14 @@ export class ConversionService {
           { objectKey: uploadObjectKey },
           { state: 'committed' },
         );
+        return this.supportReferences.create(manager, {
+          principalId: accountId,
+          principalType: 'account',
+          records: [
+            { id: processingJobId, type: 'processing_job' },
+            { id: processingJobId, type: 'pattern_conversion' },
+          ],
+        });
       });
     } catch (error: unknown) {
       try {
@@ -163,7 +174,7 @@ export class ConversionService {
       throw error;
     }
 
-    return { id: processingJobId, status: 'pending' };
+    return { id: processingJobId, status: 'pending', supportReference };
   }
 
   async getConversionJob(principal: AuthPrincipal, id: string) {

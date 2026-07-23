@@ -151,3 +151,17 @@ export interface BackendErrorPayload {
   message: string | string[];
   error?: string;
 }
+
+export interface ResolvedSupportRecord {
+  type: 'ai_artwork' | 'pattern_conversion' | 'processing_job';
+  id: string;
+  data: Record<string, unknown> | null;
+}
+
+export interface ResolvedSupportReference {
+  id: string;
+  code: string;
+  createdAt: string;
+  principal: { type: 'account' | 'guest'; id: string };
+  records: ResolvedSupportRecord[];
+}
