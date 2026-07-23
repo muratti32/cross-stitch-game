@@ -69,6 +69,7 @@ export function useStitchingSession(sessionId: string | undefined) {
   const isAccountSessionRef = useRef<boolean>(false);
   const remoteSessionIdRef = useRef<string | null>(null);
   const syncInFlightRef = useRef<boolean>(false);
+  const gameplaySyncInFlightRef = useRef<boolean>(false);
   const pendingOpsRef = useRef<ProgressOperation[]>([]);
   const undoStackRef = useRef<number[]>([]);
   const gameplayClientSeqRef = useRef<number>(0);
@@ -173,13 +174,16 @@ export function useStitchingSession(sessionId: string | undefined) {
   }, []);
 
   const flushGameplayEventsToServer = useCallback(async () => {
-    if (!isAccountSessionRef.current) return;
+    if (!remoteSessionIdRef.current || gameplaySyncInFlightRef.current) return;
+    gameplaySyncInFlightRef.current = true;
     try {
       await flushPendingGameplayEvents();
       await flushGameplayEvents();
     } catch {
       // Stay queued locally (nothing is deleted from local-db until a 201
       // response); the next sync trigger retries.
+    } finally {
+      gameplaySyncInFlightRef.current = false;
     }
   }, [flushPendingGameplayEvents]);
 
@@ -426,14 +430,17 @@ export function useStitchingSession(sessionId: string | undefined) {
     const timer = setInterval(() => {
       flushPendingOps();
       flushPendingGameplayEvents();
+      void flushGameplayEventsToServer();
     }, 500);
 
     return () => {
       clearInterval(timer);
     };
-  }, [flushPendingOps, flushPendingGameplayEvents]);
+  }, [flushPendingOps, flushPendingGameplayEvents, flushGameplayEventsToServer]);
 
-  // Opportunistic sync loop (account sessions only; runSync self-gates).
+  // Opportunistic progress-sync loop (account sessions only; runSync self-gates).
+  // Gameplay Events are flushed independently above for any prepared remote
+  // session, including a Guest's server-authoritative Ledger.
   useEffect(() => {
     if (loading) return;
     runSync();
@@ -512,14 +519,15 @@ export function useStitchingSession(sessionId: string | undefined) {
       // O(1) incremental counters — no grid scan on the stitch path
       remainingCountsRef.current[colorIdx - 1]--;
 
-      if (isAccountSessionRef.current) {
+      const remoteSessionId = remoteSessionIdRef.current;
+      if (remoteSessionId) {
         const dmcCode = pat.palette[activeColorIndex].dmcCode;
         const occurredAt = new Date().toISOString();
 
         gameplayClientSeqRef.current++;
         pendingGameplayEventsRef.current.push({
           eventId: generateUUID(),
-          sessionId: sess.id,
+          sessionId: remoteSessionId,
           kind: 'stitch_action',
           dmcCode,
           clientSeq: gameplayClientSeqRef.current,
@@ -530,7 +538,7 @@ export function useStitchingSession(sessionId: string | undefined) {
           gameplayClientSeqRef.current++;
           pendingGameplayEventsRef.current.push({
             eventId: generateUUID(),
-            sessionId: sess.id,
+            sessionId: remoteSessionId,
             kind: 'color_completion',
             dmcCode,
             clientSeq: gameplayClientSeqRef.current,

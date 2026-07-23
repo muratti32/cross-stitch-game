@@ -1,4 +1,4 @@
-import { Injectable, ForbiddenException, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
 import { AuthPrincipal } from '../auth/auth.types';
@@ -39,26 +39,18 @@ export class DailyTaskService {
   ) {}
 
   async getBoard(principal: AuthPrincipal): Promise<DailyTaskBoardView> {
-    if (principal.type !== PrincipalType.Account) {
-      throw new ForbiddenException('Daily Tasks are available to registered accounts only');
-    }
-
     const ledgerPrincipal = toLedgerPrincipal(principal);
     const rewardDay = utcRewardDay();
 
     const [balance, progress, grantedKeys] = await Promise.all([
       this.ledger.getBalance(ledgerPrincipal),
-      this.readProgress(this.dataSource.manager, principal, rewardDay),
+      this.readProgress(this.dataSource.manager, ledgerPrincipal, rewardDay),
       this.ledger.grantedDailyTaskKeys(this.dataSource.manager, ledgerPrincipal, rewardDay),
     ]);
 
     return this.buildBoard(rewardDay, balance, progress, grantedKeys);
   }
   async ingest(principal: AuthPrincipal, events: GameplayEventDto[]): Promise<DailyTaskBoardView> {
-    if (principal.type !== PrincipalType.Account) {
-      throw new ForbiddenException('Daily Tasks are available to registered accounts only');
-    }
-
     const ledgerPrincipal = toLedgerPrincipal(principal);
 
     return this.dataSource.transaction(async (manager) => {
@@ -69,9 +61,9 @@ export class DailyTaskService {
         const ownedRows = await manager.query<{ id: string }[]>(
           `SELECT id FROM sessions.stitching_sessions
            WHERE id = ANY($1::uuid[])
-             AND principal_type = 'account'
-             AND principal_id = $2`,
-          [sessionIds, principal.id]
+             AND principal_type = $2
+             AND principal_id = $3`,
+          [sessionIds, ledgerPrincipal.type, principal.id]
         );
         ownedSessionIds = new Set(ownedRows.map(r => r.id));
       }
@@ -182,7 +174,7 @@ export class DailyTaskService {
 
       // Check completions and grant daily tasks for all affected days
       for (const affectedDay of affectedRewardDays) {
-        const progress = await this.readProgress(manager, principal, affectedDay);
+        const progress = await this.readProgress(manager, ledgerPrincipal, affectedDay);
 
         const cells_100_completed = progress.totalActions >= DAILY_TASK_CELLS_TARGET;
         const three_colors_10_completed = progress.distinctColorsAtThreshold >= DAILY_TASK_DISTINCT_COLORS_TARGET;
@@ -208,7 +200,7 @@ export class DailyTaskService {
 
       // Build and return the board for the current server reward day
       const currentRewardDay = utcRewardDay();
-      const finalProgress = await this.readProgress(manager, principal, currentRewardDay);
+      const finalProgress = await this.readProgress(manager, ledgerPrincipal, currentRewardDay);
       const finalGranted = await this.ledger.grantedDailyTaskKeys(manager, ledgerPrincipal, currentRewardDay);
 
       const balanceRows = await manager.query<{ balance: string }[]>(
@@ -223,7 +215,7 @@ export class DailyTaskService {
 
   private async readProgress(
     manager: EntityManager,
-    principal: AuthPrincipal,
+    principal: LedgerPrincipal,
     rewardDay: string,
   ): Promise<{
     totalActions: number;
@@ -233,10 +225,10 @@ export class DailyTaskService {
     const colorCounts = await manager.query<{ action_count: number }[]>(
       `SELECT action_count
        FROM economy.daily_color_action_counts
-       WHERE principal_type = 'account'
-         AND principal_id = $1
-         AND reward_day = $2`,
-      [principal.id, rewardDay],
+       WHERE principal_type = $1
+         AND principal_id = $2
+         AND reward_day = $3`,
+      [principal.type, principal.id, rewardDay],
     );
 
     let totalActions = 0;
@@ -253,12 +245,12 @@ export class DailyTaskService {
       `SELECT EXISTS(
          SELECT 1
          FROM economy.gameplay_events
-         WHERE principal_type = 'account'
-           AND principal_id = $1
-           AND reward_day = $2
+         WHERE principal_type = $1
+           AND principal_id = $2
+           AND reward_day = $3
            AND kind = 'color_completion'
        ) AS "exists"`,
-      [principal.id, rewardDay],
+      [principal.type, principal.id, rewardDay],
     );
     const hasColorCompletion = completionRows[0]?.exists ?? false;
 

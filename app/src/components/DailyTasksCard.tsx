@@ -42,7 +42,7 @@ function formatTimeRemaining(resetsAt: string): string {
 }
 
 interface DailyTasksCardProps {
-  /** Pass the account-vs-guest flag from the caller (e.g. `isAccount` from `useIdentityStore()`). */
+  /** True only while a Guest or Account backend session is available. */
   enabled: boolean;
 }
 

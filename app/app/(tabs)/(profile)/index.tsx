@@ -184,7 +184,7 @@ export default function ProfileScreen() {
         </Pressable>
       )}
 
-      <DailyTasksCard enabled={isAccount} />
+      <DailyTasksCard enabled={isAuthenticated && !isPending && !isOfflinePending} />
       <RewardedAdCard enabled={!isPending && !isOfflinePending} />
 
       {/* Tab Switcher */}

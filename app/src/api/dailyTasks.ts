@@ -42,7 +42,7 @@ export interface DailyTaskBoardView {
 }
 
 /**
- * Uploads a batch of Gameplay Events (account sessions only; guests 403).
+ * Uploads a batch of Gameplay Events for the authenticated Guest or Account.
  * The endpoint has no @HttpCode override so Nest's default POST success
  * status is 201, not 200 — check 201 here, do not copy the 200 check from
  * progressSync.ts (that endpoint explicitly overrides to 200).
@@ -62,7 +62,7 @@ export async function postGameplayEvents(events: GameplayEventPayload[]): Promis
 }
 
 /**
- * Fetches the current Daily Task board (account sessions only; guests 403).
+ * Fetches the current Daily Task board for the authenticated Guest or Account.
  */
 export async function fetchDailyTaskBoard(): Promise<DailyTaskBoardView> {
   const response = await apiFetch('/v1/economy/daily-tasks');
@@ -76,8 +76,8 @@ export async function fetchDailyTaskBoard(): Promise<DailyTaskBoardView> {
 }
 
 /**
- * `enabled` must be false for guest sessions — Daily Tasks are account-only
- * and the endpoint 403s guests, so the query must never fire for them.
+ * Set `enabled` only while the app has a backend-authenticated identity. Both
+ * Guest and Registered Account ledgers receive the same task rewards.
  */
 export function useDailyTaskBoard(enabled: boolean) {
   return useQuery({

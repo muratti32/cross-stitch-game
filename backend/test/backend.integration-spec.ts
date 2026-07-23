@@ -2873,6 +2873,44 @@ describe('Stitch Wish backend integration', () => {
       });
     });
 
+    it('grants Daily Task rewards to a Guest Ledger from that guest\'s prepared session', async () => {
+      const guest = await createGuestThroughApi(
+        httpServer,
+        randomUUID(),
+        createCredentialSecret(),
+      );
+      const patternId = await seedPattern('Guest Daily Task', 2, 2);
+      const sessionId = await prepareSession(guest.accessToken, patternId);
+
+      const response = await request(httpServer)
+        .post('/v1/economy/daily-tasks/events')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({
+          events: [{
+            eventId: randomUUID(),
+            kind: 'color_completion',
+            sessionId,
+            dmcCode: '310',
+            clientSeq: 1,
+            occurredAt: new Date().toISOString(),
+          }],
+        })
+        .expect(201);
+
+      expect(response.body.balance).toBe(10);
+      expect(response.body.tasks.find((task: { key: string }) => task.key === 'color_completion')).toMatchObject({
+        progress: 1,
+        completed: true,
+        granted: true,
+      });
+
+      const board = await request(httpServer)
+        .get('/v1/economy/daily-tasks')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(200);
+      expect(board.body.balance).toBe(10);
+    });
+
     it('skips events referencing a sessionId NOT owned by the account', async () => {
       const account1 = await createAccount();
       const account2 = await createAccount();
