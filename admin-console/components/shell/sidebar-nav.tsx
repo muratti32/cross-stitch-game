@@ -11,6 +11,7 @@ import {
   Shapes,
   SearchCheck,
   ClipboardCheck,
+  FileEdit,
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
   { href: '/patterns', icon: Images, label: 'Patterns' },
   { href: '/drafts', icon: UploadCloud, label: 'Drafts' },
   { href: '/submissions', icon: ClipboardCheck, label: 'Catalog Review' },
+  { href: '/metadata-revisions', icon: FileEdit, label: 'Metadata Revisions' },
   { href: '/staff-picks', icon: Star, label: 'Staff Picks' },
   { href: '/tags', icon: Tags, label: 'Tags' },
   { href: '/categories', icon: Shapes, label: 'Categories' },

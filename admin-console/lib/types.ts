@@ -229,3 +229,60 @@ export interface CatalogSubmissionReviewDetail extends CatalogSubmissionReview {
   appeal: { createdAt: string; note: string | null } | null;
   decisions: CatalogReviewDecision[];
 }
+
+export type CatalogMetadataRevisionStatus =
+  | 'pending'
+  | 'rejected'
+  | 'appeal_pending'
+  | 'appeal_upheld'
+  | 'accepted'
+  | 'withdrawn';
+
+export interface CatalogMetadataRevisionReview {
+  accountId: string;
+  categoryCode: string;
+  communityPatternId: string;
+  createdAt: string;
+  creatorProfileId: string;
+  description: string;
+  id: string;
+  initialModeratorId: string | null;
+  metadataErrors: string[];
+  metadataValid: boolean | null;
+  rejectionNote: string | null;
+  rejectionReason: CatalogRejectionReason | null;
+  sourceLanguage: string;
+  status: CatalogMetadataRevisionStatus;
+  tagCodes: string[];
+  title: string;
+  updatedAt: string;
+}
+
+export interface CatalogMetadataRevisionCurrentPattern {
+  categoryCode: string;
+  description: string | null;
+  publishedAt: string;
+  sourceLanguage: string | null;
+  tagCodes: string[];
+  title: string;
+}
+
+export interface CatalogMetadataReviewDecision {
+  createdAt: string;
+  decision: 'accepted' | 'rejected';
+  note: string | null;
+  operatorAccountId: string;
+  rejectionReason: CatalogRejectionReason | null;
+  reviewRound: 'initial' | 'appeal';
+}
+
+export interface CatalogMetadataAppeal {
+  createdAt: string;
+  note: string | null;
+}
+
+export interface CatalogMetadataRevisionReviewDetail extends CatalogMetadataRevisionReview {
+  appeal: CatalogMetadataAppeal | null;
+  currentPattern: CatalogMetadataRevisionCurrentPattern | null;
+  decisions: CatalogMetadataReviewDecision[];
+}

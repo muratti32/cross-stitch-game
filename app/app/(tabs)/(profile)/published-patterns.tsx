@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
@@ -7,6 +7,7 @@ import {
   type CatalogMetadataRevisionStatus,
   type CatalogRejectionReason,
   type MyPublishedPattern,
+  useAppealCatalogMetadataRevision,
   useMyPublishedPatterns,
   useWithdrawCatalogMetadataRevision,
 } from '@/api/catalogMetadataRevisions';
@@ -29,8 +30,12 @@ export default function PublishedPatternsScreen() {
   const isAccount = useIdentityStore((state) => state.isAccount);
   const query = useMyPublishedPatterns(accountId, isAccount);
   const withdraw = useWithdrawCatalogMetadataRevision(accountId);
+  const appeal = useAppealCatalogMetadataRevision(accountId);
   const [withdrawingId, setWithdrawingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [appealId, setAppealId] = useState<string | null>(null);
+  const [appealNote, setAppealNote] = useState('');
+  const [appealError, setAppealError] = useState<string | null>(null);
 
   const submitWithdraw = async (id: string) => {
     setError(null);
@@ -41,6 +46,17 @@ export default function PublishedPatternsScreen() {
       setError(caught instanceof Error ? caught.message : String(caught));
     } finally {
       setWithdrawingId(null);
+    }
+  };
+
+  const submitAppeal = async (id: string) => {
+    setAppealError(null);
+    try {
+      await appeal.mutateAsync({ id, note: appealNote });
+      setAppealId(null);
+      setAppealNote('');
+    } catch (caught: unknown) {
+      setAppealError(caught instanceof Error ? caught.message : String(caught));
     }
   };
 
@@ -83,12 +99,22 @@ export default function PublishedPatternsScreen() {
           refreshing={query.isRefetching}
           renderItem={({ item }) => (
             <PatternCard
+              appealError={appealId === item.id ? appealError : null}
+              appealId={appealId}
+              appealNote={appealNote}
+              appealSubmitting={appeal.isPending && appealId === item.id}
               error={withdrawingId === item.id ? error : null}
               item={item}
               withdrawing={withdraw.isPending && withdrawingId === item.id}
+              onAppealNoteChange={setAppealNote}
+              onCancelAppeal={() => { setAppealId(null); setAppealNote(''); setAppealError(null); }}
+              onOpenAppeal={() => { setAppealId(item.id); setAppealNote(''); setAppealError(null); }}
               onReviseMetadata={() =>
                 router.push(`/(tabs)/(profile)/revise-pattern-metadata?patternId=${item.id}`)
               }
+              onSubmitAppeal={() => {
+                if (item.latestRevision !== null) void submitAppeal(item.latestRevision.id);
+              }}
               onWithdraw={() => {
                 if (item.latestRevision !== null) void submitWithdraw(item.latestRevision.id);
               }}
@@ -101,13 +127,19 @@ export default function PublishedPatternsScreen() {
 }
 
 function PatternCard({
-  error, item, onReviseMetadata, onWithdraw, withdrawing,
+  appealError, appealId, appealNote, appealSubmitting, error, item, onAppealNoteChange, onCancelAppeal,
+  onOpenAppeal, onReviseMetadata, onSubmitAppeal, onWithdraw, withdrawing,
 }: {
-  error: string | null; item: MyPublishedPattern; onReviseMetadata: () => void; onWithdraw: () => void;
+  appealError: string | null; appealId: string | null; appealNote: string; appealSubmitting: boolean;
+  error: string | null; item: MyPublishedPattern;
+  onAppealNoteChange: (value: string) => void; onCancelAppeal: () => void; onOpenAppeal: () => void;
+  onReviseMetadata: () => void; onSubmitAppeal: () => void; onWithdraw: () => void;
   withdrawing: boolean;
 }) {
   const revision = item.latestRevision;
   const canWithdraw = revision !== null && (revision.status === 'pending' || revision.status === 'appeal_pending');
+  const canAppeal = revision !== null && revision.status === 'rejected';
+  const appealOpen = appealId === item.id;
   return (
     <Card style={styles.card}>
       <View style={styles.titleRow}>
@@ -131,7 +163,31 @@ function PatternCard({
         {canWithdraw && (
           <Button title="Withdraw" variant="rose" loading={withdrawing} onPress={onWithdraw} style={styles.action} />
         )}
+        {canAppeal && !appealOpen && (
+          <Button title="Appeal Decision" variant="secondary" onPress={onOpenAppeal} style={styles.action} />
+        )}
       </View>
+      {appealOpen && (
+        <View style={styles.appealForm}>
+          <Text style={styles.help}>You can appeal this unchanged snapshot once. Submitting a new revision instead waives this appeal.</Text>
+          <TextInput
+            accessibilityLabel="Appeal note"
+            maxLength={1000}
+            multiline
+            onChangeText={onAppealNoteChange}
+            placeholder="Optional context for the reviewing moderator"
+            placeholderTextColor={Theme.colors.textSecondary}
+            style={styles.input}
+            textAlignVertical="top"
+            value={appealNote}
+          />
+          {appealError !== null && <Text style={styles.error}>{appealError}</Text>}
+          <View style={styles.actions}>
+            <Button title="Cancel" variant="secondary" onPress={onCancelAppeal} style={styles.action} />
+            <Button title="Submit Appeal" variant="rose" loading={appealSubmitting} onPress={onSubmitAppeal} style={styles.action} />
+          </View>
+        </View>
+      )}
     </Card>
   );
 }
@@ -155,4 +211,7 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', gap: Theme.spacing.sm },
   action: { flex: 1 },
   error: { color: Theme.colors.error, fontSize: Theme.typography.sizes.sm },
+  help: { color: Theme.colors.textSecondary, fontSize: Theme.typography.sizes.sm, lineHeight: 20 },
+  appealForm: { gap: Theme.spacing.md },
+  input: { backgroundColor: Theme.colors.background, borderColor: Theme.colors.border, borderRadius: Theme.radii.md, borderWidth: 1, color: Theme.colors.textPrimary, minHeight: 100, padding: Theme.spacing.md },
 });

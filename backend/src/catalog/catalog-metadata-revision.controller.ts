@@ -3,6 +3,7 @@ import { Body, Controller, Get, Param, ParseUUIDPipe, Post, UseGuards } from '@n
 import { CurrentPrincipal, JwtAuthGuard } from '../auth';
 import type { AuthPrincipal } from '../auth/auth.types';
 import { CatalogMetadataRevisionService } from './catalog-metadata-revision.service';
+import { CreateCatalogMetadataAppealDto } from './dto/create-catalog-metadata-appeal.dto';
 import { CreateCatalogMetadataRevisionDto } from './dto/create-catalog-metadata-revision.dto';
 
 @Controller('catalog-metadata-revisions')
@@ -43,5 +44,14 @@ export class CatalogMetadataRevisionController {
     @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.revisions.withdraw(principal, id);
+  }
+
+  @Post(':id/appeal')
+  appeal(
+    @CurrentPrincipal() principal: AuthPrincipal,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: CreateCatalogMetadataAppealDto,
+  ) {
+    return this.revisions.appeal(principal, id, dto);
   }
 }

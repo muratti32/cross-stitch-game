@@ -159,6 +159,115 @@ describe('Catalog Metadata Revision persistence', () => {
     ).rejects.toMatchObject({ constraint: 'UQ_catalog_metadata_review_decisions_round' });
   });
 
+  it('lets a moderator accept a revision, publish it onto the same Pattern, and keep the publication timestamp unchanged', async () => {
+    const acceptPatternId = randomUUID();
+    const publishedAt = new Date('2024-01-01T00:00:00.000Z');
+    await dataSource.query(
+      `INSERT INTO catalog.patterns
+        (id, title, description, creator_name, creator_profile_id, category_code, width, height,
+         palette_size, artifact_object_key, artifact_checksum, artifact_byte_length,
+         artifact_schema_version, preview_object_key, visibility, owner_account_id, status, published_at)
+       VALUES ($1, 'Accept Pattern', 'Accept description.', 'Stitch Reviewer', $2, 'other', 2, 2,
+         2, 'community/artifact3.bin', $3, 100, 1, 'community/preview3.png', 'catalog', NULL, 'available', $4)`,
+      [acceptPatternId, profileId, 'c'.repeat(64), publishedAt],
+    );
+
+    const precheck = new CatalogPrecheckService(
+      { openAiModerationEnabled: false } as AppConfigService,
+      dataSource,
+      {
+        delete: () => Promise.resolve(),
+        exists: () => Promise.resolve(false),
+        get: () => Promise.resolve(null),
+        publicUrl: (key: string) => key,
+        put: () => Promise.resolve(),
+      },
+    );
+    const service = new CatalogMetadataRevisionService(dataSource, precheck);
+    const principal = { id: accountId, tokenVersion: 1, type: PrincipalType.Account };
+
+    const created = await service.create(principal, acceptPatternId, {
+      categoryCode: 'other',
+      description: 'An accepted description of the design.',
+      sourceLanguage: 'en',
+      tagCodes: [],
+      title: 'Accepted Title',
+    });
+
+    const accepted = await service.accept(operatorId, created.id, 'Looks great');
+    expect(accepted.status).toBe('accepted');
+
+    const [patternRow] = await dataSource.query<{ title: string; description: string; published_at: Date }[]>(
+      'SELECT title, description, published_at FROM catalog.patterns WHERE id = $1',
+      [acceptPatternId],
+    );
+    expect(patternRow.title).toBe('Accepted Title');
+    expect(patternRow.description).toBe('An accepted description of the design.');
+    expect(new Date(patternRow.published_at).toISOString()).toBe(publishedAt.toISOString());
+
+    const review = await service.getForReview(created.id);
+    expect(review.decisions).toHaveLength(1);
+    expect(review.decisions[0]).toMatchObject({ decision: 'accepted', operatorAccountId: operatorId });
+
+    await expect(
+      dataSource.query(`SELECT title FROM catalog.catalog_metadata_revisions WHERE id = $1`, [created.id]),
+    ).resolves.toMatchObject([{ title: 'Accepted Title' }]);
+  });
+
+  it('lets a moderator reject a revision with a visible reason without touching the published Pattern', async () => {
+    const rejectPatternId = randomUUID();
+    await dataSource.query(
+      `INSERT INTO catalog.patterns
+        (id, title, description, creator_name, creator_profile_id, category_code, width, height,
+         palette_size, artifact_object_key, artifact_checksum, artifact_byte_length,
+         artifact_schema_version, preview_object_key, visibility, owner_account_id, status)
+       VALUES ($1, 'Reject Pattern', 'Reject description.', 'Stitch Reviewer', $2, 'other', 2, 2,
+         2, 'community/artifact4.bin', $3, 100, 1, 'community/preview4.png', 'catalog', NULL, 'available')`,
+      [rejectPatternId, profileId, 'd'.repeat(64)],
+    );
+
+    const precheck = new CatalogPrecheckService(
+      { openAiModerationEnabled: false } as AppConfigService,
+      dataSource,
+      {
+        delete: () => Promise.resolve(),
+        exists: () => Promise.resolve(false),
+        get: () => Promise.resolve(null),
+        publicUrl: (key: string) => key,
+        put: () => Promise.resolve(),
+      },
+    );
+    const service = new CatalogMetadataRevisionService(dataSource, precheck);
+    const principal = { id: accountId, tokenVersion: 1, type: PrincipalType.Account };
+
+    const created = await service.create(principal, rejectPatternId, {
+      categoryCode: 'other',
+      description: 'A rejected description of the design.',
+      sourceLanguage: 'en',
+      tagCodes: [],
+      title: 'Rejected Title',
+    });
+
+    const queue = await service.listForReview();
+    expect(queue.map((item) => item.id)).toContain(created.id);
+
+    const rejected = await service.reject(operatorId, created.id, 'quality_standard', 'Needs more detail');
+    expect(rejected).toMatchObject({
+      rejectionNote: 'Needs more detail',
+      rejectionReason: 'quality_standard',
+      status: 'rejected',
+    });
+
+    const [patternRow] = await dataSource.query<{ title: string }[]>(
+      'SELECT title FROM catalog.patterns WHERE id = $1',
+      [rejectPatternId],
+    );
+    expect(patternRow.title).toBe('Reject Pattern');
+
+    const mine = await service.getMine(principal, created.id);
+    expect(mine).toMatchObject({ rejectionNote: 'Needs more detail', rejectionReason: 'quality_standard', status: 'rejected' });
+  });
+
   it('lets an owner submit, get blocked by the active slot, withdraw, then resubmit through the service', async () => {
     const otherPatternId = randomUUID();
     await dataSource.query(
@@ -210,5 +319,134 @@ describe('Catalog Metadata Revision persistence', () => {
     const entry = mine.find((item) => item.id === otherPatternId);
     expect(entry).toMatchObject({ canSubmitRevision: false });
     expect(entry?.latestRevision?.id).toBe(resubmitted.id);
+  });
+
+  it('lets an owner appeal a rejected revision and a moderator accept the appeal, publishing it with the timestamp unchanged and the decision audited', async () => {
+    const appealPatternId = randomUUID();
+    const publishedAt = new Date('2024-02-01T00:00:00.000Z');
+    await dataSource.query(
+      `INSERT INTO catalog.patterns
+        (id, title, description, creator_name, creator_profile_id, category_code, width, height,
+         palette_size, artifact_object_key, artifact_checksum, artifact_byte_length,
+         artifact_schema_version, preview_object_key, visibility, owner_account_id, status, published_at)
+       VALUES ($1, 'Appeal Accept Pattern', 'Appeal accept description.', 'Stitch Reviewer', $2, 'other', 2, 2,
+         2, 'community/artifact5.bin', $3, 100, 1, 'community/preview5.png', 'catalog', NULL, 'available', $4)`,
+      [appealPatternId, profileId, 'e'.repeat(64), publishedAt],
+    );
+
+    const precheck = new CatalogPrecheckService(
+      { openAiModerationEnabled: false } as AppConfigService,
+      dataSource,
+      {
+        delete: () => Promise.resolve(),
+        exists: () => Promise.resolve(false),
+        get: () => Promise.resolve(null),
+        publicUrl: (key: string) => key,
+        put: () => Promise.resolve(),
+      },
+    );
+    const service = new CatalogMetadataRevisionService(dataSource, precheck);
+    const principal = { id: accountId, tokenVersion: 1, type: PrincipalType.Account };
+
+    const created = await service.create(principal, appealPatternId, {
+      categoryCode: 'other',
+      description: 'An appealed description of the design.',
+      sourceLanguage: 'en',
+      tagCodes: [],
+      title: 'Appealed Title',
+    });
+    await service.reject(operatorId, created.id, 'quality_standard', 'Needs more detail');
+
+    const appealed = await service.appeal(principal, created.id, { note: 'Please reconsider' });
+    expect(appealed.revisionId).toBe(created.id);
+
+    const afterAppeal = await service.getMine(principal, created.id);
+    expect(afterAppeal.status).toBe('appeal_pending');
+
+    await expect(service.create(principal, appealPatternId, {
+      categoryCode: 'other',
+      description: 'A blocked description of the design.',
+      sourceLanguage: 'en',
+      tagCodes: [],
+      title: 'Blocked Title',
+    })).rejects.toMatchObject({ status: 409 });
+
+    const accepted = await service.accept(operatorId, created.id, 'Appeal accepted');
+    expect(accepted.status).toBe('accepted');
+
+    const [patternRow] = await dataSource.query<{ title: string; published_at: Date }[]>(
+      'SELECT title, published_at FROM catalog.patterns WHERE id = $1',
+      [appealPatternId],
+    );
+    expect(patternRow.title).toBe('Appealed Title');
+    expect(new Date(patternRow.published_at).toISOString()).toBe(publishedAt.toISOString());
+
+    const review = await service.getForReview(created.id);
+    expect(review.appeal).toMatchObject({ note: 'Please reconsider' });
+    expect(review.decisions).toHaveLength(2);
+    expect(review.decisions[1]).toMatchObject({ decision: 'accepted', reviewRound: 'appeal' });
+
+    const auditRows = await dataSource.query<{ action: string }[]>(
+      `SELECT action FROM admin.operator_audit_log WHERE target_type = 'catalog_metadata_revision' AND target_id = $1 ORDER BY created_at ASC`,
+      [created.id],
+    );
+    expect(auditRows.map((row) => row.action)).toEqual([
+      'catalog_metadata_revision.reject',
+      'catalog_metadata_revision.appeal.accept',
+    ]);
+  });
+
+  it('blocks a second appeal, lets a moderator reject the appeal visibly to the owner, and waives the appeal right once a new revision is submitted instead', async () => {
+    const waivePatternId = randomUUID();
+    await dataSource.query(
+      `INSERT INTO catalog.patterns
+        (id, title, description, creator_name, creator_profile_id, category_code, width, height,
+         palette_size, artifact_object_key, artifact_checksum, artifact_byte_length,
+         artifact_schema_version, preview_object_key, visibility, owner_account_id, status)
+       VALUES ($1, 'Appeal Waive Pattern', 'Appeal waive description.', 'Stitch Reviewer', $2, 'other', 2, 2,
+         2, 'community/artifact6.bin', $3, 100, 1, 'community/preview6.png', 'catalog', NULL, 'available')`,
+      [waivePatternId, profileId, 'f'.repeat(64)],
+    );
+
+    const precheck = new CatalogPrecheckService(
+      { openAiModerationEnabled: false } as AppConfigService,
+      dataSource,
+      {
+        delete: () => Promise.resolve(),
+        exists: () => Promise.resolve(false),
+        get: () => Promise.resolve(null),
+        publicUrl: (key: string) => key,
+        put: () => Promise.resolve(),
+      },
+    );
+    const service = new CatalogMetadataRevisionService(dataSource, precheck);
+    const principal = { id: accountId, tokenVersion: 1, type: PrincipalType.Account };
+    const input = {
+      categoryCode: 'other',
+      description: 'A waivable description of the design.',
+      sourceLanguage: 'en',
+      tagCodes: [],
+      title: 'Waivable Title',
+    };
+
+    const first = await service.create(principal, waivePatternId, input);
+    await service.reject(operatorId, first.id, 'quality_standard', 'Needs more detail');
+
+    await service.appeal(principal, first.id, {});
+    await expect(service.appeal(principal, first.id, {})).rejects.toMatchObject({ status: 409 });
+
+    const rejectedAppeal = await service.reject(operatorId, first.id, 'quality_standard', 'Appeal denied');
+    expect(rejectedAppeal.status).toBe('appeal_upheld');
+    const mine = await service.getMine(principal, first.id);
+    expect(mine).toMatchObject({ rejectionNote: 'Appeal denied', rejectionReason: 'quality_standard', status: 'appeal_upheld' });
+
+    const second = await service.create(principal, waivePatternId, { ...input, title: 'Second Waivable Title' });
+    await service.reject(operatorId, second.id, 'quality_standard', 'Needs more detail again');
+
+    const third = await service.create(principal, waivePatternId, { ...input, title: 'Third Waivable Title' });
+    await expect(service.appeal(principal, second.id, {})).rejects.toMatchObject({ status: 409 });
+
+    await service.reject(operatorId, third.id, 'quality_standard', 'Needs more detail once more');
+    await expect(service.appeal(principal, third.id, {})).resolves.toMatchObject({ revisionId: third.id });
   });
 });

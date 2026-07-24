@@ -8,6 +8,7 @@ export type OperatorPermission =
   | 'catalog.tag.manage'
   | 'catalog.category.manage'
   | 'catalog.submission.review'
+  | 'catalog.metadata_revision.review'
   | 'support.reference.lookup';
 
 export const ALL_OPERATOR_PERMISSIONS: readonly OperatorPermission[] = [
@@ -18,6 +19,7 @@ export const ALL_OPERATOR_PERMISSIONS: readonly OperatorPermission[] = [
   'catalog.tag.manage',
   'catalog.category.manage',
   'catalog.submission.review',
+  'catalog.metadata_revision.review',
   'support.reference.lookup',
 ];
 

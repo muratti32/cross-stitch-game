@@ -89,6 +89,18 @@ export async function withdrawCatalogMetadataRevision(id: string): Promise<Catal
   );
 }
 
+export async function appealCatalogMetadataRevision(id: string, note?: string): Promise<void> {
+  await catalogMetadataRevisionRequest(
+    `/v1/catalog-metadata-revisions/${id}/appeal`,
+    {
+      body: JSON.stringify({ note: note?.trim() || undefined }),
+      headers: { 'content-type': 'application/json' },
+      method: 'POST',
+    },
+    'Could not submit this appeal',
+  );
+}
+
 export function useMyPublishedPatterns(accountId: string | null, enabled: boolean) {
   return useQuery({
     enabled,
@@ -113,6 +125,17 @@ export function useWithdrawCatalogMetadataRevision(accountId: string | null) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => withdrawCatalogMetadataRevision(id),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: revisionsKey(accountId) });
+      void queryClient.invalidateQueries({ queryKey: myPatternsKey(accountId) });
+    },
+  });
+}
+
+export function useAppealCatalogMetadataRevision(accountId: string | null) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, note }: { id: string; note?: string }) => appealCatalogMetadataRevision(id, note),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: revisionsKey(accountId) });
       void queryClient.invalidateQueries({ queryKey: myPatternsKey(accountId) });

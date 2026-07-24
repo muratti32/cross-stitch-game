@@ -1,12 +1,22 @@
-import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, In } from 'typeorm';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { DataSource, In, MoreThan, Not } from 'typeorm';
 
+import { OperatorAuditLogEntity } from '../admin/entities';
 import type { AuthPrincipal } from '../auth/auth.types';
 import { PrincipalType } from '../auth/entities';
 import { CreatorProfileEntity } from '../creator-profile/entities';
 import { CatalogPrecheckService } from './catalog-precheck.service';
+import { CreateCatalogMetadataAppealDto } from './dto/create-catalog-metadata-appeal.dto';
 import { CreateCatalogMetadataRevisionDto } from './dto/create-catalog-metadata-revision.dto';
-import { CatalogMetadataRevisionEntity, PatternEntity } from './entities';
+import {
+  CategoryEntity,
+  CatalogMetadataAppealEntity,
+  CatalogMetadataRevisionEntity,
+  CatalogMetadataReviewDecisionEntity,
+  CatalogRejectionReason,
+  PatternEntity,
+  TagEntity,
+} from './entities';
 
 const ACTIVE_SLOT_STATUSES = ['pending', 'appeal_pending'] as const;
 
@@ -109,6 +119,52 @@ export class CatalogMetadataRevisionService {
     });
   }
 
+  async appeal(principal: AuthPrincipal, id: string, dto: CreateCatalogMetadataAppealDto) {
+    const accountId = this.requireAccount(principal);
+    const snapshot = await this.dataSource.getRepository(CatalogMetadataRevisionEntity).findOneBy({ accountId, id });
+    if (snapshot === null) throw new NotFoundException('Catalog Metadata Revision not found');
+    if (snapshot.status !== 'rejected') {
+      throw new ConflictException('Only an initially rejected revision can be appealed');
+    }
+    const waived = await this.dataSource.getRepository(CatalogMetadataRevisionEntity).findOneBy({
+      communityPatternId: snapshot.communityPatternId,
+      createdAt: MoreThan(snapshot.createdAt),
+      id: Not(snapshot.id),
+    });
+    if (waived !== null) {
+      throw new ConflictException('The appeal right for this revision was waived by a later revision');
+    }
+    return this.dataSource.transaction(async (manager) => {
+      const repository = manager.getRepository(CatalogMetadataRevisionEntity);
+      const revision = await repository.findOne({
+        lock: { mode: 'pessimistic_write' },
+        where: { accountId, id },
+      });
+      if (revision === null) throw new NotFoundException('Catalog Metadata Revision not found');
+      if (revision.status !== 'rejected') {
+        throw new ConflictException('Only an initially rejected revision can be appealed');
+      }
+      const laterRevision = await manager.getRepository(CatalogMetadataRevisionEntity).findOneBy({
+        communityPatternId: revision.communityPatternId,
+        createdAt: MoreThan(revision.createdAt),
+        id: Not(revision.id),
+      });
+      if (laterRevision !== null) {
+        throw new ConflictException('The appeal right for this revision was waived by a later revision');
+      }
+      const existing = await manager.getRepository(CatalogMetadataAppealEntity).findOneBy({ revisionId: id });
+      if (existing !== null) throw new ConflictException('This Catalog Metadata Revision has already used its appeal');
+      const appeal = await manager.getRepository(CatalogMetadataAppealEntity).save({
+        accountId,
+        note: dto.note?.trim() || null,
+        revisionId: id,
+      });
+      revision.status = 'appeal_pending';
+      await repository.save(revision);
+      return { createdAt: appeal.createdAt.toISOString(), id: appeal.id, revisionId: id };
+    });
+  }
+
   async myPatterns(principal: AuthPrincipal) {
     const accountId = this.requireAccount(principal);
     const profile = await this.dataSource.getRepository(CreatorProfileEntity).findOneBy({ accountId });
@@ -144,6 +200,227 @@ export class CatalogMetadataRevisionService {
         title: pattern.title,
       };
     });
+  }
+
+  async listForReview(status?: string) {
+    const allowed = ['pending', 'appeal_pending'];
+    const statuses = status === undefined ? allowed : allowed.includes(status) ? [status] : [];
+    if (statuses.length === 0) throw new BadRequestException('Unknown Catalog Metadata Revision review status');
+    const revisions = await this.dataSource.getRepository(CatalogMetadataRevisionEntity)
+      .createQueryBuilder('revision')
+      .where('revision.status IN (:...statuses)', { statuses })
+      .orderBy('revision.createdAt', 'ASC')
+      .getMany();
+    return revisions.map((revision) => this.reviewView(revision));
+  }
+
+  async getForReview(id: string) {
+    const revision = await this.dataSource.getRepository(CatalogMetadataRevisionEntity).findOneBy({ id });
+    if (revision === null) throw new NotFoundException('Catalog Metadata Revision not found');
+    const [pattern, appeal, decisions] = await Promise.all([
+      this.dataSource.getRepository(PatternEntity).findOne({
+        relations: ['tags'],
+        where: { id: revision.communityPatternId },
+      }),
+      this.dataSource.getRepository(CatalogMetadataAppealEntity).findOneBy({ revisionId: id }),
+      this.dataSource.getRepository(CatalogMetadataReviewDecisionEntity).find({
+        order: { createdAt: 'ASC' },
+        where: { revisionId: id },
+      }),
+    ]);
+    return {
+      ...this.reviewView(revision),
+      appeal: appeal === null ? null : { createdAt: appeal.createdAt.toISOString(), note: appeal.note },
+      currentPattern: pattern === null ? null : {
+        categoryCode: pattern.categoryCode,
+        description: pattern.description,
+        publishedAt: pattern.publishedAt.toISOString(),
+        sourceLanguage: pattern.sourceLanguage,
+        tagCodes: pattern.tags.map((tag) => tag.code),
+        title: pattern.title,
+      },
+      decisions: decisions.map((decision) => ({
+        createdAt: decision.createdAt.toISOString(),
+        decision: decision.decision,
+        note: decision.note,
+        operatorAccountId: decision.operatorAccountId,
+        rejectionReason: decision.rejectionReason,
+        reviewRound: decision.reviewRound,
+      })),
+    };
+  }
+
+  async accept(
+    operatorAccountId: string,
+    id: string,
+    note?: string,
+    requestId: string | null = null,
+  ) {
+    const snapshot = await this.dataSource.getRepository(CatalogMetadataRevisionEntity).findOneBy({ id });
+    if (snapshot === null) throw new NotFoundException('Catalog Metadata Revision not found');
+    if (snapshot.status === 'accepted') return this.reviewView(snapshot);
+    this.reviewRound(snapshot.status);
+    const [metadataErrors, moderationEvidence] = await Promise.all([
+      this.precheck.validateMetadataFields({
+        categoryCode: snapshot.categoryCode,
+        description: snapshot.description,
+        sourceLanguage: snapshot.sourceLanguage,
+        tagCodes: snapshot.tagCodes,
+        title: snapshot.title,
+      }),
+      this.precheck.moderateText(snapshot.title, snapshot.description),
+    ]);
+    if (metadataErrors.length > 0 || moderationEvidence.flagged === true) {
+      throw new ConflictException('Invalid Catalog Metadata Revision cannot be accepted');
+    }
+    return this.dataSource.transaction(async (manager) => {
+      const revisions = manager.getRepository(CatalogMetadataRevisionEntity);
+      const revision = await revisions.findOne({
+        lock: { mode: 'pessimistic_write' },
+        where: { id },
+      });
+      if (revision === null) throw new NotFoundException('Catalog Metadata Revision not found');
+      if (revision.status === 'accepted') return this.reviewView(revision);
+      const reviewRound = this.reviewRound(revision.status);
+      const pattern = await manager.getRepository(PatternEntity).findOne({
+        lock: { mode: 'pessimistic_write' },
+        where: { id: revision.communityPatternId },
+      });
+      if (pattern === null) throw new ConflictException('Community Pattern is unavailable');
+      const category = await manager.getRepository(CategoryEntity).findOneBy({
+        active: true,
+        code: revision.categoryCode,
+      });
+      if (category === null) throw new ConflictException('Invalid Catalog Metadata Revision cannot be accepted');
+      const tags = revision.tagCodes.length === 0
+        ? []
+        : await manager.getRepository(TagEntity).findBy({ active: true, code: In(revision.tagCodes) });
+      if (tags.length !== revision.tagCodes.length) {
+        throw new ConflictException('Invalid Catalog Metadata Revision cannot be accepted');
+      }
+      const before = this.auditView(revision);
+      pattern.title = revision.title;
+      pattern.description = revision.description;
+      pattern.sourceLanguage = revision.sourceLanguage;
+      pattern.categoryCode = revision.categoryCode;
+      await manager.getRepository(PatternEntity).save(pattern);
+      await manager.query('DELETE FROM catalog.pattern_tags WHERE pattern_id = $1', [pattern.id]);
+      if (tags.length > 0) {
+        await manager.createQueryBuilder()
+          .relation(PatternEntity, 'tags')
+          .of(pattern.id)
+          .add(tags.map((tag) => tag.code));
+      }
+      await manager.getRepository(CatalogMetadataReviewDecisionEntity).save({
+        decision: 'accepted',
+        note: note?.trim() || null,
+        operatorAccountId,
+        rejectionReason: null,
+        reviewRound,
+        revisionId: id,
+      });
+      revision.metadataErrors = metadataErrors;
+      revision.metadataValid = true;
+      revision.status = 'accepted';
+      if (reviewRound === 'initial') revision.initialModeratorId = operatorAccountId;
+      await revisions.save(revision);
+      await this.recordDecisionAudit(manager, {
+        action: reviewRound === 'initial' ? 'catalog_metadata_revision.accept' : 'catalog_metadata_revision.appeal.accept',
+        after: this.auditView(revision),
+        before,
+        id,
+        operatorAccountId,
+        requestId,
+      });
+      return this.reviewView(revision);
+    });
+  }
+
+  async reject(
+    operatorAccountId: string,
+    id: string,
+    reason: CatalogRejectionReason,
+    note?: string,
+    requestId: string | null = null,
+  ) {
+    return this.dataSource.transaction(async (manager) => {
+      const repository = manager.getRepository(CatalogMetadataRevisionEntity);
+      const revision = await repository.findOne({
+        lock: { mode: 'pessimistic_write' },
+        where: { id },
+      });
+      if (revision === null) throw new NotFoundException('Catalog Metadata Revision not found');
+      const reviewRound = this.reviewRound(revision.status);
+      const before = this.auditView(revision);
+      await manager.getRepository(CatalogMetadataReviewDecisionEntity).save({
+        decision: 'rejected',
+        note: note?.trim() || null,
+        operatorAccountId,
+        rejectionReason: reason,
+        reviewRound,
+        revisionId: id,
+      });
+      revision.rejectionNote = note?.trim() || null;
+      revision.rejectionReason = reason;
+      revision.status = reviewRound === 'initial' ? 'rejected' : 'appeal_upheld';
+      if (reviewRound === 'initial') revision.initialModeratorId = operatorAccountId;
+      await repository.save(revision);
+      await this.recordDecisionAudit(manager, {
+        action: reviewRound === 'initial' ? 'catalog_metadata_revision.reject' : 'catalog_metadata_revision.appeal.reject',
+        after: this.auditView(revision),
+        before,
+        id,
+        operatorAccountId,
+        requestId,
+      });
+      return this.reviewView(revision);
+    });
+  }
+
+  private reviewRound(status: string): 'initial' | 'appeal' {
+    if (status === 'pending') return 'initial';
+    if (status === 'appeal_pending') return 'appeal';
+    throw new ConflictException('Catalog Metadata Revision is not awaiting human review');
+  }
+
+  private auditView(revision: CatalogMetadataRevisionEntity) {
+    return {
+      rejectionNote: revision.rejectionNote,
+      rejectionReason: revision.rejectionReason,
+      status: revision.status,
+    };
+  }
+
+  private async recordDecisionAudit(
+    manager: import('typeorm').EntityManager,
+    input: {
+      action: string;
+      after: ReturnType<CatalogMetadataRevisionService['auditView']>;
+      before: ReturnType<CatalogMetadataRevisionService['auditView']>;
+      id: string;
+      operatorAccountId: string;
+      requestId: string | null;
+    },
+  ): Promise<void> {
+    await manager.getRepository(OperatorAuditLogEntity).save({
+      action: input.action,
+      after: input.after,
+      before: input.before,
+      operatorAccountId: input.operatorAccountId,
+      outcome: 'success',
+      requestId: input.requestId,
+      targetId: input.id,
+      targetType: 'catalog_metadata_revision',
+    });
+  }
+
+  private reviewView(revision: CatalogMetadataRevisionEntity) {
+    return {
+      ...this.ownerView(revision),
+      accountId: revision.accountId,
+      creatorProfileId: revision.creatorProfileId,
+      initialModeratorId: revision.initialModeratorId,
+    };
   }
 
   private ownerView(revision: CatalogMetadataRevisionEntity) {
