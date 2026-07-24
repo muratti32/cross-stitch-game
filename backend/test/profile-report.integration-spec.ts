@@ -5,6 +5,7 @@ import { DataSource } from 'typeorm';
 import type { ObjectStorage } from '../src/catalog/storage/object-storage.interface';
 import { PrincipalType } from '../src/auth/entities';
 import {
+  CreatorProfileAppealEntity,
   CreatorProfileAuditEntity,
   CreatorProfileAuditEventEntity,
   CreatorProfileEntity,
@@ -13,6 +14,7 @@ import {
   ReservedUsernameEntity,
 } from '../src/creator-profile/entities';
 import { ProfileReportService } from '../src/creator-profile/profile-report.service';
+import { ProfileTextPolicyService } from '../src/creator-profile/profile-text-policy.service';
 import { CreateAuthSchema1783987200000 } from '../src/database/migrations/1783987200000-CreateAuthSchema';
 import { CreateEmailAuthSchema1784160000001 } from '../src/database/migrations/1784160000001-CreateEmailAuthSchema';
 import { CreateAdminAuthSchema1784592000000 } from '../src/database/migrations/1784592000000-CreateAdminAuthSchema';
@@ -21,6 +23,7 @@ import { CreateProfileReports1786320000000 } from '../src/database/migrations/17
 import { CreateReservedUsernames1786406400000 } from '../src/database/migrations/1786406400000-CreateReservedUsernames';
 import { AllowModeratorUsernameReset1786492800000 } from '../src/database/migrations/1786492800000-AllowModeratorUsernameReset';
 import { AddCreatorProfileRestriction1786579200000 } from '../src/database/migrations/1786579200000-AddCreatorProfileRestriction';
+import { CreateCreatorProfileAppeals1786665600000 } from '../src/database/migrations/1786665600000-CreateCreatorProfileAppeals';
 
 const ACCOUNT = PrincipalType.Account;
 
@@ -34,6 +37,7 @@ describe('Profile Report intake and Profile Investigation', () => {
     postgres = await new PostgreSqlContainer('postgres:16-alpine').start();
     dataSource = new DataSource({
       entities: [
+        CreatorProfileAppealEntity,
         CreatorProfileEntity,
         CreatorProfileAuditEntity,
         CreatorProfileAuditEventEntity,
@@ -50,6 +54,7 @@ describe('Profile Report intake and Profile Investigation', () => {
         CreateReservedUsernames1786406400000,
         AllowModeratorUsernameReset1786492800000,
         AddCreatorProfileRestriction1786579200000,
+        CreateCreatorProfileAppeals1786665600000,
       ],
       migrationsTableName: 'typeorm_migrations',
       synchronize: false,
@@ -72,7 +77,7 @@ describe('Profile Report intake and Profile Investigation', () => {
         return Promise.resolve();
       },
     };
-    service = new ProfileReportService(dataSource, storage);
+    service = new ProfileReportService(dataSource, storage, new ProfileTextPolicyService());
   });
 
   afterAll(async () => {
@@ -113,6 +118,16 @@ describe('Profile Report intake and Profile Investigation', () => {
     const reporter = await seedAccount();
     const result = await service.report(principal(reporter), profileId, { reasonCode: 'offensive' });
     return result.investigationId;
+  }
+
+  async function restrictProfile(
+    profileId: string,
+    reason = 'repeated violations',
+  ): Promise<{ investigationId: string; operatorId: string }> {
+    const investigationId = await openInvestigation(profileId);
+    const operatorId = await seedOperator();
+    await service.restrict(operatorId, investigationId, reason);
+    return { investigationId, operatorId };
   }
 
   const principal = (id: string) => ({ id, tokenVersion: 1, type: ACCOUNT });
@@ -492,5 +507,199 @@ describe('Profile Report intake and Profile Investigation', () => {
     await expect(
       service.restrict(operatorId, investigationId, 'second restriction'),
     ).rejects.toMatchObject({ status: 409 });
+  });
+
+  it('rejects filing an appeal for an account with no profile or a profile that is not restricted', async () => {
+    const noProfileAccount = await seedAccount();
+    await expect(
+      service.fileAppeal(principal(noProfileAccount), {}),
+    ).rejects.toMatchObject({ status: 404 });
+
+    const { accountId } = await seedProfile(`prof_${randomUUID().slice(0, 8).replace(/-/g, '')}`);
+    await expect(
+      service.fileAppeal(principal(accountId), {}),
+    ).rejects.toMatchObject({ status: 409 });
+  });
+
+  it('files one appeal per restriction, keeps the restriction fully in effect, and rejects a second appeal', async () => {
+    const { accountId, profileId } = await seedProfile(
+      `prof_${randomUUID().slice(0, 8).replace(/-/g, '')}`,
+    );
+    const { investigationId } = await restrictProfile(profileId);
+
+    const appeal = await service.fileAppeal(principal(accountId), { note: 'this was a mistake' });
+    expect(appeal.status).toBe('open');
+    expect(appeal.investigationId).toBe(investigationId);
+
+    // The restriction stays fully in effect while the appeal is open.
+    const profileRows = await dataSource.query<{ restricted_at: Date | null }[]>(
+      'SELECT restricted_at FROM moderation.creator_profiles WHERE id = $1',
+      [profileId],
+    );
+    expect(profileRows[0].restricted_at).not.toBeNull();
+
+    await expect(
+      service.fileAppeal(principal(accountId), {}),
+    ).rejects.toMatchObject({ status: 409 });
+
+    const appealRows = await dataSource.query<{ count: string }[]>(
+      'SELECT count(*) FROM moderation.creator_profile_appeals WHERE investigation_id = $1',
+      [investigationId],
+    );
+    expect(appealRows).toEqual([{ count: '1' }]);
+
+    const eventTypes = await dataSource.query<{ event_type: string }[]>(
+      `SELECT event_type FROM moderation.creator_profile_audit_events
+       WHERE investigation_id = $1 ORDER BY created_at`,
+      [investigationId],
+    );
+    expect(eventTypes.map((row) => row.event_type)).toEqual([
+      'investigation_opened',
+      'report_submitted',
+      'creator_restricted',
+      'investigation_closed',
+      'appeal_filed',
+    ]);
+  });
+
+  it('assigns an operator other than the one who imposed the restriction, when one is available', async () => {
+    const { accountId, profileId } = await seedProfile(
+      `prof_${randomUUID().slice(0, 8).replace(/-/g, '')}`,
+    );
+    const { operatorId: restrictingOperatorId } = await restrictProfile(profileId);
+    await seedOperator();
+
+    const appeal = await service.fileAppeal(principal(accountId), {});
+    const row = await dataSource.query<{ assigned_operator_id: string | null }[]>(
+      'SELECT assigned_operator_id FROM moderation.creator_profile_appeals WHERE id = $1',
+      [appeal.id],
+    );
+    // Other operators exist in this shared fixture (from earlier tests and
+    // the one just seeded), so a different moderator is always available.
+    expect(row[0].assigned_operator_id).not.toBeNull();
+    expect(row[0].assigned_operator_id).not.toBe(restrictingOperatorId);
+  });
+
+  it('accepts an appeal, restores visibility, and keeps a still-safe username unchanged', async () => {
+    const username = `prof_${randomUUID().slice(0, 8).replace(/-/g, '')}`;
+    const { accountId, profileId } = await seedProfile(username);
+    await restrictProfile(profileId);
+    const appeal = await service.fileAppeal(principal(accountId), {});
+    const moderatorId = await seedOperator();
+
+    const decision = await service.acceptAppeal(moderatorId, appeal.id, 'appeal upheld: no violation found');
+    expect(decision.status).toBe('accepted');
+    expect(decision.newUsername).toBeNull();
+
+    const profileRows = await dataSource.query<
+      { username: string; restricted_at: Date | null }[]
+    >('SELECT username, restricted_at FROM moderation.creator_profiles WHERE id = $1', [profileId]);
+    expect(profileRows).toEqual([{ restricted_at: null, username }]);
+
+    const appealRow = await dataSource.query<
+      { status: string; decided_by: string; reason: string }[]
+    >('SELECT status, decided_by, reason FROM moderation.creator_profile_appeals WHERE id = $1', [
+      appeal.id,
+    ]);
+    expect(appealRow).toEqual([
+      { decided_by: moderatorId, reason: 'appeal upheld: no violation found', status: 'accepted' },
+    ]);
+  });
+
+  it('accepts an appeal and resets a username that no longer passes policy before restoring', async () => {
+    const violatingUsername = `admin_${randomUUID().slice(0, 8).replace(/-/g, '')}`;
+    const { accountId, profileId } = await seedProfile(violatingUsername);
+    const { investigationId } = await restrictProfile(profileId);
+    const appeal = await service.fileAppeal(principal(accountId), {});
+    const moderatorId = await seedOperator();
+
+    const decision = await service.acceptAppeal(moderatorId, appeal.id, 'restoring, unsafe username replaced');
+    expect(decision.newUsername).not.toBeNull();
+    expect(decision.newUsername).not.toBe(violatingUsername);
+
+    const profileRows = await dataSource.query<
+      { username: string; restricted_at: Date | null; version: number }[]
+    >('SELECT username, restricted_at, version FROM moderation.creator_profiles WHERE id = $1', [
+      profileId,
+    ]);
+    expect(profileRows[0].username).toBe(decision.newUsername);
+    expect(profileRows[0].restricted_at).toBeNull();
+    expect(profileRows[0].version).toBe(2);
+
+    const reservedRows = await dataSource.query<{ username: string }[]>(
+      'SELECT username FROM moderation.reserved_usernames WHERE username = $1',
+      [violatingUsername],
+    );
+    expect(reservedRows).toEqual([{ username: violatingUsername }]);
+
+    const eventTypes = await dataSource.query<{ event_type: string }[]>(
+      `SELECT event_type FROM moderation.creator_profile_audit_events
+       WHERE investigation_id = $1 ORDER BY created_at`,
+      [investigationId],
+    );
+    expect(eventTypes.map((row) => row.event_type)).toEqual([
+      'investigation_opened',
+      'report_submitted',
+      'creator_restricted',
+      'investigation_closed',
+      'appeal_filed',
+      'username_reset',
+      'appeal_accepted',
+    ]);
+  });
+
+  it('rejects deciding an appeal that is already decided', async () => {
+    const { accountId, profileId } = await seedProfile(
+      `prof_${randomUUID().slice(0, 8).replace(/-/g, '')}`,
+    );
+    await restrictProfile(profileId);
+    const appeal = await service.fileAppeal(principal(accountId), {});
+    const moderatorId = await seedOperator();
+
+    await service.acceptAppeal(moderatorId, appeal.id, 'restored');
+    await expect(
+      service.acceptAppeal(moderatorId, appeal.id, 'again'),
+    ).rejects.toMatchObject({ status: 409 });
+    await expect(
+      service.upholdAppeal(moderatorId, appeal.id, 'again'),
+    ).rejects.toMatchObject({ status: 409 });
+  });
+
+  it('upholds an appeal as final, leaving the restriction in place and no further appeal possible', async () => {
+    const { accountId, profileId } = await seedProfile(
+      `prof_${randomUUID().slice(0, 8).replace(/-/g, '')}`,
+    );
+    const { investigationId } = await restrictProfile(profileId);
+    const appeal = await service.fileAppeal(principal(accountId), {});
+    const moderatorId = await seedOperator();
+
+    const decision = await service.upholdAppeal(moderatorId, appeal.id, 'violation confirmed');
+    expect(decision.status).toBe('upheld');
+
+    const profileRows = await dataSource.query<{ restricted_at: Date | null }[]>(
+      'SELECT restricted_at FROM moderation.creator_profiles WHERE id = $1',
+      [profileId],
+    );
+    expect(profileRows[0].restricted_at).not.toBeNull();
+
+    // The restriction is unchanged, so it is still "restricted" -> filing
+    // again resolves to the same investigation, whose appeal is upheld/final.
+    await expect(
+      service.fileAppeal(principal(accountId), {}),
+    ).rejects.toMatchObject({ status: 409 });
+
+    const eventTypes = await dataSource.query<{ event_type: string }[]>(
+      `SELECT event_type FROM moderation.creator_profile_audit_events
+       WHERE investigation_id = $1 ORDER BY created_at`,
+      [investigationId],
+    );
+    expect(eventTypes.map((row) => row.event_type)).toEqual([
+      'investigation_opened',
+      'report_submitted',
+      'creator_restricted',
+      'investigation_closed',
+      'appeal_filed',
+      'appeal_upheld',
+    ]);
   });
 });

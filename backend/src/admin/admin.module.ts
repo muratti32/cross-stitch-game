@@ -14,6 +14,7 @@ import { ADMIN_JWT_AUDIENCE, ADMIN_JWT_ISSUER } from './admin.constants';
 import { AdminAuthController } from './admin-auth.controller';
 import { AdminCatalogMetadataRevisionsController } from './admin-catalog-metadata-revisions.controller';
 import { AdminCatalogSubmissionsController } from './admin-catalog-submissions.controller';
+import { AdminCreatorRestrictionAppealsController } from './admin-creator-restriction-appeals.controller';
 import { AdminProfileInvestigationsController } from './admin-profile-investigations.controller';
 import { AdminCatalogService } from './admin-catalog.service';
 import { AdminCategoriesController } from './admin-categories.controller';
@@ -50,6 +51,7 @@ import { TotpSecretCipherService } from './totp-secret-cipher.service';
     AdminAuthController,
     AdminCatalogMetadataRevisionsController,
     AdminCatalogSubmissionsController,
+    AdminCreatorRestrictionAppealsController,
     AdminProfileInvestigationsController,
     AdminCategoriesController,
     AdminPatternsController,

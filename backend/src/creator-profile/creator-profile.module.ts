@@ -6,6 +6,7 @@ import { CatalogModule } from '../catalog/catalog.module';
 import { CreatorProfileController } from './creator-profile.controller';
 import { CreatorProfileService } from './creator-profile.service';
 import {
+  CreatorProfileAppealEntity,
   CreatorProfileAuditEntity,
   CreatorProfileAuditEventEntity,
   CreatorProfileEntity,
@@ -25,6 +26,7 @@ import { ProfileTextPolicyService } from './profile-text-policy.service';
     AuthModule,
     CatalogModule,
     TypeOrmModule.forFeature([
+      CreatorProfileAppealEntity,
       CreatorProfileEntity,
       CreatorProfileAuditEntity,
       CreatorProfileAuditEventEntity,

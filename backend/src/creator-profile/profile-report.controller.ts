@@ -11,6 +11,7 @@ import {
 
 import { CurrentPrincipal, JwtAuthGuard } from '../auth';
 import type { AuthPrincipal } from '../auth/auth.types';
+import { CreateProfileAppealDto } from './dto/create-profile-appeal.dto';
 import { CreateProfileReportDto } from './dto/create-profile-report.dto';
 import { ProfileReportService } from './profile-report.service';
 
@@ -27,5 +28,15 @@ export class ProfileReportController {
     @Body() dto: CreateProfileReportDto,
   ) {
     return this.reports.report(principal, id, dto);
+  }
+
+  @Post('me/appeal')
+  @HttpCode(HttpStatus.ACCEPTED)
+  @UseGuards(JwtAuthGuard)
+  fileAppeal(
+    @CurrentPrincipal() principal: AuthPrincipal,
+    @Body() dto: CreateProfileAppealDto,
+  ) {
+    return this.reports.fileAppeal(principal, dto);
   }
 }

@@ -1,3 +1,4 @@
+export * from './creator-profile-appeal.entity';
 export * from './creator-profile-audit-event.entity';
 export * from './creator-profile-audit.entity';
 export * from './creator-profile.entity';
