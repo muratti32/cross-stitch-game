@@ -18,6 +18,7 @@ import {
   CatalogWithdrawalClosureEntity,
   CatalogWithdrawalEntity,
   ModerationNoticeEntity,
+  SafetyRemovalAppealEntity,
 } from './entities';
 import { CatalogService } from './catalog.service';
 import { CatalogController } from './catalog.controller';
@@ -42,6 +43,9 @@ import { CatalogWithdrawalController } from './catalog-withdrawal.controller';
 import { CatalogWithdrawalService } from './catalog-withdrawal.service';
 import { ModerationNoticeController } from './moderation-notice.controller';
 import { ModerationNoticeService } from './moderation-notice.service';
+import { SafetyRemovalAppealController } from './safety-removal-appeal.controller';
+import { SafetyRemovalAppealService } from './safety-removal-appeal.service';
+import { OperatorAuditLogService } from '../admin/operator-audit-log.service';
 
 @Module({
   imports: [
@@ -64,6 +68,7 @@ import { ModerationNoticeService } from './moderation-notice.service';
       CatalogWithdrawalClosureEntity,
       CatalogWithdrawalEntity,
       ModerationNoticeEntity,
+      SafetyRemovalAppealEntity,
     ]),
     AppConfigModule,
     AuthModule,
@@ -77,6 +82,7 @@ import { ModerationNoticeService } from './moderation-notice.service';
     CommunityReportController,
     CatalogWithdrawalController,
     ModerationNoticeController,
+    SafetyRemovalAppealController,
   ],
   providers: [
     CatalogService,
@@ -87,6 +93,8 @@ import { ModerationNoticeService } from './moderation-notice.service';
     CommunityReportService,
     CatalogWithdrawalService,
     ModerationNoticeService,
+    SafetyRemovalAppealService,
+    OperatorAuditLogService,
     LocalObjectStorage,
     R2ObjectStorage,
     {
@@ -104,6 +112,7 @@ import { ModerationNoticeService } from './moderation-notice.service';
     CatalogSubmissionService,
     CatalogMetadataRevisionService,
     CatalogPrecheckJobConsumerService,
+    SafetyRemovalAppealService,
     OBJECT_STORAGE,
   ],
 })

@@ -23,6 +23,10 @@ import {
   OBJECT_STORAGE,
   ObjectStorage,
 } from '../catalog/storage/object-storage.interface';
+import {
+  previewContentType,
+  safetyRemovalPreviewArchiveKey,
+} from '../catalog/catalog.utils';
 import { CreatorProfileEntity } from '../creator-profile/entities';
 import { OperatorAuditLogService } from './operator-audit-log.service';
 
@@ -434,10 +438,20 @@ export class PostPublicationReviewService {
       pattern.status = 'removed';
       await patterns.save(pattern);
 
-      // Purges the public Pattern Preview so it disappears from the CDN. The
-      // private origin artifact stays in storage for Safety Removal Appeal
-      // review; only the artifact grant path (already gated on pattern status
-      // in SessionsService) controls access to it going forward.
+      // Purges the public Pattern Preview so it disappears from the CDN, after
+      // archiving its bytes privately so an accepted Safety Removal Appeal can
+      // republish the exact same preview. The private origin artifact stays in
+      // storage for Safety Removal Appeal review; only the artifact grant path
+      // (already gated on pattern status in SessionsService) controls access to
+      // it going forward.
+      const previewBytes = await this.storage.get(pattern.previewObjectKey);
+      if (previewBytes !== null) {
+        await this.storage.put(
+          safetyRemovalPreviewArchiveKey(pattern.id, pattern.previewObjectKey),
+          previewBytes,
+          previewContentType(pattern.previewObjectKey),
+        );
+      }
       await this.storage.delete(pattern.previewObjectKey);
 
       const closedRecords = await this.closePendingMetadataWork(

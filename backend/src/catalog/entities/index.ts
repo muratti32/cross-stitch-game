@@ -15,3 +15,4 @@ export * from './post-publication-review-closure.entity';
 export * from './catalog-withdrawal.entity';
 export * from './catalog-withdrawal-closure.entity';
 export * from './moderation-notice.entity';
+export * from './safety-removal-appeal.entity';
