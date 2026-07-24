@@ -13,3 +13,4 @@ export * from './community-report.entity';
 export * from './post-publication-review.entity';
 export * from './catalog-withdrawal.entity';
 export * from './catalog-withdrawal-closure.entity';
+export * from './moderation-notice.entity';

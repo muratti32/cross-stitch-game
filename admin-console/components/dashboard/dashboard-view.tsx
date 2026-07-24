@@ -13,6 +13,7 @@ import type { OfficialPatternDraftStatus, PatternStatus } from '@/lib/types';
 
 const PATTERN_STATUS_LABELS: Record<PatternStatus, string> = {
   available: 'Available',
+  review_hold: 'Review Hold',
   removed: 'Removed',
   withdrawn: 'Withdrawn',
 };
@@ -56,7 +57,7 @@ export function DashboardView() {
             <CardHeader>
               <CardTitle>Patterns by status</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-3 gap-4">
+            <CardContent className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               {(Object.keys(PATTERN_STATUS_LABELS) as PatternStatus[]).map((status) => (
                 <div key={status} className="rounded-lg border border-border p-3 text-center">
                   {data === undefined ? (

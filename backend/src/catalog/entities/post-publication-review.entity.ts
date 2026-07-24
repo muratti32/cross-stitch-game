@@ -24,6 +24,10 @@ export type PostPublicationReviewStatus = 'open' | 'closed';
   'CHK_post_publication_reviews_closed_at',
   '("status" = \'open\' AND "closed_at" IS NULL) OR ("status" = \'closed\' AND "closed_at" IS NOT NULL)',
 )
+@Check(
+  'CHK_post_publication_reviews_hold',
+  '("hold_applied_at" IS NULL AND "hold_reason" IS NULL AND "hold_operator_account_id" IS NULL) OR ("hold_applied_at" IS NOT NULL AND length(btrim("hold_reason")) > 0 AND "hold_operator_account_id" IS NOT NULL)',
+)
 export class PostPublicationReviewEntity {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'PK_post_publication_reviews',
@@ -41,6 +45,15 @@ export class PostPublicationReviewEntity {
 
   @Column({ name: 'closed_at', nullable: true, type: 'timestamptz' })
   closedAt!: Date | null;
+
+  @Column({ name: 'hold_applied_at', nullable: true, type: 'timestamptz' })
+  holdAppliedAt!: Date | null;
+
+  @Column({ length: 2000, name: 'hold_reason', nullable: true, type: 'varchar' })
+  holdReason!: string | null;
+
+  @Column({ name: 'hold_operator_account_id', nullable: true, type: 'uuid' })
+  holdOperatorAccountId!: string | null;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;

@@ -3,12 +3,14 @@ import type { OfficialPatternDraftStatus, PatternStatus } from '@/lib/types';
 
 const PATTERN_STATUS_LABEL: Record<PatternStatus, string> = {
   available: 'Available',
+  review_hold: 'Review Hold',
   removed: 'Removed',
   withdrawn: 'Withdrawn',
 };
 
 const PATTERN_STATUS_VARIANT: Record<PatternStatus, 'default' | 'secondary' | 'destructive'> = {
   available: 'default',
+  review_hold: 'secondary',
   removed: 'destructive',
   withdrawn: 'secondary',
 };

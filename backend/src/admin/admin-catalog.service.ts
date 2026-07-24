@@ -528,6 +528,11 @@ export class AdminCatalogService {
           'Community Patterns can only be withdrawn by their owning Registered Account',
         );
       }
+      if (pattern.status === 'review_hold') {
+        throw new BadRequestException(
+          'Review Hold must be resolved through the Post-Publication Review',
+        );
+      }
       if (options.to === 'available' && pattern.creatorProfileId !== null) {
         const ownerWithdrawal = await manager
           .getRepository(CatalogWithdrawalEntity)

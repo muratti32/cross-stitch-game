@@ -42,7 +42,7 @@ export interface MyPublishedPattern {
   latestRevision: CatalogMetadataRevision | null;
   publishedAt: string;
   sourceLanguage: string | null;
-  status: 'available' | 'withdrawn';
+  status: 'available' | 'review_hold' | 'withdrawn';
   tagCodes: string[];
   title: string;
 }

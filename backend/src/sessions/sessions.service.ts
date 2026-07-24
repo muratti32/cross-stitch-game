@@ -67,7 +67,7 @@ export class SessionsService {
       });
       if (pattern.status !== 'available') {
         if (
-          pattern.status !== 'withdrawn' ||
+          (pattern.status !== 'withdrawn' && pattern.status !== 'review_hold') ||
           pattern.visibility !== 'catalog' ||
           existing === null
         ) {

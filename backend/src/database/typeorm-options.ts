@@ -18,6 +18,7 @@ import {
   PostPublicationReviewEntity,
   CatalogWithdrawalClosureEntity,
   CatalogWithdrawalEntity,
+  ModerationNoticeEntity,
 } from '../catalog/entities';
 import { JobOutboxEntity, ProcessingJobEntity } from '../jobs/entities';
 import {
@@ -105,6 +106,7 @@ import { CreateCatalogSubmissions1786147200000 } from './migrations/178614720000
 import { CreateCatalogMetadataRevisions1786233600000 } from './migrations/1786233600000-CreateCatalogMetadataRevisions';
 import { CreateCommunityReports1786320000000 } from './migrations/1786320000000-CreateCommunityReports';
 import { CreateCatalogWithdrawals1786406400000 } from './migrations/1786406400000-CreateCatalogWithdrawals';
+import { CreateReviewHolds1786492800000 } from './migrations/1786492800000-CreateReviewHolds';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -168,6 +170,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       PostPublicationReviewEntity,
       CatalogWithdrawalClosureEntity,
       CatalogWithdrawalEntity,
+      ModerationNoticeEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -201,6 +204,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateCatalogMetadataRevisions1786233600000,
       CreateCommunityReports1786320000000,
       CreateCatalogWithdrawals1786406400000,
+      CreateReviewHolds1786492800000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

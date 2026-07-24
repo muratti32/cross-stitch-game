@@ -12,6 +12,7 @@ import { SupportModule } from '../support/support.module';
 import { ADMIN_JWT_AUDIENCE, ADMIN_JWT_ISSUER } from './admin.constants';
 import { AdminAuthController } from './admin-auth.controller';
 import { AdminCatalogMetadataRevisionsController } from './admin-catalog-metadata-revisions.controller';
+import { AdminPostPublicationReviewsController } from './admin-post-publication-reviews.controller';
 import { AdminCatalogSubmissionsController } from './admin-catalog-submissions.controller';
 import { AdminCatalogService } from './admin-catalog.service';
 import { AdminCategoriesController } from './admin-categories.controller';
@@ -41,6 +42,7 @@ import { OperatorProvisioningService } from './operator-provisioning.service';
 import { OperatorRefreshTokensRepository } from './operator-refresh-tokens.repository';
 import { OperatorSecurityEventsService } from './operator-security-events.service';
 import { OperatorTotpService } from './operator-totp.service';
+import { PostPublicationReviewService } from './post-publication-review.service';
 import { TotpSecretCipherService } from './totp-secret-cipher.service';
 
 @Module({
@@ -48,6 +50,7 @@ import { TotpSecretCipherService } from './totp-secret-cipher.service';
     AdminAuthController,
     AdminCatalogMetadataRevisionsController,
     AdminCatalogSubmissionsController,
+    AdminPostPublicationReviewsController,
     AdminCategoriesController,
     AdminPatternsController,
     AdminStaffPicksController,
@@ -114,6 +117,7 @@ import { TotpSecretCipherService } from './totp-secret-cipher.service';
     OperatorHashingService,
     OperatorPermissionsGuard,
     OperatorProvisioningService,
+    PostPublicationReviewService,
     OperatorRefreshTokensRepository,
     OperatorSecurityEventsService,
     OperatorTotpService,

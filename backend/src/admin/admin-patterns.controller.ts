@@ -21,7 +21,12 @@ import { OperatorPermissionsGuard } from './operator-permissions.guard';
 import { OperatorPrincipal } from './operator-auth.types';
 import { RequireOperatorPermissions } from './require-operator-permissions.decorator';
 
-const KNOWN_STATUSES: readonly PatternStatus[] = ['available', 'withdrawn', 'removed'];
+const KNOWN_STATUSES: readonly PatternStatus[] = [
+  'available',
+  'review_hold',
+  'withdrawn',
+  'removed',
+];
 
 @Controller('admin/patterns')
 @UseGuards(OperatorAuthGuard, OperatorPermissionsGuard)

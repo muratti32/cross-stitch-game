@@ -16,6 +16,7 @@ import {
   PostPublicationReviewEntity,
   CatalogWithdrawalClosureEntity,
   CatalogWithdrawalEntity,
+  ModerationNoticeEntity,
 } from './entities';
 import { CatalogService } from './catalog.service';
 import { CatalogController } from './catalog.controller';
@@ -38,6 +39,8 @@ import { CommunityReportController } from './community-report.controller';
 import { CommunityReportService } from './community-report.service';
 import { CatalogWithdrawalController } from './catalog-withdrawal.controller';
 import { CatalogWithdrawalService } from './catalog-withdrawal.service';
+import { ModerationNoticeController } from './moderation-notice.controller';
+import { ModerationNoticeService } from './moderation-notice.service';
 
 @Module({
   imports: [
@@ -58,6 +61,7 @@ import { CatalogWithdrawalService } from './catalog-withdrawal.service';
       PostPublicationReviewEntity,
       CatalogWithdrawalClosureEntity,
       CatalogWithdrawalEntity,
+      ModerationNoticeEntity,
     ]),
     AppConfigModule,
     AuthModule,
@@ -70,6 +74,7 @@ import { CatalogWithdrawalService } from './catalog-withdrawal.service';
     CatalogMetadataRevisionController,
     CommunityReportController,
     CatalogWithdrawalController,
+    ModerationNoticeController,
   ],
   providers: [
     CatalogService,
@@ -79,6 +84,7 @@ import { CatalogWithdrawalService } from './catalog-withdrawal.service';
     CatalogPrecheckJobConsumerService,
     CommunityReportService,
     CatalogWithdrawalService,
+    ModerationNoticeService,
     LocalObjectStorage,
     R2ObjectStorage,
     {

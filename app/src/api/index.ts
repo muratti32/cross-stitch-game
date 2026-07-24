@@ -9,3 +9,4 @@ export * from './creatorProfile';
 export * from './catalogSubmissions';
 export * from './communityReports';
 export * from './catalogWithdrawals';
+export * from './moderationNotices';

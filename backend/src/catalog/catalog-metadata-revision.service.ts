@@ -35,7 +35,7 @@ export class CatalogMetadataRevisionService {
     const pattern = await this.dataSource.getRepository(PatternEntity).findOneBy({
       creatorProfileId: profile.id,
       id: patternId,
-      status: 'available',
+      status: In(['available', 'review_hold']),
       visibility: 'catalog',
     });
     if (pattern === null) throw new NotFoundException('Community Pattern not found');
@@ -65,7 +65,7 @@ export class CatalogMetadataRevisionService {
         where: {
           creatorProfileId: profile.id,
           id: patternId,
-          status: 'available',
+          status: In(['available', 'review_hold']),
           visibility: 'catalog',
         },
       });
@@ -150,7 +150,7 @@ export class CatalogMetadataRevisionService {
         where: {
           creatorProfileId: snapshot.creatorProfileId,
           id: snapshot.communityPatternId,
-          status: 'available',
+          status: In(['available', 'review_hold']),
           visibility: 'catalog',
         },
       });
@@ -194,7 +194,7 @@ export class CatalogMetadataRevisionService {
       relations: ['tags'],
       where: {
         creatorProfileId: profile.id,
-        status: In(['available', 'withdrawn']),
+        status: In(['available', 'review_hold', 'withdrawn']),
         visibility: 'catalog',
       },
     });
@@ -213,7 +213,9 @@ export class CatalogMetadataRevisionService {
       const latest = latestByPattern.get(pattern.id) ?? null;
       const hasActiveSlot = latest !== null && (ACTIVE_SLOT_STATUSES as readonly string[]).includes(latest.status);
       return {
-        canSubmitRevision: pattern.status === 'available' && !hasActiveSlot,
+        canSubmitRevision:
+          (pattern.status === 'available' || pattern.status === 'review_hold') &&
+          !hasActiveSlot,
         categoryCode: pattern.categoryCode,
         description: pattern.description,
         id: pattern.id,
@@ -311,7 +313,10 @@ export class CatalogMetadataRevisionService {
         lock: { mode: 'pessimistic_write' },
         where: { id: revision.communityPatternId },
       });
-      if (pattern === null || pattern.status !== 'available') {
+      if (
+        pattern === null ||
+        (pattern.status !== 'available' && pattern.status !== 'review_hold')
+      ) {
         throw new ConflictException('Community Pattern is unavailable');
       }
       const category = await manager.getRepository(CategoryEntity).findOneBy({

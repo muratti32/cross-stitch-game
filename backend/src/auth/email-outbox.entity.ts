@@ -15,6 +15,17 @@ export interface EmailOtpOutboxPayload {
   codeId: string;
 }
 
+export interface ModerationNoticeOutboxPayload {
+  noticeId: string;
+  patternId: string;
+  patternTitle: string;
+  reason: string;
+}
+
+export type EmailOutboxPayload =
+  | EmailOtpOutboxPayload
+  | ModerationNoticeOutboxPayload;
+
 @Entity({ name: 'email_outbox', schema: 'notifications' })
 @Index('IDX_email_outbox_undispatched', ['createdAt', 'id'], {
   where: '"dispatched_at" IS NULL',
@@ -33,10 +44,10 @@ export class EmailOutboxEntity {
   toEmail!: string;
 
   @Column({ length: 32, type: 'varchar' })
-  template!: 'email_otp';
+  template!: 'email_otp' | 'moderation_notice';
 
   @Column({ type: 'jsonb' })
-  payload!: EmailOtpOutboxPayload;
+  payload!: EmailOutboxPayload;
 
   @Column({ name: 'dispatched_at', nullable: true, type: 'timestamptz' })
   dispatchedAt!: Date | null;

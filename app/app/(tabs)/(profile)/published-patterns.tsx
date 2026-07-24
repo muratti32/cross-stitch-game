@@ -179,17 +179,22 @@ function PatternCard({
 }) {
   const revision = item.latestRevision;
   const available = item.status === 'available';
-  const canWithdraw = available && revision !== null && (revision.status === 'pending' || revision.status === 'appeal_pending');
-  const canAppeal = available && revision !== null && revision.status === 'rejected';
-  const appealOpen = available && appealId === item.id;
+  const metadataActionsAvailable = available || item.status === 'review_hold';
+  const canWithdraw = metadataActionsAvailable && revision !== null && (revision.status === 'pending' || revision.status === 'appeal_pending');
+  const canAppeal = metadataActionsAvailable && revision !== null && revision.status === 'rejected';
+  const appealOpen = metadataActionsAvailable && appealId === item.id;
   return (
     <Card style={styles.card}>
       <View style={styles.titleRow}>
         <Text numberOfLines={2} style={styles.title}>{item.title}</Text>
-        {(item.status === 'withdrawn' || revision !== null) && (
+        {(item.status !== 'available' || revision !== null) && (
           <View style={styles.badge}>
             <Text style={styles.badgeText}>
-              {item.status === 'withdrawn' ? 'Withdrawn from Catalog' : STATUS_LABELS[revision!.status]}
+              {item.status === 'withdrawn'
+                ? 'Withdrawn from Catalog'
+                : item.status === 'review_hold'
+                  ? 'Under Review Hold'
+                  : STATUS_LABELS[revision!.status]}
             </Text>
           </View>
         )}
@@ -206,8 +211,13 @@ function PatternCard({
           This identity is permanently withdrawn. Players with an existing Stitching Session keep their progress and access.
         </Text>
       )}
+      {item.status === 'review_hold' && (
+        <Text style={styles.help}>
+          This Pattern is temporarily outside discovery and cannot start new sessions. Existing Stitching Sessions remain playable. You may still propose a metadata revision.
+        </Text>
+      )}
       <View style={styles.actions}>
-        {available && item.canSubmitRevision && (
+        {metadataActionsAvailable && item.canSubmitRevision && (
           <Button title="Revise Metadata" variant="secondary" onPress={onReviseMetadata} style={styles.action} />
         )}
         {canWithdraw && (
