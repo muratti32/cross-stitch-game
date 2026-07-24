@@ -9,6 +9,7 @@ export type OperatorPermission =
   | 'catalog.category.manage'
   | 'catalog.submission.review'
   | 'catalog.metadata_revision.review'
+  | 'catalog.post_publication_review.manage'
   | 'moderation.profile_investigation.review'
   | 'support.reference.lookup';
 
@@ -21,6 +22,7 @@ export const ALL_OPERATOR_PERMISSIONS: readonly OperatorPermission[] = [
   'catalog.category.manage',
   'catalog.submission.review',
   'catalog.metadata_revision.review',
+  'catalog.post_publication_review.manage',
   'moderation.profile_investigation.review',
   'support.reference.lookup',
 ];

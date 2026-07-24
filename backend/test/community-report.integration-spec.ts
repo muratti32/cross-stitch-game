@@ -248,11 +248,19 @@ describe('Community Report intake', () => {
   }
 
   async function closeReview(reviewId: string): Promise<void> {
+    const operatorId = randomUUID();
+    await dataSource.query(
+      `INSERT INTO admin.operator_accounts (id, email, password_hash, totp_secret_encrypted)
+       VALUES ($1, $2, 'hash', 'ciphertext')`,
+      [operatorId, `test-closure-operator-${operatorId}@example.test`],
+    );
     await dataSource.query(
       `UPDATE moderation.post_publication_reviews
-       SET status = 'closed', closed_at = now(), updated_at = now()
+       SET status = 'closed', closed_at = now(), updated_at = now(),
+           close_outcome = 'no_violation', close_reason = 'test fixture closure',
+           close_operator_account_id = $2
        WHERE id = $1`,
-      [reviewId],
+      [reviewId, operatorId],
     );
   }
 

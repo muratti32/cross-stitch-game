@@ -62,6 +62,8 @@ import { TotpSecretCipherService } from './totp-secret-cipher.service';
     AdminCatalogSubmissionsController,
     AdminCreatorRestrictionAppealsController,
     AdminProfileInvestigationsController,
+    AdminPostPublicationReviewsController,
+    AdminSafetyRemovalAppealsController,
     AdminCategoriesController,
     AdminPatternsController,
     AdminStaffPicksController,
