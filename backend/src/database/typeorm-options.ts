@@ -91,10 +91,14 @@ import {
 import { CreateCreatorProfiles1786060800000 } from './migrations/1786060800000-CreateCreatorProfiles';
 import {
   CatalogAppealEntity,
+  CatalogMetadataAppealEntity,
+  CatalogMetadataReviewDecisionEntity,
+  CatalogMetadataRevisionEntity,
   CatalogReviewDecisionEntity,
   CatalogSubmissionEntity,
 } from '../catalog/entities';
 import { CreateCatalogSubmissions1786147200000 } from './migrations/1786147200000-CreateCatalogSubmissions';
+import { CreateCatalogMetadataRevisions1786233600000 } from './migrations/1786233600000-CreateCatalogMetadataRevisions';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -151,6 +155,9 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CatalogSubmissionEntity,
       CatalogAppealEntity,
       CatalogReviewDecisionEntity,
+      CatalogMetadataRevisionEntity,
+      CatalogMetadataAppealEntity,
+      CatalogMetadataReviewDecisionEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -181,6 +188,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateSupportReferences1785974400000,
       CreateCreatorProfiles1786060800000,
       CreateCatalogSubmissions1786147200000,
+      CreateCatalogMetadataRevisions1786233600000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

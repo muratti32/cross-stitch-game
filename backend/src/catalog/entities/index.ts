@@ -6,3 +6,6 @@ export * from './category.entity';
 export * from './catalog-submission.entity';
 export * from './catalog-appeal.entity';
 export * from './catalog-review-decision.entity';
+export * from './catalog-metadata-revision.entity';
+export * from './catalog-metadata-appeal.entity';
+export * from './catalog-metadata-review-decision.entity';

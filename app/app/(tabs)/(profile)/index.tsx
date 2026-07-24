@@ -250,6 +250,20 @@ export default function ProfileScreen() {
         </Pressable>
       )}
 
+      {isAccount && creatorProfile !== null && (
+        <Pressable
+          onPress={() => router.push('/(tabs)/(profile)/published-patterns')}
+          style={({ pressed }) => [styles.submissionsButton, pressed && styles.pressedButton]}
+        >
+          <Ionicons name="albums-outline" size={18} color={Theme.colors.accentTeal} />
+          <View style={styles.submissionsButtonText}>
+            <Text style={styles.submissionsButtonTitle}>Published Patterns</Text>
+            <Text style={styles.submissionsButtonSubtitle}>Revise metadata, withdraw, and track appeals</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Theme.colors.textSecondary} />
+        </Pressable>
+      )}
+
       <DailyTasksCard enabled={isAuthenticated && !isPending && !isOfflinePending} />
       <RewardedAdCard enabled={!isPending && !isOfflinePending} />
 

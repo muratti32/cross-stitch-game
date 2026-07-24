@@ -2,6 +2,9 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
   CatalogAppealEntity,
+  CatalogMetadataAppealEntity,
+  CatalogMetadataReviewDecisionEntity,
+  CatalogMetadataRevisionEntity,
   CatalogReviewDecisionEntity,
   CatalogSubmissionEntity,
   PatternEntity,
@@ -25,6 +28,8 @@ import { CatalogSubmissionController } from './catalog-submission.controller';
 import { CatalogSubmissionService } from './catalog-submission.service';
 import { CatalogPrecheckService } from './catalog-precheck.service';
 import { CatalogPrecheckJobConsumerService } from './catalog-precheck-job-consumer.service';
+import { CatalogMetadataRevisionController } from './catalog-metadata-revision.controller';
+import { CatalogMetadataRevisionService } from './catalog-metadata-revision.service';
 
 @Module({
   imports: [
@@ -37,6 +42,9 @@ import { CatalogPrecheckJobConsumerService } from './catalog-precheck-job-consum
       CatalogSubmissionEntity,
       CatalogAppealEntity,
       CatalogReviewDecisionEntity,
+      CatalogMetadataRevisionEntity,
+      CatalogMetadataAppealEntity,
+      CatalogMetadataReviewDecisionEntity,
       CreatorProfileEntity,
     ]),
     AppConfigModule,
@@ -47,10 +55,12 @@ import { CatalogPrecheckJobConsumerService } from './catalog-precheck-job-consum
     CatalogController,
     CatalogPreviewsController,
     CatalogSubmissionController,
+    CatalogMetadataRevisionController,
   ],
   providers: [
     CatalogService,
     CatalogSubmissionService,
+    CatalogMetadataRevisionService,
     CatalogPrecheckService,
     CatalogPrecheckJobConsumerService,
     LocalObjectStorage,
@@ -68,6 +78,7 @@ import { CatalogPrecheckJobConsumerService } from './catalog-precheck-job-consum
   exports: [
     CatalogService,
     CatalogSubmissionService,
+    CatalogMetadataRevisionService,
     CatalogPrecheckJobConsumerService,
     OBJECT_STORAGE,
   ],

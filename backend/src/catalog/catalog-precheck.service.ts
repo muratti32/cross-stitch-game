@@ -90,39 +90,55 @@ export class CatalogPrecheckService {
   }
 
   private async validateMetadata(submission: CatalogSubmissionEntity): Promise<string[]> {
+    return this.validateMetadataFields({
+      categoryCode: submission.categoryCode,
+      description: submission.description,
+      sourceLanguage: submission.sourceLanguage,
+      tagCodes: submission.tagCodes,
+      title: submission.title,
+    });
+  }
+
+  async validateMetadataFields(input: {
+    categoryCode: string;
+    description: string;
+    sourceLanguage: string;
+    tagCodes: string[];
+    title: string;
+  }): Promise<string[]> {
     const errors: string[] = [];
     if (
-      submission.title !== normalizeText(submission.title) ||
-      submission.title.length < 1 ||
-      submission.title.length > 120
+      input.title !== normalizeText(input.title) ||
+      input.title.length < 1 ||
+      input.title.length > 120
     ) {
       errors.push('Title is not normalized or is outside the allowed length');
     }
     if (
-      submission.description !== normalizeText(submission.description) ||
-      submission.description.length < 1 ||
-      submission.description.length > 2000
+      input.description !== normalizeText(input.description) ||
+      input.description.length < 1 ||
+      input.description.length > 2000
     ) {
       errors.push('Description is not normalized or is outside the allowed length');
     }
-    if (submission.sourceLanguage !== 'en') errors.push('Source language is not supported');
-    if (new Set(submission.tagCodes).size !== submission.tagCodes.length || submission.tagCodes.length > 5) {
+    if (input.sourceLanguage !== 'en') errors.push('Source language is not supported');
+    if (new Set(input.tagCodes).size !== input.tagCodes.length || input.tagCodes.length > 5) {
       errors.push('Tag codes must be distinct and limited to five');
     }
     const [category, tags] = await Promise.all([
       this.dataSource.getRepository(CategoryEntity).findOneBy({
         active: true,
-        code: submission.categoryCode,
+        code: input.categoryCode,
       }),
-      submission.tagCodes.length === 0
+      input.tagCodes.length === 0
         ? Promise.resolve([])
         : this.dataSource.getRepository(TagEntity).findBy({
             active: true,
-            code: In(submission.tagCodes),
+            code: In(input.tagCodes),
           }),
     ]);
     if (category === null) errors.push('Category is unknown or inactive');
-    if (tags.length !== submission.tagCodes.length) errors.push('One or more tags are unknown or inactive');
+    if (tags.length !== input.tagCodes.length) errors.push('One or more tags are unknown or inactive');
     return errors;
   }
 
@@ -169,13 +185,24 @@ export class CatalogPrecheckService {
     submission: CatalogSubmissionEntity,
     preview: Buffer | null,
   ): Promise<Record<string, unknown>> {
+    return this.moderateContent(`Title: ${submission.title}\nDescription: ${submission.description}`, preview);
+  }
+
+  async moderateText(title: string, description: string): Promise<Record<string, unknown>> {
+    return this.moderateContent(`Title: ${title}\nDescription: ${description}`, null);
+  }
+
+  private async moderateContent(
+    text: string,
+    preview: Buffer | null,
+  ): Promise<Record<string, unknown>> {
     if (!this.config.openAiModerationEnabled) {
       return { checked: false, flagged: false, model: 'omni-moderation-latest' };
     }
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) throw new ServiceUnavailableException('Catalog Precheck moderation is unavailable');
     const input: Array<Record<string, unknown>> = [
-      { text: `Title: ${submission.title}\nDescription: ${submission.description}`, type: 'text' },
+      { text, type: 'text' },
     ];
     if (preview !== null) {
       input.push({
