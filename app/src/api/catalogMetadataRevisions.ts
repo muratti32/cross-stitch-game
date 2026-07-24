@@ -42,6 +42,7 @@ export interface MyPublishedPattern {
   latestRevision: CatalogMetadataRevision | null;
   publishedAt: string;
   sourceLanguage: string | null;
+  status: 'available' | 'withdrawn';
   tagCodes: string[];
   title: string;
 }

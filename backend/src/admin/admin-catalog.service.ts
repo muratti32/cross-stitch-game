@@ -4,6 +4,7 @@ import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import {
   CategoryEntity,
+  CatalogWithdrawalEntity,
   PatternEntity,
   PatternStatus,
   StaffPickEntity,
@@ -521,6 +522,21 @@ export class AdminCatalogService {
       });
       if (pattern === null) {
         throw new NotFoundException(`Pattern ${patternId} was not found`);
+      }
+      if (options.action === 'pattern.withdraw' && pattern.creatorProfileId !== null) {
+        throw new BadRequestException(
+          'Community Patterns can only be withdrawn by their owning Registered Account',
+        );
+      }
+      if (options.to === 'available' && pattern.creatorProfileId !== null) {
+        const ownerWithdrawal = await manager
+          .getRepository(CatalogWithdrawalEntity)
+          .findOneBy({ communityPatternId: pattern.id });
+        if (ownerWithdrawal !== null) {
+          throw new BadRequestException(
+            'Catalog Withdrawal is irreversible for a Community Pattern',
+          );
+        }
       }
       if (!options.from.includes(pattern.status)) {
         throw new BadRequestException(

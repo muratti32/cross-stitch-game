@@ -14,6 +14,8 @@ import {
   CategoryEntity,
   CommunityReportEntity,
   PostPublicationReviewEntity,
+  CatalogWithdrawalClosureEntity,
+  CatalogWithdrawalEntity,
 } from './entities';
 import { CatalogService } from './catalog.service';
 import { CatalogController } from './catalog.controller';
@@ -34,6 +36,8 @@ import { CatalogMetadataRevisionController } from './catalog-metadata-revision.c
 import { CatalogMetadataRevisionService } from './catalog-metadata-revision.service';
 import { CommunityReportController } from './community-report.controller';
 import { CommunityReportService } from './community-report.service';
+import { CatalogWithdrawalController } from './catalog-withdrawal.controller';
+import { CatalogWithdrawalService } from './catalog-withdrawal.service';
 
 @Module({
   imports: [
@@ -52,6 +56,8 @@ import { CommunityReportService } from './community-report.service';
       CreatorProfileEntity,
       CommunityReportEntity,
       PostPublicationReviewEntity,
+      CatalogWithdrawalClosureEntity,
+      CatalogWithdrawalEntity,
     ]),
     AppConfigModule,
     AuthModule,
@@ -63,6 +69,7 @@ import { CommunityReportService } from './community-report.service';
     CatalogSubmissionController,
     CatalogMetadataRevisionController,
     CommunityReportController,
+    CatalogWithdrawalController,
   ],
   providers: [
     CatalogService,
@@ -71,6 +78,7 @@ import { CommunityReportService } from './community-report.service';
     CatalogPrecheckService,
     CatalogPrecheckJobConsumerService,
     CommunityReportService,
+    CatalogWithdrawalService,
     LocalObjectStorage,
     R2ObjectStorage,
     {

@@ -11,3 +11,5 @@ export * from './catalog-metadata-appeal.entity';
 export * from './catalog-metadata-review-decision.entity';
 export * from './community-report.entity';
 export * from './post-publication-review.entity';
+export * from './catalog-withdrawal.entity';
+export * from './catalog-withdrawal-closure.entity';

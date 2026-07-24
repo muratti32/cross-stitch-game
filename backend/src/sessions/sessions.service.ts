@@ -6,7 +6,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, EntityManager } from 'typeorm';
 import { createHmac, timingSafeEqual } from 'node:crypto';
 
 import { StitchingSessionEntity, SessionProgressFlagEntity } from './entities';
@@ -39,125 +39,144 @@ export class SessionsService {
     if (!pattern) {
       throw new NotFoundException('Pattern not found');
     }
+    this.assertPatternVisible(principal, pattern);
     if (pattern.status !== 'available') {
       throw new ConflictException('Pattern is not available');
     }
-    if (
-      pattern.visibility === 'personal' &&
-      (principal.type !== PrincipalType.Account ||
-        pattern.ownerAccountId !== principal.id)
-    ) {
-      throw new NotFoundException('Pattern not found');
-    }
-    // Pattern Unlock enforcement (issue #15) slots in here: a non-null
-    // unlockPriceTier will additionally require the identity's Unlock.
-    if (pattern.unlockPriceTier !== null) {
-      const ledgerPrincipal = {
-        type: principal.type === PrincipalType.Account ? ('account' as const) : ('guest' as const),
-        id: principal.id,
-      };
-      const owned = await this.coinLedger.isPatternUnlocked(
-        this.dataSource.manager,
-        ledgerPrincipal,
-        patternId,
-      );
-      if (!owned) {
-        throw new ForbiddenException({
-          code: 'unlock_required',
-          patternId,
-          price: unlockPrice(pattern.unlockPriceTier),
-        });
-      }
-    }
+    await this.assertPatternUnlocked(this.dataSource.manager, principal, pattern);
     return pattern;
   }
 
   async prepareSession(principal: AuthPrincipal, patternId: string) {
-    const pattern = await this.verifyPatternAvailability(principal, patternId);
+    return this.dataSource.transaction(async (manager) => {
+      // Serialize Session Preparation with owner withdrawal so a request either
+      // creates the session before withdrawal or observes the withdrawn state.
+      const pattern = await manager.getRepository(PatternEntity).findOne({
+        lock: { mode: 'pessimistic_write' },
+        where: { id: patternId },
+      });
+      if (pattern === null) throw new NotFoundException('Pattern not found');
+      this.assertPatternVisible(principal, pattern);
 
-    // Idempotent create-or-return using raw postgres INSERT ... ON CONFLICT
-    const result = (await this.dataSource.query(
-      `INSERT INTO "sessions"."stitching_sessions" ("principal_type", "principal_id", "pattern_id", "status")
-       VALUES ($1, $2, $3, 'active')
-       ON CONFLICT ("principal_type", "principal_id", "pattern_id") WHERE "status" = 'active'
-       DO UPDATE SET "status" = 'active' -- dummy update to return ID
-       RETURNING "id"`,
-      [principal.type as string, principal.id, patternId],
-    )) as unknown as { id: string }[];
+      const sessions = manager.getRepository(StitchingSessionEntity);
+      const existing = await sessions.findOneBy({
+        patternId,
+        principalId: principal.id,
+        principalType: principal.type as string,
+        status: 'active',
+      });
+      if (pattern.status !== 'available') {
+        if (
+          pattern.status !== 'withdrawn' ||
+          pattern.visibility !== 'catalog' ||
+          existing === null
+        ) {
+          throw new ConflictException('Pattern is not available');
+        }
+        return this.preparationResponse(existing.id, pattern);
+      }
 
-    const sessionId = result[0].id;
+      await this.assertPatternUnlocked(manager, principal, pattern);
+      const result = (await manager.query(
+        `INSERT INTO "sessions"."stitching_sessions" ("principal_type", "principal_id", "pattern_id", "status")
+         VALUES ($1, $2, $3, 'active')
+         ON CONFLICT ("principal_type", "principal_id", "pattern_id") WHERE "status" = 'active'
+         DO UPDATE SET "status" = 'active'
+         RETURNING "id"`,
+        [principal.type as string, principal.id, patternId],
+      )) as unknown as { id: string }[];
+      const sessionId = result[0].id;
 
-    // Ensure session progress flag row exists
-    await this.dataSource.query(
-      `INSERT INTO "sessions"."session_progress_flags" ("session_id", "has_any_progress")
-       VALUES ($1, false)
-       ON CONFLICT ("session_id") DO NOTHING`,
-      [sessionId],
-    );
-
-    const exp = Math.floor(Date.now() / 1000) + this.configService.grantTtlSeconds;
-    const sig = this.signGrant(patternId, exp);
-    const url = `/v1/artifacts/${patternId}?exp=${exp}&sig=${sig}`;
-    const expiresAt = new Date(exp * 1000).toISOString();
-
-    return {
-      sessionId,
-      patternId,
-      artifact: {
-        checksum: pattern.artifactChecksum.trim(),
-        byteLength: pattern.artifactByteLength,
-        schemaVersion: pattern.artifactSchemaVersion,
-      },
-      grant: {
-        url,
-        expiresAt,
-      },
-    };
+      await manager.query(
+        `INSERT INTO "sessions"."session_progress_flags" ("session_id", "has_any_progress")
+         VALUES ($1, false)
+         ON CONFLICT ("session_id") DO NOTHING`,
+        [sessionId],
+      );
+      return this.preparationResponse(sessionId, pattern);
+    });
   }
 
   async refreshGrant(principal: AuthPrincipal, sessionId: string) {
-    const session = await this.sessionRepo.findOne({ where: { id: sessionId } });
-    if (!session) {
-      throw new NotFoundException('Session not found');
-    }
+    return this.dataSource.transaction(async (manager) => {
+      const session = await manager.getRepository(StitchingSessionEntity).findOne({
+        where: { id: sessionId },
+      });
+      if (!session) throw new NotFoundException('Session not found');
+      if (
+        session.principalId !== principal.id ||
+        session.principalType !== (principal.type as string)
+      ) {
+        throw new ForbiddenException('Forbidden: Owner only');
+      }
+      if (session.status !== 'active') {
+        throw new BadRequestException('Session is not active');
+      }
 
-    if (session.principalId !== principal.id || session.principalType !== (principal.type as string)) {
-      throw new ForbiddenException('Forbidden: Owner only');
-    }
+      const pattern = await manager.getRepository(PatternEntity).findOne({
+        lock: { mode: 'pessimistic_read' },
+        where: { id: session.patternId },
+      });
+      if (pattern === null) throw new NotFoundException('Pattern not found');
+      this.assertPatternVisible(principal, pattern);
+      if (
+        pattern.status === 'removed' ||
+        (pattern.status === 'withdrawn' && pattern.visibility !== 'catalog')
+      ) {
+        throw new ConflictException('Pattern is not available');
+      }
+      return this.preparationResponse(sessionId, pattern);
+    });
+  }
 
-    if (session.status !== 'active') {
-      throw new BadRequestException('Session is not active');
-    }
-
-    const pattern = await this.patternRepo.findOne({ where: { id: session.patternId } });
-    if (!pattern) {
-      throw new NotFoundException('Pattern not found');
-    }
+  private assertPatternVisible(principal: AuthPrincipal, pattern: PatternEntity): void {
     if (
       pattern.visibility === 'personal' &&
-      (principal.type !== PrincipalType.Account ||
-        pattern.ownerAccountId !== principal.id)
+      (principal.type !== PrincipalType.Account || pattern.ownerAccountId !== principal.id)
     ) {
       throw new NotFoundException('Pattern not found');
     }
+  }
 
+  private async assertPatternUnlocked(
+    manager: EntityManager,
+    principal: AuthPrincipal,
+    pattern: PatternEntity,
+  ): Promise<void> {
+    if (pattern.unlockPriceTier === null) return;
+    const ledgerPrincipal = {
+      id: principal.id,
+      type: principal.type === PrincipalType.Account ? ('account' as const) : ('guest' as const),
+    };
+    const owned = await this.coinLedger.isPatternUnlocked(
+      manager,
+      ledgerPrincipal,
+      pattern.id,
+    );
+    if (!owned) {
+      throw new ForbiddenException({
+        code: 'unlock_required',
+        patternId: pattern.id,
+        price: unlockPrice(pattern.unlockPriceTier),
+      });
+    }
+  }
+
+  private preparationResponse(sessionId: string, pattern: PatternEntity) {
     const exp = Math.floor(Date.now() / 1000) + this.configService.grantTtlSeconds;
-    const sig = this.signGrant(session.patternId, exp);
-    const url = `/v1/artifacts/${session.patternId}?exp=${exp}&sig=${sig}`;
-    const expiresAt = new Date(exp * 1000).toISOString();
-
+    const sig = this.signGrant(pattern.id, exp);
     return {
-      sessionId,
-      patternId: session.patternId,
       artifact: {
-        checksum: pattern.artifactChecksum.trim(),
         byteLength: pattern.artifactByteLength,
+        checksum: pattern.artifactChecksum.trim(),
         schemaVersion: pattern.artifactSchemaVersion,
       },
       grant: {
-        url,
-        expiresAt,
+        expiresAt: new Date(exp * 1000).toISOString(),
+        url: `/v1/artifacts/${pattern.id}?exp=${exp}&sig=${sig}`,
       },
+      patternId: pattern.id,
+      sessionId,
     };
   }
 

@@ -60,6 +60,16 @@ export class CatalogMetadataRevisionService {
     const metadataValid = metadataErrors.length === 0 && moderationEvidence.flagged !== true;
 
     return this.dataSource.transaction(async (manager) => {
+      const lockedPattern = await manager.getRepository(PatternEntity).findOne({
+        lock: { mode: 'pessimistic_write' },
+        where: {
+          creatorProfileId: profile.id,
+          id: patternId,
+          status: 'available',
+          visibility: 'catalog',
+        },
+      });
+      if (lockedPattern === null) throw new NotFoundException('Community Pattern not found');
       const existing = await manager.getRepository(CatalogMetadataRevisionEntity).findOneBy({
         communityPatternId: patternId,
         status: In([...ACTIVE_SLOT_STATUSES]),
@@ -135,6 +145,16 @@ export class CatalogMetadataRevisionService {
       throw new ConflictException('The appeal right for this revision was waived by a later revision');
     }
     return this.dataSource.transaction(async (manager) => {
+      const pattern = await manager.getRepository(PatternEntity).findOne({
+        lock: { mode: 'pessimistic_write' },
+        where: {
+          creatorProfileId: snapshot.creatorProfileId,
+          id: snapshot.communityPatternId,
+          status: 'available',
+          visibility: 'catalog',
+        },
+      });
+      if (pattern === null) throw new ConflictException('Community Pattern is unavailable');
       const repository = manager.getRepository(CatalogMetadataRevisionEntity);
       const revision = await repository.findOne({
         lock: { mode: 'pessimistic_write' },
@@ -172,7 +192,11 @@ export class CatalogMetadataRevisionService {
     const patterns = await this.dataSource.getRepository(PatternEntity).find({
       order: { publishedAt: 'DESC' },
       relations: ['tags'],
-      where: { creatorProfileId: profile.id, status: 'available', visibility: 'catalog' },
+      where: {
+        creatorProfileId: profile.id,
+        status: In(['available', 'withdrawn']),
+        visibility: 'catalog',
+      },
     });
     if (patterns.length === 0) return [];
     const revisions = await this.dataSource.getRepository(CatalogMetadataRevisionEntity).find({
@@ -189,13 +213,14 @@ export class CatalogMetadataRevisionService {
       const latest = latestByPattern.get(pattern.id) ?? null;
       const hasActiveSlot = latest !== null && (ACTIVE_SLOT_STATUSES as readonly string[]).includes(latest.status);
       return {
-        canSubmitRevision: !hasActiveSlot,
+        canSubmitRevision: pattern.status === 'available' && !hasActiveSlot,
         categoryCode: pattern.categoryCode,
         description: pattern.description,
         id: pattern.id,
         latestRevision: latest === null ? null : this.ownerView(latest),
         publishedAt: pattern.publishedAt.toISOString(),
         sourceLanguage: pattern.sourceLanguage,
+        status: pattern.status,
         tagCodes: (pattern.tags ?? []).map((tag) => tag.code),
         title: pattern.title,
       };
@@ -286,7 +311,9 @@ export class CatalogMetadataRevisionService {
         lock: { mode: 'pessimistic_write' },
         where: { id: revision.communityPatternId },
       });
-      if (pattern === null) throw new ConflictException('Community Pattern is unavailable');
+      if (pattern === null || pattern.status !== 'available') {
+        throw new ConflictException('Community Pattern is unavailable');
+      }
       const category = await manager.getRepository(CategoryEntity).findOneBy({
         active: true,
         code: revision.categoryCode,
