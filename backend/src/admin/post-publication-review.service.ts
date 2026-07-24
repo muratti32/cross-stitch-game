@@ -394,6 +394,93 @@ export class PostPublicationReviewService {
     });
   }
 
+  async applySafetyRemoval(
+    operatorAccountId: string,
+    id: string,
+    rawReason: string,
+    requestId: string | null,
+  ) {
+    const reason = normalizeReason(rawReason);
+    if (reason.length === 0 || reason.length > 2000) {
+      throw new ConflictException('Safety Removal reason is required');
+    }
+
+    return this.dataSource.transaction(async (manager) => {
+      const reviews = manager.getRepository(PostPublicationReviewEntity);
+      const review = await reviews.findOne({
+        lock: { mode: 'pessimistic_write' },
+        where: { id },
+      });
+      if (review === null) {
+        throw new NotFoundException('Post-Publication Review not found');
+      }
+      if (review.status === 'closed') {
+        return this.idempotentCloseView(manager, review, 'safety_removal');
+      }
+
+      const patterns = manager.getRepository(PatternEntity);
+      const pattern = await patterns.findOne({
+        lock: { mode: 'pessimistic_write' },
+        where: { id: review.communityPatternId },
+      });
+      if (pattern === null || pattern.creatorProfileId === null) {
+        throw new ConflictException('Community Pattern is unavailable');
+      }
+      if (pattern.status !== 'available' && pattern.status !== 'review_hold') {
+        throw new ConflictException('Community Pattern is unavailable');
+      }
+
+      const before = { patternStatus: pattern.status, reviewStatus: review.status };
+      pattern.status = 'removed';
+      await patterns.save(pattern);
+
+      // Purges the public Pattern Preview so it disappears from the CDN. The
+      // private origin artifact stays in storage for Safety Removal Appeal
+      // review; only the artifact grant path (already gated on pattern status
+      // in SessionsService) controls access to it going forward.
+      await this.storage.delete(pattern.previewObjectKey);
+
+      const closedRecords = await this.closePendingMetadataWork(
+        manager,
+        review.id,
+        pattern.id,
+      );
+
+      review.status = 'closed';
+      review.closedAt = new Date();
+      review.closeOutcome = 'safety_removal';
+      review.closeOperatorAccountId = operatorAccountId;
+      review.closeReason = reason;
+      await reviews.save(review);
+
+      const { notice, emailQueued } = await this.createOwnerNotice(manager, {
+        noticeType: 'safety_removal',
+        pattern,
+        reason,
+        reviewId: review.id,
+      });
+
+      await this.auditLog.record(manager, {
+        action: 'post_publication_review.close.safety_removal',
+        after: {
+          closedRecords,
+          emailQueued,
+          moderationNoticeId: notice.id,
+          patternStatus: pattern.status,
+          reviewStatus: review.status,
+        },
+        before,
+        operatorAccountId,
+        outcome: 'success',
+        requestId,
+        targetId: review.id,
+        targetType: 'post_publication_review',
+      });
+
+      return this.closeView(review, notice, true, emailQueued);
+    });
+  }
+
   private async idempotentCloseView(
     manager: EntityManager,
     review: PostPublicationReviewEntity,

@@ -66,9 +66,9 @@ export async function syncProgress(
     },
   );
   if (response.status !== 200) {
-    throw new ProgressSyncError(
+    throw await ProgressSyncError.fromResponse(
       `Progress sync failed: status ${response.status}`,
-      response.status,
+      response,
     );
   }
   return (await response.json()) as ProgressSyncResponse;
@@ -91,9 +91,9 @@ export async function completeProgress(
     },
   );
   if (response.status !== 200) {
-    throw new ProgressSyncError(
+    throw await ProgressSyncError.fromResponse(
       `Progress completion failed: status ${response.status}`,
-      response.status,
+      response,
     );
   }
   return (await response.json()) as ProgressCompleteResponse;
@@ -122,9 +122,17 @@ export async function fetchProgressCheckpoint(
 
 export class ProgressSyncError extends Error {
   readonly status: number;
-  constructor(message: string, status: number) {
+  readonly code: string | null;
+  constructor(message: string, status: number, code: string | null = null) {
     super(message);
     this.name = 'ProgressSyncError';
     this.status = status;
+    this.code = code;
+  }
+
+  static async fromResponse(message: string, response: Response): Promise<ProgressSyncError> {
+    const body = (await response.json().catch(() => null)) as { code?: unknown } | null;
+    const code = typeof body?.code === 'string' ? body.code : null;
+    return new ProgressSyncError(message, response.status, code);
   }
 }

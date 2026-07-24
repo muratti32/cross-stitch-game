@@ -16,10 +16,13 @@ import type { ObjectStorage } from '../src/catalog/storage/object-storage.interf
 import type { AppConfigService } from '../src/config/app-config.service';
 import { createTypeOrmOptions } from '../src/database/typeorm-options';
 import type { CoinLedgerRepository } from '../src/economy/coin-ledger.repository';
+import type { PromotionService } from '../src/promotion/promotion.service';
 import {
   SessionProgressFlagEntity,
   StitchingSessionEntity,
 } from '../src/sessions/entities';
+import { ProgressCheckpointService } from '../src/sessions/progress-checkpoint.service';
+import { ProgressSyncService } from '../src/sessions/progress-sync.service';
 import { SessionsService } from '../src/sessions/sessions.service';
 
 describe('Post-Publication Review Hold', () => {
@@ -30,6 +33,7 @@ describe('Post-Publication Review Hold', () => {
   let notices: ModerationNoticeService;
   let revisions: CatalogMetadataRevisionService;
   let sessions: SessionsService;
+  let progressSync: ProgressSyncService;
   let emailDispatcher: EmailOutboxDispatcherService;
   let localEmailSender: LocalEmailSender;
   let ownerAccountId: string;
@@ -40,7 +44,7 @@ describe('Post-Publication Review Hold', () => {
   let profileId: string;
 
   const storage: ObjectStorage = {
-    delete: () => Promise.resolve(),
+    delete: jest.fn().mockResolvedValue(undefined),
     exists: () => Promise.resolve(false),
     get: () => Promise.resolve(null),
     publicUrl: (key: string) => `/v1/catalog-previews/${key}`,
@@ -117,6 +121,12 @@ describe('Post-Publication Review Hold', () => {
     emailDispatcher = new EmailOutboxDispatcherService(
       dataSource,
       localEmailSender,
+    );
+    progressSync = new ProgressSyncService(
+      dataSource,
+      new ProgressCheckpointService(dataSource),
+      {} as unknown as CoinLedgerRepository,
+      { assertNotLocked: jest.fn().mockResolvedValue(undefined) } as unknown as PromotionService,
     );
   });
 
@@ -430,6 +440,106 @@ describe('Post-Publication Review Hold', () => {
 
     await expect(
       reviews.closeNoViolation(operatorId, created.review.id, 'Too late.', null),
+    ).rejects.toThrow();
+  });
+
+  it('applies Safety Removal: purges the preview, blocks new and existing sessions and grants, delivers a deletion instruction, and resolves pending metadata work', async () => {
+    const patternId = await createCommunityPattern('Unsafe Pattern');
+    const prepared = await sessions.prepareSession(
+      accountPrincipal(existingPlayerAccountId),
+      patternId,
+    );
+    await sessions.setProgressFlagInternal(prepared.sessionId, true);
+    const revision = await revisions.create(accountPrincipal(ownerAccountId), patternId, {
+      categoryCode: 'other',
+      description: 'A proposed correction submitted before Safety Removal.',
+      sourceLanguage: 'en',
+      tagCodes: [],
+      title: 'Proposed Title',
+    });
+    const created = await reports.create(
+      accountPrincipal(reporterAccountId),
+      patternId,
+      { reason: 'inappropriate_or_unsafe_content' },
+    );
+
+    const [patternBefore] = await dataSource.query<{ preview_object_key: string }[]>(
+      'SELECT preview_object_key FROM catalog.patterns WHERE id = $1',
+      [patternId],
+    );
+
+    const reason = 'Confirmed unsafe content violating platform policy.';
+    const results = await Promise.all(
+      Array.from({ length: 4 }, () =>
+        reviews.applySafetyRemoval(operatorId, created.review.id, reason, 'safety-request'),
+      ),
+    );
+    expect(results.filter((result) => result.applied)).toHaveLength(1);
+    expect(new Set(results.map((result) => result.moderationNoticeId))).toHaveProperty('size', 1);
+    expect(results[0].closeOutcome).toBe('safety_removal');
+
+    expect(await patternStatus(patternId)).toBe('removed');
+    expect(storage.delete).toHaveBeenCalledWith(patternBefore.preview_object_key);
+
+    await expect(
+      sessions.prepareSession(accountPrincipal(newPlayerAccountId), patternId),
+    ).rejects.toThrow('Pattern is not available');
+    await expect(
+      sessions.prepareSession(accountPrincipal(existingPlayerAccountId), patternId),
+    ).rejects.toThrow('Pattern is not available');
+    await expect(
+      sessions.refreshGrant(accountPrincipal(existingPlayerAccountId), prepared.sessionId),
+    ).rejects.toThrow('Pattern is not available');
+
+    const deviceId = randomUUID();
+    await expect(
+      progressSync.sync(accountPrincipal(existingPlayerAccountId), prepared.sessionId, {
+        deviceId,
+        operations: [],
+        sinceRevision: 0,
+      }),
+    ).rejects.toMatchObject({ status: 410, response: { code: 'pattern_removed' } });
+    await expect(
+      progressSync.complete(accountPrincipal(existingPlayerAccountId), prepared.sessionId, {
+        deviceId,
+      }),
+    ).rejects.toMatchObject({ status: 410, response: { code: 'pattern_removed' } });
+
+    const [revisionRow] = await dataSource.query<{ status: string }[]>(
+      'SELECT status FROM catalog.catalog_metadata_revisions WHERE id = $1',
+      [revision.id],
+    );
+    expect(revisionRow.status).toBe('withdrawn');
+    const [closure] = await dataSource.query<{ record_type: string; to_status: string }[]>(
+      'SELECT record_type, to_status FROM moderation.post_publication_review_closures WHERE review_id = $1',
+      [created.review.id],
+    );
+    expect(closure).toMatchObject({ record_type: 'metadata_revision', to_status: 'withdrawn' });
+
+    const auditCount = await countRows(
+      'admin.operator_audit_log',
+      `action = 'post_publication_review.close.safety_removal' AND target_id = '${created.review.id}'`,
+    );
+    expect(auditCount).toBe(1);
+
+    const ownerNotices = await notices.listMine(accountPrincipal(ownerAccountId));
+    expect(ownerNotices).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ noticeType: 'safety_removal', patternId, reason }),
+      ]),
+    );
+    expect(JSON.stringify(ownerNotices)).not.toContain(reporterAccountId);
+
+    await expect(
+      reviews.closeNoViolation(operatorId, created.review.id, 'Too late.', null),
+    ).rejects.toThrow();
+    await expect(
+      reviews.applyRemediation(
+        operatorId,
+        created.review.id,
+        { reason: 'Too late.', removeTagCodes: [] },
+        null,
+      ),
     ).rejects.toThrow();
   });
 

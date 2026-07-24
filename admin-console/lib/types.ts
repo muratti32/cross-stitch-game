@@ -294,7 +294,10 @@ export type CommunityReportReason =
   | 'misleading_title_or_tags'
   | 'other';
 
-export type PostPublicationReviewCloseOutcome = 'no_violation' | 'metadata_remediation';
+export type PostPublicationReviewCloseOutcome =
+  | 'no_violation'
+  | 'metadata_remediation'
+  | 'safety_removal';
 
 export interface PostPublicationReviewListItem {
   closeOutcome: PostPublicationReviewCloseOutcome | null;

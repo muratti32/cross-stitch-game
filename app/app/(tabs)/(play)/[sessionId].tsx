@@ -54,6 +54,7 @@ export default function SessionReadyScreen() {
     hasSyncConflict,
     dismissSyncConflict,
     syncTick,
+    patternRemoved,
   } = useStitchingSession(sessionId);
 
   const { selectedColorIndex, setSelectedColorIndex, handedness } = useGameplayStore();
@@ -283,8 +284,21 @@ export default function SessionReadyScreen() {
         </View>
       </View>
 
+      {/* Safety Removal deletion instruction: session is no longer playable. */}
+      {patternRemoved && (
+        <Pressable
+          style={styles.removedBanner}
+          onPress={() => router.dismissTo('/(tabs)/(play)')}
+        >
+          <Ionicons name="shield-outline" size={16} color={Theme.colors.textPrimary} />
+          <Text style={styles.conflictText}>
+            This Pattern was removed by moderation and is no longer available. Tap to leave.
+          </Text>
+        </Pressable>
+      )}
+
       {/* Progress Sync conflict notice (server resolved a concurrent edit) */}
-      {hasSyncConflict && (
+      {!patternRemoved && hasSyncConflict && (
         <Pressable style={styles.conflictBanner} onPress={dismissSyncConflict}>
           <Ionicons name="sync-outline" size={16} color={Theme.colors.textPrimary} />
           <Text style={styles.conflictText}>
@@ -529,6 +543,17 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: Theme.typography.sizes.sm,
     color: Theme.colors.textPrimary,
+  },
+  removedBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Theme.spacing.xs,
+    paddingHorizontal: Theme.spacing.md,
+    paddingVertical: Theme.spacing.sm,
+    backgroundColor: '#F5D9D9',
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.colors.border,
+    zIndex: 10,
   },
   headerInfo: {
     flex: 1,

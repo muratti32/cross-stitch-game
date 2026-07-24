@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, GoneException, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
 import { PrincipalType } from '../auth/entities';
@@ -118,6 +118,7 @@ export class ProgressSyncService {
     return this.dataSource.transaction(async (manager) => {
       await this.requireAccountSession(manager, principal, sessionId);
       await this.lockSession(manager, sessionId);
+      await this.assertPatternNotRemoved(manager, sessionId);
       await this.ensureSyncState(manager, sessionId);
 
       const syncState = await this.getSyncState(manager, sessionId);
@@ -252,6 +253,7 @@ export class ProgressSyncService {
     return this.dataSource.transaction(async (manager) => {
       await this.requireAccountSession(manager, principal, sessionId);
       await this.lockSession(manager, sessionId);
+      await this.assertPatternNotRemoved(manager, sessionId);
       await this.ensureSyncState(manager, sessionId);
 
       const syncState = await this.getSyncState(manager, sessionId);
@@ -353,6 +355,28 @@ export class ProgressSyncService {
        ) AS locked`,
       [sessionId],
     );
+  }
+
+  // Safety Removal must block both new and existing Stitching Sessions. Progress
+  // sync is the recurring "next backend check" a connected client makes, so this
+  // is where the deletion instruction is delivered: every call on a removed
+  // Pattern rejects the same way, which is what makes it idempotent from the
+  // client's perspective.
+  private async assertPatternNotRemoved(
+    manager: EntityManager,
+    sessionId: string,
+  ): Promise<void> {
+    const rows = await manager.query<readonly { status: string; patternId: string }[]>(
+      `SELECT p.status, p.id AS "patternId"
+       FROM sessions.stitching_sessions s
+       INNER JOIN catalog.patterns p ON p.id = s.pattern_id
+       WHERE s.id = $1`,
+      [sessionId],
+    );
+    const pattern = rows[0];
+    if (pattern && pattern.status === 'removed') {
+      throw new GoneException({ code: 'pattern_removed', patternId: pattern.patternId });
+    }
   }
 
   private async ensureSyncState(manager: EntityManager, sessionId: string): Promise<void> {

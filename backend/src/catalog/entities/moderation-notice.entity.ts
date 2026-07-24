@@ -11,14 +11,15 @@ import {
 export type ModerationNoticeType =
   | 'review_hold'
   | 'no_violation'
-  | 'metadata_remediation';
+  | 'metadata_remediation'
+  | 'safety_removal';
 
 @Entity({ name: 'moderation_notices', schema: 'moderation' })
 @Unique('UQ_moderation_notices_review_type', ['reviewId', 'noticeType'])
 @Index('IDX_moderation_notices_account_created', ['accountId', 'createdAt'])
 @Check(
   'CHK_moderation_notices_type',
-  '"notice_type" IN (\'review_hold\', \'no_violation\', \'metadata_remediation\')',
+  '"notice_type" IN (\'review_hold\', \'no_violation\', \'metadata_remediation\', \'safety_removal\')',
 )
 export class ModerationNoticeEntity {
   @PrimaryGeneratedColumn('uuid', {

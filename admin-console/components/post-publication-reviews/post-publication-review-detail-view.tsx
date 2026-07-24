@@ -22,6 +22,7 @@ import { useCategories } from '@/hooks/use-categories';
 import {
   useApplyCatalogMetadataRemediation,
   useApplyReviewHold,
+  useApplySafetyRemoval,
   useCloseReviewNoViolation,
   usePostPublicationReview,
 } from '@/hooks/use-post-publication-reviews';
@@ -42,6 +43,7 @@ const REASON_LABELS: Record<CommunityReportReason, string> = {
 const CLOSE_OUTCOME_LABELS = {
   metadata_remediation: 'Catalog Metadata Remediation applied',
   no_violation: 'Closed — no violation found',
+  safety_removal: 'Safety Removal applied',
 };
 
 export function PostPublicationReviewDetailView({ reviewId }: { reviewId: string }) {
@@ -51,11 +53,13 @@ export function PostPublicationReviewDetailView({ reviewId }: { reviewId: string
   const hold = useApplyReviewHold(reviewId);
   const closeNoViolation = useCloseReviewNoViolation(reviewId);
   const remediate = useApplyCatalogMetadataRemediation(reviewId);
+  const safetyRemoval = useApplySafetyRemoval(reviewId);
   const [reason, setReason] = useState('');
   const [closeReason, setCloseReason] = useState('');
   const [remediationReason, setRemediationReason] = useState('');
   const [removeTagCodes, setRemoveTagCodes] = useState<string[]>([]);
   const [remediationCategory, setRemediationCategory] = useState<string | null>(null);
+  const [safetyRemovalReason, setSafetyRemovalReason] = useState('');
 
   if (query.isPending) {
     return (
@@ -331,6 +335,49 @@ export function PostPublicationReviewDetailView({ reviewId }: { reviewId: string
                 />
                 {remediate.error !== null && (
                   <p className="text-sm text-destructive">{remediate.error.message}</p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {review.status === 'open' && (
+            <Card className="border-destructive/50">
+              <CardHeader><CardTitle>Apply Safety Removal</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-xs text-muted-foreground">
+                  For a serious safety, legal, or policy violation. Removes the Pattern from every
+                  public catalog surface, purges its public preview, blocks new and existing
+                  Stitching Sessions, and stops new Artifact Access Grants. Connected clients
+                  delete their Offline Pattern Data at their next backend check. This is
+                  irreversible except through a Safety Removal Appeal.
+                </p>
+                <div className="space-y-2">
+                  <Label htmlFor="safety-removal-reason">Owner-visible reason</Label>
+                  <Textarea
+                    id="safety-removal-reason"
+                    maxLength={2000}
+                    placeholder="Explain the safety, legal, or policy violation. Do not include reporter details."
+                    value={safetyRemovalReason}
+                    onChange={(event) => setSafetyRemovalReason(event.target.value)}
+                  />
+                </div>
+                <ConfirmActionDialog
+                  trigger={
+                    <Button disabled={safetyRemovalReason.trim().length === 0} variant="destructive">
+                      Apply Safety Removal
+                    </Button>
+                  }
+                  title="Apply Safety Removal?"
+                  description="This immediately removes the Pattern from discovery, blocks new and existing Stitching Sessions, purges the public preview, and resolves any pending Catalog Metadata Revision or appeal without publishing it. The owner receives one in-app notice and one idempotent email. Only a Safety Removal Appeal can reverse this."
+                  confirmLabel="Apply Safety Removal"
+                  destructive
+                  onConfirm={async () => {
+                    await safetyRemoval.mutateAsync(safetyRemovalReason.trim());
+                    toast.success('Safety Removal applied and owner notice queued.');
+                  }}
+                />
+                {safetyRemoval.error !== null && (
+                  <p className="text-sm text-destructive">{safetyRemoval.error.message}</p>
                 )}
               </CardContent>
             </Card>

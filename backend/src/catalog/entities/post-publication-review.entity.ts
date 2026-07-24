@@ -11,7 +11,8 @@ import {
 export type PostPublicationReviewStatus = 'open' | 'closed';
 export type PostPublicationReviewCloseOutcome =
   | 'no_violation'
-  | 'metadata_remediation';
+  | 'metadata_remediation'
+  | 'safety_removal';
 
 @Entity({ name: 'post_publication_reviews', schema: 'moderation' })
 @Index('IDX_post_publication_reviews_pattern', ['communityPatternId', 'createdAt'])
@@ -33,7 +34,7 @@ export type PostPublicationReviewCloseOutcome =
 )
 @Check(
   'CHK_post_publication_reviews_close_outcome',
-  '"close_outcome" IN (\'no_violation\', \'metadata_remediation\')',
+  '"close_outcome" IN (\'no_violation\', \'metadata_remediation\', \'safety_removal\')',
 )
 @Check(
   'CHK_post_publication_reviews_close',

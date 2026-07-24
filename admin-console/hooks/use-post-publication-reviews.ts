@@ -61,6 +61,18 @@ export function useApplyCatalogMetadataRemediation(id: string) {
   });
 }
 
+export function useApplySafetyRemoval(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (reason: string) =>
+      api.post<PostPublicationReviewCloseResult>(
+        `/api/admin/post-publication-reviews/${id}/safety-removal`,
+        { reason },
+      ),
+    onSuccess: () => invalidateReviewQueries(queryClient, id),
+  });
+}
+
 function invalidateReviewQueries(
   queryClient: ReturnType<typeof useQueryClient>,
   id: string,

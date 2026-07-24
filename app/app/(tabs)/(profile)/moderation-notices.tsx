@@ -20,6 +20,7 @@ const NOTICE_LABELS: Record<ModerationNoticeType, string> = {
   metadata_remediation: 'Catalog Metadata Remediation',
   no_violation: 'Review closed — no violation',
   review_hold: 'Review Hold',
+  safety_removal: 'Safety Removal',
 };
 
 const NOTICE_HELP: Record<ModerationNoticeType, string> = {
@@ -29,6 +30,8 @@ const NOTICE_HELP: Record<ModerationNoticeType, string> = {
     'The Post-Publication Review is closed and this Pattern is fully available again in discovery and new Stitching Sessions.',
   review_hold:
     'This Pattern is temporarily unavailable for discovery and new sessions. Existing Stitching Sessions, progress, and Offline Pattern Data remain playable.',
+  safety_removal:
+    'This Pattern was removed for a safety, legal, or policy violation. It left discovery, existing Stitching Sessions became inaccessible, and Offline Pattern Data on your devices was deleted. You may submit one Safety Removal Appeal.',
 };
 
 export default function ModerationNoticesScreen() {
