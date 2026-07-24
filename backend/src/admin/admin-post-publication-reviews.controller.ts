@@ -10,7 +10,9 @@ import {
 } from '@nestjs/common';
 
 import { CurrentOperator } from './current-operator.decorator';
+import { ApplyCatalogMetadataRemediationDto } from './dto/apply-catalog-metadata-remediation.dto';
 import { ApplyReviewHoldDto } from './dto/apply-review-hold.dto';
+import { ClosePostPublicationReviewDto } from './dto/close-post-publication-review.dto';
 import { OperatorAuthGuard } from './operator-auth.guard';
 import type { OperatorPrincipal } from './operator-auth.types';
 import { OperatorPermissionsGuard } from './operator-permissions.guard';
@@ -46,6 +48,38 @@ export class AdminPostPublicationReviewsController {
       operator.id,
       id,
       dto.reason,
+      requestId ?? null,
+    );
+  }
+
+  @Post(':id/close')
+  @RequireOperatorPermissions('catalog.post_publication_review.manage')
+  closeNoViolation(
+    @CurrentOperator() operator: OperatorPrincipal,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: ClosePostPublicationReviewDto,
+    @Headers('x-request-id') requestId?: string,
+  ) {
+    return this.reviews.closeNoViolation(
+      operator.id,
+      id,
+      dto.reason,
+      requestId ?? null,
+    );
+  }
+
+  @Post(':id/remediate')
+  @RequireOperatorPermissions('catalog.post_publication_review.manage')
+  applyRemediation(
+    @CurrentOperator() operator: OperatorPrincipal,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: ApplyCatalogMetadataRemediationDto,
+    @Headers('x-request-id') requestId?: string,
+  ) {
+    return this.reviews.applyRemediation(
+      operator.id,
+      id,
+      dto,
       requestId ?? null,
     );
   }

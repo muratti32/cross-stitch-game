@@ -294,7 +294,12 @@ export type CommunityReportReason =
   | 'misleading_title_or_tags'
   | 'other';
 
+export type PostPublicationReviewCloseOutcome = 'no_violation' | 'metadata_remediation';
+
 export interface PostPublicationReviewListItem {
+  closeOutcome: PostPublicationReviewCloseOutcome | null;
+  closeReason: string | null;
+  closedAt: string | null;
   holdAppliedAt: string | null;
   holdReason: string | null;
   id: string;
@@ -338,4 +343,16 @@ export interface ReviewHoldResult {
   reason: string;
   reviewId: string;
   status: 'review_hold';
+}
+
+export interface PostPublicationReviewCloseResult {
+  applied: boolean;
+  closeOutcome: PostPublicationReviewCloseOutcome;
+  closedAt: string;
+  emailQueued: boolean;
+  moderationNoticeId: string;
+  patternId: string;
+  reason: string | null;
+  reviewId: string;
+  status: 'closed';
 }

@@ -16,6 +16,7 @@ import {
   CategoryEntity,
   CommunityReportEntity,
   PostPublicationReviewEntity,
+  PostPublicationReviewClosureEntity,
   CatalogWithdrawalClosureEntity,
   CatalogWithdrawalEntity,
   ModerationNoticeEntity,
@@ -107,6 +108,7 @@ import { CreateCatalogMetadataRevisions1786233600000 } from './migrations/178623
 import { CreateCommunityReports1786320000000 } from './migrations/1786320000000-CreateCommunityReports';
 import { CreateCatalogWithdrawals1786406400000 } from './migrations/1786406400000-CreateCatalogWithdrawals';
 import { CreateReviewHolds1786492800000 } from './migrations/1786492800000-CreateReviewHolds';
+import { CreatePostPublicationReviewFinalDecisions1786579200000 } from './migrations/1786579200000-CreatePostPublicationReviewFinalDecisions';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -168,6 +170,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CatalogMetadataReviewDecisionEntity,
       CommunityReportEntity,
       PostPublicationReviewEntity,
+      PostPublicationReviewClosureEntity,
       CatalogWithdrawalClosureEntity,
       CatalogWithdrawalEntity,
       ModerationNoticeEntity,
@@ -205,6 +208,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateCommunityReports1786320000000,
       CreateCatalogWithdrawals1786406400000,
       CreateReviewHolds1786492800000,
+      CreatePostPublicationReviewFinalDecisions1786579200000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

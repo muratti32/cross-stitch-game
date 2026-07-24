@@ -15,12 +15,17 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
+import { useCategories } from '@/hooks/use-categories';
 import {
+  useApplyCatalogMetadataRemediation,
   useApplyReviewHold,
+  useCloseReviewNoViolation,
   usePostPublicationReview,
 } from '@/hooks/use-post-publication-reviews';
+import { useTags } from '@/hooks/use-tags';
 import { ApiError } from '@/lib/client/fetcher';
 import { formatDateTime } from '@/lib/format';
 import { toConsolePreviewSrc } from '@/lib/preview-url';
@@ -34,10 +39,23 @@ const REASON_LABELS: Record<CommunityReportReason, string> = {
   other: 'Other',
 };
 
+const CLOSE_OUTCOME_LABELS = {
+  metadata_remediation: 'Catalog Metadata Remediation applied',
+  no_violation: 'Closed — no violation found',
+};
+
 export function PostPublicationReviewDetailView({ reviewId }: { reviewId: string }) {
   const query = usePostPublicationReview(reviewId);
+  const categoriesQuery = useCategories();
+  const tagsQuery = useTags();
   const hold = useApplyReviewHold(reviewId);
+  const closeNoViolation = useCloseReviewNoViolation(reviewId);
+  const remediate = useApplyCatalogMetadataRemediation(reviewId);
   const [reason, setReason] = useState('');
+  const [closeReason, setCloseReason] = useState('');
+  const [remediationReason, setRemediationReason] = useState('');
+  const [removeTagCodes, setRemoveTagCodes] = useState<string[]>([]);
+  const [remediationCategory, setRemediationCategory] = useState<string | null>(null);
 
   if (query.isPending) {
     return (
@@ -81,12 +99,23 @@ export function PostPublicationReviewDetailView({ reviewId }: { reviewId: string
         actions={<PatternStatusBadge status={review.pattern.status} />}
       />
 
-      {review.holdAppliedAt !== null && (
+      {review.status === 'open' && review.holdAppliedAt !== null && (
         <Alert className="mb-6">
           <ShieldAlert />
           <AlertTitle>Review Hold active</AlertTitle>
           <AlertDescription>
             Applied {formatDateTime(review.holdAppliedAt)}. {review.holdReason}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {review.status === 'closed' && review.closeOutcome !== null && (
+        <Alert className="mb-6">
+          <ShieldAlert />
+          <AlertTitle>{CLOSE_OUTCOME_LABELS[review.closeOutcome]}</AlertTitle>
+          <AlertDescription>
+            {review.closedAt !== null && `Decided ${formatDateTime(review.closedAt)}. `}
+            {review.closeReason}
           </AlertDescription>
         </Alert>
       )}
@@ -172,6 +201,136 @@ export function PostPublicationReviewDetailView({ reviewId }: { reviewId: string
                 />
                 {hold.error !== null && (
                   <p className="text-sm text-destructive">{hold.error.message}</p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {review.status === 'open' && (
+            <Card>
+              <CardHeader><CardTitle>Close — no violation found</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="close-no-violation-reason">Owner-visible reason</Label>
+                  <Textarea
+                    id="close-no-violation-reason"
+                    maxLength={2000}
+                    placeholder="Explain why the report(s) did not identify a policy violation."
+                    value={closeReason}
+                    onChange={(event) => setCloseReason(event.target.value)}
+                  />
+                </div>
+                <ConfirmActionDialog
+                  trigger={
+                    <Button disabled={closeReason.trim().length === 0} variant="secondary">
+                      Close with no violation
+                    </Button>
+                  }
+                  title="Close this Post-Publication Review?"
+                  description="This restores normal discovery, new Stitching Sessions, and grant behavior, clears any active Review Hold, and resolves any pending Catalog Metadata Revision or appeal without publishing it. The owner receives one in-app notice and one idempotent email."
+                  confirmLabel="Close with no violation"
+                  onConfirm={async () => {
+                    await closeNoViolation.mutateAsync(closeReason.trim());
+                    toast.success('Post-Publication Review closed and owner notice queued.');
+                  }}
+                />
+                {closeNoViolation.error !== null && (
+                  <p className="text-sm text-destructive">{closeNoViolation.error.message}</p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {review.status === 'open' && (
+            <Card>
+              <CardHeader><CardTitle>Apply Catalog Metadata Remediation</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-xs text-muted-foreground">
+                  Replaces the title and description with a safe neutral default, removes the
+                  violating tags you select below, and may reassign the category. The Pattern
+                  Artifact, preview, and availability are unaffected. There is no separate appeal;
+                  the owner may submit an ordinary Catalog Metadata Revision afterward.
+                </p>
+                <div className="space-y-2">
+                  <Label htmlFor="remediation-reason">Owner-visible reason</Label>
+                  <Textarea
+                    id="remediation-reason"
+                    maxLength={2000}
+                    placeholder="Explain what violated policy and what changed. Do not include reporter details."
+                    value={remediationReason}
+                    onChange={(event) => setRemediationReason(event.target.value)}
+                  />
+                </div>
+                {review.pattern.tagCodes.length > 0 && (
+                  <div className="space-y-2">
+                    <Label>Tags to remove</Label>
+                    <div className="flex flex-wrap gap-2 rounded-lg border border-input p-2">
+                      {review.pattern.tagCodes.map((code) => {
+                        const selected = removeTagCodes.includes(code);
+                        const label =
+                          tagsQuery.data?.find((tag) => tag.code === code)?.labels.find(
+                            (entry) => entry.locale === 'en',
+                          )?.label ?? code;
+                        return (
+                          <button
+                            key={code}
+                            type="button"
+                            onClick={() =>
+                              setRemoveTagCodes((current) =>
+                                selected
+                                  ? current.filter((entry) => entry !== code)
+                                  : [...current, code],
+                              )
+                            }
+                          >
+                            <Badge variant={selected ? 'destructive' : 'outline'} className="cursor-pointer">
+                              {label}
+                            </Badge>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <Label>Reassign category (optional)</Label>
+                  <Select
+                    value={remediationCategory ?? review.pattern.categoryCode}
+                    onValueChange={(value) =>
+                      setRemediationCategory(value === review.pattern.categoryCode ? null : value)
+                    }
+                  >
+                    <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {categoriesQuery.data?.map((category) => (
+                        <SelectItem key={category.code} value={category.code}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <ConfirmActionDialog
+                  trigger={
+                    <Button disabled={remediationReason.trim().length === 0} variant="destructive">
+                      Apply Catalog Metadata Remediation
+                    </Button>
+                  }
+                  title="Apply Catalog Metadata Remediation?"
+                  description="This immediately replaces the title and description with a safe default, removes the selected tags, may reassign the category, clears any active Review Hold, and resolves any pending Catalog Metadata Revision or appeal without publishing it. The owner receives one in-app notice and one idempotent email."
+                  confirmLabel="Apply remediation"
+                  destructive
+                  onConfirm={async () => {
+                    await remediate.mutateAsync({
+                      categoryCode: remediationCategory ?? undefined,
+                      reason: remediationReason.trim(),
+                      removeTagCodes,
+                    });
+                    toast.success('Catalog Metadata Remediation applied and owner notice queued.');
+                  }}
+                />
+                {remediate.error !== null && (
+                  <p className="text-sm text-destructive">{remediate.error.message}</p>
                 )}
               </CardContent>
             </Card>

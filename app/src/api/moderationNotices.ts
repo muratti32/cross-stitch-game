@@ -2,10 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 
 import { apiFetch } from './apiFetch';
 
+export type ModerationNoticeType = 'review_hold' | 'no_violation' | 'metadata_remediation';
+
 export interface ModerationNotice {
   createdAt: string;
   id: string;
-  noticeType: 'review_hold';
+  noticeType: ModerationNoticeType;
   patternId: string;
   patternTitle: string;
   reason: string;

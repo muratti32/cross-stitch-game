@@ -305,6 +305,134 @@ describe('Post-Publication Review Hold', () => {
     );
   });
 
+  it('closes with no violation, restores availability, and resolves a pending revision without publishing it', async () => {
+    const patternId = await createCommunityPattern('No Violation Pattern');
+    const created = await reports.create(
+      accountPrincipal(reporterAccountId),
+      patternId,
+      { reason: 'duplicate_or_spam' },
+    );
+    await reviews.applyHold(
+      operatorId,
+      created.review.id,
+      'Reviewing a duplicate-content report.',
+      null,
+    );
+    const revision = await revisions.create(accountPrincipal(ownerAccountId), patternId, {
+      categoryCode: 'other',
+      description: 'A proposed correction submitted during Review Hold.',
+      sourceLanguage: 'en',
+      tagCodes: [],
+      title: 'Proposed Title',
+    });
+
+    const closeReason = 'The duplicate-content report did not identify a policy violation.';
+    const results = await Promise.all(
+      Array.from({ length: 4 }, () =>
+        reviews.closeNoViolation(operatorId, created.review.id, closeReason, 'close-request'),
+      ),
+    );
+    expect(results.filter((result) => result.applied)).toHaveLength(1);
+    expect(new Set(results.map((result) => result.moderationNoticeId))).toHaveProperty('size', 1);
+    expect(results[0].closeOutcome).toBe('no_violation');
+
+    expect(await patternStatus(patternId)).toBe('available');
+    const [revisionRow] = await dataSource.query<{ status: string }[]>(
+      'SELECT status FROM catalog.catalog_metadata_revisions WHERE id = $1',
+      [revision.id],
+    );
+    expect(revisionRow.status).toBe('withdrawn');
+    const [closure] = await dataSource.query<{ record_type: string; to_status: string }[]>(
+      'SELECT record_type, to_status FROM moderation.post_publication_review_closures WHERE review_id = $1',
+      [created.review.id],
+    );
+    expect(closure).toMatchObject({ record_type: 'metadata_revision', to_status: 'withdrawn' });
+
+    const auditCount = await countRows(
+      'admin.operator_audit_log',
+      `action = 'post_publication_review.close.no_violation' AND target_id = '${created.review.id}'`,
+    );
+    expect(auditCount).toBe(1);
+
+    await expect(
+      reviews.applyRemediation(
+        operatorId,
+        created.review.id,
+        { reason: 'Reassessing.', removeTagCodes: [] },
+        null,
+      ),
+    ).rejects.toThrow();
+
+    const ownerNotices = await notices.listMine(accountPrincipal(ownerAccountId));
+    expect(ownerNotices).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ noticeType: 'no_violation', patternId, reason: closeReason }),
+      ]),
+    );
+  });
+
+  it('applies Catalog Metadata Remediation with safe defaults, tag removal, and category reassignment', async () => {
+    const patternId = await createCommunityPattern('Misleading Pattern Title');
+    await dataSource.query(
+      `INSERT INTO catalog.tags (code) VALUES ('cozy-fixture'), ('spooky-fixture') ON CONFLICT DO NOTHING`,
+    );
+    await dataSource.query(
+      'INSERT INTO catalog.pattern_tags (pattern_id, tag_code) VALUES ($1, $2), ($1, $3)',
+      [patternId, 'cozy-fixture', 'spooky-fixture'],
+    );
+    const created = await reports.create(
+      accountPrincipal(reporterAccountId),
+      patternId,
+      { reason: 'misleading_title_or_tags' },
+    );
+
+    const reason = 'The title and one tag were misleading; the underlying design is fine.';
+    const results = await Promise.all(
+      Array.from({ length: 4 }, () =>
+        reviews.applyRemediation(
+          operatorId,
+          created.review.id,
+          { categoryCode: 'fantasy', reason, removeTagCodes: ['spooky-fixture'] },
+          'remediate-request',
+        ),
+      ),
+    );
+    expect(results.filter((result) => result.applied)).toHaveLength(1);
+    expect(new Set(results.map((result) => result.moderationNoticeId))).toHaveProperty('size', 1);
+    expect(results[0].closeOutcome).toBe('metadata_remediation');
+
+    const [patternRow] = await dataSource.query<
+      { category_code: string; description: string | null; status: string; title: string }[]
+    >(
+      'SELECT status, title, description, category_code FROM catalog.patterns WHERE id = $1',
+      [patternId],
+    );
+    expect(patternRow).toMatchObject({
+      category_code: 'fantasy',
+      description: null,
+      status: 'available',
+    });
+    expect(patternRow.title).not.toBe('Misleading Pattern Title');
+
+    const tagRows = await dataSource.query<{ tag_code: string }[]>(
+      'SELECT tag_code FROM catalog.pattern_tags WHERE pattern_id = $1',
+      [patternId],
+    );
+    expect(tagRows.map((row) => row.tag_code)).toEqual(['cozy-fixture']);
+
+    const ownerNotices = await notices.listMine(accountPrincipal(ownerAccountId));
+    const noticeForPattern = ownerNotices.find(
+      (notice) => notice.noticeType === 'metadata_remediation' && notice.patternId === patternId,
+    );
+    expect(noticeForPattern).toBeDefined();
+    expect(noticeForPattern?.patternTitle).toBe('Misleading Pattern Title');
+    expect(JSON.stringify(ownerNotices)).not.toContain(reporterAccountId);
+
+    await expect(
+      reviews.closeNoViolation(operatorId, created.review.id, 'Too late.', null),
+    ).rejects.toThrow();
+  });
+
   function accountPrincipal(id: string) {
     return { id, tokenVersion: 1, type: PrincipalType.Account };
   }

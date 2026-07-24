@@ -9,6 +9,9 @@ import {
 } from 'typeorm';
 
 export type PostPublicationReviewStatus = 'open' | 'closed';
+export type PostPublicationReviewCloseOutcome =
+  | 'no_violation'
+  | 'metadata_remediation';
 
 @Entity({ name: 'post_publication_reviews', schema: 'moderation' })
 @Index('IDX_post_publication_reviews_pattern', ['communityPatternId', 'createdAt'])
@@ -27,6 +30,14 @@ export type PostPublicationReviewStatus = 'open' | 'closed';
 @Check(
   'CHK_post_publication_reviews_hold',
   '("hold_applied_at" IS NULL AND "hold_reason" IS NULL AND "hold_operator_account_id" IS NULL) OR ("hold_applied_at" IS NOT NULL AND length(btrim("hold_reason")) > 0 AND "hold_operator_account_id" IS NOT NULL)',
+)
+@Check(
+  'CHK_post_publication_reviews_close_outcome',
+  '"close_outcome" IN (\'no_violation\', \'metadata_remediation\')',
+)
+@Check(
+  'CHK_post_publication_reviews_close',
+  '("status" = \'open\' AND "close_outcome" IS NULL AND "close_reason" IS NULL AND "close_operator_account_id" IS NULL) OR ("status" = \'closed\' AND "close_outcome" IS NOT NULL AND length(btrim("close_reason")) > 0 AND "close_operator_account_id" IS NOT NULL)',
 )
 export class PostPublicationReviewEntity {
   @PrimaryGeneratedColumn('uuid', {
@@ -54,6 +65,15 @@ export class PostPublicationReviewEntity {
 
   @Column({ name: 'hold_operator_account_id', nullable: true, type: 'uuid' })
   holdOperatorAccountId!: string | null;
+
+  @Column({ name: 'close_outcome', nullable: true, type: 'varchar', length: 32 })
+  closeOutcome!: PostPublicationReviewCloseOutcome | null;
+
+  @Column({ length: 2000, name: 'close_reason', nullable: true, type: 'varchar' })
+  closeReason!: string | null;
+
+  @Column({ name: 'close_operator_account_id', nullable: true, type: 'uuid' })
+  closeOperatorAccountId!: string | null;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;

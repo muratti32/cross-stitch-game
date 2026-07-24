@@ -10,10 +10,26 @@ import {
   View,
 } from 'react-native';
 
+import type { ModerationNoticeType } from '@/api/moderationNotices';
 import { useModerationNotices } from '@/api/moderationNotices';
 import { Card, EmptyState, Screen } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
+
+const NOTICE_LABELS: Record<ModerationNoticeType, string> = {
+  metadata_remediation: 'Catalog Metadata Remediation',
+  no_violation: 'Review closed — no violation',
+  review_hold: 'Review Hold',
+};
+
+const NOTICE_HELP: Record<ModerationNoticeType, string> = {
+  metadata_remediation:
+    'The title, description, and selected tags were replaced with safe values. Availability, the Pattern Artifact, and preview are unaffected. You can submit a new Catalog Metadata Revision at any time.',
+  no_violation:
+    'The Post-Publication Review is closed and this Pattern is fully available again in discovery and new Stitching Sessions.',
+  review_hold:
+    'This Pattern is temporarily unavailable for discovery and new sessions. Existing Stitching Sessions, progress, and Offline Pattern Data remain playable.',
+};
 
 export default function ModerationNoticesScreen() {
   const accountId = useIdentityStore((state) => state.accountId);
@@ -73,14 +89,12 @@ export default function ModerationNoticesScreen() {
                 <View style={styles.titleCopy}>
                   <Text style={styles.title}>{item.patternTitle}</Text>
                   <Text style={styles.meta}>
-                    Review Hold · {new Date(item.createdAt).toLocaleString()}
+                    {NOTICE_LABELS[item.noticeType]} · {new Date(item.createdAt).toLocaleString()}
                   </Text>
                 </View>
               </View>
               <Text style={styles.reason}>{item.reason}</Text>
-              <Text style={styles.help}>
-                This Pattern is temporarily unavailable for discovery and new sessions. Existing Stitching Sessions, progress, and Offline Pattern Data remain playable.
-              </Text>
+              <Text style={styles.help}>{NOTICE_HELP[item.noticeType]}</Text>
             </Card>
           )}
         />

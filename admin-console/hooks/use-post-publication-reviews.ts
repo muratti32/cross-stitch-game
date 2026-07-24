@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api } from '@/lib/client/fetcher';
 import type {
+  PostPublicationReviewCloseResult,
   PostPublicationReviewDetail,
   PostPublicationReviewListItem,
   ReviewHoldResult,
@@ -32,11 +33,40 @@ export function useApplyReviewHold(id: string) {
       api.post<ReviewHoldResult>(`/api/admin/post-publication-reviews/${id}/hold`, {
         reason,
       }),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['post-publication-review', id] });
-      void queryClient.invalidateQueries({ queryKey: ['post-publication-reviews'] });
-      void queryClient.invalidateQueries({ queryKey: ['patterns'] });
-      void queryClient.invalidateQueries({ queryKey: ['dashboard-counts'] });
-    },
+    onSuccess: () => invalidateReviewQueries(queryClient, id),
   });
+}
+
+export function useCloseReviewNoViolation(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (reason: string) =>
+      api.post<PostPublicationReviewCloseResult>(
+        `/api/admin/post-publication-reviews/${id}/close`,
+        { reason },
+      ),
+    onSuccess: () => invalidateReviewQueries(queryClient, id),
+  });
+}
+
+export function useApplyCatalogMetadataRemediation(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { categoryCode?: string; reason: string; removeTagCodes: string[] }) =>
+      api.post<PostPublicationReviewCloseResult>(
+        `/api/admin/post-publication-reviews/${id}/remediate`,
+        input,
+      ),
+    onSuccess: () => invalidateReviewQueries(queryClient, id),
+  });
+}
+
+function invalidateReviewQueries(
+  queryClient: ReturnType<typeof useQueryClient>,
+  id: string,
+): void {
+  void queryClient.invalidateQueries({ queryKey: ['post-publication-review', id] });
+  void queryClient.invalidateQueries({ queryKey: ['post-publication-reviews'] });
+  void queryClient.invalidateQueries({ queryKey: ['patterns'] });
+  void queryClient.invalidateQueries({ queryKey: ['dashboard-counts'] });
 }
