@@ -60,6 +60,9 @@ export class CatalogSubmissionService {
     ]);
     if (source === null) throw new NotFoundException('Personal Pattern not found');
     if (profile === null) throw new ConflictException('Create a Public Creator Profile before submitting');
+    if (profile.restrictedAt !== null) {
+      throw new ForbiddenException('Creator Profile is restricted');
+    }
 
     const title = normalizeText(dto.title);
     const description = normalizeText(dto.description);

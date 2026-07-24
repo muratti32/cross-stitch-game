@@ -5,8 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppConfigModule } from '../config/app-config.module';
 import { AppConfigService } from '../config/app-config.service';
 import { CatalogModule } from '../catalog/catalog.module';
-import { PatternEntity, TagEntity, TagLabelEntity, StaffPickEntity, CategoryEntity } from '../catalog/entities';
+import {
+  PatternEntity,
+  TagEntity,
+  TagLabelEntity,
+  StaffPickEntity,
+  CategoryEntity,
+} from '../catalog/entities';
 import { ConversionModule } from '../conversion/conversion.module';
+import { CreatorProfileModule } from '../creator-profile/creator-profile.module';
 import { JobsModule } from '../jobs/jobs.module';
 import { SupportModule } from '../support/support.module';
 import { ADMIN_JWT_AUDIENCE, ADMIN_JWT_ISSUER } from './admin.constants';
@@ -15,6 +22,8 @@ import { AdminCatalogMetadataRevisionsController } from './admin-catalog-metadat
 import { AdminPostPublicationReviewsController } from './admin-post-publication-reviews.controller';
 import { AdminSafetyRemovalAppealsController } from './admin-safety-removal-appeals.controller';
 import { AdminCatalogSubmissionsController } from './admin-catalog-submissions.controller';
+import { AdminCreatorRestrictionAppealsController } from './admin-creator-restriction-appeals.controller';
+import { AdminProfileInvestigationsController } from './admin-profile-investigations.controller';
 import { AdminCatalogService } from './admin-catalog.service';
 import { AdminCategoriesController } from './admin-categories.controller';
 import { AdminPatternsController } from './admin-patterns.controller';
@@ -51,8 +60,8 @@ import { TotpSecretCipherService } from './totp-secret-cipher.service';
     AdminAuthController,
     AdminCatalogMetadataRevisionsController,
     AdminCatalogSubmissionsController,
-    AdminPostPublicationReviewsController,
-    AdminSafetyRemovalAppealsController,
+    AdminCreatorRestrictionAppealsController,
+    AdminProfileInvestigationsController,
     AdminCategoriesController,
     AdminPatternsController,
     AdminStaffPicksController,
@@ -105,6 +114,7 @@ import { TotpSecretCipherService } from './totp-secret-cipher.service';
     }),
     forwardRef(() => CatalogModule),
     ConversionModule,
+    CreatorProfileModule,
     forwardRef(() => JobsModule),
     SupportModule,
   ],

@@ -26,6 +26,7 @@ import { UpdateCreatorProfileDto } from './dto/update-creator-profile.dto';
 import {
   CreatorProfileAuditEntity,
   CreatorProfileEntity,
+  ReservedUsernameEntity,
 } from './entities';
 import {
   CheckedAvatar,
@@ -33,6 +34,10 @@ import {
   UploadedAvatar,
 } from './profile-safety.service';
 import { ProfileTextPolicyService } from './profile-text-policy.service';
+
+// Creator Restriction masks the public-facing display name with this value;
+// see CreatorProfileService.publicView.
+const RESTRICTED_DISPLAY_NAME = 'Restricted Creator';
 
 @Injectable()
 export class CreatorProfileService {
@@ -68,6 +73,12 @@ export class CreatorProfileService {
         );
         if (accounts[0]?.status !== 'active') {
           throw new ForbiddenException('Active Registered Account required');
+        }
+        const reserved = await manager
+          .getRepository(ReservedUsernameEntity)
+          .exist({ where: { username } });
+        if (reserved) {
+          throw new ConflictException('Username is unavailable');
         }
 
         const created = await manager.getRepository(CreatorProfileEntity).save({
@@ -106,6 +117,9 @@ export class CreatorProfileService {
 
     const existing = await this.profiles.findOneBy({ accountId });
     if (existing === null) throw new NotFoundException('Creator Profile not found');
+    if (existing.restrictedAt !== null) {
+      throw new ForbiddenException('Creator Profile is restricted');
+    }
 
     const displayName =
       dto.displayName === undefined
@@ -133,6 +147,9 @@ export class CreatorProfileService {
           where: { accountId },
         });
         if (current === null) throw new NotFoundException('Creator Profile not found');
+        if (current.restrictedAt !== null) {
+          throw new ForbiddenException('Creator Profile is restricted');
+        }
 
         const nextDisplayName = displayName ?? current.displayName;
         const nextAvatar =
@@ -180,13 +197,14 @@ export class CreatorProfileService {
   async getPublic(id: string) {
     const profile = await this.profiles.findOneBy({ id });
     if (profile === null) throw new NotFoundException('Creator Profile not found');
-    return this.view(profile);
+    return this.publicView(profile);
   }
 
   async getAvatar(id: string): Promise<{ bytes: Buffer; contentType: string }> {
     const profile = await this.profiles.findOneBy({ id });
     if (
       profile === null ||
+      profile.restrictedAt !== null ||
       profile.avatarObjectKey === null ||
       profile.avatarContentType === null
     ) {
@@ -280,8 +298,19 @@ export class CreatorProfileService {
       createdAt: profile.createdAt.toISOString(),
       displayName: profile.displayName,
       id: profile.id,
+      restricted: profile.restrictedAt !== null,
       updatedAt: profile.updatedAt.toISOString(),
       username: profile.username,
     };
+  }
+
+  // Creator Restriction masks the public identity without destroying the
+  // underlying values, so a future appeal can restore them; only this read
+  // path (and getAvatar) enforce the mask. The account owner's own view
+  // (getMine) still shows their real, unmasked profile.
+  private publicView(profile: CreatorProfileEntity) {
+    const base = this.view(profile);
+    if (profile.restrictedAt === null) return base;
+    return { ...base, avatarUrl: null, displayName: RESTRICTED_DISPLAY_NAME };
   }
 }

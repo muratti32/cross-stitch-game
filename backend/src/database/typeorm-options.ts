@@ -88,14 +88,30 @@ import { CreateCommerceLedger1785628800000 } from './migrations/1785628800000-Cr
 import { CreatePremiumMembership1785801600000 } from './migrations/1785801600000-CreatePremiumMembership';
 import { CreateAdAttempts1785715200000 } from './migrations/1785715200000-CreateAdAttempts';
 import { CreateAiArtworkSchema1785881600000 } from './migrations/1785881600000-CreateAiArtworkSchema';
-import { AiArtworkEntity, AiCreditReservationEntity } from '../ai-artwork/entities';
-import { SupportReferenceEntity, SupportReferenceRecordEntity } from '../support/entities';
+import {
+  AiArtworkEntity,
+  AiCreditReservationEntity,
+} from '../ai-artwork/entities';
+import {
+  SupportReferenceEntity,
+  SupportReferenceRecordEntity,
+} from '../support/entities';
 import { CreateSupportReferences1785974400000 } from './migrations/1785974400000-CreateSupportReferences';
 import {
+  CreatorProfileAppealEntity,
   CreatorProfileAuditEntity,
+  CreatorProfileAuditEventEntity,
   CreatorProfileEntity,
+  ProfileInvestigationEntity,
+  ProfileReportEntity,
+  ReservedUsernameEntity,
 } from '../creator-profile/entities';
 import { CreateCreatorProfiles1786060800000 } from './migrations/1786060800000-CreateCreatorProfiles';
+import { CreateProfileReports1786320000000 } from './migrations/1786320000000-CreateProfileReports';
+import { CreateReservedUsernames1786406400000 } from './migrations/1786406400000-CreateReservedUsernames';
+import { AllowModeratorUsernameReset1786492800000 } from './migrations/1786492800000-AllowModeratorUsernameReset';
+import { AddCreatorProfileRestriction1786579200000 } from './migrations/1786579200000-AddCreatorProfileRestriction';
+import { CreateCreatorProfileAppeals1786665600000 } from './migrations/1786665600000-CreateCreatorProfileAppeals';
 import {
   CatalogAppealEntity,
   CatalogMetadataAppealEntity,
@@ -164,7 +180,12 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       SupportReferenceEntity,
       SupportReferenceRecordEntity,
       CreatorProfileEntity,
+      CreatorProfileAppealEntity,
       CreatorProfileAuditEntity,
+      CreatorProfileAuditEventEntity,
+      ProfileInvestigationEntity,
+      ProfileReportEntity,
+      ReservedUsernameEntity,
       CatalogSubmissionEntity,
       CatalogAppealEntity,
       CatalogReviewDecisionEntity,
@@ -209,12 +230,11 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateCreatorProfiles1786060800000,
       CreateCatalogSubmissions1786147200000,
       CreateCatalogMetadataRevisions1786233600000,
-      CreateCommunityReports1786320000000,
-      CreateCatalogWithdrawals1786406400000,
-      CreateReviewHolds1786492800000,
-      CreatePostPublicationReviewFinalDecisions1786579200000,
-      AddSafetyRemovalOutcome1786665600000,
-      CreateSafetyRemovalAppeals1786752000000,
+      CreateProfileReports1786320000000,
+      CreateReservedUsernames1786406400000,
+      AllowModeratorUsernameReset1786492800000,
+      AddCreatorProfileRestriction1786579200000,
+      CreateCreatorProfileAppeals1786665600000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',
