@@ -1,7 +1,13 @@
-import { Controller, Get, Param, ParseUUIDPipe, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query, UseGuards } from '@nestjs/common';
 
+import {
+  CloseProfileInvestigationDto,
+  RemediateProfileInvestigationDto,
+} from '../creator-profile/dto/decide-profile-investigation.dto';
 import { ProfileReportService } from '../creator-profile/profile-report.service';
+import { CurrentOperator } from './current-operator.decorator';
 import { OperatorAuthGuard } from './operator-auth.guard';
+import type { OperatorPrincipal } from './operator-auth.types';
 import { OperatorPermissionsGuard } from './operator-permissions.guard';
 import { RequireOperatorPermissions } from './require-operator-permissions.decorator';
 
@@ -20,5 +26,25 @@ export class AdminProfileInvestigationsController {
   @RequireOperatorPermissions('moderation.profile_investigation.review')
   get(@Param('id', ParseUUIDPipe) id: string) {
     return this.reports.getInvestigation(id);
+  }
+
+  @Post(':id/close')
+  @RequireOperatorPermissions('moderation.profile_investigation.review')
+  close(
+    @CurrentOperator() operator: OperatorPrincipal,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: CloseProfileInvestigationDto,
+  ) {
+    return this.reports.close(operator.id, id, dto.reason);
+  }
+
+  @Post(':id/remediate')
+  @RequireOperatorPermissions('moderation.profile_investigation.review')
+  remediate(
+    @CurrentOperator() operator: OperatorPrincipal,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: RemediateProfileInvestigationDto,
+  ) {
+    return this.reports.remediate(operator.id, id, dto.reason);
   }
 }

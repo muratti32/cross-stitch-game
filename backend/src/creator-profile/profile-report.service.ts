@@ -1,8 +1,10 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -10,9 +12,15 @@ import { DataSource, EntityManager } from 'typeorm';
 
 import type { AuthPrincipal } from '../auth/auth.types';
 import { PrincipalType } from '../auth/entities';
+import {
+  OBJECT_STORAGE,
+  ObjectStorage,
+} from '../catalog/storage/object-storage.interface';
 import { CreateProfileReportDto } from './dto/create-profile-report.dto';
 import {
+  CreatorProfileAuditEntity,
   CreatorProfileAuditEventEntity,
+  CreatorProfileEntity,
   ProfileInvestigationEntity,
   ProfileReportEntity,
 } from './entities';
@@ -22,9 +30,17 @@ import {
 // once this cooldown elapses, which stands in for "materially new evidence".
 const REPORT_REOPEN_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
+// Profile Remediation replaces the display name with this safe default; the
+// player can submit a new compliant display name afterward via Profile
+// Safety Check, so this is not meant to persist as a real identity.
+const REMEDIATED_DISPLAY_NAME = 'Creator';
+
 @Injectable()
 export class ProfileReportService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
+  ) {}
 
   async report(
     principal: AuthPrincipal,
@@ -119,6 +135,103 @@ export class ProfileReportService {
     });
   }
 
+  async close(
+    operatorId: string,
+    investigationId: string,
+    reason: string,
+  ) {
+    return this.dataSource.transaction(async (manager) => {
+      const investigation = await this.lockOpenInvestigation(manager, investigationId);
+      investigation.status = 'closed';
+      investigation.closedAt = new Date();
+      investigation.closedBy = operatorId;
+      investigation.closeOutcome = 'no_action';
+      const saved = await manager
+        .getRepository(ProfileInvestigationEntity)
+        .save(investigation);
+      await this.appendEvent(manager, {
+        actorId: operatorId,
+        actorType: 'operator',
+        eventType: 'investigation_closed',
+        investigationId: saved.id,
+        profileId: saved.profileId,
+        reason,
+        reportId: null,
+      });
+      return this.investigationView(saved);
+    });
+  }
+
+  async remediate(
+    operatorId: string,
+    investigationId: string,
+    reason: string,
+  ) {
+    const result = await this.dataSource.transaction(async (manager) => {
+      const investigation = await this.lockOpenInvestigation(manager, investigationId);
+      const profiles = manager.getRepository(CreatorProfileEntity);
+      const profile = await profiles.findOne({
+        lock: { mode: 'pessimistic_write' },
+        where: { id: investigation.profileId },
+      });
+      if (profile === null) throw new NotFoundException('Creator Profile not found');
+
+      const removedAvatarObjectKey = profile.avatarObjectKey;
+      profile.displayName = REMEDIATED_DISPLAY_NAME;
+      profile.avatarObjectKey = null;
+      profile.avatarContentType = null;
+      profile.avatarChecksum = null;
+      profile.version += 1;
+      const savedProfile = await profiles.save(profile);
+
+      await manager.getRepository(CreatorProfileAuditEntity).save({
+        actorId: operatorId,
+        actorType: 'operator',
+        avatarChecksum: null,
+        avatarContentType: null,
+        avatarObjectKey: null,
+        displayName: savedProfile.displayName,
+        profileId: savedProfile.id,
+        reason,
+        username: savedProfile.username,
+        version: savedProfile.version,
+      });
+      await this.appendEvent(manager, {
+        actorId: operatorId,
+        actorType: 'operator',
+        eventType: 'profile_remediated',
+        investigationId: investigation.id,
+        profileId: savedProfile.id,
+        reason,
+        reportId: null,
+      });
+
+      investigation.status = 'closed';
+      investigation.closedAt = new Date();
+      investigation.closedBy = operatorId;
+      investigation.closeOutcome = 'remediated';
+      const savedInvestigation = await manager
+        .getRepository(ProfileInvestigationEntity)
+        .save(investigation);
+      await this.appendEvent(manager, {
+        actorId: operatorId,
+        actorType: 'operator',
+        eventType: 'investigation_closed',
+        investigationId: savedInvestigation.id,
+        profileId: savedProfile.id,
+        reason,
+        reportId: null,
+      });
+
+      return { removedAvatarObjectKey, view: this.investigationView(savedInvestigation) };
+    });
+
+    if (result.removedAvatarObjectKey !== null) {
+      await this.removeStoredAvatar(result.removedAvatarObjectKey);
+    }
+    return result.view;
+  }
+
   async listInvestigations(status = 'open') {
     if (status !== 'open' && status !== 'closed') {
       throw new BadRequestException('Unknown Profile Investigation status');
@@ -151,6 +264,31 @@ export class ProfileReportService {
         reporterAccountId: report.reporterAccountId,
       })),
     };
+  }
+
+  private async lockOpenInvestigation(
+    manager: EntityManager,
+    id: string,
+  ): Promise<ProfileInvestigationEntity> {
+    const investigation = await manager
+      .getRepository(ProfileInvestigationEntity)
+      .findOne({ lock: { mode: 'pessimistic_write' }, where: { id } });
+    if (investigation === null) {
+      throw new NotFoundException('Profile Investigation not found');
+    }
+    if (investigation.status !== 'open') {
+      throw new ConflictException('Profile Investigation is already closed');
+    }
+    return investigation;
+  }
+
+  private async removeStoredAvatar(objectKey: string): Promise<void> {
+    try {
+      await this.storage.delete(objectKey);
+    } catch {
+      // The database remains authoritative. Storage reconciliation can clean
+      // up an object that could not be deleted here.
+    }
   }
 
   private canReopen(

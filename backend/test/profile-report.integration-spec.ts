@@ -2,6 +2,7 @@ import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers
 import { randomUUID } from 'node:crypto';
 import { DataSource } from 'typeorm';
 
+import type { ObjectStorage } from '../src/catalog/storage/object-storage.interface';
 import { PrincipalType } from '../src/auth/entities';
 import {
   CreatorProfileAuditEntity,
@@ -23,6 +24,7 @@ describe('Profile Report intake and Profile Investigation', () => {
   let postgres: StartedPostgreSqlContainer;
   let dataSource: DataSource;
   let service: ProfileReportService;
+  let storageObjects: Map<string, Buffer>;
 
   beforeAll(async () => {
     postgres = await new PostgreSqlContainer('postgres:16-alpine').start();
@@ -48,7 +50,21 @@ describe('Profile Report intake and Profile Investigation', () => {
     });
     await dataSource.initialize();
     await dataSource.runMigrations();
-    service = new ProfileReportService(dataSource);
+    storageObjects = new Map<string, Buffer>();
+    const storage: ObjectStorage = {
+      delete: (key) => {
+        storageObjects.delete(key);
+        return Promise.resolve();
+      },
+      exists: (key) => Promise.resolve(storageObjects.has(key)),
+      get: (key) => Promise.resolve(storageObjects.get(key) ?? null),
+      publicUrl: (key) => key,
+      put: (key, bytes) => {
+        storageObjects.set(key, bytes);
+        return Promise.resolve();
+      },
+    };
+    service = new ProfileReportService(dataSource, storage);
   });
 
   afterAll(async () => {
@@ -72,6 +88,23 @@ describe('Profile Report intake and Profile Investigation', () => {
     const accountId = randomUUID();
     await dataSource.query('INSERT INTO auth.registered_accounts (id) VALUES ($1)', [accountId]);
     return accountId;
+  }
+
+  async function seedOperator(): Promise<string> {
+    const operatorId = randomUUID();
+    await dataSource.query(
+      `INSERT INTO admin.operator_accounts
+        (id, email, password_hash, totp_secret_encrypted)
+       VALUES ($1, $2, 'hash', 'ciphertext')`,
+      [operatorId, `operator_${operatorId}@example.test`],
+    );
+    return operatorId;
+  }
+
+  async function openInvestigation(profileId: string): Promise<string> {
+    const reporter = await seedAccount();
+    const result = await service.report(principal(reporter), profileId, { reasonCode: 'offensive' });
+    return result.investigationId;
   }
 
   const principal = (id: string) => ({ id, tokenVersion: 1, type: ACCOUNT });
@@ -196,5 +229,146 @@ describe('Profile Report intake and Profile Investigation', () => {
     const open = await service.listInvestigations('open');
     expect(open.some((row) => row.id === created.investigationId)).toBe(true);
     await expect(service.listInvestigations('bogus')).rejects.toMatchObject({ status: 400 });
+  });
+
+  it('closes an investigation without action and leaves the profile untouched', async () => {
+    const { profileId } = await seedProfile(`prof_${randomUUID().slice(0, 8).replace(/-/g, '')}`);
+    const investigationId = await openInvestigation(profileId);
+    const operatorId = await seedOperator();
+
+    const before = await dataSource.query<{ display_name: string; version: number }[]>(
+      'SELECT display_name, version FROM moderation.creator_profiles WHERE id = $1',
+      [profileId],
+    );
+    const view = await service.close(operatorId, investigationId, 'reviewed, no violation');
+    expect(view.status).toBe('closed');
+
+    const after = await dataSource.query<{ display_name: string; version: number }[]>(
+      'SELECT display_name, version FROM moderation.creator_profiles WHERE id = $1',
+      [profileId],
+    );
+    expect(after).toEqual(before);
+
+    const row = await dataSource.query<
+      { status: string; close_outcome: string; closed_by: string }[]
+    >(
+      'SELECT status, close_outcome, closed_by FROM moderation.profile_investigations WHERE id = $1',
+      [investigationId],
+    );
+    expect(row).toEqual([{ close_outcome: 'no_action', closed_by: operatorId, status: 'closed' }]);
+
+    const event = await dataSource.query<{ event_type: string; actor_type: string; reason: string }[]>(
+      `SELECT event_type, actor_type, reason FROM moderation.creator_profile_audit_events
+       WHERE investigation_id = $1 AND event_type = 'investigation_closed'`,
+      [investigationId],
+    );
+    expect(event).toEqual([
+      { actor_type: 'operator', event_type: 'investigation_closed', reason: 'reviewed, no violation' },
+    ]);
+
+    // Closing re-opens the rate-limited re-report window (new evidence still gated).
+    await expect(
+      service.report(principal(await seedAccount()), profileId, { reasonCode: 'spam' }),
+    ).rejects.toMatchObject({ status: 429 });
+  });
+
+  it('rejects closing an investigation that is not open', async () => {
+    const { profileId } = await seedProfile(`prof_${randomUUID().slice(0, 8).replace(/-/g, '')}`);
+    const investigationId = await openInvestigation(profileId);
+    const operatorId = await seedOperator();
+    await service.close(operatorId, investigationId, 'first close');
+    await expect(service.close(operatorId, investigationId, 'second close')).rejects.toMatchObject({
+      status: 409,
+    });
+    await expect(
+      service.close(operatorId, randomUUID(), 'unknown'),
+    ).rejects.toMatchObject({ status: 404 });
+  });
+
+  it('remediates a profile: resets display name, removes avatar, preserves username/access/patterns', async () => {
+    const username = `prof_${randomUUID().slice(0, 8).replace(/-/g, '')}`;
+    const { accountId, profileId } = await seedProfile(username);
+    const avatarKey = `creator-profiles/${profileId}/avatars/original.png`;
+    storageObjects.set(avatarKey, Buffer.from('avatar-bytes'));
+    await dataSource.query(
+      `UPDATE moderation.creator_profiles
+       SET avatar_object_key = $1, avatar_content_type = 'image/png', avatar_checksum = 'chk'
+       WHERE id = $2`,
+      [avatarKey, profileId],
+    );
+
+    const investigationId = await openInvestigation(profileId);
+    const operatorId = await seedOperator();
+
+    const view = await service.remediate(operatorId, investigationId, 'display name violated policy');
+    expect(view.status).toBe('closed');
+
+    const profileRows = await dataSource.query<
+      {
+        display_name: string;
+        username: string;
+        account_id: string;
+        avatar_object_key: string | null;
+        version: number;
+      }[]
+    >(
+      `SELECT display_name, username, account_id, avatar_object_key, version
+       FROM moderation.creator_profiles WHERE id = $1`,
+      [profileId],
+    );
+    expect(profileRows).toEqual([
+      {
+        account_id: accountId,
+        avatar_object_key: null,
+        display_name: 'Creator',
+        username,
+        version: 2,
+      },
+    ]);
+    expect(storageObjects.has(avatarKey)).toBe(false);
+
+    const snapshot = await dataSource.query<
+      { actor_type: string; actor_id: string; reason: string; version: number }[]
+    >(
+      'SELECT actor_type, actor_id, reason, version FROM moderation.creator_profile_audit WHERE profile_id = $1 AND version = 2',
+      [profileId],
+    );
+    expect(snapshot).toEqual([
+      { actor_id: operatorId, actor_type: 'operator', reason: 'display name violated policy', version: 2 },
+    ]);
+
+    const investigationRow = await dataSource.query<{ close_outcome: string; status: string }[]>(
+      'SELECT close_outcome, status FROM moderation.profile_investigations WHERE id = $1',
+      [investigationId],
+    );
+    expect(investigationRow).toEqual([{ close_outcome: 'remediated', status: 'closed' }]);
+
+    const eventTypes = await dataSource.query<{ event_type: string }[]>(
+      `SELECT event_type FROM moderation.creator_profile_audit_events
+       WHERE investigation_id = $1 ORDER BY created_at`,
+      [investigationId],
+    );
+    expect(eventTypes.map((row) => row.event_type)).toEqual([
+      'investigation_opened',
+      'report_submitted',
+      'profile_remediated',
+      'investigation_closed',
+    ]);
+
+    // The player can still submit compliant values afterward (no lockout).
+    await dataSource.query(
+      `UPDATE moderation.creator_profiles SET display_name = 'Compliant Name' WHERE id = $1`,
+      [profileId],
+    );
+  });
+
+  it('rejects remediating an investigation that is not open', async () => {
+    const { profileId } = await seedProfile(`prof_${randomUUID().slice(0, 8).replace(/-/g, '')}`);
+    const investigationId = await openInvestigation(profileId);
+    const operatorId = await seedOperator();
+    await service.remediate(operatorId, investigationId, 'violation');
+    await expect(
+      service.remediate(operatorId, investigationId, 'again'),
+    ).rejects.toMatchObject({ status: 409 });
   });
 });
