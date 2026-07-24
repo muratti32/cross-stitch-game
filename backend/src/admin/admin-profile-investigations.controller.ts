@@ -3,6 +3,7 @@ import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query, UseGuards } f
 import {
   CloseProfileInvestigationDto,
   RemediateProfileInvestigationDto,
+  ResetProfileUsernameDto,
 } from '../creator-profile/dto/decide-profile-investigation.dto';
 import { ProfileReportService } from '../creator-profile/profile-report.service';
 import { CurrentOperator } from './current-operator.decorator';
@@ -46,5 +47,15 @@ export class AdminProfileInvestigationsController {
     @Body() dto: RemediateProfileInvestigationDto,
   ) {
     return this.reports.remediate(operator.id, id, dto.reason);
+  }
+
+  @Post(':id/reset-username')
+  @RequireOperatorPermissions('moderation.profile_investigation.review')
+  resetUsername(
+    @CurrentOperator() operator: OperatorPrincipal,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: ResetProfileUsernameDto,
+  ) {
+    return this.reports.resetUsername(operator.id, id, dto.reason);
   }
 }

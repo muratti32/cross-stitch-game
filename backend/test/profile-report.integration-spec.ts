@@ -10,6 +10,7 @@ import {
   CreatorProfileEntity,
   ProfileInvestigationEntity,
   ProfileReportEntity,
+  ReservedUsernameEntity,
 } from '../src/creator-profile/entities';
 import { ProfileReportService } from '../src/creator-profile/profile-report.service';
 import { CreateAuthSchema1783987200000 } from '../src/database/migrations/1783987200000-CreateAuthSchema';
@@ -17,6 +18,8 @@ import { CreateEmailAuthSchema1784160000001 } from '../src/database/migrations/1
 import { CreateAdminAuthSchema1784592000000 } from '../src/database/migrations/1784592000000-CreateAdminAuthSchema';
 import { CreateCreatorProfiles1786060800000 } from '../src/database/migrations/1786060800000-CreateCreatorProfiles';
 import { CreateProfileReports1786320000000 } from '../src/database/migrations/1786320000000-CreateProfileReports';
+import { CreateReservedUsernames1786406400000 } from '../src/database/migrations/1786406400000-CreateReservedUsernames';
+import { AllowModeratorUsernameReset1786492800000 } from '../src/database/migrations/1786492800000-AllowModeratorUsernameReset';
 
 const ACCOUNT = PrincipalType.Account;
 
@@ -35,6 +38,7 @@ describe('Profile Report intake and Profile Investigation', () => {
         CreatorProfileAuditEventEntity,
         ProfileInvestigationEntity,
         ProfileReportEntity,
+        ReservedUsernameEntity,
       ],
       migrations: [
         CreateAuthSchema1783987200000,
@@ -42,6 +46,8 @@ describe('Profile Report intake and Profile Investigation', () => {
         CreateAdminAuthSchema1784592000000,
         CreateCreatorProfiles1786060800000,
         CreateProfileReports1786320000000,
+        CreateReservedUsernames1786406400000,
+        AllowModeratorUsernameReset1786492800000,
       ],
       migrationsTableName: 'typeorm_migrations',
       synchronize: false,
@@ -369,6 +375,70 @@ describe('Profile Report intake and Profile Investigation', () => {
     await service.remediate(operatorId, investigationId, 'violation');
     await expect(
       service.remediate(operatorId, investigationId, 'again'),
+    ).rejects.toMatchObject({ status: 409 });
+  });
+
+  it('resets a violating username to a safe system-generated value and reserves the old one forever', async () => {
+    const violatingUsername = `bad_${randomUUID().slice(0, 8).replace(/-/g, '')}`;
+    const { accountId, profileId } = await seedProfile(violatingUsername);
+    const investigationId = await openInvestigation(profileId);
+    const operatorId = await seedOperator();
+
+    const view = await service.resetUsername(operatorId, investigationId, 'impersonating username');
+    expect(view.status).toBe('closed');
+    expect(view.newUsername).toMatch(/^[a-z0-9_]{3,30}$/);
+    expect(view.newUsername).not.toBe(violatingUsername);
+
+    const profileRows = await dataSource.query<
+      { username: string; account_id: string; version: number }[]
+    >('SELECT username, account_id, version FROM moderation.creator_profiles WHERE id = $1', [profileId]);
+    expect(profileRows).toEqual([
+      { account_id: accountId, username: view.newUsername, version: 2 },
+    ]);
+
+    // The opaque profile id, ownership, and old audit history are all untouched.
+    const reservedRows = await dataSource.query<{ username: string; profile_id: string }[]>(
+      'SELECT username, profile_id FROM moderation.reserved_usernames WHERE username = $1',
+      [violatingUsername],
+    );
+    expect(reservedRows).toEqual([{ profile_id: profileId, username: violatingUsername }]);
+
+    const investigationRow = await dataSource.query<{ close_outcome: string; status: string }[]>(
+      'SELECT close_outcome, status FROM moderation.profile_investigations WHERE id = $1',
+      [investigationId],
+    );
+    expect(investigationRow).toEqual([{ close_outcome: 'username_reset', status: 'closed' }]);
+
+    const eventTypes = await dataSource.query<{ event_type: string }[]>(
+      `SELECT event_type FROM moderation.creator_profile_audit_events
+       WHERE investigation_id = $1 ORDER BY created_at`,
+      [investigationId],
+    );
+    expect(eventTypes.map((row) => row.event_type)).toEqual([
+      'investigation_opened',
+      'report_submitted',
+      'username_reset',
+      'investigation_closed',
+    ]);
+
+    // The released value can never be reused, by this account or any other.
+    await dataSource.query('INSERT INTO auth.registered_accounts (id) VALUES ($1)', [randomUUID()]);
+    await expect(
+      dataSource.query(
+        `INSERT INTO moderation.creator_profiles (id, account_id, username, display_name)
+         VALUES ($1, $2, $3, 'Someone Else')`,
+        [randomUUID(), randomUUID(), violatingUsername],
+      ),
+    ).rejects.toThrow();
+  });
+
+  it('rejects resetting the username of an investigation that is not open', async () => {
+    const { profileId } = await seedProfile(`prof_${randomUUID().slice(0, 8).replace(/-/g, '')}`);
+    const investigationId = await openInvestigation(profileId);
+    const operatorId = await seedOperator();
+    await service.resetUsername(operatorId, investigationId, 'first reset');
+    await expect(
+      service.resetUsername(operatorId, investigationId, 'second reset'),
     ).rejects.toMatchObject({ status: 409 });
   });
 });

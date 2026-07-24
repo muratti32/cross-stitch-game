@@ -11,6 +11,7 @@ import {
   CreatorProfileEntity,
   ProfileInvestigationEntity,
   ProfileReportEntity,
+  ReservedUsernameEntity,
 } from './entities';
 import { ProfileReportController } from './profile-report.controller';
 import { ProfileReportService } from './profile-report.service';
@@ -29,6 +30,7 @@ import { ProfileTextPolicyService } from './profile-text-policy.service';
       CreatorProfileAuditEventEntity,
       ProfileInvestigationEntity,
       ProfileReportEntity,
+      ReservedUsernameEntity,
     ]),
   ],
   providers: [

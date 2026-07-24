@@ -9,12 +9,14 @@ import { CreatorProfileService } from '../src/creator-profile/creator-profile.se
 import {
   CreatorProfileAuditEntity,
   CreatorProfileEntity,
+  ReservedUsernameEntity,
 } from '../src/creator-profile/entities';
 import { ProfileSafetyService } from '../src/creator-profile/profile-safety.service';
 import { ProfileTextPolicyService } from '../src/creator-profile/profile-text-policy.service';
 import { CreateAuthSchema1783987200000 } from '../src/database/migrations/1783987200000-CreateAuthSchema';
 import { CreateEmailAuthSchema1784160000001 } from '../src/database/migrations/1784160000001-CreateEmailAuthSchema';
 import { CreateCreatorProfiles1786060800000 } from '../src/database/migrations/1786060800000-CreateCreatorProfiles';
+import { CreateReservedUsernames1786406400000 } from '../src/database/migrations/1786406400000-CreateReservedUsernames';
 
 describe('Creator Profile persistence', () => {
   let postgres: StartedPostgreSqlContainer;
@@ -23,11 +25,12 @@ describe('Creator Profile persistence', () => {
   beforeAll(async () => {
     postgres = await new PostgreSqlContainer('postgres:16-alpine').start();
     dataSource = new DataSource({
-      entities: [CreatorProfileEntity, CreatorProfileAuditEntity],
+      entities: [CreatorProfileEntity, CreatorProfileAuditEntity, ReservedUsernameEntity],
       migrations: [
         CreateAuthSchema1783987200000,
         CreateEmailAuthSchema1784160000001,
         CreateCreatorProfiles1786060800000,
+        CreateReservedUsernames1786406400000,
       ],
       migrationsTableName: 'typeorm_migrations',
       synchronize: false,
@@ -224,5 +227,53 @@ describe('Creator Profile persistence', () => {
       { display_name: 'First Accepted Name', version: 1 },
       { display_name: 'Second Accepted Name', version: 2 },
     ]);
+  });
+
+  it('never allows a permanently reserved username to be claimed again', async () => {
+    const releasedFromProfileId = randomUUID();
+    const releasedFromAccountId = randomUUID();
+    await dataSource.query('INSERT INTO auth.registered_accounts (id) VALUES ($1)', [
+      releasedFromAccountId,
+    ]);
+    await dataSource.query(
+      `INSERT INTO moderation.creator_profiles (id, account_id, username, display_name)
+       VALUES ($1, $2, 'creator_deadbeef', 'Reset Creator')`,
+      [releasedFromProfileId, releasedFromAccountId],
+    );
+    await dataSource.query(
+      'INSERT INTO moderation.reserved_usernames (username, profile_id) VALUES ($1, $2)',
+      ['creator_deadbeef', releasedFromProfileId],
+    );
+
+    const accountId = randomUUID();
+    await dataSource.query('INSERT INTO auth.registered_accounts (id) VALUES ($1)', [accountId]);
+    const storage: ObjectStorage = {
+      delete: () => Promise.resolve(),
+      exists: () => Promise.resolve(false),
+      get: () => Promise.resolve(null),
+      publicUrl: (key) => key,
+      put: () => Promise.resolve(),
+    };
+    const textPolicy = new ProfileTextPolicyService();
+    const safety = new ProfileSafetyService(
+      { openAiModerationEnabled: false } as AppConfigService,
+      textPolicy,
+    );
+    const service = new CreatorProfileService(
+      dataSource,
+      dataSource.getRepository(CreatorProfileEntity),
+      storage,
+      safety,
+      textPolicy,
+    );
+    const principal = { id: accountId, tokenVersion: 1, type: PrincipalType.Account };
+
+    await expect(
+      service.create(
+        principal,
+        { displayName: 'New Name', username: 'creator_deadbeef' },
+        undefined,
+      ),
+    ).rejects.toMatchObject({ status: 409 });
   });
 });

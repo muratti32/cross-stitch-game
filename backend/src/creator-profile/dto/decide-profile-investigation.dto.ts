@@ -13,3 +13,10 @@ export class RemediateProfileInvestigationDto {
   @MaxLength(64)
   reason!: string;
 }
+
+export class ResetProfileUsernameDto {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(64)
+  reason!: string;
+}

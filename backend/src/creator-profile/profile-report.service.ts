@@ -8,6 +8,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { randomBytes } from 'node:crypto';
 import { DataSource, EntityManager } from 'typeorm';
 
 import type { AuthPrincipal } from '../auth/auth.types';
@@ -23,6 +24,7 @@ import {
   CreatorProfileEntity,
   ProfileInvestigationEntity,
   ProfileReportEntity,
+  ReservedUsernameEntity,
 } from './entities';
 
 // After a case is closed, a repeat report on the same profile is rate-limited:
@@ -34,6 +36,12 @@ const REPORT_REOPEN_COOLDOWN_MS = 24 * 60 * 60 * 1000;
 // player can submit a new compliant display name afterward via Profile
 // Safety Check, so this is not meant to persist as a real identity.
 const REMEDIATED_DISPLAY_NAME = 'Creator';
+
+const USERNAME_RESET_MAX_ATTEMPTS = 8;
+
+function generateSystemUsername(): string {
+  return `creator_${randomBytes(4).toString('hex')}`;
+}
 
 @Injectable()
 export class ProfileReportService {
@@ -230,6 +238,91 @@ export class ProfileReportService {
       await this.removeStoredAvatar(result.removedAvatarObjectKey);
     }
     return result.view;
+  }
+
+  async resetUsername(
+    operatorId: string,
+    investigationId: string,
+    reason: string,
+  ) {
+    return this.dataSource.transaction(async (manager) => {
+      const investigation = await this.lockOpenInvestigation(manager, investigationId);
+      const profiles = manager.getRepository(CreatorProfileEntity);
+      const profile = await profiles.findOne({
+        lock: { mode: 'pessimistic_write' },
+        where: { id: investigation.profileId },
+      });
+      if (profile === null) throw new NotFoundException('Creator Profile not found');
+
+      const reserved = manager.getRepository(ReservedUsernameEntity);
+      const releasedUsername = profile.username;
+      let nextUsername: string | null = null;
+      for (let attempt = 0; attempt < USERNAME_RESET_MAX_ATTEMPTS; attempt += 1) {
+        const candidate = generateSystemUsername();
+        const taken =
+          (await profiles.exist({ where: { username: candidate } })) ||
+          (await reserved.exist({ where: { username: candidate } }));
+        if (!taken) {
+          nextUsername = candidate;
+          break;
+        }
+      }
+      if (nextUsername === null) {
+        throw new ConflictException('Could not allocate a safe username');
+      }
+
+      // Usernames are permanent for every other write path (enforced by a
+      // database trigger); this is the sole exceptional path, opted into for
+      // this transaction only via a local session setting.
+      await manager.query("SELECT set_config('app.moderator_username_reset', 'on', true)");
+      profile.username = nextUsername;
+      profile.version += 1;
+      const savedProfile = await profiles.save(profile);
+      await reserved.save(
+        reserved.create({ profileId: savedProfile.id, username: releasedUsername }),
+      );
+
+      await manager.getRepository(CreatorProfileAuditEntity).save({
+        actorId: operatorId,
+        actorType: 'operator',
+        avatarChecksum: savedProfile.avatarChecksum,
+        avatarContentType: savedProfile.avatarContentType,
+        avatarObjectKey: savedProfile.avatarObjectKey,
+        displayName: savedProfile.displayName,
+        profileId: savedProfile.id,
+        reason,
+        username: savedProfile.username,
+        version: savedProfile.version,
+      });
+      await this.appendEvent(manager, {
+        actorId: operatorId,
+        actorType: 'operator',
+        eventType: 'username_reset',
+        investigationId: investigation.id,
+        profileId: savedProfile.id,
+        reason,
+        reportId: null,
+      });
+
+      investigation.status = 'closed';
+      investigation.closedAt = new Date();
+      investigation.closedBy = operatorId;
+      investigation.closeOutcome = 'username_reset';
+      const savedInvestigation = await manager
+        .getRepository(ProfileInvestigationEntity)
+        .save(investigation);
+      await this.appendEvent(manager, {
+        actorId: operatorId,
+        actorType: 'operator',
+        eventType: 'investigation_closed',
+        investigationId: savedInvestigation.id,
+        profileId: savedProfile.id,
+        reason,
+        reportId: null,
+      });
+
+      return { ...this.investigationView(savedInvestigation), newUsername: nextUsername };
+    });
   }
 
   async listInvestigations(status = 'open') {

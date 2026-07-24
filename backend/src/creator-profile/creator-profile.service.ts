@@ -26,6 +26,7 @@ import { UpdateCreatorProfileDto } from './dto/update-creator-profile.dto';
 import {
   CreatorProfileAuditEntity,
   CreatorProfileEntity,
+  ReservedUsernameEntity,
 } from './entities';
 import {
   CheckedAvatar,
@@ -68,6 +69,12 @@ export class CreatorProfileService {
         );
         if (accounts[0]?.status !== 'active') {
           throw new ForbiddenException('Active Registered Account required');
+        }
+        const reserved = await manager
+          .getRepository(ReservedUsernameEntity)
+          .exist({ where: { username } });
+        if (reserved) {
+          throw new ConflictException('Username is unavailable');
         }
 
         const created = await manager.getRepository(CreatorProfileEntity).save({
