@@ -7,24 +7,33 @@ import { CreatorProfileController } from './creator-profile.controller';
 import { CreatorProfileService } from './creator-profile.service';
 import {
   CreatorProfileAuditEntity,
+  CreatorProfileAuditEventEntity,
   CreatorProfileEntity,
+  ProfileInvestigationEntity,
+  ProfileReportEntity,
 } from './entities';
+import { ProfileReportController } from './profile-report.controller';
+import { ProfileReportService } from './profile-report.service';
 import { ProfileSafetyService } from './profile-safety.service';
 import { ProfileTextPolicyService } from './profile-text-policy.service';
 
 @Module({
-  controllers: [CreatorProfileController],
-  exports: [CreatorProfileService],
+  controllers: [CreatorProfileController, ProfileReportController],
+  exports: [CreatorProfileService, ProfileReportService],
   imports: [
     AuthModule,
     CatalogModule,
     TypeOrmModule.forFeature([
       CreatorProfileEntity,
       CreatorProfileAuditEntity,
+      CreatorProfileAuditEventEntity,
+      ProfileInvestigationEntity,
+      ProfileReportEntity,
     ]),
   ],
   providers: [
     CreatorProfileService,
+    ProfileReportService,
     ProfileSafetyService,
     ProfileTextPolicyService,
   ],

@@ -86,9 +86,13 @@ import { SupportReferenceEntity, SupportReferenceRecordEntity } from '../support
 import { CreateSupportReferences1785974400000 } from './migrations/1785974400000-CreateSupportReferences';
 import {
   CreatorProfileAuditEntity,
+  CreatorProfileAuditEventEntity,
   CreatorProfileEntity,
+  ProfileInvestigationEntity,
+  ProfileReportEntity,
 } from '../creator-profile/entities';
 import { CreateCreatorProfiles1786060800000 } from './migrations/1786060800000-CreateCreatorProfiles';
+import { CreateProfileReports1786320000000 } from './migrations/1786320000000-CreateProfileReports';
 import {
   CatalogAppealEntity,
   CatalogMetadataAppealEntity,
@@ -152,6 +156,9 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       SupportReferenceRecordEntity,
       CreatorProfileEntity,
       CreatorProfileAuditEntity,
+      CreatorProfileAuditEventEntity,
+      ProfileInvestigationEntity,
+      ProfileReportEntity,
       CatalogSubmissionEntity,
       CatalogAppealEntity,
       CatalogReviewDecisionEntity,
@@ -189,6 +196,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateCreatorProfiles1786060800000,
       CreateCatalogSubmissions1786147200000,
       CreateCatalogMetadataRevisions1786233600000,
+      CreateProfileReports1786320000000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',
