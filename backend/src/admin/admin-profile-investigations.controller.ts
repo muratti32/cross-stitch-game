@@ -4,6 +4,7 @@ import {
   CloseProfileInvestigationDto,
   RemediateProfileInvestigationDto,
   ResetProfileUsernameDto,
+  RestrictProfileInvestigationDto,
 } from '../creator-profile/dto/decide-profile-investigation.dto';
 import { ProfileReportService } from '../creator-profile/profile-report.service';
 import { CurrentOperator } from './current-operator.decorator';
@@ -57,5 +58,15 @@ export class AdminProfileInvestigationsController {
     @Body() dto: ResetProfileUsernameDto,
   ) {
     return this.reports.resetUsername(operator.id, id, dto.reason);
+  }
+
+  @Post(':id/restrict')
+  @RequireOperatorPermissions('moderation.profile_investigation.review')
+  restrict(
+    @CurrentOperator() operator: OperatorPrincipal,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: RestrictProfileInvestigationDto,
+  ) {
+    return this.reports.restrict(operator.id, id, dto.reason);
   }
 }

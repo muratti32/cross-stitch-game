@@ -46,6 +46,9 @@ export class CreatorProfileEntity {
   @Column({ default: 1, type: 'integer' })
   version!: number;
 
+  @Column({ name: 'restricted_at', nullable: true, type: 'timestamptz' })
+  restrictedAt!: Date | null;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 

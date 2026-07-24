@@ -20,3 +20,10 @@ export class ResetProfileUsernameDto {
   @MaxLength(64)
   reason!: string;
 }
+
+export class RestrictProfileInvestigationDto {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(64)
+  reason!: string;
+}

@@ -325,6 +325,56 @@ export class ProfileReportService {
     });
   }
 
+  async restrict(
+    operatorId: string,
+    investigationId: string,
+    reason: string,
+  ) {
+    return this.dataSource.transaction(async (manager) => {
+      const investigation = await this.lockOpenInvestigation(manager, investigationId);
+      const profiles = manager.getRepository(CreatorProfileEntity);
+      const profile = await profiles.findOne({
+        lock: { mode: 'pessimistic_write' },
+        where: { id: investigation.profileId },
+      });
+      if (profile === null) throw new NotFoundException('Creator Profile not found');
+
+      // Non-destructive: the stored identity is left as-is so a future
+      // appeal can restore it. Only the read paths mask it while restricted.
+      profile.restrictedAt = new Date();
+      const savedProfile = await profiles.save(profile);
+
+      await this.appendEvent(manager, {
+        actorId: operatorId,
+        actorType: 'operator',
+        eventType: 'creator_restricted',
+        investigationId: investigation.id,
+        profileId: savedProfile.id,
+        reason,
+        reportId: null,
+      });
+
+      investigation.status = 'closed';
+      investigation.closedAt = new Date();
+      investigation.closedBy = operatorId;
+      investigation.closeOutcome = 'restricted';
+      const savedInvestigation = await manager
+        .getRepository(ProfileInvestigationEntity)
+        .save(investigation);
+      await this.appendEvent(manager, {
+        actorId: operatorId,
+        actorType: 'operator',
+        eventType: 'investigation_closed',
+        investigationId: savedInvestigation.id,
+        profileId: savedProfile.id,
+        reason,
+        reportId: null,
+      });
+
+      return this.investigationView(savedInvestigation);
+    });
+  }
+
   async listInvestigations(status = 'open') {
     if (status !== 'open' && status !== 'closed') {
       throw new BadRequestException('Unknown Profile Investigation status');

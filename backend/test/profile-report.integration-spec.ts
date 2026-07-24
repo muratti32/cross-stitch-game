@@ -20,6 +20,7 @@ import { CreateCreatorProfiles1786060800000 } from '../src/database/migrations/1
 import { CreateProfileReports1786320000000 } from '../src/database/migrations/1786320000000-CreateProfileReports';
 import { CreateReservedUsernames1786406400000 } from '../src/database/migrations/1786406400000-CreateReservedUsernames';
 import { AllowModeratorUsernameReset1786492800000 } from '../src/database/migrations/1786492800000-AllowModeratorUsernameReset';
+import { AddCreatorProfileRestriction1786579200000 } from '../src/database/migrations/1786579200000-AddCreatorProfileRestriction';
 
 const ACCOUNT = PrincipalType.Account;
 
@@ -48,6 +49,7 @@ describe('Profile Report intake and Profile Investigation', () => {
         CreateProfileReports1786320000000,
         CreateReservedUsernames1786406400000,
         AllowModeratorUsernameReset1786492800000,
+        AddCreatorProfileRestriction1786579200000,
       ],
       migrationsTableName: 'typeorm_migrations',
       synchronize: false,
@@ -439,6 +441,56 @@ describe('Profile Report intake and Profile Investigation', () => {
     await service.resetUsername(operatorId, investigationId, 'first reset');
     await expect(
       service.resetUsername(operatorId, investigationId, 'second reset'),
+    ).rejects.toMatchObject({ status: 409 });
+  });
+
+  it('restricts a profile without destroying its stored identity', async () => {
+    const username = `prof_${randomUUID().slice(0, 8).replace(/-/g, '')}`;
+    const { profileId } = await seedProfile(username);
+    const investigationId = await openInvestigation(profileId);
+    const operatorId = await seedOperator();
+
+    const view = await service.restrict(operatorId, investigationId, 'repeated violations');
+    expect(view.status).toBe('closed');
+
+    const profileRows = await dataSource.query<
+      { username: string; display_name: string; restricted_at: Date | null; version: number }[]
+    >(
+      'SELECT username, display_name, restricted_at, version FROM moderation.creator_profiles WHERE id = $1',
+      [profileId],
+    );
+    expect(profileRows[0].username).toBe(username);
+    expect(profileRows[0].display_name).toBe('Creator');
+    expect(profileRows[0].restricted_at).not.toBeNull();
+    expect(profileRows[0].version).toBe(1);
+
+    const investigationRow = await dataSource.query<{ close_outcome: string; status: string }[]>(
+      'SELECT close_outcome, status FROM moderation.profile_investigations WHERE id = $1',
+      [investigationId],
+    );
+    expect(investigationRow).toEqual([{ close_outcome: 'restricted', status: 'closed' }]);
+
+    const eventTypes = await dataSource.query<{ event_type: string; reason: string }[]>(
+      `SELECT event_type, reason FROM moderation.creator_profile_audit_events
+       WHERE investigation_id = $1 ORDER BY created_at`,
+      [investigationId],
+    );
+    expect(eventTypes.map((row) => row.event_type)).toEqual([
+      'investigation_opened',
+      'report_submitted',
+      'creator_restricted',
+      'investigation_closed',
+    ]);
+    expect(eventTypes[2].reason).toBe('repeated violations');
+  });
+
+  it('rejects restricting an investigation that is not open', async () => {
+    const { profileId } = await seedProfile(`prof_${randomUUID().slice(0, 8).replace(/-/g, '')}`);
+    const investigationId = await openInvestigation(profileId);
+    const operatorId = await seedOperator();
+    await service.restrict(operatorId, investigationId, 'first restriction');
+    await expect(
+      service.restrict(operatorId, investigationId, 'second restriction'),
     ).rejects.toMatchObject({ status: 409 });
   });
 });

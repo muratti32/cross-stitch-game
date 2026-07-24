@@ -96,6 +96,7 @@ import { CreateCreatorProfiles1786060800000 } from './migrations/1786060800000-C
 import { CreateProfileReports1786320000000 } from './migrations/1786320000000-CreateProfileReports';
 import { CreateReservedUsernames1786406400000 } from './migrations/1786406400000-CreateReservedUsernames';
 import { AllowModeratorUsernameReset1786492800000 } from './migrations/1786492800000-AllowModeratorUsernameReset';
+import { AddCreatorProfileRestriction1786579200000 } from './migrations/1786579200000-AddCreatorProfileRestriction';
 import {
   CatalogAppealEntity,
   CatalogMetadataAppealEntity,
@@ -203,6 +204,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateProfileReports1786320000000,
       CreateReservedUsernames1786406400000,
       AllowModeratorUsernameReset1786492800000,
+      AddCreatorProfileRestriction1786579200000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

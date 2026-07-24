@@ -267,4 +267,58 @@ describe('Catalog Submission persistence', () => {
       status: 'appeal_upheld',
     });
   });
+
+  it('blocks new Catalog Submissions from a restricted Creator Profile', async () => {
+    const restrictedAccountId = randomUUID();
+    const restrictedProfileId = randomUUID();
+    const sourcePatternId = randomUUID();
+    await dataSource.query('INSERT INTO auth.registered_accounts (id) VALUES ($1)', [
+      restrictedAccountId,
+    ]);
+    await dataSource.query(
+      `INSERT INTO moderation.creator_profiles (id, account_id, username, display_name, restricted_at)
+       VALUES ($1, $2, 'restricted_creator', 'Restricted Name', now())`,
+      [restrictedProfileId, restrictedAccountId],
+    );
+    const palette = [{ dmcCode: '310', name: 'Black', rgbHex: '#000000' }];
+    const grid = Uint8Array.from([1, 0, 0, 1]);
+    const artifact = encodePatternArtifactV1({ grid, height: 2, palette, width: 2 });
+    await dataSource.query(
+      `INSERT INTO catalog.patterns
+        (id, title, creator_name, category_code, width, height, palette_size,
+         artifact_object_key, artifact_checksum, artifact_byte_length,
+         artifact_schema_version, preview_object_key, visibility, owner_account_id)
+       VALUES ($1, 'Restricted Source', 'You', 'other', 2, 2, 1,
+         'personal/restricted-artifact.bin', $2, $3, 1,
+         'personal/restricted-preview.png', 'personal', $4)`,
+      [sourcePatternId, artifact.checksum, artifact.byteLength, restrictedAccountId],
+    );
+    const storage: ObjectStorage = {
+      delete: () => Promise.resolve(),
+      exists: () => Promise.resolve(false),
+      get: () => Promise.resolve(null),
+      publicUrl: (key) => key,
+      put: () => Promise.resolve(),
+    };
+    const jobs = new ProcessingJobsRepository(dataSource, new JobStateTransitionService());
+    const precheck = new CatalogPrecheckService(
+      { openAiModerationEnabled: false } as AppConfigService,
+      dataSource,
+      storage,
+    );
+    const service = new CatalogSubmissionService(dataSource, jobs, precheck, storage);
+    const principal = { id: restrictedAccountId, tokenVersion: 1, type: PrincipalType.Account };
+
+    await expect(
+      service.create(principal, sourcePatternId, {
+        categoryCode: 'other',
+        description: 'Should be blocked.',
+        licenseVersion: 'v1' as const,
+        rightsDeclared: true as const,
+        sourceLanguage: 'en',
+        tagCodes: [],
+        title: 'Blocked Motif',
+      }),
+    ).rejects.toMatchObject({ status: 403 });
+  });
 });
