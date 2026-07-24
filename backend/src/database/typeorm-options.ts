@@ -14,6 +14,8 @@ import {
   TagLabelEntity,
   StaffPickEntity,
   CategoryEntity,
+  CommunityReportEntity,
+  PostPublicationReviewEntity,
 } from '../catalog/entities';
 import { JobOutboxEntity, ProcessingJobEntity } from '../jobs/entities';
 import {
@@ -99,6 +101,7 @@ import {
 } from '../catalog/entities';
 import { CreateCatalogSubmissions1786147200000 } from './migrations/1786147200000-CreateCatalogSubmissions';
 import { CreateCatalogMetadataRevisions1786233600000 } from './migrations/1786233600000-CreateCatalogMetadataRevisions';
+import { CreateCommunityReports1786320000000 } from './migrations/1786320000000-CreateCommunityReports';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -158,6 +161,8 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CatalogMetadataRevisionEntity,
       CatalogMetadataAppealEntity,
       CatalogMetadataReviewDecisionEntity,
+      CommunityReportEntity,
+      PostPublicationReviewEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -189,6 +194,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateCreatorProfiles1786060800000,
       CreateCatalogSubmissions1786147200000,
       CreateCatalogMetadataRevisions1786233600000,
+      CreateCommunityReports1786320000000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

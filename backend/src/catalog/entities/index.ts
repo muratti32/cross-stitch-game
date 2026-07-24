@@ -9,3 +9,5 @@ export * from './catalog-review-decision.entity';
 export * from './catalog-metadata-revision.entity';
 export * from './catalog-metadata-appeal.entity';
 export * from './catalog-metadata-review-decision.entity';
+export * from './community-report.entity';
+export * from './post-publication-review.entity';

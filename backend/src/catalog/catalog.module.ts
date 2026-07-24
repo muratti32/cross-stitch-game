@@ -12,6 +12,8 @@ import {
   TagLabelEntity,
   StaffPickEntity,
   CategoryEntity,
+  CommunityReportEntity,
+  PostPublicationReviewEntity,
 } from './entities';
 import { CatalogService } from './catalog.service';
 import { CatalogController } from './catalog.controller';
@@ -30,6 +32,8 @@ import { CatalogPrecheckService } from './catalog-precheck.service';
 import { CatalogPrecheckJobConsumerService } from './catalog-precheck-job-consumer.service';
 import { CatalogMetadataRevisionController } from './catalog-metadata-revision.controller';
 import { CatalogMetadataRevisionService } from './catalog-metadata-revision.service';
+import { CommunityReportController } from './community-report.controller';
+import { CommunityReportService } from './community-report.service';
 
 @Module({
   imports: [
@@ -46,6 +50,8 @@ import { CatalogMetadataRevisionService } from './catalog-metadata-revision.serv
       CatalogMetadataAppealEntity,
       CatalogMetadataReviewDecisionEntity,
       CreatorProfileEntity,
+      CommunityReportEntity,
+      PostPublicationReviewEntity,
     ]),
     AppConfigModule,
     AuthModule,
@@ -56,6 +62,7 @@ import { CatalogMetadataRevisionService } from './catalog-metadata-revision.serv
     CatalogPreviewsController,
     CatalogSubmissionController,
     CatalogMetadataRevisionController,
+    CommunityReportController,
   ],
   providers: [
     CatalogService,
@@ -63,6 +70,7 @@ import { CatalogMetadataRevisionService } from './catalog-metadata-revision.serv
     CatalogMetadataRevisionService,
     CatalogPrecheckService,
     CatalogPrecheckJobConsumerService,
+    CommunityReportService,
     LocalObjectStorage,
     R2ObjectStorage,
     {

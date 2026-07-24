@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Image, ActivityIndicator, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Screen, Button, Card, CachedImage, EmptyState, GuestDataRiskNotice } from '@/components';
+import { Screen, Button, Card, CachedImage, CommunityReportAction, EmptyState, GuestDataRiskNotice } from '@/components';
 import { Theme } from '@/theme/theme';
 import { BUNDLED_PATTERNS, loadBundledPattern } from '@/bundled-patterns';
 import { PatternData } from '@/pattern-artifact';
@@ -333,6 +333,10 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
           ))}
         </View>
       )}
+
+      {item.creatorProfileId ? (
+        <CommunityReportAction patternId={item.id} patternTitle={item.title} />
+      ) : null}
 
       {prepareError && (
         <View style={styles.errorBanner}>
