@@ -22,6 +22,7 @@ import {
   DemoJobResult,
 } from './jobs.types';
 import { ProcessingJobsRepository } from './processing-jobs.repository';
+import { captureWorkerFailure } from '../observability';
 
 type DemoJobWorker = Worker<
   DemoJobQueueData,
@@ -216,22 +217,29 @@ export class DemoJobConsumerService {
     }
   }
 
-  private processQueueDelivery(
+  private async processQueueDelivery(
     job: DemoJobWorkerJob,
   ): Promise<ProcessingJobQueueResult> {
-    if (job.name === CONVERSION_JOB_EVENT_NAME) {
-      return this.conversionJobs.processDelivery(job.data.processingJobId);
+    try {
+      if (job.name === CONVERSION_JOB_EVENT_NAME) {
+        return await this.conversionJobs.processDelivery(job.data.processingJobId);
+      }
+      if (job.name === OFFICIAL_PATTERN_DRAFT_EVENT_NAME) {
+        return await this.officialPatternDraftJobs.processDelivery(job.data.processingJobId);
+      }
+      if (job.name === AI_ARTWORK_JOB_EVENT_NAME) {
+        return await this.aiArtworkJobs.processDelivery(job.data.processingJobId);
+      }
+      if (job.name === CATALOG_PRECHECK_EVENT_NAME) {
+        return await this.catalogPrecheckJobs.processDelivery(job.data.processingJobId);
+      }
+      return await this.processDelivery(job.data);
+    } catch (error: unknown) {
+      if (!(error instanceof ProcessingJobNotReadyError)) {
+        captureWorkerFailure(error, job.name);
+      }
+      throw asError(error);
     }
-    if (job.name === OFFICIAL_PATTERN_DRAFT_EVENT_NAME) {
-      return this.officialPatternDraftJobs.processDelivery(job.data.processingJobId);
-    }
-    if (job.name === AI_ARTWORK_JOB_EVENT_NAME) {
-      return this.aiArtworkJobs.processDelivery(job.data.processingJobId);
-    }
-    if (job.name === CATALOG_PRECHECK_EVENT_NAME) {
-      return this.catalogPrecheckJobs.processDelivery(job.data.processingJobId);
-    }
-    return this.processDelivery(job.data);
   }
 }
 

@@ -1,9 +1,12 @@
+import './observability/sentry';
+
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import { WorkerAppModule } from './app.worker.module';
 import { EmailAuthWorkerRuntimeService } from './auth';
 import { JobsWorkerRuntimeService } from './jobs';
+import { captureBootstrapFailure } from './observability';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.createApplicationContext(WorkerAppModule);
@@ -23,6 +26,7 @@ async function bootstrap(): Promise<void> {
 }
 
 void bootstrap().catch((error: unknown) => {
+  captureBootstrapFailure(error, 'worker');
   const message = error instanceof Error ? error.message : String(error);
   const stack = error instanceof Error ? error.stack : undefined;
   Logger.error(message, stack, 'WorkerBootstrap');

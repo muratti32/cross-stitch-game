@@ -190,4 +190,22 @@ export class AppConfigService {
   get openAiModerationEnabled(): boolean {
     return this.configService.get('OPENAI_MODERATION_ENABLED', { infer: true });
   }
+
+  get sentryDsn(): string | undefined {
+    return this.configService.get('SENTRY_DSN', { infer: true });
+  }
+
+  get sentryEnvironment(): string {
+    return this.configService.get('SENTRY_ENVIRONMENT', { infer: true });
+  }
+
+  get sentryRelease(): string | undefined {
+    return this.configService.get('SENTRY_RELEASE', { infer: true });
+  }
+
+  get sentryTracesSampleRate(): number {
+    return this.configService.get('SENTRY_TRACES_SAMPLE_RATE', {
+      infer: true,
+    });
+  }
 }

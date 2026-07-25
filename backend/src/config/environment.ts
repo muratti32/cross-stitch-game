@@ -1,3 +1,5 @@
+import { config as loadEnvironmentFile } from 'dotenv';
+
 export type EnvironmentVariables = {
   CONVERSION_ENGINE_URL: string;
   CONVERSION_WORKER_CONCURRENCY: number;
@@ -35,7 +37,19 @@ export type EnvironmentVariables = {
   REVENUECAT_WEBHOOK_AUTH_TOKEN: string | undefined;
   AD_ATTEMPT_TTL_SECONDS: number;
   OPENAI_MODERATION_ENABLED: boolean;
+  SENTRY_DSN: string | undefined;
+  SENTRY_ENVIRONMENT: string;
+  SENTRY_RELEASE: string | undefined;
+  SENTRY_TRACES_SAMPLE_RATE: number;
 };
+
+export type SentryEnvironmentVariables = Pick<
+  EnvironmentVariables,
+  | 'SENTRY_DSN'
+  | 'SENTRY_ENVIRONMENT'
+  | 'SENTRY_RELEASE'
+  | 'SENTRY_TRACES_SAMPLE_RATE'
+>;
 
 const DATABASE_PROTOCOLS = new Set(['postgres:', 'postgresql:']);
 const DEFAULT_JWT_ACCESS_TTL_SECONDS = 900;
@@ -203,6 +217,88 @@ function parseCommaList(value: unknown): readonly string[] {
     .split(',')
     .map((item) => item.trim())
     .filter((item) => item.length > 0);
+}
+
+function parseSampleRate(
+  value: unknown,
+  variableName: string,
+  defaultValue: number,
+): number {
+  if (value === undefined || value === '') {
+    return defaultValue;
+  }
+  if (
+    (typeof value !== 'string' && typeof value !== 'number') ||
+    (typeof value === 'string' && value.trim() === '')
+  ) {
+    throw new Error(`${variableName} must be a number between 0 and 1`);
+  }
+
+  const sampleRate = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(sampleRate) || sampleRate < 0 || sampleRate > 1) {
+    throw new Error(`${variableName} must be a number between 0 and 1`);
+  }
+  return sampleRate;
+}
+
+function parseOptionalSentryDsn(value: unknown): string | undefined {
+  const dsn = parseOptionalString(value);
+  if (dsn === undefined) {
+    return undefined;
+  }
+
+  try {
+    const parsedDsn = new URL(dsn);
+    if (
+      !HTTP_PROTOCOLS.has(parsedDsn.protocol) ||
+      parsedDsn.hostname.length === 0 ||
+      parsedDsn.username.length === 0
+    ) {
+      throw new Error();
+    }
+  } catch {
+    throw new Error('SENTRY_DSN must be a valid Sentry DSN URL');
+  }
+
+  return dsn;
+}
+
+/**
+ * Reads the Sentry subset needed before Nest creates an application. This
+ * remains in the configuration layer because Sentry instrumentation must run
+ * before the ConfigModule and application modules are imported.
+ */
+export function parseSentryEnvironment(
+  environment: Record<string, unknown>,
+): SentryEnvironmentVariables {
+  const dsn = parseOptionalSentryDsn(environment.SENTRY_DSN);
+  const environmentName =
+    parseOptionalString(environment.SENTRY_ENVIRONMENT) ??
+    parseOptionalString(environment.NODE_ENV) ??
+    'development';
+  const release = parseOptionalString(environment.SENTRY_RELEASE);
+  if (dsn !== undefined && release === undefined) {
+    throw new Error('SENTRY_RELEASE is required when SENTRY_DSN is configured');
+  }
+
+  return {
+    SENTRY_DSN: dsn,
+    SENTRY_ENVIRONMENT: environmentName,
+    SENTRY_RELEASE: release,
+    SENTRY_TRACES_SAMPLE_RATE: parseSampleRate(
+      environment.SENTRY_TRACES_SAMPLE_RATE,
+      'SENTRY_TRACES_SAMPLE_RATE',
+      environmentName === 'production' ? 0.2 : 1,
+    ),
+  };
+}
+
+export function readSentryBootstrapEnvironment(): SentryEnvironmentVariables {
+  // ConfigModule loads this same default file later in application bootstrap.
+  // Sentry must initialize first, so load it here within the configuration
+  // layer before the Nest application and ConfigModule exist.
+  loadEnvironmentFile();
+  return parseSentryEnvironment(process.env);
 }
 
 // R2 credentials are all-or-nothing: a partially configured R2 setup would
@@ -411,6 +507,7 @@ export function parseEnvironment(
       DEFAULT_AD_ATTEMPT_TTL_SECONDS,
     ),
     OPENAI_MODERATION_ENABLED: parseOpenAiModerationEnabled(environment),
+    ...parseSentryEnvironment(environment),
   };
 }
 

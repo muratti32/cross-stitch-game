@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 
 import { AccountDeletionModule } from './deletion';
 import { AdminModule } from './admin/admin.module';
@@ -18,9 +20,14 @@ import { AiArtworkModule } from './ai-artwork/ai-artwork.module';
 import { SupportModule } from './support/support.module';
 import { CreatorProfileModule } from './creator-profile';
 import { SocialModule } from './social/social.module';
+import {
+  isSentryEnabled,
+  SentryRequestContextInterceptor,
+} from './observability';
 
 @Module({
   imports: [
+    ...(isSentryEnabled ? [SentryModule.forRoot()] : []),
     AccountDeletionModule,
     AppConfigModule,
     DatabaseModule,
@@ -40,5 +47,17 @@ import { SocialModule } from './social/social.module';
     SocialModule,
     AdminModule,
   ],
+  providers: isSentryEnabled
+    ? [
+        {
+          provide: APP_FILTER,
+          useClass: SentryGlobalFilter,
+        },
+        {
+          provide: APP_INTERCEPTOR,
+          useClass: SentryRequestContextInterceptor,
+        },
+      ]
+    : [],
 })
 export class ApiAppModule {}

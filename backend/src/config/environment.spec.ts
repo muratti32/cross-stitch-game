@@ -1,4 +1,4 @@
-import { parseEnvironment } from './environment';
+import { parseEnvironment, parseSentryEnvironment } from './environment';
 
 function validEnvironment(
   overrides: Record<string, unknown> = {},
@@ -75,6 +75,40 @@ describe('parseEnvironment OpenAI moderation', () => {
         validEnvironment({ OPENAI_MODERATION_ENABLED: 'off' }),
       ),
     ).toThrow('OPENAI_MODERATION_ENABLED must be either true or false');
+  });
+});
+
+describe('parseSentryEnvironment', () => {
+  it('leaves Sentry disabled when no DSN is configured', () => {
+    expect(parseSentryEnvironment({})).toEqual({
+      SENTRY_DSN: undefined,
+      SENTRY_ENVIRONMENT: 'development',
+      SENTRY_RELEASE: undefined,
+      SENTRY_TRACES_SAMPLE_RATE: 1,
+    });
+  });
+
+  it('requires a release whenever a DSN is configured', () => {
+    expect(() =>
+      parseSentryEnvironment({
+        SENTRY_DSN: 'https://public@example.ingest.sentry.io/123',
+      }),
+    ).toThrow('SENTRY_RELEASE is required when SENTRY_DSN is configured');
+  });
+
+  it('uses the production tracing default and accepts a configured release', () => {
+    expect(
+      parseSentryEnvironment({
+        NODE_ENV: 'production',
+        SENTRY_DSN: 'https://public@example.ingest.sentry.io/123',
+        SENTRY_RELEASE: 'stitch-wish-backend@0.1.0',
+      }),
+    ).toEqual({
+      SENTRY_DSN: 'https://public@example.ingest.sentry.io/123',
+      SENTRY_ENVIRONMENT: 'production',
+      SENTRY_RELEASE: 'stitch-wish-backend@0.1.0',
+      SENTRY_TRACES_SAMPLE_RATE: 0.2,
+    });
   });
 });
 
