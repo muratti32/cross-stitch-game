@@ -264,6 +264,20 @@ export default function ProfileScreen() {
         </Pressable>
       )}
 
+      {isAccount && (
+        <Pressable
+          onPress={() => router.push('/(tabs)/(profile)/liked-patterns')}
+          style={({ pressed }) => [styles.submissionsButton, pressed && styles.pressedButton]}
+        >
+          <Ionicons name="heart-outline" size={18} color={Theme.colors.accentTeal} />
+          <View style={styles.submissionsButtonText}>
+            <Text style={styles.submissionsButtonTitle}>Liked Patterns</Text>
+            <Text style={styles.submissionsButtonSubtitle}>Your private collection of liked community patterns</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Theme.colors.textSecondary} />
+        </Pressable>
+      )}
+
       <DailyTasksCard enabled={isAuthenticated && !isPending && !isOfflinePending} />
       <RewardedAdCard enabled={!isPending && !isOfflinePending} />
 

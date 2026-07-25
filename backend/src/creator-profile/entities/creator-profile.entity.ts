@@ -49,6 +49,12 @@ export class CreatorProfileEntity {
   @Column({ name: 'restricted_at', nullable: true, type: 'timestamptz' })
   restrictedAt!: Date | null;
 
+  @Column({ name: 'closure_hold_at', nullable: true, type: 'timestamptz' })
+  closureHoldAt!: Date | null;
+
+  @Column({ name: 'deleted_at', nullable: true, type: 'timestamptz' })
+  deletedAt?: Date | null;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 

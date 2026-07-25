@@ -12,6 +12,9 @@ import {
   useNewPatterns,
   useStaffPicks,
 } from '@/api/catalog';
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalLikes } from '@/api/social';
+import { useIdentityStore } from '@/identity/guestIdentity';
 
 export default function CatalogScreen() {
   const router = useRouter();
@@ -235,6 +238,10 @@ function ServerPatternCard({
   pattern: CatalogPatternItem;
   onPress: () => void;
 }) {
+  const { data: localLikes } = useLocalLikes();
+  const { isAccount } = useIdentityStore();
+  const isLiked = isAccount ? pattern.viewerLiked : !!localLikes?.[pattern.id];
+
   return (
     <Card style={styles.patternCard} onPress={onPress}>
       <CachedImage uri={absolutePreviewUrl(pattern.originalImageUrl ?? pattern.previewUrl)} style={styles.patternImage} />
@@ -243,8 +250,16 @@ function ServerPatternCard({
           {pattern.title}
         </Text>
         <Text style={styles.patternMeta}>
-          {pattern.width}×{pattern.height} • {pattern.paletteSize} colors
+          {pattern.width}×{pattern.height} • {pattern.paletteSize} cols
         </Text>
+        <View style={styles.cardLikesRow}>
+          <Ionicons
+            name={isLiked ? 'heart' : 'heart-outline'}
+            size={12}
+            color={isLiked ? Theme.colors.error : Theme.colors.textSecondary}
+          />
+          <Text style={styles.cardLikesText}>{pattern.likeCount}</Text>
+        </View>
       </View>
     </Card>
   );
@@ -257,13 +272,27 @@ function NewPatternRow({
   pattern: CatalogPatternItem;
   onPress: () => void;
 }) {
+  const { data: localLikes } = useLocalLikes();
+  const { isAccount } = useIdentityStore();
+  const isLiked = isAccount ? pattern.viewerLiked : !!localLikes?.[pattern.id];
+
   return (
     <Card style={styles.newRow} onPress={onPress}>
       <CachedImage uri={absolutePreviewUrl(pattern.originalImageUrl ?? pattern.previewUrl)} style={styles.newRowImage} />
       <View style={styles.newRowDetails}>
-        <Text style={styles.patternTitle} numberOfLines={1}>
-          {pattern.title}
-        </Text>
+        <View style={styles.newRowHeader}>
+          <Text style={styles.patternTitle} numberOfLines={1}>
+            {pattern.title}
+          </Text>
+          <View style={styles.cardLikesRow}>
+            <Ionicons
+              name={isLiked ? 'heart' : 'heart-outline'}
+              size={12}
+              color={isLiked ? Theme.colors.error : Theme.colors.textSecondary}
+            />
+            <Text style={styles.cardLikesText}>{pattern.likeCount}</Text>
+          </View>
+        </View>
         <Text style={styles.patternMeta}>
           {pattern.creatorName} • {pattern.width}×{pattern.height}
         </Text>
@@ -464,5 +493,21 @@ const styles = StyleSheet.create({
   },
   showMoreButton: {
     marginTop: Theme.spacing.sm,
+  },
+  cardLikesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 4,
+  },
+  cardLikesText: {
+    fontSize: 11,
+    color: Theme.colors.textSecondary,
+  },
+  newRowHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
   },
 });

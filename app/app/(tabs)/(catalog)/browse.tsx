@@ -9,6 +9,9 @@ import {
   absolutePreviewUrl,
   usePatternsBrowse,
 } from '@/api/catalog';
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalLikes } from '@/api/social';
+import { useIdentityStore } from '@/identity/guestIdentity';
 
 export default function BrowseScreen() {
   const { category, tag, title } = useLocalSearchParams<{
@@ -19,6 +22,8 @@ export default function BrowseScreen() {
   const router = useRouter();
   const tabBarSpace = useTabBarSpace();
   const browse = usePatternsBrowse({ category, tag });
+  const { data: localLikes } = useLocalLikes();
+  const { isAccount } = useIdentityStore();
 
   const items: CatalogPatternItem[] =
     browse.data?.pages.flatMap((page) => page.data.items) ?? [];
@@ -91,23 +96,34 @@ export default function BrowseScreen() {
               />
             ) : null
           }
-          renderItem={({ item }) => (
-            <Card
-              style={styles.gridCard}
-              onPress={() => router.push(`/(tabs)/(catalog)/${item.id}`)}
-            >
-              <CachedImage
-                uri={absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl)}
-                style={styles.gridImage}
-              />
-              <Text style={styles.gridTitle} numberOfLines={1}>
-                {item.title}
-              </Text>
-              <Text style={styles.gridMeta}>
-                {item.width}×{item.height} • {item.paletteSize} colors
-              </Text>
-            </Card>
-          )}
+          renderItem={({ item }) => {
+            const isLiked = isAccount ? item.viewerLiked : !!localLikes?.[item.id];
+            return (
+              <Card
+                style={styles.gridCard}
+                onPress={() => router.push(`/(tabs)/(catalog)/${item.id}`)}
+              >
+                <CachedImage
+                  uri={absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl)}
+                  style={styles.gridImage}
+                />
+                <Text style={styles.gridTitle} numberOfLines={1}>
+                  {item.title}
+                </Text>
+                <Text style={styles.gridMeta}>
+                  {item.width}×{item.height} • {item.paletteSize} cols
+                </Text>
+                <View style={styles.cardLikesRow}>
+                  <Ionicons
+                    name={isLiked ? 'heart' : 'heart-outline'}
+                    size={12}
+                    color={isLiked ? Theme.colors.error : Theme.colors.textSecondary}
+                  />
+                  <Text style={styles.cardLikesText}>{item.likeCount}</Text>
+                </View>
+              </Card>
+            );
+          }}
         />
       )}
     </Screen>
@@ -187,5 +203,15 @@ const styles = StyleSheet.create({
   },
   footerSpinner: {
     marginVertical: Theme.spacing.md,
+  },
+  cardLikesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 4,
+  },
+  cardLikesText: {
+    fontSize: 11,
+    color: Theme.colors.textSecondary,
   },
 });

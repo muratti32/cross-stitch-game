@@ -8,9 +8,12 @@ import { GuestInstallationsRepository } from '../auth/guest-installations.reposi
 import { AuthHashingService } from '../auth/auth-hashing.service';
 import { PromotionLockEntity, PromotionTransferPackageEntity } from './entities';
 import { CoinBalanceEntity, CoinLedgerEntryEntity, CoinLedgerReason, PatternUnlockEntity } from '../economy/entities';
+import { AccountStateService } from '../deletion/account-state.service';
 import { PromotionPreviewRequestDto } from './dto/promotion-preview.dto';
 import { PromotionPackageRequestDto } from './dto/promotion-package.dto';
 import { PromotionCommitRequestDto } from './dto/promotion-commit.dto';
+import { PatternLikeService } from '../social/pattern-like.service';
+import { PatternEntity } from '../catalog/entities/pattern.entity';
 import {
   DAILY_TASK_CELLS_TARGET,
   DAILY_TASK_COLOR_ACTIONS_MIN,
@@ -24,6 +27,7 @@ import {
 @Injectable()
 export class PromotionService {
   constructor(
+    private readonly patternLikeService: PatternLikeService,
     private readonly dataSource: DataSource,
     private readonly config: AppConfigService,
     private readonly authHashing: AuthHashingService,
@@ -36,9 +40,14 @@ export class PromotionService {
     private readonly coinBalanceRepo: Repository<CoinBalanceEntity>,
     @InjectRepository(CoinLedgerEntryEntity)
     private readonly coinLedgerEntryRepo: Repository<CoinLedgerEntryEntity>,
+    private readonly accountStateService: AccountStateService,
   ) {}
 
   async generatePreview(accountId: string, dto: PromotionPreviewRequestDto) {
+    const status = await this.accountStateService.getAccountStatus(accountId);
+    if (status === 'closing') {
+      throw new ForbiddenException('Account is closing');
+    }
     const { guestId, guestCredential, manifest, manifestChecksum } = dto;
 
     // 1. Authenticate guest
@@ -124,6 +133,10 @@ export class PromotionService {
   }
 
   async acquireLock(accountId: string, previewSignature: string, previewData: any) {
+    const status = await this.accountStateService.getAccountStatus(accountId);
+    if (status === 'closing') {
+      throw new ForbiddenException('Account is closing');
+    }
     // 1. Verify preview signature
     const isValid = this.verifySignature(previewData, previewSignature);
     if (!isValid) {
@@ -159,6 +172,10 @@ export class PromotionService {
   }
 
   async stagePackage(accountId: string, dto: PromotionPackageRequestDto) {
+    const status = await this.accountStateService.getAccountStatus(accountId);
+    if (status === 'closing') {
+      throw new ForbiddenException('Account is closing');
+    }
     const { guestId, lockToken, manifestChecksum, packageData, checksum } = dto;
 
     // 1. Verify active lock exists and token matches
@@ -204,6 +221,10 @@ export class PromotionService {
   }
 
   async commitPromotion(accountId: string, dto: PromotionCommitRequestDto) {
+    const status = await this.accountStateService.getAccountStatus(accountId);
+    if (status === 'closing') {
+      throw new ForbiddenException('Account is closing');
+    }
     const { previewData, signature } = dto;
 
     // 1. Verify preview signature
@@ -551,7 +572,11 @@ export class PromotionService {
     }
   }
 
-  async drainLike(accountId: string, guestId: string, patternId: string) {
+  async drainLike(
+    accountId: string,
+    guestId: string,
+    patternId: string,
+  ): Promise<{ status: 'applied' | 'already_present' | 'discarded' }> {
     const pkg = await this.transferPackageRepo.findOne({
       where: { guestId, accountId, status: 'committed' }
     });
@@ -559,9 +584,21 @@ export class PromotionService {
       throw new ForbiddenException('Staged package not found or not committed');
     }
 
-    // Since there is no database table for likes yet (Issue #29 is open),
-    // we acknowledge the transfer of the like.
-    return { status: 'acknowledged' };
+    return await this.dataSource.transaction(async (manager) => {
+      const pattern = await manager.findOne(PatternEntity, {
+        where: { id: patternId },
+      });
+      if (!pattern || pattern.visibility === 'personal' || pattern.status !== 'available') {
+        return { status: 'discarded' };
+      }
+
+      const result = await this.patternLikeService.likeWithManager(manager, accountId, patternId);
+      if (result.wasInserted) {
+        return { status: 'applied' };
+      } else {
+        return { status: 'already_present' };
+      }
+    });
   }
 
   async assertNotLocked(principalId: string, principalType: string): Promise<void> {

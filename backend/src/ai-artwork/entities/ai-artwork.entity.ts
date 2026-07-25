@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 export type ArtworkAspect = 'square' | 'portrait_4_3' | 'landscape_4_3';
-export type AiArtworkStatus = 'pending' | 'submitting' | 'submitted' | 'delivered' | 'safety_rejected' | 'failed' | 'deleted';
+export type AiArtworkStatus = 'pending' | 'submitting' | 'submitted' | 'delivered' | 'safety_rejected' | 'failed' | 'deleted' | 'cancelled';
 
 @Entity({ name: 'ai_artworks', schema: 'ai' })
 @Index('UQ_ai_artworks_processing_job', ['processingJobId'], { unique: true })

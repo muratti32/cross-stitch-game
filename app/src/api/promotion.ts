@@ -1,4 +1,5 @@
 import { apiFetch } from './apiFetch';
+import { getLocalPatternLikes, setLocalPatternLike } from '../local-db';
 
 export interface PromotionManifest {
   progress: Record<string, { deviceSeq: number; checksum: string }>;
@@ -44,6 +45,16 @@ export interface PromotionPackageRequest {
   manifestChecksum: string;
   packageData: any;
   checksum: string;
+}
+
+export async function preparePromotionManifest(): Promise<PromotionManifest> {
+  const likes = await getLocalPatternLikes();
+  return {
+    progress: {},
+    completions: {},
+    pendingRewards: {},
+    likes,
+  };
 }
 
 export async function fetchPromotionPreview(dto: PromotionPreviewRequest): Promise<PromotionPreviewResponse> {
@@ -141,5 +152,7 @@ export async function drainLike(guestId: string, patternId: string): Promise<any
     throw new Error('Failed to drain like: ' + res.status);
   }
 
-  return await res.json();
+  const data = await res.json();
+  await setLocalPatternLike(patternId, false);
+  return data;
 }

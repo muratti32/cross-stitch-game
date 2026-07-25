@@ -17,15 +17,19 @@ import {
 import { GuestIdentityService } from './guest-identity.service';
 import { GuestInstallationsRepository } from './guest-installations.repository';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { OptionalJwtAuthGuard } from './optional-jwt-auth.guard';
 import { RefreshTokensRepository } from './refresh-tokens.repository';
+
+import { InvalidatedNamespaceTokenModule } from '../deletion/invalidated-namespace-token.module';
 
 @Module({
   controllers: [AuthController],
   // JwtModule is re-exported so modules importing AuthModule (e.g. SessionsModule)
   // can instantiate JwtAuthGuard via @UseGuards, which depends on JwtService.
-  exports: [AccountIdentityService, AuthSessionService, JwtAuthGuard, JwtModule, GuestInstallationsRepository, AuthHashingService],
+  exports: [AccountIdentityService, AuthSessionService, JwtAuthGuard, OptionalJwtAuthGuard, JwtModule, GuestInstallationsRepository, AuthHashingService, RefreshTokensRepository],
   imports: [
     AppConfigModule,
+    InvalidatedNamespaceTokenModule,
     TypeOrmModule.forFeature([
       GuestInstallationEntity,
       AuthIdentityEntity,
@@ -51,6 +55,7 @@ import { RefreshTokensRepository } from './refresh-tokens.repository';
     GuestIdentityService,
     GuestInstallationsRepository,
     JwtAuthGuard,
+    OptionalJwtAuthGuard,
     RefreshTokensRepository,
   ],
 })

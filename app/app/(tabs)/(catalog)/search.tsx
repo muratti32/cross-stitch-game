@@ -12,6 +12,9 @@ import { Screen, Card, Button, EmptyState, CachedImage } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useTabBarSpace } from '@/theme/tabBar';
 import { absolutePreviewUrl, useCatalogSearch } from '@/api/catalog';
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalLikes } from '@/api/social';
+import { useIdentityStore } from '@/identity/guestIdentity';
 
 const DEBOUNCE_MS = 300;
 
@@ -28,6 +31,8 @@ export default function SearchScreen() {
 
   const search = useCatalogSearch(query);
   const active = query.trim().length >= 2;
+  const { data: localLikes } = useLocalLikes();
+  const { isAccount } = useIdentityStore();
 
   return (
     <Screen clearsTabBar={false}>
@@ -87,32 +92,45 @@ export default function SearchScreen() {
           data={search.data}
           keyExtractor={(item) => item.id}
           contentContainerStyle={[styles.listContent, { paddingBottom: tabBarSpace }]}
-          renderItem={({ item }) => (
-            <Card
-              style={styles.resultRow}
-              onPress={() => router.push(`/(tabs)/(catalog)/${item.id}`)}
-            >
-              <CachedImage
-                uri={absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl)}
-                style={styles.resultImage}
-              />
-              <View style={styles.resultDetails}>
-                <Text style={styles.resultTitle} numberOfLines={1}>
-                  {item.title}
-                </Text>
-                <Text style={styles.resultMeta}>
-                  {item.creatorName} • {item.width}×{item.height}
-                </Text>
-                <View style={styles.resultTags}>
-                  {item.tags.slice(0, 3).map((tag) => (
-                    <Text key={tag.code} style={styles.resultTag}>
-                      #{tag.label}
+          renderItem={({ item }) => {
+            const isLiked = isAccount ? item.viewerLiked : !!localLikes?.[item.id];
+            return (
+              <Card
+                style={styles.resultRow}
+                onPress={() => router.push(`/(tabs)/(catalog)/${item.id}`)}
+              >
+                <CachedImage
+                  uri={absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl)}
+                  style={styles.resultImage}
+                />
+                <View style={styles.resultDetails}>
+                  <View style={styles.resultRowHeader}>
+                    <Text style={styles.resultTitle} numberOfLines={1}>
+                      {item.title}
                     </Text>
-                  ))}
+                    <View style={styles.cardLikesRow}>
+                      <Ionicons
+                        name={isLiked ? 'heart' : 'heart-outline'}
+                        size={12}
+                        color={isLiked ? Theme.colors.error : Theme.colors.textSecondary}
+                      />
+                      <Text style={styles.cardLikesText}>{item.likeCount}</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.resultMeta}>
+                    {item.creatorName} • {item.width}×{item.height}
+                  </Text>
+                  <View style={styles.resultTags}>
+                    {item.tags.slice(0, 3).map((tag) => (
+                      <Text key={tag.code} style={styles.resultTag}>
+                        #{tag.label}
+                      </Text>
+                    ))}
+                  </View>
                 </View>
-              </View>
-            </Card>
-          )}
+              </Card>
+            );
+          }}
         />
       )}
     </Screen>
@@ -188,5 +206,20 @@ const styles = StyleSheet.create({
   resultTag: {
     fontSize: Theme.typography.sizes.xs,
     color: Theme.colors.accentTeal,
+  },
+  resultRowHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+  cardLikesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  cardLikesText: {
+    fontSize: 11,
+    color: Theme.colors.textSecondary,
   },
 });

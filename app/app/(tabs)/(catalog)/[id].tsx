@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Image, ActivityIndicator, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Image, ActivityIndicator, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Screen, Button, Card, CachedImage, EmptyState, GuestDataRiskNotice } from '@/components';
 import { Theme } from '@/theme/theme';
@@ -10,6 +10,8 @@ import { useIdentityStore } from '@/identity/guestIdentity';
 import { prepareCatalogSession, prepareBundledSession, UnlockRequiredError } from '@/session-preparation';
 import { useCoinBalance, useUnlockedPatternIds, useUnlockPattern, InsufficientCoinError, unlockPriceForTier } from '@/api/economy';
 import { hasSeenGuestDataRiskNotice, markGuestDataRiskNoticeSeen } from '@/local-db';
+import { Ionicons } from '@expo/vector-icons';
+import { useLikeToggle, useLocalLikes, useBlockCreator } from '@/api/social';
 
 export default function PatternDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -164,6 +166,10 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
   const { data: unlockedIds, isLoading: unlocksLoading } = useUnlockedPatternIds();
   const unlockMutation = useUnlockPattern();
 
+  const { data: localLikes } = useLocalLikes();
+  const toggleLike = useLikeToggle();
+  const blockMutation = useBlockCreator();
+
   const [preparing, setPreparing] = useState(false);
   const [prepareError, setPrepareError] = useState<string | null>(null);
   const [noticeVisible, setNoticeVisible] = useState(false);
@@ -197,6 +203,47 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
   const tier = item.unlockPriceTier;
   const price = tier ? unlockPriceForTier(tier) : 0;
   const owned = (tier === null || (unlockedIds ?? []).includes(item.id)) && !unlockCTAOverride;
+
+  const isLiked = isAccount ? item.viewerLiked : !!localLikes?.[item.id];
+
+  const handleLikeTap = () => {
+    toggleLike.mutate(
+      {
+        patternId: item.id,
+        currentLiked: isLiked,
+        currentLikeCount: item.likeCount,
+      },
+      {
+        onError: (err) => {
+          setPrepareError(err instanceof Error ? err.message : 'Failed to update like status');
+        },
+      }
+    );
+  };
+
+  const handleBlockPress = () => {
+    Alert.alert(
+      'Block Creator',
+      `Are you sure you want to block ${item.creatorName}? This is a private, reversible action that hides their patterns from search/browse. It does not report the creator and will not interrupt your current stitching session.`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Block',
+          style: 'destructive',
+          onPress: async () => {
+            if (item.creatorProfileId) {
+              try {
+                await blockMutation.mutateAsync(item.creatorProfileId);
+                Alert.alert('Blocked', `${item.creatorName} has been blocked.`);
+              } catch (err) {
+                Alert.alert('Error', err instanceof Error ? err.message : 'Failed to block creator.');
+              }
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const handleStartStitching = async () => {
     try {
@@ -276,6 +323,26 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
           onPress={() => router.back()}
           style={styles.backButton}
         />
+        <View style={styles.headerActions}>
+          <TouchableOpacity onPress={handleLikeTap} style={styles.likeHeaderButton} activeOpacity={0.7}>
+            <Ionicons
+              name={isLiked ? 'heart' : 'heart-outline'}
+              size={24}
+              color={isLiked ? Theme.colors.error : Theme.colors.textSecondary}
+            />
+            <Text style={styles.likeCountText}>{item.likeCount}</Text>
+          </TouchableOpacity>
+          
+          {item.creatorProfileId && isAccount && (
+            <TouchableOpacity onPress={handleBlockPress} style={styles.blockHeaderButton} activeOpacity={0.7}>
+              <Ionicons
+                name="ellipsis-horizontal"
+                size={24}
+                color={Theme.colors.textSecondary}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       <View style={styles.imageContainer}>
@@ -334,9 +401,11 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
         </View>
       )}
 
-      {prepareError && (
+      {(prepareError || toggleLike.error) && (
         <View style={styles.errorBanner}>
-          <Text style={styles.errorBannerText}>{prepareError}</Text>
+          <Text style={styles.errorBannerText}>
+            {prepareError || toggleLike.error?.message || 'Failed to update like status'}
+          </Text>
         </View>
       )}
 
@@ -470,7 +539,29 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: Theme.spacing.md,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Theme.spacing.md,
+  },
+  likeHeaderButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Theme.spacing.xs,
+    padding: Theme.spacing.xs,
+  },
+  likeCountText: {
+    fontSize: Theme.typography.sizes.sm,
+    fontWeight: Theme.typography.weights.semibold,
+    color: Theme.colors.textSecondary,
+  },
+  blockHeaderButton: {
+    padding: Theme.spacing.xs,
   },
   backButton: {
     alignSelf: 'flex-start',

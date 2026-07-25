@@ -15,6 +15,7 @@ import {
 import { OutboxDispatcherService } from './outbox-dispatcher.service';
 import { StorageReconcilerService } from '../sessions/storage-reconciler.service';
 import { AiArtworkService } from '../ai-artwork/ai-artwork.service';
+import { AccountDeletionFinalizerService } from '../deletion/account-deletion-finalizer.service';
 
 @Injectable()
 export class JobsWorkerRuntimeService implements OnApplicationShutdown {
@@ -22,6 +23,7 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
   private dispatchTimer: NodeJS.Timeout | null = null;
   private reconcileTimer: NodeJS.Timeout | null = null;
   private aiArtworkReconcileTimer: NodeJS.Timeout | null = null;
+  private accountDeletionFinalizerTimer: NodeJS.Timeout | null = null;
   private activeDispatch: Promise<void> | null = null;
   private running = false;
 
@@ -32,6 +34,7 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     private readonly reconciler: StorageReconcilerService,
     @Inject(forwardRef(() => AiArtworkService))
     private readonly aiArtworks: AiArtworkService,
+    private readonly accountDeletionFinalizer: AccountDeletionFinalizerService,
   ) {}
 
   async start(): Promise<void> {
@@ -48,6 +51,14 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
       this.reconciler.reconcileOnce().catch((error: unknown) => {
         this.logger.error(
           `Error running storage reconciler: ${error instanceof Error ? error.message : String(error)}`,
+        );
+      });
+    }, 60000);
+
+    this.accountDeletionFinalizerTimer = setInterval(() => {
+      this.accountDeletionFinalizer.finalizeDueRequests().catch((error: unknown) => {
+        this.logger.error(
+          `Error running account deletion finalizer: ${error instanceof Error ? error.message : String(error)}`,
         );
       });
     }, 60000);
@@ -79,6 +90,10 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     if (this.aiArtworkReconcileTimer !== null) {
       clearInterval(this.aiArtworkReconcileTimer);
       this.aiArtworkReconcileTimer = null;
+    }
+    if (this.accountDeletionFinalizerTimer !== null) {
+      clearInterval(this.accountDeletionFinalizerTimer);
+      this.accountDeletionFinalizerTimer = null;
     }
     if (this.activeDispatch !== null) {
       await this.activeDispatch;

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { AccountDeletionModule } from './deletion';
 import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { EmailAuthModule } from './auth/email-auth.module';
@@ -16,9 +17,11 @@ import { PromotionModule } from './promotion/promotion.module';
 import { AiArtworkModule } from './ai-artwork/ai-artwork.module';
 import { SupportModule } from './support/support.module';
 import { CreatorProfileModule } from './creator-profile';
+import { SocialModule } from './social/social.module';
 
 @Module({
   imports: [
+    AccountDeletionModule,
     AppConfigModule,
     DatabaseModule,
     AuthModule,
@@ -34,6 +37,7 @@ import { CreatorProfileModule } from './creator-profile';
     AiArtworkModule,
     SupportModule,
     CreatorProfileModule,
+    SocialModule,
     AdminModule,
   ],
 })

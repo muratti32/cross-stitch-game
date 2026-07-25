@@ -23,6 +23,7 @@ export {
   GuestInstallationsRepository,
 } from './guest-installations.repository';
 export { JwtAuthGuard } from './jwt-auth.guard';
+export { OptionalJwtAuthGuard } from './optional-jwt-auth.guard';
 export {
   RefreshRotationOutcome,
   RefreshTokenPrincipal,

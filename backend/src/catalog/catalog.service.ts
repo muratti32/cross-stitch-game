@@ -1,7 +1,12 @@
-import { Inject, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, BadRequestException, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 import { PatternEntity, TagEntity, TagLabelEntity, StaffPickEntity, CategoryEntity, PatternUnlockPriceTier, PatternStatus } from './entities';
+import { AuthPrincipal } from '../auth/auth.types';
+import { PrincipalType } from '../auth/entities';
+import { PatternLikeService } from '../social/pattern-like.service';
+import { CreatorBlockService } from '../social/creator-block.service';
+
 import { encodeCursor, decodeCursor } from './catalog.utils';
 import { OBJECT_STORAGE, ObjectStorage } from './storage/object-storage.interface';
 
@@ -43,9 +48,13 @@ export class CatalogService {
     private readonly categoryRepository: Repository<CategoryEntity>,
     @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
     private readonly dataSource: DataSource,
+    @Inject(forwardRef(() => PatternLikeService))
+    private readonly patternLikeService: PatternLikeService,
+    @Inject(forwardRef(() => CreatorBlockService))
+    private readonly creatorBlockService: CreatorBlockService,
   ) {}
 
-  private formatPattern(pattern: PatternEntity, locale: string) {
+  public formatPattern(pattern: PatternEntity, locale: string, viewerLiked: boolean = false) {
     const creatorName = pattern.creatorProfile?.displayName ?? pattern.creatorName;
     return {
       id: pattern.id,
@@ -70,31 +79,74 @@ export class CatalogService {
       previewUrl: this.storage.publicUrl(pattern.previewObjectKey),
       unlockPriceTier: pattern.unlockPriceTier,
       publishedAt: pattern.publishedAt.toISOString(),
+      likeCount: pattern.likeCount ?? 0,
+      viewerLiked,
     };
   }
 
-  async getStaffPicks(locale: string = 'en') {
-    const picks = await this.staffPickRepository.find({
-      order: { position: 'ASC' },
-      relations: ['pattern', 'pattern.creatorProfile', 'pattern.tags', 'pattern.tags.labels'],
-    });
-    return picks
-      .filter(
-        (pick) =>
-          pick.pattern &&
-          pick.pattern.status === 'available' &&
-          pick.pattern.visibility === 'catalog',
-      )
-      .map(pick => this.formatPattern(pick.pattern, locale));
+  async getStaffPicks(locale: string = 'en', principal?: AuthPrincipal) {
+    const queryBuilder = this.staffPickRepository.createQueryBuilder('pick')
+      .innerJoinAndSelect('pick.pattern', 'pattern')
+      .leftJoinAndSelect('pattern.creatorProfile', 'creatorProfile')
+      .leftJoinAndSelect('pattern.tags', 'tag')
+      .leftJoinAndSelect('tag.labels', 'label')
+      .where('pattern.status = :status', { status: 'available' })
+      .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' })
+      .andWhere('(creatorProfile.id IS NULL OR creatorProfile.closureHoldAt IS NULL)');
+
+    if (principal?.type === PrincipalType.Account) {
+      const hasBlocks = await this.creatorBlockService.hasBlocks(principal.id);
+      if (hasBlocks) {
+        queryBuilder.andWhere(
+          `NOT EXISTS (
+            SELECT 1 FROM "social"."creator_blocks" cb
+            WHERE cb.account_id = :accountId AND cb.creator_profile_id = pattern.creator_profile_id
+          )`,
+          { accountId: principal.id }
+        );
+      }
+    }
+
+    queryBuilder.orderBy('pick.position', 'ASC');
+
+    const availablePicks = await queryBuilder.getMany();
+    const patternIds = availablePicks.map((pick) => pick.pattern.id);
+    const likedIds =
+      principal?.type === PrincipalType.Account && patternIds.length > 0
+        ? await this.patternLikeService.getViewerLikedPatternIds(principal.id, patternIds)
+        : new Set<string>();
+
+    return availablePicks.map((pick) =>
+      this.formatPattern(pick.pattern, locale, likedIds.has(pick.pattern.id)),
+    );
   }
 
-  async getNewPatterns(limit: number = 10, cursor?: string, locale: string = 'en') {
+  async getNewPatterns(
+    limit: number = 10,
+    cursor?: string,
+    locale: string = 'en',
+    principal?: AuthPrincipal,
+  ) {
     const queryBuilder = this.patternRepository.createQueryBuilder('pattern')
       .leftJoinAndSelect('pattern.tags', 'tag')
       .leftJoinAndSelect('tag.labels', 'label')
       .leftJoinAndSelect('pattern.creatorProfile', 'creatorProfile')
       .where('pattern.status = :status', { status: 'available' })
-      .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' });
+      .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' })
+      .andWhere('(creatorProfile.id IS NULL OR creatorProfile.closureHoldAt IS NULL)');
+
+    if (principal?.type === PrincipalType.Account) {
+      const hasBlocks = await this.creatorBlockService.hasBlocks(principal.id);
+      if (hasBlocks) {
+        queryBuilder.andWhere(
+          `NOT EXISTS (
+            SELECT 1 FROM "social"."creator_blocks" cb
+            WHERE cb.account_id = :accountId AND cb.creator_profile_id = pattern.creator_profile_id
+          )`,
+          { accountId: principal.id }
+        );
+      }
+    }
 
     if (cursor) {
       const decoded = decodeCursor(cursor);
@@ -117,6 +169,12 @@ export class CatalogService {
     const patterns = await queryBuilder.getMany();
     const hasMore = patterns.length > limit;
     const items = patterns.slice(0, limit);
+    const patternIds = items.map((p) => p.id);
+    const likedIds =
+      principal?.type === PrincipalType.Account && patternIds.length > 0
+        ? await this.patternLikeService.getViewerLikedPatternIds(principal.id, patternIds)
+        : new Set<string>();
+
     let nextCursor: string | null = null;
     if (hasMore && items.length > 0) {
       const lastItem = items[items.length - 1];
@@ -127,7 +185,7 @@ export class CatalogService {
     }
 
     return {
-      items: items.map(p => this.formatPattern(p, locale)),
+      items: items.map((p) => this.formatPattern(p, locale, likedIds.has(p.id))),
       nextCursor,
     };
   }
@@ -139,8 +197,10 @@ export class CatalogService {
         .createQueryBuilder('pattern')
         .select('pattern.categoryCode', 'categoryCode')
         .addSelect('COUNT(pattern.id)', 'count')
+        .leftJoin('pattern.creatorProfile', 'creatorProfile')
         .where('pattern.status = :status', { status: 'available' })
         .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' })
+        .andWhere('(creatorProfile.id IS NULL OR creatorProfile.closureHoldAt IS NULL)')
         .groupBy('pattern.categoryCode')
         .getRawMany<{ categoryCode: string; count: string }>(),
     ]);
@@ -178,7 +238,14 @@ export class CatalogService {
     });
   }
 
-  async getPatterns(options: { category?: string; tag?: string; limit: number; cursor?: string; locale?: string }) {
+  async getPatterns(options: {
+    category?: string;
+    tag?: string;
+    limit: number;
+    cursor?: string;
+    locale?: string;
+    principal?: AuthPrincipal;
+  }) {
     const limit = options.limit || 10;
     const locale = options.locale || 'en';
     const queryBuilder = this.patternRepository.createQueryBuilder('pattern')
@@ -186,7 +253,21 @@ export class CatalogService {
       .leftJoinAndSelect('tag.labels', 'label')
       .leftJoinAndSelect('pattern.creatorProfile', 'creatorProfile')
       .where('pattern.status = :status', { status: 'available' })
-      .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' });
+      .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' })
+      .andWhere('(creatorProfile.id IS NULL OR creatorProfile.closureHoldAt IS NULL)');
+
+    if (options.principal?.type === PrincipalType.Account) {
+      const hasBlocks = await this.creatorBlockService.hasBlocks(options.principal.id);
+      if (hasBlocks) {
+        queryBuilder.andWhere(
+          `NOT EXISTS (
+            SELECT 1 FROM "social"."creator_blocks" cb
+            WHERE cb.account_id = :accountId AND cb.creator_profile_id = pattern.creator_profile_id
+          )`,
+          { accountId: options.principal.id }
+        );
+      }
+    }
 
     if (options.category) {
       queryBuilder.andWhere('pattern.categoryCode = :category', { category: options.category });
@@ -224,6 +305,12 @@ export class CatalogService {
     const patterns = await queryBuilder.getMany();
     const hasMore = patterns.length > limit;
     const items = patterns.slice(0, limit);
+    const patternIds = items.map((p) => p.id);
+    const likedIds =
+      options.principal?.type === PrincipalType.Account && patternIds.length > 0
+        ? await this.patternLikeService.getViewerLikedPatternIds(options.principal.id, patternIds)
+        : new Set<string>();
+
     let nextCursor: string | null = null;
     if (hasMore && items.length > 0) {
       const lastItem = items[items.length - 1];
@@ -234,29 +321,52 @@ export class CatalogService {
     }
 
     return {
-      items: items.map(p => this.formatPattern(p, locale)),
+      items: items.map((p) => this.formatPattern(p, locale, likedIds.has(p.id))),
       nextCursor,
     };
   }
 
-  async getPatternById(id: string, locale: string = 'en') {
+  async getPatternById(id: string, locale: string = 'en', principal?: AuthPrincipal) {
     const pattern = await this.patternRepository.findOne({
       where: { id, status: 'available', visibility: 'catalog' },
       relations: ['creatorProfile', 'tags', 'tags.labels'],
     });
-    if (!pattern) {
+    if (!pattern || (pattern.creatorProfile?.closureHoldAt ?? null) !== null) {
       throw new NotFoundException(`Pattern with ID ${id} not found`);
     }
-    return this.formatPattern(pattern, locale);
+    const likedIds =
+      principal?.type === PrincipalType.Account
+        ? await this.patternLikeService.getViewerLikedPatternIds(principal.id, [id])
+        : new Set<string>();
+    return this.formatPattern(pattern, locale, likedIds.has(id));
   }
 
-  async searchPatterns(q: string, limit: number = 10, locale: string = 'en') {
+  async searchPatterns(
+    q: string,
+    limit: number = 10,
+    locale: string = 'en',
+    principal?: AuthPrincipal,
+  ) {
     const queryBuilder = this.patternRepository.createQueryBuilder('pattern')
       .leftJoinAndSelect('pattern.tags', 'tag')
       .leftJoinAndSelect('tag.labels', 'label')
       .leftJoinAndSelect('pattern.creatorProfile', 'creatorProfile')
       .where('pattern.status = :status', { status: 'available' })
-      .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' });
+      .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' })
+      .andWhere('(creatorProfile.id IS NULL OR creatorProfile.closureHoldAt IS NULL)');
+
+    if (principal?.type === PrincipalType.Account) {
+      const hasBlocks = await this.creatorBlockService.hasBlocks(principal.id);
+      if (hasBlocks) {
+        queryBuilder.andWhere(
+          `NOT EXISTS (
+            SELECT 1 FROM "social"."creator_blocks" cb
+            WHERE cb.account_id = :accountId AND cb.creator_profile_id = pattern.creator_profile_id
+          )`,
+          { accountId: principal.id }
+        );
+      }
+    }
 
     if (q) {
       const searchPattern = `%${q}%`;
@@ -278,7 +388,13 @@ export class CatalogService {
       .take(limit);
 
     const patterns = await queryBuilder.getMany();
-    return patterns.map(p => this.formatPattern(p, locale));
+    const patternIds = patterns.map((p) => p.id);
+    const likedIds =
+      principal?.type === PrincipalType.Account && patternIds.length > 0
+        ? await this.patternLikeService.getViewerLikedPatternIds(principal.id, patternIds)
+        : new Set<string>();
+
+    return patterns.map((p) => this.formatPattern(p, locale, likedIds.has(p.id)));
   }
 
   upsertPattern(data: UpsertPatternInput): Promise<PatternEntity> {

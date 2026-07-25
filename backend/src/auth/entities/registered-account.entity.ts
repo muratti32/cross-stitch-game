@@ -11,7 +11,7 @@ import { RegisteredAccountStatus } from './registered-account-status.enum';
 @Entity({ name: 'registered_accounts', schema: 'auth' })
 @Check(
   'CHK_registered_accounts_status',
-  '"status" IN (\'active\', \'closed\')',
+  '"status" IN (\'active\', \'closed\', \'closing\', \'deleted\')',
 )
 export class RegisteredAccountEntity {
   @PrimaryGeneratedColumn('uuid', {

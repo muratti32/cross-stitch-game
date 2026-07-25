@@ -35,11 +35,17 @@ export class SessionsService {
     principal: AuthPrincipal,
     patternId: string,
   ): Promise<PatternEntity> {
-    const pattern = await this.patternRepo.findOne({ where: { id: patternId } });
+    const pattern = await this.patternRepo.findOne({
+      where: { id: patternId },
+      relations: ['creatorProfile'],
+    });
     if (!pattern) {
       throw new NotFoundException('Pattern not found');
     }
     if (pattern.status !== 'available') {
+      throw new ConflictException('Pattern is not available');
+    }
+    if (pattern.creatorProfile && pattern.creatorProfile.closureHoldAt !== null) {
       throw new ConflictException('Pattern is not available');
     }
     if (

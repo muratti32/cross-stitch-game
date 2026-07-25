@@ -196,7 +196,9 @@ export class CreatorProfileService {
 
   async getPublic(id: string) {
     const profile = await this.profiles.findOneBy({ id });
-    if (profile === null) throw new NotFoundException('Creator Profile not found');
+    if (profile === null || profile.closureHoldAt !== null) {
+      throw new NotFoundException('Creator Profile not found');
+    }
     return this.publicView(profile);
   }
 
@@ -204,6 +206,7 @@ export class CreatorProfileService {
     const profile = await this.profiles.findOneBy({ id });
     if (
       profile === null ||
+      profile.closureHoldAt !== null ||
       profile.restrictedAt !== null ||
       profile.avatarObjectKey === null ||
       profile.avatarContentType === null
@@ -299,18 +302,24 @@ export class CreatorProfileService {
       displayName: profile.displayName,
       id: profile.id,
       restricted: profile.restrictedAt !== null,
+      closureHold: profile.closureHoldAt !== null,
       updatedAt: profile.updatedAt.toISOString(),
       username: profile.username,
     };
   }
 
-  // Creator Restriction masks the public identity without destroying the
-  // underlying values, so a future appeal can restore them; only this read
-  // path (and getAvatar) enforce the mask. The account owner's own view
-  // (getMine) still shows their real, unmasked profile.
   private publicView(profile: CreatorProfileEntity) {
     const base = this.view(profile);
-    if (profile.restrictedAt === null) return base;
-    return { ...base, avatarUrl: null, displayName: RESTRICTED_DISPLAY_NAME };
+    const rest = {
+      avatarUrl: base.avatarUrl,
+      createdAt: base.createdAt,
+      displayName: base.displayName,
+      id: base.id,
+      restricted: base.restricted,
+      updatedAt: base.updatedAt,
+      username: base.username,
+    };
+    if (profile.restrictedAt === null) return rest;
+    return { ...rest, avatarUrl: null, displayName: RESTRICTED_DISPLAY_NAME };
   }
 }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 
 import { AppConfigModule } from './config/app-config.module';
 import { DatabaseModule } from './database/database.module';
@@ -6,6 +6,7 @@ import { JobsWorkerModule } from './jobs';
 import { EmailAuthWorkerModule } from './auth/email-auth-worker.module';
 import { AiArtworkModule } from './ai-artwork/ai-artwork.module';
 import { SupportModule } from './support/support.module';
+import { AccountDeletionModule } from './deletion/account-deletion.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { SupportModule } from './support/support.module';
     EmailAuthWorkerModule,
     AiArtworkModule,
     SupportModule,
+    forwardRef(() => require('./deletion/account-deletion.module').AccountDeletionModule),
   ],
 })
 export class WorkerAppModule {}

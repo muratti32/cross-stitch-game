@@ -8,7 +8,7 @@ import {
   Unique,
 } from 'typeorm';
 
-export type CreatorProfileAppealStatus = 'open' | 'accepted' | 'upheld';
+export type CreatorProfileAppealStatus = 'open' | 'accepted' | 'upheld' | 'dismissed';
 
 // One Creator Restriction Appeal per restricting Profile Investigation
 // (unique below): the restriction stays fully in effect until this
@@ -19,7 +19,7 @@ export type CreatorProfileAppealStatus = 'open' | 'accepted' | 'upheld';
 @Index('IDX_creator_profile_appeals_profile', ['profileId', 'createdAt'])
 @Check(
   'CHK_creator_profile_appeals_status',
-  '"status" IN (\'open\', \'accepted\', \'upheld\')',
+  '"status" IN (\'open\', \'accepted\', \'upheld\', \'dismissed\')',
 )
 export class CreatorProfileAppealEntity {
   @PrimaryGeneratedColumn('uuid', {

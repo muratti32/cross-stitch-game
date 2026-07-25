@@ -15,12 +15,13 @@ import { AiArtworkEntity, AiCreditReservationEntity } from './entities';
 import { PromptModerationService } from './prompt-moderation.service';
 import { FalArtworkProviderService, FalArtworkSubmissionRejectedError } from './fal-artwork-provider.service';
 import { SupportReferenceService } from '../support/support-reference.service';
+import { AccountStateService } from '../deletion/account-state.service';
 
 @Injectable()
 export class AiArtworkService {
-  constructor(private readonly dataSource: DataSource, private readonly jobs: ProcessingJobsRepository, private readonly moderation: PromptModerationService, private readonly fal: FalArtworkProviderService, private readonly conversions: ConversionService, private readonly supportReferences: SupportReferenceService, @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage, @InjectRepository(AiArtworkEntity) private readonly artworks: Repository<AiArtworkEntity>) {}
+  constructor(private readonly dataSource: DataSource, private readonly jobs: ProcessingJobsRepository, private readonly moderation: PromptModerationService, private readonly fal: FalArtworkProviderService, private readonly conversions: ConversionService, private readonly supportReferences: SupportReferenceService, @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage, @InjectRepository(AiArtworkEntity) private readonly artworks: Repository<AiArtworkEntity>, private readonly accountStateService: AccountStateService) {}
   async create(principal: AuthPrincipal, dto: CreateAiArtworkDto) {
-    const accountId = this.account(principal); const prompt = dto.prompt.trim();
+    const accountId = this.account(principal); const status = await this.accountStateService.getAccountStatus(accountId); if (status === 'closing') throw new ForbiddenException('Account is closing'); const prompt = dto.prompt.trim();
     if (!prompt) throw new UnprocessableEntityException('Prompt cannot be blank');
     await this.recordAttempt(accountId);
     if (await this.moderation.isFlagged(prompt)) throw new UnprocessableEntityException('Prompt Safety Rejection');
@@ -44,10 +45,10 @@ export class AiArtworkService {
     });
     return { id, jobId, status: 'pending' as const, supportReference };
   }
-  async list(principal: AuthPrincipal) { const accountId = this.account(principal); const rows = await this.artworks.find({ where: { accountId }, order: { createdAt: 'DESC' } }); const visible = rows.filter((x) => x.status !== 'deleted'); const codes = await this.supportReferences.findCodesForRecords('ai_artwork', visible.map((x) => x.id)); return visible.map((x) => this.view(x, codes.get(x.id) ?? null)); }
-  async getJob(principal: AuthPrincipal, id: string) { const a = await this.owned(principal, id); const job = await this.jobs.findById(a.processingJobId); if (!job) throw new NotFoundException(); const supportReference = await this.supportReferences.findCodeForRecord('ai_artwork', a.id); return { ...this.view(a, supportReference), jobStatus: job.status, errorMessage: job.errorMessage }; }
+  async list(principal: AuthPrincipal) { const accountId = this.account(principal); const status = await this.accountStateService.getAccountStatus(accountId); if (status === 'closing') return []; const rows = await this.artworks.find({ where: { accountId }, order: { createdAt: 'DESC' } }); const visible = rows.filter((x) => x.status !== 'deleted'); const codes = await this.supportReferences.findCodesForRecords('ai_artwork', visible.map((x) => x.id)); return visible.map((x) => this.view(x, codes.get(x.id) ?? null)); }
+  async getJob(principal: AuthPrincipal, id: string) { const accountId = this.account(principal); const status = await this.accountStateService.getAccountStatus(accountId); if (status === 'closing') throw new NotFoundException('AI Artwork not found'); const a = await this.owned(principal, id); const job = await this.jobs.findById(a.processingJobId); if (!job) throw new NotFoundException(); const supportReference = await this.supportReferences.findCodeForRecord('ai_artwork', a.id); return { ...this.view(a, supportReference), jobStatus: job.status, errorMessage: job.errorMessage }; }
   async delete(principal: AuthPrincipal, id: string) { const a = await this.owned(principal, id); if (a.status === 'deleted') return; if (a.imageObjectKey) await this.storage.delete(a.imageObjectKey); await this.artworks.update({ id }, { status: 'deleted', imageObjectKey: null }); }
-  async approve(principal: AuthPrincipal, id: string, dto: ApproveAiArtworkDto) { const a = await this.owned(principal, id); if (a.status !== 'delivered' || !a.imageObjectKey || !a.imageContentType) throw new ConflictException('Artwork is not ready for approval'); const bytes = await this.storage.get(a.imageObjectKey); if (!bytes) throw new ConflictException('Artwork bytes are unavailable'); return this.conversions.createPhotoConversion(principal, dto, { buffer: bytes, mimetype: a.imageContentType, size: bytes.length }); }
+  async approve(principal: AuthPrincipal, id: string, dto: ApproveAiArtworkDto) { const accountId = this.account(principal); const status = await this.accountStateService.getAccountStatus(accountId); if (status === 'closing') throw new ForbiddenException('Account is closing'); const a = await this.owned(principal, id); if (a.status !== 'delivered' || !a.imageObjectKey || !a.imageContentType) throw new ConflictException('Artwork is not ready for approval'); const bytes = await this.storage.get(a.imageObjectKey); if (!bytes) throw new ConflictException('Artwork bytes are unavailable'); return this.conversions.createPhotoConversion(principal, dto, { buffer: bytes, mimetype: a.imageContentType, size: bytes.length }); }
   async process(jobId: string): Promise<void> {
     const a = await this.artworks.findOneBy({ processingJobId: jobId }); if (!a) throw new Error('AI artwork input is missing');
     if (a.status === 'delivered' || a.status === 'safety_rejected' || a.status === 'failed') return;
@@ -70,9 +71,40 @@ export class AiArtworkService {
     }
     await this.attachRequest(jobId, requestId);
   }
-  async webhook(jobId: string, providerRequestKey: string, requestId: string) { const artwork = await this.artworks.findOneBy({ processingJobId: jobId }); if (!artwork || artwork.providerRequestKey !== providerRequestKey) throw new NotFoundException(); await this.attachRequest(jobId, requestId); await this.reconcile(requestId); }
+  async webhook(jobId: string, providerRequestKey: string, requestId: string) {
+    const tombstoneExists = await this.dataSource.query<readonly { id: string }[]>(
+      `SELECT id FROM deletion.provider_job_tombstones WHERE provider = 'fal.ai' AND provider_request_id = $1`,
+      [requestId],
+    );
+    if (tombstoneExists.length > 0) {
+      return;
+    }
+
+    const artwork = await this.artworks.findOneBy({ processingJobId: jobId });
+    if (!artwork) {
+      return;
+    }
+    if (artwork.providerRequestKey !== providerRequestKey) {
+      throw new NotFoundException();
+    }
+    await this.attachRequest(jobId, requestId);
+    await this.reconcile(requestId);
+  }
+
   async reconcile(requestId: string) {
-    const a = await this.artworks.findOneBy({ providerRequestId: requestId }); if (!a || a.status === 'delivered' || a.status === 'failed' || a.status === 'safety_rejected') return;
+    const tombstoneExists = await this.dataSource.query<readonly { id: string }[]>(
+      `SELECT id FROM deletion.provider_job_tombstones WHERE provider = 'fal.ai' AND provider_request_id = $1`,
+      [requestId],
+    );
+    if (tombstoneExists.length > 0) {
+      return;
+    }
+
+    const a = await this.artworks.findOneBy({ providerRequestId: requestId });
+    if (!a) {
+      return;
+    }
+    if (a.status === 'delivered' || a.status === 'failed' || a.status === 'safety_rejected') return;
     const result = await this.fal.result(requestId); if (!result) return;
     if (result.failed) return this.release(a, 'failed', 'fal.ai terminal failure');
     if (result.unsafe) return this.release(a, 'safety_rejected', 'Provider safety rejection');

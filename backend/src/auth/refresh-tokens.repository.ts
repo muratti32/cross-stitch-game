@@ -241,6 +241,20 @@ export class RefreshTokensRepository {
     );
   }
 
+  async revokeAllForPrincipal(
+    principalType: PrincipalType,
+    principalId: string,
+  ): Promise<void> {
+    await this.dataSource.manager.query(
+      `UPDATE auth.refresh_tokens
+       SET status = $3
+       WHERE principal_type = $1
+         AND principal_id = $2
+         AND status <> $3`,
+      [principalType, principalId, RefreshTokenStatus.Revoked],
+    );
+  }
+
   private async lockActivePrincipal(
     manager: EntityManager,
     principalType: PrincipalType,
@@ -261,7 +275,7 @@ export class RefreshTokensRepository {
       const rows = await manager.query<readonly { id: string }[]>(
         `SELECT id
          FROM auth.registered_accounts
-         WHERE id = $1 AND status = 'active'
+         WHERE id = $1 AND status IN ('active', 'closing')
          FOR SHARE`,
         [principalId],
       );

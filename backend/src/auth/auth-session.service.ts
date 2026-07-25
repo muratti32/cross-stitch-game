@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { GoneException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'node:crypto';
 
@@ -12,6 +12,7 @@ import {
 } from './auth.types';
 import { PrincipalType } from './entities';
 import { RefreshTokensRepository } from './refresh-tokens.repository';
+import { InvalidatedNamespaceTokenService } from '../deletion/invalidated-namespace-token.service';
 
 @Injectable()
 export class AuthSessionService {
@@ -20,6 +21,7 @@ export class AuthSessionService {
     private readonly hashing: AuthHashingService,
     private readonly jwtService: JwtService,
     private readonly refreshTokens: RefreshTokensRepository,
+    private readonly invalidatedTokens: InvalidatedNamespaceTokenService,
   ) {}
 
   async issueForGuest(guestId: string): Promise<AuthTokenPair> {
@@ -66,6 +68,10 @@ export class AuthSessionService {
     const currentPrincipal =
       await this.refreshTokens.findPrincipalByTokenHash(tokenHash);
     if (currentPrincipal === null) {
+      const isTokenInvalidated = await this.invalidatedTokens.isInvalidated(tokenHash);
+      if (isTokenInvalidated) {
+        throw new GoneException({ code: 'ACCOUNT_DELETED', message: 'Account has been deleted' });
+      }
       throw new UnauthorizedException('Invalid refresh token');
     }
 

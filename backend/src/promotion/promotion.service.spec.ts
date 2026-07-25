@@ -5,7 +5,9 @@ import { AuthHashingService } from '../auth/auth-hashing.service';
 import { Repository } from 'typeorm';
 import { PromotionLockEntity, PromotionTransferPackageEntity } from './entities';
 import { CoinBalanceEntity, CoinLedgerEntryEntity } from '../economy/entities';
-import { NotFoundException, UnauthorizedException, ConflictException, BadRequestException } from '@nestjs/common';
+import { NotFoundException, UnauthorizedException, ConflictException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { PatternLikeService } from '../social/pattern-like.service';
+import { AccountStateService } from '../deletion/account-state.service';
 
 describe('PromotionService', () => {
   let service: PromotionService;
@@ -16,8 +18,10 @@ describe('PromotionService', () => {
   let transferPackageRepo: Repository<PromotionTransferPackageEntity>;
   let coinBalanceRepo: Repository<CoinBalanceEntity>;
   let coinLedgerEntryRepo: Repository<CoinLedgerEntryEntity>;
+  let patternLikeService: PatternLikeService;
   let managerFindOne: jest.Mock;
   let managerQuery: jest.Mock;
+  let accountStateServiceMock: any;
 
   beforeEach(() => {
     config = { jwtSecret: 'test-secret' } as any;
@@ -27,6 +31,9 @@ describe('PromotionService', () => {
     transferPackageRepo = { save: jest.fn(), delete: jest.fn(), count: jest.fn(), findOne: jest.fn() } as any;
     coinBalanceRepo = { findOne: jest.fn() } as any;
     coinLedgerEntryRepo = { findOne: jest.fn() } as any;
+    patternLikeService = {
+      likeWithManager: jest.fn(),
+    } as any;
 
     managerFindOne = jest.fn();
     managerQuery = jest.fn();
@@ -53,7 +60,12 @@ describe('PromotionService', () => {
       }),
     } as any;
 
+    accountStateServiceMock = {
+      getAccountStatus: jest.fn().mockResolvedValue('active'),
+    };
+
     service = new PromotionService(
+      patternLikeService,
       dataSource,
       config,
       authHashing,
@@ -62,6 +74,7 @@ describe('PromotionService', () => {
       transferPackageRepo,
       coinBalanceRepo,
       coinLedgerEntryRepo,
+      accountStateServiceMock as AccountStateService,
     );
   });
 
@@ -243,6 +256,61 @@ describe('PromotionService', () => {
       } as any);
 
       await expect(service.assertNotLocked('id', 'guest')).resolves.toBeUndefined();
+    });
+  });
+
+  describe('drainLike', () => {
+    it('throws ForbiddenException if package is not found or not committed', async () => {
+      jest.spyOn(transferPackageRepo, 'findOne').mockResolvedValue(null);
+      await expect(service.drainLike('account-uuid', 'guest-uuid', 'pattern-uuid'))
+        .rejects.toThrow(ForbiddenException);
+    });
+
+    it('returns discarded if pattern does not exist, is personal, or is not available', async () => {
+      jest.spyOn(transferPackageRepo, 'findOne').mockResolvedValue({ status: 'committed' } as unknown as PromotionTransferPackageEntity);
+
+      // Pattern not found
+      managerFindOne.mockResolvedValueOnce(null);
+      let result = await service.drainLike('account-uuid', 'guest-uuid', 'pattern-uuid');
+      expect(result).toEqual({ status: 'discarded' });
+
+      // Pattern is personal
+      managerFindOne.mockResolvedValueOnce({ visibility: 'personal', status: 'available' });
+      result = await service.drainLike('account-uuid', 'guest-uuid', 'pattern-uuid');
+      expect(result).toEqual({ status: 'discarded' });
+
+      // Pattern status is not available
+      managerFindOne.mockResolvedValueOnce({ visibility: 'catalog', status: 'withdrawn' });
+      result = await service.drainLike('account-uuid', 'guest-uuid', 'pattern-uuid');
+      expect(result).toEqual({ status: 'discarded' });
+    });
+
+    it('applies the like and returns status applied if not already liked', async () => {
+      jest.spyOn(transferPackageRepo, 'findOne').mockResolvedValue({ status: 'committed' } as unknown as PromotionTransferPackageEntity);
+      managerFindOne.mockResolvedValueOnce({ visibility: 'catalog', status: 'available' });
+      jest.spyOn(patternLikeService, 'likeWithManager').mockResolvedValueOnce({ liked: true, likeCount: 1, wasInserted: true });
+
+      const result = await service.drainLike('account-uuid', 'guest-uuid', 'pattern-uuid');
+      expect(result).toEqual({ status: 'applied' });
+      expect(patternLikeService.likeWithManager).toHaveBeenCalled();
+    });
+
+    it('does not double-increment if drain is replayed (returns already_present)', async () => {
+      jest.spyOn(transferPackageRepo, 'findOne').mockResolvedValue({ status: 'committed' } as unknown as PromotionTransferPackageEntity);
+      managerFindOne.mockResolvedValueOnce({ visibility: 'catalog', status: 'available' });
+      jest.spyOn(patternLikeService, 'likeWithManager').mockResolvedValueOnce({ liked: true, likeCount: 1, wasInserted: false });
+
+      const result = await service.drainLike('account-uuid', 'guest-uuid', 'pattern-uuid');
+      expect(result).toEqual({ status: 'already_present' });
+    });
+
+    it('returns already_present and does not increment if the account already liked the pattern', async () => {
+      jest.spyOn(transferPackageRepo, 'findOne').mockResolvedValue({ status: 'committed' } as unknown as PromotionTransferPackageEntity);
+      managerFindOne.mockResolvedValueOnce({ visibility: 'catalog', status: 'available' });
+      jest.spyOn(patternLikeService, 'likeWithManager').mockResolvedValueOnce({ liked: true, likeCount: 5, wasInserted: false });
+
+      const result = await service.drainLike('account-uuid', 'guest-uuid', 'pattern-uuid');
+      expect(result).toEqual({ status: 'already_present' });
     });
   });
 });

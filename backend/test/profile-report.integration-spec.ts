@@ -24,6 +24,9 @@ import { CreateReservedUsernames1786406400000 } from '../src/database/migrations
 import { AllowModeratorUsernameReset1786492800000 } from '../src/database/migrations/1786492800000-AllowModeratorUsernameReset';
 import { AddCreatorProfileRestriction1786579200000 } from '../src/database/migrations/1786579200000-AddCreatorProfileRestriction';
 import { CreateCreatorProfileAppeals1786665600000 } from '../src/database/migrations/1786665600000-CreateCreatorProfileAppeals';
+import { CreateAccountDeletion1786924800000 } from '../src/database/migrations/1786924800000-CreateAccountDeletion';
+import { AddAccountClosureHold1787011200000 } from '../src/database/migrations/1787011200000-AddAccountClosureHold';
+import { CreateDeletionTombstones1787184000000 } from '../src/database/migrations/1787184000000-CreateDeletionTombstones';
 
 const ACCOUNT = PrincipalType.Account;
 
@@ -55,6 +58,9 @@ describe('Profile Report intake and Profile Investigation', () => {
         AllowModeratorUsernameReset1786492800000,
         AddCreatorProfileRestriction1786579200000,
         CreateCreatorProfileAppeals1786665600000,
+        CreateAccountDeletion1786924800000,
+        AddAccountClosureHold1787011200000,
+        CreateDeletionTombstones1787184000000,
       ],
       migrationsTableName: 'typeorm_migrations',
       synchronize: false,

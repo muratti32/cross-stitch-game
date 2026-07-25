@@ -7,3 +7,5 @@ export * from './progressSync';
 export * from './promotion';
 export * from './creatorProfile';
 export * from './catalogSubmissions';
+export * from './social';
+export * from './accountDeletion';

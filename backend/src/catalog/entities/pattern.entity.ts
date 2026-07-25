@@ -92,6 +92,9 @@ export class PatternEntity {
   @Column({ name: 'creator_profile_id', nullable: true, type: 'uuid' })
   creatorProfileId!: string | null;
 
+  @Column({ name: 'like_count', type: 'integer', default: 0 })
+  likeCount!: number;
+
   @ManyToOne(() => CreatorProfileEntity, { nullable: true, onDelete: 'RESTRICT' })
   @JoinColumn({
     foreignKeyConstraintName: 'FK_patterns_creator_profile',

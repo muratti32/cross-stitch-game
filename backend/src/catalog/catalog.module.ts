@@ -23,6 +23,7 @@ import { AppConfigModule } from '../config/app-config.module';
 import { AppConfigService } from '../config/app-config.service';
 import { AuthModule } from '../auth/auth.module';
 import { JobsModule } from '../jobs/jobs.module';
+import { SocialModule } from '../social/social.module';
 import { CreatorProfileEntity } from '../creator-profile/entities';
 import { CatalogSubmissionController } from './catalog-submission.controller';
 import { CatalogSubmissionService } from './catalog-submission.service';
@@ -50,6 +51,7 @@ import { CatalogMetadataRevisionService } from './catalog-metadata-revision.serv
     AppConfigModule,
     AuthModule,
     forwardRef(() => JobsModule),
+    forwardRef(() => SocialModule),
   ],
   controllers: [
     CatalogController,

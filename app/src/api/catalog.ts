@@ -28,6 +28,8 @@ export interface CatalogPatternItem {
   sourceLanguage?: string | null;
   creatorProfileId?: string | null;
   creatorUsername?: string | null;
+  likeCount: number;
+  viewerLiked: boolean;
 }
 
 export interface CatalogPage {

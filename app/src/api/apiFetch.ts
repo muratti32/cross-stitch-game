@@ -1,4 +1,4 @@
-import { getAccessToken, refreshSession } from '../identity/guestIdentity';
+import { getAccessToken, refreshSession, handleAccountDeletedIdempotently } from '../identity/guestIdentity';
 import { performAuthenticatedRequest } from './authenticatedRequest';
 
 export interface ApiFetchOptions extends RequestInit {
@@ -15,5 +15,6 @@ export async function apiFetch(path: string, options: ApiFetchOptions = {}): Pro
   return performAuthenticatedRequest(path, options, {
     getAccessToken,
     refreshSession,
+    onAccountDeleted: handleAccountDeletedIdempotently,
   });
 }

@@ -16,6 +16,7 @@ import { SessionsModule } from '../sessions/sessions.module';
 import { ConversionModule } from '../conversion/conversion.module';
 import { AiArtworkModule } from '../ai-artwork/ai-artwork.module';
 import { CatalogModule } from '../catalog/catalog.module';
+import { AccountDeletionModule } from '../deletion/account-deletion.module';
 
 @Module({
   controllers: [JobsController],
@@ -47,6 +48,7 @@ export class JobsModule {}
     AppConfigModule,
     JobsModule,
     SessionsModule,
+    forwardRef(() => require('../deletion/account-deletion.module').AccountDeletionModule),
     forwardRef(() => ConversionModule),
     forwardRef(() => AdminModule),
     forwardRef(() => AiArtworkModule),

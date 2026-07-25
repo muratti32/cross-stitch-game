@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from '../auth/auth.module';
@@ -24,7 +24,9 @@ import { ProfileTextPolicyService } from './profile-text-policy.service';
   exports: [CreatorProfileService, ProfileReportService],
   imports: [
     AuthModule,
-    CatalogModule,
+    // Catalog imports Social, which imports Catalog back; entering that cycle
+    // from here needs the lazy edge too.
+    forwardRef(() => CatalogModule),
     TypeOrmModule.forFeature([
       CreatorProfileAppealEntity,
       CreatorProfileEntity,

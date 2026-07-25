@@ -109,6 +109,20 @@ import {
 } from '../catalog/entities';
 import { CreateCatalogSubmissions1786147200000 } from './migrations/1786147200000-CreateCatalogSubmissions';
 import { CreateCatalogMetadataRevisions1786233600000 } from './migrations/1786233600000-CreateCatalogMetadataRevisions';
+import { PatternLikeEntity, CreatorBlockEntity } from '../social/entities';
+import { CreatePatternLikes1786752000000 } from './migrations/1786752000000-CreatePatternLikes';
+import { CreateCreatorBlocks1786838400000 } from './migrations/1786838400000-CreateCreatorBlocks';
+import {
+  AccountDeletionRequestEntity,
+  DeletionAuditEventEntity,
+  ProviderJobTombstoneEntity,
+  InvalidatedNamespaceTokenEntity,
+} from '../deletion/entities';
+import { CreateAccountDeletion1786924800000 } from './migrations/1786924800000-CreateAccountDeletion';
+import { AddAccountClosureHold1787011200000 } from './migrations/1787011200000-AddAccountClosureHold';
+import { AddAiArtworkCancelledStatus1787097600000 } from './migrations/1787097600000-AddAiArtworkCancelledStatus';
+import { CreateDeletionTombstones1787184000000 } from './migrations/1787184000000-CreateDeletionTombstones';
+import { CreateInvalidatedNamespaceTokens1787270400000 } from './migrations/1787270400000-CreateInvalidatedNamespaceTokens';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -173,6 +187,12 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CatalogMetadataRevisionEntity,
       CatalogMetadataAppealEntity,
       CatalogMetadataReviewDecisionEntity,
+      PatternLikeEntity,
+      CreatorBlockEntity,
+      AccountDeletionRequestEntity,
+      DeletionAuditEventEntity,
+      ProviderJobTombstoneEntity,
+      InvalidatedNamespaceTokenEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -209,6 +229,13 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AllowModeratorUsernameReset1786492800000,
       AddCreatorProfileRestriction1786579200000,
       CreateCreatorProfileAppeals1786665600000,
+      CreatePatternLikes1786752000000,
+      CreateCreatorBlocks1786838400000,
+      CreateAccountDeletion1786924800000,
+      AddAccountClosureHold1787011200000,
+      AddAiArtworkCancelledStatus1787097600000,
+      CreateDeletionTombstones1787184000000,
+      CreateInvalidatedNamespaceTokens1787270400000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

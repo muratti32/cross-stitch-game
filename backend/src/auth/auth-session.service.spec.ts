@@ -1,4 +1,4 @@
-import { UnauthorizedException } from '@nestjs/common';
+import { GoneException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { AppConfigService } from '../config/app-config.service';
@@ -12,6 +12,7 @@ import {
   RefreshTokenPrincipal,
   RefreshTokensRepository,
 } from './refresh-tokens.repository';
+import { InvalidatedNamespaceTokenService } from '../deletion/invalidated-namespace-token.service';
 
 describe('AuthSessionService', () => {
   const guestId = '8393f580-9cde-4e2b-bc5d-d77b9fbd73b1';
@@ -33,6 +34,7 @@ describe('AuthSessionService', () => {
     [string, string, Date]
   >;
   let signAsync: jest.Mock<Promise<string>, [AccessTokenPayload]>;
+  let isInvalidatedMock: jest.Mock<Promise<boolean>, [string]>;
   let hashing: AuthHashingService;
   let service: AuthSessionService;
 
@@ -61,6 +63,10 @@ describe('AuthSessionService', () => {
       .fn<Promise<string>, [AccessTokenPayload]>()
       .mockResolvedValue('signed-access-token');
 
+    isInvalidatedMock = jest
+      .fn<Promise<boolean>, [string]>()
+      .mockResolvedValue(false);
+
     const config = {
       refreshTokenTtlSeconds: 3_600,
     } as unknown as AppConfigService;
@@ -72,6 +78,9 @@ describe('AuthSessionService', () => {
       revokeFamilyByTokenHash,
       rotate,
     } as unknown as RefreshTokensRepository;
+    const invalidatedTokens = {
+      isInvalidated: isInvalidatedMock,
+    } as unknown as InvalidatedNamespaceTokenService;
 
     hashing = new AuthHashingService();
     service = new AuthSessionService(
@@ -79,6 +88,7 @@ describe('AuthSessionService', () => {
       hashing,
       jwtService,
       repository,
+      invalidatedTokens,
     );
   });
 
@@ -164,6 +174,25 @@ describe('AuthSessionService', () => {
     ).rejects.toBeInstanceOf(UnauthorizedException);
     expect(signAsync).not.toHaveBeenCalled();
     expect(rotate).not.toHaveBeenCalled();
+  });
+
+  it('an unknown refresh token that matches an invalidated-namespace marker yields GoneException', async () => {
+    findPrincipalByTokenHash.mockResolvedValue(null);
+    isInvalidatedMock.mockResolvedValue(true);
+
+    await expect(
+      service.refresh('invalidated-refresh-token'),
+    ).rejects.toThrow(GoneException);
+
+    const thrown = await service
+      .refresh('invalidated-refresh-token')
+      .then(() => null)
+      .catch((error: unknown) => error);
+    expect(thrown).toBeInstanceOf(GoneException);
+    expect((thrown as GoneException).getResponse()).toEqual({
+      code: 'ACCOUNT_DELETED',
+      message: 'Account has been deleted',
+    });
   });
 
   it('hashes the presented token before idempotent family logout', async () => {

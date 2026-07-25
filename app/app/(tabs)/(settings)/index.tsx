@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Switch, ActivityIndicator, Pressable, Alert, Linking, Modal, TextInput } from 'react-native';
+import { StyleSheet, View, Text, Switch, ActivityIndicator, Pressable, Alert, Linking, Modal, TextInput, Platform } from 'react-native';
 import { Screen, Card, Button, AccountSection } from '@/components';
 import { router } from 'expo-router';
 import { Theme } from '@/theme/theme';
@@ -10,19 +10,48 @@ import { Ionicons } from '@expo/vector-icons';
 import { setHandedness as setHandednessDb } from '@/local-db';
 import { useBackendSession } from '@/hooks/useBackendSession';
 import { shortenGuestId } from '@/identity/identityLogic';
-import { resetGuestData, removeLocalData } from '@/identity/guestIdentity';
+import { resetGuestData, removeLocalData, useIdentityStore, logout } from '@/identity/guestIdentity';
+import { useAccountDeletionStatus, useRequestAccountDeletion, useCancelAccountDeletion, AccountDeletionApiError } from '@/api/accountDeletion';
 
 export default function SettingsScreen() {
   const { showGridLines, toggleGridLines, handedness, setHandedness } = useGameplayStore();
   const { data: health, isLoading, error, refetch, isRefetching } = useHealthCheck();
   const { data: sessionData, isLoading: sessionLoading, error: sessionError } = useBackendSession();
+  const isAccount = useIdentityStore((state) => state.isAccount);
+
+  const {
+    data: deletionStatus,
+    isLoading: deletionLoading,
+    error: deletionError,
+    refetch: refetchDeletionStatus,
+  } = useAccountDeletionStatus(isAccount);
+
+  const { mutateAsync: requestDeletion } = useRequestAccountDeletion();
+  const { mutateAsync: cancelDeletion } = useCancelAccountDeletion();
 
   const [resetModalVisible, setResetModalVisible] = React.useState(false);
   const [typedConfirmation, setTypedConfirmation] = React.useState('');
   const [isResetting, setIsResetting] = React.useState(false);
   const [isRemovingLocal, setIsRemovingLocal] = React.useState(false);
 
+  const [deleteModalVisible, setDeleteModalVisible] = React.useState(false);
+  const [deletionStage, setDeletionStage] = React.useState<1 | 2>(1);
+  const [deleteConfirmation, setDeleteConfirmation] = React.useState('');
+  const [isSubmittingDeletion, setIsSubmittingDeletion] = React.useState(false);
+  const [isCancellingDeletion, setIsCancellingDeletion] = React.useState(false);
+
   const isOffline = !isLoading && (!!error || !health || health.status !== 'ok');
+
+  const formatRecoveryWindowEnd = (recoveryWindowEndsAt?: string): string => {
+    if (!recoveryWindowEndsAt) {
+      return 'Unavailable';
+    }
+
+    const endDate = new Date(recoveryWindowEndsAt);
+    return Number.isNaN(endDate.getTime())
+      ? 'Unavailable'
+      : endDate.toLocaleDateString();
+  };
 
   const handleResetGuestData = async () => {
     if (typedConfirmation !== 'RESET') {
@@ -85,6 +114,92 @@ export default function SettingsScreen() {
       });
     } else {
       Alert.alert(title, 'This page will be available before release.');
+    }
+  };
+
+  const handleSubscriptionManagePress = () => {
+    const url = Platform.OS === 'ios'
+      ? 'https://apps.apple.com/account/subscriptions'
+      : 'https://play.google.com/store/account/subscriptions';
+    Linking.openURL(url).catch(() => {
+      Alert.alert('Error', `Could not open link: ${url}`);
+    });
+  };
+
+  const handleRequestDeletion = async () => {
+    if (deleteConfirmation !== 'DELETE') {
+      return;
+    }
+    setIsSubmittingDeletion(true);
+    try {
+      const result = await requestDeletion();
+      setDeleteModalVisible(false);
+      setDeleteConfirmation('');
+      setDeletionStage(1);
+
+      const dateStr = formatRecoveryWindowEnd(result.recoveryWindowEndsAt);
+
+      Alert.alert(
+        'Account Deletion Requested',
+        `Your deletion request is pending through ${dateStr}. Your account has been logged out. Sign in again before then if you wish to cancel this deletion.`,
+      );
+      void logout().catch((logoutError: unknown) => {
+        const message = logoutError instanceof Error ? logoutError.message : 'Unknown error';
+        Alert.alert('Local Sign-out Failed', `Your deletion request is still pending: ${message}`);
+      });
+    } catch (err: unknown) {
+      if (err instanceof AccountDeletionApiError && err.reauthenticationRequired) {
+        setDeleteModalVisible(false);
+        setDeleteConfirmation('');
+        setDeletionStage(1);
+        Alert.alert(
+          'Reauthentication Required',
+          'For security, you must sign in again before requesting account deletion.',
+          [
+            {
+              text: 'Sign In',
+              onPress: () => {
+                router.push('/(tabs)/(settings)/sign-in');
+              },
+            },
+            { text: 'Cancel', style: 'cancel' },
+          ]
+        );
+      } else {
+        const msg = err instanceof Error ? err.message : 'Unknown error';
+        Alert.alert('Request Failed', `Failed to request account deletion: ${msg}`);
+      }
+    } finally {
+      setIsSubmittingDeletion(false);
+    }
+  };
+
+  const handleCancelDeletion = async () => {
+    setIsCancellingDeletion(true);
+    try {
+      await cancelDeletion();
+      Alert.alert('Success', 'Your account deletion request has been cancelled.');
+    } catch (err: unknown) {
+      if (err instanceof AccountDeletionApiError && err.reauthenticationRequired) {
+        Alert.alert(
+          'Reauthentication Required',
+          'For security, you must sign in again before cancelling account deletion.',
+          [
+            {
+              text: 'Sign In',
+              onPress: () => {
+                router.push('/(tabs)/(settings)/sign-in');
+              },
+            },
+            { text: 'Cancel', style: 'cancel' },
+          ]
+        );
+      } else {
+        const msg = err instanceof Error ? err.message : 'Unknown error';
+        Alert.alert('Cancel Failed', `Failed to cancel account deletion: ${msg}`);
+      }
+    } finally {
+      setIsCancellingDeletion(false);
     }
   };
 
@@ -313,6 +428,21 @@ export default function SettingsScreen() {
         </View>
       </Card>
 
+      {isAccount && (
+        <>
+          <Text style={styles.sectionTitle}>Social & Privacy</Text>
+          <Card style={styles.card}>
+            <Pressable
+              onPress={() => router.push('/(tabs)/(settings)/blocked-creators')}
+              style={({ pressed }) => [styles.linkRow, pressed && styles.linkPressed]}
+            >
+              <Text style={styles.linkText}>Blocked Creators</Text>
+              <Ionicons name="chevron-forward" size={16} color={Theme.colors.textSecondary} />
+            </Pressable>
+          </Card>
+        </>
+      )}
+
       {/* Data Section */}
       <Text style={styles.sectionTitle}>Data</Text>
       <Card style={styles.card}>
@@ -364,6 +494,82 @@ export default function SettingsScreen() {
           </View>
           <Ionicons name="phone-portrait-outline" size={20} color={Theme.colors.error} />
         </Pressable>
+
+        {isAccount && (
+          <>
+            <View style={styles.rowDivider} />
+            {deletionLoading ? (
+              <View style={styles.settingRow}>
+                <View style={styles.settingTextContainer}>
+                  <Text style={styles.settingTitle}>Account Deletion Status</Text>
+                  <Text style={styles.settingDescription}>Checking status...</Text>
+                </View>
+                <ActivityIndicator size="small" color={Theme.colors.accentRose} />
+              </View>
+            ) : deletionError ? (
+              <View style={styles.settingRow}>
+                <View style={styles.settingTextContainer}>
+                  <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>
+                    Account Deletion Error
+                  </Text>
+                  <Text style={styles.settingDescription}>
+                    {deletionError instanceof Error ? deletionError.message : 'Could not check status.'}
+                  </Text>
+                </View>
+                <Button
+                  title="Retry"
+                  onPress={() => refetchDeletionStatus()}
+                  variant="secondary"
+                  style={styles.retryButtonSmall}
+                  textStyle={styles.retryButtonSmallText}
+                />
+              </View>
+            ) : deletionStatus?.status === 'pending' ? (
+              <View style={styles.pendingDeletionContainer}>
+                <View style={styles.settingTextContainer}>
+                  <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>
+                    Account Deletion Pending
+                  </Text>
+                  <Text style={styles.settingDescription}>
+                    Your account deletion is scheduled. Sign in again before the recovery window ends to cancel it.
+                  </Text>
+                  <Text style={styles.recoveryEndText}>
+                    Recovery Window Ends: {formatRecoveryWindowEnd(deletionStatus.recoveryWindowEndsAt)}
+                  </Text>
+                </View>
+                <Button
+                  title={isCancellingDeletion ? 'Cancelling...' : 'Cancel deletion'}
+                  onPress={handleCancelDeletion}
+                  disabled={isCancellingDeletion}
+                  style={styles.cancelDeletionButton}
+                  textStyle={styles.cancelDeletionButtonText}
+                />
+              </View>
+            ) : (
+              <Pressable
+                onPress={() => {
+                  setDeletionStage(1);
+                  setDeleteConfirmation('');
+                  setDeleteModalVisible(true);
+                }}
+                style={({ pressed }) => [
+                  styles.settingRow,
+                  pressed && styles.linkPressed,
+                ]}
+              >
+                <View style={styles.settingTextContainer}>
+                  <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>
+                    Delete Account
+                  </Text>
+                  <Text style={styles.settingDescription}>
+                    Permanently delete your account, progress, and all unlocks after a 30-day recovery window.
+                  </Text>
+                </View>
+                <Ionicons name="trash-bin-outline" size={20} color={Theme.colors.error} />
+              </Pressable>
+            )}
+          </>
+        )}
       </Card>
 
       {/* Links Section */}
@@ -478,6 +684,116 @@ export default function SettingsScreen() {
                       : undefined
                   }
                 />
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={deleteModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => {
+          if (!isSubmittingDeletion) setDeleteModalVisible(false);
+        }}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            {deletionStage === 1 ? (
+              <View>
+                <Text style={styles.modalTitle}>Delete Account?</Text>
+
+                <Text style={styles.modalWarningText}>
+                  Your account enters a <Text style={{ fontWeight: 'bold' }}>30-day Deletion Recovery Window</Text>. Sign in again during this window to cancel the deletion.
+                </Text>
+
+                <View style={styles.bulletsContainer}>
+                  <Text style={styles.bulletItem}>• Stitch Coin and AI Credit balances</Text>
+                  <Text style={styles.bulletItem}>• All Pattern Unlocks</Text>
+                  <Text style={styles.bulletItem}>• AI Artwork and Personal Patterns</Text>
+                  <Text style={styles.bulletItem}>• Synchronized progress and Likes</Text>
+                </View>
+
+                <Text style={styles.modalWarningText}>
+                  At the end of the recovery window, these are erased or forfeited with no refund or transfer. Published Community Patterns are withdrawn from the catalog, attribution becomes <Text style={{ fontWeight: 'bold' }}>Deleted Creator</Text>, and your username stays permanently reserved.
+                </Text>
+
+                <Text style={[styles.modalWarningText, { color: Theme.colors.error, fontWeight: Theme.typography.weights.medium }]}>
+                  Important: This does NOT cancel your Apple or Google store subscription. Please cancel it separately.
+                </Text>
+
+                <Button
+                  title="Manage Subscriptions"
+                  onPress={handleSubscriptionManagePress}
+                  variant="secondary"
+                  style={styles.manageSubscriptionButton}
+                  textStyle={styles.manageSubscriptionButtonText}
+                />
+
+                <View style={[styles.modalButtonsRow, { marginTop: Theme.spacing.lg }]}>
+                  <Button
+                    title="Cancel"
+                    onPress={() => setDeleteModalVisible(false)}
+                    variant="secondary"
+                    style={styles.modalCancelButton}
+                  />
+                  <Button
+                    title="Continue"
+                    onPress={() => setDeletionStage(2)}
+                    style={{ backgroundColor: Theme.colors.error }}
+                    textStyle={{ color: Theme.colors.textLight }}
+                  />
+                </View>
+              </View>
+            ) : (
+              <View>
+                <Text style={styles.modalTitle}>Confirm Deletion</Text>
+
+                <Text style={styles.modalWarningText}>
+                  To confirm that you want to delete your account, type <Text style={{ fontWeight: 'bold' }}>DELETE</Text> in the box below:
+                </Text>
+
+                <TextInput
+                  style={styles.textInput}
+                  value={deleteConfirmation}
+                  onChangeText={setDeleteConfirmation}
+                  placeholder="DELETE"
+                  placeholderTextColor={Theme.colors.textSecondary}
+                  autoCapitalize="characters"
+                  editable={!isSubmittingDeletion}
+                />
+
+                {isSubmittingDeletion ? (
+                  <View style={styles.modalLoadingContainer}>
+                    <ActivityIndicator size="small" color={Theme.colors.error} />
+                    <Text style={styles.modalLoadingText}>Submitting deletion request...</Text>
+                  </View>
+                ) : (
+                  <View style={styles.modalButtonsRow}>
+                    <Button
+                      title="Back"
+                      onPress={() => setDeletionStage(1)}
+                      variant="secondary"
+                      style={styles.modalCancelButton}
+                    />
+                    <Button
+                      title="Confirm"
+                      onPress={handleRequestDeletion}
+                      disabled={deleteConfirmation !== 'DELETE'}
+                      style={
+                        deleteConfirmation === 'DELETE'
+                          ? { backgroundColor: Theme.colors.error }
+                          : undefined
+                      }
+                      textStyle={
+                        deleteConfirmation === 'DELETE'
+                          ? { color: Theme.colors.textLight }
+                          : undefined
+                      }
+                    />
+                  </View>
+                )}
               </View>
             )}
           </View>
@@ -851,5 +1167,42 @@ const styles = StyleSheet.create({
   },
   rowDisabled: {
     opacity: 0.5,
+  },
+  pendingDeletionContainer: {
+    padding: Theme.spacing.lg,
+    gap: Theme.spacing.md,
+  },
+  recoveryEndText: {
+    fontSize: Theme.typography.sizes.xs,
+    fontWeight: Theme.typography.weights.bold,
+    color: Theme.colors.error,
+    marginTop: Theme.spacing.xs,
+  },
+  cancelDeletionButton: {
+    backgroundColor: Theme.colors.accentSage,
+    height: 40,
+    alignSelf: 'flex-start',
+    marginTop: Theme.spacing.xs,
+  },
+  cancelDeletionButtonText: {
+    color: Theme.colors.textLight,
+    fontSize: Theme.typography.sizes.sm,
+    fontWeight: Theme.typography.weights.bold,
+  },
+  retryButtonSmall: {
+    height: 32,
+    paddingHorizontal: Theme.spacing.md,
+  },
+  retryButtonSmallText: {
+    fontSize: Theme.typography.sizes.xs,
+  },
+  manageSubscriptionButton: {
+    height: 40,
+    alignSelf: 'stretch',
+    marginTop: Theme.spacing.xs,
+  },
+  manageSubscriptionButtonText: {
+    fontSize: Theme.typography.sizes.sm,
+    color: Theme.colors.textPrimary,
   },
 });

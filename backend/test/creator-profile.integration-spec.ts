@@ -18,6 +18,9 @@ import { CreateEmailAuthSchema1784160000001 } from '../src/database/migrations/1
 import { CreateCreatorProfiles1786060800000 } from '../src/database/migrations/1786060800000-CreateCreatorProfiles';
 import { CreateReservedUsernames1786406400000 } from '../src/database/migrations/1786406400000-CreateReservedUsernames';
 import { AddCreatorProfileRestriction1786579200000 } from '../src/database/migrations/1786579200000-AddCreatorProfileRestriction';
+import { CreateAccountDeletion1786924800000 } from '../src/database/migrations/1786924800000-CreateAccountDeletion';
+import { AddAccountClosureHold1787011200000 } from '../src/database/migrations/1787011200000-AddAccountClosureHold';
+import { CreateDeletionTombstones1787184000000 } from '../src/database/migrations/1787184000000-CreateDeletionTombstones';
 
 describe('Creator Profile persistence', () => {
   let postgres: StartedPostgreSqlContainer;
@@ -33,6 +36,9 @@ describe('Creator Profile persistence', () => {
         CreateCreatorProfiles1786060800000,
         CreateReservedUsernames1786406400000,
         AddCreatorProfileRestriction1786579200000,
+        CreateAccountDeletion1786924800000,
+        AddAccountClosureHold1787011200000,
+        CreateDeletionTombstones1787184000000,
       ],
       migrationsTableName: 'typeorm_migrations',
       synchronize: false,

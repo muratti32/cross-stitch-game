@@ -447,6 +447,18 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
       await db.execAsync('PRAGMA user_version = 6;');
     });
   }
+
+  if (currentVersion < 7) {
+    await runInTransaction(db, async () => {
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS pattern_likes (
+          pattern_id TEXT PRIMARY KEY NOT NULL,
+          liked_at TEXT NOT NULL
+        );
+      `);
+      await db.execAsync('PRAGMA user_version = 7;');
+    });
+  }
 }
 
 /**
@@ -1340,4 +1352,42 @@ export async function getPendingPersonalPatterns(): Promise<PendingPersonalPatte
 export async function removePendingPersonalPattern(patternId: string): Promise<void> {
   const db = await getDatabase();
   await db.runAsync('DELETE FROM pending_personal_patterns WHERE pattern_id = ?', patternId);
+}
+
+export async function setLocalPatternLike(patternId: string, liked: boolean): Promise<void> {
+  const db = await getDatabase();
+  if (liked) {
+    const likedAt = new Date().toISOString();
+    await db.runAsync(
+      'INSERT OR REPLACE INTO pattern_likes (pattern_id, liked_at) VALUES (?, ?)',
+      patternId,
+      likedAt
+    );
+  } else {
+    await db.runAsync(
+      'DELETE FROM pattern_likes WHERE pattern_id = ?',
+      patternId
+    );
+  }
+}
+
+export async function isLocalPatternLiked(patternId: string): Promise<boolean> {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{ pattern_id: string }>(
+    'SELECT pattern_id FROM pattern_likes WHERE pattern_id = ?',
+    patternId
+  );
+  return !!row;
+}
+
+export async function getLocalPatternLikes(): Promise<Record<string, boolean>> {
+  const db = await getDatabase();
+  const rows = await db.getAllAsync<{ pattern_id: string }>(
+    'SELECT pattern_id FROM pattern_likes'
+  );
+  const result: Record<string, boolean> = {};
+  for (const row of rows) {
+    result[row.pattern_id] = true;
+  }
+  return result;
 }

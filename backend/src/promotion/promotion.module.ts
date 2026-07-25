@@ -7,11 +7,15 @@ import { PromotionController } from './promotion.controller';
 import { PromotionService } from './promotion.service';
 import { PromotionLockEntity, PromotionTransferPackageEntity } from './entities';
 import { CoinBalanceEntity, CoinLedgerEntryEntity } from '../economy/entities';
+import { SocialModule } from '../social/social.module';
+import { AccountStateModule } from '../deletion/account-state.module';
 
 @Module({
   imports: [
     AuthModule,
     AppConfigModule,
+    SocialModule,
+    AccountStateModule,
     TypeOrmModule.forFeature([
       PromotionLockEntity,
       PromotionTransferPackageEntity,

@@ -3,6 +3,20 @@ import { Config } from '../config';
 export interface AuthSessionProvider {
   getAccessToken: () => string | null;
   refreshSession: () => Promise<string>;
+  onAccountDeleted?: () => Promise<void>;
+}
+
+export class AccountClosingError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'AccountClosingError';
+  }
+}
+
+let accountDeletionTriggered = false;
+
+export function resetAccountDeletionTrigger(): void {
+  accountDeletionTriggered = false;
 }
 
 /**
@@ -29,6 +43,34 @@ export async function performAuthenticatedRequest(
     headers,
   });
 
+  if (response.status === 410 && authSession.onAccountDeleted) {
+    try {
+      const body = await response.clone().json();
+      if (body && body.code === 'ACCOUNT_DELETED') {
+        if (!accountDeletionTriggered) {
+          accountDeletionTriggered = true;
+          await authSession.onAccountDeleted();
+        }
+      }
+    } catch {
+      // ignore
+    }
+    return response;
+  }
+
+  if (response.status === 403) {
+    try {
+      const body = await response.clone().json();
+      if (body && body.code === 'ACCOUNT_CLOSING') {
+        throw new AccountClosingError(body.message || 'Account is closing');
+      }
+    } catch (e) {
+      if (e instanceof AccountClosingError) {
+        throw e;
+      }
+    }
+  }
+
   if (response.status !== 401) {
     return response;
   }
@@ -38,11 +80,43 @@ export async function performAuthenticatedRequest(
     const retryHeaders = new Headers(options.headers || {});
     retryHeaders.set('Authorization', `Bearer ${newToken}`);
 
-    return await fetch(url, {
+    const retryResponse = await fetch(url, {
       ...options,
       headers: retryHeaders,
     });
-  } catch {
+
+    if (retryResponse.status === 410 && authSession.onAccountDeleted) {
+      try {
+        const body = await retryResponse.clone().json();
+        if (body && body.code === 'ACCOUNT_DELETED') {
+          if (!accountDeletionTriggered) {
+            accountDeletionTriggered = true;
+            await authSession.onAccountDeleted();
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    if (retryResponse.status === 403) {
+      try {
+        const body = await retryResponse.clone().json();
+        if (body && body.code === 'ACCOUNT_CLOSING') {
+          throw new AccountClosingError(body.message || 'Account is closing');
+        }
+      } catch (e) {
+        if (e instanceof AccountClosingError) {
+          throw e;
+        }
+      }
+    }
+
+    return retryResponse;
+  } catch (err) {
+    if (err instanceof AccountClosingError) {
+      throw err;
+    }
     return response;
   }
 }

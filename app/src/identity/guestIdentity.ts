@@ -4,7 +4,7 @@ import * as Crypto from 'expo-crypto';
 import { Config } from '../config';
 import { decodeJwt, calculateRefreshDelay, bufferToBase64Url } from './identityLogic';
 import { adoptPreIdentityDatabase, openNamespace, deleteNamespaceFiles } from '../local-db';
-import { performAuthenticatedRequest } from '../api/authenticatedRequest';
+import { performAuthenticatedRequest, resetAccountDeletionTrigger } from '../api/authenticatedRequest';
 import { useGameplayStore } from '../store';
 import { queryClient } from '../providers';
 
@@ -184,6 +184,7 @@ function updateStoreState(updates: Partial<Omit<IdentityState, 'bootstrap' | 'lo
  * or registers as a new/existing guest. Handles offline modes gracefully.
  */
 export async function bootstrap(): Promise<void> {
+  resetAccountDeletionTrigger();
   if (activeBootstrapPromise) {
     return activeBootstrapPromise;
   }
@@ -538,6 +539,7 @@ export async function adoptEmailAccountSession(
 export async function adoptAccountSession(
   session: AccountSession,
 ): Promise<void> {
+  resetAccountDeletionTrigger();
   clearRefreshSchedule();
   resetRetryDelay();
 
@@ -600,6 +602,17 @@ async function performRefreshRequest(refreshToken: string): Promise<TokenRespons
     return await response.json();
   }
 
+  if (response.status === 410) {
+    try {
+      const body = await response.clone().json();
+      if (body && body.code === 'ACCOUNT_DELETED') {
+        await handleAccountDeletedIdempotently();
+      }
+    } catch {
+      // ignore
+    }
+  }
+
   const err = new Error(
     `Token refresh failed: status ${response.status}`,
   ) as Error & { status: number };
@@ -633,7 +646,7 @@ export async function resetGuestData(): Promise<void> {
   const response = await performAuthenticatedRequest(
     '/v1/auth/guest/reset',
     { method: 'POST' },
-    { getAccessToken, refreshSession },
+    { getAccessToken, refreshSession, onAccountDeleted: handleAccountDeletedIdempotently },
   );
   if (response.status !== 204) {
     throw new Error(`Failed to reset guest data on server: status ${response.status}`);
@@ -675,9 +688,28 @@ export async function resetGuestData(): Promise<void> {
  * Works offline.
  */
 export async function removeLocalData(): Promise<void> {
-  const activeIdentity = useIdentityStore.getState().guestId;
+  const state = useIdentityStore.getState();
+  const activeIdentity = state.accountId || state.guestId;
   await deleteNamespaceFiles(activeIdentity);
   await openNamespace(activeIdentity);
   useGameplayStore.getState().resetGameplay();
   queryClient.clear();
+}
+
+let isHandlingAccountDeletion = false;
+
+export async function handleAccountDeletedIdempotently(): Promise<void> {
+  if (isHandlingAccountDeletion) {
+    return;
+  }
+  isHandlingAccountDeletion = true;
+  try {
+    await removeLocalData();
+    await logout();
+    await bootstrap();
+  } catch (err) {
+    console.error('Failed to handle account deletion:', err);
+  } finally {
+    isHandlingAccountDeletion = false;
+  }
 }
