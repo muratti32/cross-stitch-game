@@ -1,6 +1,7 @@
 import * as protobuf from 'protobufjs';
 import { gzip, Inflate } from 'pako';
 import { sha256 } from 'js-sha256';
+import { markCriticalPathActivity } from '../perf/criticalPathSentinel';
 
 export type PatternCodecErrorType =
   | 'checksum-mismatch'
@@ -69,6 +70,7 @@ const MAX_DECOMPRESSED_BYTES = 2 * 1024 * 1024;
 // the cap: pako delivers inflated chunks incrementally and anything beyond the
 // limit is discarded instead of accumulated.
 function ungzipBounded(bytes: Uint8Array, cap: number): Uint8Array {
+  markCriticalPathActivity('decompression', 'ungzipBounded');
   const inflator = new Inflate();
   const chunks: Uint8Array[] = [];
   let total = 0;

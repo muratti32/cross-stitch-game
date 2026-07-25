@@ -22,6 +22,11 @@ export interface UseRendererGestureOptions {
   completedShared: SharedValue<Uint8Array>;
   activeColorIndexShared: SharedValue<number>;
   isColorCompletedShared: SharedValue<boolean>;
+  scaleShared?: SharedValue<number>;
+  translateXShared?: SharedValue<number>;
+  translateYShared?: SharedValue<number>;
+  containerWidthShared?: SharedValue<number>;
+  containerHeightShared?: SharedValue<number>;
 }
 
 export function useRendererGesture({
@@ -34,15 +39,29 @@ export function useRendererGesture({
   completedShared,
   activeColorIndexShared,
   isColorCompletedShared,
+  scaleShared,
+  translateXShared,
+  translateYShared,
+  containerWidthShared,
+  containerHeightShared,
 }: UseRendererGestureOptions) {
+  // Shared values are always created so the hook order stays stable; the
+  // optional externally-owned values (used by the ADR-0031 performance harness
+  // to drive the viewport) simply take precedence when supplied.
+  const ownContainerWidth = useSharedValue(0);
+  const ownContainerHeight = useSharedValue(0);
+  const ownScale = useSharedValue(1.0);
+  const ownTranslateX = useSharedValue(0.0);
+  const ownTranslateY = useSharedValue(0.0);
+
   // Container (viewport) dimensions
-  const containerWidth = useSharedValue(0);
-  const containerHeight = useSharedValue(0);
+  const containerWidth = containerWidthShared ?? ownContainerWidth;
+  const containerHeight = containerHeightShared ?? ownContainerHeight;
 
   // Current transform shared values
-  const scale = useSharedValue(1.0);
-  const translateX = useSharedValue(0.0);
-  const translateY = useSharedValue(0.0);
+  const scale = scaleShared ?? ownScale;
+  const translateX = translateXShared ?? ownTranslateX;
+  const translateY = translateYShared ?? ownTranslateY;
 
   // Clamping scale limit derived dynamically based on fit
   const minScale = useSharedValue(0.05);

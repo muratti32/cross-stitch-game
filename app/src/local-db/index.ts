@@ -2,6 +2,7 @@ import * as SQLite from 'expo-sqlite';
 import * as FileSystem from 'expo-file-system/legacy';
 import { getDatabaseFilename, getDatabasePath, shouldAdopt } from './namespaceLogic';
 import type { AnalyticsGameplayEvent, AnalyticsGameplayEventPayload } from '../analytics/schema';
+import { markCriticalPathActivity } from '../perf/criticalPathSentinel';
 
 export type PatternSource = 'bundled' | 'catalog' | 'personal';
 
@@ -962,6 +963,7 @@ export async function getUnackedProgressOps(
  */
 export async function markProgressOpsAcked(opIds: string[]): Promise<void> {
   if (opIds.length === 0) return;
+  markCriticalPathActivity('db-reconciliation', 'markProgressOpsAcked');
   const db = await getDatabase();
   await runInTransaction(db, async () => {
     for (const opId of opIds) {
@@ -1159,6 +1161,7 @@ export async function setGameplaySeqHigh(sessionId: string, value: number): Prom
 export async function getSyncSnapshot(
   sessionId: string
 ): Promise<SyncSnapshot | null> {
+  markCriticalPathActivity('db-reconciliation', 'getSyncSnapshot');
   const db = await getDatabase();
   const row = await db.getFirstAsync<{
     session_id: string;
@@ -1186,6 +1189,7 @@ export async function saveSyncSnapshot(
   completed: Uint8Array,
   terminal: boolean
 ): Promise<void> {
+  markCriticalPathActivity('db-reconciliation', 'saveSyncSnapshot');
   const db = await getDatabase();
   await db.runAsync(
     `INSERT OR REPLACE INTO sync_snapshots (session_id, server_revision, packed_bitmap, terminal, updated_at)

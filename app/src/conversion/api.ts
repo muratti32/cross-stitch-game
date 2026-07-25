@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 import { apiFetch } from '@/api/apiFetch';
 import { Config } from '@/config';
 import type { ConversionProfile } from './profiles';
+import { markCriticalPathActivity } from '@/perf/criticalPathSentinel';
 
 export interface PersonalPattern {
   createdAt: string;
@@ -34,6 +35,7 @@ export async function createPhotoConversion(input: {
   title: string;
   uploadUri: string;
 }): Promise<PendingConversion> {
+  markCriticalPathActivity('conversion', 'createPhotoConversion');
   const body = new FormData();
   body.append('profile', input.profile);
   body.append('title', input.title);
@@ -71,6 +73,7 @@ export async function waitForConversion(
   onStatus?: (status: ConversionJob['status']) => void,
   supportReference?: string,
 ): Promise<PersonalPattern> {
+  markCriticalPathActivity('conversion', 'waitForConversion');
   const deadline = Date.now() + 5 * 60 * 1000;
   while (Date.now() < deadline) {
     const response = await apiFetch(`/v1/conversions/jobs/${jobId}`);

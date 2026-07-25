@@ -44,6 +44,11 @@ export interface StitchRendererProps {
   isColorCompletedShared: SharedValue<boolean>;
   parentRevision?: number;
   theme?: MembershipTheme;
+  scaleShared?: SharedValue<number>;
+  translateXShared?: SharedValue<number>;
+  translateYShared?: SharedValue<number>;
+  containerWidthShared?: SharedValue<number>;
+  containerHeightShared?: SharedValue<number>;
 }
 
 export interface StitchRendererRef {
@@ -62,6 +67,11 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     isColorCompletedShared,
     parentRevision,
     theme = DEFAULT_MEMBERSHIP_THEME,
+    scaleShared,
+    translateXShared,
+    translateYShared,
+    containerWidthShared,
+    containerHeightShared,
   },
   ref
 ) => {
@@ -120,6 +130,11 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     completedShared,
     activeColorIndexShared,
     isColorCompletedShared,
+    scaleShared,
+    translateXShared,
+    translateYShared,
+    containerWidthShared,
+    containerHeightShared,
   });
 
   useImperativeHandle(ref, () => ({

@@ -1,0 +1,75 @@
+name: Performance Release Gate
+
+on:
+  workflow_dispatch:
+    inputs:
+      reports_path:
+        description: 'Path to performance reports directory or file'
+        required: true
+        default: 'perf-reports/'
+        type: string
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'app/src/perf/**'
+      - 'app/modules/perf-thermal/**'
+      - 'app/scripts/perf-gate.ts'
+
+jobs:
+  stitch-interaction-budget:
+    name: Stitch Interaction Budget
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: 'app/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: app
+
+      - name: Run TypeScript check
+        run: npm run ts:check
+        working-directory: app
+
+      - name: Run Jest tests
+        run: npx jest src/perf modules/perf-thermal scripts
+        working-directory: app
+
+      - name: Run performance release gate
+        run: |
+          REPORTS_PATH="perf-reports/"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            REPORTS_PATH="${{ github.event.inputs.reports_path }}"
+          fi
+
+          # Check if reports exist relative to the working directory (app/)
+          HAS_REPORTS=false
+          if [ -d "$REPORTS_PATH" ]; then
+            if ls "$REPORTS_PATH"/*.json >/dev/null 2>&1; then
+              HAS_REPORTS=true
+            fi
+          elif [ -f "$REPORTS_PATH" ]; then
+            HAS_REPORTS=true
+          fi
+
+          if [ "$HAS_REPORTS" = "false" ]; then
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+              echo "::error::Release requires fresh device reports. No performance reports found in '$REPORTS_PATH'. Please run the performance harness on reference devices and commit the reports."
+              exit 1
+            else
+              echo "::error::Provided reports path '$REPORTS_PATH' does not exist or contains no JSON reports."
+              exit 1
+            fi
+          fi
+
+          npm run perf:gate -- --reports "$REPORTS_PATH"
+        working-directory: app

@@ -4,9 +4,10 @@ dist/
 web-build/
 expo-env.d.ts
 
-# native build output
-ios/
-android/
+# native build output (prebuild artifacts at the app root only — local Expo
+# modules under modules/ own their native sources and must stay tracked)
+/ios/
+/android/
 
 # env
 .env

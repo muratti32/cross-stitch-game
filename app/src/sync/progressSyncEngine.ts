@@ -10,6 +10,7 @@ import {
   OutgoingProgressOperation,
 } from '../api/progressSync';
 import { applyResolvedOperations } from './syncApply';
+import { markCriticalPathActivity } from '../perf/criticalPathSentinel';
 
 export interface SyncOutcome {
   /** Authoritative server revision after this sync. */
@@ -37,6 +38,7 @@ export async function syncSession(
   deviceId: string,
   completed: Uint8Array,
 ): Promise<SyncOutcome> {
+  markCriticalPathActivity('progress-sync', 'syncSession');
   const snapshot = await getSyncSnapshot(sessionId);
   const sinceRevision = snapshot?.serverRevision ?? 0;
 
@@ -104,6 +106,7 @@ export async function completeSession(
   remoteSessionId: string,
   deviceId: string,
 ): Promise<boolean> {
+  markCriticalPathActivity('progress-sync', 'completeSession');
   const result = await completeProgress(remoteSessionId, deviceId);
   return result.terminalCompleted;
 }

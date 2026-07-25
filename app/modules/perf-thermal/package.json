@@ -1,0 +1,12 @@
+{
+  "name": "perf-thermal",
+  "version": "1.0.0",
+  "description": "Local Expo native module for device thermal state and device profile",
+  "main": "index.ts",
+  "types": "index.d.ts",
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "expo": "*"
+  }
+}

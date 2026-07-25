@@ -1,5 +1,6 @@
 import { getAccessToken, refreshSession, handleAccountDeletedIdempotently } from '../identity/guestIdentity';
 import { performAuthenticatedRequest } from './authenticatedRequest';
+import { markCriticalPathActivity } from '../perf/criticalPathSentinel';
 
 export interface ApiFetchOptions extends RequestInit {
   // Add any custom options if needed in the future
@@ -12,6 +13,7 @@ export interface ApiFetchOptions extends RequestInit {
  * and replays the original request.
  */
 export async function apiFetch(path: string, options: ApiFetchOptions = {}): Promise<Response> {
+  markCriticalPathActivity('network', path);
   return performAuthenticatedRequest(path, options, {
     getAccessToken,
     refreshSession,
