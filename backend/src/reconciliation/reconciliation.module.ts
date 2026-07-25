@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppConfigModule } from '../config/app-config.module';
@@ -10,7 +10,7 @@ import { ReconciliationService } from './reconciliation.service';
   exports: [ReconciliationService, TypeOrmModule],
   imports: [
     AppConfigModule,
-    SessionsModule,
+    forwardRef(() => SessionsModule),
     TypeOrmModule.forFeature([ReconciliationRunEntity, ReconciliationFindingEntity]),
   ],
   providers: [ReconciliationService],

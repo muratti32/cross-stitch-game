@@ -47,6 +47,7 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     private readonly config: AppConfigService,
     private readonly webhookArchives: WebhookDeliveryArchiveService,
     private readonly gameplayEvents: EventsPartitionService,
+    @Inject(forwardRef(() => ReconciliationService))
     private readonly reconciliation: ReconciliationService,
     private readonly operationalAlerts: OperationalAlertsService,
   ) {}

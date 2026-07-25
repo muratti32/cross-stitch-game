@@ -1,12 +1,10 @@
-import type { ErrorEvent, NodeOptions } from '@sentry/node';
-
 import type { SentryEnvironmentVariables } from '../config';
-import { initializeSentry } from './sentry';
-import { scrubSentryEvent } from './sentry-scrubber';
+import { initializeSentry, type NodeOptions } from './sentry';
+import { scrubSentryEvent, type SentryEvent } from './sentry-scrubber';
 
 describe('Sentry scrubber', () => {
   it('redacts sensitive nested values and breadcrumb data', () => {
-    const event: ErrorEvent = {
+    const event: SentryEvent = {
       breadcrumbs: [
         {
           category: 'app.action',
@@ -101,7 +99,7 @@ describe('Sentry scrubber', () => {
   });
 
   it('keeps message and exception text diagnosable while redacting secrets in it', () => {
-    const event: ErrorEvent = {
+    const event: SentryEvent = {
       exception: {
         values: [
           {
@@ -126,7 +124,7 @@ describe('Sentry scrubber', () => {
   });
 
   it('truncates long free text so a prompt cannot ride along in a message', () => {
-    const event: ErrorEvent = {
+    const event: SentryEvent = {
       message: `prefix ${'a b '.repeat(400)}`,
       type: undefined,
     };
@@ -139,7 +137,7 @@ describe('Sentry scrubber', () => {
   });
 
   it('keeps protocol and domain codes that carry no player data', () => {
-    const event: ErrorEvent = {
+    const event: SentryEvent = {
       extra: {
         errorCode: 'ECONNRESET',
         otpCode: '123456',

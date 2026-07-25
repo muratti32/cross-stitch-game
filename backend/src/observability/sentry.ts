@@ -1,21 +1,50 @@
-import * as Sentry from '@sentry/nestjs';
-import type { NodeOptions } from '@sentry/node';
-
 import {
   readSentryBootstrapEnvironment,
   type SentryEnvironmentVariables,
 } from '../config';
 import { scrubBreadcrumb, scrubSentryEvent, scrubSentryTransaction } from './sentry-scrubber';
 
+export interface SentryScope {
+  setTag(key: string, value: string): void;
+  setLevel(level: string): void;
+  setFingerprint(fingerprint: string[]): void;
+  setContext(name: string, context: Record<string, unknown>): void;
+}
+
+export interface NodeOptions {
+  dsn?: string;
+  environment?: string;
+  release?: string;
+  tracesSampleRate?: number;
+  sendDefaultPii?: boolean;
+  beforeBreadcrumb?: (breadcrumb: any) => any;
+  beforeSend?: (event: any) => any;
+  beforeSendTransaction?: (event: any) => any;
+}
+
 interface SentrySdk {
   init(options: NodeOptions): unknown;
+  withScope?(callback: (scope: SentryScope) => void): void;
+  captureException?(error: unknown): void;
+  captureMessage?(message: string): void;
 }
+
+function loadSentrySdk(): SentrySdk | null {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    return require('@sentry/nestjs') as SentrySdk;
+  } catch {
+    return null;
+  }
+}
+
+const Sentry = loadSentrySdk();
 
 export function initializeSentry(
   config: SentryEnvironmentVariables,
-  sdk: SentrySdk,
+  sdk: SentrySdk | null,
 ): boolean {
-  if (config.SENTRY_DSN === undefined) {
+  if (config.SENTRY_DSN === undefined || !sdk) {
     return false;
   }
 
@@ -43,12 +72,12 @@ export const isSentryEnabled = initializeSentry(
 );
 
 export function captureWorkerFailure(error: unknown, jobKind: string): void {
-  if (!isSentryEnabled) {
+  if (!isSentryEnabled || !Sentry?.withScope) {
     return;
   }
-  Sentry.withScope((scope) => {
+  Sentry.withScope((scope: SentryScope) => {
     scope.setTag('job.kind', jobKind);
-    Sentry.captureException(error);
+    Sentry.captureException?.(error);
   });
 }
 
@@ -56,12 +85,12 @@ export function captureBootstrapFailure(
   error: unknown,
   entrypoint: 'api' | 'worker',
 ): void {
-  if (!isSentryEnabled) {
+  if (!isSentryEnabled || !Sentry?.withScope) {
     return;
   }
-  Sentry.withScope((scope) => {
+  Sentry.withScope((scope: SentryScope) => {
     scope.setTag('entrypoint', entrypoint);
-    Sentry.captureException(error);
+    Sentry.captureException?.(error);
   });
 }
 
@@ -81,13 +110,13 @@ export function captureOperationalAlert(
   fingerprint: string,
   context: Record<string, unknown>,
 ): void {
-  if (!isSentryEnabled) {
+  if (!isSentryEnabled || !Sentry?.withScope) {
     return;
   }
-  Sentry.withScope((scope) => {
+  Sentry.withScope((scope: SentryScope) => {
     scope.setLevel(level);
     scope.setFingerprint([fingerprint]);
     scope.setContext('operational_alert', context);
-    Sentry.captureMessage(message);
+    Sentry.captureMessage?.(message);
   });
 }

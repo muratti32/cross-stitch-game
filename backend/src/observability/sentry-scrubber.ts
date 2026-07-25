@@ -1,5 +1,38 @@
-import type { TransactionEvent } from '@sentry/core';
-import type { Breadcrumb, ErrorEvent } from '@sentry/node';
+/**
+ * Local self-contained type definitions for Sentry events and breadcrumbs.
+ * This guarantees zero external module dependency overhead during TypeORM
+ * database migrations, CLI scripts, and standalone test runs.
+ */
+export interface Breadcrumb {
+  category?: string;
+  message?: string;
+  data?: Record<string, unknown>;
+  type?: string;
+  level?: any;
+  event_id?: string;
+  timestamp?: number;
+}
+
+export interface ExceptionValue {
+  type?: string;
+  value?: string;
+  mechanism?: unknown;
+  stacktrace?: unknown;
+}
+
+export interface SentryEvent {
+  type?: string;
+  request?: unknown;
+  user?: { id?: string | number; [key: string]: unknown };
+  extra?: Record<string, unknown> | unknown;
+  contexts?: Record<string, unknown> | unknown;
+  tags?: Record<string, unknown> | unknown;
+  breadcrumbs?: Breadcrumb[];
+  exception?: {
+    values?: ExceptionValue[];
+  };
+  message?: string;
+}
 
 /**
  * ADR-0035: Sentry events are scrubbed before send. No prompt text, artwork,
@@ -150,7 +183,7 @@ function scrubBreadcrumb(breadcrumb: Breadcrumb): Breadcrumb {
   };
 }
 
-function scrubEvent<T extends ErrorEvent | TransactionEvent>(event: T): T {
+function scrubEvent<T extends SentryEvent>(event: T): T {
   // Request bodies, headers, cookies, and query strings can contain auth
   // credentials and OTP values. Do not send any request data at all.
   event.request = undefined;
@@ -182,7 +215,7 @@ function scrubEvent<T extends ErrorEvent | TransactionEvent>(event: T): T {
   // an event with no message is not diagnosable, and operational alerts
   // (issue #63) carry their meaning in the message.
   if (event.exception?.values !== undefined) {
-    event.exception.values = event.exception.values.map((value) => ({
+    event.exception.values = event.exception.values.map((value: ExceptionValue) => ({
       ...value,
       value: value.value === undefined ? value.value : redactText(value.value),
     }));
@@ -194,13 +227,11 @@ function scrubEvent<T extends ErrorEvent | TransactionEvent>(event: T): T {
   return event;
 }
 
-export function scrubSentryEvent(event: ErrorEvent): ErrorEvent {
+export function scrubSentryEvent<T extends SentryEvent>(event: T): T {
   return scrubEvent(event);
 }
 
-export function scrubSentryTransaction(
-  event: TransactionEvent,
-): TransactionEvent {
+export function scrubSentryTransaction<T extends SentryEvent>(event: T): T {
   return scrubEvent(event);
 }
 

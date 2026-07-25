@@ -120,9 +120,9 @@ import { OperationalAlertsAdminService } from './operational-alerts-admin.servic
     CreatorProfileModule,
     forwardRef(() => JobsModule),
     SupportModule,
-    WebhookArchiveModule,
-    ReconciliationModule,
-    ObservabilityAlertsModule,
+    forwardRef(() => WebhookArchiveModule),
+    forwardRef(() => ReconciliationModule),
+    forwardRef(() => ObservabilityAlertsModule),
   ],
   providers: [
     AdminCatalogService,
