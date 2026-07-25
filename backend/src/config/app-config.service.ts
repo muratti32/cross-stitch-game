@@ -211,6 +211,19 @@ export class AppConfigService {
     });
   }
 
+  get gameplayEventRetentionMonths(): number {
+    return this.configService.get('GAMEPLAY_EVENT_RETENTION_MONTHS', {
+      infer: true,
+    });
+  }
+
+  get gameplayEventPartitionMaintenanceIntervalSeconds(): number {
+    return this.configService.get(
+      'GAMEPLAY_EVENT_PARTITION_MAINTENANCE_INTERVAL_SECONDS',
+      { infer: true },
+    );
+  }
+
   get openAiModerationEnabled(): boolean {
     return this.configService.get('OPENAI_MODERATION_ENABLED', { infer: true });
   }

@@ -125,6 +125,8 @@ import { CreateDeletionTombstones1787184000000 } from './migrations/178718400000
 import { CreateInvalidatedNamespaceTokens1787270400000 } from './migrations/1787270400000-CreateInvalidatedNamespaceTokens';
 import { CreateWebhookDeliveryArchives1787356800000 } from './migrations/1787356800000-CreateWebhookDeliveryArchives';
 import { WebhookDeliveryArchiveEntity } from '../webhooks';
+import { AnalyticsGameplayEventEntity } from '../events/entities';
+import { CreateAnalyticsGameplayEvents1787443200000 } from './migrations/1787443200000-CreateAnalyticsGameplayEvents';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -196,6 +198,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       ProviderJobTombstoneEntity,
       InvalidatedNamespaceTokenEntity,
       WebhookDeliveryArchiveEntity,
+      AnalyticsGameplayEventEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -240,6 +243,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateDeletionTombstones1787184000000,
       CreateInvalidatedNamespaceTokens1787270400000,
       CreateWebhookDeliveryArchives1787356800000,
+      CreateAnalyticsGameplayEvents1787443200000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

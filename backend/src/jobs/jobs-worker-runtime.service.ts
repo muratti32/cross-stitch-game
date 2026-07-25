@@ -18,6 +18,7 @@ import { AiArtworkService } from '../ai-artwork/ai-artwork.service';
 import { AccountDeletionFinalizerService } from '../deletion/account-deletion-finalizer.service';
 import { AppConfigService } from '../config/app-config.service';
 import { WebhookDeliveryArchiveService } from '../webhooks';
+import { EventsPartitionService } from '../events';
 
 @Injectable()
 export class JobsWorkerRuntimeService implements OnApplicationShutdown {
@@ -27,6 +28,7 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
   private aiArtworkReconcileTimer: NodeJS.Timeout | null = null;
   private accountDeletionFinalizerTimer: NodeJS.Timeout | null = null;
   private webhookArchivePurgeTimer: NodeJS.Timeout | null = null;
+  private gameplayEventsMaintenanceTimer: NodeJS.Timeout | null = null;
   private activeDispatch: Promise<void> | null = null;
   private running = false;
 
@@ -40,6 +42,7 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     private readonly accountDeletionFinalizer: AccountDeletionFinalizerService,
     private readonly config: AppConfigService,
     private readonly webhookArchives: WebhookDeliveryArchiveService,
+    private readonly gameplayEvents: EventsPartitionService,
   ) {}
 
   async start(): Promise<void> {
@@ -72,6 +75,11 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
       void this.purgeWebhookArchives();
     }, this.config.webhookArchivePurgeIntervalSeconds * 1000);
     void this.purgeWebhookArchives();
+
+    this.gameplayEventsMaintenanceTimer = setInterval(() => {
+      void this.maintainGameplayEventPartitions();
+    }, this.config.gameplayEventPartitionMaintenanceIntervalSeconds * 1000);
+    void this.maintainGameplayEventPartitions();
 
     void this.reconcileAiArtworks();
     this.aiArtworkReconcileTimer = setInterval(() => {
@@ -108,6 +116,10 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     if (this.webhookArchivePurgeTimer !== null) {
       clearInterval(this.webhookArchivePurgeTimer);
       this.webhookArchivePurgeTimer = null;
+    }
+    if (this.gameplayEventsMaintenanceTimer !== null) {
+      clearInterval(this.gameplayEventsMaintenanceTimer);
+      this.gameplayEventsMaintenanceTimer = null;
     }
     if (this.activeDispatch !== null) {
       await this.activeDispatch;
@@ -179,6 +191,20 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     } catch (error: unknown) {
       this.logger.error(
         `Error purging webhook delivery archives: ${errorMessage(error)}`,
+        errorStack(error),
+      );
+    }
+  }
+
+  private async maintainGameplayEventPartitions(): Promise<void> {
+    try {
+      const { droppedPartitions } = await this.gameplayEvents.maintain();
+      if (droppedPartitions > 0) {
+        this.logger.log(`Dropped ${droppedPartitions} expired gameplay event partitions`);
+      }
+    } catch (error: unknown) {
+      this.logger.error(
+        `Error maintaining gameplay event partitions: ${errorMessage(error)}`,
         errorStack(error),
       );
     }

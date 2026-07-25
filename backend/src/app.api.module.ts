@@ -20,6 +20,7 @@ import { AiArtworkModule } from './ai-artwork/ai-artwork.module';
 import { SupportModule } from './support/support.module';
 import { CreatorProfileModule } from './creator-profile';
 import { SocialModule } from './social/social.module';
+import { EventsModule } from './events';
 import {
   isSentryEnabled,
   SentryRequestContextInterceptor,
@@ -45,6 +46,7 @@ import {
     SupportModule,
     CreatorProfileModule,
     SocialModule,
+    EventsModule,
     AdminModule,
   ],
   providers: isSentryEnabled

@@ -9,6 +9,7 @@ import { AiArtworkModule } from './ai-artwork/ai-artwork.module';
 import { SupportModule } from './support/support.module';
 import { AccountDeletionModule } from './deletion/account-deletion.module';
 import { isSentryEnabled } from './observability';
+import { EventsModule } from './events';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { isSentryEnabled } from './observability';
     EmailAuthWorkerModule,
     AiArtworkModule,
     SupportModule,
+    EventsModule,
     forwardRef(() => require('./deletion/account-deletion.module').AccountDeletionModule),
   ],
 })

@@ -18,6 +18,7 @@ import { AiArtworkModule } from '../ai-artwork/ai-artwork.module';
 import { CatalogModule } from '../catalog/catalog.module';
 import { AccountDeletionModule } from '../deletion/account-deletion.module';
 import { WebhookArchiveModule } from '../webhooks';
+import { EventsModule } from '../events';
 
 @Module({
   controllers: [JobsController],
@@ -55,6 +56,7 @@ export class JobsModule {}
     forwardRef(() => AiArtworkModule),
     forwardRef(() => CatalogModule),
     WebhookArchiveModule,
+    EventsModule,
   ],
   providers: [
     DemoJobConsumerService,
