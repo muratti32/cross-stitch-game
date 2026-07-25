@@ -123,6 +123,8 @@ import { AddAccountClosureHold1787011200000 } from './migrations/1787011200000-A
 import { AddAiArtworkCancelledStatus1787097600000 } from './migrations/1787097600000-AddAiArtworkCancelledStatus';
 import { CreateDeletionTombstones1787184000000 } from './migrations/1787184000000-CreateDeletionTombstones';
 import { CreateInvalidatedNamespaceTokens1787270400000 } from './migrations/1787270400000-CreateInvalidatedNamespaceTokens';
+import { CreateWebhookDeliveryArchives1787356800000 } from './migrations/1787356800000-CreateWebhookDeliveryArchives';
+import { WebhookDeliveryArchiveEntity } from '../webhooks';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -193,6 +195,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       DeletionAuditEventEntity,
       ProviderJobTombstoneEntity,
       InvalidatedNamespaceTokenEntity,
+      WebhookDeliveryArchiveEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -236,6 +239,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddAiArtworkCancelledStatus1787097600000,
       CreateDeletionTombstones1787184000000,
       CreateInvalidatedNamespaceTokens1787270400000,
+      CreateWebhookDeliveryArchives1787356800000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

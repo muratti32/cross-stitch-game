@@ -25,6 +25,7 @@ import { AdAttemptService } from './ad-attempt.service';
 import { MembershipController } from './membership.controller';
 import { MembershipRepository } from './membership.repository';
 import { MembershipService } from './membership.service';
+import { WebhookArchiveModule } from '../webhooks';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { MembershipService } from './membership.service';
     AuthModule,
     AppConfigModule,
     PromotionModule,
+    WebhookArchiveModule,
   ],
   controllers: [
     AdMobSsvController,
@@ -60,6 +62,8 @@ import { MembershipService } from './membership.service';
     CoinLedgerRepository,
     CommerceLedgerRepository,
     PatternUnlockService,
+    RevenueCatWebhookService,
+    RewardGrantService,
   ],
 })
 export class EconomyModule {}

@@ -22,6 +22,7 @@ import { AdminPatternsController } from './admin-patterns.controller';
 import { AdminStaffPicksController } from './admin-staff-picks.controller';
 import { AdminSupportReferencesController } from './admin-support-references.controller';
 import { AdminTagsController } from './admin-tags.controller';
+import { AdminWebhookDeliveriesController } from './admin-webhook-deliveries.controller';
 import {
   OperatorAccountEntity,
   OperatorAuditLogEntity,
@@ -45,6 +46,8 @@ import { OperatorRefreshTokensRepository } from './operator-refresh-tokens.repos
 import { OperatorSecurityEventsService } from './operator-security-events.service';
 import { OperatorTotpService } from './operator-totp.service';
 import { TotpSecretCipherService } from './totp-secret-cipher.service';
+import { WebhookArchiveModule } from '../webhooks';
+import { WebhookDeliveriesAdminService } from './webhook-deliveries-admin.service';
 
 @Module({
   controllers: [
@@ -58,6 +61,7 @@ import { TotpSecretCipherService } from './totp-secret-cipher.service';
     AdminStaffPicksController,
     AdminSupportReferencesController,
     AdminTagsController,
+    AdminWebhookDeliveriesController,
     OfficialPatternDraftsController,
   ],
   exports: [
@@ -108,6 +112,7 @@ import { TotpSecretCipherService } from './totp-secret-cipher.service';
     CreatorProfileModule,
     forwardRef(() => JobsModule),
     SupportModule,
+    WebhookArchiveModule,
   ],
   providers: [
     AdminCatalogService,
@@ -124,6 +129,7 @@ import { TotpSecretCipherService } from './totp-secret-cipher.service';
     OperatorSecurityEventsService,
     OperatorTotpService,
     TotpSecretCipherService,
+    WebhookDeliveriesAdminService,
   ],
 })
 export class AdminModule {}

@@ -36,6 +36,11 @@ export type EnvironmentVariables = {
   ADMOB_SSV_ALLOWED_AD_UNITS: readonly string[];
   REVENUECAT_WEBHOOK_AUTH_TOKEN: string | undefined;
   AD_ATTEMPT_TTL_SECONDS: number;
+  FAL_WEBHOOK_SECRET: string | undefined;
+  FAL_KEY: string | undefined;
+  FAL_WEBHOOK_BASE_URL: string | undefined;
+  WEBHOOK_ARCHIVE_RETENTION_SECONDS: number;
+  WEBHOOK_ARCHIVE_PURGE_INTERVAL_SECONDS: number;
   OPENAI_MODERATION_ENABLED: boolean;
   SENTRY_DSN: string | undefined;
   SENTRY_ENVIRONMENT: string;
@@ -68,6 +73,8 @@ const ADMIN_TOTP_ENC_KEY_BYTES = 32;
 const DEFAULT_ADMOB_SSV_KEYS_URL =
   'https://gstatic.com/admob/reward/verifier-keys.json';
 const DEFAULT_AD_ATTEMPT_TTL_SECONDS = 300;
+const DEFAULT_WEBHOOK_ARCHIVE_RETENTION_SECONDS = 30 * 24 * 60 * 60;
+const DEFAULT_WEBHOOK_ARCHIVE_PURGE_INTERVAL_SECONDS = 60 * 60;
 
 function parseHexKey(
   value: unknown,
@@ -505,6 +512,30 @@ export function parseEnvironment(
       environment.AD_ATTEMPT_TTL_SECONDS,
       'AD_ATTEMPT_TTL_SECONDS',
       DEFAULT_AD_ATTEMPT_TTL_SECONDS,
+    ),
+    FAL_WEBHOOK_SECRET: parseOptionalSecret(
+      environment.FAL_WEBHOOK_SECRET,
+      'FAL_WEBHOOK_SECRET',
+    ),
+    FAL_KEY: parseOptionalSecret(environment.FAL_KEY, 'FAL_KEY'),
+    FAL_WEBHOOK_BASE_URL:
+      environment.FAL_WEBHOOK_BASE_URL === undefined ||
+      environment.FAL_WEBHOOK_BASE_URL === ''
+        ? undefined
+        : parseUrl(
+            environment.FAL_WEBHOOK_BASE_URL,
+            'FAL_WEBHOOK_BASE_URL',
+            HTTP_PROTOCOLS,
+          ),
+    WEBHOOK_ARCHIVE_RETENTION_SECONDS: parseDurationSeconds(
+      environment.WEBHOOK_ARCHIVE_RETENTION_SECONDS,
+      'WEBHOOK_ARCHIVE_RETENTION_SECONDS',
+      DEFAULT_WEBHOOK_ARCHIVE_RETENTION_SECONDS,
+    ),
+    WEBHOOK_ARCHIVE_PURGE_INTERVAL_SECONDS: parseDurationSeconds(
+      environment.WEBHOOK_ARCHIVE_PURGE_INTERVAL_SECONDS,
+      'WEBHOOK_ARCHIVE_PURGE_INTERVAL_SECONDS',
+      DEFAULT_WEBHOOK_ARCHIVE_PURGE_INTERVAL_SECONDS,
     ),
     OPENAI_MODERATION_ENABLED: parseOpenAiModerationEnabled(environment),
     ...parseSentryEnvironment(environment),

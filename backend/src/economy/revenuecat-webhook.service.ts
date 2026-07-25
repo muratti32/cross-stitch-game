@@ -11,6 +11,7 @@ import type { VerifiedMembershipEvent } from './membership-projection';
 export interface RevenueCatWebhookOutcome {
   handled: boolean; // false for event types this ticket doesn't own
   detail: string; // short machine-readable reason for logging
+  duplicate: boolean;
 }
 
 @Injectable()
@@ -63,7 +64,7 @@ export class RevenueCatWebhookService {
       this.logger.warn(
         `RevenueCat webhook ${type} rejected: account ${appUserId} does not exist or is inactive`,
       );
-      return { handled: false, detail: 'unknown_or_inactive_account' };
+      return { handled: false, detail: 'unknown_or_inactive_account', duplicate: false };
     }
 
     const premiumProduct = resolvePremiumProduct(productId);
@@ -80,7 +81,7 @@ export class RevenueCatWebhookService {
         this.logger.warn(
           `RevenueCat membership fraud signal: transaction ${transactionId} is bound to another account`,
         );
-        return { handled: true, detail: 'rejected_other_account' };
+        return { handled: true, detail: 'rejected_other_account', duplicate: false };
       }
       this.logger.log(
         `RevenueCat membership ${type} transaction ${transactionId}: recorded=${result.recorded} granted=${result.creditGranted} reversed=${result.creditReversed}`,
@@ -88,6 +89,7 @@ export class RevenueCatWebhookService {
       return {
         handled: true,
         detail: result.recorded ? 'membership_event_recorded' : 'membership_event_replayed',
+        duplicate: !result.recorded,
       };
     }
 
@@ -112,6 +114,7 @@ export class RevenueCatWebhookService {
       return {
         handled: true,
         detail: result.outcome,
+        duplicate: result.outcome === 'replayed_same_account',
       };
     }
 
@@ -131,6 +134,7 @@ export class RevenueCatWebhookService {
       return {
         handled: true,
         detail: result.applied ? 'reversed' : 'no_binding_to_reverse',
+        duplicate: !result.applied,
       };
     }
 
@@ -138,6 +142,7 @@ export class RevenueCatWebhookService {
     return {
       handled: false,
       detail: 'ignored_event_type',
+      duplicate: false,
     };
   }
 }

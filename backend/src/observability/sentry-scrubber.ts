@@ -85,8 +85,14 @@ function isScrubbedKey(key: string): boolean {
 }
 
 function scrub(value: unknown, seen: WeakSet<object> = new WeakSet()): unknown {
+  if (typeof value === 'string') {
+    return redactText(value);
+  }
   if (value === null || typeof value !== 'object') {
     return value;
+  }
+  if (Buffer.isBuffer(value) || value instanceof Uint8Array) {
+    return `[Scrubbed:${value.length}-bytes]`;
   }
   if (seen.has(value)) {
     return '[Circular]';
@@ -107,6 +113,16 @@ function scrub(value: unknown, seen: WeakSet<object> = new WeakSet()): unknown {
     out[key] = isScrubbedKey(key) ? SCRUBBED_VALUE : scrub(source[key], seen);
   }
   return out;
+}
+
+/**
+ * Applies the ADR-0035 recursive key and text scrubbing policy to data that
+ * stays in the Game Backend. Webhook retention uses this before persistence;
+ * it deliberately shares the Sentry policy instead of letting a second
+ * privacy deny-list drift from it.
+ */
+export function scrubWebhookPayload(value: unknown): unknown {
+  return scrub(value);
 }
 
 function scrubBreadcrumb(breadcrumb: Breadcrumb): Breadcrumb {

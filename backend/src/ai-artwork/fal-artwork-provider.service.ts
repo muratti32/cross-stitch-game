@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { ArtworkAspect } from './entities';
+import { AppConfigService } from '../config/app-config.service';
 
 const MODEL = 'fal-ai/flux-2/turbo';
 // fal submits the turbo route through the flux-2 queue and returns status/result
@@ -11,7 +12,9 @@ export class FalArtworkSubmissionRejectedError extends Error {}
 
 @Injectable()
 export class FalArtworkProviderService {
-  private key(): string { const key = process.env.FAL_KEY; if (!key) throw new Error('fal.ai is not configured'); return key; }
+  constructor(private readonly config: AppConfigService) {}
+
+  private key(): string { const key = this.config.falKey; if (!key) throw new Error('fal.ai is not configured'); return key; }
   async submit(prompt: string, aspect: ArtworkAspect, webhookUrl: string): Promise<string> {
     const response = await fetch(`https://queue.fal.run/${MODEL}`, { method: 'POST', headers: { Authorization: `Key ${this.key()}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt, image_size: imageSize[aspect], num_images: 1, enable_safety_checker: true, webhook_url: webhookUrl }) });
     if (!response.ok) {

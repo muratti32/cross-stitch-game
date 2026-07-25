@@ -17,6 +17,7 @@ import { ConversionModule } from '../conversion/conversion.module';
 import { AiArtworkModule } from '../ai-artwork/ai-artwork.module';
 import { CatalogModule } from '../catalog/catalog.module';
 import { AccountDeletionModule } from '../deletion/account-deletion.module';
+import { WebhookArchiveModule } from '../webhooks';
 
 @Module({
   controllers: [JobsController],
@@ -53,6 +54,7 @@ export class JobsModule {}
     forwardRef(() => AdminModule),
     forwardRef(() => AiArtworkModule),
     forwardRef(() => CatalogModule),
+    WebhookArchiveModule,
   ],
   providers: [
     DemoJobConsumerService,

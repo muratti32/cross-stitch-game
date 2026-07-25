@@ -35,6 +35,12 @@ export class RewardGrantService {
 
   async processAdCallback(rawQuery: string): Promise<AdRewardCallbackResult> {
     const reward = await this.verifier.verify(rawQuery);
+    return this.processVerifiedAdCallback(reward);
+  }
+
+  async processVerifiedAdCallback(
+    reward: AdMobSsvReward,
+  ): Promise<AdRewardCallbackResult> {
     this.assertKnownAdUnit(reward);
 
     if (reward.transactionId.length === 0) {

@@ -12,6 +12,7 @@ import { ConversionService } from '../conversion/conversion.service';
 import { SupportReferenceService } from '../support/support-reference.service';
 import { ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { ApproveAiArtworkDto } from './dto/approve-ai-artwork.dto';
+import { AppConfigService } from '../config/app-config.service';
 
 describe('AiArtworkService - Account Closing Behaviors', () => {
   let service: AiArtworkService;
@@ -21,6 +22,7 @@ describe('AiArtworkService - Account Closing Behaviors', () => {
   };
   let artworksRepoMock: {
     find: jest.Mock;
+    findOne: jest.Mock;
     findOneBy: jest.Mock;
     update: jest.Mock;
   };
@@ -54,6 +56,7 @@ describe('AiArtworkService - Account Closing Behaviors', () => {
 
     artworksRepoMock = {
       find: jest.fn(),
+      findOne: jest.fn(),
       findOneBy: jest.fn(),
       update: jest.fn().mockResolvedValue({}),
     };
@@ -105,6 +108,7 @@ describe('AiArtworkService - Account Closing Behaviors', () => {
       storageMock as unknown as ObjectStorage,
       artworksRepoMock as unknown as Repository<AiArtworkEntity>,
       accountStateServiceMock as unknown as AccountStateService,
+      { grantSigningSecret: 'test-signing-secret' } as AppConfigService,
     );
   });
 
@@ -196,6 +200,73 @@ describe('AiArtworkService - Account Closing Behaviors', () => {
 
       expect(result).toBe('conversion-result');
       expect(conversionsMock.createPhotoConversion).toHaveBeenCalled();
+    });
+  });
+
+  // Issue #64 split the fal.ai webhook into verifyWebhookKey +
+  // handleVerifiedWebhook so the delivery can be archived between the two. These
+  // cover the semantics that split must preserve.
+  describe('fal.ai webhook verification and idempotency', () => {
+    it('accepts a delivery whose artwork row is already gone instead of rejecting it', async () => {
+      artworksRepoMock.findOneBy.mockResolvedValue(null);
+
+      await expect(
+        service.verifyWebhookKey('job-id', 'request-key'),
+      ).resolves.toBeUndefined();
+    });
+
+    it('rejects a delivery whose key contradicts the stored artwork', async () => {
+      artworksRepoMock.findOneBy.mockResolvedValue({
+        processingJobId: 'job-id',
+        providerRequestKey: 'real-key',
+      });
+
+      await expect(
+        service.verifyWebhookKey('job-id', 'forged-key'),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('reports a tombstoned delivery as a duplicate without reprocessing it', async () => {
+      dataSourceMock.query.mockResolvedValue([{ id: 'tombstone-id' }]);
+
+      await expect(
+        service.handleVerifiedWebhook('job-id', 'request-id'),
+      ).resolves.toBe(true);
+      expect(falMock.result).not.toHaveBeenCalled();
+    });
+
+    it('reports an already-attached delivery as a duplicate', async () => {
+      dataSourceMock.query.mockResolvedValue([]);
+      const artwork = {
+        id: 'artwork-id',
+        processingJobId: 'job-id',
+        providerRequestId: 'request-id',
+        status: 'submitted',
+      };
+      artworksRepoMock.findOneBy.mockResolvedValue(artwork);
+      artworksRepoMock.findOne.mockResolvedValue(artwork);
+      falMock.result.mockResolvedValue({ failed: true });
+
+      await expect(
+        service.handleVerifiedWebhook('job-id', 'request-id'),
+      ).resolves.toBe(true);
+    });
+
+    it('reports a first delivery as processed', async () => {
+      dataSourceMock.query.mockResolvedValue([]);
+      const artwork = {
+        id: 'artwork-id',
+        processingJobId: 'job-id',
+        providerRequestId: null,
+        status: 'submitting',
+      };
+      artworksRepoMock.findOneBy.mockResolvedValue(artwork);
+      artworksRepoMock.findOne.mockResolvedValue(artwork);
+      falMock.result.mockResolvedValue({ failed: true });
+
+      await expect(
+        service.handleVerifiedWebhook('job-id', 'request-id'),
+      ).resolves.toBe(false);
     });
   });
 

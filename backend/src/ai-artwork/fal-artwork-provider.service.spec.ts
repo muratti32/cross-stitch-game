@@ -1,23 +1,14 @@
+import type { AppConfigService } from '../config/app-config.service';
 import {
   FalArtworkProviderService,
   FalArtworkSubmissionRejectedError,
 } from './fal-artwork-provider.service';
 
 describe('FalArtworkProviderService', () => {
-  const originalFalKey = process.env.FAL_KEY;
   const originalFetch = global.fetch;
-
-  beforeEach(() => {
-    process.env.FAL_KEY = 'test-fal-key';
-  });
 
   afterEach(() => {
     global.fetch = originalFetch;
-    if (originalFalKey === undefined) {
-      delete process.env.FAL_KEY;
-    } else {
-      process.env.FAL_KEY = originalFalKey;
-    }
   });
 
   it('submits to the turbo endpoint with the requested aspect and webhook', async () => {
@@ -29,7 +20,7 @@ describe('FalArtworkProviderService', () => {
     );
     global.fetch = fetchMock;
 
-    const requestId = await new FalArtworkProviderService().submit(
+    const requestId = await provider().submit(
       'a fox',
       'portrait_4_3',
       'https://example.test/webhook',
@@ -75,7 +66,7 @@ describe('FalArtworkProviderService', () => {
     global.fetch = fetchMock;
 
     await expect(
-      new FalArtworkProviderService().result('request-1'),
+      provider().result('request-1'),
     ).resolves.toEqual({
       unsafe: false,
       url: 'https://example.test/image.png',
@@ -98,7 +89,7 @@ describe('FalArtworkProviderService', () => {
       .mockResolvedValue(new Response(null, { status: 400 }));
 
     await expect(
-      new FalArtworkProviderService().submit(
+      provider().submit(
         'a fox',
         'square',
         'https://example.test/webhook',
@@ -106,3 +97,9 @@ describe('FalArtworkProviderService', () => {
     ).rejects.toBeInstanceOf(FalArtworkSubmissionRejectedError);
   });
 });
+
+function provider(): FalArtworkProviderService {
+  return new FalArtworkProviderService({
+    falKey: 'test-fal-key',
+  } as unknown as AppConfigService);
+}

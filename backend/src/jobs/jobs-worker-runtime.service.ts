@@ -16,6 +16,8 @@ import { OutboxDispatcherService } from './outbox-dispatcher.service';
 import { StorageReconcilerService } from '../sessions/storage-reconciler.service';
 import { AiArtworkService } from '../ai-artwork/ai-artwork.service';
 import { AccountDeletionFinalizerService } from '../deletion/account-deletion-finalizer.service';
+import { AppConfigService } from '../config/app-config.service';
+import { WebhookDeliveryArchiveService } from '../webhooks';
 
 @Injectable()
 export class JobsWorkerRuntimeService implements OnApplicationShutdown {
@@ -24,6 +26,7 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
   private reconcileTimer: NodeJS.Timeout | null = null;
   private aiArtworkReconcileTimer: NodeJS.Timeout | null = null;
   private accountDeletionFinalizerTimer: NodeJS.Timeout | null = null;
+  private webhookArchivePurgeTimer: NodeJS.Timeout | null = null;
   private activeDispatch: Promise<void> | null = null;
   private running = false;
 
@@ -35,6 +38,8 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     @Inject(forwardRef(() => AiArtworkService))
     private readonly aiArtworks: AiArtworkService,
     private readonly accountDeletionFinalizer: AccountDeletionFinalizerService,
+    private readonly config: AppConfigService,
+    private readonly webhookArchives: WebhookDeliveryArchiveService,
   ) {}
 
   async start(): Promise<void> {
@@ -62,6 +67,11 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
         );
       });
     }, 60000);
+
+    this.webhookArchivePurgeTimer = setInterval(() => {
+      void this.purgeWebhookArchives();
+    }, this.config.webhookArchivePurgeIntervalSeconds * 1000);
+    void this.purgeWebhookArchives();
 
     void this.reconcileAiArtworks();
     this.aiArtworkReconcileTimer = setInterval(() => {
@@ -94,6 +104,10 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     if (this.accountDeletionFinalizerTimer !== null) {
       clearInterval(this.accountDeletionFinalizerTimer);
       this.accountDeletionFinalizerTimer = null;
+    }
+    if (this.webhookArchivePurgeTimer !== null) {
+      clearInterval(this.webhookArchivePurgeTimer);
+      this.webhookArchivePurgeTimer = null;
     }
     if (this.activeDispatch !== null) {
       await this.activeDispatch;
@@ -148,6 +162,23 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     } catch (error: unknown) {
       this.logger.error(
         `Error reconciling AI Artworks: ${errorMessage(error)}`,
+        errorStack(error),
+      );
+    }
+  }
+
+  private async purgeWebhookArchives(): Promise<void> {
+    try {
+      const before = new Date(
+        Date.now() - this.config.webhookArchiveRetentionSeconds * 1000,
+      );
+      const deleted = await this.webhookArchives.purgeBefore(before);
+      if (deleted > 0) {
+        this.logger.log(`Purged ${deleted} expired webhook delivery archives`);
+      }
+    } catch (error: unknown) {
+      this.logger.error(
+        `Error purging webhook delivery archives: ${errorMessage(error)}`,
         errorStack(error),
       );
     }

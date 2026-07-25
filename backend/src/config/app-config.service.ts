@@ -187,6 +187,30 @@ export class AppConfigService {
     return this.configService.get('AD_ATTEMPT_TTL_SECONDS', { infer: true });
   }
 
+  get falWebhookSecret(): string | undefined {
+    return this.configService.get('FAL_WEBHOOK_SECRET', { infer: true });
+  }
+
+  get falKey(): string | undefined {
+    return this.configService.get('FAL_KEY', { infer: true });
+  }
+
+  get falWebhookBaseUrl(): string | undefined {
+    return this.configService.get('FAL_WEBHOOK_BASE_URL', { infer: true });
+  }
+
+  get webhookArchiveRetentionSeconds(): number {
+    return this.configService.get('WEBHOOK_ARCHIVE_RETENTION_SECONDS', {
+      infer: true,
+    });
+  }
+
+  get webhookArchivePurgeIntervalSeconds(): number {
+    return this.configService.get('WEBHOOK_ARCHIVE_PURGE_INTERVAL_SECONDS', {
+      infer: true,
+    });
+  }
+
   get openAiModerationEnabled(): boolean {
     return this.configService.get('OPENAI_MODERATION_ENABLED', { infer: true });
   }

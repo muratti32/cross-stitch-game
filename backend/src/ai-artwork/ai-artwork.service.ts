@@ -16,10 +16,11 @@ import { PromptModerationService } from './prompt-moderation.service';
 import { FalArtworkProviderService, FalArtworkSubmissionRejectedError } from './fal-artwork-provider.service';
 import { SupportReferenceService } from '../support/support-reference.service';
 import { AccountStateService } from '../deletion/account-state.service';
+import { AppConfigService } from '../config/app-config.service';
 
 @Injectable()
 export class AiArtworkService {
-  constructor(private readonly dataSource: DataSource, private readonly jobs: ProcessingJobsRepository, private readonly moderation: PromptModerationService, private readonly fal: FalArtworkProviderService, private readonly conversions: ConversionService, private readonly supportReferences: SupportReferenceService, @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage, @InjectRepository(AiArtworkEntity) private readonly artworks: Repository<AiArtworkEntity>, private readonly accountStateService: AccountStateService) {}
+  constructor(private readonly dataSource: DataSource, private readonly jobs: ProcessingJobsRepository, private readonly moderation: PromptModerationService, private readonly fal: FalArtworkProviderService, private readonly conversions: ConversionService, private readonly supportReferences: SupportReferenceService, @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage, @InjectRepository(AiArtworkEntity) private readonly artworks: Repository<AiArtworkEntity>, private readonly accountStateService: AccountStateService, private readonly config: AppConfigService) {}
   async create(principal: AuthPrincipal, dto: CreateAiArtworkDto) {
     const accountId = this.account(principal); const status = await this.accountStateService.getAccountStatus(accountId); if (status === 'closing') throw new ForbiddenException('Account is closing'); const prompt = dto.prompt.trim();
     if (!prompt) throw new UnprocessableEntityException('Prompt cannot be blank');
@@ -53,7 +54,7 @@ export class AiArtworkService {
     const a = await this.artworks.findOneBy({ processingJobId: jobId }); if (!a) throw new Error('AI artwork input is missing');
     if (a.status === 'delivered' || a.status === 'safety_rejected' || a.status === 'failed') return;
     if (a.providerRequestId) { await this.reconcile(a.providerRequestId); return; }
-    const base = process.env.FAL_WEBHOOK_BASE_URL; const secret = process.env.FAL_WEBHOOK_SECRET;
+    const base = this.config.falWebhookBaseUrl; const secret = this.config.falWebhookSecret;
     if (!base || !secret) throw new Error('fal.ai webhook is not configured');
     // A submit response can be lost after fal accepted the request. In that
     // ambiguous state we wait for the webhook instead of generating twice.
@@ -71,24 +72,34 @@ export class AiArtworkService {
     }
     await this.attachRequest(jobId, requestId);
   }
-  async webhook(jobId: string, providerRequestKey: string, requestId: string) {
+  // An absent artwork is not an authentication failure: the row is already gone
+  // for a closed account (the delivery is matched by tombstone in
+  // handleVerifiedWebhook) or for a job that was deleted, and both of those used
+  // to be accepted silently. Only a key that contradicts a row that does exist
+  // is a rejection, which is the pre-archive behaviour of `webhook()`.
+  async verifyWebhookKey(jobId: string, providerRequestKey: string): Promise<void> {
+    const artwork = await this.artworks.findOneBy({ processingJobId: jobId });
+    if (artwork !== null && artwork.providerRequestKey !== providerRequestKey) {
+      throw new NotFoundException();
+    }
+  }
+  async handleVerifiedWebhook(jobId: string, requestId: string): Promise<boolean> {
     const tombstoneExists = await this.dataSource.query<readonly { id: string }[]>(
       `SELECT id FROM deletion.provider_job_tombstones WHERE provider = 'fal.ai' AND provider_request_id = $1`,
       [requestId],
     );
     if (tombstoneExists.length > 0) {
-      return;
+      return true;
     }
 
     const artwork = await this.artworks.findOneBy({ processingJobId: jobId });
     if (!artwork) {
-      return;
+      return true;
     }
-    if (artwork.providerRequestKey !== providerRequestKey) {
-      throw new NotFoundException();
-    }
+    const duplicate = artwork.providerRequestId === requestId && artwork.status !== 'submitting';
     await this.attachRequest(jobId, requestId);
     await this.reconcile(requestId);
+    return duplicate;
   }
 
   async reconcile(requestId: string) {
@@ -120,6 +131,6 @@ export class AiArtworkService {
   private async recordAttempt(accountId: string) { await this.dataSource.transaction(async (m) => { await m.query('SELECT id FROM auth.registered_accounts WHERE id=$1 FOR UPDATE', [accountId]); const rows = await m.query<readonly { count: string }[]>(`SELECT count(*)::text AS count FROM ai.prompt_safety_attempts WHERE account_id=$1 AND created_at > now() - interval '10 minutes'`, [accountId]); if (Number(rows[0]?.count ?? 0) >= 10) throw new HttpException('AI generation rate limit reached', 429); await m.query('INSERT INTO ai.prompt_safety_attempts (account_id) VALUES ($1)', [accountId]); }); }
   private account(p: AuthPrincipal) { if (p.type !== PrincipalType.Account) throw new ForbiddenException('Registered Account required'); return p.id; }
   private async owned(p: AuthPrincipal, id: string) { const a = await this.artworks.findOneBy({ id }); if (!a || a.accountId !== this.account(p)) throw new NotFoundException('AI Artwork not found'); return a; }
-  private view(a: AiArtworkEntity, supportReference: string | null = null) { const exp = Math.floor(Date.now()/1000)+300; const sig = createHmac('sha256', process.env.GRANT_SIGNING_SECRET ?? '').update(`${a.id}.${exp}`).digest('hex'); return { id: a.id, aspect: a.aspect, status: a.status, failureReason: a.failureReason, supportReference, createdAt: a.createdAt.toISOString(), imageUrl: a.status === 'delivered' ? `/v1/ai-artworks/images/${a.id}?exp=${exp}&sig=${sig}` : null }; }
-  async image(id: string, exp: number, sig: string) { const expected = createHmac('sha256', process.env.GRANT_SIGNING_SECRET ?? '').update(`${id}.${exp}`).digest('hex'); if (exp < Math.floor(Date.now()/1000) || sig.length !== expected.length || !timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) throw new ForbiddenException(); const a = await this.artworks.findOneBy({ id, status: 'delivered' }); if (!a?.imageObjectKey) throw new NotFoundException(); const bytes = await this.storage.get(a.imageObjectKey); if (!bytes) throw new NotFoundException(); return { bytes, contentType: a.imageContentType ?? 'image/png' }; }
+  private view(a: AiArtworkEntity, supportReference: string | null = null) { const exp = Math.floor(Date.now()/1000)+300; const sig = createHmac('sha256', this.config.grantSigningSecret).update(`${a.id}.${exp}`).digest('hex'); return { id: a.id, aspect: a.aspect, status: a.status, failureReason: a.failureReason, supportReference, createdAt: a.createdAt.toISOString(), imageUrl: a.status === 'delivered' ? `/v1/ai-artworks/images/${a.id}?exp=${exp}&sig=${sig}` : null }; }
+  async image(id: string, exp: number, sig: string) { const expected = createHmac('sha256', this.config.grantSigningSecret).update(`${id}.${exp}`).digest('hex'); if (exp < Math.floor(Date.now()/1000) || sig.length !== expected.length || !timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) throw new ForbiddenException(); const a = await this.artworks.findOneBy({ id, status: 'delivered' }); if (!a?.imageObjectKey) throw new NotFoundException(); const bytes = await this.storage.get(a.imageObjectKey); if (!bytes) throw new NotFoundException(); return { bytes, contentType: a.imageContentType ?? 'image/png' }; }
 }

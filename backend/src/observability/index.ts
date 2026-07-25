@@ -7,5 +7,6 @@ export {
 export {
   scrubSentryEvent,
   scrubSentryTransaction,
+  scrubWebhookPayload,
 } from './sentry-scrubber';
 export { SentryRequestContextInterceptor } from './sentry-request-context.interceptor';

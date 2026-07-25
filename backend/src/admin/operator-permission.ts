@@ -10,7 +10,9 @@ export type OperatorPermission =
   | 'catalog.submission.review'
   | 'catalog.metadata_revision.review'
   | 'moderation.profile_investigation.review'
-  | 'support.reference.lookup';
+  | 'support.reference.lookup'
+  | 'webhook.delivery.read'
+  | 'webhook.delivery.replay';
 
 export const ALL_OPERATOR_PERMISSIONS: readonly OperatorPermission[] = [
   'catalog.pattern.read',
@@ -23,6 +25,8 @@ export const ALL_OPERATOR_PERMISSIONS: readonly OperatorPermission[] = [
   'catalog.metadata_revision.review',
   'moderation.profile_investigation.review',
   'support.reference.lookup',
+  'webhook.delivery.read',
+  'webhook.delivery.replay',
 ];
 
 // Explicit role -> permission mapping from day one, even while `owner` is the
