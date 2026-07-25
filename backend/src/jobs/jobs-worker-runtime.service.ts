@@ -20,6 +20,7 @@ import { AppConfigService } from '../config/app-config.service';
 import { WebhookDeliveryArchiveService } from '../webhooks';
 import { EventsPartitionService } from '../events';
 import { ReconciliationService } from '../reconciliation';
+import { OperationalAlertsService } from '../observability';
 
 @Injectable()
 export class JobsWorkerRuntimeService implements OnApplicationShutdown {
@@ -31,6 +32,7 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
   private webhookArchivePurgeTimer: NodeJS.Timeout | null = null;
   private gameplayEventsMaintenanceTimer: NodeJS.Timeout | null = null;
   private reconciliationTimer: NodeJS.Timeout | null = null;
+  private operationalAlertsTimer: NodeJS.Timeout | null = null;
   private activeDispatch: Promise<void> | null = null;
   private running = false;
 
@@ -46,6 +48,7 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     private readonly webhookArchives: WebhookDeliveryArchiveService,
     private readonly gameplayEvents: EventsPartitionService,
     private readonly reconciliation: ReconciliationService,
+    private readonly operationalAlerts: OperationalAlertsService,
   ) {}
 
   async start(): Promise<void> {
@@ -88,6 +91,13 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
       void this.runReconciliation();
     }, this.config.reconciliationIntervalSeconds * 1000);
     void this.runReconciliation();
+
+    this.operationalAlertsTimer = setInterval(() => {
+      // OperationalAlertsService.runOnce never throws (logs and swallows
+      // internally), matching every other timer here.
+      void this.operationalAlerts.runOnce();
+    }, this.config.operationalAlertsEvaluationIntervalSeconds * 1000);
+    void this.operationalAlerts.runOnce();
 
     void this.reconcileAiArtworks();
     this.aiArtworkReconcileTimer = setInterval(() => {
@@ -132,6 +142,10 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     if (this.reconciliationTimer !== null) {
       clearInterval(this.reconciliationTimer);
       this.reconciliationTimer = null;
+    }
+    if (this.operationalAlertsTimer !== null) {
+      clearInterval(this.operationalAlertsTimer);
+      this.operationalAlertsTimer = null;
     }
     if (this.activeDispatch !== null) {
       await this.activeDispatch;

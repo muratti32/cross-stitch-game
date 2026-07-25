@@ -129,6 +129,8 @@ import { AnalyticsGameplayEventEntity } from '../events/entities';
 import { CreateAnalyticsGameplayEvents1787443200000 } from './migrations/1787443200000-CreateAnalyticsGameplayEvents';
 import { CreateReconciliationFindings1787529600000 } from './migrations/1787529600000-CreateReconciliationFindings';
 import { ReconciliationFindingEntity, ReconciliationRunEntity } from '../reconciliation';
+import { CreateOperationalAlertRuns1787616000000 } from './migrations/1787616000000-CreateOperationalAlertRuns';
+import { OperationalAlertRunEntity } from '../observability';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -203,6 +205,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AnalyticsGameplayEventEntity,
       ReconciliationRunEntity,
       ReconciliationFindingEntity,
+      OperationalAlertRunEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -249,6 +252,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateWebhookDeliveryArchives1787356800000,
       CreateAnalyticsGameplayEvents1787443200000,
       CreateReconciliationFindings1787529600000,
+      CreateOperationalAlertRuns1787616000000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

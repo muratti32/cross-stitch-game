@@ -20,6 +20,7 @@ import { AccountDeletionModule } from '../deletion/account-deletion.module';
 import { WebhookArchiveModule } from '../webhooks';
 import { EventsModule } from '../events';
 import { ReconciliationModule } from '../reconciliation';
+import { ObservabilityAlertsModule } from '../observability';
 
 @Module({
   controllers: [JobsController],
@@ -59,6 +60,7 @@ export class JobsModule {}
     WebhookArchiveModule,
     EventsModule,
     ReconciliationModule,
+    ObservabilityAlertsModule,
   ],
   providers: [
     DemoJobConsumerService,

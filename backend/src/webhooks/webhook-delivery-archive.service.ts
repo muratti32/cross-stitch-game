@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { scrubWebhookPayload } from '../observability';
+import { scrubWebhookPayload } from '../observability/sentry-scrubber';
 import type { JsonObject, JsonValue } from '../jobs/jobs.types';
 import {
   WebhookDeliveryArchiveEntity,

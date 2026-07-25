@@ -13,7 +13,8 @@ export type OperatorPermission =
   | 'support.reference.lookup'
   | 'webhook.delivery.read'
   | 'webhook.delivery.replay'
-  | 'reconciliation.read';
+  | 'reconciliation.read'
+  | 'operational_alerts.read';
 
 export const ALL_OPERATOR_PERMISSIONS: readonly OperatorPermission[] = [
   'catalog.pattern.read',
@@ -29,6 +30,7 @@ export const ALL_OPERATOR_PERMISSIONS: readonly OperatorPermission[] = [
   'webhook.delivery.read',
   'webhook.delivery.replay',
   'reconciliation.read',
+  'operational_alerts.read',
 ];
 
 // Explicit role -> permission mapping from day one, even while `owner` is the

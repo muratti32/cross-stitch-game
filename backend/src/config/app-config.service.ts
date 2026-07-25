@@ -236,6 +236,57 @@ export class AppConfigService {
     });
   }
 
+  get operationalAlertsEvaluationIntervalSeconds(): number {
+    return this.configService.get('OPERATIONAL_ALERTS_EVALUATION_INTERVAL_SECONDS', {
+      infer: true,
+    });
+  }
+
+  get operationalAlertsCooldownSeconds(): number {
+    return this.configService.get('OPERATIONAL_ALERTS_COOLDOWN_SECONDS', {
+      infer: true,
+    });
+  }
+
+  get operationalAlertsQueueDepthThreshold(): number {
+    return this.configService.get('OPERATIONAL_ALERTS_QUEUE_DEPTH_THRESHOLD', {
+      infer: true,
+    });
+  }
+
+  get operationalAlertsWebhookFailureThreshold(): number {
+    return this.configService.get('OPERATIONAL_ALERTS_WEBHOOK_FAILURE_THRESHOLD', {
+      infer: true,
+    });
+  }
+
+  get operationalAlertsWebhookFailureWindowSeconds(): number {
+    return this.configService.get(
+      'OPERATIONAL_ALERTS_WEBHOOK_FAILURE_WINDOW_SECONDS',
+      { infer: true },
+    );
+  }
+
+  get operationalAlertsStuckJobThreshold(): number {
+    return this.configService.get('OPERATIONAL_ALERTS_STUCK_JOB_THRESHOLD', {
+      infer: true,
+    });
+  }
+
+  get operationalAlertsStuckJobStalenessSeconds(): number {
+    return this.configService.get(
+      'OPERATIONAL_ALERTS_STUCK_JOB_STALENESS_SECONDS',
+      { infer: true },
+    );
+  }
+
+  get operationalAlertsPromotionNeedsAttentionThreshold(): number {
+    return this.configService.get(
+      'OPERATIONAL_ALERTS_PROMOTION_NEEDS_ATTENTION_THRESHOLD',
+      { infer: true },
+    );
+  }
+
   get openAiModerationEnabled(): boolean {
     return this.configService.get('OPENAI_MODERATION_ENABLED', { infer: true });
   }

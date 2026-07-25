@@ -64,3 +64,30 @@ export function captureBootstrapFailure(
     Sentry.captureException(error);
   });
 }
+
+/**
+ * Raises an operational alert (issue #63: queue depth, webhook failures,
+ * stuck Processing Jobs, Promotion Needs Attention) through the same #59
+ * Sentry pipeline crashes use, rather than a second reporting channel. The
+ * fingerprint groups repeat breaches of the same signal into one Sentry
+ * issue instead of a new one per evaluation tick. Callers are expected to
+ * have already scrubbed `context` (see OperationalAlertsService); `beforeSend`
+ * (sentry-scrubber.ts) still re-scrubs it as the defense-in-depth net ADR-0035
+ * describes before the event leaves the process.
+ */
+export function captureOperationalAlert(
+  message: string,
+  level: 'warning' | 'error',
+  fingerprint: string,
+  context: Record<string, unknown>,
+): void {
+  if (!isSentryEnabled) {
+    return;
+  }
+  Sentry.withScope((scope) => {
+    scope.setLevel(level);
+    scope.setFingerprint([fingerprint]);
+    scope.setContext('operational_alert', context);
+    Sentry.captureMessage(message);
+  });
+}

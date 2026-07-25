@@ -51,6 +51,9 @@ import { WebhookDeliveriesAdminService } from './webhook-deliveries-admin.servic
 import { ReconciliationModule } from '../reconciliation';
 import { AdminReconciliationController } from './admin-reconciliation.controller';
 import { ReconciliationAdminService } from './reconciliation-admin.service';
+import { ObservabilityAlertsModule } from '../observability';
+import { AdminOperationalAlertsController } from './admin-operational-alerts.controller';
+import { OperationalAlertsAdminService } from './operational-alerts-admin.service';
 
 @Module({
   controllers: [
@@ -66,6 +69,7 @@ import { ReconciliationAdminService } from './reconciliation-admin.service';
     AdminTagsController,
     AdminWebhookDeliveriesController,
     AdminReconciliationController,
+    AdminOperationalAlertsController,
     OfficialPatternDraftsController,
   ],
   exports: [
@@ -118,6 +122,7 @@ import { ReconciliationAdminService } from './reconciliation-admin.service';
     SupportModule,
     WebhookArchiveModule,
     ReconciliationModule,
+    ObservabilityAlertsModule,
   ],
   providers: [
     AdminCatalogService,
@@ -136,6 +141,7 @@ import { ReconciliationAdminService } from './reconciliation-admin.service';
     TotpSecretCipherService,
     WebhookDeliveriesAdminService,
     ReconciliationAdminService,
+    OperationalAlertsAdminService,
   ],
 })
 export class AdminModule {}
