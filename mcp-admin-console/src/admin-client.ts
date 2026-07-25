@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { authenticator } from 'otplib';
 
 export class AdminApiError extends Error {
@@ -25,6 +26,15 @@ export interface Authenticated {
   status: 'authenticated';
   operator: { id: string; email: string; role: string };
 }
+
+export interface BinaryResponse {
+  mimeType: string;
+  /** Base64-encoded response body. */
+  base64: string;
+  byteLength: number;
+}
+
+export const MAX_INLINE_BINARY_BYTES = 4 * 1024 * 1024;
 
 /**
  * Thin client over the Game Backend's `/v1/admin/*` operator API
@@ -114,6 +124,49 @@ export class AdminClient {
     return this.rawFormRequest(method, path, form, this.session.accessToken);
   }
 
+  /**
+   * Requests a binary asset from the admin API (such as preview images).
+   * Supports standard authentication, automatic request ID tracing, and session token auto-refresh.
+   * If the payload exceeds the inline size cap, throws a clear Error.
+   */
+  async requestBinary(method: string, path: string): Promise<BinaryResponse> {
+    if (this.session === null) {
+      throw new Error('Not authenticated. Call admin_login then admin_verify_mfa first.');
+    }
+    const response = await this.rawBinaryRequest(method, path, this.session.accessToken);
+    if (!response.ok) {
+      const text = await response.text();
+      const contentType = (response.headers.get('content-type') || '').toLowerCase();
+      let errorBody: unknown = text;
+      if (contentType.includes('application/json') && text.length > 0) {
+        try {
+          errorBody = JSON.parse(text);
+        } catch {
+          errorBody = text;
+        }
+      }
+      throw new AdminApiError(response.status, errorBody);
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const byteLength = arrayBuffer.byteLength;
+    if (byteLength > MAX_INLINE_BINARY_BYTES) {
+      throw new Error(
+        `Image is too large to return inline (${byteLength} bytes, limit is ` +
+          `${MAX_INLINE_BINARY_BYTES} bytes). View it in the web operator console instead.`,
+      );
+    }
+
+    const mimeTypeHeader = response.headers.get('content-type');
+    let mimeType = 'application/octet-stream';
+    if (mimeTypeHeader) {
+      mimeType = mimeTypeHeader.split(';')[0].trim();
+    }
+
+    const base64 = Buffer.from(arrayBuffer).toString('base64');
+    return { mimeType, base64, byteLength };
+  }
+
   private async refresh(): Promise<boolean> {
     if (this.session === null) {
       return false;
@@ -137,7 +190,10 @@ export class AdminClient {
     accessToken?: string,
     isRetry = false,
   ): Promise<any> {
-    const headers: Record<string, string> = { 'content-type': 'application/json' };
+    const headers: Record<string, string> = {
+      'content-type': 'application/json',
+      'x-request-id': randomUUID(),
+    };
     if (accessToken !== undefined) {
       headers.authorization = `Bearer ${accessToken}`;
     }
@@ -164,9 +220,13 @@ export class AdminClient {
     accessToken: string,
     isRetry = false,
   ): Promise<any> {
+    const headers: Record<string, string> = {
+      'x-request-id': randomUUID(),
+      authorization: `Bearer ${accessToken}`,
+    };
     const response = await fetch(`${this.baseUrl}/v1/admin${path}`, {
       method,
-      headers: { authorization: `Bearer ${accessToken}` },
+      headers,
       body: form,
     });
 
@@ -180,12 +240,68 @@ export class AdminClient {
     return this.parseResponse(response);
   }
 
+  private async rawBinaryRequest(
+    method: string,
+    path: string,
+    accessToken?: string,
+    isRetry = false,
+  ): Promise<Response> {
+    const headers: Record<string, string> = {
+      'x-request-id': randomUUID(),
+    };
+    if (accessToken !== undefined) {
+      headers.authorization = `Bearer ${accessToken}`;
+    }
+    const response = await fetch(`${this.baseUrl}/v1/admin${path}`, {
+      method,
+      headers,
+    });
+
+    if (response.status === 401 && accessToken !== undefined && !isRetry) {
+      const refreshed = await this.refresh();
+      if (refreshed) {
+        return this.rawBinaryRequest(method, path, this.session?.accessToken, true);
+      }
+    }
+
+    return response;
+  }
+
   private async parseResponse(response: Response): Promise<any> {
     const text = await response.text();
-    const data = text.length > 0 ? JSON.parse(text) : null;
-    if (!response.ok) {
-      throw new AdminApiError(response.status, data);
+    const contentType = (response.headers.get('content-type') ?? '').toLowerCase();
+    // An absent content-type is treated as JSON so this keeps behaving exactly as it did
+    // before binary support was added — every JSON route the client calls either sets the
+    // header or (on some proxies) omits it, and none of them return non-JSON text.
+    const isJson = contentType.length === 0 || contentType.includes('json');
+
+    if (text.length === 0) {
+      if (!response.ok) {
+        throw new AdminApiError(response.status, null);
+      }
+      return null;
     }
-    return data;
+
+    if (isJson) {
+      let data: any;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        if (!response.ok) {
+          throw new AdminApiError(response.status, text);
+        }
+        throw new Error(`Failed to parse JSON response: ${(err as Error).message}`);
+      }
+
+      if (!response.ok) {
+        throw new AdminApiError(response.status, data);
+      }
+      return data;
+    }
+
+    if (!response.ok) {
+      throw new AdminApiError(response.status, text);
+    }
+    return text;
   }
 }
