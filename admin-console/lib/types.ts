@@ -286,3 +286,30 @@ export interface CatalogMetadataRevisionReviewDetail extends CatalogMetadataRevi
   currentPattern: CatalogMetadataRevisionCurrentPattern | null;
   decisions: CatalogMetadataReviewDecision[];
 }
+
+export type ReconciliationFindingClass =
+  | 'commerce_delivery_without_ledger'
+  | 'commerce_ledger_without_delivery'
+  | 'storage_registry_missing_object'
+  | 'storage_orphan_object'
+  | 'ai_credit_reservation_stuck';
+
+export interface ReconciliationFinding {
+  detail: string | null;
+  findingClass: ReconciliationFindingClass;
+  identifier: string;
+  relatedIdentifier: string | null;
+}
+
+export interface ReconciliationReport {
+  findings: ReconciliationFinding[];
+  run: {
+    aiCreditReservationStuckCount: number;
+    commerceDeliveryWithoutLedgerCount: number;
+    commerceLedgerWithoutDeliveryCount: number;
+    commerceWindowStart: string;
+    ranAt: string;
+    storageOrphanObjectCount: number;
+    storageRegistryMissingObjectCount: number;
+  } | null;
+}

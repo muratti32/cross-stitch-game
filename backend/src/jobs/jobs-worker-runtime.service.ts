@@ -19,6 +19,7 @@ import { AccountDeletionFinalizerService } from '../deletion/account-deletion-fi
 import { AppConfigService } from '../config/app-config.service';
 import { WebhookDeliveryArchiveService } from '../webhooks';
 import { EventsPartitionService } from '../events';
+import { ReconciliationService } from '../reconciliation';
 
 @Injectable()
 export class JobsWorkerRuntimeService implements OnApplicationShutdown {
@@ -29,6 +30,7 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
   private accountDeletionFinalizerTimer: NodeJS.Timeout | null = null;
   private webhookArchivePurgeTimer: NodeJS.Timeout | null = null;
   private gameplayEventsMaintenanceTimer: NodeJS.Timeout | null = null;
+  private reconciliationTimer: NodeJS.Timeout | null = null;
   private activeDispatch: Promise<void> | null = null;
   private running = false;
 
@@ -43,6 +45,7 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     private readonly config: AppConfigService,
     private readonly webhookArchives: WebhookDeliveryArchiveService,
     private readonly gameplayEvents: EventsPartitionService,
+    private readonly reconciliation: ReconciliationService,
   ) {}
 
   async start(): Promise<void> {
@@ -80,6 +83,11 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
       void this.maintainGameplayEventPartitions();
     }, this.config.gameplayEventPartitionMaintenanceIntervalSeconds * 1000);
     void this.maintainGameplayEventPartitions();
+
+    this.reconciliationTimer = setInterval(() => {
+      void this.runReconciliation();
+    }, this.config.reconciliationIntervalSeconds * 1000);
+    void this.runReconciliation();
 
     void this.reconcileAiArtworks();
     this.aiArtworkReconcileTimer = setInterval(() => {
@@ -120,6 +128,10 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     if (this.gameplayEventsMaintenanceTimer !== null) {
       clearInterval(this.gameplayEventsMaintenanceTimer);
       this.gameplayEventsMaintenanceTimer = null;
+    }
+    if (this.reconciliationTimer !== null) {
+      clearInterval(this.reconciliationTimer);
+      this.reconciliationTimer = null;
     }
     if (this.activeDispatch !== null) {
       await this.activeDispatch;
@@ -205,6 +217,18 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     } catch (error: unknown) {
       this.logger.error(
         `Error maintaining gameplay event partitions: ${errorMessage(error)}`,
+        errorStack(error),
+      );
+    }
+  }
+
+  private async runReconciliation(): Promise<void> {
+    try {
+      const result = await this.reconciliation.reconcileOnce();
+      this.logger.log(`Recorded reconciliation run ${result.runId}`);
+    } catch (error: unknown) {
+      this.logger.error(
+        `Error running reconciliation: ${errorMessage(error)}`,
         errorStack(error),
       );
     }

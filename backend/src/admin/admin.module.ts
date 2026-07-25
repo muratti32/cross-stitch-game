@@ -48,6 +48,9 @@ import { OperatorTotpService } from './operator-totp.service';
 import { TotpSecretCipherService } from './totp-secret-cipher.service';
 import { WebhookArchiveModule } from '../webhooks';
 import { WebhookDeliveriesAdminService } from './webhook-deliveries-admin.service';
+import { ReconciliationModule } from '../reconciliation';
+import { AdminReconciliationController } from './admin-reconciliation.controller';
+import { ReconciliationAdminService } from './reconciliation-admin.service';
 
 @Module({
   controllers: [
@@ -62,6 +65,7 @@ import { WebhookDeliveriesAdminService } from './webhook-deliveries-admin.servic
     AdminSupportReferencesController,
     AdminTagsController,
     AdminWebhookDeliveriesController,
+    AdminReconciliationController,
     OfficialPatternDraftsController,
   ],
   exports: [
@@ -113,6 +117,7 @@ import { WebhookDeliveriesAdminService } from './webhook-deliveries-admin.servic
     forwardRef(() => JobsModule),
     SupportModule,
     WebhookArchiveModule,
+    ReconciliationModule,
   ],
   providers: [
     AdminCatalogService,
@@ -130,6 +135,7 @@ import { WebhookDeliveriesAdminService } from './webhook-deliveries-admin.servic
     OperatorTotpService,
     TotpSecretCipherService,
     WebhookDeliveriesAdminService,
+    ReconciliationAdminService,
   ],
 })
 export class AdminModule {}

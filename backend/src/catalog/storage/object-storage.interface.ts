@@ -4,6 +4,7 @@ export interface ObjectStorage {
   publicUrl(key: string): string;
   delete(key: string): Promise<void>;
   exists(key: string): Promise<boolean>;
+  list(): Promise<readonly string[]>;
 }
 
 // DI token for the active ObjectStorage implementation (Local in development,

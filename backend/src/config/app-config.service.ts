@@ -224,6 +224,18 @@ export class AppConfigService {
     );
   }
 
+  get reconciliationIntervalSeconds(): number {
+    return this.configService.get('RECONCILIATION_INTERVAL_SECONDS', {
+      infer: true,
+    });
+  }
+
+  get aiCreditReservationStalenessSeconds(): number {
+    return this.configService.get('AI_CREDIT_RESERVATION_STALENESS_SECONDS', {
+      infer: true,
+    });
+  }
+
   get openAiModerationEnabled(): boolean {
     return this.configService.get('OPENAI_MODERATION_ENABLED', { infer: true });
   }

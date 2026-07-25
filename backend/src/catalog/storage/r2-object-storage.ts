@@ -3,6 +3,7 @@ import {
   DeleteObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
@@ -79,6 +80,29 @@ export class R2ObjectStorage implements ObjectStorage {
       }
       throw error;
     }
+  }
+
+  async list(): Promise<readonly string[]> {
+    const { client, bucket } = this.getContext();
+    const keys: string[] = [];
+    let continuationToken: string | undefined;
+
+    do {
+      const page = await client.send(
+        new ListObjectsV2Command({
+          Bucket: bucket,
+          ContinuationToken: continuationToken,
+        }),
+      );
+      for (const object of page.Contents ?? []) {
+        if (object.Key !== undefined) {
+          keys.push(object.Key);
+        }
+      }
+      continuationToken = page.IsTruncated ? page.NextContinuationToken : undefined;
+    } while (continuationToken !== undefined);
+
+    return keys;
   }
 
   publicUrl(key: string): string {

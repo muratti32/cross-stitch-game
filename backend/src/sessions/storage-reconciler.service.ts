@@ -4,6 +4,11 @@ import { Repository, LessThan } from 'typeorm';
 import { ObjectRegistryEntity } from './entities/object-registry.entity';
 import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 
+export interface StorageReconciliationDiscrepancies {
+  registryMissingObjectKeys: readonly string[];
+  storageOrphanObjectKeys: readonly string[];
+}
+
 @Injectable()
 export class StorageReconcilerService {
   private readonly logger = new Logger(StorageReconcilerService.name);
@@ -57,5 +62,33 @@ export class StorageReconcilerService {
         }
       }
     }
+  }
+
+  /**
+   * Read-only storage comparison used by the operator reconciliation report.
+   * Cleanup stays in reconcileOnce; this method deliberately never deletes or
+   * mutates registry rows.
+   */
+  async reportDiscrepancies(): Promise<StorageReconciliationDiscrepancies> {
+    const activeRows = await this.objectRegistryRepo.find({
+      where: [{ state: 'committed' }, { state: 'available' }],
+    });
+    const registryRows = await this.objectRegistryRepo.find();
+    const missing: string[] = [];
+
+    for (const row of activeRows) {
+      if (!(await this.storage.exists(row.objectKey))) {
+        missing.push(row.objectKey);
+      }
+    }
+
+    const registeredKeys = new Set(registryRows.map((row) => row.objectKey));
+    const storedKeys = await this.storage.list();
+    const orphans = storedKeys.filter((key) => !registeredKeys.has(key));
+
+    return {
+      registryMissingObjectKeys: missing,
+      storageOrphanObjectKeys: orphans,
+    };
   }
 }

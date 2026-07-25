@@ -19,6 +19,7 @@ import { CatalogModule } from '../catalog/catalog.module';
 import { AccountDeletionModule } from '../deletion/account-deletion.module';
 import { WebhookArchiveModule } from '../webhooks';
 import { EventsModule } from '../events';
+import { ReconciliationModule } from '../reconciliation';
 
 @Module({
   controllers: [JobsController],
@@ -57,6 +58,7 @@ export class JobsModule {}
     forwardRef(() => CatalogModule),
     WebhookArchiveModule,
     EventsModule,
+    ReconciliationModule,
   ],
   providers: [
     DemoJobConsumerService,

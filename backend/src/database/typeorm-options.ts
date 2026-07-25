@@ -127,6 +127,8 @@ import { CreateWebhookDeliveryArchives1787356800000 } from './migrations/1787356
 import { WebhookDeliveryArchiveEntity } from '../webhooks';
 import { AnalyticsGameplayEventEntity } from '../events/entities';
 import { CreateAnalyticsGameplayEvents1787443200000 } from './migrations/1787443200000-CreateAnalyticsGameplayEvents';
+import { CreateReconciliationFindings1787529600000 } from './migrations/1787529600000-CreateReconciliationFindings';
+import { ReconciliationFindingEntity, ReconciliationRunEntity } from '../reconciliation';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -199,6 +201,8 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       InvalidatedNamespaceTokenEntity,
       WebhookDeliveryArchiveEntity,
       AnalyticsGameplayEventEntity,
+      ReconciliationRunEntity,
+      ReconciliationFindingEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -244,6 +248,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateInvalidatedNamespaceTokens1787270400000,
       CreateWebhookDeliveryArchives1787356800000,
       CreateAnalyticsGameplayEvents1787443200000,
+      CreateReconciliationFindings1787529600000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

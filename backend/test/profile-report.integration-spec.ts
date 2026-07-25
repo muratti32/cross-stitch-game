@@ -77,6 +77,7 @@ describe('Profile Report intake and Profile Investigation', () => {
       },
       exists: (key) => Promise.resolve(storageObjects.has(key)),
       get: (key) => Promise.resolve(storageObjects.get(key) ?? null),
+      list: () => Promise.resolve([...storageObjects.keys()]),
       publicUrl: (key) => key,
       put: (key, bytes) => {
         storageObjects.set(key, bytes);

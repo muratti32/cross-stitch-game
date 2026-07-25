@@ -12,6 +12,7 @@ import {
   SearchCheck,
   ClipboardCheck,
   FileEdit,
+  Scale,
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -26,6 +27,7 @@ const NAV_ITEMS = [
   { href: '/tags', icon: Tags, label: 'Tags' },
   { href: '/categories', icon: Shapes, label: 'Categories' },
   { href: '/support-references', icon: SearchCheck, label: 'Support References' },
+  { href: '/reconciliation', icon: Scale, label: 'Reconciliation' },
 ] as const;
 
 export function SidebarNav() {

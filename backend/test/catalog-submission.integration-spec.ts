@@ -172,6 +172,7 @@ describe('Catalog Submission persistence', () => {
       },
       exists: (key) => Promise.resolve(objects.has(key)),
       get: (key) => Promise.resolve(objects.get(key) ?? null),
+      list: () => Promise.resolve([...objects.keys()]),
       publicUrl: (key) => key,
       put: (key, bytes) => {
         objects.set(key, Buffer.from(bytes));
@@ -297,6 +298,7 @@ describe('Catalog Submission persistence', () => {
       delete: () => Promise.resolve(),
       exists: () => Promise.resolve(false),
       get: () => Promise.resolve(null),
+      list: () => Promise.resolve([]),
       publicUrl: (key) => key,
       put: () => Promise.resolve(),
     };
