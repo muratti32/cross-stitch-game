@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { Slot } from 'expo-router';
 import * as Sentry from '@sentry/react-native';
@@ -12,6 +12,15 @@ import { initializeAdMob } from '../src/ads';
 import { initSentry, syncSentryPlayerReferenceWithIdentity } from '../src/observability/sentry';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { syncPendingPersonalPatterns } from '../src/pattern-editor/sync';
+import { flushAnalyticsGameplayEvents } from '../src/sync/analyticsGameplayEventEngine';
+
+const ANALYTICS_RETRY_INITIAL_MS = 1_000;
+const ANALYTICS_RETRY_MAX_MS = 60_000;
+// The app-foreground and startup triggers do the real work; this timer only
+// exists so a backlog that built up offline drains while the player keeps
+// playing. It is deliberately slow - a fast tick would query SQLite on the
+// main thread forever for a queue that is almost always empty.
+const ANALYTICS_FLUSH_INTERVAL_MS = 60_000;
 
 // Must run before anything else that could throw.
 initSentry();
@@ -22,6 +31,35 @@ SplashScreen.preventAutoHideAsync();
 
 function RootLayout() {
   const [dbReady, setDbReady] = useState(false);
+  const analyticsFlushInFlightRef = useRef(false);
+  const analyticsRetryDelayRef = useRef(ANALYTICS_RETRY_INITIAL_MS);
+  const analyticsNextRetryAtRef = useRef(0);
+
+  // This extends the root lifecycle sync trigger already used for pending
+  // personal patterns. The retry gate avoids a new reachability subsystem while
+  // retrying offline analytics with capped exponential backoff on reconnect.
+  const flushAnalytics = useCallback(async () => {
+    if (
+      analyticsFlushInFlightRef.current ||
+      Date.now() < analyticsNextRetryAtRef.current
+    ) {
+      return;
+    }
+    analyticsFlushInFlightRef.current = true;
+    try {
+      await flushAnalyticsGameplayEvents();
+      analyticsRetryDelayRef.current = ANALYTICS_RETRY_INITIAL_MS;
+      analyticsNextRetryAtRef.current = 0;
+    } catch {
+      analyticsNextRetryAtRef.current = Date.now() + analyticsRetryDelayRef.current;
+      analyticsRetryDelayRef.current = Math.min(
+        analyticsRetryDelayRef.current * 2,
+        ANALYTICS_RETRY_MAX_MS,
+      );
+    } finally {
+      analyticsFlushInFlightRef.current = false;
+    }
+  }, []);
 
   useEffect(() => {
     async function prepare() {
@@ -47,6 +85,7 @@ function RootLayout() {
             err instanceof Error ? err.message : String(err),
           );
         });
+        void flushAnalytics();
       } catch (e) {
         console.warn('Failed to initialize database:', e);
       } finally {
@@ -58,19 +97,27 @@ function RootLayout() {
       }
     }
     prepare();
-  }, []);
+  }, [flushAnalytics]);
 
   useEffect(() => {
     const handleAppStateChange = (nextStatus: AppStateStatus) => {
       if (nextStatus === 'active') {
         syncPendingPersonalPatterns().catch(() => undefined);
+        void flushAnalytics();
       }
     };
     const sub = AppState.addEventListener('change', handleAppStateChange);
     return () => {
       sub.remove();
     };
-  }, []);
+  }, [flushAnalytics]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      void flushAnalytics();
+    }, ANALYTICS_FLUSH_INTERVAL_MS);
+    return () => clearInterval(timer);
+  }, [flushAnalytics]);
 
   if (!dbReady) {
     return null;

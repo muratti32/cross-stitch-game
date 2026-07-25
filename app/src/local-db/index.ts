@@ -1,6 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 import * as FileSystem from 'expo-file-system/legacy';
 import { getDatabaseFilename, getDatabasePath, shouldAdopt } from './namespaceLogic';
+import type { AnalyticsGameplayEvent, AnalyticsGameplayEventPayload } from '../analytics/schema';
 
 export type PatternSource = 'bundled' | 'catalog' | 'personal';
 
@@ -457,6 +458,33 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
         );
       `);
       await db.execAsync('PRAGMA user_version = 7;');
+    });
+  }
+
+  if (currentVersion < 8) {
+    await runInTransaction(db, async () => {
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS analytics_gameplay_events (
+          event_id TEXT PRIMARY KEY NOT NULL,
+          occurred_at TEXT NOT NULL,
+          kind TEXT NOT NULL,
+          payload_json TEXT NOT NULL,
+          dedupe_key TEXT UNIQUE
+        );
+      `);
+      await db.execAsync('PRAGMA user_version = 8;');
+    });
+  }
+
+  if (currentVersion < 9) {
+    await runInTransaction(db, async () => {
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS analytics_session_ids (
+          session_id TEXT PRIMARY KEY NOT NULL,
+          analytics_session_id TEXT NOT NULL UNIQUE
+        );
+      `);
+      await db.execAsync('PRAGMA user_version = 9;');
     });
   }
 }
@@ -992,6 +1020,119 @@ export async function markGameplayEventsAcked(eventIds: string[]): Promise<void>
       await db.runAsync('DELETE FROM gameplay_events WHERE event_id = ?', eventId);
     }
   });
+}
+
+export const ANALYTICS_GAMEPLAY_EVENT_QUEUE_CAP = 2_000;
+
+export function analyticsGameplayEventQueueOverflow(count: number): number {
+  return Math.max(0, count - ANALYTICS_GAMEPLAY_EVENT_QUEUE_CAP);
+}
+
+/**
+ * Stores the separate first-party analytics stream. At most 2,000 events are
+ * retained per identity namespace: analytics is never a reward or progress
+ * authority, so dropping the oldest records is safer than unbounded storage.
+ */
+export async function enqueueAnalyticsGameplayEvent(
+  event: AnalyticsGameplayEvent,
+): Promise<void> {
+  const db = await getDatabase();
+  await runInTransaction(db, async () => {
+    await db.runAsync(
+      `INSERT OR IGNORE INTO analytics_gameplay_events
+        (event_id, occurred_at, kind, payload_json, dedupe_key)
+       VALUES (?, ?, ?, ?, ?)`,
+      event.eventId,
+      event.occurredAt,
+      event.kind,
+      JSON.stringify(event.payload),
+      event.dedupeKey ?? null,
+    );
+
+    const countRow = await db.getFirstAsync<{ count: number }>(
+      'SELECT COUNT(*) AS count FROM analytics_gameplay_events',
+    );
+    const overflow = analyticsGameplayEventQueueOverflow(countRow?.count ?? 0);
+    if (overflow > 0) {
+      await db.runAsync(
+        `DELETE FROM analytics_gameplay_events WHERE rowid IN (
+          SELECT rowid FROM analytics_gameplay_events ORDER BY rowid ASC LIMIT ?
+        )`,
+        overflow,
+      );
+    }
+  });
+}
+
+export async function getUnackedAnalyticsGameplayEvents(
+  limit: number,
+): Promise<AnalyticsGameplayEvent[]> {
+  const db = await getDatabase();
+  const rows = await db.getAllAsync<{
+    event_id: string;
+    occurred_at: string;
+    kind: AnalyticsGameplayEvent['kind'];
+    payload_json: string;
+    dedupe_key: string | null;
+  }>(
+    `SELECT event_id, occurred_at, kind, payload_json, dedupe_key
+     FROM analytics_gameplay_events ORDER BY rowid ASC LIMIT ?`,
+    limit,
+  );
+  return rows.map((row) => ({
+    eventId: row.event_id,
+    occurredAt: row.occurred_at,
+    kind: row.kind,
+    payload: JSON.parse(row.payload_json) as AnalyticsGameplayEventPayload['payload'],
+    dedupeKey: row.dedupe_key ?? undefined,
+  }));
+}
+
+export async function markAnalyticsGameplayEventsAcked(eventIds: string[]): Promise<void> {
+  if (eventIds.length === 0) return;
+  const db = await getDatabase();
+  await runInTransaction(db, async () => {
+    for (const eventId of eventIds) {
+      await db.runAsync(
+        'DELETE FROM analytics_gameplay_events WHERE event_id = ?',
+        eventId,
+      );
+    }
+  });
+}
+
+/**
+ * Bundled/offline sessions use local ids that are not UUIDs. Persist a separate
+ * opaque UUID once so their start and completion analytics records remain
+ * schema-valid and correlated across restart without exposing pattern data.
+ */
+export async function getAnalyticsSessionId(sessionId: string): Promise<string> {
+  const db = await getDatabase();
+  const existing = await db.getFirstAsync<{ analytics_session_id: string }>(
+    'SELECT analytics_session_id FROM analytics_session_ids WHERE session_id = ?',
+    sessionId,
+  );
+  if (existing) {
+    return existing.analytics_session_id;
+  }
+
+  const analyticsSessionId = generateUUID();
+  await runInTransaction(db, async () => {
+    await db.runAsync(
+      `INSERT OR IGNORE INTO analytics_session_ids (session_id, analytics_session_id)
+       VALUES (?, ?)`,
+      sessionId,
+      analyticsSessionId,
+    );
+  });
+  const created = await db.getFirstAsync<{ analytics_session_id: string }>(
+    'SELECT analytics_session_id FROM analytics_session_ids WHERE session_id = ?',
+    sessionId,
+  );
+  if (!created) {
+    throw new Error('Could not persist analytics session identifier');
+  }
+  return created.analytics_session_id;
 }
 
 export async function getGameplaySeqHigh(sessionId: string): Promise<number> {

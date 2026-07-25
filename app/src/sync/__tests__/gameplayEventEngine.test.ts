@@ -1,6 +1,7 @@
 import { flushGameplayEvents } from '../gameplayEventEngine';
 import * as localDb from '../../local-db';
 import * as api from '../../api/dailyTasks';
+import * as analytics from '../../analytics/gameplayEvents';
 import { queryClient } from '../../providers';
 
 jest.mock('../../local-db', () => ({
@@ -12,8 +13,20 @@ jest.mock('../../api/dailyTasks', () => ({
   postGameplayEvents: jest.fn(),
 }));
 
+jest.mock('../../analytics/gameplayEvents', () => ({
+  captureGameplayEvent: jest.fn(),
+}));
+
 const mockedDb = localDb as jest.Mocked<typeof localDb>;
 const mockedApi = api as jest.Mocked<typeof api>;
+const mockedAnalytics = analytics as jest.Mocked<typeof analytics>;
+
+const dailyTaskBoard = {
+  rewardDay: '2026-07-22',
+  resetsAt: '2026-07-23T00:00:00.000Z',
+  balance: 0,
+  tasks: [],
+};
 
 describe('flushGameplayEvents', () => {
   beforeEach(() => {
@@ -41,7 +54,7 @@ describe('flushGameplayEvents', () => {
     ];
 
     mockedDb.getUnackedGameplayEvents.mockResolvedValueOnce(mockEvents);
-    mockedApi.postGameplayEvents.mockResolvedValueOnce(undefined);
+    mockedApi.postGameplayEvents.mockResolvedValueOnce(dailyTaskBoard);
     mockedDb.markGameplayEventsAcked.mockResolvedValueOnce(undefined);
 
     await flushGameplayEvents();
@@ -87,8 +100,8 @@ describe('flushGameplayEvents', () => {
       .mockResolvedValueOnce(batch2);
 
     mockedApi.postGameplayEvents
-      .mockResolvedValueOnce(undefined)
-      .mockResolvedValueOnce(undefined);
+      .mockResolvedValueOnce(dailyTaskBoard)
+      .mockResolvedValueOnce(dailyTaskBoard);
 
     mockedDb.markGameplayEventsAcked
       .mockResolvedValueOnce(undefined)
@@ -145,7 +158,7 @@ describe('flushGameplayEvents', () => {
       },
     ];
     mockedDb.getUnackedGameplayEvents.mockResolvedValueOnce(mockEvents);
-    mockedApi.postGameplayEvents.mockResolvedValueOnce(undefined);
+    mockedApi.postGameplayEvents.mockResolvedValueOnce(dailyTaskBoard);
     mockedDb.markGameplayEventsAcked.mockResolvedValueOnce(undefined);
 
     const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
@@ -192,5 +205,30 @@ describe('flushGameplayEvents', () => {
     expect(invalidateSpy).not.toHaveBeenCalled();
 
     invalidateSpy.mockRestore();
+  });
+
+  it('emits a deduplicated analytics Daily Task completion after unchanged evidence acceptance', async () => {
+    const event = {
+      eventId: 'e1',
+      sessionId: 's1',
+      kind: 'stitch_action' as const,
+      dmcCode: '310',
+      clientSeq: 1,
+      occurredAt: '2026-07-22T10:41:52Z',
+    };
+    mockedDb.getUnackedGameplayEvents.mockResolvedValueOnce([event]);
+    mockedApi.postGameplayEvents.mockResolvedValueOnce({
+      ...dailyTaskBoard,
+      tasks: [{ key: 'cells_100', target: 100, progress: 100, completed: true, granted: true }],
+    });
+    mockedDb.markGameplayEventsAcked.mockResolvedValueOnce(undefined);
+
+    await flushGameplayEvents();
+
+    expect(mockedAnalytics.captureGameplayEvent).toHaveBeenCalledWith(
+      'daily_task_completed',
+      { task_key: 'cells_100' },
+      'daily-task:2026-07-22:cells_100',
+    );
   });
 });

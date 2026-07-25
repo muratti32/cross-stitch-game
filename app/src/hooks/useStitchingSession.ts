@@ -38,6 +38,10 @@ import { RendererState } from '../renderer';
 import { useIdentityStore } from '../identity/guestIdentity';
 import { syncSession, completeSession } from '../sync/progressSyncEngine';
 import { ProgressSyncError } from '../api/progressSync';
+import {
+  captureGameplayEvent,
+  captureSessionGameplayEvent,
+} from '../analytics/gameplayEvents';
 
 export function useStitchingSession(sessionId: string | undefined) {
   const [loading, setLoading] = useState(true);
@@ -300,6 +304,11 @@ export function useStitchingSession(sessionId: string | undefined) {
         if (sess.status === 'ready') {
           await updateSessionStatus(sess.id, 'active');
           sess.status = 'active';
+          await captureSessionGameplayEvent(
+            'session_started',
+            sess.id,
+            sess.remoteSessionId,
+          );
         }
 
         // 5. Load Pattern Data. Catalog and personal sessions both download
@@ -562,6 +571,11 @@ export function useStitchingSession(sessionId: string | undefined) {
         // Async write completion checkpoint, then finalize server-side.
         (async () => {
           await updateSessionStatus(sess.id, 'completed', ts);
+          await captureSessionGameplayEvent(
+            'session_completed',
+            sess.id,
+            remoteSessionIdRef.current,
+          );
           await saveSessionCheckpoint();
           if (isAccountSessionRef.current && remoteSessionIdRef.current) {
             await runSync();

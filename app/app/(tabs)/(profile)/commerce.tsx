@@ -14,6 +14,8 @@ import {
   MEMBERSHIP_THEMES,
   useActiveMembershipTheme,
 } from '@/membership/themes';
+import { captureGameplayEvent } from '@/analytics/gameplayEvents';
+import type { PurchaseProductKind } from '@/analytics/schema';
 
 const PREMIUM_PLAN_DESCRIPTIONS: Record<string, { label: string; credits: number; trial: boolean }> = {
   premium_weekly: { label: 'Weekly Premium', credits: 3, trial: false },
@@ -39,6 +41,39 @@ interface PackItem {
   package: PurchasesPackage;
   amount: number;
   label: string;
+}
+
+function productKindForPackage(pkg: PurchasesPackage): PurchaseProductKind | null {
+  if (matchingProductId(pkg, PREMIUM_PLAN_DESCRIPTIONS)) {
+    return 'premium_membership';
+  }
+  if (matchingProductId(pkg, COIN_PACK_DESCRIPTIONS)) {
+    return 'stitch_coin_pack';
+  }
+  if (matchingProductId(pkg, AI_CREDIT_PACK_DESCRIPTIONS)) {
+    return 'ai_credit_pack';
+  }
+  return null;
+}
+
+function isPurchaseCancelled(error: unknown): boolean {
+  return (
+    typeof error === 'object'
+    && error !== null
+    && 'userCancelled' in error
+    && error.userCancelled === true
+  );
+}
+
+function purchaseErrorMessage(error: unknown): string | null {
+  return (
+    typeof error === 'object'
+    && error !== null
+    && 'message' in error
+    && typeof error.message === 'string'
+  )
+    ? error.message
+    : null;
 }
 
 export default function CommerceScreen() {
@@ -135,8 +170,15 @@ export default function CommerceScreen() {
   const handlePurchase = useCallback(async (pkg: PurchasesPackage) => {
     setPurchaseError(null);
     setPurchasingPackageId(pkg.identifier);
+    const productKind = productKindForPackage(pkg);
+    if (productKind) {
+      await captureGameplayEvent('purchase_started', { product_kind: productKind });
+    }
     try {
       await Purchases.purchasePackage(pkg);
+      if (productKind) {
+        await captureGameplayEvent('purchase_completed', { product_kind: productKind });
+      }
       setShowSuccessMessage(true);
       await new Promise(r => setTimeout(r, 500));
       await refetchBalances();
@@ -145,12 +187,21 @@ export default function CommerceScreen() {
       await new Promise(r => setTimeout(r, 2500));
       await refetchBalances();
     } catch (err: unknown) {
-      const error = err as any;
-      if (error?.userCancelled) {
+      if (isPurchaseCancelled(err)) {
+        if (productKind) {
+          await captureGameplayEvent('purchase_cancelled', { product_kind: productKind });
+        }
         return;
       }
-      if (error?.message) {
-        setPurchaseError(error.message);
+      if (productKind) {
+        await captureGameplayEvent('purchase_failed', {
+          product_kind: productKind,
+          failure_stage: 'store',
+        });
+      }
+      const message = purchaseErrorMessage(err);
+      if (message) {
+        setPurchaseError(message);
       } else if (err instanceof Error) {
         setPurchaseError(err.message);
       } else {

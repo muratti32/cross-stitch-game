@@ -1,6 +1,7 @@
 import { getUnackedGameplayEvents, markGameplayEventsAcked } from '../local-db';
 import { postGameplayEvents } from '../api/dailyTasks';
 import { queryClient } from '../providers';
+import { captureGameplayEvent } from '../analytics/gameplayEvents';
 
 const FLUSH_BATCH_LIMIT = 500;
 
@@ -17,7 +18,7 @@ export async function flushGameplayEvents(): Promise<void> {
   let queued = await getUnackedGameplayEvents(FLUSH_BATCH_LIMIT);
   let flushedAny = false;
   while (queued.length > 0) {
-    await postGameplayEvents(
+    const board = await postGameplayEvents(
       queued.map((event) => ({
         eventId: event.eventId,
         kind: event.kind,
@@ -27,6 +28,21 @@ export async function flushGameplayEvents(): Promise<void> {
         occurredAt: event.occurredAt,
       })),
     );
+    // Daily Task completion becomes authoritative when the unchanged evidence
+    // endpoint accepts the batch and returns its computed board. This separate
+    // analytics record is deduplicated locally per task/day and never delays
+    // evidence acknowledgement or a player reward.
+    if (board) {
+      for (const task of board.tasks) {
+        if (task.completed) {
+          void captureGameplayEvent(
+            'daily_task_completed',
+            { task_key: task.key },
+            `daily-task:${board.rewardDay}:${task.key}`,
+          );
+        }
+      }
+    }
     await markGameplayEventsAcked(queued.map((event) => event.eventId));
     flushedAny = true;
     if (queued.length < FLUSH_BATCH_LIMIT) break;

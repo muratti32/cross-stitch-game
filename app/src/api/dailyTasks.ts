@@ -47,7 +47,7 @@ export interface DailyTaskBoardView {
  * status is 201, not 200 — check 201 here, do not copy the 200 check from
  * progressSync.ts (that endpoint explicitly overrides to 200).
  */
-export async function postGameplayEvents(events: GameplayEventPayload[]): Promise<void> {
+export async function postGameplayEvents(events: GameplayEventPayload[]): Promise<DailyTaskBoardView | null> {
   const response = await apiFetch('/v1/economy/daily-tasks/events', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -58,6 +58,14 @@ export async function postGameplayEvents(events: GameplayEventPayload[]): Promis
       `Gameplay event flush failed: status ${response.status}`,
       response.status,
     );
+  }
+  // The board is only read to derive an analytics record. A body that will not
+  // parse must not stop this batch of reward evidence from being acknowledged,
+  // so the accepted upload still counts as accepted.
+  try {
+    return (await response.json()) as DailyTaskBoardView;
+  } catch {
+    return null;
   }
 }
 

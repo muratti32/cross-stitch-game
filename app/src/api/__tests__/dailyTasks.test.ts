@@ -20,8 +20,14 @@ describe('dailyTasks economy client', () => {
     jest.clearAllMocks();
   });
 
-  test('postGameplayEvents resolves on 201', async () => {
-    apiFetch.mockResolvedValue(jsonResponse(201, {}));
+  test('postGameplayEvents returns the accepted Daily Task board on 201', async () => {
+    const board = {
+      rewardDay: '2026-07-22',
+      resetsAt: '2026-07-23T00:00:00.000Z',
+      balance: 10,
+      tasks: [],
+    };
+    apiFetch.mockResolvedValue(jsonResponse(201, board));
 
     const mockPayload = [
       {
@@ -34,7 +40,7 @@ describe('dailyTasks economy client', () => {
       },
     ];
 
-    await expect(postGameplayEvents(mockPayload)).resolves.toBeUndefined();
+    await expect(postGameplayEvents(mockPayload)).resolves.toEqual(board);
 
     expect(apiFetch).toHaveBeenCalledWith(
       '/v1/economy/daily-tasks/events',

@@ -39,6 +39,8 @@ import {
   waitUntilSessionReady,
 } from '@/session-preparation';
 import { Theme } from '@/theme/theme';
+import { captureGameplayEvent } from '@/analytics/gameplayEvents';
+import type { ConversionFailureStage } from '@/analytics/schema';
 
 const MAX_FRAME_HEIGHT = 300;
 const MAX_ZOOM = 8;
@@ -220,6 +222,9 @@ export default function PhotoImportScreen() {
     setError(null);
     setProcessingStatus('Preparing the approved frame on this device…');
     let uploadUri: string | null = null;
+    let failureStage: ConversionFailureStage = 'upload';
+    let conversionStarted = false;
+    let conversionCompleted = false;
     try {
       const crop = computeCropRectangle({
         frameHeight: frameSize.height,
@@ -255,6 +260,11 @@ export default function PhotoImportScreen() {
       }
 
       setProcessingStatus('Uploading only the cropped, downscaled frame…');
+      conversionStarted = true;
+      await captureGameplayEvent('pattern_conversion_started', {
+        source_artwork_kind: 'photo_artwork',
+        conversion_profile: profile,
+      });
       const pendingConversion = await createPhotoConversion({
         maxColors: exactSettings.maxColors,
         profile,
@@ -265,6 +275,7 @@ export default function PhotoImportScreen() {
       await FileSystem.deleteAsync(uploadUri, { idempotent: true });
       uploadUri = null;
 
+      failureStage = 'conversion_engine';
       const pattern = await waitForConversion(pendingConversion.id, (status) => {
         setProcessingStatus(
           status === 'pending' || status === 'dispatched'
@@ -272,6 +283,11 @@ export default function PhotoImportScreen() {
             : 'Building the stitch grid and DMC palette…',
         );
       }, pendingConversion.supportReference);
+      await captureGameplayEvent('pattern_conversion_completed', {
+        source_artwork_kind: 'photo_artwork',
+      });
+      conversionCompleted = true;
+      failureStage = 'delivery';
       setProcessingStatus('Preparing the Personal Pattern for play…');
       const session = await preparePersonalSession(pattern.id, {
         height: pattern.height,
@@ -300,6 +316,12 @@ export default function PhotoImportScreen() {
       router.dismissAll();
       router.replace(`/(tabs)/(play)/${readySession.id}`);
     } catch (caught: unknown) {
+      if (conversionStarted && !conversionCompleted) {
+        await captureGameplayEvent('pattern_conversion_failed', {
+          source_artwork_kind: 'photo_artwork',
+          failure_stage: failureStage,
+        });
+      }
       setError(caught instanceof Error ? caught.message : String(caught));
       setProcessingStatus(null);
     } finally {
