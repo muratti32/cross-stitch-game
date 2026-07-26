@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { CatalogService } from './catalog.service';
-import { CurrentPrincipal, OptionalJwtAuthGuard } from '../auth';
+import { OptionalJwtAuthGuard, OptionalPrincipal } from '../auth';
 import type { AuthPrincipal } from '../auth/auth.types';
 
 @Controller('catalog')
@@ -11,7 +11,7 @@ export class CatalogController {
   @UseGuards(OptionalJwtAuthGuard)
   async getStaffPicks(
     @Query('locale') locale?: string,
-    @CurrentPrincipal() principal?: AuthPrincipal,
+    @OptionalPrincipal() principal?: AuthPrincipal,
   ) {
     return this.catalogService.getStaffPicks(locale || 'en', principal);
   }
@@ -22,7 +22,7 @@ export class CatalogController {
     @Query('cursor') cursor?: string,
     @Query('limit') limit?: string,
     @Query('locale') locale?: string,
-    @CurrentPrincipal() principal?: AuthPrincipal,
+    @OptionalPrincipal() principal?: AuthPrincipal,
   ) {
     const parsedLimit = parseInt(limit || '10', 10);
     return this.catalogService.getNewPatterns(parsedLimit, cursor, locale || 'en', principal);
@@ -46,7 +46,7 @@ export class CatalogController {
     @Query('cursor') cursor?: string,
     @Query('limit') limit?: string,
     @Query('locale') locale?: string,
-    @CurrentPrincipal() principal?: AuthPrincipal,
+    @OptionalPrincipal() principal?: AuthPrincipal,
   ) {
     const parsedLimit = parseInt(limit || '10', 10);
     return this.catalogService.getPatterns({
@@ -64,7 +64,7 @@ export class CatalogController {
   async getPatternById(
     @Param('id') id: string,
     @Query('locale') locale?: string,
-    @CurrentPrincipal() principal?: AuthPrincipal,
+    @OptionalPrincipal() principal?: AuthPrincipal,
   ) {
     return this.catalogService.getPatternById(id, locale || 'en', principal);
   }
@@ -75,7 +75,7 @@ export class CatalogController {
     @Query('q') q?: string,
     @Query('locale') locale?: string,
     @Query('limit') limit?: string,
-    @CurrentPrincipal() principal?: AuthPrincipal,
+    @OptionalPrincipal() principal?: AuthPrincipal,
   ) {
     const parsedLimit = parseInt(limit || '10', 10);
     return this.catalogService.searchPatterns(q || '', parsedLimit, locale || 'en', principal);
