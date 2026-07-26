@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { DataSource } from 'typeorm';
 
 import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
-import { personalPatternObjectKeys } from '../catalog/pattern-object-keys';
+import { PatternObjectKeySet, personalPatternObjectKeys } from '../catalog/pattern-object-keys';
 import { ObjectRegistryEntity } from '../sessions/entities';
 import { captureOperationalAlert } from '../observability/sentry';
 import { renderPatternThumbnailPng, PATTERN_THUMBNAIL_RENDERER_VERSION } from './pattern-thumbnail-renderer';
@@ -37,6 +37,33 @@ export class PatternThumbnailStagingService {
   }): Promise<{ readonly version: number; readonly keys: readonly string[] } | null> {
     const keys = personalPatternObjectKeys(input.patternId);
 
+    return this.stageThumbnails({
+      grid: input.grid,
+      height: input.height,
+      idForLogging: input.patternId,
+      keys,
+      ownerLabel: 'pattern',
+      palette: input.palette,
+      width: input.width,
+    });
+  }
+
+  /**
+   * Renders both Pattern Thumbnail variants and stages them under the supplied
+   * object keys. NEVER throws: a Thumbnail is decorative and callers must be
+   * able to complete their conversion or publication without one (ADR-0042).
+   */
+  async stageThumbnails(input: {
+    ownerLabel: string;
+    idForLogging: string;
+    keys: Pick<PatternObjectKeySet, 'thumbnailBrowsing' | 'thumbnailDetail'>;
+    width: number;
+    height: number;
+    palette: { dmcCode: string; name: string; rgbHex: string }[];
+    grid: Uint8Array;
+  }): Promise<{ readonly version: number; readonly keys: readonly string[] } | null> {
+    const { keys } = input;
+
     try {
       // Render BOTH variants first (browsing, then detail) — render before any storage write, so a renderer throw stages nothing.
       const browsingBytes = renderPatternThumbnailPng({
@@ -66,14 +93,14 @@ export class PatternThumbnailStagingService {
     } catch (error: unknown) {
       const reason = error instanceof Error ? error.message : String(error);
       this.logger.error(
-        `Pattern Thumbnail rendering/staging failed for pattern ${input.patternId}: ${reason}`,
+        `Pattern Thumbnail rendering/staging failed for ${input.ownerLabel} ${input.idForLogging}: ${reason}`,
       );
 
       captureOperationalAlert(
         'Pattern Thumbnail rendering failed',
         'warning',
         'pattern-thumbnail-render-failure',
-        { patternId: input.patternId, reason },
+        { ownerLabel: input.ownerLabel, patternId: input.idForLogging, reason },
       );
 
       // Best-effort cleanup so no half-staged objects linger
@@ -95,7 +122,7 @@ export class PatternThumbnailStagingService {
       } catch (cleanupError: unknown) {
         const cleanupReason = cleanupError instanceof Error ? cleanupError.message : String(cleanupError);
         this.logger.error(
-          `Pattern Thumbnail cleanup failed for pattern ${input.patternId}: ${cleanupReason}`,
+          `Pattern Thumbnail cleanup failed for ${input.ownerLabel} ${input.idForLogging}: ${cleanupReason}`,
         );
       }
 

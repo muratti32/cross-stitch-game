@@ -11,6 +11,7 @@ import {
   ConversionEngineResponse,
 } from '../conversion/conversion-engine.client';
 import { calculatePatternSize } from '../conversion/conversion-profile';
+import { PatternThumbnailStagingService } from '../conversion/pattern-thumbnail-staging.service';
 import { OFFICIAL_PATTERN_DRAFT_JOB_TYPE } from '../jobs/jobs.constants';
 import { ProcessingJobStatus } from '../jobs/entities';
 import { ProcessingJobNotReadyError } from '../jobs/demo-job-consumer.service';
@@ -35,6 +36,7 @@ export class OfficialPatternDraftJobConsumerService {
     private readonly engine: ConversionEngineClient,
     private readonly processingJobs: ProcessingJobsRepository,
     @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
+    private readonly thumbnails: PatternThumbnailStagingService,
   ) {}
 
   async processDelivery(processingJobId: string): Promise<ProcessingJobQueueResult> {
@@ -150,23 +152,32 @@ export class OfficialPatternDraftJobConsumerService {
       throw new TerminalDraftError('Conversion Engine preview is not PNG');
     }
 
+    const palette = response.palette.map((entry) => ({
+      dmcCode: entry.dmc_code,
+      name: entry.name,
+      rgbHex: entry.rgb_hex,
+    }));
     const artifact = encodePatternArtifactV1({
       grid,
       height,
-      palette: response.palette.map((entry) => ({
-        dmcCode: entry.dmc_code,
-        name: entry.name,
-        rgbHex: entry.rgb_hex,
-      })),
+      palette,
       width,
     });
-    const { artifact: artifactKey, preview: previewKey } = officialPatternDraftObjectKeys(
-      draft.id,
-    );
+    const draftKeys = officialPatternDraftObjectKeys(draft.id);
+    const { artifact: artifactKey, preview: previewKey } = draftKeys;
     await Promise.all([
       this.stageObject(artifactKey, artifact.bytes, 'application/octet-stream'),
       this.stageObject(previewKey, preview, 'image/png'),
     ]);
+    const thumbnails = await this.thumbnails.stageThumbnails({
+      grid,
+      height,
+      idForLogging: draft.id,
+      keys: draftKeys,
+      ownerLabel: 'Official Pattern Draft',
+      palette,
+      width,
+    });
 
     await this.dataSource.transaction(async (manager) => {
       const draftRepository = manager.getRepository(OfficialPatternDraftEntity);
@@ -185,11 +196,12 @@ export class OfficialPatternDraftJobConsumerService {
       current.paletteSize = response.palette.length;
       current.previewObjectKey = previewKey;
       current.stitchableCellCount = response.statistics.total_stitchable_cells;
+      current.thumbnailRendererVersion = thumbnails?.version ?? null;
       current.width = width;
       await draftRepository.save(current);
 
       await manager.getRepository(ObjectRegistryEntity).update(
-        [{ objectKey: artifactKey }, { objectKey: previewKey }],
+        [artifactKey, previewKey, ...(thumbnails?.keys ?? [])].map((objectKey) => ({ objectKey })),
         { missing: false, state: 'available' },
       );
       const completed = await this.processingJobs.completeFromRunning(

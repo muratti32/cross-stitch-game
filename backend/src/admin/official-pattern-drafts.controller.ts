@@ -104,6 +104,22 @@ export class OfficialPatternDraftsController {
     response.send(bytes);
   }
 
+  @Get(':id/thumbnail/:variant')
+  @RequireOperatorPermissions('catalog.pattern.read')
+  async getThumbnail(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('variant') variant: string,
+    @Res() response: Response,
+  ): Promise<void> {
+    if (variant !== 'browsing' && variant !== 'detail') {
+      throw new BadRequestException(`Invalid Pattern Thumbnail variant: ${variant}`);
+    }
+    const bytes = await this.drafts.getThumbnailBytes(id, variant);
+    response.setHeader('Cache-Control', 'private, max-age=60');
+    response.setHeader('Content-Type', 'image/png');
+    response.send(bytes);
+  }
+
   @Post(':id/publish')
   @RequireOperatorPermissions('catalog.pattern.publish')
   publish(

@@ -1,3 +1,4 @@
+import { NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
 import { CatalogService } from '../catalog/catalog.service';
@@ -37,6 +38,7 @@ function readyDraft(): OfficialPatternDraftEntity {
     sourceWidth: 32,
     status: OfficialPatternDraftStatus.Ready,
     stitchableCellCount: 500,
+    thumbnailRendererVersion: null,
     updatedAt: new Date(),
     width: 32,
   };
@@ -46,7 +48,9 @@ function buildService(draft: OfficialPatternDraftEntity): {
   service: OfficialPatternDraftsService;
   upsertPatternWithManager: jest.Mock;
   draftSave: jest.Mock;
+  storageGet: jest.Mock;
   storagePut: jest.Mock;
+  managerQuery: jest.Mock;
 } {
   const draftSave = jest.fn((value: OfficialPatternDraftEntity) => Promise.resolve(value));
   const draftFindOne = jest.fn().mockResolvedValue({ ...draft });
@@ -61,6 +65,7 @@ function buildService(draft: OfficialPatternDraftEntity): {
   const patternFindOne = jest.fn().mockResolvedValue(null);
   const patternRepository = { findOne: patternFindOne, findOneBy: patternFindOne };
 
+  const managerQuery = jest.fn().mockResolvedValue([]);
   const manager = {
     getRepository: (entity: unknown) => {
       if (entity === OfficialPatternDraftEntity) return draftRepository;
@@ -69,7 +74,7 @@ function buildService(draft: OfficialPatternDraftEntity): {
       if (entity === CategoryEntity) return categoryRepository;
       throw new Error(`Unexpected repository requested: ${String(entity)}`);
     },
-    query: jest.fn().mockResolvedValue([]),
+    query: managerQuery,
   } as unknown as EntityManager;
 
   const dataSource = {
@@ -77,10 +82,11 @@ function buildService(draft: OfficialPatternDraftEntity): {
     transaction: async <T>(work: (m: EntityManager) => Promise<T>) => work(manager),
   } as unknown as DataSource;
 
+  const storageGet = jest.fn().mockResolvedValue(Buffer.from('bytes'));
   const storagePut = jest.fn().mockResolvedValue(undefined);
   const storage = {
     delete: jest.fn().mockResolvedValue(undefined),
-    get: jest.fn().mockResolvedValue(Buffer.from('bytes')),
+    get: storageGet,
     put: storagePut,
   } as unknown as ObjectStorage;
 
@@ -101,10 +107,17 @@ function buildService(draft: OfficialPatternDraftEntity): {
     auditLog,
     // The service only calls .findOneBy/.findOne through the transaction's
     // manager for this method; the module-level repository isn't exercised.
-    { findOneBy: jest.fn() } as never,
+    { findOneBy: jest.fn().mockResolvedValue({ ...draft }) } as never,
   );
 
-  return { draftSave, service, storagePut, upsertPatternWithManager };
+  return {
+    draftSave,
+    managerQuery,
+    service,
+    storageGet,
+    storagePut,
+    upsertPatternWithManager,
+  };
 }
 
 describe('OfficialPatternDraftsService.publishDraft idempotency', () => {
@@ -123,6 +136,49 @@ describe('OfficialPatternDraftsService.publishDraft idempotency', () => {
 
     expect(result).toEqual({ draftId: DRAFT_ID, patternId: PATTERN_ID, status: 'published' });
     expect(upsertPatternWithManager).toHaveBeenCalledTimes(1);
+  });
+
+  it('copies and registers both Thumbnail variants when the ready draft has one', async () => {
+    const draft = { ...readyDraft(), thumbnailRendererVersion: 1 };
+    const { managerQuery, service, storageGet, storagePut, upsertPatternWithManager } = buildService(draft);
+
+    await service.publishDraft(OPERATOR_ID, DRAFT_ID, publishInput, null);
+
+    expect(storageGet).toHaveBeenCalledWith(
+      `official-pattern-drafts/${DRAFT_ID}/thumbnail-browsing.png`,
+    );
+    expect(storageGet).toHaveBeenCalledWith(
+      `official-pattern-drafts/${DRAFT_ID}/thumbnail-detail.png`,
+    );
+    const publishedInput = upsertPatternWithManager.mock.calls[0]?.[0] as { id: string };
+    expect(storagePut).toHaveBeenCalledWith(
+      `patterns/${publishedInput.id}/thumbnail-browsing.png`,
+      expect.any(Buffer),
+      'image/png',
+    );
+    expect(storagePut).toHaveBeenCalledWith(
+      `patterns/${publishedInput.id}/thumbnail-detail.png`,
+      expect.any(Buffer),
+      'image/png',
+    );
+    expect(upsertPatternWithManager).toHaveBeenCalledWith(
+      expect.objectContaining({ thumbnailRendererVersion: 1 }),
+      expect.anything(),
+    );
+    expect(managerQuery).toHaveBeenCalledTimes(4);
+  });
+
+  it('publishes without a Thumbnail when the ready draft has none', async () => {
+    const { service, storageGet, storagePut, upsertPatternWithManager } = buildService(readyDraft());
+
+    await service.publishDraft(OPERATOR_ID, DRAFT_ID, publishInput, null);
+
+    expect(storageGet).toHaveBeenCalledTimes(2);
+    expect(storagePut).toHaveBeenCalledTimes(2);
+    expect(upsertPatternWithManager).toHaveBeenCalledWith(
+      expect.objectContaining({ thumbnailRendererVersion: null }),
+      expect.anything(),
+    );
   });
 
   it('is idempotent: replaying publish on an already-published draft returns the same result without creating a second pattern', async () => {
@@ -148,5 +204,42 @@ describe('OfficialPatternDraftsService.publishDraft idempotency', () => {
       service.publishDraft(OPERATOR_ID, DRAFT_ID, publishInput, null),
     ).rejects.toThrow(/not ready to publish/);
     expect(upsertPatternWithManager).not.toHaveBeenCalled();
+  });
+});
+
+describe('OfficialPatternDraftsService.getThumbnailBytes', () => {
+  it('returns the requested Thumbnail when it is present', async () => {
+    const draft = { ...readyDraft(), thumbnailRendererVersion: 1 };
+    const { service, storageGet } = buildService(draft);
+    const thumbnail = Buffer.from('thumbnail');
+    storageGet.mockResolvedValueOnce(thumbnail);
+
+    await expect(service.getThumbnailBytes(DRAFT_ID, 'detail')).resolves.toBe(thumbnail);
+    expect(storageGet).toHaveBeenCalledWith(
+      `official-pattern-drafts/${DRAFT_ID}/thumbnail-detail.png`,
+    );
+  });
+
+  it('falls back to the Preview when the Thumbnail object is missing', async () => {
+    const draft = { ...readyDraft(), thumbnailRendererVersion: 1 };
+    const { service, storageGet } = buildService(draft);
+    const preview = Buffer.from('preview');
+    storageGet.mockResolvedValueOnce(null).mockResolvedValueOnce(preview);
+
+    await expect(service.getThumbnailBytes(DRAFT_ID, 'browsing')).resolves.toBe(preview);
+    expect(storageGet).toHaveBeenNthCalledWith(
+      2,
+      `official-pattern-drafts/${DRAFT_ID}/preview.png`,
+    );
+  });
+
+  it('returns 404 when neither the Thumbnail nor Preview exists', async () => {
+    const draft = { ...readyDraft(), thumbnailRendererVersion: 1 };
+    const { service, storageGet } = buildService(draft);
+    storageGet.mockResolvedValue(null);
+
+    await expect(service.getThumbnailBytes(DRAFT_ID, 'browsing')).rejects.toEqual(
+      new NotFoundException(`Official Pattern Draft ${DRAFT_ID} preview was not found`),
+    );
   });
 });

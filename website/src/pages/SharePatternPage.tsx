@@ -11,6 +11,7 @@ interface PatternMetadata {
   height: number
   paletteSize: number
   previewUrl: string
+  thumbnailUrls: { browsing: string; detail: string } | null
   unlockPriceTier: string | null
   publishedAt: string
 }
@@ -123,8 +124,8 @@ export function SharePatternPage() {
             {/* Left: Preview Image */}
             <div className="share-preview-container" style={{ background: '#FAF6F0', borderRadius: '16px', border: '1px solid #E6DCD2', padding: '20px', textAlign: 'center', boxShadow: '0 4px 10px rgba(0,0,0,0.02)' }}>
               <img
-                src={pattern.previewUrl}
-                alt={`Cross stitch preview of ${pattern.title}`}
+                src={pattern.thumbnailUrls?.detail || pattern.previewUrl}
+                alt={`Finished cross-stitch piece for ${pattern.title}`}
                 style={{ maxWidth: '100%', maxHeight: '450px', borderRadius: '8px', objectFit: 'contain' }}
               />
             </div>

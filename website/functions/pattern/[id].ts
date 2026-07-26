@@ -2,6 +2,16 @@ interface Env {
   VITE_API_URL?: string;
 }
 
+interface CatalogPattern {
+  title: string;
+  creatorName: string;
+  width: number;
+  height: number;
+  paletteSize: number;
+  previewUrl: string | null;
+  thumbnailUrls: { browsing: string; detail: string } | null;
+}
+
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const { request, env, params } = context;
   const id = params.id as string;
@@ -27,7 +37,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       });
     }
 
-    const pattern = await res.json() as any;
+    const pattern = (await res.json()) as CatalogPattern;
 
     const html = getPatternHtml(id, pattern);
     return new Response(html, {
@@ -43,10 +53,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
 };
 
-function getPatternHtml(id: string, pattern: any): string {
+function getPatternHtml(id: string, pattern: CatalogPattern): string {
   const title = `Stitch Wish - ${pattern.title}`;
   const description = `Play '${pattern.title}' by ${pattern.creatorName} (${pattern.width}x${pattern.height}, ${pattern.paletteSize} colors) in Stitch Wish: Cross Stitch!`;
-  const previewUrl = pattern.previewUrl || '';
+  const imageUrl = pattern.thumbnailUrls?.detail || pattern.previewUrl || '';
   const appLink = `stitchwish://catalog/pattern/${id}`;
   const fallbackUrl = `/pattern/${id}?fallback=true`;
 
@@ -57,13 +67,13 @@ function getPatternHtml(id: string, pattern: any): string {
   <title>${title}</title>
   <meta property="og:title" content="${title}">
   <meta property="og:description" content="${description}">
-  <meta property="og:image" content="${previewUrl}">
+  <meta property="og:image" content="${imageUrl}">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://stitchwish.avkdesign.net/pattern/${id}">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${title}">
   <meta name="twitter:description" content="${description}">
-  <meta name="twitter:image" content="${previewUrl}">
+  <meta name="twitter:image" content="${imageUrl}">
   <meta name="viewport" content="width=device-width, initial-scale=device-width, initial-scale=1">
   <script>
     // Try to open deep link in native app

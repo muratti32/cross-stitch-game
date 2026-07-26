@@ -63,6 +63,57 @@ describe('PatternThumbnailStagingService', () => {
   ];
   const validGrid = new Uint8Array([1, 2, 2, 1]); // 2x2 grid
 
+  it('stages both variants under arbitrary keys', async () => {
+    const result = await service.stageThumbnails({
+      grid: validGrid,
+      height: 2,
+      idForLogging: 'draft-id',
+      keys: {
+        thumbnailBrowsing: 'official-pattern-drafts/draft-id/thumbnail-browsing.png',
+        thumbnailDetail: 'official-pattern-drafts/draft-id/thumbnail-detail.png',
+      },
+      ownerLabel: 'Official Pattern Draft',
+      palette: validPalette,
+      width: 2,
+    });
+
+    expect(result).toEqual({
+      version: 1,
+      keys: [
+        'official-pattern-drafts/draft-id/thumbnail-browsing.png',
+        'official-pattern-drafts/draft-id/thumbnail-detail.png',
+      ],
+    });
+    expect(fakeStorage.put).toHaveBeenCalledWith(
+      'official-pattern-drafts/draft-id/thumbnail-browsing.png',
+      expect.any(Buffer),
+      'image/png',
+    );
+    expect(fakeStorage.put).toHaveBeenCalledWith(
+      'official-pattern-drafts/draft-id/thumbnail-detail.png',
+      expect.any(Buffer),
+      'image/png',
+    );
+  });
+
+  it('returns null without staging when rendering arbitrary keys fails', async () => {
+    const result = await service.stageThumbnails({
+      grid: new Uint8Array([1, 2]),
+      height: 2,
+      idForLogging: 'draft-id',
+      keys: {
+        thumbnailBrowsing: 'official-pattern-drafts/draft-id/thumbnail-browsing.png',
+        thumbnailDetail: 'official-pattern-drafts/draft-id/thumbnail-detail.png',
+      },
+      ownerLabel: 'Official Pattern Draft',
+      palette: validPalette,
+      width: 2,
+    });
+
+    expect(result).toBeNull();
+    expect(fakeStorage.put).not.toHaveBeenCalled();
+  });
+
   it('stages exactly two objects and returns the renderer version and keys', async () => {
     const input = {
       patternId: 'test-pattern-id',

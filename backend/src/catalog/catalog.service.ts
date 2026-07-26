@@ -28,6 +28,7 @@ export interface UpsertPatternInput {
   artifactByteLength: number;
   artifactSchemaVersion: number;
   previewObjectKey: string;
+  thumbnailRendererVersion?: number | null;
   unlockPriceTier: PatternUnlockPriceTier;
   status: PatternStatus;
   publishedAt?: Date;
@@ -460,6 +461,7 @@ export class CatalogService {
       pattern.artifactByteLength = data.artifactByteLength;
       pattern.artifactSchemaVersion = data.artifactSchemaVersion;
       pattern.previewObjectKey = data.previewObjectKey;
+      pattern.thumbnailRendererVersion = data.thumbnailRendererVersion ?? null;
       pattern.unlockPriceTier = data.unlockPriceTier;
       pattern.status = data.status;
       pattern.visibility = 'catalog';
@@ -479,6 +481,7 @@ export class CatalogService {
         artifactByteLength: data.artifactByteLength,
         artifactSchemaVersion: data.artifactSchemaVersion,
         previewObjectKey: data.previewObjectKey,
+        thumbnailRendererVersion: data.thumbnailRendererVersion ?? null,
         unlockPriceTier: data.unlockPriceTier,
         status: data.status,
         visibility: 'catalog',

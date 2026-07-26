@@ -64,7 +64,29 @@ export function DraftDetailView({ draftId }: { draftId: string }) {
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">
             <div className="space-y-4">
-              {draftQuery.data.hasPreview ? (
+              {draftQuery.data.hasThumbnail ? (
+                <>
+                  <Image
+                    src={`/api/admin/pattern-drafts/${draftQuery.data.id}/thumbnail/detail`}
+                    alt="Finished-piece thumbnail"
+                    width={320}
+                    height={320}
+                    unoptimized
+                    className="w-full rounded-lg border border-border object-cover"
+                  />
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium">Pattern Preview (moderation reference)</p>
+                    <Image
+                      src={`/api/admin/pattern-drafts/${draftQuery.data.id}/preview`}
+                      alt="Flat Pattern Preview moderation reference"
+                      width={160}
+                      height={160}
+                      unoptimized
+                      className="w-1/2 rounded-lg border border-border object-cover"
+                    />
+                  </div>
+                </>
+              ) : draftQuery.data.hasPreview ? (
                 <Image
                   src={`/api/admin/pattern-drafts/${draftQuery.data.id}/preview`}
                   alt="Converted preview"

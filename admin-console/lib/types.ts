@@ -79,6 +79,7 @@ export interface OfficialPatternDraftView {
   paletteSize: number | null;
   stitchableCellCount: number | null;
   hasPreview: boolean;
+  hasThumbnail: boolean;
   failureReason: string | null;
   publishedPatternId: string | null;
   createdAt: string;

@@ -11,7 +11,10 @@ import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import { CatalogService } from '../catalog/catalog.service';
 import { CategoryEntity, PatternEntity, TagEntity } from '../catalog/entities';
-import { catalogPatternObjectKeys } from '../catalog/pattern-object-keys';
+import {
+  catalogPatternObjectKeys,
+  officialPatternDraftObjectKeys,
+} from '../catalog/pattern-object-keys';
 import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { calculatePatternSize } from '../conversion/conversion-profile';
 import { readImageDimensions } from '../conversion/image-dimensions';
@@ -40,6 +43,7 @@ export interface OfficialPatternDraftView {
   paletteSize: number | null;
   stitchableCellCount: number | null;
   hasPreview: boolean;
+  hasThumbnail: boolean;
   failureReason: string | null;
   publishedPatternId: string | null;
   createdAt: string;
@@ -220,6 +224,28 @@ export class OfficialPatternDraftsService {
     return bytes;
   }
 
+  async getThumbnailBytes(id: string, variant: 'browsing' | 'detail'): Promise<Buffer> {
+    const draft = await this.drafts.findOneBy({ id });
+    if (draft === null) {
+      throw new NotFoundException(`Official Pattern Draft ${id} preview was not found`);
+    }
+
+    try {
+      const thumbnailObjectKey = await this.resolveThumbnailObjectKey(draft, variant);
+      if (thumbnailObjectKey !== null) {
+        const bytes = await this.storage.get(thumbnailObjectKey);
+        if (bytes !== null) {
+          return bytes;
+        }
+      }
+    } catch {
+      // A Thumbnail is decorative. The exact Preview remains the operator's
+      // reliable fallback when storage is missing or temporarily unreadable.
+    }
+
+    return this.getPreviewBytes(id);
+  }
+
   // Publishing copies the preview to a permanent catalog object key and
   // deletes the staged draft-scoped copy, so a published draft's own
   // previewObjectKey no longer resolves — fall back to the Pattern's key.
@@ -231,6 +257,27 @@ export class OfficialPatternDraftsService {
       return pattern?.previewObjectKey ?? null;
     }
     return draft.previewObjectKey;
+  }
+
+  private async resolveThumbnailObjectKey(
+    draft: OfficialPatternDraftEntity,
+    variant: 'browsing' | 'detail',
+  ): Promise<string | null> {
+    if (draft.status === OfficialPatternDraftStatus.Published && draft.publishedPatternId !== null) {
+      const pattern = await this.dataSource
+        .getRepository(PatternEntity)
+        .findOneBy({ id: draft.publishedPatternId });
+      if (pattern === null || pattern.thumbnailRendererVersion === null) {
+        return null;
+      }
+      const keys = catalogPatternObjectKeys(pattern.id);
+      return variant === 'browsing' ? keys.thumbnailBrowsing : keys.thumbnailDetail;
+    }
+    if (draft.thumbnailRendererVersion === null) {
+      return null;
+    }
+    const keys = officialPatternDraftObjectKeys(draft.id);
+    return variant === 'browsing' ? keys.thumbnailBrowsing : keys.thumbnailDetail;
   }
 
   async publishDraft(
@@ -271,6 +318,7 @@ export class OfficialPatternDraftsService {
           patternId: draft.publishedPatternId,
           stagedArtifactObjectKey: null,
           stagedPreviewObjectKey: null,
+          stagedThumbnailObjectKeys: [],
           status: 'published' as const,
         };
       }
@@ -362,6 +410,42 @@ export class OfficialPatternDraftsService {
         previewBytes.length,
       );
 
+      let thumbnailRendererVersion: number | null = null;
+      if (draft.thumbnailRendererVersion !== null) {
+        const draftThumbnailKeys = officialPatternDraftObjectKeys(draft.id);
+        const catalogThumbnailKeys = catalogPatternObjectKeys(patternId);
+        try {
+          const [browsingBytes, detailBytes] = await Promise.all([
+            this.storage.get(draftThumbnailKeys.thumbnailBrowsing),
+            this.storage.get(draftThumbnailKeys.thumbnailDetail),
+          ]);
+          if (browsingBytes !== null && detailBytes !== null) {
+            await Promise.all([
+              this.storage.put(catalogThumbnailKeys.thumbnailBrowsing, browsingBytes, 'image/png'),
+              this.storage.put(catalogThumbnailKeys.thumbnailDetail, detailBytes, 'image/png'),
+            ]);
+            await Promise.all([
+              this.registerCatalogObject(
+                manager,
+                catalogThumbnailKeys.thumbnailBrowsing,
+                sha256(browsingBytes),
+                browsingBytes.length,
+              ),
+              this.registerCatalogObject(
+                manager,
+                catalogThumbnailKeys.thumbnailDetail,
+                sha256(detailBytes),
+                detailBytes.length,
+              ),
+            ]);
+            thumbnailRendererVersion = draft.thumbnailRendererVersion;
+          }
+        } catch {
+          // A staged Thumbnail is optional. Do not turn a storage problem into
+          // a failed official publication; the catalog Pattern will use its Preview.
+        }
+      }
+
       const unlockPriceTier = deriveUnlockPriceTier(dto.paid, draft.stitchableCellCount);
       const pattern = await this.catalogService.upsertPatternWithManager(
         {
@@ -379,6 +463,7 @@ export class OfficialPatternDraftsService {
           status: 'available',
           tagCodes: dto.tagCodes,
           title: dto.title,
+          thumbnailRendererVersion,
           unlockPriceTier,
           width: draft.width,
         },
@@ -412,6 +497,13 @@ export class OfficialPatternDraftsService {
         patternId: pattern.id,
         stagedArtifactObjectKey: draft.artifactObjectKey,
         stagedPreviewObjectKey: draft.previewObjectKey,
+        stagedThumbnailObjectKeys:
+          draft.thumbnailRendererVersion === null
+            ? []
+            : [
+                officialPatternDraftObjectKeys(draft.id).thumbnailBrowsing,
+                officialPatternDraftObjectKeys(draft.id).thumbnailDetail,
+              ],
         status: 'published' as const,
       };
     });
@@ -420,7 +512,11 @@ export class OfficialPatternDraftsService {
     // staging copies are no longer needed. Best-effort: a leftover staged
     // object is inert and cannot resurface once the draft is published.
     await Promise.allSettled(
-      [result.stagedArtifactObjectKey, result.stagedPreviewObjectKey]
+      [
+        result.stagedArtifactObjectKey,
+        result.stagedPreviewObjectKey,
+        ...result.stagedThumbnailObjectKeys,
+      ]
         .filter((key): key is string => key !== null)
         .map((key) => this.storage.delete(key)),
     );
@@ -470,6 +566,13 @@ export class OfficialPatternDraftsService {
         artifactObjectKey: draft.artifactObjectKey,
         previewObjectKey: draft.previewObjectKey,
         sourceObjectKey: draft.sourceObjectKey,
+        thumbnailObjectKeys:
+          draft.thumbnailRendererVersion === null
+            ? []
+            : [
+                officialPatternDraftObjectKeys(draft.id).thumbnailBrowsing,
+                officialPatternDraftObjectKeys(draft.id).thumbnailDetail,
+              ],
       };
     });
 
@@ -497,10 +600,14 @@ export class OfficialPatternDraftsService {
     sourceObjectKey: string;
     artifactObjectKey: string | null;
     previewObjectKey: string | null;
+    thumbnailObjectKeys: readonly string[];
   }): Promise<void> {
-    const keys = [staged.sourceObjectKey, staged.artifactObjectKey, staged.previewObjectKey].filter(
-      (key): key is string => key !== null,
-    );
+    const keys = [
+      staged.sourceObjectKey,
+      staged.artifactObjectKey,
+      staged.previewObjectKey,
+      ...staged.thumbnailObjectKeys,
+    ].filter((key): key is string => key !== null);
     await Promise.allSettled(keys.map((key) => this.storage.delete(key)));
     if (keys.length > 0) {
       await this.dataSource
@@ -518,6 +625,7 @@ export class OfficialPatternDraftsService {
       createdAt: draft.createdAt.toISOString(),
       failureReason: draft.failureReason,
       hasPreview: draft.previewObjectKey !== null,
+      hasThumbnail: draft.thumbnailRendererVersion !== null,
       height: draft.height,
       id: draft.id,
       maxColors: draft.maxColors,

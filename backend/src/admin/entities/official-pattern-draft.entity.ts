@@ -86,6 +86,9 @@ export class OfficialPatternDraftEntity {
   @Column({ name: 'preview_object_key', nullable: true, type: 'varchar', length: 512 })
   previewObjectKey!: string | null;
 
+  @Column({ name: 'thumbnail_renderer_version', nullable: true, type: 'integer' })
+  thumbnailRendererVersion!: number | null;
+
   @Column({ nullable: true, type: 'integer' })
   width!: number | null;
 

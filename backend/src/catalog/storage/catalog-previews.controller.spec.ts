@@ -26,6 +26,7 @@ describe('CatalogPreviewsController', () => {
   function catalogPattern(thumbnailRendererVersion: number | null): PatternEntity {
     return {
       id: patternId,
+      status: 'available',
       thumbnailRendererVersion,
       visibility: 'catalog',
     } as PatternEntity;
@@ -75,4 +76,35 @@ describe('CatalogPreviewsController', () => {
     );
     expect(storage.get).not.toHaveBeenCalled();
   });
+
+  it.each(['review_hold', 'withdrawn', 'removed'] as const)(
+    'does not serve preview or Thumbnail objects for a %s Pattern',
+    async (status) => {
+      const previewKey = catalogPatternObjectKeys(patternId).preview;
+      const thumbnailKey = catalogPatternObjectKeys(patternId).thumbnailDetail;
+      (patterns.findOneBy as jest.Mock)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
+
+      await expect(controller.getPreview(previewKey, response as never)).rejects.toEqual(
+        new NotFoundException('Preview not found'),
+      );
+      await expect(controller.getPreview(thumbnailKey, response as never)).rejects.toEqual(
+        new NotFoundException('Preview not found'),
+      );
+
+      expect(patterns.findOneBy).toHaveBeenNthCalledWith(1, {
+        previewObjectKey: previewKey,
+        status: 'available',
+        visibility: 'catalog',
+      });
+      expect(patterns.findOneBy).toHaveBeenNthCalledWith(3, {
+        id: patternId,
+        status: 'available',
+        visibility: 'catalog',
+      });
+      expect(storage.get).not.toHaveBeenCalled();
+    },
+  );
 });

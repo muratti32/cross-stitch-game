@@ -29,7 +29,12 @@ import {
     PersonalPatternThumbnailsController,
     PersonalPatternArtifactsController,
   ],
-  exports: [ConversionEngineClient, ConversionJobConsumerService, ConversionService],
+  exports: [
+    ConversionEngineClient,
+    ConversionJobConsumerService,
+    ConversionService,
+    PatternThumbnailStagingService,
+  ],
   imports: [
     TypeOrmModule.forFeature([
       ConversionRecipeEntity,

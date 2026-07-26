@@ -21,6 +21,7 @@ export class CatalogPreviewsController {
   ): Promise<void> {
     const previewPattern = await this.patterns.findOneBy({
       previewObjectKey: key,
+      status: 'available',
       visibility: 'catalog',
     });
     if (previewPattern === null && !(await this.isCatalogThumbnailKey(key))) {
@@ -47,7 +48,7 @@ export class CatalogPreviewsController {
       return false;
     }
     const [, id, variant] = match;
-    const pattern = await this.patterns.findOneBy({ id, visibility: 'catalog' });
+    const pattern = await this.patterns.findOneBy({ id, status: 'available', visibility: 'catalog' });
     if (pattern === null || pattern.thumbnailRendererVersion === null) {
       return false;
     }
