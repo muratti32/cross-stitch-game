@@ -162,6 +162,7 @@ export default function PlayScreen() {
             }}
             variant="browsing"
             localAsset={pattern?.previewAsset}
+            localThumbnailAsset={pattern?.thumbnailAsset}
             style={styles.sessionImage}
           />
 

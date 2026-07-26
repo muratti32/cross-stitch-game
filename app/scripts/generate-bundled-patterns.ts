@@ -3,6 +3,7 @@ import * as path from 'path';
 import { PNG } from 'pngjs';
 import { sha256 } from 'js-sha256';
 import { encodePatternArtifact, PatternData, PaletteEntry } from '../src/pattern-artifact';
+import { renderPatternThumbnailPng } from '../../backend/src/conversion/pattern-thumbnail-renderer';
 
 // Helper to convert grid string templates to Uint8Array
 function createGrid(template: string, width: number, height: number): Uint8Array {
@@ -209,6 +210,19 @@ interface ManifestEntry {
 }
 
 const manifest: ManifestEntry[] = [];
+let totalThumbnailBytes = 0;
+
+// A Bundled Starter Pattern's createdAt must match the same Pattern in the server
+// catalog, so regenerating assets reuses the timestamp already in the manifest
+// instead of stamping a fresh one on every run.
+const existingCreatedAt = new Map<string, string>();
+const existingManifestPath = path.join(targetDir, 'manifest.json');
+if (fs.existsSync(existingManifestPath)) {
+  const existing = JSON.parse(fs.readFileSync(existingManifestPath, 'utf8')) as ManifestEntry[];
+  for (const entry of existing) {
+    existingCreatedAt.set(entry.id, entry.createdAt);
+  }
+}
 
 // Helper to parse Hex color to RGB
 function parseHex(hex: string) {
@@ -277,6 +291,17 @@ for (const p of patterns) {
   const pngBuffer = PNG.sync.write(png);
   fs.writeFileSync(pngPath, pngBuffer);
 
+  const thumbnailBuffer = renderPatternThumbnailPng({
+    width: p.width,
+    height: p.height,
+    palette: p.palette,
+    grid,
+    variant: 'browsing',
+  });
+  const thumbnailPath = path.join(targetDir, `${p.id}_thumbnail.png`);
+  fs.writeFileSync(thumbnailPath, thumbnailBuffer);
+  totalThumbnailBytes += thumbnailBuffer.length;
+
   // Count filled cells
   const filledCells = grid.filter(c => c > 0).length;
 
@@ -295,12 +320,14 @@ for (const p of patterns) {
     isPremium: false,
     colorsCount: p.palette.length,
     cellsCount: filledCells, // Number of filled cells/stitches
-    createdAt: new Date().toISOString(),
+    createdAt: existingCreatedAt.get(p.id) ?? new Date().toISOString(),
   });
 
   console.log(`Generated ${p.title} (${p.id}): Binary size = ${byteLength} bytes, Checksum = ${checksum}`);
+  console.log(`Generated thumbnail ${p.id}_thumbnail.png: ${thumbnailBuffer.length} bytes`);
 }
 
 // Write manifest.json
 fs.writeFileSync(path.join(targetDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
 console.log('Successfully generated all bundled patterns and manifest.');
+console.log(`Total bundled thumbnail bytes: ${totalThumbnailBytes}`);

@@ -99,7 +99,13 @@ export default function CatalogScreen() {
             style={styles.patternCard}
             onPress={() => handleSelectPattern(pattern.id)}
           >
-            <PatternImage assets={{}} variant="browsing" localAsset={pattern.previewAsset} style={styles.patternImage} />
+            <PatternImage
+              assets={{}}
+              variant="browsing"
+              localAsset={pattern.previewAsset}
+              localThumbnailAsset={pattern.thumbnailAsset}
+              style={styles.patternImage}
+            />
             <View style={styles.patternDetails}>
               <Text style={styles.patternTitle} numberOfLines={1}>
                 {pattern.title}

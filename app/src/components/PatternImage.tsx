@@ -12,6 +12,8 @@ interface PatternImageProps {
   style?: StyleProp<ImageStyle>;
   /** Locally bundled fallback (Starter Patterns ship no remote urls). */
   localAsset?: number;
+  /** Bundled browsing-variant Pattern Thumbnail. */
+  localThumbnailAsset?: number;
   accessibilityLabel?: string;
 }
 
@@ -20,9 +22,13 @@ export function PatternImage({
   variant,
   style,
   localAsset,
+  localThumbnailAsset,
   accessibilityLabel,
 }: PatternImageProps) {
   const selection = selectPatternImage(assets, variant);
+  const fallbackAsset = variant === 'browsing' && localThumbnailAsset !== undefined
+    ? localThumbnailAsset
+    : localAsset;
 
   return (
     <View
@@ -31,12 +37,12 @@ export function PatternImage({
       style={[styles.backdrop, style]}
     >
       {selection.kind === 'none' ? (
-        localAsset === undefined ? (
+        fallbackAsset === undefined ? (
           <View style={styles.placeholder}>
             <Ionicons name="image-outline" size={32} color={Theme.colors.textSecondary} />
           </View>
         ) : (
-          <Image source={localAsset} style={styles.image} />
+          <Image source={fallbackAsset} style={styles.image} />
         )
       ) : (
         <CachedImage uri={selection.url} style={styles.image} />

@@ -19,6 +19,7 @@ export interface BundledPattern {
   cellsCount: number;
   createdAt: string;
   previewAsset: number;
+  thumbnailAsset: number;
   binaryAsset: number;
 }
 
@@ -34,6 +35,13 @@ const previewAssets: Record<string, number> = {
   starter_flower: require('../../assets/bundled-patterns/starter_flower.png'),
   starter_star: require('../../assets/bundled-patterns/starter_star.png'),
   starter_mushroom: require('../../assets/bundled-patterns/starter_mushroom.png'),
+};
+
+const thumbnailAssets: Record<string, number> = {
+  starter_heart: require('../../assets/bundled-patterns/starter_heart_thumbnail.png'),
+  starter_flower: require('../../assets/bundled-patterns/starter_flower_thumbnail.png'),
+  starter_star: require('../../assets/bundled-patterns/starter_star_thumbnail.png'),
+  starter_mushroom: require('../../assets/bundled-patterns/starter_mushroom_thumbnail.png'),
 };
 
 interface ManifestJsonEntry {
@@ -55,13 +63,14 @@ interface ManifestJsonEntry {
 
 export const BUNDLED_PATTERNS: BundledPattern[] = (manifestJson as ManifestJsonEntry[]).map((entry) => {
   const id = entry.id;
-  if (!binaryAssets[id] || !previewAssets[id]) {
+  if (!binaryAssets[id] || !previewAssets[id] || !thumbnailAssets[id]) {
     throw new Error(`Assets missing for bundled pattern ID: ${id}`);
   }
   return {
     ...entry,
     difficulty: entry.difficulty as 'easy' | 'medium' | 'hard',
     previewAsset: previewAssets[id],
+    thumbnailAsset: thumbnailAssets[id],
     binaryAsset: binaryAssets[id],
   };
 });

@@ -11,7 +11,8 @@
     "test": "jest",
     "build:preview:android": "eas build --local --profile preview --platform android",
     "build:preview:ios": "eas build --local --profile preview --platform ios",
-    "perf:gate": "tsx scripts/perf-gate.ts"
+    "perf:gate": "tsx scripts/perf-gate.ts",
+    "bundled:generate": "tsx scripts/generate-bundled-patterns.ts"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
