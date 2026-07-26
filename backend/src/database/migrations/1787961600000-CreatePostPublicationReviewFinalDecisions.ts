@@ -1,9 +1,9 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreatePostPublicationReviewFinalDecisions1786579200000
+export class CreatePostPublicationReviewFinalDecisions1787961600000
   implements MigrationInterface
 {
-  readonly name = 'CreatePostPublicationReviewFinalDecisions1786579200000';
+  readonly name = 'CreatePostPublicationReviewFinalDecisions1787961600000';
 
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`

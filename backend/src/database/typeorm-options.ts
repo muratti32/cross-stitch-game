@@ -144,12 +144,12 @@ import { CreateReconciliationFindings1787529600000 } from './migrations/17875296
 import { ReconciliationFindingEntity, ReconciliationRunEntity } from '../reconciliation';
 import { CreateOperationalAlertRuns1787616000000 } from './migrations/1787616000000-CreateOperationalAlertRuns';
 import { OperationalAlertRunEntity } from '../observability';
-import { CreateCommunityReports1786320000000 } from './migrations/1786320000000-CreateCommunityReports';
-import { CreateCatalogWithdrawals1786406400000 } from './migrations/1786406400000-CreateCatalogWithdrawals';
-import { CreateReviewHolds1786492800000 } from './migrations/1786492800000-CreateReviewHolds';
-import { CreatePostPublicationReviewFinalDecisions1786579200000 } from './migrations/1786579200000-CreatePostPublicationReviewFinalDecisions';
-import { AddSafetyRemovalOutcome1786665600000 } from './migrations/1786665600000-AddSafetyRemovalOutcome';
-import { CreateSafetyRemovalAppeals1786752000000 } from './migrations/1786752000000-CreateSafetyRemovalAppeals';
+import { CreateCommunityReports1787702400000 } from './migrations/1787702400000-CreateCommunityReports';
+import { CreateCatalogWithdrawals1787788800000 } from './migrations/1787788800000-CreateCatalogWithdrawals';
+import { CreateReviewHolds1787875200000 } from './migrations/1787875200000-CreateReviewHolds';
+import { CreatePostPublicationReviewFinalDecisions1787961600000 } from './migrations/1787961600000-CreatePostPublicationReviewFinalDecisions';
+import { AddSafetyRemovalOutcome1788048000000 } from './migrations/1788048000000-AddSafetyRemovalOutcome';
+import { CreateSafetyRemovalAppeals1788134400000 } from './migrations/1788134400000-CreateSafetyRemovalAppeals';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -279,12 +279,12 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateAnalyticsGameplayEvents1787443200000,
       CreateReconciliationFindings1787529600000,
       CreateOperationalAlertRuns1787616000000,
-      CreateCommunityReports1786320000000,
-      CreateCatalogWithdrawals1786406400000,
-      CreateReviewHolds1786492800000,
-      CreatePostPublicationReviewFinalDecisions1786579200000,
-      AddSafetyRemovalOutcome1786665600000,
-      CreateSafetyRemovalAppeals1786752000000,
+      CreateCommunityReports1787702400000,
+      CreateCatalogWithdrawals1787788800000,
+      CreateReviewHolds1787875200000,
+      CreatePostPublicationReviewFinalDecisions1787961600000,
+      AddSafetyRemovalOutcome1788048000000,
+      CreateSafetyRemovalAppeals1788134400000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

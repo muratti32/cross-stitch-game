@@ -1,7 +1,7 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateCommunityReports1786320000000 implements MigrationInterface {
-  readonly name = 'CreateCommunityReports1786320000000';
+export class CreateCommunityReports1787702400000 implements MigrationInterface {
+  readonly name = 'CreateCommunityReports1787702400000';
 
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`

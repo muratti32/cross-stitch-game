@@ -1,7 +1,7 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateCatalogWithdrawals1786406400000 implements MigrationInterface {
-  readonly name = 'CreateCatalogWithdrawals1786406400000';
+export class CreateCatalogWithdrawals1787788800000 implements MigrationInterface {
+  readonly name = 'CreateCatalogWithdrawals1787788800000';
 
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`

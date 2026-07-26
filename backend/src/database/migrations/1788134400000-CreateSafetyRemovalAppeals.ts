@@ -1,7 +1,7 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class CreateSafetyRemovalAppeals1786752000000 implements MigrationInterface {
-  readonly name = 'CreateSafetyRemovalAppeals1786752000000';
+export class CreateSafetyRemovalAppeals1788134400000 implements MigrationInterface {
+  readonly name = 'CreateSafetyRemovalAppeals1788134400000';
 
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
