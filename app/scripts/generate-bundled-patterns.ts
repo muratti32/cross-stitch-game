@@ -246,7 +246,7 @@ for (const p of patterns) {
   for (let cy = 0; cy < p.height; cy++) {
     for (let cx = 0; cx < p.width; cx++) {
       const cellVal = grid[cy * p.width + cx];
-      let r = 250, g = 246, b = 240, a = 0; // default transparent / linen background
+      let r = 0, g = 0, b = 0, a = 0; // Unstitched cells are fully transparent (0,0,0,0), matching backend and conversion-engine Pattern Preview renderers
 
       if (cellVal > 0) {
         const pal = p.palette[cellVal - 1];

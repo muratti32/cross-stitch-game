@@ -13,7 +13,7 @@
     "isPremium": false,
     "colorsCount": 4,
     "cellsCount": 114,
-    "createdAt": "2026-07-14T05:44:35.577Z"
+    "createdAt": "2026-07-26T10:49:04.380Z"
   },
   {
     "id": "starter_flower",
@@ -29,7 +29,7 @@
     "isPremium": false,
     "colorsCount": 4,
     "cellsCount": 118,
-    "createdAt": "2026-07-14T05:44:35.582Z"
+    "createdAt": "2026-07-26T10:49:04.386Z"
   },
   {
     "id": "starter_star",
@@ -45,7 +45,7 @@
     "isPremium": false,
     "colorsCount": 3,
     "cellsCount": 108,
-    "createdAt": "2026-07-14T05:44:35.587Z"
+    "createdAt": "2026-07-26T10:49:04.391Z"
   },
   {
     "id": "starter_mushroom",
@@ -61,6 +61,6 @@
     "isPremium": false,
     "colorsCount": 4,
     "cellsCount": 158,
-    "createdAt": "2026-07-14T05:44:35.592Z"
+    "createdAt": "2026-07-26T10:49:04.396Z"
   }
 ]

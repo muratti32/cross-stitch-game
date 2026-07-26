@@ -411,7 +411,7 @@ A short-lived download authorization issued after the Game Backend verifies that
 _Avoid_: Public artifact URL, Pattern Unlock, ownership grant
 
 **Pattern Preview**:
-The exact flat-pixel image of a Pattern's grid, in which every cell is rendered as a uniform block of its own DMC Thread Color. It is the audit artefact that Catalog Technical Validation, Catalog Similarity Signal, and automated safety moderation read, not the image players are meant to browse. Personal Pattern Previews require owner-only signed access; Official and Community Pattern Previews are public and are purged on Safety Removal.
+The exact flat-pixel image of a Pattern's grid, in which every cell is rendered as a uniform block of its own DMC Thread Color. It is the audit artefact that Catalog Technical Validation, Catalog Similarity Signal, and automated safety moderation read, not the image players are meant to browse. Personal Pattern Previews require owner-only signed access; Official and Community Pattern Previews are public and are purged on Safety Removal. Every renderer writes the cells a design does not stitch as fully transparent pixels (RGBA 0,0,0,0), so the same grid yields the same image on either conversion path.
 _Avoid_: Source Artwork, Pattern Artifact, screenshot, thumbnail
 
 **Pattern Thumbnail**:

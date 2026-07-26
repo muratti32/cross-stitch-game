@@ -28,18 +28,22 @@ export function renderPatternPreviewPng(input: {
     for (let c = 0; c < input.width; c++) {
       const i = r * input.width + c;
       const cellValue = input.grid[i];
-      let hex = '#FFFFFF';
+      // Unstitched cells are fully transparent (0,0,0,0) so Pattern Preview matches conversion engine renderer byte-for-byte in behaviour
+      let red = 0;
+      let green = 0;
+      let blue = 0;
+      let alpha = 0;
 
       if (cellValue !== 0) {
         const paletteEntry = input.palette[cellValue - 1];
         if (paletteEntry) {
-          hex = paletteEntry.rgbHex;
+          const hex = paletteEntry.rgbHex;
+          red = parseInt(hex.substring(1, 3), 16);
+          green = parseInt(hex.substring(3, 5), 16);
+          blue = parseInt(hex.substring(5, 7), 16);
+          alpha = 255;
         }
       }
-
-      const red = parseInt(hex.substring(1, 3), 16);
-      const green = parseInt(hex.substring(3, 5), 16);
-      const blue = parseInt(hex.substring(5, 7), 16);
 
       for (let by = 0; by < blockSize; by++) {
         for (let bx = 0; bx < blockSize; bx++) {
@@ -49,7 +53,7 @@ export function renderPatternPreviewPng(input: {
           png.data[idx] = red;
           png.data[idx + 1] = green;
           png.data[idx + 2] = blue;
-          png.data[idx + 3] = 255;
+          png.data[idx + 3] = alpha;
         }
       }
     }

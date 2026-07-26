@@ -53,7 +53,8 @@ def test_alpha_cells_palette_and_statistics_are_consistent(client: TestClient) -
     try:
         assert preview.mode == "RGBA"
         assert preview.size == (160, 160)
-        assert preview.getpixel((4 * 8, 10 * 8))[3] == 0
+        # Unstitched cells are fully transparent (0, 0, 0, 0); backend renderer must produce the same value
+        assert preview.getpixel((4 * 8, 10 * 8)) == (0, 0, 0, 0)
         expected_rgb = tuple(
             bytes.fromhex(payload["palette"][0]["rgb_hex"].removeprefix("#"))
         )
@@ -80,6 +81,8 @@ def test_all_transparent_artwork_has_empty_palette_and_transparent_preview(
     try:
         assert preview.mode == "RGBA"
         assert preview.getextrema()[3] == (0, 0)
+        # Unstitched cells are fully transparent (0, 0, 0, 0); backend renderer must produce the same value
+        assert preview.getextrema() == ((0, 0), (0, 0), (0, 0), (0, 0))
     finally:
         preview.close()
 
