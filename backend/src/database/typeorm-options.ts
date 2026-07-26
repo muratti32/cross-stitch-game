@@ -150,6 +150,7 @@ import { CreateReviewHolds1787875200000 } from './migrations/1787875200000-Creat
 import { CreatePostPublicationReviewFinalDecisions1787961600000 } from './migrations/1787961600000-CreatePostPublicationReviewFinalDecisions';
 import { AddSafetyRemovalOutcome1788048000000 } from './migrations/1788048000000-AddSafetyRemovalOutcome';
 import { CreateSafetyRemovalAppeals1788134400000 } from './migrations/1788134400000-CreateSafetyRemovalAppeals';
+import { AddPatternThumbnailRendererVersion1788220800000 } from './migrations/1788220800000-AddPatternThumbnailRendererVersion';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -285,6 +286,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreatePostPublicationReviewFinalDecisions1787961600000,
       AddSafetyRemovalOutcome1788048000000,
       CreateSafetyRemovalAppeals1788134400000,
+      AddPatternThumbnailRendererVersion1788220800000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

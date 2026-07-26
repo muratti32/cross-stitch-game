@@ -107,9 +107,14 @@ export class AccountDeletionFinalizerService {
       }
 
       const personalPatterns = await manager.query<
-        readonly { artifact_object_key: string; preview_object_key: string }[]
+        readonly {
+          id: string;
+          artifact_object_key: string;
+          preview_object_key: string;
+          thumbnail_renderer_version: number | null;
+        }[]
       >(
-        `SELECT artifact_object_key, preview_object_key FROM catalog.patterns
+        `SELECT id, artifact_object_key, preview_object_key, thumbnail_renderer_version FROM catalog.patterns
          WHERE visibility = 'personal' AND owner_account_id = $1`,
         [accountId],
       );
@@ -117,7 +122,10 @@ export class AccountDeletionFinalizerService {
         keysToDelete.push(
           ...storedPatternObjectKeys({
             artifactObjectKey: p.artifact_object_key,
+            id: p.id,
             previewObjectKey: p.preview_object_key,
+            thumbnailRendererVersion: p.thumbnail_renderer_version,
+            visibility: 'personal',
           }),
         );
       }

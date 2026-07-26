@@ -14,6 +14,7 @@ import {
 import { ConversionEngineClient } from './conversion-engine.client';
 import { ConversionJobConsumerService } from './conversion-job-consumer.service';
 import { ConversionService } from './conversion.service';
+import { PatternThumbnailStagingService } from './pattern-thumbnail-staging.service';
 import {
   ConversionRecipeEntity,
   PatternConversionEntity,
@@ -43,6 +44,7 @@ import {
     ConversionEngineClient,
     ConversionJobConsumerService,
     ConversionService,
+    PatternThumbnailStagingService,
   ],
 })
 export class ConversionModule {}

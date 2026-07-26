@@ -69,8 +69,13 @@ describe('AccountDeletionFinalizerService', () => {
       if (cleanSql.includes('SELECT upload_object_key FROM conversion.pattern_conversions')) {
         return [{ upload_object_key: 'key-conversion' }];
       }
-      if (cleanSql.includes('SELECT artifact_object_key, preview_object_key FROM catalog.patterns')) {
-        return [{ artifact_object_key: 'key-art', preview_object_key: 'key-prev' }];
+      if (cleanSql.includes('SELECT id, artifact_object_key, preview_object_key, thumbnail_renderer_version FROM catalog.patterns')) {
+        return [{
+          id: 'pat-1',
+          artifact_object_key: 'key-art',
+          preview_object_key: 'key-prev',
+          thumbnail_renderer_version: null,
+        }];
       }
       if (cleanSql.includes('SELECT avatar_object_key FROM moderation.creator_profiles')) {
         return [{ avatar_object_key: 'key-avatar' }];

@@ -17,6 +17,7 @@ import {
   ConversionEngineRequestError,
   ConversionEngineResponse,
 } from './conversion-engine.client';
+import { PatternThumbnailStagingService } from './pattern-thumbnail-staging.service';
 import { calculatePatternSize } from './conversion-profile';
 import {
   ConversionRecipeEntity,
@@ -40,6 +41,7 @@ export class ConversionJobConsumerService {
     private readonly engine: ConversionEngineClient,
     private readonly processingJobs: ProcessingJobsRepository,
     @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
+    private readonly thumbnails: PatternThumbnailStagingService,
   ) {}
 
   async processDelivery(
@@ -153,14 +155,16 @@ export class ConversionJobConsumerService {
       throw new TerminalConversionError('Conversion Engine preview is not PNG');
     }
 
+    const palette = response.palette.map((entry) => ({
+      dmcCode: entry.dmc_code,
+      name: entry.name,
+      rgbHex: entry.rgb_hex,
+    }));
+
     const artifact = encodePatternArtifactV1({
       grid,
       height,
-      palette: response.palette.map((entry) => ({
-        dmcCode: entry.dmc_code,
-        name: entry.name,
-        rgbHex: entry.rgb_hex,
-      })),
+      palette,
       width,
     });
     const { artifact: artifactKey, preview: previewKey } = personalPatternObjectKeys(
@@ -170,6 +174,14 @@ export class ConversionJobConsumerService {
       this.stageObject(artifactKey, artifact.bytes, 'application/octet-stream'),
       this.stageObject(previewKey, preview, 'image/png'),
     ]);
+
+    const thumbnails = await this.thumbnails.stagePersonalPatternThumbnails({
+      grid,
+      height,
+      palette,
+      patternId: conversion.targetPatternId,
+      width,
+    });
 
     const result = {
       artifactChecksum: artifact.checksum,
@@ -194,6 +206,7 @@ export class ConversionJobConsumerService {
           previewObjectKey: previewKey,
           publishedAt: new Date(),
           status: 'available',
+          thumbnailRendererVersion: thumbnails?.version ?? null,
           title: conversion.title,
           unlockPriceTier: null,
           visibility: 'personal',
@@ -217,7 +230,7 @@ export class ConversionJobConsumerService {
         });
       }
       await manager.getRepository(ObjectRegistryEntity).update(
-        [{ objectKey: artifactKey }, { objectKey: previewKey }],
+        [artifactKey, previewKey, ...(thumbnails?.keys ?? [])].map((objectKey) => ({ objectKey })),
         { missing: false, state: 'available' },
       );
       const completed = await this.processingJobs.completeFromRunning(

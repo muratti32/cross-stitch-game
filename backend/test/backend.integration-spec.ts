@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, Logger } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import {
   PostgreSqlContainer,
@@ -21,6 +21,7 @@ import { CatalogService } from '../src/catalog/catalog.service';
 import { encodePatternArtifactV1 } from '../src/catalog/pattern-artifact-encoder';
 import { LocalObjectStorage } from '../src/catalog/storage/local-object-storage';
 import { OBJECT_STORAGE } from '../src/catalog/storage/object-storage.interface';
+import { personalPatternObjectKeys } from '../src/catalog/pattern-object-keys';
 import { SessionsService } from '../src/sessions/sessions.service';
 import { ProgressCheckpointService } from '../src/sessions/progress-checkpoint.service';
 import { StorageReconcilerService } from '../src/sessions/storage-reconciler.service';
@@ -60,6 +61,9 @@ import {
   PersonalPatternEntity,
 } from '../src/conversion/entities';
 import { PatternEntity } from '../src/catalog/entities';
+import { PATTERN_THUMBNAIL_RENDERER_VERSION } from '../src/conversion/pattern-thumbnail-renderer';
+import * as thumbnailRenderer from '../src/conversion/pattern-thumbnail-renderer';
+import { ObjectRegistryEntity } from '../src/sessions/entities';
 import { CoinLedgerRepository } from '../src/economy/coin-ledger.repository';
 import { CommerceLedgerRepository } from '../src/economy/commerce-ledger.repository';
 import { utcRewardDay } from '../src/economy/reward-day';
@@ -1075,6 +1079,29 @@ describe('Stitch Wish backend integration', () => {
         width: 75,
       });
 
+      const firstPatternRow = await dataSource
+        .getRepository(PatternEntity)
+        .findOneByOrFail({ id: firstPatternId });
+      expect(firstPatternRow.thumbnailRendererVersion).toBe(PATTERN_THUMBNAIL_RENDERER_VERSION);
+
+      const firstPatternKeys = personalPatternObjectKeys(firstPatternId);
+      const storage = app.get(LocalObjectStorage);
+      expect(await storage.exists(firstPatternKeys.thumbnailBrowsing)).toBe(true);
+      expect(await storage.exists(firstPatternKeys.thumbnailDetail)).toBe(true);
+
+      const [firstBrowsingRow, firstDetailRow] = await Promise.all([
+        dataSource
+          .getRepository(ObjectRegistryEntity)
+          .findOneByOrFail({ objectKey: firstPatternKeys.thumbnailBrowsing }),
+        dataSource
+          .getRepository(ObjectRegistryEntity)
+          .findOneByOrFail({ objectKey: firstPatternKeys.thumbnailDetail }),
+      ]);
+      expect(firstBrowsingRow.state).toBe('available');
+      expect(firstBrowsingRow.missing).toBe(false);
+      expect(firstDetailRow.state).toBe('available');
+      expect(firstDetailRow.missing).toBe(false);
+
       const ownerList = await request(httpServer)
         .get('/v1/conversions/patterns')
         .set('Authorization', `Bearer ${account.accessToken}`)
@@ -1290,6 +1317,29 @@ describe('Stitch Wish backend integration', () => {
       expect(derivedPersonal.processingJobId).toBeNull();
       expect(derivedPersonal.derivedFromPatternId).toBe(sourcePatternId);
 
+      const derivedPattern = await dataSource
+        .getRepository(PatternEntity)
+        .findOneByOrFail({ id: clientPatternId });
+      expect(derivedPattern.thumbnailRendererVersion).toBe(PATTERN_THUMBNAIL_RENDERER_VERSION);
+
+      const derivedKeys = personalPatternObjectKeys(clientPatternId);
+      const storage = app.get(LocalObjectStorage);
+      expect(await storage.exists(derivedKeys.thumbnailBrowsing)).toBe(true);
+      expect(await storage.exists(derivedKeys.thumbnailDetail)).toBe(true);
+
+      const [derivedBrowsingRow, derivedDetailRow] = await Promise.all([
+        dataSource
+          .getRepository(ObjectRegistryEntity)
+          .findOneByOrFail({ objectKey: derivedKeys.thumbnailBrowsing }),
+        dataSource
+          .getRepository(ObjectRegistryEntity)
+          .findOneByOrFail({ objectKey: derivedKeys.thumbnailDetail }),
+      ]);
+      expect(derivedBrowsingRow.state).toBe('available');
+      expect(derivedBrowsingRow.missing).toBe(false);
+      expect(derivedDetailRow.state).toBe('available');
+      expect(derivedDetailRow.missing).toBe(false);
+
       const previewUrl = readStringRecord(first.body, 'previewUrl');
       await request(httpServer).get(previewUrl).expect(200).expect('Content-Type', /png/);
 
@@ -1315,6 +1365,66 @@ describe('Stitch Wish backend integration', () => {
       expect(ids).toEqual([sourcePatternId, clientPatternId].sort());
 
       engine.mockRestore();
+    });
+
+    it('creates a playable derived Personal Pattern with no Thumbnail when the Thumbnail renderer fails', async () => {
+      const loggerSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+      const renderSpy = jest
+        .spyOn(thumbnailRenderer, 'renderPatternThumbnailPng')
+        .mockImplementation(() => {
+          throw new Error('thumbnail renderer exploded');
+        });
+
+      try {
+        const engine = mockSuccessfulEngine();
+        const account = await createAccount();
+        const sourceJobId = await requestConversion(account.accessToken, 'Editable Source');
+        await runConversion(sourceJobId);
+        const sourceCompleted = await processingJobs.findById(sourceJobId);
+        const sourcePatternId = readStringRecord(sourceCompleted?.result, 'patternId');
+
+        const clientPatternId = randomUUID();
+        const grid = Buffer.from([1, 0, 1, 0]);
+        const derivePayload = {
+          patternId: clientPatternId,
+          sourcePatternId,
+          title: 'Edited Copy',
+          width: 2,
+          height: 2,
+          palette: [{ dmcCode: '310', name: 'Black', rgbHex: '#000000' }],
+          grid: grid.toString('base64'),
+        };
+
+        const first = await request(httpServer)
+          .post('/v1/conversions/personal-patterns/derived')
+          .set('Authorization', `Bearer ${account.accessToken}`)
+          .send(derivePayload)
+          .expect(201);
+        expect(readStringRecord(first.body, 'id')).toBe(clientPatternId);
+        expect(first.body).toMatchObject({ alreadyExists: false, title: 'Edited Copy', width: 2, height: 2 });
+
+        const pattern = await dataSource
+          .getRepository(PatternEntity)
+          .findOneByOrFail({ id: clientPatternId });
+        expect(pattern.status).toBe('available');
+        expect(pattern.thumbnailRendererVersion).toBeNull();
+
+        const derivedKeys = personalPatternObjectKeys(clientPatternId);
+        const storage = app.get(LocalObjectStorage);
+        expect(await storage.exists(derivedKeys.thumbnailBrowsing)).toBe(false);
+        expect(await storage.exists(derivedKeys.thumbnailDetail)).toBe(false);
+
+        const previewUrl = readStringRecord(first.body, 'previewUrl');
+        await request(httpServer)
+          .get(previewUrl)
+          .expect(200)
+          .expect('Content-Type', /png/);
+
+        engine.mockRestore();
+      } finally {
+        renderSpy.mockRestore();
+        loggerSpy.mockRestore();
+      }
     });
 
     it('rejects deriving from a Pattern the caller does not own', async () => {

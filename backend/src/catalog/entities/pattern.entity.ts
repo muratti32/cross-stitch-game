@@ -71,6 +71,10 @@ export class PatternEntity {
   @Column({ name: 'preview_object_key', type: 'varchar', length: 512 })
   previewObjectKey!: string;
 
+  // null means no Pattern Thumbnail is stored for this Pattern (ADR-0042).
+  @Column({ name: 'thumbnail_renderer_version', nullable: true, type: 'integer' })
+  thumbnailRendererVersion!: number | null;
+
   @Column({
     name: 'unlock_price_tier',
     type: 'varchar',

@@ -26,6 +26,7 @@ import { ProcessingJobEntity, ProcessingJobStatus } from '../jobs/entities';
 import { CreatePhotoConversionDto } from './dto/create-photo-conversion.dto';
 import { CreateDerivedPatternDto } from './dto/create-derived-pattern.dto';
 import { renderPatternPreviewPng } from './pattern-preview-renderer';
+import { PatternThumbnailStagingService } from './pattern-thumbnail-staging.service';
 import { encodePatternArtifactV1 } from '../catalog/pattern-artifact-encoder';
 import {
   ConversionRecipeEntity,
@@ -59,6 +60,7 @@ export class ConversionService {
     private readonly recipes: Repository<ConversionRecipeEntity>,
     @InjectRepository(PatternEntity)
     private readonly patterns: Repository<PatternEntity>,
+    private readonly thumbnails: PatternThumbnailStagingService,
   ) {}
 
   async createPhotoConversion(
@@ -323,6 +325,14 @@ export class ConversionService {
       { missing: false, state: 'verified' },
     );
 
+    const thumbnails = await this.thumbnails.stagePersonalPatternThumbnails({
+      grid,
+      height: dto.height,
+      palette: dto.palette,
+      patternId: dto.patternId,
+      width: dto.width,
+    });
+
     // 9. Database transaction
     await this.dataSource.transaction(async (manager) => {
       await manager
@@ -342,6 +352,7 @@ export class ConversionService {
           artifactByteLength: artifact.byteLength,
           artifactSchemaVersion: artifact.schemaVersion,
           previewObjectKey: previewKey,
+          thumbnailRendererVersion: thumbnails?.version ?? null,
           unlockPriceTier: null,
           status: 'available',
           visibility: 'personal',
@@ -365,7 +376,7 @@ export class ConversionService {
         .execute();
 
       await manager.getRepository(ObjectRegistryEntity).update(
-        [{ objectKey: artifactKey }, { objectKey: previewKey }],
+        [artifactKey, previewKey, ...(thumbnails?.keys ?? [])].map((objectKey) => ({ objectKey })),
         { missing: false, state: 'available' },
       );
     });
