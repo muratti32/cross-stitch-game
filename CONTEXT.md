@@ -411,8 +411,12 @@ A short-lived download authorization issued after the Game Backend verifies that
 _Avoid_: Public artifact URL, Pattern Unlock, ownership grant
 
 **Pattern Preview**:
-The image rendered separately to browse or identify a Pattern without downloading its Pattern Artifact. Personal Pattern Previews require owner-only signed access; Official and Community Pattern Previews are public and are purged on Safety Removal.
-_Avoid_: Source Artwork, Pattern Artifact, screenshot
+The exact flat-pixel image of a Pattern's grid, in which every cell is rendered as a uniform block of its own DMC Thread Color. It is the audit artefact that Catalog Technical Validation, Catalog Similarity Signal, and automated safety moderation read, not the image players are meant to browse. Personal Pattern Previews require owner-only signed access; Official and Community Pattern Previews are public and are purged on Safety Removal.
+_Avoid_: Source Artwork, Pattern Artifact, screenshot, thumbnail
+
+**Pattern Thumbnail**:
+The decorative image of a finished cross-stitch piece derived from a Pattern's grid and palette, used on every surface where a player or operator browses or identifies a Pattern. It is regenerable rather than immutable, carries no moderation or validation authority, and never reflects any Stitching Session's progress. It exists in a browsing and a detail variant, and its absence falls back to the Pattern Preview. It follows Pattern Preview's access and Safety Removal rules.
+_Avoid_: Pattern Preview, cover image, progress image, hero image
 
 **DMC Thread Color**:
 A canonical thread color identified by its DMC code and used by Pattern cells. Pattern Conversion maps source colors into this palette rather than keeping arbitrary digital RGB colors.
