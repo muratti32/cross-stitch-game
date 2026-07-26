@@ -8,6 +8,7 @@
   ],
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": "..",
+  "setupFiles": ["<rootDir>/test/setup-env.ts"],
   "testEnvironment": "node",
   "testMatch": [
     "<rootDir>/src/**/*.spec.ts",

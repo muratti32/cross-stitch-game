@@ -9,7 +9,7 @@ export {
   AuthTokenPair,
   GuestAuthResponse,
 } from './auth.types';
-export { CurrentPrincipal } from './current-principal.decorator';
+export { CurrentPrincipal, OptionalPrincipal } from './current-principal.decorator';
 export {
   GuestInstallationEntity,
   GuestInstallationStatus,
