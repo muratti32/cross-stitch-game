@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 
 import { PatternEntity } from '../catalog/entities';
 import { encodePatternArtifactV1 } from '../catalog/pattern-artifact-encoder';
+import { personalPatternObjectKeys } from '../catalog/pattern-object-keys';
 import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { CONVERSION_JOB_TYPE } from '../jobs/jobs.constants';
 import { ProcessingJobStatus } from '../jobs/entities';
@@ -162,8 +163,9 @@ export class ConversionJobConsumerService {
       })),
       width,
     });
-    const artifactKey = this.artifactKey(conversion.targetPatternId);
-    const previewKey = this.previewKey(conversion.targetPatternId);
+    const { artifact: artifactKey, preview: previewKey } = personalPatternObjectKeys(
+      conversion.targetPatternId,
+    );
     await Promise.all([
       this.stageObject(artifactKey, artifact.bytes, 'application/octet-stream'),
       this.stageObject(previewKey, preview, 'image/png'),
@@ -299,28 +301,16 @@ export class ConversionJobConsumerService {
       await this.deleteTemporaryUpload(conversion);
       return;
     }
-    const artifactKey = this.artifactKey(conversion.targetPatternId);
-    const previewKey = this.previewKey(conversion.targetPatternId);
+    const { all: keys } = personalPatternObjectKeys(conversion.targetPatternId);
     await this.deleteTemporaryUpload(conversion);
-    await Promise.allSettled([
-      this.storage.delete(artifactKey),
-      this.storage.delete(previewKey),
-    ]);
+    await Promise.allSettled(keys.map((key) => this.storage.delete(key)));
     await this.dataSource
       .getRepository(ObjectRegistryEntity)
       .createQueryBuilder()
       .delete()
-      .where('object_key IN (:...keys)', { keys: [artifactKey, previewKey] })
+      .where('object_key IN (:...keys)', { keys })
       .andWhere('state <> :state', { state: 'available' })
       .execute();
-  }
-
-  private artifactKey(patternId: string): string {
-    return `personal-patterns/${patternId}/artifact-v1.bin`;
-  }
-
-  private previewKey(patternId: string): string {
-    return `personal-patterns/${patternId}/preview.png`;
   }
 }
 

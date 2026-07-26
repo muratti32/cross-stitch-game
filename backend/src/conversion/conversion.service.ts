@@ -13,6 +13,7 @@ import { DataSource, Repository } from 'typeorm';
 import { AuthPrincipal } from '../auth/auth.types';
 import { PrincipalType } from '../auth/entities';
 import { PatternEntity } from '../catalog/entities';
+import { personalPatternObjectKeys } from '../catalog/pattern-object-keys';
 import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { AppConfigService } from '../config/app-config.service';
 import {
@@ -280,8 +281,9 @@ export class ConversionService {
     }
 
     // 8. Stage to R2 & register in ObjectRegistryEntity
-    const artifactKey = `personal-patterns/${dto.patternId}/artifact-v1.bin`;
-    const previewKey = `personal-patterns/${dto.patternId}/preview.png`;
+    const { artifact: artifactKey, preview: previewKey } = personalPatternObjectKeys(
+      dto.patternId,
+    );
     const artifactChecksum = artifact.checksum;
     const previewChecksum = sha256(preview);
 

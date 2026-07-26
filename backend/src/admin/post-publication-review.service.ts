@@ -27,6 +27,7 @@ import {
   previewContentType,
   safetyRemovalPreviewArchiveKey,
 } from '../catalog/catalog.utils';
+import { storedPatternPublicObjectKeys } from '../catalog/pattern-object-keys';
 import { CreatorProfileEntity } from '../creator-profile/entities';
 import { OperatorAuditLogService } from './operator-audit-log.service';
 
@@ -452,7 +453,9 @@ export class PostPublicationReviewService {
           previewContentType(pattern.previewObjectKey),
         );
       }
-      await this.storage.delete(pattern.previewObjectKey);
+      for (const key of storedPatternPublicObjectKeys(pattern)) {
+        await this.storage.delete(key);
+      }
 
       const closedRecords = await this.closePendingMetadataWork(
         manager,

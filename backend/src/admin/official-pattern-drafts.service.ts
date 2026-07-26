@@ -11,6 +11,7 @@ import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import { CatalogService } from '../catalog/catalog.service';
 import { CategoryEntity, PatternEntity, TagEntity } from '../catalog/entities';
+import { catalogPatternObjectKeys } from '../catalog/pattern-object-keys';
 import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { calculatePatternSize } from '../conversion/conversion-profile';
 import { readImageDimensions } from '../conversion/image-dimensions';
@@ -333,8 +334,9 @@ export class OfficialPatternDraftsService {
           );
         }
         patternId = randomUUID();
-        catalogArtifactKey = `patterns/${patternId}/artifact.bin`;
-        catalogPreviewKey = `patterns/${patternId}/preview.png`;
+        const catalogKeys = catalogPatternObjectKeys(patternId);
+        catalogArtifactKey = catalogKeys.artifact;
+        catalogPreviewKey = catalogKeys.preview;
       }
 
       const [artifactBytes, previewBytes] = await Promise.all([

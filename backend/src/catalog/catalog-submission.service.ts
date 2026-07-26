@@ -28,6 +28,7 @@ import {
   PatternEntity,
   TagEntity,
 } from './entities';
+import { catalogSubmissionObjectKeys } from './pattern-object-keys';
 import { OBJECT_STORAGE, ObjectStorage } from './storage/object-storage.interface';
 
 export const CATALOG_PUBLICATION_LICENSE_VERSION = 'v1' as const;
@@ -71,8 +72,8 @@ export class CatalogSubmissionService {
     }
     const submissionId = randomUUID();
     const processingJobId = randomUUID();
-    const artifactObjectKey = `catalog-submissions/${submissionId}/artifact-v1.bin`;
-    const previewObjectKey = `catalog-submissions/${submissionId}/preview.png`;
+    const submissionKeys = catalogSubmissionObjectKeys(submissionId);
+    const { artifact: artifactObjectKey, preview: previewObjectKey } = submissionKeys;
     const [artifact, preview] = await Promise.all([
       this.storage.get(source.artifactObjectKey),
       this.storage.get(source.previewObjectKey),
@@ -137,7 +138,7 @@ export class CatalogSubmissionService {
       });
       return this.ownerView(submission, false);
     } catch (error: unknown) {
-      await this.removeSnapshotObjects([artifactObjectKey, previewObjectKey]);
+      await this.removeSnapshotObjects(submissionKeys.all);
       throw error;
     }
   }
@@ -401,7 +402,7 @@ export class CatalogSubmissionService {
     );
   }
 
-  private async removeSnapshotObjects(keys: string[]): Promise<void> {
+  private async removeSnapshotObjects(keys: readonly string[]): Promise<void> {
     await Promise.allSettled(keys.map((key) => this.storage.delete(key)));
     await this.dataSource.getRepository(ObjectRegistryEntity)
       .createQueryBuilder()

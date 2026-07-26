@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
+import { storedPatternObjectKeys } from '../catalog/pattern-object-keys';
 import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { RefreshTokensRepository } from '../auth/refresh-tokens.repository';
 import { PrincipalType } from '../auth/entities';
@@ -113,8 +114,12 @@ export class AccountDeletionFinalizerService {
         [accountId],
       );
       for (const p of personalPatterns) {
-        if (p.artifact_object_key) keysToDelete.push(p.artifact_object_key);
-        if (p.preview_object_key) keysToDelete.push(p.preview_object_key);
+        keysToDelete.push(
+          ...storedPatternObjectKeys({
+            artifactObjectKey: p.artifact_object_key,
+            previewObjectKey: p.preview_object_key,
+          }),
+        );
       }
 
       const profiles = await manager.query<readonly { avatar_object_key: string | null }[]>(

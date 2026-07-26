@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { DataSource } from 'typeorm';
 
 import { encodePatternArtifactV1 } from '../catalog/pattern-artifact-encoder';
+import { officialPatternDraftObjectKeys } from '../catalog/pattern-object-keys';
 import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import {
   ConversionEngineClient,
@@ -159,8 +160,9 @@ export class OfficialPatternDraftJobConsumerService {
       })),
       width,
     });
-    const artifactKey = this.artifactKey(draft.id);
-    const previewKey = this.previewKey(draft.id);
+    const { artifact: artifactKey, preview: previewKey } = officialPatternDraftObjectKeys(
+      draft.id,
+    );
     await Promise.all([
       this.stageObject(artifactKey, artifact.bytes, 'application/octet-stream'),
       this.stageObject(previewKey, preview, 'image/png'),
@@ -260,31 +262,19 @@ export class OfficialPatternDraftJobConsumerService {
     const current = await this.dataSource
       .getRepository(OfficialPatternDraftEntity)
       .findOneBy({ id: draft.id });
-    const artifactKey = this.artifactKey(draft.id);
-    const previewKey = this.previewKey(draft.id);
+    const { all: keys } = officialPatternDraftObjectKeys(draft.id);
     await this.deleteSourceUpload(draft);
     if (current?.status === OfficialPatternDraftStatus.Published) {
       return; // artifact/preview were promoted to catalog keys; nothing staged to clean up.
     }
-    await Promise.allSettled([
-      this.storage.delete(artifactKey),
-      this.storage.delete(previewKey),
-    ]);
+    await Promise.allSettled(keys.map((key) => this.storage.delete(key)));
     await this.dataSource
       .getRepository(ObjectRegistryEntity)
       .createQueryBuilder()
       .delete()
-      .where('object_key IN (:...keys)', { keys: [artifactKey, previewKey] })
+      .where('object_key IN (:...keys)', { keys })
       .andWhere("state <> 'available'")
       .execute();
-  }
-
-  private artifactKey(draftId: string): string {
-    return `official-pattern-drafts/${draftId}/artifact-v1.bin`;
-  }
-
-  private previewKey(draftId: string): string {
-    return `official-pattern-drafts/${draftId}/preview.png`;
   }
 }
 
