@@ -35,7 +35,8 @@ export class ReconciliationAdminService {
   ) {}
 
   async latest(): Promise<ReconciliationAdminReport> {
-    const run = await this.runs.findOne({ order: { ranAt: 'DESC' } });
+    // findOne requires selection conditions; take: 1 gets the latest run without a where clause.
+    const [run = null] = await this.runs.find({ order: { ranAt: 'DESC' }, take: 1 });
     if (run === null) {
       return { findings: [], run: null };
     }

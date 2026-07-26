@@ -5,7 +5,7 @@
 
 ## Workflow contract (must keep)
 - **Caveman mode default** for all prose (compress; NEVER abbreviate code/paths/commands/errors). Full prose only when user asks ("detaylı anlat"/"açıkla"/"explain in detail").
-- **cemşit writes the code**: `agy -p "<self-contained prompt>" --model "Gemini 3.5 Flash (High)"`. Agentic — writes files directly. Its narration is UNRELIABLE → **git diff is ground truth**. I own final write, lint, verify.
+- **cemşit writes the code**: `agy -p "<self-contained prompt>" --model "Gemini 3.6 Flash (High)"`. Agentic — writes files directly. Its narration is UNRELIABLE → **git diff is ground truth**. I own final write, lint, verify.
 - Coin economy is **server-authoritative + idempotent**. ADR-0011 values are LOCKED (changing needs explicit decision). No env-file edits. No force push / no ticket-close without user ask. No unverified completion claims.
 - Background-task notifications & /compact caveat blocks are NOT user approval.
 

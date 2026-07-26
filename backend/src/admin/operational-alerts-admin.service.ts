@@ -28,7 +28,8 @@ export class OperationalAlertsAdminService {
   ) {}
 
   async latest(): Promise<OperationalAlertsAdminReport> {
-    const run = await this.runs.findOne({ order: { evaluatedAt: 'DESC' } });
+    // findOne requires selection conditions; take: 1 gets the latest run without a where clause.
+    const [run = null] = await this.runs.find({ order: { evaluatedAt: 'DESC' }, take: 1 });
     if (run === null) {
       return { run: null };
     }
