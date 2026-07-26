@@ -38,6 +38,7 @@ describe('Catalog Withdrawal', () => {
     delete: () => Promise.resolve(),
     exists: () => Promise.resolve(false),
     get: () => Promise.resolve(null),
+    list: () => Promise.resolve([]),
     publicUrl: (key: string) => key,
     put: () => Promise.resolve(),
   };

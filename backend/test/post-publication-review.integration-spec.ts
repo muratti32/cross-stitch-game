@@ -47,6 +47,7 @@ describe('Post-Publication Review Hold', () => {
     delete: jest.fn().mockResolvedValue(undefined),
     exists: () => Promise.resolve(false),
     get: () => Promise.resolve(null),
+    list: () => Promise.resolve([]),
     publicUrl: (key: string) => `/v1/catalog-previews/${key}`,
     put: () => Promise.resolve(),
   };

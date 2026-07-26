@@ -43,6 +43,7 @@ describe('Safety Removal Appeal', () => {
     },
     exists: () => Promise.resolve(false),
     get: (key: string) => Promise.resolve(archive.get(key) ?? null),
+    list: () => Promise.resolve([...archive.keys()]),
     publicUrl: (key: string) => `/v1/catalog-previews/${key}`,
     put: (key: string, data: Buffer) => {
       archive.set(key, data);
