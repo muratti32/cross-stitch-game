@@ -1,4 +1,5 @@
 import { PNG } from 'pngjs';
+import { encodeIndexedPng } from './indexed-png-encoder';
 
 export type PatternThumbnailVariant = 'browsing' | 'detail';
 
@@ -121,6 +122,27 @@ export function renderPatternThumbnailPng(input: {
   let maskShade: Float32Array | null = null;
 
   if (useGlyphs) {
+    const usedCellValues = new Set<number>();
+    for (let i = 0; i < input.grid.length; i++) {
+      const val = input.grid[i];
+      if (val !== 0) {
+        const paletteEntry = input.palette[val - 1];
+        if (paletteEntry) {
+          usedCellValues.add(val);
+        }
+      }
+    }
+    const usedColors = Math.max(1, usedCellValues.size);
+
+    const COVERAGE_STEPS = 4;
+    let coverageSteps = COVERAGE_STEPS;
+    let bands = Math.floor(250 / (usedColors * 2 * coverageSteps));
+    if (bands < 1) {
+      coverageSteps = 1; // hard edges: no partial coverage at all
+      bands = Math.floor(250 / (usedColors * 2));
+    }
+    bands = Math.max(1, Math.min(tuning.shadeBands, bands));
+
     maskCoverage = new Float32Array(integerCell * integerCell);
     maskShade = new Float32Array(integerCell * integerCell);
 
@@ -128,7 +150,7 @@ export function renderPatternThumbnailPng(input: {
     const halfThickness = integerCell * tuning.armThicknessFraction;
 
     const k = tuning.shadingStrength;
-    const B = tuning.shadeBands;
+    const B = bands;
     const aaWidth = Math.max(1, integerCell * 0.06);
 
     // Line segments
@@ -163,6 +185,9 @@ export function renderPatternThumbnailPng(input: {
             coverage = 1.0 - (d2 - (halfThickness - aaWidth)) / aaWidth;
           }
           coverage = Math.max(0, Math.min(1, coverage));
+          if (coverage > 0) {
+            coverage = Math.ceil(coverage * coverageSteps) / coverageSteps;
+          }
 
           const normDist = d2 / halfThickness;
           const band = Math.min(B - 1, Math.floor(normDist * B));
@@ -181,6 +206,9 @@ export function renderPatternThumbnailPng(input: {
             coverage = 1.0 - (d1 - (halfThickness - aaWidth)) / aaWidth;
           }
           coverage = Math.max(0, Math.min(1, coverage));
+          if (coverage > 0) {
+            coverage = Math.ceil(coverage * coverageSteps) / coverageSteps;
+          }
 
           const normDist = d1 / halfThickness;
           const band = Math.min(B - 1, Math.floor(normDist * B));
@@ -253,13 +281,9 @@ export function renderPatternThumbnailPng(input: {
                 png.data[idx + 1] = cellG;
                 png.data[idx + 2] = cellB;
               } else {
-                const fabricR = png.data[idx];
-                const fabricG = png.data[idx + 1];
-                const fabricB = png.data[idx + 2];
-
-                png.data[idx] = Math.max(0, Math.min(255, Math.round(cellR * coverage + fabricR * (1 - coverage))));
-                png.data[idx + 1] = Math.max(0, Math.min(255, Math.round(cellG * coverage + fabricG * (1 - coverage))));
-                png.data[idx + 2] = Math.max(0, Math.min(255, Math.round(cellB * coverage + fabricB * (1 - coverage))));
+                png.data[idx] = Math.max(0, Math.min(255, Math.round(cellR * coverage + baseR * (1 - coverage))));
+                png.data[idx + 1] = Math.max(0, Math.min(255, Math.round(cellG * coverage + baseG * (1 - coverage))));
+                png.data[idx + 2] = Math.max(0, Math.min(255, Math.round(cellB * coverage + baseB * (1 - coverage))));
               }
             }
           }
@@ -311,6 +335,13 @@ export function renderPatternThumbnailPng(input: {
         }
       }
     }
+  }
+
+  // The render is opaque and usually holds only a few dozen distinct colours,
+  // where an indexed PNG is an order of magnitude smaller than truecolour.
+  const indexed = encodeIndexedPng({ width: size, height: size, data: png.data });
+  if (indexed !== null) {
+    return indexed;
   }
 
   return PNG.sync.write(png, { deflateLevel: 9 });
