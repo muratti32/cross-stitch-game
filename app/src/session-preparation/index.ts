@@ -54,6 +54,17 @@ export function getOfflinePatternPath(patternId: string, identity: string | null
   return `${baseDir}${namespace}/offline-patterns/${patternId}.bin`;
 }
 
+/**
+ * Deletes this device's cached Offline Pattern Data for a Pattern, e.g. when
+ * the backend delivers a Safety Removal deletion instruction. Idempotent: a
+ * missing file is not an error.
+ */
+export async function deleteOfflinePatternFile(patternId: string): Promise<void> {
+  const identity = getActiveIdentity();
+  const path = getOfflinePatternPath(patternId, identity);
+  await FileSystem.deleteAsync(path, { idempotent: true });
+}
+
 export function base64ToUint8Array(base64: string): Uint8Array {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
   const lookup = new Uint8Array(256);

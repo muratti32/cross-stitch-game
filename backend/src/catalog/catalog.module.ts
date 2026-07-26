@@ -12,6 +12,13 @@ import {
   TagLabelEntity,
   StaffPickEntity,
   CategoryEntity,
+  CommunityReportEntity,
+  PostPublicationReviewEntity,
+  PostPublicationReviewClosureEntity,
+  CatalogWithdrawalClosureEntity,
+  CatalogWithdrawalEntity,
+  ModerationNoticeEntity,
+  SafetyRemovalAppealEntity,
 } from './entities';
 import { CatalogService } from './catalog.service';
 import { CatalogController } from './catalog.controller';
@@ -31,6 +38,15 @@ import { CatalogPrecheckService } from './catalog-precheck.service';
 import { CatalogPrecheckJobConsumerService } from './catalog-precheck-job-consumer.service';
 import { CatalogMetadataRevisionController } from './catalog-metadata-revision.controller';
 import { CatalogMetadataRevisionService } from './catalog-metadata-revision.service';
+import { CommunityReportController } from './community-report.controller';
+import { CommunityReportService } from './community-report.service';
+import { CatalogWithdrawalController } from './catalog-withdrawal.controller';
+import { CatalogWithdrawalService } from './catalog-withdrawal.service';
+import { ModerationNoticeController } from './moderation-notice.controller';
+import { ModerationNoticeService } from './moderation-notice.service';
+import { SafetyRemovalAppealController } from './safety-removal-appeal.controller';
+import { SafetyRemovalAppealService } from './safety-removal-appeal.service';
+import { OperatorAuditLogService } from '../admin/operator-audit-log.service';
 
 @Module({
   imports: [
@@ -47,6 +63,13 @@ import { CatalogMetadataRevisionService } from './catalog-metadata-revision.serv
       CatalogMetadataAppealEntity,
       CatalogMetadataReviewDecisionEntity,
       CreatorProfileEntity,
+      CommunityReportEntity,
+      PostPublicationReviewEntity,
+      PostPublicationReviewClosureEntity,
+      CatalogWithdrawalClosureEntity,
+      CatalogWithdrawalEntity,
+      ModerationNoticeEntity,
+      SafetyRemovalAppealEntity,
     ]),
     AppConfigModule,
     AuthModule,
@@ -58,6 +81,10 @@ import { CatalogMetadataRevisionService } from './catalog-metadata-revision.serv
     CatalogPreviewsController,
     CatalogSubmissionController,
     CatalogMetadataRevisionController,
+    CommunityReportController,
+    CatalogWithdrawalController,
+    ModerationNoticeController,
+    SafetyRemovalAppealController,
   ],
   providers: [
     CatalogService,
@@ -65,6 +92,11 @@ import { CatalogMetadataRevisionService } from './catalog-metadata-revision.serv
     CatalogMetadataRevisionService,
     CatalogPrecheckService,
     CatalogPrecheckJobConsumerService,
+    CommunityReportService,
+    CatalogWithdrawalService,
+    ModerationNoticeService,
+    SafetyRemovalAppealService,
+    OperatorAuditLogService,
     LocalObjectStorage,
     R2ObjectStorage,
     {
@@ -82,6 +114,7 @@ import { CatalogMetadataRevisionService } from './catalog-metadata-revision.serv
     CatalogSubmissionService,
     CatalogMetadataRevisionService,
     CatalogPrecheckJobConsumerService,
+    SafetyRemovalAppealService,
     OBJECT_STORAGE,
   ],
 })

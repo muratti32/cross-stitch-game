@@ -1,7 +1,7 @@
 // Shapes mirrored 1:1 from backend/src/admin and backend/src/catalog. Do not
 // add fields the backend does not return; do not invent endpoints.
 
-export type PatternStatus = 'available' | 'withdrawn' | 'removed';
+export type PatternStatus = 'available' | 'review_hold' | 'withdrawn' | 'removed';
 export type PatternUnlockPriceTier = 'small' | 'medium' | 'large' | null;
 
 export interface AdminPatternListItem {
@@ -312,4 +312,77 @@ export interface ReconciliationReport {
     storageOrphanObjectCount: number;
     storageRegistryMissingObjectCount: number;
   } | null;
+}
+
+export type CommunityReportReason =
+  | 'inappropriate_or_unsafe_content'
+  | 'copyright_or_publication_rights'
+  | 'duplicate_or_spam'
+  | 'misleading_title_or_tags'
+  | 'other';
+
+export type PostPublicationReviewCloseOutcome =
+  | 'no_violation'
+  | 'metadata_remediation'
+  | 'safety_removal';
+
+export interface PostPublicationReviewListItem {
+  closeOutcome: PostPublicationReviewCloseOutcome | null;
+  closeReason: string | null;
+  closedAt: string | null;
+  holdAppliedAt: string | null;
+  holdReason: string | null;
+  id: string;
+  openedAt: string;
+  patternId: string;
+  patternStatus: PatternStatus;
+  patternTitle: string;
+  reportCount: number;
+  status: 'open' | 'closed';
+}
+
+export interface PostPublicationReviewReport {
+  createdAt: string;
+  explanation: string | null;
+  id: string;
+  reason: CommunityReportReason;
+}
+
+export interface PostPublicationReviewDetail extends PostPublicationReviewListItem {
+  metadataRevisionId: string | null;
+  noticeId: string | null;
+  pattern: {
+    categoryCode: string;
+    description: string | null;
+    id: string;
+    previewUrl: string;
+    sourceLanguage: string | null;
+    status: PatternStatus;
+    tagCodes: string[];
+    title: string;
+  };
+  reports: PostPublicationReviewReport[];
+}
+
+export interface ReviewHoldResult {
+  applied: boolean;
+  emailQueued: boolean;
+  holdAppliedAt: string;
+  moderationNoticeId: string;
+  patternId: string;
+  reason: string;
+  reviewId: string;
+  status: 'review_hold';
+}
+
+export interface PostPublicationReviewCloseResult {
+  applied: boolean;
+  closeOutcome: PostPublicationReviewCloseOutcome;
+  closedAt: string;
+  emailQueued: boolean;
+  moderationNoticeId: string;
+  patternId: string;
+  reason: string | null;
+  reviewId: string;
+  status: 'closed';
 }

@@ -6,6 +6,7 @@ import type { PatternStatus } from '@/lib/types';
 const STATUS_TABS: { value: 'all' | PatternStatus; label: string }[] = [
   { label: 'All', value: 'all' },
   { label: 'Available', value: 'available' },
+  { label: 'Review Hold', value: 'review_hold' },
   { label: 'Withdrawn', value: 'withdrawn' },
   { label: 'Removed', value: 'removed' },
 ];

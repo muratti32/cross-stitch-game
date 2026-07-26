@@ -13,12 +13,15 @@ import { TagEntity } from './tag.entity';
 import { CreatorProfileEntity } from '../../creator-profile/entities';
 
 export type PatternUnlockPriceTier = 'small' | 'medium' | 'large' | null;
-export type PatternStatus = 'available' | 'withdrawn' | 'removed';
+export type PatternStatus = 'available' | 'review_hold' | 'withdrawn' | 'removed';
 export type PatternVisibility = 'catalog' | 'personal';
 
 @Entity({ name: 'patterns', schema: 'catalog' })
 @Check('CHK_patterns_unlock_price_tier', '"unlock_price_tier" IN (\'small\', \'medium\', \'large\') OR "unlock_price_tier" IS NULL')
-@Check('CHK_patterns_status', '"status" IN (\'available\', \'withdrawn\', \'removed\')')
+@Check(
+  'CHK_patterns_status',
+  '"status" IN (\'available\', \'review_hold\', \'withdrawn\', \'removed\')',
+)
 @Check(
   'CHK_patterns_visibility_owner',
   '("visibility" = \'catalog\' AND "owner_account_id" IS NULL) OR ("visibility" = \'personal\' AND "owner_account_id" IS NOT NULL)',

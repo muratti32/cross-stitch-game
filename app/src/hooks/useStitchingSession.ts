@@ -13,6 +13,7 @@ import {
   insertProgressOpsBatch,
   saveCheckpoint,
   updateSessionStatus,
+  updateSessionError,
   unpackCompletedBitmap,
   ProgressOperation,
   StitchingSession,
@@ -27,6 +28,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { loadBundledPattern } from '../bundled-patterns';
 import {
   base64ToUint8Array,
+  deleteOfflinePatternFile,
   getOfflinePatternPath,
   retryDownload,
   waitUntilSessionReady,
@@ -59,6 +61,10 @@ export function useStitchingSession(sessionId: string | undefined) {
 
   // Reactive: a single conflict notice when the server overrode a local op.
   const [hasSyncConflict, setHasSyncConflict] = useState(false);
+  // Set when the backend reports this Pattern was Safety Removed while the
+  // session was open. Offline Pattern Data for it is deleted locally and the
+  // session stops accepting further play.
+  const [patternRemoved, setPatternRemoved] = useState(false);
   // Bumped whenever a sync folds server-changed cells into the renderer, so the
   // canvas can refresh its shared completed bitmap.
   const [syncTick, setSyncTick] = useState(0);
@@ -242,6 +248,18 @@ export function useStitchingSession(sessionId: string | undefined) {
       if (err instanceof ProgressSyncError && err.status === 404) {
         // Not an account-owned session server-side; stop trying to sync it.
         isAccountSessionRef.current = false;
+      } else if (err instanceof ProgressSyncError && err.code === 'pattern_removed') {
+        // Safety Removal deletion instruction: stop syncing, wipe the local
+        // Offline Pattern Data, and keep the session unavailable.
+        isAccountSessionRef.current = false;
+        setPatternRemoved(true);
+        if (sess) {
+          await updateSessionError(
+            sess.id,
+            'This Community Pattern was removed by moderation.',
+          );
+          await deleteOfflinePatternFile(sess.patternId).catch(() => undefined);
+        }
       }
       // Otherwise stay silent: local play is unaffected and the next trigger retries.
     } finally {
@@ -677,6 +695,7 @@ export function useStitchingSession(sessionId: string | undefined) {
     hasSyncConflict,
     dismissSyncConflict: () => setHasSyncConflict(false),
     syncTick,
+    patternRemoved,
   };
 }
 

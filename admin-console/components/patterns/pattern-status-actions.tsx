@@ -11,12 +11,13 @@ export function PatternStatusActions({ pattern }: { pattern: AdminPatternDetail 
   const withdrawMutation = useWithdrawPattern(pattern.id);
   const removeMutation = useRemovePattern(pattern.id);
   const restoreMutation = useRestorePattern(pattern.id);
+  const heldForReview = pattern.status === 'review_hold';
 
   return (
     <div className="flex flex-wrap gap-2">
       <ConfirmActionDialog
         trigger={
-          <Button variant="outline" disabled={pattern.status === 'withdrawn'}>
+          <Button variant="outline" disabled={heldForReview || pattern.status === 'withdrawn'}>
             Withdraw
           </Button>
         }
@@ -30,7 +31,7 @@ export function PatternStatusActions({ pattern }: { pattern: AdminPatternDetail 
       />
       <ConfirmActionDialog
         trigger={
-          <Button variant="destructive" disabled={pattern.status === 'removed'}>
+          <Button variant="destructive" disabled={heldForReview || pattern.status === 'removed'}>
             Remove
           </Button>
         }
@@ -45,7 +46,7 @@ export function PatternStatusActions({ pattern }: { pattern: AdminPatternDetail 
       />
       <ConfirmActionDialog
         trigger={
-          <Button variant="secondary" disabled={pattern.status === 'available'}>
+          <Button variant="secondary" disabled={heldForReview || pattern.status === 'available'}>
             Restore
           </Button>
         }

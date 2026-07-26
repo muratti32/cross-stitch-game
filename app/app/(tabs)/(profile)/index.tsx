@@ -250,6 +250,20 @@ export default function ProfileScreen() {
         </Pressable>
       )}
 
+      {isAccount && (
+        <Pressable
+          onPress={() => router.push('/(tabs)/(profile)/moderation-notices')}
+          style={({ pressed }) => [styles.submissionsButton, pressed && styles.pressedButton]}
+        >
+          <Ionicons name="shield-outline" size={18} color={Theme.colors.accentTeal} />
+          <View style={styles.submissionsButtonText}>
+            <Text style={styles.submissionsButtonTitle}>Moderation Notices</Text>
+            <Text style={styles.submissionsButtonSubtitle}>Review catalog decisions affecting your patterns</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={Theme.colors.textSecondary} />
+        </Pressable>
+      )}
+
       {isAccount && creatorProfile !== null && (
         <Pressable
           onPress={() => router.push('/(tabs)/(profile)/published-patterns')}

@@ -14,6 +14,13 @@ import {
   TagLabelEntity,
   StaffPickEntity,
   CategoryEntity,
+  CommunityReportEntity,
+  PostPublicationReviewEntity,
+  PostPublicationReviewClosureEntity,
+  CatalogWithdrawalClosureEntity,
+  CatalogWithdrawalEntity,
+  ModerationNoticeEntity,
+  SafetyRemovalAppealEntity,
 } from '../catalog/entities';
 import { JobOutboxEntity, ProcessingJobEntity } from '../jobs/entities';
 import {
@@ -81,8 +88,14 @@ import { CreateCommerceLedger1785628800000 } from './migrations/1785628800000-Cr
 import { CreatePremiumMembership1785801600000 } from './migrations/1785801600000-CreatePremiumMembership';
 import { CreateAdAttempts1785715200000 } from './migrations/1785715200000-CreateAdAttempts';
 import { CreateAiArtworkSchema1785881600000 } from './migrations/1785881600000-CreateAiArtworkSchema';
-import { AiArtworkEntity, AiCreditReservationEntity } from '../ai-artwork/entities';
-import { SupportReferenceEntity, SupportReferenceRecordEntity } from '../support/entities';
+import {
+  AiArtworkEntity,
+  AiCreditReservationEntity,
+} from '../ai-artwork/entities';
+import {
+  SupportReferenceEntity,
+  SupportReferenceRecordEntity,
+} from '../support/entities';
 import { CreateSupportReferences1785974400000 } from './migrations/1785974400000-CreateSupportReferences';
 import {
   CreatorProfileAppealEntity,
@@ -131,6 +144,12 @@ import { CreateReconciliationFindings1787529600000 } from './migrations/17875296
 import { ReconciliationFindingEntity, ReconciliationRunEntity } from '../reconciliation';
 import { CreateOperationalAlertRuns1787616000000 } from './migrations/1787616000000-CreateOperationalAlertRuns';
 import { OperationalAlertRunEntity } from '../observability';
+import { CreateCommunityReports1786320000000 } from './migrations/1786320000000-CreateCommunityReports';
+import { CreateCatalogWithdrawals1786406400000 } from './migrations/1786406400000-CreateCatalogWithdrawals';
+import { CreateReviewHolds1786492800000 } from './migrations/1786492800000-CreateReviewHolds';
+import { CreatePostPublicationReviewFinalDecisions1786579200000 } from './migrations/1786579200000-CreatePostPublicationReviewFinalDecisions';
+import { AddSafetyRemovalOutcome1786665600000 } from './migrations/1786665600000-AddSafetyRemovalOutcome';
+import { CreateSafetyRemovalAppeals1786752000000 } from './migrations/1786752000000-CreateSafetyRemovalAppeals';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -206,6 +225,13 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       ReconciliationRunEntity,
       ReconciliationFindingEntity,
       OperationalAlertRunEntity,
+      CommunityReportEntity,
+      PostPublicationReviewEntity,
+      PostPublicationReviewClosureEntity,
+      CatalogWithdrawalClosureEntity,
+      CatalogWithdrawalEntity,
+      ModerationNoticeEntity,
+      SafetyRemovalAppealEntity,
     ],
     migrations: [
       CreateJobsSchema1783900800000,
@@ -253,6 +279,12 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateAnalyticsGameplayEvents1787443200000,
       CreateReconciliationFindings1787529600000,
       CreateOperationalAlertRuns1787616000000,
+      CreateCommunityReports1786320000000,
+      CreateCatalogWithdrawals1786406400000,
+      CreateReviewHolds1786492800000,
+      CreatePostPublicationReviewFinalDecisions1786579200000,
+      AddSafetyRemovalOutcome1786665600000,
+      CreateSafetyRemovalAppeals1786752000000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

@@ -5,7 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppConfigModule } from '../config/app-config.module';
 import { AppConfigService } from '../config/app-config.service';
 import { CatalogModule } from '../catalog/catalog.module';
-import { PatternEntity, TagEntity, TagLabelEntity, StaffPickEntity, CategoryEntity } from '../catalog/entities';
+import {
+  PatternEntity,
+  TagEntity,
+  TagLabelEntity,
+  StaffPickEntity,
+  CategoryEntity,
+} from '../catalog/entities';
 import { ConversionModule } from '../conversion/conversion.module';
 import { CreatorProfileModule } from '../creator-profile/creator-profile.module';
 import { JobsModule } from '../jobs/jobs.module';
@@ -13,6 +19,8 @@ import { SupportModule } from '../support/support.module';
 import { ADMIN_JWT_AUDIENCE, ADMIN_JWT_ISSUER } from './admin.constants';
 import { AdminAuthController } from './admin-auth.controller';
 import { AdminCatalogMetadataRevisionsController } from './admin-catalog-metadata-revisions.controller';
+import { AdminPostPublicationReviewsController } from './admin-post-publication-reviews.controller';
+import { AdminSafetyRemovalAppealsController } from './admin-safety-removal-appeals.controller';
 import { AdminCatalogSubmissionsController } from './admin-catalog-submissions.controller';
 import { AdminCreatorRestrictionAppealsController } from './admin-creator-restriction-appeals.controller';
 import { AdminProfileInvestigationsController } from './admin-profile-investigations.controller';
@@ -45,6 +53,7 @@ import { OperatorProvisioningService } from './operator-provisioning.service';
 import { OperatorRefreshTokensRepository } from './operator-refresh-tokens.repository';
 import { OperatorSecurityEventsService } from './operator-security-events.service';
 import { OperatorTotpService } from './operator-totp.service';
+import { PostPublicationReviewService } from './post-publication-review.service';
 import { TotpSecretCipherService } from './totp-secret-cipher.service';
 import { WebhookArchiveModule } from '../webhooks';
 import { WebhookDeliveriesAdminService } from './webhook-deliveries-admin.service';
@@ -62,6 +71,8 @@ import { OperationalAlertsAdminService } from './operational-alerts-admin.servic
     AdminCatalogSubmissionsController,
     AdminCreatorRestrictionAppealsController,
     AdminProfileInvestigationsController,
+    AdminPostPublicationReviewsController,
+    AdminSafetyRemovalAppealsController,
     AdminCategoriesController,
     AdminPatternsController,
     AdminStaffPicksController,
@@ -135,6 +146,7 @@ import { OperationalAlertsAdminService } from './operational-alerts-admin.servic
     OperatorHashingService,
     OperatorPermissionsGuard,
     OperatorProvisioningService,
+    PostPublicationReviewService,
     OperatorRefreshTokensRepository,
     OperatorSecurityEventsService,
     OperatorTotpService,

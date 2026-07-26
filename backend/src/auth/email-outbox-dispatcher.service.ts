@@ -1,8 +1,13 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { DataSource, EntityManager, IsNull } from 'typeorm';
 
-import { EMAIL_SENDER, EmailSender } from './email-sender.interface';
-import { EmailOutboxEntity, EmailOtpOutboxPayload } from './email-outbox.entity';
+import { EMAIL_SENDER, EmailDelivery, EmailSender } from './email-sender.interface';
+import {
+  EmailOutboxEntity,
+  EmailOutboxPayload,
+  EmailOtpOutboxPayload,
+  ModerationNoticeOutboxPayload,
+} from './email-outbox.entity';
 
 const DEFAULT_EMAIL_OUTBOX_BATCH_SIZE = 25;
 
@@ -36,15 +41,7 @@ export class EmailOutboxDispatcherService {
         .getMany();
 
       for (const outbox of outboxRows) {
-        const payload = assertEmailOtpPayload(outbox.payload);
-        if (outbox.template !== 'email_otp' || outbox.dedupeKey !== payload.codeId) {
-          throw new Error(`Email outbox ${outbox.id} has an invalid delivery payload`);
-        }
-        await this.sender.send({
-          code: payload.code,
-          codeId: payload.codeId,
-          toEmail: outbox.toEmail,
-        });
+        await this.sender.send(deliveryFor(outbox));
         const updated = await manager.getRepository(EmailOutboxEntity).update(
           { dispatchedAt: IsNull(), id: outbox.id },
           {
@@ -96,13 +93,65 @@ export class EmailOutboxDispatcherService {
   }
 }
 
-function assertEmailOtpPayload(payload: EmailOtpOutboxPayload): EmailOtpOutboxPayload {
+function deliveryFor(outbox: EmailOutboxEntity): EmailDelivery {
+  if (outbox.template === 'email_otp') {
+    const payload = assertEmailOtpPayload(outbox.payload);
+    if (outbox.dedupeKey !== payload.codeId) {
+      throw new Error(`Email outbox ${outbox.id} has an invalid delivery payload`);
+    }
+    return {
+      code: payload.code,
+      codeId: payload.codeId,
+      deliveryId: outbox.dedupeKey,
+      template: 'email_otp',
+      toEmail: outbox.toEmail,
+    };
+  }
+  const payload = assertModerationNoticePayload(outbox.payload);
+  if (outbox.dedupeKey !== `moderation_notice:${payload.noticeId}`) {
+    throw new Error(`Email outbox ${outbox.id} has an invalid delivery payload`);
+  }
+  return {
+    deliveryId: outbox.dedupeKey,
+    noticeId: payload.noticeId,
+    patternId: payload.patternId,
+    patternTitle: payload.patternTitle,
+    reason: payload.reason,
+    template: 'moderation_notice',
+    toEmail: outbox.toEmail,
+  };
+}
+
+function assertEmailOtpPayload(payload: EmailOutboxPayload): EmailOtpOutboxPayload {
   if (
     typeof payload !== 'object' ||
     payload === null ||
+    !('code' in payload) ||
     typeof payload.code !== 'string' ||
     !/^\d{6}$/.test(payload.code) ||
+    !('codeId' in payload) ||
     typeof payload.codeId !== 'string'
+  ) {
+    throw new Error('Email outbox payload is invalid');
+  }
+  return payload;
+}
+
+function assertModerationNoticePayload(
+  payload: EmailOutboxPayload,
+): ModerationNoticeOutboxPayload {
+  if (
+    typeof payload !== 'object' ||
+    payload === null ||
+    !('noticeId' in payload) ||
+    typeof payload.noticeId !== 'string' ||
+    !('patternId' in payload) ||
+    typeof payload.patternId !== 'string' ||
+    !('patternTitle' in payload) ||
+    typeof payload.patternTitle !== 'string' ||
+    !('reason' in payload) ||
+    typeof payload.reason !== 'string' ||
+    payload.reason.trim().length === 0
   ) {
     throw new Error('Email outbox payload is invalid');
   }

@@ -5,7 +5,12 @@ import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/client/fetcher';
 import type { AdminPatternPage, OfficialPatternDraftPage, OfficialPatternDraftStatus, PatternStatus } from '@/lib/types';
 
-const PATTERN_STATUSES: readonly PatternStatus[] = ['available', 'withdrawn', 'removed'];
+const PATTERN_STATUSES: readonly PatternStatus[] = [
+  'available',
+  'review_hold',
+  'withdrawn',
+  'removed',
+];
 const DRAFT_STATUSES: readonly OfficialPatternDraftStatus[] = [
   'pending',
   'processing',

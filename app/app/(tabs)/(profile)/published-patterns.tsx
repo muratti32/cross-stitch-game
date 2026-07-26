@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
@@ -11,6 +11,7 @@ import {
   useMyPublishedPatterns,
   useWithdrawCatalogMetadataRevision,
 } from '@/api/catalogMetadataRevisions';
+import { useWithdrawCommunityPattern } from '@/api/catalogWithdrawals';
 import { Button, Card, EmptyState, Screen } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
@@ -29,24 +30,62 @@ export default function PublishedPatternsScreen() {
   const accountId = useIdentityStore((state) => state.accountId);
   const isAccount = useIdentityStore((state) => state.isAccount);
   const query = useMyPublishedPatterns(accountId, isAccount);
-  const withdraw = useWithdrawCatalogMetadataRevision(accountId);
+  const withdrawRevision = useWithdrawCatalogMetadataRevision(accountId);
+  const withdrawPattern = useWithdrawCommunityPattern(accountId);
   const appeal = useAppealCatalogMetadataRevision(accountId);
   const [withdrawingId, setWithdrawingId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [withdrawingPatternId, setWithdrawingPatternId] = useState<string | null>(null);
   const [appealId, setAppealId] = useState<string | null>(null);
   const [appealNote, setAppealNote] = useState('');
   const [appealError, setAppealError] = useState<string | null>(null);
 
   const submitWithdraw = async (id: string) => {
-    setError(null);
     setWithdrawingId(id);
     try {
-      await withdraw.mutateAsync(id);
+      await withdrawRevision.mutateAsync(id);
     } catch (caught: unknown) {
-      setError(caught instanceof Error ? caught.message : String(caught));
+      Alert.alert(
+        'Could not withdraw revision',
+        caught instanceof Error ? caught.message : String(caught),
+      );
     } finally {
       setWithdrawingId(null);
     }
+  };
+
+  const submitPatternWithdrawal = async (id: string) => {
+    if (withdrawPattern.isPending) return;
+    setWithdrawingPatternId(id);
+    try {
+      await withdrawPattern.mutateAsync(id);
+      Alert.alert(
+        'Pattern withdrawn',
+        'It is no longer discoverable and cannot start new sessions. Existing Stitching Sessions keep their progress and playable data.',
+      );
+    } catch (caught: unknown) {
+      Alert.alert(
+        'Could not withdraw pattern',
+        caught instanceof Error ? caught.message : String(caught),
+      );
+    } finally {
+      setWithdrawingPatternId(null);
+    }
+  };
+
+  const confirmPatternWithdrawal = (item: MyPublishedPattern) => {
+    if (withdrawPattern.isPending || item.status !== 'available') return;
+    Alert.alert(
+      'Withdraw from Community Catalog?',
+      `“${item.title}” will disappear from discovery and cannot start new sessions. This Pattern identity can never be restored. Existing Stitching Sessions and their progress remain playable.`,
+      [
+        { style: 'cancel', text: 'Cancel' },
+        {
+          onPress: () => void submitPatternWithdrawal(item.id),
+          style: 'destructive',
+          text: 'Withdraw permanently',
+        },
+      ],
+    );
   };
 
   const submitAppeal = async (id: string) => {
@@ -103,9 +142,9 @@ export default function PublishedPatternsScreen() {
               appealId={appealId}
               appealNote={appealNote}
               appealSubmitting={appeal.isPending && appealId === item.id}
-              error={withdrawingId === item.id ? error : null}
               item={item}
-              withdrawing={withdraw.isPending && withdrawingId === item.id}
+              withdrawingRevision={withdrawRevision.isPending && withdrawingId === item.id}
+              withdrawingPattern={withdrawPattern.isPending && withdrawingPatternId === item.id}
               onAppealNoteChange={setAppealNote}
               onCancelAppeal={() => { setAppealId(null); setAppealNote(''); setAppealError(null); }}
               onOpenAppeal={() => { setAppealId(item.id); setAppealNote(''); setAppealError(null); }}
@@ -118,6 +157,7 @@ export default function PublishedPatternsScreen() {
               onWithdraw={() => {
                 if (item.latestRevision !== null) void submitWithdraw(item.latestRevision.id);
               }}
+              onWithdrawPattern={() => confirmPatternWithdrawal(item)}
             />
           )}
         />
@@ -127,25 +167,36 @@ export default function PublishedPatternsScreen() {
 }
 
 function PatternCard({
-  appealError, appealId, appealNote, appealSubmitting, error, item, onAppealNoteChange, onCancelAppeal,
-  onOpenAppeal, onReviseMetadata, onSubmitAppeal, onWithdraw, withdrawing,
+  appealError, appealId, appealNote, appealSubmitting, item, onAppealNoteChange, onCancelAppeal,
+  onOpenAppeal, onReviseMetadata, onSubmitAppeal, onWithdraw, onWithdrawPattern,
+  withdrawingPattern, withdrawingRevision,
 }: {
   appealError: string | null; appealId: string | null; appealNote: string; appealSubmitting: boolean;
-  error: string | null; item: MyPublishedPattern;
+  item: MyPublishedPattern;
   onAppealNoteChange: (value: string) => void; onCancelAppeal: () => void; onOpenAppeal: () => void;
   onReviseMetadata: () => void; onSubmitAppeal: () => void; onWithdraw: () => void;
-  withdrawing: boolean;
+  onWithdrawPattern: () => void; withdrawingPattern: boolean; withdrawingRevision: boolean;
 }) {
   const revision = item.latestRevision;
-  const canWithdraw = revision !== null && (revision.status === 'pending' || revision.status === 'appeal_pending');
-  const canAppeal = revision !== null && revision.status === 'rejected';
-  const appealOpen = appealId === item.id;
+  const available = item.status === 'available';
+  const metadataActionsAvailable = available || item.status === 'review_hold';
+  const canWithdraw = metadataActionsAvailable && revision !== null && (revision.status === 'pending' || revision.status === 'appeal_pending');
+  const canAppeal = metadataActionsAvailable && revision !== null && revision.status === 'rejected';
+  const appealOpen = metadataActionsAvailable && appealId === item.id;
   return (
     <Card style={styles.card}>
       <View style={styles.titleRow}>
         <Text numberOfLines={2} style={styles.title}>{item.title}</Text>
-        {revision !== null && (
-          <View style={styles.badge}><Text style={styles.badgeText}>{STATUS_LABELS[revision.status]}</Text></View>
+        {(item.status !== 'available' || revision !== null) && (
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>
+              {item.status === 'withdrawn'
+                ? 'Withdrawn from Catalog'
+                : item.status === 'review_hold'
+                  ? 'Under Review Hold'
+                  : STATUS_LABELS[revision!.status]}
+            </Text>
+          </View>
         )}
       </View>
       <Text style={styles.meta}>{item.categoryCode} · Published {new Date(item.publishedAt).toLocaleDateString()}</Text>
@@ -155,18 +206,35 @@ function PatternCard({
           {revision.rejectionNote !== null && <Text style={styles.rejectionNote}>{revision.rejectionNote}</Text>}
         </View>
       )}
-      {error !== null && <Text style={styles.error}>{error}</Text>}
+      {item.status === 'withdrawn' && (
+        <Text style={styles.help}>
+          This identity is permanently withdrawn. Players with an existing Stitching Session keep their progress and access.
+        </Text>
+      )}
+      {item.status === 'review_hold' && (
+        <Text style={styles.help}>
+          This Pattern is temporarily outside discovery and cannot start new sessions. Existing Stitching Sessions remain playable. You may still propose a metadata revision.
+        </Text>
+      )}
       <View style={styles.actions}>
-        {item.canSubmitRevision && (
+        {metadataActionsAvailable && item.canSubmitRevision && (
           <Button title="Revise Metadata" variant="secondary" onPress={onReviseMetadata} style={styles.action} />
         )}
         {canWithdraw && (
-          <Button title="Withdraw" variant="rose" loading={withdrawing} onPress={onWithdraw} style={styles.action} />
+          <Button title="Withdraw Revision" variant="rose" loading={withdrawingRevision} onPress={onWithdraw} style={styles.action} />
         )}
         {canAppeal && !appealOpen && (
           <Button title="Appeal Decision" variant="secondary" onPress={onOpenAppeal} style={styles.action} />
         )}
       </View>
+      {available && (
+        <Button
+          title="Withdraw from Catalog"
+          variant="rose"
+          loading={withdrawingPattern}
+          onPress={onWithdrawPattern}
+        />
+      )}
       {appealOpen && (
         <View style={styles.appealForm}>
           <Text style={styles.help}>You can appeal this unchanged snapshot once. Submitting a new revision instead waives this appeal.</Text>
