@@ -138,6 +138,7 @@ export interface PrepareResponse {
 export interface PreparePatternInfo {
   title: string;
   previewUrl: string | null;
+  thumbnailUrl: string | null;
   width: number;
   height: number;
 }
@@ -192,6 +193,7 @@ export async function preparePendingPersonalSession(
   return createSession(pending.patternId, checksum, 'personal', 'ready', null, {
     title: pending.title,
     previewUrl: null,
+    thumbnailUrl: null,
     width: pending.width,
     height: pending.height,
   });

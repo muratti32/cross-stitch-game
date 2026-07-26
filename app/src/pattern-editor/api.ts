@@ -1,7 +1,9 @@
 import { apiFetch } from '@/api/apiFetch';
+import { absoluteThumbnailUrls } from '@/api/catalog';
 import { Config } from '@/config';
 import { decodePatternArtifact } from '@/pattern-artifact';
 import type { PatternData } from '@/pattern-artifact';
+import type { PatternThumbnailUrls } from '../pattern-assets';
 
 export class ApiError extends Error {
   constructor(message: string, public readonly status: number) {
@@ -74,6 +76,7 @@ export interface CreateDerivedPatternResult {
   width: number;
   height: number;
   previewUrl: string;
+  thumbnailUrls?: PatternThumbnailUrls | null;
   alreadyExists: boolean;
 }
 
@@ -104,12 +107,16 @@ function withAbsoluteArtifactUrl(grant: PersonalPatternArtifactGrant): PersonalP
   };
 }
 
-function withAbsolutePreviewUrl<T extends { previewUrl: string }>(result: T): T {
+function withAbsolutePreviewUrl<T extends {
+  previewUrl: string;
+  thumbnailUrls?: PatternThumbnailUrls | null;
+}>(result: T): T {
   return {
     ...result,
     previewUrl: result.previewUrl.startsWith('http')
       ? result.previewUrl
       : `${Config.apiBaseUrl}${result.previewUrl}`,
+    thumbnailUrls: absoluteThumbnailUrls(result.thumbnailUrls),
   };
 }
 

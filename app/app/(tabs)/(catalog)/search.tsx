@@ -8,10 +8,10 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Screen, Card, Button, EmptyState, CachedImage } from '@/components';
+import { Screen, Card, Button, EmptyState, PatternImage } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useTabBarSpace } from '@/theme/tabBar';
-import { absolutePreviewUrl, useCatalogSearch } from '@/api/catalog';
+import { absolutePreviewUrl, absoluteThumbnailUrls, useCatalogSearch } from '@/api/catalog';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalLikes } from '@/api/social';
 import { useIdentityStore } from '@/identity/guestIdentity';
@@ -99,8 +99,12 @@ export default function SearchScreen() {
                 style={styles.resultRow}
                 onPress={() => router.push(`/(tabs)/(catalog)/${item.id}`)}
               >
-                <CachedImage
-                  uri={absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl)}
+                <PatternImage
+                  assets={{
+                    thumbnailUrls: absoluteThumbnailUrls(item.thumbnailUrls),
+                    previewUrl: absolutePreviewUrl(item.previewUrl),
+                  }}
+                  variant="browsing"
                   style={styles.resultImage}
                 />
                 <View style={styles.resultDetails}>

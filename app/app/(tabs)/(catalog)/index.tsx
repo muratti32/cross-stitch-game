@@ -1,12 +1,13 @@
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView, Image, ActivityIndicator, Pressable, RefreshControl } from 'react-native';
-import { Screen, EmptyState, SectionHeader, Card, Button, CachedImage } from '@/components';
+import { StyleSheet, View, Text, ScrollView, ActivityIndicator, Pressable, RefreshControl } from 'react-native';
+import { Screen, EmptyState, SectionHeader, Card, Button, PatternImage } from '@/components';
 import { Theme } from '@/theme/theme';
 import { BUNDLED_PATTERNS } from '@/bundled-patterns';
 import { useRouter } from 'expo-router';
 import {
   CatalogPatternItem,
   absolutePreviewUrl,
+  absoluteThumbnailUrls,
   useCatalogCategories,
   useCatalogTags,
   useNewPatterns,
@@ -98,7 +99,7 @@ export default function CatalogScreen() {
             style={styles.patternCard}
             onPress={() => handleSelectPattern(pattern.id)}
           >
-            <Image source={pattern.previewAsset} style={styles.patternImage} />
+            <PatternImage assets={{}} variant="browsing" localAsset={pattern.previewAsset} style={styles.patternImage} />
             <View style={styles.patternDetails}>
               <Text style={styles.patternTitle} numberOfLines={1}>
                 {pattern.title}
@@ -244,7 +245,14 @@ function ServerPatternCard({
 
   return (
     <Card style={styles.patternCard} onPress={onPress}>
-      <CachedImage uri={absolutePreviewUrl(pattern.originalImageUrl ?? pattern.previewUrl)} style={styles.patternImage} />
+      <PatternImage
+        assets={{
+          thumbnailUrls: absoluteThumbnailUrls(pattern.thumbnailUrls),
+          previewUrl: absolutePreviewUrl(pattern.previewUrl),
+        }}
+        variant="browsing"
+        style={styles.patternImage}
+      />
       <View style={styles.patternDetails}>
         <Text style={styles.patternTitle} numberOfLines={1}>
           {pattern.title}
@@ -278,7 +286,14 @@ function NewPatternRow({
 
   return (
     <Card style={styles.newRow} onPress={onPress}>
-      <CachedImage uri={absolutePreviewUrl(pattern.originalImageUrl ?? pattern.previewUrl)} style={styles.newRowImage} />
+      <PatternImage
+        assets={{
+          thumbnailUrls: absoluteThumbnailUrls(pattern.thumbnailUrls),
+          previewUrl: absolutePreviewUrl(pattern.previewUrl),
+        }}
+        variant="browsing"
+        style={styles.newRowImage}
+      />
       <View style={styles.newRowDetails}>
         <View style={styles.newRowHeader}>
           <Text style={styles.patternTitle} numberOfLines={1}>

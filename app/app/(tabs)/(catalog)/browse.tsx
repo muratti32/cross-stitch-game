@@ -1,12 +1,13 @@
 import React from 'react';
 import { StyleSheet, View, Text, FlatList, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Screen, Card, Button, EmptyState, CachedImage } from '@/components';
+import { Screen, Card, Button, EmptyState, PatternImage } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useTabBarSpace } from '@/theme/tabBar';
 import {
   CatalogPatternItem,
   absolutePreviewUrl,
+  absoluteThumbnailUrls,
   usePatternsBrowse,
 } from '@/api/catalog';
 import { Ionicons } from '@expo/vector-icons';
@@ -103,8 +104,12 @@ export default function BrowseScreen() {
                 style={styles.gridCard}
                 onPress={() => router.push(`/(tabs)/(catalog)/${item.id}`)}
               >
-                <CachedImage
-                  uri={absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl)}
+                <PatternImage
+                  assets={{
+                    thumbnailUrls: absoluteThumbnailUrls(item.thumbnailUrls),
+                    previewUrl: absolutePreviewUrl(item.previewUrl),
+                  }}
+                  variant="browsing"
                   style={styles.gridImage}
                 />
                 <Text style={styles.gridTitle} numberOfLines={1}>

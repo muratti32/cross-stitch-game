@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Pressable, ActivityIndicator, Image } from 'react-native';
-import { Screen, EmptyState, Card, CachedImage, Button, DailyTasksCard, RewardedAdCard } from '@/components';
+import { Screen, EmptyState, Card, PatternImage, Button, DailyTasksCard, RewardedAdCard } from '@/components';
 import { Theme } from '@/theme/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { useIdentityStore } from '@/identity/guestIdentity';
@@ -74,6 +74,7 @@ export default function ProfileScreen() {
       const session = await preparePersonalSession(pattern.id, {
         height: pattern.height,
         previewUrl: pattern.previewUrl,
+        thumbnailUrl: pattern.thumbnailUrls?.browsing ?? null,
         title: pattern.title,
         width: pattern.width,
       });
@@ -360,7 +361,11 @@ export default function ProfileScreen() {
             ))}
             {personalPatterns.map((pattern) => (
               <Card key={pattern.id} style={styles.patternCard}>
-                <CachedImage uri={pattern.previewUrl} style={styles.patternPreview} />
+                <PatternImage
+                  assets={{ thumbnailUrls: pattern.thumbnailUrls, previewUrl: pattern.previewUrl }}
+                  variant="browsing"
+                  style={styles.patternPreview}
+                />
                 <View style={styles.patternInfo}>
                   <Text style={styles.patternTitle} numberOfLines={1}>{pattern.title}</Text>
                   <Text style={styles.patternMeta}>

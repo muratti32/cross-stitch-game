@@ -2,9 +2,11 @@ import { File } from 'expo-file-system';
 import { Platform } from 'react-native';
 
 import { apiFetch } from '@/api/apiFetch';
+import { absoluteThumbnailUrls } from '@/api/catalog';
 import { Config } from '@/config';
 import type { ConversionProfile } from './profiles';
 import { markCriticalPathActivity } from '@/perf/criticalPathSentinel';
+import type { PatternThumbnailUrls } from '../pattern-assets';
 
 export interface PersonalPattern {
   createdAt: string;
@@ -12,6 +14,7 @@ export interface PersonalPattern {
   id: string;
   paletteSize: number;
   previewUrl: string;
+  thumbnailUrls?: PatternThumbnailUrls | null;
   title: string;
   width: number;
 }
@@ -112,6 +115,7 @@ function withAbsolutePreviewUrl(pattern: PersonalPattern): PersonalPattern {
     previewUrl: pattern.previewUrl.startsWith('http')
       ? pattern.previewUrl
       : `${Config.apiBaseUrl}${pattern.previewUrl}`,
+    thumbnailUrls: absoluteThumbnailUrls(pattern.thumbnailUrls),
   };
 }
 

@@ -3,6 +3,7 @@ import { apiFetch } from './apiFetch';
 import { Config } from '../config';
 import { getCatalogCache, setCatalogCache } from '../local-db';
 import { getSurfaceKey } from '../catalog-cache-logic';
+import type { PatternThumbnailUrls } from '../pattern-assets';
 
 export type UnlockPriceTier = 'small' | 'medium' | 'large' | null;
 
@@ -21,6 +22,7 @@ export interface CatalogPatternItem {
   height: number;
   paletteSize: number;
   previewUrl: string;
+  thumbnailUrls?: PatternThumbnailUrls | null;
   originalImageUrl?: string;
   unlockPriceTier: UnlockPriceTier;
   publishedAt: string;
@@ -53,6 +55,18 @@ export function absolutePreviewUrl(previewUrl: string): string {
   return previewUrl.startsWith('http')
     ? previewUrl
     : `${Config.apiBaseUrl}${previewUrl}`;
+}
+
+export function absoluteThumbnailUrls(
+  thumbnailUrls: PatternThumbnailUrls | null | undefined,
+): PatternThumbnailUrls | null {
+  if (thumbnailUrls === null || thumbnailUrls === undefined) {
+    return null;
+  }
+  return {
+    browsing: absolutePreviewUrl(thumbnailUrls.browsing),
+    detail: absolutePreviewUrl(thumbnailUrls.detail),
+  };
 }
 
 async function fetchCatalogJson<T>(path: string): Promise<T> {

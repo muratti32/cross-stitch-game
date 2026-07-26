@@ -91,6 +91,7 @@ describe('preparePendingPersonalSession', () => {
     expect(metaArg).toEqual({
       title: 'My Draft',
       previewUrl: null,
+      thumbnailUrl: null,
       width: 2,
       height: 2,
     });

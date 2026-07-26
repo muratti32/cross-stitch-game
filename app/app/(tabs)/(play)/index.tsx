@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, View, Text, Image, FlatList, ActivityIndicator, Alert, Pressable, Dimensions } from 'react-native';
-import { Screen, EmptyState, Card, CachedImage } from '@/components';
+import { StyleSheet, View, Text, FlatList, ActivityIndicator, Alert, Pressable, Dimensions } from 'react-native';
+import { Screen, EmptyState, Card, PatternImage } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useTabBarSpace } from '@/theme/tabBar';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -153,15 +153,17 @@ export default function PlayScreen() {
     return (
       <Card style={styles.sessionCard} onPress={() => handleOpenSession(item.id)}>
         <View style={styles.imageWrapper}>
-          {pattern ? (
-            <Image source={pattern.previewAsset} style={styles.sessionImage} />
-          ) : item.previewUrl ? (
-            <CachedImage uri={item.previewUrl} style={styles.sessionImage} />
-          ) : (
-            <View style={[styles.sessionImage, styles.placeholderImageContainer]}>
-              <Ionicons name="image-outline" size={32} color={Theme.colors.textSecondary} />
-            </View>
-          )}
+          <PatternImage
+            assets={{
+              thumbnailUrls: item.thumbnailUrl
+                ? { browsing: item.thumbnailUrl, detail: item.thumbnailUrl }
+                : null,
+              previewUrl: item.previewUrl,
+            }}
+            variant="browsing"
+            localAsset={pattern?.previewAsset}
+            style={styles.sessionImage}
+          />
 
           {/* Absolute Trash Icon Button in top right of image */}
           <Pressable
@@ -318,13 +320,16 @@ function PreparingSessionCard({
   return (
     <Card style={styles.sessionCard}>
       <View style={styles.imageWrapper}>
-        {session.previewUrl ? (
-          <CachedImage uri={session.previewUrl} style={styles.sessionImage} />
-        ) : (
-          <View style={[styles.sessionImage, styles.placeholderImageContainer]}>
-            <Ionicons name="cloud-download-outline" size={32} color={Theme.colors.textSecondary} />
-          </View>
-        )}
+        <PatternImage
+          assets={{
+            thumbnailUrls: session.thumbnailUrl
+              ? { browsing: session.thumbnailUrl, detail: session.thumbnailUrl }
+              : null,
+            previewUrl: session.previewUrl,
+          }}
+          variant="browsing"
+          style={styles.sessionImage}
+        />
 
         {/* Cancel/Discard Button in top right */}
         <Pressable
@@ -496,7 +501,6 @@ const styles = StyleSheet.create({
   sessionImage: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#FAF6F0',
   },
   placeholderImageContainer: {
     justifyContent: 'center',

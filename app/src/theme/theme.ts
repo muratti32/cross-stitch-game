@@ -4,6 +4,7 @@ export const Theme = {
     background: '#FAF6F0',      // Warm linen fabric-inspired neutral background
     card: '#FFFFFF',            // Clean soft white for container/cards
     border: '#EADFC9',          // Muted warm border color
+    patternImageBackdrop: '#F3EAD9', // Opaque base for transparent previews, including under dark themes
 
     // Accent colors (cozy threads)
     accentRose: '#C36A76',      // Warm Rose thread

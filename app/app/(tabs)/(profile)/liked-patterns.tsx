@@ -4,10 +4,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
 import { useLikedPatterns } from '@/api/social';
-import { Card, EmptyState, Screen, CachedImage } from '@/components';
+import { Card, EmptyState, Screen, PatternImage } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
-import { absolutePreviewUrl } from '@/api/catalog';
+import { absolutePreviewUrl, absoluteThumbnailUrls } from '@/api/catalog';
 
 export default function LikedPatternsScreen() {
   const isAccount = useIdentityStore((state) => state.isAccount);
@@ -92,7 +92,14 @@ export default function LikedPatternsScreen() {
               style={({ pressed }) => [pressed && styles.pressedItem]}
             >
               <Card style={styles.card}>
-                <CachedImage uri={absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl)} style={styles.preview} />
+                <PatternImage
+                  assets={{
+                    thumbnailUrls: absoluteThumbnailUrls(item.thumbnailUrls),
+                    previewUrl: absolutePreviewUrl(item.previewUrl),
+                  }}
+                  variant="browsing"
+                  style={styles.preview}
+                />
                 <View style={styles.info}>
                   <Text numberOfLines={1} style={styles.title}>{item.title}</Text>
                   <Text style={styles.meta}>by {item.creatorName}</Text>
@@ -119,7 +126,7 @@ const styles = StyleSheet.create({
   footerLoader: { paddingVertical: Theme.spacing.md },
   list: { gap: Theme.spacing.md, paddingBottom: Theme.spacing.xxl },
   card: { flexDirection: 'row', alignItems: 'center', padding: Theme.spacing.md },
-  preview: { backgroundColor: Theme.colors.disabledBackground, borderRadius: Theme.radii.sm, height: 60, width: 60 },
+  preview: { borderRadius: Theme.radii.sm, height: 60, width: 60 },
   info: { flex: 1, marginHorizontal: Theme.spacing.md, gap: Theme.spacing.xs },
   title: { color: Theme.colors.textPrimary, fontSize: Theme.typography.sizes.sm, fontWeight: Theme.typography.weights.bold },
   meta: { color: Theme.colors.accentTeal, fontSize: Theme.typography.sizes.xs, fontWeight: Theme.typography.weights.semibold },

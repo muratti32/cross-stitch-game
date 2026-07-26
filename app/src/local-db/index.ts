@@ -20,6 +20,7 @@ export interface StitchingSession {
   errorNote?: string | null;
   title?: string | null;
   previewUrl?: string | null;
+  thumbnailUrl?: string | null;
   patternWidth?: number | null;
   patternHeight?: number | null;
 }
@@ -488,6 +489,15 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
       await db.execAsync('PRAGMA user_version = 9;');
     });
   }
+
+  if (currentVersion < 10) {
+    await runInTransaction(db, async () => {
+      await db.execAsync(`
+        ALTER TABLE sessions ADD COLUMN thumbnail_url TEXT;
+      `);
+      await db.execAsync('PRAGMA user_version = 10;');
+    });
+  }
 }
 
 /**
@@ -614,6 +624,7 @@ export async function setDeviceSeqHigh(value: number): Promise<void> {
 export interface SessionPatternMeta {
   title: string;
   previewUrl: string | null;
+  thumbnailUrl: string | null;
   width: number;
   height: number;
 }
@@ -631,8 +642,8 @@ export async function createSession(
   const createdAt = new Date().toISOString();
 
   await db.runAsync(
-    `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, remote_session_id, title, preview_url, pattern_width, pattern_height)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, remote_session_id, title, preview_url, thumbnail_url, pattern_width, pattern_height)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     id,
     patternId,
     source,
@@ -643,6 +654,7 @@ export async function createSession(
     remoteSessionId,
     patternMeta?.title ?? null,
     patternMeta?.previewUrl ?? null,
+    patternMeta?.thumbnailUrl ?? null,
     patternMeta?.width ?? null,
     patternMeta?.height ?? null
   );
@@ -658,6 +670,7 @@ export async function createSession(
     remoteSessionId,
     title: patternMeta?.title ?? null,
     previewUrl: patternMeta?.previewUrl ?? null,
+    thumbnailUrl: patternMeta?.thumbnailUrl ?? null,
     patternWidth: patternMeta?.width ?? null,
     patternHeight: patternMeta?.height ?? null,
   };
@@ -683,8 +696,8 @@ export async function createReplaySession(
   const patternId = parent.patternId;
 
   await db.runAsync(
-    `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, replay_of)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, replay_of, title, preview_url, thumbnail_url, pattern_width, pattern_height)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     id,
     patternId,
     source,
@@ -692,7 +705,12 @@ export async function createReplaySession(
     createdAt,
     createdAt,
     status,
-    parentSessionId
+    parentSessionId,
+    parent.title ?? null,
+    parent.previewUrl ?? null,
+    parent.thumbnailUrl ?? null,
+    parent.patternWidth ?? null,
+    parent.patternHeight ?? null,
   );
 
   return {
@@ -704,6 +722,11 @@ export async function createReplaySession(
     updatedAt: createdAt,
     status,
     replayOf: parentSessionId,
+    title: parent.title ?? null,
+    previewUrl: parent.previewUrl ?? null,
+    thumbnailUrl: parent.thumbnailUrl ?? null,
+    patternWidth: parent.patternWidth ?? null,
+    patternHeight: parent.patternHeight ?? null,
   };
 }
 
@@ -737,6 +760,7 @@ export async function getSessions(): Promise<StitchingSession[]> {
     error_note?: string | null;
     title?: string | null;
     preview_url?: string | null;
+    thumbnail_url?: string | null;
     pattern_width?: number | null;
     pattern_height?: number | null;
   }>('SELECT * FROM sessions ORDER BY updated_at DESC');
@@ -755,6 +779,7 @@ export async function getSessions(): Promise<StitchingSession[]> {
     errorNote: row.error_note,
     title: row.title ?? null,
     previewUrl: row.preview_url ?? null,
+    thumbnailUrl: row.thumbnail_url ?? null,
     patternWidth: row.pattern_width ?? null,
     patternHeight: row.pattern_height ?? null,
   }));
@@ -779,6 +804,7 @@ export async function getSession(id: string): Promise<StitchingSession | null> {
     error_note?: string | null;
     title?: string | null;
     preview_url?: string | null;
+    thumbnail_url?: string | null;
     pattern_width?: number | null;
     pattern_height?: number | null;
   }>('SELECT * FROM sessions WHERE id = ?', id);
@@ -801,6 +827,7 @@ export async function getSession(id: string): Promise<StitchingSession | null> {
     errorNote: row.error_note,
     title: row.title ?? null,
     previewUrl: row.preview_url ?? null,
+    thumbnailUrl: row.thumbnail_url ?? null,
     patternWidth: row.pattern_width ?? null,
     patternHeight: row.pattern_height ?? null,
   };

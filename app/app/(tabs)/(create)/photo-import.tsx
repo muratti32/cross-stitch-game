@@ -292,6 +292,7 @@ export default function PhotoImportScreen() {
       const session = await preparePersonalSession(pattern.id, {
         height: pattern.height,
         previewUrl: pattern.previewUrl,
+        thumbnailUrl: pattern.thumbnailUrls?.browsing ?? null,
         title: pattern.title,
         width: pattern.width,
       });

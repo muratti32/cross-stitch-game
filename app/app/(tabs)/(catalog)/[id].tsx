@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Image, ActivityIndicator, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Screen, Button, Card, CachedImage, CommunityReportAction, EmptyState, GuestDataRiskNotice } from '@/components';
+import { Screen, Button, Card, PatternImage, CommunityReportAction, EmptyState, GuestDataRiskNotice } from '@/components';
 import { Theme } from '@/theme/theme';
 import { BUNDLED_PATTERNS, loadBundledPattern } from '@/bundled-patterns';
 import { PatternData } from '@/pattern-artifact';
-import { absolutePreviewUrl, useCatalogPattern } from '@/api/catalog';
+import { absolutePreviewUrl, absoluteThumbnailUrls, useCatalogPattern } from '@/api/catalog';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { prepareCatalogSession, prepareBundledSession, UnlockRequiredError } from '@/session-preparation';
 import { useCoinBalance, useUnlockedPatternIds, useUnlockPattern, InsufficientCoinError, unlockPriceForTier } from '@/api/economy';
@@ -77,7 +77,7 @@ export default function PatternDetailScreen() {
 
       {/* Pattern Visual Preview */}
       <View style={styles.imageContainer}>
-        <Image source={manifestPattern.previewAsset} style={styles.previewImage} />
+        <PatternImage assets={{}} variant="detail" localAsset={manifestPattern.previewAsset} style={styles.previewImage} />
       </View>
 
       {/* Pattern Title & Description */}
@@ -251,7 +251,8 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
       setPrepareError(null);
       const session = await prepareCatalogSession(item.id, {
         title: item.title,
-        previewUrl: absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl),
+        previewUrl: absolutePreviewUrl(item.previewUrl),
+        thumbnailUrl: absoluteThumbnailUrls(item.thumbnailUrls)?.browsing ?? null,
         width: item.width,
         height: item.height,
       });
@@ -281,7 +282,8 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
       
       const session = await prepareCatalogSession(item.id, {
         title: item.title,
-        previewUrl: absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl),
+        previewUrl: absolutePreviewUrl(item.previewUrl),
+        thumbnailUrl: absoluteThumbnailUrls(item.thumbnailUrls)?.browsing ?? null,
         width: item.width,
         height: item.height,
       });
@@ -346,8 +348,12 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
       </View>
 
       <View style={styles.imageContainer}>
-        <CachedImage
-          uri={absolutePreviewUrl(item.originalImageUrl ?? item.previewUrl)}
+        <PatternImage
+          assets={{
+            thumbnailUrls: absoluteThumbnailUrls(item.thumbnailUrls),
+            previewUrl: absolutePreviewUrl(item.previewUrl),
+          }}
+          variant="detail"
           style={styles.previewImage}
         />
       </View>
