@@ -293,4 +293,45 @@ describe('CatalogService - Creator Block Filtering', () => {
       );
     });
   });
+
+  describe('Pattern Thumbnail URLs', () => {
+    it('includes public Thumbnail URLs when a renderer version was stored', () => {
+      const pattern = {
+        id: '44444444-4444-4444-8444-444444444444',
+        publishedAt: new Date('2026-01-01T00:00:00.000Z'),
+        thumbnailRendererVersion: 1,
+        previewObjectKey: 'patterns/44444444-4444-4444-8444-444444444444/preview.png',
+      } as PatternEntity;
+      const storage = {
+        publicUrl: (key: string) => `https://cdn.example/${key}`,
+      } as ObjectStorage;
+      const thumbnailService = new CatalogService(
+        patternRepository,
+        {} as Repository<TagEntity>,
+        {} as Repository<TagLabelEntity>,
+        staffPickRepository,
+        {} as Repository<CategoryEntity>,
+        storage,
+        {} as DataSource,
+        patternLikeService,
+        creatorBlockService,
+      );
+
+      expect(thumbnailService.formatPattern(pattern, 'en').thumbnailUrls).toEqual({
+        browsing: 'https://cdn.example/patterns/44444444-4444-4444-8444-444444444444/thumbnail-browsing.png',
+        detail: 'https://cdn.example/patterns/44444444-4444-4444-8444-444444444444/thumbnail-detail.png',
+      });
+    });
+
+    it('returns null Thumbnail URLs when no renderer version was stored', () => {
+      const pattern = {
+        id: '55555555-5555-4555-8555-555555555555',
+        publishedAt: new Date('2026-01-01T00:00:00.000Z'),
+        thumbnailRendererVersion: null,
+        previewObjectKey: 'patterns/55555555-5555-4555-8555-555555555555/preview.png',
+      } as PatternEntity;
+
+      expect(service.formatPattern(pattern, 'en').thumbnailUrls).toBeNull();
+    });
+  });
 });

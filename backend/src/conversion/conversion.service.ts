@@ -213,6 +213,7 @@ export class ConversionService {
     width: number;
     height: number;
     previewUrl: string;
+    thumbnailUrls: { browsing: string; detail: string } | null;
     alreadyExists: boolean;
   }> {
     const accountId = this.requireAccount(principal);
@@ -231,6 +232,13 @@ export class ConversionService {
         width: existing.width,
         height: existing.height,
         previewUrl: `/v1/personal-pattern-previews/${existing.id}?exp=${exp}&sig=${signature}`,
+        thumbnailUrls:
+          existing.thumbnailRendererVersion === null
+            ? null
+            : {
+                browsing: `/v1/personal-pattern-thumbnails/${existing.id}/browsing?exp=${exp}&sig=${signature}`,
+                detail: `/v1/personal-pattern-thumbnails/${existing.id}/detail?exp=${exp}&sig=${signature}`,
+              },
         alreadyExists: true,
       };
     }
@@ -390,6 +398,13 @@ export class ConversionService {
       width: dto.width,
       height: dto.height,
       previewUrl: `/v1/personal-pattern-previews/${dto.patternId}?exp=${exp}&sig=${signature}`,
+      thumbnailUrls:
+        thumbnails === null
+          ? null
+          : {
+              browsing: `/v1/personal-pattern-thumbnails/${dto.patternId}/browsing?exp=${exp}&sig=${signature}`,
+              detail: `/v1/personal-pattern-thumbnails/${dto.patternId}/detail?exp=${exp}&sig=${signature}`,
+            },
       alreadyExists: false,
     };
   }
@@ -423,6 +438,32 @@ export class ConversionService {
     const bytes = await this.storage.get(pattern.previewObjectKey);
     if (bytes === null) {
       throw new NotFoundException('Personal Pattern preview not found');
+    }
+    return bytes;
+  }
+
+  async getSignedThumbnail(
+    patternId: string,
+    variant: 'browsing' | 'detail',
+    exp: number,
+    signature: string,
+  ): Promise<Buffer> {
+    if (!this.verifyPreviewGrant(patternId, exp, signature)) {
+      throw new ForbiddenException('Invalid or expired thumbnail grant');
+    }
+    const pattern = await this.patterns.findOneBy({
+      id: patternId,
+      visibility: 'personal',
+    });
+    if (pattern === null || pattern.thumbnailRendererVersion === null) {
+      throw new NotFoundException('Personal Pattern Thumbnail not found');
+    }
+    const keys = personalPatternObjectKeys(patternId);
+    const bytes = await this.storage.get(
+      variant === 'browsing' ? keys.thumbnailBrowsing : keys.thumbnailDetail,
+    );
+    if (bytes === null) {
+      throw new NotFoundException('Personal Pattern Thumbnail not found');
     }
     return bytes;
   }
@@ -492,6 +533,13 @@ export class ConversionService {
       id: pattern.id,
       paletteSize: pattern.paletteSize,
       previewUrl: `/v1/personal-pattern-previews/${pattern.id}?exp=${exp}&sig=${signature}`,
+      thumbnailUrls:
+        pattern.thumbnailRendererVersion === null
+          ? null
+          : {
+              browsing: `/v1/personal-pattern-thumbnails/${pattern.id}/browsing?exp=${exp}&sig=${signature}`,
+              detail: `/v1/personal-pattern-thumbnails/${pattern.id}/detail?exp=${exp}&sig=${signature}`,
+            },
       recipe: recipe === null ? null : {
         dmcPaletteVersion: recipe.dmcPaletteVersion,
         engineVersion: recipe.engineVersion,

@@ -9,6 +9,7 @@ import { SupportModule } from '../support/support.module';
 import {
   ConversionController,
   PersonalPatternPreviewsController,
+  PersonalPatternThumbnailsController,
   PersonalPatternArtifactsController,
 } from './conversion.controller';
 import { ConversionEngineClient } from './conversion-engine.client';
@@ -25,6 +26,7 @@ import {
   controllers: [
     ConversionController,
     PersonalPatternPreviewsController,
+    PersonalPatternThumbnailsController,
     PersonalPatternArtifactsController,
   ],
   exports: [ConversionEngineClient, ConversionJobConsumerService, ConversionService],

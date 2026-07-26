@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { INestApplication, Logger } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { createHash, randomBytes, randomUUID } from 'node:crypto';
+import { createHash, createHmac, randomBytes, randomUUID } from 'node:crypto';
 import { Server } from 'node:http';
 import request from 'supertest';
 import { DataSource, IsNull } from 'typeorm';
@@ -13,7 +13,11 @@ import { CatalogService } from '../src/catalog/catalog.service';
 import { encodePatternArtifactV1 } from '../src/catalog/pattern-artifact-encoder';
 import { LocalObjectStorage } from '../src/catalog/storage/local-object-storage';
 import { OBJECT_STORAGE } from '../src/catalog/storage/object-storage.interface';
-import { personalPatternObjectKeys } from '../src/catalog/pattern-object-keys';
+import {
+  catalogPatternObjectKeys,
+  personalPatternObjectKeys,
+} from '../src/catalog/pattern-object-keys';
+import { AppConfigService } from '../src/config/app-config.service';
 import { SessionsService } from '../src/sessions/sessions.service';
 import { ProgressCheckpointService } from '../src/sessions/progress-checkpoint.service';
 import { StorageReconcilerService } from '../src/sessions/storage-reconciler.service';
@@ -1028,6 +1032,45 @@ describe('Stitch Wish backend integration', () => {
       const previewUrl = readStringRecord(ownerListBody[0], 'previewUrl');
       await request(httpServer).get(previewUrl).expect(200).expect('Content-Type', /png/);
 
+      const thumbnailUrls = readRecord(ownerListBody[0], 'thumbnailUrls');
+      expect(thumbnailUrls).not.toBeNull();
+      const browsingThumbnailUrl = readStringRecord(thumbnailUrls, 'browsing');
+      const detailThumbnailUrl = readStringRecord(thumbnailUrls, 'detail');
+      await request(httpServer)
+        .get(browsingThumbnailUrl)
+        .expect(200)
+        .expect('Content-Type', /image\/png/);
+      await request(httpServer)
+        .get(detailThumbnailUrl)
+        .expect(200)
+        .expect('Content-Type', /image\/png/);
+
+      const tamperedUrl = new URL(browsingThumbnailUrl, 'http://localhost');
+      const signature = tamperedUrl.searchParams.get('sig');
+      if (signature === null) {
+        throw new Error('Thumbnail URL did not contain a signature');
+      }
+      tamperedUrl.searchParams.set(
+        'sig',
+        `${signature.slice(0, -1)}${signature.endsWith('a') ? 'b' : 'a'}`,
+      );
+      await request(httpServer)
+        .get(`${tamperedUrl.pathname}${tamperedUrl.search}`)
+        .expect(403);
+
+      const expiredExpiration = Math.floor(Date.now() / 1000) - 1;
+      const expiredUrl = new URL(detailThumbnailUrl, 'http://localhost');
+      expiredUrl.searchParams.set('exp', String(expiredExpiration));
+      expiredUrl.searchParams.set(
+        'sig',
+        createHmac('sha256', app.get(AppConfigService).grantSigningSecret)
+          .update(`personal-preview:${firstPatternId}:${expiredExpiration}`)
+          .digest('hex'),
+      );
+      await request(httpServer)
+        .get(`${expiredUrl.pathname}${expiredUrl.search}`)
+        .expect(403);
+
       await request(httpServer)
         .get(`/v1/catalog/patterns/${firstPatternId}`)
         .expect(404);
@@ -1257,6 +1300,17 @@ describe('Stitch Wish backend integration', () => {
       const previewUrl = readStringRecord(first.body, 'previewUrl');
       await request(httpServer).get(previewUrl).expect(200).expect('Content-Type', /png/);
 
+      const thumbnailUrls = readRecord(first.body, 'thumbnailUrls');
+      expect(thumbnailUrls).not.toBeNull();
+      await request(httpServer)
+        .get(readStringRecord(thumbnailUrls, 'browsing'))
+        .expect(200)
+        .expect('Content-Type', /image\/png/);
+      await request(httpServer)
+        .get(readStringRecord(thumbnailUrls, 'detail'))
+        .expect(200)
+        .expect('Content-Type', /image\/png/);
+
       // Idempotent replay: same clientPatternId, no duplicate row, alreadyExists true.
       const replay = await request(httpServer)
         .post('/v1/conversions/personal-patterns/derived')
@@ -1316,6 +1370,7 @@ describe('Stitch Wish backend integration', () => {
           .expect(201);
         expect(readStringRecord(first.body, 'id')).toBe(clientPatternId);
         expect(first.body).toMatchObject({ alreadyExists: false, title: 'Edited Copy', width: 2, height: 2 });
+        expect(readRecord(first.body, 'thumbnailUrls')).toBeNull();
 
         const pattern = await dataSource
           .getRepository(PatternEntity)
@@ -1328,7 +1383,23 @@ describe('Stitch Wish backend integration', () => {
         expect(await storage.exists(derivedKeys.thumbnailBrowsing)).toBe(false);
         expect(await storage.exists(derivedKeys.thumbnailDetail)).toBe(false);
 
-        const previewUrl = readStringRecord(first.body, 'previewUrl');
+        const ownerList = await request(httpServer)
+          .get('/v1/conversions/patterns')
+          .set('Authorization', `Bearer ${account.accessToken}`)
+          .expect(200);
+        const ownerListBody: unknown = ownerList.body;
+        if (!Array.isArray(ownerListBody)) {
+          throw new Error('Personal Pattern list was not an array');
+        }
+        const derivedListItem: unknown = ownerListBody.find(
+          (item) => readStringRecord(item, 'id') === clientPatternId,
+        );
+        if (derivedListItem === undefined) {
+          throw new Error('Personal Pattern list did not contain the derived Pattern');
+        }
+        expect(readRecord(derivedListItem, 'thumbnailUrls')).toBeNull();
+
+        const previewUrl = readStringRecord(derivedListItem, 'previewUrl');
         await request(httpServer)
           .get(previewUrl)
           .expect(200)
@@ -1689,6 +1760,67 @@ describe('Stitch Wish backend integration', () => {
         tagCodes: options.tagCodes,
       });
     }
+
+    it('serves catalog Thumbnails publicly only when the catalog Pattern stored them', async () => {
+      const pattern = await seedCatalogPattern({
+        title: 'ITest Catalog Thumbnail',
+        creatorName: 'ITest Team',
+        categoryCode: 'other',
+        tagCodes: [],
+        status: 'available',
+        publishedAt: new Date('2026-07-01T00:00:00.000Z'),
+      });
+      const thumbnail = new PNG({ height: 1, width: 1 });
+      thumbnail.data[0] = 32;
+      thumbnail.data[1] = 120;
+      thumbnail.data[2] = 180;
+      thumbnail.data[3] = 255;
+      const thumbnailBytes = PNG.sync.write(thumbnail);
+      const keys = catalogPatternObjectKeys(pattern.id);
+      const storage = app.get(LocalObjectStorage);
+      await Promise.all([
+        storage.put(keys.thumbnailBrowsing, thumbnailBytes),
+        storage.put(keys.thumbnailDetail, thumbnailBytes),
+        dataSource.getRepository(PatternEntity).update(
+          { id: pattern.id },
+          { thumbnailRendererVersion: PATTERN_THUMBNAIL_RENDERER_VERSION },
+        ),
+      ]);
+
+      await request(httpServer)
+        .get(`/v1/catalog-previews/${keys.thumbnailBrowsing}`)
+        .expect(200)
+        .expect('Content-Type', /image\/png/);
+      await request(httpServer)
+        .get(`/v1/catalog-previews/${keys.thumbnailDetail}`)
+        .expect(200)
+        .expect('Content-Type', /image\/png/);
+
+      const patternWithoutThumbnail = await seedCatalogPattern({
+        title: 'ITest Catalog Pattern Without Thumbnail',
+        creatorName: 'ITest Team',
+        categoryCode: 'other',
+        tagCodes: [],
+        status: 'available',
+        publishedAt: new Date('2026-07-01T00:00:00.000Z'),
+      });
+      const keysWithoutThumbnail = catalogPatternObjectKeys(
+        patternWithoutThumbnail.id,
+      );
+      await request(httpServer)
+        .get(`/v1/catalog-previews/${keysWithoutThumbnail.thumbnailBrowsing}`)
+        .expect(404);
+      await request(httpServer)
+        .get(`/v1/catalog-previews/${keysWithoutThumbnail.thumbnailDetail}`)
+        .expect(404);
+
+      const personalPatternId = randomUUID();
+      const personalKeys = personalPatternObjectKeys(personalPatternId);
+      await storage.put(personalKeys.thumbnailBrowsing, thumbnailBytes);
+      await request(httpServer)
+        .get(`/v1/catalog-previews/${personalKeys.thumbnailBrowsing}`)
+        .expect(404);
+    });
 
     it('upserts patterns idempotently and enforces the five-tag limit', async () => {
       const catalog = app.get(CatalogService);
@@ -4262,4 +4394,3 @@ function readStringRecord(value: unknown, key: string): string {
   }
   return result;
 }
-

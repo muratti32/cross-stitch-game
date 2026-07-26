@@ -15,9 +15,11 @@ describe('AccountDeletionFinalizerService', () => {
   let objectStorageDeleteMock: jest.Mock;
   let service: AccountDeletionFinalizerService;
   let requestStatus: string;
+  let thumbnailRendererVersion: number | null;
 
   beforeEach(() => {
     requestStatus = 'pending';
+    thumbnailRendererVersion = null;
     queryMock = jest.fn();
     managerQueryMock = jest.fn();
 
@@ -74,7 +76,7 @@ describe('AccountDeletionFinalizerService', () => {
           id: 'pat-1',
           artifact_object_key: 'key-art',
           preview_object_key: 'key-prev',
-          thumbnail_renderer_version: null,
+          thumbnail_renderer_version: thumbnailRendererVersion,
         }];
       }
       if (cleanSql.includes('SELECT avatar_object_key FROM moderation.creator_profiles')) {
@@ -198,6 +200,19 @@ describe('AccountDeletionFinalizerService', () => {
     expect(objectStorageDeleteMock).toHaveBeenCalledWith('key-art');
     expect(objectStorageDeleteMock).toHaveBeenCalledWith('key-prev');
     expect(objectStorageDeleteMock).toHaveBeenCalledWith('key-avatar');
+  });
+
+  it('deletes both Thumbnail variants when a Personal Pattern has them', async () => {
+    thumbnailRendererVersion = 1;
+
+    await service.finalizeOne('req-1');
+
+    expect(objectStorageDeleteMock).toHaveBeenCalledWith(
+      'personal-patterns/pat-1/thumbnail-browsing.png',
+    );
+    expect(objectStorageDeleteMock).toHaveBeenCalledWith(
+      'personal-patterns/pat-1/thumbnail-detail.png',
+    );
   });
 
   it('sessions are revoked', async () => {

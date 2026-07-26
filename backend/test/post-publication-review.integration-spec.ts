@@ -12,6 +12,7 @@ import { CatalogPrecheckService } from '../src/catalog/catalog-precheck.service'
 import { CommunityReportService } from '../src/catalog/community-report.service';
 import { ModerationNoticeService } from '../src/catalog/moderation-notice.service';
 import { PatternEntity } from '../src/catalog/entities';
+import { catalogPatternObjectKeys } from '../src/catalog/pattern-object-keys';
 import type { ObjectStorage } from '../src/catalog/storage/object-storage.interface';
 import type { AppConfigService } from '../src/config/app-config.service';
 import { createTypeOrmOptions } from '../src/database/typeorm-options';
@@ -468,6 +469,10 @@ describe('Post-Publication Review Hold', () => {
       'SELECT preview_object_key FROM catalog.patterns WHERE id = $1',
       [patternId],
     );
+    await dataSource.query(
+      'UPDATE catalog.patterns SET thumbnail_renderer_version = 1 WHERE id = $1',
+      [patternId],
+    );
 
     const reason = 'Confirmed unsafe content violating platform policy.';
     const results = await Promise.all(
@@ -481,6 +486,12 @@ describe('Post-Publication Review Hold', () => {
 
     expect(await patternStatus(patternId)).toBe('removed');
     expect(storage.delete).toHaveBeenCalledWith(patternBefore.preview_object_key);
+    expect(storage.delete).toHaveBeenCalledWith(
+      catalogPatternObjectKeys(patternId).thumbnailBrowsing,
+    );
+    expect(storage.delete).toHaveBeenCalledWith(
+      catalogPatternObjectKeys(patternId).thumbnailDetail,
+    );
 
     await expect(
       sessions.prepareSession(accountPrincipal(newPlayerAccountId), patternId),

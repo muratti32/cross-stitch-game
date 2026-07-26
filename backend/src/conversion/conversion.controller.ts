@@ -109,6 +109,33 @@ export class PersonalPatternPreviewsController {
   }
 }
 
+@Controller('personal-pattern-thumbnails')
+export class PersonalPatternThumbnailsController {
+  constructor(private readonly conversions: ConversionService) {}
+
+  @Get(':id/:variant')
+  async getThumbnail(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('variant') variant: string,
+    @Query('exp') exp: string,
+    @Query('sig') signature: string,
+    @Res() response: Response,
+  ): Promise<void> {
+    if (variant !== 'browsing' && variant !== 'detail') {
+      throw new BadRequestException('Thumbnail variant must be browsing or detail');
+    }
+    const bytes = await this.conversions.getSignedThumbnail(
+      id,
+      variant,
+      Number(exp),
+      signature,
+    );
+    response.setHeader('Cache-Control', 'private, max-age=300');
+    response.setHeader('Content-Type', 'image/png');
+    response.send(bytes);
+  }
+}
+
 @Controller('personal-pattern-artifacts')
 export class PersonalPatternArtifactsController {
   constructor(private readonly conversions: ConversionService) {}
