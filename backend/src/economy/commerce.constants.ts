@@ -1,3 +1,5 @@
+import { storeProductKey } from './store-product-id';
+
 export type CommerceCurrency = 'coin' | 'ai_credit';
 
 export interface CommerceProduct {
@@ -21,5 +23,5 @@ export const COMMERCE_PRODUCT_CATALOG: Readonly<Record<string, CommerceProduct>>
 };
 
 export function resolveCommerceProduct(productId: string): CommerceProduct | null {
-  return COMMERCE_PRODUCT_CATALOG[productId] ?? null;
+  return COMMERCE_PRODUCT_CATALOG[storeProductKey(productId)] ?? null;
 }

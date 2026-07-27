@@ -69,4 +69,10 @@ Provisioned 2026-07-27 under the same product ID strings; Play accepts lowercase
 
 ## RevenueCat
 
-Not provisioned. There is no RevenueCat project for Stitch Wish yet; the project, iOS and Android apps, nine products, entitlement, and offering are created once the Play products exist so both platforms land in one offering (ADR-0032).
+Provisioned 2026-07-27. Project `Stitch Wish` = `projf2795a83`; apps `Stitch Wish iOS` = `app5adf5224e0` (`app_store`, `com.avk.stitchwish`) and `Stitch Wish Android` = `app9943323f25` (`play_store`, `com.avk.stitchwish`).
+
+Each of the nine products exists twice, once per app, so an offering serves both platforms (ADR-0032). Entitlement `premium` = `entl57a71f4adf` carries the six subscription products. Offering `default` = `ofrng489e2fe72c` is current and holds nine packages, each with the iOS and Android product attached at eligibility `all`: `$rc_weekly`, `$rc_monthly`, `$rc_annual`, then `$rc_custom_coin_pack_300`, `$rc_custom_coin_pack_900`, `$rc_custom_coin_pack_2000`, `$rc_custom_ai_credit_pack_5`, `$rc_custom_ai_credit_pack_20`, `$rc_custom_ai_credit_pack_50`.
+
+**Base-plan suffix.** Play models a subscription as a product plus a base plan, so the three Android subscriptions are registered as `com.avk.stitchwish.premium_weekly:weekly`, `…premium_monthly:monthly`, and `…premium_annual:annual` — the only place the two stores do not share a byte-identical string. The backend and the client therefore truncate at the first colon before every catalog lookup (`backend/src/economy/store-product-id.ts`, `storeProductKey` in `app/app/(tabs)/(profile)/commerce.tsx`); Apple identifiers contain no colon, so the rule is a no-op there. Play consumables carry no suffix.
+
+Still to do before real purchases work: App Store Connect API key and subscription status URL on the iOS app, Play service-account credentials on the Android app, prices imported from the stores, and the webhook pointed at the backend's RevenueCat endpoint with its shared secret.

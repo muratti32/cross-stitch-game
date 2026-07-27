@@ -1,4 +1,5 @@
 import { DAILY_POOL_COIN } from './economy.constants';
+import { storeProductKey } from './store-product-id';
 
 export type PremiumPlan = 'weekly' | 'monthly' | 'annual';
 
@@ -17,7 +18,7 @@ export const PREMIUM_PRODUCT_CATALOG: Readonly<Record<string, PremiumProduct>> =
 };
 
 export function resolvePremiumProduct(productId: string): PremiumProduct | null {
-  return PREMIUM_PRODUCT_CATALOG[productId] ?? null;
+  return PREMIUM_PRODUCT_CATALOG[storeProductKey(productId)] ?? null;
 }
 
 export function premiumDailyClaimAmount(

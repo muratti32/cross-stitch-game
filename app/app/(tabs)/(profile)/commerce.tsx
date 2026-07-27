@@ -525,7 +525,17 @@ function matchingProductId(
   pkg: PurchasesPackage,
   catalog: Readonly<Record<string, unknown>>,
 ): string | null {
-  return [pkg.identifier, pkg.product.identifier].find((candidate) => candidate in catalog) ?? null;
+  return [pkg.identifier, pkg.product.identifier]
+    .map(storeProductKey)
+    .find((candidate) => candidate in catalog) ?? null;
+}
+
+// Google Play identifies a subscription as `productId:basePlanId`; the catalogs
+// are keyed by the bare identifier shared with Apple (ADR-0043). Apple
+// identifiers never contain a colon, so this is a no-op for them.
+function storeProductKey(storeIdentifier: string): string {
+  const separator = storeIdentifier.indexOf(':');
+  return separator === -1 ? storeIdentifier : storeIdentifier.slice(0, separator);
 }
 
 function capitalize(value: string): string {
