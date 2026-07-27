@@ -45,9 +45,11 @@ Introductory offer: `com.avk.stitchwish.premium_monthly` only — `FREE_TRIAL`, 
 ## Pricing and availability
 
 - Base territory United States; all other territories use Apple's automatic price equalisation from the US price point.
-- Subscriptions are available in all 175 App Store territories with "available in new territories" enabled.
-- Consumables carry no explicit availability record, so they inherit app availability.
-- **Open:** the app itself has no App Store availability record yet (`asc pricing availability view` returns "app availability not found"), so consumable territory availability is Apple's default rather than an asserted all-territories setting. The App Store Connect API cannot create the initial record, only edit an existing one. Bootstrapping it through an authenticated Apple web session (`asc web apps availability create`, signed in as `muratulug2@gmail.com`, team `128389013`) returned HTTP 404 on 2026-07-27 for both the full 175-territory payload and a single territory, while the same session reached the app fine through other web endpoints — so the app is visible but Apple's availability endpoint rejects it, most likely because the app has no App Store version yet. Revisit after the first version exists, or set availability once in the App Store Connect UI, after which `asc pricing availability edit --all-territories --available-in-new-territories true` works.
+- The app is available in all 175 App Store territories with "available in new territories" enabled (`appAvailabilities/6792383323`, verified 175/175 on 2026-07-27).
+- All three subscriptions are available in all 175 territories with "available in new territories" enabled.
+- All six consumables carry an explicit `inAppPurchaseAvailabilities` record set to the same 175 territories with "available in new territories" enabled, rather than inheriting app availability implicitly. Note that `asc` exposes no readback for a consumable's territory list, so this is verified by the accepted write and the `availableInNewTerritories: true` attribute, not by enumerating the territories.
+
+The app availability record could not be bootstrapped through the API or an Apple web session: `asc pricing availability edit` only edits an existing record, and `asc web apps availability create` returned HTTP 404 on 2026-07-27 for both a 175-territory payload and a single territory, while the same web session reached the app through other endpoints. The record was created in the App Store Connect UI instead. If a future app needs the same bootstrap, expect to do that step by hand.
 
 ## Review state
 
