@@ -17,22 +17,24 @@ import {
 import { captureGameplayEvent } from '@/analytics/gameplayEvents';
 import type { PurchaseProductKind } from '@/analytics/schema';
 
+// Keys are the store product identifiers exactly as registered in App Store
+// Connect and Google Play (ADR-0043).
 const PREMIUM_PLAN_DESCRIPTIONS: Record<string, { label: string; credits: number; trial: boolean }> = {
-  premium_weekly: { label: 'Weekly Premium', credits: 3, trial: false },
-  premium_monthly: { label: 'Monthly Premium', credits: 15, trial: true },
-  premium_annual: { label: 'Annual Premium', credits: 180, trial: false },
+  'com.avk.stitchwish.premium_weekly': { label: 'Weekly Premium', credits: 3, trial: false },
+  'com.avk.stitchwish.premium_monthly': { label: 'Monthly Premium', credits: 15, trial: true },
+  'com.avk.stitchwish.premium_annual': { label: 'Annual Premium', credits: 180, trial: false },
 };
 
 const COIN_PACK_DESCRIPTIONS: Record<string, { coins: number }> = {
-  'coin_pack_300': { coins: 300 },
-  'coin_pack_900': { coins: 900 },
-  'coin_pack_2000': { coins: 2000 },
+  'com.avk.stitchwish.coin_pack_300': { coins: 300 },
+  'com.avk.stitchwish.coin_pack_900': { coins: 900 },
+  'com.avk.stitchwish.coin_pack_2000': { coins: 2000 },
 };
 
 const AI_CREDIT_PACK_DESCRIPTIONS: Record<string, { credits: number }> = {
-  'ai_credit_pack_5': { credits: 5 },
-  'ai_credit_pack_20': { credits: 20 },
-  'ai_credit_pack_50': { credits: 50 },
+  'com.avk.stitchwish.ai_credit_pack_5': { credits: 5 },
+  'com.avk.stitchwish.ai_credit_pack_20': { credits: 20 },
+  'com.avk.stitchwish.ai_credit_pack_50': { credits: 50 },
 };
 
 interface PackItem {

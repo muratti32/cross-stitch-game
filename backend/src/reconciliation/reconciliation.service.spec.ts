@@ -64,8 +64,8 @@ describe('ReconciliationService', () => {
   it('records each discrepancy class while excluding healthy provider, storage, and reservation records', async () => {
     const { savedFindings, service } = buildService({
       archiveRows: [
-        { payload: commercePayload('delivery-only', 'coin_pack_300') },
-        { payload: commercePayload('healthy', 'coin_pack_300') },
+        { payload: commercePayload('delivery-only', 'com.avk.stitchwish.coin_pack_300') },
+        { payload: commercePayload('healthy', 'com.avk.stitchwish.coin_pack_300') },
         { payload: commercePayload('unknown-product', 'unowned_product') },
       ],
       ledgerRows: [
@@ -107,7 +107,7 @@ describe('ReconciliationService', () => {
 
   it('skips an archived delivery whose identifier the scrubber redacted', async () => {
     const { savedFindings, service } = buildService({
-      archiveRows: [{ payload: commercePayload('[Scrubbed]', 'coin_pack_300') }],
+      archiveRows: [{ payload: commercePayload('[Scrubbed]', 'com.avk.stitchwish.coin_pack_300') }],
     });
 
     await service.reconcileOnce(new Date('2026-07-25T12:00:00.000Z'));

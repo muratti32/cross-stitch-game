@@ -7,13 +7,17 @@ export interface CommerceProduct {
 
 // ADR-0011 fixed pack contents. Raising amounts or adding packs requires an
 // explicit decision update, not a silent change here.
+//
+// Keys are the store product identifiers exactly as registered in App Store
+// Connect and Google Play (ADR-0043); RevenueCat forwards them verbatim as
+// `product_id`, so any divergence silently drops the grant.
 export const COMMERCE_PRODUCT_CATALOG: Readonly<Record<string, CommerceProduct>> = {
-  coin_pack_300: { currency: 'coin', amount: 300 },
-  coin_pack_900: { currency: 'coin', amount: 900 },
-  coin_pack_2000: { currency: 'coin', amount: 2000 },
-  ai_credit_pack_5: { currency: 'ai_credit', amount: 5 },
-  ai_credit_pack_20: { currency: 'ai_credit', amount: 20 },
-  ai_credit_pack_50: { currency: 'ai_credit', amount: 50 },
+  'com.avk.stitchwish.coin_pack_300': { currency: 'coin', amount: 300 },
+  'com.avk.stitchwish.coin_pack_900': { currency: 'coin', amount: 900 },
+  'com.avk.stitchwish.coin_pack_2000': { currency: 'coin', amount: 2000 },
+  'com.avk.stitchwish.ai_credit_pack_5': { currency: 'ai_credit', amount: 5 },
+  'com.avk.stitchwish.ai_credit_pack_20': { currency: 'ai_credit', amount: 20 },
+  'com.avk.stitchwish.ai_credit_pack_50': { currency: 'ai_credit', amount: 50 },
 };
 
 export function resolveCommerceProduct(productId: string): CommerceProduct | null {

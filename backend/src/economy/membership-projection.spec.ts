@@ -18,7 +18,7 @@ function membershipEvent(
     originalTransactionId: 'original-1',
     accountId: ACCOUNT_ID,
     type: 'INITIAL_PURCHASE',
-    productId: 'premium_monthly',
+    productId: 'com.avk.stitchwish.premium_monthly',
     periodType: 'NORMAL',
     eventAt: new Date('2026-07-01T00:00:01.000Z'),
     purchasedAt: new Date('2026-07-01T00:00:00.000Z'),
@@ -47,9 +47,9 @@ describe('membership period projection', () => {
   });
 
   it.each([
-    ['premium_weekly', 3],
-    ['premium_monthly', 15],
-    ['premium_annual', 180],
+    ['com.avk.stitchwish.premium_weekly', 3],
+    ['com.avk.stitchwish.premium_monthly', 15],
+    ['com.avk.stitchwish.premium_annual', 180],
   ])('maps %s to one paid-period credit grant', (productId, creditAmount) => {
     expect(projectMembershipPeriod([membershipEvent({ productId })])).toMatchObject({
       creditAmount,

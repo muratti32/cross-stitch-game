@@ -145,7 +145,7 @@ One of the three auto-renewing store products offered from the first release. Th
 _Avoid_: Membership tier, lifetime purchase, credit pack
 
 **Monthly Trial**:
-The seven-day no-charge introductory period available to store-eligible players who start the Monthly Premium Plan. It unlocks the Premium Theme Collection and Premium Daily Coin Claim, but grants no AI Credit; the first Membership Credit Grant occurs only after the store verifies conversion into the first paid monthly period. Weekly and Annual Premium Plans do not include a trial.
+The seven-day no-charge introductory period available to store-eligible players who start the Monthly Premium Plan. It unlocks the Premium Theme Collection and Premium Daily Coin Claim, but grants no AI Credit; the first Membership Credit Grant occurs only after the store verifies conversion into the first paid monthly period. Weekly and Annual Premium Plans do not include a trial. Store eligibility is consumed once across all three Premium Plans, because they share a single subscription group (ADR-0043): a player who has already held any Premium Plan starts the Monthly Premium Plan as a paid period with no trial.
 _Avoid_: Free credits, weekly trial, annual trial
 
 **Premium Theme Collection**:
