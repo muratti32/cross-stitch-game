@@ -77,7 +77,7 @@ export default function PatternDetailScreen() {
 
       {/* Pattern Visual Preview */}
       <View style={styles.imageContainer}>
-        <PatternImage assets={{}} variant="detail" localAsset={manifestPattern.previewAsset} style={styles.previewImage} />
+        <PatternImage assets={{}} variant="detail" localAsset={manifestPattern.thumbnailAsset} style={styles.previewImage} />
       </View>
 
       {/* Pattern Title & Description */}

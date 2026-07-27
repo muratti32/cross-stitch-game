@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "stitchwish-d3b28",
+  "private_key_id": "0235544c4c815b33a394adeb9abd334ce2861467",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPTRQgBUpRxAf4\n6SYxS6dtcUTQOOSRz32fCjNFL4cdG/tA1MTZqeEFKooh3ljA0NCRrQhvet0JKMGM\n7WUq1+NmEGtMhtzNPhZCztGsFc7nCYNWgTqLy4RZdlp4KcO1reAbZJSiFURoFi7a\nPl5uyjZydreVxvgFYAj4U1XMTuaRDMLAgObLXdMGQ5OIbiiel6CU2qfgJD7mBZUt\njJe0VXUbd19iHg5xibqBIxMGiMRIJSaNWr2vPDpr3zR5mOtRuARBIRh/5Lybyj71\nUy8WyTz/rA/qeYf6cVliCTtIeBrIN5yYV6fPPe98OzKUhd5hzLwr5BMJZVaGQVtw\nsf44pNXhAgMBAAECggEAKrO5/Y6ZbJZw/fkpAOaQqp62ih3uF4siWWyEey/7KSfm\nbchmdF/mFmZY5fkjVzSsghWeszgf6A8ZL6qHOHgYQ6IGOFFfknfDpidsUYJ8iGMR\nRvR/1uQpczRKFo6j3fzfOUVSyMCQwtAu/o3ybegBpzqFPrkpxhGuR1kDR37JR/91\nzOXrND67eFI2CCz5cMx5LApSISbosbZf67twE32egKPjlZehxr+B7vbFZmqeSJ0t\n+nEgoZWBOUjSK+uHV5mJPFhgqDcjqaxcE4QmtdNgUzYAkIloUQ9dAP8KlPrGYN31\nlKnCt5BTkVVyVGFN5yJFESOGsy/LVRmaa3Nr9voCsQKBgQD2upeFD06oWDl8k+bD\n3Anl9X51hAIV6yO9XZhEFtDbv5dmIWY5NvPQpfBouydnd32vr7a1I6u9WoEXVD0F\nTRs6J47IGyywo4awrix/zK2w/WWNXsxyJPDOIuZ2gztY0HEumMXqo1jQpLCaMrpA\nL/Cbns4gqMLFWMkk+paZqT240wKBgQDXFzYQ6U5bUZ629RQk2+1+FT5YhfvlTvGW\n19rrfbQyO76EysiIRRrLA3Y+CAYGDhq1wQ/CtcX8mQcfQXfACGNt+uWUkrBjVfDE\nqoNB8xDjCaou/A0Y+RUspw1PgMsRZDyi5KeFKu1UNc5WWzQFzNJqEBIU1rBmdMCp\nDbMu9pmF+wKBgDUDzv72VQ5zNpcAKLu5Eh9paqzRmqkfB2TvMYKf7GzrdBqr3o04\ns5cHsOqwHD1tPYJ8nSO68HIVeluK7DmxYcJTMajpveaOnKhmJIWpc0Dukd2YmxGD\nwoJomWCpvhzNXSSICy7pvnHGkXPwpniYVHj73IrD+GXzN/VMKwQFi4+lAoGAGnt0\nH67qA9pPxUz1dvhRDFYHQBT3B6upmR3oiVgHyKuMcIMbH5QKkXZSp56LR1GTPk+P\n5jRFNS2OL+36lX0y6MacX6eT6hcZts0brhIEQT/eYTyNTEbWsZG71M8RsYl64b9v\nVLkNUXHyfrVp+VDXk1F5OHGadHLpiabzKdQY4OMCgYEA4zVBVXbTTbB0OG/JwpCe\n0OzFH9F9sgkyqh65LLeVFMQOOq3kUL2LY/mSxamjXUjeHBoBySREO2JD0CRLkRxC\nk8QNzpUYV8vfWyP9iSHsc8uQ4O5EeM+czRFqCr6/8TmOHBbHccPtlJ91G23thJgz\nvGmro3Uwm9vlrM0y31p7wbQ=\n-----END PRIVATE KEY-----\n",
+  "client_email": "stitchwish-service-acnt@stitchwish-d3b28.iam.gserviceaccount.com",
+  "client_id": "112446916612429710341",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/stitchwish-service-acnt%40stitchwish-d3b28.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
