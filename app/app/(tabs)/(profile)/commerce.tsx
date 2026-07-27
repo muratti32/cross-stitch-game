@@ -422,7 +422,7 @@ export default function CommerceScreen() {
                           <Text style={styles.packDetail}>
                             {description.credits} AI Credits per paid period
                             {description.trial
-                              ? ' · eligible players: 7-day trial, 0 trial credits'
+                              ? ' · eligible players: 3-day trial, 0 trial credits'
                               : ''}
                           </Text>
                           <Text style={styles.packPrice}>{item.package.product.priceString}</Text>
