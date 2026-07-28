@@ -80,6 +80,53 @@ docker compose down
 
 Add `--volumes` only when the local PostgreSQL and Redis data should be discarded.
 
+### RevenueCat Test Store webhook lane
+
+After the API, PostgreSQL, and Redis are running locally, one command validates
+`http://127.0.0.1:3000/v1/health`, starts or reuses an ngrok HTTPS tunnel to port
+3000, discovers its URL, and points the existing sandbox-only RevenueCat Test
+Store webhook integration at the local Commerce Ledger endpoint:
+
+```sh
+cd backend
+npm run revenuecat:test-store-lane
+```
+
+Configure these values in `backend/.env` or your local shell:
+
+- `REVENUECAT_API_V2_KEY`: secret v2 key with
+  `project_configuration:apps:read` and
+  `project_configuration:integrations:read_write`.
+- `REVENUECAT_PROJECT_ID`: the Stitch Wish RevenueCat project ID.
+- `REVENUECAT_TEST_STORE_APP_ID`: the RevenueCat Test Store app ID.
+- `REVENUECAT_TEST_STORE_WEBHOOK_INTEGRATION_ID`: an existing integration that
+  is already scoped to that Test Store app and `sandbox` only.
+- `REVENUECAT_WEBHOOK_AUTH_TOKEN`: the same authorization value configured on
+  the local Game Backend.
+- `NGROK_AUTHTOKEN`: optional if ngrok already has credentials in its local
+  configuration.
+
+The command never creates an integration and refuses to write unless RevenueCat
+confirms that the configured app is `rc_billing` and the existing integration is
+both `sandbox` and scoped to that exact app. Missing values, degraded backend
+health, a missing HTTPS tunnel, or any RevenueCat API error stops the workflow.
+Re-running it safely reapplies the same configuration and prints the effective
+public URL.
+
+To stop an ngrok process started by this workflow (a reused process is left
+alone):
+
+```sh
+npm run revenuecat:test-store-lane -- stop
+```
+
+Complete a purchase in the Test Store development build, then confirm the API
+logs show a `RevenueCat webhook` outcome. For database-level confirmation,
+inspect the local `webhooks.webhook_delivery_archives` row with provider
+`revenuecat` and the resulting `economy` Commerce Ledger or Membership Period
+record. The tunnel target is always
+`https://<ngrok-host>/v1/commerce/revenuecat/webhook`.
+
 ## Production-style local run
 
 Build both entrypoints, apply migrations, and start each compiled process in a separate terminal:
