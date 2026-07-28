@@ -559,14 +559,6 @@ export async function adoptAccountSession(
 
   await openNamespace(session.accountId);
 
-  // Configure RevenueCat for this account (lazy-loaded to avoid breaking tests)
-  try {
-    const { configureRevenueCat } = await import('../commerce/revenueCat');
-    configureRevenueCat(session.accountId);
-  } catch (err) {
-    console.debug('RevenueCat configuration skipped:', err instanceof Error ? err.message : String(err));
-  }
-
   updateStoreState({
     guestId: null,
     guestCreatedAt: null,

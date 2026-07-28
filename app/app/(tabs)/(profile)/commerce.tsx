@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator, SectionList, Pressable, Alert } from 'react-native';
-import { Screen, Card, Button, EmptyState } from '@/components';
+import { StyleSheet, View, Text, ActivityIndicator, Pressable, Alert } from 'react-native';
+import { Screen, Card, Button } from '@/components';
 import { Theme } from '@/theme/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { useCoinBalance } from '@/api/economy';
 import { useAiCreditBalance } from '@/api/commerce';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
-import Purchases, { PurchasesPackage } from 'react-native-purchases';
+import { PurchasesPackage } from 'react-native-purchases';
 import { useMembership, usePremiumDailyClaim } from '@/api/membership';
 import {
   MEMBERSHIP_THEMES,
@@ -16,6 +16,18 @@ import {
 } from '@/membership/themes';
 import { captureGameplayEvent } from '@/analytics/gameplayEvents';
 import type { PurchaseProductKind } from '@/analytics/schema';
+import {
+  PAYWALL_PROTOTYPE_NAMES,
+  PaywallPrototype,
+  type PaywallPrototypeVariant,
+} from '@/commerce/PaywallPrototype';
+import { PrototypeSwitcher } from '@/components/PrototypeSwitcher';
+import {
+  getRevenueCatOfferings,
+  purchaseRevenueCatPackage,
+  restoreRevenueCatPurchases,
+  useRevenueCatRuntime,
+} from '@/commerce/revenueCat';
 
 // Keys are the store product identifiers exactly as registered in App Store
 // Connect and Google Play (ADR-0043).
@@ -80,8 +92,10 @@ function purchaseErrorMessage(error: unknown): string | null {
 
 export default function CommerceScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ variant?: string }>();
   const queryClient = useQueryClient();
-  const { isAccount } = useIdentityStore();
+  const { isAccount, accountId } = useIdentityStore();
+  const revenueCatRuntime = useRevenueCatRuntime();
   const { data: coinBalance } = useCoinBalance();
   const { data: aiCreditBalance } = useAiCreditBalance();
   const { data: membership } = useMembership();
@@ -96,16 +110,27 @@ export default function CommerceScreen() {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [restoringPurchases, setRestoringPurchases] = useState(false);
 
+  const prototypeVariant = process.env.NODE_ENV !== 'production'
+    && isPaywallPrototypeVariant(params.variant)
+    ? params.variant
+    : null;
+
   useEffect(() => {
-    if (!isAccount) return;
-    loadOfferings();
-  }, [isAccount]);
+    if (revenueCatRuntime.status === 'ready') {
+      void loadOfferings();
+      return;
+    }
+    if (revenueCatRuntime.status === 'disabled' || revenueCatRuntime.status === 'error') {
+      setLoadingOfferings(false);
+      setOfferingsError(revenueCatRuntime.message ?? 'Commerce is unavailable.');
+    }
+  }, [revenueCatRuntime.status, revenueCatRuntime.message]);
 
   const loadOfferings = async () => {
     try {
       setLoadingOfferings(true);
       setOfferingsError(null);
-      const data = await Purchases.getOfferings();
+      const data = await getRevenueCatOfferings();
 
       if (data.current === null) {
         setOfferingsError('No offerings available.');
@@ -177,7 +202,7 @@ export default function CommerceScreen() {
       await captureGameplayEvent('purchase_started', { product_kind: productKind });
     }
     try {
-      await Purchases.purchasePackage(pkg);
+      await purchaseRevenueCatPackage(pkg, accountId);
       if (productKind) {
         await captureGameplayEvent('purchase_completed', { product_kind: productKind });
       }
@@ -214,7 +239,7 @@ export default function CommerceScreen() {
       setPurchasingPackageId(null);
       setShowSuccessMessage(false);
     }
-  }, [queryClient]);
+  }, [accountId, queryClient]);
 
   const refetchBalances = async () => {
     await queryClient.refetchQueries({ queryKey: ['economy', 'balance'] });
@@ -226,7 +251,7 @@ export default function CommerceScreen() {
     setRestoringPurchases(true);
     setPurchaseError(null);
     try {
-      await Purchases.restorePurchases();
+      await restoreRevenueCatPurchases(accountId);
       setShowSuccessMessage(true);
       await new Promise(r => setTimeout(r, 500));
       await refetchBalances();
@@ -241,26 +266,67 @@ export default function CommerceScreen() {
       setRestoringPurchases(false);
       setShowSuccessMessage(false);
     }
-  }, [queryClient]);
+  }, [accountId, queryClient]);
 
-  if (!isAccount) {
+  if (prototypeVariant) {
     return (
-      <Screen scrollable contentContainerStyle={styles.container}>
-        <EmptyState
-          icon="lock-closed-outline"
-          title="Sign in to Purchase"
-          body="A Registered Account is required to purchase Stitch Coins and AI Credits. Sign in to protect your progress and unlock commerce features."
-          actionLabel="Sign in"
-          onAction={() => router.push('/(tabs)/(settings)/sign-in')}
-          actionVariant="rose"
+      <>
+        <PaywallPrototype variant={prototypeVariant} />
+        <PrototypeSwitcher
+          variants={['A', 'B', 'C'] as const}
+          current={prototypeVariant}
+          names={PAYWALL_PROTOTYPE_NAMES}
+          onChange={(variant) => router.setParams({ variant })}
         />
-      </Screen>
+      </>
     );
   }
 
   const premiumPlans = offerings.filter(p => p.productId in PREMIUM_PLAN_DESCRIPTIONS);
   const coinPacks = offerings.filter(p => p.productId in COIN_PACK_DESCRIPTIONS);
   const aiPacks = offerings.filter(p => p.productId in AI_CREDIT_PACK_DESCRIPTIONS);
+
+  if (!isAccount) {
+    return (
+      <Screen scrollable contentContainerStyle={styles.container}>
+        <Card style={styles.catalogOnlyCard}>
+          <View style={styles.membershipTitleRow}>
+            <Ionicons name="storefront-outline" size={22} color={Theme.colors.accentRose} />
+            <Text style={styles.membershipTitle}>Browse the Commerce Store</Text>
+          </View>
+          <Text style={styles.membershipDescription}>
+            Current products and store prices are available while playing as a Guest. Sign in with a Registered Account before purchasing.
+          </Text>
+          <Button
+            title="Sign in to Purchase"
+            onPress={() => router.push('/(tabs)/(settings)/sign-in')}
+            variant="rose"
+          />
+        </Card>
+
+        {loadingOfferings ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={Theme.colors.accentRose} />
+            <Text style={styles.loadingText}>Loading current store prices...</Text>
+          </View>
+        ) : offeringsError ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorLabel}>Commerce catalog unavailable</Text>
+            <Text style={styles.errorDescription}>{offeringsError}</Text>
+            {revenueCatRuntime.status === 'ready' && (
+              <Button title="Try Again" onPress={loadOfferings} variant="rose" style={styles.retryButton} />
+            )}
+          </View>
+        ) : (
+          <>
+            <CatalogOnlySection title="Premium Plans" items={premiumPlans} />
+            <CatalogOnlySection title="Stitch Coin Packs" items={coinPacks} />
+            <CatalogOnlySection title="AI Credit Packs" items={aiPacks} />
+          </>
+        )}
+      </Screen>
+    );
+  }
 
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
@@ -521,6 +587,32 @@ export default function CommerceScreen() {
   );
 }
 
+function CatalogOnlySection({ title, items }: { title: string; items: PackItem[] }) {
+  if (items.length === 0) return null;
+
+  return (
+    <>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      <View style={styles.packsList}>
+        {items.map((item) => (
+          <Card key={item.id} style={styles.packCard}>
+            <View style={styles.packInfo}>
+              <View style={styles.packTextGroup}>
+                <Text style={styles.packLabel}>{item.label}</Text>
+                <Text style={styles.packPrice}>{item.package.product.priceString}</Text>
+              </View>
+            </View>
+            <View style={styles.catalogOnlyBadge}>
+              <Ionicons name="eye-outline" size={14} color={Theme.colors.textSecondary} />
+              <Text style={styles.catalogOnlyBadgeText}>Browse only</Text>
+            </View>
+          </Card>
+        ))}
+      </View>
+    </>
+  );
+}
+
 function matchingProductId(
   pkg: PurchasesPackage,
   catalog: Readonly<Record<string, unknown>>,
@@ -538,6 +630,10 @@ function storeProductKey(storeIdentifier: string): string {
   return separator === -1 ? storeIdentifier : storeIdentifier.slice(0, separator);
 }
 
+function isPaywallPrototypeVariant(value: string | undefined): value is PaywallPrototypeVariant {
+  return value === 'A' || value === 'B' || value === 'C';
+}
+
 function capitalize(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
@@ -547,6 +643,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: Theme.spacing.lg,
     paddingTop: Theme.spacing.xl,
     paddingBottom: Theme.spacing.xxl,
+  },
+  catalogOnlyCard: {
+    gap: Theme.spacing.md,
+    marginBottom: Theme.spacing.xl,
+  },
+  catalogOnlyBadge: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: Theme.spacing.xs,
+  },
+  catalogOnlyBadgeText: {
+    color: Theme.colors.textSecondary,
+    fontSize: Theme.typography.sizes.xs,
+    fontWeight: Theme.typography.weights.medium,
   },
   balanceSection: {
     gap: Theme.spacing.md,

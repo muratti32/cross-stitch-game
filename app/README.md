@@ -50,7 +50,7 @@ Stitch Wish features a tactile, warm, craft-inspired UI. Design tokens reside in
 
 ## ⚙️ Environment Configurations
 
-The application relies on `EXPO_PUBLIC_API_BASE_URL` to route backend calls (e.g. Health status checker). 
+The application relies on `EXPO_PUBLIC_API_BASE_URL` to route backend calls. RevenueCat additionally requires an explicit `EXPO_PUBLIC_REVENUECAT_STORE_MODE` plus the matching public SDK key; see `.env.example` for the variable names.
 
 1. Copy the example configuration to create your local variables:
    ```bash
@@ -87,9 +87,19 @@ Inside the Metro terminal:
 ## 🛠️ Build Profiles (`eas.json`)
 
 Build configurations correspond to separate environments:
-- **`development`**: Local sandbox builds targeting `http://localhost:3000`. Uses a development client.
-- **`preview`**: Staging builds for internal distribution/testing. `EXPO_PUBLIC_API_BASE_URL` comes from the EAS `preview` environment variables (API domain is not yet provisioned — see issue #36).
-- **`production`**: Live store release builds. `EXPO_PUBLIC_API_BASE_URL` comes from the EAS `production` environment variables (API domain is not yet provisioned — see issue #36).
+- **`development`**: Existing local-backend development client. RevenueCat mode is `native`; missing native public keys disable commerce without blocking the app.
+- **`development-test-store`**: Development client targeting the staging Game Backend with RevenueCat mode `test_store`. Set `EXPO_PUBLIC_REVENUECAT_TEST_STORE_API_KEY` in the EAS `development` environment; never put this key in preview or production.
+- **`preview`**: Internal staging build using the iOS/Android native store and the EAS `preview` environment's platform-specific RevenueCat public key.
+- **`production`**: Live release build using the iOS/Android native store and the EAS `production` environment's platform-specific RevenueCat public key.
+
+RevenueCat variable mapping:
+
+| Build profile | Store mode | Public SDK key | Game Backend |
+|---|---|---|---|
+| `development` | `native` | `EXPO_PUBLIC_REVENUECAT_API_KEY_IOS` or `EXPO_PUBLIC_REVENUECAT_API_KEY_ANDROID` | local network URL in `eas.json` |
+| `development-test-store` | `test_store` | `EXPO_PUBLIC_REVENUECAT_TEST_STORE_API_KEY` | staging |
+| `preview` | `native` | platform-specific key | staging |
+| `production` | `native` | platform-specific key | production EAS environment |
 
 Run the TypeScript checker command to ensure type compliance before pushing changes:
 ```bash

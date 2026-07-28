@@ -136,6 +136,10 @@ _Avoid_: Public profile history, editable log, Community Pattern metadata
 
 ### Economy and Commerce
 
+**Commerce Store**:
+The single player-facing purchase surface where Premium Plans, Stitch Coin Packs, and AI Credit Packs can be compared. A Guest Player may browse the products and current store prices but must become a Registered Account before purchasing; a Registered Account can buy there. The surface presents recurring membership and one-time top-ups together while keeping their grants, durations, and purchase terms distinct. It is not a gate over core play or creation, and entering it never implies that Premium Membership is required.
+_Avoid_: Paywall, Premium-only screen, locked game
+
 **Premium Membership**:
 The paid access held by a Registered Account through a Weekly, Monthly, or Annual Premium Plan. Its first-release benefits are limited to the Membership Credit Grant, Premium Daily Coin Claim, and Premium Theme Collection. It is not required to purchase or spend AI Credit and does not gate Pattern Conversion, photo tools, Progress Sync, Catalog Submission, core play, accessibility, or Official Pattern access.
 _Avoid_: Premium Account, paid user, VIP
@@ -175,6 +179,10 @@ _Avoid_: Local Coin balance, Commerce Ledger, client save data
 **Commerce Ledger**:
 The backend source of truth for verified store transactions, their Commerce Transaction Bindings, normalized Membership Periods, and the account grants they produce. Each provider transaction identifier and paid membership period is recorded idempotently and can produce its grant exactly once; the mobile client cannot mutate paid balances or entitlements directly.
 _Avoid_: Client purchase history, local receipt cache, balance endpoint
+
+**Purchase Reconciliation Pending**:
+The non-failure state shown after the store reports a completed purchase or restore but the Commerce Ledger has not yet exposed its verified grant. It grants no client-side value, prevents the player from being prompted to repeat the same purchase, and keeps checking the backend until the recorded result appears. A prolonged delay provides retry and Support Reference actions without claiming that the store transaction failed.
+_Avoid_: Purchase success, purchase failure, repurchase prompt, local grant
 
 **Commerce Transaction Binding**:
 The permanent association created when a verified Apple or Google store transaction is first granted to one Registered Account. Resubmitting or restoring it for the same account is idempotent; another account cannot claim, transfer, or merge it. Account Deletion may remove bounded receipt and account detail but retains a minimal one-way provider-transaction tombstone for the life of the service to prevent regranting. Deletion does not cancel the platform subscription or move it to a later account.

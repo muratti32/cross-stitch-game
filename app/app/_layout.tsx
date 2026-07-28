@@ -7,7 +7,8 @@ import { QueryProvider } from '../src/providers';
 import * as SplashScreen from 'expo-splash-screen';
 import { initDatabase, getHandedness } from '../src/local-db';
 import { useGameplayStore } from '../src/store/gameplayStore';
-import { bootstrap } from '../src/identity/guestIdentity';
+import { bootstrap, useIdentityStore } from '../src/identity/guestIdentity';
+import { synchronizeRevenueCatIdentity } from '../src/commerce/revenueCat';
 import { initializeAdMob } from '../src/ads';
 import { initSentry, syncSentryPlayerReferenceWithIdentity } from '../src/observability/sentry';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -59,6 +60,24 @@ function RootLayout() {
     } finally {
       analyticsFlushInFlightRef.current = false;
     }
+  }, []);
+
+  useEffect(() => {
+    const synchronize = (accountId: string | null) => {
+      void synchronizeRevenueCatIdentity(accountId).catch((error: unknown) => {
+        console.warn(
+          'RevenueCat identity synchronization deferred:',
+          error instanceof Error ? error.message : String(error),
+        );
+      });
+    };
+
+    synchronize(useIdentityStore.getState().accountId);
+    return useIdentityStore.subscribe((state, previousState) => {
+      if (state.accountId !== previousState.accountId) {
+        synchronize(state.accountId);
+      }
+    });
   }, []);
 
   useEffect(() => {
