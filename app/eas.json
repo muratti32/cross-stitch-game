@@ -9,9 +9,20 @@
       "distribution": "internal",
       "env": {
         "EXPO_PUBLIC_API_BASE_URL": "http://192.168.1.119:3000",
+        "EXPO_PUBLIC_REVENUECAT_STORE_MODE": "native",
         "EXPO_PUBLIC_SENTRY_ENVIRONMENT": "development"
       },
       "environment": "development"
+    },
+    "development-test-store": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "environment": "development",
+      "env": {
+        "EXPO_PUBLIC_API_BASE_URL": "https://stitch-wish-staging-api.avkdesign.net",
+        "EXPO_PUBLIC_REVENUECAT_STORE_MODE": "test_store",
+        "EXPO_PUBLIC_SENTRY_ENVIRONMENT": "development"
+      }
     },
     "preview": {
       "distribution": "internal",
@@ -22,6 +33,7 @@
       "environment": "preview",
       "env": {
         "EXPO_PUBLIC_API_BASE_URL": "https://stitch-wish-staging-api.avkdesign.net",
+        "EXPO_PUBLIC_REVENUECAT_STORE_MODE": "native",
         "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyDEMMkOI6ewbheo9v8tBLjqN7fn2PUtyP0",
         "EXPO_PUBLIC_FIREBASE_APP_ID": "1:316776132325:web:baf4ada2659d54eb67ae0c",
         "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "stitchwish-d3b28.firebaseapp.com",
@@ -34,12 +46,17 @@
         "EXPO_PUBLIC_ADMOB_ANDROID_APP_ID": "ca-app-pub-0493573291885691~2187247429",
         "EXPO_PUBLIC_ADMOB_IOS_APP_ID": "ca-app-pub-0493573291885691~6805149283",
         "EXPO_PUBLIC_ADMOB_ANDROID_REWARDED_AD_UNIT_ID": "ca-app-pub-0493573291885691/1417091233",
-        "EXPO_PUBLIC_ADMOB_IOS_REWARDED_AD_UNIT_ID": "ca-app-pub-0493573291885691/4178985949"
+        "EXPO_PUBLIC_ADMOB_IOS_REWARDED_AD_UNIT_ID": "ca-app-pub-0493573291885691/4178985949",
+        "NODE_ENV": "preview"
       }
     },
     "production": {
       "autoIncrement": true,
-      "environment": "production"
+      "environment": "production",
+      "env": {
+        "EXPO_PUBLIC_REVENUECAT_STORE_MODE": "native",
+        "NODE_ENV": "production"
+      }
     }
   },
   "submit": {

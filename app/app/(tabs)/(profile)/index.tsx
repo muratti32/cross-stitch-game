@@ -105,6 +105,22 @@ export default function ProfileScreen() {
     router.push('/(tabs)/(profile)/public-profile');
   };
 
+  const [isRetryingProfile, setIsRetryingProfile] = useState(false);
+
+  const handleRetryProfile = async () => {
+    setIsRetryingProfile(true);
+    try {
+      await bootstrap();
+    } catch {
+      // ignore bootstrap error, refetch will handle or report
+    }
+    try {
+      await creatorProfileQuery.refetch();
+    } finally {
+      setIsRetryingProfile(false);
+    }
+  };
+
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
       {/* Profile Header Card */}
@@ -135,9 +151,24 @@ export default function ProfileScreen() {
             <Ionicons name="cloud-offline-outline" size={48} color={Theme.colors.error} />
           </View>
           <Text style={styles.displayName}>Public profile unavailable</Text>
-          <Text style={styles.profileHelpText}>Check your connection and try again.</Text>
-          <Pressable onPress={() => void creatorProfileQuery.refetch()} style={styles.retryButton}>
-            <Text style={styles.retryButtonText}>Try Again</Text>
+          <Text style={styles.profileHelpText}>
+            {creatorProfileQuery.error instanceof Error
+              ? creatorProfileQuery.error.message
+              : 'Check your connection and try again.'}
+          </Text>
+          <Pressable
+            disabled={creatorProfileQuery.isRefetching || isRetryingProfile}
+            onPress={handleRetryProfile}
+            style={[
+              styles.retryButton,
+              (creatorProfileQuery.isRefetching || isRetryingProfile) && { opacity: 0.7 },
+            ]}
+          >
+            {creatorProfileQuery.isRefetching || isRetryingProfile ? (
+              <ActivityIndicator size="small" color={Theme.colors.error} />
+            ) : (
+              <Text style={styles.retryButtonText}>Try Again</Text>
+            )}
           </Pressable>
         </View>
       ) : isAccount && creatorProfile === null ? (
@@ -428,7 +459,7 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: Theme.spacing.xl,
     paddingHorizontal: Theme.spacing.lg,
-    paddingBottom: Theme.spacing.xxl,
+    paddingBottom: 100,
   },
   profileCard: {
     alignItems: 'center',

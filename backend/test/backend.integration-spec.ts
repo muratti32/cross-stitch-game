@@ -3350,7 +3350,7 @@ describe('Stitch Wish backend integration', () => {
         environment: 'sandbox',
         providerTransactionId: coinTxId,
         accountId: account1.accountId,
-        productId: 'coin_pack_300',
+        productId: 'com.avk.stitchwish.coin_pack_300',
       });
       expect(coinResult).toEqual({
         outcome: 'granted',
@@ -3365,7 +3365,7 @@ describe('Stitch Wish backend integration', () => {
         environment: 'sandbox',
         providerTransactionId: aiTxId,
         accountId: account1.accountId,
-        productId: 'ai_credit_pack_5',
+        productId: 'com.avk.stitchwish.ai_credit_pack_5',
       });
       expect(aiResult).toEqual({
         outcome: 'granted',
@@ -3379,7 +3379,7 @@ describe('Stitch Wish backend integration', () => {
         environment: 'sandbox',
         providerTransactionId: aiTxId,
         accountId: account1.accountId,
-        productId: 'ai_credit_pack_5',
+        productId: 'com.avk.stitchwish.ai_credit_pack_5',
       });
       expect(duplicateResult).toEqual({
         outcome: 'replayed_same_account',
@@ -3393,7 +3393,7 @@ describe('Stitch Wish backend integration', () => {
         environment: 'sandbox',
         providerTransactionId: aiTxId,
         accountId: account2.accountId,
-        productId: 'ai_credit_pack_5',
+        productId: 'com.avk.stitchwish.ai_credit_pack_5',
       });
       expect(fraudulentResult).toEqual({
         outcome: 'rejected_other_account',
@@ -3482,7 +3482,7 @@ describe('Stitch Wish backend integration', () => {
             type: 'NON_RENEWING_PURCHASE',
             app_user_id: account.accountId,
             transaction_id: transactionId,
-            product_id: 'coin_pack_900',
+            product_id: 'com.avk.stitchwish.coin_pack_900',
             environment: 'SANDBOX',
           },
         })
@@ -3496,7 +3496,7 @@ describe('Stitch Wish backend integration', () => {
             type: 'NON_RENEWING_PURCHASE',
             app_user_id: account.accountId,
             transaction_id: transactionId,
-            product_id: 'coin_pack_900',
+            product_id: 'com.avk.stitchwish.coin_pack_900',
             environment: 'SANDBOX',
           },
         })
@@ -3511,7 +3511,7 @@ describe('Stitch Wish backend integration', () => {
             type: 'NON_RENEWING_PURCHASE',
             app_user_id: account.accountId,
             transaction_id: transactionId,
-            product_id: 'coin_pack_900',
+            product_id: 'com.avk.stitchwish.coin_pack_900',
             environment: 'SANDBOX',
           },
         })
@@ -3533,7 +3533,7 @@ describe('Stitch Wish backend integration', () => {
             type: 'NON_RENEWING_PURCHASE',
             app_user_id: account.accountId,
             transaction_id: transactionId,
-            product_id: 'coin_pack_900',
+            product_id: 'com.avk.stitchwish.coin_pack_900',
             environment: 'SANDBOX',
           },
         })
@@ -3555,7 +3555,7 @@ describe('Stitch Wish backend integration', () => {
             type: 'NON_RENEWING_PURCHASE',
             app_user_id: account.accountId,
             transaction_id: aiTxId,
-            product_id: 'ai_credit_pack_20',
+            product_id: 'com.avk.stitchwish.ai_credit_pack_20',
             environment: 'SANDBOX',
           },
         })
@@ -3576,7 +3576,7 @@ describe('Stitch Wish backend integration', () => {
             type: 'REFUND',
             app_user_id: account.accountId,
             transaction_id: transactionId,
-            product_id: 'coin_pack_900',
+            product_id: 'com.avk.stitchwish.coin_pack_900',
             environment: 'SANDBOX',
           },
         })
@@ -3598,7 +3598,7 @@ describe('Stitch Wish backend integration', () => {
             type: 'REFUND',
             app_user_id: account.accountId,
             transaction_id: unboundTxId,
-            product_id: 'coin_pack_900',
+            product_id: 'com.avk.stitchwish.coin_pack_900',
             environment: 'SANDBOX',
           },
         })
@@ -3629,7 +3629,7 @@ describe('Stitch Wish backend integration', () => {
         id: `event-${randomUUID()}`,
         type: 'INITIAL_PURCHASE',
         transaction_id: oldTransactionId,
-        product_id: 'premium_weekly',
+        product_id: 'com.avk.stitchwish.premium_weekly',
         event_timestamp_ms: now - 8 * 86_400_000,
         purchased_at_ms: now - 8 * 86_400_000,
         expiration_at_ms: now - 60_000,
@@ -3640,7 +3640,7 @@ describe('Stitch Wish backend integration', () => {
         id: `event-${randomUUID()}`,
         type: 'RENEWAL',
         transaction_id: newTransactionId,
-        product_id: 'premium_monthly',
+        product_id: 'com.avk.stitchwish.premium_monthly',
         event_timestamp_ms: now - 30_000,
         purchased_at_ms: now - 60_000,
         expiration_at_ms: now + 30 * 86_400_000,
@@ -3656,7 +3656,7 @@ describe('Stitch Wish backend integration', () => {
         id: `event-${randomUUID()}`,
         type: 'EXPIRATION',
         transaction_id: oldTransactionId,
-        product_id: 'premium_weekly',
+        product_id: 'com.avk.stitchwish.premium_weekly',
         event_timestamp_ms: now - 10_000,
         purchased_at_ms: now - 8 * 86_400_000,
         expiration_at_ms: now - 60_000,
@@ -3687,7 +3687,7 @@ describe('Stitch Wish backend integration', () => {
         type: 'CANCELLATION',
         cancel_reason: 'CUSTOMER_SUPPORT',
         transaction_id: oldTransactionId,
-        product_id: 'premium_weekly',
+        product_id: 'com.avk.stitchwish.premium_weekly',
         event_timestamp_ms: now,
         purchased_at_ms: now - 8 * 86_400_000,
         expiration_at_ms: now - 60_000,

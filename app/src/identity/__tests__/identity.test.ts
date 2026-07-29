@@ -63,6 +63,9 @@ beforeAll(() => {
     return {
       status: response.status,
       json: async () => response.body,
+      clone() {
+        return this;
+      },
     } as any;
   }) as any;
 });
@@ -136,6 +139,7 @@ describe('Guest Identity Client State Machine', () => {
       isAuthenticated: false,
       isPending: false,
       isOfflinePending: false,
+      requiresSignIn: false,
     });
     setAccessToken(null);
   });
@@ -210,6 +214,7 @@ describe('apiFetch Interception, Refresh and Replay', () => {
     useIdentityStore.setState({
       guestId: 'guest_abc',
       isAuthenticated: true,
+      requiresSignIn: false,
     });
   });
 
@@ -253,7 +258,7 @@ describe('apiFetch Interception, Refresh and Replay', () => {
     );
   });
 
-  test('401 -> refresh failure (401) -> clear session and re-bootstrap flow', async () => {
+  test('guest 401 -> refresh failure (401) -> clear session and re-bootstrap flow', async () => {
     setAccessToken('expired-token.eyJpZCI6ImcxIiwiaWF0IjoxMDAwLCJleHAiOjE5MDB9.sig');
     mockSecureStore['stitch_wish.refresh_token'] = 'invalid_refresh_token';
     mockSecureStore['stitch_wish.installation_key'] = 'inst_key';
@@ -286,6 +291,63 @@ describe('apiFetch Interception, Refresh and Replay', () => {
     expect(useIdentityStore.getState().guestId).toBe('new_guest_xyz');
     expect(useIdentityStore.getState().isAuthenticated).toBe(true);
     expect(getAccessToken()).toBe('brand-new-access.eyJpZCI6ImcxIiwiaWF0IjoxMDAwLCJleHAiOjE5MDB9.sig');
+  });
+
+  test('account 401 -> refresh failure requires sign-in instead of switching to guest', async () => {
+    setAccessToken('expired-token.eyJpZCI6ImcxIiwiaWF0IjoxMDAwLCJleHAiOjE5MDB9.sig');
+    mockSecureStore['stitch_wish.refresh_token'] = 'invalid_refresh_token';
+    mockSecureStore['stitch_wish.account_id'] = 'account_expired';
+    mockSecureStore['stitch_wish.account_email'] = 'expired@example.com';
+    mockSecureStore['stitch_wish.account_provider'] = 'email';
+    useIdentityStore.setState({
+      accountId: 'account_expired',
+      accountEmail: 'expired@example.com',
+      accountProvider: 'email',
+      isAccount: true,
+      isAuthenticated: true,
+    });
+
+    mockFetchResponses.push({ status: 401, body: { error: 'Unauthorized' } });
+    mockFetchResponses.push({ status: 401, body: { error: 'Refresh token invalid' } });
+
+    const res = await apiFetch('/v1/creator-profiles/me');
+    await new Promise(process.nextTick);
+
+    expect(res.status).toBe(401);
+    expect(mockFetchResponses).toHaveLength(0);
+    expect(useIdentityStore.getState()).toMatchObject({
+      accountId: null,
+      isAccount: false,
+      isAuthenticated: false,
+      requiresSignIn: true,
+    });
+    expect(mockSecureStore['stitch_wish.requires_sign_in']).toBe('true');
+    expect(getAccessToken()).toBeNull();
+  });
+
+  test('account-only 403 marks a stale account state as sign-in required', async () => {
+    setAccessToken('guest-token.eyJpZCI6ImcxIiwiaWF0IjoxMDAwLCJleHAiOjE5MDB9.sig');
+    useIdentityStore.setState({
+      accountId: 'account_stale',
+      accountEmail: 'stale@example.com',
+      accountProvider: 'email',
+      isAccount: true,
+      isAuthenticated: true,
+    });
+    mockFetchResponses.push({
+      status: 403,
+      body: { message: 'Registered Account required' },
+    });
+
+    const res = await apiFetch('/v1/creator-profiles/me');
+
+    expect(res.status).toBe(403);
+    expect(useIdentityStore.getState()).toMatchObject({
+      accountId: null,
+      isAccount: false,
+      isAuthenticated: false,
+      requiresSignIn: true,
+    });
   });
 });
 
@@ -545,7 +607,7 @@ describe('Email Sign-In (Registered Account) flows', () => {
     expect(mockSecureStore[REFRESH_TOKEN]).toBe('refresh_next');
   });
 
-  test('bootstrap falls back to guest when account refresh is revoked (401)', async () => {
+  test('bootstrap requires sign-in when account refresh is revoked (401)', async () => {
     mockSecureStore['stitch_wish.installation_key'] = 'inst';
     mockSecureStore['stitch_wish.credential_secret'] = 'cred';
     mockSecureStore[ACCOUNT_ID] = 'acc_dead';
@@ -554,24 +616,28 @@ describe('Email Sign-In (Registered Account) flows', () => {
 
     // Account refresh rejected
     mockFetchResponses.push({ status: 401, body: {} });
-    // Guest registration succeeds
-    mockFetchResponses.push({
-      status: 201,
-      body: {
-        guestId: 'guest_fallback',
-        accessToken: `access.${DECODABLE_JWT}`,
-        refreshToken: 'refresh_guest',
-      },
+    // Reproduce the real transition from a registered account to the guest
+    // fallback while the profile screen is still mounted.
+    useIdentityStore.setState({
+      accountId: 'acc_dead',
+      accountEmail: 'dead@example.com',
+      accountProvider: 'email',
+      isAccount: true,
     });
 
     await bootstrap();
 
-    expect(mockSecureStore[ACCOUNT_ID]).toBeUndefined();
-    expect(mockSecureStore[ACCOUNT_EMAIL]).toBeUndefined();
+    expect(mockSecureStore[ACCOUNT_ID]).toBe('acc_dead');
+    expect(mockSecureStore[ACCOUNT_EMAIL]).toBe('dead@example.com');
     const state = useIdentityStore.getState();
     expect(state.isAccount).toBe(false);
-    expect(state.guestId).toBe('guest_fallback');
-    expect(state.isAuthenticated).toBe(true);
+    expect(state.accountId).toBeNull();
+    expect(state.accountEmail).toBeNull();
+    expect(state.accountProvider).toBeNull();
+    expect(state.guestId).toBeNull();
+    expect(state.isAuthenticated).toBe(false);
+    expect(state.requiresSignIn).toBe(true);
+    expect(mockSecureStore['stitch_wish.requires_sign_in']).toBe('true');
   });
 
   test('logout of an account clears keys but preserves namespace data', async () => {

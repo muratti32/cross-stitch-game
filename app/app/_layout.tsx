@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
-import { Slot } from 'expo-router';
+import { router, Slot, usePathname } from 'expo-router';
 import * as Sentry from '@sentry/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryProvider } from '../src/providers';
 import * as SplashScreen from 'expo-splash-screen';
 import { initDatabase, getHandedness } from '../src/local-db';
 import { useGameplayStore } from '../src/store/gameplayStore';
-import { bootstrap } from '../src/identity/guestIdentity';
+import { bootstrap, useIdentityStore } from '../src/identity/guestIdentity';
+import { synchronizeRevenueCatIdentity } from '../src/commerce/revenueCat';
 import { initializeAdMob } from '../src/ads';
 import { initSentry, syncSentryPlayerReferenceWithIdentity } from '../src/observability/sentry';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -31,9 +32,17 @@ SplashScreen.preventAutoHideAsync();
 
 function RootLayout() {
   const [dbReady, setDbReady] = useState(false);
+  const pathname = usePathname();
+  const requiresSignIn = useIdentityStore((state) => state.requiresSignIn);
   const analyticsFlushInFlightRef = useRef(false);
   const analyticsRetryDelayRef = useRef(ANALYTICS_RETRY_INITIAL_MS);
   const analyticsNextRetryAtRef = useRef(0);
+
+  useEffect(() => {
+    if (requiresSignIn && !pathname.endsWith('/sign-in')) {
+      router.replace('/(tabs)/(settings)/sign-in');
+    }
+  }, [pathname, requiresSignIn]);
 
   // This extends the root lifecycle sync trigger already used for pending
   // personal patterns. The retry gate avoids a new reachability subsystem while
@@ -59,6 +68,24 @@ function RootLayout() {
     } finally {
       analyticsFlushInFlightRef.current = false;
     }
+  }, []);
+
+  useEffect(() => {
+    const synchronize = (accountId: string | null) => {
+      void synchronizeRevenueCatIdentity(accountId).catch((error: unknown) => {
+        console.warn(
+          'RevenueCat identity synchronization deferred:',
+          error instanceof Error ? error.message : String(error),
+        );
+      });
+    };
+
+    synchronize(useIdentityStore.getState().accountId);
+    return useIdentityStore.subscribe((state, previousState) => {
+      if (state.accountId !== previousState.accountId) {
+        synchronize(state.accountId);
+      }
+    });
   }, []);
 
   useEffect(() => {

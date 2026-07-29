@@ -22,9 +22,14 @@ Every event has `event_id` (client UUID), `occurred_at` (ISO-8601 timestamp), an
 | `ai_generation_prompt_blocked` | no fields (`{}`) |
 | `ai_generation_completed` | `aspect`: `square` \| `portrait_4_3` \| `landscape_4_3` |
 | `ai_generation_failed` | `failure_stage`: `prompt_safety` \| `provider_submission` \| `provider_safety` \| `delivery` |
-| `purchase_started` | `product_kind`: `premium_membership` \| `ai_credit_pack` \| `stitch_coin_pack` |
-| `purchase_completed` | `product_kind`: `premium_membership` \| `ai_credit_pack` \| `stitch_coin_pack` |
-| `purchase_cancelled` | `product_kind`: `premium_membership` \| `ai_credit_pack` \| `stitch_coin_pack` |
-| `purchase_failed` | `product_kind`: `premium_membership` \| `ai_credit_pack` \| `stitch_coin_pack`; `failure_stage`: `store` \| `verification` \| `grant` |
+| `commerce_store_viewed` | `source`: `profile` \| `stitch_coin_shortfall` \| `ai_credit_shortfall` \| `premium_benefit` \| `sign_in_return` \| `direct` |
+| `commerce_product_selected` | `product_kind`: `premium_membership` \| `ai_credit_pack` \| `stitch_coin_pack`; `product_key`: `premium_weekly` \| `premium_monthly` \| `premium_annual` \| `ai_credit_pack_5` \| `ai_credit_pack_20` \| `ai_credit_pack_50` \| `coin_pack_300` \| `coin_pack_900` \| `coin_pack_2000` |
+| `purchase_started` | `product_kind`; `product_key` (same closed values as `commerce_product_selected`) |
+| `purchase_reconciliation_pending` | `product_kind`; `product_key` (same closed values as `commerce_product_selected`) |
+| `purchase_completed` | `product_kind`; `product_key` (same closed values as `commerce_product_selected`) |
+| `purchase_cancelled` | `product_kind`; `product_key` (same closed values as `commerce_product_selected`) |
+| `purchase_failed` | `product_kind`; `product_key` (same closed values as `commerce_product_selected`); `failure_stage`: `store` \| `verification` \| `grant` |
+
+`purchase_completed` is emitted only after the Game Backend exposes the verified Commerce Ledger grant. A successful RevenueCat SDK return emits neither `purchase_completed` nor client-side value; it proceeds to `purchase_reconciliation_pending` when the grant is not yet visible.
 
 The API accepts up to 500 events at `POST /v1/events`. It returns `accepted: true` for both new and replayed event identifiers, allowing the client to safely prune its local queue. The read service exposes per-kind daily counts for an ascending date range; it does not expose individual player events.
