@@ -194,6 +194,14 @@ runtime variables in the Coolify console:
 | `EMAIL_FROM_ADDRESS` | Sender on the verified Resend domain |
 | `FIREBASE_PROJECT_ID` | Firebase project accepted by the SSO exchange endpoint |
 | `FIREBASE_SERVICE_ACCOUNT_BASE64` | Base64-encoded Firebase Admin service-account JSON; API container only |
+| `REVENUECAT_WEBHOOK_AUTH_TOKEN` | Authorization value configured on the environment's RevenueCat webhook |
+| `OPENAI_API_KEY` | Server-side key for prompt and catalog moderation |
+| `FAL_KEY` | Server-side fal.ai inference key |
+| `FAL_WEBHOOK_BASE_URL` | Public API origin for fal.ai callbacks; use the matching staging or production domain |
+| `FAL_WEBHOOK_SECRET` | Environment-specific fal.ai callback signing secret |
+| `SENTRY_DSN` | Backend Sentry DSN |
+| `SENTRY_ENVIRONMENT` | Event environment tag; set to `staging` or `production` |
+| `SENTRY_RELEASE` | Immutable backend release identifier |
 
 The Compose `:?` syntax marks these values as required, so Coolify blocks the
 deployment while any is empty. Keep them runtime-only; none is needed during
@@ -206,8 +214,22 @@ value for each signing secret:
 openssl rand -hex 32
 ```
 
-The TTL, rate-limit, conversion concurrency, and log-level variables have safe
-defaults in Compose and remain editable in the Coolify panel.
+The TTL, retention, reconciliation, operational-alert, Sentry trace-sampling,
+rate-limit, conversion-concurrency, and log-level variables have safe defaults
+in Compose and remain editable in the Coolify panel. `OPENAI_MODERATION_ENABLED`
+defaults to `true` and cannot be disabled while `NODE_ENV=production`.
+
+Keep staging and production as separate Coolify resources. After a Compose
+change reaches the branch tracked by each resource, open **Environment
+Variables**, enter that environment's values, keep secrets runtime-only, save,
+and redeploy. Use different database, Redis, RevenueCat, fal.ai, Firebase, and
+signing credentials in each environment. At minimum, set
+`FAL_WEBHOOK_BASE_URL` and `SENTRY_ENVIRONMENT` to the matching public API origin
+and environment name. The local Test Store lane variables
+`REVENUECAT_API_V2_KEY`, `REVENUECAT_PROJECT_ID`,
+`REVENUECAT_TEST_STORE_APP_ID`,
+`REVENUECAT_TEST_STORE_WEBHOOK_INTEGRATION_ID`, and `NGROK_AUTHTOKEN` are not
+runtime deployment variables and must not be copied to Coolify.
 
 Firebase credentials are intentionally passed only to the `api` service. Encode
 the downloaded service-account JSON as a single line before storing it in the
