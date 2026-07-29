@@ -378,12 +378,25 @@ it('shows active lifecycle and opens native subscription management through Reve
   expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
     'Active · Monthly',
     'Renews 8/29/2026',
+    'Active Premium Membership',
     'Manage Subscription',
     'Stitch Coin Packs',
     'AI Credit Packs',
   ]));
+  expect(allText(renderer!.root)).not.toContain('Premium Daily Coin Claim');
+  expect(allText(renderer!.root)).not.toContain('Theme Collection');
   await act(async () => pressByText(renderer!.root, 'Manage Subscription'));
   expect(mockManageSubscriptions).toHaveBeenCalledTimes(1);
+});
+
+it('records the Premium benefit context when a locked benefit opens the store', async () => {
+  mockParams = { category: 'premium', source: 'premium_benefit' };
+  await renderScreen();
+
+  expect(allText(renderer!.root)).toContain('Choose a Premium plan');
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('commerce_store_viewed', {
+    source: 'premium_benefit',
+  });
 });
 
 afterEach(() => {

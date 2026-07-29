@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, Pressable, ActivityIndicator, Image } from 'react-native';
-import { Screen, EmptyState, Card, PatternImage, Button, DailyTasksCard, RewardedAdCard } from '@/components';
+import { Screen, EmptyState, Card, PatternImage, Button, DailyTasksCard, PremiumDailyCoinClaimCard, RewardedAdCard } from '@/components';
 import { Theme } from '@/theme/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { useIdentityStore } from '@/identity/guestIdentity';
@@ -340,6 +340,10 @@ export default function ProfileScreen() {
       )}
 
       <DailyTasksCard enabled={isAuthenticated && !isPending && !isOfflinePending} />
+      <PremiumDailyCoinClaimCard
+        enabled={isAuthenticated && !isPending && !isOfflinePending}
+        isAccount={isAccount}
+      />
       <RewardedAdCard enabled={!isPending && !isOfflinePending} />
 
       {/* Tab Switcher */}

@@ -28,7 +28,6 @@ import {
   createPremiumReconciliation,
   fetchMembership,
   useMembership,
-  usePremiumDailyClaim,
   type MembershipView,
 } from '@/api/membership';
 import { captureGameplayEvent } from '@/analytics/gameplayEvents';
@@ -53,11 +52,6 @@ import {
 } from '@/commerce/revenueCat';
 import { Button, Card, Screen } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
-import {
-  MEMBERSHIP_THEMES,
-  type MembershipThemeId,
-  useActiveMembershipTheme,
-} from '@/membership/themes';
 import { Theme } from '@/theme/theme';
 
 const RECONCILIATION_POLL_MS = 2_000;
@@ -110,8 +104,6 @@ export default function CommerceScreen() {
   const { data: coinBalance } = useCoinBalance();
   const { data: aiCreditBalance } = useAiCreditBalance(isAccount);
   const { data: membership } = useMembership(isAccount);
-  const dailyClaim = usePremiumDailyClaim();
-  const { theme, themeAccess, selectTheme } = useActiveMembershipTheme(isAccount);
 
   const [products, setProducts] = useState<CommerceProduct[]>([]);
   const [loadingStore, setLoadingStore] = useState(true);
@@ -874,20 +866,21 @@ export default function CommerceScreen() {
         </View>
 
         {isAccount && membership?.active && (
-          <MembershipBenefits
-            membership={membership}
-            claimPending={dailyClaim.isPending}
-            claimError={dailyClaim.error?.message ?? null}
-            onClaim={() => dailyClaim.mutate()}
-            selectedThemeId={theme.id}
-            themeAccess={themeAccess}
-            onSelectTheme={(themeId) => void selectTheme(themeId)}
-            onManage={() => {
-              void showRevenueCatManageSubscriptions().catch(() => {
-                Alert.alert('Unable to open subscriptions', 'Try again from your device store account.');
-              });
-            }}
-          />
+          <Card style={styles.membershipActionsCard}>
+            <Text style={styles.membershipActionsTitle}>Active Premium Membership</Text>
+            <Text style={styles.membershipActionsBody}>
+              Daily rewards are in Profile. Themes are under Settings › Appearance.
+            </Text>
+            <Button
+              title="Manage Subscription"
+              onPress={() => {
+                void showRevenueCatManageSubscriptions().catch(() => {
+                  Alert.alert('Unable to open subscriptions', 'Try again from your device store account.');
+                });
+              }}
+              variant="secondary"
+            />
+          </Card>
         )}
 
         {purchaseError !== null && (
@@ -1137,76 +1130,6 @@ function Benefit({ icon, label }: { icon: React.ComponentProps<typeof Ionicons>[
       <Ionicons name={icon} size={16} color={Theme.colors.textLight} />
       <Text style={styles.benefitText}>{label}</Text>
     </View>
-  );
-}
-
-function MembershipBenefits({
-  membership,
-  claimPending,
-  claimError,
-  onClaim,
-  selectedThemeId,
-  themeAccess,
-  onSelectTheme,
-  onManage,
-}: {
-  membership: NonNullable<ReturnType<typeof useMembership>['data']>;
-  claimPending: boolean;
-  claimError: string | null;
-  onClaim: () => void;
-  selectedThemeId: MembershipThemeId;
-  themeAccess: boolean;
-  onSelectTheme: (themeId: MembershipThemeId) => void;
-  onManage: () => void;
-}) {
-  return (
-    <Card style={styles.benefitsCard}>
-      <View style={styles.benefitsHeader}>
-        <Text style={styles.benefitsTitle}>Your Premium benefits</Text>
-        {membership.expiresAt && (
-          <Text style={styles.benefitsMeta}>
-            Period ends {new Date(membership.expiresAt).toLocaleDateString()}
-          </Text>
-        )}
-      </View>
-      <Button
-        title={membership.dailyClaim.claimed
-          ? 'Daily Coin Claimed'
-          : `Claim ${membership.dailyClaim.coinsAvailable} Coins`}
-        onPress={onClaim}
-        disabled={membership.dailyClaim.claimed || membership.dailyClaim.coinsAvailable === 0}
-        loading={claimPending}
-        variant="honey"
-      />
-      <Button title="Manage Subscription" onPress={onManage} variant="secondary" />
-      {claimError && <Text style={styles.claimError}>{claimError}</Text>}
-      <Text style={styles.themeTitle}>Theme Collection</Text>
-      <View style={styles.themeRow}>
-        {MEMBERSHIP_THEMES.map((candidate) => {
-          const locked = candidate.premium && !themeAccess;
-          return (
-            <Pressable
-              key={candidate.id}
-              disabled={locked}
-              onPress={() => onSelectTheme(candidate.id)}
-              style={[
-                styles.themeOption,
-                { backgroundColor: candidate.gridBackground },
-                selectedThemeId === candidate.id && styles.themeOptionSelected,
-                locked && styles.themeOptionLocked,
-              ]}
-            >
-              <Ionicons
-                name={locked ? 'lock-closed-outline' : 'color-palette-outline'}
-                size={17}
-                color={candidate.celebrationAccent}
-              />
-              <Text style={styles.themeOptionText}>{candidate.name}</Text>
-            </Pressable>
-          );
-        })}
-      </View>
-    </Card>
   );
 }
 
@@ -1616,39 +1539,16 @@ const styles = StyleSheet.create({
     fontWeight: Theme.typography.weights.semibold,
   },
   membershipPeriod: { color: '#E8F1EF', fontSize: Theme.typography.sizes.xs },
-  benefitsCard: { gap: Theme.spacing.md },
-  benefitsHeader: { gap: Theme.spacing.xs },
-  benefitsTitle: {
+  membershipActionsCard: { gap: Theme.spacing.md },
+  membershipActionsTitle: {
     color: Theme.colors.textPrimary,
     fontSize: Theme.typography.sizes.md,
     fontWeight: Theme.typography.weights.bold,
   },
-  benefitsMeta: { color: Theme.colors.textSecondary, fontSize: Theme.typography.sizes.xs },
-  claimError: { color: Theme.colors.error, fontSize: Theme.typography.sizes.xs },
-  themeTitle: {
-    color: Theme.colors.textPrimary,
+  membershipActionsBody: {
+    color: Theme.colors.textSecondary,
     fontSize: Theme.typography.sizes.sm,
-    fontWeight: Theme.typography.weights.bold,
-  },
-  themeRow: { flexDirection: 'row', gap: Theme.spacing.sm },
-  themeOption: {
-    alignItems: 'center',
-    borderColor: Theme.colors.border,
-    borderRadius: Theme.radii.md,
-    borderWidth: 1,
-    flex: 1,
-    gap: Theme.spacing.xs,
-    justifyContent: 'center',
-    minHeight: 68,
-    padding: Theme.spacing.xs,
-  },
-  themeOptionSelected: { borderColor: Theme.colors.accentRose, borderWidth: 2 },
-  themeOptionLocked: { opacity: 0.5 },
-  themeOptionText: {
-    color: Theme.colors.textPrimary,
-    fontSize: 10,
-    fontWeight: Theme.typography.weights.semibold,
-    textAlign: 'center',
+    lineHeight: 20,
   },
   errorBanner: {
     alignItems: 'center',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, Switch, ActivityIndicator, Pressable, Alert, Linking, Modal, TextInput, Platform } from 'react-native';
-import { Screen, Card, Button, AccountSection } from '@/components';
+import { Screen, Card, Button, AccountSection, ThemeCollectionCard } from '@/components';
 import { router } from 'expo-router';
 import { Theme } from '@/theme/theme';
 import { useGameplayStore } from '@/store';
@@ -361,6 +361,9 @@ export default function SettingsScreen() {
 
       {/* Registered Account (email sign-in / sign-out) */}
       <AccountSection />
+
+      <Text style={styles.sectionTitle}>Appearance</Text>
+      <ThemeCollectionCard />
 
       {/* Gameplay Preferences */}
       <Text style={styles.sectionTitle}>Gameplay Settings</Text>

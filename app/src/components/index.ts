@@ -12,3 +12,5 @@ export { GuestDataRiskNotice } from './GuestDataRiskNotice';
 export { DailyTasksCard } from './DailyTasksCard';
 export { RewardedAdCard } from './RewardedAdCard';
 export { CommunityReportAction } from './CommunityReportAction';
+export { PremiumDailyCoinClaimCard } from './PremiumDailyCoinClaimCard';
+export { ThemeCollectionCard } from './ThemeCollectionCard';
