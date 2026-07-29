@@ -58,15 +58,15 @@ describe('parseEnvironment OpenAI moderation', () => {
     ).toBe(false);
   });
 
-  it('rejects disabling moderation in production', () => {
-    expect(() =>
+  it('allows moderation to be disabled in production', () => {
+    expect(
       parseEnvironment(
         validEnvironment({
           OPENAI_MODERATION_ENABLED: 'false',
           NODE_ENV: 'production',
         }),
-      ),
-    ).toThrow('OPENAI_MODERATION_ENABLED cannot be false in production');
+      ).OPENAI_MODERATION_ENABLED,
+    ).toBe(false);
   });
 
   it('rejects ambiguous flag values', () => {

@@ -407,17 +407,11 @@ function parseAdminMfaEnabled(environment: Record<string, unknown>): boolean {
 function parseOpenAiModerationEnabled(
   environment: Record<string, unknown>,
 ): boolean {
-  const enabled = parseBoolean(
+  return parseBoolean(
     environment.OPENAI_MODERATION_ENABLED,
     'OPENAI_MODERATION_ENABLED',
     true,
   );
-  if (!enabled && environment.NODE_ENV === 'production') {
-    throw new Error(
-      'OPENAI_MODERATION_ENABLED cannot be false in production',
-    );
-  }
-  return enabled;
 }
 
 export function parseEnvironment(

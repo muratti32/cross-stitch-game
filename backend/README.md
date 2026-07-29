@@ -217,7 +217,7 @@ openssl rand -hex 32
 The TTL, retention, reconciliation, operational-alert, Sentry trace-sampling,
 rate-limit, conversion-concurrency, and log-level variables have safe defaults
 in Compose and remain editable in the Coolify panel. `OPENAI_MODERATION_ENABLED`
-defaults to `true` and cannot be disabled while `NODE_ENV=production`.
+defaults to `true`.
 
 Keep staging and production as separate Coolify resources. After a Compose
 change reaches the branch tracked by each resource, open **Environment
