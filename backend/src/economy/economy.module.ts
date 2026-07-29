@@ -27,6 +27,8 @@ import { MembershipRepository } from './membership.repository';
 import { MembershipService } from './membership.service';
 import { WebhookArchiveModule } from '../webhooks';
 import { SupportModule } from '../support/support.module';
+import { CoinPackReconciliationController } from './coin-pack-reconciliation.controller';
+import { CoinPackReconciliationService } from './coin-pack-reconciliation.service';
 
 @Module({
   imports: [
@@ -43,6 +45,7 @@ import { SupportModule } from '../support/support.module';
     DailyTaskController,
     RevenueCatWebhookController,
     MembershipController,
+    CoinPackReconciliationController,
   ],
   providers: [
     CoinLedgerRepository,
@@ -58,6 +61,7 @@ import { SupportModule } from '../support/support.module';
     AdAttemptService,
     MembershipRepository,
     MembershipService,
+    CoinPackReconciliationService,
   ],
 
   exports: [

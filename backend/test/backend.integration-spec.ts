@@ -3502,6 +3502,23 @@ describe('Stitch Wish backend integration', () => {
         })
         .expect(401);
 
+      const reconciliationResponse = await request(httpServer)
+        .post('/v1/commerce/coin-packs/reconciliations')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          productKey: 'coin_pack_900',
+          transactionIdentifier: transactionId,
+        })
+        .expect(201);
+      const reconciliationId = readStringRecord(reconciliationResponse.body, 'id');
+      expect(readStringRecord(reconciliationResponse.body, 'supportReference')).toMatch(
+        /^SW-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/,
+      );
+      await request(httpServer)
+        .get(`/v1/commerce/coin-packs/reconciliations/${reconciliationId}`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200, { status: 'pending', balance: null });
+
       // 2. NON_RENEWING_PURCHASE happy path -> balance increases
       await request(httpServer)
         .post('/v1/commerce/revenuecat/webhook')
@@ -3523,6 +3540,10 @@ describe('Stitch Wish backend integration', () => {
         .set('Authorization', `Bearer ${account.accessToken}`)
         .expect(200);
       expect(coinBalRes.body.balance).toBe(900);
+      await request(httpServer)
+        .get(`/v1/commerce/coin-packs/reconciliations/${reconciliationId}`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200, { status: 'granted', balance: 900 });
 
       // 3. Duplicate delivery -> same balance, no double-grant
       await request(httpServer)

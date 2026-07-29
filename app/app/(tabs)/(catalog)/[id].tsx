@@ -432,6 +432,18 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
                 Earn Stitch Coins by completing other patterns! First Completion rewards are live.
               </Text>
               <Button
+                title="Get Stitch Coins"
+                onPress={() => router.push({
+                  pathname: '/(tabs)/(profile)/commerce',
+                  params: {
+                    category: 'stitch_coin',
+                    source: 'stitch_coin_shortfall',
+                  },
+                })}
+                variant="honey"
+                style={styles.actionButton}
+              />
+              <Button
                 title="Find patterns to stitch"
                 onPress={() => router.navigate('/(tabs)/(catalog)')}
                 variant="primary"

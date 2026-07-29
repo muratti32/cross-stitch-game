@@ -13,7 +13,12 @@ import {
 } from 'react-native';
 
 import { fetchAiCreditBalance, useAiCreditBalance } from '@/api/commerce';
-import { useCoinBalance } from '@/api/economy';
+import {
+  createCoinPackReconciliation,
+  fetchCoinPackReconciliation,
+  type CoinPackProductKey,
+} from '@/api/coinPack';
+import { fetchCoinBalance, useCoinBalance } from '@/api/economy';
 import {
   createPremiumReconciliation,
   fetchMembership,
@@ -64,9 +69,20 @@ interface PremiumReconciliation {
   readonly supportReference: string | null;
 }
 
+interface CoinPackReconciliation {
+  readonly failureStage: 'verification' | 'grant' | null;
+  readonly id: string;
+  readonly product: CommerceProduct;
+  readonly prolonged: boolean;
+  readonly reconciliationId: string | null;
+  readonly startedAt: number;
+  readonly supportReference: string | null;
+  readonly transactionIdentifier: string;
+}
+
 export default function CommerceScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ source?: string }>();
+  const params = useLocalSearchParams<{ category?: string; source?: string }>();
   const queryClient = useQueryClient();
   const { accountId, isAccount } = useIdentityStore();
   const revenueCatRuntime = useRevenueCatRuntime();
@@ -92,13 +108,20 @@ export default function CommerceScreen() {
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const [purchaseSuccess, setPurchaseSuccess] = useState<string | null>(null);
   const [confirmingPremium, setConfirmingPremium] = useState<CommerceProduct | null>(null);
+  const [confirmingCoinPack, setConfirmingCoinPack] = useState<CommerceProduct | null>(null);
   const [monthlyTrialEligible, setMonthlyTrialEligible] = useState(false);
   const [purchasePending, setPurchasePending] = useState<PremiumReconciliation | null>(null);
+  const [coinPurchasePending, setCoinPurchasePending] = useState<CoinPackReconciliation | null>(null);
   const [restoringPurchases, setRestoringPurchases] = useState(false);
   const viewedSourceRef = useRef<string | null>(null);
   const reconciliationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reconciliationRef = useRef<PremiumReconciliation | null>(null);
   const reconciliationRunnerRef = useRef<(attempt: PremiumReconciliation) => Promise<void>>(
+    async () => undefined,
+  );
+  const coinReconciliationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const coinReconciliationRef = useRef<CoinPackReconciliation | null>(null);
+  const coinReconciliationRunnerRef = useRef<(attempt: CoinPackReconciliation) => Promise<void>>(
     async () => undefined,
   );
 
@@ -155,15 +178,29 @@ export default function CommerceScreen() {
     }
   }, [pendingIntent, source]);
 
+  useEffect(() => {
+    if (params.category === 'stitch_coin' || source === 'stitch_coin_shortfall') {
+      setOpenCategory('stitch_coin');
+    }
+  }, [params.category, source]);
+
   useEffect(() => () => {
     if (reconciliationTimerRef.current !== null) {
       clearTimeout(reconciliationTimerRef.current);
+    }
+    if (coinReconciliationTimerRef.current !== null) {
+      clearTimeout(coinReconciliationTimerRef.current);
     }
   }, []);
 
   const updateReconciliation = useCallback((next: PremiumReconciliation | null) => {
     reconciliationRef.current = next;
     setPurchasePending(next);
+  }, []);
+
+  const updateCoinReconciliation = useCallback((next: CoinPackReconciliation | null) => {
+    coinReconciliationRef.current = next;
+    setCoinPurchasePending(next);
   }, []);
 
   const premiumPlans = useMemo(
@@ -294,11 +331,136 @@ export default function CommerceScreen() {
 
   reconciliationRunnerRef.current = reconcilePremium;
 
+  const scheduleCoinReconciliation = useCallback((attempt: CoinPackReconciliation) => {
+    if (coinReconciliationTimerRef.current !== null) {
+      clearTimeout(coinReconciliationTimerRef.current);
+    }
+    coinReconciliationTimerRef.current = setTimeout(() => {
+      void coinReconciliationRunnerRef.current(attempt);
+    }, RECONCILIATION_POLL_MS);
+  }, []);
+
+  const reconcileCoinPack = useCallback(async (attempt: CoinPackReconciliation) => {
+    if (coinReconciliationRef.current?.id !== attempt.id || attempt.reconciliationId === null) {
+      return;
+    }
+    let grantVerified = false;
+    try {
+      const reconciliation = await fetchCoinPackReconciliation(attempt.reconciliationId);
+      if (reconciliation.status === 'pending') {
+        if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) {
+          updateCoinReconciliation({ ...attempt, prolonged: true });
+        } else {
+          scheduleCoinReconciliation(attempt);
+        }
+        return;
+      }
+      if (reconciliation.status === 'verification_failed') {
+        await captureGameplayEvent('purchase_failed', {
+          product_kind: 'stitch_coin_pack',
+          product_key: attempt.product.productKey,
+          failure_stage: 'verification',
+        });
+        updateCoinReconciliation({ ...attempt, failureStage: 'verification' });
+        setPurchaseError(
+          'The store transaction did not match this Coin Pack. Retry verification or contact support; do not buy it again.',
+        );
+        return;
+      }
+      if (reconciliation.status === 'grant_failed') {
+        await captureGameplayEvent('purchase_failed', {
+          product_kind: 'stitch_coin_pack',
+          product_key: attempt.product.productKey,
+          failure_stage: 'grant',
+        });
+        updateCoinReconciliation({ ...attempt, failureStage: 'grant' });
+        setPurchaseError(
+          'The purchase was verified, but the Stitch Coin grant is unavailable. Retry reconciliation; do not buy it again.',
+        );
+        return;
+      }
+
+      grantVerified = true;
+      const refreshedBalance = await fetchCoinBalance();
+      queryClient.setQueryData(['economy', 'balance'], refreshedBalance);
+      await captureGameplayEvent('purchase_completed', {
+        product_kind: 'stitch_coin_pack',
+        product_key: attempt.product.productKey,
+      });
+      updateCoinReconciliation(null);
+      clearIntent();
+      setPurchaseError(null);
+      setPurchaseSuccess(
+        `${attempt.product.label} grant verified. Stitch Coin balance: ${refreshedBalance.toLocaleString()}.`,
+      );
+    } catch {
+      const failureStage = grantVerified ? 'grant' : 'verification';
+      await captureGameplayEvent('purchase_failed', {
+        product_kind: 'stitch_coin_pack',
+        product_key: attempt.product.productKey,
+        failure_stage: failureStage,
+      });
+      updateCoinReconciliation({ ...attempt, failureStage });
+      setPurchaseError(grantVerified
+        ? 'The Coin grant was verified, but the current Stitch Coin balance could not be refreshed. Retry reconciliation.'
+        : 'The Game Backend could not verify this Coin Pack yet. Retry reconciliation; do not buy it again.');
+    }
+  }, [clearIntent, queryClient, scheduleCoinReconciliation, updateCoinReconciliation]);
+
+  const beginCoinPackReconciliation = useCallback(async (
+    product: CommerceProduct,
+    transactionIdentifier: string,
+  ) => {
+    const attempt: CoinPackReconciliation = {
+      failureStage: null,
+      id: `${Date.now()}-${product.productKey}-purchase`,
+      product,
+      prolonged: false,
+      reconciliationId: null,
+      startedAt: Date.now(),
+      supportReference: null,
+      transactionIdentifier,
+    };
+    updateCoinReconciliation(attempt);
+    setOpenCategory(null);
+    setPurchaseSuccess(null);
+    await captureGameplayEvent('purchase_reconciliation_pending', {
+      product_kind: 'stitch_coin_pack',
+      product_key: product.productKey,
+    });
+    try {
+      const reference = await createCoinPackReconciliation(
+        product.productKey as CoinPackProductKey,
+        transactionIdentifier,
+      );
+      const next = {
+        ...attempt,
+        reconciliationId: reference.id,
+        supportReference: reference.supportReference,
+      };
+      updateCoinReconciliation(next);
+      await reconcileCoinPack(next);
+    } catch {
+      await captureGameplayEvent('purchase_failed', {
+        product_kind: 'stitch_coin_pack',
+        product_key: product.productKey,
+        failure_stage: 'verification',
+      });
+      updateCoinReconciliation({ ...attempt, failureStage: 'verification' });
+      setPurchaseError(
+        'Coin Pack reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.',
+      );
+    }
+  }, [reconcileCoinPack, updateCoinReconciliation]);
+
+  coinReconciliationRunnerRef.current = reconcileCoinPack;
+
   const purchase = useCallback(async (product: CommerceProduct) => {
     setPurchaseError(null);
     setPurchaseSuccess(null);
     setPurchasingKey(product.productKey);
     setConfirmingPremium(null);
+    setConfirmingCoinPack(null);
     await captureGameplayEvent('purchase_started', {
       product_kind: product.productKind,
       product_key: product.productKey,
@@ -311,9 +473,14 @@ export default function CommerceScreen() {
         ? membershipFingerprint(await fetchMembership())
         : null;
       failureStage = 'store';
-      await purchaseRevenueCatPackage(product.package, accountId);
+      const purchaseResult = await purchaseRevenueCatPackage(product.package, accountId);
       if (product.category === 'premium') {
         await beginPremiumReconciliation(product, 'purchase', baselineMembership);
+      } else if (product.category === 'stitch_coin') {
+        await beginCoinPackReconciliation(
+          product,
+          purchaseResult.transaction.transactionIdentifier,
+        );
       } else {
         await refetchCommerceState();
       }
@@ -334,7 +501,7 @@ export default function CommerceScreen() {
     } finally {
       setPurchasingKey(null);
     }
-  }, [accountId, beginPremiumReconciliation, refetchCommerceState]);
+  }, [accountId, beginCoinPackReconciliation, beginPremiumReconciliation, refetchCommerceState]);
 
   const attemptPurchase = useCallback((product: CommerceProduct) => {
     void captureGameplayEvent('commerce_product_selected', {
@@ -362,6 +529,10 @@ export default function CommerceScreen() {
 
     if (product.category === 'premium') {
       setConfirmingPremium(product);
+      return;
+    }
+    if (product.category === 'stitch_coin') {
+      setConfirmingCoinPack(product);
       return;
     }
     void purchase(product);
@@ -419,6 +590,34 @@ export default function CommerceScreen() {
     }
     await reconcilePremium(reset);
   }, [reconcilePremium, updateReconciliation]);
+
+  const retryCoinPackReconciliation = useCallback(async () => {
+    const attempt = coinReconciliationRef.current;
+    if (attempt === null) return;
+    setPurchaseError(null);
+    const reset = { ...attempt, failureStage: null, prolonged: false, startedAt: Date.now() };
+    updateCoinReconciliation(reset);
+    if (reset.reconciliationId === null) {
+      try {
+        const reference = await createCoinPackReconciliation(
+          reset.product.productKey as CoinPackProductKey,
+          reset.transactionIdentifier,
+        );
+        const next = {
+          ...reset,
+          reconciliationId: reference.id,
+          supportReference: reference.supportReference,
+        };
+        updateCoinReconciliation(next);
+        await reconcileCoinPack(next);
+      } catch {
+        setPurchaseError('The Game Backend is still unavailable. Try reconciliation again later.');
+        updateCoinReconciliation({ ...reset, failureStage: 'verification' });
+      }
+      return;
+    }
+    await reconcileCoinPack(reset);
+  }, [reconcileCoinPack, updateCoinReconciliation]);
 
   return (
     <>
@@ -531,6 +730,30 @@ export default function CommerceScreen() {
                 <Button
                   title="Retry reconciliation"
                   onPress={() => void retryPremiumReconciliation()}
+                  variant="secondary"
+                />
+              )}
+            </View>
+          </View>
+        )}
+        {coinPurchasePending !== null && (
+          <View style={styles.pendingBanner}>
+            <Ionicons name="time-outline" size={18} color={Theme.colors.accentTeal} />
+            <View style={styles.pendingCopy}>
+              <Text style={styles.pendingTitle}>Purchase Reconciliation Pending</Text>
+              <Text style={styles.pendingText}>
+                The store response is received. Stitch Coin updates only after the Game Backend
+                exposes the matching Commerce Ledger grant. Do not purchase this pack again.
+              </Text>
+              {coinPurchasePending.supportReference !== null && (
+                <Text selectable style={styles.supportReference}>
+                  Support Reference: {coinPurchasePending.supportReference}
+                </Text>
+              )}
+              {(coinPurchasePending.prolonged || coinPurchasePending.failureStage !== null) && (
+                <Button
+                  title="Retry reconciliation"
+                  onPress={() => void retryCoinPackReconciliation()}
                   variant="secondary"
                 />
               )}
@@ -650,6 +873,7 @@ export default function CommerceScreen() {
         products={openCategory === 'stitch_coin' ? coinPacks : aiCreditPacks}
         pendingProductKey={source === 'sign_in_return' ? pendingIntent?.productKey ?? null : null}
         purchasingKey={purchasingKey}
+        reconcilingProductKey={coinPurchasePending?.product.productKey ?? null}
         onClose={() => setOpenCategory(null)}
         onPurchase={attemptPurchase}
       />
@@ -657,6 +881,11 @@ export default function CommerceScreen() {
         product={confirmingPremium}
         trialEligible={monthlyTrialEligible}
         onCancel={() => setConfirmingPremium(null)}
+        onConfirm={(product) => void purchase(product)}
+      />
+      <CoinPackConfirmation
+        product={confirmingCoinPack}
+        onCancel={() => setConfirmingCoinPack(null)}
         onConfirm={(product) => void purchase(product)}
       />
     </>
@@ -804,6 +1033,46 @@ function PremiumConfirmation({
   );
 }
 
+function CoinPackConfirmation({
+  product,
+  onCancel,
+  onConfirm,
+}: {
+  product: CommerceProduct | null;
+  onCancel: () => void;
+  onConfirm: (product: CommerceProduct) => void;
+}) {
+  return (
+    <Modal
+      animationType="fade"
+      onRequestClose={onCancel}
+      transparent
+      visible={product !== null}
+    >
+      <View style={styles.confirmationRoot}>
+        <View accessibilityViewIsModal style={styles.confirmationCard}>
+          <Text style={styles.confirmationTitle}>Confirm Stitch Coin purchase</Text>
+          {product !== null && (
+            <>
+              <Text style={styles.confirmationPlan}>
+                {product.label} · {product.priceString}
+              </Text>
+              <Text style={styles.confirmationBody}>
+                Your balance changes only after the Game Backend verifies the store transaction
+                and records the matching Commerce Ledger grant.
+              </Text>
+              <View style={styles.confirmationActions}>
+                <Button title="Cancel" onPress={onCancel} variant="secondary" />
+                <Button title={`Confirm ${product.label}`} onPress={() => onConfirm(product)} variant="honey" />
+              </View>
+            </>
+          )}
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
 function CategoryCard({
   icon,
   title,
@@ -843,6 +1112,7 @@ function ProductSheet({
   products,
   pendingProductKey,
   purchasingKey,
+  reconcilingProductKey,
   onClose,
   onPurchase,
 }: {
@@ -850,6 +1120,7 @@ function ProductSheet({
   products: readonly CommerceProduct[];
   pendingProductKey: string | null;
   purchasingKey: string | null;
+  reconcilingProductKey: string | null;
   onClose: () => void;
   onPurchase: (product: CommerceProduct) => void;
 }) {
@@ -892,7 +1163,7 @@ function ProductSheet({
                   title="Buy"
                   onPress={() => onPurchase(product)}
                   loading={purchasingKey === product.productKey}
-                  disabled={purchasingKey !== null}
+                  disabled={purchasingKey !== null || reconcilingProductKey === product.productKey}
                   variant={category === 'stitch_coin' ? 'honey' : 'rose'}
                   style={styles.sheetBuyButton}
                 />

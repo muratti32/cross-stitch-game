@@ -5,7 +5,7 @@ import TestRenderer, { act, type ReactTestInstance } from 'react-test-renderer';
 import CommerceScreen from '../../../app/(tabs)/(profile)/commerce';
 import { useCommerceIntentStore } from '../commerceIntent';
 
-let mockParams: { source?: string } = { source: 'profile' };
+let mockParams: { category?: string; source?: string } = { source: 'profile' };
 let mockIdentity = { accountId: null as string | null, isAccount: false };
 let mockMembership: Record<string, unknown> | undefined;
 
@@ -24,6 +24,10 @@ const mockCreateReconciliation = jest.fn();
 const mockFetchMembership = jest.fn();
 const mockFetchAiCreditBalance = jest.fn();
 const mockRefetchQueries = jest.fn().mockResolvedValue(undefined);
+const mockSetQueryData = jest.fn();
+const mockCreateCoinPackReconciliation = jest.fn();
+const mockFetchCoinPackReconciliation = jest.fn();
+const mockFetchCoinBalance = jest.fn();
 let renderer: TestRenderer.ReactTestRenderer | null = null;
 
 jest.mock('expo-router', () => ({
@@ -32,7 +36,10 @@ jest.mock('expo-router', () => ({
 }));
 
 jest.mock('@tanstack/react-query', () => ({
-  useQueryClient: () => ({ refetchQueries: mockRefetchQueries }),
+  useQueryClient: () => ({
+    refetchQueries: mockRefetchQueries,
+    setQueryData: mockSetQueryData,
+  }),
 }));
 
 jest.mock('@expo/vector-icons', () => {
@@ -77,7 +84,13 @@ jest.mock('@/identity/guestIdentity', () => ({
 }));
 
 jest.mock('@/api/economy', () => ({
+  fetchCoinBalance: (...args: unknown[]) => mockFetchCoinBalance(...args),
   useCoinBalance: () => ({ data: 120 }),
+}));
+
+jest.mock('@/api/coinPack', () => ({
+  createCoinPackReconciliation: (...args: unknown[]) => mockCreateCoinPackReconciliation(...args),
+  fetchCoinPackReconciliation: (...args: unknown[]) => mockFetchCoinPackReconciliation(...args),
 }));
 
 jest.mock('@/api/commerce', () => ({
@@ -159,13 +172,21 @@ beforeEach(() => {
   mockIdentity = { accountId: null, isAccount: false };
   mockMembership = undefined;
   mockGetOfferings.mockResolvedValue(offering());
-  mockPurchasePackage.mockResolvedValue({});
+  mockPurchasePackage.mockResolvedValue({
+    transaction: { transactionIdentifier: 'store-transaction-81' },
+  });
   mockRestorePurchases.mockResolvedValue({});
   mockTrialEligible.mockResolvedValue(false);
   mockManageSubscriptions.mockResolvedValue(undefined);
   mockCreateReconciliation.mockResolvedValue({ supportReference: 'SW-ABCD-EFGH' });
   mockFetchMembership.mockResolvedValue(inactiveMembership());
   mockFetchAiCreditBalance.mockResolvedValue(4);
+  mockCreateCoinPackReconciliation.mockResolvedValue({
+    id: '86d57c4b-4329-4f8c-a37f-b26c3bdca304',
+    supportReference: 'SW-COIN-PACK',
+  });
+  mockFetchCoinPackReconciliation.mockResolvedValue({ status: 'pending', balance: null });
+  mockFetchCoinBalance.mockResolvedValue(420);
   useCommerceIntentStore.getState().clearIntent();
 });
 
@@ -414,6 +435,182 @@ it('keeps Guest catalog intent through sign-in return without starting a purchas
   });
 });
 
+it('opens current Coin Pack prices directly for a Stitch Coin shortfall', async () => {
+  mockParams = { category: 'stitch_coin', source: 'stitch_coin_shortfall' };
+  await renderScreen();
+
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Stitch Coin Packs',
+    '300 Stitch Coins',
+    '$1.99',
+    '900 Stitch Coins',
+    '$4.99',
+    '2,000 Stitch Coins',
+    '$9.99',
+  ]));
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('commerce_store_viewed', {
+    source: 'stitch_coin_shortfall',
+  });
+});
+
+it('opens the same Coin Packs context from a direct deep link', async () => {
+  mockParams = { category: 'stitch_coin', source: 'direct' };
+  await renderScreen();
+
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Stitch Coin Packs',
+    '300 Stitch Coins',
+    '$1.99',
+  ]));
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('commerce_store_viewed', {
+    source: 'direct',
+  });
+});
+
+it('requires explicit Coin Pack confirmation and treats cancellation as a non-error', async () => {
+  mockIdentity = { accountId: 'account_81', isAccount: true };
+  mockPurchasePackage.mockRejectedValue({ userCancelled: true });
+  await renderScreen();
+  await openCoinPacks();
+
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  expect(allText(renderer!.root)).toContain('Confirm Stitch Coin purchase');
+  expect(mockPurchasePackage).not.toHaveBeenCalled();
+
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
+    await flushPromises();
+  });
+
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('commerce_product_selected', {
+    product_kind: 'stitch_coin_pack',
+    product_key: 'coin_pack_300',
+  });
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_started', {
+    product_kind: 'stitch_coin_pack',
+    product_key: 'coin_pack_300',
+  });
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_cancelled', {
+    product_kind: 'stitch_coin_pack',
+    product_key: 'coin_pack_300',
+  });
+  expect(mockCreateCoinPackReconciliation).not.toHaveBeenCalled();
+  expect(allText(renderer!.root)).not.toContain('Purchase Reconciliation Pending');
+});
+
+it('keeps the exact Coin Pack intent pending with Support Reference and blocks repurchase', async () => {
+  mockIdentity = { accountId: 'account_81', isAccount: true };
+  await renderScreen();
+  await confirmSmallCoinPackPurchase();
+
+  expect(mockCreateCoinPackReconciliation).toHaveBeenCalledWith(
+    'coin_pack_300',
+    'store-transaction-81',
+  );
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase Reconciliation Pending',
+    'Support Reference: SW-COIN-PACK',
+  ]));
+  expect(mockCaptureGameplayEvent).not.toHaveBeenCalledWith(
+    'purchase_completed',
+    expect.anything(),
+  );
+
+  await act(async () => pressAncestor(renderer!.root.findByProps({ testID: 'open-stitch-coin-packs' })));
+  expect(pressableByText(renderer!.root, 'Buy').props.disabled).toBe(true);
+  expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+});
+
+it('reports a Coin Pack store failure without starting backend reconciliation', async () => {
+  mockIdentity = { accountId: 'account_81', isAccount: true };
+  mockPurchasePackage.mockRejectedValue(new Error('store unavailable'));
+  await renderScreen();
+  await confirmSmallCoinPackPurchase();
+
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_failed', {
+    product_kind: 'stitch_coin_pack',
+    product_key: 'coin_pack_300',
+    failure_stage: 'store',
+  });
+  expect(mockCreateCoinPackReconciliation).not.toHaveBeenCalled();
+  expect(allText(renderer!.root)).toContain('store unavailable');
+});
+
+it('keeps an exact-product verification mismatch pending without encouraging repurchase', async () => {
+  mockIdentity = { accountId: 'account_81', isAccount: true };
+  mockFetchCoinPackReconciliation.mockResolvedValue({
+    status: 'verification_failed',
+    balance: null,
+  });
+  await renderScreen();
+  await confirmSmallCoinPackPurchase();
+
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_failed', {
+    product_kind: 'stitch_coin_pack',
+    product_key: 'coin_pack_300',
+    failure_stage: 'verification',
+  });
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase Reconciliation Pending',
+    'Retry reconciliation',
+    'The store transaction did not match this Coin Pack. Retry verification or contact support; do not buy it again.',
+  ]));
+});
+
+it('reports a verified transaction with a missing Coin grant at the grant stage', async () => {
+  mockIdentity = { accountId: 'account_81', isAccount: true };
+  mockFetchCoinPackReconciliation.mockResolvedValue({ status: 'grant_failed', balance: null });
+  await renderScreen();
+  await confirmSmallCoinPackPurchase();
+
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_failed', {
+    product_kind: 'stitch_coin_pack',
+    product_key: 'coin_pack_300',
+    failure_stage: 'grant',
+  });
+  expect(mockFetchCoinBalance).not.toHaveBeenCalled();
+  expect(allText(renderer!.root)).toContain(
+    'The purchase was verified, but the Stitch Coin grant is unavailable. Retry reconciliation; do not buy it again.',
+  );
+});
+
+it('updates the wallet and emits completion only after the matching backend Coin grant', async () => {
+  mockIdentity = { accountId: 'account_81', isAccount: true };
+  mockFetchCoinPackReconciliation.mockResolvedValue({ status: 'granted', balance: 420 });
+  mockFetchCoinBalance.mockResolvedValue(420);
+  await renderScreen();
+  await confirmSmallCoinPackPurchase();
+
+  expect(mockFetchCoinBalance).toHaveBeenCalledTimes(1);
+  expect(mockSetQueryData).toHaveBeenCalledWith(['economy', 'balance'], 420);
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_completed', {
+    product_kind: 'stitch_coin_pack',
+    product_key: 'coin_pack_300',
+  });
+  expect(allText(renderer!.root)).toContain(
+    '300 Stitch Coins grant verified. Stitch Coin balance: 420.',
+  );
+  expect(allText(renderer!.root)).not.toContain('Purchase Reconciliation Pending');
+});
+
+it('keeps a delayed Coin grant pending and offers Retry without another store purchase', async () => {
+  const now = jest.spyOn(Date, 'now')
+    .mockReturnValueOnce(1_000)
+    .mockReturnValueOnce(1_000)
+    .mockReturnValue(12_000);
+  mockIdentity = { accountId: 'account_81', isAccount: true };
+  await renderScreen();
+  await confirmSmallCoinPackPurchase();
+
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase Reconciliation Pending',
+    'Retry reconciliation',
+    'Support Reference: SW-COIN-PACK',
+  ]));
+  expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+  now.mockRestore();
+});
+
 it('keeps wallet and membership context visible while catalog Retry recovers', async () => {
   mockGetOfferings.mockRejectedValueOnce(new Error('offline'));
   const warning = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
@@ -477,6 +674,21 @@ async function confirmAnnualPurchase(): Promise<void> {
   await act(async () => pressByText(renderer!.root, 'Choose Annual'));
   await act(async () => {
     pressByText(renderer!.root, 'Confirm Annual');
+    await flushPromises();
+  });
+}
+
+async function openCoinPacks(): Promise<void> {
+  await act(async () => {
+    pressAncestor(renderer!.root.findByProps({ testID: 'open-stitch-coin-packs' }));
+  });
+}
+
+async function confirmSmallCoinPackPurchase(): Promise<void> {
+  await openCoinPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
     await flushPromises();
   });
 }

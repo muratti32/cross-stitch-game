@@ -145,6 +145,25 @@ describe('RevenueCat commerce boundary', () => {
     expect(mockPurchases.purchasePackage).not.toHaveBeenCalled();
   });
 
+  test('returns the SDK transaction identifier without treating purchase success as a grant', async () => {
+    const sdkResult = {
+      customerInfo: {},
+      productIdentifier: 'com.avk.stitchwish.coin_pack_300',
+      transaction: {
+        transactionIdentifier: 'store-transaction-81',
+      },
+    };
+    mockPurchases.purchasePackage.mockResolvedValue(sdkResult as never);
+
+    await expect(purchaseRevenueCatPackage(
+      { identifier: '$rc_custom_coin_pack_300' } as never,
+      'account_81',
+    )).resolves.toBe(sdkResult);
+
+    expect(mockPurchases.purchasePackage).toHaveBeenCalledTimes(1);
+    expect(useRevenueCatRuntime.getState().associatedAccountId).toBe('account_81');
+  });
+
   test('invalid public configuration disables commerce without configuring the SDK', async () => {
     process.env.EXPO_PUBLIC_REVENUECAT_STORE_MODE = 'test_store';
     process.env.EXPO_PUBLIC_REVENUECAT_TEST_STORE_API_KEY = 'appl_wrong_store';
