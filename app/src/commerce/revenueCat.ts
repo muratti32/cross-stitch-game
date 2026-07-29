@@ -10,6 +10,18 @@ import { create } from 'zustand';
 export type RevenueCatStoreMode = 'native' | 'test_store';
 export type RevenueCatRuntimeStatus = 'disabled' | 'connecting' | 'ready' | 'error';
 
+export const CANONICAL_REVENUECAT_PRODUCT_IDS = [
+  'com.avk.stitchwish.premium_weekly',
+  'com.avk.stitchwish.premium_monthly',
+  'com.avk.stitchwish.premium_annual',
+  'com.avk.stitchwish.coin_pack_300',
+  'com.avk.stitchwish.coin_pack_900',
+  'com.avk.stitchwish.coin_pack_2000',
+  'com.avk.stitchwish.ai_credit_pack_5',
+  'com.avk.stitchwish.ai_credit_pack_20',
+  'com.avk.stitchwish.ai_credit_pack_50',
+] as const;
+
 interface RevenueCatRuntimeState {
   status: RevenueCatRuntimeStatus;
   storeMode: RevenueCatStoreMode | null;
@@ -201,6 +213,21 @@ export async function getRevenueCatOfferings(): Promise<PurchasesOfferings> {
   return Purchases.getOfferings();
 }
 
+export function missingCanonicalRevenueCatProducts(
+  offerings: Pick<PurchasesOfferings, 'current'>,
+): string[] {
+  const availableProductIds = new Set(
+    (offerings.current?.availablePackages ?? []).flatMap((pkg) => [
+      pkg.identifier,
+      pkg.product.identifier,
+    ]).map(storeProductKey),
+  );
+
+  return CANONICAL_REVENUECAT_PRODUCT_IDS.filter(
+    (productId) => !availableProductIds.has(productId),
+  );
+}
+
 export async function purchaseRevenueCatPackage(
   pkg: PurchasesPackage,
   accountId: string | null,
@@ -229,6 +256,11 @@ export function isRevenueCatConfigured(): boolean {
 
 function revenueCatErrorMessage(error: unknown, fallback: string): string {
   return error instanceof Error && error.message ? error.message : fallback;
+}
+
+function storeProductKey(storeIdentifier: string): string {
+  const separator = storeIdentifier.indexOf(':');
+  return separator === -1 ? storeIdentifier : storeIdentifier.slice(0, separator);
 }
 
 export function resetRevenueCatForTests(): void {

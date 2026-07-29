@@ -24,6 +24,7 @@ import {
 import { PrototypeSwitcher } from '@/components/PrototypeSwitcher';
 import {
   getRevenueCatOfferings,
+  missingCanonicalRevenueCatProducts,
   purchaseRevenueCatPackage,
   restoreRevenueCatPurchases,
   useRevenueCatRuntime,
@@ -134,6 +135,14 @@ export default function CommerceScreen() {
 
       if (data.current === null) {
         setOfferingsError('No offerings available.');
+        return;
+      }
+
+      const missingProducts = missingCanonicalRevenueCatProducts(data);
+      if (missingProducts.length > 0) {
+        setOfferingsError(
+          `Commerce catalog is incomplete. Missing ${missingProducts.length} configured product${missingProducts.length === 1 ? '' : 's'}.`,
+        );
         return;
       }
 

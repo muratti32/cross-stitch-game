@@ -21,6 +21,7 @@ jest.mock('react-native', () => ({
 import {
   getRevenueCatOfferings,
   initializeRevenueCat,
+  missingCanonicalRevenueCatProducts,
   purchaseRevenueCatPackage,
   resetRevenueCatForTests,
   resolveRevenueCatConfiguration,
@@ -146,6 +147,37 @@ describe('RevenueCat commerce boundary', () => {
       iosApiKey: 'appl_ios',
       androidApiKey: 'goog_android',
     }, 'android')).toEqual({ storeMode: 'native', apiKey: 'goog_android' });
+  });
+
+  test('recognizes all nine canonical products, including Play base-plan suffixes', () => {
+    const offerings = {
+      current: {
+        availablePackages: [
+          'premium_weekly',
+          'premium_monthly',
+          'premium_annual',
+          'coin_pack_300',
+          'coin_pack_900',
+          'coin_pack_2000',
+          'ai_credit_pack_5',
+          'ai_credit_pack_20',
+          'ai_credit_pack_50',
+        ].map((productId) => ({
+          identifier: `$rc_${productId}`,
+          product: {
+            identifier: `com.avk.stitchwish.${productId}${productId.startsWith('premium_') ? `:${productId.slice('premium_'.length)}` : ''}`,
+          },
+        })),
+      },
+    };
+
+    expect(missingCanonicalRevenueCatProducts(offerings as never)).toEqual([]);
+  });
+
+  test('reports a partially provisioned offering instead of exposing incomplete commerce', () => {
+    expect(missingCanonicalRevenueCatProducts({
+      current: { availablePackages: [] },
+    } as never)).toHaveLength(9);
   });
 });
 

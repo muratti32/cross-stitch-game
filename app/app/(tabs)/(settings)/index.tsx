@@ -807,7 +807,7 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: Theme.spacing.xl,
     paddingHorizontal: Theme.spacing.lg,
-    paddingBottom: Theme.spacing.xxl,
+    paddingBottom: 100,
   },
   header: {
     marginBottom: Theme.spacing.xl,

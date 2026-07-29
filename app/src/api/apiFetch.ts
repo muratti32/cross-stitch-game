@@ -1,4 +1,9 @@
-import { getAccessToken, refreshSession, handleAccountDeletedIdempotently } from '../identity/guestIdentity';
+import {
+  getAccessToken,
+  refreshSession,
+  handleAccountDeletedIdempotently,
+  handleAuthenticationRequired,
+} from '../identity/guestIdentity';
 import { performAuthenticatedRequest } from './authenticatedRequest';
 import { markCriticalPathActivity } from '../perf/criticalPathSentinel';
 
@@ -18,5 +23,6 @@ export async function apiFetch(path: string, options: ApiFetchOptions = {}): Pro
     getAccessToken,
     refreshSession,
     onAccountDeleted: handleAccountDeletedIdempotently,
+    onAuthenticationRequired: handleAuthenticationRequired,
   });
 }

@@ -4,6 +4,7 @@ export interface AuthSessionProvider {
   getAccessToken: () => string | null;
   refreshSession: () => Promise<string>;
   onAccountDeleted?: () => Promise<void>;
+  onAuthenticationRequired?: () => Promise<void>;
 }
 
 export class AccountClosingError extends Error {
@@ -64,6 +65,13 @@ export async function performAuthenticatedRequest(
       if (body && body.code === 'ACCOUNT_CLOSING') {
         throw new AccountClosingError(body.message || 'Account is closing');
       }
+      if (
+        body &&
+        typeof body.message === 'string' &&
+        /Registered Account required|Registered Account is required/.test(body.message)
+      ) {
+        await authSession.onAuthenticationRequired?.();
+      }
     } catch (e) {
       if (e instanceof AccountClosingError) {
         throw e;
@@ -104,6 +112,13 @@ export async function performAuthenticatedRequest(
         const body = await retryResponse.clone().json();
         if (body && body.code === 'ACCOUNT_CLOSING') {
           throw new AccountClosingError(body.message || 'Account is closing');
+        }
+        if (
+          body &&
+          typeof body.message === 'string' &&
+          /Registered Account required|Registered Account is required/.test(body.message)
+        ) {
+          await authSession.onAuthenticationRequired?.();
         }
       } catch (e) {
         if (e instanceof AccountClosingError) {

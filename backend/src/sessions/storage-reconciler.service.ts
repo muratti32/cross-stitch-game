@@ -52,12 +52,13 @@ export class StorageReconcilerService {
     for (const row of activeRows) {
       const exists = await this.storage.exists(row.objectKey);
       if (!exists) {
-        this.logger.warn(`Reconciler: Object file is missing for key: ${row.objectKey}`);
         if (!row.missing) {
+          this.logger.warn(`Reconciler: Object file is missing for key: ${row.objectKey}`);
           await this.objectRegistryRepo.update({ objectKey: row.objectKey }, { missing: true });
         }
       } else {
         if (row.missing) {
+          this.logger.log(`Reconciler: Object file restored for key: ${row.objectKey}`);
           await this.objectRegistryRepo.update({ objectKey: row.objectKey }, { missing: false });
         }
       }

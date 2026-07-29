@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
-import { Slot } from 'expo-router';
+import { router, Slot, usePathname } from 'expo-router';
 import * as Sentry from '@sentry/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryProvider } from '../src/providers';
@@ -32,9 +32,17 @@ SplashScreen.preventAutoHideAsync();
 
 function RootLayout() {
   const [dbReady, setDbReady] = useState(false);
+  const pathname = usePathname();
+  const requiresSignIn = useIdentityStore((state) => state.requiresSignIn);
   const analyticsFlushInFlightRef = useRef(false);
   const analyticsRetryDelayRef = useRef(ANALYTICS_RETRY_INITIAL_MS);
   const analyticsNextRetryAtRef = useRef(0);
+
+  useEffect(() => {
+    if (requiresSignIn && !pathname.endsWith('/sign-in')) {
+      router.replace('/(tabs)/(settings)/sign-in');
+    }
+  }, [pathname, requiresSignIn]);
 
   // This extends the root lifecycle sync trigger already used for pending
   // personal patterns. The retry gate avoids a new reachability subsystem while

@@ -14,6 +14,7 @@ const SECURE_KEYS = {
   GUEST_ID: 'stitch_wish.guest_id',
   GUEST_CREATED_AT: 'stitch_wish.guest_created_at',
   REFRESH_TOKEN: 'stitch_wish.refresh_token',
+  REQUIRES_SIGN_IN: 'stitch_wish.requires_sign_in',
   // Registered Account (email sign-in). When ACCOUNT_ID is present, the active
   // session belongs to a Registered Account rather than a Guest Installation.
   // The account id doubles as the Local Identity Namespace key, so signing back
@@ -150,6 +151,7 @@ export interface IdentityState {
   isAuthenticated: boolean;
   isPending: boolean;
   isOfflinePending: boolean;
+  requiresSignIn: boolean;
   bootstrap: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -164,6 +166,7 @@ export const useIdentityStore = create<IdentityState>((set) => ({
   isAuthenticated: false,
   isPending: false,
   isOfflinePending: false,
+  requiresSignIn: false,
 
   bootstrap: async () => {
     await bootstrap();
@@ -215,6 +218,24 @@ export async function bootstrap(): Promise<void> {
         await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_PROVIDER),
       );
       let refreshToken = await SecureStore.getItemAsync(SECURE_KEYS.REFRESH_TOKEN);
+      const requiresSignIn =
+        (await SecureStore.getItemAsync(SECURE_KEYS.REQUIRES_SIGN_IN)) === 'true';
+
+      if (savedAccountId && requiresSignIn) {
+        updateStoreState({
+          guestId: null,
+          guestCreatedAt: null,
+          accountId: null,
+          accountEmail: null,
+          accountProvider: null,
+          isAccount: false,
+          isAuthenticated: false,
+          isPending: false,
+          isOfflinePending: false,
+          requiresSignIn: true,
+        });
+        return;
+      }
 
       // 2a. Registered Account session takes precedence over Guest. The account
       // namespace is keyed by accountId, so unsynchronized local data reopens.
@@ -243,13 +264,23 @@ export async function bootstrap(): Promise<void> {
           return;
         } catch (err: unknown) {
           if (hasHttpStatus(err) && err.status === 401) {
-            // Account refresh family revoked/expired. Clear account keys and
-            // fall through to Guest bootstrap so the app remains usable.
+            // Account refresh family revoked/expired. Keep the account
+            // namespace reserved and require the player to authenticate again.
             await SecureStore.deleteItemAsync(SECURE_KEYS.REFRESH_TOKEN);
-            await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_ID);
-            await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_EMAIL);
-            await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_PROVIDER);
-            refreshToken = null;
+            await SecureStore.setItemAsync(SECURE_KEYS.REQUIRES_SIGN_IN, 'true');
+            updateStoreState({
+              guestId: null,
+              guestCreatedAt: null,
+              accountId: null,
+              accountEmail: null,
+              accountProvider: null,
+              isAccount: false,
+              isAuthenticated: false,
+              isPending: false,
+              isOfflinePending: false,
+              requiresSignIn: true,
+            });
+            return;
           } else {
             // Connectivity error: stay offline-pending and retry.
             updateStoreState({ isPending: false, isOfflinePending: true });
@@ -330,6 +361,10 @@ export async function bootstrap(): Promise<void> {
           updateStoreState({
             guestId,
             guestCreatedAt: createdAtVal,
+            accountId: null,
+            accountEmail: null,
+            accountProvider: null,
+            isAccount: false,
             isAuthenticated: true,
             isPending: false,
             isOfflinePending: false,
@@ -423,12 +458,17 @@ export async function refreshSession(): Promise<string> {
       return tokens.accessToken;
     } catch (err: unknown) {
       if (hasHttpStatus(err) && err.status === 401) {
-        // Expired/rotated refresh token reuse detection: revoke all tokens and re-bootstrap
+        // Expired/rotated refresh token reuse detection: require account
+        // reauthentication, while guests may bootstrap a fresh guest session.
         console.warn('Refresh token is invalid or reuse detected. Revoking and re-bootstrapping.');
-        await clearSessionStateOnly();
-        bootstrap().catch((bErr) => {
-          console.error('Re-bootstrap failure after refresh revocation:', bErr);
-        });
+        if (useIdentityStore.getState().isAccount) {
+          await requireAccountSignIn();
+        } else {
+          await clearSessionStateOnly();
+          bootstrap().catch((bErr) => {
+            console.error('Background guest bootstrap failed after refresh revocation:', bErr);
+          });
+        }
       }
       throw err;
     }
@@ -449,6 +489,31 @@ export async function clearSessionStateOnly(): Promise<void> {
   updateStoreState({
     isAuthenticated: false,
   });
+}
+
+async function requireAccountSignIn(): Promise<void> {
+  setAccessToken(null);
+  clearRefreshSchedule();
+  await SecureStore.deleteItemAsync(SECURE_KEYS.REFRESH_TOKEN);
+  await SecureStore.setItemAsync(SECURE_KEYS.REQUIRES_SIGN_IN, 'true');
+  updateStoreState({
+    guestId: null,
+    guestCreatedAt: null,
+    accountId: null,
+    accountEmail: null,
+    accountProvider: null,
+    isAccount: false,
+    isAuthenticated: false,
+    isPending: false,
+    isOfflinePending: false,
+    requiresSignIn: true,
+  });
+}
+
+export async function handleAuthenticationRequired(): Promise<void> {
+  if (useIdentityStore.getState().isAccount) {
+    await requireAccountSignIn();
+  }
 }
 
 /**
@@ -484,6 +549,7 @@ export async function logout(): Promise<void> {
   await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_ID);
   await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_EMAIL);
   await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_PROVIDER);
+  await SecureStore.deleteItemAsync(SECURE_KEYS.REQUIRES_SIGN_IN);
 
   // Switch back to pre-identity database namespace
   await openNamespace(null);
@@ -497,6 +563,7 @@ export async function logout(): Promise<void> {
     isAccount: false,
     isAuthenticated: false,
     isOfflinePending: false,
+    requiresSignIn: false,
   });
 }
 
@@ -544,6 +611,7 @@ export async function adoptAccountSession(
   resetRetryDelay();
 
   await SecureStore.setItemAsync(SECURE_KEYS.REFRESH_TOKEN, session.refreshToken);
+  await SecureStore.deleteItemAsync(SECURE_KEYS.REQUIRES_SIGN_IN);
   await SecureStore.setItemAsync(SECURE_KEYS.ACCOUNT_ID, session.accountId);
   await SecureStore.setItemAsync(SECURE_KEYS.ACCOUNT_PROVIDER, session.provider);
   if (session.email === null) {
@@ -569,6 +637,7 @@ export async function adoptAccountSession(
     isAuthenticated: true,
     isPending: false,
     isOfflinePending: false,
+    requiresSignIn: false,
   });
 }
 
