@@ -72,7 +72,7 @@ describe('RevenueCat Test Store local lane', () => {
         }),
       );
 
-    await expect(run(fetchMock)).rejects.toThrow('integration must already be sandbox-only');
+    await expect(run(fetchMock)).rejects.toThrow('integration must be sandbox-only');
     expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
@@ -86,14 +86,58 @@ describe('RevenueCat Test Store local lane', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
-  it('updates only the validated sandbox Test Store integration and reports its URL', async () => {
+  it('refuses a sandbox integration scoped to another app', async () => {
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce(healthyResponse())
+      .mockResolvedValueOnce(response(testStoreApp()))
+      .mockResolvedValueOnce(
+        response({
+          id: CONFIG.webhookIntegrationId,
+          project_id: CONFIG.projectId,
+          environment: 'sandbox',
+          app_id: 'another-app',
+        }),
+      );
+
+    await expect(run(fetchMock)).rejects.toThrow('integration must be sandbox-only');
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it('stops when ngrok does not expose local port 3000', async () => {
+    const fetchMock = jest.fn().mockResolvedValueOnce(healthyResponse());
+
+    await expect(
+      runRevenueCatTestStoreLane(CONFIG, {
+        fetch: fetchMock,
+        ensureTunnel: () =>
+          Promise.resolve({ publicUrl: 'https://example.ngrok.app', localPort: 4000 }),
+        log: jest.fn(),
+      }),
+    ).rejects.toThrow('requires port 3000');
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports an actionable RevenueCat API error without attempting an update', async () => {
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce(healthyResponse())
+      .mockResolvedValueOnce(response({ message: 'denied' }, 403));
+
+    await expect(run(fetchMock)).rejects.toThrow(
+      'RevenueCat Test Store app validation failed with HTTP 403',
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('narrows a validated project-wide sandbox integration to Test Store and reports its URL', async () => {
     const webhookUrl = 'https://example.ngrok.app/v1/commerce/revenuecat/webhook';
     let updateRequest: RequestInit | undefined;
     const integration = {
       id: CONFIG.webhookIntegrationId,
       project_id: CONFIG.projectId,
       environment: 'sandbox',
-      app_id: CONFIG.testStoreAppId,
+      app_id: null,
     };
     const fetchMock = jest
       .fn()
@@ -102,7 +146,9 @@ describe('RevenueCat Test Store local lane', () => {
       .mockResolvedValueOnce(response(integration))
       .mockImplementationOnce((_url: string, request: RequestInit | undefined) => {
         updateRequest = request;
-        return Promise.resolve(response({ ...integration, url: webhookUrl }));
+        return Promise.resolve(
+          response({ ...integration, app_id: CONFIG.testStoreAppId, url: webhookUrl }),
+        );
       });
 
     await expect(run(fetchMock)).resolves.toBe(webhookUrl);
@@ -134,7 +180,7 @@ function testStoreApp(): Record<string, unknown> {
   return {
     id: CONFIG.testStoreAppId,
     project_id: CONFIG.projectId,
-    type: 'rc_billing',
+    type: 'test_store',
   };
 }
 

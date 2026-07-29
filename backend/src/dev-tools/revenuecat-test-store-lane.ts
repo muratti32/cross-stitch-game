@@ -95,7 +95,7 @@ export async function runRevenueCatTestStoreLane(
     action: 'RevenueCat sandbox webhook validation',
     headers,
   })) as RevenueCatWebhookIntegration;
-  assertSandboxIntegration(integration, config);
+  assertSandboxIntegrationCanTargetTestStore(integration, config);
 
   const updated = (await requestJson(dependencies.fetch, integrationUrl, {
     action: 'RevenueCat sandbox webhook update',
@@ -108,7 +108,7 @@ export async function runRevenueCatTestStoreLane(
       app_id: config.testStoreAppId,
     }),
   })) as RevenueCatWebhookIntegration;
-  assertSandboxIntegration(updated, config);
+  assertSandboxTestStoreIntegration(updated, config);
   if (updated.url !== webhookUrl) {
     throw new Error('RevenueCat API did not return the requested sandbox webhook URL.');
   }
@@ -171,15 +171,31 @@ function assertTestStoreApp(
   if (
     app.id !== config.testStoreAppId ||
     app.project_id !== config.projectId ||
-    app.type !== 'rc_billing'
+    app.type !== 'test_store'
   ) {
     throw new Error(
-      'Refusing webhook update: configured app is not the expected RevenueCat Test Store (rc_billing).',
+      'Refusing webhook update: configured app is not the expected RevenueCat Test Store (test_store).',
     );
   }
 }
 
-function assertSandboxIntegration(
+function assertSandboxIntegrationCanTargetTestStore(
+  integration: RevenueCatWebhookIntegration,
+  config: RevenueCatTestStoreLaneConfig,
+): void {
+  if (
+    integration.id !== config.webhookIntegrationId ||
+    integration.project_id !== config.projectId ||
+    integration.environment !== 'sandbox' ||
+    (integration.app_id !== null && integration.app_id !== config.testStoreAppId)
+  ) {
+    throw new Error(
+      'Refusing webhook update: integration must be sandbox-only and either project-wide or scoped to the configured Test Store app.',
+    );
+  }
+}
+
+function assertSandboxTestStoreIntegration(
   integration: RevenueCatWebhookIntegration,
   config: RevenueCatTestStoreLaneConfig,
 ): void {
@@ -190,7 +206,7 @@ function assertSandboxIntegration(
     integration.app_id !== config.testStoreAppId
   ) {
     throw new Error(
-      'Refusing webhook update: integration must already be sandbox-only and scoped to the configured Test Store app.',
+      'RevenueCat API did not preserve the sandbox-only Test Store integration scope.',
     );
   }
 }
