@@ -29,6 +29,8 @@ import { WebhookArchiveModule } from '../webhooks';
 import { SupportModule } from '../support/support.module';
 import { CoinPackReconciliationController } from './coin-pack-reconciliation.controller';
 import { CoinPackReconciliationService } from './coin-pack-reconciliation.service';
+import { AiCreditPackReconciliationController } from './ai-credit-pack-reconciliation.controller';
+import { AiCreditPackReconciliationService } from './ai-credit-pack-reconciliation.service';
 
 @Module({
   imports: [
@@ -46,6 +48,7 @@ import { CoinPackReconciliationService } from './coin-pack-reconciliation.servic
     RevenueCatWebhookController,
     MembershipController,
     CoinPackReconciliationController,
+    AiCreditPackReconciliationController,
   ],
   providers: [
     CoinLedgerRepository,
@@ -62,6 +65,7 @@ import { CoinPackReconciliationService } from './coin-pack-reconciliation.servic
     MembershipRepository,
     MembershipService,
     CoinPackReconciliationService,
+    AiCreditPackReconciliationService,
   ],
 
   exports: [

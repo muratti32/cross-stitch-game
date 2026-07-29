@@ -269,6 +269,20 @@ export default function ProfileScreen() {
         <Text style={styles.purchaseButtonText}>Commerce Store</Text>
       </Pressable>
 
+      <Pressable
+        onPress={() => router.push({
+          pathname: '/(tabs)/(profile)/commerce',
+          params: { category: 'ai_credit', source: 'profile' },
+        })}
+        style={({ pressed }) => [
+          styles.purchaseButton,
+          pressed && { opacity: 0.7 }
+        ]}
+      >
+        <Ionicons name="sparkles-outline" size={18} color={Theme.colors.accentRose} />
+        <Text style={styles.purchaseButtonText}>AI Credit Packs</Text>
+      </Pressable>
+
       {isAccount && creatorProfile !== null && (
         <Pressable
           onPress={() => router.push('/(tabs)/(profile)/submissions')}

@@ -14,6 +14,11 @@ import {
 
 import { fetchAiCreditBalance, useAiCreditBalance } from '@/api/commerce';
 import {
+  createAiCreditPackReconciliation,
+  fetchAiCreditPackReconciliation,
+  type AiCreditPackProductKey,
+} from '@/api/aiCreditPack';
+import {
   createCoinPackReconciliation,
   fetchCoinPackReconciliation,
   type CoinPackProductKey,
@@ -80,6 +85,17 @@ interface CoinPackReconciliation {
   readonly transactionIdentifier: string;
 }
 
+interface AiCreditPackReconciliation {
+  readonly failureStage: 'verification' | 'grant' | null;
+  readonly id: string;
+  readonly product: CommerceProduct;
+  readonly prolonged: boolean;
+  readonly reconciliationId: string | null;
+  readonly startedAt: number;
+  readonly supportReference: string | null;
+  readonly transactionIdentifier: string;
+}
+
 export default function CommerceScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ category?: string; source?: string }>();
@@ -109,9 +125,11 @@ export default function CommerceScreen() {
   const [purchaseSuccess, setPurchaseSuccess] = useState<string | null>(null);
   const [confirmingPremium, setConfirmingPremium] = useState<CommerceProduct | null>(null);
   const [confirmingCoinPack, setConfirmingCoinPack] = useState<CommerceProduct | null>(null);
+  const [confirmingAiCreditPack, setConfirmingAiCreditPack] = useState<CommerceProduct | null>(null);
   const [monthlyTrialEligible, setMonthlyTrialEligible] = useState(false);
   const [purchasePending, setPurchasePending] = useState<PremiumReconciliation | null>(null);
   const [coinPurchasePending, setCoinPurchasePending] = useState<CoinPackReconciliation | null>(null);
+  const [aiCreditPurchasePending, setAiCreditPurchasePending] = useState<AiCreditPackReconciliation | null>(null);
   const [restoringPurchases, setRestoringPurchases] = useState(false);
   const viewedSourceRef = useRef<string | null>(null);
   const reconciliationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -124,6 +142,11 @@ export default function CommerceScreen() {
   const coinReconciliationRunnerRef = useRef<(attempt: CoinPackReconciliation) => Promise<void>>(
     async () => undefined,
   );
+  const aiCreditReconciliationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const aiCreditReconciliationRef = useRef<AiCreditPackReconciliation | null>(null);
+  const aiCreditReconciliationRunnerRef = useRef<(
+    attempt: AiCreditPackReconciliation,
+  ) => Promise<void>>(async () => undefined);
 
   const loadStore = useCallback(async () => {
     setLoadingStore(true);
@@ -181,6 +204,8 @@ export default function CommerceScreen() {
   useEffect(() => {
     if (params.category === 'stitch_coin' || source === 'stitch_coin_shortfall') {
       setOpenCategory('stitch_coin');
+    } else if (params.category === 'ai_credit' || source === 'ai_credit_shortfall') {
+      setOpenCategory('ai_credit');
     }
   }, [params.category, source]);
 
@@ -190,6 +215,9 @@ export default function CommerceScreen() {
     }
     if (coinReconciliationTimerRef.current !== null) {
       clearTimeout(coinReconciliationTimerRef.current);
+    }
+    if (aiCreditReconciliationTimerRef.current !== null) {
+      clearTimeout(aiCreditReconciliationTimerRef.current);
     }
   }, []);
 
@@ -201,6 +229,11 @@ export default function CommerceScreen() {
   const updateCoinReconciliation = useCallback((next: CoinPackReconciliation | null) => {
     coinReconciliationRef.current = next;
     setCoinPurchasePending(next);
+  }, []);
+
+  const updateAiCreditReconciliation = useCallback((next: AiCreditPackReconciliation | null) => {
+    aiCreditReconciliationRef.current = next;
+    setAiCreditPurchasePending(next);
   }, []);
 
   const premiumPlans = useMemo(
@@ -455,12 +488,138 @@ export default function CommerceScreen() {
 
   coinReconciliationRunnerRef.current = reconcileCoinPack;
 
+  const scheduleAiCreditReconciliation = useCallback((attempt: AiCreditPackReconciliation) => {
+    if (aiCreditReconciliationTimerRef.current !== null) {
+      clearTimeout(aiCreditReconciliationTimerRef.current);
+    }
+    aiCreditReconciliationTimerRef.current = setTimeout(() => {
+      void aiCreditReconciliationRunnerRef.current(attempt);
+    }, RECONCILIATION_POLL_MS);
+  }, []);
+
+  const reconcileAiCreditPack = useCallback(async (attempt: AiCreditPackReconciliation) => {
+    if (aiCreditReconciliationRef.current?.id !== attempt.id
+      || attempt.reconciliationId === null) {
+      return;
+    }
+    let grantVerified = false;
+    try {
+      const reconciliation = await fetchAiCreditPackReconciliation(attempt.reconciliationId);
+      if (reconciliation.status === 'pending') {
+        if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) {
+          updateAiCreditReconciliation({ ...attempt, prolonged: true });
+        } else {
+          scheduleAiCreditReconciliation(attempt);
+        }
+        return;
+      }
+      if (reconciliation.status === 'verification_failed') {
+        await captureGameplayEvent('purchase_failed', {
+          product_kind: 'ai_credit_pack',
+          product_key: attempt.product.productKey,
+          failure_stage: 'verification',
+        });
+        updateAiCreditReconciliation({ ...attempt, failureStage: 'verification' });
+        setPurchaseError(
+          'The store transaction did not match this AI Credit Pack. Retry verification or contact support; do not buy it again.',
+        );
+        return;
+      }
+      if (reconciliation.status === 'grant_failed') {
+        await captureGameplayEvent('purchase_failed', {
+          product_kind: 'ai_credit_pack',
+          product_key: attempt.product.productKey,
+          failure_stage: 'grant',
+        });
+        updateAiCreditReconciliation({ ...attempt, failureStage: 'grant' });
+        setPurchaseError(
+          'The purchase was verified, but the AI Credit grant is unavailable. Retry reconciliation; do not buy it again.',
+        );
+        return;
+      }
+
+      grantVerified = true;
+      const refreshedBalance = await fetchAiCreditBalance();
+      queryClient.setQueryData(['economy', 'aiCreditBalance'], refreshedBalance);
+      await captureGameplayEvent('purchase_completed', {
+        product_kind: 'ai_credit_pack',
+        product_key: attempt.product.productKey,
+      });
+      updateAiCreditReconciliation(null);
+      clearIntent();
+      setPurchaseError(null);
+      setPurchaseSuccess(
+        `${attempt.product.label} grant verified. AI Credit balance: ${refreshedBalance.toLocaleString()}.`,
+      );
+    } catch {
+      const failureStage = grantVerified ? 'grant' : 'verification';
+      await captureGameplayEvent('purchase_failed', {
+        product_kind: 'ai_credit_pack',
+        product_key: attempt.product.productKey,
+        failure_stage: failureStage,
+      });
+      updateAiCreditReconciliation({ ...attempt, failureStage });
+      setPurchaseError(grantVerified
+        ? 'The AI Credit grant was verified, but the current balance could not be refreshed. Retry reconciliation.'
+        : 'The Game Backend could not verify this AI Credit Pack yet. Retry reconciliation; do not buy it again.');
+    }
+  }, [clearIntent, queryClient, scheduleAiCreditReconciliation, updateAiCreditReconciliation]);
+
+  const beginAiCreditPackReconciliation = useCallback(async (
+    product: CommerceProduct,
+    transactionIdentifier: string,
+  ) => {
+    const attempt: AiCreditPackReconciliation = {
+      failureStage: null,
+      id: `${Date.now()}-${product.productKey}-purchase`,
+      product,
+      prolonged: false,
+      reconciliationId: null,
+      startedAt: Date.now(),
+      supportReference: null,
+      transactionIdentifier,
+    };
+    updateAiCreditReconciliation(attempt);
+    setOpenCategory(null);
+    setPurchaseSuccess(null);
+    await captureGameplayEvent('purchase_reconciliation_pending', {
+      product_kind: 'ai_credit_pack',
+      product_key: product.productKey,
+    });
+    try {
+      const reference = await createAiCreditPackReconciliation(
+        product.productKey as AiCreditPackProductKey,
+        transactionIdentifier,
+      );
+      const next = {
+        ...attempt,
+        reconciliationId: reference.id,
+        supportReference: reference.supportReference,
+      };
+      updateAiCreditReconciliation(next);
+      await reconcileAiCreditPack(next);
+    } catch {
+      await captureGameplayEvent('purchase_failed', {
+        product_kind: 'ai_credit_pack',
+        product_key: product.productKey,
+        failure_stage: 'verification',
+      });
+      updateAiCreditReconciliation({ ...attempt, failureStage: 'verification' });
+      setPurchaseError(
+        'AI Credit Pack reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.',
+      );
+    }
+  }, [reconcileAiCreditPack, updateAiCreditReconciliation]);
+
+  aiCreditReconciliationRunnerRef.current = reconcileAiCreditPack;
+
   const purchase = useCallback(async (product: CommerceProduct) => {
     setPurchaseError(null);
     setPurchaseSuccess(null);
     setPurchasingKey(product.productKey);
     setConfirmingPremium(null);
     setConfirmingCoinPack(null);
+    setConfirmingAiCreditPack(null);
     await captureGameplayEvent('purchase_started', {
       product_kind: product.productKind,
       product_key: product.productKey,
@@ -482,7 +641,10 @@ export default function CommerceScreen() {
           purchaseResult.transaction.transactionIdentifier,
         );
       } else {
-        await refetchCommerceState();
+        await beginAiCreditPackReconciliation(
+          product,
+          purchaseResult.transaction.transactionIdentifier,
+        );
       }
     } catch (error: unknown) {
       if (isPurchaseCancelled(error)) {
@@ -501,7 +663,7 @@ export default function CommerceScreen() {
     } finally {
       setPurchasingKey(null);
     }
-  }, [accountId, beginCoinPackReconciliation, beginPremiumReconciliation, refetchCommerceState]);
+  }, [accountId, beginAiCreditPackReconciliation, beginCoinPackReconciliation, beginPremiumReconciliation]);
 
   const attemptPurchase = useCallback((product: CommerceProduct) => {
     void captureGameplayEvent('commerce_product_selected', {
@@ -535,7 +697,7 @@ export default function CommerceScreen() {
       setConfirmingCoinPack(product);
       return;
     }
-    void purchase(product);
+    setConfirmingAiCreditPack(product);
   }, [isAccount, pendingIntent, preserveIntent, purchase, router, source]);
 
   const restorePurchases = useCallback(async () => {
@@ -618,6 +780,34 @@ export default function CommerceScreen() {
     }
     await reconcileCoinPack(reset);
   }, [reconcileCoinPack, updateCoinReconciliation]);
+
+  const retryAiCreditPackReconciliation = useCallback(async () => {
+    const attempt = aiCreditReconciliationRef.current;
+    if (attempt === null) return;
+    setPurchaseError(null);
+    const reset = { ...attempt, failureStage: null, prolonged: false, startedAt: Date.now() };
+    updateAiCreditReconciliation(reset);
+    if (reset.reconciliationId === null) {
+      try {
+        const reference = await createAiCreditPackReconciliation(
+          reset.product.productKey as AiCreditPackProductKey,
+          reset.transactionIdentifier,
+        );
+        const next = {
+          ...reset,
+          reconciliationId: reference.id,
+          supportReference: reference.supportReference,
+        };
+        updateAiCreditReconciliation(next);
+        await reconcileAiCreditPack(next);
+      } catch {
+        setPurchaseError('The Game Backend is still unavailable. Try reconciliation again later.');
+        updateAiCreditReconciliation({ ...reset, failureStage: 'verification' });
+      }
+      return;
+    }
+    await reconcileAiCreditPack(reset);
+  }, [reconcileAiCreditPack, updateAiCreditReconciliation]);
 
   return (
     <>
@@ -760,6 +950,31 @@ export default function CommerceScreen() {
             </View>
           </View>
         )}
+        {aiCreditPurchasePending !== null && (
+          <View style={styles.pendingBanner}>
+            <Ionicons name="time-outline" size={18} color={Theme.colors.accentTeal} />
+            <View style={styles.pendingCopy}>
+              <Text style={styles.pendingTitle}>Purchase Reconciliation Pending</Text>
+              <Text style={styles.pendingText}>
+                The store response is received. AI Credit updates only after the Game Backend
+                exposes the matching Commerce Ledger grant. Do not purchase this pack again.
+              </Text>
+              {aiCreditPurchasePending.supportReference !== null && (
+                <Text selectable style={styles.supportReference}>
+                  Support Reference: {aiCreditPurchasePending.supportReference}
+                </Text>
+              )}
+              {(aiCreditPurchasePending.prolonged
+                || aiCreditPurchasePending.failureStage !== null) && (
+                <Button
+                  title="Retry reconciliation"
+                  onPress={() => void retryAiCreditPackReconciliation()}
+                  variant="secondary"
+                />
+              )}
+            </View>
+          </View>
+        )}
 
         {loadingStore ? (
           <View style={styles.storeState}>
@@ -873,7 +1088,9 @@ export default function CommerceScreen() {
         products={openCategory === 'stitch_coin' ? coinPacks : aiCreditPacks}
         pendingProductKey={source === 'sign_in_return' ? pendingIntent?.productKey ?? null : null}
         purchasingKey={purchasingKey}
-        reconcilingProductKey={coinPurchasePending?.product.productKey ?? null}
+        reconcilingProductKey={openCategory === 'stitch_coin'
+          ? coinPurchasePending?.product.productKey ?? null
+          : aiCreditPurchasePending?.product.productKey ?? null}
         onClose={() => setOpenCategory(null)}
         onPurchase={attemptPurchase}
       />
@@ -886,6 +1103,11 @@ export default function CommerceScreen() {
       <CoinPackConfirmation
         product={confirmingCoinPack}
         onCancel={() => setConfirmingCoinPack(null)}
+        onConfirm={(product) => void purchase(product)}
+      />
+      <AiCreditPackConfirmation
+        product={confirmingAiCreditPack}
+        onCancel={() => setConfirmingAiCreditPack(null)}
         onConfirm={(product) => void purchase(product)}
       />
     </>
@@ -1064,6 +1286,46 @@ function CoinPackConfirmation({
               <View style={styles.confirmationActions}>
                 <Button title="Cancel" onPress={onCancel} variant="secondary" />
                 <Button title={`Confirm ${product.label}`} onPress={() => onConfirm(product)} variant="honey" />
+              </View>
+            </>
+          )}
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+function AiCreditPackConfirmation({
+  product,
+  onCancel,
+  onConfirm,
+}: {
+  product: CommerceProduct | null;
+  onCancel: () => void;
+  onConfirm: (product: CommerceProduct) => void;
+}) {
+  return (
+    <Modal
+      animationType="fade"
+      onRequestClose={onCancel}
+      transparent
+      visible={product !== null}
+    >
+      <View style={styles.confirmationRoot}>
+        <View accessibilityViewIsModal style={styles.confirmationCard}>
+          <Text style={styles.confirmationTitle}>Confirm AI Credit purchase</Text>
+          {product !== null && (
+            <>
+              <Text style={styles.confirmationPlan}>
+                {product.label} · {product.priceString}
+              </Text>
+              <Text style={styles.confirmationBody}>
+                Your balance changes only after the Game Backend verifies the store transaction
+                and records the matching Commerce Ledger grant. Premium Membership is not required.
+              </Text>
+              <View style={styles.confirmationActions}>
+                <Button title="Cancel" onPress={onCancel} variant="secondary" />
+                <Button title={`Confirm ${product.label}`} onPress={() => onConfirm(product)} variant="rose" />
               </View>
             </>
           )}

@@ -154,6 +154,7 @@ import { AddPatternThumbnailRendererVersion1788220800000 } from './migrations/17
 import { AddCommerceStoreGameplayEvents1788393600000 } from './migrations/1788393600000-AddCommerceStoreGameplayEvents';
 import { CreatePremiumPurchaseReconciliations1788480000000 } from './migrations/1788480000000-CreatePremiumPurchaseReconciliations';
 import { CreateCoinPackPurchaseReconciliations1788566400000 } from './migrations/1788566400000-CreateCoinPackPurchaseReconciliations';
+import { CreateAiCreditPackPurchaseReconciliations1788652800000 } from './migrations/1788652800000-CreateAiCreditPackPurchaseReconciliations';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -293,6 +294,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddCommerceStoreGameplayEvents1788393600000,
       CreatePremiumPurchaseReconciliations1788480000000,
       CreateCoinPackPurchaseReconciliations1788566400000,
+      CreateAiCreditPackPurchaseReconciliations1788652800000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

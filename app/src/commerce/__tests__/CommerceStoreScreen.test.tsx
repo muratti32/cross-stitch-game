@@ -28,6 +28,8 @@ const mockSetQueryData = jest.fn();
 const mockCreateCoinPackReconciliation = jest.fn();
 const mockFetchCoinPackReconciliation = jest.fn();
 const mockFetchCoinBalance = jest.fn();
+const mockCreateAiCreditPackReconciliation = jest.fn();
+const mockFetchAiCreditPackReconciliation = jest.fn();
 let renderer: TestRenderer.ReactTestRenderer | null = null;
 
 jest.mock('expo-router', () => ({
@@ -91,6 +93,13 @@ jest.mock('@/api/economy', () => ({
 jest.mock('@/api/coinPack', () => ({
   createCoinPackReconciliation: (...args: unknown[]) => mockCreateCoinPackReconciliation(...args),
   fetchCoinPackReconciliation: (...args: unknown[]) => mockFetchCoinPackReconciliation(...args),
+}));
+
+jest.mock('@/api/aiCreditPack', () => ({
+  createAiCreditPackReconciliation: (...args: unknown[]) =>
+    mockCreateAiCreditPackReconciliation(...args),
+  fetchAiCreditPackReconciliation: (...args: unknown[]) =>
+    mockFetchAiCreditPackReconciliation(...args),
 }));
 
 jest.mock('@/api/commerce', () => ({
@@ -187,6 +196,11 @@ beforeEach(() => {
   });
   mockFetchCoinPackReconciliation.mockResolvedValue({ status: 'pending', balance: null });
   mockFetchCoinBalance.mockResolvedValue(420);
+  mockCreateAiCreditPackReconciliation.mockResolvedValue({
+    id: '86d57c4b-4329-4f8c-a37f-b26c3bdca382',
+    supportReference: 'SW-AI-CREDIT',
+  });
+  mockFetchAiCreditPackReconciliation.mockResolvedValue({ status: 'pending', balance: null });
   useCommerceIntentStore.getState().clearIntent();
 });
 
@@ -467,6 +481,179 @@ it('opens the same Coin Packs context from a direct deep link', async () => {
   });
 });
 
+it('opens current AI Credit Pack prices from Profile, direct links, and AI Credit shortfall', async () => {
+  for (const params of [
+    { category: 'ai_credit', source: 'profile' },
+    { category: 'ai_credit', source: 'direct' },
+    { category: 'ai_credit', source: 'ai_credit_shortfall' },
+  ]) {
+    mockParams = params;
+    await renderScreen();
+
+    expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+      'AI Credit Packs',
+      '5 AI Credits',
+      '$2.99',
+      '20 AI Credits',
+      '$9.99',
+      '50 AI Credits',
+      '$19.99',
+    ]));
+    expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('commerce_store_viewed', {
+      source: params.source,
+    });
+    act(() => renderer?.unmount());
+    renderer = null;
+    mockCaptureGameplayEvent.mockClear();
+  }
+});
+
+it('preserves Guest AI Credit Pack selection through sign-in return and confirmation', async () => {
+  await renderScreen();
+  await openAiCreditPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+
+  expect(useCommerceIntentStore.getState().intent).toEqual({
+    category: 'ai_credit',
+    entrySource: 'profile',
+    productKey: 'ai_credit_pack_5',
+    productKind: 'ai_credit_pack',
+  });
+  expect(mockRouter.push).toHaveBeenCalledWith({
+    pathname: '/(tabs)/(settings)/sign-in',
+    params: { returnTo: 'commerce' },
+  });
+  expect(mockPurchasePackage).not.toHaveBeenCalled();
+
+  mockIdentity = { accountId: 'account_82', isAccount: true };
+  mockParams = { source: 'sign_in_return' };
+  await act(async () => {
+    renderer!.update(<CommerceScreen />);
+    await flushPromises();
+  });
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'You’re signed in. 5 AI Credits is still selected. Review it and tap Buy when ready.',
+    'Selected before sign-in',
+  ]));
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  expect(allText(renderer!.root)).toContain('Confirm AI Credit purchase');
+  expect(mockPurchasePackage).not.toHaveBeenCalled();
+});
+
+it('keeps an exact AI Credit Pack intent pending and blocks repeat purchase', async () => {
+  mockIdentity = { accountId: 'account_82', isAccount: true };
+  await renderScreen();
+  await confirmSmallAiCreditPackPurchase();
+
+  expect(mockCreateAiCreditPackReconciliation).toHaveBeenCalledWith(
+    'ai_credit_pack_5',
+    'store-transaction-81',
+  );
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('commerce_product_selected', {
+    product_kind: 'ai_credit_pack',
+    product_key: 'ai_credit_pack_5',
+  });
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_started', {
+    product_kind: 'ai_credit_pack',
+    product_key: 'ai_credit_pack_5',
+  });
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase Reconciliation Pending',
+    'Support Reference: SW-AI-CREDIT',
+  ]));
+  expect(mockCaptureGameplayEvent).not.toHaveBeenCalledWith(
+    'purchase_completed',
+    expect.anything(),
+  );
+
+  await openAiCreditPacks();
+  expect(pressableByText(renderer!.root, 'Buy').props.disabled).toBe(true);
+  expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+});
+
+it('treats AI Credit Pack cancellation as non-error without reconciliation', async () => {
+  mockIdentity = { accountId: 'account_82', isAccount: true };
+  mockPurchasePackage.mockRejectedValue({ userCancelled: true });
+  await renderScreen();
+  await confirmSmallAiCreditPackPurchase();
+
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_cancelled', {
+    product_kind: 'ai_credit_pack',
+    product_key: 'ai_credit_pack_5',
+  });
+  expect(mockCreateAiCreditPackReconciliation).not.toHaveBeenCalled();
+  expect(allText(renderer!.root)).not.toContain('Purchase Reconciliation Pending');
+});
+
+it('reports an AI Credit Pack store failure without starting reconciliation', async () => {
+  mockIdentity = { accountId: 'account_82', isAccount: true };
+  mockPurchasePackage.mockRejectedValue(new Error('store unavailable'));
+  await renderScreen();
+  await confirmSmallAiCreditPackPurchase();
+
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_failed', {
+    product_kind: 'ai_credit_pack',
+    product_key: 'ai_credit_pack_5',
+    failure_stage: 'store',
+  });
+  expect(mockCreateAiCreditPackReconciliation).not.toHaveBeenCalled();
+  expect(allText(renderer!.root)).toContain('store unavailable');
+});
+
+it.each([
+  ['verification_failed', 'verification', 'The store transaction did not match this AI Credit Pack.'],
+  ['grant_failed', 'grant', 'The purchase was verified, but the AI Credit grant is unavailable.'],
+] as const)('reports AI Credit %s at the correct stage', async (status, stage, message) => {
+  mockIdentity = { accountId: 'account_82', isAccount: true };
+  mockFetchAiCreditPackReconciliation.mockResolvedValue({ status, balance: null });
+  await renderScreen();
+  await confirmSmallAiCreditPackPurchase();
+
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_failed', {
+    product_kind: 'ai_credit_pack',
+    product_key: 'ai_credit_pack_5',
+    failure_stage: stage,
+  });
+  expect(allText(renderer!.root).join(' ')).toContain(message);
+  expect(allText(renderer!.root)).toContain('Retry reconciliation');
+});
+
+it('updates AI Credit balance and completes only after the exact backend grant', async () => {
+  mockIdentity = { accountId: 'account_82', isAccount: true };
+  mockFetchAiCreditPackReconciliation.mockResolvedValue({ status: 'granted', balance: 9 });
+  mockFetchAiCreditBalance.mockResolvedValue(9);
+  await renderScreen();
+  await confirmSmallAiCreditPackPurchase();
+
+  expect(mockFetchAiCreditBalance).toHaveBeenCalledTimes(1);
+  expect(mockSetQueryData).toHaveBeenCalledWith(['economy', 'aiCreditBalance'], 9);
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_completed', {
+    product_kind: 'ai_credit_pack',
+    product_key: 'ai_credit_pack_5',
+  });
+  expect(allText(renderer!.root)).toContain(
+    '5 AI Credits grant verified. AI Credit balance: 9.',
+  );
+});
+
+it('offers Retry after a delayed AI Credit grant without another store purchase', async () => {
+  const now = jest.spyOn(Date, 'now')
+    .mockReturnValueOnce(1_000)
+    .mockReturnValueOnce(1_000)
+    .mockReturnValue(12_000);
+  mockIdentity = { accountId: 'account_82', isAccount: true };
+  await renderScreen();
+  await confirmSmallAiCreditPackPurchase();
+
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase Reconciliation Pending',
+    'Retry reconciliation',
+    'Support Reference: SW-AI-CREDIT',
+  ]));
+  expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+  now.mockRestore();
+});
+
 it('requires explicit Coin Pack confirmation and treats cancellation as a non-error', async () => {
   mockIdentity = { accountId: 'account_81', isAccount: true };
   mockPurchasePackage.mockRejectedValue({ userCancelled: true });
@@ -684,11 +871,26 @@ async function openCoinPacks(): Promise<void> {
   });
 }
 
+async function openAiCreditPacks(): Promise<void> {
+  await act(async () => {
+    pressAncestor(renderer!.root.findByProps({ testID: 'open-ai-credit-packs' }));
+  });
+}
+
 async function confirmSmallCoinPackPurchase(): Promise<void> {
   await openCoinPacks();
   await act(async () => pressByText(renderer!.root, 'Buy'));
   await act(async () => {
     pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
+    await flushPromises();
+  });
+}
+
+async function confirmSmallAiCreditPackPurchase(): Promise<void> {
+  await openAiCreditPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 5 AI Credits');
     await flushPromises();
   });
 }

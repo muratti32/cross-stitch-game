@@ -2,6 +2,7 @@ import { Check, Column, Entity, Index, PrimaryGeneratedColumn, Unique } from 'ty
 
 export type SupportRecordType =
   | 'ai_artwork'
+  | 'ai_credit_pack_purchase_reconciliation'
   | 'coin_pack_purchase_reconciliation'
   | 'premium_purchase_reconciliation'
   | 'pattern_conversion'
@@ -16,7 +17,7 @@ export type SupportRecordType =
 @Index('IDX_support_reference_records_record', ['recordType', 'recordId'])
 @Check(
   'CHK_support_reference_records_type',
-  '"record_type" IN (\'ai_artwork\', \'coin_pack_purchase_reconciliation\', \'premium_purchase_reconciliation\', \'pattern_conversion\', \'processing_job\')',
+  '"record_type" IN (\'ai_artwork\', \'ai_credit_pack_purchase_reconciliation\', \'coin_pack_purchase_reconciliation\', \'premium_purchase_reconciliation\', \'pattern_conversion\', \'processing_job\')',
 )
 export class SupportReferenceRecordEntity {
   @PrimaryGeneratedColumn('uuid', {

@@ -145,23 +145,23 @@ describe('RevenueCat commerce boundary', () => {
     expect(mockPurchases.purchasePackage).not.toHaveBeenCalled();
   });
 
-  test('returns the SDK transaction identifier without treating purchase success as a grant', async () => {
+  test('returns an AI Credit SDK transaction without treating purchase success as a grant', async () => {
     const sdkResult = {
       customerInfo: {},
-      productIdentifier: 'com.avk.stitchwish.coin_pack_300',
+      productIdentifier: 'com.avk.stitchwish.ai_credit_pack_5',
       transaction: {
-        transactionIdentifier: 'store-transaction-81',
+        transactionIdentifier: 'store-transaction-82',
       },
     };
     mockPurchases.purchasePackage.mockResolvedValue(sdkResult as never);
 
     await expect(purchaseRevenueCatPackage(
-      { identifier: '$rc_custom_coin_pack_300' } as never,
-      'account_81',
+      { identifier: '$rc_custom_ai_credit_pack_5' } as never,
+      'account_82',
     )).resolves.toBe(sdkResult);
 
     expect(mockPurchases.purchasePackage).toHaveBeenCalledTimes(1);
-    expect(useRevenueCatRuntime.getState().associatedAccountId).toBe('account_81');
+    expect(useRevenueCatRuntime.getState().associatedAccountId).toBe('account_82');
   });
 
   test('invalid public configuration disables commerce without configuring the SDK', async () => {

@@ -3568,6 +3568,42 @@ describe('Stitch Wish backend integration', () => {
 
       // Test AI credit balance endpoint and webhook
       const aiTxId = `webhook-ai-tx-${randomUUID()}`;
+      const aiReconciliationResponse = await request(httpServer)
+        .post('/v1/commerce/ai-credit-packs/reconciliations')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          productKey: 'ai_credit_pack_20',
+          transactionIdentifier: aiTxId,
+        })
+        .expect(201);
+      const aiReconciliationId = readStringRecord(aiReconciliationResponse.body, 'id');
+      expect(readStringRecord(aiReconciliationResponse.body, 'supportReference')).toMatch(
+        /^SW-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/,
+      );
+      await request(httpServer)
+        .get(`/v1/commerce/ai-credit-packs/reconciliations/${aiReconciliationId}`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200, { status: 'pending', balance: null });
+
+      // RevenueCat subscriber identity must resolve to an active Registered Account.
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+        .send({
+          event: {
+            type: 'NON_RENEWING_PURCHASE',
+            app_user_id: randomUUID(),
+            transaction_id: aiTxId,
+            product_id: 'com.avk.stitchwish.ai_credit_pack_20',
+            environment: 'SANDBOX',
+          },
+        })
+        .expect(200, { status: 'ok' });
+      await request(httpServer)
+        .get(`/v1/commerce/ai-credit-packs/reconciliations/${aiReconciliationId}`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200, { status: 'pending', balance: null });
+
       await request(httpServer)
         .post('/v1/commerce/revenuecat/webhook')
         .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
@@ -3582,11 +3618,33 @@ describe('Stitch Wish backend integration', () => {
         })
         .expect(200, { status: 'ok' });
 
-      const aiBalRes = await request(httpServer)
+      await request(httpServer)
         .get('/v1/economy/ai-credit-balance')
         .set('Authorization', `Bearer ${account.accessToken}`)
-        .expect(200);
-      expect(aiBalRes.body.balance).toBe(20);
+        .expect(200, { balance: 20 });
+      await request(httpServer)
+        .get(`/v1/commerce/ai-credit-packs/reconciliations/${aiReconciliationId}`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200, { status: 'granted', balance: 20 });
+
+      // Duplicate AI Credit delivery is safe and cannot grant the pack twice.
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+        .send({
+          event: {
+            type: 'NON_RENEWING_PURCHASE',
+            app_user_id: account.accountId,
+            transaction_id: aiTxId,
+            product_id: 'com.avk.stitchwish.ai_credit_pack_20',
+            environment: 'SANDBOX',
+          },
+        })
+        .expect(200, { status: 'ok' });
+      await request(httpServer)
+        .get('/v1/economy/ai-credit-balance')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200, { balance: 20 });
 
       // 4. REFUND after a grant -> balance decreases by the granted amount
       await request(httpServer)
