@@ -92,6 +92,9 @@ cd backend
 npm run revenuecat:test-store-lane
 ```
 
+Install the ngrok agent first (`brew install ngrok` on macOS), then authenticate
+it with `ngrok config add-authtoken ...` or provide `NGROK_AUTHTOKEN` locally.
+
 Configure these values in `backend/.env` or your local shell:
 
 - `REVENUECAT_API_V2_KEY`: secret v2 key with
@@ -100,18 +103,21 @@ Configure these values in `backend/.env` or your local shell:
 - `REVENUECAT_PROJECT_ID`: the Stitch Wish RevenueCat project ID.
 - `REVENUECAT_TEST_STORE_APP_ID`: the RevenueCat Test Store app ID.
 - `REVENUECAT_TEST_STORE_WEBHOOK_INTEGRATION_ID`: an existing integration that
-  is already scoped to that Test Store app and `sandbox` only.
+  is `sandbox` only and either project-wide or already scoped to that Test Store
+  app.
 - `REVENUECAT_WEBHOOK_AUTH_TOKEN`: the same authorization value configured on
   the local Game Backend.
 - `NGROK_AUTHTOKEN`: optional if ngrok already has credentials in its local
   configuration.
 
 The command never creates an integration and refuses to write unless RevenueCat
-confirms that the configured app is `rc_billing` and the existing integration is
-both `sandbox` and scoped to that exact app. Missing values, degraded backend
-health, a missing HTTPS tunnel, or any RevenueCat API error stops the workflow.
-Re-running it safely reapplies the same configuration and prints the effective
-public URL.
+confirms that the configured app is `test_store` and the existing integration is
+`sandbox`. An existing project-wide sandbox integration is narrowed to the exact
+Test Store app during the update; an integration already scoped to another app
+is rejected. A production integration is always rejected before the update
+request. Missing values, degraded backend health, a missing HTTPS tunnel, or any
+RevenueCat API error stops the workflow. Re-running it safely reapplies the same
+configuration and prints the effective public URL.
 
 To stop an ngrok process started by this workflow (a reused process is left
 alone):
@@ -122,10 +128,23 @@ npm run revenuecat:test-store-lane -- stop
 
 Complete a purchase in the Test Store development build, then confirm the API
 logs show a `RevenueCat webhook` outcome. For database-level confirmation,
-inspect the local `webhooks.webhook_delivery_archives` row with provider
-`revenuecat` and the resulting `economy` Commerce Ledger or Membership Period
-record. The tunnel target is always
-`https://<ngrok-host>/v1/commerce/revenuecat/webhook`.
+inspect the local delivery archive and resulting Commerce Ledger rows:
+
+```sql
+SELECT received_at, verification_result, processing_outcome, failure_reason
+FROM observability.webhook_delivery_archives
+WHERE provider = 'revenuecat'
+ORDER BY received_at DESC
+LIMIT 5;
+
+SELECT provider_transaction_id, environment, product_id, created_at
+FROM economy.commerce_transaction_bindings
+ORDER BY created_at DESC
+LIMIT 5;
+```
+
+For a subscription, also inspect `economy.membership_periods`. The tunnel target
+is always `https://<ngrok-host>/v1/commerce/revenuecat/webhook`.
 
 ## Production-style local run
 
