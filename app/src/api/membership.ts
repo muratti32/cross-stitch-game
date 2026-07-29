@@ -56,10 +56,11 @@ export async function claimPremiumDailyCoin(): Promise<PremiumDailyClaimResult> 
   return (await response.json()) as PremiumDailyClaimResult;
 }
 
-export function useMembership() {
+export function useMembership(enabled = true) {
   return useQuery({
     queryKey: ['commerce', 'membership'],
     queryFn: fetchMembership,
+    enabled,
     staleTime: 30_000,
     refetchInterval: 60_000,
   });

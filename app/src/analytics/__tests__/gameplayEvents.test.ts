@@ -36,20 +36,43 @@ describe('captureGameplayEvent', () => {
     await captureGameplayEvent('ai_generation_prompt_blocked', {});
     await captureGameplayEvent('ai_generation_completed', { aspect: 'portrait_4_3' });
     await captureGameplayEvent('ai_generation_failed', { failure_stage: 'delivery' });
-    await captureGameplayEvent('purchase_started', { product_kind: 'stitch_coin_pack' });
-    await captureGameplayEvent('purchase_completed', { product_kind: 'stitch_coin_pack' });
-    await captureGameplayEvent('purchase_cancelled', { product_kind: 'ai_credit_pack' });
+    await captureGameplayEvent('commerce_store_viewed', { source: 'profile' });
+    await captureGameplayEvent('commerce_product_selected', {
+      product_kind: 'stitch_coin_pack',
+      product_key: 'coin_pack_300',
+    });
+    await captureGameplayEvent('purchase_started', {
+      product_kind: 'stitch_coin_pack',
+      product_key: 'coin_pack_300',
+    });
+    await captureGameplayEvent('purchase_reconciliation_pending', {
+      product_kind: 'stitch_coin_pack',
+      product_key: 'coin_pack_300',
+    });
+    await captureGameplayEvent('purchase_completed', {
+      product_kind: 'stitch_coin_pack',
+      product_key: 'coin_pack_300',
+    });
+    await captureGameplayEvent('purchase_cancelled', {
+      product_kind: 'ai_credit_pack',
+      product_key: 'ai_credit_pack_5',
+    });
     await captureGameplayEvent('purchase_failed', {
       product_kind: 'premium_membership',
+      product_key: 'premium_monthly',
       failure_stage: 'store',
     });
 
-    expect(mockedDb.enqueueAnalyticsGameplayEvent).toHaveBeenCalledTimes(14);
+    expect(mockedDb.enqueueAnalyticsGameplayEvent).toHaveBeenCalledTimes(17);
     expect(mockedDb.enqueueAnalyticsGameplayEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         eventId: '72bb19f7-e78e-4b72-bc75-d761122a25df',
         kind: 'purchase_failed',
-        payload: { product_kind: 'premium_membership', failure_stage: 'store' },
+        payload: {
+          product_kind: 'premium_membership',
+          product_key: 'premium_monthly',
+          failure_stage: 'store',
+        },
       }),
     );
   });
@@ -58,7 +81,10 @@ describe('captureGameplayEvent', () => {
     mockedDb.enqueueAnalyticsGameplayEvent.mockRejectedValueOnce(new Error('disk unavailable'));
 
     await expect(
-      captureGameplayEvent('purchase_completed', { product_kind: 'ai_credit_pack' }),
+      captureGameplayEvent('purchase_completed', {
+        product_kind: 'ai_credit_pack',
+        product_key: 'ai_credit_pack_20',
+      }),
     ).resolves.toBeUndefined();
   });
 });

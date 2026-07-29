@@ -11,7 +11,10 @@ export const GAMEPLAY_EVENT_KINDS = [
   'ai_generation_prompt_blocked',
   'ai_generation_completed',
   'ai_generation_failed',
+  'commerce_store_viewed',
+  'commerce_product_selected',
   'purchase_started',
+  'purchase_reconciliation_pending',
   'purchase_completed',
   'purchase_cancelled',
   'purchase_failed',
@@ -46,6 +49,25 @@ type AiGenerationFailedPayload = {
 };
 type PurchasePayload = {
   product_kind: 'premium_membership' | 'ai_credit_pack' | 'stitch_coin_pack';
+  product_key:
+    | 'premium_weekly'
+    | 'premium_monthly'
+    | 'premium_annual'
+    | 'ai_credit_pack_5'
+    | 'ai_credit_pack_20'
+    | 'ai_credit_pack_50'
+    | 'coin_pack_300'
+    | 'coin_pack_900'
+    | 'coin_pack_2000';
+};
+type CommerceStoreViewedPayload = {
+  source:
+    | 'profile'
+    | 'stitch_coin_shortfall'
+    | 'ai_credit_shortfall'
+    | 'premium_benefit'
+    | 'sign_in_return'
+    | 'direct';
 };
 type PurchaseFailedPayload = PurchasePayload & {
   failure_stage: 'store' | 'verification' | 'grant';
@@ -59,6 +81,7 @@ export type GameplayEventPayload =
   | PatternConversionFailedPayload
   | AiGenerationStartedPayload
   | AiGenerationFailedPayload
+  | CommerceStoreViewedPayload
   | PurchasePayload
   | PurchaseFailedPayload
   | Record<string, never>;
@@ -87,6 +110,19 @@ const PURCHASE_KINDS = new Set([
   'ai_credit_pack',
   'stitch_coin_pack',
 ]);
+const COMMERCE_ENTRY_SOURCES = new Set([
+  'profile',
+  'stitch_coin_shortfall',
+  'ai_credit_shortfall',
+  'premium_benefit',
+  'sign_in_return',
+  'direct',
+]);
+const PRODUCT_KEYS_BY_KIND: Readonly<Record<string, ReadonlySet<string>>> = {
+  premium_membership: new Set(['premium_weekly', 'premium_monthly', 'premium_annual']),
+  ai_credit_pack: new Set(['ai_credit_pack_5', 'ai_credit_pack_20', 'ai_credit_pack_50']),
+  stitch_coin_pack: new Set(['coin_pack_300', 'coin_pack_900', 'coin_pack_2000']),
+};
 const PURCHASE_FAILURE_STAGES = new Set(['store', 'verification', 'grant']);
 
 const payloadRules: Readonly<Record<GameplayEventKind, PayloadRule>> = {
@@ -125,13 +161,19 @@ const payloadRules: Readonly<Record<GameplayEventKind, PayloadRule>> = {
     allowedFields: ['failure_stage'],
     validate: (payload) => isMember(payload.failure_stage, AI_FAILURE_STAGES),
   },
+  commerce_store_viewed: {
+    allowedFields: ['source'],
+    validate: (payload) => isMember(payload.source, COMMERCE_ENTRY_SOURCES),
+  },
+  commerce_product_selected: purchaseRule(),
   purchase_started: purchaseRule(),
+  purchase_reconciliation_pending: purchaseRule(),
   purchase_completed: purchaseRule(),
   purchase_cancelled: purchaseRule(),
   purchase_failed: {
-    allowedFields: ['product_kind', 'failure_stage'],
+    allowedFields: ['product_kind', 'product_key', 'failure_stage'],
     validate: (payload) =>
-      isMember(payload.product_kind, PURCHASE_KINDS) &&
+      isPurchaseProduct(payload) &&
       isMember(payload.failure_stage, PURCHASE_FAILURE_STAGES),
   },
 };
@@ -176,9 +218,17 @@ function sessionRule(): PayloadRule {
 
 function purchaseRule(): PayloadRule {
   return {
-    allowedFields: ['product_kind'],
-    validate: (payload) => isMember(payload.product_kind, PURCHASE_KINDS),
+    allowedFields: ['product_kind', 'product_key'],
+    validate: isPurchaseProduct,
   };
+}
+
+function isPurchaseProduct(payload: Record<string, unknown>): boolean {
+  if (!isMember(payload.product_kind, PURCHASE_KINDS)) return false;
+  return isMember(
+    payload.product_key,
+    PRODUCT_KEYS_BY_KIND[payload.product_kind as string] ?? new Set<string>(),
+  );
 }
 
 function emptyPayloadRule(): PayloadRule {

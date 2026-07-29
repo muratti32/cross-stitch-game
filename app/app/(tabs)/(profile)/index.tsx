@@ -254,19 +254,20 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      {/* Purchase Button */}
-      {isAccount && (
-        <Pressable
-          onPress={() => router.push('/(tabs)/(profile)/commerce')}
-          style={({ pressed }) => [
-            styles.purchaseButton,
-            pressed && { opacity: 0.7 }
-          ]}
-        >
-          <Ionicons name="bag-outline" size={18} color={Theme.colors.accentRose} />
-          <Text style={styles.purchaseButtonText}>Get Coins & AI Credits</Text>
-        </Pressable>
-      )}
+      {/* Commerce Store remains available for catalog browsing as Guest. */}
+      <Pressable
+        onPress={() => router.push({
+          pathname: '/(tabs)/(profile)/commerce',
+          params: { source: 'profile' },
+        })}
+        style={({ pressed }) => [
+          styles.purchaseButton,
+          pressed && { opacity: 0.7 }
+        ]}
+      >
+        <Ionicons name="storefront-outline" size={18} color={Theme.colors.accentRose} />
+        <Text style={styles.purchaseButtonText}>Commerce Store</Text>
+      </Pressable>
 
       {isAccount && creatorProfile !== null && (
         <Pressable

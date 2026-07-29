@@ -1,27 +1,31 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator, Pressable, Alert } from 'react-native';
-import { Screen, Card, Button } from '@/components';
-import { Theme } from '@/theme/theme';
 import { Ionicons } from '@expo/vector-icons';
-import { useIdentityStore } from '@/identity/guestIdentity';
-import { useCoinBalance } from '@/api/economy';
-import { useAiCreditBalance } from '@/api/commerce';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
-import { PurchasesPackage } from 'react-native-purchases';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+
+import { useAiCreditBalance } from '@/api/commerce';
+import { useCoinBalance } from '@/api/economy';
 import { useMembership, usePremiumDailyClaim } from '@/api/membership';
-import {
-  MEMBERSHIP_THEMES,
-  useActiveMembershipTheme,
-} from '@/membership/themes';
 import { captureGameplayEvent } from '@/analytics/gameplayEvents';
-import type { PurchaseProductKind } from '@/analytics/schema';
 import {
-  PAYWALL_PROTOTYPE_NAMES,
-  PaywallPrototype,
-  type PaywallPrototypeVariant,
-} from '@/commerce/PaywallPrototype';
-import { PrototypeSwitcher } from '@/components/PrototypeSwitcher';
+  commerceProductsFromOfferings,
+  productsInCategory,
+  type CommerceCategory,
+  type CommerceProduct,
+} from '@/commerce/catalog';
+import {
+  commerceEntrySource,
+  useCommerceIntentStore,
+} from '@/commerce/commerceIntent';
 import {
   getRevenueCatOfferings,
   missingCanonicalRevenueCatProducts,
@@ -29,618 +33,622 @@ import {
   restoreRevenueCatPurchases,
   useRevenueCatRuntime,
 } from '@/commerce/revenueCat';
-
-// Keys are the store product identifiers exactly as registered in App Store
-// Connect and Google Play (ADR-0043).
-const PREMIUM_PLAN_DESCRIPTIONS: Record<string, { label: string; credits: number; trial: boolean }> = {
-  'com.avk.stitchwish.premium_weekly': { label: 'Weekly Premium', credits: 3, trial: false },
-  'com.avk.stitchwish.premium_monthly': { label: 'Monthly Premium', credits: 15, trial: true },
-  'com.avk.stitchwish.premium_annual': { label: 'Annual Premium', credits: 180, trial: false },
-};
-
-const COIN_PACK_DESCRIPTIONS: Record<string, { coins: number }> = {
-  'com.avk.stitchwish.coin_pack_300': { coins: 300 },
-  'com.avk.stitchwish.coin_pack_900': { coins: 900 },
-  'com.avk.stitchwish.coin_pack_2000': { coins: 2000 },
-};
-
-const AI_CREDIT_PACK_DESCRIPTIONS: Record<string, { credits: number }> = {
-  'com.avk.stitchwish.ai_credit_pack_5': { credits: 5 },
-  'com.avk.stitchwish.ai_credit_pack_20': { credits: 20 },
-  'com.avk.stitchwish.ai_credit_pack_50': { credits: 50 },
-};
-
-interface PackItem {
-  id: string;
-  productId: string;
-  package: PurchasesPackage;
-  amount: number;
-  label: string;
-}
-
-function productKindForPackage(pkg: PurchasesPackage): PurchaseProductKind | null {
-  if (matchingProductId(pkg, PREMIUM_PLAN_DESCRIPTIONS)) {
-    return 'premium_membership';
-  }
-  if (matchingProductId(pkg, COIN_PACK_DESCRIPTIONS)) {
-    return 'stitch_coin_pack';
-  }
-  if (matchingProductId(pkg, AI_CREDIT_PACK_DESCRIPTIONS)) {
-    return 'ai_credit_pack';
-  }
-  return null;
-}
-
-function isPurchaseCancelled(error: unknown): boolean {
-  return (
-    typeof error === 'object'
-    && error !== null
-    && 'userCancelled' in error
-    && error.userCancelled === true
-  );
-}
-
-function purchaseErrorMessage(error: unknown): string | null {
-  return (
-    typeof error === 'object'
-    && error !== null
-    && 'message' in error
-    && typeof error.message === 'string'
-  )
-    ? error.message
-    : null;
-}
+import { Button, Card, Screen } from '@/components';
+import { useIdentityStore } from '@/identity/guestIdentity';
+import {
+  MEMBERSHIP_THEMES,
+  type MembershipThemeId,
+  useActiveMembershipTheme,
+} from '@/membership/themes';
+import { Theme } from '@/theme/theme';
 
 export default function CommerceScreen() {
   const router = useRouter();
-  const params = useLocalSearchParams<{ variant?: string }>();
+  const params = useLocalSearchParams<{ source?: string }>();
   const queryClient = useQueryClient();
-  const { isAccount, accountId } = useIdentityStore();
+  const { accountId, isAccount } = useIdentityStore();
   const revenueCatRuntime = useRevenueCatRuntime();
+  const pendingIntent = useCommerceIntentStore((state) => state.intent);
+  const preserveIntent = useCommerceIntentStore((state) => state.preserveIntent);
+  const clearIntent = useCommerceIntentStore((state) => state.clearIntent);
+  const source = commerceEntrySource(params.source);
+
   const { data: coinBalance } = useCoinBalance();
-  const { data: aiCreditBalance } = useAiCreditBalance();
-  const { data: membership } = useMembership();
+  const { data: aiCreditBalance } = useAiCreditBalance(isAccount);
+  const { data: membership } = useMembership(isAccount);
   const dailyClaim = usePremiumDailyClaim();
-  const { theme, themeAccess, selectTheme } = useActiveMembershipTheme();
+  const { theme, themeAccess, selectTheme } = useActiveMembershipTheme(isAccount);
 
-  const [offerings, setOfferings] = useState<PackItem[]>([]);
-  const [loadingOfferings, setLoadingOfferings] = useState(true);
-  const [offeringsError, setOfferingsError] = useState<string | null>(null);
-  const [purchasingPackageId, setPurchasingPackageId] = useState<string | null>(null);
+  const [products, setProducts] = useState<CommerceProduct[]>([]);
+  const [loadingStore, setLoadingStore] = useState(true);
+  const [storeUnavailable, setStoreUnavailable] = useState(false);
+  const [selectedPremiumKey, setSelectedPremiumKey] = useState<string>(
+    pendingIntent?.category === 'premium' ? pendingIntent.productKey : 'premium_annual',
+  );
+  const [openCategory, setOpenCategory] = useState<CommerceCategory | null>(null);
+  const [purchasingKey, setPurchasingKey] = useState<string | null>(null);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [purchasePending, setPurchasePending] = useState(false);
   const [restoringPurchases, setRestoringPurchases] = useState(false);
+  const viewedSourceRef = useRef<string | null>(null);
+  const reconciliationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const prototypeVariant = process.env.NODE_ENV !== 'production'
-    && isPaywallPrototypeVariant(params.variant)
-    ? params.variant
-    : null;
+  const loadStore = useCallback(async () => {
+    setLoadingStore(true);
+    setStoreUnavailable(false);
+    try {
+      const offerings = await getRevenueCatOfferings();
+      if (offerings.current === null || missingCanonicalRevenueCatProducts(offerings).length > 0) {
+        setProducts([]);
+        setStoreUnavailable(true);
+        return;
+      }
+      setProducts(commerceProductsFromOfferings(offerings));
+    } catch (error: unknown) {
+      setProducts([]);
+      setStoreUnavailable(true);
+      console.warn(
+        'Commerce Store catalog unavailable:',
+        error instanceof Error ? error.message : String(error),
+      );
+    } finally {
+      setLoadingStore(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (viewedSourceRef.current === source) return;
+    viewedSourceRef.current = source;
+    void captureGameplayEvent('commerce_store_viewed', { source });
+  }, [source]);
 
   useEffect(() => {
     if (revenueCatRuntime.status === 'ready') {
-      void loadOfferings();
+      void loadStore();
       return;
     }
     if (revenueCatRuntime.status === 'disabled' || revenueCatRuntime.status === 'error') {
-      setLoadingOfferings(false);
-      setOfferingsError(revenueCatRuntime.message ?? 'Commerce is unavailable.');
+      setLoadingStore(false);
+      setStoreUnavailable(true);
     }
-  }, [revenueCatRuntime.status, revenueCatRuntime.message]);
+  }, [loadStore, revenueCatRuntime.status]);
 
-  const loadOfferings = async () => {
-    try {
-      setLoadingOfferings(true);
-      setOfferingsError(null);
-      const data = await getRevenueCatOfferings();
-
-      if (data.current === null) {
-        setOfferingsError('No offerings available.');
-        return;
-      }
-
-      const missingProducts = missingCanonicalRevenueCatProducts(data);
-      if (missingProducts.length > 0) {
-        setOfferingsError(
-          `Commerce catalog is incomplete. Missing ${missingProducts.length} configured product${missingProducts.length === 1 ? '' : 's'}.`,
-        );
-        return;
-      }
-
-      const packages = data.current.availablePackages;
-      const coinPacks: PackItem[] = [];
-      const aiPacks: PackItem[] = [];
-      const premiumPlans: PackItem[] = [];
-
-      for (const pkg of packages) {
-        const productId = matchingProductId(pkg, PREMIUM_PLAN_DESCRIPTIONS);
-        const desc = productId ? PREMIUM_PLAN_DESCRIPTIONS[productId] : undefined;
-        if (desc && productId) {
-          premiumPlans.push({
-            id: pkg.identifier,
-            productId,
-            package: pkg,
-            amount: desc.credits,
-            label: desc.label,
-          });
-        }
-      }
-
-      for (const pkg of packages) {
-        const productId = matchingProductId(pkg, COIN_PACK_DESCRIPTIONS);
-        const desc = productId ? COIN_PACK_DESCRIPTIONS[productId] : undefined;
-        if (desc && productId) {
-          coinPacks.push({
-            id: pkg.identifier,
-            productId,
-            package: pkg,
-            amount: desc.coins,
-            label: `${desc.coins} Coins`,
-          });
-        }
-      }
-
-      for (const pkg of packages) {
-        const productId = matchingProductId(pkg, AI_CREDIT_PACK_DESCRIPTIONS);
-        const desc = productId ? AI_CREDIT_PACK_DESCRIPTIONS[productId] : undefined;
-        if (desc && productId) {
-          aiPacks.push({
-            id: pkg.identifier,
-            productId,
-            package: pkg,
-            amount: desc.credits,
-            label: `${desc.credits} AI Credits`,
-          });
-        }
-      }
-
-      setOfferings([...premiumPlans, ...coinPacks, ...aiPacks]);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to load offerings';
-      setOfferingsError(message);
-      console.error('Failed to load RevenueCat offerings:', err);
-    } finally {
-      setLoadingOfferings(false);
+  useEffect(() => {
+    if (source !== 'sign_in_return' || pendingIntent === null) return;
+    setSelectedPremiumKey(pendingIntent.productKey);
+    if (pendingIntent.category !== 'premium') {
+      setOpenCategory(pendingIntent.category);
     }
-  };
+  }, [pendingIntent, source]);
 
-  const handlePurchase = useCallback(async (pkg: PurchasesPackage) => {
+  useEffect(() => () => {
+    if (reconciliationTimerRef.current !== null) {
+      clearTimeout(reconciliationTimerRef.current);
+    }
+  }, []);
+
+  const premiumPlans = useMemo(
+    () => productsInCategory(products, 'premium'),
+    [products],
+  );
+  const coinPacks = useMemo(
+    () => productsInCategory(products, 'stitch_coin'),
+    [products],
+  );
+  const aiCreditPacks = useMemo(
+    () => productsInCategory(products, 'ai_credit'),
+    [products],
+  );
+  const selectedPremium = premiumPlans.find(
+    (product) => product.productKey === selectedPremiumKey,
+  ) ?? premiumPlans[0];
+  const returnedProduct = pendingIntent === null
+    ? null
+    : products.find((product) => product.productKey === pendingIntent.productKey) ?? null;
+
+  const refetchCommerceState = useCallback(async () => {
+    await Promise.all([
+      queryClient.refetchQueries({ queryKey: ['economy', 'balance'] }),
+      queryClient.refetchQueries({ queryKey: ['economy', 'aiCreditBalance'] }),
+      queryClient.refetchQueries({ queryKey: ['commerce', 'membership'] }),
+    ]);
+  }, [queryClient]);
+
+  const purchase = useCallback(async (product: CommerceProduct) => {
     setPurchaseError(null);
-    setPurchasingPackageId(pkg.identifier);
-    const productKind = productKindForPackage(pkg);
-    if (productKind) {
-      await captureGameplayEvent('purchase_started', { product_kind: productKind });
-    }
+    setPurchasePending(false);
+    setPurchasingKey(product.productKey);
+    clearIntent();
+    await captureGameplayEvent('purchase_started', {
+      product_kind: product.productKind,
+      product_key: product.productKey,
+    });
     try {
-      await purchaseRevenueCatPackage(pkg, accountId);
-      if (productKind) {
-        await captureGameplayEvent('purchase_completed', { product_kind: productKind });
+      await purchaseRevenueCatPackage(product.package, accountId);
+      await captureGameplayEvent('purchase_reconciliation_pending', {
+        product_kind: product.productKind,
+        product_key: product.productKey,
+      });
+      setPurchasePending(true);
+      await refetchCommerceState();
+      if (reconciliationTimerRef.current !== null) {
+        clearTimeout(reconciliationTimerRef.current);
       }
-      setShowSuccessMessage(true);
-      await new Promise(r => setTimeout(r, 500));
-      await refetchBalances();
-      await new Promise(r => setTimeout(r, 2000));
-      await refetchBalances();
-      await new Promise(r => setTimeout(r, 2500));
-      await refetchBalances();
-    } catch (err: unknown) {
-      if (isPurchaseCancelled(err)) {
-        if (productKind) {
-          await captureGameplayEvent('purchase_cancelled', { product_kind: productKind });
-        }
+      reconciliationTimerRef.current = setTimeout(
+        () => void refetchCommerceState(),
+        2_000,
+      );
+    } catch (error: unknown) {
+      if (isPurchaseCancelled(error)) {
+        await captureGameplayEvent('purchase_cancelled', {
+          product_kind: product.productKind,
+          product_key: product.productKey,
+        });
         return;
       }
-      if (productKind) {
-        await captureGameplayEvent('purchase_failed', {
-          product_kind: productKind,
-          failure_stage: 'store',
-        });
-      }
-      const message = purchaseErrorMessage(err);
-      if (message) {
-        setPurchaseError(message);
-      } else if (err instanceof Error) {
-        setPurchaseError(err.message);
-      } else {
-        setPurchaseError('Purchase failed. Please try again.');
-      }
-      console.error('Purchase error:', err);
+      await captureGameplayEvent('purchase_failed', {
+        product_kind: product.productKind,
+        product_key: product.productKey,
+        failure_stage: 'store',
+      });
+      setPurchaseError(purchaseErrorMessage(error));
     } finally {
-      setPurchasingPackageId(null);
-      setShowSuccessMessage(false);
+      setPurchasingKey(null);
     }
-  }, [accountId, queryClient]);
+  }, [accountId, clearIntent, refetchCommerceState]);
 
-  const refetchBalances = async () => {
-    await queryClient.refetchQueries({ queryKey: ['economy', 'balance'] });
-    await queryClient.refetchQueries({ queryKey: ['economy', 'aiCreditBalance'] });
-    await queryClient.refetchQueries({ queryKey: ['commerce', 'membership'] });
-  };
+  const attemptPurchase = useCallback((product: CommerceProduct) => {
+    void captureGameplayEvent('commerce_product_selected', {
+      product_kind: product.productKind,
+      product_key: product.productKey,
+    });
 
-  const handleRestorePurchases = useCallback(async () => {
+    const originalSource = source === 'sign_in_return' && pendingIntent !== null
+      ? pendingIntent.entrySource
+      : source;
+    preserveIntent({
+      category: product.category,
+      entrySource: originalSource,
+      productKey: product.productKey,
+      productKind: product.productKind,
+    });
+
+    if (!isAccount) {
+      router.push({
+        pathname: '/(tabs)/(settings)/sign-in',
+        params: { returnTo: 'commerce' },
+      });
+      return;
+    }
+
+    void purchase(product);
+  }, [isAccount, pendingIntent, preserveIntent, purchase, router, source]);
+
+  const restorePurchases = useCallback(async () => {
+    if (!isAccount) {
+      router.push({
+        pathname: '/(tabs)/(settings)/sign-in',
+        params: { returnTo: 'commerce' },
+      });
+      return;
+    }
     setRestoringPurchases(true);
     setPurchaseError(null);
     try {
       await restoreRevenueCatPurchases(accountId);
-      setShowSuccessMessage(true);
-      await new Promise(r => setTimeout(r, 500));
-      await refetchBalances();
-      await new Promise(r => setTimeout(r, 2000));
-      await refetchBalances();
-      Alert.alert('Success', 'Purchases restored successfully');
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to restore purchases';
-      setPurchaseError(message);
-      console.error('Restore purchases error:', err);
+      await refetchCommerceState();
+      Alert.alert('Purchases restored', 'Verified purchases will appear after reconciliation.');
+    } catch (error: unknown) {
+      setPurchaseError(purchaseErrorMessage(error));
     } finally {
       setRestoringPurchases(false);
-      setShowSuccessMessage(false);
     }
-  }, [accountId, queryClient]);
-
-  if (prototypeVariant) {
-    return (
-      <>
-        <PaywallPrototype variant={prototypeVariant} />
-        <PrototypeSwitcher
-          variants={['A', 'B', 'C'] as const}
-          current={prototypeVariant}
-          names={PAYWALL_PROTOTYPE_NAMES}
-          onChange={(variant) => router.setParams({ variant })}
-        />
-      </>
-    );
-  }
-
-  const premiumPlans = offerings.filter(p => p.productId in PREMIUM_PLAN_DESCRIPTIONS);
-  const coinPacks = offerings.filter(p => p.productId in COIN_PACK_DESCRIPTIONS);
-  const aiPacks = offerings.filter(p => p.productId in AI_CREDIT_PACK_DESCRIPTIONS);
-
-  if (!isAccount) {
-    return (
-      <Screen scrollable contentContainerStyle={styles.container}>
-        <Card style={styles.catalogOnlyCard}>
-          <View style={styles.membershipTitleRow}>
-            <Ionicons name="storefront-outline" size={22} color={Theme.colors.accentRose} />
-            <Text style={styles.membershipTitle}>Browse the Commerce Store</Text>
-          </View>
-          <Text style={styles.membershipDescription}>
-            Current products and store prices are available while playing as a Guest. Sign in with a Registered Account before purchasing.
-          </Text>
-          <Button
-            title="Sign in to Purchase"
-            onPress={() => router.push('/(tabs)/(settings)/sign-in')}
-            variant="rose"
-          />
-        </Card>
-
-        {loadingOfferings ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={Theme.colors.accentRose} />
-            <Text style={styles.loadingText}>Loading current store prices...</Text>
-          </View>
-        ) : offeringsError ? (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorLabel}>Commerce catalog unavailable</Text>
-            <Text style={styles.errorDescription}>{offeringsError}</Text>
-            {revenueCatRuntime.status === 'ready' && (
-              <Button title="Try Again" onPress={loadOfferings} variant="rose" style={styles.retryButton} />
-            )}
-          </View>
-        ) : (
-          <>
-            <CatalogOnlySection title="Premium Plans" items={premiumPlans} />
-            <CatalogOnlySection title="Stitch Coin Packs" items={coinPacks} />
-            <CatalogOnlySection title="AI Credit Packs" items={aiPacks} />
-          </>
-        )}
-      </Screen>
-    );
-  }
-
-  return (
-    <Screen scrollable contentContainerStyle={styles.container}>
-      {/* Balances Section */}
-      <View style={styles.balanceSection}>
-        <View style={styles.balanceCard}>
-          <View style={styles.balanceContent}>
-            <Ionicons name="wallet-outline" size={20} color={Theme.colors.accentHoney} />
-            <View style={styles.balanceTextGroup}>
-              <Text style={styles.balanceLabel}>Stitch Coins</Text>
-              <Text style={styles.balanceValue}>{coinBalance ?? 0}</Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.balanceCard}>
-          <View style={styles.balanceContent}>
-            <Ionicons name="sparkles-outline" size={20} color={Theme.colors.accentRose} />
-            <View style={styles.balanceTextGroup}>
-              <Text style={styles.balanceLabel}>AI Credits</Text>
-              <Text style={styles.balanceValue}>{aiCreditBalance ?? 0}</Text>
-            </View>
-          </View>
-        </View>
-      </View>
-
-      <Card style={styles.membershipCard}>
-        <View style={styles.membershipHeader}>
-          <View style={styles.membershipTitleRow}>
-            <Ionicons name="diamond-outline" size={22} color={Theme.colors.accentRose} />
-            <Text style={styles.membershipTitle}>Premium Membership</Text>
-          </View>
-          {membership?.active && (
-            <View style={styles.activeBadge}>
-              <Text style={styles.activeBadgeText}>
-                {membership.lifecycle === 'trial' ? 'TRIAL' : 'ACTIVE'}
-              </Text>
-            </View>
-          )}
-        </View>
-        <Text style={styles.membershipDescription}>
-          AI Credits each paid period, one daily shared-pool Coin claim, and cosmetic themes.
-        </Text>
-        {membership?.active && (
-          <>
-            <Text style={styles.membershipMeta}>
-              {membership.plan ? `${capitalize(membership.plan)} plan` : 'Premium'}
-              {membership.expiresAt
-                ? ` · current period ends ${new Date(membership.expiresAt).toLocaleDateString()}`
-                : ''}
-            </Text>
-            <Button
-              title={
-                membership.dailyClaim.claimed
-                  ? 'Daily Coin Claimed'
-                  : membership.dailyClaim.coinsAvailable > 0
-                    ? `Claim ${membership.dailyClaim.coinsAvailable} Coins`
-                    : "Complete Today's Claim"
-              }
-              onPress={() => dailyClaim.mutate()}
-              disabled={membership.dailyClaim.claimed || dailyClaim.isPending}
-              loading={dailyClaim.isPending}
-              variant="honey"
-              style={styles.dailyClaimButton}
-            />
-            {dailyClaim.data && !dailyClaim.isPending && (
-              <Text style={styles.claimResult}>
-                {dailyClaim.data.amount > 0
-                  ? `${dailyClaim.data.amount} Coins added.`
-                  : "Today's pool was already exhausted; the claim is recorded."}
-              </Text>
-            )}
-            {dailyClaim.error && (
-              <Text style={styles.claimError}>{dailyClaim.error.message}</Text>
-            )}
-          </>
-        )}
-
-        <Text style={styles.themeTitle}>Theme Collection</Text>
-        <View style={styles.themeRow}>
-          {MEMBERSHIP_THEMES.map((candidate) => {
-            const locked = candidate.premium && !themeAccess;
-            const selected = theme.id === candidate.id;
-            return (
-              <Pressable
-                key={candidate.id}
-                onPress={() => {
-                  if (!locked) void selectTheme(candidate.id);
-                }}
-                disabled={locked}
-                style={[
-                  styles.themeOption,
-                  { backgroundColor: candidate.gridBackground },
-                  selected && styles.themeOptionSelected,
-                  locked && styles.themeOptionLocked,
-                ]}
-              >
-                <Ionicons
-                  name={locked ? 'lock-closed-outline' : 'color-palette-outline'}
-                  size={18}
-                  color={candidate.celebrationAccent}
-                />
-                <Text style={styles.themeOptionText}>{candidate.name}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
-        {!themeAccess && (
-          <Text style={styles.themeHelp}>Premium themes automatically revert to Classic Linen when access ends.</Text>
-        )}
-      </Card>
-
-      {/* Error Message */}
-      {purchaseError && (
-        <View style={styles.errorBanner}>
-          <Ionicons name="alert-circle-outline" size={18} color={Theme.colors.error} />
-          <Text style={styles.errorText}>{purchaseError}</Text>
-        </View>
-      )}
-
-      {/* Success Message */}
-      {showSuccessMessage && (
-        <View style={styles.successBanner}>
-          <Ionicons name="checkmark-circle-outline" size={18} color={Theme.colors.success} />
-          <Text style={styles.successText}>Purchase complete — your balance will update shortly</Text>
-        </View>
-      )}
-
-      {/* Loading State */}
-      {loadingOfferings ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Theme.colors.accentRose} />
-          <Text style={styles.loadingText}>Loading available packs...</Text>
-        </View>
-      ) : offeringsError ? (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorLabel}>Unable to load offerings</Text>
-          <Text style={styles.errorDescription}>{offeringsError}</Text>
-          <Button
-            title="Try Again"
-            onPress={loadOfferings}
-            variant="rose"
-            style={styles.retryButton}
-          />
-        </View>
-      ) : (
-        <>
-          {premiumPlans.length > 0 && (
-            <>
-              <Text style={styles.sectionTitle}>Premium Plans</Text>
-              <View style={styles.packsList}>
-                {premiumPlans.map((item) => {
-                  const description = PREMIUM_PLAN_DESCRIPTIONS[item.productId];
-                  return (
-                    <Card key={item.id} style={styles.packCard}>
-                      <View style={styles.packInfo}>
-                        <View style={styles.packTextGroup}>
-                          <Text style={styles.packLabel}>{item.label}</Text>
-                          <Text style={styles.packDetail}>
-                            {description.credits} AI Credits per paid period
-                            {description.trial
-                              ? ' · eligible players: 3-day trial, 0 trial credits'
-                              : ''}
-                          </Text>
-                          <Text style={styles.packPrice}>{item.package.product.priceString}</Text>
-                        </View>
-                      </View>
-                      <Button
-                        title={purchasingPackageId === item.id ? '' : 'Choose'}
-                        onPress={() => void handlePurchase(item.package)}
-                        variant="rose"
-                        loading={purchasingPackageId === item.id}
-                        disabled={purchasingPackageId !== null}
-                        style={styles.buyButton}
-                      />
-                    </Card>
-                  );
-                })}
-              </View>
-            </>
-          )}
-
-          {/* Coin Packs */}
-          {coinPacks.length > 0 && (
-            <>
-              <Text style={styles.sectionTitle}>Stitch Coin Packs</Text>
-              <View style={styles.packsList}>
-                {coinPacks.map((item) => (
-                  <Card key={item.id} style={styles.packCard}>
-                    <View style={styles.packInfo}>
-                      <View style={styles.packTextGroup}>
-                        <Text style={styles.packLabel}>{item.label}</Text>
-                        <Text style={styles.packPrice}>
-                          {item.package.product.priceString}
-                        </Text>
-                      </View>
-                    </View>
-                    <Button
-                      title={purchasingPackageId === item.id ? '' : 'Buy'}
-                      onPress={() => void handlePurchase(item.package)}
-                      variant="honey"
-                      loading={purchasingPackageId === item.id}
-                      disabled={purchasingPackageId !== null}
-                      style={styles.buyButton}
-                    />
-                  </Card>
-                ))}
-              </View>
-            </>
-          )}
-
-          {/* AI Credit Packs */}
-          {aiPacks.length > 0 && (
-            <>
-              <Text style={styles.sectionTitle}>AI Credit Packs</Text>
-              <View style={styles.packsList}>
-                {aiPacks.map((item) => (
-                  <Card key={item.id} style={styles.packCard}>
-                    <View style={styles.packInfo}>
-                      <View style={styles.packTextGroup}>
-                        <Text style={styles.packLabel}>{item.label}</Text>
-                        <Text style={styles.packPrice}>
-                          {item.package.product.priceString}
-                        </Text>
-                      </View>
-                    </View>
-                    <Button
-                      title={purchasingPackageId === item.id ? '' : 'Buy'}
-                      onPress={() => void handlePurchase(item.package)}
-                      variant="rose"
-                      loading={purchasingPackageId === item.id}
-                      disabled={purchasingPackageId !== null}
-                      style={styles.buyButton}
-                    />
-                  </Card>
-                ))}
-              </View>
-            </>
-          )}
-
-          {/* Restore Purchases */}
-          <View style={styles.restoreSection}>
-            <Button
-              title={restoringPurchases ? '' : 'Restore Previous Purchases'}
-              onPress={handleRestorePurchases}
-              loading={restoringPurchases}
-              disabled={restoringPurchases}
-              variant="secondary"
-              style={styles.restoreButton}
-            />
-            <Text style={styles.restoreHelpText}>
-              If you've purchased on another device or after reinstalling, tap here to restore your purchases.
-            </Text>
-          </View>
-        </>
-      )}
-    </Screen>
-  );
-}
-
-function CatalogOnlySection({ title, items }: { title: string; items: PackItem[] }) {
-  if (items.length === 0) return null;
+  }, [accountId, isAccount, refetchCommerceState, router]);
 
   return (
     <>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      <View style={styles.packsList}>
-        {items.map((item) => (
-          <Card key={item.id} style={styles.packCard}>
-            <View style={styles.packInfo}>
-              <View style={styles.packTextGroup}>
-                <Text style={styles.packLabel}>{item.label}</Text>
-                <Text style={styles.packPrice}>{item.package.product.priceString}</Text>
-              </View>
+      <Screen scrollable contentContainerStyle={styles.container}>
+        <View style={styles.titleRow} testID="commerce-store-screen">
+          <Pressable
+            accessibilityLabel="Back"
+            accessibilityRole="button"
+            onPress={() => router.back()}
+            style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
+          >
+            <Ionicons name="arrow-back" size={22} color={Theme.colors.accentTeal} />
+          </Pressable>
+          <View style={styles.titleCopy}>
+            <Text style={styles.title}>Commerce Store</Text>
+            <Text style={styles.subtitle}>Membership and one-time top-ups</Text>
+          </View>
+          <View style={styles.walletSummary}>
+            <WalletValue icon="leaf" value={coinBalance ?? 0} color={Theme.colors.accentHoney} />
+            <WalletValue icon="sparkles" value={isAccount ? aiCreditBalance ?? 0 : 0} color={Theme.colors.accentRose} />
+          </View>
+        </View>
+
+        {source === 'sign_in_return' && returnedProduct !== null && (
+          <View style={styles.returnNotice} testID="sign-in-return-notice">
+            <Ionicons name="checkmark-circle" size={20} color={Theme.colors.success} />
+            <Text style={styles.returnNoticeText}>
+              You’re signed in. {returnedProduct.label} is still selected. Review it and tap Buy when ready.
+            </Text>
+          </View>
+        )}
+
+        <View style={styles.premiumHero}>
+          <View style={styles.premiumHeroTop}>
+            <View style={styles.premiumIcon}>
+              <Ionicons name="diamond-outline" size={24} color={Theme.colors.accentRose} />
             </View>
-            <View style={styles.catalogOnlyBadge}>
-              <Ionicons name="eye-outline" size={14} color={Theme.colors.textSecondary} />
-              <Text style={styles.catalogOnlyBadgeText}>Browse only</Text>
+            <View style={styles.premiumHeroCopy}>
+              <Text style={styles.eyebrow}>PREMIUM MEMBERSHIP</Text>
+              <Text style={styles.premiumTitle}>Create more. Collect a little reward every day.</Text>
             </View>
+          </View>
+          <Text style={styles.premiumBody}>
+            AI Credits each paid period, Premium themes, and a daily Stitch Coin claim.
+          </Text>
+          <View style={styles.benefitRow}>
+            <Benefit icon="sparkles-outline" label="AI Credits" />
+            <Benefit icon="calendar-outline" label="Daily Coins" />
+            <Benefit icon="color-palette-outline" label="Themes" />
+          </View>
+          <Text style={styles.membershipStatus}>
+            {membership?.active
+              ? `${membership.lifecycle === 'trial' ? 'Trial' : 'Active'}${membership.plan ? ` · ${capitalize(membership.plan)}` : ''}`
+              : isAccount
+                ? 'No active membership'
+                : 'Browse plans as a Guest Player'}
+          </Text>
+        </View>
+
+        {isAccount && membership?.active && (
+          <MembershipBenefits
+            membership={membership}
+            claimPending={dailyClaim.isPending}
+            claimError={dailyClaim.error?.message ?? null}
+            onClaim={() => dailyClaim.mutate()}
+            selectedThemeId={theme.id}
+            themeAccess={themeAccess}
+            onSelectTheme={(themeId) => void selectTheme(themeId)}
+          />
+        )}
+
+        {purchaseError !== null && (
+          <View style={styles.errorBanner}>
+            <Ionicons name="alert-circle-outline" size={18} color={Theme.colors.error} />
+            <Text style={styles.errorText}>{purchaseError}</Text>
+          </View>
+        )}
+        {purchasePending && (
+          <View style={styles.pendingBanner}>
+            <Ionicons name="time-outline" size={18} color={Theme.colors.accentTeal} />
+            <Text style={styles.pendingText}>
+              Purchase received. Wallet and membership update after server verification.
+            </Text>
+          </View>
+        )}
+
+        {loadingStore ? (
+          <View style={styles.storeState}>
+            <ActivityIndicator size="large" color={Theme.colors.accentRose} />
+            <Text style={styles.storeStateBody}>Loading current store prices…</Text>
+          </View>
+        ) : storeUnavailable ? (
+          <Card style={styles.storeState}>
+            <Ionicons name="cloud-offline-outline" size={28} color={Theme.colors.textSecondary} />
+            <Text style={styles.storeStateTitle}>Store temporarily unavailable</Text>
+            <Text style={styles.storeStateBody}>
+              Your wallet and membership information are still available.
+            </Text>
+            <Button
+              title="Retry"
+              onPress={() => void loadStore()}
+              variant="rose"
+              style={styles.retryButton}
+            />
           </Card>
-        ))}
-      </View>
+        ) : (
+          <>
+            <View style={styles.planSection}>
+              <Text style={styles.sectionTitle}>Choose a Premium plan</Text>
+              <View style={styles.planRow}>
+                {premiumPlans.map((plan) => {
+                  const selected = plan.productKey === selectedPremium?.productKey;
+                  return (
+                    <Pressable
+                      key={plan.id}
+                      accessibilityRole="button"
+                      onPress={() => {
+                        setSelectedPremiumKey(plan.productKey);
+                        void captureGameplayEvent('commerce_product_selected', {
+                          product_kind: plan.productKind,
+                          product_key: plan.productKey,
+                        });
+                      }}
+                      style={({ pressed }) => [
+                        styles.planCard,
+                        selected && styles.planCardSelected,
+                        pressed && styles.pressed,
+                      ]}
+                      testID={`premium-${plan.productKey}`}
+                    >
+                      {plan.productKey === 'premium_annual' && (
+                        <Text style={styles.bestValue}>BEST VALUE</Text>
+                      )}
+                      <Text style={styles.planName}>{plan.label}</Text>
+                      <Text style={styles.planPrice}>{plan.priceString}</Text>
+                      <Text style={styles.planCredits}>{plan.credits} credits / paid period</Text>
+                      {plan.trial && <Text style={styles.trial}>3-day trial if eligible</Text>}
+                    </Pressable>
+                  );
+                })}
+              </View>
+              {selectedPremium !== undefined && (
+                <Button
+                  title={isAccount ? `Choose ${selectedPremium.label}` : `Sign in for ${selectedPremium.label}`}
+                  onPress={() => attemptPurchase(selectedPremium)}
+                  loading={purchasingKey === selectedPremium.productKey}
+                  disabled={purchasingKey !== null}
+                  variant="rose"
+                />
+              )}
+            </View>
+
+            <Text style={styles.sectionTitle}>One-time packs</Text>
+            <CategoryCard
+              icon="leaf-outline"
+              title="Stitch Coin Packs"
+              detail="300 · 900 · 2,000 Coins"
+              price={coinPacks[0]?.priceString}
+              color={Theme.colors.accentHoney}
+              onPress={() => setOpenCategory('stitch_coin')}
+              testID="open-stitch-coin-packs"
+            />
+            <CategoryCard
+              icon="sparkles-outline"
+              title="AI Credit Packs"
+              detail="5 · 20 · 50 Credits"
+              price={aiCreditPacks[0]?.priceString}
+              color={Theme.colors.accentRose}
+              onPress={() => setOpenCategory('ai_credit')}
+              testID="open-ai-credit-packs"
+            />
+
+            <Pressable
+              accessibilityRole="button"
+              disabled={restoringPurchases}
+              onPress={() => void restorePurchases()}
+              style={({ pressed }) => [styles.restoreButton, pressed && styles.pressed]}
+            >
+              {restoringPurchases ? (
+                <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
+              ) : (
+                <Text style={styles.restoreText}>Restore purchases</Text>
+              )}
+            </Pressable>
+          </>
+        )}
+      </Screen>
+
+      <ProductSheet
+        category={openCategory}
+        products={openCategory === 'stitch_coin' ? coinPacks : aiCreditPacks}
+        pendingProductKey={source === 'sign_in_return' ? pendingIntent?.productKey ?? null : null}
+        purchasingKey={purchasingKey}
+        onClose={() => setOpenCategory(null)}
+        onPurchase={attemptPurchase}
+      />
     </>
   );
 }
 
-function matchingProductId(
-  pkg: PurchasesPackage,
-  catalog: Readonly<Record<string, unknown>>,
-): string | null {
-  return [pkg.identifier, pkg.product.identifier]
-    .map(storeProductKey)
-    .find((candidate) => candidate in catalog) ?? null;
+function WalletValue({
+  icon,
+  value,
+  color,
+}: {
+  icon: 'leaf' | 'sparkles';
+  value: number;
+  color: string;
+}) {
+  return (
+    <View style={styles.walletValue}>
+      <Ionicons name={icon} size={13} color={color} />
+      <Text style={styles.walletValueText}>{value.toLocaleString()}</Text>
+    </View>
+  );
 }
 
-// Google Play identifies a subscription as `productId:basePlanId`; the catalogs
-// are keyed by the bare identifier shared with Apple (ADR-0043). Apple
-// identifiers never contain a colon, so this is a no-op for them.
-function storeProductKey(storeIdentifier: string): string {
-  const separator = storeIdentifier.indexOf(':');
-  return separator === -1 ? storeIdentifier : storeIdentifier.slice(0, separator);
+function Benefit({ icon, label }: { icon: React.ComponentProps<typeof Ionicons>['name']; label: string }) {
+  return (
+    <View style={styles.benefit}>
+      <Ionicons name={icon} size={16} color={Theme.colors.textLight} />
+      <Text style={styles.benefitText}>{label}</Text>
+    </View>
+  );
 }
 
-function isPaywallPrototypeVariant(value: string | undefined): value is PaywallPrototypeVariant {
-  return value === 'A' || value === 'B' || value === 'C';
+function MembershipBenefits({
+  membership,
+  claimPending,
+  claimError,
+  onClaim,
+  selectedThemeId,
+  themeAccess,
+  onSelectTheme,
+}: {
+  membership: NonNullable<ReturnType<typeof useMembership>['data']>;
+  claimPending: boolean;
+  claimError: string | null;
+  onClaim: () => void;
+  selectedThemeId: MembershipThemeId;
+  themeAccess: boolean;
+  onSelectTheme: (themeId: MembershipThemeId) => void;
+}) {
+  return (
+    <Card style={styles.benefitsCard}>
+      <View style={styles.benefitsHeader}>
+        <Text style={styles.benefitsTitle}>Your Premium benefits</Text>
+        {membership.expiresAt && (
+          <Text style={styles.benefitsMeta}>
+            Period ends {new Date(membership.expiresAt).toLocaleDateString()}
+          </Text>
+        )}
+      </View>
+      <Button
+        title={membership.dailyClaim.claimed
+          ? 'Daily Coin Claimed'
+          : `Claim ${membership.dailyClaim.coinsAvailable} Coins`}
+        onPress={onClaim}
+        disabled={membership.dailyClaim.claimed || membership.dailyClaim.coinsAvailable === 0}
+        loading={claimPending}
+        variant="honey"
+      />
+      {claimError && <Text style={styles.claimError}>{claimError}</Text>}
+      <Text style={styles.themeTitle}>Theme Collection</Text>
+      <View style={styles.themeRow}>
+        {MEMBERSHIP_THEMES.map((candidate) => {
+          const locked = candidate.premium && !themeAccess;
+          return (
+            <Pressable
+              key={candidate.id}
+              disabled={locked}
+              onPress={() => onSelectTheme(candidate.id)}
+              style={[
+                styles.themeOption,
+                { backgroundColor: candidate.gridBackground },
+                selectedThemeId === candidate.id && styles.themeOptionSelected,
+                locked && styles.themeOptionLocked,
+              ]}
+            >
+              <Ionicons
+                name={locked ? 'lock-closed-outline' : 'color-palette-outline'}
+                size={17}
+                color={candidate.celebrationAccent}
+              />
+              <Text style={styles.themeOptionText}>{candidate.name}</Text>
+            </Pressable>
+          );
+        })}
+      </View>
+    </Card>
+  );
+}
+
+function CategoryCard({
+  icon,
+  title,
+  detail,
+  price,
+  color,
+  onPress,
+  testID,
+}: {
+  icon: React.ComponentProps<typeof Ionicons>['name'];
+  title: string;
+  detail: string;
+  price: string | undefined;
+  color: string;
+  onPress: () => void;
+  testID: string;
+}) {
+  return (
+    <Card onPress={onPress} style={styles.categoryCard}>
+      <View testID={testID} style={styles.categoryContent}>
+        <View style={[styles.categoryIcon, { backgroundColor: `${color}20` }]}>
+          <Ionicons name={icon} size={24} color={color} />
+        </View>
+        <View style={styles.categoryCopy}>
+          <Text style={styles.categoryTitle}>{title}</Text>
+          <Text style={styles.categoryDetail}>{detail}</Text>
+          {price && <Text style={styles.categoryPrice}>From {price}</Text>}
+        </View>
+        <Ionicons name="chevron-forward" size={20} color={Theme.colors.textSecondary} />
+      </View>
+    </Card>
+  );
+}
+
+function ProductSheet({
+  category,
+  products,
+  pendingProductKey,
+  purchasingKey,
+  onClose,
+  onPurchase,
+}: {
+  category: CommerceCategory | null;
+  products: readonly CommerceProduct[];
+  pendingProductKey: string | null;
+  purchasingKey: string | null;
+  onClose: () => void;
+  onPurchase: (product: CommerceProduct) => void;
+}) {
+  const title = category === 'stitch_coin' ? 'Stitch Coin Packs' : 'AI Credit Packs';
+  return (
+    <Modal
+      animationType="slide"
+      onRequestClose={onClose}
+      transparent
+      visible={category === 'stitch_coin' || category === 'ai_credit'}
+    >
+      <View style={styles.modalRoot}>
+        <Pressable
+          accessibilityLabel="Close product sheet"
+          onPress={onClose}
+          style={styles.modalBackdrop}
+        />
+        <View accessibilityViewIsModal style={styles.sheet}>
+          <View style={styles.sheetHandle} />
+          <View style={styles.sheetHeader}>
+            <View>
+              <Text style={styles.sheetTitle}>{title}</Text>
+              <Text style={styles.sheetSubtitle}>Current prices from the app store</Text>
+            </View>
+            <Pressable accessibilityLabel="Close" onPress={onClose} style={styles.sheetClose}>
+              <Ionicons name="close" size={22} color={Theme.colors.textPrimary} />
+            </Pressable>
+          </View>
+          <View style={styles.sheetProducts}>
+            {products.map((product) => (
+              <View key={product.id} style={styles.sheetProduct}>
+                <View style={styles.sheetProductCopy}>
+                  <Text style={styles.sheetProductTitle}>{product.label}</Text>
+                  <Text style={styles.sheetProductPrice}>{product.priceString}</Text>
+                  {pendingProductKey === product.productKey && (
+                    <Text style={styles.preservedLabel}>Selected before sign-in</Text>
+                  )}
+                </View>
+                <Button
+                  title="Buy"
+                  onPress={() => onPurchase(product)}
+                  loading={purchasingKey === product.productKey}
+                  disabled={purchasingKey !== null}
+                  variant={category === 'stitch_coin' ? 'honey' : 'rose'}
+                  style={styles.sheetBuyButton}
+                />
+              </View>
+            ))}
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+function isPurchaseCancelled(error: unknown): boolean {
+  return typeof error === 'object'
+    && error !== null
+    && 'userCancelled' in error
+    && error.userCancelled === true;
+}
+
+function purchaseErrorMessage(error: unknown): string {
+  return error instanceof Error && error.message
+    ? error.message
+    : 'Purchase failed. Please try again.';
 }
 
 function capitalize(value: string): string {
@@ -649,268 +657,348 @@ function capitalize(value: string): string {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: Theme.spacing.lg,
-    paddingTop: Theme.spacing.xl,
+    gap: Theme.spacing.lg,
     paddingBottom: Theme.spacing.xxl,
+    paddingHorizontal: Theme.spacing.lg,
+    paddingTop: Theme.spacing.md,
   },
-  catalogOnlyCard: {
-    gap: Theme.spacing.md,
-    marginBottom: Theme.spacing.xl,
-  },
-  catalogOnlyBadge: {
+  titleRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: Theme.spacing.xs,
+    gap: Theme.spacing.sm,
   },
-  catalogOnlyBadgeText: {
-    color: Theme.colors.textSecondary,
-    fontSize: Theme.typography.sizes.xs,
-    fontWeight: Theme.typography.weights.medium,
-  },
-  balanceSection: {
-    gap: Theme.spacing.md,
-    marginBottom: Theme.spacing.xl,
-  },
-  balanceCard: {
+  backButton: {
+    alignItems: 'center',
     backgroundColor: Theme.colors.card,
-    borderRadius: Theme.radii.lg,
-    borderWidth: 1,
     borderColor: Theme.colors.border,
-    padding: Theme.spacing.lg,
-  },
-  balanceContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Theme.spacing.md,
-  },
-  balanceTextGroup: {
-    flex: 1,
-  },
-  balanceLabel: {
-    fontSize: Theme.typography.sizes.xs,
-    color: Theme.colors.textSecondary,
-    fontWeight: Theme.typography.weights.medium,
-  },
-  balanceValue: {
-    fontSize: Theme.typography.sizes.lg,
-    fontWeight: Theme.typography.weights.bold,
-    color: Theme.colors.textPrimary,
-    marginTop: Theme.spacing.xs,
-  },
-  membershipCard: {
-    marginBottom: Theme.spacing.lg,
-    gap: Theme.spacing.sm,
-  },
-  membershipHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  membershipTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Theme.spacing.sm,
-  },
-  membershipTitle: {
-    fontSize: Theme.typography.sizes.lg,
-    fontWeight: Theme.typography.weights.bold,
-    color: Theme.colors.textPrimary,
-  },
-  activeBadge: {
-    backgroundColor: '#EDF7EF',
     borderRadius: Theme.radii.full,
-    paddingHorizontal: Theme.spacing.sm,
-    paddingVertical: Theme.spacing.xs,
-  },
-  activeBadgeText: {
-    fontSize: 10,
-    fontWeight: Theme.typography.weights.bold,
-    color: Theme.colors.success,
-  },
-  membershipDescription: {
-    fontSize: Theme.typography.sizes.sm,
-    color: Theme.colors.textSecondary,
-    lineHeight: 20,
-  },
-  membershipMeta: {
-    fontSize: Theme.typography.sizes.xs,
-    color: Theme.colors.textPrimary,
-    fontWeight: Theme.typography.weights.semibold,
-  },
-  dailyClaimButton: {
-    marginTop: Theme.spacing.sm,
-  },
-  claimResult: {
-    fontSize: Theme.typography.sizes.xs,
-    color: Theme.colors.success,
-    textAlign: 'center',
-  },
-  claimError: {
-    fontSize: Theme.typography.sizes.xs,
-    color: Theme.colors.error,
-    textAlign: 'center',
-  },
-  themeTitle: {
-    fontSize: Theme.typography.sizes.sm,
-    fontWeight: Theme.typography.weights.bold,
-    color: Theme.colors.textPrimary,
-    marginTop: Theme.spacing.md,
-  },
-  themeRow: {
-    flexDirection: 'row',
-    gap: Theme.spacing.sm,
-  },
-  themeOption: {
-    flex: 1,
-    minHeight: 72,
-    alignItems: 'center',
+    borderWidth: 1,
+    height: 42,
     justifyContent: 'center',
-    gap: Theme.spacing.xs,
-    borderWidth: 1,
-    borderColor: Theme.colors.border,
-    borderRadius: Theme.radii.md,
-    padding: Theme.spacing.xs,
+    width: 42,
   },
-  themeOptionSelected: {
-    borderWidth: 2,
-    borderColor: Theme.colors.accentRose,
-  },
-  themeOptionLocked: {
-    opacity: 0.5,
-  },
-  themeOptionText: {
-    fontSize: 10,
-    fontWeight: Theme.typography.weights.semibold,
+  titleCopy: { flex: 1 },
+  title: {
     color: Theme.colors.textPrimary,
-    textAlign: 'center',
+    fontSize: Theme.typography.sizes.xl,
+    fontWeight: Theme.typography.weights.bold,
   },
-  themeHelp: {
-    fontSize: Theme.typography.sizes.xs,
+  subtitle: {
     color: Theme.colors.textSecondary,
-    lineHeight: 16,
+    fontSize: Theme.typography.sizes.xs,
+    marginTop: 2,
   },
-  errorBanner: {
-    flexDirection: 'row',
+  walletSummary: {
+    alignItems: 'flex-end',
+    gap: Theme.spacing.xs,
+  },
+  walletValue: {
     alignItems: 'center',
-    gap: Theme.spacing.sm,
-    backgroundColor: '#FDF2F2',
+    backgroundColor: Theme.colors.card,
+    borderColor: Theme.colors.border,
+    borderRadius: Theme.radii.full,
     borderWidth: 1,
-    borderColor: '#FBD5D5',
-    borderRadius: Theme.radii.md,
-    padding: Theme.spacing.md,
-    marginBottom: Theme.spacing.lg,
-  },
-  errorText: {
-    flex: 1,
-    fontSize: Theme.typography.sizes.sm,
-    color: Theme.colors.error,
-    fontWeight: Theme.typography.weights.medium,
-  },
-  successBanner: {
     flexDirection: 'row',
+    gap: Theme.spacing.xs,
+    minWidth: 60,
+    paddingHorizontal: Theme.spacing.sm,
+    paddingVertical: 5,
+  },
+  walletValueText: {
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.xs,
+    fontWeight: Theme.typography.weights.bold,
+  },
+  returnNotice: {
     alignItems: 'center',
-    gap: Theme.spacing.sm,
     backgroundColor: '#F0F7F0',
-    borderWidth: 1,
     borderColor: '#C8E6C9',
     borderRadius: Theme.radii.md,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: Theme.spacing.sm,
     padding: Theme.spacing.md,
-    marginBottom: Theme.spacing.lg,
   },
-  successText: {
+  returnNoticeText: {
+    color: Theme.colors.textPrimary,
     flex: 1,
     fontSize: Theme.typography.sizes.sm,
-    color: Theme.colors.success,
-    fontWeight: Theme.typography.weights.medium,
+    lineHeight: 19,
   },
-  loadingContainer: {
+  premiumHero: {
+    backgroundColor: Theme.colors.accentTeal,
+    borderRadius: Theme.radii.xl,
+    gap: Theme.spacing.md,
+    padding: Theme.spacing.xl,
+    shadowColor: Theme.colors.accentTeal,
+    shadowOffset: { height: 6, width: 0 },
+    shadowOpacity: 0.18,
+    shadowRadius: 14,
+    elevation: 5,
+  },
+  premiumHeroTop: {
+    alignItems: 'flex-start',
+    flexDirection: 'row',
+    gap: Theme.spacing.md,
+  },
+  premiumIcon: {
     alignItems: 'center',
+    backgroundColor: Theme.colors.textLight,
+    borderRadius: Theme.radii.full,
+    height: 44,
     justifyContent: 'center',
+    width: 44,
+  },
+  premiumHeroCopy: { flex: 1 },
+  eyebrow: {
+    color: '#F3CAD0',
+    fontSize: 11,
+    fontWeight: Theme.typography.weights.bold,
+    letterSpacing: 1.2,
+  },
+  premiumTitle: {
+    color: Theme.colors.textLight,
+    fontSize: Theme.typography.sizes.xxl,
+    fontWeight: Theme.typography.weights.bold,
+    lineHeight: 30,
+    marginTop: Theme.spacing.xs,
+  },
+  premiumBody: {
+    color: '#E8F1EF',
+    fontSize: Theme.typography.sizes.sm,
+    lineHeight: 20,
+  },
+  benefitRow: { flexDirection: 'row', gap: Theme.spacing.sm },
+  benefit: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderRadius: Theme.radii.full,
+    flexDirection: 'row',
+    gap: Theme.spacing.xs,
+    paddingHorizontal: Theme.spacing.sm,
+    paddingVertical: 7,
+  },
+  benefitText: {
+    color: Theme.colors.textLight,
+    fontSize: 11,
+    fontWeight: Theme.typography.weights.semibold,
+  },
+  membershipStatus: {
+    color: '#F6E7C8',
+    fontSize: Theme.typography.sizes.xs,
+    fontWeight: Theme.typography.weights.semibold,
+  },
+  benefitsCard: { gap: Theme.spacing.md },
+  benefitsHeader: { gap: Theme.spacing.xs },
+  benefitsTitle: {
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.md,
+    fontWeight: Theme.typography.weights.bold,
+  },
+  benefitsMeta: { color: Theme.colors.textSecondary, fontSize: Theme.typography.sizes.xs },
+  claimError: { color: Theme.colors.error, fontSize: Theme.typography.sizes.xs },
+  themeTitle: {
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.sm,
+    fontWeight: Theme.typography.weights.bold,
+  },
+  themeRow: { flexDirection: 'row', gap: Theme.spacing.sm },
+  themeOption: {
+    alignItems: 'center',
+    borderColor: Theme.colors.border,
+    borderRadius: Theme.radii.md,
+    borderWidth: 1,
+    flex: 1,
+    gap: Theme.spacing.xs,
+    justifyContent: 'center',
+    minHeight: 68,
+    padding: Theme.spacing.xs,
+  },
+  themeOptionSelected: { borderColor: Theme.colors.accentRose, borderWidth: 2 },
+  themeOptionLocked: { opacity: 0.5 },
+  themeOptionText: {
+    color: Theme.colors.textPrimary,
+    fontSize: 10,
+    fontWeight: Theme.typography.weights.semibold,
+    textAlign: 'center',
+  },
+  errorBanner: {
+    alignItems: 'center',
+    backgroundColor: '#FDF2F2',
+    borderColor: '#FBD5D5',
+    borderRadius: Theme.radii.md,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: Theme.spacing.sm,
+    padding: Theme.spacing.md,
+  },
+  errorText: { color: Theme.colors.error, flex: 1, fontSize: Theme.typography.sizes.sm },
+  pendingBanner: {
+    alignItems: 'center',
+    backgroundColor: '#EEF5F4',
+    borderColor: '#BCD2CF',
+    borderRadius: Theme.radii.md,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: Theme.spacing.sm,
+    padding: Theme.spacing.md,
+  },
+  pendingText: { color: Theme.colors.textPrimary, flex: 1, fontSize: Theme.typography.sizes.sm },
+  storeState: {
+    alignItems: 'center',
+    gap: Theme.spacing.md,
     paddingVertical: Theme.spacing.xxl,
   },
-  loadingText: {
-    marginTop: Theme.spacing.md,
-    fontSize: Theme.typography.sizes.sm,
-    color: Theme.colors.textSecondary,
-  },
-  errorContainer: {
-    backgroundColor: Theme.colors.card,
-    borderRadius: Theme.radii.lg,
-    borderWidth: 1,
-    borderColor: Theme.colors.border,
-    padding: Theme.spacing.lg,
-    alignItems: 'center',
-    marginVertical: Theme.spacing.md,
-  },
-  errorLabel: {
-    fontSize: Theme.typography.sizes.md,
-    fontWeight: Theme.typography.weights.bold,
+  storeStateTitle: {
     color: Theme.colors.textPrimary,
-    marginBottom: Theme.spacing.sm,
-  },
-  errorDescription: {
-    fontSize: Theme.typography.sizes.sm,
-    color: Theme.colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: Theme.spacing.lg,
-  },
-  retryButton: {
-    minWidth: 140,
-  },
-  sectionTitle: {
     fontSize: Theme.typography.sizes.lg,
     fontWeight: Theme.typography.weights.bold,
+  },
+  storeStateBody: {
+    color: Theme.colors.textSecondary,
+    fontSize: Theme.typography.sizes.sm,
+    textAlign: 'center',
+  },
+  retryButton: { minWidth: 140 },
+  planSection: { gap: Theme.spacing.md },
+  sectionTitle: {
     color: Theme.colors.textPrimary,
-    marginTop: Theme.spacing.lg,
-    marginBottom: Theme.spacing.md,
+    fontSize: Theme.typography.sizes.lg,
+    fontWeight: Theme.typography.weights.bold,
   },
-  packsList: {
-    gap: Theme.spacing.md,
-    marginBottom: Theme.spacing.lg,
-  },
-  packCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Theme.spacing.lg,
-    paddingVertical: Theme.spacing.md,
-  },
-  packInfo: {
+  planRow: { flexDirection: 'row', gap: Theme.spacing.sm },
+  planCard: {
+    backgroundColor: Theme.colors.card,
+    borderColor: Theme.colors.border,
+    borderRadius: Theme.radii.md,
+    borderWidth: 1,
     flex: 1,
+    minHeight: 132,
+    padding: Theme.spacing.sm,
   },
-  packTextGroup: {
-    gap: Theme.spacing.xs,
+  planCardSelected: { borderColor: Theme.colors.accentRose, borderWidth: 2 },
+  bestValue: {
+    color: Theme.colors.accentRose,
+    fontSize: 9,
+    fontWeight: Theme.typography.weights.bold,
+    marginBottom: Theme.spacing.xs,
   },
-  packLabel: {
+  planName: {
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.sm,
+    fontWeight: Theme.typography.weights.bold,
+  },
+  planPrice: {
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.md,
+    fontWeight: Theme.typography.weights.bold,
+    marginTop: Theme.spacing.sm,
+  },
+  planCredits: {
+    color: Theme.colors.textSecondary,
+    fontSize: 10,
+    lineHeight: 14,
+    marginTop: Theme.spacing.xs,
+  },
+  trial: { color: Theme.colors.success, fontSize: 10, marginTop: Theme.spacing.xs },
+  categoryCard: { padding: 0 },
+  categoryContent: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: Theme.spacing.md,
+    padding: Theme.spacing.lg,
+  },
+  categoryIcon: {
+    alignItems: 'center',
+    borderRadius: Theme.radii.md,
+    height: 48,
+    justifyContent: 'center',
+    width: 48,
+  },
+  categoryCopy: { flex: 1, gap: 2 },
+  categoryTitle: {
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.md,
+    fontWeight: Theme.typography.weights.bold,
+  },
+  categoryDetail: { color: Theme.colors.textSecondary, fontSize: Theme.typography.sizes.xs },
+  categoryPrice: {
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.xs,
+    fontWeight: Theme.typography.weights.semibold,
+    marginTop: Theme.spacing.xs,
+  },
+  restoreButton: { alignItems: 'center', paddingVertical: Theme.spacing.md },
+  restoreText: {
+    color: Theme.colors.accentTeal,
+    fontSize: Theme.typography.sizes.sm,
+    fontWeight: Theme.typography.weights.semibold,
+  },
+  modalRoot: { flex: 1, justifyContent: 'flex-end' },
+  modalBackdrop: { backgroundColor: 'rgba(25, 24, 22, 0.42)', flex: 1 },
+  sheet: {
+    backgroundColor: Theme.colors.background,
+    borderTopLeftRadius: Theme.radii.xl,
+    borderTopRightRadius: Theme.radii.xl,
+    gap: Theme.spacing.lg,
+    paddingBottom: Theme.spacing.xxl,
+    paddingHorizontal: Theme.spacing.lg,
+    paddingTop: Theme.spacing.sm,
+  },
+  sheetHandle: {
+    alignSelf: 'center',
+    backgroundColor: Theme.colors.border,
+    borderRadius: Theme.radii.full,
+    height: 4,
+    width: 44,
+  },
+  sheetHeader: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  sheetTitle: {
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.xl,
+    fontWeight: Theme.typography.weights.bold,
+  },
+  sheetSubtitle: {
+    color: Theme.colors.textSecondary,
+    fontSize: Theme.typography.sizes.xs,
+    marginTop: Theme.spacing.xs,
+  },
+  sheetClose: {
+    alignItems: 'center',
+    backgroundColor: Theme.colors.card,
+    borderRadius: Theme.radii.full,
+    height: 40,
+    justifyContent: 'center',
+    width: 40,
+  },
+  sheetProducts: { gap: Theme.spacing.sm },
+  sheetProduct: {
+    alignItems: 'center',
+    backgroundColor: Theme.colors.card,
+    borderColor: Theme.colors.border,
+    borderRadius: Theme.radii.md,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: Theme.spacing.md,
+    padding: Theme.spacing.md,
+  },
+  sheetProductCopy: { flex: 1, gap: 2 },
+  sheetProductTitle: {
+    color: Theme.colors.textPrimary,
     fontSize: Theme.typography.sizes.md,
     fontWeight: Theme.typography.weights.semibold,
-    color: Theme.colors.textPrimary,
   },
-  packDetail: {
+  sheetProductPrice: { color: Theme.colors.textSecondary, fontSize: Theme.typography.sizes.sm },
+  preservedLabel: {
+    color: Theme.colors.success,
     fontSize: Theme.typography.sizes.xs,
-    color: Theme.colors.textSecondary,
-    lineHeight: 16,
+    fontWeight: Theme.typography.weights.semibold,
+    marginTop: Theme.spacing.xs,
   },
-  packPrice: {
-    fontSize: Theme.typography.sizes.sm,
-    color: Theme.colors.textSecondary,
-    fontWeight: Theme.typography.weights.medium,
-  },
-  buyButton: {
-    width: 80,
-    height: 40,
-  },
-  restoreSection: {
-    marginTop: Theme.spacing.xl,
-    marginBottom: Theme.spacing.lg,
-  },
-  restoreButton: {
-    marginBottom: Theme.spacing.md,
-  },
-  restoreHelpText: {
-    fontSize: Theme.typography.sizes.xs,
-    color: Theme.colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 16,
-  },
+  sheetBuyButton: { width: 84 },
+  pressed: { opacity: 0.78 },
 });

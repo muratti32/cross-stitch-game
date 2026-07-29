@@ -33,7 +33,34 @@ describe('Gameplay event schema', () => {
     expect(() =>
       validateGameplayEventPayload('purchase_failed', {
         product_kind: 'ai_credit_pack',
+        product_key: 'ai_credit_pack_5',
       }),
     ).toThrow(BadRequestException);
+  });
+
+  it('accepts Commerce Store source and closed product key payloads', () => {
+    expect(validateGameplayEventPayload('commerce_store_viewed', {
+      source: 'sign_in_return',
+    })).toEqual({
+      kind: 'commerce_store_viewed',
+      payload: { source: 'sign_in_return' },
+    });
+    expect(validateGameplayEventPayload('commerce_product_selected', {
+      product_kind: 'stitch_coin_pack',
+      product_key: 'coin_pack_900',
+    })).toEqual({
+      kind: 'commerce_product_selected',
+      payload: {
+        product_kind: 'stitch_coin_pack',
+        product_key: 'coin_pack_900',
+      },
+    });
+  });
+
+  it('rejects a product key outside its documented product kind', () => {
+    expect(() => validateGameplayEventPayload('commerce_product_selected', {
+      product_kind: 'premium_membership',
+      product_key: 'coin_pack_300',
+    })).toThrow(BadRequestException);
   });
 });

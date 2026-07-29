@@ -11,10 +11,12 @@ import {
   signInWithGoogleSso,
 } from '@/identity/firebaseSso';
 import { isFirebaseSsoConfigured } from '@/config';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { isCommerceReturnTarget } from '@/commerce/commerceIntent';
 
 export default function SignInScreen() {
+  const params = useLocalSearchParams<{ returnTo?: string }>();
   const [step, setStep] = useState<'email' | 'code'>('email');
   const [email, setEmail] = useState<string>('');
   const [code, setCode] = useState<string>('');
@@ -38,6 +40,17 @@ export default function SignInScreen() {
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail);
   const validCode = code.length === 6;
 
+  const finishSignIn = () => {
+    if (isCommerceReturnTarget(params.returnTo)) {
+      router.replace({
+        pathname: '/(tabs)/(profile)/commerce',
+        params: { source: 'sign_in_return' },
+      });
+      return;
+    }
+    router.back();
+  };
+
   const onSendCode = async () => {
     setError(null);
     setSubmitting(true);
@@ -57,7 +70,7 @@ export default function SignInScreen() {
     try {
       const r = await verifyEmailOtp(trimmedEmail, code);
       if (r.kind === 'verified') {
-        router.back();
+        finishSignIn();
       } else {
         setError('That code is incorrect or has expired.');
         setCode('');
@@ -101,7 +114,7 @@ export default function SignInScreen() {
           ? await signInWithAppleSso()
           : await signInWithGoogleSso();
       if (result.kind === 'signed-in') {
-        router.back();
+        finishSignIn();
       }
     } catch (signInError) {
       setError(

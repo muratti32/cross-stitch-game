@@ -9,7 +9,10 @@ export type AnalyticsGameplayEventKind =
   | 'ai_generation_prompt_blocked'
   | 'ai_generation_completed'
   | 'ai_generation_failed'
+  | 'commerce_store_viewed'
+  | 'commerce_product_selected'
   | 'purchase_started'
+  | 'purchase_reconciliation_pending'
   | 'purchase_completed'
   | 'purchase_cancelled'
   | 'purchase_failed';
@@ -28,7 +31,29 @@ export type PurchaseProductKind =
   | 'premium_membership'
   | 'ai_credit_pack'
   | 'stitch_coin_pack';
+export type PurchaseProductKey =
+  | 'premium_weekly'
+  | 'premium_monthly'
+  | 'premium_annual'
+  | 'ai_credit_pack_5'
+  | 'ai_credit_pack_20'
+  | 'ai_credit_pack_50'
+  | 'coin_pack_300'
+  | 'coin_pack_900'
+  | 'coin_pack_2000';
+export type CommerceEntrySource =
+  | 'profile'
+  | 'stitch_coin_shortfall'
+  | 'ai_credit_shortfall'
+  | 'premium_benefit'
+  | 'sign_in_return'
+  | 'direct';
 export type PurchaseFailureStage = 'store' | 'verification' | 'grant';
+
+type PurchasePayload = {
+  product_kind: PurchaseProductKind;
+  product_key: PurchaseProductKey;
+};
 
 export type AnalyticsGameplayEventPayload =
   | { kind: 'session_started'; payload: { session_id: string } }
@@ -50,12 +75,15 @@ export type AnalyticsGameplayEventPayload =
   | { kind: 'ai_generation_prompt_blocked'; payload: Record<string, never> }
   | { kind: 'ai_generation_completed'; payload: { aspect: ArtworkAspect } }
   | { kind: 'ai_generation_failed'; payload: { failure_stage: AiGenerationFailureStage } }
-  | { kind: 'purchase_started'; payload: { product_kind: PurchaseProductKind } }
-  | { kind: 'purchase_completed'; payload: { product_kind: PurchaseProductKind } }
-  | { kind: 'purchase_cancelled'; payload: { product_kind: PurchaseProductKind } }
+  | { kind: 'commerce_store_viewed'; payload: { source: CommerceEntrySource } }
+  | { kind: 'commerce_product_selected'; payload: PurchasePayload }
+  | { kind: 'purchase_started'; payload: PurchasePayload }
+  | { kind: 'purchase_reconciliation_pending'; payload: PurchasePayload }
+  | { kind: 'purchase_completed'; payload: PurchasePayload }
+  | { kind: 'purchase_cancelled'; payload: PurchasePayload }
   | {
       kind: 'purchase_failed';
-      payload: { product_kind: PurchaseProductKind; failure_stage: PurchaseFailureStage };
+      payload: PurchasePayload & { failure_stage: PurchaseFailureStage };
     };
 
 export interface AnalyticsGameplayEvent {

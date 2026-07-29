@@ -10,9 +10,10 @@ export async function fetchAiCreditBalance(): Promise<number> {
   return data.balance;
 }
 
-export function useAiCreditBalance() {
+export function useAiCreditBalance(enabled = true) {
   return useQuery({
     queryKey: ['economy', 'aiCreditBalance'],
     queryFn: fetchAiCreditBalance,
+    enabled,
   });
 }

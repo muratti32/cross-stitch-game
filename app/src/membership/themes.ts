@@ -80,13 +80,13 @@ export const useMembershipThemePreference = create<ThemePreferenceState>((set, g
   },
 }));
 
-export function useActiveMembershipTheme(): {
+export function useActiveMembershipTheme(membershipEnabled = true): {
   theme: MembershipTheme;
   themeAccess: boolean;
   selectedThemeId: MembershipThemeId;
   selectTheme: (themeId: MembershipThemeId) => Promise<void>;
 } {
-  const membership = useMembership();
+  const membership = useMembership(membershipEnabled);
   const { selectedThemeId, selectTheme, hydrate } = useMembershipThemePreference();
   const [now, setNow] = useState(Date.now());
 
