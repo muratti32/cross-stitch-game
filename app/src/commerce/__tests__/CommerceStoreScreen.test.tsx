@@ -7,6 +7,7 @@ import { useCommerceIntentStore } from '../commerceIntent';
 
 let mockParams: { source?: string } = { source: 'profile' };
 let mockIdentity = { accountId: null as string | null, isAccount: false };
+let mockMembership: Record<string, unknown> | undefined;
 
 const mockRouter = {
   back: jest.fn(),
@@ -17,6 +18,11 @@ const mockCaptureGameplayEvent = jest.fn().mockResolvedValue(undefined);
 const mockGetOfferings = jest.fn();
 const mockPurchasePackage = jest.fn();
 const mockRestorePurchases = jest.fn();
+const mockTrialEligible = jest.fn();
+const mockManageSubscriptions = jest.fn();
+const mockCreateReconciliation = jest.fn();
+const mockFetchMembership = jest.fn();
+const mockFetchAiCreditBalance = jest.fn();
 const mockRefetchQueries = jest.fn().mockResolvedValue(undefined);
 let renderer: TestRenderer.ReactTestRenderer | null = null;
 
@@ -75,11 +81,14 @@ jest.mock('@/api/economy', () => ({
 }));
 
 jest.mock('@/api/commerce', () => ({
+  fetchAiCreditBalance: (...args: unknown[]) => mockFetchAiCreditBalance(...args),
   useAiCreditBalance: () => ({ data: 4 }),
 }));
 
 jest.mock('@/api/membership', () => ({
-  useMembership: () => ({ data: undefined }),
+  createPremiumReconciliation: (...args: unknown[]) => mockCreateReconciliation(...args),
+  fetchMembership: (...args: unknown[]) => mockFetchMembership(...args),
+  useMembership: () => ({ data: mockMembership }),
   usePremiumDailyClaim: () => ({
     data: undefined,
     error: null,
@@ -103,9 +112,11 @@ jest.mock('@/analytics/gameplayEvents', () => ({
 
 jest.mock('@/commerce/revenueCat', () => ({
   getRevenueCatOfferings: (...args: unknown[]) => mockGetOfferings(...args),
+  isRevenueCatTrialEligible: (...args: unknown[]) => mockTrialEligible(...args),
   missingCanonicalRevenueCatProducts: () => [],
   purchaseRevenueCatPackage: (...args: unknown[]) => mockPurchasePackage(...args),
   restoreRevenueCatPurchases: (...args: unknown[]) => mockRestorePurchases(...args),
+  showRevenueCatManageSubscriptions: (...args: unknown[]) => mockManageSubscriptions(...args),
   useRevenueCatRuntime: () => ({ message: null, status: 'ready' }),
 }));
 
@@ -129,6 +140,13 @@ function offering() {
         product: {
           identifier: `com.avk.stitchwish.${key}`,
           priceString,
+          subscriptionPeriod: key === 'premium_annual'
+            ? 'P1Y'
+            : key === 'premium_monthly'
+              ? 'P1M'
+              : key === 'premium_weekly'
+                ? 'P1W'
+                : null,
         },
       })),
     },
@@ -139,11 +157,202 @@ beforeEach(() => {
   jest.clearAllMocks();
   mockParams = { source: 'profile' };
   mockIdentity = { accountId: null, isAccount: false };
+  mockMembership = undefined;
   mockGetOfferings.mockResolvedValue(offering());
+  mockPurchasePackage.mockResolvedValue({});
+  mockRestorePurchases.mockResolvedValue({});
+  mockTrialEligible.mockResolvedValue(false);
+  mockManageSubscriptions.mockResolvedValue(undefined);
+  mockCreateReconciliation.mockResolvedValue({ supportReference: 'SW-ABCD-EFGH' });
+  mockFetchMembership.mockResolvedValue(inactiveMembership());
+  mockFetchAiCreditBalance.mockResolvedValue(4);
   useCommerceIntentStore.getState().clearIntent();
 });
 
+it('selects Annual as Best Value and reads periods and eligible trial from RevenueCat', async () => {
+  mockTrialEligible.mockResolvedValue(true);
+  await renderScreen();
+
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'BEST VALUE',
+    'Billed every 1 year',
+    'Billed every 1 month',
+    'Billed every 1 week',
+    'Eligible for a 3-day free trial',
+  ]));
+  expect(renderer!.root.findByProps({ testID: 'premium-premium_annual' }).props.style)
+    .toBeDefined();
+  expect(mockTrialEligible).toHaveBeenCalledWith('com.avk.stitchwish.premium_monthly');
+});
+
+it('shows the normal Monthly paid offer when eligibility is unknown or ineligible', async () => {
+  mockTrialEligible.mockResolvedValue(false);
+  await renderScreen();
+
+  expect(allText(renderer!.root)).not.toContain('Eligible for a 3-day free trial');
+  expect(allText(renderer!.root)).toContain('$7.99');
+});
+
+it('requires confirmation and treats store cancellation as a non-error', async () => {
+  mockIdentity = { accountId: 'account_80', isAccount: true };
+  mockPurchasePackage.mockRejectedValue({ userCancelled: true });
+  await renderScreen();
+
+  await act(async () => pressByText(renderer!.root, 'Choose Annual'));
+  expect(allText(renderer!.root)).toContain('Confirm Premium purchase');
+  expect(mockPurchasePackage).not.toHaveBeenCalled();
+
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm Annual');
+    await flushPromises();
+  });
+
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_started', {
+    product_kind: 'premium_membership',
+    product_key: 'premium_annual',
+  });
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_cancelled', {
+    product_kind: 'premium_membership',
+    product_key: 'premium_annual',
+  });
+  expect(allText(renderer!.root)).not.toContain('Purchase Reconciliation Pending');
+});
+
+it('stays pending with a Support Reference until the backend verifies membership', async () => {
+  mockIdentity = { accountId: 'account_80', isAccount: true };
+  mockPurchasePackage.mockResolvedValue({});
+  await renderScreen();
+
+  await confirmAnnualPurchase();
+
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase Reconciliation Pending',
+    'Support Reference: SW-ABCD-EFGH',
+  ]));
+  expect(mockCaptureGameplayEvent).not.toHaveBeenCalledWith(
+    'purchase_completed',
+    expect.anything(),
+  );
+  expect(pressableByText(renderer!.root, 'Choose Annual').props.disabled).toBe(true);
+});
+
+it('emits completion only after verified membership and AI Credit refresh', async () => {
+  mockIdentity = { accountId: 'account_80', isAccount: true };
+  mockPurchasePackage.mockResolvedValue({});
+  mockFetchMembership
+    .mockResolvedValueOnce(inactiveMembership())
+    .mockResolvedValue(activeMembership('annual'));
+  mockFetchAiCreditBalance.mockResolvedValue(184);
+  await renderScreen();
+
+  await confirmAnnualPurchase();
+
+  expect(mockFetchAiCreditBalance).toHaveBeenCalled();
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_completed', {
+    product_kind: 'premium_membership',
+    product_key: 'premium_annual',
+  });
+  expect(allText(renderer!.root)).toContain('Annual Premium is verified and active.');
+  expect(allText(renderer!.root)).not.toContain('Purchase Reconciliation Pending');
+});
+
+it('reports backend verification failures before opening the store', async () => {
+  mockIdentity = { accountId: 'account_80', isAccount: true };
+  mockFetchMembership.mockRejectedValue(new Error('backend offline'));
+  await renderScreen();
+
+  await confirmAnnualPurchase();
+
+  expect(mockPurchasePackage).not.toHaveBeenCalled();
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_failed', {
+    product_kind: 'premium_membership',
+    product_key: 'premium_annual',
+    failure_stage: 'verification',
+  });
+  expect(allText(renderer!.root)).toContain('backend offline');
+});
+
+it('keeps verified Premium pending when AI Credit refresh fails at the grant stage', async () => {
+  mockIdentity = { accountId: 'account_80', isAccount: true };
+  mockFetchMembership
+    .mockResolvedValueOnce(inactiveMembership())
+    .mockResolvedValue(activeMembership('annual'));
+  mockFetchAiCreditBalance.mockRejectedValue(new Error('grant refresh failed'));
+  await renderScreen();
+
+  await confirmAnnualPurchase();
+
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_failed', {
+    product_kind: 'premium_membership',
+    product_key: 'premium_annual',
+    failure_stage: 'grant',
+  });
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase Reconciliation Pending',
+    'Retry reconciliation',
+    'Premium was verified, but membership and AI Credit state could not be refreshed. Retry reconciliation.',
+  ]));
+});
+
+it('keeps a prolonged reconciliation pending and offers Retry without repurchase', async () => {
+  const now = jest.spyOn(Date, 'now')
+    .mockReturnValueOnce(1_000)
+    .mockReturnValueOnce(1_000)
+    .mockReturnValue(12_000);
+  mockIdentity = { accountId: 'account_80', isAccount: true };
+  mockPurchasePackage.mockResolvedValue({});
+  await renderScreen();
+  await confirmAnnualPurchase();
+
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase Reconciliation Pending',
+    'Retry reconciliation',
+    'Support Reference: SW-ABCD-EFGH',
+  ]));
+  expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+  now.mockRestore();
+});
+
+it('routes restore through pending and completes from the backend-observed plan', async () => {
+  mockIdentity = { accountId: 'account_80', isAccount: true };
+  mockRestorePurchases.mockResolvedValue({});
+  mockFetchMembership.mockResolvedValue(activeMembership('monthly'));
+  await renderScreen();
+
+  await act(async () => {
+    pressByText(renderer!.root, 'Restore purchases');
+    await flushPromises();
+  });
+
+  expect(mockCreateReconciliation).toHaveBeenCalledWith('restore', null);
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_reconciliation_pending', {
+    product_kind: 'premium_membership',
+    product_key: 'premium_annual',
+  });
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_completed', {
+    product_kind: 'premium_membership',
+    product_key: 'premium_monthly',
+  });
+});
+
+it('shows active lifecycle and opens native subscription management through RevenueCat', async () => {
+  mockIdentity = { accountId: 'account_80', isAccount: true };
+  mockMembership = activeMembership('monthly');
+  await renderScreen();
+
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Active · Monthly',
+    'Renews 8/29/2026',
+    'Manage Subscription',
+    'Stitch Coin Packs',
+    'AI Credit Packs',
+  ]));
+  await act(async () => pressByText(renderer!.root, 'Manage Subscription'));
+  expect(mockManageSubscriptions).toHaveBeenCalledTimes(1);
+});
+
 afterEach(() => {
+  jest.useRealTimers();
   if (renderer !== null) {
     act(() => renderer?.unmount());
     renderer = null;
@@ -255,4 +464,50 @@ function pressAncestor(node: ReactTestInstance): void {
 async function flushPromises(): Promise<void> {
   await Promise.resolve();
   await Promise.resolve();
+}
+
+async function renderScreen(): Promise<void> {
+  await act(async () => {
+    renderer = TestRenderer.create(<CommerceScreen />);
+    await flushPromises();
+  });
+}
+
+async function confirmAnnualPurchase(): Promise<void> {
+  await act(async () => pressByText(renderer!.root, 'Choose Annual'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm Annual');
+    await flushPromises();
+  });
+}
+
+function pressableByText(root: ReactTestInstance, text: string): ReactTestInstance {
+  const label = root.findAllByType(Text).find((node) => textValue(node.props.children).includes(text));
+  if (!label) throw new Error(`Missing text: ${text}`);
+  let current: ReactTestInstance | null = label;
+  while (current && typeof current.props.onPress !== 'function') current = current.parent;
+  if (!current) throw new Error('No pressable ancestor');
+  return current;
+}
+
+function inactiveMembership() {
+  return {
+    active: false,
+    plan: null,
+    lifecycle: null,
+    expiresAt: null,
+    themeAccess: false,
+    dailyClaim: { claimed: false, coinsAvailable: 0, resetsAt: '2026-07-30T00:00:00Z' },
+  };
+}
+
+function activeMembership(plan: 'weekly' | 'monthly' | 'annual') {
+  return {
+    active: true,
+    plan,
+    lifecycle: 'active',
+    expiresAt: '2026-08-29T00:00:00Z',
+    themeAccess: true,
+    dailyClaim: { claimed: false, coinsAvailable: 30, resetsAt: '2026-07-30T00:00:00Z' },
+  };
 }

@@ -165,6 +165,10 @@ export class SupportReferenceService {
                           status, failure_reason AS "failureReason", created_at AS "createdAt",
                           updated_at AS "updatedAt"
                    FROM ai.ai_artworks WHERE id = $1`,
+      premium_purchase_reconciliation:
+        `SELECT id, account_id AS "accountId", operation, product_key AS "productKey",
+                created_at AS "createdAt"
+         FROM economy.premium_purchase_reconciliations WHERE id = $1`,
       pattern_conversion: `SELECT processing_job_id AS id, account_id AS "accountId",
                                   processing_job_id AS "processingJobId",
                                   target_pattern_id AS "targetPatternId", profile, title,

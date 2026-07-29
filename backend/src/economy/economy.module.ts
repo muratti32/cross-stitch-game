@@ -26,6 +26,7 @@ import { MembershipController } from './membership.controller';
 import { MembershipRepository } from './membership.repository';
 import { MembershipService } from './membership.service';
 import { WebhookArchiveModule } from '../webhooks';
+import { SupportModule } from '../support/support.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { WebhookArchiveModule } from '../webhooks';
     AuthModule,
     AppConfigModule,
     PromotionModule,
+    SupportModule,
     WebhookArchiveModule,
   ],
   controllers: [

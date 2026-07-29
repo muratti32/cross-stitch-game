@@ -1,4 +1,5 @@
 import Purchases, {
+  INTRO_ELIGIBILITY_STATUS,
   LOG_LEVEL,
   type MakePurchaseResult,
   type PurchasesOfferings,
@@ -248,6 +249,27 @@ export async function restoreRevenueCatPurchases(accountId: string | null): Prom
   }
   await synchronizeRevenueCatIdentity(accountId);
   return Purchases.restorePurchases();
+}
+
+export async function isRevenueCatTrialEligible(productIdentifier: string): Promise<boolean> {
+  if (!(await initializeRevenueCat())) return false;
+  try {
+    const eligibility = await Purchases.checkTrialOrIntroductoryPriceEligibility([
+      storeProductKey(productIdentifier),
+    ]);
+    return eligibility[storeProductKey(productIdentifier)]?.status
+      === INTRO_ELIGIBILITY_STATUS.INTRO_ELIGIBILITY_STATUS_ELIGIBLE;
+  } catch {
+    // Unknown eligibility must show the normal paid offer rather than promise a trial.
+    return false;
+  }
+}
+
+export async function showRevenueCatManageSubscriptions(): Promise<void> {
+  if (!(await initializeRevenueCat())) {
+    throw new Error(useRevenueCatRuntime.getState().message ?? 'Commerce is not configured.');
+  }
+  await Purchases.showManageSubscriptions();
 }
 
 export function isRevenueCatConfigured(): boolean {

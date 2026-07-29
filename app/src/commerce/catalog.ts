@@ -19,6 +19,7 @@ interface ProductDefinition {
 }
 
 export interface CommerceProduct extends ProductDefinition {
+  readonly billingPeriod: string | null;
   readonly id: string;
   readonly package: PurchasesPackage;
   readonly priceString: string;
@@ -128,9 +129,25 @@ export function commerceProductsFromOfferings(
       ...definition,
       id: matchingPackage.identifier,
       package: matchingPackage,
+      billingPeriod: subscriptionPeriodLabel(matchingPackage.product.subscriptionPeriod),
       priceString: matchingPackage.product.priceString,
     }];
   });
+}
+
+function subscriptionPeriodLabel(period: string | null): string | null {
+  if (period === null) return null;
+  const match = /^P(\d+)([DWMY])$/.exec(period);
+  if (match === null) return period;
+  const amount = Number(match[1]);
+  const units: Record<string, [string, string]> = {
+    D: ['day', 'days'],
+    W: ['week', 'weeks'],
+    M: ['month', 'months'],
+    Y: ['year', 'years'],
+  };
+  const unit = units[match[2]];
+  return `${amount} ${amount === 1 ? unit[0] : unit[1]}`;
 }
 
 export function productsInCategory(

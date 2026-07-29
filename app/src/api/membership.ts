@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { apiFetch } from './apiFetch';
+import type { PurchaseProductKey } from '../analytics/schema';
 
 export type PremiumPlan = 'weekly' | 'monthly' | 'annual';
 export type MembershipLifecycle =
@@ -32,6 +33,25 @@ export interface PremiumDailyClaimResult {
   balance: number;
   coinsConsumed: number;
   replayed: boolean;
+}
+
+export interface PremiumReconciliationReference {
+  supportReference: string;
+}
+
+export async function createPremiumReconciliation(
+  operation: 'purchase' | 'restore',
+  productKey: PurchaseProductKey | null,
+): Promise<PremiumReconciliationReference> {
+  const response = await apiFetch('/v1/commerce/membership/reconciliations', {
+    method: 'POST',
+    body: JSON.stringify({ operation, productKey }),
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!response.ok) {
+    throw new Error(`Purchase verification could not be started: ${response.status}`);
+  }
+  return (await response.json()) as PremiumReconciliationReference;
 }
 
 export async function fetchMembership(): Promise<MembershipView> {

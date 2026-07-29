@@ -12,9 +12,15 @@ import {
   View,
 } from 'react-native';
 
-import { useAiCreditBalance } from '@/api/commerce';
+import { fetchAiCreditBalance, useAiCreditBalance } from '@/api/commerce';
 import { useCoinBalance } from '@/api/economy';
-import { useMembership, usePremiumDailyClaim } from '@/api/membership';
+import {
+  createPremiumReconciliation,
+  fetchMembership,
+  useMembership,
+  usePremiumDailyClaim,
+  type MembershipView,
+} from '@/api/membership';
 import { captureGameplayEvent } from '@/analytics/gameplayEvents';
 import {
   commerceProductsFromOfferings,
@@ -28,9 +34,11 @@ import {
 } from '@/commerce/commerceIntent';
 import {
   getRevenueCatOfferings,
+  isRevenueCatTrialEligible,
   missingCanonicalRevenueCatProducts,
   purchaseRevenueCatPackage,
   restoreRevenueCatPurchases,
+  showRevenueCatManageSubscriptions,
   useRevenueCatRuntime,
 } from '@/commerce/revenueCat';
 import { Button, Card, Screen } from '@/components';
@@ -41,6 +49,20 @@ import {
   useActiveMembershipTheme,
 } from '@/membership/themes';
 import { Theme } from '@/theme/theme';
+
+const RECONCILIATION_POLL_MS = 2_000;
+const RECONCILIATION_DELAY_MS = 10_000;
+
+interface PremiumReconciliation {
+  readonly baselineMembership: string | null;
+  readonly failureStage: 'verification' | 'grant' | null;
+  readonly id: string;
+  readonly operation: 'purchase' | 'restore';
+  readonly product: CommerceProduct;
+  readonly prolonged: boolean;
+  readonly startedAt: number;
+  readonly supportReference: string | null;
+}
 
 export default function CommerceScreen() {
   const router = useRouter();
@@ -68,10 +90,17 @@ export default function CommerceScreen() {
   const [openCategory, setOpenCategory] = useState<CommerceCategory | null>(null);
   const [purchasingKey, setPurchasingKey] = useState<string | null>(null);
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
-  const [purchasePending, setPurchasePending] = useState(false);
+  const [purchaseSuccess, setPurchaseSuccess] = useState<string | null>(null);
+  const [confirmingPremium, setConfirmingPremium] = useState<CommerceProduct | null>(null);
+  const [monthlyTrialEligible, setMonthlyTrialEligible] = useState(false);
+  const [purchasePending, setPurchasePending] = useState<PremiumReconciliation | null>(null);
   const [restoringPurchases, setRestoringPurchases] = useState(false);
   const viewedSourceRef = useRef<string | null>(null);
   const reconciliationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reconciliationRef = useRef<PremiumReconciliation | null>(null);
+  const reconciliationRunnerRef = useRef<(attempt: PremiumReconciliation) => Promise<void>>(
+    async () => undefined,
+  );
 
   const loadStore = useCallback(async () => {
     setLoadingStore(true);
@@ -83,7 +112,12 @@ export default function CommerceScreen() {
         setStoreUnavailable(true);
         return;
       }
-      setProducts(commerceProductsFromOfferings(offerings));
+      const nextProducts = commerceProductsFromOfferings(offerings);
+      setProducts(nextProducts);
+      const monthly = nextProducts.find((product) => product.productKey === 'premium_monthly');
+      setMonthlyTrialEligible(monthly === undefined
+        ? false
+        : await isRevenueCatTrialEligible(monthly.package.product.identifier));
     } catch (error: unknown) {
       setProducts([]);
       setStoreUnavailable(true);
@@ -127,6 +161,11 @@ export default function CommerceScreen() {
     }
   }, []);
 
+  const updateReconciliation = useCallback((next: PremiumReconciliation | null) => {
+    reconciliationRef.current = next;
+    setPurchasePending(next);
+  }, []);
+
   const premiumPlans = useMemo(
     () => productsInCategory(products, 'premium'),
     [products],
@@ -154,30 +193,130 @@ export default function CommerceScreen() {
     ]);
   }, [queryClient]);
 
+  const scheduleReconciliation = useCallback((attempt: PremiumReconciliation) => {
+    if (reconciliationTimerRef.current !== null) {
+      clearTimeout(reconciliationTimerRef.current);
+    }
+    reconciliationTimerRef.current = setTimeout(() => {
+      void reconciliationRunnerRef.current(attempt);
+    }, RECONCILIATION_POLL_MS);
+  }, []);
+
+  const reconcilePremium = useCallback(async (attempt: PremiumReconciliation) => {
+    if (reconciliationRef.current?.id !== attempt.id) return;
+    let verifiedMembership: MembershipView | null = null;
+    try {
+      verifiedMembership = await fetchMembership();
+      const observedProductKey = premiumProductKey(verifiedMembership.plan);
+      const backendVerified = verifiedMembership.active
+        && observedProductKey !== null
+        && (attempt.operation === 'restore'
+          || (observedProductKey === attempt.product.productKey
+            && membershipFingerprint(verifiedMembership) !== attempt.baselineMembership));
+
+      if (!backendVerified) {
+        if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) {
+          updateReconciliation({ ...attempt, prolonged: true });
+        } else {
+          scheduleReconciliation(attempt);
+        }
+        return;
+      }
+
+      await fetchAiCreditBalance();
+      await refetchCommerceState();
+      const completedProduct = attempt.operation === 'restore'
+        ? products.find((product) => product.productKey === observedProductKey) ?? attempt.product
+        : attempt.product;
+      await captureGameplayEvent('purchase_completed', {
+        product_kind: 'premium_membership',
+        product_key: completedProduct.productKey,
+      });
+      updateReconciliation(null);
+      clearIntent();
+      setPurchaseError(null);
+      setPurchaseSuccess(`${completedProduct.label} Premium is verified and active.`);
+    } catch (error: unknown) {
+      const failureStage = verifiedMembership === null ? 'verification' : 'grant';
+      await captureGameplayEvent('purchase_failed', {
+        product_kind: 'premium_membership',
+        product_key: attempt.product.productKey,
+        failure_stage: failureStage,
+      });
+      updateReconciliation({ ...attempt, failureStage });
+      setPurchaseError(failureStage === 'verification'
+        ? 'The Game Backend could not verify this purchase yet. Retry reconciliation; do not buy it again.'
+        : 'Premium was verified, but membership and AI Credit state could not be refreshed. Retry reconciliation.');
+    }
+  }, [clearIntent, products, refetchCommerceState, scheduleReconciliation, updateReconciliation]);
+
+  const beginPremiumReconciliation = useCallback(async (
+    product: CommerceProduct,
+    operation: 'purchase' | 'restore',
+    baselineMembership: string | null = null,
+  ) => {
+    const attempt: PremiumReconciliation = {
+      baselineMembership,
+      failureStage: null,
+      id: `${Date.now()}-${product.productKey}-${operation}`,
+      operation,
+      product,
+      prolonged: false,
+      startedAt: Date.now(),
+      supportReference: null,
+    };
+    updateReconciliation(attempt);
+    setPurchaseSuccess(null);
+    await captureGameplayEvent('purchase_reconciliation_pending', {
+      product_kind: 'premium_membership',
+      product_key: product.productKey,
+    });
+    try {
+      const reference = await createPremiumReconciliation(
+        operation,
+        operation === 'purchase' ? product.productKey : null,
+      );
+      const next = { ...attempt, supportReference: reference.supportReference };
+      updateReconciliation(next);
+      await reconcilePremium(next);
+    } catch {
+      await captureGameplayEvent('purchase_failed', {
+        product_kind: 'premium_membership',
+        product_key: product.productKey,
+        failure_stage: 'verification',
+      });
+      updateReconciliation({ ...attempt, failureStage: 'verification' });
+      setPurchaseError(
+        'Purchase reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.',
+      );
+    }
+  }, [reconcilePremium, updateReconciliation]);
+
+  reconciliationRunnerRef.current = reconcilePremium;
+
   const purchase = useCallback(async (product: CommerceProduct) => {
     setPurchaseError(null);
-    setPurchasePending(false);
+    setPurchaseSuccess(null);
     setPurchasingKey(product.productKey);
-    clearIntent();
+    setConfirmingPremium(null);
     await captureGameplayEvent('purchase_started', {
       product_kind: product.productKind,
       product_key: product.productKey,
     });
+    let failureStage: 'store' | 'verification' = product.category === 'premium'
+      ? 'verification'
+      : 'store';
     try {
+      const baselineMembership = product.category === 'premium'
+        ? membershipFingerprint(await fetchMembership())
+        : null;
+      failureStage = 'store';
       await purchaseRevenueCatPackage(product.package, accountId);
-      await captureGameplayEvent('purchase_reconciliation_pending', {
-        product_kind: product.productKind,
-        product_key: product.productKey,
-      });
-      setPurchasePending(true);
-      await refetchCommerceState();
-      if (reconciliationTimerRef.current !== null) {
-        clearTimeout(reconciliationTimerRef.current);
+      if (product.category === 'premium') {
+        await beginPremiumReconciliation(product, 'purchase', baselineMembership);
+      } else {
+        await refetchCommerceState();
       }
-      reconciliationTimerRef.current = setTimeout(
-        () => void refetchCommerceState(),
-        2_000,
-      );
     } catch (error: unknown) {
       if (isPurchaseCancelled(error)) {
         await captureGameplayEvent('purchase_cancelled', {
@@ -189,13 +328,13 @@ export default function CommerceScreen() {
       await captureGameplayEvent('purchase_failed', {
         product_kind: product.productKind,
         product_key: product.productKey,
-        failure_stage: 'store',
+        failure_stage: failureStage,
       });
       setPurchaseError(purchaseErrorMessage(error));
     } finally {
       setPurchasingKey(null);
     }
-  }, [accountId, clearIntent, refetchCommerceState]);
+  }, [accountId, beginPremiumReconciliation, refetchCommerceState]);
 
   const attemptPurchase = useCallback((product: CommerceProduct) => {
     void captureGameplayEvent('commerce_product_selected', {
@@ -221,6 +360,10 @@ export default function CommerceScreen() {
       return;
     }
 
+    if (product.category === 'premium') {
+      setConfirmingPremium(product);
+      return;
+    }
     void purchase(product);
   }, [isAccount, pendingIntent, preserveIntent, purchase, router, source]);
 
@@ -236,14 +379,46 @@ export default function CommerceScreen() {
     setPurchaseError(null);
     try {
       await restoreRevenueCatPurchases(accountId);
-      await refetchCommerceState();
-      Alert.alert('Purchases restored', 'Verified purchases will appear after reconciliation.');
+      if (selectedPremium !== undefined) {
+        await beginPremiumReconciliation(selectedPremium, 'restore');
+      }
     } catch (error: unknown) {
+      if (selectedPremium !== undefined) {
+        await captureGameplayEvent('purchase_failed', {
+          product_kind: 'premium_membership',
+          product_key: selectedPremium.productKey,
+          failure_stage: 'store',
+        });
+      }
       setPurchaseError(purchaseErrorMessage(error));
     } finally {
       setRestoringPurchases(false);
     }
-  }, [accountId, isAccount, refetchCommerceState, router]);
+  }, [accountId, beginPremiumReconciliation, isAccount, router, selectedPremium]);
+
+  const retryPremiumReconciliation = useCallback(async () => {
+    const attempt = reconciliationRef.current;
+    if (attempt === null) return;
+    setPurchaseError(null);
+    const reset = { ...attempt, failureStage: null, prolonged: false, startedAt: Date.now() };
+    updateReconciliation(reset);
+    if (reset.supportReference === null) {
+      try {
+        const reference = await createPremiumReconciliation(
+          reset.operation,
+          reset.operation === 'purchase' ? reset.product.productKey : null,
+        );
+        const next = { ...reset, supportReference: reference.supportReference };
+        updateReconciliation(next);
+        await reconcilePremium(next);
+      } catch {
+        setPurchaseError('The Game Backend is still unavailable. Try reconciliation again later.');
+        updateReconciliation({ ...reset, failureStage: 'verification' });
+      }
+      return;
+    }
+    await reconcilePremium(reset);
+  }, [reconcilePremium, updateReconciliation]);
 
   return (
     <>
@@ -296,11 +471,17 @@ export default function CommerceScreen() {
           </View>
           <Text style={styles.membershipStatus}>
             {membership?.active
-              ? `${membership.lifecycle === 'trial' ? 'Trial' : 'Active'}${membership.plan ? ` · ${capitalize(membership.plan)}` : ''}`
+              ? `${membershipLifecycleLabel(membership.lifecycle)}${membership.plan ? ` · ${capitalize(membership.plan)}` : ''}`
               : isAccount
                 ? 'No active membership'
                 : 'Browse plans as a Guest Player'}
           </Text>
+          {membership?.active && membership.expiresAt && (
+            <Text style={styles.membershipPeriod}>
+              {membershipPeriodLabel(membership.lifecycle)}{' '}
+              {new Date(membership.expiresAt).toLocaleDateString()}
+            </Text>
+          )}
         </View>
 
         {isAccount && membership?.active && (
@@ -312,6 +493,11 @@ export default function CommerceScreen() {
             selectedThemeId={theme.id}
             themeAccess={themeAccess}
             onSelectTheme={(themeId) => void selectTheme(themeId)}
+            onManage={() => {
+              void showRevenueCatManageSubscriptions().catch(() => {
+                Alert.alert('Unable to open subscriptions', 'Try again from your device store account.');
+              });
+            }}
           />
         )}
 
@@ -321,12 +507,34 @@ export default function CommerceScreen() {
             <Text style={styles.errorText}>{purchaseError}</Text>
           </View>
         )}
-        {purchasePending && (
+        {purchaseSuccess !== null && (
+          <View style={styles.successBanner}>
+            <Ionicons name="checkmark-circle-outline" size={18} color={Theme.colors.success} />
+            <Text style={styles.successText}>{purchaseSuccess}</Text>
+          </View>
+        )}
+        {purchasePending !== null && (
           <View style={styles.pendingBanner}>
             <Ionicons name="time-outline" size={18} color={Theme.colors.accentTeal} />
-            <Text style={styles.pendingText}>
-              Purchase received. Wallet and membership update after server verification.
-            </Text>
+            <View style={styles.pendingCopy}>
+              <Text style={styles.pendingTitle}>Purchase Reconciliation Pending</Text>
+              <Text style={styles.pendingText}>
+                The store response is received. Premium activates only after Game Backend verification.
+                Do not purchase this plan again.
+              </Text>
+              {purchasePending.supportReference !== null && (
+                <Text selectable style={styles.supportReference}>
+                  Support Reference: {purchasePending.supportReference}
+                </Text>
+              )}
+              {(purchasePending.prolonged || purchasePending.failureStage !== null) && (
+                <Button
+                  title="Retry reconciliation"
+                  onPress={() => void retryPremiumReconciliation()}
+                  variant="secondary"
+                />
+              )}
+            </View>
           </View>
         )}
 
@@ -379,8 +587,13 @@ export default function CommerceScreen() {
                       )}
                       <Text style={styles.planName}>{plan.label}</Text>
                       <Text style={styles.planPrice}>{plan.priceString}</Text>
+                      {plan.billingPeriod !== null && (
+                        <Text style={styles.planPeriod}>Billed every {plan.billingPeriod}</Text>
+                      )}
                       <Text style={styles.planCredits}>{plan.credits} credits / paid period</Text>
-                      {plan.trial && <Text style={styles.trial}>3-day trial if eligible</Text>}
+                      {plan.trial && monthlyTrialEligible && (
+                        <Text style={styles.trial}>Eligible for a 3-day free trial</Text>
+                      )}
                     </Pressable>
                   );
                 })}
@@ -390,7 +603,7 @@ export default function CommerceScreen() {
                   title={isAccount ? `Choose ${selectedPremium.label}` : `Sign in for ${selectedPremium.label}`}
                   onPress={() => attemptPurchase(selectedPremium)}
                   loading={purchasingKey === selectedPremium.productKey}
-                  disabled={purchasingKey !== null}
+                  disabled={purchasingKey !== null || purchasePending !== null}
                   variant="rose"
                 />
               )}
@@ -418,7 +631,7 @@ export default function CommerceScreen() {
 
             <Pressable
               accessibilityRole="button"
-              disabled={restoringPurchases}
+              disabled={restoringPurchases || purchasePending !== null}
               onPress={() => void restorePurchases()}
               style={({ pressed }) => [styles.restoreButton, pressed && styles.pressed]}
             >
@@ -439,6 +652,12 @@ export default function CommerceScreen() {
         purchasingKey={purchasingKey}
         onClose={() => setOpenCategory(null)}
         onPurchase={attemptPurchase}
+      />
+      <PremiumConfirmation
+        product={confirmingPremium}
+        trialEligible={monthlyTrialEligible}
+        onCancel={() => setConfirmingPremium(null)}
+        onConfirm={(product) => void purchase(product)}
       />
     </>
   );
@@ -478,6 +697,7 @@ function MembershipBenefits({
   selectedThemeId,
   themeAccess,
   onSelectTheme,
+  onManage,
 }: {
   membership: NonNullable<ReturnType<typeof useMembership>['data']>;
   claimPending: boolean;
@@ -486,6 +706,7 @@ function MembershipBenefits({
   selectedThemeId: MembershipThemeId;
   themeAccess: boolean;
   onSelectTheme: (themeId: MembershipThemeId) => void;
+  onManage: () => void;
 }) {
   return (
     <Card style={styles.benefitsCard}>
@@ -506,6 +727,7 @@ function MembershipBenefits({
         loading={claimPending}
         variant="honey"
       />
+      <Button title="Manage Subscription" onPress={onManage} variant="secondary" />
       {claimError && <Text style={styles.claimError}>{claimError}</Text>}
       <Text style={styles.themeTitle}>Theme Collection</Text>
       <View style={styles.themeRow}>
@@ -534,6 +756,51 @@ function MembershipBenefits({
         })}
       </View>
     </Card>
+  );
+}
+
+function PremiumConfirmation({
+  product,
+  trialEligible,
+  onCancel,
+  onConfirm,
+}: {
+  product: CommerceProduct | null;
+  trialEligible: boolean;
+  onCancel: () => void;
+  onConfirm: (product: CommerceProduct) => void;
+}) {
+  return (
+    <Modal
+      animationType="fade"
+      onRequestClose={onCancel}
+      transparent
+      visible={product !== null}
+    >
+      <View style={styles.confirmationRoot}>
+        <View accessibilityViewIsModal style={styles.confirmationCard}>
+          <Text style={styles.confirmationTitle}>Confirm Premium purchase</Text>
+          {product !== null && (
+            <>
+              <Text style={styles.confirmationPlan}>
+                {product.label} · {product.priceString}
+                {product.billingPeriod === null ? '' : ` every ${product.billingPeriod}`}
+              </Text>
+              {product.productKey === 'premium_monthly' && trialEligible && (
+                <Text style={styles.trial}>Your store reports that you are eligible for a 3-day free trial.</Text>
+              )}
+              <Text style={styles.confirmationBody}>
+                Premium appears only after the Game Backend verifies the store transaction.
+              </Text>
+              <View style={styles.confirmationActions}>
+                <Button title="Cancel" onPress={onCancel} variant="secondary" />
+                <Button title={`Confirm ${product.label}`} onPress={() => onConfirm(product)} variant="rose" />
+              </View>
+            </>
+          )}
+        </View>
+      </View>
+    </Modal>
   );
 }
 
@@ -653,6 +920,33 @@ function purchaseErrorMessage(error: unknown): string {
 
 function capitalize(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function premiumProductKey(plan: MembershipView['plan']): CommerceProduct['productKey'] | null {
+  return plan === null ? null : `premium_${plan}`;
+}
+
+function membershipFingerprint(membership: MembershipView | undefined): string | null {
+  if (membership === undefined) return null;
+  return JSON.stringify([
+    membership.active,
+    membership.plan,
+    membership.lifecycle,
+    membership.expiresAt,
+  ]);
+}
+
+function membershipPeriodLabel(lifecycle: MembershipView['lifecycle']): string {
+  return lifecycle === 'cancelled' || lifecycle === 'paused'
+    || lifecycle === 'expired' || lifecycle === 'refunded'
+    ? 'Current period ends'
+    : 'Renews';
+}
+
+function membershipLifecycleLabel(lifecycle: MembershipView['lifecycle']): string {
+  return lifecycle === null
+    ? 'Active'
+    : lifecycle.split('_').map(capitalize).join(' ');
 }
 
 const styles = StyleSheet.create({
@@ -788,6 +1082,7 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.xs,
     fontWeight: Theme.typography.weights.semibold,
   },
+  membershipPeriod: { color: '#E8F1EF', fontSize: Theme.typography.sizes.xs },
   benefitsCard: { gap: Theme.spacing.md },
   benefitsHeader: { gap: Theme.spacing.xs },
   benefitsTitle: {
@@ -833,6 +1128,17 @@ const styles = StyleSheet.create({
     padding: Theme.spacing.md,
   },
   errorText: { color: Theme.colors.error, flex: 1, fontSize: Theme.typography.sizes.sm },
+  successBanner: {
+    alignItems: 'center',
+    backgroundColor: '#F0F7F0',
+    borderColor: '#C8E6C9',
+    borderRadius: Theme.radii.md,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: Theme.spacing.sm,
+    padding: Theme.spacing.md,
+  },
+  successText: { color: Theme.colors.textPrimary, flex: 1, fontSize: Theme.typography.sizes.sm },
   pendingBanner: {
     alignItems: 'center',
     backgroundColor: '#EEF5F4',
@@ -844,6 +1150,17 @@ const styles = StyleSheet.create({
     padding: Theme.spacing.md,
   },
   pendingText: { color: Theme.colors.textPrimary, flex: 1, fontSize: Theme.typography.sizes.sm },
+  pendingCopy: { flex: 1, gap: Theme.spacing.sm },
+  pendingTitle: {
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.sm,
+    fontWeight: Theme.typography.weights.bold,
+  },
+  supportReference: {
+    color: Theme.colors.textSecondary,
+    fontFamily: 'monospace',
+    fontSize: Theme.typography.sizes.xs,
+  },
   storeState: {
     alignItems: 'center',
     gap: Theme.spacing.md,
@@ -894,6 +1211,7 @@ const styles = StyleSheet.create({
     fontWeight: Theme.typography.weights.bold,
     marginTop: Theme.spacing.sm,
   },
+  planPeriod: { color: Theme.colors.textSecondary, fontSize: 10, marginTop: 2 },
   planCredits: {
     color: Theme.colors.textSecondary,
     fontSize: 10,
@@ -934,6 +1252,32 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.sm,
     fontWeight: Theme.typography.weights.semibold,
   },
+  confirmationRoot: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(25, 24, 22, 0.42)',
+    flex: 1,
+    justifyContent: 'center',
+    padding: Theme.spacing.lg,
+  },
+  confirmationCard: {
+    backgroundColor: Theme.colors.background,
+    borderRadius: Theme.radii.xl,
+    gap: Theme.spacing.md,
+    padding: Theme.spacing.xl,
+    width: '100%',
+  },
+  confirmationTitle: {
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.xl,
+    fontWeight: Theme.typography.weights.bold,
+  },
+  confirmationPlan: {
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.md,
+    fontWeight: Theme.typography.weights.semibold,
+  },
+  confirmationBody: { color: Theme.colors.textSecondary, fontSize: Theme.typography.sizes.sm },
+  confirmationActions: { flexDirection: 'row', gap: Theme.spacing.sm, justifyContent: 'flex-end' },
   modalRoot: { flex: 1, justifyContent: 'flex-end' },
   modalBackdrop: { backgroundColor: 'rgba(25, 24, 22, 0.42)', flex: 1 },
   sheet: {

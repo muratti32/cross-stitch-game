@@ -2,6 +2,7 @@ jest.mock('react-native-purchases', () => ({
   __esModule: true,
   default: {
     configure: jest.fn(),
+    checkTrialOrIntroductoryPriceEligibility: jest.fn(),
     getAppUserID: jest.fn(),
     getOfferings: jest.fn(),
     isAnonymous: jest.fn(),
@@ -10,6 +11,13 @@ jest.mock('react-native-purchases', () => ({
     purchasePackage: jest.fn(),
     restorePurchases: jest.fn(),
     setLogLevel: jest.fn(),
+    showManageSubscriptions: jest.fn(),
+  },
+  INTRO_ELIGIBILITY_STATUS: {
+    INTRO_ELIGIBILITY_STATUS_UNKNOWN: 0,
+    INTRO_ELIGIBILITY_STATUS_INELIGIBLE: 1,
+    INTRO_ELIGIBILITY_STATUS_ELIGIBLE: 2,
+    INTRO_ELIGIBILITY_STATUS_NO_INTRO_OFFER_EXISTS: 3,
   },
   LOG_LEVEL: { DEBUG: 'DEBUG' },
 }));
@@ -18,13 +26,23 @@ jest.mock('react-native', () => ({
   Platform: { OS: 'ios' },
 }));
 
+// Avoid triggering Expo's lazy native fetch module while Jest tears this
+// SDK-only test environment down.
+Object.defineProperty(globalThis, 'fetch', {
+  configurable: true,
+  value: jest.fn(),
+  writable: true,
+});
+
 import {
   getRevenueCatOfferings,
   initializeRevenueCat,
+  isRevenueCatTrialEligible,
   missingCanonicalRevenueCatProducts,
   purchaseRevenueCatPackage,
   resetRevenueCatForTests,
   resolveRevenueCatConfiguration,
+  showRevenueCatManageSubscriptions,
   synchronizeRevenueCatIdentity,
   useRevenueCatRuntime,
 } from '../revenueCat';
@@ -178,6 +196,28 @@ describe('RevenueCat commerce boundary', () => {
     expect(missingCanonicalRevenueCatProducts({
       current: { availablePackages: [] },
     } as never)).toHaveLength(9);
+  });
+
+  test('shows a trial only for explicit RevenueCat eligibility', async () => {
+    mockPurchases.checkTrialOrIntroductoryPriceEligibility.mockResolvedValueOnce({
+      'com.avk.stitchwish.premium_monthly': { status: 2, description: 'eligible' },
+    });
+    await expect(isRevenueCatTrialEligible(
+      'com.avk.stitchwish.premium_monthly',
+    )).resolves.toBe(true);
+
+    mockPurchases.checkTrialOrIntroductoryPriceEligibility.mockResolvedValueOnce({
+      'com.avk.stitchwish.premium_monthly': { status: 0, description: 'unknown' },
+    });
+    await expect(isRevenueCatTrialEligible(
+      'com.avk.stitchwish.premium_monthly',
+    )).resolves.toBe(false);
+  });
+
+  test('opens native subscription management through RevenueCat', async () => {
+    mockPurchases.showManageSubscriptions.mockResolvedValue(undefined);
+    await showRevenueCatManageSubscriptions();
+    expect(mockPurchases.showManageSubscriptions).toHaveBeenCalledTimes(1);
   });
 });
 
