@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 
 import { useLikedPatterns } from '@/api/social';
 import { Card, EmptyState, Screen, PatternImage } from '@/components';
@@ -12,6 +12,14 @@ import { absolutePreviewUrl, absoluteThumbnailUrls } from '@/api/catalog';
 export default function LikedPatternsScreen() {
   const isAccount = useIdentityStore((state) => state.isAccount);
   const query = useLikedPatterns('en');
+
+  useFocusEffect(
+    useCallback(() => {
+      if (isAccount) {
+        void query.refetch();
+      }
+    }, [isAccount, query.refetch]),
+  );
 
   // Handle guest principal state
   if (!isAccount) {

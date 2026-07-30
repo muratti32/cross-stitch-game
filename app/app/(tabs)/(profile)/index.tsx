@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, View, Text, Pressable, ActivityIndicator, Image } from 'react-native';
 import { Screen, EmptyState, Card, PatternImage, Button, DailyTasksCard, PremiumDailyCoinClaimCard, RewardedAdCard } from '@/components';
 import { Theme } from '@/theme/theme';
@@ -6,11 +6,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { useCoinBalance } from '@/api/economy';
 import { shortenGuestId } from '@/identity/identityLogic';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { listPersonalPatterns, type PersonalPattern } from '@/conversion';
 import { preparePersonalSession, preparePendingPersonalSession, waitUntilSessionReady } from '@/session-preparation';
 import { getPendingPersonalPatterns, type PendingPersonalPattern } from '@/local-db';
 import { useCreatorProfile } from '@/api/creatorProfile';
+import { useLikedPatterns } from '@/api/social';
+import { absolutePreviewUrl, absoluteThumbnailUrls } from '@/api/catalog';
 
 
 export default function ProfileScreen() {
@@ -19,6 +21,7 @@ export default function ProfileScreen() {
   const { guestId, guestCreatedAt, accountId, isAccount, isAuthenticated, isPending, isOfflinePending, bootstrap } = useIdentityStore();
   const { data: coinBalance } = useCoinBalance();
   const creatorProfileQuery = useCreatorProfile(accountId, isAccount && isAuthenticated && !isPending);
+  const likedPatternsQuery = useLikedPatterns('en');
   const creatorProfile = creatorProfileQuery.data ?? null;
   const [personalPatterns, setPersonalPatterns] = useState<PersonalPattern[]>([]);
   const [patternsLoading, setPatternsLoading] = useState(false);
@@ -27,39 +30,47 @@ export default function ProfileScreen() {
   const [pendingPatterns, setPendingPatterns] = useState<PendingPersonalPattern[]>([]);
   const [openingPendingId, setOpeningPendingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!isAccount || activeTab !== 'my-patterns') {
-      setPersonalPatterns([]);
-      setPendingPatterns([]);
-      return;
-    }
-    let active = true;
-    setPatternsLoading(true);
-    setPatternsError(null);
-    Promise.all([listPersonalPatterns(), getPendingPersonalPatterns()])
-      .then(([patterns, pending]) => {
-        if (!active) return;
-        setPersonalPatterns(patterns);
-        // A pattern that has already synced to the backend is dropped from the
-        // pending list so it is never rendered twice while this screen is
-        // still mounted (the local pending_personal_patterns row is deleted by
-        // the sync outbox on success, but this effect only refetches on
-        // activeTab/isAccount changes, not on that background completion).
-        const syncedIds = new Set(patterns.map((p) => p.id));
-        setPendingPatterns(pending.filter((p) => !syncedIds.has(p.patternId)));
-      })
-      .catch((error: unknown) => {
-        if (active) {
-          setPatternsError(error instanceof Error ? error.message : String(error));
-        }
-      })
-      .finally(() => {
-        if (active) setPatternsLoading(false);
-      });
-    return () => {
-      active = false;
-    };
-  }, [activeTab, isAccount]);
+  useFocusEffect(
+    useCallback(() => {
+      if (!isAccount || activeTab !== 'my-patterns') {
+        setPersonalPatterns([]);
+        setPendingPatterns([]);
+        return undefined;
+      }
+      let active = true;
+      setPatternsLoading(true);
+      setPatternsError(null);
+      Promise.all([listPersonalPatterns(), getPendingPersonalPatterns()])
+        .then(([patterns, pending]) => {
+          if (!active) return;
+          setPersonalPatterns(patterns);
+          // A pattern that has already synced to the backend is dropped from
+          // the pending list so it is never rendered twice while this screen
+          // is still mounted.
+          const syncedIds = new Set(patterns.map((p) => p.id));
+          setPendingPatterns(pending.filter((p) => !syncedIds.has(p.patternId)));
+        })
+        .catch((error: unknown) => {
+          if (active) {
+            setPatternsError(error instanceof Error ? error.message : String(error));
+          }
+        })
+        .finally(() => {
+          if (active) setPatternsLoading(false);
+        });
+      return () => {
+        active = false;
+      };
+    }, [activeTab, isAccount]),
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      if (isAccount && activeTab === 'liked') {
+        void likedPatternsQuery.refetch();
+      }
+    }, [activeTab, isAccount, likedPatternsQuery.refetch]),
+  );
 
   const playerStats = {
     coins: coinBalance ?? 0,
@@ -449,6 +460,46 @@ export default function ProfileScreen() {
               </Card>
             ))}
             {patternsError && <Text style={styles.patternError}>{patternsError}</Text>}
+          </View>
+        ) : activeTab === 'liked' && likedPatternsQuery.isPending ? (
+          <View style={styles.patternLoader}>
+            <ActivityIndicator color={Theme.colors.accentRose} />
+          </View>
+        ) : activeTab === 'liked' && likedPatternsQuery.isError ? (
+          <EmptyState
+            icon="cloud-offline-outline"
+            title="Liked Patterns Unavailable"
+            body={likedPatternsQuery.error instanceof Error ? likedPatternsQuery.error.message : 'Could not load liked patterns.'}
+            actionLabel="Try Again"
+            onAction={() => void likedPatternsQuery.refetch()}
+            actionVariant="rose"
+          />
+        ) : activeTab === 'liked' && (likedPatternsQuery.data?.pages.flatMap((page) => page.items).length ?? 0) > 0 ? (
+          <View style={styles.patternList}>
+            {likedPatternsQuery.data?.pages.flatMap((page) => page.items).map((pattern) => (
+              <Pressable
+                key={pattern.id}
+                onPress={() => router.push(`/(tabs)/(catalog)/${pattern.id}`)}
+                style={({ pressed }) => [pressed && styles.pressedButton]}
+              >
+                <Card style={styles.patternCard}>
+                  <PatternImage
+                    assets={{
+                      thumbnailUrls: absoluteThumbnailUrls(pattern.thumbnailUrls),
+                      previewUrl: absolutePreviewUrl(pattern.previewUrl),
+                    }}
+                    variant="browsing"
+                    style={styles.patternPreview}
+                  />
+                  <View style={styles.patternInfo}>
+                    <Text style={styles.patternTitle} numberOfLines={1}>{pattern.title}</Text>
+                    <Text style={styles.patternMeta}>by {pattern.creatorName}</Text>
+                    <Text style={styles.patternMeta}>{pattern.width}×{pattern.height} · {pattern.paletteSize} colors</Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={18} color={Theme.colors.textSecondary} />
+                </Card>
+              </Pressable>
+            ))}
           </View>
         ) : activeTab === 'my-patterns' ? (
           <EmptyState

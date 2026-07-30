@@ -328,6 +328,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Theme.spacing.sm,
     marginTop: Theme.spacing.md,
+    marginBottom: Theme.spacing.sm,
   },
   avatarButton: { height: 40 },
   removeButton: { paddingHorizontal: Theme.spacing.sm, paddingVertical: Theme.spacing.md },
