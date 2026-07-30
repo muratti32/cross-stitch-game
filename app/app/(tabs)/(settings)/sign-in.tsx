@@ -14,9 +14,11 @@ import { isFirebaseSsoConfigured } from '@/config';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { isCommerceReturnTarget } from '@/commerce/commerceIntent';
+import { useIdentityStore } from '@/identity/guestIdentity';
 
 export default function SignInScreen() {
   const params = useLocalSearchParams<{ returnTo?: string }>();
+  const isAccount = useIdentityStore((state) => state.isAccount);
   const [step, setStep] = useState<'email' | 'code'>('email');
   const [email, setEmail] = useState<string>('');
   const [code, setCode] = useState<string>('');
@@ -48,7 +50,21 @@ export default function SignInScreen() {
       });
       return;
     }
-    router.back();
+    router.replace('/(tabs)/(settings)');
+  };
+
+  useEffect(() => {
+    if (isAccount) {
+      finishSignIn();
+    }
+  }, [isAccount]);
+
+  const onCancel = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/(tabs)/(settings)');
+    }
   };
 
   const onSendCode = async () => {
@@ -217,7 +233,7 @@ export default function SignInScreen() {
               onPress={onSendCode}
             />
             <View style={styles.buttonSpacer} />
-            <Button title="Cancel" variant="secondary" onPress={() => router.back()} />
+            <Button title="Cancel" variant="secondary" onPress={onCancel} />
           </View>
         ) : (
           <View>

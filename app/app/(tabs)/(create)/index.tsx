@@ -7,8 +7,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 
 type CreatePath =
   | '/(tabs)/(create)/photo-import'
-  | '/(tabs)/(create)/ai-generation'
-  | '/(tabs)/(create)/pattern-editor';
+  | '/(tabs)/(create)/ai-generation';
 
 export default function CreateScreen() {
   const router = useRouter();
@@ -101,36 +100,6 @@ export default function CreateScreen() {
               ) : (
                 <>
                   <Text style={styles.actionText}>Generate design</Text>
-                  <Ionicons name="chevron-forward" size={16} color={Theme.colors.accentTeal} />
-                </>
-              )}
-            </View>
-          </View>
-        </Card>
-
-        {/* Pattern Editor Card */}
-        <Card
-          style={styles.card}
-          disabled={navigationPending}
-          onPress={() => handleNavigate('/(tabs)/(create)/pattern-editor')}
-        >
-          <View style={[styles.iconContainer, { backgroundColor: '#FCFAF0' }]}>
-            <Ionicons name="brush" size={30} color={Theme.colors.accentHoney} />
-          </View>
-          <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>Pattern Editor</Text>
-            <Text style={styles.cardDescription}>
-              Design custom artwork pixel-by-pixel with standard DMC thread color palettes.
-            </Text>
-            <View style={styles.actionRow}>
-              {pendingPath === '/(tabs)/(create)/pattern-editor' ? (
-                <>
-                  <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
-                  <Text style={styles.actionText}>Opening…</Text>
-                </>
-              ) : (
-                <>
-                  <Text style={styles.actionText}>Open editor</Text>
                   <Ionicons name="chevron-forward" size={16} color={Theme.colors.accentTeal} />
                 </>
               )}
