@@ -25,12 +25,12 @@ describe('parseEnvironment admin MFA', () => {
     ).toBe(false);
   });
 
-  it('rejects disabling MFA in production', () => {
-    expect(() =>
+  it('allows MFA to be disabled in production', () => {
+    expect(
       parseEnvironment(
         validEnvironment({ ADMIN_MFA_ENABLED: 'false', NODE_ENV: 'production' }),
-      ),
-    ).toThrow('ADMIN_MFA_ENABLED cannot be false in production');
+      ).ADMIN_MFA_ENABLED,
+    ).toBe(false);
   });
 
   it('rejects ambiguous flag values', () => {

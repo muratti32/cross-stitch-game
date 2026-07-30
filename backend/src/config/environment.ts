@@ -393,15 +393,7 @@ function parseR2Config(environment: Record<string, unknown>): {
 }
 
 function parseAdminMfaEnabled(environment: Record<string, unknown>): boolean {
-  const enabled = parseBoolean(
-    environment.ADMIN_MFA_ENABLED,
-    'ADMIN_MFA_ENABLED',
-    true,
-  );
-  if (!enabled && environment.NODE_ENV === 'production') {
-    throw new Error('ADMIN_MFA_ENABLED cannot be false in production');
-  }
-  return enabled;
+  return parseBoolean(environment.ADMIN_MFA_ENABLED, 'ADMIN_MFA_ENABLED', true);
 }
 
 function parseOpenAiModerationEnabled(
