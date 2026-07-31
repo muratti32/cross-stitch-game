@@ -8,3 +8,4 @@ app/android/app/build/
 app/ios/build/
 screenshots/
 stitchwish-service-account.json
+credentials.json
