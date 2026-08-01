@@ -105,7 +105,7 @@ describe('Post-Publication Review Hold', () => {
       dataSource,
       storage,
     );
-    revisions = new CatalogMetadataRevisionService(dataSource, precheck);
+    revisions = new CatalogMetadataRevisionService(dataSource, precheck, storage);
     sessions = new SessionsService(
       dataSource.getRepository(StitchingSessionEntity),
       dataSource.getRepository(SessionProgressFlagEntity),

@@ -47,6 +47,7 @@ import { ModerationNoticeService } from './moderation-notice.service';
 import { SafetyRemovalAppealController } from './safety-removal-appeal.controller';
 import { SafetyRemovalAppealService } from './safety-removal-appeal.service';
 import { OperatorAuditLogService } from '../admin/operator-audit-log.service';
+import { ConversionModule } from '../conversion/conversion.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { OperatorAuditLogService } from '../admin/operator-audit-log.service';
     AuthModule,
     forwardRef(() => JobsModule),
     forwardRef(() => SocialModule),
+    forwardRef(() => ConversionModule),
   ],
   controllers: [
     CatalogController,

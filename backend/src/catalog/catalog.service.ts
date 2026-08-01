@@ -8,8 +8,8 @@ import { PatternLikeService } from '../social/pattern-like.service';
 import { CreatorBlockService } from '../social/creator-block.service';
 
 import { encodeCursor, decodeCursor } from './catalog.utils';
-import { catalogPatternObjectKeys } from './pattern-object-keys';
 import { OBJECT_STORAGE, ObjectStorage } from './storage/object-storage.interface';
+import { patternImageUrls } from './pattern-image-urls';
 
 export interface UpsertPatternInput {
   // Only used when no existing Pattern matches (title, creatorName); ignored
@@ -78,11 +78,7 @@ export class CatalogService {
       width: pattern.width,
       height: pattern.height,
       paletteSize: pattern.paletteSize,
-      previewUrl: this.storage.publicUrl(pattern.previewObjectKey),
-      thumbnailUrls: pattern.thumbnailRendererVersion === null ? null : {
-        browsing: this.storage.publicUrl(catalogPatternObjectKeys(pattern.id).thumbnailBrowsing),
-        detail: this.storage.publicUrl(catalogPatternObjectKeys(pattern.id).thumbnailDetail),
-      },
+      ...patternImageUrls(pattern, this.storage),
       unlockPriceTier: pattern.unlockPriceTier,
       publishedAt: pattern.publishedAt.toISOString(),
       likeCount: pattern.likeCount ?? 0,

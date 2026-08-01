@@ -11,8 +11,9 @@ import {
   useMyPublishedPatterns,
   useWithdrawCatalogMetadataRevision,
 } from '@/api/catalogMetadataRevisions';
+import { absolutePreviewUrl, absoluteThumbnailUrls } from '@/api/catalog';
 import { useWithdrawCommunityPattern } from '@/api/catalogWithdrawals';
-import { Button, Card, EmptyState, Screen } from '@/components';
+import { Button, Card, EmptyState, Screen, PatternImage } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
 
@@ -185,21 +186,33 @@ function PatternCard({
   const appealOpen = metadataActionsAvailable && appealId === item.id;
   return (
     <Card style={styles.card}>
-      <View style={styles.titleRow}>
-        <Text numberOfLines={2} style={styles.title}>{item.title}</Text>
-        {(item.status !== 'available' || revision !== null) && (
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>
-              {item.status === 'withdrawn'
-                ? 'Withdrawn from Catalog'
-                : item.status === 'review_hold'
-                  ? 'Under Review Hold'
-                  : STATUS_LABELS[revision!.status]}
-            </Text>
+      <View style={styles.thumbRow}>
+        <PatternImage
+          assets={{
+            thumbnailUrls: absoluteThumbnailUrls(item.thumbnailUrls),
+            previewUrl: absolutePreviewUrl(item.previewUrl),
+          }}
+          variant="browsing"
+          style={styles.thumbImage}
+        />
+        <View style={styles.thumbContent}>
+          <View style={styles.titleRow}>
+            <Text numberOfLines={2} style={styles.title}>{item.title}</Text>
+            {(item.status !== 'available' || revision !== null) && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>
+                  {item.status === 'withdrawn'
+                    ? 'Withdrawn from Catalog'
+                    : item.status === 'review_hold'
+                      ? 'Under Review Hold'
+                      : STATUS_LABELS[revision!.status]}
+                </Text>
+              </View>
+            )}
           </View>
-        )}
+          <Text style={styles.meta}>{item.categoryCode} · Published {new Date(item.publishedAt).toLocaleDateString()}</Text>
+        </View>
       </View>
-      <Text style={styles.meta}>{item.categoryCode} · Published {new Date(item.publishedAt).toLocaleDateString()}</Text>
       {revision !== null && revision.rejectionReason !== null && (
         <View style={styles.rejection}>
           <Text style={styles.rejectionTitle}>{REASON_LABELS[revision.rejectionReason]}</Text>
@@ -268,6 +281,9 @@ const styles = StyleSheet.create({
   loader: { marginTop: Theme.spacing.xxl },
   list: { gap: Theme.spacing.md, paddingBottom: Theme.spacing.xxl },
   card: { gap: Theme.spacing.md },
+  thumbRow: { alignItems: 'center', flexDirection: 'row', gap: Theme.spacing.md },
+  thumbImage: { borderRadius: Theme.radii.md, height: 56, width: 56 },
+  thumbContent: { flex: 1, gap: Theme.spacing.xs },
   titleRow: { alignItems: 'flex-start', flexDirection: 'row', gap: Theme.spacing.sm },
   title: { color: Theme.colors.textPrimary, flex: 1, fontSize: Theme.typography.sizes.md, fontWeight: Theme.typography.weights.bold },
   badge: { backgroundColor: Theme.colors.accentHoneySoft, borderRadius: Theme.radii.full, paddingHorizontal: Theme.spacing.sm, paddingVertical: Theme.spacing.xs },

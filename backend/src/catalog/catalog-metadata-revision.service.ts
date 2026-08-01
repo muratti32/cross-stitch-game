@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource, In, MoreThan, Not } from 'typeorm';
 
 import { OperatorAuditLogEntity } from '../admin/entities';
@@ -17,6 +17,8 @@ import {
   PatternEntity,
   TagEntity,
 } from './entities';
+import { OBJECT_STORAGE, ObjectStorage } from './storage/object-storage.interface';
+import { patternImageUrls } from './pattern-image-urls';
 
 const ACTIVE_SLOT_STATUSES = ['pending', 'appeal_pending'] as const;
 
@@ -25,6 +27,7 @@ export class CatalogMetadataRevisionService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly precheck: CatalogPrecheckService,
+    @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
   ) {}
 
   async create(principal: AuthPrincipal, patternId: string, dto: CreateCatalogMetadataRevisionDto) {
@@ -225,6 +228,7 @@ export class CatalogMetadataRevisionService {
         status: pattern.status,
         tagCodes: (pattern.tags ?? []).map((tag) => tag.code),
         title: pattern.title,
+        ...patternImageUrls(pattern, this.storage),
       };
     });
   }

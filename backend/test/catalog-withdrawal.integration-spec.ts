@@ -87,7 +87,7 @@ describe('Catalog Withdrawal', () => {
       dataSource,
       storage,
     );
-    revisions = new CatalogMetadataRevisionService(dataSource, precheck);
+    revisions = new CatalogMetadataRevisionService(dataSource, precheck, storage);
     adminCatalog = new AdminCatalogService(
       dataSource,
       storage,

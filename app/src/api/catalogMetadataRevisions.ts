@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { apiFetch } from './apiFetch';
+import { PatternThumbnailUrls } from '../pattern-assets';
 
 export type CatalogMetadataRevisionStatus =
   | 'pending'
@@ -45,6 +46,8 @@ export interface MyPublishedPattern {
   status: 'available' | 'review_hold' | 'withdrawn';
   tagCodes: string[];
   title: string;
+  previewUrl: string;
+  thumbnailUrls: PatternThumbnailUrls | null;
 }
 
 export interface CreateCatalogMetadataRevisionInput {

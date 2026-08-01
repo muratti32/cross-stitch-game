@@ -5,6 +5,7 @@ import { DataSource } from 'typeorm';
 import { PrincipalType } from '../src/auth/entities';
 import { CatalogMetadataRevisionService } from '../src/catalog/catalog-metadata-revision.service';
 import { CatalogPrecheckService } from '../src/catalog/catalog-precheck.service';
+import type { ObjectStorage } from '../src/catalog/storage/object-storage.interface';
 import { AppConfigService } from '../src/config/app-config.service';
 import { createTypeOrmOptions } from '../src/database/typeorm-options';
 
@@ -16,6 +17,15 @@ describe('Catalog Metadata Revision persistence', () => {
   let profileId: string;
   let patternId: string;
   let revisionId: string;
+
+  const storage: ObjectStorage = {
+    delete: () => Promise.resolve(),
+    exists: () => Promise.resolve(false),
+    get: () => Promise.resolve(null),
+    list: () => Promise.resolve([]),
+    publicUrl: (key: string) => key,
+    put: () => Promise.resolve(),
+  };
 
   beforeAll(async () => {
     postgres = await new PostgreSqlContainer('postgres:16-alpine').start();
@@ -175,16 +185,9 @@ describe('Catalog Metadata Revision persistence', () => {
     const precheck = new CatalogPrecheckService(
       { openAiModerationEnabled: false } as AppConfigService,
       dataSource,
-      {
-        delete: () => Promise.resolve(),
-        exists: () => Promise.resolve(false),
-        get: () => Promise.resolve(null),
-        list: () => Promise.resolve([]),
-        publicUrl: (key: string) => key,
-        put: () => Promise.resolve(),
-      },
+      storage,
     );
-    const service = new CatalogMetadataRevisionService(dataSource, precheck);
+    const service = new CatalogMetadataRevisionService(dataSource, precheck, storage);
     const principal = { id: accountId, tokenVersion: 1, type: PrincipalType.Account };
 
     const created = await service.create(principal, acceptPatternId, {
@@ -230,16 +233,9 @@ describe('Catalog Metadata Revision persistence', () => {
     const precheck = new CatalogPrecheckService(
       { openAiModerationEnabled: false } as AppConfigService,
       dataSource,
-      {
-        delete: () => Promise.resolve(),
-        exists: () => Promise.resolve(false),
-        get: () => Promise.resolve(null),
-        list: () => Promise.resolve([]),
-        publicUrl: (key: string) => key,
-        put: () => Promise.resolve(),
-      },
+      storage,
     );
-    const service = new CatalogMetadataRevisionService(dataSource, precheck);
+    const service = new CatalogMetadataRevisionService(dataSource, precheck, storage);
     const principal = { id: accountId, tokenVersion: 1, type: PrincipalType.Account };
 
     const created = await service.create(principal, rejectPatternId, {
@@ -285,16 +281,9 @@ describe('Catalog Metadata Revision persistence', () => {
     const precheck = new CatalogPrecheckService(
       { openAiModerationEnabled: false } as AppConfigService,
       dataSource,
-      {
-        delete: () => Promise.resolve(),
-        exists: () => Promise.resolve(false),
-        get: () => Promise.resolve(null),
-        list: () => Promise.resolve([]),
-        publicUrl: (key: string) => key,
-        put: () => Promise.resolve(),
-      },
+      storage,
     );
-    const service = new CatalogMetadataRevisionService(dataSource, precheck);
+    const service = new CatalogMetadataRevisionService(dataSource, precheck, storage);
     const principal = { id: accountId, tokenVersion: 1, type: PrincipalType.Account };
     const input = {
       categoryCode: 'other',
@@ -340,16 +329,9 @@ describe('Catalog Metadata Revision persistence', () => {
     const precheck = new CatalogPrecheckService(
       { openAiModerationEnabled: false } as AppConfigService,
       dataSource,
-      {
-        delete: () => Promise.resolve(),
-        exists: () => Promise.resolve(false),
-        get: () => Promise.resolve(null),
-        list: () => Promise.resolve([]),
-        publicUrl: (key: string) => key,
-        put: () => Promise.resolve(),
-      },
+      storage,
     );
-    const service = new CatalogMetadataRevisionService(dataSource, precheck);
+    const service = new CatalogMetadataRevisionService(dataSource, precheck, storage);
     const principal = { id: accountId, tokenVersion: 1, type: PrincipalType.Account };
 
     const created = await service.create(principal, appealPatternId, {
@@ -415,16 +397,9 @@ describe('Catalog Metadata Revision persistence', () => {
     const precheck = new CatalogPrecheckService(
       { openAiModerationEnabled: false } as AppConfigService,
       dataSource,
-      {
-        delete: () => Promise.resolve(),
-        exists: () => Promise.resolve(false),
-        get: () => Promise.resolve(null),
-        list: () => Promise.resolve([]),
-        publicUrl: (key: string) => key,
-        put: () => Promise.resolve(),
-      },
+      storage,
     );
-    const service = new CatalogMetadataRevisionService(dataSource, precheck);
+    const service = new CatalogMetadataRevisionService(dataSource, precheck, storage);
     const principal = { id: accountId, tokenVersion: 1, type: PrincipalType.Account };
     const input = {
       categoryCode: 'other',

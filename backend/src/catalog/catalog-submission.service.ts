@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { createHash, randomUUID } from 'node:crypto';
@@ -28,18 +29,23 @@ import {
   PatternEntity,
   TagEntity,
 } from './entities';
-import { catalogSubmissionObjectKeys } from './pattern-object-keys';
+import { catalogSubmissionObjectKeys, catalogPatternObjectKeys } from './pattern-object-keys';
 import { OBJECT_STORAGE, ObjectStorage } from './storage/object-storage.interface';
+import { decodePatternArtifactV1 } from './pattern-artifact-encoder';
+import { PatternThumbnailStagingService } from '../conversion/pattern-thumbnail-staging.service';
 
 export const CATALOG_PUBLICATION_LICENSE_VERSION = 'v1' as const;
 
 @Injectable()
 export class CatalogSubmissionService {
+  private readonly logger = new Logger(CatalogSubmissionService.name);
+
   constructor(
     private readonly dataSource: DataSource,
     private readonly jobs: ProcessingJobsRepository,
     private readonly precheck: CatalogPrecheckService,
     @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
+    private readonly thumbnails: PatternThumbnailStagingService,
   ) {}
 
   async create(
@@ -262,6 +268,33 @@ export class CatalogSubmissionService {
     ) {
       throw new ConflictException('Invalid Catalog Submission cannot be accepted');
     }
+
+    const communityPatternId = randomUUID();
+    let thumbnails: { version: number; keys: readonly string[] } | null = null;
+    try {
+      const bytes = await this.storage.get(snapshot.artifactObjectKey);
+      if (bytes !== null) {
+        try {
+          const decoded = decodePatternArtifactV1(bytes);
+          thumbnails = await this.thumbnails.stageThumbnails({
+            grid: decoded.grid,
+            height: decoded.height,
+            idForLogging: id,
+            keys: catalogPatternObjectKeys(communityPatternId),
+            ownerLabel: 'Community Pattern',
+            palette: decoded.palette,
+            width: decoded.width,
+          });
+        } catch (decodeError: unknown) {
+          const reason = decodeError instanceof Error ? decodeError.message : String(decodeError);
+          this.logger.error(`Pattern decode failed for catalog submission accept ${id}: ${reason}`);
+        }
+      }
+    } catch (err: unknown) {
+      const reason = err instanceof Error ? err.message : String(err);
+      this.logger.error(`Pattern thumbnail staging failed for catalog submission accept ${id}: ${reason}`);
+    }
+
     return this.dataSource.transaction(async (manager) => {
       const submissions = manager.getRepository(CatalogSubmissionEntity);
       const submission = await submissions.findOne({
@@ -285,7 +318,6 @@ export class CatalogSubmissionService {
       });
       if (category === null) throw new ConflictException('Invalid Catalog Submission cannot be accepted');
       const before = this.auditView(submission);
-      const communityPatternId = randomUUID();
       await manager.getRepository(PatternEntity).save({
         artifactByteLength: submission.artifactByteLength,
         artifactChecksum: submission.artifactChecksum,
@@ -304,11 +336,18 @@ export class CatalogSubmissionService {
         sourceLanguage: submission.sourceLanguage,
         status: 'available',
         tags,
+        thumbnailRendererVersion: thumbnails?.version ?? null,
         title: submission.title,
         unlockPriceTier: null,
         visibility: 'catalog',
         width: submission.width,
       });
+      if (thumbnails !== null) {
+        await manager.getRepository(ObjectRegistryEntity).update(
+          thumbnails.keys.map((objectKey) => ({ objectKey })),
+          { missing: false, state: 'available' },
+        );
+      }
       await manager.getRepository(CatalogReviewDecisionEntity).save({
         decision: 'accepted',
         note: note?.trim() || null,

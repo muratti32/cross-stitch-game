@@ -9,6 +9,7 @@ import { encodePatternArtifactV1 } from '../src/catalog/pattern-artifact-encoder
 import type { ObjectStorage } from '../src/catalog/storage/object-storage.interface';
 import { AppConfigService } from '../src/config/app-config.service';
 import { renderPatternPreviewPng } from '../src/conversion/pattern-preview-renderer';
+import { PatternThumbnailStagingService } from '../src/conversion/pattern-thumbnail-staging.service';
 import { createTypeOrmOptions } from '../src/database/typeorm-options';
 import { JobStateTransitionService } from '../src/jobs/job-state-transition.service';
 import { ProcessingJobsRepository } from '../src/jobs/processing-jobs.repository';
@@ -196,7 +197,10 @@ describe('Catalog Submission persistence', () => {
       dataSource,
       storage,
     );
-    const service = new CatalogSubmissionService(dataSource, jobs, precheck, storage);
+    const thumbnails = {
+      stageThumbnails: () => Promise.resolve(null),
+    } as unknown as PatternThumbnailStagingService;
+    const service = new CatalogSubmissionService(dataSource, jobs, precheck, storage, thumbnails);
     const principal = { id: accountId, tokenVersion: 1, type: PrincipalType.Account };
     const input = {
       categoryCode: 'other',
@@ -308,7 +312,10 @@ describe('Catalog Submission persistence', () => {
       dataSource,
       storage,
     );
-    const service = new CatalogSubmissionService(dataSource, jobs, precheck, storage);
+    const thumbnails = {
+      stageThumbnails: () => Promise.resolve(null),
+    } as unknown as PatternThumbnailStagingService;
+    const service = new CatalogSubmissionService(dataSource, jobs, precheck, storage, thumbnails);
     const principal = { id: restrictedAccountId, tokenVersion: 1, type: PrincipalType.Account };
 
     await expect(
