@@ -96,7 +96,12 @@ export default function LikedPatternsScreen() {
           }
           renderItem={({ item }) => (
             <Pressable
-              onPress={() => router.push(`/(tabs)/(catalog)/${item.id}`)}
+              onPress={() =>
+                router.push({
+                  pathname: '/(tabs)/(catalog)/[id]',
+                  params: { id: item.id, returnTo: '/(tabs)/(profile)/liked-patterns' },
+                })
+              }
               style={({ pressed }) => [pressed && styles.pressedItem]}
             >
               <Card style={styles.card}>

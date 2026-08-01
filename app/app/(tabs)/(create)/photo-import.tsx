@@ -315,7 +315,10 @@ export default function PhotoImportScreen() {
       setCustomColors(20);
       setLogAspect(0);
       router.dismissAll();
-      router.replace(`/(tabs)/(play)/${readySession.id}`);
+      router.replace({
+        pathname: '/(tabs)/(play)/[sessionId]',
+        params: { sessionId: readySession.id, returnTo: '/(tabs)/(create)' },
+      });
     } catch (caught: unknown) {
       if (conversionStarted && !conversionCompleted) {
         await captureGameplayEvent('pattern_conversion_failed', {

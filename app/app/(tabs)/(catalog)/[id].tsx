@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLikeToggle, useLocalLikes, useBlockCreator } from '@/api/social';
 
 export default function PatternDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, returnTo } = useLocalSearchParams<{ id: string; returnTo?: string }>();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,6 +22,16 @@ export default function PatternDetailScreen() {
   const [stitching, setStitching] = useState(false);
 
   const manifestPattern = BUNDLED_PATTERNS.find((p) => p.id === id);
+
+  const handleBack = () => {
+    if (returnTo) {
+      router.navigate(returnTo as any);
+    } else if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.navigate('/(tabs)/(catalog)');
+    }
+  };
 
   const loadData = async () => {
     if (!id || !manifestPattern) return;
@@ -45,7 +55,7 @@ export default function PatternDetailScreen() {
   // Server catalog patterns are browsable only in this slice; Session
   // Preparation (issue #12) adds the download-and-play path.
   if (!manifestPattern) {
-    return <ServerPatternDetail id={id} />;
+    return <ServerPatternDetail id={id} returnTo={returnTo} />;
   }
 
   const handleStartStitching = async () => {
@@ -53,8 +63,14 @@ export default function PatternDetailScreen() {
       setStitching(true);
       // Resumes the pattern's active session if one exists, otherwise creates one.
       const session = await prepareBundledSession(manifestPattern.id, manifestPattern.checksum);
-      // Jump straight into stitching instead of the Play tab list
-      router.navigate(`/(tabs)/(play)/${session.id}`);
+      // Jump straight into stitching, returning back to this catalog detail screen on exit
+      const detailReturnTo = returnTo
+        ? `/(tabs)/(catalog)/${id}?returnTo=${encodeURIComponent(returnTo)}`
+        : `/(tabs)/(catalog)/${id}`;
+      router.navigate({
+        pathname: '/(tabs)/(play)/[sessionId]',
+        params: { sessionId: session.id, returnTo: detailReturnTo },
+      });
     } catch (err) {
       console.error('Failed to start stitching session:', err);
       setError('Failed to create a stitching session. Please try again.');
@@ -70,7 +86,7 @@ export default function PatternDetailScreen() {
         <Button
           variant="secondary"
           title="← Back"
-          onPress={() => router.back()}
+          onPress={handleBack}
           style={styles.backButton}
         />
       </View>
@@ -156,11 +172,21 @@ export default function PatternDetailScreen() {
   );
 }
 
-function ServerPatternDetail({ id }: { id: string | undefined }) {
+function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnTo?: string }) {
   const router = useRouter();
   const pattern = useCatalogPattern(id, true);
   const { isAuthenticated, isAccount } = useIdentityStore();
   const isGuest = isAuthenticated && !isAccount;
+
+  const handleBack = () => {
+    if (returnTo) {
+      router.navigate(returnTo as any);
+    } else if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.navigate('/(tabs)/(catalog)');
+    }
+  };
 
   const { data: balance, isLoading: balanceLoading } = useCoinBalance();
   const { data: unlockedIds, isLoading: unlocksLoading } = useUnlockedPatternIds();
@@ -192,7 +218,7 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
           title="Pattern Unavailable"
           body="This pattern could not be loaded. It may have been removed, or you may be offline."
           actionLabel="Go Back"
-          onAction={() => router.back()}
+          onAction={handleBack}
           actionVariant="secondary"
         />
       </Screen>
@@ -245,6 +271,10 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
     );
   };
 
+  const detailReturnTo = returnTo
+    ? `/(tabs)/(catalog)/${id}?returnTo=${encodeURIComponent(returnTo)}`
+    : `/(tabs)/(catalog)/${id}`;
+
   const handleStartStitching = async () => {
     try {
       setPreparing(true);
@@ -256,7 +286,10 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
         width: item.width,
         height: item.height,
       });
-      router.navigate(`/(tabs)/(play)/${session.id}`);
+      router.navigate({
+        pathname: '/(tabs)/(play)/[sessionId]',
+        params: { sessionId: session.id, returnTo: detailReturnTo },
+      });
     } catch (err) {
       if (err instanceof UnlockRequiredError) {
         setUnlockCTAOverride(true);
@@ -287,7 +320,10 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
         width: item.width,
         height: item.height,
       });
-      router.navigate(`/(tabs)/(play)/${session.id}`);
+      router.navigate({
+        pathname: '/(tabs)/(play)/[sessionId]',
+        params: { sessionId: session.id, returnTo: detailReturnTo },
+      });
     } catch (err) {
       if (err instanceof InsufficientCoinError) {
         setInsufficientError({ price: err.price, balance: err.balance });
@@ -322,7 +358,7 @@ function ServerPatternDetail({ id }: { id: string | undefined }) {
         <Button
           variant="secondary"
           title="← Back"
-          onPress={() => router.back()}
+          onPress={handleBack}
           style={styles.backButton}
         />
         <View style={styles.headerActions}>

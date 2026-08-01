@@ -90,7 +90,10 @@ export default function ProfileScreen() {
         width: pattern.width,
       });
       const ready = await waitUntilSessionReady(session.id);
-      router.push(`/(tabs)/(play)/${ready.id}`);
+      router.push({
+        pathname: '/(tabs)/(play)/[sessionId]',
+        params: { sessionId: ready.id, returnTo: '/(tabs)/(profile)' },
+      });
     } catch (error: unknown) {
       setPatternsError(error instanceof Error ? error.message : String(error));
     } finally {
@@ -104,7 +107,10 @@ export default function ProfileScreen() {
     try {
       const session = await preparePendingPersonalSession(pending);
       const ready = await waitUntilSessionReady(session.id);
-      router.push(`/(tabs)/(play)/${ready.id}`);
+      router.push({
+        pathname: '/(tabs)/(play)/[sessionId]',
+        params: { sessionId: ready.id, returnTo: '/(tabs)/(profile)' },
+      });
     } catch (error: unknown) {
       setPatternsError(error instanceof Error ? error.message : String(error));
     } finally {
@@ -479,7 +485,12 @@ export default function ProfileScreen() {
             {likedPatternsQuery.data?.pages.flatMap((page) => page.items).map((pattern) => (
               <Pressable
                 key={pattern.id}
-                onPress={() => router.push(`/(tabs)/(catalog)/${pattern.id}`)}
+                onPress={() =>
+                  router.push({
+                    pathname: '/(tabs)/(catalog)/[id]',
+                    params: { id: pattern.id, returnTo: '/(tabs)/(profile)' },
+                  })
+                }
                 style={({ pressed }) => [pressed && styles.pressedButton]}
               >
                 <Card style={styles.patternCard}>

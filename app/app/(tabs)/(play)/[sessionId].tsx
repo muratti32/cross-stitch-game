@@ -20,10 +20,18 @@ import Animated, {
 import { useActiveMembershipTheme } from '@/membership/themes';
 
 export default function SessionReadyScreen() {
-  const { sessionId } = useLocalSearchParams<{ sessionId: string }>();
+  const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
   const router = useRouter();
   const navigation = useNavigation();
   const { theme } = useActiveMembershipTheme();
+
+  const handleBack = () => {
+    if (returnTo) {
+      router.navigate(returnTo as any);
+    } else {
+      router.dismissTo('/(tabs)/(play)');
+    }
+  };
 
   // Hide the OS bottom tab bar while a stitching session is focused, so a
   // finger drifting past the thread palette can't land on another app tab
@@ -243,8 +251,8 @@ export default function SessionReadyScreen() {
         </Text>
         <View style={styles.errorActions}>
           <Button
-            title="Go to Table"
-            onPress={() => router.dismissTo('/(tabs)/(play)')}
+            title={returnTo ? 'Go Back' : 'Go to Table'}
+            onPress={handleBack}
             variant="secondary"
             style={styles.errorBtn}
           />
@@ -270,8 +278,8 @@ export default function SessionReadyScreen() {
       <View style={styles.header}>
         <Button
           variant="secondary"
-          title="← Table"
-          onPress={() => router.dismissTo('/(tabs)/(play)')}
+          title={returnTo ? '← Back' : '← Table'}
+          onPress={handleBack}
           style={styles.backButton}
         />
         <View style={styles.headerInfo}>
@@ -288,7 +296,7 @@ export default function SessionReadyScreen() {
       {patternRemoved && (
         <Pressable
           style={styles.removedBanner}
-          onPress={() => router.dismissTo('/(tabs)/(play)')}
+          onPress={handleBack}
         >
           <Ionicons name="shield-outline" size={16} color={Theme.colors.textPrimary} />
           <Text style={styles.conflictText}>
