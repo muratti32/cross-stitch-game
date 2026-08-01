@@ -286,6 +286,12 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     return p;
   }, [theme.majorGridColor]);
 
+  const previewPaint = useMemo(() => {
+    const p = Skia.Paint();
+    p.setStyle(PaintStyle.Fill);
+    return p;
+  }, []);
+
   const spritePaint = useMemo(() => {
     const p = Skia.Paint();
     p.setAntiAlias(true);
@@ -339,6 +345,30 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     if (!basePic && canRecordMissing) {
       const recorder = Skia.PictureRecorder();
       const canvas = recorder.beginRecording(Skia.XYWHRect(0, 0, TILE_SIZE, TILE_SIZE));
+
+      // Draw faded mosaic pattern preview for zoomed-out LOD
+      if (lodBand === 'out') {
+        for (let cy = 0; cy < TILE_CELLS; cy++) {
+          for (let cx = 0; cx < TILE_CELLS; cx++) {
+            const gx = tileX * TILE_CELLS + cx;
+            const gy = tileY * TILE_CELLS + cy;
+
+            if (gx < pattern.width && gy < pattern.height) {
+              const colorIdx = pattern.grid[gy * pattern.width + gx];
+              if (colorIdx > 0) {
+                const colorHex = pattern.palette[colorIdx - 1].rgbHex;
+                const col = Skia.Color(colorHex);
+                col[3] = 0.35; // 35% opacity preview for unstitched pattern in zoom-out
+                previewPaint.setColor(col);
+                canvas.drawRect(
+                  Skia.XYWHRect(cx * CELL_SIZE, cy * CELL_SIZE, CELL_SIZE, CELL_SIZE),
+                  previewPaint
+                );
+              }
+            }
+          }
+        }
+      }
 
       // Draw grid lines
       if (lodBand === 'mid' || lodBand === 'readable') {
