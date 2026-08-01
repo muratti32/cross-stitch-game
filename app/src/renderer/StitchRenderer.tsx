@@ -329,7 +329,9 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
   // Pre-fetch/re-record visible tiles
   const renderedTiles = visibleTiles.map(({ tileX, tileY }) => {
     const baseKey = `${theme.id}_${tileX}_${tileY}_${lodBand}`;
-    const completedKey = `${theme.id}_${tileX}_${tileY}`;
+    const completedBaseKey = `${theme.id}_${tileX}_${tileY}`;
+    const completedVariant = lodBand === 'out' ? 'mosaic' : 'shape';
+    const completedKey = `${completedBaseKey}_${completedVariant}`;
     const overlayKey = `${theme.id}_${tileX}_${tileY}`;
 
     // --- 1. Base Picture (Immutable per LOD band) ---
@@ -388,6 +390,10 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
 
     // --- 2. Completed stitches Picture (Re-recorded on cell state changes) ---
     const isCompletedDirty = rendererState.checkAndClearCompletedDirty(tileX, tileY);
+    if (isCompletedDirty) {
+      completedCache.current.delete(`${completedBaseKey}_mosaic`);
+      completedCache.current.delete(`${completedBaseKey}_shape`);
+    }
     let completedPic = completedCache.current.get(completedKey);
 
     if (isCompletedDirty || (!completedPic && canRecordMissing)) {
@@ -408,39 +414,47 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
                 stitchPaint.setColor(Skia.Color(colorHex));
                 const left = cx * CELL_SIZE;
                 const top = cy * CELL_SIZE;
-                if (theme.stitchAppearance === 'cross') {
-                  stitchPaint.setStyle(PaintStyle.Stroke);
-                  stitchPaint.setStrokeWidth(2.25);
-                  canvas.drawLine(
-                    left + 2.5,
-                    top + 2.5,
-                    left + CELL_SIZE - 2.5,
-                    top + CELL_SIZE - 2.5,
-                    stitchPaint,
-                  );
-                  canvas.drawLine(
-                    left + CELL_SIZE - 2.5,
-                    top + 2.5,
-                    left + 2.5,
-                    top + CELL_SIZE - 2.5,
-                    stitchPaint,
-                  );
-                } else if (theme.stitchAppearance === 'rounded') {
+                if (completedVariant === 'mosaic') {
                   stitchPaint.setStyle(PaintStyle.Fill);
-                  canvas.drawRRect(
-                    Skia.RRectXY(
-                      Skia.XYWHRect(left + 1, top + 1, CELL_SIZE - 2, CELL_SIZE - 2),
-                      3,
-                      3,
-                    ),
+                  canvas.drawRect(
+                    Skia.XYWHRect(left, top, CELL_SIZE, CELL_SIZE),
                     stitchPaint,
                   );
                 } else {
-                  stitchPaint.setStyle(PaintStyle.Fill);
-                  canvas.drawRect(
-                    Skia.XYWHRect(left + 0.5, top + 0.5, CELL_SIZE - 1, CELL_SIZE - 1),
-                    stitchPaint,
-                  );
+                  if (theme.stitchAppearance === 'cross') {
+                    stitchPaint.setStyle(PaintStyle.Stroke);
+                    stitchPaint.setStrokeWidth(2.25);
+                    canvas.drawLine(
+                      left + 2.5,
+                      top + 2.5,
+                      left + CELL_SIZE - 2.5,
+                      top + CELL_SIZE - 2.5,
+                      stitchPaint,
+                    );
+                    canvas.drawLine(
+                      left + CELL_SIZE - 2.5,
+                      top + 2.5,
+                      left + 2.5,
+                      top + CELL_SIZE - 2.5,
+                      stitchPaint,
+                    );
+                  } else if (theme.stitchAppearance === 'rounded') {
+                    stitchPaint.setStyle(PaintStyle.Fill);
+                    canvas.drawRRect(
+                      Skia.RRectXY(
+                        Skia.XYWHRect(left + 1, top + 1, CELL_SIZE - 2, CELL_SIZE - 2),
+                        3,
+                        3,
+                      ),
+                      stitchPaint,
+                    );
+                  } else {
+                    stitchPaint.setStyle(PaintStyle.Fill);
+                    canvas.drawRect(
+                      Skia.XYWHRect(left + 0.5, top + 0.5, CELL_SIZE - 1, CELL_SIZE - 1),
+                      stitchPaint,
+                    );
+                  }
                 }
               }
             }
@@ -554,7 +568,12 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     const visibleKeys = new Set(
       visibleTiles.map((t) => `${theme.id}_${t.tileX}_${t.tileY}`),
     );
-    completedCache.current.prune(visibleKeys, TILE_CACHE_BUDGET);
+    const completedVisibleKeys = new Set(
+      visibleTiles.map(
+        (t) => `${theme.id}_${t.tileX}_${t.tileY}_${lodBand === 'out' ? 'mosaic' : 'shape'}`,
+      ),
+    );
+    completedCache.current.prune(completedVisibleKeys, TILE_CACHE_BUDGET);
     overlayCache.current.prune(visibleKeys, TILE_CACHE_BUDGET);
 
     const baseVisibleKeys = new Set(

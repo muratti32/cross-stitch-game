@@ -386,5 +386,17 @@ describe('Stitch Renderer Pure Logic', () => {
       expect(cache.size).toBe(1);
       expect((cache.get('0_0') as unknown as { id: number }).id).toBe(2);
     });
+
+    test('delete removes a cached picture without affecting other keys', () => {
+      const cache = new TilePictureCache();
+      cache.set('0_0_shape', pic(1));
+      cache.set('0_0_mosaic', pic(2));
+
+      cache.delete('0_0_shape');
+
+      expect(cache.get('0_0_shape')).toBeUndefined();
+      expect(cache.get('0_0_mosaic')).toBeDefined();
+      expect(cache.size).toBe(1);
+    });
   });
 });

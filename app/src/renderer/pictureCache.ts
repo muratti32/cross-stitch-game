@@ -31,6 +31,10 @@ export class TilePictureCache {
     this.map.set(key, picture);
   }
 
+  delete(key: string): void {
+    this.map.delete(key);
+  }
+
   get size(): number {
     return this.map.size;
   }
