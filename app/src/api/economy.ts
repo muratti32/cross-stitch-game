@@ -135,3 +135,38 @@ export function useOpenAdAttempt() {
     mutationFn: openAdAttempt,
   });
 }
+
+export interface AdRewardGrantResult {
+  granted: boolean;
+  amount: number;
+  balance: number;
+  adsCompleted: number;
+  coinsConsumed: number;
+  replayed: boolean;
+}
+
+export async function claimAdReward(nonce: string): Promise<AdRewardGrantResult> {
+  const res = await apiFetch('/v1/economy/ad-attempts/claim', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nonce }),
+  });
+  if (!res.ok) {
+    const errBody = await res.json().catch(() => null);
+    const rawMsg = errBody?.message;
+    const msg = Array.isArray(rawMsg) ? rawMsg.join(', ') : rawMsg || `HTTP ${res.status}`;
+    throw new Error(msg);
+  }
+  return (await res.json()) as AdRewardGrantResult;
+}
+
+export function useClaimAdReward() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: claimAdReward,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
+      queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
+    },
+  });
+}

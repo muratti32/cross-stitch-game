@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { Theme } from '../theme/theme';
 import { Card } from './Card';
 import { Button } from './Button';
-import { useRewardDay, useOpenAdAttempt } from '../api/economy';
+import { useRewardDay, useOpenAdAttempt, useClaimAdReward } from '../api/economy';
 import { useRewardedAd } from '../hooks/useRewardedAd';
 
 /** Hardcoded 10 coin reward per ad attempt, locked by ADR-0011 / ADR-0033. */
@@ -29,6 +29,7 @@ interface RewardedAdCardProps {
 export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
   const { data, isLoading, isError, refetch } = useRewardDay();
   const { mutateAsync: openAdAttempt } = useOpenAdAttempt();
+  const { mutateAsync: claimAdReward } = useClaimAdReward();
   const queryClient = useQueryClient();
 
   const [attempt, setAttempt] = useState<{ nonce: string; expiresAt: string } | null>(null);
@@ -36,10 +37,42 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
   const [earned, setEarned] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
 
+  const attemptRef = useRef(attempt);
+  attemptRef.current = attempt;
+  const activeNonceRef = useRef<string | null>(null);
+  const claimingNonceRef = useRef<Set<string>>(new Set());
+
+  const handleClaim = useCallback(
+    async (nonce: string) => {
+      if (claimingNonceRef.current.has(nonce)) {
+        return;
+      }
+      claimingNonceRef.current.add(nonce);
+      try {
+        await claimAdReward(nonce);
+        activeNonceRef.current = null;
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] }),
+          queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] }),
+        ]);
+      } catch (err: unknown) {
+        claimingNonceRef.current.delete(nonce);
+        console.error('[RewardedAdCard] Failed to claim client ad reward:', err);
+        const msg = err instanceof Error ? err.message : String(err);
+        setLocalError(`Claim failed: ${msg}`);
+      }
+    },
+    [claimAdReward, queryClient],
+  );
+
   const { status, show, error } = useRewardedAd({
     serverSideVerification: attempt?.nonce ? { customData: attempt.nonce } : undefined,
-    onEarnedReward: () => {
+    onEarnedReward: async () => {
       setEarned(true);
+      const nonceToClaim = activeNonceRef.current || attemptRef.current?.nonce;
+      if (nonceToClaim) {
+        await handleClaim(nonceToClaim);
+      }
     },
   });
 
@@ -57,17 +90,27 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
 
     if (attemptPending && prevStatus === 'showing' && status !== 'showing') {
       // Ad finished (either dismissed or error during show)
-      queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
-      queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
-      setAttempt(null);
-      setAttemptPending(false);
-      setEarned(false);
+      const pendingNonce = activeNonceRef.current;
+      if (pendingNonce && !claimingNonceRef.current.has(pendingNonce)) {
+        handleClaim(pendingNonce).finally(() => {
+          queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
+          queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
+          setAttempt(null);
+          setAttemptPending(false);
+        });
+      } else {
+        queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
+        queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
+        setAttempt(null);
+        setAttemptPending(false);
+      }
     }
-  }, [status, attemptPending, queryClient]);
+  }, [status, attemptPending, queryClient, handleClaim]);
 
   useEffect(() => {
     if (attemptPending && status === 'error') {
       setLocalError(error?.message || 'Failed to load ad');
+      activeNonceRef.current = null;
       setAttempt(null);
       setAttemptPending(false);
     }
@@ -79,8 +122,10 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
       setAttemptPending(true);
       setEarned(false);
       const attemptData = await openAdAttempt();
+      activeNonceRef.current = attemptData.nonce;
       setAttempt(attemptData);
     } catch (err) {
+      activeNonceRef.current = null;
       setAttemptPending(false);
       setLocalError(err instanceof Error ? err.message : 'Failed to open ad attempt');
     }

@@ -101,4 +101,63 @@ describe('AdAttemptService', () => {
     await expect(service.openAttempt(principal)).rejects.toThrow(ConflictException);
     expect(adAttempts.create).not.toHaveBeenCalled();
   });
+
+  it('throws BadRequestException when claiming client reward with SSV enabled', async () => {
+    const status = { adsCompleted: 0, coinsConsumed: 0, premiumClaimed: false };
+    const ledger = {
+      getRewardDayStatus: jest.fn().mockResolvedValue(status),
+    } as unknown as CoinLedgerRepository;
+    const adAttempts = {} as unknown as AdAttemptRepository;
+    const config = {
+      enableAdmobSsv: true,
+    } as unknown as AppConfigService;
+
+    const service = new AdAttemptService(adAttempts, ledger, config);
+
+    await expect(service.claimClientReward(principal, 'nonce-123')).rejects.toThrow(
+      'Client ad reward claim is disabled when AdMob SSV is active',
+    );
+  });
+
+  it('claims client reward successfully when SSV is disabled', async () => {
+    const status = { adsCompleted: 0, coinsConsumed: 0, premiumClaimed: false };
+    const ledger = {
+      findExistingAdGrant: jest.fn().mockResolvedValue(null),
+      grantAdReward: jest.fn().mockResolvedValue({
+        granted: true,
+        amount: 10,
+        balance: 10,
+        adsCompleted: 1,
+        coinsConsumed: 10,
+        replayed: false,
+      }),
+    } as unknown as CoinLedgerRepository;
+
+    const adAttempts = {
+      consume: jest.fn().mockResolvedValue({ type: 'guest', id: 'guest-uuid-1' }),
+    } as unknown as AdAttemptRepository;
+
+    const config = {
+      enableAdmobSsv: false,
+    } as unknown as AppConfigService;
+
+    const service = new AdAttemptService(adAttempts, ledger, config);
+
+    const result = await service.claimClientReward(principal, 'nonce-123');
+
+    expect(result).toEqual({
+      granted: true,
+      amount: 10,
+      balance: 10,
+      adsCompleted: 1,
+      coinsConsumed: 10,
+      replayed: false,
+    });
+    expect(adAttempts.consume).toHaveBeenCalledWith('nonce-123');
+    expect(ledger.grantAdReward).toHaveBeenCalledWith(
+      { type: 'guest', id: 'guest-uuid-1' },
+      expect.any(String),
+      'ad_client:nonce-123',
+    );
+  });
 });

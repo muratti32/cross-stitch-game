@@ -48,12 +48,26 @@ export function isGoogleSsoConfigured(): boolean {
   );
 }
 
+const GOOGLE_TEST_REWARDED_AD_UNIT_IOS = 'ca-app-pub-3940256099942544/1712485313';
+const GOOGLE_TEST_REWARDED_AD_UNIT_ANDROID = 'ca-app-pub-3940256099942544/5224354917';
+
 /**
  * The Rewarded Ad unit ID for the current platform, or undefined when AdMob is
  * not configured for it (e.g. web, where the SDK is unavailable).
  */
 export function getRewardedAdUnitId(platform: 'android' | 'ios'): string | undefined {
-  return platform === 'ios'
-    ? Config.admob.iosRewardedAdUnitId
-    : Config.admob.androidRewardedAdUnitId;
+  const configured =
+    platform === 'ios'
+      ? Config.admob.iosRewardedAdUnitId
+      : Config.admob.androidRewardedAdUnitId;
+
+  if (configured) {
+    return configured;
+  }
+  if (__DEV__) {
+    return platform === 'ios'
+      ? GOOGLE_TEST_REWARDED_AD_UNIT_IOS
+      : GOOGLE_TEST_REWARDED_AD_UNIT_ANDROID;
+  }
+  return undefined;
 }

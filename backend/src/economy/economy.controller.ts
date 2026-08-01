@@ -11,6 +11,11 @@ import {
 import { PatternUnlockService } from './pattern-unlock.service';
 import { AdAttemptService } from './ad-attempt.service';
 
+class ClaimClientRewardDto {
+  @IsUUID()
+  nonce!: string;
+}
+
 class UnlockRequestDto {
   @IsUUID()
   patternId!: string;
@@ -19,7 +24,7 @@ class UnlockRequestDto {
 /**
  * Read-only coin state for the authenticated player. The client can never
  * mutate coin here; earning happens only through the server-authoritative
- * grant paths (e.g. the AdMob SSV callback).
+ * grant paths (e.g. the AdMob SSV callback or client claim endpoint when SSV is disabled).
  */
 @Controller('economy')
 @UseGuards(JwtAuthGuard)
@@ -35,6 +40,14 @@ export class EconomyController {
     @CurrentPrincipal() principal: AuthPrincipal,
   ): Promise<{ nonce: string; expiresAt: string }> {
     return this.adAttemptService.openAttempt(principal);
+  }
+
+  @Post('ad-attempts/claim')
+  async claimClientReward(
+    @CurrentPrincipal() principal: AuthPrincipal,
+    @Body() dto: ClaimClientRewardDto,
+  ) {
+    return this.adAttemptService.claimClientReward(principal, dto.nonce);
   }
 
   @Get('balance')
