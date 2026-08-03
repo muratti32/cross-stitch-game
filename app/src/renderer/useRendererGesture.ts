@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import {
   useSharedValue,
   withTiming,
@@ -10,12 +10,18 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { Gesture } from 'react-native-gesture-handler';
-import { CELL_SIZE, computeEdgePanVelocity } from './tileMath';
+import {
+  CELL_SIZE,
+  clampTranslation,
+  computeEdgePanVelocity,
+  translationBounds,
+} from './tileMath';
 
 export interface UseRendererGestureOptions {
   patternWidth: number;
   patternHeight: number;
   maxScale?: number;
+  panSlack?: { left?: number; right?: number; top?: number; bottom?: number };
   onCellTapped?: (x: number, y: number) => void;
   onSweepStitch?: (x: number, y: number) => void;
   gridShared: SharedValue<Uint8Array>;
@@ -33,6 +39,7 @@ export function useRendererGesture({
   patternWidth,
   patternHeight,
   maxScale = 3.0, // e.g. 48px per cell (48 / 16 = 3.0)
+  panSlack = {},
   onCellTapped,
   onSweepStitch,
   gridShared,
@@ -66,6 +73,12 @@ export function useRendererGesture({
   // Clamping scale limit derived dynamically based on fit
   const minScale = useSharedValue(0.05);
 
+  // Pan slack shared values keep the worklets independent from prop objects.
+  const slackLeft = useSharedValue(0);
+  const slackRight = useSharedValue(0);
+  const slackTop = useSharedValue(0);
+  const slackBottom = useSharedValue(0);
+
   // Sweep gesture state tracking
   const isSweepActive = useSharedValue(false);
   const fingerX = useSharedValue(0.0);
@@ -81,20 +94,35 @@ export function useRendererGesture({
     const contentW = patternWidth * CELL_SIZE * currentScale;
     const contentH = patternHeight * CELL_SIZE * currentScale;
 
-    // Centered horizontally if fits, otherwise clamped to boundaries
-    if (contentW <= cW) {
-      translateX.value = (cW - contentW) / 2;
-    } else {
-      translateX.value = clamp(translateX.value, cW - contentW, 0);
-    }
-
-    // Centered vertically if fits, otherwise clamped to boundaries
-    if (contentH <= cH) {
-      translateY.value = (cH - contentH) / 2;
-    } else {
-      translateY.value = clamp(translateY.value, cH - contentH, 0);
-    }
+    translateX.value = clampTranslation(
+      translateX.value,
+      cW,
+      contentW,
+      slackLeft.value,
+      slackRight.value,
+    );
+    translateY.value = clampTranslation(
+      translateY.value,
+      cH,
+      contentH,
+      slackTop.value,
+      slackBottom.value,
+    );
   };
+
+  // Publish the slack props to the UI thread, then re-clamp: when the floating
+  // rail moves (handedness flip) or disappears, the current translation may sit
+  // outside the new bounds and would otherwise stay there until the next pan.
+  useEffect(() => {
+    slackLeft.value = panSlack.left ?? 0;
+    slackRight.value = panSlack.right ?? 0;
+    slackTop.value = panSlack.top ?? 0;
+    slackBottom.value = panSlack.bottom ?? 0;
+
+    if (containerWidth.value > 0 && containerHeight.value > 0) {
+      clampTranslations(scale.value);
+    }
+  }, [panSlack.bottom, panSlack.left, panSlack.right, panSlack.top]);
 
   // Edge auto-pan loop
   useFrameCallback((frameInfo) => {
@@ -170,17 +198,20 @@ export function useRendererGesture({
     const contentW = patternWidth * CELL_SIZE * targetScale;
     const contentH = patternHeight * CELL_SIZE * targetScale;
 
-    if (contentW <= cW) {
-      targetTx = (cW - contentW) / 2;
-    } else {
-      targetTx = Math.min(0, Math.max(cW - contentW, targetTx));
-    }
-
-    if (contentH <= cH) {
-      targetTy = (cH - contentH) / 2;
-    } else {
-      targetTy = Math.min(0, Math.max(cH - contentH, targetTy));
-    }
+    targetTx = clampTranslation(
+      targetTx,
+      cW,
+      contentW,
+      slackLeft.value,
+      slackRight.value,
+    );
+    targetTy = clampTranslation(
+      targetTy,
+      cH,
+      contentH,
+      slackTop.value,
+      slackBottom.value,
+    );
 
     cancelAnimation(scale);
     cancelAnimation(translateX);
@@ -189,7 +220,18 @@ export function useRendererGesture({
     scale.value = withTiming(targetScale, { duration: 300 });
     translateX.value = withTiming(targetTx, { duration: 300 });
     translateY.value = withTiming(targetTy, { duration: 300 });
-  }, [patternWidth, containerWidth, containerHeight, scale, translateX, translateY]);
+  }, [
+    patternWidth,
+    containerWidth,
+    containerHeight,
+    scale,
+    translateX,
+    translateY,
+    slackBottom,
+    slackLeft,
+    slackRight,
+    slackTop,
+  ]);
 
   // Helper to trigger fit view (called when container size is resolved or manually)
   const fitToScreen = useCallback(() => {
@@ -220,9 +262,30 @@ export function useRendererGesture({
       containerHeight.value = h;
       if (isFirstTime) {
         fitToScreen();
+        return;
       }
+
+      const pW = patternWidth * CELL_SIZE;
+      const pH = patternHeight * CELL_SIZE;
+      if (w <= 0 || h <= 0 || pW <= 0 || pH <= 0) return;
+
+      const fitScale = Math.min(w / pW, h / pH);
+      minScale.value = fitScale;
+      if (scale.value < fitScale) {
+        scale.value = fitScale;
+      }
+      clampTranslations(scale.value);
     },
-    [containerWidth, containerHeight, fitToScreen]
+    [
+      containerWidth,
+      containerHeight,
+      fitToScreen,
+      minScale,
+      patternHeight,
+      patternWidth,
+      scale,
+      clampTranslations,
+    ]
   );
 
   // Gesture definitions.
@@ -351,18 +414,16 @@ export function useRendererGesture({
       const contentH = patternHeight * CELL_SIZE * scale.value;
 
       // Pan bounds for momentum decay
-      const minTx = contentW <= cW ? (cW - contentW) / 2 : cW - contentW;
-      const maxTx = contentW <= cW ? (cW - contentW) / 2 : 0;
-      const minTy = contentH <= cH ? (cH - contentH) / 2 : cH - contentH;
-      const maxTy = contentH <= cH ? (cH - contentH) / 2 : 0;
+      const xBounds = translationBounds(cW, contentW, slackLeft.value, slackRight.value);
+      const yBounds = translationBounds(cH, contentH, slackTop.value, slackBottom.value);
 
       translateX.value = withDecay({
         velocity: event.velocityX,
-        clamp: [minTx, maxTx],
+        clamp: [xBounds.min, xBounds.max],
       });
       translateY.value = withDecay({
         velocity: event.velocityY,
-        clamp: [minTy, maxTy],
+        clamp: [yBounds.min, yBounds.max],
       });
     });
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter, useNavigation, useFocusEffect } from 'expo-router';
 import { Screen, Button } from '@/components';
@@ -89,6 +89,13 @@ export default function SessionReadyScreen() {
   const celebrationAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: celebrationPulse.value }],
   }));
+
+  const panSlack = useMemo(() => {
+    if (isSessionCompleted) return {};
+
+    const railSlack = 48 + Theme.spacing.lg * 2;
+    return handedness === 'left' ? { left: railSlack } : { right: railSlack };
+  }, [handedness, isSessionCompleted]);
 
   useEffect(() => {
     celebrationPulse.value =
@@ -329,6 +336,7 @@ export default function SessionReadyScreen() {
           isColorCompletedShared={isColorCompletedShared}
           parentRevision={parentRevision}
           theme={theme}
+          panSlack={panSlack}
         />
       </Animated.View>
 
@@ -615,10 +623,6 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   paletteDock: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     backgroundColor: Theme.colors.card,
     borderTopWidth: 1,
     borderTopColor: Theme.colors.border,

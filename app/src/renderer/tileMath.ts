@@ -130,6 +130,45 @@ export function getFitViewport(
 }
 
 /**
+ * Returns the valid translation range for one content dimension.
+ */
+export function translationBounds(
+  containerSize: number,
+  contentSize: number,
+  slackBefore: number = 0,
+  slackAfter: number = 0,
+): { min: number; max: number } {
+  'worklet';
+  if (contentSize > containerSize) {
+    return {
+      min: containerSize - contentSize - slackAfter,
+      max: slackBefore,
+    };
+  }
+
+  const center = (containerSize - contentSize) / 2;
+  return {
+    min: center - slackAfter,
+    max: center + slackBefore,
+  };
+}
+
+/**
+ * Clamps a translation to the valid range for one content dimension.
+ */
+export function clampTranslation(
+  translate: number,
+  containerSize: number,
+  contentSize: number,
+  slackBefore: number = 0,
+  slackAfter: number = 0,
+): number {
+  'worklet';
+  const { min, max } = translationBounds(containerSize, contentSize, slackBefore, slackAfter);
+  return Math.max(min, Math.min(max, translate));
+}
+
+/**
  * Clamps scale and computes correct translations for zoom-to-point gestures,
  * keeping the anchor point in screen coordinates stationary.
  */

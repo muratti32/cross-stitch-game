@@ -10,6 +10,8 @@ import {
   getAnchoredZoomTransform,
   nextRemainingCell,
   computeEdgePanVelocity,
+  clampTranslation,
+  translationBounds,
 } from '../tileMath';
 import { RendererState } from '../RendererState';
 import { TilePictureCache, TILE_CACHE_BUDGET } from '../pictureCache';
@@ -147,6 +149,48 @@ describe('Stitch Renderer Pure Logic', () => {
 
       expect(newScreenX).toBeCloseTo(anchorScreenX);
       expect(newScreenY).toBeCloseTo(anchorScreenY);
+    });
+
+    describe('translation bounds', () => {
+      test('preserves oversized-content bounds without slack', () => {
+        expect(translationBounds(100, 120)).toEqual({ min: -20, max: 0 });
+        expect(clampTranslation(-30, 100, 120)).toBe(-20);
+        expect(clampTranslation(10, 100, 120)).toBe(0);
+      });
+
+      test('extends the end bound for oversized content with slackAfter', () => {
+        expect(translationBounds(100, 120, 0, 12)).toEqual({ min: -32, max: 0 });
+        expect(clampTranslation(-40, 100, 120, 0, 12)).toBe(-32);
+      });
+
+      test('keeps undersized content centered without slack', () => {
+        expect(translationBounds(100, 80)).toEqual({ min: 10, max: 10 });
+        expect(clampTranslation(-20, 100, 80)).toBe(10);
+        expect(clampTranslation(30, 100, 80)).toBe(10);
+      });
+
+      test('allows undersized content to move within slack around center', () => {
+        expect(translationBounds(100, 80, 6, 8)).toEqual({ min: 2, max: 16 });
+        expect(clampTranslation(0, 100, 80, 6, 8)).toBe(2);
+        expect(clampTranslation(10, 100, 80, 6, 8)).toBe(10);
+        expect(clampTranslation(20, 100, 80, 6, 8)).toBe(16);
+      });
+
+      test('keeps translation bounds and clamping consistent', () => {
+        const cases = [
+          { container: 100, content: 140, before: 4, after: 9, value: -200 },
+          { container: 100, content: 140, before: 4, after: 9, value: 20 },
+          { container: 100, content: 80, before: 4, after: 9, value: 0 },
+          { container: 100, content: 80, before: 4, after: 9, value: 30 },
+        ];
+
+        for (const { container, content, before, after, value } of cases) {
+          const bounds = translationBounds(container, content, before, after);
+          expect(clampTranslation(value, container, content, before, after)).toBe(
+            Math.max(bounds.min, Math.min(bounds.max, value))
+          );
+        }
+      });
     });
   });
 

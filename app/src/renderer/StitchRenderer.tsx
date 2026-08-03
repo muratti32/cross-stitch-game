@@ -44,6 +44,7 @@ export interface StitchRendererProps {
   isColorCompletedShared: SharedValue<boolean>;
   parentRevision?: number;
   theme?: MembershipTheme;
+  panSlack?: { left?: number; right?: number; top?: number; bottom?: number };
   scaleShared?: SharedValue<number>;
   translateXShared?: SharedValue<number>;
   translateYShared?: SharedValue<number>;
@@ -67,6 +68,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     isColorCompletedShared,
     parentRevision,
     theme = DEFAULT_MEMBERSHIP_THEME,
+    panSlack,
     scaleShared,
     translateXShared,
     translateYShared,
@@ -130,6 +132,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     completedShared,
     activeColorIndexShared,
     isColorCompletedShared,
+    panSlack,
     scaleShared,
     translateXShared,
     translateYShared,

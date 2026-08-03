@@ -12,6 +12,8 @@ export {
   getAnchoredZoomTransform,
   nextRemainingCell,
   computeEdgePanVelocity,
+  clampTranslation,
+  translationBounds,
   type Viewport,
   type LodBand,
 } from './tileMath';
