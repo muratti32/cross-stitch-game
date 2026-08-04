@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Modal, Pressable, Text, View } from 'react-native';
 import TestRenderer, { act, type ReactTestInstance } from 'react-test-renderer';
 
 import CommerceScreen from '../../../app/(tabs)/(profile)/commerce';
@@ -667,6 +667,32 @@ it('offers Retry after a delayed AI Credit grant without another store purchase'
   now.mockRestore();
 });
 
+it('never stacks the pack confirmation in a second Modal over the open product sheet', async () => {
+  // iOS silently refuses to present a modal over an already presented one, so a
+  // nested confirmation Modal makes Buy look unresponsive.
+  mockIdentity = { accountId: 'account_81', isAccount: true };
+  await renderScreen();
+
+  await openCoinPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  expect(allText(renderer!.root)).toContain('Confirm Stitch Coin purchase');
+  expect(visibleModalCount(renderer!.root)).toBe(1);
+  expect(
+    renderer!.root.findByProps({ testID: 'coin-pack-confirmation' })
+      .findAllByType(Modal),
+  ).toHaveLength(0);
+
+  await act(async () => pressByText(renderer!.root, 'Cancel'));
+  await openAiCreditPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  expect(allText(renderer!.root)).toContain('Confirm AI Credit purchase');
+  expect(visibleModalCount(renderer!.root)).toBe(1);
+  expect(
+    renderer!.root.findByProps({ testID: 'ai-credit-pack-confirmation' })
+      .findAllByType(Modal),
+  ).toHaveLength(0);
+});
+
 it('requires explicit Coin Pack confirmation and treats cancellation as a non-error', async () => {
   mockIdentity = { accountId: 'account_81', isAccount: true };
   mockPurchasePackage.mockRejectedValue({ userCancelled: true });
@@ -834,6 +860,10 @@ it('keeps wallet and membership context visible while catalog Retry recovers', a
   expect(allText(renderer!.root)).not.toContain('Store temporarily unavailable');
   warning.mockRestore();
 });
+
+function visibleModalCount(root: ReactTestInstance): number {
+  return root.findAllByType(Modal).filter((node) => node.props.visible === true).length;
+}
 
 function allText(root: ReactTestInstance): string[] {
   return root.findAllByType(Text).flatMap((node) => textValue(node.props.children));

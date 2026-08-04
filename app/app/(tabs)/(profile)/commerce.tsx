@@ -1084,23 +1084,30 @@ export default function CommerceScreen() {
         reconcilingProductKey={openCategory === 'stitch_coin'
           ? coinPurchasePending?.product.productKey ?? null
           : aiCreditPurchasePending?.product.productKey ?? null}
-        onClose={() => setOpenCategory(null)}
+        confirmation={openCategory === 'stitch_coin' ? (
+          <CoinPackConfirmation
+            product={confirmingCoinPack}
+            onCancel={() => setConfirmingCoinPack(null)}
+            onConfirm={(product) => void purchase(product)}
+          />
+        ) : (
+          <AiCreditPackConfirmation
+            product={confirmingAiCreditPack}
+            onCancel={() => setConfirmingAiCreditPack(null)}
+            onConfirm={(product) => void purchase(product)}
+          />
+        )}
+        onClose={() => {
+          setConfirmingCoinPack(null);
+          setConfirmingAiCreditPack(null);
+          setOpenCategory(null);
+        }}
         onPurchase={attemptPurchase}
       />
       <PremiumConfirmation
         product={confirmingPremium}
         trialEligible={monthlyTrialEligible}
         onCancel={() => setConfirmingPremium(null)}
-        onConfirm={(product) => void purchase(product)}
-      />
-      <CoinPackConfirmation
-        product={confirmingCoinPack}
-        onCancel={() => setConfirmingCoinPack(null)}
-        onConfirm={(product) => void purchase(product)}
-      />
-      <AiCreditPackConfirmation
-        product={confirmingAiCreditPack}
-        onCancel={() => setConfirmingAiCreditPack(null)}
         onConfirm={(product) => void purchase(product)}
       />
     </>
@@ -1178,6 +1185,9 @@ function PremiumConfirmation({
   );
 }
 
+// Rendered as an overlay inside the open ProductSheet modal, never as a nested
+// Modal: iOS silently refuses to present a second modal over an already
+// presented one, which made the Buy button look unresponsive.
 function CoinPackConfirmation({
   product,
   onCancel,
@@ -1187,37 +1197,29 @@ function CoinPackConfirmation({
   onCancel: () => void;
   onConfirm: (product: CommerceProduct) => void;
 }) {
+  if (product === null) return null;
   return (
-    <Modal
-      animationType="fade"
-      onRequestClose={onCancel}
-      transparent
-      visible={product !== null}
-    >
-      <View style={styles.confirmationRoot}>
-        <View accessibilityViewIsModal style={styles.confirmationCard}>
-          <Text style={styles.confirmationTitle}>Confirm Stitch Coin purchase</Text>
-          {product !== null && (
-            <>
-              <Text style={styles.confirmationPlan}>
-                {product.label} · {product.priceString}
-              </Text>
-              <Text style={styles.confirmationBody}>
-                Your balance changes only after the Game Backend verifies the store transaction
-                and records the matching Commerce Ledger grant.
-              </Text>
-              <View style={styles.confirmationActions}>
-                <Button title="Cancel" onPress={onCancel} variant="secondary" />
-                <Button title={`Confirm ${product.label}`} onPress={() => onConfirm(product)} variant="honey" />
-              </View>
-            </>
-          )}
+    <View style={styles.confirmationOverlay} testID="coin-pack-confirmation">
+      <View accessibilityViewIsModal style={styles.confirmationCard}>
+        <Text style={styles.confirmationTitle}>Confirm Stitch Coin purchase</Text>
+        <Text style={styles.confirmationPlan}>
+          {product.label} · {product.priceString}
+        </Text>
+        <Text style={styles.confirmationBody}>
+          Your balance changes only after the Game Backend verifies the store transaction
+          and records the matching Commerce Ledger grant.
+        </Text>
+        <View style={styles.confirmationActions}>
+          <Button title="Cancel" onPress={onCancel} variant="secondary" />
+          <Button title={`Confirm ${product.label}`} onPress={() => onConfirm(product)} variant="honey" />
         </View>
       </View>
-    </Modal>
+    </View>
   );
 }
 
+// Overlay inside the open ProductSheet modal for the same reason as
+// CoinPackConfirmation: no nested Modal on iOS.
 function AiCreditPackConfirmation({
   product,
   onCancel,
@@ -1227,34 +1229,24 @@ function AiCreditPackConfirmation({
   onCancel: () => void;
   onConfirm: (product: CommerceProduct) => void;
 }) {
+  if (product === null) return null;
   return (
-    <Modal
-      animationType="fade"
-      onRequestClose={onCancel}
-      transparent
-      visible={product !== null}
-    >
-      <View style={styles.confirmationRoot}>
-        <View accessibilityViewIsModal style={styles.confirmationCard}>
-          <Text style={styles.confirmationTitle}>Confirm AI Credit purchase</Text>
-          {product !== null && (
-            <>
-              <Text style={styles.confirmationPlan}>
-                {product.label} · {product.priceString}
-              </Text>
-              <Text style={styles.confirmationBody}>
-                Your balance changes only after the Game Backend verifies the store transaction
-                and records the matching Commerce Ledger grant. Premium Membership is not required.
-              </Text>
-              <View style={styles.confirmationActions}>
-                <Button title="Cancel" onPress={onCancel} variant="secondary" />
-                <Button title={`Confirm ${product.label}`} onPress={() => onConfirm(product)} variant="rose" />
-              </View>
-            </>
-          )}
+    <View style={styles.confirmationOverlay} testID="ai-credit-pack-confirmation">
+      <View accessibilityViewIsModal style={styles.confirmationCard}>
+        <Text style={styles.confirmationTitle}>Confirm AI Credit purchase</Text>
+        <Text style={styles.confirmationPlan}>
+          {product.label} · {product.priceString}
+        </Text>
+        <Text style={styles.confirmationBody}>
+          Your balance changes only after the Game Backend verifies the store transaction
+          and records the matching Commerce Ledger grant. Premium Membership is not required.
+        </Text>
+        <View style={styles.confirmationActions}>
+          <Button title="Cancel" onPress={onCancel} variant="secondary" />
+          <Button title={`Confirm ${product.label}`} onPress={() => onConfirm(product)} variant="rose" />
         </View>
       </View>
-    </Modal>
+    </View>
   );
 }
 
@@ -1298,6 +1290,7 @@ function ProductSheet({
   pendingProductKey,
   purchasingKey,
   reconcilingProductKey,
+  confirmation,
   onClose,
   onPurchase,
 }: {
@@ -1306,6 +1299,7 @@ function ProductSheet({
   pendingProductKey: string | null;
   purchasingKey: string | null;
   reconcilingProductKey: string | null;
+  confirmation: React.ReactNode;
   onClose: () => void;
   onPurchase: (product: CommerceProduct) => void;
 }) {
@@ -1356,6 +1350,7 @@ function ProductSheet({
             ))}
           </View>
         </View>
+        {confirmation}
       </View>
     </Modal>
   );
@@ -1689,6 +1684,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(25, 24, 22, 0.42)',
     flex: 1,
+    justifyContent: 'center',
+    padding: Theme.spacing.lg,
+  },
+  confirmationOverlay: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    alignItems: 'center',
+    backgroundColor: 'rgba(25, 24, 22, 0.42)',
     justifyContent: 'center',
     padding: Theme.spacing.lg,
   },
