@@ -4,7 +4,7 @@ import { create } from 'zustand';
 
 import { useMembership } from '@/api/membership';
 
-export type StitchAppearance = 'square' | 'rounded' | 'cross';
+export type ThreadFinish = 'matte' | 'satin';
 export type MembershipThemeId = 'default' | 'rose-garden' | 'moonlit-aida';
 
 export interface MembershipTheme {
@@ -14,7 +14,8 @@ export interface MembershipTheme {
   gridBackground: string;
   minorGridColor: string;
   majorGridColor: string;
-  stitchAppearance: StitchAppearance;
+  /** Surface treatment only; Completed Stitch geometry is never theme-specific. */
+  threadFinish: ThreadFinish;
   celebrationAccent: string;
   celebrationSurface: string;
 }
@@ -27,7 +28,7 @@ export const MEMBERSHIP_THEMES: readonly MembershipTheme[] = [
     gridBackground: '#FAF6F0',
     minorGridColor: '#E6E1D8',
     majorGridColor: '#B6AE9F',
-    stitchAppearance: 'square',
+    threadFinish: 'matte',
     celebrationAccent: '#7A9A82',
     celebrationSurface: '#FFFFFF',
   },
@@ -38,7 +39,7 @@ export const MEMBERSHIP_THEMES: readonly MembershipTheme[] = [
     gridBackground: '#FFF3F5',
     minorGridColor: '#F1D7DC',
     majorGridColor: '#C98390',
-    stitchAppearance: 'rounded',
+    threadFinish: 'satin',
     celebrationAccent: '#C36A76',
     celebrationSurface: '#FFF8F9',
   },
@@ -49,7 +50,7 @@ export const MEMBERSHIP_THEMES: readonly MembershipTheme[] = [
     gridBackground: '#18262C',
     minorGridColor: '#32474F',
     majorGridColor: '#78909A',
-    stitchAppearance: 'cross',
+    threadFinish: 'satin',
     celebrationAccent: '#66C4D1',
     celebrationSurface: '#EFFBFC',
   },

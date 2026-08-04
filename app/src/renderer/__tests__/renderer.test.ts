@@ -251,6 +251,45 @@ describe('Stitch Renderer Pure Logic', () => {
       expect(state.checkAndClearCompletedDirty(0, 0)).toBe(false);
       expect(state.checkAndClearCompletedDirty(1, 1)).toBe(false);
     });
+
+    test('keeps a local active stitch out of recorded near tiles and re-dirties only its tile when settled', () => {
+      const state = new RendererState(100, 100);
+      for (let ty = 0; ty < state.tilesY; ty++) {
+        for (let tx = 0; tx < state.tilesX; tx++) {
+          state.checkAndClearCompletedDirty(tx, ty);
+          state.checkAndClearOverlayDirty(tx, ty);
+        }
+      }
+
+      state.setCompleted(35, 10, true);
+      state.checkAndClearCompletedDirty(1, 0);
+      state.checkAndClearOverlayDirty(1, 0);
+      const now = Date.now();
+      state.placeCompletedStitch(35, 10, 'readable', now, false);
+
+      expect(state.isCompletedStitchDynamic(35, 10, 'readable')).toBe(true);
+      expect(state.isCompletedStitchDynamic(35, 10, 'out')).toBe(false);
+      state.advanceCompletedStitchVisuals(now + 140);
+
+      expect(state.checkAndClearCompletedDirty(1, 0)).toBe(true);
+      expect(state.checkAndClearOverlayDirty(1, 0)).toBe(true);
+      expect(state.checkAndClearCompletedDirty(0, 0)).toBe(false);
+      expect(state.checkAndClearOverlayDirty(0, 0)).toBe(false);
+    });
+
+    test('settles only the synchronized cell while another local stitch keeps animating', () => {
+      const state = new RendererState(100, 100);
+      state.setCompleted(1, 1, true);
+      state.setCompleted(35, 10, true);
+      const now = Date.now();
+      state.placeCompletedStitch(1, 1, 'readable', now, false);
+      state.placeCompletedStitch(35, 10, 'readable', now, false);
+
+      state.settleCompletedStitch(1, 1);
+
+      expect(state.isCompletedStitchDynamic(1, 1, 'readable')).toBe(false);
+      expect(state.isCompletedStitchDynamic(35, 10, 'readable')).toBe(true);
+    });
   });
 
   describe('Stitch Sweep cell eligibility', () => {

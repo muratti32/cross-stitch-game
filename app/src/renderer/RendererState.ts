@@ -1,4 +1,10 @@
 import { TILE_CELLS } from './tileMath';
+import {
+  CompletedStitchVisualState,
+  type CompletedStitchVisualDecision,
+} from './completedStitchVisualState';
+import type { LodBand } from './tileMath';
+import type { ThreadFinish } from '../membership/themes';
 
 export class RendererState {
   public readonly width: number;
@@ -12,6 +18,7 @@ export class RendererState {
   // Dirty flags for tile pictures (1 if dirty, 0 if clean)
   private readonly completedDirty: Uint8Array;
   private readonly overlayDirty: Uint8Array;
+  private readonly completedStitchVisuals = new CompletedStitchVisualState();
 
   // Remaining cell locator focus coordinates (-1 if none)
   private focusedCellX: number = -1;
@@ -47,6 +54,9 @@ export class RendererState {
   public restoreCompletedArray(array: Uint8Array): void {
     if (array.length === this.completed.length) {
       this.completed.set(array);
+      // Restored progress is intentionally settled: reopening a session must
+      // not flood the dynamic layer with historical animations.
+      this.completedStitchVisuals.settleAll();
       this.completedDirty.fill(1);
       this.overlayDirty.fill(1);
     }
@@ -78,6 +88,77 @@ export class RendererState {
       return true;
     }
     return false;
+  }
+
+  /** Starts the visual feedback only after a local completed state committed. */
+  public placeCompletedStitch(x: number, y: number, lod: LodBand, now: number, reduceMotion: boolean): void {
+    if (x < 0 || x >= this.width || y < 0 || y >= this.height || !this.isCompleted(x, y)) return;
+    const snapped = this.completedStitchVisuals.place(y * this.width + x, 'local', lod, now, reduceMotion);
+    this.markCompletedStitchTilesDirty(snapped);
+  }
+
+  /** Reverses visual feedback from its current visible progress after Undo commits. */
+  public undoCompletedStitch(x: number, y: number, now: number, reduceMotion: boolean): void {
+    if (x < 0 || x >= this.width || y < 0 || y >= this.height) return;
+    this.completedStitchVisuals.undo(y * this.width + x, now, reduceMotion);
+  }
+
+  /** Sync and restoration never impersonate a current-device player action. */
+  public settleCompletedStitch(x: number, y: number): void {
+    if (x < 0 || x >= this.width || y < 0 || y >= this.height) return;
+    const cellIndex = y * this.width + x;
+    if (this.completedStitchVisuals.settle(cellIndex)) {
+      this.markCompletedStitchTilesDirty([cellIndex]);
+    }
+  }
+
+  public settleAllCompletedStitches(): void {
+    this.markCompletedStitchTilesDirty(this.completedStitchVisuals.settleAll());
+  }
+
+  public isCompletedStitchDynamic(x: number, y: number, lod: LodBand): boolean {
+    if (x < 0 || x >= this.width || y < 0 || y >= this.height || lod === 'out') return false;
+    return this.completedStitchVisuals.isDynamic(y * this.width + x, lod);
+  }
+
+  public getActiveCompletedStitchIndexes(lod: LodBand): readonly number[] {
+    return this.completedStitchVisuals.getActiveCellIndexes(lod);
+  }
+
+  public getCompletedStitchVisualDecision(
+    cellIndex: number,
+    lod: LodBand,
+    color: string,
+    finish: ThreadFinish,
+    now: number,
+  ): CompletedStitchVisualDecision {
+    return this.completedStitchVisuals.get(
+      cellIndex,
+      this.completed[cellIndex] === 1,
+      lod,
+      color,
+      { finish },
+      now,
+    );
+  }
+
+  /** Advances only the small dynamic layer and re-dirties its settled tiles. */
+  public advanceCompletedStitchVisuals(now: number): boolean {
+    const transitioned = this.completedStitchVisuals.advance(now);
+    this.markCompletedStitchTilesDirty(transitioned);
+    return this.completedStitchVisuals.hasActiveVisuals;
+  }
+
+  public hasActiveCompletedStitchVisuals(): boolean {
+    return this.completedStitchVisuals.hasActiveVisuals;
+  }
+
+  private markCompletedStitchTilesDirty(cellIndexes: readonly number[]): void {
+    for (const index of cellIndexes) {
+      const x = index % this.width;
+      const y = Math.floor(index / this.width);
+      this.markTileDirty(Math.floor(x / TILE_CELLS), Math.floor(y / TILE_CELLS));
+    }
   }
 
   /**

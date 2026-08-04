@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useImperativeHandle, useCallback } from 'react';
-import { StyleSheet, View, LayoutChangeEvent, Text } from 'react-native';
+import { AccessibilityInfo, StyleSheet, View, LayoutChangeEvent, Text } from 'react-native';
 import { GestureDetector } from 'react-native-gesture-handler';
 import {
   Canvas,
@@ -7,6 +7,9 @@ import {
   Group,
   Picture,
   PaintStyle,
+  Line,
+  Rect,
+  vec,
 } from '@shopify/react-native-skia';
 import { useGameplayStore } from '../store/gameplayStore';
 import {
@@ -18,6 +21,7 @@ import {
 } from './tileMath';
 import { createSymbolAtlas, type SymbolAtlas } from './symbolAtlas';
 import { RendererState } from './RendererState';
+import { deriveThreadSurfaceColors } from './completedStitchVisualState';
 import { useRendererGesture } from './useRendererGesture';
 import { PatternData } from '../pattern-artifact';
 import {
@@ -54,6 +58,9 @@ export interface StitchRendererProps {
 
 export interface StitchRendererRef {
   locateCell: (cx: number, cy: number) => void;
+  placeCompletedStitch: (cx: number, cy: number) => void;
+  undoCompletedStitch: (cx: number, cy: number) => void;
+  settleCompletedStitch: (cx: number, cy: number) => void;
 }
 
 export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRendererProps>((
@@ -79,6 +86,32 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
 ) => {
   // Local state revision to trigger React re-renders when gameplayState updates
   const [revision, setRevision] = useState(0);
+  const [reduceMotion, setReduceMotion] = useState<boolean | null>(null);
+  const [visualNow, setVisualNow] = useState(() => Date.now());
+
+  useEffect(() => {
+    void AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
+    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
+    return () => subscription.remove();
+  }, []);
+
+  useEffect(() => {
+    if (reduceMotion !== true) return;
+    rendererState.settleAllCompletedStitches();
+    setVisualNow(Date.now());
+    setRevision((r) => r + 1);
+  }, [reduceMotion, rendererState]);
+
+  useEffect(() => {
+    if (!rendererState.hasActiveCompletedStitchVisuals()) return;
+    const timer = setInterval(() => {
+      const now = Date.now();
+      const hasActiveVisuals = rendererState.advanceCompletedStitchVisuals(now);
+      setVisualNow(now);
+      if (!hasActiveVisuals) clearInterval(timer);
+    }, 16);
+    return () => clearInterval(timer);
+  }, [rendererState, revision]);
 
   // Sync parent revision
   useEffect(() => {
@@ -144,7 +177,27 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     locateCell: (cx, cy) => {
       locateCell(cx, cy);
     },
-  }));
+    placeCompletedStitch: (cx, cy) => {
+      rendererState.placeCompletedStitch(
+        cx,
+        cy,
+        getLodBand(scale.value),
+        Date.now(),
+        reduceMotion !== false,
+      );
+      setVisualNow(Date.now());
+      setRevision((r) => r + 1);
+    },
+    undoCompletedStitch: (cx, cy) => {
+      rendererState.undoCompletedStitch(cx, cy, Date.now(), reduceMotion !== false);
+      setVisualNow(Date.now());
+      setRevision((r) => r + 1);
+    },
+    settleCompletedStitch: (cx, cy) => {
+      rendererState.settleCompletedStitch(cx, cy);
+      setRevision((r) => r + 1);
+    },
+  }), [locateCell, reduceMotion, rendererState, scale]);
 
   // Track the viewport values in React state for culling.
   // A UI-thread useAnimatedReaction below watches the transform shared values
@@ -339,7 +392,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
   const renderedTiles = visibleTiles.map(({ tileX, tileY }) => {
     const baseKey = `${theme.id}_${tileX}_${tileY}_${lodBand}`;
     const completedBaseKey = `${theme.id}_${tileX}_${tileY}`;
-    const completedVariant = lodBand === 'out' ? 'mosaic' : 'shape';
+    const completedVariant = lodBand;
     const completedKey = `${completedBaseKey}_${completedVariant}`;
     const overlayKey = `${theme.id}_${tileX}_${tileY}`;
 
@@ -425,8 +478,9 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     // --- 2. Completed stitches Picture (Re-recorded on cell state changes) ---
     const isCompletedDirty = rendererState.checkAndClearCompletedDirty(tileX, tileY);
     if (isCompletedDirty) {
-      completedCache.current.delete(`${completedBaseKey}_mosaic`);
-      completedCache.current.delete(`${completedBaseKey}_shape`);
+      completedCache.current.delete(`${completedBaseKey}_out`);
+      completedCache.current.delete(`${completedBaseKey}_mid`);
+      completedCache.current.delete(`${completedBaseKey}_readable`);
     }
     let completedPic = completedCache.current.get(completedKey);
 
@@ -441,53 +495,58 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
           const gy = tileY * TILE_CELLS + cy;
 
           if (gx < pattern.width && gy < pattern.height) {
-            if (rendererState.isCompleted(gx, gy)) {
+            const cellIndex = gy * pattern.width + gx;
+            const isDynamic = rendererState.isCompletedStitchDynamic(gx, gy, lodBand);
+            if (rendererState.isCompleted(gx, gy) || isDynamic) {
               const colorIdx = pattern.grid[gy * pattern.width + gx];
               if (colorIdx > 0) {
                 const colorHex = pattern.palette[colorIdx - 1].rgbHex;
-                stitchPaint.setColor(Skia.Color(colorHex));
+                const decision = rendererState.getCompletedStitchVisualDecision(
+                  cellIndex,
+                  lodBand,
+                  colorHex,
+                  theme.threadFinish,
+                  visualNow,
+                );
                 const left = cx * CELL_SIZE;
                 const top = cy * CELL_SIZE;
-                if (completedVariant === 'mosaic') {
+                if (!decision.showThreadNumber) {
                   stitchPaint.setStyle(PaintStyle.Fill);
+                  stitchPaint.setColor(Skia.Color(theme.gridBackground));
+                  canvas.drawRect(
+                    Skia.XYWHRect(left + 0.6, top + 0.6, CELL_SIZE - 1.2, CELL_SIZE - 1.2),
+                    stitchPaint,
+                  );
+                }
+                if (decision.isDynamic) continue;
+
+                if (decision.representation === 'mosaic') {
+                  stitchPaint.setStyle(PaintStyle.Fill);
+                  stitchPaint.setColor(Skia.Color(decision.dmcColor));
                   canvas.drawRect(
                     Skia.XYWHRect(left, top, CELL_SIZE, CELL_SIZE),
                     stitchPaint,
                   );
                 } else {
-                  if (theme.stitchAppearance === 'cross') {
-                    stitchPaint.setStyle(PaintStyle.Stroke);
-                    stitchPaint.setStrokeWidth(2.25);
-                    canvas.drawLine(
-                      left + 2.5,
-                      top + 2.5,
-                      left + CELL_SIZE - 2.5,
-                      top + CELL_SIZE - 2.5,
-                      stitchPaint,
-                    );
-                    canvas.drawLine(
-                      left + CELL_SIZE - 2.5,
-                      top + 2.5,
-                      left + 2.5,
-                      top + CELL_SIZE - 2.5,
-                      stitchPaint,
-                    );
-                  } else if (theme.stitchAppearance === 'rounded') {
-                    stitchPaint.setStyle(PaintStyle.Fill);
-                    canvas.drawRRect(
-                      Skia.RRectXY(
-                        Skia.XYWHRect(left + 1, top + 1, CELL_SIZE - 2, CELL_SIZE - 2),
-                        3,
-                        3,
-                      ),
-                      stitchPaint,
-                    );
-                  } else {
-                    stitchPaint.setStyle(PaintStyle.Fill);
-                    canvas.drawRect(
-                      Skia.XYWHRect(left + 0.5, top + 0.5, CELL_SIZE - 1, CELL_SIZE - 1),
-                      stitchPaint,
-                    );
+                  // One cross geometry and overlap order applies to every theme.
+                  // Grid pictures are drawn underneath this layer, preserving the
+                  // fabric margin and preventing lines crossing the thread.
+                  stitchPaint.setStyle(PaintStyle.Stroke);
+                  const threadWidth = decision.representation === 'textured-cross' ? 3.1 : 2.5;
+                  const surface = deriveThreadSurfaceColors(decision.dmcColor, decision.finish);
+                  stitchPaint.setStrokeWidth(threadWidth + 0.8);
+                  stitchPaint.setColor(Skia.Color(surface.shadow));
+                  canvas.drawLine(left + 2.5, top + CELL_SIZE - 2.5, left + CELL_SIZE - 2.5, top + 2.5, stitchPaint);
+                  stitchPaint.setStrokeWidth(threadWidth);
+                  stitchPaint.setColor(Skia.Color(surface.base));
+                  canvas.drawLine(left + 2.5, top + CELL_SIZE - 2.5, left + CELL_SIZE - 2.5, top + 2.5, stitchPaint);
+                  stitchPaint.setStrokeWidth(threadWidth);
+                  stitchPaint.setColor(Skia.Color(surface.base));
+                  canvas.drawLine(left + 2.5, top + 2.5, left + CELL_SIZE - 2.5, top + CELL_SIZE - 2.5, stitchPaint);
+                  if (decision.representation === 'textured-cross') {
+                    stitchPaint.setStrokeWidth(0.7);
+                    stitchPaint.setColor(Skia.Color(surface.highlight));
+                    canvas.drawLine(left + 3.4, top + 3.0, left + CELL_SIZE - 3.0, top + CELL_SIZE - 3.4, stitchPaint);
                   }
                 }
               }
@@ -604,7 +663,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     );
     const completedVisibleKeys = new Set(
       visibleTiles.map(
-        (t) => `${theme.id}_${t.tileX}_${t.tileY}_${lodBand === 'out' ? 'mosaic' : 'shape'}`,
+        (t) => `${theme.id}_${t.tileX}_${t.tileY}_${lodBand}`,
       ),
     );
     completedCache.current.prune(completedVisibleKeys, TILE_CACHE_BUDGET);
@@ -622,6 +681,25 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     { translateY: translateY.value },
     { scale: scale.value },
   ]);
+  const visibleTileKeys = new Set(visibleTiles.map(({ tileX, tileY }) => `${tileX}_${tileY}`));
+  const dynamicStitches = rendererState.getActiveCompletedStitchIndexes(lodBand)
+    .map((cellIndex) => {
+      const x = cellIndex % pattern.width;
+      const y = Math.floor(cellIndex / pattern.width);
+      const tileKey = `${Math.floor(x / TILE_CELLS)}_${Math.floor(y / TILE_CELLS)}`;
+      if (!visibleTileKeys.has(tileKey)) return null;
+      const colorIndex = pattern.grid[cellIndex];
+      if (colorIndex <= 0) return null;
+      const decision = rendererState.getCompletedStitchVisualDecision(
+        cellIndex,
+        lodBand,
+        pattern.palette[colorIndex - 1].rgbHex,
+        theme.threadFinish,
+        visualNow,
+      );
+      return { cellIndex, x, y, decision };
+    })
+    .filter((stitch): stitch is NonNullable<typeof stitch> => stitch !== null);
 
   return (
     <View
@@ -642,6 +720,33 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
                   {basePic && <Picture picture={basePic} />}
                   {completedPic && <Picture picture={completedPic} />}
                   {overlayPic && <Picture picture={overlayPic} />}
+                </Group>
+              );
+            })}
+            {dynamicStitches.map(({ cellIndex, x, y, decision }) => {
+              const left = x * CELL_SIZE;
+              const top = y * CELL_SIZE;
+              const centerX = left + CELL_SIZE / 2;
+              const centerY = top + CELL_SIZE / 2;
+              const inset = 2.5;
+              const radius = CELL_SIZE / 2 - inset;
+              const lowerProgress = decision.lowerStrandProgress;
+              const upperProgress = decision.upperStrandProgress;
+              const lowerStart = vec(centerX - radius * lowerProgress, centerY + radius * lowerProgress);
+              const lowerEnd = vec(centerX + radius * lowerProgress, centerY - radius * lowerProgress);
+              const upperStart = vec(centerX - radius * upperProgress, centerY - radius * upperProgress);
+              const upperEnd = vec(centerX + radius * upperProgress, centerY + radius * upperProgress);
+              const surface = deriveThreadSurfaceColors(decision.dmcColor, decision.finish);
+              const threadWidth = decision.representation === 'textured-cross' ? 3.1 : 2.5;
+              return (
+                <Group key={`dynamic-${cellIndex}`}>
+                  <Rect x={left + 0.6} y={top + 0.6} width={CELL_SIZE - 1.2} height={CELL_SIZE - 1.2} color={theme.gridBackground} />
+                  <Line p1={lowerStart} p2={lowerEnd} color={surface.shadow} style="stroke" strokeWidth={threadWidth + 0.8} />
+                  <Line p1={lowerStart} p2={lowerEnd} color={surface.base} style="stroke" strokeWidth={threadWidth} />
+                  <Line p1={upperStart} p2={upperEnd} color={surface.base} style="stroke" strokeWidth={threadWidth} />
+                  {decision.representation === 'textured-cross' && (
+                    <Line p1={upperStart} p2={upperEnd} color={surface.highlight} style="stroke" strokeWidth={0.7} />
+                  )}
                 </Group>
               );
             })}

@@ -6,7 +6,7 @@ describe('Premium Theme Collection', () => {
   it('applies the selected cosmetic theme with membership access', () => {
     expect(resolveMembershipTheme('moonlit-aida', true)).toMatchObject({
       id: 'moonlit-aida',
-      stitchAppearance: 'cross',
+      threadFinish: 'satin',
     });
   });
 

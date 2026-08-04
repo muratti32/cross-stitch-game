@@ -152,6 +152,7 @@ export default function SessionReadyScreen() {
   const handleCellTapped = (x: number, y: number) => {
     if (isSessionCompleted) return; // Read-only
 
+    const wasCompleted = rendererState?.isCompleted(x, y) ?? true;
     const success = stitchCell(x, y, selectedColorIndex);
     if (success) {
       if (patternData) {
@@ -159,6 +160,7 @@ export default function SessionReadyScreen() {
         completedShared.value[idx] = 1;
         completedShared.value = Uint8Array.from(completedShared.value);
       }
+      if (!wasCompleted) rendererRef.current?.placeCompletedStitch(x, y);
       setParentRevision((r) => r + 1);
     } else {
       // Trigger haptic feedback + visual shake
@@ -182,6 +184,7 @@ export default function SessionReadyScreen() {
       const idx = y * patternData.width + x;
       completedShared.value[idx] = 1;
       completedShared.value = Uint8Array.from(completedShared.value);
+      rendererRef.current?.placeCompletedStitch(x, y);
       setParentRevision((r) => r + 1);
     }
   };
@@ -189,8 +192,9 @@ export default function SessionReadyScreen() {
   // Handle undo action
   const handleUndo = () => {
     if (canUndo) {
-      const success = undo();
-      if (success && rendererState) {
+      const undoneCell = undo();
+      if (undoneCell && rendererState) {
+        rendererRef.current?.undoCompletedStitch(undoneCell.x, undoneCell.y);
         completedShared.value = Uint8Array.from(rendererState.getCompletedArray());
         setParentRevision((r) => r + 1);
       }

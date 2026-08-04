@@ -236,6 +236,7 @@ export function useStitchingSession(sessionId: string | undefined) {
           const x = cellIndex % (patternDataRef.current?.width ?? 1);
           const y = Math.floor(cellIndex / (patternDataRef.current?.width ?? 1));
           rState.setCompleted(x, y, completed[cellIndex] === 1);
+          rState.settleCompletedStitch(x, y);
         }
         updateCountsAndCompletion();
         setSyncTick((tick) => tick + 1);
@@ -622,18 +623,18 @@ export function useStitchingSession(sessionId: string | undefined) {
   }, [flushPendingOps, saveSessionCheckpoint, runSync]);
 
   // Undo action
-  const undo = useCallback((): boolean => {
+  const undo = useCallback((): { x: number; y: number } | null => {
     const sess = sessionRef.current;
     const pat = patternDataRef.current;
     const rState = rendererStateRef.current;
 
     if (!sess || !pat || !rState || sess.status === 'completed' || undoStackRef.current.length === 0) {
-      return false;
+      return null;
     }
 
     // Pop from local device undo stack
     const cellIndex = undoStackRef.current.pop();
-    if (cellIndex === undefined) return false;
+    if (cellIndex === undefined) return null;
 
     const x = cellIndex % pat.width;
     const y = Math.floor(cellIndex / pat.width);
@@ -675,7 +676,7 @@ export function useStitchingSession(sessionId: string | undefined) {
       flushPendingOps();
     }
 
-    return true;
+    return { x, y };
   }, [flushPendingOps]);
 
   return {
