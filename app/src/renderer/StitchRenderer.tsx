@@ -90,9 +90,19 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
   const [visualNow, setVisualNow] = useState(() => Date.now());
 
   useEffect(() => {
-    void AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);
+    let cancelled = false;
+    void AccessibilityInfo.isReduceMotionEnabled()
+      .then((value) => {
+        if (!cancelled) setReduceMotion(value);
+      })
+      .catch(() => {
+        if (!cancelled) setReduceMotion(false);
+      });
     const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
-    return () => subscription.remove();
+    return () => {
+      cancelled = true;
+      subscription.remove();
+    };
   }, []);
 
   useEffect(() => {

@@ -290,6 +290,37 @@ describe('Stitch Renderer Pure Logic', () => {
       expect(state.isCompletedStitchDynamic(1, 1, 'readable')).toBe(false);
       expect(state.isCompletedStitchDynamic(35, 10, 'readable')).toBe(true);
     });
+
+    test('restores completed progress as settled without replaying placement', () => {
+      const state = new RendererState(2, 2);
+      state.setCompleted(0, 0, true);
+      state.placeCompletedStitch(0, 0, 'readable', 0, false);
+
+      state.restoreCompletedArray(new Uint8Array([1, 0, 0, 0]));
+
+      expect(state.isCompletedStitchDynamic(0, 0, 'readable')).toBe(false);
+      expect(state.getCompletedStitchVisualDecision(0, 'readable', '#123456', 'matte', 0)).toMatchObject({
+        phase: 'settled',
+        progress: 1,
+        isDynamic: false,
+      });
+    });
+
+    test('settles synchronized completion without presenting it as a local action', () => {
+      const state = new RendererState(2, 2);
+
+      // Model an authoritative server change arriving for a cell that was not
+      // completed by this device.
+      state.setCompleted(1, 1, true);
+      state.settleCompletedStitch(1, 1);
+
+      expect(state.isCompletedStitchDynamic(1, 1, 'readable')).toBe(false);
+      expect(state.getCompletedStitchVisualDecision(3, 'readable', '#123456', 'matte', 0)).toMatchObject({
+        phase: 'settled',
+        progress: 1,
+        isDynamic: false,
+      });
+    });
   });
 
   describe('Stitch Sweep cell eligibility', () => {
