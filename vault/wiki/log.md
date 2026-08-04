@@ -2,6 +2,15 @@
 
 Bu dosya, bilgi tabanında yapılan tüm veri alım (ingest) ve doğrulama işlemlerinin kaydını tutar.
 
+## [2026-08-05] Completed Stitch Visual Contract
+
+- **İşlem:** Kullanıcıyla yürütülen tasarım görüşmesinde Completed Stitch görünümü, animasyonu, erişilebilirliği, zoom davranışı ve tema sınırları netleştirildi.
+- **Eklenen/Güncellenen Sayfalar:**
+  - [[wiki/concepts/completed-stitch-visual-contract.md]] (Yeni) - Kabul edilen görsel ve hareket kontratı.
+  - [[wiki/index.md]] (Güncellendi) - Yeni concept sayfası eklendi.
+- **Domain Güncellemesi:** Root `CONTEXT.md` dosyasına kanonik Completed Stitch terimi eklendi; node, knot, painted cell ve filled square kullanımları dışlandı.
+- **ADR Kararı:** Yeni ADR açılmadı; görsel seçimler kolay tersine çevrilebilir ve mevcut ADR-0031 ile ADR-0034 performans/mimari sınırları zaten belirliyor.
+
 ## [2026-07-12] Appfigures "cross stitch" Keyword Search Ingestion
 
 - **İşlem:** `raw/cross-stitch-keyword-search.md` kaynağındaki 81 sonuçtan listelenen ilk 30 uygulamanın yaklaşık son-ay indirme/gelir sinyallerinin ingest edilmesi.
@@ -44,4 +53,3 @@ Bu dosya, bilgi tabanında yapılan tüm veri alım (ingest) ve doğrulama işle
 - **Açıklama:**
   - `analyze_complaints.py` scripti kullanılarak 596 olumsuz yorum taranmış ve 5 ana şikayet teması (Reklamlar, Para kazanma, Arayüz güncellemeleri, İlerleme kaybı, Bağlantı/Teknik hatalar) altında kategorize edilmiştir.
   - Sektör lideri rakip uygulamalardaki kritik problemler belirlenmiştir (örn. Cross-Stitch World'ün son güncellemesinde yaşanan toplu ilerleme kayıpları).
-

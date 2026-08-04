@@ -10,5 +10,8 @@ Appfigures ve yerel kaynaklardan derlenen Cross-stitch oyunları ve kullanıcı 
 - [[reviews-complaints-analysis]] — Rakip oyunlardaki kullanıcı şikayetleri analizi ve yeni oyun için fırsatlar.
 - [[tracked-apps-reviews]] — Hesabımızda takip edilen (kendi) kanaviçe uygulamalarına (`Cross Stitch AI Pattern Maker`, `Needlepoint Pattern Maker AI`) ait indirilen kullanıcı yorumları.
 
+### Kavramlar (Concepts)
+- [[completed-stitch-visual-contract]] — Tamamlanmış hücrenin fiziksel çapraz dikiş görünümü, hareketi, zoom sadeleştirmesi ve performans sınırları.
+
 ## Sistem Kayıtları
 - [[log]] — Yapılan veri alımları, güncellemeler ve sistem operasyon günlükleri.

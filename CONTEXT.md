@@ -559,8 +559,12 @@ The moment every cell of the Active Thread Color has been filled. Any active Sti
 _Avoid_: Auto-next color, color finished, palette completion
 
 **Stitch Action**:
-A player action that fills an unfinished Pattern cell whose DMC Thread Color matches the Active Thread Color and records a completed Progress Operation. It may be undone freely while the Stitching Session remains active.
+A player action that turns an unfinished Pattern cell whose DMC Thread Color matches the Active Thread Color into a Completed Stitch and records a completed Progress Operation. It may be undone freely while the Stitching Session remains active.
 _Avoid_: Paint, color, mark
+
+**Completed Stitch**:
+The completed state of one Pattern cell after a Stitch Action. At a legible cell scale it replaces the unfinished Thread Color Number with a cross-shaped thread mark in that cell's DMC Thread Color; a distant view may summarize Completed Stitches as a color mosaic.
+_Avoid_: Node, knot, painted cell, filled square
 
 **Stitch Interaction Budget**:
 The first-release performance gate for stitching interactions, measured on the oldest supported iOS and Android reference devices with a maximum-size Pattern: Stitch and Undo Actions must reach visible local state within the fixed latency budget, and pan, Anchored Zoom, and Stitch Sweep must hold the target frame rate with no network, sync, conversion, or decompression work on the interaction-critical path. Background work yields while an active gesture runs; the concrete scenario, latency, frame-rate, and thermal thresholds are fixed by ADR-0031, and failing them blocks release.
