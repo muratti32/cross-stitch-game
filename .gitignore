@@ -1,6 +1,7 @@
 *.ipa
 *.aab
 *.apk
+.DS_Store
 .expo/
 .gradle/
 app/android/build/

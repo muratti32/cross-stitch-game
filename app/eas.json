@@ -58,7 +58,7 @@
       "environment": "production",
       "env": {
         "NODE_ENV": "production",
-         "EXPO_PUBLIC_API_BASE_URL": "https://stitch-wish-staging-api.avkdesign.net",
+        "EXPO_PUBLIC_API_BASE_URL": "https://stitchwish-api.avkdesign.net",
         "EXPO_PUBLIC_REVENUECAT_STORE_MODE": "native",
         "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyDEMMkOI6ewbheo9v8tBLjqN7fn2PUtyP0",
         "EXPO_PUBLIC_FIREBASE_APP_ID": "1:316776132325:web:baf4ada2659d54eb67ae0c",
@@ -68,7 +68,7 @@
         "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "316776132325-ru0b3d1ldv4plb6cgjhipfljcn0s04fi.apps.googleusercontent.com",
         "EXPO_PUBLIC_GOOGLE_IOS_URL_SCHEME": "com.googleusercontent.apps.316776132325-ru0b3d1ldv4plb6cgjhipfljcn0s04fi",
         "EXPO_PUBLIC_SENTRY_DSN": "https://db510f486cefb9acc100dcf093b38029@o4507810077212672.ingest.de.sentry.io/4511767430168656",
-        "EXPO_PUBLIC_SENTRY_ENVIRONMENT": "staging",
+        "EXPO_PUBLIC_SENTRY_ENVIRONMENT": "production",
         "EXPO_PUBLIC_ADMOB_ANDROID_APP_ID": "ca-app-pub-0493573291885691~2187247429",
         "EXPO_PUBLIC_ADMOB_IOS_APP_ID": "ca-app-pub-0493573291885691~6805149283",
         "EXPO_PUBLIC_ADMOB_ANDROID_REWARDED_AD_UNIT_ID": "ca-app-pub-0493573291885691/1417091233",
