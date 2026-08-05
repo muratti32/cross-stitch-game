@@ -39,11 +39,19 @@ export function CachedImage({ uri, style }: CachedImageProps) {
           () => undefined,
         );
         const result = await FileSystem.downloadAsync(uri, localPath);
-        if (active && result.status === 200) {
+        if (result.status !== 200) {
+          // downloadAsync writes the response body to disk whatever the status,
+          // so an expired signed grant (403) would otherwise leave an error page
+          // behind that every later render treats as a valid cache hit.
+          await discardCacheEntry(localPath);
+          return;
+        }
+        if (active) {
           setSource(result.uri);
         }
       } catch {
         // Keep the remote URI; the plain Image error state applies.
+        await discardCacheEntry(localPath);
       }
     })();
 
@@ -53,4 +61,8 @@ export function CachedImage({ uri, style }: CachedImageProps) {
   }, [uri]);
 
   return <Image source={{ uri: source }} style={style} />;
+}
+
+async function discardCacheEntry(localPath: string): Promise<void> {
+  await FileSystem.deleteAsync(localPath, { idempotent: true }).catch(() => undefined);
 }

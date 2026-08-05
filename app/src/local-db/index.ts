@@ -863,6 +863,30 @@ export async function updateSessionStatus(
 }
 
 /**
+ * Replaces the cached Pattern Preview / Pattern Thumbnail urls of every session
+ * that plays the given pattern.
+ *
+ * Personal Pattern image urls are short-lived signed grants, so the copy stored
+ * at Session Preparation time stops resolving once the grant expires. Callers
+ * re-issue the grants and write them back here. `updated_at` stays untouched so
+ * refreshing images never reorders the Stitching Table.
+ */
+export async function updateSessionAssetUrls(
+  patternId: string,
+  source: PatternSource,
+  urls: { previewUrl: string | null; thumbnailUrl: string | null }
+): Promise<void> {
+  const db = await getDatabase();
+  await db.runAsync(
+    'UPDATE sessions SET preview_url = ?, thumbnail_url = ? WHERE pattern_id = ? AND source = ?',
+    urls.previewUrl,
+    urls.thumbnailUrl,
+    patternId,
+    source
+  );
+}
+
+/**
  * Updates the error note of a session.
  */
 export async function updateSessionError(
