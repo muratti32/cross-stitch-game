@@ -2,6 +2,8 @@
 
 This document details the mandatory validation steps required before publishing a new release of **Stitch Wish**. The central quality gate is the **Stitch Interaction Budget (ADR-0031)**.
 
+This checklist covers performance and thermal evidence only. Any release that touches Completed Stitch rendering must also pass the visual/spec evidence in `docs/completed-stitch-visual-acceptance.md` — reference-image fidelity, DMC hue identity, LOD, and Reduce Motion checks that the performance gate does not exercise.
+
 ---
 
 ## Stitch Interaction Budget Gate (ADR-0031)

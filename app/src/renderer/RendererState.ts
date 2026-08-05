@@ -100,7 +100,8 @@ export class RendererState {
   /** Reverses visual feedback from its current visible progress after Undo commits. */
   public undoCompletedStitch(x: number, y: number, now: number, reduceMotion: boolean): void {
     if (x < 0 || x >= this.width || y < 0 || y >= this.height) return;
-    this.completedStitchVisuals.undo(y * this.width + x, now, reduceMotion);
+    const snapped = this.completedStitchVisuals.undo(y * this.width + x, now, reduceMotion);
+    this.markCompletedStitchTilesDirty(snapped);
   }
 
   /** Sync and restoration never impersonate a current-device player action. */

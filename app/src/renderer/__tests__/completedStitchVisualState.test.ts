@@ -28,10 +28,31 @@ describe('Completed Stitch visual state', () => {
   test('sweep placements progress independently and do not queue', () => {
     const state = new CompletedStitchVisualState();
     state.place(1, 'local', 'readable', 0, false);
-    state.place(2, 'local', 'readable', 70, false);
+    state.place(2, 'local', 'readable', 40, false);
+    state.place(3, 'local', 'readable', 80, false);
 
-    expect(state.get(1, true, 'readable', color, theme, 70).progress).toBe(0.5);
-    expect(state.get(2, true, 'readable', color, theme, 70).progress).toBe(0);
+    expect(state.get(1, true, 'readable', color, theme, 80).progress).toBeCloseTo(80 / 140);
+    expect(state.get(2, true, 'readable', color, theme, 80).progress).toBeCloseTo(40 / 140);
+    expect(state.get(3, true, 'readable', color, theme, 80).progress).toBe(0);
+  });
+
+  test('re-placing an active cell does not restart its placement timeline', () => {
+    const state = new CompletedStitchVisualState();
+    state.place(7, 'local', 'readable', 0, false);
+
+    expect(state.place(7, 'local', 'readable', 70, false)).toEqual([]);
+    expect(state.get(7, true, 'readable', color, theme, 105).progress).toBeCloseTo(0.75);
+  });
+
+  test('advance settles every completed placement once and cleans up active visuals', () => {
+    const state = new CompletedStitchVisualState();
+    state.place(1, 'local', 'readable', 0, false);
+    state.place(2, 'local', 'readable', 40, false);
+    state.place(3, 'local', 'readable', 80, false);
+
+    expect(state.advance(220)).toEqual([1, 2, 3]);
+    expect(state.advance(220)).toEqual([]);
+    expect(state.hasActiveVisuals).toBe(false);
   });
 
   test('undo reverses an in-flight placement from its current visible progress', () => {
@@ -46,6 +67,31 @@ describe('Completed Stitch visual state', () => {
     expect(state.advance(180)).toEqual([3]);
     expect(state.get(3, false, 'readable', color, theme, 180)).toMatchObject({
       phase: 'hidden', progress: 0, showThreadNumber: true,
+    });
+  });
+
+  test('re-placing a removing cell resumes from its current visible progress', () => {
+    const state = new CompletedStitchVisualState();
+    state.place(3, 'local', 'readable', 0, false);
+    state.undo(3, 70, false);
+
+    const beforeRePlace = state.get(3, false, 'readable', color, theme, 100).progress;
+    expect(state.get(3, false, 'readable', color, theme, 100)).toMatchObject({
+      phase: 'removing',
+      progress: beforeRePlace,
+    });
+
+    expect(state.place(3, 'local', 'readable', 100, false)).toEqual([]);
+    expect(state.get(3, true, 'readable', color, theme, 100)).toMatchObject({
+      phase: 'placing',
+    });
+    expect(state.get(3, true, 'readable', color, theme, 100).progress).toBeGreaterThanOrEqual(beforeRePlace);
+    expect(state.get(3, true, 'readable', color, theme, 170).progress).toBeGreaterThan(beforeRePlace);
+
+    expect(state.advance(240)).toEqual([3]);
+    expect(state.get(3, true, 'readable', color, theme, 240)).toMatchObject({
+      phase: 'settled',
+      progress: 1,
     });
   });
 
@@ -102,6 +148,17 @@ describe('Completed Stitch visual state', () => {
     }
 
     expect(state.place(MAX_ACTIVE_COMPLETED_STITCHES, 'local', 'readable', 100, false)).toEqual([0]);
+    expect(state.getActiveCellIndexes('readable')).toHaveLength(MAX_ACTIVE_COMPLETED_STITCHES);
+    expect(state.get(0, true, 'readable', color, theme, 100).phase).toBe('settled');
+  });
+
+  test('undo at the dynamic layer bound snaps the oldest visual to settled', () => {
+    const state = new CompletedStitchVisualState();
+    for (let index = 0; index < MAX_ACTIVE_COMPLETED_STITCHES; index++) {
+      expect(state.place(index, 'local', 'readable', index, false)).toEqual([]);
+    }
+
+    expect(state.undo(MAX_ACTIVE_COMPLETED_STITCHES, 100, false)).toEqual([0]);
     expect(state.getActiveCellIndexes('readable')).toHaveLength(MAX_ACTIVE_COMPLETED_STITCHES);
     expect(state.get(0, true, 'readable', color, theme, 100).phase).toBe('settled');
   });

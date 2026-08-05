@@ -82,6 +82,20 @@ export class CompletedStitchVisualState {
       return [];
     }
 
+    const current = this.active.get(cellIndex);
+    if (current?.phase === 'placing') {
+      return [];
+    }
+
+    if (current?.phase === 'removing') {
+      this.active.set(cellIndex, {
+        phase: 'placing',
+        startedAt: now,
+        initialProgress: this.progressAt(current, now),
+      });
+      return [];
+    }
+
     const snapped: number[] = [];
     if (!this.active.has(cellIndex) && this.active.size >= MAX_ACTIVE_COMPLETED_STITCHES) {
       const oldest = this.active.keys().next().value;
@@ -94,22 +108,31 @@ export class CompletedStitchVisualState {
     return snapped;
   }
 
-  undo(cellIndex: number, now: number, reduceMotion: boolean): void {
+  undo(cellIndex: number, now: number, reduceMotion: boolean): readonly number[] {
     if (reduceMotion) {
       this.active.delete(cellIndex);
-      return;
+      return [];
     }
     const current = this.active.get(cellIndex);
     const visibleProgress = current ? this.progressAt(current, now) : 1;
     if (visibleProgress <= 0) {
       this.active.delete(cellIndex);
-      return;
+      return [];
+    }
+    const snapped: number[] = [];
+    if (!current && this.active.size >= MAX_ACTIVE_COMPLETED_STITCHES) {
+      const oldest = this.active.keys().next().value;
+      if (oldest !== undefined) {
+        this.active.delete(oldest);
+        snapped.push(oldest);
+      }
     }
     this.active.set(cellIndex, {
       phase: 'removing',
       startedAt: now,
       initialProgress: visibleProgress,
     });
+    return snapped;
   }
 
   settle(cellIndex: number): boolean {

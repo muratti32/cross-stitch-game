@@ -179,12 +179,13 @@ export default function SessionReadyScreen() {
   // Handle sweep stitch events
   const handleSweepStitch = (x: number, y: number) => {
     if (isSessionCompleted) return;
+    const wasCompleted = rendererState?.isCompleted(x, y) ?? true;
     const success = stitchCell(x, y, selectedColorIndex);
     if (success && patternData) {
       const idx = y * patternData.width + x;
       completedShared.value[idx] = 1;
       completedShared.value = Uint8Array.from(completedShared.value);
-      rendererRef.current?.placeCompletedStitch(x, y);
+      if (!wasCompleted) rendererRef.current?.placeCompletedStitch(x, y);
       setParentRevision((r) => r + 1);
     }
   };

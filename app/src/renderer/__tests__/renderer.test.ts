@@ -14,6 +14,7 @@ import {
   translationBounds,
 } from '../tileMath';
 import { RendererState } from '../RendererState';
+import { MAX_ACTIVE_COMPLETED_STITCHES } from '../completedStitchVisualState';
 import { TilePictureCache, TILE_CACHE_BUDGET } from '../pictureCache';
 import type { SkPicture } from '@shopify/react-native-skia';
 
@@ -289,6 +290,46 @@ describe('Stitch Renderer Pure Logic', () => {
 
       expect(state.isCompletedStitchDynamic(1, 1, 'readable')).toBe(false);
       expect(state.isCompletedStitchDynamic(35, 10, 'readable')).toBe(true);
+    });
+
+    test('does not restart an active completed stitch when placed twice', () => {
+      const state = new RendererState(2, 2);
+      state.setCompleted(0, 0, true);
+
+      state.placeCompletedStitch(0, 0, 'readable', 0, false);
+      state.placeCompletedStitch(0, 0, 'readable', 70, false);
+
+      expect(state.getCompletedStitchVisualDecision(0, 'readable', '#123456', 'matte', 105)).toMatchObject({
+        phase: 'placing',
+        progress: 0.75,
+        isDynamic: true,
+      });
+    });
+
+    test('undo at the dynamic layer bound dirties the evicted stitch tile', () => {
+      const width = 64;
+      const completed = new Uint8Array(width);
+      completed.fill(1, 0, MAX_ACTIVE_COMPLETED_STITCHES);
+      completed[width - 1] = 1;
+      const state = new RendererState(width, 1, completed);
+
+      for (let index = 0; index < MAX_ACTIVE_COMPLETED_STITCHES; index++) {
+        state.placeCompletedStitch(index, 0, 'readable', index, false);
+      }
+      for (let tileX = 0; tileX < state.tilesX; tileX++) {
+        state.checkAndClearCompletedDirty(tileX, 0);
+        state.checkAndClearOverlayDirty(tileX, 0);
+      }
+
+      state.setCompleted(width - 1, 0, false);
+      state.checkAndClearCompletedDirty(1, 0);
+      state.checkAndClearOverlayDirty(1, 0);
+      state.undoCompletedStitch(width - 1, 0, 100, false);
+
+      expect(state.checkAndClearCompletedDirty(0, 0)).toBe(true);
+      expect(state.checkAndClearOverlayDirty(0, 0)).toBe(true);
+      expect(state.checkAndClearCompletedDirty(1, 0)).toBe(false);
+      expect(state.checkAndClearOverlayDirty(1, 0)).toBe(false);
     });
 
     test('restores completed progress as settled without replaying placement', () => {
