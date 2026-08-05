@@ -16,6 +16,12 @@ cp .env.example .env   # fill in ADMIN_API_URL, ADMIN_EMAIL, ADMIN_PASSWORD
 npm run build
 ```
 
+`ADMIN_EMAIL` / `ADMIN_PASSWORD` must be an Operator Account that exists in the
+database `ADMIN_API_URL` points at. Operator Accounts are per-environment: a
+local account does not exist on staging or production. Provision one with
+`npm run operator:create` locally, or `npm run operator:create:prod` inside the
+deployed container — see `backend/README.md` ("Operator accounts").
+
 The backend always requires MFA on login (ADR-0039) — this client never
 disables it server-side. There are two ways to complete it:
 

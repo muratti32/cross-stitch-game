@@ -29,6 +29,7 @@
     "migration:revert:prod": "typeorm migration:revert -d dist/database/data-source.js",
     "seed:catalog": "ts-node scripts/seed-catalog.ts",
     "operator:create": "ts-node scripts/create-operator.ts",
+    "operator:create:prod": "node dist/main.create-operator.js",
     "revenuecat:test-store-lane": "ts-node scripts/revenuecat-test-store-lane.ts"
   },
   "dependencies": {

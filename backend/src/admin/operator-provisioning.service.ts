@@ -32,8 +32,10 @@ export class OperatorProvisioningService {
 
   /**
    * Creates one Operator Account with role `owner`. Intended to be run
-   * through `npm run operator:create` (backend/scripts/create-operator.ts);
-   * there is deliberately no HTTP endpoint for this in the first release.
+   * through `npm run operator:create` (backend/scripts/create-operator.ts) in
+   * development, or `npm run operator:create:prod`
+   * (dist/main.create-operator.js) inside a deployed container; there is
+   * deliberately no HTTP endpoint for this in the first release.
    */
   async createOperator(
     email: string,

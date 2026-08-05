@@ -290,6 +290,24 @@ npm run migration:revert
 
 Review generated SQL before applying or committing a migration.
 
+## Operator accounts
+
+Operator Accounts for the admin console are provisioned from the command line only — there is deliberately no HTTP endpoint (ADR-0039).
+
+Locally, with the repo checked out:
+
+```sh
+npm run operator:create -- --email owner@example.com --password "a-strong-password"
+```
+
+Inside a deployed container (Coolify staging/production), the image ships only `dist` and production dependencies, so `scripts/` and `ts-node` are unavailable. Use the compiled entrypoint instead, passing credentials through the environment so the password stays out of the process list and shell history:
+
+```sh
+OPERATOR_EMAIL=owner@example.com OPERATOR_PASSWORD='a-strong-password' npm run operator:create:prod
+```
+
+Both commands run the same code (`src/admin/create-operator.cli.ts`) and print the `otpauth://` URI and the single-use recovery codes exactly once. Enroll the URI in an authenticator immediately — MFA is mandatory on every operator login and the secret is not recoverable afterwards.
+
 ## Verification and tests
 
 Run the same checks expected before handoff:
