@@ -18,6 +18,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { useActiveMembershipTheme } from '@/membership/themes';
+import { exitSession } from '@/navigation/exitSession';
 
 export default function SessionReadyScreen() {
   const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
@@ -26,11 +27,7 @@ export default function SessionReadyScreen() {
   const { theme } = useActiveMembershipTheme();
 
   const handleBack = () => {
-    if (returnTo) {
-      router.navigate(returnTo as any);
-    } else {
-      router.dismissTo('/(tabs)/(play)');
-    }
+    exitSession({ router, stack: navigation, returnTo });
   };
 
   // Hide the OS bottom tab bar while a stitching session is focused, so a

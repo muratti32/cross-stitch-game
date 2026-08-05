@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Theme } from '@/theme/theme';
 import { AnimatedTabBar } from '@/components';
 import * as Haptics from 'expo-haptics';
+import { PLAY_TAB_ROOT } from '@/navigation/exitSession';
 
 export default function TabsLayout() {
   const triggerHaptic = () => {
@@ -17,6 +18,15 @@ export default function TabsLayout() {
   const resetCatalogOnPress = () => {
     triggerHaptic();
     router.dismissTo('/(tabs)/(catalog)');
+  };
+
+  // Safety net for a session screen left on the (play) stack by an exit path that
+  // never ran exitSession() — Android hardware back, the iOS swipe-back gesture.
+  // Pressing Stitch always lands on the session list, never inside a session the
+  // player already backed out of (#91).
+  const resetPlayOnPress = () => {
+    triggerHaptic();
+    router.dismissTo(PLAY_TAB_ROOT);
   };
 
   return (
@@ -58,7 +68,7 @@ export default function TabsLayout() {
           ),
         }}
         listeners={{
-          tabPress: triggerHaptic,
+          tabPress: resetPlayOnPress,
         }}
       />
       <Tabs.Screen
