@@ -1,7 +1,6 @@
 *.ipa
 *.aab
 *.apk
-.DS_Store
 .expo/
 .gradle/
 app/android/build/
@@ -10,3 +9,4 @@ app/ios/build/
 screenshots/
 stitchwish-service-account.json
 credentials.json
+.DS_Store
