@@ -11,6 +11,7 @@ export type AnalyticsGameplayEventKind =
   | 'ai_generation_failed'
   | 'commerce_store_viewed'
   | 'commerce_product_selected'
+  | 'commerce_catalog_incomplete'
   | 'purchase_started'
   | 'purchase_reconciliation_pending'
   | 'purchase_completed'
@@ -77,6 +78,7 @@ export type AnalyticsGameplayEventPayload =
   | { kind: 'ai_generation_failed'; payload: { failure_stage: AiGenerationFailureStage } }
   | { kind: 'commerce_store_viewed'; payload: { source: CommerceEntrySource } }
   | { kind: 'commerce_product_selected'; payload: PurchasePayload }
+  | { kind: 'commerce_catalog_incomplete'; payload: PurchasePayload }
   | { kind: 'purchase_started'; payload: PurchasePayload }
   | { kind: 'purchase_reconciliation_pending'; payload: PurchasePayload }
   | { kind: 'purchase_completed'; payload: PurchasePayload }

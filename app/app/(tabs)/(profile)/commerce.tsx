@@ -32,6 +32,7 @@ import {
 } from '@/api/membership';
 import { captureGameplayEvent } from '@/analytics/gameplayEvents';
 import {
+  commerceProductIdentity,
   commerceProductsFromOfferings,
   productsInCategory,
   type CommerceCategory,
@@ -145,13 +146,17 @@ export default function CommerceScreen() {
     setStoreUnavailable(false);
     try {
       const offerings = await getRevenueCatOfferings();
-      if (offerings.current === null || missingCanonicalRevenueCatProducts(offerings).length > 0) {
-        setProducts([]);
+      await reportMissingCanonicalProducts(missingCanonicalRevenueCatProducts(offerings));
+      const nextProducts = commerceProductsFromOfferings(offerings);
+      setProducts(nextProducts);
+      // Availability is not all-or-nothing. Only an absent offering, or one that
+      // resolves to no products at all, leaves nothing to sell; a single product
+      // awaiting store approval must never hide the rest of the catalogue from a
+      // player or from an App Review reviewer.
+      if (nextProducts.length === 0) {
         setStoreUnavailable(true);
         return;
       }
-      const nextProducts = commerceProductsFromOfferings(offerings);
-      setProducts(nextProducts);
       const monthly = nextProducts.find((product) => product.productKey === 'premium_monthly');
       setMonthlyTrialEligible(monthly === undefined
         ? false
@@ -243,6 +248,14 @@ export default function CommerceScreen() {
   const selectedPremium = premiumPlans.find(
     (product) => product.productKey === selectedPremiumKey,
   ) ?? premiumPlans[0];
+  const openCategoryPacks = openCategory === 'stitch_coin'
+    ? coinPacks
+    : openCategory === 'ai_credit'
+      ? aiCreditPacks
+      : [];
+  // A deep link or shortfall entry may ask for a category the store did not
+  // return. An empty sheet is worse than none, so it simply does not open.
+  const openablePackCategory = openCategoryPacks.length > 0 ? openCategory : null;
   const returnedProduct = pendingIntent === null
     ? null
     : products.find((product) => product.productKey === pendingIntent.productKey) ?? null;
@@ -990,75 +1003,86 @@ export default function CommerceScreen() {
           </Card>
         ) : (
           <>
-            <View style={styles.planSection}>
-              <Text style={styles.sectionTitle}>Choose a Premium plan</Text>
-              <View style={styles.planRow}>
-                {premiumPlans.map((plan) => {
-                  const selected = plan.productKey === selectedPremium?.productKey;
-                  return (
-                    <Pressable
-                      key={plan.id}
-                      accessibilityRole="button"
-                      onPress={() => {
-                        setSelectedPremiumKey(plan.productKey);
-                        void captureGameplayEvent('commerce_product_selected', {
-                          product_kind: plan.productKind,
-                          product_key: plan.productKey,
-                        });
-                      }}
-                      style={({ pressed }) => [
-                        styles.planCard,
-                        selected && styles.planCardSelected,
-                        pressed && styles.pressed,
-                      ]}
-                      testID={`premium-${plan.productKey}`}
-                    >
-                      {plan.productKey === 'premium_annual' && (
-                        <Text style={styles.bestValue}>BEST VALUE</Text>
-                      )}
-                      <Text style={styles.planName}>{plan.label}</Text>
-                      <Text style={styles.planPrice}>{plan.priceString}</Text>
-                      {plan.billingPeriod !== null && (
-                        <Text style={styles.planPeriod}>Billed every {plan.billingPeriod}</Text>
-                      )}
-                      <Text style={styles.planCredits}>{plan.credits} credits / paid period</Text>
-                      {plan.trial && monthlyTrialEligible && (
-                        <Text style={styles.trial}>Eligible for a 3-day free trial</Text>
-                      )}
-                    </Pressable>
-                  );
-                })}
+            {premiumPlans.length > 0 && (
+              <View style={styles.planSection}>
+                <Text style={styles.sectionTitle}>Choose a Premium plan</Text>
+                <View style={styles.planRow}>
+                  {premiumPlans.map((plan) => {
+                    const selected = plan.productKey === selectedPremium?.productKey;
+                    return (
+                      <Pressable
+                        key={plan.id}
+                        accessibilityRole="button"
+                        onPress={() => {
+                          setSelectedPremiumKey(plan.productKey);
+                          void captureGameplayEvent('commerce_product_selected', {
+                            product_kind: plan.productKind,
+                            product_key: plan.productKey,
+                          });
+                        }}
+                        style={({ pressed }) => [
+                          styles.planCard,
+                          selected && styles.planCardSelected,
+                          pressed && styles.pressed,
+                        ]}
+                        testID={`premium-${plan.productKey}`}
+                      >
+                        {plan.productKey === 'premium_annual' && (
+                          <Text style={styles.bestValue}>BEST VALUE</Text>
+                        )}
+                        <Text style={styles.planName}>{plan.label}</Text>
+                        <Text style={styles.planPrice}>{plan.priceString}</Text>
+                        {plan.billingPeriod !== null && (
+                          <Text style={styles.planPeriod}>Billed every {plan.billingPeriod}</Text>
+                        )}
+                        <Text style={styles.planCredits}>{plan.credits} credits / paid period</Text>
+                        {plan.trial && monthlyTrialEligible && (
+                          <Text style={styles.trial}>Eligible for a 3-day free trial</Text>
+                        )}
+                      </Pressable>
+                    );
+                  })}
+                </View>
+                {selectedPremium !== undefined && (
+                  <Button
+                    title={isAccount ? `Choose ${selectedPremium.label}` : `Sign in for ${selectedPremium.label}`}
+                    onPress={() => attemptPurchase(selectedPremium)}
+                    loading={purchasingKey === selectedPremium.productKey}
+                    disabled={purchasingKey !== null || purchasePending !== null}
+                    variant="rose"
+                  />
+                )}
               </View>
-              {selectedPremium !== undefined && (
-                <Button
-                  title={isAccount ? `Choose ${selectedPremium.label}` : `Sign in for ${selectedPremium.label}`}
-                  onPress={() => attemptPurchase(selectedPremium)}
-                  loading={purchasingKey === selectedPremium.productKey}
-                  disabled={purchasingKey !== null || purchasePending !== null}
-                  variant="rose"
-                />
-              )}
-            </View>
+            )}
 
-            <Text style={styles.sectionTitle}>One-time packs</Text>
-            <CategoryCard
-              icon="leaf-outline"
-              title="Stitch Coin Packs"
-              detail="300 · 900 · 2,000 Coins"
-              price={coinPacks[0]?.priceString}
-              color={Theme.colors.accentHoney}
-              onPress={() => setOpenCategory('stitch_coin')}
-              testID="open-stitch-coin-packs"
-            />
-            <CategoryCard
-              icon="sparkles-outline"
-              title="AI Credit Packs"
-              detail="5 · 20 · 50 Credits"
-              price={aiCreditPacks[0]?.priceString}
-              color={Theme.colors.accentRose}
-              onPress={() => setOpenCategory('ai_credit')}
-              testID="open-ai-credit-packs"
-            />
+            {(coinPacks.length > 0 || aiCreditPacks.length > 0) && (
+              <Text style={styles.sectionTitle}>One-time packs</Text>
+            )}
+            {/* Packs the store did not return are not advertised, and the summary
+                line and "from" price describe only what is purchasable. Category
+                order is ascending quantity, so the first pack is the cheapest. */}
+            {coinPacks.length > 0 && (
+              <CategoryCard
+                icon="leaf-outline"
+                title="Stitch Coin Packs"
+                detail={packSummary(coinPacks, 'Coins')}
+                price={coinPacks[0]?.priceString}
+                color={Theme.colors.accentHoney}
+                onPress={() => setOpenCategory('stitch_coin')}
+                testID="open-stitch-coin-packs"
+              />
+            )}
+            {aiCreditPacks.length > 0 && (
+              <CategoryCard
+                icon="sparkles-outline"
+                title="AI Credit Packs"
+                detail={packSummary(aiCreditPacks, 'Credits')}
+                price={aiCreditPacks[0]?.priceString}
+                color={Theme.colors.accentRose}
+                onPress={() => setOpenCategory('ai_credit')}
+                testID="open-ai-credit-packs"
+              />
+            )}
 
             <Pressable
               accessibilityRole="button"
@@ -1077,14 +1101,14 @@ export default function CommerceScreen() {
       </Screen>
 
       <ProductSheet
-        category={openCategory}
-        products={openCategory === 'stitch_coin' ? coinPacks : aiCreditPacks}
+        category={openablePackCategory}
+        products={openCategoryPacks}
         pendingProductKey={source === 'sign_in_return' ? pendingIntent?.productKey ?? null : null}
         purchasingKey={purchasingKey}
-        reconcilingProductKey={openCategory === 'stitch_coin'
+        reconcilingProductKey={openablePackCategory === 'stitch_coin'
           ? coinPurchasePending?.product.productKey ?? null
           : aiCreditPurchasePending?.product.productKey ?? null}
-        confirmation={openCategory === 'stitch_coin' ? (
+        confirmation={openablePackCategory === 'stitch_coin' ? (
           <CoinPackConfirmation
             product={confirmingCoinPack}
             onCancel={() => setConfirmingCoinPack(null)}
@@ -1354,6 +1378,37 @@ function ProductSheet({
       </View>
     </Modal>
   );
+}
+
+/**
+ * A canonical product the current offering did not return no longer hides
+ * anything from the player, so it has to stay visible to the team: it is both
+ * warned about locally and reported on the gameplay-event analytics channel.
+ * The dedupe key keeps repeated store loads from queueing the same report twice.
+ */
+async function reportMissingCanonicalProducts(missing: readonly string[]): Promise<void> {
+  if (missing.length === 0) return;
+  console.warn(`Commerce Store catalog is missing canonical products: ${missing.join(', ')}`);
+  await Promise.all(missing.map(async (storeProductIdentifier) => {
+    const identity = commerceProductIdentity(storeProductIdentifier);
+    if (identity === null) {
+      // The canonical identifier list and the product catalog are maintained
+      // separately; a drift between them must not drop the report in silence.
+      console.warn(`Commerce Store cannot report an unknown store product: ${storeProductIdentifier}`);
+      return;
+    }
+    await captureGameplayEvent(
+      'commerce_catalog_incomplete',
+      { product_kind: identity.productKind, product_key: identity.productKey },
+      `commerce_catalog_incomplete:${storeProductIdentifier}`,
+    );
+  }));
+}
+
+// Quantities are grouped for the English pack copy they sit in, not for the
+// device locale, so the summary always matches the pack labels beside it.
+function packSummary(packs: readonly CommerceProduct[], noun: string): string {
+  return `${packs.map((pack) => pack.quantity.toLocaleString('en-US')).join(' · ')} ${noun}`;
 }
 
 function isPurchaseCancelled(error: unknown): boolean {

@@ -24,11 +24,14 @@ Every event has `event_id` (client UUID), `occurred_at` (ISO-8601 timestamp), an
 | `ai_generation_failed` | `failure_stage`: `prompt_safety` \| `provider_submission` \| `provider_safety` \| `delivery` |
 | `commerce_store_viewed` | `source`: `profile` \| `stitch_coin_shortfall` \| `ai_credit_shortfall` \| `premium_benefit` \| `sign_in_return` \| `direct` |
 | `commerce_product_selected` | `product_kind`: `premium_membership` \| `ai_credit_pack` \| `stitch_coin_pack`; `product_key`: `premium_weekly` \| `premium_monthly` \| `premium_annual` \| `ai_credit_pack_5` \| `ai_credit_pack_20` \| `ai_credit_pack_50` \| `coin_pack_300` \| `coin_pack_900` \| `coin_pack_2000` |
+| `commerce_catalog_incomplete` | `product_kind`; `product_key` (same closed values as `commerce_product_selected`) |
 | `purchase_started` | `product_kind`; `product_key` (same closed values as `commerce_product_selected`) |
 | `purchase_reconciliation_pending` | `product_kind`; `product_key` (same closed values as `commerce_product_selected`) |
 | `purchase_completed` | `product_kind`; `product_key` (same closed values as `commerce_product_selected`) |
 | `purchase_cancelled` | `product_kind`; `product_key` (same closed values as `commerce_product_selected`) |
 | `purchase_failed` | `product_kind`; `product_key` (same closed values as `commerce_product_selected`); `failure_stage`: `store` \| `verification` \| `grant` |
+
+`commerce_catalog_incomplete` is emitted once per canonical product that the Commerce Store expected but the current RevenueCat offering did not return. The store renders whatever products are present rather than hiding the catalogue, so this event — alongside a client warning — is the only signal that a store product is misconfigured, unapproved, or unavailable in the player's storefront. It carries the product key, never the raw store identifier, and the client deduplicates it per product while the event is queued.
 
 `purchase_completed` is emitted only after the Game Backend exposes the verified Commerce Ledger grant. A successful RevenueCat SDK return emits neither `purchase_completed` nor client-side value; it proceeds to `purchase_reconciliation_pending` when the grant is not yet visible.
 

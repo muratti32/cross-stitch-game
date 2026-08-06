@@ -137,7 +137,7 @@ _Avoid_: Public profile history, editable log, Community Pattern metadata
 ### Economy and Commerce
 
 **Commerce Store**:
-The single player-facing purchase surface where Premium Plans, Stitch Coin Packs, and AI Credit Packs can be compared. A Guest Player may browse the products and current store prices but must become a Registered Account before purchasing; a Registered Account can buy there. The surface presents recurring membership and one-time top-ups together while keeping their grants, durations, and purchase terms distinct. It is not a gate over core play or creation, and entering it never implies that Premium Membership is required.
+The single player-facing purchase surface where Premium Plans, Stitch Coin Packs, and AI Credit Packs can be compared. A Guest Player may browse the products and current store prices but must become a Registered Account before purchasing; a Registered Account can buy there. The surface presents recurring membership and one-time top-ups together while keeping their grants, durations, and purchase terms distinct. It shows whatever products the current store offering returns, each with the price and billing period read from its own package, and declares itself unavailable only when there is genuinely nothing to sell; a product the offering omits is reported to the team as a warning and a `commerce_catalog_incomplete` event rather than hiding the rest of the catalogue. It is not a gate over core play or creation, and entering it never implies that Premium Membership is required.
 _Avoid_: Paywall, Premium-only screen, locked game
 
 **Premium Membership**:

@@ -150,6 +150,22 @@ function subscriptionPeriodLabel(period: string | null): string | null {
   return `${amount} ${amount === 1 ? unit[0] : unit[1]}`;
 }
 
+/**
+ * Resolves a store product identifier back to the analytics vocabulary. Used to
+ * report a canonical product the current offering did not return, where no
+ * CommerceProduct exists to read the keys from.
+ */
+export function commerceProductIdentity(
+  storeProductIdentifier: string,
+): Pick<ProductDefinition, 'productKey' | 'productKind'> | null {
+  const definition = PRODUCT_DEFINITIONS.find(
+    (candidate) => candidate.storeProductId === storeProductId(storeProductIdentifier),
+  );
+  return definition === undefined
+    ? null
+    : { productKey: definition.productKey, productKind: definition.productKind };
+}
+
 export function productsInCategory(
   products: readonly CommerceProduct[],
   category: CommerceCategory,

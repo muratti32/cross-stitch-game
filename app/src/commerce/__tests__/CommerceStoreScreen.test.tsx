@@ -16,6 +16,7 @@ const mockRouter = {
 };
 const mockCaptureGameplayEvent = jest.fn().mockResolvedValue(undefined);
 const mockGetOfferings = jest.fn();
+const mockMissingCanonicalProducts = jest.fn();
 const mockPurchasePackage = jest.fn();
 const mockRestorePurchases = jest.fn();
 const mockTrialEligible = jest.fn();
@@ -135,7 +136,8 @@ jest.mock('@/analytics/gameplayEvents', () => ({
 jest.mock('@/commerce/revenueCat', () => ({
   getRevenueCatOfferings: (...args: unknown[]) => mockGetOfferings(...args),
   isRevenueCatTrialEligible: (...args: unknown[]) => mockTrialEligible(...args),
-  missingCanonicalRevenueCatProducts: () => [],
+  missingCanonicalRevenueCatProducts: (...args: unknown[]) =>
+    mockMissingCanonicalProducts(...args),
   purchaseRevenueCatPackage: (...args: unknown[]) => mockPurchasePackage(...args),
   restoreRevenueCatPurchases: (...args: unknown[]) => mockRestorePurchases(...args),
   showRevenueCatManageSubscriptions: (...args: unknown[]) => mockManageSubscriptions(...args),
@@ -154,23 +156,25 @@ const productRows = [
   ['ai_credit_pack_50', '$19.99'],
 ] as const;
 
-function offering() {
+function offering(withheldProductKeys: readonly string[] = []) {
   return {
     current: {
-      availablePackages: productRows.map(([key, priceString]) => ({
-        identifier: `$rc_${key}`,
-        product: {
-          identifier: `com.avk.stitchwish.${key}`,
-          priceString,
-          subscriptionPeriod: key === 'premium_annual'
-            ? 'P1Y'
-            : key === 'premium_monthly'
-              ? 'P1M'
-              : key === 'premium_weekly'
-                ? 'P1W'
-                : null,
-        },
-      })),
+      availablePackages: productRows
+        .filter(([key]) => !withheldProductKeys.includes(key))
+        .map(([key, priceString]) => ({
+          identifier: `$rc_${key}`,
+          product: {
+            identifier: `com.avk.stitchwish.${key}`,
+            priceString,
+            subscriptionPeriod: key === 'premium_annual'
+              ? 'P1Y'
+              : key === 'premium_monthly'
+                ? 'P1M'
+                : key === 'premium_weekly'
+                  ? 'P1W'
+                  : null,
+          },
+        })),
     },
   };
 }
@@ -181,6 +185,7 @@ beforeEach(() => {
   mockIdentity = { accountId: null, isAccount: false };
   mockMembership = undefined;
   mockGetOfferings.mockResolvedValue(offering());
+  mockMissingCanonicalProducts.mockReturnValue([]);
   mockPurchasePackage.mockResolvedValue({
     transaction: { transactionIdentifier: 'store-transaction-81' },
   });
@@ -861,6 +866,100 @@ it('keeps wallet and membership context visible while catalog Retry recovers', a
   warning.mockRestore();
 });
 
+it('renders the products the store returned when canonical products are missing', async () => {
+  withholdProducts(['premium_weekly', 'coin_pack_300']);
+  const warning = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+  await renderScreen();
+
+  const text = allText(renderer!.root);
+  expect(text).not.toContain('Store temporarily unavailable');
+  expect(text).toEqual(expect.arrayContaining([
+    'Annual',
+    '$39.99',
+    'Billed every 1 year',
+    'Monthly',
+    '$7.99',
+    'Billed every 1 month',
+    'Stitch Coin Packs',
+    '900 · 2,000 Coins',
+    'From $4.99',
+    'AI Credit Packs',
+    '5 · 20 · 50 Credits',
+    'From $2.99',
+  ]));
+  expect(text).not.toContain('Weekly');
+  expect(text).not.toContain('Billed every 1 week');
+  warning.mockRestore();
+});
+
+it('reports missing canonical products as a warning and an analytics event', async () => {
+  withholdProducts(['premium_weekly', 'coin_pack_300']);
+  const warning = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+  await renderScreen();
+
+  expect(warning).toHaveBeenCalledWith(
+    'Commerce Store catalog is missing canonical products: '
+      + 'com.avk.stitchwish.premium_weekly, com.avk.stitchwish.coin_pack_300',
+  );
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith(
+    'commerce_catalog_incomplete',
+    { product_kind: 'premium_membership', product_key: 'premium_weekly' },
+    'commerce_catalog_incomplete:com.avk.stitchwish.premium_weekly',
+  );
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith(
+    'commerce_catalog_incomplete',
+    { product_kind: 'stitch_coin_pack', product_key: 'coin_pack_300' },
+    'commerce_catalog_incomplete:com.avk.stitchwish.coin_pack_300',
+  );
+  warning.mockRestore();
+});
+
+it.each([
+  ['no current offering', { current: null }],
+  ['a current offering that resolves to no products', { current: { availablePackages: [] } }],
+])('keeps the unavailable state and its Retry for %s', async (_label, emptyOffering) => {
+  mockGetOfferings.mockResolvedValue(emptyOffering);
+  mockMissingCanonicalProducts.mockReturnValue(
+    productRows.map(([key]) => `com.avk.stitchwish.${key}`),
+  );
+  const warning = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+  await renderScreen();
+
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Store temporarily unavailable',
+    'Retry',
+  ]));
+
+  mockGetOfferings.mockResolvedValue(offering());
+  mockMissingCanonicalProducts.mockReturnValue([]);
+  await act(async () => {
+    pressByText(renderer!.root, 'Retry');
+    await flushPromises();
+  });
+
+  expect(allText(renderer!.root)).toContain('Stitch Coin Packs');
+  expect(allText(renderer!.root)).not.toContain('Store temporarily unavailable');
+  warning.mockRestore();
+});
+
+it('does not offer a pack category the store returned no packs for', async () => {
+  mockParams = { category: 'ai_credit', source: 'ai_credit_shortfall' };
+  withholdProducts(['ai_credit_pack_5', 'ai_credit_pack_20', 'ai_credit_pack_50']);
+  const warning = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+  await renderScreen();
+
+  const text = allText(renderer!.root);
+  expect(text).not.toContain('AI Credit Packs');
+  expect(text).toEqual(expect.arrayContaining([
+    'One-time packs',
+    'Stitch Coin Packs',
+    '300 · 900 · 2,000 Coins',
+  ]));
+  expect(renderer!.root.findAllByProps({ testID: 'open-ai-credit-packs' })).toHaveLength(0);
+  expect(visibleModalCount(renderer!.root)).toBe(0);
+  warning.mockRestore();
+});
+
 function visibleModalCount(root: ReactTestInstance): number {
   return root.findAllByType(Modal).filter((node) => node.props.visible === true).length;
 }
@@ -891,6 +990,15 @@ function pressAncestor(node: ReactTestInstance): void {
 async function flushPromises(): Promise<void> {
   await Promise.resolve();
   await Promise.resolve();
+}
+
+// Keeps the withheld packages and the canonical identifiers the RevenueCat
+// wrapper reports missing in step, so the two halves cannot drift apart.
+function withholdProducts(productKeys: readonly string[]): void {
+  mockGetOfferings.mockResolvedValue(offering(productKeys));
+  mockMissingCanonicalProducts.mockReturnValue(
+    productKeys.map((key) => `com.avk.stitchwish.${key}`),
+  );
 }
 
 async function renderScreen(): Promise<void> {

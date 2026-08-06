@@ -13,6 +13,7 @@ export const GAMEPLAY_EVENT_KINDS = [
   'ai_generation_failed',
   'commerce_store_viewed',
   'commerce_product_selected',
+  'commerce_catalog_incomplete',
   'purchase_started',
   'purchase_reconciliation_pending',
   'purchase_completed',
@@ -166,6 +167,10 @@ const payloadRules: Readonly<Record<GameplayEventKind, PayloadRule>> = {
     validate: (payload) => isMember(payload.source, COMMERCE_ENTRY_SOURCES),
   },
   commerce_product_selected: purchaseRule(),
+  // A canonical product the Commerce Store expected but the current offering
+  // did not return. The catalogue still renders whatever is present, so this is
+  // the only signal that a store product is misconfigured or unapproved.
+  commerce_catalog_incomplete: purchaseRule(),
   purchase_started: purchaseRule(),
   purchase_reconciliation_pending: purchaseRule(),
   purchase_completed: purchaseRule(),
