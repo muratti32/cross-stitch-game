@@ -7,11 +7,25 @@ import { useGameplayStore } from '@/store';
 import { useHealthCheck } from '@/hooks/useHealthCheck';
 import { Config, WebLinks } from '@/config';
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import { setHandedness as setHandednessDb } from '@/local-db';
 import { useBackendSession } from '@/hooks/useBackendSession';
 import { shortenGuestId } from '@/identity/identityLogic';
 import { resetGuestData, removeLocalData, useIdentityStore, logout } from '@/identity/guestIdentity';
 import { useAccountDeletionStatus, useRequestAccountDeletion, useCancelAccountDeletion, AccountDeletionApiError } from '@/api/accountDeletion';
+
+// App identity is read from the Expo config so the settings footer can never
+// drift away from app.json / app.config.ts.
+const expoConfig = Constants.expoConfig;
+const appVersion = expoConfig?.version ?? 'unknown';
+const sdkVersion = expoConfig?.sdkVersion?.split('.')[0];
+const appIdentifier =
+  Platform.OS === 'ios'
+    ? expoConfig?.ios?.bundleIdentifier ?? 'unknown'
+    : expoConfig?.android?.package ?? 'unknown';
+const appScheme = Array.isArray(expoConfig?.scheme)
+  ? expoConfig.scheme[0] ?? 'unknown'
+  : expoConfig?.scheme ?? 'unknown';
 
 export default function SettingsScreen() {
   const { showGridLines, toggleGridLines, handedness, setHandedness } = useGameplayStore();
@@ -613,12 +627,14 @@ export default function SettingsScreen() {
       {/* App details card */}
       <View style={styles.appDetails}>
         <Text style={styles.appDetailsText}>Stitch Wish — Cozy Pixel-Art Needlecraft</Text>
-        <Text style={styles.appDetailsVersion}>Version 1.0.0</Text>
+        <Text style={styles.appDetailsVersion}>Version {appVersion}</Text>
         {__DEV__ && (
           <>
-            <Text style={styles.appDetailsVersion}>Expo SDK 54</Text>
-            <Text style={styles.appDetailsIdentifier}>Package: com.avk.stitchwish</Text>
-            <Text style={styles.appDetailsScheme}>Scheme: stitchwish://</Text>
+            {sdkVersion !== undefined && (
+              <Text style={styles.appDetailsVersion}>Expo SDK {sdkVersion}</Text>
+            )}
+            <Text style={styles.appDetailsIdentifier}>Package: {appIdentifier}</Text>
+            <Text style={styles.appDetailsScheme}>Scheme: {appScheme}://</Text>
           </>
         )}
       </View>
