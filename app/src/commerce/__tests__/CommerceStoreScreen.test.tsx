@@ -1,8 +1,9 @@
 import React from 'react';
-import { Modal, Pressable, Text, View } from 'react-native';
+import { Alert, Linking, Modal, Platform, Pressable, Text, View } from 'react-native';
 import TestRenderer, { act, type ReactTestInstance } from 'react-test-renderer';
 
 import CommerceScreen from '../../../app/(tabs)/(profile)/commerce';
+import { WebLinks } from '@/config';
 import { useCommerceIntentStore } from '../commerceIntent';
 
 let mockParams: { category?: string; source?: string } = { source: 'profile' };
@@ -231,6 +232,98 @@ it('shows the normal Monthly paid offer when eligibility is unknown or ineligibl
 
   expect(allText(renderer!.root)).not.toContain('Eligible for a 3-day free trial');
   expect(allText(renderer!.root)).toContain('$7.99');
+});
+
+it('discloses the store subscription terms above the Premium purchase action', async () => {
+  mockIdentity = { accountId: 'account_80', isAccount: true };
+  await renderScreen();
+
+  const text = allText(renderer!.root);
+  expect(text).toContain(
+    'Payment is charged to your App Store account at confirmation. Annual Premium renews '
+    + 'automatically at $39.99 every 1 year unless auto-renew is turned off at least 24 hours '
+    + 'before the end of the current period. Any unused portion of a free trial is forfeited '
+    + 'when you purchase a subscription. You can cancel at any time from your App Store account.',
+  );
+  expect(allText(subscriptionDisclosure())).toEqual(expect.arrayContaining([
+    'Privacy Policy',
+    'Terms of Service',
+  ]));
+  expect(text.indexOf('Privacy Policy')).toBeLessThan(text.indexOf('Choose Annual'));
+});
+
+it('interpolates the disclosure from the selected Premium Plan', async () => {
+  mockIdentity = { accountId: 'account_80', isAccount: true };
+  await renderScreen();
+
+  await act(async () => {
+    pressAncestor(renderer!.root.findByProps({ testID: 'premium-premium_weekly' }));
+  });
+
+  expect(allText(subscriptionDisclosure()).join(' ')).toContain(
+    'Weekly Premium renews automatically at $2.99 every 1 week unless auto-renew is turned off',
+  );
+});
+
+it('names the store the player is holding', async () => {
+  Object.defineProperty(Platform, 'OS', { configurable: true, value: 'android' });
+  try {
+    await renderScreen();
+
+    const disclosure = allText(subscriptionDisclosure()).join(' ');
+    expect(disclosure).toContain(
+      'Payment is charged to your Google Play account at confirmation.',
+    );
+    expect(disclosure).toContain('You can cancel at any time from your Google Play account.');
+    expect(disclosure).not.toContain('App Store');
+  } finally {
+    Object.defineProperty(Platform, 'OS', { configurable: true, value: 'ios' });
+  }
+});
+
+it('repeats the disclosure and both links inside the Premium confirmation', async () => {
+  mockIdentity = { accountId: 'account_80', isAccount: true };
+  await renderScreen();
+
+  await act(async () => pressByText(renderer!.root, 'Choose Annual'));
+
+  const confirmation = allText(
+    renderer!.root.findByProps({ testID: 'premium-confirmation-disclosure' }),
+  );
+  expect(confirmation.join(' ')).toContain(
+    'Annual Premium renews automatically at $39.99 every 1 year',
+  );
+  expect(confirmation).toEqual(expect.arrayContaining(['Privacy Policy', 'Terms of Service']));
+});
+
+it('opens the configured Privacy Policy and Terms of Service from the disclosure', async () => {
+  const openURL = jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
+  await renderScreen();
+
+  await act(async () => pressByText(subscriptionDisclosure(), 'Privacy Policy'));
+  await act(async () => pressByText(subscriptionDisclosure(), 'Terms of Service'));
+
+  expect(openURL).toHaveBeenNthCalledWith(1, WebLinks.privacyPolicy);
+  expect(openURL).toHaveBeenNthCalledWith(2, WebLinks.termsOfService);
+  openURL.mockRestore();
+});
+
+it('tells the player when a legal link cannot be opened', async () => {
+  const openURL = jest.spyOn(Linking, 'openURL').mockRejectedValue(new Error('no handler'));
+  const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+  await renderScreen();
+
+  await act(async () => {
+    pressByText(subscriptionDisclosure(), 'Terms of Service');
+    await flushPromises();
+  });
+
+  expect(alert).toHaveBeenCalledWith(
+    'Terms of Service',
+    `Could not open link: ${WebLinks.termsOfService}`,
+  );
+  alert.mockRestore();
+  openURL.mockRestore();
 });
 
 it('requires confirmation and treats store cancellation as a non-error', async () => {
@@ -959,6 +1052,10 @@ it('does not offer a pack category the store returned no packs for', async () =>
   expect(visibleModalCount(renderer!.root)).toBe(0);
   warning.mockRestore();
 });
+
+function subscriptionDisclosure(): ReactTestInstance {
+  return renderer!.root.findByProps({ testID: 'commerce-subscription-disclosure' });
+}
 
 function visibleModalCount(root: ReactTestInstance): number {
   return root.findAllByType(Modal).filter((node) => node.props.visible === true).length;

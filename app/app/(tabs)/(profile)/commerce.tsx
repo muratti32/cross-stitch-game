@@ -5,8 +5,11 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   Alert,
+  Linking,
   Modal,
+  Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -52,6 +55,7 @@ import {
   useRevenueCatRuntime,
 } from '@/commerce/revenueCat';
 import { Button, Card, Screen } from '@/components';
+import { WebLinks } from '@/config';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
 
@@ -1044,13 +1048,19 @@ export default function CommerceScreen() {
                   })}
                 </View>
                 {selectedPremium !== undefined && (
-                  <Button
-                    title={isAccount ? `Choose ${selectedPremium.label}` : `Sign in for ${selectedPremium.label}`}
-                    onPress={() => attemptPurchase(selectedPremium)}
-                    loading={purchasingKey === selectedPremium.productKey}
-                    disabled={purchasingKey !== null || purchasePending !== null}
-                    variant="rose"
-                  />
+                  <>
+                    <SubscriptionDisclosure
+                      plan={selectedPremium}
+                      testID="commerce-subscription-disclosure"
+                    />
+                    <Button
+                      title={isAccount ? `Choose ${selectedPremium.label}` : `Sign in for ${selectedPremium.label}`}
+                      onPress={() => attemptPurchase(selectedPremium)}
+                      loading={purchasingKey === selectedPremium.productKey}
+                      disabled={purchasingKey !== null || purchasePending !== null}
+                      variant="rose"
+                    />
+                  </>
                 )}
               </View>
             )}
@@ -1183,30 +1193,111 @@ function PremiumConfirmation({
       visible={product !== null}
     >
       <View style={styles.confirmationRoot}>
-        <View accessibilityViewIsModal style={styles.confirmationCard}>
-          <Text style={styles.confirmationTitle}>Confirm Premium purchase</Text>
-          {product !== null && (
-            <>
-              <Text style={styles.confirmationPlan}>
-                {product.label} · {product.priceString}
-                {product.billingPeriod === null ? '' : ` every ${product.billingPeriod}`}
-              </Text>
-              {product.productKey === 'premium_monthly' && trialEligible && (
-                <Text style={styles.trial}>Your store reports that you are eligible for a 3-day free trial.</Text>
-              )}
-              <Text style={styles.confirmationBody}>
-                Premium appears only after the Game Backend verifies the store transaction.
-              </Text>
-              <View style={styles.confirmationActions}>
-                <Button title="Cancel" onPress={onCancel} variant="secondary" />
-                <Button title={`Confirm ${product.label}`} onPress={() => onConfirm(product)} variant="rose" />
-              </View>
-            </>
-          )}
+        {/* The disclosure roughly doubles this card, so its content scrolls:
+            under a large accessibility text size the terms, both links, and the
+            Confirm action all have to stay reachable. */}
+        <View
+          accessibilityViewIsModal
+          style={[styles.confirmationCard, styles.premiumConfirmationCard]}
+        >
+          <ScrollView contentContainerStyle={styles.premiumConfirmationContent}>
+            <Text style={styles.confirmationTitle}>Confirm Premium purchase</Text>
+            {product !== null && (
+              <>
+                <Text style={styles.confirmationPlan}>
+                  {product.label} · {product.priceString}
+                  {product.billingPeriod === null ? '' : ` every ${product.billingPeriod}`}
+                </Text>
+                {product.productKey === 'premium_monthly' && trialEligible && (
+                  <Text style={styles.trial}>Your store reports that you are eligible for a 3-day free trial.</Text>
+                )}
+                <Text style={styles.confirmationBody}>
+                  Premium appears only after the Game Backend verifies the store transaction.
+                </Text>
+                <SubscriptionDisclosure
+                  plan={product}
+                  testID="premium-confirmation-disclosure"
+                />
+                <View style={styles.confirmationActions}>
+                  <Button title="Cancel" onPress={onCancel} variant="secondary" />
+                  <Button title={`Confirm ${product.label}`} onPress={() => onConfirm(product)} variant="rose" />
+                </View>
+              </>
+            )}
+          </ScrollView>
         </View>
       </View>
     </Modal>
   );
+}
+
+/**
+ * The store-standard subscription terms, rendered above the Premium purchase
+ * action and again inside the Premium confirmation: the confirmation covers the
+ * screen, so a player who commits from there must still be able to read the
+ * terms and reach both legal documents.
+ */
+function SubscriptionDisclosure({
+  plan,
+  testID,
+}: {
+  plan: CommerceProduct;
+  testID: string;
+}) {
+  return (
+    <View style={styles.disclosure} testID={testID}>
+      <Text style={styles.disclosureText}>{subscriptionTerms(plan)}</Text>
+      <View style={styles.disclosureLinks}>
+        <Pressable
+          accessibilityRole="link"
+          onPress={() => openLegalLink('Privacy Policy', WebLinks.privacyPolicy)}
+          style={({ pressed }) => [pressed && styles.pressed]}
+        >
+          <Text style={styles.disclosureLink}>Privacy Policy</Text>
+        </Pressable>
+        <Text style={styles.disclosureSeparator}>·</Text>
+        <Pressable
+          accessibilityRole="link"
+          onPress={() => openLegalLink('Terms of Service', WebLinks.termsOfService)}
+          style={({ pressed }) => [pressed && styles.pressed]}
+        >
+          <Text style={styles.disclosureLink}>Terms of Service</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
+/**
+ * The plan's price and billing period are read from its own store package, so a
+ * price or period changed in App Store Connect or Play Console cannot make the
+ * disclosure lie. A package that carries no subscription period simply drops the
+ * period clause rather than asserting one.
+ */
+function subscriptionTerms(plan: CommerceProduct): string {
+  const store = storeAccountName();
+  const renewal = plan.billingPeriod === null
+    ? `${plan.label} Premium renews automatically at ${plan.priceString}`
+    : `${plan.label} Premium renews automatically at ${plan.priceString} every ${plan.billingPeriod}`;
+  return `Payment is charged to your ${store} account at confirmation. ${renewal} unless `
+    + 'auto-renew is turned off at least 24 hours before the end of the current period. '
+    + 'Any unused portion of a free trial is forfeited when you purchase a subscription. '
+    + `You can cancel at any time from your ${store} account.`;
+}
+
+// The disclosure names the store the player is actually holding, so the
+// cancellation instructions match the device in their hand.
+function storeAccountName(): string {
+  return Platform.OS === 'ios' ? 'App Store' : 'Google Play';
+}
+
+// Same destinations and same failure handling Settings already uses for these
+// two documents: a link that cannot be opened tells the player instead of
+// failing silently at the point of purchase.
+function openLegalLink(title: string, url: string): void {
+  Linking.openURL(url).catch(() => {
+    Alert.alert(title, `Could not open link: ${url}`);
+  });
 }
 
 // Rendered as an overlay inside the open ProductSheet modal, never as a nested
@@ -1702,6 +1793,33 @@ const styles = StyleSheet.create({
     marginTop: Theme.spacing.xs,
   },
   trial: { color: Theme.colors.success, fontSize: 10, marginTop: Theme.spacing.xs },
+  disclosure: {
+    backgroundColor: Theme.colors.card,
+    borderColor: Theme.colors.border,
+    borderRadius: Theme.radii.md,
+    borderWidth: 1,
+    gap: Theme.spacing.sm,
+    padding: Theme.spacing.md,
+  },
+  disclosureText: {
+    color: Theme.colors.textSecondary,
+    fontSize: Theme.typography.sizes.xs,
+    lineHeight: 17,
+  },
+  disclosureLinks: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: Theme.spacing.sm,
+  },
+  disclosureLink: {
+    color: Theme.colors.accentTeal,
+    fontSize: Theme.typography.sizes.xs,
+    fontWeight: Theme.typography.weights.semibold,
+  },
+  disclosureSeparator: {
+    color: Theme.colors.textSecondary,
+    fontSize: Theme.typography.sizes.xs,
+  },
   categoryCard: { padding: 0 },
   categoryContent: {
     alignItems: 'center',
@@ -1760,6 +1878,8 @@ const styles = StyleSheet.create({
     padding: Theme.spacing.xl,
     width: '100%',
   },
+  premiumConfirmationCard: { maxHeight: '86%', padding: 0 },
+  premiumConfirmationContent: { gap: Theme.spacing.md, padding: Theme.spacing.xl },
   confirmationTitle: {
     color: Theme.colors.textPrimary,
     fontSize: Theme.typography.sizes.xl,
