@@ -20,6 +20,7 @@ export function Footer() {
               <h4>Legal</h4>
               <ul>
                 <li><Link to="/privacy-policy">Privacy Policy</Link></li>
+                <li><Link to="/terms-of-service">Terms of Service</Link></li>
                 <li><Link to="/account-deletion">Account Deletion</Link></li>
               </ul>
             </div>

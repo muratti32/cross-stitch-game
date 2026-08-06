@@ -147,7 +147,9 @@ export function PrivacyPolicyPage() {
             <h2>9. Contact</h2>
             <p>
               For privacy questions or data-access requests, contact us at{' '}
-              <a href="mailto:muratti32@gmail.com">muratti32@gmail.com</a>.
+              <a href="mailto:muratti32@gmail.com">muratti32@gmail.com</a>. Your
+              use of the App is also governed by our{' '}
+              <Link to="/terms-of-service">Terms of Service</Link>.
             </p>
           </div>
         </div>

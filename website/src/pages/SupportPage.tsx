@@ -69,6 +69,23 @@ export function SupportPage() {
             </div>
 
             <div className="support-card">
+              <span className="support-card__icon" aria-hidden="true">📄</span>
+              <h2 className="support-card__title">Terms of Service</h2>
+              <p className="support-card__text">
+                The rules for using Stitch Wish: accounts, purchases and
+                subscriptions, virtual items, catalog submissions, and content
+                moderation.
+              </p>
+              <Link
+                to="/terms-of-service"
+                className="support-card__action"
+                aria-label="Read our terms of service"
+              >
+                Terms of Service →
+              </Link>
+            </div>
+
+            <div className="support-card">
               <span className="support-card__icon" aria-hidden="true">💳</span>
               <h2 className="support-card__title">Subscription &amp; Billing</h2>
               <p className="support-card__text">

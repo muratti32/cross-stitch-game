@@ -5,7 +5,7 @@ import { router } from 'expo-router';
 import { Theme } from '@/theme/theme';
 import { useGameplayStore } from '@/store';
 import { useHealthCheck } from '@/hooks/useHealthCheck';
-import { Config } from '@/config';
+import { Config, WebLinks } from '@/config';
 import { Ionicons } from '@expo/vector-icons';
 import { setHandedness as setHandednessDb } from '@/local-db';
 import { useBackendSession } from '@/hooks/useBackendSession';
@@ -107,14 +107,10 @@ export default function SettingsScreen() {
     }
   };
 
-  const handleLinkPress = (title: string, url?: string) => {
-    if (url) {
-      Linking.openURL(url).catch(() => {
-        Alert.alert('Error', `Could not open link: ${url}`);
-      });
-    } else {
-      Alert.alert(title, 'This page will be available before release.');
-    }
+  const handleLinkPress = (title: string, url: string) => {
+    Linking.openURL(url).catch(() => {
+      Alert.alert(title, `Could not open link: ${url}`);
+    });
   };
 
   const handleSubscriptionManagePress = () => {
@@ -579,7 +575,7 @@ export default function SettingsScreen() {
       <Text style={styles.sectionTitle}>Information & Links</Text>
       <Card style={styles.card}>
         <Pressable
-          onPress={() => handleLinkPress('Privacy Policy')}
+          onPress={() => handleLinkPress('Privacy Policy', WebLinks.privacyPolicy)}
           style={({ pressed }) => [styles.linkRow, pressed && styles.linkPressed]}
         >
           <Text style={styles.linkText}>Privacy Policy</Text>
@@ -588,7 +584,7 @@ export default function SettingsScreen() {
         <View style={styles.rowDivider} />
         
         <Pressable
-          onPress={() => handleLinkPress('Terms of Service')}
+          onPress={() => handleLinkPress('Terms of Service', WebLinks.termsOfService)}
           style={({ pressed }) => [styles.linkRow, pressed && styles.linkPressed]}
         >
           <Text style={styles.linkText}>Terms of Service</Text>
@@ -597,10 +593,19 @@ export default function SettingsScreen() {
         <View style={styles.rowDivider} />
 
         <Pressable
-          onPress={() => handleLinkPress('Contact Support')}
+          onPress={() => handleLinkPress('Contact Support', WebLinks.support)}
           style={({ pressed }) => [styles.linkRow, pressed && styles.linkPressed]}
         >
           <Text style={styles.linkText}>Contact Support</Text>
+          <Ionicons name="chevron-forward" size={16} color={Theme.colors.textSecondary} />
+        </Pressable>
+        <View style={styles.rowDivider} />
+
+        <Pressable
+          onPress={() => handleLinkPress('Account Deletion', WebLinks.accountDeletion)}
+          style={({ pressed }) => [styles.linkRow, pressed && styles.linkPressed]}
+        >
+          <Text style={styles.linkText}>Account Deletion</Text>
           <Ionicons name="chevron-forward" size={16} color={Theme.colors.textSecondary} />
         </Pressable>
       </Card>

@@ -1,5 +1,12 @@
 export const Config = {
   apiBaseUrl: process.env.EXPO_PUBLIC_API_BASE_URL || 'http://localhost:3000',
+  // Public marketing/legal site (Cloudflare DNS -> Coolify `website` app). It
+  // hosts the Privacy Policy, Terms of Service, Support, and Account Deletion
+  // pages the stores require, and is also the Catalog Share Link web fallback.
+  webBaseUrl: (process.env.EXPO_PUBLIC_WEB_BASE_URL || 'https://stitchwish.avkdesign.net').replace(
+    /\/+$/,
+    '',
+  ),
   firebase: {
     apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
     appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
@@ -27,6 +34,17 @@ export const Config = {
     iosRewardedAdUnitId: process.env.EXPO_PUBLIC_ADMOB_IOS_REWARDED_AD_UNIT_ID,
   },
 };
+
+/**
+ * Public web pages linked from the app. Every route here exists in the
+ * `website/` Vite app (see website/src/App.tsx).
+ */
+export const WebLinks = {
+  privacyPolicy: `${Config.webBaseUrl}/privacy-policy`,
+  termsOfService: `${Config.webBaseUrl}/terms-of-service`,
+  support: `${Config.webBaseUrl}/support`,
+  accountDeletion: `${Config.webBaseUrl}/account-deletion`,
+} as const;
 
 export function isSentryConfigured(): boolean {
   return Boolean(Config.sentry.dsn);

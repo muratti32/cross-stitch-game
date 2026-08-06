@@ -24,6 +24,7 @@ export function Nav() {
             <li><NavLink to="/" end>Home</NavLink></li>
             <li><NavLink to="/support">Support</NavLink></li>
             <li><NavLink to="/privacy-policy">Privacy Policy</NavLink></li>
+            <li><NavLink to="/terms-of-service">Terms</NavLink></li>
           </ul>
           <a href="#download" className="btn btn--primary btn--sm nav__cta-btn">
             Get App

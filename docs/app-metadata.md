@@ -27,6 +27,9 @@ Canonical identity and store metadata for the game. Values marked **locked** mus
 | Copyright | AVK |
 | Support contact | muratti32@gmail.com |
 | Privacy Policy URL | https://stitchwish.avkdesign.net/privacy-policy |
+| Terms of Service URL | https://stitchwish.avkdesign.net/terms-of-service |
+| Support URL | https://stitchwish.avkdesign.net/support |
+| Account Deletion URL | https://stitchwish.avkdesign.net/account-deletion |
 
 ## Platform targets
 
