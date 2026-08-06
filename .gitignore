@@ -3,6 +3,7 @@
 *.apk
 .expo/
 .gradle/
+tmp/
 app/android/build/
 app/android/app/build/
 app/ios/build/
