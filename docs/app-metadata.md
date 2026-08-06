@@ -14,7 +14,7 @@ Canonical identity and store metadata for the game. Values marked **locked** mus
 | Android package name | `com.avk.stitchwish` | **locked** |
 | Expo slug | `stitch-wish` | EAS project name |
 | Deep link scheme | `stitchwish` | Used by Expo Router linking and Catalog Share Links |
-| Version | `1.0.0` | iOS `buildNumber` and Android `versionCode` start at `1` |
+| Version | `1.1` | First submitted App Store version; `app/app.json` `version` is `1.1` and iOS build `10` (uploaded 2026-08-06) is attached to the App Store Connect version record |
 
 ## Store listing
 

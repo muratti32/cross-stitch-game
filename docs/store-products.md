@@ -55,7 +55,7 @@ The app availability record could not be bootstrapped through the API or an Appl
 
 ## Review state
 
-All nine products are in `MISSING_METADATA`. This is expected before the first build: Apple requires a review screenshot per product and requires first-release in-app purchases to be submitted together with the first App Store version. Review screenshots and submission belong to the app-version submission work, not here.
+All nine products are in `READY_TO_SUBMIT` (verified 2026-08-06). Apple requires first-release in-app purchases to be submitted together with the first App Store version, so they stay in this state until the `1.1` version submission carries them through review.
 
 ## Google Play
 
