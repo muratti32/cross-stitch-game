@@ -540,6 +540,65 @@ it('routes restore through pending and completes from the backend-observed plan'
   });
 });
 
+it('explains restore to a Guest Player before the sign-in screen appears', async () => {
+  const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+  await renderScreen();
+
+  expect(allText(renderer!.root)).toContain('Sign in to restore purchases');
+  expect(allText(renderer!.root)).not.toContain('Restore purchases');
+
+  await act(async () => {
+    pressByText(renderer!.root, 'Sign in to restore purchases');
+    await flushPromises();
+  });
+
+  expect(alert).toHaveBeenCalledTimes(1);
+  const [title, message, buttons] = alert.mock.calls[0];
+  expect(title).toBe('Sign in to restore purchases');
+  expect(message).toContain('Purchases are attached to a Registered Account');
+  expect(message).toContain('Signing in with the account that made them recovers');
+  expect(mockRouter.push).not.toHaveBeenCalled();
+  expect(mockRestorePurchases).not.toHaveBeenCalled();
+  expect(mockCreateReconciliation).not.toHaveBeenCalled();
+
+  // A single continue action: the explanation always leads on to sign-in.
+  expect(buttons).toHaveLength(1);
+  const signIn = (buttons ?? []).find((button) => button.text === 'Sign in');
+  await act(async () => {
+    signIn?.onPress?.();
+    await flushPromises();
+  });
+
+  expect(mockRouter.push).toHaveBeenCalledWith({
+    pathname: '/(tabs)/(settings)/sign-in',
+    params: { returnTo: 'commerce' },
+  });
+  alert.mockRestore();
+});
+
+it('leaves a Registered Account restore on the Purchase Reconciliation path', async () => {
+  const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+  mockIdentity = { accountId: 'account_80', isAccount: true };
+  await renderScreen();
+
+  expect(allText(renderer!.root)).toContain('Restore purchases');
+
+  await act(async () => {
+    pressByText(renderer!.root, 'Restore purchases');
+    await flushPromises();
+  });
+
+  expect(alert).not.toHaveBeenCalled();
+  expect(mockRestorePurchases).toHaveBeenCalledWith('account_80');
+  expect(mockCreateReconciliation).toHaveBeenCalledWith('restore', null);
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase Reconciliation Pending',
+    'Support Reference: SW-ABCD-EFGH',
+  ]));
+  expect(mockRouter.push).not.toHaveBeenCalled();
+  alert.mockRestore();
+});
+
 it('shows active lifecycle and opens native subscription management through RevenueCat', async () => {
   mockIdentity = { accountId: 'account_80', isAccount: true };
   mockMembership = activeMembership('monthly');
