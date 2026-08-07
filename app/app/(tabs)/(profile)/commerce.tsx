@@ -1069,6 +1069,7 @@ export default function CommerceScreen() {
                   <>
                     <SubscriptionDisclosure
                       plan={selectedPremium}
+                      presentation="compact"
                       testID="commerce-subscription-disclosure"
                     />
                     <Button
@@ -1262,13 +1263,21 @@ function PremiumConfirmation({
  */
 function SubscriptionDisclosure({
   plan,
+  presentation = 'card',
   testID,
 }: {
   plan: CommerceProduct;
+  presentation?: 'card' | 'compact';
   testID: string;
 }) {
   return (
-    <View style={styles.disclosure} testID={testID}>
+    <View
+      style={[
+        styles.disclosure,
+        presentation === 'compact' && styles.disclosureCompact,
+      ]}
+      testID={testID}
+    >
       <Text style={styles.disclosureText}>{subscriptionTerms(plan)}</Text>
       <View style={styles.disclosureLinks}>
         <Pressable
@@ -1867,6 +1876,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: Theme.spacing.sm,
     padding: Theme.spacing.md,
+  },
+  disclosureCompact: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    padding: 0,
   },
   disclosureText: {
     color: Theme.colors.textSecondary,

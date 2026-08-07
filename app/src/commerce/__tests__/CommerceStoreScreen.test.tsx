@@ -1,5 +1,14 @@
 import React from 'react';
-import { Alert, Linking, Modal, Platform, Pressable, Text, View } from 'react-native';
+import {
+  Alert,
+  Linking,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import TestRenderer, { act, type ReactTestInstance } from 'react-test-renderer';
 
 import CommerceScreen from '../../../app/(tabs)/(profile)/commerce';
@@ -327,6 +336,27 @@ it('discloses the store subscription terms above the Premium purchase action', a
     'Terms of Service',
   ]));
   expect(text.indexOf('Privacy Policy')).toBeLessThan(text.indexOf('Choose Annual'));
+});
+
+it('keeps the store disclosure compact while the confirmation disclosure remains a card', async () => {
+  mockIdentity = { accountId: 'account_80', isAccount: true };
+  await renderScreen();
+
+  expect(StyleSheet.flatten(subscriptionDisclosure().findByType(View).props.style)).toMatchObject({
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    padding: 0,
+  });
+
+  await act(async () => pressByText(renderer!.root, 'Choose Annual'));
+
+  expect(StyleSheet.flatten(
+    renderer!.root
+      .findByProps({ testID: 'premium-confirmation-disclosure' })
+      .findByType(View).props.style,
+  )).toMatchObject({
+    borderWidth: 1,
+  });
 });
 
 it('interpolates the disclosure from the selected Premium Plan', async () => {
