@@ -157,7 +157,15 @@ const productRows = [
   ['ai_credit_pack_50', '$19.99'],
 ] as const;
 
-function offering(withheldProductKeys: readonly string[] = []) {
+// The store, not the app, decides which products carry an introductory offer,
+// how long it runs, and whether it costs anything; `introductoryOffers` mirrors
+// that store configuration and `introPrice` its price. `withheldProductKeys`
+// drops the packages the current offering does not return at all.
+function offering(
+  introductoryOffers: Readonly<Record<string, string>> = { premium_monthly: 'P3D' },
+  introPrice = 0,
+  withheldProductKeys: readonly string[] = [],
+) {
   return {
     current: {
       availablePackages: productRows
@@ -166,6 +174,16 @@ function offering(withheldProductKeys: readonly string[] = []) {
           identifier: `$rc_${key}`,
           product: {
             identifier: `com.avk.stitchwish.${key}`,
+            introPrice: introductoryOffers[key] === undefined
+              ? null
+              : {
+                cycles: 1,
+                period: introductoryOffers[key],
+                periodNumberOfUnits: Number(/\d+/.exec(introductoryOffers[key])?.[0] ?? 0),
+                periodUnit: 'DAY',
+                price: introPrice,
+                priceString: `$${introPrice.toFixed(2)}`,
+              },
             priceString,
             subscriptionPeriod: key === 'premium_annual'
               ? 'P1Y'
@@ -219,7 +237,7 @@ it('selects Annual as Best Value and reads periods and eligible trial from Reven
     'Billed every 1 year',
     'Billed every 1 month',
     'Billed every 1 week',
-    'Eligible for a 3-day free trial',
+    'Free for 3 days, then $7.99 every 1 month',
   ]));
   expect(renderer!.root.findByProps({ testID: 'premium-premium_annual' }).props.style)
     .toBeDefined();
@@ -230,8 +248,67 @@ it('shows the normal Monthly paid offer when eligibility is unknown or ineligibl
   mockTrialEligible.mockResolvedValue(false);
   await renderScreen();
 
-  expect(allText(renderer!.root)).not.toContain('Eligible for a 3-day free trial');
+  expect(allText(renderer!.root).join(' ')).not.toContain('Free for');
   expect(allText(renderer!.root)).toContain('$7.99');
+});
+
+it('reads the trial duration from the store introductory offer rather than the app', async () => {
+  mockGetOfferings.mockResolvedValue(offering({ premium_monthly: 'P1W' }));
+  mockTrialEligible.mockResolvedValue(true);
+  await renderScreen();
+
+  expect(mockTrialEligible).toHaveBeenCalledWith('com.avk.stitchwish.premium_monthly');
+  expect(mockTrialEligible).toHaveBeenCalledTimes(1);
+  expect(allText(renderer!.root)).toContain('Free for 1 week, then $7.99 every 1 month');
+  expect(allText(renderer!.root).join(' ')).not.toContain('3 days');
+});
+
+it('renders the ordinary paid offer when the store advertises no introductory offer', async () => {
+  mockGetOfferings.mockResolvedValue(offering({}));
+  mockTrialEligible.mockResolvedValue(true);
+  await renderScreen();
+
+  expect(mockTrialEligible).not.toHaveBeenCalled();
+  expect(allText(renderer!.root).join(' ')).not.toContain('Free for');
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining(['$7.99', '$2.99', '$39.99']));
+});
+
+it('never advertises a paid introductory offer as free', async () => {
+  // RevenueCat reports paid introductory prices through the same introPrice
+  // field; a discounted first period is not a trial.
+  mockGetOfferings.mockResolvedValue(offering({ premium_monthly: 'P1M' }, 0.99));
+  mockTrialEligible.mockResolvedValue(true);
+  await renderScreen();
+
+  expect(mockTrialEligible).not.toHaveBeenCalled();
+  expect(allText(renderer!.root).join(' ')).not.toContain('Free for');
+  expect(allText(renderer!.root)).toContain('$7.99');
+});
+
+it('states each AI Credit allowance against that plan’s own paid period', async () => {
+  await renderScreen();
+
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    '180 credits / paid year',
+    '15 credits / paid month',
+    '3 credits / paid week',
+  ]));
+  expect(allText(renderer!.root).join(' ')).not.toContain('credits / paid period');
+});
+
+it('repeats the store introductory offer inside the Premium confirmation', async () => {
+  mockIdentity = { accountId: 'account_80', isAccount: true };
+  mockTrialEligible.mockResolvedValue(true);
+  await renderScreen();
+
+  await act(async () => {
+    pressAncestor(renderer!.root.findByProps({ testID: 'premium-premium_monthly' }));
+  });
+  await act(async () => pressByText(renderer!.root, 'Choose Monthly'));
+
+  expect(allText(renderer!.root)).toContain(
+    'Your store reports this introductory offer: Free for 3 days, then $7.99 every 1 month.',
+  );
 });
 
 it('discloses the store subscription terms above the Premium purchase action', async () => {
@@ -1092,7 +1169,7 @@ async function flushPromises(): Promise<void> {
 // Keeps the withheld packages and the canonical identifiers the RevenueCat
 // wrapper reports missing in step, so the two halves cannot drift apart.
 function withholdProducts(productKeys: readonly string[]): void {
-  mockGetOfferings.mockResolvedValue(offering(productKeys));
+  mockGetOfferings.mockResolvedValue(offering(undefined, undefined, productKeys));
   mockMissingCanonicalProducts.mockReturnValue(
     productKeys.map((key) => `com.avk.stitchwish.${key}`),
   );

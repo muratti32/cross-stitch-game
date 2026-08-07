@@ -34,6 +34,7 @@ import {
   type MembershipView,
 } from '@/api/membership';
 import { captureGameplayEvent } from '@/analytics/gameplayEvents';
+import type { PurchaseProductKey } from '@/analytics/schema';
 import {
   commerceProductIdentity,
   commerceProductsFromOfferings,
@@ -123,7 +124,7 @@ export default function CommerceScreen() {
   const [confirmingPremium, setConfirmingPremium] = useState<CommerceProduct | null>(null);
   const [confirmingCoinPack, setConfirmingCoinPack] = useState<CommerceProduct | null>(null);
   const [confirmingAiCreditPack, setConfirmingAiCreditPack] = useState<CommerceProduct | null>(null);
-  const [monthlyTrialEligible, setMonthlyTrialEligible] = useState(false);
+  const [trialEligibleKeys, setTrialEligibleKeys] = useState<readonly PurchaseProductKey[]>([]);
   const [purchasePending, setPurchasePending] = useState<PremiumReconciliation | null>(null);
   const [coinPurchasePending, setCoinPurchasePending] = useState<CoinPackReconciliation | null>(null);
   const [aiCreditPurchasePending, setAiCreditPurchasePending] = useState<AiCreditPackReconciliation | null>(null);
@@ -158,15 +159,25 @@ export default function CommerceScreen() {
       // awaiting store approval must never hide the rest of the catalogue from a
       // player or from an App Review reviewer.
       if (nextProducts.length === 0) {
+        setTrialEligibleKeys([]);
         setStoreUnavailable(true);
         return;
       }
-      const monthly = nextProducts.find((product) => product.productKey === 'premium_monthly');
-      setMonthlyTrialEligible(monthly === undefined
-        ? false
-        : await isRevenueCatTrialEligible(monthly.package.product.identifier));
+      // Only products the store actually advertises an introductory offer for
+      // are worth an eligibility check; everything else keeps the paid offer.
+      const offeredTrials = nextProducts.filter(
+        (product) => product.category === 'premium' && product.freeIntroductoryOffer !== null,
+      );
+      const eligibility = await Promise.all(offeredTrials.map(async (product) => ({
+        eligible: await isRevenueCatTrialEligible(product.package.product.identifier),
+        productKey: product.productKey,
+      })));
+      setTrialEligibleKeys(
+        eligibility.filter((entry) => entry.eligible).map((entry) => entry.productKey),
+      );
     } catch (error: unknown) {
       setProducts([]);
+      setTrialEligibleKeys([]);
       setStoreUnavailable(true);
       console.warn(
         'Commerce Store catalog unavailable:',
@@ -1013,6 +1024,7 @@ export default function CommerceScreen() {
                 <View style={styles.planRow}>
                   {premiumPlans.map((plan) => {
                     const selected = plan.productKey === selectedPremium?.productKey;
+                    const trialOffer = premiumTrialOffer(plan, trialEligibleKeys);
                     return (
                       <Pressable
                         key={plan.id}
@@ -1039,9 +1051,13 @@ export default function CommerceScreen() {
                         {plan.billingPeriod !== null && (
                           <Text style={styles.planPeriod}>Billed every {plan.billingPeriod}</Text>
                         )}
-                        <Text style={styles.planCredits}>{plan.credits} credits / paid period</Text>
-                        {plan.trial && monthlyTrialEligible && (
-                          <Text style={styles.trial}>Eligible for a 3-day free trial</Text>
+                        {plan.credits !== undefined && (
+                          <Text style={styles.planCredits}>
+                            {creditAllowanceLabel(plan.credits, plan.creditPeriod)}
+                          </Text>
+                        )}
+                        {trialOffer !== null && (
+                          <Text style={styles.trial}>{trialOffer}</Text>
                         )}
                       </Pressable>
                     );
@@ -1140,7 +1156,9 @@ export default function CommerceScreen() {
       />
       <PremiumConfirmation
         product={confirmingPremium}
-        trialEligible={monthlyTrialEligible}
+        trialOffer={confirmingPremium === null
+          ? null
+          : premiumTrialOffer(confirmingPremium, trialEligibleKeys)}
         onCancel={() => setConfirmingPremium(null)}
         onConfirm={(product) => void purchase(product)}
       />
@@ -1176,12 +1194,12 @@ function Benefit({ icon, label }: { icon: React.ComponentProps<typeof Ionicons>[
 
 function PremiumConfirmation({
   product,
-  trialEligible,
+  trialOffer,
   onCancel,
   onConfirm,
 }: {
   product: CommerceProduct | null;
-  trialEligible: boolean;
+  trialOffer: string | null;
   onCancel: () => void;
   onConfirm: (product: CommerceProduct) => void;
 }) {
@@ -1205,11 +1223,12 @@ function PremiumConfirmation({
             {product !== null && (
               <>
                 <Text style={styles.confirmationPlan}>
-                  {product.label} · {product.priceString}
-                  {product.billingPeriod === null ? '' : ` every ${product.billingPeriod}`}
+                  {`${product.label} · ${paidOfferLabel(product)}`}
                 </Text>
-                {product.productKey === 'premium_monthly' && trialEligible && (
-                  <Text style={styles.trial}>Your store reports that you are eligible for a 3-day free trial.</Text>
+                {trialOffer !== null && (
+                  <Text style={styles.trial}>
+                    {`Your store reports this introductory offer: ${trialOffer}.`}
+                  </Text>
                 )}
                 <Text style={styles.confirmationBody}>
                   Premium appears only after the Game Backend verifies the store transaction.
@@ -1276,10 +1295,8 @@ function SubscriptionDisclosure({
  */
 function subscriptionTerms(plan: CommerceProduct): string {
   const store = storeAccountName();
-  const renewal = plan.billingPeriod === null
-    ? `${plan.label} Premium renews automatically at ${plan.priceString}`
-    : `${plan.label} Premium renews automatically at ${plan.priceString} every ${plan.billingPeriod}`;
-  return `Payment is charged to your ${store} account at confirmation. ${renewal} unless `
+  return `Payment is charged to your ${store} account at confirmation. `
+    + `${plan.label} Premium renews automatically at ${paidOfferLabel(plan)} unless `
     + 'auto-renew is turned off at least 24 hours before the end of the current period. '
     + 'Any unused portion of a free trial is forfeited when you purchase a subscription. '
     + `You can cancel at any time from your ${store} account.`;
@@ -1500,6 +1517,37 @@ async function reportMissingCanonicalProducts(missing: readonly string[]): Promi
 // device locale, so the summary always matches the pack labels beside it.
 function packSummary(packs: readonly CommerceProduct[], noun: string): string {
   return `${packs.map((pack) => pack.quantity.toLocaleString('en-US')).join(' · ')} ${noun}`;
+}
+
+// A trial is advertised only when the store carries a free introductory offer
+// for this exact product and reports the player eligible for it. A missing or
+// paid offer, a negative report, or unknown eligibility all fall back to the
+// ordinary paid offer.
+function premiumTrialOffer(
+  product: CommerceProduct,
+  eligibleProductKeys: readonly PurchaseProductKey[],
+): string | null {
+  if (product.freeIntroductoryOffer === null) return null;
+  if (!eligibleProductKeys.includes(product.productKey)) return null;
+  return `Free for ${product.freeIntroductoryOffer}, then ${paidOfferLabel(product)}`;
+}
+
+// One rendering of a plan's recurring charge — "$7.99 every 1 month" — shared by
+// the disclosure, the confirmation and the trial line, so the same plan can
+// never be quoted three different ways.
+function paidOfferLabel(product: CommerceProduct): string {
+  return product.billingPeriod === null
+    ? product.priceString
+    : `${product.priceString} every ${product.billingPeriod}`;
+}
+
+// A Membership Credit Grant is attached to each verified *paid* Membership
+// Period, so the allowance stays qualified as paid while naming this plan's own
+// period instead of a generic one.
+function creditAllowanceLabel(credits: number, creditPeriod: string | null): string {
+  return creditPeriod === null
+    ? `${credits} credits / paid period`
+    : `${credits} credits / paid ${creditPeriod}`;
 }
 
 function isPurchaseCancelled(error: unknown): boolean {
