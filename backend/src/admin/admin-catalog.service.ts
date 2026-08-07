@@ -21,6 +21,7 @@ export interface AdminPatternListItem {
   creatorName: string;
   categoryCode: string;
   status: PatternStatus;
+  patternType: 'official' | 'community';
   unlockPriceTier: string | null;
   previewUrl: string;
   publishedAt: string;
@@ -528,6 +529,11 @@ export class AdminCatalogService {
           'Community Patterns can only be withdrawn by their owning Registered Account',
         );
       }
+      if (options.action === 'pattern.remove' && pattern.creatorProfileId !== null) {
+        throw new BadRequestException(
+          'Community Patterns can only be removed through Post-Publication Review',
+        );
+      }
       if (pattern.status === 'review_hold') {
         throw new BadRequestException(
           'Review Hold must be resolved through the Post-Publication Review',
@@ -594,6 +600,7 @@ export class AdminCatalogService {
       creatorName: pattern.creatorName,
       id: pattern.id,
       previewUrl: this.storage.publicUrl(pattern.previewObjectKey),
+      patternType: pattern.creatorProfileId === null ? 'official' : 'community',
       publishedAt: pattern.publishedAt.toISOString(),
       status: pattern.status,
       title: pattern.title,

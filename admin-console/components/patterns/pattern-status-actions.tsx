@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { toast } from 'sonner';
 
 import { ConfirmActionDialog } from '@/components/common/confirm-action-dialog';
@@ -7,17 +8,30 @@ import { Button } from '@/components/ui/button';
 import { useRemovePattern, useRestorePattern, useWithdrawPattern } from '@/hooks/use-patterns';
 import type { AdminPatternDetail } from '@/lib/types';
 
+import { getPatternActionPolicy } from './pattern-action-policy';
+
 export function PatternStatusActions({ pattern }: { pattern: AdminPatternDetail }) {
   const withdrawMutation = useWithdrawPattern(pattern.id);
   const removeMutation = useRemovePattern(pattern.id);
   const restoreMutation = useRestorePattern(pattern.id);
-  const heldForReview = pattern.status === 'review_hold';
+  const policy = getPatternActionPolicy(pattern);
+
+  if (policy.communityRemovalGuidance !== null) {
+    return (
+      <p className="max-w-md text-sm text-muted-foreground">
+        {policy.communityRemovalGuidance}{' '}
+        <Link className="font-medium text-foreground underline" href="/post-publication-reviews">
+          Open moderation reviews
+        </Link>
+      </p>
+    );
+  }
 
   return (
     <div className="flex flex-wrap gap-2">
       <ConfirmActionDialog
         trigger={
-          <Button variant="outline" disabled={heldForReview || pattern.status === 'withdrawn'}>
+          <Button variant="outline" disabled={!policy.canWithdraw}>
             Withdraw
           </Button>
         }
@@ -31,7 +45,7 @@ export function PatternStatusActions({ pattern }: { pattern: AdminPatternDetail 
       />
       <ConfirmActionDialog
         trigger={
-          <Button variant="destructive" disabled={heldForReview || pattern.status === 'removed'}>
+          <Button variant="destructive" disabled={!policy.canRemove}>
             Remove
           </Button>
         }
@@ -46,7 +60,7 @@ export function PatternStatusActions({ pattern }: { pattern: AdminPatternDetail 
       />
       <ConfirmActionDialog
         trigger={
-          <Button variant="secondary" disabled={heldForReview || pattern.status === 'available'}>
+          <Button variant="secondary" disabled={!policy.canRestore}>
             Restore
           </Button>
         }

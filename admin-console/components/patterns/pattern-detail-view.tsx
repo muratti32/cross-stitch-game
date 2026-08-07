@@ -77,6 +77,10 @@ export function PatternDetailView({ patternId }: { patternId: string }) {
               <Card>
                 <CardContent className="space-y-2 pt-4 text-sm">
                   <div className="flex justify-between">
+                    <span className="text-muted-foreground">Type</span>
+                    <span className="capitalize">{patternQuery.data.patternType}</span>
+                  </div>
+                  <div className="flex justify-between">
                     <span className="text-muted-foreground">Status</span>
                     <PatternStatusBadge status={patternQuery.data.status} />
                   </div>

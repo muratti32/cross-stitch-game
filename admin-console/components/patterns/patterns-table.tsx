@@ -31,6 +31,7 @@ export function PatternsTable({
           <TableHead className="w-16">Preview</TableHead>
           <TableHead>Title</TableHead>
           <TableHead>Creator</TableHead>
+          <TableHead>Type</TableHead>
           <TableHead>Category</TableHead>
           <TableHead>Price</TableHead>
           <TableHead>Status</TableHead>
@@ -58,6 +59,7 @@ export function PatternsTable({
               </Link>
             </TableCell>
             <TableCell>{pattern.creatorName}</TableCell>
+            <TableCell className="capitalize">{pattern.patternType}</TableCell>
             <TableCell>{categoriesByCode.get(pattern.categoryCode)?.label ?? pattern.categoryCode}</TableCell>
             <TableCell>
               {pattern.unlockPriceTier === null ? 'Free' : PRICE_TIER_UNIT_LABELS[pattern.unlockPriceTier]}

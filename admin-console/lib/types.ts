@@ -2,6 +2,7 @@
 // add fields the backend does not return; do not invent endpoints.
 
 export type PatternStatus = 'available' | 'review_hold' | 'withdrawn' | 'removed';
+export type PatternType = 'official' | 'community';
 export type PatternUnlockPriceTier = 'small' | 'medium' | 'large' | null;
 
 export interface AdminPatternListItem {
@@ -10,6 +11,7 @@ export interface AdminPatternListItem {
   creatorName: string;
   categoryCode: string;
   status: PatternStatus;
+  patternType: PatternType;
   unlockPriceTier: PatternUnlockPriceTier;
   previewUrl: string;
   publishedAt: string;
