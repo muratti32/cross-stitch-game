@@ -17,7 +17,11 @@ import { formatDate } from '@/lib/format';
 import { PRICE_TIER_UNIT_LABELS } from '@/lib/price-tier';
 import { toConsolePreviewSrc } from '@/lib/preview-url';
 import type { AdminPatternListItem, Category } from '@/lib/types';
-import { eligiblePatternIds, getBulkRemovalIneligibility } from './bulk-remove-policy';
+import {
+  bulkRemovalReasonId,
+  eligiblePatternIds,
+  getBulkRemovalIneligibility,
+} from './bulk-remove-policy';
 
 export function PatternsTable({
   items,
@@ -58,13 +62,17 @@ export function PatternsTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {items.map((pattern) => (
+        {items.map((pattern) => {
+          const ineligibility = getBulkRemovalIneligibility(pattern);
+          const reasonId = ineligibility === null ? undefined : bulkRemovalReasonId(pattern.id);
+          return (
           <TableRow key={pattern.id} className="cursor-pointer">
-            <TableCell title={getBulkRemovalIneligibility(pattern) ?? undefined}>
+            <TableCell>
               <Checkbox
                 aria-label={`Select ${pattern.title}`}
+                aria-describedby={reasonId}
                 checked={selectedIds.has(pattern.id)}
-                disabled={getBulkRemovalIneligibility(pattern) !== null}
+                disabled={ineligibility !== null}
                 onCheckedChange={(checked) => {
                   const next = new Set(selectedIds);
                   if (checked) {
@@ -75,8 +83,10 @@ export function PatternsTable({
                   onSelectionChange(next);
                 }}
               />
-              {getBulkRemovalIneligibility(pattern) !== null && (
-                <span className="sr-only">{getBulkRemovalIneligibility(pattern)}</span>
+              {ineligibility !== null && (
+                <span id={reasonId} className="ml-2 text-xs text-muted-foreground">
+                  {ineligibility}
+                </span>
               )}
             </TableCell>
             <TableCell>
@@ -107,7 +117,8 @@ export function PatternsTable({
             </TableCell>
             <TableCell>{formatDate(pattern.publishedAt)}</TableCell>
           </TableRow>
-        ))}
+          );
+        })}
       </TableBody>
     </Table>
   );

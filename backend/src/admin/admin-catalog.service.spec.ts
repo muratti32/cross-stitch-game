@@ -124,7 +124,10 @@ describe('AdminCatalogService Pattern contract', () => {
 
 /* eslint-disable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unnecessary-type-assertion */
 describe('AdminCatalogService bulk removal', () => {
-  function setup(patterns: PatternEntity[], picks: { patternId: string; position: number }[] = []) {
+  function setup(
+    patterns: PatternEntity[],
+    picks: { patternId: string; position: number; pattern: PatternEntity }[] = [],
+  ) {
     const patternSave = jest.fn((values: PatternEntity[]) => Promise.resolve(values));
     const getMany = jest.fn().mockResolvedValue(patterns);
     const patternQueryBuilder = {
@@ -165,12 +168,13 @@ describe('AdminCatalogService bulk removal', () => {
     const first = pattern();
     const second = pattern({ id: '00000000-0000-4000-8000-000000000002', status: 'withdrawn', title: 'Owl' });
     const thirdId = '00000000-0000-4000-8000-000000000003';
+    const third = pattern({ id: thirdId, title: 'Bee' });
     const { auditLog, patternSave, service, staffSave } = setup(
       [first, second],
       [
-        { patternId: first.id, position: 1 },
-        { patternId: thirdId, position: 2 },
-        { patternId: second.id, position: 3 },
+        { pattern: first, patternId: first.id, position: 1 },
+        { pattern: third, patternId: thirdId, position: 2 },
+        { pattern: second, patternId: second.id, position: 3 },
       ],
     );
 
@@ -183,10 +187,27 @@ describe('AdminCatalogService bulk removal', () => {
     expect(first.status).toBe('removed');
     expect(second.status).toBe('removed');
     expect(staffSave).toHaveBeenCalledWith([{ patternId: thirdId, position: 1 }]);
-    expect(auditLog.record).toHaveBeenCalledTimes(2);
+    expect(auditLog.record).toHaveBeenCalledTimes(3);
     expect(auditLog.record).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
       action: 'pattern.bulk_remove', requestId: 'request-id',
       after: expect.objectContaining({ batchId: '00000000-0000-4000-8000-000000000099', reason: 'Confirmed policy removal' }),
+    }));
+    expect(auditLog.record).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
+      action: 'staffpick.bulk_remove_compact',
+      requestId: 'request-id',
+      before: expect.objectContaining({
+        batchId: '00000000-0000-4000-8000-000000000099',
+        picks: [
+          expect.objectContaining({ patternId: first.id, position: 1 }),
+          expect.objectContaining({ patternId: thirdId, position: 2 }),
+          expect.objectContaining({ patternId: second.id, position: 3 }),
+        ],
+        reason: 'Confirmed policy removal',
+      }),
+      after: expect.objectContaining({
+        picks: [expect.objectContaining({ patternId: thirdId, position: 1 })],
+      }),
+      targetType: 'staff_picks',
     }));
   });
 

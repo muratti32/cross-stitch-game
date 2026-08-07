@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import type { AdminPatternListItem } from '@/lib/types';
-import { eligiblePatternIds, getBulkRemovalIneligibility } from './bulk-remove-policy';
+import {
+  bulkRemovalReasonId,
+  eligiblePatternIds,
+  getBulkRemovalIneligibility,
+} from './bulk-remove-policy';
 
 function pattern(overrides: Partial<AdminPatternListItem> = {}): AdminPatternListItem {
   return {
@@ -27,6 +31,7 @@ describe('bulk remove selection policy', () => {
     expect(getBulkRemovalIneligibility(pattern({ patternType: 'community' }))).toContain('Community');
     expect(getBulkRemovalIneligibility(pattern({ status: 'review_hold' }))).toContain('Review Hold');
     expect(getBulkRemovalIneligibility(pattern({ status: 'removed' }))).toContain('already removed');
+    expect(bulkRemovalReasonId('stable-id')).toBe('bulk-remove-reason-stable-id');
   });
 
   it('caps eligible selection at 20 unique page IDs', () => {

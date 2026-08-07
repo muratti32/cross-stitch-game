@@ -15,6 +15,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useBulkRemovePatterns } from '@/hooks/use-patterns';
 import type { AdminPatternListItem, BulkRemovePatternsResponse } from '@/lib/types';
 
+import {
+  bulkRemoveSubmissionFailed,
+  bulkRemoveSubmissionSucceeded,
+  initialBulkRemoveDialogState,
+} from './bulk-remove-state';
+
 export function BulkRemoveDialog({
   patterns,
   open,
@@ -26,9 +32,9 @@ export function BulkRemoveDialog({
   onOpenChange: (open: boolean) => void;
   onSuccess: (result: BulkRemovePatternsResponse) => void;
 }) {
-  const [reason, setReason] = useState('');
+  const [dialogState, setDialogState] = useState(initialBulkRemoveDialogState);
   const mutation = useBulkRemovePatterns();
-  const trimmedReason = reason.trim();
+  const trimmedReason = dialogState.reason.trim();
   const reasonValid = trimmedReason.length >= 10 && trimmedReason.length <= 2000;
 
   async function submit(): Promise<void> {
@@ -38,12 +44,11 @@ export function BulkRemoveDialog({
         patternIds: patterns.map((pattern) => pattern.id),
         reason: trimmedReason,
       });
-      setReason('');
+      setDialogState(bulkRemoveSubmissionSucceeded());
       onSuccess(result);
       onOpenChange(false);
-    } catch {
-      // React Query exposes the concrete API error below. Keeping this state
-      // untouched lets the operator correct or retry the same batch.
+    } catch (error) {
+      setDialogState((state) => bulkRemoveSubmissionFailed(state, error));
     }
   }
 
@@ -67,8 +72,10 @@ export function BulkRemoveDialog({
         <label className="space-y-2 text-sm font-medium">
           Removal reason
           <Textarea
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
+            value={dialogState.reason}
+            onChange={(event) =>
+              setDialogState({ error: null, reason: event.target.value })
+            }
             minLength={10}
             maxLength={2000}
             rows={4}
@@ -79,8 +86,8 @@ export function BulkRemoveDialog({
         <p id="bulk-remove-reason-help" className="text-xs text-muted-foreground">
           {trimmedReason.length}/2000 characters; 10 required after trimming.
         </p>
-        {mutation.isError && (
-          <p role="alert" className="text-sm text-destructive">{mutation.error.message}</p>
+        {dialogState.error !== null && (
+          <p role="alert" className="text-sm text-destructive">{dialogState.error}</p>
         )}
         <DialogFooter>
           <Button variant="outline" disabled={mutation.isPending} onClick={() => onOpenChange(false)}>

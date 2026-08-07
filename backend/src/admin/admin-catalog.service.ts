@@ -248,17 +248,15 @@ export class AdminCatalogService {
       const existingPicks = await staffPickRepository.find({
         lock: { mode: 'pessimistic_write' },
         order: { position: 'ASC' },
+        relations: ['pattern'],
       });
       const selectedIds = new Set(patternIds);
       const remainingPicks = existingPicks.filter((pick) => !selectedIds.has(pick.patternId));
-      await staffPickRepository.createQueryBuilder().delete().execute();
-      if (remainingPicks.length > 0) {
-        await staffPickRepository.save(
-          remainingPicks.map((pick, index) =>
-            staffPickRepository.create({ patternId: pick.patternId, position: index + 1 }),
-          ),
-        );
-      }
+      const staffPicksBefore = this.formatStaffPicks(existingPicks);
+      await this.writeStaffPickOrder(manager, remainingPicks.map((pick) => pick.patternId));
+      const staffPicksAfter = this.formatStaffPicks(
+        remainingPicks.map((pick, index) => ({ ...pick, position: index + 1 })),
+      );
 
       for (const pattern of orderedPatterns) {
         await this.auditLog.record(manager, {
@@ -272,6 +270,17 @@ export class AdminCatalogService {
           targetType: 'pattern',
         });
       }
+
+      await this.auditLog.record(manager, {
+        action: 'staffpick.bulk_remove_compact',
+        after: { batchId, picks: staffPicksAfter, reason: trimmedReason },
+        before: { batchId, picks: staffPicksBefore, reason: trimmedReason },
+        operatorAccountId,
+        outcome: 'success',
+        requestId,
+        targetId: null,
+        targetType: 'staff_picks',
+      });
 
       return { batchId, removedCount: orderedPatterns.length };
     });
@@ -309,7 +318,6 @@ export class AdminCatalogService {
   ): Promise<StaffPickListItem[]> {
     return this.dataSource.transaction(async (manager) => {
       const patternRepository = manager.getRepository(PatternEntity);
-      const staffPickRepository = manager.getRepository(StaffPickEntity);
 
       const before = await this.getStaffPicksWithManager(manager);
 
@@ -326,13 +334,7 @@ export class AdminCatalogService {
         patterns.push(pattern);
       }
 
-      await staffPickRepository.createQueryBuilder().delete().execute();
-      const rows = patterns.map((pattern, index) =>
-        staffPickRepository.create({ patternId: pattern.id, position: index + 1 }),
-      );
-      if (rows.length > 0) {
-        await staffPickRepository.save(rows);
-      }
+      await this.writeStaffPickOrder(manager, patterns.map((pattern) => pattern.id));
 
       const after = patterns.map((pattern, index) => ({
         creatorName: pattern.creatorName,
@@ -665,8 +667,29 @@ export class AdminCatalogService {
       order: { position: 'ASC' },
       relations: ['pattern'],
     });
+    return this.formatStaffPicks(picks);
+  }
+
+  private async writeStaffPickOrder(
+    manager: EntityManager,
+    patternIds: string[],
+  ): Promise<void> {
+    const staffPickRepository = manager.getRepository(StaffPickEntity);
+    await staffPickRepository.createQueryBuilder().delete().execute();
+    if (patternIds.length > 0) {
+      await staffPickRepository.save(
+        patternIds.map((patternId, index) =>
+          staffPickRepository.create({ patternId, position: index + 1 }),
+        ),
+      );
+    }
+  }
+
+  private formatStaffPicks(
+    picks: Pick<StaffPickEntity, 'pattern' | 'patternId' | 'position'>[],
+  ): { patternId: string; title: string; creatorName: string; position: number }[] {
     return picks
-      .filter((pick) => pick.pattern !== null)
+      .filter((pick) => pick.pattern !== null && pick.pattern !== undefined)
       .map((pick) => ({
         creatorName: pick.pattern.creatorName,
         patternId: pick.patternId,

@@ -20,7 +20,7 @@ import { ApiError } from '@/lib/client/fetcher';
 import type { PatternStatus } from '@/lib/types';
 
 import { BulkRemoveDialog } from './bulk-remove-dialog';
-
+import { clearPatternSelection, pageAfterBulkRemoval } from './bulk-remove-state';
 import { PatternStatusTabs } from './pattern-status-tabs';
 import { PatternsTable } from './patterns-table';
 
@@ -48,19 +48,19 @@ export function PatternsView() {
   });
 
   function handleStatusChange(next: 'all' | PatternStatus): void {
-    setSelectedIds(new Set());
+    setSelectedIds(clearPatternSelection());
     setStatus(next);
     setPage(1);
   }
 
   function handleSearchChange(next: string): void {
-    setSelectedIds(new Set());
+    setSelectedIds(clearPatternSelection());
     setSearchInput(next);
     setPage(1);
   }
 
   function handlePageChange(next: number): void {
-    setSelectedIds(new Set());
+    setSelectedIds(clearPatternSelection());
     setPage(next);
   }
 
@@ -160,13 +160,14 @@ export function PatternsView() {
         open={bulkDialogOpen}
         onOpenChange={setBulkDialogOpen}
         onSuccess={(result) => {
-          const totalAfter = Math.max(
-            0,
-            (patternsQuery.data?.total ?? result.removedCount) - result.removedCount,
-          );
-          const lastPage = Math.max(1, Math.ceil(totalAfter / PAGE_SIZE));
-          setPage(Math.min(page, lastPage));
-          setSelectedIds(new Set());
+          setPage(pageAfterBulkRemoval({
+            currentPage: page,
+            pageSize: PAGE_SIZE,
+            removedCount: result.removedCount,
+            status,
+            totalBefore: patternsQuery.data?.total ?? result.removedCount,
+          }));
+          setSelectedIds(clearPatternSelection());
           toast.success(`${result.removedCount} Patterns removed.`);
         }}
       />

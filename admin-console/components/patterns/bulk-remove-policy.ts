@@ -2,6 +2,10 @@ import type { AdminPatternListItem } from '@/lib/types';
 
 export const MAX_BULK_REMOVE_PATTERNS = 20;
 
+export function bulkRemovalReasonId(patternId: string): string {
+  return `bulk-remove-reason-${patternId}`;
+}
+
 export function getBulkRemovalIneligibility(pattern: AdminPatternListItem): string | null {
   if (pattern.patternType === 'community') {
     return 'Community Patterns must be handled through Post-Publication Review.';

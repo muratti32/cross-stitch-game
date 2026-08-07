@@ -123,6 +123,29 @@ describe('Catalog Withdrawal', () => {
     expect(await patternStatus(officialPatternId)).toBe('available');
   });
 
+  it('rolls back Pattern and Staff Pick mutations when bulk-removal audit persistence fails', async () => {
+    const patternId = await createPattern(null);
+    await dataSource.getRepository(StaffPickEntity).save({ patternId, position: 1 });
+
+    await expect(adminCatalog.bulkRemovePatterns(
+      randomUUID(),
+      [patternId],
+      'Confirmed rollback evidence',
+      randomUUID(),
+      'bulk-rollback-request',
+    )).rejects.toThrow();
+
+    expect(await patternStatus(patternId)).toBe('available');
+    await expect(dataSource.getRepository(StaffPickEntity).findOneBy({ patternId }))
+      .resolves.toMatchObject({ patternId, position: 1 });
+    const [{ count }] = await dataSource.query<{ count: string }[]>(
+      `SELECT COUNT(*)::text AS count
+       FROM admin.operator_audit_log
+       WHERE request_id = 'bulk-rollback-request'`,
+    );
+    expect(count).toBe('0');
+  });
+
   it('closes pending revisions and active appeals without publication and audits every transition', async () => {
     const pendingPatternId = await createPattern(profileId);
     const pendingRevisionId = await createRevision(pendingPatternId, 'pending');
