@@ -722,9 +722,11 @@ export default function CommerceScreen() {
 
   const restorePurchases = useCallback(async () => {
     if (!isAccount) {
-      router.push({
-        pathname: '/(tabs)/(settings)/sign-in',
-        params: { returnTo: 'commerce' },
+      explainGuestRestore(() => {
+        router.push({
+          pathname: '/(tabs)/(settings)/sign-in',
+          params: { returnTo: 'commerce' },
+        });
       });
       return;
     }
@@ -1119,7 +1121,9 @@ export default function CommerceScreen() {
               {restoringPurchases ? (
                 <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
               ) : (
-                <Text style={styles.restoreText}>Restore purchases</Text>
+                <Text style={styles.restoreText}>
+                  {isAccount ? 'Restore purchases' : 'Sign in to restore purchases'}
+                </Text>
               )}
             </Pressable>
           </>
@@ -1517,6 +1521,21 @@ async function reportMissingCanonicalProducts(missing: readonly string[]): Promi
 // device locale, so the summary always matches the pack labels beside it.
 function packSummary(packs: readonly CommerceProduct[], noun: string): string {
   return `${packs.map((pack) => pack.quantity.toLocaleString('en-US')).join(' · ')} ${noun}`;
+}
+
+// A Guest Player learns why sign-in is being asked of them before anything
+// navigates, so the control never reads as a dead button. A single continue
+// action keeps the explanation on the way to sign-in rather than in front of it.
+// The identity gate itself does not move: the RevenueCat wrapper still refuses
+// to restore without an account identifier (ADR-0032).
+function explainGuestRestore(onContinue: () => void): void {
+  Alert.alert(
+    'Sign in to restore purchases',
+    'Purchases are attached to a Registered Account rather than to this device. '
+      + 'Signing in with the account that made them recovers your Premium Membership '
+      + 'and pack grants.',
+    [{ onPress: onContinue, text: 'Sign in' }],
+  );
 }
 
 // A trial is advertised only when the store carries a free introductory offer
