@@ -121,3 +121,216 @@ describe('AdminCatalogService Pattern contract', () => {
     expect(auditLog.record).not.toHaveBeenCalled();
   });
 });
+
+/* eslint-disable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unnecessary-type-assertion */
+describe('AdminCatalogService bulk removal', () => {
+  function setup(
+    patterns: PatternEntity[],
+    picks: { patternId: string; position: number; pattern: PatternEntity }[] = [],
+  ) {
+    const patternSave = jest.fn((values: PatternEntity[]) => Promise.resolve(values));
+    const getMany = jest.fn().mockResolvedValue(patterns);
+    const patternQueryBuilder = {
+      andWhere: jest.fn().mockReturnThis(),
+      getMany,
+      setLock: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+    };
+    const deleteExecute = jest.fn().mockResolvedValue(undefined);
+    const staffSave = jest.fn().mockResolvedValue(undefined);
+    const patternRepository = {
+      createQueryBuilder: jest.fn(() => patternQueryBuilder),
+      save: patternSave,
+    };
+    const staffRepository = {
+      create: jest.fn((value) => value),
+      createQueryBuilder: jest.fn(() => ({ delete: jest.fn(() => ({ execute: deleteExecute })) })),
+      find: jest.fn().mockResolvedValue(picks),
+      save: staffSave,
+    };
+    let receipt: Record<string, unknown> | null = null;
+    const receiptRepository = {
+      create: jest.fn((value) => value),
+      findOneBy: jest.fn(() => Promise.resolve(receipt)),
+      save: jest.fn((value) => {
+        receipt = value;
+        return Promise.resolve(value);
+      }),
+    };
+    const manager = {
+      getRepository: jest.fn((entity) => entity.name === 'PatternEntity'
+        ? patternRepository
+        : entity.name === 'BulkPatternRemovalEntity' ? receiptRepository : staffRepository),
+      query: jest.fn().mockResolvedValue(undefined),
+    };
+    const dataSource = {
+      transaction: jest.fn((callback) => callback(manager)),
+    };
+    const auditLog = { record: jest.fn().mockResolvedValue(undefined) };
+    const service = new AdminCatalogService(
+      dataSource as never,
+      { publicUrl: (key: string) => `https://cdn.test/${key}` } as never,
+      auditLog as never,
+      {} as never, {} as never, {} as never, {} as never, {} as never,
+    );
+    return { auditLog, deleteExecute, patternSave, receiptRepository, service, staffSave };
+  }
+
+  it('removes every eligible Pattern, audits the shared batch, and compacts Staff Picks', async () => {
+    const first = pattern();
+    const second = pattern({ id: '00000000-0000-4000-8000-000000000002', status: 'withdrawn', title: 'Owl' });
+    const thirdId = '00000000-0000-4000-8000-000000000003';
+    const third = pattern({ id: thirdId, title: 'Bee' });
+    const { auditLog, patternSave, service, staffSave } = setup(
+      [first, second],
+      [
+        { pattern: first, patternId: first.id, position: 1 },
+        { pattern: third, patternId: thirdId, position: 2 },
+        { pattern: second, patternId: second.id, position: 3 },
+      ],
+    );
+
+    await expect(service.bulkRemovePatterns(
+      'operator-id', [first.id, second.id], 'Confirmed policy removal',
+      '00000000-0000-4000-8000-000000000099', 'request-id',
+    )).resolves.toEqual({
+      batchId: '00000000-0000-4000-8000-000000000099',
+      patternIds: [first.id, second.id],
+      removedCount: 2,
+    });
+
+    expect(patternSave).toHaveBeenCalledWith([first, second]);
+    expect(first.status).toBe('removed');
+    expect(second.status).toBe('removed');
+    expect(staffSave).toHaveBeenCalledWith([{ patternId: thirdId, position: 1 }]);
+    expect(auditLog.record).toHaveBeenCalledTimes(3);
+    expect(auditLog.record).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
+      action: 'pattern.bulk_remove', requestId: 'request-id',
+      after: expect.objectContaining({ batchId: '00000000-0000-4000-8000-000000000099', reason: 'Confirmed policy removal' }),
+    }));
+    expect(auditLog.record).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
+      action: 'staffpick.bulk_remove_compact',
+      requestId: 'request-id',
+      before: expect.objectContaining({
+        batchId: '00000000-0000-4000-8000-000000000099',
+        picks: [
+          expect.objectContaining({ patternId: first.id, position: 1 }),
+          expect.objectContaining({ patternId: thirdId, position: 2 }),
+          expect.objectContaining({ patternId: second.id, position: 3 }),
+        ],
+        reason: 'Confirmed policy removal',
+      }),
+      after: expect.objectContaining({
+        picks: [expect.objectContaining({ patternId: thirdId, position: 1 })],
+      }),
+      targetType: 'staff_picks',
+    }));
+  });
+
+  it('returns the original successful result for an exact replay without repeated writes', async () => {
+    const first = pattern();
+    const { auditLog, deleteExecute, patternSave, service } = setup([first]);
+    const invoke = () => service.bulkRemovePatterns(
+      'operator-id', [first.id], '  Confirmed policy removal  ',
+      '00000000-0000-4000-8000-000000000099', 'request-id',
+    );
+
+    const original = await invoke();
+    const replay = await invoke();
+
+    expect(replay).toEqual(original);
+    expect(patternSave).toHaveBeenCalledTimes(1);
+    expect(deleteExecute).toHaveBeenCalledTimes(1);
+    expect(auditLog.record).toHaveBeenCalledTimes(2);
+  });
+
+  it('canonicalizes UUID case and selection order before binding the replay payload', async () => {
+    const first = pattern({ id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1' });
+    const second = pattern({ id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2' });
+    const { patternSave, service } = setup([first, second]);
+    const uppercaseBatchId = 'CCCCCCCC-CCCC-4CCC-8CCC-CCCCCCCCCCC3';
+
+    const original = await service.bulkRemovePatterns(
+      'operator-id',
+      [second.id.toUpperCase(), first.id.toUpperCase()],
+      'Confirmed policy removal',
+      uppercaseBatchId,
+      'request-id',
+    );
+    const replay = await service.bulkRemovePatterns(
+      'operator-id',
+      [first.id, second.id],
+      'Confirmed policy removal',
+      uppercaseBatchId.toLowerCase(),
+      'retry-request-id',
+    );
+
+    expect(original).toEqual({
+      batchId: uppercaseBatchId.toLowerCase(),
+      patternIds: [first.id, second.id],
+      removedCount: 2,
+    });
+    expect(replay).toEqual(original);
+    expect(patternSave).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects a reused batch ID with a different normalized payload without mutation', async () => {
+    const first = pattern();
+    const second = pattern({ id: '00000000-0000-4000-8000-000000000002' });
+    const { auditLog, patternSave, service } = setup([first]);
+    await service.bulkRemovePatterns(
+      'operator-id', [first.id], 'Confirmed policy removal',
+      '00000000-0000-4000-8000-000000000099', 'request-id',
+    );
+
+    await expect(service.bulkRemovePatterns(
+      'operator-id', [second.id], 'Confirmed policy removal',
+      '00000000-0000-4000-8000-000000000099', 'retry-request',
+    )).rejects.toThrow('batch ID was already used with a different request');
+    expect(patternSave).toHaveBeenCalledTimes(1);
+    expect(auditLog.record).toHaveBeenCalledTimes(2);
+  });
+
+  it('rejects a reused batch ID with a different normalized reason without mutation', async () => {
+    const first = pattern();
+    const { auditLog, patternSave, service } = setup([first]);
+    await service.bulkRemovePatterns(
+      'operator-id', [first.id], 'Confirmed policy removal',
+      '00000000-0000-4000-8000-000000000099', 'request-id',
+    );
+
+    await expect(service.bulkRemovePatterns(
+      'operator-id', [first.id], 'Confirmed legal removal',
+      '00000000-0000-4000-8000-000000000099', 'retry-request',
+    )).rejects.toThrow('batch ID was already used with a different request');
+    expect(patternSave).toHaveBeenCalledTimes(1);
+    expect(auditLog.record).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([
+    ['missing', [pattern()], ['00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000002']],
+    ['community', [pattern({ creatorProfileId: '00000000-0000-4000-8000-000000000010' })], ['00000000-0000-4000-8000-000000000001']],
+    ['review hold', [pattern({ status: 'review_hold' })], ['00000000-0000-4000-8000-000000000001']],
+    ['already removed', [pattern({ status: 'removed' })], ['00000000-0000-4000-8000-000000000001']],
+  ])('rejects an ineligible %s selection without writes', async (_case, values, ids) => {
+    const { auditLog, patternSave, service, staffSave } = setup(values);
+    await expect(service.bulkRemovePatterns(
+      'operator-id', ids, 'Confirmed policy removal',
+      '00000000-0000-4000-8000-000000000099', 'request-id',
+    )).rejects.toThrow(BadRequestException);
+    expect(patternSave).not.toHaveBeenCalled();
+    expect(staffSave).not.toHaveBeenCalled();
+    expect(auditLog.record).not.toHaveBeenCalled();
+  });
+
+  it('rejects duplicate IDs before opening a transaction', async () => {
+    const entity = pattern();
+    const { patternSave, service } = setup([entity]);
+    await expect(service.bulkRemovePatterns(
+      'operator-id', [entity.id, entity.id], 'Confirmed policy removal',
+      '00000000-0000-4000-8000-000000000099', 'request-id',
+    )).rejects.toThrow('Bulk removal Pattern IDs must be unique');
+    expect(patternSave).not.toHaveBeenCalled();
+  });
+});
+/* eslint-enable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unnecessary-type-assertion */

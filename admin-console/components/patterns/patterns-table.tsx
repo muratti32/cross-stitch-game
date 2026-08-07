@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { PatternStatusBadge } from '@/components/common/status-badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Table,
   TableBody,
@@ -16,18 +17,40 @@ import { formatDate } from '@/lib/format';
 import { PRICE_TIER_UNIT_LABELS } from '@/lib/price-tier';
 import { toConsolePreviewSrc } from '@/lib/preview-url';
 import type { AdminPatternListItem, Category } from '@/lib/types';
+import {
+  bulkRemovalReasonId,
+  eligiblePatternIds,
+  getBulkRemovalIneligibility,
+} from './bulk-remove-policy';
 
 export function PatternsTable({
   items,
   categoriesByCode,
+  selectedIds,
+  onSelectionChange,
 }: {
   items: AdminPatternListItem[];
   categoriesByCode: Map<string, Category>;
+  selectedIds: Set<string>;
+  onSelectionChange: (ids: Set<string>) => void;
 }) {
+  const eligibleIds = eligiblePatternIds(items);
+  const allEligibleSelected =
+    eligibleIds.length > 0 && eligibleIds.every((id) => selectedIds.has(id));
   return (
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead className="w-10">
+            <Checkbox
+              aria-label="Select all eligible Official Patterns on this page"
+              checked={allEligibleSelected}
+              disabled={eligibleIds.length === 0}
+              onCheckedChange={(checked) =>
+                onSelectionChange(checked ? new Set(eligibleIds) : new Set())
+              }
+            />
+          </TableHead>
           <TableHead className="w-16">Preview</TableHead>
           <TableHead>Title</TableHead>
           <TableHead>Creator</TableHead>
@@ -39,8 +62,33 @@ export function PatternsTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {items.map((pattern) => (
+        {items.map((pattern) => {
+          const ineligibility = getBulkRemovalIneligibility(pattern);
+          const reasonId = ineligibility === null ? undefined : bulkRemovalReasonId(pattern.id);
+          return (
           <TableRow key={pattern.id} className="cursor-pointer">
+            <TableCell>
+              <Checkbox
+                aria-label={`Select ${pattern.title}`}
+                aria-describedby={reasonId}
+                checked={selectedIds.has(pattern.id)}
+                disabled={ineligibility !== null}
+                onCheckedChange={(checked) => {
+                  const next = new Set(selectedIds);
+                  if (checked) {
+                    next.add(pattern.id);
+                  } else {
+                    next.delete(pattern.id);
+                  }
+                  onSelectionChange(next);
+                }}
+              />
+              {ineligibility !== null && (
+                <span id={reasonId} className="ml-2 text-xs text-muted-foreground">
+                  {ineligibility}
+                </span>
+              )}
+            </TableCell>
             <TableCell>
               <Link href={`/patterns/${pattern.id}`}>
                 <Image
@@ -69,7 +117,8 @@ export function PatternsTable({
             </TableCell>
             <TableCell>{formatDate(pattern.publishedAt)}</TableCell>
           </TableRow>
-        ))}
+          );
+        })}
       </TableBody>
     </Table>
   );

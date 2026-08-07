@@ -13,6 +13,7 @@ import {
 } from '../catalog/entities';
 import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { MAX_TAG_CODES_PER_PATTERN } from './admin.constants';
+import { BulkPatternRemovalEntity } from './entities';
 import { OperatorAuditLogService } from './operator-audit-log.service';
 
 export interface AdminPatternListItem {
@@ -195,6 +196,133 @@ export class AdminCatalogService {
     });
   }
 
+  async bulkRemovePatterns(
+    operatorAccountId: string,
+    patternIds: string[],
+    reason: string,
+    batchId: string,
+    requestId: string | null,
+  ): Promise<{ batchId: string; patternIds: string[]; removedCount: number }> {
+    const trimmedReason = reason.trim();
+    const canonicalBatchId = batchId.toLowerCase();
+    const canonicalPatternIds = patternIds.map((id) => id.toLowerCase()).sort();
+    if (patternIds.length < 1 || patternIds.length > 20) {
+      throw new BadRequestException('Bulk removal requires between 1 and 20 Pattern IDs');
+    }
+    if (new Set(canonicalPatternIds).size !== canonicalPatternIds.length) {
+      throw new BadRequestException('Bulk removal Pattern IDs must be unique');
+    }
+    if (trimmedReason.length < 10 || trimmedReason.length > 2000) {
+      throw new BadRequestException('Bulk removal reason must be between 10 and 2000 characters');
+    }
+
+    return this.dataSource.transaction(async (manager) => {
+      await manager.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [
+        `${operatorAccountId}:${canonicalBatchId}`,
+      ]);
+      const receiptRepository = manager.getRepository(BulkPatternRemovalEntity);
+      const receipt = await receiptRepository.findOneBy({
+        batchId: canonicalBatchId,
+        operatorAccountId,
+      });
+      if (receipt !== null) {
+        if (
+          receipt.reason !== trimmedReason
+          || JSON.stringify(receipt.patternIds) !== JSON.stringify(canonicalPatternIds)
+        ) {
+          throw new BadRequestException('Bulk removal batch ID was already used with a different request');
+        }
+        return {
+          batchId: receipt.batchId,
+          patternIds: receipt.patternIds,
+          removedCount: receipt.removedCount,
+        };
+      }
+
+      const patternRepository = manager.getRepository(PatternEntity);
+      const patterns = await patternRepository
+        .createQueryBuilder('pattern')
+        .setLock('pessimistic_write')
+        .where('pattern.id IN (:...patternIds)', { patternIds: canonicalPatternIds })
+        .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' })
+        .getMany();
+
+      if (patterns.length !== patternIds.length) {
+        throw new BadRequestException('One or more selected Patterns were not found');
+      }
+      const byId = new Map(patterns.map((pattern) => [pattern.id, pattern]));
+      const orderedPatterns = canonicalPatternIds.map((id) => byId.get(id)!);
+      for (const pattern of orderedPatterns) {
+        if (pattern.creatorProfileId !== null) {
+          throw new BadRequestException(`Pattern ${pattern.id} is a Community Pattern and is not eligible for bulk removal`);
+        }
+        if (pattern.status !== 'available' && pattern.status !== 'withdrawn') {
+          throw new BadRequestException(`Pattern ${pattern.id} with status ${pattern.status} is not eligible for bulk removal`);
+        }
+      }
+
+      const beforeById = new Map(
+        orderedPatterns.map((pattern) => [pattern.id, this.formatListItem(pattern)]),
+      );
+      for (const pattern of orderedPatterns) {
+        pattern.status = 'removed';
+      }
+      await patternRepository.save(orderedPatterns);
+
+      const staffPickRepository = manager.getRepository(StaffPickEntity);
+      await manager.query(
+        'SELECT pattern_id FROM catalog.staff_picks ORDER BY position FOR UPDATE',
+      );
+      const existingPicks = await staffPickRepository.find({
+        order: { position: 'ASC' },
+        relations: ['pattern'],
+      });
+      const selectedIds = new Set(canonicalPatternIds);
+      const remainingPicks = existingPicks.filter((pick) => !selectedIds.has(pick.patternId));
+      const staffPicksBefore = this.formatStaffPicks(existingPicks);
+      await this.writeStaffPickOrder(manager, remainingPicks.map((pick) => pick.patternId));
+      const staffPicksAfter = this.formatStaffPicks(
+        remainingPicks.map((pick, index) => ({ ...pick, position: index + 1 })),
+      );
+
+      for (const pattern of orderedPatterns) {
+        await this.auditLog.record(manager, {
+          action: 'pattern.bulk_remove',
+          after: { batchId: canonicalBatchId, pattern: this.formatListItem(pattern), reason: trimmedReason },
+          before: { batchId: canonicalBatchId, pattern: beforeById.get(pattern.id), reason: trimmedReason },
+          operatorAccountId,
+          outcome: 'success',
+          requestId,
+          targetId: pattern.id,
+          targetType: 'pattern',
+        });
+      }
+
+      await this.auditLog.record(manager, {
+        action: 'staffpick.bulk_remove_compact',
+        after: { batchId: canonicalBatchId, picks: staffPicksAfter, reason: trimmedReason },
+        before: { batchId: canonicalBatchId, picks: staffPicksBefore, reason: trimmedReason },
+        operatorAccountId,
+        outcome: 'success',
+        requestId,
+        targetId: null,
+        targetType: 'staff_picks',
+      });
+
+      const result = {
+        batchId: canonicalBatchId,
+        patternIds: canonicalPatternIds,
+        removedCount: orderedPatterns.length,
+      };
+      await receiptRepository.save(receiptRepository.create({
+        ...result,
+        operatorAccountId,
+        reason: trimmedReason,
+      }));
+      return result;
+    });
+  }
+
   restorePattern(operatorAccountId: string, patternId: string, requestId: string | null) {
     return this.applyStatusTransition(operatorAccountId, patternId, {
       action: 'pattern.restore',
@@ -227,7 +355,6 @@ export class AdminCatalogService {
   ): Promise<StaffPickListItem[]> {
     return this.dataSource.transaction(async (manager) => {
       const patternRepository = manager.getRepository(PatternEntity);
-      const staffPickRepository = manager.getRepository(StaffPickEntity);
 
       const before = await this.getStaffPicksWithManager(manager);
 
@@ -244,13 +371,7 @@ export class AdminCatalogService {
         patterns.push(pattern);
       }
 
-      await staffPickRepository.createQueryBuilder().delete().execute();
-      const rows = patterns.map((pattern, index) =>
-        staffPickRepository.create({ patternId: pattern.id, position: index + 1 }),
-      );
-      if (rows.length > 0) {
-        await staffPickRepository.save(rows);
-      }
+      await this.writeStaffPickOrder(manager, patterns.map((pattern) => pattern.id));
 
       const after = patterns.map((pattern, index) => ({
         creatorName: pattern.creatorName,
@@ -583,8 +704,29 @@ export class AdminCatalogService {
       order: { position: 'ASC' },
       relations: ['pattern'],
     });
+    return this.formatStaffPicks(picks);
+  }
+
+  private async writeStaffPickOrder(
+    manager: EntityManager,
+    patternIds: string[],
+  ): Promise<void> {
+    const staffPickRepository = manager.getRepository(StaffPickEntity);
+    await staffPickRepository.createQueryBuilder().delete().execute();
+    if (patternIds.length > 0) {
+      await staffPickRepository.save(
+        patternIds.map((patternId, index) =>
+          staffPickRepository.create({ patternId, position: index + 1 }),
+        ),
+      );
+    }
+  }
+
+  private formatStaffPicks(
+    picks: Pick<StaffPickEntity, 'pattern' | 'patternId' | 'position'>[],
+  ): { patternId: string; title: string; creatorName: string; position: number }[] {
     return picks
-      .filter((pick) => pick.pattern !== null)
+      .filter((pick) => pick.pattern !== null && pick.pattern !== undefined)
       .map((pick) => ({
         creatorName: pick.pattern.creatorName,
         patternId: pick.patternId,

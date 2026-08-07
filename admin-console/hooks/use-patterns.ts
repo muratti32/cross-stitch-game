@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api } from '@/lib/client/fetcher';
 import { buildQueryString } from '@/lib/client/query-string';
-import type { AdminPatternDetail, AdminPatternPage, PatternStatus, UpdatePatternMetadataInput } from '@/lib/types';
+import type { AdminPatternDetail, AdminPatternPage, BulkRemovePatternsInput, BulkRemovePatternsResponse, PatternStatus, UpdatePatternMetadataInput } from '@/lib/types';
 
 export type PatternListParams = {
   status?: PatternStatus;
@@ -62,4 +62,17 @@ export function useRemovePattern(id: string) {
 
 export function useRestorePattern(id: string) {
   return usePatternStatusMutation(id, 'restore');
+}
+
+export function useBulkRemovePatterns() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: BulkRemovePatternsInput) =>
+      api.post<BulkRemovePatternsResponse>('/api/admin/patterns/bulk-remove', input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['admin-patterns'] });
+      void queryClient.invalidateQueries({ queryKey: ['dashboard-counts'] });
+      void queryClient.invalidateQueries({ queryKey: ['staff-picks'] });
+    },
+  });
 }

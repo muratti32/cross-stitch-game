@@ -8,3 +8,4 @@ export * from './operator-login-challenge.entity';
 export * from './operator-audit-log.entity';
 export * from './operator-security-event.entity';
 export * from './official-pattern-draft.entity';
+export * from './bulk-pattern-removal.entity';
