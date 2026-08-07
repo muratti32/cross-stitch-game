@@ -5,8 +5,11 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   Alert,
+  Linking,
   Modal,
+  Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -51,6 +54,7 @@ import {
   useRevenueCatRuntime,
 } from '@/commerce/revenueCat';
 import { Button, Card, Screen } from '@/components';
+import { WebLinks } from '@/config';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
 
@@ -1030,13 +1034,16 @@ export default function CommerceScreen() {
                 })}
               </View>
               {selectedPremium !== undefined && (
-                <Button
-                  title={isAccount ? `Choose ${selectedPremium.label}` : `Sign in for ${selectedPremium.label}`}
-                  onPress={() => attemptPurchase(selectedPremium)}
-                  loading={purchasingKey === selectedPremium.productKey}
-                  disabled={purchasingKey !== null || purchasePending !== null}
-                  variant="rose"
-                />
+                <>
+                  <SubscriptionDisclosure product={selectedPremium} surface="store" />
+                  <Button
+                    title={isAccount ? `Choose ${selectedPremium.label}` : `Sign in for ${selectedPremium.label}`}
+                    onPress={() => attemptPurchase(selectedPremium)}
+                    loading={purchasingKey === selectedPremium.productKey}
+                    disabled={purchasingKey !== null || purchasePending !== null}
+                    variant="rose"
+                  />
+                </>
               )}
             </View>
 
@@ -1140,6 +1147,55 @@ function Benefit({ icon, label }: { icon: React.ComponentProps<typeof Ionicons>[
   );
 }
 
+// Store-standard subscription disclosure. The store name comes from the
+// platform the player is holding and the renewal terms from the selected
+// Premium Plan, so a price or billing period changed in App Store Connect or
+// Play Console can never leave this block quoting a stale one.
+function SubscriptionDisclosure({
+  product,
+  surface,
+}: {
+  product: CommerceProduct;
+  surface: 'store' | 'confirmation';
+}) {
+  const store = storeAccountName();
+  const renewalPrice = paidOfferLabel(product);
+
+  return (
+    <View style={styles.disclosure} testID={`premium-disclosure-${surface}`}>
+      <Text style={styles.disclosureText}>
+        {`Payment is charged to your ${store} account when you confirm the purchase.`}
+      </Text>
+      <Text style={styles.disclosureText}>
+        {`${product.label} Premium auto-renews at ${renewalPrice} unless auto-renew is turned off at least 24 hours before the end of the current period.`}
+      </Text>
+      <Text style={styles.disclosureText}>
+        Any unused portion of a free trial is forfeited when a subscription is purchased.
+      </Text>
+      <Text style={styles.disclosureText}>
+        {`You can cancel at any time from your ${store} account.`}
+      </Text>
+      <View style={styles.disclosureLinks}>
+        <Pressable
+          accessibilityRole="link"
+          onPress={() => openWebLink('Privacy Policy', WebLinks.privacyPolicy)}
+          style={({ pressed }) => [pressed && styles.pressed]}
+        >
+          <Text style={styles.disclosureLink}>Privacy Policy</Text>
+        </Pressable>
+        <Text style={styles.disclosureText}>·</Text>
+        <Pressable
+          accessibilityRole="link"
+          onPress={() => openWebLink('Terms of Service', WebLinks.termsOfService)}
+          style={({ pressed }) => [pressed && styles.pressed]}
+        >
+          <Text style={styles.disclosureLink}>Terms of Service</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 function PremiumConfirmation({
   product,
   trialEligible,
@@ -1164,8 +1220,7 @@ function PremiumConfirmation({
           {product !== null && (
             <>
               <Text style={styles.confirmationPlan}>
-                {product.label} · {product.priceString}
-                {product.billingPeriod === null ? '' : ` every ${product.billingPeriod}`}
+                {`${product.label} · ${paidOfferLabel(product)}`}
               </Text>
               {product.productKey === 'premium_monthly' && trialEligible && (
                 <Text style={styles.trial}>Your store reports that you are eligible for a 3-day free trial.</Text>
@@ -1173,6 +1228,11 @@ function PremiumConfirmation({
               <Text style={styles.confirmationBody}>
                 Premium appears only after the Game Backend verifies the store transaction.
               </Text>
+              {/* The confirmation covers the screen, so the full disclosure and both
+                  legal documents must stay readable and reachable from here. */}
+              <ScrollView style={styles.confirmationDisclosure}>
+                <SubscriptionDisclosure product={product} surface="confirmation" />
+              </ScrollView>
               <View style={styles.confirmationActions}>
                 <Button title="Cancel" onPress={onCancel} variant="secondary" />
                 <Button title={`Confirm ${product.label}`} onPress={() => onConfirm(product)} variant="rose" />
@@ -1354,6 +1414,30 @@ function ProductSheet({
       </View>
     </Modal>
   );
+}
+
+// One rendering of a plan's recurring charge — "$7.99 every 1 month" — shared by
+// the disclosure and the confirmation, so the same plan can never be quoted two
+// different ways.
+function paidOfferLabel(product: CommerceProduct): string {
+  return product.billingPeriod === null
+    ? product.priceString
+    : `${product.priceString} every ${product.billingPeriod}`;
+}
+
+// Commerce runs only in the iOS and Android apps — resolveRevenueCatConfiguration
+// refuses every other platform — so these are the only two stores a player can
+// be holding when the disclosure renders.
+function storeAccountName(): string {
+  return Platform.OS === 'ios' ? 'App Store' : 'Google Play';
+}
+
+// Same failure handling Settings uses for these two destinations: a link that
+// cannot be opened tells the player instead of failing silently.
+function openWebLink(title: string, url: string): void {
+  Linking.openURL(url).catch(() => {
+    Alert.alert(title, `Could not open link: ${url}`);
+  });
 }
 
 function isPurchaseCancelled(error: unknown): boolean {
@@ -1647,6 +1731,31 @@ const styles = StyleSheet.create({
     marginTop: Theme.spacing.xs,
   },
   trial: { color: Theme.colors.success, fontSize: 10, marginTop: Theme.spacing.xs },
+  disclosure: {
+    backgroundColor: Theme.colors.card,
+    borderColor: Theme.colors.border,
+    borderRadius: Theme.radii.md,
+    borderWidth: 1,
+    gap: Theme.spacing.xs,
+    padding: Theme.spacing.md,
+  },
+  disclosureText: {
+    color: Theme.colors.textSecondary,
+    fontSize: Theme.typography.sizes.xs,
+    lineHeight: 17,
+  },
+  disclosureLinks: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: Theme.spacing.sm,
+    marginTop: Theme.spacing.xs,
+  },
+  disclosureLink: {
+    color: Theme.colors.accentTeal,
+    fontSize: Theme.typography.sizes.xs,
+    fontWeight: Theme.typography.weights.semibold,
+    textDecorationLine: 'underline',
+  },
   categoryCard: { padding: 0 },
   categoryContent: {
     alignItems: 'center',
@@ -1716,6 +1825,7 @@ const styles = StyleSheet.create({
     fontWeight: Theme.typography.weights.semibold,
   },
   confirmationBody: { color: Theme.colors.textSecondary, fontSize: Theme.typography.sizes.sm },
+  confirmationDisclosure: { maxHeight: 220 },
   confirmationActions: { flexDirection: 'row', gap: Theme.spacing.sm, justifyContent: 'flex-end' },
   modalRoot: { flex: 1, justifyContent: 'flex-end' },
   modalBackdrop: { backgroundColor: 'rgba(25, 24, 22, 0.42)', flex: 1 },

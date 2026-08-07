@@ -1,8 +1,9 @@
 import React from 'react';
-import { Modal, Pressable, Text, View } from 'react-native';
+import { Alert, Linking, Modal, Platform, Pressable, Text, View } from 'react-native';
 import TestRenderer, { act, type ReactTestInstance } from 'react-test-renderer';
 
 import CommerceScreen from '../../../app/(tabs)/(profile)/commerce';
+import { WebLinks } from '../../config';
 import { useCommerceIntentStore } from '../commerceIntent';
 
 let mockParams: { category?: string; source?: string } = { source: 'profile' };
@@ -226,6 +227,100 @@ it('shows the normal Monthly paid offer when eligibility is unknown or ineligibl
 
   expect(allText(renderer!.root)).not.toContain('Eligible for a 3-day free trial');
   expect(allText(renderer!.root)).toContain('$7.99');
+});
+
+it('carries the full store subscription disclosure above the Premium purchase action', async () => {
+  await renderScreen();
+
+  expect(disclosure('store')).toEqual([
+    'Payment is charged to your App Store account when you confirm the purchase.',
+    'Annual Premium auto-renews at $39.99 every 1 year unless auto-renew is turned off at least 24 hours before the end of the current period.',
+    'Any unused portion of a free trial is forfeited when a subscription is purchased.',
+    'You can cancel at any time from your App Store account.',
+    'Privacy Policy',
+    '·',
+    'Terms of Service',
+  ]);
+
+  const screen = allText(renderer!.root);
+  expect(screen.indexOf('You can cancel at any time from your App Store account.'))
+    .toBeLessThan(screen.indexOf('Sign in for Annual'));
+});
+
+it('interpolates the disclosure price and period from the selected Premium Plan', async () => {
+  await renderScreen();
+
+  await act(async () => {
+    pressAncestor(renderer!.root.findByProps({ testID: 'premium-premium_weekly' }));
+  });
+
+  expect(disclosure('store')).toContain(
+    'Weekly Premium auto-renews at $2.99 every 1 week unless auto-renew is turned off at least 24 hours before the end of the current period.',
+  );
+});
+
+it('names Google Play as the store account on Android', async () => {
+  const platform = jest.replaceProperty(Platform, 'OS', 'android');
+  await renderScreen();
+
+  expect(disclosure('store')).toEqual(expect.arrayContaining([
+    'Payment is charged to your Google Play account when you confirm the purchase.',
+    'You can cancel at any time from your Google Play account.',
+  ]));
+  platform.restore();
+});
+
+it('repeats the disclosure and both documents inside the Premium confirmation', async () => {
+  mockIdentity = { accountId: 'account_80', isAccount: true };
+  await renderScreen();
+
+  await act(async () => pressByText(renderer!.root, 'Choose Annual'));
+
+  expect(disclosure('confirmation')).toEqual([
+    'Payment is charged to your App Store account when you confirm the purchase.',
+    'Annual Premium auto-renews at $39.99 every 1 year unless auto-renew is turned off at least 24 hours before the end of the current period.',
+    'Any unused portion of a free trial is forfeited when a subscription is purchased.',
+    'You can cancel at any time from your App Store account.',
+    'Privacy Policy',
+    '·',
+    'Terms of Service',
+  ]);
+});
+
+it('opens the configured Privacy Policy and Terms of Service from the disclosure', async () => {
+  const openURL = jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
+  await renderScreen();
+
+  await act(async () => {
+    pressByText(renderer!.root, 'Privacy Policy');
+    await flushPromises();
+  });
+  await act(async () => {
+    pressByText(renderer!.root, 'Terms of Service');
+    await flushPromises();
+  });
+
+  expect(openURL).toHaveBeenNthCalledWith(1, WebLinks.privacyPolicy);
+  expect(openURL).toHaveBeenNthCalledWith(2, WebLinks.termsOfService);
+  openURL.mockRestore();
+});
+
+it('tells the player when a legal link cannot be opened', async () => {
+  const openURL = jest.spyOn(Linking, 'openURL').mockRejectedValue(new Error('no handler'));
+  const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+  await renderScreen();
+
+  await act(async () => {
+    pressByText(renderer!.root, 'Privacy Policy');
+    await flushPromises();
+  });
+
+  expect(alert).toHaveBeenCalledWith(
+    'Privacy Policy',
+    `Could not open link: ${WebLinks.privacyPolicy}`,
+  );
+  openURL.mockRestore();
+  alert.mockRestore();
 });
 
 it('requires confirmation and treats store cancellation as a non-error', async () => {
@@ -863,6 +958,10 @@ it('keeps wallet and membership context visible while catalog Retry recovers', a
 
 function visibleModalCount(root: ReactTestInstance): number {
   return root.findAllByType(Modal).filter((node) => node.props.visible === true).length;
+}
+
+function disclosure(surface: 'store' | 'confirmation'): string[] {
+  return allText(renderer!.root.findByProps({ testID: `premium-disclosure-${surface}` }));
 }
 
 function allText(root: ReactTestInstance): string[] {
