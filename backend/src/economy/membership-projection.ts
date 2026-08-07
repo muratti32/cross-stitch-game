@@ -73,8 +73,15 @@ export function projectMembershipPeriod(
     return left.providerEventId.localeCompare(right.providerEventId);
   });
   const latest = ordered[ordered.length - 1];
+  // PRODUCT_CHANGE carries a new provider_transaction_id (plan cross-grade/upgrade),
+  // so its own event history never contains an INITIAL_PURCHASE/RENEWAL row. Its
+  // payload already has full period state (product_id, period_type, expiry), so it
+  // is a valid anchor on its own — otherwise plan switches are silently dropped.
   const purchase = ordered.find(
-    (event) => event.type === 'INITIAL_PURCHASE' || event.type === 'RENEWAL',
+    (event) =>
+      event.type === 'INITIAL_PURCHASE' ||
+      event.type === 'RENEWAL' ||
+      event.type === 'PRODUCT_CHANGE',
   );
   if (!purchase) return null;
 

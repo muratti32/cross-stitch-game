@@ -110,6 +110,27 @@ describe('membership period projection', () => {
     expect(periodHasEntitlement(projection!, new Date('2026-08-04T00:00:00.000Z'))).toBe(true);
     expect(periodHasEntitlement(projection!, new Date('2026-08-09T00:00:00.000Z'))).toBe(false);
   });
+
+  it('anchors a period on a lone PRODUCT_CHANGE event (plan cross-grade arrives under a new transaction id)', () => {
+    const projection = projectMembershipPeriod([
+      membershipEvent({
+        providerEventId: 'product-change-1',
+        providerTransactionId: 'transaction-2',
+        type: 'PRODUCT_CHANGE',
+        productId: 'com.avk.stitchwish.premium_annual',
+        eventAt: new Date('2026-08-01T00:00:01.000Z'),
+        purchasedAt: new Date('2026-08-01T00:00:00.000Z'),
+        expiresAt: new Date('2027-08-01T00:00:00.000Z'),
+      }),
+    ]);
+
+    expect(projection).toMatchObject({
+      plan: 'annual',
+      currentStatus: 'active',
+      creditAmount: 180,
+    });
+    expect(periodHasEntitlement(projection!, new Date('2026-08-04T00:00:00.000Z'))).toBe(true);
+  });
 });
 
 describe('Premium Daily Coin Claim', () => {
