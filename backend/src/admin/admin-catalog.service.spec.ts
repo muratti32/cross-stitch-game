@@ -121,3 +121,99 @@ describe('AdminCatalogService Pattern contract', () => {
     expect(auditLog.record).not.toHaveBeenCalled();
   });
 });
+
+/* eslint-disable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unnecessary-type-assertion */
+describe('AdminCatalogService bulk removal', () => {
+  function setup(patterns: PatternEntity[], picks: { patternId: string; position: number }[] = []) {
+    const patternSave = jest.fn((values: PatternEntity[]) => Promise.resolve(values));
+    const getMany = jest.fn().mockResolvedValue(patterns);
+    const patternQueryBuilder = {
+      andWhere: jest.fn().mockReturnThis(),
+      getMany,
+      setLock: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+    };
+    const deleteExecute = jest.fn().mockResolvedValue(undefined);
+    const staffSave = jest.fn().mockResolvedValue(undefined);
+    const patternRepository = {
+      createQueryBuilder: jest.fn(() => patternQueryBuilder),
+      save: patternSave,
+    };
+    const staffRepository = {
+      create: jest.fn((value) => value),
+      createQueryBuilder: jest.fn(() => ({ delete: jest.fn(() => ({ execute: deleteExecute })) })),
+      find: jest.fn().mockResolvedValue(picks),
+      save: staffSave,
+    };
+    const manager = {
+      getRepository: jest.fn((entity) => entity.name === 'PatternEntity' ? patternRepository : staffRepository),
+    };
+    const dataSource = {
+      transaction: jest.fn((callback) => callback(manager)),
+    };
+    const auditLog = { record: jest.fn().mockResolvedValue(undefined) };
+    const service = new AdminCatalogService(
+      dataSource as never,
+      { publicUrl: (key: string) => `https://cdn.test/${key}` } as never,
+      auditLog as never,
+      {} as never, {} as never, {} as never, {} as never, {} as never,
+    );
+    return { auditLog, deleteExecute, patternSave, service, staffSave };
+  }
+
+  it('removes every eligible Pattern, audits the shared batch, and compacts Staff Picks', async () => {
+    const first = pattern();
+    const second = pattern({ id: '00000000-0000-4000-8000-000000000002', status: 'withdrawn', title: 'Owl' });
+    const thirdId = '00000000-0000-4000-8000-000000000003';
+    const { auditLog, patternSave, service, staffSave } = setup(
+      [first, second],
+      [
+        { patternId: first.id, position: 1 },
+        { patternId: thirdId, position: 2 },
+        { patternId: second.id, position: 3 },
+      ],
+    );
+
+    await expect(service.bulkRemovePatterns(
+      'operator-id', [first.id, second.id], 'Confirmed policy removal',
+      '00000000-0000-4000-8000-000000000099', 'request-id',
+    )).resolves.toEqual({ batchId: '00000000-0000-4000-8000-000000000099', removedCount: 2 });
+
+    expect(patternSave).toHaveBeenCalledWith([first, second]);
+    expect(first.status).toBe('removed');
+    expect(second.status).toBe('removed');
+    expect(staffSave).toHaveBeenCalledWith([{ patternId: thirdId, position: 1 }]);
+    expect(auditLog.record).toHaveBeenCalledTimes(2);
+    expect(auditLog.record).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
+      action: 'pattern.bulk_remove', requestId: 'request-id',
+      after: expect.objectContaining({ batchId: '00000000-0000-4000-8000-000000000099', reason: 'Confirmed policy removal' }),
+    }));
+  });
+
+  it.each([
+    ['missing', [pattern()], ['00000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000002']],
+    ['community', [pattern({ creatorProfileId: '00000000-0000-4000-8000-000000000010' })], ['00000000-0000-4000-8000-000000000001']],
+    ['review hold', [pattern({ status: 'review_hold' })], ['00000000-0000-4000-8000-000000000001']],
+    ['already removed', [pattern({ status: 'removed' })], ['00000000-0000-4000-8000-000000000001']],
+  ])('rejects an ineligible %s selection without writes', async (_case, values, ids) => {
+    const { auditLog, patternSave, service, staffSave } = setup(values);
+    await expect(service.bulkRemovePatterns(
+      'operator-id', ids, 'Confirmed policy removal',
+      '00000000-0000-4000-8000-000000000099', 'request-id',
+    )).rejects.toThrow(BadRequestException);
+    expect(patternSave).not.toHaveBeenCalled();
+    expect(staffSave).not.toHaveBeenCalled();
+    expect(auditLog.record).not.toHaveBeenCalled();
+  });
+
+  it('rejects duplicate IDs before opening a transaction', async () => {
+    const entity = pattern();
+    const { patternSave, service } = setup([entity]);
+    await expect(service.bulkRemovePatterns(
+      'operator-id', [entity.id, entity.id], 'Confirmed policy removal',
+      '00000000-0000-4000-8000-000000000099', 'request-id',
+    )).rejects.toThrow('Bulk removal Pattern IDs must be unique');
+    expect(patternSave).not.toHaveBeenCalled();
+  });
+});
+/* eslint-enable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unnecessary-type-assertion */

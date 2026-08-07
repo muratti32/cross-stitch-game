@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { EmptyState } from '@/components/common/empty-state';
 import { ErrorState } from '@/components/common/error-state';
@@ -18,6 +19,8 @@ import { usePatterns } from '@/hooks/use-patterns';
 import { ApiError } from '@/lib/client/fetcher';
 import type { PatternStatus } from '@/lib/types';
 
+import { BulkRemoveDialog } from './bulk-remove-dialog';
+
 import { PatternStatusTabs } from './pattern-status-tabs';
 import { PatternsTable } from './patterns-table';
 
@@ -27,6 +30,8 @@ export function PatternsView() {
   const [status, setStatus] = useState<'all' | PatternStatus>('all');
   const [searchInput, setSearchInput] = useState('');
   const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
   const search = useDebouncedValue(searchInput, 400);
 
   const categoriesQuery = useCategories();
@@ -43,14 +48,25 @@ export function PatternsView() {
   });
 
   function handleStatusChange(next: 'all' | PatternStatus): void {
+    setSelectedIds(new Set());
     setStatus(next);
     setPage(1);
   }
 
   function handleSearchChange(next: string): void {
+    setSelectedIds(new Set());
     setSearchInput(next);
     setPage(1);
   }
+
+  function handlePageChange(next: number): void {
+    setSelectedIds(new Set());
+    setPage(next);
+  }
+
+  const selectedPatterns = (patternsQuery.data?.items ?? []).filter((pattern) =>
+    selectedIds.has(pattern.id),
+  );
 
   return (
     <div>
@@ -77,6 +93,15 @@ export function PatternsView() {
           />
         </div>
       </div>
+
+      {selectedIds.size > 0 && (
+        <div className="mb-4 flex items-center justify-between rounded-md border p-3">
+          <span className="text-sm">{selectedIds.size} selected</span>
+          <Button variant="destructive" onClick={() => setBulkDialogOpen(true)}>
+            <Trash2 className="size-4" /> Remove selected
+          </Button>
+        </div>
+      )}
 
       <Card className="p-0">
         {patternsQuery.isPending && (
@@ -115,16 +140,36 @@ export function PatternsView() {
 
         {patternsQuery.data !== undefined && patternsQuery.data.items.length > 0 && (
           <>
-            <PatternsTable items={patternsQuery.data.items} categoriesByCode={categoriesByCode} />
+            <PatternsTable
+              items={patternsQuery.data.items}
+              categoriesByCode={categoriesByCode}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+            />
             <PaginationBar
               page={patternsQuery.data.page}
               pageSize={patternsQuery.data.pageSize}
               total={patternsQuery.data.total}
-              onPageChange={setPage}
+              onPageChange={handlePageChange}
             />
           </>
         )}
       </Card>
+      <BulkRemoveDialog
+        patterns={selectedPatterns}
+        open={bulkDialogOpen}
+        onOpenChange={setBulkDialogOpen}
+        onSuccess={(result) => {
+          const totalAfter = Math.max(
+            0,
+            (patternsQuery.data?.total ?? result.removedCount) - result.removedCount,
+          );
+          const lastPage = Math.max(1, Math.ceil(totalAfter / PAGE_SIZE));
+          setPage(Math.min(page, lastPage));
+          setSelectedIds(new Set());
+          toast.success(`${result.removedCount} Patterns removed.`);
+        }}
+      />
     </div>
   );
 }

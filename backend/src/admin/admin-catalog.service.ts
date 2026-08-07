@@ -195,6 +195,88 @@ export class AdminCatalogService {
     });
   }
 
+  async bulkRemovePatterns(
+    operatorAccountId: string,
+    patternIds: string[],
+    reason: string,
+    batchId: string,
+    requestId: string | null,
+  ): Promise<{ batchId: string; removedCount: number }> {
+    const trimmedReason = reason.trim();
+    if (patternIds.length < 1 || patternIds.length > 20) {
+      throw new BadRequestException('Bulk removal requires between 1 and 20 Pattern IDs');
+    }
+    if (new Set(patternIds).size !== patternIds.length) {
+      throw new BadRequestException('Bulk removal Pattern IDs must be unique');
+    }
+    if (trimmedReason.length < 10 || trimmedReason.length > 2000) {
+      throw new BadRequestException('Bulk removal reason must be between 10 and 2000 characters');
+    }
+
+    return this.dataSource.transaction(async (manager) => {
+      const patternRepository = manager.getRepository(PatternEntity);
+      const patterns = await patternRepository
+        .createQueryBuilder('pattern')
+        .setLock('pessimistic_write')
+        .where('pattern.id IN (:...patternIds)', { patternIds })
+        .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' })
+        .getMany();
+
+      if (patterns.length !== patternIds.length) {
+        throw new BadRequestException('One or more selected Patterns were not found');
+      }
+      const byId = new Map(patterns.map((pattern) => [pattern.id, pattern]));
+      const orderedPatterns = patternIds.map((id) => byId.get(id)!);
+      for (const pattern of orderedPatterns) {
+        if (pattern.creatorProfileId !== null) {
+          throw new BadRequestException(`Pattern ${pattern.id} is a Community Pattern and is not eligible for bulk removal`);
+        }
+        if (pattern.status !== 'available' && pattern.status !== 'withdrawn') {
+          throw new BadRequestException(`Pattern ${pattern.id} with status ${pattern.status} is not eligible for bulk removal`);
+        }
+      }
+
+      const beforeById = new Map(
+        orderedPatterns.map((pattern) => [pattern.id, this.formatListItem(pattern)]),
+      );
+      for (const pattern of orderedPatterns) {
+        pattern.status = 'removed';
+      }
+      await patternRepository.save(orderedPatterns);
+
+      const staffPickRepository = manager.getRepository(StaffPickEntity);
+      const existingPicks = await staffPickRepository.find({
+        lock: { mode: 'pessimistic_write' },
+        order: { position: 'ASC' },
+      });
+      const selectedIds = new Set(patternIds);
+      const remainingPicks = existingPicks.filter((pick) => !selectedIds.has(pick.patternId));
+      await staffPickRepository.createQueryBuilder().delete().execute();
+      if (remainingPicks.length > 0) {
+        await staffPickRepository.save(
+          remainingPicks.map((pick, index) =>
+            staffPickRepository.create({ patternId: pick.patternId, position: index + 1 }),
+          ),
+        );
+      }
+
+      for (const pattern of orderedPatterns) {
+        await this.auditLog.record(manager, {
+          action: 'pattern.bulk_remove',
+          after: { batchId, pattern: this.formatListItem(pattern), reason: trimmedReason },
+          before: { batchId, pattern: beforeById.get(pattern.id), reason: trimmedReason },
+          operatorAccountId,
+          outcome: 'success',
+          requestId,
+          targetId: pattern.id,
+          targetType: 'pattern',
+        });
+      }
+
+      return { batchId, removedCount: orderedPatterns.length };
+    });
+  }
+
   restorePattern(operatorAccountId: string, patternId: string, requestId: string | null) {
     return this.applyStatusTransition(operatorAccountId, patternId, {
       action: 'pattern.restore',

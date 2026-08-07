@@ -14,6 +14,7 @@ import {
 
 import type { PatternStatus } from '../catalog/entities';
 import { AdminCatalogService } from './admin-catalog.service';
+import { BulkRemovePatternsDto } from './dto/bulk-remove-patterns.dto';
 import { CurrentOperator } from './current-operator.decorator';
 import { UpdatePatternMetadataDto } from './dto/update-pattern-metadata.dto';
 import { OperatorAuthGuard } from './operator-auth.guard';
@@ -80,6 +81,22 @@ export class AdminPatternsController {
     @Headers('x-request-id') requestId?: string,
   ) {
     return this.adminCatalog.withdrawPattern(operator.id, id, requestId ?? null);
+  }
+
+  @Post('bulk-remove')
+  @RequireOperatorPermissions('catalog.pattern.manage')
+  bulkRemove(
+    @CurrentOperator() operator: OperatorPrincipal,
+    @Body() body: BulkRemovePatternsDto,
+    @Headers('x-request-id') requestId?: string,
+  ) {
+    return this.adminCatalog.bulkRemovePatterns(
+      operator.id,
+      body.patternIds,
+      body.reason,
+      body.batchId,
+      requestId ?? null,
+    );
   }
 
   @Post(':id/remove')

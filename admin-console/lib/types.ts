@@ -44,6 +44,17 @@ export interface UpdatePatternMetadataInput {
   tagCodes: string[];
 }
 
+export interface BulkRemovePatternsInput {
+  patternIds: string[];
+  reason: string;
+  batchId: string;
+}
+
+export interface BulkRemovePatternsResponse {
+  batchId: string;
+  removedCount: number;
+}
+
 export interface StaffPickItem {
   patternId: string;
   title: string;
