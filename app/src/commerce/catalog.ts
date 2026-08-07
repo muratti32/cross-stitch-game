@@ -1,4 +1,8 @@
-import type { PurchasesOfferings, PurchasesPackage } from 'react-native-purchases';
+import type {
+  PurchasesIntroPrice,
+  PurchasesOfferings,
+  PurchasesPackage,
+} from 'react-native-purchases';
 
 import type {
   PurchaseProductKey,
@@ -15,11 +19,18 @@ interface ProductDefinition {
   readonly productKind: PurchaseProductKind;
   readonly quantity: number;
   readonly storeProductId: string;
-  readonly trial: boolean;
 }
 
 export interface CommerceProduct extends ProductDefinition {
   readonly billingPeriod: string | null;
+  /** Period noun this product's grants are measured against, e.g. `year`. */
+  readonly creditPeriod: string | null;
+  /**
+   * How long the store's introductory offer for this product runs free of
+   * charge, e.g. `3 days`, or null when the store advertises no free offer. The
+   * store owns this offer; the app never assumes a duration of its own.
+   */
+  readonly freeIntroductoryOffer: string | null;
   readonly id: string;
   readonly package: PurchasesPackage;
   readonly priceString: string;
@@ -34,7 +45,6 @@ const PRODUCT_DEFINITIONS: readonly ProductDefinition[] = [
     productKind: 'premium_membership',
     quantity: 180,
     storeProductId: 'com.avk.stitchwish.premium_annual',
-    trial: false,
   },
   {
     category: 'premium',
@@ -44,7 +54,6 @@ const PRODUCT_DEFINITIONS: readonly ProductDefinition[] = [
     productKind: 'premium_membership',
     quantity: 15,
     storeProductId: 'com.avk.stitchwish.premium_monthly',
-    trial: true,
   },
   {
     category: 'premium',
@@ -54,7 +63,6 @@ const PRODUCT_DEFINITIONS: readonly ProductDefinition[] = [
     productKind: 'premium_membership',
     quantity: 3,
     storeProductId: 'com.avk.stitchwish.premium_weekly',
-    trial: false,
   },
   {
     category: 'stitch_coin',
@@ -63,7 +71,6 @@ const PRODUCT_DEFINITIONS: readonly ProductDefinition[] = [
     productKind: 'stitch_coin_pack',
     quantity: 300,
     storeProductId: 'com.avk.stitchwish.coin_pack_300',
-    trial: false,
   },
   {
     category: 'stitch_coin',
@@ -72,7 +79,6 @@ const PRODUCT_DEFINITIONS: readonly ProductDefinition[] = [
     productKind: 'stitch_coin_pack',
     quantity: 900,
     storeProductId: 'com.avk.stitchwish.coin_pack_900',
-    trial: false,
   },
   {
     category: 'stitch_coin',
@@ -81,7 +87,6 @@ const PRODUCT_DEFINITIONS: readonly ProductDefinition[] = [
     productKind: 'stitch_coin_pack',
     quantity: 2000,
     storeProductId: 'com.avk.stitchwish.coin_pack_2000',
-    trial: false,
   },
   {
     category: 'ai_credit',
@@ -90,7 +95,6 @@ const PRODUCT_DEFINITIONS: readonly ProductDefinition[] = [
     productKind: 'ai_credit_pack',
     quantity: 5,
     storeProductId: 'com.avk.stitchwish.ai_credit_pack_5',
-    trial: false,
   },
   {
     category: 'ai_credit',
@@ -99,7 +103,6 @@ const PRODUCT_DEFINITIONS: readonly ProductDefinition[] = [
     productKind: 'ai_credit_pack',
     quantity: 20,
     storeProductId: 'com.avk.stitchwish.ai_credit_pack_20',
-    trial: false,
   },
   {
     category: 'ai_credit',
@@ -108,7 +111,6 @@ const PRODUCT_DEFINITIONS: readonly ProductDefinition[] = [
     productKind: 'ai_credit_pack',
     quantity: 50,
     storeProductId: 'com.avk.stitchwish.ai_credit_pack_50',
-    trial: false,
   },
 ];
 
@@ -130,24 +132,65 @@ export function commerceProductsFromOfferings(
       id: matchingPackage.identifier,
       package: matchingPackage,
       billingPeriod: subscriptionPeriodLabel(matchingPackage.product.subscriptionPeriod),
+      creditPeriod: subscriptionPeriodNoun(matchingPackage.product.subscriptionPeriod),
+      freeIntroductoryOffer: freeIntroductoryOfferDuration(matchingPackage.product.introPrice),
       priceString: matchingPackage.product.priceString,
     }];
   });
 }
 
+type PeriodUnit = readonly [singular: string, plural: string];
+
+const ISO_PERIOD_UNITS: Readonly<Record<string, PeriodUnit>> = {
+  D: ['day', 'days'],
+  W: ['week', 'weeks'],
+  M: ['month', 'months'],
+  Y: ['year', 'years'],
+};
+
+interface ParsedPeriod {
+  readonly amount: number;
+  readonly unit: PeriodUnit;
+}
+
+function parseIsoPeriod(period: string): ParsedPeriod | null {
+  const match = /^P(\d+)([DWMY])$/.exec(period);
+  if (match === null) return null;
+  const unit = ISO_PERIOD_UNITS[match[2]];
+  if (unit === undefined) return null;
+  return { amount: Number(match[1]), unit };
+}
+
+function countedPeriod(parsed: ParsedPeriod): string {
+  return `${parsed.amount} ${parsed.amount === 1 ? parsed.unit[0] : parsed.unit[1]}`;
+}
+
 function subscriptionPeriodLabel(period: string | null): string | null {
   if (period === null) return null;
-  const match = /^P(\d+)([DWMY])$/.exec(period);
-  if (match === null) return period;
-  const amount = Number(match[1]);
-  const units: Record<string, [string, string]> = {
-    D: ['day', 'days'],
-    W: ['week', 'weeks'],
-    M: ['month', 'months'],
-    Y: ['year', 'years'],
-  };
-  const unit = units[match[2]];
-  return `${amount} ${amount === 1 ? unit[0] : unit[1]}`;
+  const parsed = parseIsoPeriod(period);
+  return parsed === null ? period : countedPeriod(parsed);
+}
+
+// The noun a plan's grants are measured against: `year` for P1Y, `month` for
+// P1M, and `3 months` for a hypothetical P3M, so an Annual allowance never
+// reads as a monthly one.
+function subscriptionPeriodNoun(period: string | null): string | null {
+  if (period === null) return null;
+  const parsed = parseIsoPeriod(period);
+  if (parsed === null) return null;
+  return parsed.amount === 1 ? parsed.unit[0] : `${parsed.amount} ${parsed.unit[1]}`;
+}
+
+// Reads how long a store-advertised introductory offer runs free of charge.
+// RevenueCat reports paid introductory prices through the same `introPrice`
+// field, so a non-zero offer is not a trial and yields null: the plan then keeps
+// its ordinary paid offer instead of being advertised as free. An offer whose
+// period cannot be parsed is likewise treated as no offer rather than advertised
+// with a guessed duration.
+function freeIntroductoryOfferDuration(introPrice: PurchasesIntroPrice | null): string | null {
+  if (introPrice === null || introPrice.price !== 0) return null;
+  const parsed = parseIsoPeriod(introPrice.period);
+  return parsed === null ? null : countedPeriod(parsed);
 }
 
 export function productsInCategory(
