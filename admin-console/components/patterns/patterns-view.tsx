@@ -20,7 +20,7 @@ import { ApiError } from '@/lib/client/fetcher';
 import type { PatternStatus } from '@/lib/types';
 
 import { BulkRemoveDialog } from './bulk-remove-dialog';
-import { clearPatternSelection, pageAfterBulkRemoval } from './bulk-remove-state';
+import { pageAfterBulkRemoval } from './bulk-remove-state';
 import { PatternStatusTabs } from './pattern-status-tabs';
 import { PatternsTable } from './patterns-table';
 
@@ -48,19 +48,19 @@ export function PatternsView() {
   });
 
   function handleStatusChange(next: 'all' | PatternStatus): void {
-    setSelectedIds(clearPatternSelection());
+    setSelectedIds(new Set());
     setStatus(next);
     setPage(1);
   }
 
   function handleSearchChange(next: string): void {
-    setSelectedIds(clearPatternSelection());
+    setSelectedIds(new Set());
     setSearchInput(next);
     setPage(1);
   }
 
   function handlePageChange(next: number): void {
-    setSelectedIds(clearPatternSelection());
+    setSelectedIds(new Set());
     setPage(next);
   }
 
@@ -167,7 +167,7 @@ export function PatternsView() {
             status,
             totalBefore: patternsQuery.data?.total ?? result.removedCount,
           }));
-          setSelectedIds(clearPatternSelection());
+          setSelectedIds(new Set());
           toast.success(`${result.removedCount} Patterns removed.`);
         }}
       />

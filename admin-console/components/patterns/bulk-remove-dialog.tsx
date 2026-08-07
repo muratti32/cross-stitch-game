@@ -17,7 +17,6 @@ import type { AdminPatternListItem, BulkRemovePatternsResponse } from '@/lib/typ
 
 import {
   bulkRemoveSubmissionFailed,
-  bulkRemoveSubmissionSucceeded,
   initialBulkRemoveDialogState,
 } from './bulk-remove-state';
 
@@ -44,7 +43,7 @@ export function BulkRemoveDialog({
         patternIds: patterns.map((pattern) => pattern.id),
         reason: trimmedReason,
       });
-      setDialogState(bulkRemoveSubmissionSucceeded());
+      setDialogState(initialBulkRemoveDialogState());
       onSuccess(result);
       onOpenChange(false);
     } catch (error) {

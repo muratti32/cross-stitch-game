@@ -19,14 +19,6 @@ export function bulkRemoveSubmissionFailed(
   };
 }
 
-export function bulkRemoveSubmissionSucceeded(): BulkRemoveDialogState {
-  return initialBulkRemoveDialogState();
-}
-
-export function clearPatternSelection(): Set<string> {
-  return new Set<string>();
-}
-
 export function pageAfterBulkRemoval(options: {
   currentPage: number;
   pageSize: number;
