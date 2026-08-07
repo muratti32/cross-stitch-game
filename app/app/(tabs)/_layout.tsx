@@ -6,6 +6,10 @@ import { AnimatedTabBar } from '@/components';
 import * as Haptics from 'expo-haptics';
 import { PLAY_TAB_ROOT } from '@/navigation/exitSession';
 
+export const unstable_settings = {
+  initialRouteName: '(catalog)',
+};
+
 export default function TabsLayout() {
   const triggerHaptic = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
@@ -31,6 +35,7 @@ export default function TabsLayout() {
 
   return (
     <Tabs
+      initialRouteName="(catalog)"
       tabBar={(props) => <AnimatedTabBar {...props} />}
       screenOptions={{
         headerShown: false,
