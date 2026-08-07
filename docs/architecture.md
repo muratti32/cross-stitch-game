@@ -81,6 +81,7 @@ Modular monolith. Modules communicate through injected services in-process; anyt
 - **Job Outbox**: outbox rows committed atomically with their Processing Job. Identical horizontally-scalable dispatchers poll with `FOR UPDATE SKIP LOCKED` (shardable by outbox category) and publish to BullMQ using the outbox row id as the BullMQ `jobId`, closing the publish/ack ambiguity. The queue carries job identifiers only; every consumer claims and transitions the PostgreSQL job row idempotently before doing work.
 - **External-call idempotency**: before any paid external submission (fal.ai, Conversion Engine), the worker persists a provider request key on the job row; an ambiguous timeout is reconciled against the provider (or the recorded key) rather than blindly resubmitted, so at-least-once delivery cannot duplicate provider cost.
 - **Deletion/retention data map**: every table and bucket declares its Account Deletion Finalization behavior — erase, pseudonymize, or retain as bounded tombstone (commerce, moderation, security, idempotency evidence per CONTEXT.md). Backups age out on their own schedule; finalization does not rewrite them.
+- **Operator bulk-removal receipts**: `admin.bulk_pattern_removals` retains the operator, canonical request, and successful result for the same lifetime as the immutable Operator Audit Log, then is removed with that audit archive at service retirement. It contains no Registered Account or Guest Installation Identity, so Account Deletion Finalization leaves it unchanged.
 
 ## 5. Mobile client architecture
 

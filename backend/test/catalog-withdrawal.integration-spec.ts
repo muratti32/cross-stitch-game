@@ -179,6 +179,34 @@ describe('Catalog Withdrawal', () => {
     expect({ auditCount, receiptCount }).toEqual({ auditCount: '2', receiptCount: '1' });
   });
 
+  it('persists one canonical result when UUID case and selection order change on retry', async () => {
+    const firstId = await createPattern(null);
+    const secondId = await createPattern(null);
+    const batchId = randomUUID();
+
+    const original = await adminCatalog.bulkRemovePatterns(
+      operatorId,
+      [secondId.toUpperCase(), firstId.toUpperCase()],
+      'Confirmed canonical removal',
+      batchId.toUpperCase(),
+      randomUUID(),
+    );
+    const replay = await adminCatalog.bulkRemovePatterns(
+      operatorId,
+      [firstId, secondId],
+      '  Confirmed canonical removal  ',
+      batchId,
+      randomUUID(),
+    );
+
+    expect(replay).toEqual(original);
+    expect(original).toEqual({
+      batchId,
+      patternIds: [firstId, secondId].sort(),
+      removedCount: 2,
+    });
+  });
+
   it('rejects a persisted batch payload mismatch without mutating the new selection', async () => {
     const removedId = await createPattern(null);
     const untouchedId = await createPattern(null);

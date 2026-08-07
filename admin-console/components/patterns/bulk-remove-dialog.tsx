@@ -13,7 +13,11 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useBulkRemovePatterns } from '@/hooks/use-patterns';
-import type { AdminPatternListItem, BulkRemovePatternsResponse } from '@/lib/types';
+import type {
+  AdminPatternListItem,
+  BulkRemovePatternsInput,
+  BulkRemovePatternsResponse,
+} from '@/lib/types';
 
 import {
   bulkRemoveSubmissionFailed,
@@ -32,11 +36,8 @@ export function BulkRemoveDialog({
   onSuccess: (result: BulkRemovePatternsResponse) => void;
 }) {
   const [dialogState, setDialogState] = useState(initialBulkRemoveDialogState);
-  const [confirmedRequest, setConfirmedRequest] = useState<{
-    batchId: string;
-    patternIds: string[];
-    reason: string;
-  } | null>(null);
+  const [confirmedRequest, setConfirmedRequest] =
+    useState<BulkRemovePatternsInput | null>(null);
   const mutation = useBulkRemovePatterns();
   const trimmedReason = dialogState.reason.trim();
   const reasonValid = trimmedReason.length >= 10 && trimmedReason.length <= 2000;

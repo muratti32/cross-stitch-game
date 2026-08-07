@@ -204,11 +204,12 @@ export class AdminCatalogService {
     requestId: string | null,
   ): Promise<{ batchId: string; patternIds: string[]; removedCount: number }> {
     const trimmedReason = reason.trim();
-    const canonicalPatternIds = [...patternIds].sort();
+    const canonicalBatchId = batchId.toLowerCase();
+    const canonicalPatternIds = patternIds.map((id) => id.toLowerCase()).sort();
     if (patternIds.length < 1 || patternIds.length > 20) {
       throw new BadRequestException('Bulk removal requires between 1 and 20 Pattern IDs');
     }
-    if (new Set(patternIds).size !== patternIds.length) {
+    if (new Set(canonicalPatternIds).size !== canonicalPatternIds.length) {
       throw new BadRequestException('Bulk removal Pattern IDs must be unique');
     }
     if (trimmedReason.length < 10 || trimmedReason.length > 2000) {
@@ -217,10 +218,13 @@ export class AdminCatalogService {
 
     return this.dataSource.transaction(async (manager) => {
       await manager.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [
-        `${operatorAccountId}:${batchId}`,
+        `${operatorAccountId}:${canonicalBatchId}`,
       ]);
       const receiptRepository = manager.getRepository(BulkPatternRemovalEntity);
-      const receipt = await receiptRepository.findOneBy({ batchId, operatorAccountId });
+      const receipt = await receiptRepository.findOneBy({
+        batchId: canonicalBatchId,
+        operatorAccountId,
+      });
       if (receipt !== null) {
         if (
           receipt.reason !== trimmedReason
@@ -239,7 +243,7 @@ export class AdminCatalogService {
       const patterns = await patternRepository
         .createQueryBuilder('pattern')
         .setLock('pessimistic_write')
-        .where('pattern.id IN (:...patternIds)', { patternIds })
+        .where('pattern.id IN (:...patternIds)', { patternIds: canonicalPatternIds })
         .andWhere('pattern.visibility = :visibility', { visibility: 'catalog' })
         .getMany();
 
@@ -247,7 +251,7 @@ export class AdminCatalogService {
         throw new BadRequestException('One or more selected Patterns were not found');
       }
       const byId = new Map(patterns.map((pattern) => [pattern.id, pattern]));
-      const orderedPatterns = patternIds.map((id) => byId.get(id)!);
+      const orderedPatterns = canonicalPatternIds.map((id) => byId.get(id)!);
       for (const pattern of orderedPatterns) {
         if (pattern.creatorProfileId !== null) {
           throw new BadRequestException(`Pattern ${pattern.id} is a Community Pattern and is not eligible for bulk removal`);
@@ -273,7 +277,7 @@ export class AdminCatalogService {
         order: { position: 'ASC' },
         relations: ['pattern'],
       });
-      const selectedIds = new Set(patternIds);
+      const selectedIds = new Set(canonicalPatternIds);
       const remainingPicks = existingPicks.filter((pick) => !selectedIds.has(pick.patternId));
       const staffPicksBefore = this.formatStaffPicks(existingPicks);
       await this.writeStaffPickOrder(manager, remainingPicks.map((pick) => pick.patternId));
@@ -284,8 +288,8 @@ export class AdminCatalogService {
       for (const pattern of orderedPatterns) {
         await this.auditLog.record(manager, {
           action: 'pattern.bulk_remove',
-          after: { batchId, pattern: this.formatListItem(pattern), reason: trimmedReason },
-          before: { batchId, pattern: beforeById.get(pattern.id), reason: trimmedReason },
+          after: { batchId: canonicalBatchId, pattern: this.formatListItem(pattern), reason: trimmedReason },
+          before: { batchId: canonicalBatchId, pattern: beforeById.get(pattern.id), reason: trimmedReason },
           operatorAccountId,
           outcome: 'success',
           requestId,
@@ -296,8 +300,8 @@ export class AdminCatalogService {
 
       await this.auditLog.record(manager, {
         action: 'staffpick.bulk_remove_compact',
-        after: { batchId, picks: staffPicksAfter, reason: trimmedReason },
-        before: { batchId, picks: staffPicksBefore, reason: trimmedReason },
+        after: { batchId: canonicalBatchId, picks: staffPicksAfter, reason: trimmedReason },
+        before: { batchId: canonicalBatchId, picks: staffPicksBefore, reason: trimmedReason },
         operatorAccountId,
         outcome: 'success',
         requestId,
@@ -306,7 +310,7 @@ export class AdminCatalogService {
       });
 
       const result = {
-        batchId,
+        batchId: canonicalBatchId,
         patternIds: canonicalPatternIds,
         removedCount: orderedPatterns.length,
       };

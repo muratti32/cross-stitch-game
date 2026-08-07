@@ -244,6 +244,36 @@ describe('AdminCatalogService bulk removal', () => {
     expect(auditLog.record).toHaveBeenCalledTimes(2);
   });
 
+  it('canonicalizes UUID case and selection order before binding the replay payload', async () => {
+    const first = pattern({ id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1' });
+    const second = pattern({ id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2' });
+    const { patternSave, service } = setup([first, second]);
+    const uppercaseBatchId = 'CCCCCCCC-CCCC-4CCC-8CCC-CCCCCCCCCCC3';
+
+    const original = await service.bulkRemovePatterns(
+      'operator-id',
+      [second.id.toUpperCase(), first.id.toUpperCase()],
+      'Confirmed policy removal',
+      uppercaseBatchId,
+      'request-id',
+    );
+    const replay = await service.bulkRemovePatterns(
+      'operator-id',
+      [first.id, second.id],
+      'Confirmed policy removal',
+      uppercaseBatchId.toLowerCase(),
+      'retry-request-id',
+    );
+
+    expect(original).toEqual({
+      batchId: uppercaseBatchId.toLowerCase(),
+      patternIds: [first.id, second.id],
+      removedCount: 2,
+    });
+    expect(replay).toEqual(original);
+    expect(patternSave).toHaveBeenCalledTimes(1);
+  });
+
   it('rejects a reused batch ID with a different normalized payload without mutation', async () => {
     const first = pattern();
     const second = pattern({ id: '00000000-0000-4000-8000-000000000002' });
