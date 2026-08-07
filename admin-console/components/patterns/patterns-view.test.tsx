@@ -39,7 +39,7 @@ describe('PatternsView bulk removal wiring', () => {
       isError: false,
       isPending: false,
     }));
-    mocks.bulkRemove.mockResolvedValue({ batchId: 'batch', removedCount: 1 });
+    mocks.bulkRemove.mockResolvedValue({ batchId: 'batch', patternIds: ['fox'], removedCount: 1 });
     const user = userEvent.setup();
     render(<PatternsView />);
 

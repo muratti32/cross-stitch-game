@@ -148,8 +148,20 @@ describe('AdminCatalogService bulk removal', () => {
       find: jest.fn().mockResolvedValue(picks),
       save: staffSave,
     };
+    let receipt: Record<string, unknown> | null = null;
+    const receiptRepository = {
+      create: jest.fn((value) => value),
+      findOneBy: jest.fn(() => Promise.resolve(receipt)),
+      save: jest.fn((value) => {
+        receipt = value;
+        return Promise.resolve(value);
+      }),
+    };
     const manager = {
-      getRepository: jest.fn((entity) => entity.name === 'PatternEntity' ? patternRepository : staffRepository),
+      getRepository: jest.fn((entity) => entity.name === 'PatternEntity'
+        ? patternRepository
+        : entity.name === 'BulkPatternRemovalEntity' ? receiptRepository : staffRepository),
+      query: jest.fn().mockResolvedValue(undefined),
     };
     const dataSource = {
       transaction: jest.fn((callback) => callback(manager)),
@@ -161,7 +173,7 @@ describe('AdminCatalogService bulk removal', () => {
       auditLog as never,
       {} as never, {} as never, {} as never, {} as never, {} as never,
     );
-    return { auditLog, deleteExecute, patternSave, service, staffSave };
+    return { auditLog, deleteExecute, patternSave, receiptRepository, service, staffSave };
   }
 
   it('removes every eligible Pattern, audits the shared batch, and compacts Staff Picks', async () => {
@@ -181,7 +193,11 @@ describe('AdminCatalogService bulk removal', () => {
     await expect(service.bulkRemovePatterns(
       'operator-id', [first.id, second.id], 'Confirmed policy removal',
       '00000000-0000-4000-8000-000000000099', 'request-id',
-    )).resolves.toEqual({ batchId: '00000000-0000-4000-8000-000000000099', removedCount: 2 });
+    )).resolves.toEqual({
+      batchId: '00000000-0000-4000-8000-000000000099',
+      patternIds: [first.id, second.id],
+      removedCount: 2,
+    });
 
     expect(patternSave).toHaveBeenCalledWith([first, second]);
     expect(first.status).toBe('removed');
@@ -209,6 +225,56 @@ describe('AdminCatalogService bulk removal', () => {
       }),
       targetType: 'staff_picks',
     }));
+  });
+
+  it('returns the original successful result for an exact replay without repeated writes', async () => {
+    const first = pattern();
+    const { auditLog, deleteExecute, patternSave, service } = setup([first]);
+    const invoke = () => service.bulkRemovePatterns(
+      'operator-id', [first.id], '  Confirmed policy removal  ',
+      '00000000-0000-4000-8000-000000000099', 'request-id',
+    );
+
+    const original = await invoke();
+    const replay = await invoke();
+
+    expect(replay).toEqual(original);
+    expect(patternSave).toHaveBeenCalledTimes(1);
+    expect(deleteExecute).toHaveBeenCalledTimes(1);
+    expect(auditLog.record).toHaveBeenCalledTimes(2);
+  });
+
+  it('rejects a reused batch ID with a different normalized payload without mutation', async () => {
+    const first = pattern();
+    const second = pattern({ id: '00000000-0000-4000-8000-000000000002' });
+    const { auditLog, patternSave, service } = setup([first]);
+    await service.bulkRemovePatterns(
+      'operator-id', [first.id], 'Confirmed policy removal',
+      '00000000-0000-4000-8000-000000000099', 'request-id',
+    );
+
+    await expect(service.bulkRemovePatterns(
+      'operator-id', [second.id], 'Confirmed policy removal',
+      '00000000-0000-4000-8000-000000000099', 'retry-request',
+    )).rejects.toThrow('batch ID was already used with a different request');
+    expect(patternSave).toHaveBeenCalledTimes(1);
+    expect(auditLog.record).toHaveBeenCalledTimes(2);
+  });
+
+  it('rejects a reused batch ID with a different normalized reason without mutation', async () => {
+    const first = pattern();
+    const { auditLog, patternSave, service } = setup([first]);
+    await service.bulkRemovePatterns(
+      'operator-id', [first.id], 'Confirmed policy removal',
+      '00000000-0000-4000-8000-000000000099', 'request-id',
+    );
+
+    await expect(service.bulkRemovePatterns(
+      'operator-id', [first.id], 'Confirmed legal removal',
+      '00000000-0000-4000-8000-000000000099', 'retry-request',
+    )).rejects.toThrow('batch ID was already used with a different request');
+    expect(patternSave).toHaveBeenCalledTimes(1);
+    expect(auditLog.record).toHaveBeenCalledTimes(2);
   });
 
   it.each([

@@ -52,6 +52,7 @@ export interface BulkRemovePatternsInput {
 
 export interface BulkRemovePatternsResponse {
   batchId: string;
+  patternIds: string[];
   removedCount: number;
 }
 

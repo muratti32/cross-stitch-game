@@ -46,6 +46,7 @@ import {
   OperatorAuditLogEntity,
   OperatorSecurityEventEntity,
   OfficialPatternDraftEntity,
+  BulkPatternRemovalEntity,
 } from '../admin/entities';
 import {
   CoinBalanceEntity,
@@ -157,6 +158,7 @@ import { CreatePremiumPurchaseReconciliations1788480000000 } from './migrations/
 import { CreateCoinPackPurchaseReconciliations1788566400000 } from './migrations/1788566400000-CreateCoinPackPurchaseReconciliations';
 import { CreateAiCreditPackPurchaseReconciliations1788652800000 } from './migrations/1788652800000-CreateAiCreditPackPurchaseReconciliations';
 import { AddCommerceCatalogIncompleteGameplayEvent1788739200000 } from './migrations/1788739200000-AddCommerceCatalogIncompleteGameplayEvent';
+import { CreateBulkPatternRemovals1788825600000 } from './migrations/1788825600000-CreateBulkPatternRemovals';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -192,6 +194,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       OperatorAuditLogEntity,
       OperatorSecurityEventEntity,
       OfficialPatternDraftEntity,
+      BulkPatternRemovalEntity,
       CoinBalanceEntity,
       CoinLedgerEntryEntity,
       RewardDayPoolEntity,
@@ -299,6 +302,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateCoinPackPurchaseReconciliations1788566400000,
       CreateAiCreditPackPurchaseReconciliations1788652800000,
       AddCommerceCatalogIncompleteGameplayEvent1788739200000,
+      CreateBulkPatternRemovals1788825600000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

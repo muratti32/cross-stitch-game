@@ -13,6 +13,7 @@ import {
 } from '../catalog/entities';
 import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { MAX_TAG_CODES_PER_PATTERN } from './admin.constants';
+import { BulkPatternRemovalEntity } from './entities';
 import { OperatorAuditLogService } from './operator-audit-log.service';
 
 export interface AdminPatternListItem {
@@ -201,8 +202,9 @@ export class AdminCatalogService {
     reason: string,
     batchId: string,
     requestId: string | null,
-  ): Promise<{ batchId: string; removedCount: number }> {
+  ): Promise<{ batchId: string; patternIds: string[]; removedCount: number }> {
     const trimmedReason = reason.trim();
+    const canonicalPatternIds = [...patternIds].sort();
     if (patternIds.length < 1 || patternIds.length > 20) {
       throw new BadRequestException('Bulk removal requires between 1 and 20 Pattern IDs');
     }
@@ -214,6 +216,25 @@ export class AdminCatalogService {
     }
 
     return this.dataSource.transaction(async (manager) => {
+      await manager.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [
+        `${operatorAccountId}:${batchId}`,
+      ]);
+      const receiptRepository = manager.getRepository(BulkPatternRemovalEntity);
+      const receipt = await receiptRepository.findOneBy({ batchId, operatorAccountId });
+      if (receipt !== null) {
+        if (
+          receipt.reason !== trimmedReason
+          || JSON.stringify(receipt.patternIds) !== JSON.stringify(canonicalPatternIds)
+        ) {
+          throw new BadRequestException('Bulk removal batch ID was already used with a different request');
+        }
+        return {
+          batchId: receipt.batchId,
+          patternIds: receipt.patternIds,
+          removedCount: receipt.removedCount,
+        };
+      }
+
       const patternRepository = manager.getRepository(PatternEntity);
       const patterns = await patternRepository
         .createQueryBuilder('pattern')
@@ -245,8 +266,10 @@ export class AdminCatalogService {
       await patternRepository.save(orderedPatterns);
 
       const staffPickRepository = manager.getRepository(StaffPickEntity);
+      await manager.query(
+        'SELECT pattern_id FROM catalog.staff_picks ORDER BY position FOR UPDATE',
+      );
       const existingPicks = await staffPickRepository.find({
-        lock: { mode: 'pessimistic_write' },
         order: { position: 'ASC' },
         relations: ['pattern'],
       });
@@ -282,7 +305,17 @@ export class AdminCatalogService {
         targetType: 'staff_picks',
       });
 
-      return { batchId, removedCount: orderedPatterns.length };
+      const result = {
+        batchId,
+        patternIds: canonicalPatternIds,
+        removedCount: orderedPatterns.length,
+      };
+      await receiptRepository.save(receiptRepository.create({
+        ...result,
+        operatorAccountId,
+        reason: trimmedReason,
+      }));
+      return result;
     });
   }
 

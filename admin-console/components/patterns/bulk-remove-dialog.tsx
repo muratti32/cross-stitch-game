@@ -32,18 +32,26 @@ export function BulkRemoveDialog({
   onSuccess: (result: BulkRemovePatternsResponse) => void;
 }) {
   const [dialogState, setDialogState] = useState(initialBulkRemoveDialogState);
+  const [confirmedRequest, setConfirmedRequest] = useState<{
+    batchId: string;
+    patternIds: string[];
+    reason: string;
+  } | null>(null);
   const mutation = useBulkRemovePatterns();
   const trimmedReason = dialogState.reason.trim();
   const reasonValid = trimmedReason.length >= 10 && trimmedReason.length <= 2000;
 
   async function submit(): Promise<void> {
+    const request = confirmedRequest ?? {
+      batchId: crypto.randomUUID(),
+      patternIds: patterns.map((pattern) => pattern.id),
+      reason: trimmedReason,
+    };
+    setConfirmedRequest(request);
     try {
-      const result = await mutation.mutateAsync({
-        batchId: crypto.randomUUID(),
-        patternIds: patterns.map((pattern) => pattern.id),
-        reason: trimmedReason,
-      });
+      const result = await mutation.mutateAsync(request);
       setDialogState(initialBulkRemoveDialogState());
+      setConfirmedRequest(null);
       onSuccess(result);
       onOpenChange(false);
     } catch (error) {
@@ -52,7 +60,12 @@ export function BulkRemoveDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={(next) => !mutation.isPending && onOpenChange(next)}>
+    <Dialog open={open} onOpenChange={(next) => {
+      if (!mutation.isPending) {
+        if (!next) setConfirmedRequest(null);
+        onOpenChange(next);
+      }
+    }}>
       <DialogContent className="sm:max-w-lg" showCloseButton={!mutation.isPending}>
         <DialogHeader>
           <DialogTitle>Remove {patterns.length} Official Patterns?</DialogTitle>
@@ -78,7 +91,7 @@ export function BulkRemoveDialog({
             minLength={10}
             maxLength={2000}
             rows={4}
-            disabled={mutation.isPending}
+            disabled={mutation.isPending || confirmedRequest !== null}
             aria-describedby="bulk-remove-reason-help"
           />
         </label>
@@ -89,7 +102,10 @@ export function BulkRemoveDialog({
           <p role="alert" className="text-sm text-destructive">{dialogState.error}</p>
         )}
         <DialogFooter>
-          <Button variant="outline" disabled={mutation.isPending} onClick={() => onOpenChange(false)}>
+          <Button variant="outline" disabled={mutation.isPending} onClick={() => {
+            setConfirmedRequest(null);
+            onOpenChange(false);
+          }}>
             Cancel
           </Button>
           <Button variant="destructive" disabled={!reasonValid || mutation.isPending} onClick={() => void submit()}>

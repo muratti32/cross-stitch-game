@@ -146,6 +146,63 @@ describe('Catalog Withdrawal', () => {
     expect(count).toBe('0');
   });
 
+  it('serializes concurrent retries and preserves the first successful bulk-removal result', async () => {
+    const firstId = await createPattern(null);
+    const secondId = await createPattern(null);
+    const batchId = randomUUID();
+    const invoke = () => adminCatalog.bulkRemovePatterns(
+      operatorId,
+      [secondId, firstId],
+      '  Confirmed concurrent removal  ',
+      batchId,
+      randomUUID(),
+    );
+
+    const [first, retry] = await Promise.all([invoke(), invoke()]);
+
+    expect(retry).toEqual(first);
+    expect(first).toEqual({
+      batchId,
+      patternIds: [firstId, secondId].sort(),
+      removedCount: 2,
+    });
+    const [{ auditCount, receiptCount }] = await dataSource.query<
+      { auditCount: string; receiptCount: string }[]
+    >(
+      `SELECT
+        (SELECT COUNT(*)::text FROM admin.operator_audit_log
+         WHERE action = 'pattern.bulk_remove' AND after->>'batchId' = $1) AS "auditCount",
+        (SELECT COUNT(*)::text FROM admin.bulk_pattern_removals
+         WHERE operator_account_id = $2::uuid AND batch_id = $1::uuid) AS "receiptCount"`,
+      [batchId, operatorId],
+    );
+    expect({ auditCount, receiptCount }).toEqual({ auditCount: '2', receiptCount: '1' });
+  });
+
+  it('rejects a persisted batch payload mismatch without mutating the new selection', async () => {
+    const removedId = await createPattern(null);
+    const untouchedId = await createPattern(null);
+    const batchId = randomUUID();
+    await adminCatalog.bulkRemovePatterns(
+      operatorId, [removedId], 'Confirmed persisted removal', batchId, randomUUID(),
+    );
+
+    await expect(adminCatalog.bulkRemovePatterns(
+      operatorId, [untouchedId], 'Confirmed persisted removal', batchId, randomUUID(),
+    )).rejects.toThrow('batch ID was already used with a different request');
+    await expect(adminCatalog.bulkRemovePatterns(
+      operatorId, [removedId], 'Confirmed different reason', batchId, randomUUID(),
+    )).rejects.toThrow('batch ID was already used with a different request');
+
+    expect(await patternStatus(untouchedId)).toBe('available');
+    const [{ count }] = await dataSource.query<{ count: string }[]>(
+      `SELECT COUNT(*)::text AS count FROM admin.operator_audit_log
+       WHERE action = 'pattern.bulk_remove' AND after->>'batchId' = $1`,
+      [batchId],
+    );
+    expect(count).toBe('1');
+  });
+
   it('closes pending revisions and active appeals without publication and audits every transition', async () => {
     const pendingPatternId = await createPattern(profileId);
     const pendingRevisionId = await createRevision(pendingPatternId, 'pending');

@@ -21,7 +21,7 @@ describe('useBulkRemovePatterns', () => {
   it('invalidates pattern list, dashboard counts, and Staff Picks after success', async () => {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const invalidate = vi.spyOn(queryClient, 'invalidateQueries');
-    mocks.post.mockResolvedValueOnce({ batchId: 'batch', removedCount: 2 });
+    mocks.post.mockResolvedValueOnce({ batchId: 'batch', patternIds: ['fox', 'owl'], removedCount: 2 });
     const wrapper = ({ children }: { children: ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );

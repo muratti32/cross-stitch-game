@@ -41,9 +41,47 @@ describe('BulkRemoveDialog', () => {
     expect(onOpenChange).not.toHaveBeenCalledWith(false);
   });
 
+  it('reuses the confirmation batch ID after an ambiguous failure', async () => {
+    const user = userEvent.setup();
+    mocks.mutateAsync
+      .mockRejectedValueOnce(new Error('Network response was lost'))
+      .mockResolvedValueOnce({ batchId: 'server-batch', patternIds: ['fox'], removedCount: 1 });
+    render(<BulkRemoveDialog patterns={selected} open onOpenChange={vi.fn()} onSuccess={vi.fn()} />);
+
+    await user.type(screen.getByRole('textbox', { name: /Removal reason/ }), 'Confirmed policy removal');
+    await user.click(screen.getByRole('button', { name: 'Remove selected' }));
+    await screen.findByRole('alert');
+    expect((screen.getByRole('textbox', { name: /Removal reason/ }) as HTMLTextAreaElement).disabled)
+      .toBe(true);
+    await user.click(screen.getByRole('button', { name: 'Remove selected' }));
+
+    await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(2));
+    expect(mocks.mutateAsync.mock.calls[1][0]).toEqual(mocks.mutateAsync.mock.calls[0][0]);
+  });
+
+  it('creates a new batch only after a cancelled confirmation is confirmed again', async () => {
+    const user = userEvent.setup();
+    mocks.mutateAsync.mockRejectedValue(new Error('Network response was lost'));
+    const onOpenChange = vi.fn();
+    const view = render(
+      <BulkRemoveDialog patterns={selected} open onOpenChange={onOpenChange} onSuccess={vi.fn()} />,
+    );
+    await user.type(screen.getByRole('textbox', { name: /Removal reason/ }), 'Confirmed policy removal');
+    await user.click(screen.getByRole('button', { name: 'Remove selected' }));
+    await screen.findByRole('alert');
+    const firstBatchId = mocks.mutateAsync.mock.calls[0][0].batchId;
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    view.rerender(<BulkRemoveDialog patterns={selected} open={false} onOpenChange={onOpenChange} onSuccess={vi.fn()} />);
+    view.rerender(<BulkRemoveDialog patterns={selected} open onOpenChange={onOpenChange} onSuccess={vi.fn()} />);
+    await user.click(screen.getByRole('button', { name: 'Remove selected' }));
+    await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalledTimes(2));
+    expect(mocks.mutateAsync.mock.calls[1][0].batchId).not.toBe(firstBatchId);
+  });
+
   it('closes on success, returns the removed count, and resets the reason for reopen', async () => {
     const user = userEvent.setup();
-    mocks.mutateAsync.mockResolvedValueOnce({ batchId: 'batch', removedCount: 1 });
+    mocks.mutateAsync.mockResolvedValueOnce({ batchId: 'batch', patternIds: ['fox'], removedCount: 1 });
     const onOpenChange = vi.fn();
     const onSuccess = vi.fn();
     const { rerender } = render(
@@ -52,7 +90,7 @@ describe('BulkRemoveDialog', () => {
     await user.type(screen.getByRole('textbox', { name: /Removal reason/ }), 'Confirmed policy removal');
     await user.click(screen.getByRole('button', { name: 'Remove selected' }));
 
-    await waitFor(() => expect(onSuccess).toHaveBeenCalledWith({ batchId: 'batch', removedCount: 1 }));
+    await waitFor(() => expect(onSuccess).toHaveBeenCalledWith({ batchId: 'batch', patternIds: ['fox'], removedCount: 1 }));
     expect(onOpenChange).toHaveBeenCalledWith(false);
     rerender(<BulkRemoveDialog patterns={selected} open onOpenChange={onOpenChange} onSuccess={onSuccess} />);
     expect((screen.getByRole('textbox', { name: /Removal reason/ }) as HTMLTextAreaElement).value).toBe('');
