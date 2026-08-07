@@ -130,6 +130,8 @@ export default function CommerceScreen() {
   const [aiCreditPurchasePending, setAiCreditPurchasePending] = useState<AiCreditPackReconciliation | null>(null);
   const [restoringPurchases, setRestoringPurchases] = useState(false);
   const viewedSourceRef = useRef<string | null>(null);
+  const pendingPremiumPurchaseRef = useRef<CommerceProduct | null>(null);
+  const premiumPurchaseInFlightRef = useRef(false);
   const reconciliationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reconciliationRef = useRef<PremiumReconciliation | null>(null);
   const reconciliationRunnerRef = useRef<(attempt: PremiumReconciliation) => Promise<void>>(
@@ -685,6 +687,33 @@ export default function CommerceScreen() {
     }
   }, [accountId, beginAiCreditPackReconciliation, beginCoinPackReconciliation, beginPremiumReconciliation]);
 
+  const confirmPremiumPurchase = useCallback((product: CommerceProduct) => {
+    if (premiumPurchaseInFlightRef.current) return;
+    premiumPurchaseInFlightRef.current = true;
+
+    // React Native only emits Modal.onDismiss on iOS. Wait for that callback
+    // there so RevenueCat's Test Store UIAlertController is not presented from
+    // the modal view controller while its fade dismissal is still in flight.
+    if (Platform.OS !== 'ios') {
+      void purchase(product).finally(() => {
+        premiumPurchaseInFlightRef.current = false;
+      });
+      return;
+    }
+
+    pendingPremiumPurchaseRef.current = product;
+    setConfirmingPremium(null);
+  }, [purchase]);
+
+  const handlePremiumConfirmationDismiss = useCallback(() => {
+    const product = pendingPremiumPurchaseRef.current;
+    if (product === null) return;
+    pendingPremiumPurchaseRef.current = null;
+    void purchase(product).finally(() => {
+      premiumPurchaseInFlightRef.current = false;
+    });
+  }, [purchase]);
+
   const attemptPurchase = useCallback((product: CommerceProduct) => {
     void captureGameplayEvent('commerce_product_selected', {
       product_kind: product.productKind,
@@ -1160,12 +1189,13 @@ export default function CommerceScreen() {
         onPurchase={attemptPurchase}
       />
       <PremiumConfirmation
+        onDismiss={handlePremiumConfirmationDismiss}
         product={confirmingPremium}
         trialOffer={confirmingPremium === null
           ? null
           : premiumTrialOffer(confirmingPremium, trialEligibleKeys)}
         onCancel={() => setConfirmingPremium(null)}
-        onConfirm={(product) => void purchase(product)}
+        onConfirm={confirmPremiumPurchase}
       />
     </>
   );
@@ -1202,16 +1232,20 @@ function PremiumConfirmation({
   trialOffer,
   onCancel,
   onConfirm,
+  onDismiss,
 }: {
   product: CommerceProduct | null;
   trialOffer: string | null;
   onCancel: () => void;
   onConfirm: (product: CommerceProduct) => void;
+  onDismiss: () => void;
 }) {
   return (
     <Modal
       animationType="fade"
+      onDismiss={onDismiss}
       onRequestClose={onCancel}
+      testID="premium-confirmation-modal"
       transparent
       visible={product !== null}
     >

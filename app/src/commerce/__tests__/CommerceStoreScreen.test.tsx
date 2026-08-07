@@ -447,6 +447,14 @@ it('requires confirmation and treats store cancellation as a non-error', async (
     await flushPromises();
   });
 
+  expect(mockPurchasePackage).not.toHaveBeenCalled();
+  expect(mockCaptureGameplayEvent).not.toHaveBeenCalledWith(
+    'purchase_started',
+    expect.anything(),
+  );
+
+  await dismissPremiumConfirmation();
+
   expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_started', {
     product_kind: 'premium_membership',
     product_key: 'premium_annual',
@@ -456,6 +464,25 @@ it('requires confirmation and treats store cancellation as a non-error', async (
     product_key: 'premium_annual',
   });
   expect(allText(renderer!.root)).not.toContain('Purchase Reconciliation Pending');
+});
+
+it('does not wait for the iOS-only modal dismissal callback on Android', async () => {
+  Object.defineProperty(Platform, 'OS', { configurable: true, value: 'android' });
+  try {
+    mockIdentity = { accountId: 'account_80', isAccount: true };
+    mockPurchasePackage.mockRejectedValue({ userCancelled: true });
+    await renderScreen();
+
+    await act(async () => pressByText(renderer!.root, 'Choose Annual'));
+    await act(async () => {
+      pressByText(renderer!.root, 'Confirm Annual');
+      await flushPromises();
+    });
+
+    expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+  } finally {
+    Object.defineProperty(Platform, 'OS', { configurable: true, value: 'ios' });
+  }
 });
 
 it('stays pending with a Support Reference until the backend verifies membership', async () => {
@@ -1275,6 +1302,16 @@ async function confirmAnnualPurchase(): Promise<void> {
   await act(async () => pressByText(renderer!.root, 'Choose Annual'));
   await act(async () => {
     pressByText(renderer!.root, 'Confirm Annual');
+    await flushPromises();
+  });
+  await dismissPremiumConfirmation();
+}
+
+async function dismissPremiumConfirmation(): Promise<void> {
+  await act(async () => {
+    renderer!.root
+      .findByProps({ testID: 'premium-confirmation-modal' })
+      .props.onDismiss();
     await flushPromises();
   });
 }
