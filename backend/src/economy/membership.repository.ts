@@ -106,14 +106,17 @@ export class MembershipRepository {
       await manager.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [
         `${event.environment}:${event.providerTransactionId}`,
       ]);
+      // Every recorded row for one provider transaction must agree on the
+      // owner, so ask for all of them rather than an arbitrary single row: a
+      // partially rebound transaction would otherwise accept or reject the
+      // same claim depending on which row Postgres happened to return.
       const ownerRows = await manager.query<readonly { account_id: string }[]>(
-        `SELECT account_id
+        `SELECT DISTINCT account_id
          FROM economy.membership_events
-         WHERE environment = $1 AND provider_transaction_id = $2
-         LIMIT 1`,
+         WHERE environment = $1 AND provider_transaction_id = $2`,
         [event.environment, event.providerTransactionId],
       );
-      if (ownerRows[0] && ownerRows[0].account_id !== event.accountId) {
+      if (ownerRows.some((row) => row.account_id !== event.accountId)) {
         return {
           recorded: false,
           rejectedOtherAccount: true,
@@ -223,21 +226,32 @@ export class MembershipRepository {
         ]);
       }
 
+      // Move by transaction rather than by source account. A transaction whose
+      // rows are spread over several previous identities has to end up whole on
+      // the destination, otherwise the ownership guard keeps seeing a conflict.
+      const transactionIds = transactionRows.map((row) => row.provider_transaction_id);
+      if (transactionIds.length === 0) {
+        return { eventsMoved: 0, periodsMoved: 0 };
+      }
       const movedEvents = await manager.query<readonly { provider_event_id: string }[]>(
         `UPDATE economy.membership_events
          SET account_id = $3
-         WHERE environment = $1 AND account_id = ANY($2::uuid[])
+         WHERE environment = $1
+           AND provider_transaction_id = ANY($2::varchar[])
+           AND account_id <> $3
          RETURNING provider_event_id`,
-        [input.environment, [...input.fromAccountIds], input.toAccountId],
+        [input.environment, transactionIds, input.toAccountId],
       );
       const movedPeriods = await manager.query<
         readonly { provider_transaction_id: string }[]
       >(
         `UPDATE economy.membership_periods
          SET account_id = $3, updated_at = now()
-         WHERE environment = $1 AND account_id = ANY($2::uuid[])
+         WHERE environment = $1
+           AND provider_transaction_id = ANY($2::varchar[])
+           AND account_id <> $3
          RETURNING provider_transaction_id`,
-        [input.environment, [...input.fromAccountIds], input.toAccountId],
+        [input.environment, transactionIds, input.toAccountId],
       );
 
       return {

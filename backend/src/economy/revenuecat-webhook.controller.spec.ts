@@ -1,4 +1,4 @@
-import { UnauthorizedException } from '@nestjs/common';
+import { ServiceUnavailableException, UnauthorizedException } from '@nestjs/common';
 
 import { WebhookDeliveryArchiveService } from '../webhooks';
 import { RevenueCatWebhookController } from './revenuecat-webhook.controller';
@@ -27,5 +27,33 @@ describe('RevenueCatWebhookController', () => {
       }),
     );
     expect(service.handleEvent).not.toHaveBeenCalled();
+  });
+
+  it('asks RevenueCat to redeliver an event whose transaction is owned by another account', async () => {
+    const verifier = { verify: jest.fn() } as unknown as RevenueCatWebhookVerifierService;
+    const service = {
+      handleEvent: jest.fn().mockResolvedValue({
+        handled: true,
+        detail: 'rejected_other_account',
+        duplicate: false,
+      }),
+    } as unknown as RevenueCatWebhookService;
+    const archive = {
+      archive: jest.fn().mockResolvedValue(undefined),
+    } as unknown as WebhookDeliveryArchiveService;
+    const controller = new RevenueCatWebhookController(verifier, service, archive);
+
+    await expect(
+      controller.handle('token', { event: { id: 'event-2', type: 'RENEWAL' } }),
+    ).rejects.toBeInstanceOf(ServiceUnavailableException);
+    expect(archive.archive).toHaveBeenCalledTimes(1);
+    expect(archive.archive).toHaveBeenCalledWith(
+      expect.objectContaining({
+        failureReason: 'rejected_other_account',
+        processingOutcome: 'failed',
+        providerDeliveryId: 'event-2',
+        verificationResult: 'verified',
+      }),
+    );
   });
 });

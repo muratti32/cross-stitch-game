@@ -1,4 +1,12 @@
-import { Body, Controller, Headers, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Headers,
+  HttpCode,
+  HttpStatus,
+  Post,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 
 import { RevenueCatWebhookVerifierService } from './revenuecat-webhook-verifier.service';
 import { RevenueCatWebhookService } from './revenuecat-webhook.service';
@@ -7,9 +15,10 @@ import { WebhookDeliveryArchiveService } from '../webhooks';
 /**
  * RevenueCat Webhook Controller (ADR-0032).
  * Receives webhook notifications from RevenueCat. Authenticates using a shared secret token
- * provided in the Authorization header. Returns HTTP 200 for business-rule outcomes
- * (e.g. unknown account) to prevent retry storms, only throwing 4xx for signature issues
- * or malformed payloads.
+ * provided in the Authorization header. Returns HTTP 200 for settled business-rule
+ * outcomes (e.g. unknown account) to prevent retry storms, throws 4xx for signature
+ * issues or malformed payloads, and throws 503 for the one outcome that a later
+ * delivery can still resolve: a transaction currently owned by another account.
  */
 @Controller('commerce/revenuecat')
 export class RevenueCatWebhookController {
@@ -42,6 +51,25 @@ export class RevenueCatWebhookController {
 
     try {
       const outcome = await this.service.handleEvent(body);
+      // A transaction owned by another account is not necessarily fraud:
+      // RevenueCat delivers a subscription TRANSFER and the events of the
+      // transferred subscription in no fixed order, so an event can arrive
+      // moments before the transfer that makes it legitimate. Answering 200
+      // would drop it for good, so ask for redelivery instead and let the
+      // ownership guard decide again once the transfer has landed.
+      if (outcome.detail === 'rejected_other_account') {
+        await this.archive.archive({
+          failureReason: 'rejected_other_account',
+          payload: revenueCatArchivePayload(body),
+          processingOutcome: 'failed',
+          provider: 'revenuecat',
+          providerDeliveryId,
+          verificationResult: 'verified',
+        });
+        throw new ServiceUnavailableException(
+          'Transaction ownership is unresolved; retry this delivery',
+        );
+      }
       await this.archive.archive({
         payload: revenueCatArchivePayload(body),
         processingOutcome: outcome.duplicate ? 'duplicate_ignored' : 'processed',
@@ -50,6 +78,7 @@ export class RevenueCatWebhookController {
         verificationResult: 'verified',
       });
     } catch (error: unknown) {
+      if (error instanceof ServiceUnavailableException) throw error;
       await this.archive.archive({
         failureReason: errorMessage(error),
         payload: revenueCatArchivePayload(body),

@@ -3849,7 +3849,8 @@ describe('Stitch Wish backend integration', () => {
       });
 
       // Before the transfer the second account claiming the same provider
-      // transaction is a fraud signal, not an entitlement.
+      // transaction earns no entitlement. The delivery is answered 503 rather
+      // than 200 so RevenueCat redelivers it once the transfer has landed.
       await webhook({
         id: `event-${randomUUID()}`,
         type: 'RENEWAL',
@@ -3862,7 +3863,7 @@ describe('Stitch Wish backend integration', () => {
         event_timestamp_ms: now - 60_000,
         purchased_at_ms: now - 120_000,
         expiration_at_ms: now + 365 * 86_400_000,
-      }).expect(200, { status: 'ok' });
+      }).expect(503);
       expect(await membershipOf(next.accessToken)).toMatchObject({ active: false, plan: null });
 
       const transfer = {
