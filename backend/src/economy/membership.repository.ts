@@ -60,6 +60,17 @@ export interface MembershipEventResult {
   creditReversed: number;
 }
 
+export interface MembershipTransferInput {
+  environment: 'sandbox' | 'production';
+  fromAccountIds: readonly string[];
+  toAccountId: string;
+}
+
+export interface MembershipTransferResult {
+  eventsMoved: number;
+  periodsMoved: number;
+}
+
 export interface MembershipStatus {
   active: boolean;
   plan: PremiumPlan | null;
@@ -178,6 +189,60 @@ export class MembershipRepository {
         rejectedOtherAccount: false,
         creditGranted,
         creditReversed,
+      };
+    });
+  }
+
+  /**
+   * Moves every Membership Event and Membership Period recorded for the
+   * previous subscriber identities onto the account RevenueCat transferred the
+   * store subscription to. Ownership is re-anchored rather than duplicated, so
+   * the ownership guard in recordVerifiedEvent keeps rejecting genuine
+   * cross-account claims while a real transfer stops looking like one.
+   */
+  async transferMembership(input: MembershipTransferInput): Promise<MembershipTransferResult> {
+    if (input.fromAccountIds.length === 0) {
+      return { eventsMoved: 0, periodsMoved: 0 };
+    }
+    return this.dataSource.transaction('SERIALIZABLE', async (manager) => {
+      const transactionRows = await manager.query<
+        readonly { provider_transaction_id: string }[]
+      >(
+        `SELECT DISTINCT provider_transaction_id
+         FROM economy.membership_events
+         WHERE environment = $1 AND account_id = ANY($2::uuid[])
+         ORDER BY provider_transaction_id`,
+        [input.environment, [...input.fromAccountIds]],
+      );
+      // Take the same per-transaction locks recordVerifiedEvent takes, in a
+      // stable order, so a transfer and an in-flight event for one of these
+      // transactions cannot interleave (or deadlock) mid-rebind.
+      for (const row of transactionRows) {
+        await manager.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [
+          `${input.environment}:${row.provider_transaction_id}`,
+        ]);
+      }
+
+      const movedEvents = await manager.query<readonly { provider_event_id: string }[]>(
+        `UPDATE economy.membership_events
+         SET account_id = $3
+         WHERE environment = $1 AND account_id = ANY($2::uuid[])
+         RETURNING provider_event_id`,
+        [input.environment, [...input.fromAccountIds], input.toAccountId],
+      );
+      const movedPeriods = await manager.query<
+        readonly { provider_transaction_id: string }[]
+      >(
+        `UPDATE economy.membership_periods
+         SET account_id = $3, updated_at = now()
+         WHERE environment = $1 AND account_id = ANY($2::uuid[])
+         RETURNING provider_transaction_id`,
+        [input.environment, [...input.fromAccountIds], input.toAccountId],
+      );
+
+      return {
+        eventsMoved: movedEvents.length,
+        periodsMoved: movedPeriods.length,
       };
     });
   }

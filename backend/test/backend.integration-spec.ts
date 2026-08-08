@@ -3809,6 +3809,108 @@ describe('Stitch Wish backend integration', () => {
       expect(adAfterClaim).toMatchObject({ granted: false, amount: 0 });
       expect(await ledger.getBalance(principal)).toBe(30);
     });
+
+    it('moves Premium Membership to the account a store subscription is transferred to', async () => {
+      const previous = await newRegisteredAccount();
+      const next = await newRegisteredAccount();
+      const originalTransactionId = `premium-transfer-original-${randomUUID()}`;
+      const transactionId = `premium-transfer-${randomUUID()}`;
+      const now = Date.now();
+      const webhook = (event: Record<string, unknown>) =>
+        request(httpServer)
+          .post('/v1/commerce/revenuecat/webhook')
+          .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+          .send({ event });
+      const membershipOf = async (accessToken: string): Promise<unknown> => {
+        const response = await request(httpServer)
+          .get('/v1/commerce/membership')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .expect(200);
+        return response.body;
+      };
+
+      await webhook({
+        id: `event-${randomUUID()}`,
+        type: 'INITIAL_PURCHASE',
+        app_user_id: previous.accountId,
+        transaction_id: transactionId,
+        original_transaction_id: originalTransactionId,
+        product_id: 'com.avk.stitchwish.premium_annual',
+        environment: 'SANDBOX',
+        period_type: 'NORMAL',
+        event_timestamp_ms: now - 120_000,
+        purchased_at_ms: now - 120_000,
+        expiration_at_ms: now + 365 * 86_400_000,
+      }).expect(200, { status: 'ok' });
+
+      expect(await membershipOf(previous.accessToken)).toMatchObject({
+        active: true,
+        plan: 'annual',
+      });
+
+      // Before the transfer the second account claiming the same provider
+      // transaction is a fraud signal, not an entitlement.
+      await webhook({
+        id: `event-${randomUUID()}`,
+        type: 'RENEWAL',
+        app_user_id: next.accountId,
+        transaction_id: transactionId,
+        original_transaction_id: originalTransactionId,
+        product_id: 'com.avk.stitchwish.premium_annual',
+        environment: 'SANDBOX',
+        period_type: 'NORMAL',
+        event_timestamp_ms: now - 60_000,
+        purchased_at_ms: now - 120_000,
+        expiration_at_ms: now + 365 * 86_400_000,
+      }).expect(200, { status: 'ok' });
+      expect(await membershipOf(next.accessToken)).toMatchObject({ active: false, plan: null });
+
+      const transfer = {
+        id: `event-${randomUUID()}`,
+        type: 'TRANSFER',
+        environment: 'SANDBOX',
+        store: 'APP_STORE',
+        transferred_from: [previous.accountId, `$RCAnonymousID:${randomUUID()}`],
+        transferred_to: [next.accountId],
+        event_timestamp_ms: now - 30_000,
+      };
+      await webhook(transfer).expect(200, { status: 'ok' });
+      // A redelivered transfer must not bounce the entitlement back.
+      await webhook(transfer).expect(200, { status: 'ok' });
+
+      expect(await membershipOf(next.accessToken)).toMatchObject({
+        active: true,
+        plan: 'annual',
+        lifecycle: 'active',
+        themeAccess: true,
+      });
+      expect(await membershipOf(previous.accessToken)).toMatchObject({
+        active: false,
+        plan: null,
+      });
+
+      // Later store events for the transferred subscription now belong to the
+      // new account instead of tripping the ownership guard.
+      await webhook({
+        id: `event-${randomUUID()}`,
+        type: 'RENEWAL',
+        app_user_id: next.accountId,
+        transaction_id: transactionId,
+        original_transaction_id: originalTransactionId,
+        product_id: 'com.avk.stitchwish.premium_annual',
+        environment: 'SANDBOX',
+        period_type: 'NORMAL',
+        event_timestamp_ms: now,
+        purchased_at_ms: now - 120_000,
+        expiration_at_ms: now + 730 * 86_400_000,
+      }).expect(200, { status: 'ok' });
+
+      expect(await membershipOf(next.accessToken)).toMatchObject({
+        active: true,
+        plan: 'annual',
+        lifecycle: 'active',
+      });
+    });
   });
 
   describe('Guest Data Promotion stage 1', () => {

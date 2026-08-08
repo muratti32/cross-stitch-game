@@ -192,6 +192,10 @@ _Avoid_: Store account, receipt ownership transfer, purchase restore grant
 The normalized, provider-verified paid interval of one Premium subscription, identified independently from delivery retries and plan changes. Exactly one Membership Credit Grant may be attached to each paid period. Premium entitlement is derived from the latest verified subscription status across periods, including trial, grace, billing retry, upgrade, downgrade, expiration, and refund; reversing an older period never deactivates a newer valid period.
 _Avoid_: Store webhook, transaction retry, permanent entitlement
 
+**Membership Transfer**:
+The re-anchoring of one subscription's Membership Periods onto the Registered Account the store subscription now belongs to, applied only from a provider-verified transfer event that names both the previous and the new subscriber identity. It moves entitlement state alone: Membership Credit Grants already delivered to the previous account are neither clawed back nor regranted, Commerce Transaction Bindings for one-time purchases stay with the account that received their goods, and an account claiming a subscription's provider transaction without a verified transfer is still refused as a fraud signal.
+_Avoid_: Account merge, entitlement sharing, receipt ownership transfer
+
 **Membership Credit Grant**:
 The AI Credit added to a Registered Account exactly once for each verified paid Membership Period: 3 credits for Weekly, 15 for Monthly after trial conversion and each renewal, and the full 180-credit Annual allowance at purchase or renewal. Delivery retries and plan-change events cannot duplicate it. It joins the same non-expiring balance as purchased AI Credit and remains available after the membership period ends.
 _Avoid_: Free credit, monthly coin, Premium balance

@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 
 import { RegisteredAccountEntity, RegisteredAccountStatus } from '../auth/entities';
 import { CommerceLedgerRepository } from './commerce-ledger.repository';
@@ -38,9 +38,10 @@ export class RevenueCatWebhookService {
 
     const evt = event as Record<string, unknown>;
 
-    // Validate required event fields defensively
-    const requiredFields = ['type', 'app_user_id', 'transaction_id', 'product_id', 'environment'];
-    for (const field of requiredFields) {
+    // Validate the fields every event kind carries. TRANSFER is the exception to
+    // the rest: it describes a subscriber identity move, so it has no
+    // app_user_id, transaction_id or product_id of its own.
+    for (const field of ['type', 'environment']) {
       const value = evt[field];
       if (typeof value !== 'string' || value.trim().length === 0) {
         throw new BadRequestException(`Event is missing or has invalid field: ${field}`);
@@ -48,9 +49,6 @@ export class RevenueCatWebhookService {
     }
 
     const type = evt.type as string;
-    const appUserId = evt.app_user_id as string;
-    const transactionId = evt.transaction_id as string;
-    const productId = evt.product_id as string;
     const rawEnv = evt.environment as string;
 
     if (rawEnv !== 'SANDBOX' && rawEnv !== 'PRODUCTION') {
@@ -58,6 +56,21 @@ export class RevenueCatWebhookService {
     }
 
     const environment = rawEnv.toLowerCase() as 'sandbox' | 'production';
+
+    if (type === 'TRANSFER') {
+      return this.handleTransfer(evt, environment);
+    }
+
+    for (const field of ['app_user_id', 'transaction_id', 'product_id']) {
+      const value = evt[field];
+      if (typeof value !== 'string' || value.trim().length === 0) {
+        throw new BadRequestException(`Event is missing or has invalid field: ${field}`);
+      }
+    }
+
+    const appUserId = evt.app_user_id as string;
+    const transactionId = evt.transaction_id as string;
+    const productId = evt.product_id as string;
 
     const account = await this.accounts.findOne({ where: { id: appUserId } });
     if (!account || account.status !== RegisteredAccountStatus.Active) {
@@ -145,6 +158,78 @@ export class RevenueCatWebhookService {
       duplicate: false,
     };
   }
+
+  /**
+   * A store account keeps its subscription when the player signs in with a
+   * different Registered Account, and RevenueCat reports that as TRANSFER.
+   * Without this, the Membership Periods stay on the previous account and every
+   * later event for the same provider transaction trips the ownership guard in
+   * MembershipRepository.recordVerifiedEvent, so the new account can never see
+   * the entitlement it is paying for (ADR-0032).
+   *
+   * Only Membership state moves. Stitch Coin and AI Credit grants for one-time
+   * purchases were already delivered to the previous account and are not
+   * clawed back, and the Membership Credit Grant for a period keys on the
+   * provider transaction rather than the account, so a transfer never regrants.
+   */
+  private async handleTransfer(
+    event: Record<string, unknown>,
+    environment: 'sandbox' | 'production',
+  ): Promise<RevenueCatWebhookOutcome> {
+    const transferredTo = appUserIdList(event, 'transferred_to');
+    const transferredFrom = appUserIdList(event, 'transferred_from');
+
+    const targets = await this.activeAccountIds(transferredTo);
+    if (targets.length !== 1) {
+      this.logger.warn(
+        `RevenueCat webhook TRANSFER rejected: transferred_to resolves to ${targets.length} active accounts`,
+      );
+      return { handled: false, detail: 'transfer_target_unresolved', duplicate: false };
+    }
+    const toAccountId = targets[0];
+    const fromAccountIds = transferredFrom.filter(
+      (candidate) => UUID_PATTERN.test(candidate) && candidate !== toAccountId,
+    );
+
+    const moved = await this.membership.transferMembership({
+      environment,
+      fromAccountIds,
+      toAccountId,
+    });
+    this.logger.log(
+      `RevenueCat webhook TRANSFER to account ${toAccountId}: events=${moved.eventsMoved} periods=${moved.periodsMoved}`,
+    );
+    return {
+      handled: true,
+      detail: moved.eventsMoved > 0 ? 'transfer_applied' : 'transfer_noop',
+      duplicate: moved.eventsMoved === 0,
+    };
+  }
+
+  private async activeAccountIds(appUserIds: readonly string[]): Promise<string[]> {
+    const candidates = appUserIds.filter((appUserId) => UUID_PATTERN.test(appUserId));
+    if (candidates.length === 0) return [];
+    const accounts = await this.accounts.find({ where: { id: In(candidates) } });
+    return accounts
+      .filter((account) => account.status === RegisteredAccountStatus.Active)
+      .map((account) => account.id);
+  }
+}
+
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * RevenueCat lists both sides of a transfer as app user id arrays that mix
+ * Registered Account identifiers with its own anonymous identifiers.
+ */
+function appUserIdList(event: Record<string, unknown>, field: string): string[] {
+  const value = event[field];
+  if (!Array.isArray(value)) {
+    throw new BadRequestException(`Event is missing or has invalid field: ${field}`);
+  }
+  return value.filter(
+    (entry): entry is string => typeof entry === 'string' && entry.trim().length > 0,
+  );
 }
 
 const MEMBERSHIP_EVENT_TYPES = new Set([
