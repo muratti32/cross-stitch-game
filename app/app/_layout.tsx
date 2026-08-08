@@ -17,6 +17,7 @@ import { flushAnalyticsGameplayEvents } from '../src/sync/analyticsGameplayEvent
 import {
   handleForegroundLifecycle,
   foregroundEntryCoordinator,
+  isApplicationInboundUrl,
   isActiveStitchingSessionRoute,
 } from '../src/navigation/foregroundEntryNavigation';
 
@@ -43,6 +44,7 @@ function RootLayout() {
   const analyticsFlushInFlightRef = useRef(false);
   const analyticsRetryDelayRef = useRef(ANALYTICS_RETRY_INITIAL_MS);
   const analyticsNextRetryAtRef = useRef(0);
+  const initialURLHandledRef = useRef(false);
 
   useEffect(() => {
     if (requiresSignIn && !pathname.endsWith('/sign-in')) {
@@ -133,30 +135,50 @@ function RootLayout() {
   }, [flushAnalytics]);
 
   useEffect(() => {
-    const inboundSubscription = Linking.addEventListener('url', () => {
+    const inboundSubscription = Linking.addEventListener('url', ({ url }) => {
       // Native URL delivery can race AppState active; mark it before the
       // foreground coordinator evaluates its ordinary-return default.
-      foregroundEntryCoordinator.markInboundNavigationPending();
-    });
-    const handleAppStateChange = (nextStatus: AppStateStatus) => {
-      if (nextStatus === 'active') {
-        handleForegroundLifecycle(
-          nextStatus,
-          {
-            requiresSignIn,
-            // A mounted session must remain visible through an ordinary return.
-            activeStitchingSession: isActiveStitchingSessionRoute(segments),
-          },
-          router,
-          pathname,
-          segments,
-        );
-        syncPendingPersonalPatterns().catch(() => undefined);
-        void flushAnalytics();
+      if (isApplicationInboundUrl(url)) {
+        foregroundEntryCoordinator.markInboundNavigationPending();
       }
+    });
+    let disposed = false;
+    const handleActive = () => {
+      if (disposed) return;
+      handleForegroundLifecycle(
+        'active',
+        {
+          requiresSignIn,
+          // A mounted session must remain visible through an ordinary return.
+          activeStitchingSession: isActiveStitchingSessionRoute(segments),
+        },
+        router,
+        pathname,
+        segments,
+      );
+      syncPendingPersonalPatterns().catch(() => undefined);
+      void flushAnalytics();
+    };
+    const handleAppStateChange = (nextStatus: AppStateStatus) => {
+      if (nextStatus === 'active') handleActive();
     };
     const sub = AppState.addEventListener('change', handleAppStateChange);
+
+    // The initial active event may have fired before RootLayout mounted. Wait
+    // for the cold-start URL so an explicit deep link remains authoritative.
+    if (!initialURLHandledRef.current) {
+      initialURLHandledRef.current = true;
+      void Linking.getInitialURL().then((url) => {
+        if (disposed) return;
+        if (url && isApplicationInboundUrl(url)) {
+          foregroundEntryCoordinator.markInboundNavigationPending();
+        }
+        if (AppState.currentState === 'active') handleActive();
+      });
+    }
+
     return () => {
+      disposed = true;
       sub.remove();
       inboundSubscription.remove();
     };

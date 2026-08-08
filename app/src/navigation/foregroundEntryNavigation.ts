@@ -16,6 +16,13 @@ export type ForegroundNavigationRouter = {
 
 export const foregroundEntryCoordinator = new ForegroundEntryCoordinator();
 
+export function isApplicationInboundUrl(url: string): boolean {
+  return (
+    url.startsWith('stitchwish://') ||
+    url.startsWith('https://stitchwish.avkdesign.net/')
+  );
+}
+
 export function isCatalogRoute(segments: readonly string[], pathname = ''): boolean {
   return segments.includes('(catalog)') || pathname.includes('/(catalog)') || pathname.includes('/catalog');
 }

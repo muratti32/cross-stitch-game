@@ -2,6 +2,7 @@ import {
   applyForegroundEntryDecision,
   foregroundEntryCoordinator,
   handleForegroundLifecycle,
+  isApplicationInboundUrl,
   isActiveStitchingSessionRoute,
   withProtectedRoundTrip,
 } from '../foregroundEntryNavigation';
@@ -24,6 +25,12 @@ describe('foreground entry navigation seam', () => {
   it('protects only a concrete stitching session, not the Stitch list', () => {
     expect(isActiveStitchingSessionRoute(['(tabs)', '(play)', 'index'])).toBe(false);
     expect(isActiveStitchingSessionRoute(['(tabs)', '(play)', '[sessionId]'])).toBe(true);
+  });
+
+  it('ignores the Expo Dev Client bootstrap URL as an inbound app route', () => {
+    expect(isApplicationInboundUrl('exp+stitch-wish://expo-development-client/?url=http://localhost:8081')).toBe(false);
+    expect(isApplicationInboundUrl('stitchwish://pattern/123')).toBe(true);
+    expect(isApplicationInboundUrl('https://stitchwish.avkdesign.net/pattern/123')).toBe(true);
   });
 
   it('leaves a nested catalog route and every already-active catalog route untouched', () => {

@@ -4,6 +4,15 @@ import {
 } from '../foregroundEntryPolicy';
 
 describe('foreground entry policy', () => {
+  it('selects Catalog for the first active event of a fresh app process', () => {
+    const coordinator = new ForegroundEntryCoordinator();
+
+    expect(coordinator.onLifecycleChange('active')).toEqual({
+      action: 'select-catalog',
+      reason: 'ordinary-return',
+    });
+  });
+
   it.each([
     ['ordinary return', { ordinaryReturn: true }, 'select-catalog', 'ordinary-return'],
     ['transient inactive', { ordinaryReturn: false }, 'preserve-current-route', 'transient-inactive'],

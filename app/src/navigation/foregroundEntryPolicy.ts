@@ -69,7 +69,7 @@ export function decideForegroundEntry(
   return { action: 'preserve-current-route', reason: 'transient-inactive' };
 }
 
-type SettledLifecycleState = 'active' | 'background';
+type SettledLifecycleState = 'initial' | 'active' | 'background';
 export type LifecycleStatus = 'active' | 'inactive' | 'background' | 'unknown';
 
 export interface LifecycleEntryContext {
@@ -84,7 +84,10 @@ export interface LifecycleEntryContext {
  * must not turn an ordinary return into a Catalog selection.
  */
 export class ForegroundEntryCoordinator {
-  private settledState: SettledLifecycleState = 'active';
+  // Treat the first settled active event as the app's initial entry. React
+  // Native commonly reports `active` before this listener is mounted, so the
+  // root lifecycle bridge also evaluates AppState.currentState on startup.
+  private settledState: SettledLifecycleState = 'initial';
   private protectedRoundTrip: ProtectedRoundTrip | undefined;
   private nextRoundTripToken = 1;
   private pendingInboundNavigation = false;
@@ -128,12 +131,20 @@ export class ForegroundEntryCoordinator {
       this.settledState = 'background';
       return undefined;
     }
+    if (nextState === 'inactive') {
+      // A transient interruption before the first active callback must not be
+      // mistaken for a background return. A real background state remains
+      // settled until the subsequent active event.
+      if (this.settledState === 'initial') this.settledState = 'active';
+      return undefined;
+    }
     if (nextState !== 'active') {
       return undefined;
     }
 
     const decision = decideForegroundEntry({
-      ordinaryReturn: this.settledState === 'background',
+      ordinaryReturn:
+        this.settledState === 'initial' || this.settledState === 'background',
       activeStitchingSession: context.activeStitchingSession ?? false,
       requiresSignIn: context.requiresSignIn ?? false,
       pendingInboundNavigation:
