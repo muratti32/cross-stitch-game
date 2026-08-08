@@ -14,7 +14,11 @@ import { initSentry, syncSentryPlayerReferenceWithIdentity } from '../src/observ
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { syncPendingPersonalPatterns } from '../src/pattern-editor/sync';
 import { flushAnalyticsGameplayEvents } from '../src/sync/analyticsGameplayEventEngine';
-import { handleForegroundLifecycle, foregroundEntryCoordinator } from '../src/navigation/foregroundEntryNavigation';
+import {
+  handleForegroundLifecycle,
+  foregroundEntryCoordinator,
+  isActiveStitchingSessionRoute,
+} from '../src/navigation/foregroundEntryNavigation';
 
 const ANALYTICS_RETRY_INITIAL_MS = 1_000;
 const ANALYTICS_RETRY_MAX_MS = 60_000;
@@ -141,12 +145,11 @@ function RootLayout() {
           {
             requiresSignIn,
             // A mounted session must remain visible through an ordinary return.
-            activeStitchingSession:
-              segments.includes('(play)' as never) &&
-              segments[segments.indexOf('(play)' as never) + 1] !== undefined,
+            activeStitchingSession: isActiveStitchingSessionRoute(segments),
           },
           router,
-          `${pathname}/${segments.join('/')}`,
+          pathname,
+          segments,
         );
         syncPendingPersonalPatterns().catch(() => undefined);
         void flushAnalytics();

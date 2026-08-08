@@ -16,14 +16,27 @@ export type ForegroundNavigationRouter = {
 
 export const foregroundEntryCoordinator = new ForegroundEntryCoordinator();
 
+export function isCatalogRoute(segments: readonly string[], pathname = ''): boolean {
+  return segments.includes('(catalog)') || pathname.includes('/(catalog)') || pathname.includes('/catalog');
+}
+
+/** The play tab's index is the session list; only a concrete child is gameplay. */
+export function isActiveStitchingSessionRoute(segments: readonly string[]): boolean {
+  const playIndex = segments.indexOf('(play)');
+  if (playIndex < 0) return false;
+  const child = segments[playIndex + 1];
+  return child !== undefined && child !== 'index';
+}
+
 export function applyForegroundEntryDecision(
   decision: ForegroundEntryDecision | undefined,
   router: ForegroundNavigationRouter,
   pathname: string,
+  segments: readonly string[] = [],
 ): void {
   if (decision?.action !== 'select-catalog') return;
   // A return while Catalog is already visible is intentionally idempotent.
-  if (pathname.includes('/(catalog)') || pathname.includes('/catalog')) return;
+  if (isCatalogRoute(segments, pathname)) return;
   router.navigate(CATALOG_TAB_ROOT);
 }
 
@@ -32,9 +45,10 @@ export function handleForegroundLifecycle(
   context: LifecycleEntryContext,
   router: ForegroundNavigationRouter,
   pathname: string,
+  segments: readonly string[] = [],
 ): ForegroundEntryDecision | undefined {
   const decision = foregroundEntryCoordinator.onLifecycleChange(nextState, context);
-  applyForegroundEntryDecision(decision, router, pathname);
+  applyForegroundEntryDecision(decision, router, pathname, segments);
   return decision;
 }
 
@@ -47,7 +61,7 @@ export async function withProtectedRoundTrip<T>(
   try {
     return await operation();
   } finally {
-    if (!options.keepUntilForeground) {
+    if (options.keepUntilForeground === false) {
       foregroundEntryCoordinator.clearProtectedRoundTrip(token.token);
     }
   }
