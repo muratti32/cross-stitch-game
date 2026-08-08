@@ -87,6 +87,16 @@ export class ForegroundEntryCoordinator {
   private settledState: SettledLifecycleState = 'active';
   private protectedRoundTrip: ProtectedRoundTrip | undefined;
   private nextRoundTripToken = 1;
+  private pendingInboundNavigation = false;
+
+  /** Mark an explicit deep-link intent before the native active event arrives. */
+  markInboundNavigationPending(): void {
+    this.pendingInboundNavigation = true;
+  }
+
+  clearInboundNavigationPending(): void {
+    this.pendingInboundNavigation = false;
+  }
 
   beginProtectedRoundTrip(kind: ProtectedRoundTripKind): ProtectedRoundTrip {
     const roundTrip = { kind, token: this.nextRoundTripToken++ };
@@ -126,12 +136,14 @@ export class ForegroundEntryCoordinator {
       ordinaryReturn: this.settledState === 'background',
       activeStitchingSession: context.activeStitchingSession ?? false,
       requiresSignIn: context.requiresSignIn ?? false,
-      pendingInboundNavigation: context.pendingInboundNavigation ?? false,
+      pendingInboundNavigation:
+        context.pendingInboundNavigation ?? this.pendingInboundNavigation,
       protectedRoundTrip: this.protectedRoundTrip,
     });
 
     this.settledState = 'active';
     this.protectedRoundTrip = undefined;
+    this.pendingInboundNavigation = false;
     return decision;
   }
 }

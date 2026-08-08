@@ -59,6 +59,7 @@ import { Button, Card, Screen } from '@/components';
 import { WebLinks } from '@/config';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
+import { withProtectedRoundTrip } from '@/navigation/foregroundEntryNavigation';
 
 const RECONCILIATION_POLL_MS = 2_000;
 const RECONCILIATION_DELAY_MS = 10_000;
@@ -654,7 +655,9 @@ export default function CommerceScreen() {
         ? membershipFingerprint(await fetchMembership())
         : null;
       failureStage = 'store';
-      const purchaseResult = await purchaseRevenueCatPackage(product.package, accountId);
+      const purchaseResult = await withProtectedRoundTrip('commerce', () =>
+        purchaseRevenueCatPackage(product.package, accountId),
+      );
       if (product.category === 'premium') {
         await beginPremiumReconciliation(product, 'purchase', baselineMembership);
       } else if (product.category === 'stitch_coin') {
@@ -762,7 +765,7 @@ export default function CommerceScreen() {
     setRestoringPurchases(true);
     setPurchaseError(null);
     try {
-      await restoreRevenueCatPurchases(accountId);
+      await withProtectedRoundTrip('commerce', () => restoreRevenueCatPurchases(accountId));
       if (selectedPremium !== undefined) {
         await beginPremiumReconciliation(selectedPremium, 'restore');
       }
@@ -933,7 +936,10 @@ export default function CommerceScreen() {
             <Button
               title="Manage Subscription"
               onPress={() => {
-                void showRevenueCatManageSubscriptions().catch(() => {
+                void withProtectedRoundTrip('subscription-management', () =>
+                  showRevenueCatManageSubscriptions(),
+                  { keepUntilForeground: true },
+                ).catch(() => {
                   Alert.alert('Unable to open subscriptions', 'Try again from your device store account.');
                 });
               }}
@@ -1359,7 +1365,9 @@ function storeAccountName(): string {
 // two documents: a link that cannot be opened tells the player instead of
 // failing silently at the point of purchase.
 function openLegalLink(title: string, url: string): void {
-  Linking.openURL(url).catch(() => {
+  void withProtectedRoundTrip('external-link', () => Linking.openURL(url), {
+    keepUntilForeground: true,
+  }).catch(() => {
     Alert.alert(title, `Could not open link: ${url}`);
   });
 }

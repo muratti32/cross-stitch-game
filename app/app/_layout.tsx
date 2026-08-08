@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
-import { router, Slot, usePathname } from 'expo-router';
+import { AppState, AppStateStatus, Linking } from 'react-native';
+import { router, Slot, usePathname, useSegments } from 'expo-router';
 import * as Sentry from '@sentry/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryProvider } from '../src/providers';
@@ -14,6 +14,7 @@ import { initSentry, syncSentryPlayerReferenceWithIdentity } from '../src/observ
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { syncPendingPersonalPatterns } from '../src/pattern-editor/sync';
 import { flushAnalyticsGameplayEvents } from '../src/sync/analyticsGameplayEventEngine';
+import { handleForegroundLifecycle, foregroundEntryCoordinator } from '../src/navigation/foregroundEntryNavigation';
 
 const ANALYTICS_RETRY_INITIAL_MS = 1_000;
 const ANALYTICS_RETRY_MAX_MS = 60_000;
@@ -33,6 +34,7 @@ SplashScreen.preventAutoHideAsync();
 function RootLayout() {
   const [dbReady, setDbReady] = useState(false);
   const pathname = usePathname();
+  const segments = useSegments();
   const requiresSignIn = useIdentityStore((state) => state.requiresSignIn);
   const analyticsFlushInFlightRef = useRef(false);
   const analyticsRetryDelayRef = useRef(ANALYTICS_RETRY_INITIAL_MS);
@@ -127,8 +129,25 @@ function RootLayout() {
   }, [flushAnalytics]);
 
   useEffect(() => {
+    const inboundSubscription = Linking.addEventListener('url', () => {
+      // Native URL delivery can race AppState active; mark it before the
+      // foreground coordinator evaluates its ordinary-return default.
+      foregroundEntryCoordinator.markInboundNavigationPending();
+    });
     const handleAppStateChange = (nextStatus: AppStateStatus) => {
       if (nextStatus === 'active') {
+        handleForegroundLifecycle(
+          nextStatus,
+          {
+            requiresSignIn,
+            // A mounted session must remain visible through an ordinary return.
+            activeStitchingSession:
+              segments.includes('(play)' as never) &&
+              segments[segments.indexOf('(play)' as never) + 1] !== undefined,
+          },
+          router,
+          `${pathname}/${segments.join('/')}`,
+        );
         syncPendingPersonalPatterns().catch(() => undefined);
         void flushAnalytics();
       }
@@ -136,8 +155,9 @@ function RootLayout() {
     const sub = AppState.addEventListener('change', handleAppStateChange);
     return () => {
       sub.remove();
+      inboundSubscription.remove();
     };
-  }, [flushAnalytics]);
+  }, [flushAnalytics, pathname, requiresSignIn, segments]);
 
   useEffect(() => {
     const timer = setInterval(() => {

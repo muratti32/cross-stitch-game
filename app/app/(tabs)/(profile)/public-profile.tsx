@@ -20,6 +20,7 @@ import {
 import { Button, Card, EmptyState, Screen } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
+import { withProtectedRoundTrip } from '@/navigation/foregroundEntryNavigation';
 
 const ACCEPTED_AVATAR_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
@@ -64,18 +65,22 @@ export default function PublicProfileScreen() {
     setPickingAvatar(true);
     setError(null);
     try {
-      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const permission = await withProtectedRoundTrip('permission', () =>
+        ImagePicker.requestMediaLibraryPermissionsAsync(),
+      );
       if (!permission.granted) {
         setError('Photo library access is required to choose a profile photo.');
         return;
       }
-      const result = await ImagePicker.launchImageLibraryAsync({
-        allowsEditing: true,
-        aspect: [1, 1],
-        exif: false,
-        mediaTypes: ['images'],
-        quality: 0.9,
-      });
+      const result = await withProtectedRoundTrip('photo-picker', () =>
+        ImagePicker.launchImageLibraryAsync({
+          allowsEditing: true,
+          aspect: [1, 1],
+          exif: false,
+          mediaTypes: ['images'],
+          quality: 0.9,
+        }),
+      );
       if (result.canceled) return;
       const selected = result.assets[0];
       if (selected.mimeType !== undefined && !ACCEPTED_AVATAR_TYPES.has(selected.mimeType)) {

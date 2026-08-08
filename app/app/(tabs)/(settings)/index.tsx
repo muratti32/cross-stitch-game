@@ -13,6 +13,7 @@ import { useBackendSession } from '@/hooks/useBackendSession';
 import { shortenGuestId } from '@/identity/identityLogic';
 import { resetGuestData, removeLocalData, useIdentityStore, logout } from '@/identity/guestIdentity';
 import { useAccountDeletionStatus, useRequestAccountDeletion, useCancelAccountDeletion, AccountDeletionApiError } from '@/api/accountDeletion';
+import { withProtectedRoundTrip } from '@/navigation/foregroundEntryNavigation';
 
 // App identity is read from the Expo config so the settings footer can never
 // drift away from app.json / app.config.ts.
@@ -122,7 +123,9 @@ export default function SettingsScreen() {
   };
 
   const handleLinkPress = (title: string, url: string) => {
-    Linking.openURL(url).catch(() => {
+    void withProtectedRoundTrip('external-link', () => Linking.openURL(url), {
+      keepUntilForeground: true,
+    }).catch(() => {
       Alert.alert(title, `Could not open link: ${url}`);
     });
   };
@@ -131,7 +134,9 @@ export default function SettingsScreen() {
     const url = Platform.OS === 'ios'
       ? 'https://apps.apple.com/account/subscriptions'
       : 'https://play.google.com/store/account/subscriptions';
-    Linking.openURL(url).catch(() => {
+    void withProtectedRoundTrip('subscription-management', () => Linking.openURL(url), {
+      keepUntilForeground: true,
+    }).catch(() => {
       Alert.alert('Error', `Could not open link: ${url}`);
     });
   };

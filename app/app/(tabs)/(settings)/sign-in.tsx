@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, Pressable, ActivityIndicator } from 
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { Screen, Button, Card } from '@/components';
 import { Theme } from '@/theme/theme';
+import { withProtectedRoundTrip } from '@/navigation/foregroundEntryNavigation';
 import { requestEmailOtp, verifyEmailOtp } from '@/identity/emailAuth';
 import {
   canUseAppleSso,
@@ -125,10 +126,9 @@ export default function SignInScreen() {
     setError(null);
     setSocialProvider(provider);
     try {
-      const result =
-        provider === 'apple'
-          ? await signInWithAppleSso()
-          : await signInWithGoogleSso();
+      const result = await withProtectedRoundTrip('authentication', () =>
+        provider === 'apple' ? signInWithAppleSso() : signInWithGoogleSso(),
+      );
       if (result.kind === 'signed-in') {
         finishSignIn();
       }

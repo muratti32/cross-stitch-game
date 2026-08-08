@@ -41,6 +41,7 @@ import {
 import { Theme } from '@/theme/theme';
 import { captureGameplayEvent } from '@/analytics/gameplayEvents';
 import type { ConversionFailureStage } from '@/analytics/schema';
+import { withProtectedRoundTrip } from '@/navigation/foregroundEntryNavigation';
 
 const MAX_FRAME_HEIGHT = 300;
 const MAX_ZOOM = 8;
@@ -179,18 +180,22 @@ export default function PhotoImportScreen() {
     setPickingPhoto(true);
     setError(null);
     try {
-      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const permission = await withProtectedRoundTrip('permission', () =>
+        ImagePicker.requestMediaLibraryPermissionsAsync(),
+      );
       if (!permission.granted) {
         setError('Photo library access is required to choose a Local Photo Source.');
         return;
       }
 
-      const result = await ImagePicker.launchImageLibraryAsync({
-        allowsEditing: false,
-        exif: false,
-        mediaTypes: ['images'],
-        quality: 1,
-      });
+      const result = await withProtectedRoundTrip('photo-picker', () =>
+        ImagePicker.launchImageLibraryAsync({
+          allowsEditing: false,
+          exif: false,
+          mediaTypes: ['images'],
+          quality: 1,
+        }),
+      );
       if (!result.canceled) {
         const selected = result.assets[0];
         if (selected.width < 1 || selected.height < 1) {
