@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
  * data (see identity `logout`), so the same account reopens it on next sign-in.
  */
 export function AccountSection() {
-  const { isAccount, accountEmail, accountProvider, logout } = useIdentityStore();
+  const { isAccount, accountEmail, accountProvider, isOfflinePending, requiresSignIn, logout } = useIdentityStore();
   const [isSigningOut, setIsSigningOut] = useState<boolean>(false);
 
   const handleSignOut = () => {
@@ -51,7 +51,7 @@ export function AccountSection() {
         {!isAccount ? (
           <View style={styles.settingRow}>
             <View style={styles.textContainer}>
-              <Text style={styles.settingTitle}>Not signed in</Text>
+              <Text style={styles.settingTitle}>{requiresSignIn ? 'Sign in required' : 'Not signed in'}</Text>
               <Text style={styles.settingDescription}>
                 Sign in to sync progress across devices.
               </Text>
@@ -81,6 +81,9 @@ export function AccountSection() {
                 {accountEmail ?? providerLabel(accountProvider)}
               </Text>
             </View>
+            {isOfflinePending && (
+              <Text style={styles.reconnectingText}>Reconnecting…</Text>
+            )}
             <View style={styles.signOutRow}>
               <Pressable
                 onPress={handleSignOut}
@@ -177,5 +180,10 @@ const styles = StyleSheet.create({
   },
   spinner: {
     marginRight: Theme.spacing.xs,
+  },
+  reconnectingText: {
+    color: Theme.colors.textSecondary,
+    fontSize: Theme.typography.sizes.sm,
+    marginBottom: Theme.spacing.sm,
   },
 });

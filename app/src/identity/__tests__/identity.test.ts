@@ -1,11 +1,12 @@
 import { getDatabaseFilename, shouldAdopt } from '../../local-db/namespaceLogic';
 import { decodeJwt, calculateRefreshDelay, isTokenOlderThan12Minutes, shortenGuestId } from '../identityLogic';
-import { bootstrap, refreshSession, useIdentityStore, setAccessToken, getAccessToken, resetGuestData, removeLocalData, logout } from '../guestIdentity';
+import { adoptAccountSession, bootstrap, refreshSession, useIdentityStore, setAccessToken, getAccessToken, resetGuestData, removeLocalData, logout } from '../guestIdentity';
 import { requestEmailOtp, verifyEmailOtp } from '../emailAuth';
 import { exchangeFirebaseIdToken } from '../federatedAuth';
 import { apiFetch } from '../../api/apiFetch';
 
 const DECODABLE_JWT = 'h.eyJpZCI6ImcxIiwiaWF0IjoxMDAwLCJleHAiOjE5MDB9.sig';
+const SESSION_ENVELOPE = 'stitch_wish.session_envelope_v1';
 
 // Mock expo-secure-store
 const mockSecureStore: Record<string, string> = {};
@@ -136,6 +137,10 @@ describe('Guest Identity Client State Machine', () => {
     useIdentityStore.setState({
       guestId: null,
       guestCreatedAt: null,
+      accountId: null,
+      accountEmail: null,
+      accountProvider: null,
+      isAccount: false,
       isAuthenticated: false,
       isPending: false,
       isOfflinePending: false,
@@ -197,6 +202,103 @@ describe('Guest Identity Client State Machine', () => {
       global.fetch = fetchMock;
       consoleErrorSpy.mockRestore();
       jest.useRealTimers();
+    }
+  });
+
+  test('adoption commits the account principal before resolving', async () => {
+    await adoptAccountSession({
+      accountId: 'acc_immediate',
+      email: 'immediate@example.com',
+      provider: 'email',
+      accessToken: `access.${DECODABLE_JWT}`,
+      refreshToken: 'refresh_immediate',
+    });
+
+    expect(useIdentityStore.getState()).toMatchObject({
+      isAccount: true,
+      accountId: 'acc_immediate',
+      accountEmail: 'immediate@example.com',
+    });
+  });
+
+  test('a late guest response cannot overwrite an adopted account', async () => {
+    let resolveGuest: ((response: Response) => void) | undefined;
+    const fetchMock = global.fetch;
+    global.fetch = jest.fn((url: string) => {
+      if (url.includes('/v1/auth/guest')) {
+        return new Promise<Response>((resolve) => { resolveGuest = resolve; });
+      }
+      return Promise.resolve({ status: 200, json: async () => ({}) } as Response);
+    }) as typeof fetch;
+    try {
+      const guestBootstrap = bootstrap();
+      for (let tick = 0; tick < 8; tick += 1) await Promise.resolve();
+      await adoptAccountSession({
+        accountId: 'acc_wins', email: 'wins@example.com', provider: 'email',
+        accessToken: `access.${DECODABLE_JWT}`, refreshToken: 'refresh_wins',
+      });
+      resolveGuest?.({
+        status: 201,
+        json: async () => ({ guestId: 'late_guest', accessToken: 'late', refreshToken: 'late_refresh' }),
+      } as Response);
+      await guestBootstrap;
+      expect(useIdentityStore.getState().accountId).toBe('acc_wins');
+    } finally {
+      global.fetch = fetchMock;
+    }
+  });
+
+  test('bootstrap and refreshSession share one refresh request', async () => {
+    mockSecureStore['stitch_wish.account_id'] = 'acc_single';
+    mockSecureStore['stitch_wish.account_email'] = 'single@example.com';
+    mockSecureStore['stitch_wish.refresh_token'] = 'refresh_single';
+    let resolveRefresh: ((response: Response) => void) | undefined;
+    const fetchMock = global.fetch;
+    global.fetch = jest.fn((url: string) => {
+      if (url.includes('/v1/auth/refresh')) {
+        return new Promise<Response>((resolve) => { resolveRefresh = resolve; });
+      }
+      return Promise.resolve({ status: 200, json: async () => ({}) } as Response);
+    }) as typeof fetch;
+    try {
+      const first = bootstrap();
+      const second = refreshSession();
+      for (let tick = 0; tick < 8; tick += 1) await Promise.resolve();
+      expect((global.fetch as jest.Mock).mock.calls.filter(([url]) => String(url).includes('/v1/auth/refresh'))).toHaveLength(1);
+      resolveRefresh?.({ status: 200, json: async () => ({ accessToken: `access.${DECODABLE_JWT}`, refreshToken: 'rotated' }) } as Response);
+      await Promise.all([first, second]);
+    } finally {
+      global.fetch = fetchMock;
+    }
+  });
+
+  test('bootstrap hydrates the cached account before refresh resolves', async () => {
+    mockSecureStore['stitch_wish.account_id'] = 'acc_cached';
+    mockSecureStore['stitch_wish.account_email'] = 'cached@example.com';
+    mockSecureStore['stitch_wish.account_provider'] = 'email';
+    mockSecureStore['stitch_wish.refresh_token'] = 'refresh_cached';
+    let resolveRefresh: ((response: Response) => void) | undefined;
+    const fetchMock = global.fetch;
+    global.fetch = jest.fn((url: string) => {
+      if (url.includes('/v1/auth/refresh')) {
+        return new Promise<Response>((resolve) => { resolveRefresh = resolve; });
+      }
+      return Promise.resolve({ status: 200, json: async () => ({}) } as Response);
+    }) as typeof fetch;
+    try {
+      const pendingBootstrap = bootstrap();
+      for (let tick = 0; tick < 40 && !resolveRefresh; tick += 1) await Promise.resolve();
+      expect(useIdentityStore.getState()).toMatchObject({
+        isAccount: true,
+        accountId: 'acc_cached',
+        isHydrated: true,
+        isAuthenticated: false,
+        isPending: true,
+      });
+      resolveRefresh?.({ status: 200, json: async () => ({ accessToken: `access.${DECODABLE_JWT}`, refreshToken: 'rotated_cached' }) } as Response);
+      await pendingBootstrap;
+    } finally {
+      global.fetch = fetchMock;
     }
   });
 });
@@ -321,7 +423,7 @@ describe('apiFetch Interception, Refresh and Replay', () => {
       isAuthenticated: false,
       requiresSignIn: true,
     });
-    expect(mockSecureStore['stitch_wish.requires_sign_in']).toBe('true');
+    expect(JSON.parse(mockSecureStore[SESSION_ENVELOPE])).toMatchObject({ requiresSignIn: true });
     expect(getAccessToken()).toBeNull();
   });
 
@@ -519,10 +621,11 @@ describe('Email Sign-In (Registered Account) flows', () => {
     const result = await verifyEmailOtp('user@example.com', '123456');
 
     expect(result).toEqual({ kind: 'verified' });
-    expect(mockSecureStore[ACCOUNT_ID]).toBe('acc_123');
-    expect(mockSecureStore[ACCOUNT_EMAIL]).toBe('user@example.com');
-    expect(mockSecureStore[ACCOUNT_PROVIDER]).toBe('email');
-    expect(mockSecureStore[REFRESH_TOKEN]).toBe('refresh_acc');
+    // Session identity now has one authoritative versioned envelope.
+    expect(JSON.parse(mockSecureStore[SESSION_ENVELOPE])).toMatchObject({
+      kind: 'account', accountId: 'acc_123', accountEmail: 'user@example.com',
+      accountProvider: 'email', refreshToken: 'refresh_acc',
+    });
     expect(mockSecureStore[GUEST_ID]).toBeUndefined();
     expect(openMock).toHaveBeenCalledWith('acc_123');
 
@@ -541,8 +644,7 @@ describe('Email Sign-In (Registered Account) flows', () => {
     const result = await verifyEmailOtp('user@example.com', '000000');
 
     expect(result).toEqual({ kind: 'rejected' });
-    expect(mockSecureStore[ACCOUNT_ID]).toBeUndefined();
-    expect(mockSecureStore[REFRESH_TOKEN]).toBeUndefined();
+    expect(mockSecureStore[SESSION_ENVELOPE]).toBeUndefined();
     expect(useIdentityStore.getState().isAccount).toBe(false);
     expect(getAccessToken()).toBeNull();
   });
@@ -567,9 +669,9 @@ describe('Email Sign-In (Registered Account) flows', () => {
     expect(JSON.parse(fetchCalls[0].options.body)).toEqual({
       idToken: 'firebase-id-token',
     });
-    expect(mockSecureStore[ACCOUNT_ID]).toBe('acc_google');
-    expect(mockSecureStore[ACCOUNT_EMAIL]).toBe('google@example.com');
-    expect(mockSecureStore[ACCOUNT_PROVIDER]).toBe('google');
+    expect(JSON.parse(mockSecureStore[SESSION_ENVELOPE])).toMatchObject({
+      kind: 'account', accountId: 'acc_google', accountEmail: 'google@example.com', accountProvider: 'google',
+    });
     expect(openMock).toHaveBeenCalledWith('acc_google');
     expect(useIdentityStore.getState()).toMatchObject({
       accountId: 'acc_google',
@@ -604,7 +706,7 @@ describe('Email Sign-In (Registered Account) flows', () => {
     expect(state.accountEmail).toBe('saved@example.com');
     expect(state.accountProvider).toBe('email');
     expect(state.guestId).toBeNull();
-    expect(mockSecureStore[REFRESH_TOKEN]).toBe('refresh_next');
+    expect(JSON.parse(mockSecureStore[SESSION_ENVELOPE]).refreshToken).toBe('refresh_next');
   });
 
   test('bootstrap requires sign-in when account refresh is revoked (401)', async () => {
@@ -627,8 +729,9 @@ describe('Email Sign-In (Registered Account) flows', () => {
 
     await bootstrap();
 
-    expect(mockSecureStore[ACCOUNT_ID]).toBe('acc_dead');
-    expect(mockSecureStore[ACCOUNT_EMAIL]).toBe('dead@example.com');
+    expect(JSON.parse(mockSecureStore[SESSION_ENVELOPE])).toMatchObject({
+      kind: 'account', accountId: 'acc_dead', requiresSignIn: true, refreshToken: null,
+    });
     const state = useIdentityStore.getState();
     expect(state.isAccount).toBe(false);
     expect(state.accountId).toBeNull();
@@ -637,7 +740,7 @@ describe('Email Sign-In (Registered Account) flows', () => {
     expect(state.guestId).toBeNull();
     expect(state.isAuthenticated).toBe(false);
     expect(state.requiresSignIn).toBe(true);
-    expect(mockSecureStore['stitch_wish.requires_sign_in']).toBe('true');
+    expect(JSON.parse(mockSecureStore[SESSION_ENVELOPE])).toMatchObject({ requiresSignIn: true });
   });
 
   test('logout of an account clears keys but preserves namespace data', async () => {
@@ -661,10 +764,7 @@ describe('Email Sign-In (Registered Account) flows', () => {
 
     await logout();
 
-    expect(mockSecureStore[ACCOUNT_ID]).toBeUndefined();
-    expect(mockSecureStore[ACCOUNT_EMAIL]).toBeUndefined();
-    expect(mockSecureStore[ACCOUNT_PROVIDER]).toBeUndefined();
-    expect(mockSecureStore[REFRESH_TOKEN]).toBeUndefined();
+    expect(JSON.parse(mockSecureStore[SESSION_ENVELOPE])).toMatchObject({ kind: 'none', refreshToken: null });
     expect(openMock).toHaveBeenCalledWith(null);
     expect(deleteMock).not.toHaveBeenCalled();
     const state = useIdentityStore.getState();
