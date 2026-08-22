@@ -23,7 +23,7 @@ import { AiCreditLedgerReason } from './ai-credit-ledger-reason.enum';
 )
 @Check(
   'CHK_ai_credit_ledger_entries_reason',
-  '"reason" IN (\'pack_purchase\', \'commerce_reversal\', \'membership_credit_grant\', \'membership_reversal\')',
+  '"reason" IN (\'pack_purchase\', \'commerce_reversal\', \'membership_credit_grant\', \'membership_reversal\', \'ai_artwork_delivery\', \'commerce_transfer\')',
 )
 export class AiCreditLedgerEntryEntity {
   @PrimaryGeneratedColumn('uuid', {

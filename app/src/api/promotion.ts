@@ -32,6 +32,27 @@ export interface PromotionPreviewResponse {
   };
   expiry: string;
   signature: string;
+  paidCommerce: 'transfer' | 'none';
+}
+
+export interface CommercePromotionStatus {
+  handoffId: string;
+  status: 'pending' | 'processing' | 'acknowledged' | 'failed';
+  syncingPurchases: boolean;
+  attemptCount: number;
+  lastFailureReason: string | null;
+}
+
+export async function startCommercePromotion(guestId: string, guestCredential: string): Promise<CommercePromotionStatus> {
+  const res = await apiFetch('/v1/promotion/commerce-handoff', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ guestId, guestCredential }) });
+  if (!res.ok) throw new Error('Failed to start commerce promotion: ' + res.status);
+  return (await res.json()) as CommercePromotionStatus;
+}
+
+export async function fetchCommercePromotionStatus(handoffId: string): Promise<CommercePromotionStatus> {
+  const res = await apiFetch(`/v1/promotion/commerce-handoff/${handoffId}`);
+  if (!res.ok) throw new Error('Failed to fetch commerce promotion status: ' + res.status);
+  return (await res.json()) as CommercePromotionStatus;
 }
 
 export interface PromotionLockResponse {

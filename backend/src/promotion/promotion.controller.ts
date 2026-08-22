@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, HttpCode, HttpStatus, Get, Param } from '@nestjs/common';
 import { IsUUID, IsNotEmpty } from 'class-validator';
 
 import { CurrentPrincipal, JwtAuthGuard } from '../auth';
@@ -8,6 +8,16 @@ import { PromotionPreviewRequestDto } from './dto/promotion-preview.dto';
 import { PromotionLockRequestDto } from './dto/promotion-lock.dto';
 import { PromotionPackageRequestDto } from './dto/promotion-package.dto';
 import { PromotionCommitRequestDto } from './dto/promotion-commit.dto';
+import { CommercePromotionService } from './commerce-promotion.service';
+
+class CommercePromotionStartDto {
+  @IsUUID()
+  @IsNotEmpty()
+  guestId!: string;
+
+  @IsNotEmpty()
+  guestCredential!: string;
+}
 
 class PromotionCancelRequestDto {
   @IsUUID()
@@ -42,7 +52,24 @@ class PromotionDrainLikeDto {
 @Controller('promotion')
 @UseGuards(JwtAuthGuard)
 export class PromotionController {
-  constructor(private readonly promotionService: PromotionService) {}
+  constructor(private readonly promotionService: PromotionService, private readonly commercePromotion: CommercePromotionService) {}
+
+  @Post('commerce-handoff')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async startCommerceHandoff(@CurrentPrincipal() principal: AuthPrincipal, @Body() dto: CommercePromotionStartDto) {
+    return this.commercePromotion.start(principal.id, dto.guestId, dto.guestCredential);
+  }
+
+  @Get('commerce-handoff/:handoffId')
+  async commerceHandoffStatus(@CurrentPrincipal() principal: AuthPrincipal, @Param('handoffId') handoffId: string) {
+    return this.commercePromotion.status(principal.id, handoffId);
+  }
+
+  @Post('commerce-handoff/:handoffId/retry')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async retryCommerceHandoff(@CurrentPrincipal() principal: AuthPrincipal, @Param('handoffId') handoffId: string) {
+    return this.commercePromotion.retry(principal.id, handoffId);
+  }
 
   @Post('preview')
   @HttpCode(HttpStatus.OK)

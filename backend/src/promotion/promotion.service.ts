@@ -129,6 +129,7 @@ export class PromotionService {
       dispositions,
       expiry: expiry.toISOString(),
       signature,
+      paidCommerce: guestBalanceRow?.paidBalance !== undefined && Number(guestBalanceRow.paidBalance) > 0 ? 'transfer' : 'none',
     };
   }
 
@@ -278,19 +279,21 @@ export class PromotionService {
               where: { principalType: 'guest', principalId: guestId }
             });
             const guestBalance = guestBalanceRow ? Number(guestBalanceRow.balance) : 0;
+            const guestPaidReserve = guestBalanceRow ? Number(guestBalanceRow.paidBalance ?? 0) : 0;
+            const freeGuestBalance = Math.max(0, guestBalance - guestPaidReserve);
 
-            if (guestBalance > 0 && guestBalanceRow) {
+            if (freeGuestBalance > 0 && guestBalanceRow) {
               // Deduct from guest ledger
               await manager.insert(CoinLedgerEntryEntity, {
                 principalType: 'guest',
                 principalId: guestId,
-                amount: String(-guestBalance),
+                amount: String(-freeGuestBalance),
                 reason: CoinLedgerReason.GuestPromotion,
                 sourceKey: `guest_promotion:close:${guestId}`,
                 granted: true,
               });
 
-              guestBalanceRow.balance = '0';
+              guestBalanceRow.balance = String(guestBalance - freeGuestBalance);
               await manager.save(CoinBalanceEntity, guestBalanceRow);
 
               // Credit target account ledger
@@ -298,7 +301,7 @@ export class PromotionService {
               await manager.insert(CoinLedgerEntryEntity, {
                 principalType: 'account',
                 principalId: accountId,
-                amount: String(guestBalance),
+                amount: String(freeGuestBalance),
                 reason: CoinLedgerReason.GuestPromotion,
                 sourceKey: accountSourceKey,
                 granted: true,
@@ -309,13 +312,13 @@ export class PromotionService {
                 where: { principalType: 'account', principalId: accountId }
               });
               if (accountBalanceRow) {
-                accountBalanceRow.balance = String(Number(accountBalanceRow.balance) + guestBalance);
+                accountBalanceRow.balance = String(Number(accountBalanceRow.balance) + freeGuestBalance);
                 await manager.save(CoinBalanceEntity, accountBalanceRow);
               } else {
                 await manager.insert(CoinBalanceEntity, {
                   principalType: 'account',
                   principalId: accountId,
-                  balance: String(guestBalance),
+                  balance: String(freeGuestBalance),
                 });
               }
             }
@@ -382,31 +385,44 @@ export class PromotionService {
             const guestBalanceRow = await manager.findOne(CoinBalanceEntity, {
               where: { principalType: 'guest', principalId: guestId }
             });
-            if (guestBalanceRow && Number(guestBalanceRow.balance) > 0) {
+            if (guestBalanceRow && Number(guestBalanceRow.balance) - Number(guestBalanceRow.paidBalance ?? 0) > 0) {
               const guestBalance = Number(guestBalanceRow.balance);
+              const guestPaidReserve = Number(guestBalanceRow.paidBalance ?? 0);
+              const freeGuestBalance = Math.max(0, guestBalance - guestPaidReserve);
               await manager.insert(CoinLedgerEntryEntity, {
                 principalType: 'guest',
                 principalId: guestId,
-                amount: String(-guestBalance),
+                amount: String(-freeGuestBalance),
                 reason: CoinLedgerReason.GuestPromotion,
                 sourceKey: `guest_promotion:close:${guestId}`,
                 granted: true,
               });
-              guestBalanceRow.balance = '0';
+              guestBalanceRow.balance = String(guestPaidReserve);
               await manager.save(CoinBalanceEntity, guestBalanceRow);
             }
           }
 
-          // Consume guest installation identity
-          await manager.query(
+          const pendingPaidHandoff = await manager.query<readonly { state: string }[]>(
+            `SELECT state FROM promotion.commerce_promotion_handoffs WHERE guest_id = $1 AND account_id = $2`,
+            [guestId, accountId],
+          );
+          const paidReserveRemaining = await manager.query<readonly { paid_balance: string }[]>(
+            `SELECT paid_balance FROM economy.coin_balances WHERE principal_type='guest' AND principal_id=$1`,
+            [guestId],
+          );
+          const handoffAcknowledged = pendingPaidHandoff.some((row) => row.state === 'acknowledged');
+          const mayRevokeGuest = handoffAcknowledged || Number(paidReserveRemaining[0]?.paid_balance ?? 0) === 0;
+
+          // Consume guest installation identity only after paid commerce is acknowledged.
+          if (mayRevokeGuest) await manager.query(
             `UPDATE auth.guest_installations
              SET status = 'revoked'
              WHERE id = $1`,
             [guestId]
           );
 
-          // Revoke refresh tokens
-          await manager.query(
+          // Revoke refresh tokens when the Guest Installation Identity is safe to close.
+          if (mayRevokeGuest) await manager.query(
             `UPDATE auth.refresh_tokens
              SET status = 'revoked'
              WHERE principal_type = 'guest' AND principal_id = $1`,

@@ -117,6 +117,7 @@ export class CommerceLedgerRepository {
                VALUES ($1, $2, $3)
                ON CONFLICT ON CONSTRAINT "PK_coin_balances"
                  DO UPDATE SET balance = economy.coin_balances.balance + EXCLUDED.balance,
+                               paid_balance = economy.coin_balances.paid_balance + EXCLUDED.balance,
                                updated_at = now()
                RETURNING balance`,
               [principalType, principalId, amount],
@@ -140,6 +141,7 @@ export class CommerceLedgerRepository {
                VALUES ($1, $2, $3)
                ON CONFLICT ON CONSTRAINT "PK_ai_credit_balances"
                  DO UPDATE SET balance = economy.ai_credit_balances.balance + EXCLUDED.balance,
+                               paid_balance = economy.ai_credit_balances.paid_balance + EXCLUDED.balance,
                                updated_at = now()
                RETURNING balance`,
               [principalType, principalId, amount],
@@ -270,6 +272,7 @@ export class CommerceLedgerRepository {
              VALUES ($1, $2, $3)
              ON CONFLICT ON CONSTRAINT "PK_coin_balances"
                DO UPDATE SET balance = economy.coin_balances.balance + EXCLUDED.balance,
+                             paid_balance = GREATEST(0, economy.coin_balances.paid_balance - LEAST(economy.coin_balances.paid_balance, -EXCLUDED.balance)),
                              updated_at = now()
              RETURNING balance`,
             [binding.principal_type, binding.principal_id, amountToWithdraw],
@@ -283,6 +286,7 @@ export class CommerceLedgerRepository {
              VALUES ($1, $2, $3)
              ON CONFLICT ON CONSTRAINT "PK_ai_credit_balances"
                DO UPDATE SET balance = economy.ai_credit_balances.balance + EXCLUDED.balance,
+                             paid_balance = GREATEST(0, economy.ai_credit_balances.paid_balance - LEAST(economy.ai_credit_balances.paid_balance, -EXCLUDED.balance)),
                              updated_at = now()
              RETURNING balance`,
             [binding.principal_type, binding.principal_id, amountToWithdraw],

@@ -184,6 +184,10 @@ _Avoid_: unverified Guest purchase, principal_id alone, polymorphic owner withou
 The backend source of truth for verified store transactions, their Commerce Transaction Bindings, normalized Membership Periods, and the Account or Guest Ledger grants they produce. Each provider transaction identifier and paid membership period is recorded idempotently and can produce its grant exactly once; the mobile client cannot mutate paid balances or entitlements directly.
 _Avoid_: Client purchase history, local receipt cache, balance endpoint
 
+**Paid Reserve**:
+The remaining portion of a Coin or AI Credit balance minted by a verified provider purchase. It increases only from `coin_pack_purchase` or `pack_purchase`, is spent after free value, and is reduced first by a Commerce Reversal or Membership Reversal. Membership Credit Grants and Premium Daily Coin Claims are free recurring benefits and never enter the Paid Reserve.
+_Avoid_: total balance, membership benefit, client purchase cache
+
 **Purchase Reconciliation Pending**:
 The non-failure state shown after the store reports a completed purchase or restore but the Commerce Ledger has not yet exposed its verified grant. It grants no client-side value, prevents the player from being prompted to repeat the same purchase, and keeps checking the backend until the recorded result appears. A prolonged delay provides retry and Support Reference actions without claiming that the store transaction failed.
 _Avoid_: Purchase success, purchase failure, repurchase prompt, local grant
