@@ -8,6 +8,7 @@ export class CommercePromotionHandoffEntity {
   @PrimaryGeneratedColumn('uuid') id!: string;
   @Column({ name: 'guest_id', type: 'uuid' }) guestId!: string;
   @Column({ name: 'account_id', type: 'uuid' }) accountId!: string;
+  @Column({ name: 'processing_job_id', type: 'uuid', nullable: true }) processingJobId!: string | null;
   @Column({ type: 'varchar', length: 20, default: 'pending' }) state!: CommercePromotionHandoffState;
   @Column({ name: 'attempt_count', type: 'integer', default: 0 }) attemptCount!: number;
   @Column({ name: 'last_failure_reason', type: 'text', nullable: true }) lastFailureReason!: string | null;

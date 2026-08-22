@@ -313,4 +313,22 @@ describe('PromotionService', () => {
       expect(result).toEqual({ status: 'already_present' });
     });
   });
+
+  describe('mayRevokeGuest', () => {
+    it('protects a guest when any commerce source remains', async () => {
+      managerQuery.mockResolvedValue([{ safe: false }]);
+      await expect((service as any).mayRevokeGuest(
+        { query: managerQuery }, 'guest-uuid', 'account-uuid',
+      )).resolves.toBe(false);
+      expect(managerQuery.mock.calls[0][0]).toContain('membership_periods');
+      expect(managerQuery.mock.calls[0][0]).toContain('commerce_transaction_bindings');
+    });
+
+    it('allows revocation only after all sources are empty or acknowledged', async () => {
+      managerQuery.mockResolvedValue([{ safe: true }]);
+      await expect((service as any).mayRevokeGuest(
+        { query: managerQuery }, 'guest-uuid', 'account-uuid',
+      )).resolves.toBe(true);
+    });
+  });
 });

@@ -26,6 +26,8 @@ export interface GuestAuthResponse extends AuthTokenPair {
 
 export interface AccountAuthResponse extends AuthTokenPair {
   accountId: string;
+  commerceHandoffId?: string;
+  syncingPurchases?: boolean;
 }
 
 export interface FederatedAccountAuthResponse extends AccountAuthResponse {

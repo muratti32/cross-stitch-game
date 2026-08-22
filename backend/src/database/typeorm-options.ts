@@ -166,6 +166,7 @@ import { AddCommerceOwnerToPremiumMembership1789084800000 } from './migrations/1
 import { AddGuestAiArtworkAndPatternOwnership1789171200000 } from './migrations/1789171200000-AddGuestAiArtworkAndPatternOwnership';
 import { AddPaidBalanceProvenance1789257600000 } from './migrations/1789257600000-AddPaidBalanceProvenance';
 import { CreateCommercePromotionHandoffs1789344000000 } from './migrations/1789344000000-CreateCommercePromotionHandoffs';
+import { FixCommercePromotionOwnership1789344000001 } from './migrations/1789344000001-FixCommercePromotionOwnership';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -210,6 +211,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       DailyColorActionCountEntity,
       PromotionLockEntity,
       PromotionTransferPackageEntity,
+      CommercePromotionHandoffEntity,
       AiCreditBalanceEntity,
       AiCreditLedgerEntryEntity,
       CommerceTransactionBindingEntity,
@@ -316,6 +318,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddGuestAiArtworkAndPatternOwnership1789171200000,
       AddPaidBalanceProvenance1789257600000,
       CreateCommercePromotionHandoffs1789344000000,
+      FixCommercePromotionOwnership1789344000001,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

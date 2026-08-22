@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from '../auth/auth.module';
@@ -17,6 +17,7 @@ import { AccountStateModule } from '../deletion/account-state.module';
     AppConfigModule,
     SocialModule,
     AccountStateModule,
+    forwardRef(() => require('../jobs/jobs.module').JobsModule),
     TypeOrmModule.forFeature([
       PromotionLockEntity,
       PromotionTransferPackageEntity,
@@ -27,6 +28,6 @@ import { AccountStateModule } from '../deletion/account-state.module';
   ],
   controllers: [PromotionController],
   providers: [PromotionService, CommercePromotionService],
-  exports: [PromotionService],
+  exports: [PromotionService, CommercePromotionService],
 })
 export class PromotionModule {}

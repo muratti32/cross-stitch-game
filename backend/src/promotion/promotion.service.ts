@@ -402,16 +402,7 @@ export class PromotionService {
             }
           }
 
-          const pendingPaidHandoff = await manager.query<readonly { state: string }[]>(
-            `SELECT state FROM promotion.commerce_promotion_handoffs WHERE guest_id = $1 AND account_id = $2`,
-            [guestId, accountId],
-          );
-          const paidReserveRemaining = await manager.query<readonly { paid_balance: string }[]>(
-            `SELECT paid_balance FROM economy.coin_balances WHERE principal_type='guest' AND principal_id=$1`,
-            [guestId],
-          );
-          const handoffAcknowledged = pendingPaidHandoff.some((row) => row.state === 'acknowledged');
-          const mayRevokeGuest = handoffAcknowledged || Number(paidReserveRemaining[0]?.paid_balance ?? 0) === 0;
+          const mayRevokeGuest = await this.mayRevokeGuest(manager, guestId, accountId);
 
           // Consume guest installation identity only after paid commerce is acknowledged.
           if (mayRevokeGuest) await manager.query(
@@ -443,6 +434,23 @@ export class PromotionService {
         throw err;
       }
     }
+  }
+
+  /** Guest revocation is safe only after every commerce-owned source is empty or acknowledged. */
+  private async mayRevokeGuest(manager: EntityManager, guestId: string, accountId: string): Promise<boolean> {
+    const rows = await manager.query<readonly { safe: boolean }[]>(`
+      SELECT NOT EXISTS (
+        SELECT 1 FROM economy.coin_balances WHERE principal_type='guest' AND principal_id=$1 AND paid_balance > 0
+        UNION ALL SELECT 1 FROM economy.ai_credit_balances WHERE principal_type='guest' AND principal_id=$1 AND paid_balance > 0
+        UNION ALL SELECT 1 FROM economy.membership_periods WHERE guest_installation_id=$1
+        UNION ALL SELECT 1 FROM ai.ai_artworks WHERE guest_installation_id=$1
+        UNION ALL SELECT 1 FROM conversion.personal_patterns WHERE guest_installation_id=$1
+        UNION ALL SELECT 1 FROM economy.commerce_transaction_bindings WHERE guest_installation_id=$1
+      ) OR EXISTS (
+        SELECT 1 FROM promotion.commerce_promotion_handoffs
+        WHERE guest_id=$1 AND account_id=$2 AND state='acknowledged'
+      ) AS safe`, [guestId, accountId]);
+    return rows[0]?.safe === true;
   }
 
   async drainSession(accountId: string, guestId: string, patternId: string, guestSessionId: string) {

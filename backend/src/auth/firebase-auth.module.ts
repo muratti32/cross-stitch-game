@@ -7,10 +7,11 @@ import { FirebaseAuthController } from './firebase-auth.controller';
 import { FirebaseAuthService } from './firebase-auth.service';
 import { FIREBASE_IDENTITY_VERIFIER } from './firebase-identity-verifier';
 import { AuthIdentitiesController } from './auth-identities.controller';
+import { PromotionModule } from '../promotion/promotion.module';
 
 @Module({
   controllers: [FirebaseAuthController, AuthIdentitiesController],
-  imports: [AuthModule, EmailAuthModule],
+  imports: [AuthModule, EmailAuthModule, PromotionModule],
   providers: [
     FirebaseAdminIdentityVerifier,
     FirebaseAuthService,

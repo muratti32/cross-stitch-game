@@ -16,6 +16,7 @@ import type { PremiumPlan } from './membership.constants';
 import { premiumDailyClaimAmount } from './membership.constants';
 import type { CommerceOwner } from './commerce-owner';
 import { toCommerceOwnerPrincipal } from './commerce-owner';
+import { paidDebitUpdateExpression } from './paid-reserve';
 
 interface MembershipEventRow {
   environment: 'sandbox' | 'production';
@@ -480,7 +481,7 @@ export class MembershipRepository {
   ): Promise<number> {
     if (projection.creditAmount === 0) return 0;
     const principal = toCommerceOwnerPrincipal(projection.owner);
-    const sourceKey = `membership:${principal.principalType === 'guest' ? 'guest:' : ''}${environment}:${transactionId}`;
+    const sourceKey = `membership:${environment}:${transactionId}`;
     const claim = returningRows<{ id: string }>(
       await manager.query(
         `INSERT INTO economy.ai_credit_ledger_entries
@@ -527,7 +528,7 @@ export class MembershipRepository {
     const principal = toCommerceOwnerPrincipal(projection.owner);
     const grantRows = await manager.query<readonly { id: string }[]>(
       `SELECT id FROM economy.ai_credit_ledger_entries WHERE source_key = $1`,
-      [`membership:${projection.owner.type === 'guest' ? 'guest:' : ''}${environment}:${transactionId}`],
+      [`membership:${environment}:${transactionId}`],
     );
     if (grantRows.length === 0) return 0;
 
@@ -543,7 +544,7 @@ export class MembershipRepository {
           principal.principalId,
           -projection.creditAmount,
           AiCreditLedgerReason.MembershipReversal,
-          `membership_reversal:${projection.owner.type === 'guest' ? 'guest:' : ''}${environment}:${transactionId}`,
+          `membership_reversal:${environment}:${transactionId}`,
           { plan: projection.plan, providerTransactionId: transactionId },
         ],
       ),
@@ -555,6 +556,7 @@ export class MembershipRepository {
        VALUES ($1, $2, $3)
        ON CONFLICT ON CONSTRAINT "PK_ai_credit_balances"
          DO UPDATE SET balance = economy.ai_credit_balances.balance + EXCLUDED.balance,
+                       paid_balance = ${paidDebitUpdateExpression('economy.ai_credit_balances')},
                        updated_at = now()`,
       [principal.principalType, principal.principalId, -projection.creditAmount],
     );

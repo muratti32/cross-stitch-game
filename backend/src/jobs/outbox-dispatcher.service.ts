@@ -14,6 +14,7 @@ import {
   OFFICIAL_PATTERN_DRAFT_EVENT_NAME,
   AI_ARTWORK_JOB_EVENT_NAME,
   CATALOG_PRECHECK_EVENT_NAME,
+  COMMERCE_PROMOTION_JOB_EVENT_NAME,
 } from './jobs.constants';
 import { DemoJobsQueueService } from './demo-jobs-queue.service';
 import { ProcessingJobsRepository } from './processing-jobs.repository';
@@ -81,7 +82,8 @@ export class OutboxDispatcherService {
             | typeof CONVERSION_JOB_EVENT_NAME
             | typeof OFFICIAL_PATTERN_DRAFT_EVENT_NAME
             | typeof AI_ARTWORK_JOB_EVENT_NAME
-            | typeof CATALOG_PRECHECK_EVENT_NAME,
+            | typeof CATALOG_PRECHECK_EVENT_NAME
+            | typeof COMMERCE_PROMOTION_JOB_EVENT_NAME,
         );
       } catch (error: unknown) {
         // The outbox row is durably marked as dispatched, so reconcileOnce
@@ -160,7 +162,8 @@ export class OutboxDispatcherService {
         outbox.eventName !== CONVERSION_JOB_EVENT_NAME &&
         outbox.eventName !== OFFICIAL_PATTERN_DRAFT_EVENT_NAME &&
         outbox.eventName !== AI_ARTWORK_JOB_EVENT_NAME &&
-        outbox.eventName !== CATALOG_PRECHECK_EVENT_NAME)
+        outbox.eventName !== CATALOG_PRECHECK_EVENT_NAME &&
+        outbox.eventName !== COMMERCE_PROMOTION_JOB_EVENT_NAME)
     ) {
       throw new Error(
         `Job Outbox ${outbox.id} targets unsupported queue event ${outbox.queueName}/${outbox.eventName}`,

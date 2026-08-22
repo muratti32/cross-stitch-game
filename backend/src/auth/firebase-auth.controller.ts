@@ -13,6 +13,6 @@ export class FirebaseAuthController {
   exchange(
     @Body() body: ExchangeFirebaseTokenDto,
   ): Promise<FederatedAccountAuthResponse> {
-    return this.firebaseAuth.exchange(body.idToken);
+    return this.firebaseAuth.exchange(body.idToken, body.guestId, body.guestCredential);
   }
 }
