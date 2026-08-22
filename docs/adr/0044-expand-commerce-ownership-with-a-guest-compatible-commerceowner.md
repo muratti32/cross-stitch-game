@@ -1,5 +1,14 @@
 # Expand commerce ownership with a Guest-compatible CommerceOwner
 
+## Follow-up: Guest-owned Personal Patterns and visibility invariants
+
+Issue #105 extends ownership widening to Guest-owned private AI Artwork and
+Personal Patterns. `CHK_patterns_visibility_owner` therefore uses an
+exactly-one-owner rule: a `personal` Pattern has either an Account or a Guest
+Installation owner, while a `catalog` Pattern has neither. The database
+constraint guarantees that a catalog-visible Pattern can never carry a Guest
+owner (or an Account owner).
+
 > This ADR narrows, not overrides, ADR-0011's "Only a Registered Account may purchase a pack," ADR-0012's Registered-Account-only Commerce Transaction Binding, and ADR-0032's rule that the Game Backend grants only webhook events whose subscriber identity resolves to a Registered Account. Those account-only purchase rules remain in force; this ADR only makes the schema able to hold a Guest-owned row once a later ticket deliberately enables that path.
 
 `economy.commerce_transaction_bindings` gains a `CommerceOwner`: a nullable `account_id` foreign key into `auth.registered_accounts` and a nullable `guest_installation_id` foreign key into `auth.guest_installations`, guarded by one database constraint that requires exactly one of them to be set and keeps both in lockstep with the row's existing `principal_type`/`principal_id` columns. The existing columns, their values, and every query that reads them are left untouched; the migration only adds columns, backfills `account_id` from `principal_id` for the existing `'account'` rows, and widens the `principal_type` CHECK from the literal `'account'` to `IN ('account', 'guest')` so the column can, at the schema level, hold a Guest-owned row in the future. No code path writes a `'guest'` row today.

@@ -62,6 +62,10 @@ import { ObjectRegistryEntity } from '../src/sessions/entities';
 import { CoinLedgerRepository } from '../src/economy/coin-ledger.repository';
 import { CommerceLedgerRepository } from '../src/economy/commerce-ledger.repository';
 import { utcRewardDay } from '../src/economy/reward-day';
+import { AiArtworkJobConsumerService } from '../src/ai-artwork/ai-artwork-job-consumer.service';
+import { FalArtworkProviderService } from '../src/ai-artwork/fal-artwork-provider.service';
+import { AiArtworkEntity } from '../src/ai-artwork/entities';
+import { AiArtworkService } from '../src/ai-artwork/ai-artwork.service';
 
 class ForcedRollbackError extends Error {
   constructor() {
@@ -80,11 +84,14 @@ describe('Stitch Wish backend integration', () => {
   let consumer: DemoJobConsumerService;
   let emailDispatcher: EmailOutboxDispatcherService;
   let localEmailSender: LocalEmailSender;
+  let aiArtworkConsumer: AiArtworkJobConsumerService;
+  const falImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAF/gL+7b9lAAAAAElFTkSuQmCC';
 
   const GOOGLE_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.google';
   const APPLE_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.apple';
   const BOUND_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.bound';
-  const INTEGRATION_WEBHOOK_TOKEN = 'integration-test-only-revenuecat-webhook-auth-token-at-least-32-chars';
+
+  const WEBHOOK_TOKEN = 'integration-test-only-revenuecat-webhook-auth-token-at-least-32-chars';
 
   beforeAll(async () => {
     const [{ ApiAppModule }, jobs] = await Promise.all([
@@ -132,6 +139,11 @@ describe('Stitch Wish backend integration', () => {
           return Promise.reject(new Error('Invalid token'));
         }),
       })
+      .overrideProvider(FalArtworkProviderService)
+      .useValue({
+        submit: jest.fn().mockImplementation(() => Promise.resolve(randomUUID())),
+        result: jest.fn().mockResolvedValue({ unsafe: false, url: falImage }),
+      })
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -146,6 +158,7 @@ describe('Stitch Wish backend integration', () => {
     consumer = app.get(jobs.DemoJobConsumerService);
     emailDispatcher = app.get(EmailOutboxDispatcherService);
     localEmailSender = app.get(LocalEmailSender);
+    aiArtworkConsumer = app.get(AiArtworkJobConsumerService);
     await queue.waitUntilReady();
   });
 
@@ -935,6 +948,13 @@ describe('Stitch Wish backend integration', () => {
 
       const guestConversion = await requestConversion(guest.accessToken, 'Guest attempt');
       await runConversion(guestConversion);
+      const guestConversionRow = await dataSource.getRepository(PatternConversionEntity).findOneByOrFail({ processingJobId: guestConversion });
+      expect(guestConversionRow.guestInstallationId).toBe(guest.guestId);
+      expect(guestConversionRow.accountId).toBeNull();
+      const guestPatternId = readStringRecord((await processingJobs.findById(guestConversion))?.result, 'patternId');
+      const guestPattern = await dataSource.getRepository(PersonalPatternEntity).findOneByOrFail({ patternId: guestPatternId });
+      expect(guestPattern.guestInstallationId).toBe(guest.guestId);
+      expect(guestPattern.ownerAccountId).toBeNull();
 
       const firstJobId = await requestConversion(
         account.accessToken,
@@ -3329,8 +3349,6 @@ describe('Stitch Wish backend integration', () => {
       return { accountId, accessToken };
     }
 
-    const WEBHOOK_TOKEN = 'integration-test-only-revenuecat-webhook-auth-token-at-least-32-chars';
-
     it('uses the server capability toggle to refuse new guest commerce writes', async () => {
       const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
       const subscriberId = `$RCAnonymousID:${randomUUID()}`;
@@ -4406,16 +4424,68 @@ describe('Stitch Wish backend integration', () => {
     const supportReference = readStringRecord(attempt.body, 'supportReference');
     await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`).set(headers).expect(200)
       .expect((response) => {
-        expect(response.body.status).toBe('created');
-        expect(response.body.supportReference).toBe(supportReference);
+        expect(readStringRecord(response.body, 'status')).toBe('created');
+        expect(readStringRecord(response.body, 'supportReference')).toBe(supportReference);
       });
     await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 0 });
     const event = { type: 'NON_RENEWING_PURCHASE', app_user_id: subscriberId, aliases: [subscriberId], transaction_id: `ai-${randomUUID()}`, product_id: productId, environment: 'SANDBOX' };
-    await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${INTEGRATION_WEBHOOK_TOKEN}`).send({ event }).expect(200, { status: 'ok' });
-    await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${INTEGRATION_WEBHOOK_TOKEN}`).send({ event }).expect(200, { status: 'ok' });
+    await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event }).expect(200, { status: 'ok' });
+    await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event }).expect(200, { status: 'ok' });
     await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: amount });
     await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`).set(headers).expect(200)
-      .expect((response) => expect(response.body.status).toBe('granted'));
+      .expect((response) => expect(readStringRecord(response.body, 'status')).toBe('granted'));
+  });
+
+  it.each([
+    ['ai_credit_pack_5', 5],
+    ['ai_credit_pack_20', 20],
+    ['ai_credit_pack_50', 50],
+  ] as const)('spends exactly one Guest AI Credit for delivered artwork %s and isolates artwork access', async (productKey, amount) => {
+    const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+    const otherGuest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+    const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+    const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+    await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+    await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+      productId: `com.avk.stitchwish.${productKey}`,
+      idempotencyKey: `ai-art-${randomUUID()}`,
+      subscriberId,
+    }).expect(201);
+    await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+      type: 'NON_RENEWING_PURCHASE', app_user_id: subscriberId, aliases: [subscriberId],
+      transaction_id: `ai-art-tx-${randomUUID()}`, product_id: `com.avk.stitchwish.${productKey}`,
+      amount: 999999, credits: 999999, environment: 'SANDBOX',
+    } }).expect(200, { status: 'ok' });
+    await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: amount });
+
+    const config = app.get(AppConfigService);
+    const base = jest.spyOn(config, 'falWebhookBaseUrl', 'get').mockReturnValue('http://integration.test');
+    const secret = jest.spyOn(config, 'falWebhookSecret', 'get').mockReturnValue('integration-fal-secret');
+    try {
+      const created = await request(httpServer).post('/v1/ai-artworks').set(headers).send({ prompt: 'A blue flower', aspect: 'square' }).expect(202);
+      const artworkId = readStringRecord(created.body, 'id');
+      const jobId = readStringRecord(created.body, 'jobId');
+      expect(await processingJobs.markDispatched(jobId)).toBe(true);
+      await aiArtworkConsumer.processDelivery(jobId);
+      const artwork = await dataSource.getRepository(AiArtworkEntity).findOneByOrFail({ id: artworkId });
+      expect(artwork.guestInstallationId).toBe(guest.guestId);
+      expect(artwork.accountId).toBeNull();
+      const providerRequestId = artwork.providerRequestId;
+      if (providerRequestId === null) throw new Error('AI Artwork provider request was not attached');
+      await app.get(AiArtworkService).handleVerifiedWebhook(jobId, providerRequestId);
+      await aiArtworkConsumer.processDelivery(jobId);
+      await request(httpServer).get(`/v1/ai-artworks/${artworkId}`).set(headers).expect(200)
+        .expect((response) => expect(readStringRecord(response.body, 'status')).toBe('delivered'));
+      await request(httpServer).get(`/v1/ai-artworks/${artworkId}`).set({ Authorization: `Bearer ${otherGuest.accessToken}` }).expect(404);
+      await request(httpServer).post(`/v1/ai-artworks/${artworkId}/approve`).set({ Authorization: `Bearer ${otherGuest.accessToken}` }).send({ title: 'Other Guest', profile: 'easy' }).expect(404);
+      await request(httpServer).delete(`/v1/ai-artworks/${artworkId}`).set({ Authorization: `Bearer ${otherGuest.accessToken}` }).expect(404);
+      await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: amount - 1 });
+      const ledger = await dataSource.query<readonly { amount: string; principal_type: string; principal_id: string }[]>(`SELECT amount, principal_type, principal_id FROM economy.ai_credit_ledger_entries WHERE source_key = $1`, [`ai-artwork:${jobId}`]);
+      expect(ledger).toEqual([{ amount: '-1', principal_type: 'guest', principal_id: guest.guestId }]);
+    } finally {
+      base.mockRestore();
+      secret.mockRestore();
+    }
   });
 
   describe('Guest Data Promotion stage 1', () => {
