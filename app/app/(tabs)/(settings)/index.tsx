@@ -463,7 +463,7 @@ export default function SettingsScreen() {
 
       {/* Data Section */}
       <Text style={styles.sectionTitle}>Data</Text>
-      <Card style={styles.card}>
+      {!isAccount && <Card style={styles.card}>
         <Pressable
           disabled={isOffline}
           onPress={() => setResetModalVisible(true)}
@@ -485,6 +485,9 @@ export default function SettingsScreen() {
                 Offline: Active server connection required to reset guest data.
               </Text>
             )}
+            <Text style={styles.offlineExplanation}>
+              Reset is blocked while a purchase is still being verified. Consumables and private Guest data cannot be recovered afterward.
+            </Text>
           </View>
           <Ionicons
             name="trash-outline"
@@ -588,7 +591,7 @@ export default function SettingsScreen() {
             )}
           </>
         )}
-      </Card>
+      </Card>}
 
       {/* Links Section */}
       <Text style={styles.sectionTitle}>Information & Links</Text>

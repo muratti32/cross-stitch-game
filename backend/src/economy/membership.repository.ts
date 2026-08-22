@@ -123,13 +123,16 @@ export class MembershipRepository {
         [event.environment, event.providerTransactionId],
       );
       if (ownerRows.some((row) => !sameOwner(row, event.owner))) {
-        return {
-          recorded: false,
-          rejectedOtherAccount: true,
-          periodExists: false,
-          creditGranted: 0,
-          creditReversed: 0,
-        };
+        const restored = await this.restoreDeletedAccountSubscription(manager, ownerRows, event);
+        if (!restored) {
+          return {
+            recorded: false,
+            rejectedOtherAccount: true,
+            periodExists: false,
+            creditGranted: 0,
+            creditReversed: 0,
+          };
+        }
       }
 
       const inserted = returningRows<{ provider_event_id: string }>(
@@ -428,6 +431,46 @@ export class MembershipRepository {
       expiresAt: selected.endsAt?.toISOString() ?? null,
       themeAccess: active,
     };
+  }
+
+  /**
+   * Account deletion intentionally leaves bounded subscription history so an
+   * active store subscription can be recovered. A Guest restore may re-own
+   * only that Premium history; deleted balances, content, and one-time grants
+   * remain unreachable and are never copied to the Guest.
+   */
+  private async restoreDeletedAccountSubscription(
+    manager: EntityManager,
+    ownerRows: readonly { account_id: string | null; guest_installation_id: string | null }[],
+    event: VerifiedMembershipEvent,
+  ): Promise<boolean> {
+    if (event.owner.type !== 'guest' || ownerRows.length === 0) return false;
+    const accountIds = ownerRows
+      .map((row) => row.account_id)
+      .filter((id): id is string => id !== null);
+    if (accountIds.length !== ownerRows.length) return false;
+
+    const deletedAccounts = await manager.query<readonly { id: string }[]>(
+      `SELECT id
+       FROM auth.registered_accounts
+       WHERE id = ANY($1::uuid[]) AND status = 'deleted'`,
+      [accountIds],
+    );
+    if (deletedAccounts.length !== accountIds.length) return false;
+
+    await manager.query(
+      `UPDATE economy.membership_events
+       SET account_id = NULL, guest_installation_id = $2
+       WHERE environment = $1 AND provider_transaction_id = $3`,
+      [event.environment, event.owner.guestInstallationId, event.providerTransactionId],
+    );
+    await manager.query(
+      `UPDATE economy.membership_periods
+       SET account_id = NULL, guest_installation_id = $2, updated_at = now()
+       WHERE environment = $1 AND provider_transaction_id = $3`,
+      [event.environment, event.owner.guestInstallationId, event.providerTransactionId],
+    );
+    return true;
   }
 
   private async upsertPeriod(

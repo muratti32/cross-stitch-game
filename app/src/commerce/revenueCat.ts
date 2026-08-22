@@ -270,9 +270,6 @@ export async function getRevenueCatSubscriberId(): Promise<string> {
 }
 
 export async function restoreRevenueCatPurchases(accountId: string | null): Promise<unknown> {
-  if (!accountId) {
-    throw new Error('Sign in with a Registered Account before restoring purchases.');
-  }
   await synchronizeRevenueCatIdentity(accountId);
   return Purchases.restorePurchases();
 }
