@@ -26,6 +26,12 @@ import {
   fetchCoinPackReconciliation,
   type CoinPackProductKey,
 } from '@/api/coinPack';
+import {
+  createGuestPurchaseAttempt,
+  fetchGuestPurchaseAttempt,
+  mapGuestRevenueCatSubscriber,
+  type GuestPurchaseAttemptReference,
+} from '@/api/guestPurchase';
 import { fetchCoinBalance, useCoinBalance } from '@/api/economy';
 import {
   createPremiumReconciliation,
@@ -48,6 +54,7 @@ import {
 } from '@/commerce/commerceIntent';
 import {
   getRevenueCatOfferings,
+  getRevenueCatSubscriberId,
   isRevenueCatTrialEligible,
   missingCanonicalRevenueCatProducts,
   purchaseRevenueCatPackage,
@@ -55,11 +62,16 @@ import {
   showRevenueCatManageSubscriptions,
   useRevenueCatRuntime,
 } from '@/commerce/revenueCat';
-import { Button, Card, Screen } from '@/components';
+import { Button, Card, GuestDataRiskNotice, Screen } from '@/components';
 import { WebLinks } from '@/config';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
 import { withProtectedRoundTrip } from '@/navigation/foregroundEntryNavigation';
+import {
+  clearGuestPurchaseAttempt,
+  readGuestPurchaseAttempt,
+  saveGuestPurchaseAttempt,
+} from '@/commerce/guestPurchaseRecovery';
 
 const RECONCILIATION_POLL_MS = 2_000;
 const RECONCILIATION_DELAY_MS = 10_000;
@@ -84,6 +96,7 @@ interface CoinPackReconciliation {
   readonly startedAt: number;
   readonly supportReference: string | null;
   readonly transactionIdentifier: string;
+  readonly guestAttemptId: string | null;
 }
 
 interface AiCreditPackReconciliation {
@@ -101,7 +114,7 @@ export default function CommerceScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ category?: string; source?: string }>();
   const queryClient = useQueryClient();
-  const { accountId, isAccount } = useIdentityStore();
+  const { accountId, guestId, isAccount } = useIdentityStore();
   const revenueCatRuntime = useRevenueCatRuntime();
   const pendingIntent = useCommerceIntentStore((state) => state.intent);
   const preserveIntent = useCommerceIntentStore((state) => state.preserveIntent);
@@ -129,6 +142,7 @@ export default function CommerceScreen() {
   const [purchasePending, setPurchasePending] = useState<PremiumReconciliation | null>(null);
   const [coinPurchasePending, setCoinPurchasePending] = useState<CoinPackReconciliation | null>(null);
   const [aiCreditPurchasePending, setAiCreditPurchasePending] = useState<AiCreditPackReconciliation | null>(null);
+  const [guestCommerceProduct, setGuestCommerceProduct] = useState<CommerceProduct | null>(null);
   const [restoringPurchases, setRestoringPurchases] = useState(false);
   const viewedSourceRef = useRef<string | null>(null);
   const pendingPremiumPurchaseRef = useRef<CommerceProduct | null>(null);
@@ -402,8 +416,10 @@ export default function CommerceScreen() {
     }
     let grantVerified = false;
     try {
-      const reconciliation = await fetchCoinPackReconciliation(attempt.reconciliationId);
-      if (reconciliation.status === 'pending') {
+      const reconciliation = attempt.guestAttemptId === null
+        ? await fetchCoinPackReconciliation(attempt.reconciliationId)
+        : await fetchGuestPurchaseAttempt(attempt.reconciliationId);
+      if (reconciliation.status === 'pending' || reconciliation.status === 'created' || reconciliation.status === 'verifying') {
         if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) {
           updateCoinReconciliation({ ...attempt, prolonged: true });
         } else {
@@ -411,7 +427,7 @@ export default function CommerceScreen() {
         }
         return;
       }
-      if (reconciliation.status === 'verification_failed') {
+      if (reconciliation.status === 'verification_failed' || reconciliation.status === 'failed' || reconciliation.status === 'cancelled') {
         await captureGameplayEvent('purchase_failed', {
           product_kind: 'stitch_coin_pack',
           product_key: attempt.product.productKey,
@@ -444,6 +460,7 @@ export default function CommerceScreen() {
         product_key: attempt.product.productKey,
       });
       updateCoinReconciliation(null);
+      if (!isAccount && guestId !== null) await clearGuestPurchaseAttempt(guestId);
       clearIntent();
       setPurchaseError(null);
       setPurchaseSuccess(
@@ -461,21 +478,23 @@ export default function CommerceScreen() {
         ? 'The Coin grant was verified, but the current Stitch Coin balance could not be refreshed. Retry reconciliation.'
         : 'The Game Backend could not verify this Coin Pack yet. Retry reconciliation; do not buy it again.');
     }
-  }, [clearIntent, queryClient, scheduleCoinReconciliation, updateCoinReconciliation]);
+  }, [clearIntent, guestId, isAccount, queryClient, scheduleCoinReconciliation, updateCoinReconciliation]);
 
   const beginCoinPackReconciliation = useCallback(async (
     product: CommerceProduct,
     transactionIdentifier: string,
+    guestAttempt: GuestPurchaseAttemptReference | null = null,
   ) => {
     const attempt: CoinPackReconciliation = {
       failureStage: null,
       id: `${Date.now()}-${product.productKey}-purchase`,
       product,
       prolonged: false,
-      reconciliationId: null,
+      reconciliationId: guestAttempt?.id ?? null,
       startedAt: Date.now(),
-      supportReference: null,
+      supportReference: guestAttempt?.supportReference ?? null,
       transactionIdentifier,
+      guestAttemptId: guestAttempt?.id ?? null,
     };
     updateCoinReconciliation(attempt);
     setOpenCategory(null);
@@ -484,6 +503,11 @@ export default function CommerceScreen() {
       product_kind: 'stitch_coin_pack',
       product_key: product.productKey,
     });
+    if (guestAttempt !== null) {
+      updateCoinReconciliation(attempt);
+      await reconcileCoinPack(attempt);
+      return;
+    }
     try {
       const reference = await createCoinPackReconciliation(
         product.productKey as CoinPackProductKey,
@@ -510,6 +534,30 @@ export default function CommerceScreen() {
   }, [reconcileCoinPack, updateCoinReconciliation]);
 
   coinReconciliationRunnerRef.current = reconcileCoinPack;
+
+  useEffect(() => {
+    if (isAccount || guestId === null || products.length === 0 || coinPurchasePending !== null) return;
+    let cancelled = false;
+    void readGuestPurchaseAttempt(guestId).then(async (stored) => {
+      if (cancelled || stored === null) return;
+      const product = products.find((candidate) => candidate.productKey === stored.productKey);
+      if (product === undefined) return;
+      const attempt: CoinPackReconciliation = {
+        failureStage: null,
+        id: `recovered-${stored.id}`,
+        product,
+        prolonged: false,
+        reconciliationId: stored.id,
+        startedAt: Date.now(),
+        supportReference: stored.supportReference,
+        transactionIdentifier: '',
+        guestAttemptId: stored.id,
+      };
+      updateCoinReconciliation(attempt);
+      await reconcileCoinPack(attempt);
+    }).catch(() => undefined);
+    return () => { cancelled = true; };
+  }, [coinPurchasePending, guestId, isAccount, products, reconcileCoinPack, updateCoinReconciliation]);
 
   const scheduleAiCreditReconciliation = useCallback((attempt: AiCreditPackReconciliation) => {
     if (aiCreditReconciliationTimerRef.current !== null) {
@@ -651,12 +699,30 @@ export default function CommerceScreen() {
       ? 'verification'
       : 'store';
     try {
+      let guestAttempt: GuestPurchaseAttemptReference | null = null;
+      if (!isAccount) {
+        if (Platform.OS !== 'ios') throw new Error('Guest Stitch Coin purchases are available on iOS only.');
+        const subscriberId = await getRevenueCatSubscriberId();
+        await mapGuestRevenueCatSubscriber(subscriberId);
+        guestAttempt = await createGuestPurchaseAttempt(
+          product.package.product.identifier,
+          `${Date.now()}-${product.productKey}`,
+          subscriberId,
+        );
+        if (guestId !== null) {
+          await saveGuestPurchaseAttempt(guestId, {
+            id: guestAttempt.id,
+            productKey: product.productKey,
+            supportReference: guestAttempt.supportReference,
+          });
+        }
+      }
       const baselineMembership = product.category === 'premium'
         ? membershipFingerprint(await fetchMembership())
         : null;
       failureStage = 'store';
       const purchaseResult = await withProtectedRoundTrip('commerce', () =>
-        purchaseRevenueCatPackage(product.package, accountId),
+        purchaseRevenueCatPackage(product.package, accountId, !isAccount),
       );
       if (product.category === 'premium') {
         await beginPremiumReconciliation(product, 'purchase', baselineMembership);
@@ -664,6 +730,7 @@ export default function CommerceScreen() {
         await beginCoinPackReconciliation(
           product,
           purchaseResult.transaction.transactionIdentifier,
+          guestAttempt,
         );
       } else {
         await beginAiCreditPackReconciliation(
@@ -688,7 +755,7 @@ export default function CommerceScreen() {
     } finally {
       setPurchasingKey(null);
     }
-  }, [accountId, beginAiCreditPackReconciliation, beginCoinPackReconciliation, beginPremiumReconciliation]);
+  }, [accountId, beginAiCreditPackReconciliation, beginCoinPackReconciliation, beginPremiumReconciliation, isAccount]);
 
   const confirmPremiumPurchase = useCallback((product: CommerceProduct) => {
     if (premiumPurchaseInFlightRef.current) return;
@@ -734,10 +801,15 @@ export default function CommerceScreen() {
     });
 
     if (!isAccount) {
-      router.push({
-        pathname: '/(tabs)/(settings)/sign-in',
-        params: { returnTo: 'commerce' },
-      });
+      if (product.category !== 'stitch_coin') {
+        router.push({ pathname: '/(tabs)/(settings)/sign-in', params: { returnTo: 'commerce' } });
+        return;
+      }
+      if (Platform.OS !== 'ios') {
+        setPurchaseError('Guest Stitch Coin purchases are available on iOS only.');
+        return;
+      }
+      setGuestCommerceProduct(product);
       return;
     }
 
@@ -750,7 +822,7 @@ export default function CommerceScreen() {
       return;
     }
     setConfirmingAiCreditPack(product);
-  }, [isAccount, pendingIntent, preserveIntent, purchase, router, source]);
+  }, [isAccount, pendingIntent, preserveIntent, router, setGuestCommerceProduct, source]);
 
   const restorePurchases = useCallback(async () => {
     if (!isAccount) {
@@ -988,7 +1060,11 @@ export default function CommerceScreen() {
           <View style={styles.pendingBanner}>
             <Ionicons name="time-outline" size={18} color={Theme.colors.accentTeal} />
             <View style={styles.pendingCopy}>
-              <Text style={styles.pendingTitle}>Purchase Reconciliation Pending</Text>
+              <Text style={styles.pendingTitle}>
+                {coinPurchasePending.guestAttemptId !== null
+                  ? 'Verifying purchase'
+                  : 'Purchase Reconciliation Pending'}
+              </Text>
               <Text style={styles.pendingText}>
                 The store response is received. Stitch Coin updates only after the Game Backend
                 exposes the matching Commerce Ledger grant. Do not purchase this pack again.
@@ -1193,6 +1269,20 @@ export default function CommerceScreen() {
           setOpenCategory(null);
         }}
         onPurchase={attemptPurchase}
+      />
+      <GuestDataRiskNotice
+        visible={guestCommerceProduct !== null}
+        commerce
+        onProceed={() => {
+          const product = guestCommerceProduct;
+          setGuestCommerceProduct(null);
+          if (product !== null) setConfirmingCoinPack(product);
+        }}
+        onSignIn={() => {
+          setGuestCommerceProduct(null);
+          router.push({ pathname: '/(tabs)/(settings)/sign-in', params: { returnTo: 'commerce' } });
+        }}
+        onDismiss={() => setGuestCommerceProduct(null)}
       />
       <PremiumConfirmation
         onDismiss={handlePremiumConfirmationDismiss}

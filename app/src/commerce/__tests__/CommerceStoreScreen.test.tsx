@@ -39,6 +39,9 @@ const mockSetQueryData = jest.fn();
 const mockCreateCoinPackReconciliation = jest.fn();
 const mockFetchCoinPackReconciliation = jest.fn();
 const mockFetchCoinBalance = jest.fn();
+const mockCreateGuestPurchaseAttempt = jest.fn();
+const mockFetchGuestPurchaseAttempt = jest.fn();
+const mockMapGuestRevenueCatSubscriber = jest.fn();
 const mockCreateAiCreditPackReconciliation = jest.fn();
 const mockFetchAiCreditPackReconciliation = jest.fn();
 let renderer: TestRenderer.ReactTestRenderer | null = null;
@@ -88,7 +91,19 @@ jest.mock('@/components', () => {
       Pressable,
       { disabled, onPress },
       React.createElement(Text, null, title),
-    ),
+      ),
+    GuestDataRiskNotice: ({ visible, onProceed, onSignIn, onDismiss }: {
+      visible: boolean;
+      onProceed: () => void;
+      onSignIn: () => void;
+      onDismiss: () => void;
+    }) => visible
+      ? React.createElement(View, null,
+        React.createElement(Pressable, { onPress: onProceed }, React.createElement(Text, null, 'Continue as Guest')),
+        React.createElement(Pressable, { onPress: onSignIn }, React.createElement(Text, null, 'Sign in instead')),
+        React.createElement(Pressable, { onPress: onDismiss }, React.createElement(Text, null, 'Dismiss')),
+      )
+      : null,
   };
 });
 
@@ -152,6 +167,13 @@ jest.mock('@/commerce/revenueCat', () => ({
   restoreRevenueCatPurchases: (...args: unknown[]) => mockRestorePurchases(...args),
   showRevenueCatManageSubscriptions: (...args: unknown[]) => mockManageSubscriptions(...args),
   useRevenueCatRuntime: () => ({ message: null, status: 'ready' }),
+  getRevenueCatSubscriberId: jest.fn().mockResolvedValue('anonymous-subscriber'),
+}));
+
+jest.mock('@/api/guestPurchase', () => ({
+  createGuestPurchaseAttempt: (...args: unknown[]) => mockCreateGuestPurchaseAttempt(...args),
+  fetchGuestPurchaseAttempt: (...args: unknown[]) => mockFetchGuestPurchaseAttempt(...args),
+  mapGuestRevenueCatSubscriber: (...args: unknown[]) => mockMapGuestRevenueCatSubscriber(...args),
 }));
 
 const productRows = [
@@ -229,6 +251,12 @@ beforeEach(() => {
   });
   mockFetchCoinPackReconciliation.mockResolvedValue({ status: 'pending', balance: null });
   mockFetchCoinBalance.mockResolvedValue(420);
+  mockMapGuestRevenueCatSubscriber.mockResolvedValue(undefined);
+  mockCreateGuestPurchaseAttempt.mockResolvedValue({
+    id: 'guest-attempt-81', status: 'created', productId: 'com.avk.stitchwish.coin_pack_300',
+    supportReference: 'SW-GUEST-COIN', providerTransactionId: null,
+  });
+  mockFetchGuestPurchaseAttempt.mockResolvedValue({ status: 'granted', balance: 420 });
   mockCreateAiCreditPackReconciliation.mockResolvedValue({
     id: '86d57c4b-4329-4f8c-a37f-b26c3bdca382',
     supportReference: 'SW-AI-CREDIT',
@@ -698,7 +726,7 @@ afterEach(() => {
   }
 });
 
-it('keeps Guest catalog intent through sign-in return without starting a purchase', async () => {
+it('keeps Guest catalog intent and makes Continue as Guest primary', async () => {
   await act(async () => {
     renderer = TestRenderer.create(<CommerceScreen />);
     await flushPromises();
@@ -724,10 +752,8 @@ it('keeps Guest catalog intent through sign-in return without starting a purchas
     product_kind: 'stitch_coin_pack',
     product_key: 'coin_pack_300',
   });
-  expect(mockRouter.push).toHaveBeenCalledWith({
-    pathname: '/(tabs)/(settings)/sign-in',
-    params: { returnTo: 'commerce' },
-  });
+  expect(allText(renderer!.root)).toContain('Continue as Guest');
+  expect(mockRouter.push).not.toHaveBeenCalled();
   expect(useCommerceIntentStore.getState().intent).toEqual({
     category: 'stitch_coin',
     entrySource: 'profile',
@@ -751,6 +777,26 @@ it('keeps Guest catalog intent through sign-in return without starting a purchas
   expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('commerce_store_viewed', {
     source: 'sign_in_return',
   });
+});
+
+it('drives the Guest purchase through mapping, durable attempt, verification and refreshed balance', async () => {
+  await renderScreen();
+  await openCoinPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  await act(async () => pressByText(renderer!.root, 'Continue as Guest'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
+    await flushPromises();
+  });
+
+  expect(mockMapGuestRevenueCatSubscriber).toHaveBeenCalledWith('anonymous-subscriber');
+  expect(mockCreateGuestPurchaseAttempt).toHaveBeenCalledWith(
+    'com.avk.stitchwish.coin_pack_300', expect.any(String), 'anonymous-subscriber',
+  );
+  expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+  expect(mockFetchGuestPurchaseAttempt).toHaveBeenCalledWith('guest-attempt-81');
+  expect(mockFetchCoinBalance).toHaveBeenCalledWith();
+  expect(allText(renderer!.root)).toContain('300 Stitch Coins grant verified. Stitch Coin balance: 420.');
 });
 
 it('opens current Coin Pack prices directly for a Stitch Coin shortfall', async () => {
