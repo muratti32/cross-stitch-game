@@ -463,40 +463,46 @@ export default function SettingsScreen() {
 
       {/* Data Section */}
       <Text style={styles.sectionTitle}>Data</Text>
-      {!isAccount && <Card style={styles.card}>
-        <Pressable
-          disabled={isOffline}
-          onPress={() => setResetModalVisible(true)}
-          style={({ pressed }) => [
-            styles.settingRow,
-            isOffline && styles.rowDisabled,
-            pressed && styles.linkPressed,
-          ]}
-        >
-          <View style={styles.settingTextContainer}>
-            <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>
-              Reset guest data
-            </Text>
-            <Text style={styles.settingDescription}>
-              Irreversibly close the guest identity on the server and wipe all device data.
-            </Text>
-            {isOffline && (
-              <Text style={styles.offlineExplanation}>
-                Offline: Active server connection required to reset guest data.
-              </Text>
-            )}
-            <Text style={styles.offlineExplanation}>
-              Reset is blocked while a purchase is still being verified. Consumables and private Guest data cannot be recovered afterward.
-            </Text>
-          </View>
-          <Ionicons
-            name="trash-outline"
-            size={20}
-            color={isOffline ? Theme.colors.disabledText : Theme.colors.error}
-          />
-        </Pressable>
+      <Card style={styles.card}>
+        {/* Guest Data Reset belongs to the Guest identity only; a Registered
+            Account closes its identity through Account Deletion below. */}
+        {!isAccount && (
+          <>
+            <Pressable
+              disabled={isOffline}
+              onPress={() => setResetModalVisible(true)}
+              style={({ pressed }) => [
+                styles.settingRow,
+                isOffline && styles.rowDisabled,
+                pressed && styles.linkPressed,
+              ]}
+            >
+              <View style={styles.settingTextContainer}>
+                <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>
+                  Reset guest data
+                </Text>
+                <Text style={styles.settingDescription}>
+                  Irreversibly close the guest identity on the server and wipe all device data.
+                </Text>
+                {isOffline && (
+                  <Text style={styles.offlineExplanation}>
+                    Offline: Active server connection required to reset guest data.
+                  </Text>
+                )}
+                <Text style={styles.offlineExplanation}>
+                  Reset is blocked while a purchase is still being verified. Consumables and private Guest data cannot be recovered afterward.
+                </Text>
+              </View>
+              <Ionicons
+                name="trash-outline"
+                size={20}
+                color={isOffline ? Theme.colors.disabledText : Theme.colors.error}
+              />
+            </Pressable>
 
-        <View style={styles.rowDivider} />
+            <View style={styles.rowDivider} />
+          </>
+        )}
 
         <Pressable
           onPress={handleRemoveLocalData}
@@ -591,7 +597,7 @@ export default function SettingsScreen() {
             )}
           </>
         )}
-      </Card>}
+      </Card>
 
       {/* Links Section */}
       <Text style={styles.sectionTitle}>Information & Links</Text>

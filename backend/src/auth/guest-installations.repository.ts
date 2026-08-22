@@ -1,7 +1,12 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
+import { AiGuestPurgeRepository } from '../ai-artwork/ai-guest-purge.repository';
+import { CatalogGuestPurgeRepository } from '../catalog/catalog-guest-purge.repository';
+import { ConversionGuestPurgeRepository } from '../conversion/conversion-guest-purge.repository';
 import { returningRows } from '../database/query-results';
+import { EconomyGuestPurgeRepository } from '../economy/economy-guest-purge.repository';
+import { SessionsGuestPurgeRepository } from '../sessions/sessions-guest-purge.repository';
 import { GuestInstallationStatus } from './entities';
 
 export interface GuestInstallationRecord {
@@ -12,7 +17,14 @@ export interface GuestInstallationRecord {
 
 @Injectable()
 export class GuestInstallationsRepository {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly economyPurge: EconomyGuestPurgeRepository,
+    private readonly aiPurge: AiGuestPurgeRepository,
+    private readonly conversionPurge: ConversionGuestPurgeRepository,
+    private readonly catalogPurge: CatalogGuestPurgeRepository,
+    private readonly sessionsPurge: SessionsGuestPurgeRepository,
+  ) {}
 
   async findByInstallationKeyHash(
     installationKeyHash: string,
@@ -77,6 +89,13 @@ export class GuestInstallationsRepository {
     return returningRows<{ id: string }>(result).length === 1;
   }
 
+  /**
+   * Confirmed Guest Data Reset. Each bounded context erases its own rows
+   * through its purge repository; this method owns only the `auth` schema and
+   * the transaction the whole reset shares. The revoked installation row stays
+   * behind, so provider-transaction bindings and grant tombstones keep
+   * pointing at an identity that can never be signed in to again.
+   */
   async reset(id: string): Promise<void> {
     await this.dataSource.transaction(async (manager) => {
       const activeRows = await manager.query<readonly { status: GuestInstallationStatus }[]>(
@@ -84,82 +103,14 @@ export class GuestInstallationsRepository {
         [id],
       );
       if (activeRows[0]?.status === GuestInstallationStatus.Active) {
-        const pendingRows = await manager.query<readonly { id: string }[]>(
-          `SELECT id
-           FROM economy.purchase_attempts
-           WHERE principal_type = 'guest' AND principal_id = $1
-             AND status IN ('created', 'verifying')
-           LIMIT 1
-           FOR UPDATE`,
-          [id],
-        );
-        if (pendingRows.length > 0) {
-          throw new ConflictException(
-            'Guest Data Reset is unavailable while a Purchase Attempt is unresolved',
-          );
-        }
+        await this.economyPurge.assertNoUnresolvedPurchaseAttempt(manager, id);
       }
 
-      // Keep the revoked installation row and its provider-transaction
-      // bindings as non-regrant tombstones. All mutable Guest state is removed
-      // so a fresh installation can restore Premium only; consumables remain
-      // bound to the old identity and can never be minted again.
-      await manager.query(
-        `DELETE FROM economy.membership_events
-         WHERE guest_installation_id = $1`,
-        [id],
-      );
-      await manager.query(
-        `DELETE FROM economy.membership_periods
-         WHERE guest_installation_id = $1`,
-        [id],
-      );
-      await manager.query(
-        `DELETE FROM economy.premium_purchase_reconciliations
-         WHERE guest_installation_id = $1`,
-        [id],
-      );
-      await manager.query(
-        `DELETE FROM economy.purchase_attempts
-         WHERE principal_type = 'guest' AND principal_id = $1`,
-        [id],
-      );
-      await manager.query(
-        `DELETE FROM economy.revenuecat_subscriber_mappings
-         WHERE guest_installation_id = $1`,
-        [id],
-      );
-      for (const table of [
-        'economy.coin_ledger_entries',
-        'economy.ai_credit_ledger_entries',
-        'economy.coin_balances',
-        'economy.ai_credit_balances',
-        'economy.reward_day_pools',
-        'economy.gameplay_events',
-        'economy.daily_color_action_counts',
-        'economy.ad_attempts',
-        'economy.pattern_unlocks',
-      ]) {
-        await manager.query(
-          `DELETE FROM ${table} WHERE principal_type = 'guest' AND principal_id = $1`,
-          [id],
-        );
-      }
-      for (const [table, column] of [
-        ['ai.ai_credit_reservations', 'guest_installation_id'],
-        ['ai.ai_artworks', 'guest_installation_id'],
-        ['ai.prompt_safety_attempts', 'guest_installation_id'],
-        ['conversion.pattern_conversions', 'guest_installation_id'],
-        ['conversion.personal_patterns', 'guest_installation_id'],
-        ['catalog.patterns', 'guest_installation_id'],
-      ] as const) {
-        await manager.query(`DELETE FROM ${table} WHERE ${column} = $1`, [id]);
-      }
-      await manager.query(
-        `DELETE FROM sessions.stitching_sessions
-         WHERE principal_type = 'guest' AND principal_id = $1`,
-        [id],
-      );
+      await this.economyPurge.purgeGuest(manager, id);
+      await this.aiPurge.purgeGuest(manager, id);
+      await this.conversionPurge.purgeGuest(manager, id);
+      await this.catalogPurge.purgeGuest(manager, id);
+      await this.sessionsPurge.purgeGuest(manager, id);
 
       await manager.query(
         `UPDATE auth.guest_installations

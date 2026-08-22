@@ -869,37 +869,38 @@ export default function CommerceScreen() {
     setConfirmingAiCreditPack(product);
   }, [isAccount, pendingIntent, preserveIntent, router, setGuestCommerceProduct, source]);
 
-  const restorePurchases = useCallback(async () => {
-    if (!isAccount) {
-      setRestoringPurchases(true);
-      setPurchaseError(null);
-      try {
-        const subscriberId = await getRevenueCatSubscriberId();
-        await mapGuestRevenueCatSubscriber(subscriberId);
-        await restoreRevenueCatPurchases(null);
-        await queryClient.refetchQueries({ queryKey: ['commerce', 'membership'] });
-        await queryClient.refetchQueries({ queryKey: ['economy'] });
-        Alert.alert(
-          'Restore requested',
-          'Verified Premium access will appear after the store webhook is reconciled. '
-            + 'Stitch Coin and AI Credit packs are never restored.',
-        );
-      } catch (error: unknown) {
-        setPurchaseError(purchaseErrorMessage(error));
-      } finally {
-        setRestoringPurchases(false);
-      }
-      return;
+  // A Guest restore re-owns provider-verified Premium only, so it maps the
+  // anonymous subscriber first and never opens a reconciliation for packs.
+  const restoreGuestPremium = useCallback(async () => {
+    const subscriberId = await getRevenueCatSubscriberId();
+    await mapGuestRevenueCatSubscriber(subscriberId);
+    await restoreRevenueCatPurchases(null);
+    await queryClient.refetchQueries({ queryKey: ['commerce', 'membership'] });
+    await queryClient.refetchQueries({ queryKey: ['economy'] });
+    Alert.alert(
+      'Restore requested',
+      'Verified Premium access will appear after the store webhook is reconciled. '
+        + 'Stitch Coin and AI Credit packs are never restored.',
+    );
+  }, [queryClient]);
+
+  const restoreAccountPurchases = useCallback(async () => {
+    await restoreRevenueCatPurchases(accountId);
+    if (selectedPremium !== undefined) {
+      await beginPremiumReconciliation(selectedPremium, 'restore');
     }
+  }, [accountId, beginPremiumReconciliation, selectedPremium]);
+
+  const restorePurchases = useCallback(async () => {
     setRestoringPurchases(true);
     setPurchaseError(null);
     try {
-      await withProtectedRoundTrip('commerce', () => restoreRevenueCatPurchases(accountId));
-      if (selectedPremium !== undefined) {
-        await beginPremiumReconciliation(selectedPremium, 'restore');
-      }
+      await withProtectedRoundTrip(
+        'commerce',
+        () => (isAccount ? restoreAccountPurchases() : restoreGuestPremium()),
+      );
     } catch (error: unknown) {
-      if (selectedPremium !== undefined) {
+      if (isAccount && selectedPremium !== undefined) {
         await captureGameplayEvent('purchase_failed', {
           product_kind: 'premium_membership',
           product_key: selectedPremium.productKey,
@@ -910,7 +911,7 @@ export default function CommerceScreen() {
     } finally {
       setRestoringPurchases(false);
     }
-  }, [accountId, beginPremiumReconciliation, isAccount, router, selectedPremium]);
+  }, [isAccount, restoreAccountPurchases, restoreGuestPremium, selectedPremium]);
 
   const retryPremiumReconciliation = useCallback(async () => {
     const attempt = reconciliationRef.current;

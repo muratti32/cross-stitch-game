@@ -31,7 +31,7 @@ export function GuestDataRiskNotice({ visible, onProceed, onSignIn, onDismiss, c
 
           <Text style={styles.body}>
             {commerce
-              ? 'You can purchase Stitch Coin without registration. This purchase belongs to this Guest Installation Identity; signing in remains optional.'
+              ? 'You can purchase without registration. Premium Membership can be restored from the store, but Stitch Coin, AI Credit, and private Guest content are unrecoverable if this installation is lost. Registering protects them and never interrupts playing as a Guest.'
               : 'Stitch Coin and progress live only on this device as a Guest. If the installation is lost, the Guest ledger and progress may be unrecoverable. Signing in protects your progress.'}
           </Text>
 
