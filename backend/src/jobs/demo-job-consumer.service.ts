@@ -13,6 +13,7 @@ import {
   OFFICIAL_PATTERN_DRAFT_EVENT_NAME,
   AI_ARTWORK_JOB_EVENT_NAME,
   CATALOG_PRECHECK_EVENT_NAME,
+  COMMERCE_PROMOTION_JOB_TYPE,
 } from './jobs.constants';
 import {
   DemoJobPayload,
@@ -23,6 +24,8 @@ import {
 } from './jobs.types';
 import { ProcessingJobsRepository } from './processing-jobs.repository';
 import { captureWorkerFailure } from '../observability';
+import { CommercePromotionService } from '../promotion/commerce-promotion.service';
+import { COMMERCE_PROMOTION_JOB_EVENT_NAME } from './jobs.constants';
 
 type DemoJobWorker = Worker<
   DemoJobQueueData,
@@ -60,6 +63,8 @@ export class DemoJobConsumerService {
     @Inject(forwardRef(() => CatalogPrecheckJobConsumerService))
     private readonly catalogPrecheckJobs: CatalogPrecheckJobConsumerService,
     private readonly processingJobs: ProcessingJobsRepository,
+    @Inject(forwardRef(() => CommercePromotionService))
+    private readonly commercePromotion: CommercePromotionService,
   ) {
     this.redisUrl = config.redisUrl;
     this.workerConcurrency = config.conversionWorkerConcurrency;
@@ -232,6 +237,29 @@ export class DemoJobConsumerService {
       }
       if (job.name === CATALOG_PRECHECK_EVENT_NAME) {
         return await this.catalogPrecheckJobs.processDelivery(job.data.processingJobId);
+      }
+      if (job.name === COMMERCE_PROMOTION_JOB_EVENT_NAME) {
+        const claim = await this.processingJobs.claimForWorker(job.data.processingJobId);
+        if (claim.kind === 'missing') throw new Error(`Missing Commerce Promotion job ${job.data.processingJobId}`);
+        if (claim.kind === 'retry') throw new ProcessingJobNotReadyError(job.data.processingJobId);
+        if (claim.kind === 'terminal') return { outcome: 'terminal-replay', processingJobId: job.data.processingJobId };
+        if (claim.job.type !== COMMERCE_PROMOTION_JOB_TYPE) {
+          await this.processingJobs.failFromRunning(job.data.processingJobId, 'Commerce Promotion job type is invalid');
+          throw new Error('Commerce Promotion job type is invalid');
+        }
+        const handoffId = claim.job.payload.handoffId;
+        if (typeof handoffId !== 'string') {
+          await this.processingJobs.failFromRunning(job.data.processingJobId, 'Commerce Promotion payload is invalid');
+          throw new Error('Commerce Promotion payload is invalid');
+        }
+        await this.commercePromotion.processQueued(handoffId);
+        const completed = await this.processingJobs.completeFromRunning(job.data.processingJobId, {});
+        if (!completed) {
+          const currentJob = await this.processingJobs.findById(job.data.processingJobId);
+          if (currentJob?.status !== ProcessingJobStatus.Completed) throw new Error('Commerce Promotion job lost its running state');
+          return { outcome: 'terminal-replay', processingJobId: job.data.processingJobId };
+        }
+        return { outcome: claim.kind === 'resume' ? 'resumed-and-completed' : 'completed', processingJobId: job.data.processingJobId };
       }
       return await this.processDelivery(job.data);
     } catch (error: unknown) {

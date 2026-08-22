@@ -14,13 +14,17 @@ import {
 } from './membership-projection';
 import type { PremiumPlan } from './membership.constants';
 import { premiumDailyClaimAmount } from './membership.constants';
+import type { CommerceOwner } from './commerce-owner';
+import { toCommerceOwnerPrincipal } from './commerce-owner';
+import { paidDebitUpdateExpression } from './paid-reserve';
 
 interface MembershipEventRow {
   environment: 'sandbox' | 'production';
   provider_event_id: string;
   provider_transaction_id: string;
   original_transaction_id: string;
-  account_id: string;
+  account_id: string | null;
+  guest_installation_id: string | null;
   event_type: string;
   product_id: string;
   period_type: string;
@@ -56,6 +60,7 @@ interface PoolRow {
 export interface MembershipEventResult {
   recorded: boolean;
   rejectedOtherAccount: boolean;
+  periodExists: boolean;
   creditGranted: number;
   creditReversed: number;
 }
@@ -63,6 +68,7 @@ export interface MembershipEventResult {
 export interface MembershipTransferInput {
   environment: 'sandbox' | 'production';
   fromAccountIds: readonly string[];
+  fromGuestIds?: readonly string[];
   toAccountId: string;
 }
 
@@ -110,16 +116,17 @@ export class MembershipRepository {
       // owner, so ask for all of them rather than an arbitrary single row: a
       // partially rebound transaction would otherwise accept or reject the
       // same claim depending on which row Postgres happened to return.
-      const ownerRows = await manager.query<readonly { account_id: string }[]>(
-        `SELECT DISTINCT account_id
+      const ownerRows = await manager.query<readonly { account_id: string | null; guest_installation_id: string | null }[]>(
+        `SELECT DISTINCT account_id, guest_installation_id
          FROM economy.membership_events
          WHERE environment = $1 AND provider_transaction_id = $2`,
         [event.environment, event.providerTransactionId],
       );
-      if (ownerRows.some((row) => row.account_id !== event.accountId)) {
+      if (ownerRows.some((row) => !sameOwner(row, event.owner))) {
         return {
           recorded: false,
           rejectedOtherAccount: true,
+          periodExists: false,
           creditGranted: 0,
           creditReversed: 0,
         };
@@ -129,10 +136,10 @@ export class MembershipRepository {
         await manager.query(
           `INSERT INTO economy.membership_events
              (environment, provider_event_id, provider_transaction_id,
-              original_transaction_id, account_id, event_type, product_id,
+              original_transaction_id, account_id, guest_installation_id, event_type, product_id,
               period_type, event_at, purchased_at, expires_at,
               grace_period_expires_at, cancel_reason)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
            ON CONFLICT ON CONSTRAINT "PK_membership_events" DO NOTHING
            RETURNING provider_event_id`,
           [
@@ -140,7 +147,8 @@ export class MembershipRepository {
             event.providerEventId,
             event.providerTransactionId,
             event.originalTransactionId,
-            event.accountId,
+              event.owner.type === 'account' ? event.owner.accountId : null,
+              event.owner.type === 'guest' ? event.owner.guestInstallationId : null,
             event.type,
             event.productId,
             event.periodType,
@@ -166,6 +174,7 @@ export class MembershipRepository {
         return {
           recorded: inserted.length > 0,
           rejectedOtherAccount: false,
+          periodExists: false,
           creditGranted: 0,
           creditReversed: 0,
         };
@@ -190,6 +199,7 @@ export class MembershipRepository {
       return {
         recorded: inserted.length > 0,
         rejectedOtherAccount: false,
+        periodExists: true,
         creditGranted,
         creditReversed,
       };
@@ -204,7 +214,8 @@ export class MembershipRepository {
    * cross-account claims while a real transfer stops looking like one.
    */
   async transferMembership(input: MembershipTransferInput): Promise<MembershipTransferResult> {
-    if (input.fromAccountIds.length === 0) {
+    const fromGuestIds = input.fromGuestIds ?? [];
+    if (input.fromAccountIds.length === 0 && fromGuestIds.length === 0) {
       return { eventsMoved: 0, periodsMoved: 0 };
     }
     return this.dataSource.transaction('SERIALIZABLE', async (manager) => {
@@ -213,9 +224,10 @@ export class MembershipRepository {
       >(
         `SELECT DISTINCT provider_transaction_id
          FROM economy.membership_events
-         WHERE environment = $1 AND account_id = ANY($2::uuid[])
+         WHERE environment = $1
+           AND (account_id = ANY($2::uuid[]) OR guest_installation_id = ANY($3::uuid[]))
          ORDER BY provider_transaction_id`,
-        [input.environment, [...input.fromAccountIds]],
+        [input.environment, [...input.fromAccountIds], [...fromGuestIds]],
       );
       // Take the same per-transaction locks recordVerifiedEvent takes, in a
       // stable order, so a transfer and an in-flight event for one of these
@@ -235,10 +247,10 @@ export class MembershipRepository {
       }
       const movedEvents = await manager.query<readonly { provider_event_id: string }[]>(
         `UPDATE economy.membership_events
-         SET account_id = $3
+         SET account_id = $3, guest_installation_id = NULL
          WHERE environment = $1
            AND provider_transaction_id = ANY($2::varchar[])
-           AND account_id <> $3
+           AND (account_id IS DISTINCT FROM $3 OR guest_installation_id IS NOT NULL)
          RETURNING provider_event_id`,
         [input.environment, transactionIds, input.toAccountId],
       );
@@ -246,10 +258,10 @@ export class MembershipRepository {
         readonly { provider_transaction_id: string }[]
       >(
         `UPDATE economy.membership_periods
-         SET account_id = $3, updated_at = now()
+         SET account_id = $3, guest_installation_id = NULL, updated_at = now()
          WHERE environment = $1
            AND provider_transaction_id = ANY($2::varchar[])
-           AND account_id <> $3
+           AND (account_id IS DISTINCT FROM $3 OR guest_installation_id IS NOT NULL)
          RETURNING provider_transaction_id`,
         [input.environment, transactionIds, input.toAccountId],
       );
@@ -261,17 +273,18 @@ export class MembershipRepository {
     });
   }
 
-  async getStatus(accountId: string, now: Date = new Date()): Promise<MembershipStatus> {
-    return this.getStatusWithManager(this.dataSource.manager, accountId, now);
+  async getStatus(owner: CommerceOwner, now: Date = new Date()): Promise<MembershipStatus> {
+    return this.getStatusWithManager(this.dataSource.manager, owner, now);
   }
 
   async claimPremiumDailyCoin(
-    accountId: string,
+    owner: CommerceOwner,
     rewardDay: string,
     now: Date = new Date(),
   ): Promise<PremiumDailyClaimResult> {
     return this.dataSource.transaction('SERIALIZABLE', async (manager) => {
-      const sourceKey = `premium_daily:${accountId}:${rewardDay}`;
+      const principal = toCommerceOwnerPrincipal(owner);
+      const sourceKey = `premium_daily:${principal.principalType === 'guest' ? 'guest:' : ''}${principal.principalId}:${rewardDay}`;
       const existing = await manager.query<readonly { amount: string }[]>(
         `SELECT amount
          FROM economy.coin_ledger_entries
@@ -279,20 +292,20 @@ export class MembershipRepository {
         [sourceKey],
       );
       if (existing[0]) {
-        return this.replayDailyClaim(manager, accountId, rewardDay, Number(existing[0].amount));
+        return this.replayDailyClaim(manager, owner, rewardDay, Number(existing[0].amount));
       }
 
-      const status = await this.getStatusWithManager(manager, accountId, now);
+      const status = await this.getStatusWithManager(manager, owner, now);
       if (!status.active) throw new PremiumMembershipRequiredError();
 
       const claim = returningRows<CoinClaimRow>(
         await manager.query(
           `INSERT INTO economy.coin_ledger_entries
              (principal_type, principal_id, amount, reason, source_key, granted, metadata)
-           VALUES ('account', $1, 0, $2, $3, false, NULL)
+           VALUES ($1, $2, 0, $3, $4, false, NULL)
            ON CONFLICT ON CONSTRAINT "UQ_coin_ledger_entries_source_key" DO NOTHING
            RETURNING id, amount`,
-          [accountId, CoinLedgerReason.PremiumDailyClaim, sourceKey],
+          [principal.principalType, principal.principalId, CoinLedgerReason.PremiumDailyClaim, sourceKey],
         ),
       );
       if (claim.length === 0) {
@@ -302,7 +315,7 @@ export class MembershipRepository {
         );
         return this.replayDailyClaim(
           manager,
-          accountId,
+          owner,
           rewardDay,
           Number(concurrent[0]?.amount ?? 0),
         );
@@ -310,16 +323,16 @@ export class MembershipRepository {
 
       await manager.query(
         `INSERT INTO economy.reward_day_pools (principal_type, principal_id, reward_day)
-         VALUES ('account', $1, $2)
+         VALUES ($1, $2, $3)
          ON CONFLICT ON CONSTRAINT "PK_reward_day_pools" DO NOTHING`,
-        [accountId, rewardDay],
+        [principal.principalType, principal.principalId, rewardDay],
       );
       const poolRows = await manager.query<readonly PoolRow[]>(
         `SELECT coins_consumed, ads_completed, premium_claimed
          FROM economy.reward_day_pools
-         WHERE principal_type = 'account' AND principal_id = $1 AND reward_day = $2
+         WHERE principal_type = $1 AND principal_id = $2 AND reward_day = $3
          FOR UPDATE`,
-        [accountId, rewardDay],
+        [principal.principalType, principal.principalId, rewardDay],
       );
       const pool = poolRows[0] ?? {
         coins_consumed: 0,
@@ -333,9 +346,9 @@ export class MembershipRepository {
 
       await manager.query(
         `UPDATE economy.reward_day_pools
-         SET coins_consumed = $3, premium_claimed = true, updated_at = now()
-         WHERE principal_type = 'account' AND principal_id = $1 AND reward_day = $2`,
-        [accountId, rewardDay, DAILY_POOL_COIN],
+         SET coins_consumed = $4, premium_claimed = true, updated_at = now()
+         WHERE principal_type = $1 AND principal_id = $2 AND reward_day = $3`,
+        [principal.principalType, principal.principalId, rewardDay, DAILY_POOL_COIN],
       );
 
       let balance: number;
@@ -343,17 +356,17 @@ export class MembershipRepository {
         const balanceRows = returningRows<BalanceRow>(
           await manager.query(
             `INSERT INTO economy.coin_balances (principal_type, principal_id, balance)
-             VALUES ('account', $1, $2)
+             VALUES ($1, $2, $3)
              ON CONFLICT ON CONSTRAINT "PK_coin_balances"
                DO UPDATE SET balance = economy.coin_balances.balance + EXCLUDED.balance,
                              updated_at = now()
              RETURNING balance`,
-            [accountId, amount],
+            [principal.principalType, principal.principalId, amount],
           ),
         );
         balance = Number(balanceRows[0].balance);
       } else {
-        balance = await this.readCoinBalance(manager, accountId);
+        balance = await this.readCoinBalance(manager, owner);
       }
 
       await manager.query(
@@ -375,7 +388,7 @@ export class MembershipRepository {
 
   private async getStatusWithManager(
     manager: EntityManager,
-    accountId: string,
+    owner: CommerceOwner,
     now: Date,
   ): Promise<MembershipStatus> {
     const rows = await manager.query<readonly MembershipPeriodRow[]>(
@@ -385,11 +398,11 @@ export class MembershipRepository {
            environment, original_transaction_id, plan, current_status,
            ends_at, status_event_at, starts_at
          FROM economy.membership_periods
-         WHERE account_id = $1
+         WHERE ${ownerWhere(owner)}
          ORDER BY environment, original_transaction_id, starts_at DESC, status_event_at DESC
        ) latest_subscription_periods
        ORDER BY ends_at DESC NULLS LAST, status_event_at DESC`,
-      [accountId],
+      [ownerId(owner)],
     );
     const periods = rows.map((row) => ({
       plan: row.plan,
@@ -425,12 +438,14 @@ export class MembershipRepository {
     await manager.query(
       `INSERT INTO economy.membership_periods
          (environment, provider_transaction_id, original_transaction_id,
-          account_id, product_id, plan, period_type, starts_at, ends_at,
+          account_id, guest_installation_id, product_id, plan, period_type, starts_at, ends_at,
           current_status, status_event_at, credit_amount)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
        ON CONFLICT ON CONSTRAINT "PK_membership_periods"
        DO UPDATE SET
          original_transaction_id = EXCLUDED.original_transaction_id,
+         account_id = EXCLUDED.account_id,
+         guest_installation_id = EXCLUDED.guest_installation_id,
          product_id = EXCLUDED.product_id,
          plan = EXCLUDED.plan,
          period_type = EXCLUDED.period_type,
@@ -444,7 +459,8 @@ export class MembershipRepository {
         event.environment,
         event.providerTransactionId,
         projection.originalTransactionId,
-        projection.accountId,
+        projection.owner.type === 'account' ? projection.owner.accountId : null,
+        projection.owner.type === 'guest' ? projection.owner.guestInstallationId : null,
         projection.productId,
         projection.plan,
         projection.periodType,
@@ -464,16 +480,18 @@ export class MembershipRepository {
     projection: MembershipPeriodProjection,
   ): Promise<number> {
     if (projection.creditAmount === 0) return 0;
+    const principal = toCommerceOwnerPrincipal(projection.owner);
     const sourceKey = `membership:${environment}:${transactionId}`;
     const claim = returningRows<{ id: string }>(
       await manager.query(
         `INSERT INTO economy.ai_credit_ledger_entries
            (principal_type, principal_id, amount, reason, source_key, granted, metadata)
-         VALUES ('account', $1, $2, $3, $4, true, $5)
+         VALUES ($1, $2, $3, $4, $5, true, $6)
          ON CONFLICT ON CONSTRAINT "UQ_ai_credit_ledger_entries_source_key" DO NOTHING
          RETURNING id`,
         [
-          projection.accountId,
+          principal.principalType,
+          principal.principalId,
           projection.creditAmount,
           AiCreditLedgerReason.MembershipCreditGrant,
           sourceKey,
@@ -485,11 +503,11 @@ export class MembershipRepository {
 
     await manager.query(
       `INSERT INTO economy.ai_credit_balances (principal_type, principal_id, balance)
-       VALUES ('account', $1, $2)
+       VALUES ($1, $2, $3)
        ON CONFLICT ON CONSTRAINT "PK_ai_credit_balances"
          DO UPDATE SET balance = economy.ai_credit_balances.balance + EXCLUDED.balance,
                        updated_at = now()`,
-      [projection.accountId, projection.creditAmount],
+      [principal.principalType, principal.principalId, projection.creditAmount],
     );
     await manager.query(
       `UPDATE economy.membership_periods
@@ -507,6 +525,7 @@ export class MembershipRepository {
     projection: MembershipPeriodProjection,
   ): Promise<number> {
     if (projection.creditAmount === 0) return 0;
+    const principal = toCommerceOwnerPrincipal(projection.owner);
     const grantRows = await manager.query<readonly { id: string }[]>(
       `SELECT id FROM economy.ai_credit_ledger_entries WHERE source_key = $1`,
       [`membership:${environment}:${transactionId}`],
@@ -517,11 +536,12 @@ export class MembershipRepository {
       await manager.query(
         `INSERT INTO economy.ai_credit_ledger_entries
            (principal_type, principal_id, amount, reason, source_key, granted, metadata)
-         VALUES ('account', $1, $2, $3, $4, true, $5)
+         VALUES ($1, $2, $3, $4, $5, true, $6)
          ON CONFLICT ON CONSTRAINT "UQ_ai_credit_ledger_entries_source_key" DO NOTHING
          RETURNING id`,
         [
-          projection.accountId,
+          principal.principalType,
+          principal.principalId,
           -projection.creditAmount,
           AiCreditLedgerReason.MembershipReversal,
           `membership_reversal:${environment}:${transactionId}`,
@@ -533,11 +553,12 @@ export class MembershipRepository {
 
     await manager.query(
       `INSERT INTO economy.ai_credit_balances (principal_type, principal_id, balance)
-       VALUES ('account', $1, $2)
+       VALUES ($1, $2, $3)
        ON CONFLICT ON CONSTRAINT "PK_ai_credit_balances"
          DO UPDATE SET balance = economy.ai_credit_balances.balance + EXCLUDED.balance,
+                       paid_balance = ${paidDebitUpdateExpression('economy.ai_credit_balances')},
                        updated_at = now()`,
-      [projection.accountId, -projection.creditAmount],
+      [principal.principalType, principal.principalId, -projection.creditAmount],
     );
     await manager.query(
       `UPDATE economy.membership_periods
@@ -550,17 +571,17 @@ export class MembershipRepository {
 
   private async replayDailyClaim(
     manager: EntityManager,
-    accountId: string,
+    owner: CommerceOwner,
     rewardDay: string,
     amount: number,
   ): Promise<PremiumDailyClaimResult> {
     const [balance, poolRows] = await Promise.all([
-      this.readCoinBalance(manager, accountId),
+      this.readCoinBalance(manager, owner),
       manager.query<readonly PoolRow[]>(
         `SELECT coins_consumed, ads_completed, premium_claimed
          FROM economy.reward_day_pools
-         WHERE principal_type = 'account' AND principal_id = $1 AND reward_day = $2`,
-        [accountId, rewardDay],
+         WHERE principal_type = $1 AND principal_id = $2 AND reward_day = $3`,
+        [toCommerceOwnerPrincipal(owner).principalType, toCommerceOwnerPrincipal(owner).principalId, rewardDay],
       ),
     ]);
     return {
@@ -572,11 +593,12 @@ export class MembershipRepository {
     };
   }
 
-  private async readCoinBalance(manager: EntityManager, accountId: string): Promise<number> {
+  private async readCoinBalance(manager: EntityManager, owner: CommerceOwner): Promise<number> {
+    const principal = toCommerceOwnerPrincipal(owner);
     const rows = await manager.query<readonly BalanceRow[]>(
       `SELECT balance FROM economy.coin_balances
-       WHERE principal_type = 'account' AND principal_id = $1`,
-      [accountId],
+       WHERE principal_type = $1 AND principal_id = $2`,
+      [principal.principalType, principal.principalId],
     );
     return Number(rows[0]?.balance ?? 0);
   }
@@ -588,7 +610,9 @@ function toVerifiedEvent(row: MembershipEventRow): VerifiedMembershipEvent {
     providerEventId: row.provider_event_id,
     providerTransactionId: row.provider_transaction_id,
     originalTransactionId: row.original_transaction_id,
-    accountId: row.account_id,
+    owner: row.account_id !== null
+      ? { type: 'account', accountId: row.account_id }
+      : { type: 'guest', guestInstallationId: row.guest_installation_id! },
     type: row.event_type,
     productId: row.product_id,
     periodType: row.period_type,
@@ -598,6 +622,20 @@ function toVerifiedEvent(row: MembershipEventRow): VerifiedMembershipEvent {
     gracePeriodExpiresAt: toDate(row.grace_period_expires_at),
     cancelReason: row.cancel_reason,
   };
+}
+
+function ownerId(owner: CommerceOwner): string {
+  return owner.type === 'account' ? owner.accountId : owner.guestInstallationId;
+}
+
+function ownerWhere(owner: CommerceOwner): string {
+  return owner.type === 'account' ? 'account_id = $1' : 'guest_installation_id = $1';
+}
+
+function sameOwner(row: { account_id: string | null; guest_installation_id: string | null }, owner: CommerceOwner): boolean {
+  return owner.type === 'account'
+    ? row.account_id === owner.accountId && row.guest_installation_id === null
+    : row.account_id === null && row.guest_installation_id === owner.guestInstallationId;
 }
 
 function toDate(value: Date | string | null): Date | null {

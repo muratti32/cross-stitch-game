@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from '../auth/auth.module';
@@ -32,13 +32,15 @@ import { CoinPackReconciliationService } from './coin-pack-reconciliation.servic
 import { AiCreditPackReconciliationController } from './ai-credit-pack-reconciliation.controller';
 import { AiCreditPackReconciliationService } from './ai-credit-pack-reconciliation.service';
 import { CommerceCapabilitiesController } from './commerce-capabilities.controller';
+import { GuestPurchaseAttemptController } from './guest-purchase-attempt.controller';
+import { GuestPurchaseAttemptService } from './guest-purchase-attempt.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([PatternEntity, PatternUnlockEntity, RegisteredAccountEntity]),
     AuthModule,
     AppConfigModule,
-    PromotionModule,
+    forwardRef(() => PromotionModule),
     SupportModule,
     WebhookArchiveModule,
   ],
@@ -51,6 +53,7 @@ import { CommerceCapabilitiesController } from './commerce-capabilities.controll
     CoinPackReconciliationController,
     AiCreditPackReconciliationController,
     CommerceCapabilitiesController,
+    GuestPurchaseAttemptController,
   ],
   providers: [
     CoinLedgerRepository,
@@ -68,6 +71,7 @@ import { CommerceCapabilitiesController } from './commerce-capabilities.controll
     MembershipService,
     CoinPackReconciliationService,
     AiCreditPackReconciliationService,
+    GuestPurchaseAttemptService,
   ],
 
   exports: [

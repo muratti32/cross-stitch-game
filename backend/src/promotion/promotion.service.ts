@@ -129,6 +129,7 @@ export class PromotionService {
       dispositions,
       expiry: expiry.toISOString(),
       signature,
+      paidCommerce: guestBalanceRow?.paidBalance !== undefined && Number(guestBalanceRow.paidBalance) > 0 ? 'transfer' : 'none',
     };
   }
 
@@ -278,19 +279,21 @@ export class PromotionService {
               where: { principalType: 'guest', principalId: guestId }
             });
             const guestBalance = guestBalanceRow ? Number(guestBalanceRow.balance) : 0;
+            const guestPaidReserve = guestBalanceRow ? Number(guestBalanceRow.paidBalance ?? 0) : 0;
+            const freeGuestBalance = Math.max(0, guestBalance - guestPaidReserve);
 
-            if (guestBalance > 0 && guestBalanceRow) {
+            if (freeGuestBalance > 0 && guestBalanceRow) {
               // Deduct from guest ledger
               await manager.insert(CoinLedgerEntryEntity, {
                 principalType: 'guest',
                 principalId: guestId,
-                amount: String(-guestBalance),
+                amount: String(-freeGuestBalance),
                 reason: CoinLedgerReason.GuestPromotion,
                 sourceKey: `guest_promotion:close:${guestId}`,
                 granted: true,
               });
 
-              guestBalanceRow.balance = '0';
+              guestBalanceRow.balance = String(guestBalance - freeGuestBalance);
               await manager.save(CoinBalanceEntity, guestBalanceRow);
 
               // Credit target account ledger
@@ -298,7 +301,7 @@ export class PromotionService {
               await manager.insert(CoinLedgerEntryEntity, {
                 principalType: 'account',
                 principalId: accountId,
-                amount: String(guestBalance),
+                amount: String(freeGuestBalance),
                 reason: CoinLedgerReason.GuestPromotion,
                 sourceKey: accountSourceKey,
                 granted: true,
@@ -309,13 +312,13 @@ export class PromotionService {
                 where: { principalType: 'account', principalId: accountId }
               });
               if (accountBalanceRow) {
-                accountBalanceRow.balance = String(Number(accountBalanceRow.balance) + guestBalance);
+                accountBalanceRow.balance = String(Number(accountBalanceRow.balance) + freeGuestBalance);
                 await manager.save(CoinBalanceEntity, accountBalanceRow);
               } else {
                 await manager.insert(CoinBalanceEntity, {
                   principalType: 'account',
                   principalId: accountId,
-                  balance: String(guestBalance),
+                  balance: String(freeGuestBalance),
                 });
               }
             }
@@ -382,31 +385,35 @@ export class PromotionService {
             const guestBalanceRow = await manager.findOne(CoinBalanceEntity, {
               where: { principalType: 'guest', principalId: guestId }
             });
-            if (guestBalanceRow && Number(guestBalanceRow.balance) > 0) {
+            if (guestBalanceRow && Number(guestBalanceRow.balance) - Number(guestBalanceRow.paidBalance ?? 0) > 0) {
               const guestBalance = Number(guestBalanceRow.balance);
+              const guestPaidReserve = Number(guestBalanceRow.paidBalance ?? 0);
+              const freeGuestBalance = Math.max(0, guestBalance - guestPaidReserve);
               await manager.insert(CoinLedgerEntryEntity, {
                 principalType: 'guest',
                 principalId: guestId,
-                amount: String(-guestBalance),
+                amount: String(-freeGuestBalance),
                 reason: CoinLedgerReason.GuestPromotion,
                 sourceKey: `guest_promotion:close:${guestId}`,
                 granted: true,
               });
-              guestBalanceRow.balance = '0';
+              guestBalanceRow.balance = String(guestPaidReserve);
               await manager.save(CoinBalanceEntity, guestBalanceRow);
             }
           }
 
-          // Consume guest installation identity
-          await manager.query(
+          const mayRevokeGuest = await this.mayRevokeGuest(manager, guestId, accountId);
+
+          // Consume guest installation identity only after paid commerce is acknowledged.
+          if (mayRevokeGuest) await manager.query(
             `UPDATE auth.guest_installations
              SET status = 'revoked'
              WHERE id = $1`,
             [guestId]
           );
 
-          // Revoke refresh tokens
-          await manager.query(
+          // Revoke refresh tokens when the Guest Installation Identity is safe to close.
+          if (mayRevokeGuest) await manager.query(
             `UPDATE auth.refresh_tokens
              SET status = 'revoked'
              WHERE principal_type = 'guest' AND principal_id = $1`,
@@ -427,6 +434,23 @@ export class PromotionService {
         throw err;
       }
     }
+  }
+
+  /** Guest revocation is safe only after every commerce-owned source is empty or acknowledged. */
+  private async mayRevokeGuest(manager: EntityManager, guestId: string, accountId: string): Promise<boolean> {
+    const rows = await manager.query<readonly { safe: boolean }[]>(`
+      SELECT NOT EXISTS (
+        SELECT 1 FROM economy.coin_balances WHERE principal_type='guest' AND principal_id=$1 AND paid_balance > 0
+        UNION ALL SELECT 1 FROM economy.ai_credit_balances WHERE principal_type='guest' AND principal_id=$1 AND paid_balance > 0
+        UNION ALL SELECT 1 FROM economy.membership_periods WHERE guest_installation_id=$1
+        UNION ALL SELECT 1 FROM ai.ai_artworks WHERE guest_installation_id=$1
+        UNION ALL SELECT 1 FROM conversion.personal_patterns WHERE guest_installation_id=$1
+        UNION ALL SELECT 1 FROM economy.commerce_transaction_bindings WHERE guest_installation_id=$1
+      ) OR EXISTS (
+        SELECT 1 FROM promotion.commerce_promotion_handoffs
+        WHERE guest_id=$1 AND account_id=$2 AND state='acknowledged'
+      ) AS safe`, [guestId, accountId]);
+    return rows[0]?.safe === true;
   }
 
   async drainSession(accountId: string, guestId: string, patternId: string, guestSessionId: string) {

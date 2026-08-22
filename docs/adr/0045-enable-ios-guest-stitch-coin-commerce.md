@@ -1,0 +1,18 @@
+# Enable iOS Guest Stitch Coin commerce
+
+> This ADR narrows, not overrides, ADR-0032's rule that grants only webhook events whose subscriber identity resolves to a Registered Account, and ADR-0012's Registered-Account-only Commerce Transaction Binding. This ADR deliberately adds one bounded exception for iOS Guest Stitch Coin Pack Purchase Attempts; all other Guest products and lifecycle flows remain outside its scope.
+
+Issue #108 enables one narrow Guest commerce path. On iOS, a Guest Player may buy a Stitch Coin Pack without registration. RevenueCat keeps its anonymous subscriber identifier; the Game Backend maps that identifier to the authenticated Guest Installation Identity before creating a Purchase Attempt. The raw Guest identity is never passed to RevenueCat.
+
+The Game Backend creates a durable Purchase Attempt before StoreKit opens. It owns product, CommerceOwner, subscriber association, idempotency key, lifecycle state, and opaque Support Reference. StoreKit and RevenueCat success only move the attempt toward verification. A verified RevenueCat webhook resolves current or historical subscriber aliases and the Commerce Ledger grants the exact pack to the Guest Ledger through the existing provider-transaction binding. Binding and ledger source keys make duplicate, replayed, delayed, and concurrent deliveries idempotent. An account-owned app user id is resolved before aliases so a historical Guest alias cannot shadow a Registered Account purchase.
+
+Guest Premium, AI Credit, restore, promotion, refund, and deletion flows remain outside this decision. Android Guest purchase remains disabled in the mobile product. The backend uses `ENABLE_IOS_GUEST_COMMERCE` as the rollout and rollback toggle; its default is `true` for the current release. The User-Agent is retained only as a client-shape hint and is client-supplied and spoofable, so it is not authorization, platform attestation, or a security boundary. There is no App Attest or DeviceCheck signal in this backend. The anonymous RevenueCat subscriber id is unguessable in normal SDK operation, but the mapping endpoint is still a first-claim correlation boundary rather than proof of provider session ownership; support and reconciliation must treat a suspicious mapping as a residual risk.
+
+## Consequences
+
+- Guest Stitch Coin grants are server-authoritative but owned by a Guest Installation Identity, using the CommerceOwner and existing provider-transaction idempotency rules.
+- Account-owned commerce remains backward compatible, including account webhooks carrying historical Guest aliases.
+- Guest commerce creation and subscriber mapping are gated server-side by `ENABLE_IOS_GUEST_COMMERCE`; disabling it refuses new writes with an actionable error while existing attempts, webhook reconciliation, and support lookups remain available. The User-Agent check is only a client-shape hint: the platform signal is client-supplied and spoofable, and is not a security control.
+- No Stitch Coin value is granted without a verified RevenueCat webhook carrying a real provider transaction. Therefore spoofing the client hint alone cannot obtain Stitch Coin, but the lack of platform attestation and the first-claim subscriber mapping remain residual risks.
+- The backend stores only a privacy-safe subscriber mapping and opaque Support Reference; the raw Guest Installation Identity is never sent to RevenueCat.
+- The RevenueCat anonymous id is not correlated cryptographically to the caller's SDK session. Its normal UUID unpredictability limits practical guessing, but a malicious caller who obtains one can attempt a first claim; later identity and ledger conflicts remain fail-closed.

@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppConfigModule } from '../config/app-config.module';
 import { AppConfigService } from '../config/app-config.service';
+import { PromotionModule } from '../promotion/promotion.module';
 import { AuthModule } from './auth.module';
 import { EmailAuthController } from './email-auth.controller';
 import { EmailOutboxDispatcherService } from './email-outbox-dispatcher.service';
@@ -22,6 +23,7 @@ import {
   imports: [
     AppConfigModule,
     AuthModule,
+    PromotionModule,
     TypeOrmModule.forFeature([
       EmailOutboxEntity,
       EmailVerificationCodeEntity,

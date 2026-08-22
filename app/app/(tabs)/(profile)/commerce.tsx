@@ -26,6 +26,12 @@ import {
   fetchCoinPackReconciliation,
   type CoinPackProductKey,
 } from '@/api/coinPack';
+import {
+  createGuestPurchaseAttempt,
+  fetchGuestPurchaseAttempt,
+  mapGuestRevenueCatSubscriber,
+  type GuestPurchaseAttemptReference,
+} from '@/api/guestPurchase';
 import { fetchCoinBalance, useCoinBalance } from '@/api/economy';
 import {
   createPremiumReconciliation,
@@ -48,6 +54,7 @@ import {
 } from '@/commerce/commerceIntent';
 import {
   getRevenueCatOfferings,
+  getRevenueCatSubscriberId,
   isRevenueCatTrialEligible,
   missingCanonicalRevenueCatProducts,
   purchaseRevenueCatPackage,
@@ -55,11 +62,16 @@ import {
   showRevenueCatManageSubscriptions,
   useRevenueCatRuntime,
 } from '@/commerce/revenueCat';
-import { Button, Card, Screen } from '@/components';
+import { Button, Card, GuestDataRiskNotice, Screen } from '@/components';
 import { WebLinks } from '@/config';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
 import { withProtectedRoundTrip } from '@/navigation/foregroundEntryNavigation';
+import {
+  clearGuestPurchaseAttempt,
+  readGuestPurchaseAttempt,
+  saveGuestPurchaseAttempt,
+} from '@/commerce/guestPurchaseRecovery';
 
 const RECONCILIATION_POLL_MS = 2_000;
 const RECONCILIATION_DELAY_MS = 10_000;
@@ -73,6 +85,7 @@ interface PremiumReconciliation {
   readonly prolonged: boolean;
   readonly startedAt: number;
   readonly supportReference: string | null;
+  readonly guestAttemptId: string | null;
 }
 
 interface CoinPackReconciliation {
@@ -84,6 +97,7 @@ interface CoinPackReconciliation {
   readonly startedAt: number;
   readonly supportReference: string | null;
   readonly transactionIdentifier: string;
+  readonly guestAttemptId: string | null;
 }
 
 interface AiCreditPackReconciliation {
@@ -95,13 +109,14 @@ interface AiCreditPackReconciliation {
   readonly startedAt: number;
   readonly supportReference: string | null;
   readonly transactionIdentifier: string;
+  readonly guestAttemptId: string | null;
 }
 
 export default function CommerceScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ category?: string; source?: string }>();
   const queryClient = useQueryClient();
-  const { accountId, isAccount } = useIdentityStore();
+  const { accountId, guestId, isAccount } = useIdentityStore();
   const revenueCatRuntime = useRevenueCatRuntime();
   const pendingIntent = useCommerceIntentStore((state) => state.intent);
   const preserveIntent = useCommerceIntentStore((state) => state.preserveIntent);
@@ -109,8 +124,8 @@ export default function CommerceScreen() {
   const source = commerceEntrySource(params.source);
 
   const { data: coinBalance } = useCoinBalance();
-  const { data: aiCreditBalance } = useAiCreditBalance(isAccount);
-  const { data: membership } = useMembership(isAccount);
+  const { data: aiCreditBalance } = useAiCreditBalance(true);
+  const { data: membership } = useMembership(true);
 
   const [products, setProducts] = useState<CommerceProduct[]>([]);
   const [loadingStore, setLoadingStore] = useState(true);
@@ -129,6 +144,7 @@ export default function CommerceScreen() {
   const [purchasePending, setPurchasePending] = useState<PremiumReconciliation | null>(null);
   const [coinPurchasePending, setCoinPurchasePending] = useState<CoinPackReconciliation | null>(null);
   const [aiCreditPurchasePending, setAiCreditPurchasePending] = useState<AiCreditPackReconciliation | null>(null);
+  const [guestCommerceProduct, setGuestCommerceProduct] = useState<CommerceProduct | null>(null);
   const [restoringPurchases, setRestoringPurchases] = useState(false);
   const viewedSourceRef = useRef<string | null>(null);
   const pendingPremiumPurchaseRef = useRef<CommerceProduct | null>(null);
@@ -299,6 +315,19 @@ export default function CommerceScreen() {
     if (reconciliationRef.current?.id !== attempt.id) return;
     let verifiedMembership: MembershipView | null = null;
     try {
+      if (attempt.guestAttemptId !== null) {
+        const guestAttempt = await fetchGuestPurchaseAttempt(attempt.guestAttemptId);
+        if (guestAttempt.status === 'created' || guestAttempt.status === 'verifying') {
+          if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) updateReconciliation({ ...attempt, prolonged: true });
+          else scheduleReconciliation(attempt);
+          return;
+        }
+        if (guestAttempt.status !== 'granted') {
+          updateReconciliation({ ...attempt, failureStage: 'verification' });
+          setPurchaseError('The Game Backend could not verify this purchase. Retry reconciliation; do not buy it again.');
+          return;
+        }
+      }
       verifiedMembership = await fetchMembership();
       const observedProductKey = premiumProductKey(verifiedMembership.plan);
       const backendVerified = verifiedMembership.active
@@ -347,6 +376,7 @@ export default function CommerceScreen() {
     product: CommerceProduct,
     operation: 'purchase' | 'restore',
     baselineMembership: string | null = null,
+    guestAttempt: GuestPurchaseAttemptReference | null = null,
   ) => {
     const attempt: PremiumReconciliation = {
       baselineMembership,
@@ -356,7 +386,8 @@ export default function CommerceScreen() {
       product,
       prolonged: false,
       startedAt: Date.now(),
-      supportReference: null,
+      supportReference: guestAttempt?.supportReference ?? null,
+      guestAttemptId: guestAttempt?.id ?? null,
     };
     updateReconciliation(attempt);
     setPurchaseSuccess(null);
@@ -365,10 +396,9 @@ export default function CommerceScreen() {
       product_key: product.productKey,
     });
     try {
-      const reference = await createPremiumReconciliation(
-        operation,
-        operation === 'purchase' ? product.productKey : null,
-      );
+      const reference = guestAttempt === null
+        ? await createPremiumReconciliation(operation, operation === 'purchase' ? product.productKey : null)
+        : { supportReference: guestAttempt.supportReference };
       const next = { ...attempt, supportReference: reference.supportReference };
       updateReconciliation(next);
       await reconcilePremium(next);
@@ -402,8 +432,10 @@ export default function CommerceScreen() {
     }
     let grantVerified = false;
     try {
-      const reconciliation = await fetchCoinPackReconciliation(attempt.reconciliationId);
-      if (reconciliation.status === 'pending') {
+      const reconciliation = attempt.guestAttemptId === null
+        ? await fetchCoinPackReconciliation(attempt.reconciliationId)
+        : await fetchGuestPurchaseAttempt(attempt.reconciliationId);
+      if (reconciliation.status === 'pending' || reconciliation.status === 'created' || reconciliation.status === 'verifying') {
         if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) {
           updateCoinReconciliation({ ...attempt, prolonged: true });
         } else {
@@ -411,7 +443,7 @@ export default function CommerceScreen() {
         }
         return;
       }
-      if (reconciliation.status === 'verification_failed') {
+      if (reconciliation.status === 'verification_failed' || reconciliation.status === 'failed' || reconciliation.status === 'cancelled') {
         await captureGameplayEvent('purchase_failed', {
           product_kind: 'stitch_coin_pack',
           product_key: attempt.product.productKey,
@@ -444,6 +476,7 @@ export default function CommerceScreen() {
         product_key: attempt.product.productKey,
       });
       updateCoinReconciliation(null);
+      if (!isAccount && guestId !== null) await clearGuestPurchaseAttempt(guestId);
       clearIntent();
       setPurchaseError(null);
       setPurchaseSuccess(
@@ -461,21 +494,23 @@ export default function CommerceScreen() {
         ? 'The Coin grant was verified, but the current Stitch Coin balance could not be refreshed. Retry reconciliation.'
         : 'The Game Backend could not verify this Coin Pack yet. Retry reconciliation; do not buy it again.');
     }
-  }, [clearIntent, queryClient, scheduleCoinReconciliation, updateCoinReconciliation]);
+  }, [clearIntent, guestId, isAccount, queryClient, scheduleCoinReconciliation, updateCoinReconciliation]);
 
   const beginCoinPackReconciliation = useCallback(async (
     product: CommerceProduct,
     transactionIdentifier: string,
+    guestAttempt: GuestPurchaseAttemptReference | null = null,
   ) => {
     const attempt: CoinPackReconciliation = {
       failureStage: null,
       id: `${Date.now()}-${product.productKey}-purchase`,
       product,
       prolonged: false,
-      reconciliationId: null,
+      reconciliationId: guestAttempt?.id ?? null,
       startedAt: Date.now(),
-      supportReference: null,
+      supportReference: guestAttempt?.supportReference ?? null,
       transactionIdentifier,
+      guestAttemptId: guestAttempt?.id ?? null,
     };
     updateCoinReconciliation(attempt);
     setOpenCategory(null);
@@ -484,6 +519,11 @@ export default function CommerceScreen() {
       product_kind: 'stitch_coin_pack',
       product_key: product.productKey,
     });
+    if (guestAttempt !== null) {
+      updateCoinReconciliation(attempt);
+      await reconcileCoinPack(attempt);
+      return;
+    }
     try {
       const reference = await createCoinPackReconciliation(
         product.productKey as CoinPackProductKey,
@@ -511,6 +551,30 @@ export default function CommerceScreen() {
 
   coinReconciliationRunnerRef.current = reconcileCoinPack;
 
+  useEffect(() => {
+    if (isAccount || guestId === null || products.length === 0 || coinPurchasePending !== null) return;
+    let cancelled = false;
+    void readGuestPurchaseAttempt(guestId).then(async (stored) => {
+      if (cancelled || stored === null) return;
+      const product = products.find((candidate) => candidate.productKey === stored.productKey);
+      if (product === undefined) return;
+      const attempt: CoinPackReconciliation = {
+        failureStage: null,
+        id: `recovered-${stored.id}`,
+        product,
+        prolonged: false,
+        reconciliationId: stored.id,
+        startedAt: Date.now(),
+        supportReference: stored.supportReference,
+        transactionIdentifier: '',
+        guestAttemptId: stored.id,
+      };
+      updateCoinReconciliation(attempt);
+      await reconcileCoinPack(attempt);
+    }).catch(() => undefined);
+    return () => { cancelled = true; };
+  }, [coinPurchasePending, guestId, isAccount, products, reconcileCoinPack, updateCoinReconciliation]);
+
   const scheduleAiCreditReconciliation = useCallback((attempt: AiCreditPackReconciliation) => {
     if (aiCreditReconciliationTimerRef.current !== null) {
       clearTimeout(aiCreditReconciliationTimerRef.current);
@@ -527,8 +591,10 @@ export default function CommerceScreen() {
     }
     let grantVerified = false;
     try {
-      const reconciliation = await fetchAiCreditPackReconciliation(attempt.reconciliationId);
-      if (reconciliation.status === 'pending') {
+      const reconciliation = attempt.guestAttemptId === null
+        ? await fetchAiCreditPackReconciliation(attempt.reconciliationId)
+        : await fetchGuestPurchaseAttempt(attempt.guestAttemptId);
+      if (reconciliation.status === 'pending' || reconciliation.status === 'created' || reconciliation.status === 'verifying') {
         if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) {
           updateAiCreditReconciliation({ ...attempt, prolonged: true });
         } else {
@@ -536,7 +602,7 @@ export default function CommerceScreen() {
         }
         return;
       }
-      if (reconciliation.status === 'verification_failed') {
+      if (reconciliation.status === 'verification_failed' || reconciliation.status === 'failed' || reconciliation.status === 'cancelled') {
         await captureGameplayEvent('purchase_failed', {
           product_kind: 'ai_credit_pack',
           product_key: attempt.product.productKey,
@@ -569,6 +635,7 @@ export default function CommerceScreen() {
         product_key: attempt.product.productKey,
       });
       updateAiCreditReconciliation(null);
+      if (!isAccount && guestId !== null) await clearGuestPurchaseAttempt(guestId);
       clearIntent();
       setPurchaseError(null);
       setPurchaseSuccess(
@@ -586,21 +653,23 @@ export default function CommerceScreen() {
         ? 'The AI Credit grant was verified, but the current balance could not be refreshed. Retry reconciliation.'
         : 'The Game Backend could not verify this AI Credit Pack yet. Retry reconciliation; do not buy it again.');
     }
-  }, [clearIntent, queryClient, scheduleAiCreditReconciliation, updateAiCreditReconciliation]);
+  }, [clearIntent, guestId, isAccount, queryClient, scheduleAiCreditReconciliation, updateAiCreditReconciliation]);
 
   const beginAiCreditPackReconciliation = useCallback(async (
     product: CommerceProduct,
     transactionIdentifier: string,
+    guestAttempt: GuestPurchaseAttemptReference | null = null,
   ) => {
     const attempt: AiCreditPackReconciliation = {
       failureStage: null,
       id: `${Date.now()}-${product.productKey}-purchase`,
       product,
       prolonged: false,
-      reconciliationId: null,
+      reconciliationId: guestAttempt?.id ?? null,
       startedAt: Date.now(),
       supportReference: null,
       transactionIdentifier,
+      guestAttemptId: guestAttempt?.id ?? null,
     };
     updateAiCreditReconciliation(attempt);
     setOpenCategory(null);
@@ -610,10 +679,9 @@ export default function CommerceScreen() {
       product_key: product.productKey,
     });
     try {
-      const reference = await createAiCreditPackReconciliation(
-        product.productKey as AiCreditPackProductKey,
-        transactionIdentifier,
-      );
+      const reference = guestAttempt === null
+        ? await createAiCreditPackReconciliation(product.productKey as AiCreditPackProductKey, transactionIdentifier)
+        : { id: guestAttempt.id, supportReference: guestAttempt.supportReference };
       const next = {
         ...attempt,
         reconciliationId: reference.id,
@@ -636,6 +704,30 @@ export default function CommerceScreen() {
 
   aiCreditReconciliationRunnerRef.current = reconcileAiCreditPack;
 
+  useEffect(() => {
+    if (isAccount || guestId === null || products.length === 0 || aiCreditPurchasePending !== null) return;
+    let cancelled = false;
+    void readGuestPurchaseAttempt(guestId).then(async (stored) => {
+      if (cancelled || stored === null) return;
+      const product = products.find((candidate) => candidate.productKey === stored.productKey && candidate.category === 'ai_credit');
+      if (product === undefined) return;
+      const attempt: AiCreditPackReconciliation = {
+        failureStage: null,
+        id: `recovered-${stored.id}`,
+        product,
+        prolonged: false,
+        reconciliationId: stored.id,
+        startedAt: Date.now(),
+        supportReference: stored.supportReference,
+        transactionIdentifier: '',
+        guestAttemptId: stored.id,
+      };
+      updateAiCreditReconciliation(attempt);
+      await reconcileAiCreditPack(attempt);
+    }).catch(() => undefined);
+    return () => { cancelled = true; };
+  }, [aiCreditPurchasePending, guestId, isAccount, products, reconcileAiCreditPack, updateAiCreditReconciliation]);
+
   const purchase = useCallback(async (product: CommerceProduct) => {
     setPurchaseError(null);
     setPurchaseSuccess(null);
@@ -651,24 +743,44 @@ export default function CommerceScreen() {
       ? 'verification'
       : 'store';
     try {
+      let guestAttempt: GuestPurchaseAttemptReference | null = null;
+      if (!isAccount) {
+        if (Platform.OS !== 'ios') throw new Error('Guest Stitch Coin purchases are available on iOS only.');
+        const subscriberId = await getRevenueCatSubscriberId();
+        await mapGuestRevenueCatSubscriber(subscriberId);
+        guestAttempt = await createGuestPurchaseAttempt(
+          product.package.product.identifier,
+          `${Date.now()}-${product.productKey}`,
+          subscriberId,
+        );
+        if (guestId !== null) {
+          await saveGuestPurchaseAttempt(guestId, {
+            id: guestAttempt.id,
+            productKey: product.productKey,
+            supportReference: guestAttempt.supportReference,
+          });
+        }
+      }
       const baselineMembership = product.category === 'premium'
         ? membershipFingerprint(await fetchMembership())
         : null;
       failureStage = 'store';
       const purchaseResult = await withProtectedRoundTrip('commerce', () =>
-        purchaseRevenueCatPackage(product.package, accountId),
+        purchaseRevenueCatPackage(product.package, accountId, !isAccount),
       );
       if (product.category === 'premium') {
-        await beginPremiumReconciliation(product, 'purchase', baselineMembership);
+        await beginPremiumReconciliation(product, 'purchase', baselineMembership, guestAttempt);
       } else if (product.category === 'stitch_coin') {
         await beginCoinPackReconciliation(
           product,
           purchaseResult.transaction.transactionIdentifier,
+          guestAttempt,
         );
       } else {
         await beginAiCreditPackReconciliation(
           product,
           purchaseResult.transaction.transactionIdentifier,
+          guestAttempt,
         );
       }
     } catch (error: unknown) {
@@ -688,7 +800,7 @@ export default function CommerceScreen() {
     } finally {
       setPurchasingKey(null);
     }
-  }, [accountId, beginAiCreditPackReconciliation, beginCoinPackReconciliation, beginPremiumReconciliation]);
+  }, [accountId, beginAiCreditPackReconciliation, beginCoinPackReconciliation, beginPremiumReconciliation, isAccount]);
 
   const confirmPremiumPurchase = useCallback((product: CommerceProduct) => {
     if (premiumPurchaseInFlightRef.current) return;
@@ -734,10 +846,15 @@ export default function CommerceScreen() {
     });
 
     if (!isAccount) {
-      router.push({
-        pathname: '/(tabs)/(settings)/sign-in',
-        params: { returnTo: 'commerce' },
-      });
+      if (product.category !== 'premium' && product.category !== 'stitch_coin' && product.category !== 'ai_credit') {
+        router.push({ pathname: '/(tabs)/(settings)/sign-in', params: { returnTo: 'commerce' } });
+        return;
+      }
+      if (Platform.OS !== 'ios') {
+        setPurchaseError('Guest purchases are available on iOS only.');
+        return;
+      }
+      setGuestCommerceProduct(product);
       return;
     }
 
@@ -750,7 +867,7 @@ export default function CommerceScreen() {
       return;
     }
     setConfirmingAiCreditPack(product);
-  }, [isAccount, pendingIntent, preserveIntent, purchase, router, source]);
+  }, [isAccount, pendingIntent, preserveIntent, router, setGuestCommerceProduct, source]);
 
   const restorePurchases = useCallback(async () => {
     if (!isAccount) {
@@ -988,7 +1105,11 @@ export default function CommerceScreen() {
           <View style={styles.pendingBanner}>
             <Ionicons name="time-outline" size={18} color={Theme.colors.accentTeal} />
             <View style={styles.pendingCopy}>
-              <Text style={styles.pendingTitle}>Purchase Reconciliation Pending</Text>
+              <Text style={styles.pendingTitle}>
+                {coinPurchasePending.guestAttemptId !== null
+                  ? 'Verifying purchase'
+                  : 'Purchase Reconciliation Pending'}
+              </Text>
               <Text style={styles.pendingText}>
                 The store response is received. Stitch Coin updates only after the Game Backend
                 exposes the matching Commerce Ledger grant. Do not purchase this pack again.
@@ -1193,6 +1314,22 @@ export default function CommerceScreen() {
           setOpenCategory(null);
         }}
         onPurchase={attemptPurchase}
+      />
+      <GuestDataRiskNotice
+        visible={guestCommerceProduct !== null}
+        commerce
+        onProceed={() => {
+          const product = guestCommerceProduct;
+          setGuestCommerceProduct(null);
+          if (product?.category === 'premium') setConfirmingPremium(product);
+          else if (product?.category === 'stitch_coin') setConfirmingCoinPack(product);
+          else if (product !== null) setConfirmingAiCreditPack(product);
+        }}
+        onSignIn={() => {
+          setGuestCommerceProduct(null);
+          router.push({ pathname: '/(tabs)/(settings)/sign-in', params: { returnTo: 'commerce' } });
+        }}
+        onDismiss={() => setGuestCommerceProduct(null)}
       />
       <PremiumConfirmation
         onDismiss={handlePremiumConfirmationDismiss}

@@ -19,13 +19,13 @@ export class CommerceTransactionBindingEntity {
   providerTransactionId!: string;
 
   @Column({ name: 'principal_type', type: 'varchar', length: 16 })
-  principalType!: string; // 'account' today; capability-gated 'guest' rows arrive in a later ticket (ADR-0044)
+  principalType!: string; // 'account' or iOS Guest Installation Identity
 
   @Column({ name: 'principal_id', type: 'uuid' })
   principalId!: string; // Registered Account id or, once enabled, Guest Installation Identity id
 
-  // CommerceOwner (ADR-0044): exactly one of these mirrors principalId, enforced by
-  // CHK_commerce_transaction_bindings_owner. Guest commerce is capability-gated OFF today.
+  // CommerceOwner (ADR-0044/0045): exactly one mirrors principalId, enforced by
+  // CHK_commerce_transaction_bindings_owner.
   @Column({ type: 'uuid', nullable: true, name: 'account_id' })
   accountId!: string | null;
 

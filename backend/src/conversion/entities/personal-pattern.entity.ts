@@ -6,8 +6,11 @@ export class PersonalPatternEntity {
   @PrimaryColumn({ name: 'pattern_id', type: 'uuid' })
   patternId!: string;
 
-  @Column({ name: 'owner_account_id', type: 'uuid' })
-  ownerAccountId!: string;
+  @Column({ name: 'owner_account_id', type: 'uuid', nullable: true })
+  ownerAccountId!: string | null;
+
+  @Column({ name: 'guest_installation_id', type: 'uuid', nullable: true })
+  guestInstallationId!: string | null;
 
   @Column({ name: 'processing_job_id', type: 'uuid', nullable: true })
   processingJobId!: string | null;

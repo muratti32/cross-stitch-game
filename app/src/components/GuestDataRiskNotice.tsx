@@ -10,9 +10,10 @@ interface Props {
   onProceed: () => void;
   onSignIn: () => void;
   onDismiss: () => void;
+  commerce?: boolean;
 }
 
-export function GuestDataRiskNotice({ visible, onProceed, onSignIn, onDismiss }: Props) {
+export function GuestDataRiskNotice({ visible, onProceed, onSignIn, onDismiss, commerce = false }: Props) {
   return (
     <Modal
       transparent
@@ -26,25 +27,25 @@ export function GuestDataRiskNotice({ visible, onProceed, onSignIn, onDismiss }:
             <Ionicons name="close" size={24} color={Theme.colors.textSecondary} />
           </Pressable>
 
-          <Text style={styles.title}>Playing as Guest</Text>
+          <Text style={styles.title}>{commerce ? 'Purchase as Guest' : 'Playing as Guest'}</Text>
 
           <Text style={styles.body}>
-            Stitch Coin and progress live only on this device as a Guest. If the
-            installation is lost, the Guest ledger and progress may be
-            unrecoverable. Signing in protects your progress.
+            {commerce
+              ? 'You can purchase Stitch Coin without registration. This purchase belongs to this Guest Installation Identity; signing in remains optional.'
+              : 'Stitch Coin and progress live only on this device as a Guest. If the installation is lost, the Guest ledger and progress may be unrecoverable. Signing in protects your progress.'}
           </Text>
 
           <View style={styles.buttonContainer}>
             <Button
-              title="Sign in to protect my Coin"
-              onPress={onSignIn}
-              variant="primary"
+              title="Continue as Guest"
+              onPress={onProceed}
+              variant={commerce ? 'primary' : 'secondary'}
               style={styles.button}
             />
             <Button
-              title="Continue as Guest"
-              onPress={onProceed}
-              variant="secondary"
+              title="Sign in instead"
+              onPress={onSignIn}
+              variant={commerce ? 'secondary' : 'primary'}
               style={styles.button}
             />
           </View>

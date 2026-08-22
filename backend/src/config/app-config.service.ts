@@ -171,6 +171,10 @@ export class AppConfigService {
     return this.configService.get('ENABLE_ADMOB_SSV', { infer: true });
   }
 
+  get iosGuestCommerceEnabled(): boolean {
+    return this.configService.get('ENABLE_IOS_GUEST_COMMERCE', { infer: true });
+  }
+
   get admobSsvKeysUrl(): string {
     return this.configService.get('ADMOB_SSV_KEYS_URL', { infer: true });
   }

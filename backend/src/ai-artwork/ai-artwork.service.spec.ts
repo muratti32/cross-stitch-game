@@ -118,6 +118,12 @@ describe('AiArtworkService - Account Closing Behaviors', () => {
     type: PrincipalType.Account,
   });
 
+  const getGuestPrincipal = (): AuthPrincipal => ({
+    id: 'test-guest-id',
+    tokenVersion: 1,
+    type: PrincipalType.Guest,
+  });
+
   describe('list', () => {
     it('returns empty array when account is closing', async () => {
       accountStateServiceMock.getAccountStatus.mockResolvedValue('closing');
@@ -139,6 +145,17 @@ describe('AiArtworkService - Account Closing Behaviors', () => {
 
       expect(result).toEqual([]);
       expect(artworksRepoMock.find).toHaveBeenCalled();
+    });
+
+    it('scopes Guest AI Artwork reads to the Guest Installation Identity', async () => {
+      artworksRepoMock.find.mockResolvedValue([]);
+
+      await expect(service.list(getGuestPrincipal())).resolves.toEqual([]);
+
+      expect(accountStateServiceMock.getAccountStatus).not.toHaveBeenCalled();
+      expect(artworksRepoMock.find).toHaveBeenCalledWith(expect.objectContaining({
+        where: { guestInstallationId: 'test-guest-id' },
+      }));
     });
   });
 
@@ -200,6 +217,25 @@ describe('AiArtworkService - Account Closing Behaviors', () => {
 
       expect(result).toBe('conversion-result');
       expect(conversionsMock.createPhotoConversion).toHaveBeenCalled();
+    });
+
+    it('approves only a delivered AI Artwork owned by the Guest Installation Identity', async () => {
+      artworksRepoMock.findOneBy.mockResolvedValue({
+        id: 'artwork-id',
+        guestInstallationId: 'test-guest-id',
+        status: 'delivered',
+        imageObjectKey: 'key',
+        imageContentType: 'image/png',
+      });
+      storageMock.get.mockResolvedValue(Buffer.from('hello'));
+      conversionsMock.createPhotoConversion.mockResolvedValue('conversion-result');
+
+      await expect(service.approve(getGuestPrincipal(), 'artwork-id', {} as unknown as ApproveAiArtworkDto))
+        .resolves.toBe('conversion-result');
+      expect(artworksRepoMock.findOneBy).toHaveBeenCalledWith({
+        id: 'artwork-id',
+        guestInstallationId: 'test-guest-id',
+      });
     });
   });
 

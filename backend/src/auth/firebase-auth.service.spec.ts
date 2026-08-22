@@ -2,6 +2,7 @@ import { AccountIdentityService } from './account-identity.service';
 import { AuthSessionService } from './auth-session.service';
 import type { FirebaseIdentityVerifier } from './firebase-identity-verifier';
 import { FirebaseAuthService } from './firebase-auth.service';
+import type { CommercePromotionService } from '../promotion/commerce-promotion.service';
 
 describe('FirebaseAuthService', () => {
   it('exchanges a verified provider identity for a game-owned session', async () => {
@@ -23,10 +24,14 @@ describe('FirebaseAuthService', () => {
         refreshToken: 'game-refresh-token',
       }),
     } as unknown as AuthSessionService;
+    const commercePromotion = {
+      start: jest.fn(),
+    } as unknown as CommercePromotionService;
     const service = new FirebaseAuthService(
       verifier,
       accountIdentities,
       sessions,
+      commercePromotion,
     );
 
     await expect(service.exchange('firebase-id-token')).resolves.toEqual({

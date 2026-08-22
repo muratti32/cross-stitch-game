@@ -11,6 +11,7 @@ import {
   OFFICIAL_PATTERN_DRAFT_JOB_TYPE,
   AI_ARTWORK_JOB_TYPE,
   CATALOG_PRECHECK_JOB_TYPE,
+  COMMERCE_PROMOTION_JOB_TYPE,
 } from './jobs.constants';
 import { JobOutboxEntity, ProcessingJobEntity, ProcessingJobStatus } from './entities';
 import { JobStateTransitionService } from './job-state-transition.service';
@@ -57,12 +58,13 @@ export class ProcessingJobsRepository {
       eventName: ProcessingJobEventName;
       id?: string;
       payload: JsonObject;
-      type:
+  type:
         | typeof DEMO_JOB_TYPE
         | typeof CONVERSION_JOB_TYPE
         | typeof OFFICIAL_PATTERN_DRAFT_JOB_TYPE
         | typeof AI_ARTWORK_JOB_TYPE
-        | typeof CATALOG_PRECHECK_JOB_TYPE;
+        | typeof CATALOG_PRECHECK_JOB_TYPE
+        | typeof COMMERCE_PROMOTION_JOB_TYPE;
     },
   ): Promise<PendingJobAndOutbox> {
     const jobRepository = manager.getRepository(ProcessingJobEntity);

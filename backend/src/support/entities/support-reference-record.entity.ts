@@ -6,7 +6,8 @@ export type SupportRecordType =
   | 'coin_pack_purchase_reconciliation'
   | 'premium_purchase_reconciliation'
   | 'pattern_conversion'
-  | 'processing_job';
+  | 'processing_job'
+  | 'guest_purchase_attempt';
 
 @Entity({ name: 'support_reference_records', schema: 'support' })
 @Unique('UQ_support_reference_records_reference_record', [
@@ -17,7 +18,7 @@ export type SupportRecordType =
 @Index('IDX_support_reference_records_record', ['recordType', 'recordId'])
 @Check(
   'CHK_support_reference_records_type',
-  '"record_type" IN (\'ai_artwork\', \'ai_credit_pack_purchase_reconciliation\', \'coin_pack_purchase_reconciliation\', \'premium_purchase_reconciliation\', \'pattern_conversion\', \'processing_job\')',
+  '"record_type" IN (\'ai_artwork\', \'ai_credit_pack_purchase_reconciliation\', \'coin_pack_purchase_reconciliation\', \'premium_purchase_reconciliation\', \'pattern_conversion\', \'processing_job\', \'guest_purchase_attempt\')',
 )
 export class SupportReferenceRecordEntity {
   @PrimaryGeneratedColumn('uuid', {

@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 
@@ -7,6 +7,7 @@ import { CommerceLedgerRepository } from './commerce-ledger.repository';
 import { MembershipRepository } from './membership.repository';
 import { resolvePremiumProduct } from './membership.constants';
 import type { VerifiedMembershipEvent } from './membership-projection';
+import { GuestPurchaseAttemptService } from './guest-purchase-attempt.service';
 
 export interface RevenueCatWebhookOutcome {
   handled: boolean; // false for event types this ticket doesn't own
@@ -23,6 +24,7 @@ export class RevenueCatWebhookService {
     private readonly membership: MembershipRepository,
     @InjectRepository(RegisteredAccountEntity)
     private readonly accounts: Repository<RegisteredAccountEntity>,
+    @Optional() private readonly guestAttempts?: GuestPurchaseAttemptService,
   ) {}
 
   async handleEvent(body: unknown): Promise<RevenueCatWebhookOutcome> {
@@ -71,8 +73,64 @@ export class RevenueCatWebhookService {
     const appUserId = evt.app_user_id as string;
     const transactionId = evt.transaction_id as string;
     const productId = evt.product_id as string;
+    const account = UUID_PATTERN.test(appUserId)
+      ? await this.accounts.findOne({ where: { id: appUserId } })
+      : null;
+    const aliases = Array.isArray(evt.aliases)
+      ? evt.aliases.filter((value): value is string => typeof value === 'string')
+      : [];
+    const originalAppUserId = typeof evt.original_app_user_id === 'string'
+      ? [evt.original_app_user_id]
+      : [];
 
-    const account = await this.accounts.findOne({ where: { id: appUserId } });
+    if (type === 'NON_RENEWING_PURCHASE') {
+      if (account && account.status === RegisteredAccountStatus.Active) {
+        return this.applyAccountPurchase(account.id, productId, environment, transactionId);
+      }
+      const guestResult = this.guestAttempts === undefined ? null : await this.guestAttempts.applyWebhook(
+        [appUserId, ...aliases, ...originalAppUserId],
+        productId,
+        environment,
+        transactionId,
+      );
+      if (guestResult !== null) return guestResult;
+    }
+
+    const premiumProduct = resolvePremiumProduct(productId);
+    if (premiumProduct && MEMBERSHIP_EVENT_TYPES.has(type) && (!account || account.status !== RegisteredAccountStatus.Active)) {
+      const mapped = this.guestAttempts === undefined
+        ? null
+        : await this.guestAttempts.resolveMappedGuest([appUserId, ...aliases, ...originalAppUserId]);
+      if (mapped?.status === 'alias_conflict') {
+        return { handled: false, detail: 'guest_subscriber_alias_conflict', duplicate: false };
+      }
+      if (mapped !== null) {
+        const membershipEvent = parseMembershipEvent(evt, environment, {
+          type: 'guest', guestInstallationId: mapped.guestId,
+        });
+        if (membershipEvent.periodType === 'TRIAL' && premiumProduct.plan !== 'monthly') {
+          throw new BadRequestException('Only the Monthly Premium Plan may have a trial');
+        }
+        const result = await this.membership.recordVerifiedEvent(membershipEvent);
+        if (result.rejectedOtherAccount) {
+          this.logger.warn(
+            `RevenueCat membership fraud signal: transaction ${transactionId} is bound to another account`,
+          );
+        }
+        await this.guestAttempts?.markMembershipWebhook(
+          mapped, productId, transactionId, type, membershipEvent.originalTransactionId, result,
+        );
+        if (result.rejectedOtherAccount) {
+          return { handled: true, detail: 'rejected_other_account', duplicate: false };
+        }
+        return {
+          handled: true,
+          detail: result.recorded ? 'membership_event_recorded' : 'membership_event_replayed',
+          duplicate: !result.recorded,
+        };
+      }
+    }
+
     if (!account || account.status !== RegisteredAccountStatus.Active) {
       this.logger.warn(
         `RevenueCat webhook ${type} rejected: account ${appUserId} does not exist or is inactive`,
@@ -80,9 +138,10 @@ export class RevenueCatWebhookService {
       return { handled: false, detail: 'unknown_or_inactive_account', duplicate: false };
     }
 
-    const premiumProduct = resolvePremiumProduct(productId);
     if (premiumProduct && MEMBERSHIP_EVENT_TYPES.has(type)) {
-      const membershipEvent = parseMembershipEvent(evt, environment);
+      const membershipEvent = parseMembershipEvent(evt, environment, {
+        type: 'account', accountId: appUserId,
+      });
       if (
         membershipEvent.periodType === 'TRIAL' &&
         premiumProduct.plan !== 'monthly'
@@ -159,6 +218,11 @@ export class RevenueCatWebhookService {
     };
   }
 
+  private async applyAccountPurchase(accountId: string, productId: string, environment: 'sandbox' | 'production', transactionId: string): Promise<RevenueCatWebhookOutcome> {
+    const result = await this.commerceLedger.processPurchase({ environment, providerTransactionId: transactionId, accountId, productId });
+    return { handled: true, detail: result.outcome, duplicate: result.outcome === 'replayed_same_account' };
+  }
+
   /**
    * A store account keeps its subscription when the player signs in with a
    * different Registered Account, and RevenueCat reports that as TRANSFER.
@@ -190,10 +254,15 @@ export class RevenueCatWebhookService {
     const fromAccountIds = transferredFrom.filter(
       (candidate) => UUID_PATTERN.test(candidate) && candidate !== toAccountId,
     );
+    const mappedGuest = this.guestAttempts === undefined
+      ? null
+      : await this.guestAttempts.resolveMappedGuest(transferredFrom);
+    const fromGuestIds = mappedGuest?.status === 'resolved' ? [mappedGuest.guestId] : [];
 
     const moved = await this.membership.transferMembership({
       environment,
       fromAccountIds,
+      ...(fromGuestIds.length > 0 ? { fromGuestIds } : {}),
       toAccountId,
     });
     this.logger.log(
@@ -248,11 +317,11 @@ const MEMBERSHIP_EVENT_TYPES = new Set([
 function parseMembershipEvent(
   event: Record<string, unknown>,
   environment: 'sandbox' | 'production',
+  owner: import('./commerce-owner').CommerceOwner,
 ): VerifiedMembershipEvent {
   const providerEventId = requiredString(event, 'id');
   const providerTransactionId = requiredString(event, 'transaction_id');
   const originalTransactionId = requiredString(event, 'original_transaction_id');
-  const accountId = requiredString(event, 'app_user_id');
   const type = requiredString(event, 'type');
   const productId = requiredString(event, 'product_id');
   const periodType = requiredString(event, 'period_type');
@@ -271,7 +340,7 @@ function parseMembershipEvent(
     providerEventId,
     providerTransactionId,
     originalTransactionId,
-    accountId,
+    owner,
     type,
     productId,
     periodType,

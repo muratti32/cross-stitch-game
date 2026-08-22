@@ -10,6 +10,7 @@ import { PNG } from 'pngjs';
 
 import { configureApi } from '../src/api/configure-api';
 import { CatalogService } from '../src/catalog/catalog.service';
+import { CommercePromotionService } from '../src/promotion/commerce-promotion.service';
 import { encodePatternArtifactV1 } from '../src/catalog/pattern-artifact-encoder';
 import { LocalObjectStorage } from '../src/catalog/storage/local-object-storage';
 import { OBJECT_STORAGE } from '../src/catalog/storage/object-storage.interface';
@@ -62,6 +63,10 @@ import { ObjectRegistryEntity } from '../src/sessions/entities';
 import { CoinLedgerRepository } from '../src/economy/coin-ledger.repository';
 import { CommerceLedgerRepository } from '../src/economy/commerce-ledger.repository';
 import { utcRewardDay } from '../src/economy/reward-day';
+import { AiArtworkJobConsumerService } from '../src/ai-artwork/ai-artwork-job-consumer.service';
+import { FalArtworkProviderService } from '../src/ai-artwork/fal-artwork-provider.service';
+import { AiArtworkEntity } from '../src/ai-artwork/entities';
+import { AiArtworkService } from '../src/ai-artwork/ai-artwork.service';
 
 class ForcedRollbackError extends Error {
   constructor() {
@@ -80,10 +85,14 @@ describe('Stitch Wish backend integration', () => {
   let consumer: DemoJobConsumerService;
   let emailDispatcher: EmailOutboxDispatcherService;
   let localEmailSender: LocalEmailSender;
+  let aiArtworkConsumer: AiArtworkJobConsumerService;
+  const falImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAF/gL+7b9lAAAAAElFTkSuQmCC';
 
   const GOOGLE_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.google';
   const APPLE_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.apple';
   const BOUND_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.bound';
+
+  const WEBHOOK_TOKEN = 'integration-test-only-revenuecat-webhook-auth-token-at-least-32-chars';
 
   beforeAll(async () => {
     const [{ ApiAppModule }, jobs] = await Promise.all([
@@ -131,6 +140,11 @@ describe('Stitch Wish backend integration', () => {
           return Promise.reject(new Error('Invalid token'));
         }),
       })
+      .overrideProvider(FalArtworkProviderService)
+      .useValue({
+        submit: jest.fn().mockImplementation(() => Promise.resolve(randomUUID())),
+        result: jest.fn().mockResolvedValue({ unsafe: false, url: falImage }),
+      })
       .compile();
 
     app = moduleRef.createNestApplication();
@@ -145,6 +159,7 @@ describe('Stitch Wish backend integration', () => {
     consumer = app.get(jobs.DemoJobConsumerService);
     emailDispatcher = app.get(EmailOutboxDispatcherService);
     localEmailSender = app.get(LocalEmailSender);
+    aiArtworkConsumer = app.get(AiArtworkJobConsumerService);
     await queue.waitUntilReady();
   });
 
@@ -932,16 +947,15 @@ describe('Stitch Wish backend integration', () => {
         createCredentialSecret(),
       );
 
-      await request(httpServer)
-        .post('/v1/conversions/photo')
-        .set('Authorization', `Bearer ${guest.accessToken}`)
-        .field('profile', 'easy')
-        .field('title', 'Guest attempt')
-        .attach('artwork', framedArtwork(), {
-          contentType: 'image/png',
-          filename: 'approved-frame.png',
-        })
-        .expect(403);
+      const guestConversion = await requestConversion(guest.accessToken, 'Guest attempt');
+      await runConversion(guestConversion);
+      const guestConversionRow = await dataSource.getRepository(PatternConversionEntity).findOneByOrFail({ processingJobId: guestConversion });
+      expect(guestConversionRow.guestInstallationId).toBe(guest.guestId);
+      expect(guestConversionRow.accountId).toBeNull();
+      const guestPatternId = readStringRecord((await processingJobs.findById(guestConversion))?.result, 'patternId');
+      const guestPattern = await dataSource.getRepository(PersonalPatternEntity).findOneByOrFail({ patternId: guestPatternId });
+      expect(guestPattern.guestInstallationId).toBe(guest.guestId);
+      expect(guestPattern.ownerAccountId).toBeNull();
 
       const firstJobId = await requestConversion(
         account.accessToken,
@@ -1516,6 +1530,199 @@ describe('Stitch Wish backend integration', () => {
         .expect(404);
 
       engine.mockRestore();
+    });
+
+    it('approves a delivered Guest AI Artwork into a Guest-owned Personal Pattern', async () => {
+      // The AI provider stub returns a square image, so the engine stub must answer
+      // with the square Pattern Size the pipeline computes for it.
+      const squarePreview = framedArtwork(2, 2).toString('base64');
+      const engine = jest
+        .spyOn(app.get(ConversionEngineClient), 'convert')
+        .mockImplementation((input) => {
+          const size = input.shortEdgeCells;
+          return Promise.resolve({
+            dmc_palette_version: 'dmc-itest-v1',
+            engine_version: 'itest-engine-v1',
+            grid: Buffer.alloc(size * size, 1).toString('base64'),
+            palette: [
+              { dmc_code: '995', name: 'Electric Blue Dark', rgb_hex: '#2696B6' },
+            ],
+            preview_png: squarePreview,
+            recipe_version: 'v1',
+            statistics: {
+              distinct_colors: 1,
+              height: size,
+              total_stitchable_cells: size * size,
+              width: size,
+            },
+          });
+        });
+      const guest = await createGuestThroughApi(
+        httpServer,
+        randomUUID(),
+        createCredentialSecret(),
+      );
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      const headers = {
+        Authorization: `Bearer ${guest.accessToken}`,
+        'User-Agent': 'StitchWish/iOS',
+      };
+      await request(httpServer)
+        .post('/v1/commerce/guest/revenuecat-mapping')
+        .set(headers)
+        .send({ subscriberId })
+        .expect(201);
+      await request(httpServer)
+        .post('/v1/commerce/guest/purchase-attempts')
+        .set(headers)
+        .send({
+          productId: 'com.avk.stitchwish.ai_credit_pack_5',
+          idempotencyKey: `approve-chain-${randomUUID()}`,
+          subscriberId,
+        })
+        .expect(201);
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+        .send({
+          event: {
+            type: 'NON_RENEWING_PURCHASE',
+            app_user_id: subscriberId,
+            aliases: [subscriberId],
+            transaction_id: `approve-chain-tx-${randomUUID()}`,
+            product_id: 'com.avk.stitchwish.ai_credit_pack_5',
+            environment: 'SANDBOX',
+          },
+        })
+        .expect(200, { status: 'ok' });
+
+      const config = app.get(AppConfigService);
+      const falBase = jest
+        .spyOn(config, 'falWebhookBaseUrl', 'get')
+        .mockReturnValue('http://integration.test');
+      const falSecret = jest
+        .spyOn(config, 'falWebhookSecret', 'get')
+        .mockReturnValue('integration-fal-secret');
+      try {
+        const created = await request(httpServer)
+          .post('/v1/ai-artworks')
+          .set(headers)
+          .send({ prompt: 'A quiet harbour', aspect: 'square' })
+          .expect(202);
+        const artworkId = readStringRecord(created.body, 'id');
+        const artworkJobId = readStringRecord(created.body, 'jobId');
+        expect(await processingJobs.markDispatched(artworkJobId)).toBe(true);
+        await aiArtworkConsumer.processDelivery(artworkJobId);
+        const artwork = await dataSource
+          .getRepository(AiArtworkEntity)
+          .findOneByOrFail({ id: artworkId });
+        const providerRequestId = artwork.providerRequestId;
+        if (providerRequestId === null) {
+          throw new Error('AI Artwork provider request was not attached');
+        }
+        await app
+          .get(AiArtworkService)
+          .handleVerifiedWebhook(artworkJobId, providerRequestId);
+        await aiArtworkConsumer.processDelivery(artworkJobId);
+
+        const approved = await request(httpServer)
+          .post(`/v1/ai-artworks/${artworkId}/approve`)
+          .set(headers)
+          .send({ title: 'Guest Harbour', profile: 'easy' })
+          .expect(202);
+        const conversionJobId = readStringRecord(approved.body, 'id');
+        await runConversion(conversionJobId);
+        const patternId = readStringRecord(
+          (await processingJobs.findById(conversionJobId))?.result,
+          'patternId',
+        );
+
+        const personalPattern = await dataSource
+          .getRepository(PersonalPatternEntity)
+          .findOneByOrFail({ patternId });
+        expect(personalPattern.guestInstallationId).toBe(guest.guestId);
+        expect(personalPattern.ownerAccountId).toBeNull();
+        const catalogRows = await dataSource.query<
+          readonly {
+            visibility: string;
+            owner_account_id: string | null;
+            guest_installation_id: string | null;
+          }[]
+        >(
+          `SELECT visibility, owner_account_id, guest_installation_id FROM catalog.patterns WHERE id = $1`,
+          [patternId],
+        );
+        expect(catalogRows).toEqual([
+          {
+            visibility: 'personal',
+            owner_account_id: null,
+            guest_installation_id: guest.guestId,
+          },
+        ]);
+
+        // The owning Guest reads it back; another Guest cannot see it at all.
+        await request(httpServer)
+          .get(`/v1/conversions/personal-patterns/${patternId}/artifact-grant`)
+          .set(headers)
+          .expect(200);
+        const otherGuest = await createGuestThroughApi(
+          httpServer,
+          randomUUID(),
+          createCredentialSecret(),
+        );
+        await request(httpServer)
+          .get(`/v1/conversions/personal-patterns/${patternId}/artifact-grant`)
+          .set({ Authorization: `Bearer ${otherGuest.accessToken}` })
+          .expect(404);
+      } finally {
+        falBase.mockRestore();
+        falSecret.mockRestore();
+        engine.mockRestore();
+      }
+    });
+
+    it('scopes Personal Pattern title uniqueness to a single owner', async () => {
+      const engine = mockSuccessfulEngine();
+      try {
+        const account = await createAccount();
+        const guestA = await createGuestThroughApi(
+          httpServer,
+          randomUUID(),
+          createCredentialSecret(),
+        );
+        const guestB = await createGuestThroughApi(
+          httpServer,
+          randomUUID(),
+          createCredentialSecret(),
+        );
+
+        // The same title is free for every distinct owner, Account or Guest.
+        await runConversion(await requestConversion(account.accessToken, 'Shared Sunset'));
+        await runConversion(await requestConversion(guestA.accessToken, 'Shared Sunset'));
+        await runConversion(await requestConversion(guestB.accessToken, 'Shared Sunset'));
+
+        const duplicateFor = (accessToken: string) =>
+          request(httpServer)
+            .post('/v1/conversions/photo')
+            .set('Authorization', `Bearer ${accessToken}`)
+            .field('profile', 'easy')
+            .field('title', 'Shared Sunset')
+            .attach('artwork', framedArtwork(), {
+              contentType: 'image/png',
+              filename: 'approved-frame.png',
+            });
+
+        // The same owner may not reuse it.
+        const guestDuplicate = await duplicateFor(guestA.accessToken);
+        expect(guestDuplicate.status).toBe(409);
+        expect(readStringRecord(guestDuplicate.body, 'message')).toContain(
+          'already have a Personal Pattern named "Shared Sunset"',
+        );
+        const accountDuplicate = await duplicateFor(account.accessToken);
+        expect(accountDuplicate.status).toBe(409);
+      } finally {
+        engine.mockRestore();
+      }
     });
   });
 
@@ -3336,7 +3543,195 @@ describe('Stitch Wish backend integration', () => {
       return { accountId, accessToken };
     }
 
-    const WEBHOOK_TOKEN = 'integration-test-only-revenuecat-webhook-auth-token-at-least-32-chars';
+    it('uses the server capability toggle to refuse new guest commerce writes', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+        .set(headers).send({ subscriberId }).expect(201);
+      const config = app.get(AppConfigService);
+      const toggle = jest.spyOn(config, 'iosGuestCommerceEnabled', 'get').mockReturnValue(false);
+      try {
+        await request(httpServer).get('/v1/commerce/capabilities')
+          .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { guestCommerceAvailable: false });
+        await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+          .set(headers)
+          .send({ subscriberId }).expect(403)
+          .expect((response) => expect(response.body).toMatchObject({
+            message: 'Guest commerce is disabled; retry after ENABLE_IOS_GUEST_COMMERCE is enabled',
+          }));
+        await request(httpServer).post('/v1/commerce/guest/purchase-attempts')
+          .set(headers).send({
+            productId: 'com.avk.stitchwish.coin_pack_300',
+            idempotencyKey: `disabled-${randomUUID()}`,
+            subscriberId,
+          }).expect(403).expect((response) => expect(response.body).toMatchObject({
+            message: 'Guest commerce is disabled; retry after ENABLE_IOS_GUEST_COMMERCE is enabled',
+          }));
+      } finally {
+        toggle.mockRestore();
+      }
+    });
+
+    it('completes an iOS Guest Coin Pack attempt idempotently and scopes its status', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const otherGuest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      const userAgent = 'StitchWish/iOS';
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': userAgent };
+
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+        .set('Authorization', `Bearer ${guest.accessToken}`).send({ subscriberId }).expect(403);
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+        .set({ Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/Android' })
+        .send({ subscriberId }).expect(403);
+
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+        .set(headers).send({ subscriberId }).expect(201, { mapped: true });
+      const attemptResponse = await request(httpServer).post('/v1/commerce/guest/purchase-attempts')
+        .set(headers).send({
+          productId: 'com.avk.stitchwish.coin_pack_300',
+          idempotencyKey: `guest-${randomUUID()}`,
+          subscriberId,
+        }).expect(201);
+      const attemptId = readStringRecord(attemptResponse.body, 'id');
+      const supportReference = readStringRecord(attemptResponse.body, 'supportReference');
+      expect(supportReference).toMatch(/^SW-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/);
+
+      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`)
+        .set('Authorization', `Bearer ${otherGuest.accessToken}`).expect(404);
+      await request(httpServer).post('/v1/commerce/guest/purchase-attempts')
+        .set(headers).send({ productId: 'com.avk.stitchwish.coin_pack_300', idempotencyKey: `other-${randomUUID()}`, subscriberId }).expect(409);
+
+      const webhook = () => request(httpServer).post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+          type: 'NON_RENEWING_PURCHASE', app_user_id: subscriberId,
+          aliases: [subscriberId], transaction_id: 'guest-integration-tx',
+          product_id: 'com.avk.stitchwish.coin_pack_300', environment: 'SANDBOX',
+        } });
+      await webhook().expect(200, { status: 'ok' });
+      await webhook().expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/economy/balance')
+        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 300 });
+      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`)
+        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200)
+        .expect((response) => expect(response.body.status).toBe('granted'));
+    });
+
+    it('reconciles delayed delivery after the client has restarted and exposes one grant', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+        .set(headers).send({ subscriberId }).expect(201);
+      const attempt = await request(httpServer).post('/v1/commerce/guest/purchase-attempts')
+        .set(headers).send({
+          productId: 'com.avk.stitchwish.coin_pack_300',
+          idempotencyKey: `delayed-${randomUUID()}`,
+          subscriberId,
+        }).expect(201);
+
+      // A restarted client keeps only the attempt id from its Local Identity Namespace.
+      const attemptId = readStringRecord(attempt.body, 'id');
+      const supportReference = readStringRecord(attempt.body, 'supportReference');
+
+      // Before the delayed webhook arrives, recovery must expose the unresolved attempt
+      // and the same Support Reference, so the player can retry or contact support.
+      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`)
+        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200)
+        .expect((response) => {
+          expect(readStringRecord(response.body, 'status')).toBe('created');
+          expect(readStringRecord(response.body, 'supportReference')).toBe(supportReference);
+        });
+      // Nothing was granted while the webhook was still in flight.
+      await request(httpServer).get('/v1/economy/balance')
+        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 0 });
+
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+          type: 'NON_RENEWING_PURCHASE', app_user_id: subscriberId, aliases: [subscriberId],
+          transaction_id: `delayed-${randomUUID()}`, product_id: 'com.avk.stitchwish.coin_pack_300',
+          environment: 'SANDBOX',
+        } }).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/economy/balance')
+        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 300 });
+      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`)
+        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200)
+        .expect((response) => {
+          expect(readStringRecord(response.body, 'status')).toBe('granted');
+          expect(readStringRecord(response.body, 'supportReference')).toBe(supportReference);
+        });
+    });
+
+    it('ignores a second distinct provider transaction once the attempt is already granted', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+        .set(headers).send({ subscriberId }).expect(201);
+      await request(httpServer).post('/v1/commerce/guest/purchase-attempts')
+        .set(headers).send({
+          productId: 'com.avk.stitchwish.coin_pack_300',
+          idempotencyKey: `ordered-${randomUUID()}`,
+          subscriberId,
+        }).expect(201);
+
+      const webhook = (transactionId: string) => request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+        .send({ event: {
+          type: 'NON_RENEWING_PURCHASE', app_user_id: subscriberId, aliases: [subscriberId],
+          transaction_id: transactionId, product_id: 'com.avk.stitchwish.coin_pack_300',
+          environment: 'SANDBOX',
+        } });
+      await webhook(`first-${randomUUID()}`).expect(200, { status: 'ok' });
+      await webhook(`second-${randomUUID()}`).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/economy/balance')
+        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 300 });
+    });
+
+    it('refuses unresolved repurchases but allows a new attempt after a grant', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+        .set(headers).send({ subscriberId }).expect(201);
+      const firstKey = `repurchase-${randomUUID()}`;
+      await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId: 'com.avk.stitchwish.coin_pack_300', idempotencyKey: firstKey, subscriberId,
+      }).expect(201);
+      await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId: 'com.avk.stitchwish.coin_pack_300', idempotencyKey: `conflict-${randomUUID()}`, subscriberId,
+      }).expect(409, { statusCode: 409, message: 'A purchase for this Stitch Coin Pack is already being verified', error: 'Conflict' });
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+          type: 'NON_RENEWING_PURCHASE', app_user_id: subscriberId, aliases: [subscriberId],
+          transaction_id: `repurchase-granted-${randomUUID()}`, product_id: 'com.avk.stitchwish.coin_pack_300', environment: 'SANDBOX',
+        } }).expect(200, { status: 'ok' });
+      await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId: 'com.avk.stitchwish.coin_pack_300', idempotencyKey: `second-${randomUUID()}`, subscriberId,
+      }).expect(201);
+    });
+
+    it('returns one clean conflict when concurrent starts race the unresolved-product unique index', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+        .set(headers).send({ subscriberId }).expect(201);
+      const start = (idempotencyKey: string) => request(httpServer)
+        .post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+          productId: 'com.avk.stitchwish.coin_pack_300', idempotencyKey, subscriberId,
+        });
+      const responses = await Promise.all([
+        start(`race-a-${randomUUID()}`),
+        start(`race-b-${randomUUID()}`),
+      ]);
+      expect(responses.map((response) => response.status).sort()).toEqual([201, 409]);
+      expect(responses.find((response) => response.status === 409)?.body).toMatchObject({
+        statusCode: 409,
+        message: 'A purchase for this Stitch Coin Pack is already being verified',
+      });
+    });
 
     it('CommerceLedgerRepository processes purchases and reversals idempotently', async () => {
       const account1 = await newRegisteredAccount();
@@ -3684,6 +4079,296 @@ describe('Stitch Wish backend integration', () => {
         .expect(200, { status: 'ok' });
     });
 
+    it.each([
+      ['weekly', 'com.avk.stitchwish.premium_weekly', 3],
+      ['monthly', 'com.avk.stitchwish.premium_monthly', 15],
+      ['annual', 'com.avk.stitchwish.premium_annual', 180],
+    ])('completes a Guest Premium %s Purchase Attempt through visible benefits', async (plan, productId, credits) => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `guest-premium-${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers)
+        .send({ subscriberId }).expect(201);
+      const attempt = await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers)
+        .send({ productId, idempotencyKey: `premium-${randomUUID()}`, subscriberId }).expect(201);
+      expect(attempt.body.status).toBe('created');
+
+      const now = Date.now();
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({
+        event: {
+          id: `guest-premium-event-${randomUUID()}`,
+          type: 'INITIAL_PURCHASE',
+          app_user_id: subscriberId,
+          aliases: [subscriberId],
+          transaction_id: `guest-premium-tx-${randomUUID()}`,
+          original_transaction_id: `guest-premium-original-${randomUUID()}`,
+          product_id: productId,
+          period_type: 'NORMAL',
+          environment: 'SANDBOX',
+          event_timestamp_ms: now,
+          purchased_at_ms: now,
+          expiration_at_ms: now + 7 * 86_400_000,
+        },
+      }).expect(200, { status: 'ok' });
+
+      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attempt.body.id}`).set(headers)
+        .expect(200).expect((response) => expect(response.body.status).toBe('granted'));
+      await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200).expect((response) => {
+        expect(response.body).toMatchObject({ active: true, plan, themeAccess: true });
+      });
+      await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: credits });
+      await request(httpServer).post('/v1/commerce/membership/daily-claim').set(headers).expect(201)
+        .expect((response) => expect(response.body).toMatchObject({ amount: 30, replayed: false }));
+      await request(httpServer).post('/v1/commerce/membership/daily-claim').set(headers).expect(201)
+        .expect((response) => expect(response.body).toMatchObject({ amount: 30, replayed: true }));
+    });
+
+    it('grants Guest Monthly trial entitlement without credit, then grants conversion credit once', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `guest-trial-${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      const productId = 'com.avk.stitchwish.premium_monthly';
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+      await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId, idempotencyKey: `trial-${randomUUID()}`, subscriberId,
+      }).expect(201);
+      const now = Date.now();
+      const originalTransactionId = `guest-trial-original-${randomUUID()}`;
+      const conversionTransactionId = `guest-conversion-tx-${randomUUID()}`;
+      const webhook = (event: Record<string, unknown>) => request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event });
+      await webhook({
+        id: `guest-trial-event-${randomUUID()}`, type: 'INITIAL_PURCHASE', app_user_id: subscriberId,
+        aliases: [subscriberId], transaction_id: `guest-trial-tx-${randomUUID()}`, original_transaction_id: originalTransactionId,
+        product_id: productId, period_type: 'TRIAL', environment: 'SANDBOX', event_timestamp_ms: now,
+        purchased_at_ms: now, expiration_at_ms: now + 3 * 86_400_000,
+      }).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200).expect((response) => {
+        expect(response.body).toMatchObject({ active: true, lifecycle: 'trial', plan: 'monthly' });
+      });
+      await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 0 });
+
+      await webhook({
+        id: `guest-conversion-event-${randomUUID()}`, type: 'RENEWAL', app_user_id: subscriberId,
+        aliases: [subscriberId], transaction_id: conversionTransactionId, original_transaction_id: originalTransactionId,
+        product_id: productId, period_type: 'NORMAL', environment: 'SANDBOX', event_timestamp_ms: now + 3 * 86_400_000,
+        purchased_at_ms: now + 3 * 86_400_000, expiration_at_ms: now + 33 * 86_400_000,
+      }).expect(200, { status: 'ok' });
+      await webhook({
+        id: `guest-conversion-event-replay-${randomUUID()}`, type: 'RENEWAL', app_user_id: subscriberId,
+        aliases: [subscriberId], transaction_id: conversionTransactionId, original_transaction_id: originalTransactionId,
+        product_id: productId, period_type: 'NORMAL', environment: 'SANDBOX', event_timestamp_ms: now + 3 * 86_400_000,
+        purchased_at_ms: now + 3 * 86_400_000, expiration_at_ms: now + 33 * 86_400_000,
+      }).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 15 });
+    });
+
+    it('keeps a Guest Premium attempt pending for lifecycle events and exposes its Support Reference', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `guest-pending-${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      const productId = 'com.avk.stitchwish.premium_monthly';
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+      const attempt = await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId, idempotencyKey: `pending-${randomUUID()}`, subscriberId,
+      }).expect(201);
+      const event = (type: string, transactionId = `pending-tx-${randomUUID()}`) => request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+          id: `pending-event-${randomUUID()}`, type, app_user_id: subscriberId, aliases: [subscriberId],
+          transaction_id: transactionId, original_transaction_id: `pending-original-${randomUUID()}`,
+          product_id: productId, period_type: 'NORMAL', environment: 'SANDBOX',
+          event_timestamp_ms: Date.now(), purchased_at_ms: Date.now(), expiration_at_ms: Date.now() + 86_400_000,
+        } });
+
+      await event('BILLING_ISSUE').expect(200, { status: 'ok' });
+      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attempt.body.id}`).set(headers)
+        .expect(200).expect((response) => expect(response.body).toMatchObject({
+          status: 'created', supportReference: attempt.body.supportReference,
+        }));
+      await request(httpServer).post('/v1/commerce/membership/reconciliations').set(headers)
+        .send({ operation: 'purchase', productKey: 'premium_monthly' }).expect(201)
+        .expect((response) => expect(response.body.supportReference).toMatch(/^SW-/));
+    });
+
+    it('does not grant a Guest Premium attempt from EXPIRATION or a rejected transaction', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const account = await newRegisteredAccount();
+      const subscriberId = `guest-negative-${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      const productId = 'com.avk.stitchwish.premium_weekly';
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+      const attempt = await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId, idempotencyKey: `negative-${randomUUID()}`, subscriberId,
+      }).expect(201);
+      const transactionId = `owned-by-account-${randomUUID()}`;
+      const base = {
+        original_transaction_id: `negative-original-${randomUUID()}`, product_id: productId,
+        period_type: 'NORMAL', environment: 'SANDBOX', event_timestamp_ms: Date.now(),
+        purchased_at_ms: Date.now(), expiration_at_ms: Date.now() + 86_400_000,
+      };
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+        ...base, id: `owner-event-${randomUUID()}`, type: 'INITIAL_PURCHASE', app_user_id: account.accountId,
+        transaction_id: transactionId,
+      } }).expect(200, { status: 'ok' });
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+        ...base, id: `guest-rejected-${randomUUID()}`, type: 'INITIAL_PURCHASE', app_user_id: subscriberId,
+        aliases: [subscriberId], transaction_id: transactionId,
+      } }).expect(503);
+      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attempt.body.id}`).set(headers)
+        .expect(200).expect((response) => expect(response.body.status).toBe('failed'));
+
+      const second = await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId, idempotencyKey: `expiration-${randomUUID()}`, subscriberId,
+      }).expect(201);
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+        ...base, id: `expiration-${randomUUID()}`, type: 'EXPIRATION', app_user_id: subscriberId,
+        aliases: [subscriberId], transaction_id: `expired-${randomUUID()}`,
+      } }).expect(200, { status: 'ok' });
+      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${second.body.id}`).set(headers)
+        .expect(200).expect((response) => expect(response.body.status).toBe('created'));
+    });
+
+    it('transfers Guest-owned Premium rows to the Registered Account and clears the Guest owner', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const account = await newRegisteredAccount();
+      const subscriberId = `guest-transfer-${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+      const now = Date.now();
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+        id: `transfer-initial-${randomUUID()}`, type: 'INITIAL_PURCHASE', app_user_id: subscriberId, aliases: [subscriberId],
+        transaction_id: `transfer-tx-${randomUUID()}`, original_transaction_id: `transfer-original-${randomUUID()}`,
+        product_id: 'com.avk.stitchwish.premium_annual', period_type: 'NORMAL', environment: 'SANDBOX',
+        event_timestamp_ms: now, purchased_at_ms: now, expiration_at_ms: now + 365 * 86_400_000,
+      } }).expect(200, { status: 'ok' });
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+        id: `transfer-${randomUUID()}`, type: 'TRANSFER', environment: 'SANDBOX',
+        transferred_from: [subscriberId], transferred_to: [account.accountId],
+      } }).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/commerce/membership').set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(200).expect((response) => expect(response.body.active).toBe(false));
+      await request(httpServer).get('/v1/commerce/membership').set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200).expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'annual' }));
+    });
+
+    it('projects Guest billing retry, grace, expiration, and product changes through membership status', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `guest-lifecycle-${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      const webhook = (event: Record<string, unknown>) => request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event });
+      const now = Date.now();
+      const original = `lifecycle-original-${randomUUID()}`;
+      const weeklyTx = `lifecycle-weekly-${randomUUID()}`;
+      const base = { app_user_id: subscriberId, aliases: [subscriberId], original_transaction_id: original,
+        product_id: 'com.avk.stitchwish.premium_weekly', period_type: 'NORMAL', environment: 'SANDBOX' };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+      await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'INITIAL_PURCHASE', transaction_id: weeklyTx,
+        event_timestamp_ms: now, purchased_at_ms: now, expiration_at_ms: now + 5 * 86_400_000 }).expect(200, { status: 'ok' });
+      await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'BILLING_ISSUE', transaction_id: weeklyTx,
+        event_timestamp_ms: now + 1_000, purchased_at_ms: now, expiration_at_ms: now + 5 * 86_400_000,
+        grace_period_expiration_at_ms: now + 86_400_000 }).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'weekly', lifecycle: 'grace' }));
+      await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'EXPIRATION', transaction_id: weeklyTx,
+        event_timestamp_ms: now + 2_000, purchased_at_ms: now, expiration_at_ms: now - 1_000 }).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: false, lifecycle: 'expired' }));
+
+      const annualTx = `lifecycle-annual-${randomUUID()}`;
+      await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'PRODUCT_CHANGE', transaction_id: annualTx,
+        product_id: 'com.avk.stitchwish.premium_annual', event_timestamp_ms: now + 3_000,
+        purchased_at_ms: now + 3_000, expiration_at_ms: now + 365 * 86_400_000 }).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'annual' }));
+      await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'EXPIRATION', transaction_id: annualTx,
+        product_id: 'com.avk.stitchwish.premium_annual', event_timestamp_ms: now + 4_000,
+        purchased_at_ms: now + 3_000, expiration_at_ms: now - 1_000 }).expect(200, { status: 'ok' });
+      const downgradeTx = `lifecycle-downgrade-${randomUUID()}`;
+      await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'PRODUCT_CHANGE', transaction_id: downgradeTx,
+        product_id: 'com.avk.stitchwish.premium_weekly', event_timestamp_ms: now + 5_000,
+        purchased_at_ms: now + 5_000, expiration_at_ms: now + 6 * 86_400_000 }).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'weekly' }));
+    });
+
+    it('handles out-of-order Guest deliveries idempotently for period, AI credit, and daily claim', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `guest-order-${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      const now = Date.now();
+      const transactionId = `guest-order-tx-${randomUUID()}`;
+      const base = { app_user_id: subscriberId, aliases: [subscriberId], transaction_id: transactionId,
+        original_transaction_id: `guest-order-original-${randomUUID()}`, product_id: 'com.avk.stitchwish.premium_monthly',
+        period_type: 'NORMAL', environment: 'SANDBOX', purchased_at_ms: now, expiration_at_ms: now + 30 * 86_400_000 };
+      const initial = { ...base, id: `order-initial-${randomUUID()}`, type: 'INITIAL_PURCHASE', event_timestamp_ms: now - 2_000 };
+      const renewal = { ...base, id: `order-renewal-${randomUUID()}`, type: 'RENEWAL', event_timestamp_ms: now - 1_000 };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: renewal }).expect(200, { status: 'ok' });
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: initial }).expect(200, { status: 'ok' });
+      const replay = await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: initial });
+      expect(replay.status).toBe(200);
+      await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'monthly' }));
+      const periods = await dataSource.query(`SELECT provider_transaction_id FROM economy.membership_periods WHERE guest_installation_id = $1`, [guest.guestId]);
+      expect(periods).toHaveLength(1);
+      await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 15 });
+      await request(httpServer).post('/v1/commerce/membership/daily-claim').set(headers).expect(201);
+      await request(httpServer).post('/v1/commerce/membership/daily-claim').set(headers).expect(201)
+        .expect((response) => expect(response.body.replayed).toBe(true));
+    });
+
+    it('stops new Guest Premium purchases with the toggle off without abandoning an existing period', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `guest-toggle-${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      const now = Date.now();
+      const original = `toggle-original-${randomUUID()}`;
+      const base = {
+        app_user_id: subscriberId, aliases: [subscriberId], original_transaction_id: original,
+        product_id: 'com.avk.stitchwish.premium_monthly', period_type: 'NORMAL', environment: 'SANDBOX',
+      };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers)
+        .send({ subscriberId }).expect(201);
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+          ...base, id: `toggle-initial-${randomUUID()}`, type: 'INITIAL_PURCHASE',
+          transaction_id: `toggle-tx-${randomUUID()}`, event_timestamp_ms: now,
+          purchased_at_ms: now, expiration_at_ms: now + 30 * 86_400_000,
+        } }).expect(200, { status: 'ok' });
+
+      const config = app.get(AppConfigService);
+      const toggle = jest.spyOn(config, 'iosGuestCommerceEnabled', 'get').mockReturnValue(false);
+      try {
+        // The toggle is the rollback control: it stops new purchases only.
+        await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+          productId: 'com.avk.stitchwish.premium_monthly',
+          idempotencyKey: `toggle-${randomUUID()}`,
+          subscriberId,
+        }).expect(403);
+
+        // Everything the Guest already paid for keeps working.
+        await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
+          .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'monthly' }));
+        await request(httpServer).post('/v1/commerce/membership/daily-claim').set(headers).expect(201)
+          .expect((response) => expect(response.body).toMatchObject({ replayed: false }));
+        const renewalTransactionId = `toggle-renewal-${randomUUID()}`;
+        await request(httpServer).post('/v1/commerce/revenuecat/webhook')
+          .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+            ...base, id: `toggle-renewal-event-${randomUUID()}`, type: 'RENEWAL',
+            transaction_id: renewalTransactionId, event_timestamp_ms: now + 30 * 86_400_000,
+            purchased_at_ms: now + 30 * 86_400_000, expiration_at_ms: now + 60 * 86_400_000,
+          } }).expect(200, { status: 'ok' });
+        const periods = await dataSource.query(
+          `SELECT provider_transaction_id FROM economy.membership_periods WHERE guest_installation_id = $1`,
+          [guest.guestId],
+        );
+        expect(periods).toHaveLength(2);
+      } finally {
+        toggle.mockRestore();
+      }
+    });
+
     it('derives Premium Membership from periods and shares the daily Coin pool', async () => {
       const account = await newRegisteredAccount();
       const originalTransactionId = `premium-original-${randomUUID()}`;
@@ -3912,6 +4597,214 @@ describe('Stitch Wish backend integration', () => {
         lifecycle: 'active',
       });
     });
+  });
+
+  it.each([
+    ['ai_credit_pack_5', 5],
+    ['ai_credit_pack_20', 20],
+    ['ai_credit_pack_50', 50],
+  ] as const)('keeps Guest AI Credit Pack %s unresolved until webhook and grants exact amount once', async (productKey, amount) => {
+    const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+    const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+    const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+    const productId = `com.avk.stitchwish.${productKey}`;
+    await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+    const attempt = await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+      productId,
+      idempotencyKey: `ai-${randomUUID()}`,
+      subscriberId,
+    }).expect(201);
+    const attemptId = readStringRecord(attempt.body, 'id');
+    const supportReference = readStringRecord(attempt.body, 'supportReference');
+    await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`).set(headers).expect(200)
+      .expect((response) => {
+        expect(readStringRecord(response.body, 'status')).toBe('created');
+        expect(readStringRecord(response.body, 'supportReference')).toBe(supportReference);
+      });
+    await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 0 });
+    const event = { type: 'NON_RENEWING_PURCHASE', app_user_id: subscriberId, aliases: [subscriberId], transaction_id: `ai-${randomUUID()}`, product_id: productId, environment: 'SANDBOX' };
+    await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event }).expect(200, { status: 'ok' });
+    await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event }).expect(200, { status: 'ok' });
+    await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: amount });
+    await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`).set(headers).expect(200)
+      .expect((response) => expect(readStringRecord(response.body, 'status')).toBe('granted'));
+  });
+
+  it.each([
+    ['ai_credit_pack_5', 5],
+    ['ai_credit_pack_20', 20],
+    ['ai_credit_pack_50', 50],
+  ] as const)('spends exactly one Guest AI Credit for delivered artwork %s and isolates artwork access', async (productKey, amount) => {
+    const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+    const otherGuest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+    const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+    const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+    await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+    await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+      productId: `com.avk.stitchwish.${productKey}`,
+      idempotencyKey: `ai-art-${randomUUID()}`,
+      subscriberId,
+    }).expect(201);
+    await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+      type: 'NON_RENEWING_PURCHASE', app_user_id: subscriberId, aliases: [subscriberId],
+      transaction_id: `ai-art-tx-${randomUUID()}`, product_id: `com.avk.stitchwish.${productKey}`,
+      amount: 999999, credits: 999999, environment: 'SANDBOX',
+    } }).expect(200, { status: 'ok' });
+    await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: amount });
+
+    const config = app.get(AppConfigService);
+    const base = jest.spyOn(config, 'falWebhookBaseUrl', 'get').mockReturnValue('http://integration.test');
+    const secret = jest.spyOn(config, 'falWebhookSecret', 'get').mockReturnValue('integration-fal-secret');
+    try {
+      const created = await request(httpServer).post('/v1/ai-artworks').set(headers).send({ prompt: 'A blue flower', aspect: 'square' }).expect(202);
+      const artworkId = readStringRecord(created.body, 'id');
+      const jobId = readStringRecord(created.body, 'jobId');
+      expect(await processingJobs.markDispatched(jobId)).toBe(true);
+      await aiArtworkConsumer.processDelivery(jobId);
+      const artwork = await dataSource.getRepository(AiArtworkEntity).findOneByOrFail({ id: artworkId });
+      expect(artwork.guestInstallationId).toBe(guest.guestId);
+      expect(artwork.accountId).toBeNull();
+      const providerRequestId = artwork.providerRequestId;
+      if (providerRequestId === null) throw new Error('AI Artwork provider request was not attached');
+      await app.get(AiArtworkService).handleVerifiedWebhook(jobId, providerRequestId);
+      await aiArtworkConsumer.processDelivery(jobId);
+      await request(httpServer).get(`/v1/ai-artworks/${artworkId}`).set(headers).expect(200)
+        .expect((response) => expect(readStringRecord(response.body, 'status')).toBe('delivered'));
+      await request(httpServer).get(`/v1/ai-artworks/${artworkId}`).set({ Authorization: `Bearer ${otherGuest.accessToken}` }).expect(404);
+      await request(httpServer).post(`/v1/ai-artworks/${artworkId}/approve`).set({ Authorization: `Bearer ${otherGuest.accessToken}` }).send({ title: 'Other Guest', profile: 'easy' }).expect(404);
+      await request(httpServer).delete(`/v1/ai-artworks/${artworkId}`).set({ Authorization: `Bearer ${otherGuest.accessToken}` }).expect(404);
+      await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: amount - 1 });
+      const ledger = await dataSource.query<readonly { amount: string; principal_type: string; principal_id: string }[]>(`SELECT amount, principal_type, principal_id FROM economy.ai_credit_ledger_entries WHERE source_key = $1`, [`ai-artwork:${jobId}`]);
+      expect(ledger).toEqual([{ amount: '-1', principal_type: 'guest', principal_id: guest.guestId }]);
+    } finally {
+      base.mockRestore();
+      secret.mockRestore();
+    }
+  });
+
+  it('refuses an unresolved Guest AI Credit Pack repurchase and recovers the same attempt after an interruption', async () => {
+    const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+    const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+    const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+    const productId = 'com.avk.stitchwish.ai_credit_pack_20';
+    await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+    const attempt = await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+      productId, idempotencyKey: `ai-repurchase-${randomUUID()}`, subscriberId,
+    }).expect(201);
+    const attemptId = readStringRecord(attempt.body, 'id');
+    const supportReference = readStringRecord(attempt.body, 'supportReference');
+
+    // A second purchase of the same pack is refused while the first is unresolved.
+    await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+      productId, idempotencyKey: `ai-conflict-${randomUUID()}`, subscriberId,
+    }).expect(409, { statusCode: 409, message: 'A purchase for this product is already being verified', error: 'Conflict' });
+
+    // After an interruption the restarted client recovers the same attempt and Support Reference.
+    await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`).set(headers).expect(200)
+      .expect((response) => {
+        expect(readStringRecord(response.body, 'status')).toBe('created');
+        expect(readStringRecord(response.body, 'supportReference')).toBe(supportReference);
+      });
+    await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 0 });
+
+    await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+      type: 'NON_RENEWING_PURCHASE', app_user_id: subscriberId, aliases: [subscriberId],
+      transaction_id: `ai-repurchase-tx-${randomUUID()}`, product_id: productId, environment: 'SANDBOX',
+    } }).expect(200, { status: 'ok' });
+    await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`).set(headers).expect(200)
+      .expect((response) => {
+        expect(readStringRecord(response.body, 'status')).toBe('granted');
+        expect(readStringRecord(response.body, 'supportReference')).toBe(supportReference);
+      });
+    // Once the grant landed, the same pack may be purchased again.
+    await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+      productId, idempotencyKey: `ai-second-${randomUUID()}`, subscriberId,
+    }).expect(201);
+  });
+
+  it('applies the AI generation rate limit per Guest owner', async () => {
+    const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+    const otherGuest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+    const headers = { Authorization: `Bearer ${guest.accessToken}` };
+    // The attempt is recorded before the credit check, so an owner without credit
+    // still consumes the ten-per-ten-minutes allowance.
+    for (let index = 0; index < 10; index += 1) {
+      await request(httpServer).post('/v1/ai-artworks').set(headers)
+        .send({ prompt: `A harbour number ${index}`, aspect: 'square' }).expect(409);
+    }
+    await request(httpServer).post('/v1/ai-artworks').set(headers)
+      .send({ prompt: 'One request too many', aspect: 'square' })
+      .expect(429)
+      .expect((response) => expect(readStringRecord(response.body, 'message')).toBe('AI generation rate limit reached'));
+
+    // One Guest's attempts do not count against another's.
+    await request(httpServer).post('/v1/ai-artworks').set({ Authorization: `Bearer ${otherGuest.accessToken}` })
+      .send({ prompt: 'A separate harbour', aspect: 'square' }).expect(409);
+  });
+
+  it('refuses a Guest a Catalog Submission and a Public Creator Profile', async () => {
+    const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+    const headers = { Authorization: `Bearer ${guest.accessToken}` };
+    await request(httpServer).post(`/v1/catalog-submissions/patterns/${randomUUID()}`).set(headers).send({
+      title: 'Guest Submission', description: 'Not allowed', sourceLanguage: 'en',
+      categoryCode: 'animals', tagCodes: [], rightsDeclared: true, licenseVersion: 'v1',
+    }).expect(403).expect((response) => expect(readStringRecord(response.body, 'message')).toBe('Registered Account required'));
+    await request(httpServer).post('/v1/creator-profiles').set(headers)
+      .send({ username: `guest_${randomUUID().slice(0, 8)}`, displayName: 'Guest Creator' })
+      .expect(403).expect((response) => expect(readStringRecord(response.body, 'message')).toBe('Registered Account required'));
+  });
+
+  it('stops new Guest AI Credit Pack purchases with the toggle off while granted credit and reconciliation keep working', async () => {
+    const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+    const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+    const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+    await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+    await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+      productId: 'com.avk.stitchwish.ai_credit_pack_5', idempotencyKey: `toggle-granted-${randomUUID()}`, subscriberId,
+    }).expect(201);
+    await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+      type: 'NON_RENEWING_PURCHASE', app_user_id: subscriberId, aliases: [subscriberId],
+      transaction_id: `toggle-granted-tx-${randomUUID()}`, product_id: 'com.avk.stitchwish.ai_credit_pack_5', environment: 'SANDBOX',
+    } }).expect(200, { status: 'ok' });
+    // A second pack is started before the rollback, so its webhook must still reconcile after it.
+    await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+      productId: 'com.avk.stitchwish.ai_credit_pack_20', idempotencyKey: `toggle-inflight-${randomUUID()}`, subscriberId,
+    }).expect(201);
+
+    const config = app.get(AppConfigService);
+    const toggle = jest.spyOn(config, 'iosGuestCommerceEnabled', 'get').mockReturnValue(false);
+    const base = jest.spyOn(config, 'falWebhookBaseUrl', 'get').mockReturnValue('http://integration.test');
+    const secret = jest.spyOn(config, 'falWebhookSecret', 'get').mockReturnValue('integration-fal-secret');
+    try {
+      await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId: 'com.avk.stitchwish.ai_credit_pack_50', idempotencyKey: `toggle-blocked-${randomUUID()}`, subscriberId,
+      }).expect(403);
+
+      // Credit the Guest already owns is still spendable and the job still completes.
+      const created = await request(httpServer).post('/v1/ai-artworks').set(headers)
+        .send({ prompt: 'A rolled back harbour', aspect: 'square' }).expect(202);
+      const jobId = readStringRecord(created.body, 'jobId');
+      const artworkId = readStringRecord(created.body, 'id');
+      expect(await processingJobs.markDispatched(jobId)).toBe(true);
+      await aiArtworkConsumer.processDelivery(jobId);
+      const artwork = await dataSource.getRepository(AiArtworkEntity).findOneByOrFail({ id: artworkId });
+      const providerRequestId = artwork.providerRequestId;
+      if (providerRequestId === null) throw new Error('AI Artwork provider request was not attached');
+      await app.get(AiArtworkService).handleVerifiedWebhook(jobId, providerRequestId);
+      await aiArtworkConsumer.processDelivery(jobId);
+      await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 4 });
+
+      // Webhook reconciliation for the in-flight attempt is unaffected by the toggle.
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+        type: 'NON_RENEWING_PURCHASE', app_user_id: subscriberId, aliases: [subscriberId],
+        transaction_id: `toggle-inflight-tx-${randomUUID()}`, product_id: 'com.avk.stitchwish.ai_credit_pack_20', environment: 'SANDBOX',
+      } }).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 24 });
+    } finally {
+      toggle.mockRestore();
+      base.mockRestore();
+      secret.mockRestore();
+    }
   });
 
   describe('Guest Data Promotion stage 1', () => {
@@ -4437,6 +5330,602 @@ describe('Stitch Wish backend integration', () => {
         [account.accountId],
       );
       expect(Number(accountBal[0].balance)).toBe(60);
+    });
+  });
+
+  describe('Guest paid commerce promotion', () => {
+    const COIN_PACK = 'com.avk.stitchwish.coin_pack_300';
+    const AI_CREDIT_PACK = 'com.avk.stitchwish.ai_credit_pack_5';
+    const PREMIUM_MONTHLY = 'com.avk.stitchwish.premium_monthly';
+    const unlockPalette = [
+      { dmcCode: '310', name: 'Black', rgbHex: '#000000' },
+      { dmcCode: 'B5200', name: 'Snow White', rgbHex: '#FFFFFF' },
+    ];
+
+    interface PaidGuest {
+      accessToken: string;
+      credentialSecret: string;
+      guestId: string;
+    }
+
+    interface PromotionAccount {
+      accessToken: string;
+      accountId: string;
+    }
+
+    interface Reserve {
+      balance: number;
+      paid: number;
+    }
+
+    function iosHeaders(accessToken: string): Record<string, string> {
+      return { Authorization: `Bearer ${accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+    }
+
+    async function newPaidGuest(): Promise<PaidGuest> {
+      const credentialSecret = createCredentialSecret();
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), credentialSecret);
+      return { accessToken: guest.accessToken, credentialSecret, guestId: guest.guestId };
+    }
+
+    /** Seeds free (non-purchased) Guest Coin so the free/paid split is observable. */
+    async function seedFreeGuestCoin(guestId: string, amount: number): Promise<void> {
+      await dataSource.query(
+        `INSERT INTO economy.coin_balances (principal_type, principal_id, balance)
+         VALUES ('guest', $1, $2)
+         ON CONFLICT ON CONSTRAINT "PK_coin_balances"
+           DO UPDATE SET balance = EXCLUDED.balance, updated_at = now()`,
+        [guestId, amount],
+      );
+    }
+
+    async function mapSubscriber(guest: PaidGuest, subscriberId: string): Promise<void> {
+      await request(httpServer)
+        .post('/v1/commerce/guest/revenuecat-mapping')
+        .set(iosHeaders(guest.accessToken))
+        .send({ subscriberId })
+        .expect(201);
+    }
+
+    /** Drives one verified Guest consumable purchase end to end. */
+    async function purchasePack(
+      guest: PaidGuest,
+      productId: string,
+      subscriberId: string,
+    ): Promise<void> {
+      await mapSubscriber(guest, subscriberId);
+      await request(httpServer)
+        .post('/v1/commerce/guest/purchase-attempts')
+        .set(iosHeaders(guest.accessToken))
+        .send({ idempotencyKey: `paid-promo-${randomUUID()}`, productId, subscriberId })
+        .expect(201);
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+        .send({
+          event: {
+            aliases: [subscriberId],
+            app_user_id: subscriberId,
+            environment: 'SANDBOX',
+            product_id: productId,
+            transaction_id: `paid-promo-tx-${randomUUID()}`,
+            type: 'NON_RENEWING_PURCHASE',
+          },
+        })
+        .expect(200, { status: 'ok' });
+    }
+
+    /** Returns the webhook body so a duplicate delivery can be replayed verbatim. */
+    async function purchasePremium(
+      guest: PaidGuest,
+      subscriberId: string,
+    ): Promise<Record<string, unknown>> {
+      await mapSubscriber(guest, subscriberId);
+      await request(httpServer)
+        .post('/v1/commerce/guest/purchase-attempts')
+        .set(iosHeaders(guest.accessToken))
+        .send({ idempotencyKey: `paid-premium-${randomUUID()}`, productId: PREMIUM_MONTHLY, subscriberId })
+        .expect(201);
+      const now = Date.now();
+      const body = {
+        event: {
+          aliases: [subscriberId],
+          app_user_id: subscriberId,
+          environment: 'SANDBOX',
+          event_timestamp_ms: now,
+          expiration_at_ms: now + 30 * 86_400_000,
+          id: `paid-premium-event-${randomUUID()}`,
+          original_transaction_id: `paid-premium-original-${randomUUID()}`,
+          period_type: 'NORMAL',
+          product_id: PREMIUM_MONTHLY,
+          purchased_at_ms: now,
+          transaction_id: `paid-premium-tx-${randomUUID()}`,
+          type: 'INITIAL_PURCHASE',
+        },
+      };
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+        .send(body)
+        .expect(200, { status: 'ok' });
+      return body;
+    }
+
+    async function registerAccount(
+      guest?: PaidGuest,
+    ): Promise<PromotionAccount & { handoffId: string | null; syncingPurchases: unknown }> {
+      const email = `paid-promo-${randomUUID()}@example.test`;
+      await requestEmailOtp(httpServer, email);
+      const code = await dispatchAndReadEmailOtp(email);
+      const verified = await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send(
+          guest === undefined
+            ? { code, email }
+            : { code, email, guestCredential: guest.credentialSecret, guestId: guest.guestId },
+        )
+        .expect(200);
+      const handoffId = readRecord(verified.body, 'commerceHandoffId');
+      return {
+        accessToken: readStringRecord(verified.body, 'accessToken'),
+        accountId: readStringRecord(verified.body, 'accountId'),
+        handoffId: typeof handoffId === 'string' ? handoffId : null,
+        syncingPurchases: readRecord(verified.body, 'syncingPurchases'),
+      };
+    }
+
+    async function startHandoff(account: PromotionAccount, guest: PaidGuest): Promise<string> {
+      const started = await request(httpServer)
+        .post('/v1/promotion/commerce-handoff')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ guestCredential: guest.credentialSecret, guestId: guest.guestId })
+        .expect(202);
+      return readStringRecord(started.body, 'handoffId');
+    }
+
+    async function acknowledge(account: PromotionAccount, handoffId: string): Promise<void> {
+      await request(httpServer)
+        .post(`/v1/promotion/commerce-handoff/${handoffId}/retry`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(202);
+      const status = await request(httpServer)
+        .get(`/v1/promotion/commerce-handoff/${handoffId}`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      expect(readRecord(status.body, 'status')).toBe('acknowledged');
+      expect(readRecord(status.body, 'syncingPurchases')).toBe(false);
+    }
+
+    async function coinReserve(
+      principalType: 'account' | 'guest',
+      principalId: string,
+    ): Promise<Reserve> {
+      const rows = await dataSource.query<{ balance: string; paid_balance: string }[]>(
+        `SELECT balance, paid_balance FROM economy.coin_balances
+         WHERE principal_type = $1 AND principal_id = $2`,
+        [principalType, principalId],
+      );
+      return rows.length === 0
+        ? { balance: 0, paid: 0 }
+        : { balance: Number(rows[0].balance), paid: Number(rows[0].paid_balance) };
+    }
+
+    async function creditReserve(
+      principalType: 'account' | 'guest',
+      principalId: string,
+    ): Promise<Reserve> {
+      const rows = await dataSource.query<{ balance: string; paid_balance: string }[]>(
+        `SELECT balance, paid_balance FROM economy.ai_credit_balances
+         WHERE principal_type = $1 AND principal_id = $2`,
+        [principalType, principalId],
+      );
+      return rows.length === 0
+        ? { balance: 0, paid: 0 }
+        : { balance: Number(rows[0].balance), paid: Number(rows[0].paid_balance) };
+    }
+
+    async function countLedgerRows(
+      table: 'coin_ledger_entries' | 'ai_credit_ledger_entries',
+      principalType: 'account' | 'guest',
+      principalId: string,
+      reason: string,
+    ): Promise<number> {
+      const rows = await dataSource.query<{ count: string }[]>(
+        `SELECT COUNT(*)::text AS count FROM economy.${table}
+         WHERE principal_type = $1 AND principal_id = $2 AND reason = $3`,
+        [principalType, principalId, reason],
+      );
+      return Number(rows[0].count);
+    }
+
+    async function seedUnlockablePattern(title: string): Promise<string> {
+      const catalog = app.get(CatalogService);
+      const grid = new Uint8Array(25).fill(1);
+      const encoded = encodePatternArtifactV1({ width: 5, height: 5, palette: unlockPalette, grid });
+      const objectKey = `itest-paid-promo/${title}/artifact.bin`;
+      await app.get(LocalObjectStorage).put(objectKey, encoded.bytes);
+      const pattern = await catalog.upsertPattern({
+        artifactByteLength: encoded.byteLength,
+        artifactChecksum: encoded.checksum,
+        artifactObjectKey: objectKey,
+        artifactSchemaVersion: encoded.schemaVersion,
+        categoryCode: 'other',
+        creatorName: 'ITest Paid Promotion Team',
+        height: 5,
+        paletteSize: unlockPalette.length,
+        previewObjectKey: `itest-paid-promo/${title}/preview.png`,
+        publishedAt: new Date('2026-07-01T00:00:00.000Z'),
+        status: 'available',
+        tagCodes: [],
+        title,
+        unlockPriceTier: 'small',
+        width: 5,
+      });
+      return pattern.id;
+    }
+
+    /** Small tier costs 75 Coin (ADR-0011). */
+    async function unlockSmallPattern(guest: PaidGuest, title: string): Promise<void> {
+      const patternId = await seedUnlockablePattern(title);
+      await request(httpServer)
+        .post('/v1/economy/unlocks')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201);
+    }
+
+    async function guestStatus(guestId: string): Promise<string> {
+      const rows = await dataSource.query<{ status: string }[]>(
+        'SELECT status FROM auth.guest_installations WHERE id = $1',
+        [guestId],
+      );
+      return rows[0].status;
+    }
+
+    /** Runs the existing free Guest Data Promotion to completion. */
+    async function runFreePromotion(account: PromotionAccount, guest: PaidGuest): Promise<string> {
+      const manifestChecksum = `chk-paid-promo-${randomUUID()}`;
+      const preview = await request(httpServer)
+        .post('/v1/promotion/preview')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          guestCredential: guest.credentialSecret,
+          guestId: guest.guestId,
+          manifest: { completions: {}, likes: {}, pendingRewards: {}, progress: {} },
+          manifestChecksum,
+        })
+        .expect(200);
+      const promotionMode = readStringRecord(preview.body, 'promotionMode');
+      const previewData = {
+        accountId: readStringRecord(preview.body, 'accountId'),
+        expiry: readStringRecord(preview.body, 'expiry'),
+        guestId: readStringRecord(preview.body, 'guestId'),
+        guestLedgerBalance: readRecord(preview.body, 'guestLedgerBalance'),
+        manifestChecksum: readStringRecord(preview.body, 'manifestChecksum'),
+        promotionMode,
+      };
+      const signature = readStringRecord(preview.body, 'signature');
+      const lock = await request(httpServer)
+        .post('/v1/promotion/lock')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ previewData, signature })
+        .expect(200);
+      await request(httpServer)
+        .post('/v1/promotion/stage-package')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          checksum: `pkg-${randomUUID()}`,
+          guestId: guest.guestId,
+          lockToken: readStringRecord(lock.body, 'lockToken'),
+          manifestChecksum,
+          packageData: { sessions: [] },
+        })
+        .expect(200);
+      await request(httpServer)
+        .post('/v1/promotion/commit')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ previewData, signature })
+        .expect(200);
+      return promotionMode;
+    }
+
+    it('moves only the remaining paid reserve into a brand new Registered Account', async () => {
+      const guest = await newPaidGuest();
+      await seedFreeGuestCoin(guest.guestId, 100);
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      await purchasePack(guest, COIN_PACK, subscriberId);
+      await purchasePack(guest, AI_CREDIT_PACK, subscriberId);
+
+      expect(await coinReserve('guest', guest.guestId)).toEqual({ balance: 400, paid: 300 });
+      expect(await creditReserve('guest', guest.guestId)).toEqual({ balance: 5, paid: 5 });
+
+      // 75 Coin comes out of the 100 free Coin, leaving the paid reserve untouched.
+      await unlockSmallPattern(guest, `Paid Promo New ${randomUUID()}`);
+      expect(await coinReserve('guest', guest.guestId)).toEqual({ balance: 325, paid: 300 });
+
+      const account = await registerAccount(guest);
+      expect(account.handoffId).not.toBeNull();
+      expect(account.syncingPurchases).toBe(true);
+      await acknowledge(account, account.handoffId as string);
+
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 300, paid: 300 });
+      expect(await creditReserve('account', account.accountId)).toEqual({ balance: 5, paid: 5 });
+      // The free remainder stays behind for the existing free Guest Economy Promotion.
+      expect(await coinReserve('guest', guest.guestId)).toEqual({ balance: 25, paid: 0 });
+      expect(await creditReserve('guest', guest.guestId)).toEqual({ balance: 0, paid: 0 });
+      expect(
+        await countLedgerRows('coin_ledger_entries', 'account', account.accountId, 'commerce_transfer'),
+      ).toBe(1);
+      expect(
+        await countLedgerRows('ai_credit_ledger_entries', 'account', account.accountId, 'commerce_transfer'),
+      ).toBe(1);
+    });
+
+    it('spends free Guest Coin before the paid reserve and only then draws it down', async () => {
+      const guest = await newPaidGuest();
+      await seedFreeGuestCoin(guest.guestId, 100);
+      await purchasePack(guest, COIN_PACK, `$RCAnonymousID:${randomUUID()}`);
+
+      await unlockSmallPattern(guest, `Paid Promo Free First A ${randomUUID()}`);
+      expect(await coinReserve('guest', guest.guestId)).toEqual({ balance: 325, paid: 300 });
+
+      // The second unlock exhausts the remaining 25 free Coin and takes 50 from the reserve.
+      await unlockSmallPattern(guest, `Paid Promo Free First B ${randomUUID()}`);
+      expect(await coinReserve('guest', guest.guestId)).toEqual({ balance: 250, paid: 250 });
+
+      expect(
+        await countLedgerRows('coin_ledger_entries', 'guest', guest.guestId, 'unlock_spend'),
+      ).toBe(2);
+    });
+
+    it('transfers the paid reserve even after the account consumed its one-lifetime free promotion', async () => {
+      const account = await registerAccount();
+      const freeGuest = await newPaidGuest();
+      await seedFreeGuestCoin(freeGuest.guestId, 150);
+      expect(await runFreePromotion(account, freeGuest)).toBe('economy');
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 150, paid: 0 });
+
+      const paidGuest = await newPaidGuest();
+      await purchasePack(paidGuest, COIN_PACK, `$RCAnonymousID:${randomUUID()}`);
+
+      const preview = await request(httpServer)
+        .post('/v1/promotion/preview')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          guestCredential: paidGuest.credentialSecret,
+          guestId: paidGuest.guestId,
+          manifest: { completions: {}, likes: {}, pendingRewards: {}, progress: {} },
+          manifestChecksum: `chk-second-${randomUUID()}`,
+        })
+        .expect(200);
+      // Free economy value is refused exactly as before; paid value is announced separately.
+      expect(readRecord(preview.body, 'promotionMode')).toBe('data-only');
+      expect(readRecord(preview.body, 'paidCommerce')).toBe('transfer');
+
+      const handoffId = await startHandoff(account, paidGuest);
+      await acknowledge(account, handoffId);
+
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 450, paid: 300 });
+      expect(await coinReserve('guest', paidGuest.guestId)).toEqual({ balance: 0, paid: 0 });
+    });
+
+    it('adds to existing paid value and never mints a Membership benefit or Reward Day claim twice', async () => {
+      const account = await registerAccount();
+      await dataSource.query(
+        `INSERT INTO economy.coin_balances (principal_type, principal_id, balance, paid_balance)
+         VALUES ('account', $1, 200, 200)`,
+        [account.accountId],
+      );
+
+      const guest = await newPaidGuest();
+      const subscriberId = `paid-promo-premium-${randomUUID()}`;
+      await purchasePack(guest, COIN_PACK, subscriberId);
+      const premiumWebhook = await purchasePremium(guest, subscriberId);
+
+      // Monthly Premium grants 15 AI Credit as a free membership benefit, not paid value.
+      expect(await creditReserve('guest', guest.guestId)).toEqual({ balance: 15, paid: 0 });
+      expect(
+        await countLedgerRows('ai_credit_ledger_entries', 'guest', guest.guestId, 'membership_credit_grant'),
+      ).toBe(1);
+      await request(httpServer)
+        .post('/v1/commerce/membership/daily-claim')
+        .set(iosHeaders(guest.accessToken))
+        .expect(201)
+        .expect((response) => {
+          expect(readRecord(response.body, 'replayed')).toBe(false);
+        });
+
+      const handoffId = await startHandoff(account, guest);
+      await acknowledge(account, handoffId);
+
+      // The Guest kept its free Premium Daily Coin Claim; only the paid reserve moved.
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 500, paid: 500 });
+      await request(httpServer)
+        .get('/v1/commerce/membership')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200)
+        .expect((response) => {
+          expect(readRecord(response.body, 'active')).toBe(true);
+          expect(readRecord(response.body, 'plan')).toBe('monthly');
+        });
+
+      // The same Reward Day cannot pay out again on the other side of the identity change:
+      // the merged Reward Day pool leaves nothing left to claim.
+      await request(httpServer)
+        .post('/v1/commerce/membership/daily-claim')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(201)
+        .expect((response) => {
+          expect(readRecord(response.body, 'amount')).toBe(0);
+        });
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 500, paid: 500 });
+
+      // A replayed provider delivery must not mint a second Membership Credit Grant.
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+        .send(premiumWebhook)
+        .expect(200, { status: 'ok' });
+      const accountGrants = await countLedgerRows(
+        'ai_credit_ledger_entries',
+        'account',
+        account.accountId,
+        'membership_credit_grant',
+      );
+      const guestGrants = await countLedgerRows(
+        'ai_credit_ledger_entries',
+        'guest',
+        guest.guestId,
+        'membership_credit_grant',
+      );
+      expect(accountGrants + guestGrants).toBe(1);
+    });
+
+    it('converges on exactly one transfer when the handoff is interrupted and retried', async () => {
+      const guest = await newPaidGuest();
+      await purchasePack(guest, COIN_PACK, `$RCAnonymousID:${randomUUID()}`);
+      const account = await registerAccount(guest);
+      const handoffId = account.handoffId as string;
+      await acknowledge(account, handoffId);
+      const afterFirst = await coinReserve('account', account.accountId);
+
+      // Interruption point 1: a duplicate client retry after acknowledgement.
+      await acknowledge(account, handoffId);
+
+      // Interruption point 2: a crash that left the handoff mid-flight.
+      await dataSource.query(
+        `UPDATE promotion.commerce_promotion_handoffs SET state = 'processing' WHERE id = $1`,
+        [handoffId],
+      );
+      await acknowledge(account, handoffId);
+
+      expect(await coinReserve('account', account.accountId)).toEqual(afterFirst);
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 300, paid: 300 });
+      expect(
+        await countLedgerRows('coin_ledger_entries', 'account', account.accountId, 'commerce_transfer'),
+      ).toBe(1);
+      expect(
+        await countLedgerRows('coin_ledger_entries', 'guest', guest.guestId, 'commerce_transfer'),
+      ).toBe(1);
+    });
+
+    it('keeps the Guest Installation Identity and its paid records until the handoff is acknowledged', async () => {
+      const guest = await newPaidGuest();
+      await seedFreeGuestCoin(guest.guestId, 40);
+      await purchasePack(guest, COIN_PACK, `$RCAnonymousID:${randomUUID()}`);
+      const account = await registerAccount();
+
+      // The free promotion commits without stranding the outstanding paid reserve.
+      expect(await runFreePromotion(account, guest)).toBe('economy');
+      expect(await guestStatus(guest.guestId)).not.toBe('revoked');
+      expect(await coinReserve('guest', guest.guestId)).toEqual({ balance: 300, paid: 300 });
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 40, paid: 0 });
+
+      const handoffId = await startHandoff(account, guest);
+      await acknowledge(account, handoffId);
+
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 340, paid: 300 });
+      expect(await coinReserve('guest', guest.guestId)).toEqual({ balance: 0, paid: 0 });
+    });
+
+    it('completes authentication immediately and reports Syncing purchases until the worker finishes', async () => {
+      const guest = await newPaidGuest();
+      await purchasePack(guest, COIN_PACK, `$RCAnonymousID:${randomUUID()}`);
+      const account = await registerAccount(guest);
+      const handoffId = account.handoffId as string;
+
+      expect(account.syncingPurchases).toBe(true);
+      // Authentication is usable straight away, before any commerce work has run.
+      await request(httpServer)
+        .get('/v1/economy/balance')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+
+      // The handoff is owner scoped.
+      const otherAccount = await registerAccount();
+      await request(httpServer)
+        .get(`/v1/promotion/commerce-handoff/${handoffId}`)
+        .set('Authorization', `Bearer ${otherAccount.accessToken}`)
+        .expect(404);
+
+      // The queued worker reaches durable acknowledgement without any client retry.
+      // Nothing has been transferred yet: the handoff is still queued behind the outbox.
+      const queued = await request(httpServer)
+        .get(`/v1/promotion/commerce-handoff/${handoffId}`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      expect(readRecord(queued.body, 'status')).toBe('pending');
+      expect(readRecord(queued.body, 'syncingPurchases')).toBe(true);
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 0, paid: 0 });
+
+      // The handoff reaches the queue on its own. The dispatcher works in batches, so drain
+      // until this handoff's job leaves the outbox rather than assuming one pass covers it.
+      await waitFor(async () => {
+        await dispatcher.dispatchOnce();
+        const rows = await dataSource.query<{ status: string }[]>(
+          `SELECT j.status FROM jobs.processing_jobs j
+           JOIN promotion.commerce_promotion_handoffs h ON h.processing_job_id = j.id
+           WHERE h.id = $1`,
+          [handoffId],
+        );
+        return rows[0]?.status === 'dispatched' ? true : null;
+      }, 'the Commerce Promotion job to be dispatched', 20_000);
+
+      // This harness starts no BullMQ worker, so drive the unit the worker invokes.
+      await app.get(CommercePromotionService).processQueued(handoffId);
+      const settled = await request(httpServer)
+        .get(`/v1/promotion/commerce-handoff/${handoffId}`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      expect(readRecord(settled.body, 'status')).toBe('acknowledged');
+      expect(readRecord(settled.body, 'syncingPurchases')).toBe(false);
+
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 300, paid: 300 });
+    });
+
+    it('re-owners Guest commerce bindings, the subscriber mapping and AI attempt records', async () => {
+      const guest = await newPaidGuest();
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      await purchasePack(guest, COIN_PACK, subscriberId);
+      await dataSource.query(
+        'INSERT INTO ai.prompt_safety_attempts (guest_installation_id) VALUES ($1)',
+        [guest.guestId],
+      );
+
+      const account = await registerAccount(guest);
+      await acknowledge(account, account.handoffId as string);
+
+      const bindings = await dataSource.query<
+        { account_id: string | null; guest_installation_id: string | null; principal_type: string }[]
+      >(
+        `SELECT account_id, guest_installation_id, principal_type
+         FROM economy.commerce_transaction_bindings WHERE principal_id = $1`,
+        [account.accountId],
+      );
+      expect(bindings).toHaveLength(1);
+      expect(bindings[0]).toEqual({
+        account_id: account.accountId,
+        guest_installation_id: null,
+        principal_type: 'account',
+      });
+
+      const mappings = await dataSource.query<
+        { account_id: string | null; guest_installation_id: string | null }[]
+      >(
+        `SELECT account_id, guest_installation_id
+         FROM economy.revenuecat_subscriber_mappings WHERE subscriber_id = $1`,
+        [subscriberId],
+      );
+      expect(mappings).toEqual([{ account_id: account.accountId, guest_installation_id: null }]);
+
+      const attempts = await dataSource.query<
+        { account_id: string | null; guest_installation_id: string | null }[]
+      >(
+        `SELECT account_id, guest_installation_id FROM ai.prompt_safety_attempts
+         WHERE account_id = $1 OR guest_installation_id = $2`,
+        [account.accountId, guest.guestId],
+      );
+      expect(attempts).toEqual([{ account_id: account.accountId, guest_installation_id: null }]);
     });
   });
 });

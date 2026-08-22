@@ -1,4 +1,4 @@
-import { IsEmail, IsString, Matches, MaxLength } from 'class-validator';
+import { IsEmail, IsOptional, IsString, IsUUID, Matches, MaxLength } from 'class-validator';
 
 export class VerifyEmailOtpDto {
   @IsString()
@@ -9,4 +9,6 @@ export class VerifyEmailOtpDto {
   @IsString()
   @MaxLength(254)
   email!: string;
+  @IsOptional() @IsUUID() guestId?: string;
+  @IsOptional() @IsString() @MaxLength(512) guestCredential?: string;
 }

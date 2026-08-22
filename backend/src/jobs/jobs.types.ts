@@ -26,7 +26,8 @@ export type ProcessingJobEventName =
   | typeof import('./jobs.constants').CONVERSION_JOB_EVENT_NAME
   | typeof import('./jobs.constants').OFFICIAL_PATTERN_DRAFT_EVENT_NAME
   | typeof import('./jobs.constants').AI_ARTWORK_JOB_EVENT_NAME
-  | typeof import('./jobs.constants').CATALOG_PRECHECK_EVENT_NAME;
+  | typeof import('./jobs.constants').CATALOG_PRECHECK_EVENT_NAME
+  | typeof import('./jobs.constants').COMMERCE_PROMOTION_JOB_EVENT_NAME;
 
 export type DemoJobQueueOutcome =
   | 'completed'

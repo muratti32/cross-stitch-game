@@ -16,6 +16,9 @@ export class CoinBalanceEntity {
   @Column({ type: 'bigint', default: 0 })
   balance!: string;
 
+  @Column({ name: 'paid_balance', type: 'bigint', default: 0 })
+  paidBalance!: string;
+
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamptz' })
   updatedAt!: Date;
 }

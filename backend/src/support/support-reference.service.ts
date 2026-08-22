@@ -153,6 +153,13 @@ export class SupportReferenceService {
     ) {
       data = null;
     }
+    if (
+      data !== null &&
+      typeof data.principalId === 'string' &&
+      (reference.principalType !== 'guest' || data.principalId !== reference.principalId)
+    ) {
+      data = null;
+    }
     return { data, id: record.recordId, type: record.recordType };
   }
 
@@ -174,7 +181,7 @@ export class SupportReferenceService {
                 provider_transaction_id AS "providerTransactionId", created_at AS "createdAt"
          FROM economy.coin_pack_purchase_reconciliations WHERE id = $1`,
       premium_purchase_reconciliation:
-        `SELECT id, account_id AS "accountId", operation, product_key AS "productKey",
+        `SELECT id, account_id AS "accountId", guest_installation_id AS "principalId", operation, product_key AS "productKey",
                 created_at AS "createdAt"
          FROM economy.premium_purchase_reconciliations WHERE id = $1`,
       pattern_conversion: `SELECT processing_job_id AS id, account_id AS "accountId",
@@ -183,8 +190,11 @@ export class SupportReferenceService {
                                   created_at AS "createdAt"
                            FROM conversion.pattern_conversions WHERE processing_job_id = $1`,
       processing_job: `SELECT id, type, status, error_message AS "errorMessage",
-                              created_at AS "createdAt", updated_at AS "updatedAt"
+                       created_at AS "createdAt", updated_at AS "updatedAt"
                        FROM jobs.processing_jobs WHERE id = $1`,
+      guest_purchase_attempt: `SELECT id, principal_id AS "principalId", product_id AS "productId",
+                              status, created_at AS "createdAt", updated_at AS "updatedAt"
+                       FROM economy.purchase_attempts WHERE id = $1`,
     };
     const rows = await this.dataSource.query<readonly Record<string, unknown>[]>(queries[type], [id]);
     return rows[0] ?? null;

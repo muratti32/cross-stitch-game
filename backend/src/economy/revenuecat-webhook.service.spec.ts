@@ -12,6 +12,9 @@ const NEW_ACCOUNT_ID = 'd278d6bc-2ba1-42aa-a940-8a6d2a4b3d8b';
 function buildService(overrides: {
   accounts?: readonly { id: string; status: RegisteredAccountStatus }[];
   transferMembership?: jest.Mock;
+  guestAttempts?: { applyWebhook: jest.Mock };
+  processPurchase?: jest.Mock;
+  account?: { id: string; status: RegisteredAccountStatus } | null;
 }) {
   const accountRows = overrides.accounts ?? [
     { id: NEW_ACCOUNT_ID, status: RegisteredAccountStatus.Active },
@@ -20,16 +23,18 @@ function buildService(overrides: {
     overrides.transferMembership ??
     jest.fn().mockResolvedValue({ eventsMoved: 3, periodsMoved: 1 });
   const membership = { transferMembership } as unknown as MembershipRepository;
-  const commerceLedger = {} as unknown as CommerceLedgerRepository;
+  const processPurchase = overrides.processPurchase ?? jest.fn();
+  const commerceLedger = { processPurchase } as unknown as CommerceLedgerRepository;
   const accounts = {
     find: jest.fn().mockResolvedValue(accountRows),
-    findOne: jest.fn().mockResolvedValue(null),
+    findOne: jest.fn().mockResolvedValue(overrides.account ?? null),
   } as unknown as Repository<RegisteredAccountEntity>;
 
   return {
-    service: new RevenueCatWebhookService(commerceLedger, membership, accounts),
+    service: new RevenueCatWebhookService(commerceLedger, membership, accounts, overrides.guestAttempts as never),
     accounts,
     transferMembership,
+    processPurchase,
   };
 }
 
@@ -105,5 +110,29 @@ describe('RevenueCatWebhookService TRANSFER', () => {
         event: { id: 'event-1', type: 'INITIAL_PURCHASE', environment: 'SANDBOX' },
       }),
     ).rejects.toBeInstanceOf(BadRequestException);
+  });
+});
+
+describe('RevenueCatWebhookService guest/account routing', () => {
+  it('routes an account app user to account commerce before historical guest aliases', async () => {
+    const processPurchase = jest.fn().mockResolvedValue({
+      outcome: 'granted', currency: 'coin', amount: 300, balance: 300,
+    });
+    const applyWebhook = jest.fn().mockResolvedValue({
+      handled: false, detail: 'guest_purchase_attempt_not_found', duplicate: false,
+    });
+    const { service } = buildService({
+      processPurchase,
+      guestAttempts: { applyWebhook },
+      account: { id: NEW_ACCOUNT_ID, status: RegisteredAccountStatus.Active },
+    });
+
+    await expect(service.handleEvent({ event: {
+      type: 'NON_RENEWING_PURCHASE', environment: 'SANDBOX',
+      app_user_id: NEW_ACCOUNT_ID, aliases: ['$RCAnonymousID:old-guest'],
+      transaction_id: 'account-tx', product_id: 'com.avk.stitchwish.coin_pack_300',
+    } })).resolves.toMatchObject({ handled: true, detail: 'granted' });
+    expect(applyWebhook).not.toHaveBeenCalled();
+    expect(processPurchase).toHaveBeenCalledWith(expect.objectContaining({ accountId: NEW_ACCOUNT_ID }));
   });
 });

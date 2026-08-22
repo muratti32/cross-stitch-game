@@ -11,12 +11,11 @@ import { Card } from './Card';
 
 interface PremiumDailyCoinClaimCardProps {
   readonly enabled: boolean;
-  readonly isAccount: boolean;
 }
 
-export function PremiumDailyCoinClaimCard({ enabled, isAccount }: PremiumDailyCoinClaimCardProps) {
+export function PremiumDailyCoinClaimCard({ enabled }: PremiumDailyCoinClaimCardProps) {
   const router = useRouter();
-  const membership = useMembership(enabled && isAccount);
+  const membership = useMembership(enabled);
   const claim = usePremiumDailyClaim();
 
   const openPremium = () => {
@@ -63,8 +62,6 @@ export function PremiumDailyCoinClaimCard({ enabled, isAccount }: PremiumDailyCo
 
       {!enabled ? (
         <Text style={styles.muted}>Connect to the Game Backend to check today&apos;s reward.</Text>
-      ) : !isAccount ? (
-        <LockedState onOpenPremium={openPremium} />
       ) : membership.isLoading ? (
         <View style={styles.statusRow} testID="premium-daily-claim-loading">
           <ActivityIndicator size="small" color={Theme.colors.accentHoney} />

@@ -246,15 +246,27 @@ export function missingCanonicalRevenueCatProducts(
 export async function purchaseRevenueCatPackage(
   pkg: PurchasesPackage,
   accountId: string | null,
+  allowAnonymous = false,
 ): Promise<MakePurchaseResult> {
-  if (!accountId) {
+  if (!accountId && !allowAnonymous) {
     throw new Error('Sign in with a Registered Account before purchasing.');
   }
   await synchronizeRevenueCatIdentity(accountId);
-  if (useRevenueCatRuntime.getState().associatedAccountId !== accountId) {
+  if (!allowAnonymous && useRevenueCatRuntime.getState().associatedAccountId !== accountId) {
     throw new Error('Commerce could not verify the signed-in account. Try signing in again.');
   }
   return Purchases.purchasePackage(pkg);
+}
+
+export async function getRevenueCatSubscriberId(): Promise<string> {
+  if (!(await initializeRevenueCat())) {
+    throw new Error(useRevenueCatRuntime.getState().message ?? 'Commerce is not configured.');
+  }
+  const subscriberId = await Purchases.getAppUserID();
+  if (!subscriberId || !(await Purchases.isAnonymous())) {
+    throw new Error('Guest commerce requires the RevenueCat anonymous subscriber.');
+  }
+  return subscriberId;
 }
 
 export async function restoreRevenueCatPurchases(accountId: string | null): Promise<unknown> {

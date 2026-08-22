@@ -63,6 +63,7 @@ import {
 import {
   PromotionLockEntity,
   PromotionTransferPackageEntity,
+  CommercePromotionHandoffEntity,
 } from '../promotion/entities';
 import { CreateAuthSchema1783987200000 } from './migrations/1783987200000-CreateAuthSchema';
 import { CreateJobsSchema1783900800000 } from './migrations/1783900800000-CreateJobsSchema';
@@ -159,6 +160,13 @@ import { CreateCoinPackPurchaseReconciliations1788566400000 } from './migrations
 import { CreateAiCreditPackPurchaseReconciliations1788652800000 } from './migrations/1788652800000-CreateAiCreditPackPurchaseReconciliations';
 import { AddCommerceCatalogIncompleteGameplayEvent1788739200000 } from './migrations/1788739200000-AddCommerceCatalogIncompleteGameplayEvent';
 import { CreateBulkPatternRemovals1788825600000 } from './migrations/1788825600000-CreateBulkPatternRemovals';
+import { CreateGuestCommercePurchaseAttempts1788998400000 } from './migrations/1788998400000-CreateGuestCommercePurchaseAttempts';
+import { AddCommerceOwnerToTransactionBindings1788912000000 } from './migrations/1788912000000-AddCommerceOwnerToTransactionBindings';
+import { AddCommerceOwnerToPremiumMembership1789084800000 } from './migrations/1789084800000-AddCommerceOwnerToPremiumMembership';
+import { AddGuestAiArtworkAndPatternOwnership1789171200000 } from './migrations/1789171200000-AddGuestAiArtworkAndPatternOwnership';
+import { AddPaidBalanceProvenance1789257600000 } from './migrations/1789257600000-AddPaidBalanceProvenance';
+import { CreateCommercePromotionHandoffs1789344000000 } from './migrations/1789344000000-CreateCommercePromotionHandoffs';
+import { FixCommercePromotionOwnership1789344000001 } from './migrations/1789344000001-FixCommercePromotionOwnership';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -203,6 +211,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       DailyColorActionCountEntity,
       PromotionLockEntity,
       PromotionTransferPackageEntity,
+      CommercePromotionHandoffEntity,
       AiCreditBalanceEntity,
       AiCreditLedgerEntryEntity,
       CommerceTransactionBindingEntity,
@@ -303,6 +312,13 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateAiCreditPackPurchaseReconciliations1788652800000,
       AddCommerceCatalogIncompleteGameplayEvent1788739200000,
       CreateBulkPatternRemovals1788825600000,
+      AddCommerceOwnerToTransactionBindings1788912000000,
+      CreateGuestCommercePurchaseAttempts1788998400000,
+      AddCommerceOwnerToPremiumMembership1789084800000,
+      AddGuestAiArtworkAndPatternOwnership1789171200000,
+      AddPaidBalanceProvenance1789257600000,
+      CreateCommercePromotionHandoffs1789344000000,
+      FixCommercePromotionOwnership1789344000001,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

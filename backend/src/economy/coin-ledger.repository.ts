@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
 import { returningRows } from '../database/query-results';
+import { paidDebitUpdateExpression } from './paid-reserve';
 import {
   AD_REWARD_COIN,
   DAILY_AD_LIMIT,
@@ -404,7 +405,7 @@ export class CoinLedgerRepository {
 
       // 2. Lock and read the balance row FOR UPDATE
       const balanceRows = await manager.query<readonly BalanceRow[]>(
-        `SELECT balance FROM economy.coin_balances
+        `SELECT balance, paid_balance FROM economy.coin_balances
          WHERE principal_type = $1 AND principal_id = $2
          FOR UPDATE`,
         [principal.type, principal.id],
@@ -439,6 +440,7 @@ export class CoinLedgerRepository {
            VALUES ($1, $2, $3)
            ON CONFLICT ON CONSTRAINT "PK_coin_balances"
              DO UPDATE SET balance = economy.coin_balances.balance + EXCLUDED.balance,
+                           paid_balance = ${paidDebitUpdateExpression('economy.coin_balances')},
                            updated_at = now()
            RETURNING balance`,
           [principal.type, principal.id, -price],

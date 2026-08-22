@@ -21,7 +21,7 @@ import { CoinLedgerReason } from './coin-ledger-reason.enum';
   'CHK_coin_ledger_entries_principal_type',
   '"principal_type" IN (\'guest\', \'account\')',
 )
-@Check('CHK_coin_ledger_entries_reason', '"reason" IN (\'ad_reward\', \'first_completion\', \'unlock_spend\', \'daily_task\', \'guest_promotion\', \'coin_pack_purchase\', \'commerce_reversal\', \'premium_daily_claim\')')
+@Check('CHK_coin_ledger_entries_reason', '"reason" IN (\'ad_reward\', \'first_completion\', \'unlock_spend\', \'daily_task\', \'guest_promotion\', \'coin_pack_purchase\', \'commerce_reversal\', \'premium_daily_claim\', \'commerce_transfer\')')
 export class CoinLedgerEntryEntity {
   @PrimaryGeneratedColumn('uuid', {
     primaryKeyConstraintName: 'PK_coin_ledger_entries',

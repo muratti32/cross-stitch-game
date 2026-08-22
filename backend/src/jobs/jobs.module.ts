@@ -61,6 +61,7 @@ export class JobsModule {}
     forwardRef(() => EventsModule),
     forwardRef(() => ReconciliationModule),
     forwardRef(() => ObservabilityAlertsModule),
+    forwardRef(() => require('../promotion/promotion.module').PromotionModule),
   ],
   providers: [
     DemoJobConsumerService,
