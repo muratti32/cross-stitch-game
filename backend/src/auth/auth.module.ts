@@ -21,6 +21,15 @@ import { OptionalJwtAuthGuard } from './optional-jwt-auth.guard';
 import { RefreshTokensRepository } from './refresh-tokens.repository';
 
 import { InvalidatedNamespaceTokenModule } from '../deletion/invalidated-namespace-token.module';
+// Guest Data Reset erases rows in five other bounded contexts. Each context
+// keeps its own SQL in a purge repository; they hold no dependencies of their
+// own, so AuthModule provides them directly rather than importing five modules
+// that already import AuthModule for its guards.
+import { AiGuestPurgeRepository } from '../ai-artwork/ai-guest-purge.repository';
+import { CatalogGuestPurgeRepository } from '../catalog/catalog-guest-purge.repository';
+import { ConversionGuestPurgeRepository } from '../conversion/conversion-guest-purge.repository';
+import { EconomyGuestPurgeRepository } from '../economy/economy-guest-purge.repository';
+import { SessionsGuestPurgeRepository } from '../sessions/sessions-guest-purge.repository';
 
 @Module({
   controllers: [AuthController],
@@ -50,10 +59,15 @@ import { InvalidatedNamespaceTokenModule } from '../deletion/invalidated-namespa
   ],
   providers: [
     AccountIdentityService,
+    AiGuestPurgeRepository,
     AuthHashingService,
     AuthSessionService,
+    CatalogGuestPurgeRepository,
+    ConversionGuestPurgeRepository,
+    EconomyGuestPurgeRepository,
     GuestIdentityService,
     GuestInstallationsRepository,
+    SessionsGuestPurgeRepository,
     JwtAuthGuard,
     OptionalJwtAuthGuard,
     RefreshTokensRepository,

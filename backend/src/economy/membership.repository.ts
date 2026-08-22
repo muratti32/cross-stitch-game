@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
+import { RegisteredAccountStatus } from '../auth/entities';
 import { returningRows } from '../database/query-results';
 import { DAILY_POOL_COIN } from './economy.constants';
 import { AiCreditLedgerReason, CoinLedgerReason } from './entities';
@@ -301,6 +302,13 @@ export class MembershipRepository {
       const status = await this.getStatusWithManager(manager, owner, now);
       if (!status.active) throw new PremiumMembershipRequiredError();
 
+      // The identity-keyed source key above cannot see a claim the erased
+      // identity already made, so a restored subscription is also checked
+      // against the reward days tombstoned for its store transaction.
+      if (await this.premiumDayIsTombstoned(manager, owner, rewardDay)) {
+        return this.replayDailyClaim(manager, owner, rewardDay, 0);
+      }
+
       const claim = returningRows<CoinClaimRow>(
         await manager.query(
           `INSERT INTO economy.coin_ledger_entries
@@ -453,8 +461,8 @@ export class MembershipRepository {
     const deletedAccounts = await manager.query<readonly { id: string }[]>(
       `SELECT id
        FROM auth.registered_accounts
-       WHERE id = ANY($1::uuid[]) AND status = 'deleted'`,
-      [accountIds],
+       WHERE id = ANY($1::uuid[]) AND status = $2`,
+      [accountIds, RegisteredAccountStatus.Deleted],
     );
     if (deletedAccounts.length !== accountIds.length) return false;
 
@@ -525,6 +533,14 @@ export class MembershipRepository {
     if (projection.creditAmount === 0) return 0;
     const principal = toCommerceOwnerPrincipal(projection.owner);
     const sourceKey = `membership:${environment}:${transactionId}`;
+    // A Guest Data Reset erases the ledger row that made this grant unique, so
+    // the surviving tombstone is what keeps a restored subscription from
+    // minting its Membership Credit a second time.
+    const tombstones = await manager.query<readonly { source_key: string }[]>(
+      `SELECT source_key FROM economy.commerce_grant_tombstones WHERE source_key = $1`,
+      [sourceKey],
+    );
+    if (tombstones.length > 0) return 0;
     const claim = returningRows<{ id: string }>(
       await manager.query(
         `INSERT INTO economy.ai_credit_ledger_entries
@@ -610,6 +626,29 @@ export class MembershipRepository {
       [environment, transactionId],
     );
     return projection.creditAmount;
+  }
+
+  /**
+   * A reward day claimed before a Guest Data Reset is tombstoned under the
+   * store transaction that paid for it. The restored subscription finds it
+   * even though the identity that claimed it is gone.
+   */
+  private async premiumDayIsTombstoned(
+    manager: EntityManager,
+    owner: CommerceOwner,
+    rewardDay: string,
+  ): Promise<boolean> {
+    const tombstones = await manager.query<readonly { source_key: string }[]>(
+      `SELECT tombstone.source_key
+       FROM economy.membership_periods period
+       JOIN economy.commerce_grant_tombstones tombstone
+         ON tombstone.source_key = 'premium_daily:' || period.environment || ':'
+                                   || period.provider_transaction_id || ':' || $2
+       WHERE period.${ownerWhere(owner)}
+       LIMIT 1`,
+      [ownerId(owner), rewardDay],
+    );
+    return tombstones.length > 0;
   }
 
   private async replayDailyClaim(
