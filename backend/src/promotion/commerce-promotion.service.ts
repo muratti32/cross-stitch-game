@@ -130,7 +130,9 @@ export class CommercePromotionService {
     if (claim.length === 0) return;
     await manager.query(`INSERT INTO economy.${ledgerTable} (principal_type, principal_id, amount, reason, source_key, granted, metadata) VALUES ('guest',$1,$2,$3,$4,true,$5) ON CONFLICT ON CONSTRAINT "UQ_${ledgerTable}_source_key" DO NOTHING`, [guestId, `-${amount}`, reason, `${source}:source`, { accountId, paidTransfer: true }]);
     await manager.query(`INSERT INTO economy.${balanceTable} (principal_type, principal_id, balance, paid_balance) VALUES ('account',$1,$2,$2) ON CONFLICT ON CONSTRAINT "PK_${balanceTable}" DO UPDATE SET balance=${balanceTable}.balance+EXCLUDED.balance, paid_balance=${balanceTable}.paid_balance+EXCLUDED.paid_balance, updated_at=now()`, [accountId, amount]);
-    await manager.query(`UPDATE economy.${balanceTable} SET balance=balance-$2, paid_balance=GREATEST(0, paid_balance - GREATEST(0, $2 - GREATEST(0, balance-paid_balance))), updated_at=now() WHERE principal_type='guest' AND principal_id=$1`, [guestId, amount]);
+    // This debit moves the reserve itself, so it draws on paid value directly rather than
+    // free-before-paid: the amount is exactly the reserve read under the lock above.
+    await manager.query(`UPDATE economy.${balanceTable} SET balance=balance-$2, paid_balance=GREATEST(0, paid_balance-$2), updated_at=now() WHERE principal_type='guest' AND principal_id=$1`, [guestId, amount]);
   }
 
   private async transferRewardDayPools(manager: EntityManager, guestId: string, accountId: string): Promise<void> {

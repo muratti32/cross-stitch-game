@@ -113,8 +113,9 @@ export class CommerceLedgerRepository {
 
           const balanceRows = returningRows<BalanceRow>(
             await manager.query(
-              `INSERT INTO economy.coin_balances (principal_type, principal_id, balance)
-               VALUES ($1, $2, $3)
+              // A first purchase creates the row, so the paid reserve must be seeded here too.
+              `INSERT INTO economy.coin_balances (principal_type, principal_id, balance, paid_balance)
+               VALUES ($1, $2, $3, $3)
                ON CONFLICT ON CONSTRAINT "PK_coin_balances"
                  DO UPDATE SET balance = economy.coin_balances.balance + EXCLUDED.balance,
                                paid_balance = economy.coin_balances.paid_balance + EXCLUDED.balance,
@@ -137,8 +138,9 @@ export class CommerceLedgerRepository {
 
           const balanceRows = returningRows<BalanceRow>(
             await manager.query(
-              `INSERT INTO economy.ai_credit_balances (principal_type, principal_id, balance)
-               VALUES ($1, $2, $3)
+              // A first purchase creates the row, so the paid reserve must be seeded here too.
+              `INSERT INTO economy.ai_credit_balances (principal_type, principal_id, balance, paid_balance)
+               VALUES ($1, $2, $3, $3)
                ON CONFLICT ON CONSTRAINT "PK_ai_credit_balances"
                  DO UPDATE SET balance = economy.ai_credit_balances.balance + EXCLUDED.balance,
                                paid_balance = economy.ai_credit_balances.paid_balance + EXCLUDED.balance,

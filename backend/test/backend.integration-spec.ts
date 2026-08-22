@@ -10,6 +10,7 @@ import { PNG } from 'pngjs';
 
 import { configureApi } from '../src/api/configure-api';
 import { CatalogService } from '../src/catalog/catalog.service';
+import { CommercePromotionService } from '../src/promotion/commerce-promotion.service';
 import { encodePatternArtifactV1 } from '../src/catalog/pattern-artifact-encoder';
 import { LocalObjectStorage } from '../src/catalog/storage/local-object-storage';
 import { OBJECT_STORAGE } from '../src/catalog/storage/object-storage.interface';
@@ -5329,6 +5330,602 @@ describe('Stitch Wish backend integration', () => {
         [account.accountId],
       );
       expect(Number(accountBal[0].balance)).toBe(60);
+    });
+  });
+
+  describe('Guest paid commerce promotion', () => {
+    const COIN_PACK = 'com.avk.stitchwish.coin_pack_300';
+    const AI_CREDIT_PACK = 'com.avk.stitchwish.ai_credit_pack_5';
+    const PREMIUM_MONTHLY = 'com.avk.stitchwish.premium_monthly';
+    const unlockPalette = [
+      { dmcCode: '310', name: 'Black', rgbHex: '#000000' },
+      { dmcCode: 'B5200', name: 'Snow White', rgbHex: '#FFFFFF' },
+    ];
+
+    interface PaidGuest {
+      accessToken: string;
+      credentialSecret: string;
+      guestId: string;
+    }
+
+    interface PromotionAccount {
+      accessToken: string;
+      accountId: string;
+    }
+
+    interface Reserve {
+      balance: number;
+      paid: number;
+    }
+
+    function iosHeaders(accessToken: string): Record<string, string> {
+      return { Authorization: `Bearer ${accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+    }
+
+    async function newPaidGuest(): Promise<PaidGuest> {
+      const credentialSecret = createCredentialSecret();
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), credentialSecret);
+      return { accessToken: guest.accessToken, credentialSecret, guestId: guest.guestId };
+    }
+
+    /** Seeds free (non-purchased) Guest Coin so the free/paid split is observable. */
+    async function seedFreeGuestCoin(guestId: string, amount: number): Promise<void> {
+      await dataSource.query(
+        `INSERT INTO economy.coin_balances (principal_type, principal_id, balance)
+         VALUES ('guest', $1, $2)
+         ON CONFLICT ON CONSTRAINT "PK_coin_balances"
+           DO UPDATE SET balance = EXCLUDED.balance, updated_at = now()`,
+        [guestId, amount],
+      );
+    }
+
+    async function mapSubscriber(guest: PaidGuest, subscriberId: string): Promise<void> {
+      await request(httpServer)
+        .post('/v1/commerce/guest/revenuecat-mapping')
+        .set(iosHeaders(guest.accessToken))
+        .send({ subscriberId })
+        .expect(201);
+    }
+
+    /** Drives one verified Guest consumable purchase end to end. */
+    async function purchasePack(
+      guest: PaidGuest,
+      productId: string,
+      subscriberId: string,
+    ): Promise<void> {
+      await mapSubscriber(guest, subscriberId);
+      await request(httpServer)
+        .post('/v1/commerce/guest/purchase-attempts')
+        .set(iosHeaders(guest.accessToken))
+        .send({ idempotencyKey: `paid-promo-${randomUUID()}`, productId, subscriberId })
+        .expect(201);
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+        .send({
+          event: {
+            aliases: [subscriberId],
+            app_user_id: subscriberId,
+            environment: 'SANDBOX',
+            product_id: productId,
+            transaction_id: `paid-promo-tx-${randomUUID()}`,
+            type: 'NON_RENEWING_PURCHASE',
+          },
+        })
+        .expect(200, { status: 'ok' });
+    }
+
+    /** Returns the webhook body so a duplicate delivery can be replayed verbatim. */
+    async function purchasePremium(
+      guest: PaidGuest,
+      subscriberId: string,
+    ): Promise<Record<string, unknown>> {
+      await mapSubscriber(guest, subscriberId);
+      await request(httpServer)
+        .post('/v1/commerce/guest/purchase-attempts')
+        .set(iosHeaders(guest.accessToken))
+        .send({ idempotencyKey: `paid-premium-${randomUUID()}`, productId: PREMIUM_MONTHLY, subscriberId })
+        .expect(201);
+      const now = Date.now();
+      const body = {
+        event: {
+          aliases: [subscriberId],
+          app_user_id: subscriberId,
+          environment: 'SANDBOX',
+          event_timestamp_ms: now,
+          expiration_at_ms: now + 30 * 86_400_000,
+          id: `paid-premium-event-${randomUUID()}`,
+          original_transaction_id: `paid-premium-original-${randomUUID()}`,
+          period_type: 'NORMAL',
+          product_id: PREMIUM_MONTHLY,
+          purchased_at_ms: now,
+          transaction_id: `paid-premium-tx-${randomUUID()}`,
+          type: 'INITIAL_PURCHASE',
+        },
+      };
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+        .send(body)
+        .expect(200, { status: 'ok' });
+      return body;
+    }
+
+    async function registerAccount(
+      guest?: PaidGuest,
+    ): Promise<PromotionAccount & { handoffId: string | null; syncingPurchases: unknown }> {
+      const email = `paid-promo-${randomUUID()}@example.test`;
+      await requestEmailOtp(httpServer, email);
+      const code = await dispatchAndReadEmailOtp(email);
+      const verified = await request(httpServer)
+        .post('/v1/auth/email/verify')
+        .send(
+          guest === undefined
+            ? { code, email }
+            : { code, email, guestCredential: guest.credentialSecret, guestId: guest.guestId },
+        )
+        .expect(200);
+      const handoffId = readRecord(verified.body, 'commerceHandoffId');
+      return {
+        accessToken: readStringRecord(verified.body, 'accessToken'),
+        accountId: readStringRecord(verified.body, 'accountId'),
+        handoffId: typeof handoffId === 'string' ? handoffId : null,
+        syncingPurchases: readRecord(verified.body, 'syncingPurchases'),
+      };
+    }
+
+    async function startHandoff(account: PromotionAccount, guest: PaidGuest): Promise<string> {
+      const started = await request(httpServer)
+        .post('/v1/promotion/commerce-handoff')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ guestCredential: guest.credentialSecret, guestId: guest.guestId })
+        .expect(202);
+      return readStringRecord(started.body, 'handoffId');
+    }
+
+    async function acknowledge(account: PromotionAccount, handoffId: string): Promise<void> {
+      await request(httpServer)
+        .post(`/v1/promotion/commerce-handoff/${handoffId}/retry`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(202);
+      const status = await request(httpServer)
+        .get(`/v1/promotion/commerce-handoff/${handoffId}`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      expect(readRecord(status.body, 'status')).toBe('acknowledged');
+      expect(readRecord(status.body, 'syncingPurchases')).toBe(false);
+    }
+
+    async function coinReserve(
+      principalType: 'account' | 'guest',
+      principalId: string,
+    ): Promise<Reserve> {
+      const rows = await dataSource.query<{ balance: string; paid_balance: string }[]>(
+        `SELECT balance, paid_balance FROM economy.coin_balances
+         WHERE principal_type = $1 AND principal_id = $2`,
+        [principalType, principalId],
+      );
+      return rows.length === 0
+        ? { balance: 0, paid: 0 }
+        : { balance: Number(rows[0].balance), paid: Number(rows[0].paid_balance) };
+    }
+
+    async function creditReserve(
+      principalType: 'account' | 'guest',
+      principalId: string,
+    ): Promise<Reserve> {
+      const rows = await dataSource.query<{ balance: string; paid_balance: string }[]>(
+        `SELECT balance, paid_balance FROM economy.ai_credit_balances
+         WHERE principal_type = $1 AND principal_id = $2`,
+        [principalType, principalId],
+      );
+      return rows.length === 0
+        ? { balance: 0, paid: 0 }
+        : { balance: Number(rows[0].balance), paid: Number(rows[0].paid_balance) };
+    }
+
+    async function countLedgerRows(
+      table: 'coin_ledger_entries' | 'ai_credit_ledger_entries',
+      principalType: 'account' | 'guest',
+      principalId: string,
+      reason: string,
+    ): Promise<number> {
+      const rows = await dataSource.query<{ count: string }[]>(
+        `SELECT COUNT(*)::text AS count FROM economy.${table}
+         WHERE principal_type = $1 AND principal_id = $2 AND reason = $3`,
+        [principalType, principalId, reason],
+      );
+      return Number(rows[0].count);
+    }
+
+    async function seedUnlockablePattern(title: string): Promise<string> {
+      const catalog = app.get(CatalogService);
+      const grid = new Uint8Array(25).fill(1);
+      const encoded = encodePatternArtifactV1({ width: 5, height: 5, palette: unlockPalette, grid });
+      const objectKey = `itest-paid-promo/${title}/artifact.bin`;
+      await app.get(LocalObjectStorage).put(objectKey, encoded.bytes);
+      const pattern = await catalog.upsertPattern({
+        artifactByteLength: encoded.byteLength,
+        artifactChecksum: encoded.checksum,
+        artifactObjectKey: objectKey,
+        artifactSchemaVersion: encoded.schemaVersion,
+        categoryCode: 'other',
+        creatorName: 'ITest Paid Promotion Team',
+        height: 5,
+        paletteSize: unlockPalette.length,
+        previewObjectKey: `itest-paid-promo/${title}/preview.png`,
+        publishedAt: new Date('2026-07-01T00:00:00.000Z'),
+        status: 'available',
+        tagCodes: [],
+        title,
+        unlockPriceTier: 'small',
+        width: 5,
+      });
+      return pattern.id;
+    }
+
+    /** Small tier costs 75 Coin (ADR-0011). */
+    async function unlockSmallPattern(guest: PaidGuest, title: string): Promise<void> {
+      const patternId = await seedUnlockablePattern(title);
+      await request(httpServer)
+        .post('/v1/economy/unlocks')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .send({ patternId })
+        .expect(201);
+    }
+
+    async function guestStatus(guestId: string): Promise<string> {
+      const rows = await dataSource.query<{ status: string }[]>(
+        'SELECT status FROM auth.guest_installations WHERE id = $1',
+        [guestId],
+      );
+      return rows[0].status;
+    }
+
+    /** Runs the existing free Guest Data Promotion to completion. */
+    async function runFreePromotion(account: PromotionAccount, guest: PaidGuest): Promise<string> {
+      const manifestChecksum = `chk-paid-promo-${randomUUID()}`;
+      const preview = await request(httpServer)
+        .post('/v1/promotion/preview')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          guestCredential: guest.credentialSecret,
+          guestId: guest.guestId,
+          manifest: { completions: {}, likes: {}, pendingRewards: {}, progress: {} },
+          manifestChecksum,
+        })
+        .expect(200);
+      const promotionMode = readStringRecord(preview.body, 'promotionMode');
+      const previewData = {
+        accountId: readStringRecord(preview.body, 'accountId'),
+        expiry: readStringRecord(preview.body, 'expiry'),
+        guestId: readStringRecord(preview.body, 'guestId'),
+        guestLedgerBalance: readRecord(preview.body, 'guestLedgerBalance'),
+        manifestChecksum: readStringRecord(preview.body, 'manifestChecksum'),
+        promotionMode,
+      };
+      const signature = readStringRecord(preview.body, 'signature');
+      const lock = await request(httpServer)
+        .post('/v1/promotion/lock')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ previewData, signature })
+        .expect(200);
+      await request(httpServer)
+        .post('/v1/promotion/stage-package')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          checksum: `pkg-${randomUUID()}`,
+          guestId: guest.guestId,
+          lockToken: readStringRecord(lock.body, 'lockToken'),
+          manifestChecksum,
+          packageData: { sessions: [] },
+        })
+        .expect(200);
+      await request(httpServer)
+        .post('/v1/promotion/commit')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({ previewData, signature })
+        .expect(200);
+      return promotionMode;
+    }
+
+    it('moves only the remaining paid reserve into a brand new Registered Account', async () => {
+      const guest = await newPaidGuest();
+      await seedFreeGuestCoin(guest.guestId, 100);
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      await purchasePack(guest, COIN_PACK, subscriberId);
+      await purchasePack(guest, AI_CREDIT_PACK, subscriberId);
+
+      expect(await coinReserve('guest', guest.guestId)).toEqual({ balance: 400, paid: 300 });
+      expect(await creditReserve('guest', guest.guestId)).toEqual({ balance: 5, paid: 5 });
+
+      // 75 Coin comes out of the 100 free Coin, leaving the paid reserve untouched.
+      await unlockSmallPattern(guest, `Paid Promo New ${randomUUID()}`);
+      expect(await coinReserve('guest', guest.guestId)).toEqual({ balance: 325, paid: 300 });
+
+      const account = await registerAccount(guest);
+      expect(account.handoffId).not.toBeNull();
+      expect(account.syncingPurchases).toBe(true);
+      await acknowledge(account, account.handoffId as string);
+
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 300, paid: 300 });
+      expect(await creditReserve('account', account.accountId)).toEqual({ balance: 5, paid: 5 });
+      // The free remainder stays behind for the existing free Guest Economy Promotion.
+      expect(await coinReserve('guest', guest.guestId)).toEqual({ balance: 25, paid: 0 });
+      expect(await creditReserve('guest', guest.guestId)).toEqual({ balance: 0, paid: 0 });
+      expect(
+        await countLedgerRows('coin_ledger_entries', 'account', account.accountId, 'commerce_transfer'),
+      ).toBe(1);
+      expect(
+        await countLedgerRows('ai_credit_ledger_entries', 'account', account.accountId, 'commerce_transfer'),
+      ).toBe(1);
+    });
+
+    it('spends free Guest Coin before the paid reserve and only then draws it down', async () => {
+      const guest = await newPaidGuest();
+      await seedFreeGuestCoin(guest.guestId, 100);
+      await purchasePack(guest, COIN_PACK, `$RCAnonymousID:${randomUUID()}`);
+
+      await unlockSmallPattern(guest, `Paid Promo Free First A ${randomUUID()}`);
+      expect(await coinReserve('guest', guest.guestId)).toEqual({ balance: 325, paid: 300 });
+
+      // The second unlock exhausts the remaining 25 free Coin and takes 50 from the reserve.
+      await unlockSmallPattern(guest, `Paid Promo Free First B ${randomUUID()}`);
+      expect(await coinReserve('guest', guest.guestId)).toEqual({ balance: 250, paid: 250 });
+
+      expect(
+        await countLedgerRows('coin_ledger_entries', 'guest', guest.guestId, 'unlock_spend'),
+      ).toBe(2);
+    });
+
+    it('transfers the paid reserve even after the account consumed its one-lifetime free promotion', async () => {
+      const account = await registerAccount();
+      const freeGuest = await newPaidGuest();
+      await seedFreeGuestCoin(freeGuest.guestId, 150);
+      expect(await runFreePromotion(account, freeGuest)).toBe('economy');
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 150, paid: 0 });
+
+      const paidGuest = await newPaidGuest();
+      await purchasePack(paidGuest, COIN_PACK, `$RCAnonymousID:${randomUUID()}`);
+
+      const preview = await request(httpServer)
+        .post('/v1/promotion/preview')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .send({
+          guestCredential: paidGuest.credentialSecret,
+          guestId: paidGuest.guestId,
+          manifest: { completions: {}, likes: {}, pendingRewards: {}, progress: {} },
+          manifestChecksum: `chk-second-${randomUUID()}`,
+        })
+        .expect(200);
+      // Free economy value is refused exactly as before; paid value is announced separately.
+      expect(readRecord(preview.body, 'promotionMode')).toBe('data-only');
+      expect(readRecord(preview.body, 'paidCommerce')).toBe('transfer');
+
+      const handoffId = await startHandoff(account, paidGuest);
+      await acknowledge(account, handoffId);
+
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 450, paid: 300 });
+      expect(await coinReserve('guest', paidGuest.guestId)).toEqual({ balance: 0, paid: 0 });
+    });
+
+    it('adds to existing paid value and never mints a Membership benefit or Reward Day claim twice', async () => {
+      const account = await registerAccount();
+      await dataSource.query(
+        `INSERT INTO economy.coin_balances (principal_type, principal_id, balance, paid_balance)
+         VALUES ('account', $1, 200, 200)`,
+        [account.accountId],
+      );
+
+      const guest = await newPaidGuest();
+      const subscriberId = `paid-promo-premium-${randomUUID()}`;
+      await purchasePack(guest, COIN_PACK, subscriberId);
+      const premiumWebhook = await purchasePremium(guest, subscriberId);
+
+      // Monthly Premium grants 15 AI Credit as a free membership benefit, not paid value.
+      expect(await creditReserve('guest', guest.guestId)).toEqual({ balance: 15, paid: 0 });
+      expect(
+        await countLedgerRows('ai_credit_ledger_entries', 'guest', guest.guestId, 'membership_credit_grant'),
+      ).toBe(1);
+      await request(httpServer)
+        .post('/v1/commerce/membership/daily-claim')
+        .set(iosHeaders(guest.accessToken))
+        .expect(201)
+        .expect((response) => {
+          expect(readRecord(response.body, 'replayed')).toBe(false);
+        });
+
+      const handoffId = await startHandoff(account, guest);
+      await acknowledge(account, handoffId);
+
+      // The Guest kept its free Premium Daily Coin Claim; only the paid reserve moved.
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 500, paid: 500 });
+      await request(httpServer)
+        .get('/v1/commerce/membership')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200)
+        .expect((response) => {
+          expect(readRecord(response.body, 'active')).toBe(true);
+          expect(readRecord(response.body, 'plan')).toBe('monthly');
+        });
+
+      // The same Reward Day cannot pay out again on the other side of the identity change:
+      // the merged Reward Day pool leaves nothing left to claim.
+      await request(httpServer)
+        .post('/v1/commerce/membership/daily-claim')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(201)
+        .expect((response) => {
+          expect(readRecord(response.body, 'amount')).toBe(0);
+        });
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 500, paid: 500 });
+
+      // A replayed provider delivery must not mint a second Membership Credit Grant.
+      await request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`)
+        .send(premiumWebhook)
+        .expect(200, { status: 'ok' });
+      const accountGrants = await countLedgerRows(
+        'ai_credit_ledger_entries',
+        'account',
+        account.accountId,
+        'membership_credit_grant',
+      );
+      const guestGrants = await countLedgerRows(
+        'ai_credit_ledger_entries',
+        'guest',
+        guest.guestId,
+        'membership_credit_grant',
+      );
+      expect(accountGrants + guestGrants).toBe(1);
+    });
+
+    it('converges on exactly one transfer when the handoff is interrupted and retried', async () => {
+      const guest = await newPaidGuest();
+      await purchasePack(guest, COIN_PACK, `$RCAnonymousID:${randomUUID()}`);
+      const account = await registerAccount(guest);
+      const handoffId = account.handoffId as string;
+      await acknowledge(account, handoffId);
+      const afterFirst = await coinReserve('account', account.accountId);
+
+      // Interruption point 1: a duplicate client retry after acknowledgement.
+      await acknowledge(account, handoffId);
+
+      // Interruption point 2: a crash that left the handoff mid-flight.
+      await dataSource.query(
+        `UPDATE promotion.commerce_promotion_handoffs SET state = 'processing' WHERE id = $1`,
+        [handoffId],
+      );
+      await acknowledge(account, handoffId);
+
+      expect(await coinReserve('account', account.accountId)).toEqual(afterFirst);
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 300, paid: 300 });
+      expect(
+        await countLedgerRows('coin_ledger_entries', 'account', account.accountId, 'commerce_transfer'),
+      ).toBe(1);
+      expect(
+        await countLedgerRows('coin_ledger_entries', 'guest', guest.guestId, 'commerce_transfer'),
+      ).toBe(1);
+    });
+
+    it('keeps the Guest Installation Identity and its paid records until the handoff is acknowledged', async () => {
+      const guest = await newPaidGuest();
+      await seedFreeGuestCoin(guest.guestId, 40);
+      await purchasePack(guest, COIN_PACK, `$RCAnonymousID:${randomUUID()}`);
+      const account = await registerAccount();
+
+      // The free promotion commits without stranding the outstanding paid reserve.
+      expect(await runFreePromotion(account, guest)).toBe('economy');
+      expect(await guestStatus(guest.guestId)).not.toBe('revoked');
+      expect(await coinReserve('guest', guest.guestId)).toEqual({ balance: 300, paid: 300 });
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 40, paid: 0 });
+
+      const handoffId = await startHandoff(account, guest);
+      await acknowledge(account, handoffId);
+
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 340, paid: 300 });
+      expect(await coinReserve('guest', guest.guestId)).toEqual({ balance: 0, paid: 0 });
+    });
+
+    it('completes authentication immediately and reports Syncing purchases until the worker finishes', async () => {
+      const guest = await newPaidGuest();
+      await purchasePack(guest, COIN_PACK, `$RCAnonymousID:${randomUUID()}`);
+      const account = await registerAccount(guest);
+      const handoffId = account.handoffId as string;
+
+      expect(account.syncingPurchases).toBe(true);
+      // Authentication is usable straight away, before any commerce work has run.
+      await request(httpServer)
+        .get('/v1/economy/balance')
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+
+      // The handoff is owner scoped.
+      const otherAccount = await registerAccount();
+      await request(httpServer)
+        .get(`/v1/promotion/commerce-handoff/${handoffId}`)
+        .set('Authorization', `Bearer ${otherAccount.accessToken}`)
+        .expect(404);
+
+      // The queued worker reaches durable acknowledgement without any client retry.
+      // Nothing has been transferred yet: the handoff is still queued behind the outbox.
+      const queued = await request(httpServer)
+        .get(`/v1/promotion/commerce-handoff/${handoffId}`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      expect(readRecord(queued.body, 'status')).toBe('pending');
+      expect(readRecord(queued.body, 'syncingPurchases')).toBe(true);
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 0, paid: 0 });
+
+      // The handoff reaches the queue on its own. The dispatcher works in batches, so drain
+      // until this handoff's job leaves the outbox rather than assuming one pass covers it.
+      await waitFor(async () => {
+        await dispatcher.dispatchOnce();
+        const rows = await dataSource.query<{ status: string }[]>(
+          `SELECT j.status FROM jobs.processing_jobs j
+           JOIN promotion.commerce_promotion_handoffs h ON h.processing_job_id = j.id
+           WHERE h.id = $1`,
+          [handoffId],
+        );
+        return rows[0]?.status === 'dispatched' ? true : null;
+      }, 'the Commerce Promotion job to be dispatched', 20_000);
+
+      // This harness starts no BullMQ worker, so drive the unit the worker invokes.
+      await app.get(CommercePromotionService).processQueued(handoffId);
+      const settled = await request(httpServer)
+        .get(`/v1/promotion/commerce-handoff/${handoffId}`)
+        .set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200);
+      expect(readRecord(settled.body, 'status')).toBe('acknowledged');
+      expect(readRecord(settled.body, 'syncingPurchases')).toBe(false);
+
+      expect(await coinReserve('account', account.accountId)).toEqual({ balance: 300, paid: 300 });
+    });
+
+    it('re-owners Guest commerce bindings, the subscriber mapping and AI attempt records', async () => {
+      const guest = await newPaidGuest();
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      await purchasePack(guest, COIN_PACK, subscriberId);
+      await dataSource.query(
+        'INSERT INTO ai.prompt_safety_attempts (guest_installation_id) VALUES ($1)',
+        [guest.guestId],
+      );
+
+      const account = await registerAccount(guest);
+      await acknowledge(account, account.handoffId as string);
+
+      const bindings = await dataSource.query<
+        { account_id: string | null; guest_installation_id: string | null; principal_type: string }[]
+      >(
+        `SELECT account_id, guest_installation_id, principal_type
+         FROM economy.commerce_transaction_bindings WHERE principal_id = $1`,
+        [account.accountId],
+      );
+      expect(bindings).toHaveLength(1);
+      expect(bindings[0]).toEqual({
+        account_id: account.accountId,
+        guest_installation_id: null,
+        principal_type: 'account',
+      });
+
+      const mappings = await dataSource.query<
+        { account_id: string | null; guest_installation_id: string | null }[]
+      >(
+        `SELECT account_id, guest_installation_id
+         FROM economy.revenuecat_subscriber_mappings WHERE subscriber_id = $1`,
+        [subscriberId],
+      );
+      expect(mappings).toEqual([{ account_id: account.accountId, guest_installation_id: null }]);
+
+      const attempts = await dataSource.query<
+        { account_id: string | null; guest_installation_id: string | null }[]
+      >(
+        `SELECT account_id, guest_installation_id FROM ai.prompt_safety_attempts
+         WHERE account_id = $1 OR guest_installation_id = $2`,
+        [account.accountId, guest.guestId],
+      );
+      expect(attempts).toEqual([{ account_id: account.accountId, guest_installation_id: null }]);
     });
   });
 });
