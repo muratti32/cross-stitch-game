@@ -84,6 +84,7 @@ describe('Stitch Wish backend integration', () => {
   const GOOGLE_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.google';
   const APPLE_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.apple';
   const BOUND_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.bound';
+  const INTEGRATION_WEBHOOK_TOKEN = 'integration-test-only-revenuecat-webhook-auth-token-at-least-32-chars';
 
   beforeAll(async () => {
     const [{ ApiAppModule }, jobs] = await Promise.all([
@@ -932,16 +933,8 @@ describe('Stitch Wish backend integration', () => {
         createCredentialSecret(),
       );
 
-      await request(httpServer)
-        .post('/v1/conversions/photo')
-        .set('Authorization', `Bearer ${guest.accessToken}`)
-        .field('profile', 'easy')
-        .field('title', 'Guest attempt')
-        .attach('artwork', framedArtwork(), {
-          contentType: 'image/png',
-          filename: 'approved-frame.png',
-        })
-        .expect(403);
+      const guestConversion = await requestConversion(guest.accessToken, 'Guest attempt');
+      await runConversion(guestConversion);
 
       const firstJobId = await requestConversion(
         account.accessToken,
@@ -4392,6 +4385,37 @@ describe('Stitch Wish backend integration', () => {
         lifecycle: 'active',
       });
     });
+  });
+
+  it.each([
+    ['ai_credit_pack_5', 5],
+    ['ai_credit_pack_20', 20],
+    ['ai_credit_pack_50', 50],
+  ] as const)('keeps Guest AI Credit Pack %s unresolved until webhook and grants exact amount once', async (productKey, amount) => {
+    const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+    const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+    const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+    const productId = `com.avk.stitchwish.${productKey}`;
+    await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+    const attempt = await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+      productId,
+      idempotencyKey: `ai-${randomUUID()}`,
+      subscriberId,
+    }).expect(201);
+    const attemptId = readStringRecord(attempt.body, 'id');
+    const supportReference = readStringRecord(attempt.body, 'supportReference');
+    await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`).set(headers).expect(200)
+      .expect((response) => {
+        expect(response.body.status).toBe('created');
+        expect(response.body.supportReference).toBe(supportReference);
+      });
+    await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 0 });
+    const event = { type: 'NON_RENEWING_PURCHASE', app_user_id: subscriberId, aliases: [subscriberId], transaction_id: `ai-${randomUUID()}`, product_id: productId, environment: 'SANDBOX' };
+    await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${INTEGRATION_WEBHOOK_TOKEN}`).send({ event }).expect(200, { status: 'ok' });
+    await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${INTEGRATION_WEBHOOK_TOKEN}`).send({ event }).expect(200, { status: 'ok' });
+    await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: amount });
+    await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`).set(headers).expect(200)
+      .expect((response) => expect(response.body.status).toBe('granted'));
   });
 
   describe('Guest Data Promotion stage 1', () => {

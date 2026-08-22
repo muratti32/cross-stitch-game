@@ -162,6 +162,7 @@ import { CreateBulkPatternRemovals1788825600000 } from './migrations/17888256000
 import { CreateGuestCommercePurchaseAttempts1788998400000 } from './migrations/1788998400000-CreateGuestCommercePurchaseAttempts';
 import { AddCommerceOwnerToTransactionBindings1788912000000 } from './migrations/1788912000000-AddCommerceOwnerToTransactionBindings';
 import { AddCommerceOwnerToPremiumMembership1789084800000 } from './migrations/1789084800000-AddCommerceOwnerToPremiumMembership';
+import { AddGuestAiArtworkAndPatternOwnership1789171200000 } from './migrations/1789171200000-AddGuestAiArtworkAndPatternOwnership';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -309,6 +310,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddCommerceOwnerToTransactionBindings1788912000000,
       CreateGuestCommercePurchaseAttempts1788998400000,
       AddCommerceOwnerToPremiumMembership1789084800000,
+      AddGuestAiArtworkAndPatternOwnership1789171200000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

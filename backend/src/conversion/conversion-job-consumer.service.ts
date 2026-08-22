@@ -202,6 +202,7 @@ export class ConversionJobConsumerService {
           height,
           id: conversion.targetPatternId,
           ownerAccountId: conversion.accountId,
+          guestInstallationId: conversion.guestInstallationId,
           paletteSize: response.palette.length,
           previewObjectKey: previewKey,
           publishedAt: new Date(),
@@ -214,6 +215,7 @@ export class ConversionJobConsumerService {
         });
         await manager.getRepository(PersonalPatternEntity).save({
           ownerAccountId: conversion.accountId,
+          guestInstallationId: conversion.guestInstallationId,
           patternId: conversion.targetPatternId,
           processingJobId: conversion.processingJobId,
         });

@@ -9,6 +9,7 @@ import { SupportReferenceService } from '../support/support-reference.service';
 import { CommerceLedgerRepository } from './commerce-ledger.repository';
 import { GUEST_COIN_PACK_PRODUCT_IDS, type GuestPurchaseAttemptDto } from './guest-purchase-attempt.dto';
 import { resolvePremiumProduct } from './membership.constants';
+import { resolveCommerceProduct } from './commerce.constants';
 import { assertIosGuestCommerceClientHint } from './commerce-capabilities';
 
 interface AttemptRow {
@@ -59,7 +60,10 @@ export class GuestPurchaseAttemptService {
   async start(principal: AuthPrincipal, input: GuestPurchaseAttemptDto, userAgent?: string) {
     this.requireGuest(principal);
     this.requireIosGuestCommerce(userAgent);
-    if (!GUEST_COIN_PACK_PRODUCT_IDS.some((productId) => productId === input.productId) && resolvePremiumProduct(input.productId) === null) {
+    const commerceProduct = resolveCommerceProduct(input.productId);
+    if (!GUEST_COIN_PACK_PRODUCT_IDS.some((productId) => productId === input.productId)
+      && commerceProduct?.currency !== 'ai_credit'
+      && resolvePremiumProduct(input.productId) === null) {
       throw new ForbiddenException('Guest commerce product is not eligible');
     }
     try {
@@ -79,7 +83,9 @@ export class GuestPurchaseAttemptService {
         [principal.id, input.productId],
       );
       if (existing[0] !== undefined && existing[0].idempotency_key !== input.idempotencyKey) {
-        throw new ConflictException('A purchase for this Stitch Coin Pack is already being verified');
+        throw new ConflictException(GUEST_COIN_PACK_PRODUCT_IDS.some((productId) => productId === input.productId)
+          ? 'A purchase for this Stitch Coin Pack is already being verified'
+          : 'A purchase for this product is already being verified');
       }
       const byKey = await manager.query<readonly AttemptRow[]>(
         `SELECT * FROM economy.purchase_attempts WHERE principal_type = 'guest' AND principal_id = $1 AND idempotency_key = $2`,
@@ -109,7 +115,9 @@ export class GuestPurchaseAttemptService {
       });
     } catch (error: unknown) {
       if (isUniqueViolation(error)) {
-        throw new ConflictException('A purchase for this Stitch Coin Pack is already being verified');
+        throw new ConflictException(GUEST_COIN_PACK_PRODUCT_IDS.some((productId) => productId === input.productId)
+          ? 'A purchase for this Stitch Coin Pack is already being verified'
+          : 'A purchase for this product is already being verified');
       }
       throw error;
     }

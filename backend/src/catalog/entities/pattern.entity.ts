@@ -24,7 +24,7 @@ export type PatternVisibility = 'catalog' | 'personal';
 )
 @Check(
   'CHK_patterns_visibility_owner',
-  '("visibility" = \'catalog\' AND "owner_account_id" IS NULL) OR ("visibility" = \'personal\' AND "owner_account_id" IS NOT NULL)',
+  '(("visibility" = \'catalog\' AND "owner_account_id" IS NULL AND "guest_installation_id" IS NULL) OR ("visibility" = \'personal\' AND (("owner_account_id" IS NOT NULL) <> ("guest_installation_id" IS NOT NULL))))',
 )
 export class PatternEntity {
   @PrimaryGeneratedColumn('uuid', {
@@ -95,6 +95,9 @@ export class PatternEntity {
 
   @Column({ name: 'owner_account_id', nullable: true, type: 'uuid' })
   ownerAccountId!: string | null;
+
+  @Column({ name: 'guest_installation_id', nullable: true, type: 'uuid' })
+  guestInstallationId!: string | null;
 
   @Column({ name: 'creator_profile_id', nullable: true, type: 'uuid' })
   creatorProfileId!: string | null;

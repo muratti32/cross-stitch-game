@@ -35,6 +35,7 @@ import {
 } from './entities';
 import { readImageDimensions } from './image-dimensions';
 import { resolveConversionSettings } from './conversion-profile';
+import { toCommerceOwnerPrincipal, type CommerceOwnerPrincipal } from '../economy/commerce-owner';
 import { ObjectRegistryEntity } from '../sessions/entities';
 import { SupportReferenceService } from '../support/support-reference.service';
 
@@ -68,7 +69,7 @@ export class ConversionService {
     dto: CreatePhotoConversionDto,
     artwork: UploadedArtwork | undefined,
   ): Promise<{ id: string; status: 'pending'; supportReference: string }> {
-    const accountId = this.requireAccount(principal);
+    const owner = this.owner(principal);
     if (artwork === undefined || artwork.size === 0 || artwork.buffer.length === 0) {
       throw new BadRequestException('A framed artwork upload is required');
     }
@@ -103,7 +104,7 @@ export class ConversionService {
     if (title.length === 0) {
       throw new BadRequestException('Pattern title cannot be blank');
     }
-    await this.assertTitleAvailable(accountId, title);
+    await this.assertTitleAvailable(owner, title);
 
     const processingJobId = randomUUID();
     const targetPatternId = randomUUID();
@@ -138,7 +139,8 @@ export class ConversionService {
           type: CONVERSION_JOB_TYPE,
         });
         await manager.getRepository(PatternConversionEntity).save({
-          accountId,
+          accountId: owner.principalType === 'account' ? owner.principalId : null,
+          guestInstallationId: owner.principalType === 'guest' ? owner.principalId : null,
           framedHeight: dimensions.height,
           framedWidth: dimensions.width,
           maxColors: settings.maxColors,
@@ -157,8 +159,8 @@ export class ConversionService {
           { state: 'committed' },
         );
         return this.supportReferences.create(manager, {
-          principalId: accountId,
-          principalType: 'account',
+          principalId: owner.principalId,
+          principalType: owner.principalType,
           records: [
             { id: processingJobId, type: 'processing_job' },
             { id: processingJobId, type: 'pattern_conversion' },
@@ -181,9 +183,9 @@ export class ConversionService {
   }
 
   async getConversionJob(principal: AuthPrincipal, id: string) {
-    const accountId = this.requireAccount(principal);
+    const owner = this.owner(principal);
     const conversion = await this.conversions.findOneBy({ processingJobId: id });
-    if (conversion === null || conversion.accountId !== accountId) {
+    if (conversion === null || !this.sameOwner(conversion, owner)) {
       throw new NotFoundException('Pattern Conversion not found');
     }
     const job = await this.processingJobs.findById(id);
@@ -197,7 +199,7 @@ export class ConversionService {
       id: job.id,
       pattern:
         job.status === ProcessingJobStatus.Completed
-          ? await this.getPersonalPattern(accountId, conversion.targetPatternId)
+          ? await this.getPersonalPattern(owner, conversion.targetPatternId)
           : null,
       status: job.status,
       updatedAt: job.updatedAt.toISOString(),
@@ -216,12 +218,12 @@ export class ConversionService {
     thumbnailUrls: { browsing: string; detail: string } | null;
     alreadyExists: boolean;
   }> {
-    const accountId = this.requireAccount(principal);
+    const owner = this.owner(principal);
 
     // 2. Idempotent replay short-circuit
     const existing = await this.patterns.findOneBy({ id: dto.patternId });
     if (existing !== null) {
-      if (existing.ownerAccountId !== accountId || existing.visibility !== 'personal') {
+      if (existing.visibility !== 'personal' || !this.samePatternOwner(existing, owner)) {
         throw new ConflictException('This identifier is already in use');
       }
       const exp = Math.floor(Date.now() / 1000) + this.config.grantTtlSeconds;
@@ -244,10 +246,7 @@ export class ConversionService {
     }
 
     // 3. Validate source
-    const sourcePersonal = await this.personalPatterns.findOneBy({
-      patternId: dto.sourcePatternId,
-      ownerAccountId: accountId,
-    });
+    const sourcePersonal = await this.personalPatterns.findOne({ where: { patternId: dto.sourcePatternId, ...this.personalOwnerWhere(owner) } });
     if (sourcePersonal === null) {
       throw new NotFoundException('Source Personal Pattern not found');
     }
@@ -257,7 +256,7 @@ export class ConversionService {
     if (title.length === 0) {
       throw new BadRequestException('Pattern title cannot be blank');
     }
-    await this.assertTitleAvailable(accountId, title);
+    await this.assertTitleAvailable(owner, title);
 
     // 5. Decode grid
     if (!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(dto.grid)) {
@@ -364,7 +363,8 @@ export class ConversionService {
           unlockPriceTier: null,
           status: 'available',
           visibility: 'personal',
-          ownerAccountId: accountId,
+          ownerAccountId: owner.principalType === 'account' ? owner.principalId : null,
+          guestInstallationId: owner.principalType === 'guest' ? owner.principalId : null,
           publishedAt: new Date(),
         })
         .orIgnore()
@@ -376,7 +376,8 @@ export class ConversionService {
         .into(PersonalPatternEntity)
         .values({
           patternId: dto.patternId,
-          ownerAccountId: accountId,
+          ownerAccountId: owner.principalType === 'account' ? owner.principalId : null,
+          guestInstallationId: owner.principalType === 'guest' ? owner.principalId : null,
           processingJobId: null,
           derivedFromPatternId: dto.sourcePatternId,
         })
@@ -410,13 +411,13 @@ export class ConversionService {
   }
 
   async listPersonalPatterns(principal: AuthPrincipal) {
-    const accountId = this.requireAccount(principal);
+    const owner = this.owner(principal);
     const rows = await this.personalPatterns.find({
       order: { createdAt: 'DESC' },
-      where: { ownerAccountId: accountId },
+      where: this.personalOwnerWhere(owner),
     });
     return Promise.all(
-      rows.map((row) => this.getPersonalPattern(accountId, row.patternId)),
+      rows.map((row) => this.getPersonalPattern(owner, row.patternId)),
     );
   }
 
@@ -469,10 +470,10 @@ export class ConversionService {
   }
 
   async getPersonalPatternArtifactGrant(principal: AuthPrincipal, patternId: string) {
-    const accountId = this.requireAccount(principal);
+    const owner = this.owner(principal);
     const pattern = await this.patterns.findOneBy({
       id: patternId,
-      ownerAccountId: accountId,
+      ...this.personalOwnerWhere(owner),
       visibility: 'personal',
     });
     if (pattern === null) {
@@ -513,11 +514,11 @@ export class ConversionService {
     return bytes;
   }
 
-  private async getPersonalPattern(accountId: string, patternId: string) {
+  private async getPersonalPattern(owner: CommerceOwnerPrincipal, patternId: string) {
     const [pattern, recipe] = await Promise.all([
       this.patterns.findOneBy({
         id: patternId,
-        ownerAccountId: accountId,
+        ...this.personalOwnerWhere(owner),
         visibility: 'personal',
       }),
       this.recipes.findOneBy({ patternId }),
@@ -556,12 +557,12 @@ export class ConversionService {
   }
 
   private async assertTitleAvailable(
-    accountId: string,
+    owner: CommerceOwnerPrincipal,
     title: string,
   ): Promise<void> {
     const existingPattern = await this.patterns
       .createQueryBuilder('pattern')
-      .where('pattern.ownerAccountId = :accountId', { accountId })
+      .where(owner.principalType === 'account' ? 'pattern.ownerAccountId = :ownerId' : 'pattern.guestInstallationId = :ownerId', { ownerId: owner.principalId })
       .andWhere("pattern.visibility = 'personal'")
       .andWhere('LOWER(pattern.title) = LOWER(:title)', { title })
       .getOne();
@@ -577,7 +578,7 @@ export class ConversionService {
         'job',
         'job.id = conversion.processingJobId',
       )
-      .where('conversion.accountId = :accountId', { accountId })
+      .where(owner.principalType === 'account' ? 'conversion.accountId = :ownerId' : 'conversion.guestInstallationId = :ownerId', { ownerId: owner.principalId })
       .andWhere('LOWER(conversion.title) = LOWER(:title)', { title })
       .andWhere('job.status IN (:...activeStatuses)', {
         activeStatuses: [
@@ -594,11 +595,28 @@ export class ConversionService {
     }
   }
 
-  private requireAccount(principal: AuthPrincipal): string {
-    if (principal.type !== PrincipalType.Account) {
-      throw new ForbiddenException('A Registered Account is required');
-    }
-    return principal.id;
+  private owner(principal: AuthPrincipal): CommerceOwnerPrincipal {
+    return toCommerceOwnerPrincipal(principal.type === PrincipalType.Account
+      ? { type: 'account', accountId: principal.id }
+      : { type: 'guest', guestInstallationId: principal.id });
+  }
+
+  private personalOwnerWhere(owner: CommerceOwnerPrincipal): { ownerAccountId?: string; guestInstallationId?: string } {
+    return owner.principalType === 'account'
+      ? { ownerAccountId: owner.principalId }
+      : { guestInstallationId: owner.principalId };
+  }
+
+  private sameOwner(conversion: PatternConversionEntity, owner: CommerceOwnerPrincipal): boolean {
+    return owner.principalType === 'account'
+      ? conversion.accountId === owner.principalId
+      : conversion.guestInstallationId === owner.principalId;
+  }
+
+  private samePatternOwner(pattern: PatternEntity, owner: CommerceOwnerPrincipal): boolean {
+    return owner.principalType === 'account'
+      ? pattern.ownerAccountId === owner.principalId
+      : pattern.guestInstallationId === owner.principalId;
   }
 
   private signPreviewGrant(patternId: string, exp: number): string {

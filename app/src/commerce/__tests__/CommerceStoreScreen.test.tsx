@@ -858,7 +858,7 @@ it('opens current AI Credit Pack prices from Profile, direct links, and AI Credi
   }
 });
 
-it('preserves Guest AI Credit Pack selection through sign-in return and confirmation', async () => {
+it('preserves Guest AI Credit Pack selection through Guest confirmation', async () => {
   await renderScreen();
   await openAiCreditPacks();
   await act(async () => pressByText(renderer!.root, 'Buy'));
@@ -869,22 +869,13 @@ it('preserves Guest AI Credit Pack selection through sign-in return and confirma
     productKey: 'ai_credit_pack_5',
     productKind: 'ai_credit_pack',
   });
-  expect(mockRouter.push).toHaveBeenCalledWith({
-    pathname: '/(tabs)/(settings)/sign-in',
-    params: { returnTo: 'commerce' },
-  });
+  expect(allText(renderer!.root)).toContain('Continue as Guest');
+  expect(mockRouter.push).not.toHaveBeenCalled();
   expect(mockPurchasePackage).not.toHaveBeenCalled();
-
-  mockIdentity = { accountId: 'account_82', isAccount: true };
-  mockParams = { source: 'sign_in_return' };
   await act(async () => {
-    renderer!.update(<CommerceScreen />);
+    pressByText(renderer!.root, 'Continue as Guest');
     await flushPromises();
   });
-  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
-    'You’re signed in. 5 AI Credits is still selected. Review it and tap Buy when ready.',
-    'Selected before sign-in',
-  ]));
   await act(async () => pressByText(renderer!.root, 'Buy'));
   expect(allText(renderer!.root)).toContain('Confirm AI Credit purchase');
   expect(mockPurchasePackage).not.toHaveBeenCalled();

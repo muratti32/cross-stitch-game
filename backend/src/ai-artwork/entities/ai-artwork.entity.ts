@@ -8,7 +8,8 @@ export type AiArtworkStatus = 'pending' | 'submitting' | 'submitted' | 'delivere
 @Index('UQ_ai_artworks_provider_request', ['providerRequestId'], { unique: true, where: '"provider_request_id" IS NOT NULL' })
 export class AiArtworkEntity {
   @PrimaryGeneratedColumn('uuid') id!: string;
-  @Column({ name: 'account_id', type: 'uuid' }) accountId!: string;
+  @Column({ name: 'account_id', type: 'uuid', nullable: true }) accountId!: string | null;
+  @Column({ name: 'guest_installation_id', type: 'uuid', nullable: true }) guestInstallationId!: string | null;
   @Column({ name: 'processing_job_id', type: 'uuid' }) processingJobId!: string;
   @Column({ type: 'text' }) prompt!: string;
   @Column({ type: 'varchar', length: 20 }) aspect!: ArtworkAspect;

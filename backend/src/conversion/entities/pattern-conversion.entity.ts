@@ -19,8 +19,11 @@ export class PatternConversionEntity {
   @PrimaryColumn({ name: 'processing_job_id', type: 'uuid' })
   processingJobId!: string;
 
-  @Column({ name: 'account_id', type: 'uuid' })
-  accountId!: string;
+  @Column({ name: 'account_id', type: 'uuid', nullable: true })
+  accountId!: string | null;
+
+  @Column({ name: 'guest_installation_id', type: 'uuid', nullable: true })
+  guestInstallationId!: string | null;
 
   @Column({ name: 'target_pattern_id', type: 'uuid' })
   targetPatternId!: string;

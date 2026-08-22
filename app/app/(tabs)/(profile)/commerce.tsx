@@ -109,6 +109,7 @@ interface AiCreditPackReconciliation {
   readonly startedAt: number;
   readonly supportReference: string | null;
   readonly transactionIdentifier: string;
+  readonly guestAttemptId: string | null;
 }
 
 export default function CommerceScreen() {
@@ -590,8 +591,10 @@ export default function CommerceScreen() {
     }
     let grantVerified = false;
     try {
-      const reconciliation = await fetchAiCreditPackReconciliation(attempt.reconciliationId);
-      if (reconciliation.status === 'pending') {
+      const reconciliation = attempt.guestAttemptId === null
+        ? await fetchAiCreditPackReconciliation(attempt.reconciliationId)
+        : await fetchGuestPurchaseAttempt(attempt.guestAttemptId);
+      if (reconciliation.status === 'pending' || reconciliation.status === 'created' || reconciliation.status === 'verifying') {
         if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) {
           updateAiCreditReconciliation({ ...attempt, prolonged: true });
         } else {
@@ -599,7 +602,7 @@ export default function CommerceScreen() {
         }
         return;
       }
-      if (reconciliation.status === 'verification_failed') {
+      if (reconciliation.status === 'verification_failed' || reconciliation.status === 'failed' || reconciliation.status === 'cancelled') {
         await captureGameplayEvent('purchase_failed', {
           product_kind: 'ai_credit_pack',
           product_key: attempt.product.productKey,
@@ -632,6 +635,7 @@ export default function CommerceScreen() {
         product_key: attempt.product.productKey,
       });
       updateAiCreditReconciliation(null);
+      if (!isAccount && guestId !== null) await clearGuestPurchaseAttempt(guestId);
       clearIntent();
       setPurchaseError(null);
       setPurchaseSuccess(
@@ -649,21 +653,23 @@ export default function CommerceScreen() {
         ? 'The AI Credit grant was verified, but the current balance could not be refreshed. Retry reconciliation.'
         : 'The Game Backend could not verify this AI Credit Pack yet. Retry reconciliation; do not buy it again.');
     }
-  }, [clearIntent, queryClient, scheduleAiCreditReconciliation, updateAiCreditReconciliation]);
+  }, [clearIntent, guestId, isAccount, queryClient, scheduleAiCreditReconciliation, updateAiCreditReconciliation]);
 
   const beginAiCreditPackReconciliation = useCallback(async (
     product: CommerceProduct,
     transactionIdentifier: string,
+    guestAttempt: GuestPurchaseAttemptReference | null = null,
   ) => {
     const attempt: AiCreditPackReconciliation = {
       failureStage: null,
       id: `${Date.now()}-${product.productKey}-purchase`,
       product,
       prolonged: false,
-      reconciliationId: null,
+      reconciliationId: guestAttempt?.id ?? null,
       startedAt: Date.now(),
       supportReference: null,
       transactionIdentifier,
+      guestAttemptId: guestAttempt?.id ?? null,
     };
     updateAiCreditReconciliation(attempt);
     setOpenCategory(null);
@@ -673,10 +679,9 @@ export default function CommerceScreen() {
       product_key: product.productKey,
     });
     try {
-      const reference = await createAiCreditPackReconciliation(
-        product.productKey as AiCreditPackProductKey,
-        transactionIdentifier,
-      );
+      const reference = guestAttempt === null
+        ? await createAiCreditPackReconciliation(product.productKey as AiCreditPackProductKey, transactionIdentifier)
+        : { id: guestAttempt.id, supportReference: guestAttempt.supportReference };
       const next = {
         ...attempt,
         reconciliationId: reference.id,
@@ -698,6 +703,30 @@ export default function CommerceScreen() {
   }, [reconcileAiCreditPack, updateAiCreditReconciliation]);
 
   aiCreditReconciliationRunnerRef.current = reconcileAiCreditPack;
+
+  useEffect(() => {
+    if (isAccount || guestId === null || products.length === 0 || aiCreditPurchasePending !== null) return;
+    let cancelled = false;
+    void readGuestPurchaseAttempt(guestId).then(async (stored) => {
+      if (cancelled || stored === null) return;
+      const product = products.find((candidate) => candidate.productKey === stored.productKey && candidate.category === 'ai_credit');
+      if (product === undefined) return;
+      const attempt: AiCreditPackReconciliation = {
+        failureStage: null,
+        id: `recovered-${stored.id}`,
+        product,
+        prolonged: false,
+        reconciliationId: stored.id,
+        startedAt: Date.now(),
+        supportReference: stored.supportReference,
+        transactionIdentifier: '',
+        guestAttemptId: stored.id,
+      };
+      updateAiCreditReconciliation(attempt);
+      await reconcileAiCreditPack(attempt);
+    }).catch(() => undefined);
+    return () => { cancelled = true; };
+  }, [aiCreditPurchasePending, guestId, isAccount, products, reconcileAiCreditPack, updateAiCreditReconciliation]);
 
   const purchase = useCallback(async (product: CommerceProduct) => {
     setPurchaseError(null);
@@ -751,6 +780,7 @@ export default function CommerceScreen() {
         await beginAiCreditPackReconciliation(
           product,
           purchaseResult.transaction.transactionIdentifier,
+          guestAttempt,
         );
       }
     } catch (error: unknown) {
@@ -816,7 +846,7 @@ export default function CommerceScreen() {
     });
 
     if (!isAccount) {
-      if (product.category !== 'premium' && product.category !== 'stitch_coin') {
+      if (product.category !== 'premium' && product.category !== 'stitch_coin' && product.category !== 'ai_credit') {
         router.push({ pathname: '/(tabs)/(settings)/sign-in', params: { returnTo: 'commerce' } });
         return;
       }
@@ -1292,7 +1322,8 @@ export default function CommerceScreen() {
           const product = guestCommerceProduct;
           setGuestCommerceProduct(null);
           if (product?.category === 'premium') setConfirmingPremium(product);
-          else if (product !== null) setConfirmingCoinPack(product);
+          else if (product?.category === 'stitch_coin') setConfirmingCoinPack(product);
+          else if (product !== null) setConfirmingAiCreditPack(product);
         }}
         onSignIn={() => {
           setGuestCommerceProduct(null);
