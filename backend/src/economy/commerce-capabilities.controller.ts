@@ -1,6 +1,7 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 
 import { JwtAuthGuard } from '../auth';
+import { AppConfigService } from '../config/app-config.service';
 
 import {
   getCommerceCapabilities,
@@ -10,8 +11,10 @@ import {
 @Controller('commerce/capabilities')
 @UseGuards(JwtAuthGuard)
 export class CommerceCapabilitiesController {
+  constructor(private readonly config: AppConfigService) {}
+
   @Get()
   getCapabilities(): CommerceCapabilities {
-    return getCommerceCapabilities();
+    return getCommerceCapabilities(this.config.iosGuestCommerceEnabled);
   }
 }

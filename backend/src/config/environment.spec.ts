@@ -40,6 +40,25 @@ describe('parseEnvironment admin MFA', () => {
   });
 });
 
+describe('parseEnvironment iOS guest commerce', () => {
+  it('keeps guest commerce enabled by default for the current release', () => {
+    expect(parseEnvironment(validEnvironment()).ENABLE_IOS_GUEST_COMMERCE).toBe(true);
+  });
+
+  it('supports an explicit rollout rollback', () => {
+    expect(
+      parseEnvironment(validEnvironment({ ENABLE_IOS_GUEST_COMMERCE: 'false' }))
+        .ENABLE_IOS_GUEST_COMMERCE,
+    ).toBe(false);
+  });
+
+  it('rejects ambiguous toggle values', () => {
+    expect(() =>
+      parseEnvironment(validEnvironment({ ENABLE_IOS_GUEST_COMMERCE: 'off' })),
+    ).toThrow('ENABLE_IOS_GUEST_COMMERCE must be either true or false');
+  });
+});
+
 describe('parseEnvironment OpenAI moderation', () => {
   it('keeps moderation enabled when the flag is omitted', () => {
     expect(

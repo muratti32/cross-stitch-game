@@ -33,6 +33,7 @@ export type EnvironmentVariables = {
   ADMIN_TOTP_ENC_KEY: string | undefined;
   ADMIN_TOTP_ISSUER: string;
   ENABLE_ADMOB_SSV: boolean;
+  ENABLE_IOS_GUEST_COMMERCE: boolean;
   ADMOB_SSV_KEYS_URL: string;
   ADMOB_SSV_ALLOWED_AD_UNITS: readonly string[];
   REVENUECAT_WEBHOOK_AUTH_TOKEN: string | undefined;
@@ -530,6 +531,11 @@ export function parseEnvironment(
     ENABLE_ADMOB_SSV: parseBoolean(
       environment.ENABLE_ADMOB_SSV,
       'ENABLE_ADMOB_SSV',
+      true,
+    ),
+    ENABLE_IOS_GUEST_COMMERCE: parseBoolean(
+      environment.ENABLE_IOS_GUEST_COMMERCE,
+      'ENABLE_IOS_GUEST_COMMERCE',
       true,
     ),
     ADMOB_SSV_KEYS_URL:

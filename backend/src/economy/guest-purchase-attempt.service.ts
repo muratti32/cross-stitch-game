@@ -4,10 +4,11 @@ import { randomUUID } from 'node:crypto';
 
 import type { AuthPrincipal } from '../auth/auth.types';
 import { PrincipalType } from '../auth/entities';
+import { AppConfigService } from '../config/app-config.service';
 import { SupportReferenceService } from '../support/support-reference.service';
 import { CommerceLedgerRepository } from './commerce-ledger.repository';
 import { GUEST_COIN_PACK_PRODUCT_IDS, type GuestPurchaseAttemptDto } from './guest-purchase-attempt.dto';
-import { assertIosGuestCommerce } from './commerce-capabilities';
+import { assertIosGuestCommerceClientHint } from './commerce-capabilities';
 
 interface AttemptRow {
   id: string;
@@ -26,6 +27,7 @@ export class GuestPurchaseAttemptService {
     private readonly dataSource: DataSource,
     private readonly supportReferences: SupportReferenceService,
     private readonly commerceLedger: CommerceLedgerRepository,
+    private readonly config: AppConfigService,
   ) {}
 
   async mapSubscriber(principal: AuthPrincipal, subscriberId: string, userAgent?: string): Promise<{ mapped: true }> {
@@ -174,7 +176,12 @@ export class GuestPurchaseAttemptService {
   }
 
   private requireIosGuestCommerce(userAgent: string | undefined): void {
-    try { assertIosGuestCommerce(userAgent); } catch (error: unknown) {
+    if (!this.config.iosGuestCommerceEnabled) {
+      throw new ForbiddenException(
+        'Guest commerce is disabled; retry after ENABLE_IOS_GUEST_COMMERCE is enabled',
+      );
+    }
+    try { assertIosGuestCommerceClientHint(userAgent); } catch (error: unknown) {
       throw new ForbiddenException(error instanceof Error ? error.message : 'Guest commerce is unavailable');
     }
   }
