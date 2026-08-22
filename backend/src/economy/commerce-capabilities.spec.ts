@@ -1,9 +1,9 @@
 import { getCommerceCapabilities } from './commerce-capabilities';
 
 describe('CommerceCapabilities', () => {
-  it('reports that guest commerce is unavailable', () => {
+  it('reports that the iOS guest commerce path is available', () => {
     expect(getCommerceCapabilities()).toEqual({
-      guestCommerceAvailable: false,
+      guestCommerceAvailable: true,
     });
   });
 });

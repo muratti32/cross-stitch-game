@@ -159,6 +159,8 @@ import { CreateCoinPackPurchaseReconciliations1788566400000 } from './migrations
 import { CreateAiCreditPackPurchaseReconciliations1788652800000 } from './migrations/1788652800000-CreateAiCreditPackPurchaseReconciliations';
 import { AddCommerceCatalogIncompleteGameplayEvent1788739200000 } from './migrations/1788739200000-AddCommerceCatalogIncompleteGameplayEvent';
 import { CreateBulkPatternRemovals1788825600000 } from './migrations/1788825600000-CreateBulkPatternRemovals';
+import { CreateGuestCommercePurchaseAttempts1788998400000 } from './migrations/1788998400000-CreateGuestCommercePurchaseAttempts';
+import { AddCommerceOwnerToTransactionBindings1788912000000 } from './migrations/1788912000000-AddCommerceOwnerToTransactionBindings';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -303,6 +305,8 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateAiCreditPackPurchaseReconciliations1788652800000,
       AddCommerceCatalogIncompleteGameplayEvent1788739200000,
       CreateBulkPatternRemovals1788825600000,
+      AddCommerceOwnerToTransactionBindings1788912000000,
+      CreateGuestCommercePurchaseAttempts1788998400000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

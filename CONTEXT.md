@@ -29,11 +29,11 @@ _Avoid_: Raw log, transaction receipt, error stack
 ### Player Identity
 
 **Guest Player**:
-A player represented by one Guest Installation Identity rather than a Registered Account. A Guest Player can browse the Pattern Catalog, maintain local-first Stitching Sessions, keep device-local Pattern Likes, and earn Stitch Coin into a server-authoritative Guest Ledger. Offline earnings wait as Pending Coin Rewards, while Stitch Coin spending and Pattern Unlock creation require connectivity. A Guest Player cannot create a Catalog Submission or purchase a Stitch Coin Pack.
+A player represented by one Guest Installation Identity rather than a Registered Account. A Guest Player can browse the Pattern Catalog, maintain local-first Stitching Sessions, keep device-local Pattern Likes, and earn Stitch Coin into a server-authoritative Guest Ledger. Offline earnings wait as Pending Coin Rewards, while Stitch Coin spending and Pattern Unlock creation require connectivity. On iOS, a Guest Player may purchase Stitch Coin Packs through the durable Purchase Attempt and verified webhook path; Android Guest purchase remains disabled. A Guest Player cannot create a Catalog Submission.
 _Avoid_: Anonymous user, device account
 
 **Guest Installation Identity**:
-The opaque backend-issued identity bound to one app installation for a player who has not registered. It requires no email, Apple, or Google identity and scopes the Guest Ledger plus backend session identities without making them portable to another device. There is no supported recovery on another device or after the installation credential is lost; registration is the durability and portability boundary. It can be promoted exactly once into a Registered Account and cannot purchase Stitch Coin Packs, AI Credit Packs, or Premium Membership.
+The opaque backend-issued identity bound to one app installation for a player who has not registered. It requires no email, Apple, or Google identity and scopes the Guest Ledger plus backend session identities without making them portable to another device. There is no supported recovery on another device or after the installation credential is lost; registration is the durability and portability boundary. It can be promoted exactly once into a Registered Account and cannot purchase AI Credit Packs or Premium Membership.
 _Avoid_: Registered Account, recoverable login, advertising identifier
 
 **Guest Data Risk Notice**:
@@ -169,7 +169,7 @@ The backend-authoritative gameplay currency earned through play or Rewarded Ads,
 _Avoid_: Coin, gold, point, token
 
 **Stitch Coin Pack**:
-A consumable real-money product that a Registered Account may purchase to add Stitch Coin to its durable balance. The first-release United States products grant 300 Coin for `$1.99`, 900 for `$4.99`, or 2,000 for `$9.99`. They are independent of AI Credit and do not create any exchange or conversion between the two balances; Guest Players cannot purchase them.
+A consumable real-money product that a Registered Account or an iOS Guest Player may purchase to add Stitch Coin to its durable balance. The first-release United States products grant 300 Coin for `$1.99`, 900 for `$4.99`, or 2,000 for `$9.99`. They are independent of AI Credit and do not create any exchange or conversion between the two balances.
 _Avoid_: AI Credit Pack, Premium Membership, currency exchange
 
 **Guest Ledger**:
@@ -177,19 +177,23 @@ The Game Backend source of truth for a Guest Installation Identity's Stitch Coin
 _Avoid_: Local Coin balance, Commerce Ledger, client save data
 
 **CommerceOwner**:
-The single owner reference a Commerce Ledger record carries: either a Registered Account or a Guest Installation Identity, and never both or neither. Commerce Transaction Binding rows hold it as a nullable account reference and a nullable Guest Installation reference under one database constraint enforcing exactly one is set, alongside the existing account-only principal columns kept unchanged for backward compatibility. Its Guest form exists so a Registered Account and a future Guest Installation Identity can both own Commerce Ledger records without changing already-released behavior; a backend capability reports Guest commerce unavailable until a later, iOS-first ticket deliberately enables it, and ADR-0011, ADR-0012, and ADR-0032's account-only purchase rules stay in force until then.
-_Avoid_: Guest purchase (first release), principal_id alone, polymorphic owner without a DB constraint
+The single owner reference a Commerce Ledger record carries: either a Registered Account or a Guest Installation Identity, and never both or neither. Commerce Transaction Binding rows hold it as a nullable account reference and a nullable Guest Installation reference under one database constraint enforcing exactly one is set, alongside the existing account-only principal columns kept unchanged for backward compatibility. Its Guest form is enabled for iOS Stitch Coin Pack Purchase Attempts; Guest Premium, AI Credit, restore, promotion, refund, and deletion remain separate decisions.
+_Avoid_: unverified Guest purchase, principal_id alone, polymorphic owner without a DB constraint
 
 **Commerce Ledger**:
-The backend source of truth for verified store transactions, their Commerce Transaction Bindings, normalized Membership Periods, and the account grants they produce. Each provider transaction identifier and paid membership period is recorded idempotently and can produce its grant exactly once; the mobile client cannot mutate paid balances or entitlements directly.
+The backend source of truth for verified store transactions, their Commerce Transaction Bindings, normalized Membership Periods, and the Account or Guest Ledger grants they produce. Each provider transaction identifier and paid membership period is recorded idempotently and can produce its grant exactly once; the mobile client cannot mutate paid balances or entitlements directly.
 _Avoid_: Client purchase history, local receipt cache, balance endpoint
 
 **Purchase Reconciliation Pending**:
 The non-failure state shown after the store reports a completed purchase or restore but the Commerce Ledger has not yet exposed its verified grant. It grants no client-side value, prevents the player from being prompted to repeat the same purchase, and keeps checking the backend until the recorded result appears. A prolonged delay provides retry and Support Reference actions without claiming that the store transaction failed.
 _Avoid_: Purchase success, purchase failure, repurchase prompt, local grant
 
+**Purchase Attempt**:
+A durable Game Backend record created before StoreKit opens. It binds one CommerceOwner, Stitch Coin Pack product, RevenueCat subscriber association, idempotency key, lifecycle state, and opaque Support Reference; StoreKit success only advances verification and never grants value.
+_Avoid_: local purchase flag, receipt success, client grant
+
 **Commerce Transaction Binding**:
-The permanent association created when a verified Apple or Google store transaction is first granted to one Registered Account. Resubmitting or restoring it for the same account is idempotent; another account cannot claim, transfer, or merge it. Account Deletion may remove bounded receipt and account detail but retains a minimal one-way provider-transaction tombstone for the life of the service to prevent regranting. Deletion does not cancel the platform subscription or move it to a later account. Its schema carries a CommerceOwner so a future Guest Installation Identity can hold the same kind of row, but every binding still resolves to exactly one Registered Account today; Guest-owned bindings remain rejected until a later ticket enables the Guest commerce capability.
+The permanent association created when a verified Apple or Google store transaction is first granted to one CommerceOwner. Resubmitting or restoring it for the same owner is idempotent; another owner cannot claim, transfer, or merge it. Account Deletion may remove bounded receipt and account detail but retains a minimal one-way provider-transaction tombstone for the life of the service to prevent regranting. Guest-owned rows grant only to the matching Guest Ledger.
 _Avoid_: Store account, receipt ownership transfer, purchase restore grant
 
 **Membership Period**:

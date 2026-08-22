@@ -6,6 +6,7 @@ import {
   CommerceCurrency,
   resolveCommerceProduct,
 } from './commerce.constants';
+import type { CommerceOwner } from './commerce-owner';
 import { CoinLedgerReason, AiCreditLedgerReason } from './entities';
 
 export interface CommercePurchaseResult {
@@ -49,7 +50,8 @@ export class CommerceLedgerRepository {
   async processPurchase(params: {
     environment: 'sandbox' | 'production';
     providerTransactionId: string;
-    accountId: string;
+    accountId?: string;
+    owner?: CommerceOwner;
     productId: string;
   }): Promise<CommercePurchaseResult> {
     const product = resolveCommerceProduct(params.productId);
@@ -63,23 +65,34 @@ export class CommerceLedgerRepository {
     }
 
     const { currency, amount } = product;
+    const owner = params.owner ?? (
+      params.accountId === undefined
+        ? null
+        : { type: 'account' as const, accountId: params.accountId }
+    );
+    if (owner === null) throw new Error('Commerce purchase owner is required');
+    const principalType = owner.type;
+    const principalId = owner.type === 'account' ? owner.accountId : owner.guestInstallationId;
 
     return this.dataSource.transaction(async (manager) => {
       // 1. Claim the binding
       const bindingClaim = returningRows<BindingRow>(
         await manager.query(
           `INSERT INTO economy.commerce_transaction_bindings
-             (environment, provider_transaction_id, principal_type, principal_id, product_id, currency, granted_amount)
-           VALUES ($1, $2, 'account', $3, $4, $5, $6)
+             (environment, provider_transaction_id, principal_type, principal_id, product_id, currency, granted_amount, account_id, guest_installation_id)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
            ON CONFLICT ON CONSTRAINT "PK_commerce_transaction_bindings" DO NOTHING
            RETURNING *`,
           [
             params.environment,
             params.providerTransactionId,
-            params.accountId,
+            principalType,
+            principalId,
             params.productId,
             currency,
             amount,
+            owner.type === 'account' ? principalId : null,
+            owner.type === 'guest' ? principalId : null,
           ],
         ),
       );
@@ -93,20 +106,20 @@ export class CommerceLedgerRepository {
           await manager.query(
             `INSERT INTO economy.coin_ledger_entries
                (principal_type, principal_id, amount, reason, source_key, granted, metadata)
-             VALUES ('account', $1, $2, $3, $4, true, NULL)
+             VALUES ($1, $2, $3, $4, $5, true, NULL)
              ON CONFLICT ON CONSTRAINT "UQ_coin_ledger_entries_source_key" DO NOTHING`,
-            [params.accountId, amount, CoinLedgerReason.CoinPackPurchase, sourceKey],
+            [principalType, principalId, amount, CoinLedgerReason.CoinPackPurchase, sourceKey],
           );
 
           const balanceRows = returningRows<BalanceRow>(
             await manager.query(
               `INSERT INTO economy.coin_balances (principal_type, principal_id, balance)
-               VALUES ('account', $1, $2)
+               VALUES ($1, $2, $3)
                ON CONFLICT ON CONSTRAINT "PK_coin_balances"
                  DO UPDATE SET balance = economy.coin_balances.balance + EXCLUDED.balance,
                                updated_at = now()
                RETURNING balance`,
-              [params.accountId, amount],
+              [principalType, principalId, amount],
             ),
           );
           newBalance = Number(balanceRows[0].balance);
@@ -116,20 +129,20 @@ export class CommerceLedgerRepository {
           await manager.query(
             `INSERT INTO economy.ai_credit_ledger_entries
                (principal_type, principal_id, amount, reason, source_key, granted, metadata)
-             VALUES ('account', $1, $2, $3, $4, true, NULL)
+             VALUES ($1, $2, $3, $4, $5, true, NULL)
              ON CONFLICT ON CONSTRAINT "UQ_ai_credit_ledger_entries_source_key" DO NOTHING`,
-            [params.accountId, amount, AiCreditLedgerReason.PackPurchase, sourceKey],
+            [principalType, principalId, amount, AiCreditLedgerReason.PackPurchase, sourceKey],
           );
 
           const balanceRows = returningRows<BalanceRow>(
             await manager.query(
               `INSERT INTO economy.ai_credit_balances (principal_type, principal_id, balance)
-               VALUES ('account', $1, $2)
+               VALUES ($1, $2, $3)
                ON CONFLICT ON CONSTRAINT "PK_ai_credit_balances"
                  DO UPDATE SET balance = economy.ai_credit_balances.balance + EXCLUDED.balance,
                                updated_at = now()
                RETURNING balance`,
-              [params.accountId, amount],
+              [principalType, principalId, amount],
             ),
           );
           newBalance = Number(balanceRows[0].balance);
@@ -154,7 +167,7 @@ export class CommerceLedgerRepository {
         throw new Error('Inconsistent database state: binding claim failed but no row found');
       }
 
-      if (existing.principal_id !== params.accountId) {
+      if (existing.principal_id !== principalId || existing.principal_type !== principalType) {
         return {
           outcome: 'rejected_other_account',
           currency: existing.currency as CommerceCurrency,
@@ -166,8 +179,8 @@ export class CommerceLedgerRepository {
       // Replay same account
       const currentBalance = await this.readBalance(
         manager,
-        'account',
-        params.accountId,
+        principalType,
+        principalId,
         existing.currency === 'coin' ? 'coin_balances' : 'ai_credit_balances',
       );
 
@@ -213,10 +226,10 @@ export class CommerceLedgerRepository {
           await manager.query(
             `INSERT INTO economy.coin_ledger_entries
                (principal_type, principal_id, amount, reason, source_key, granted, metadata)
-             VALUES ('account', $1, $2, $3, $4, true, NULL)
+             VALUES ($1, $2, $3, $4, $5, true, NULL)
              ON CONFLICT ON CONSTRAINT "UQ_coin_ledger_entries_source_key" DO NOTHING
              RETURNING id`,
-            [binding.principal_id, amountToWithdraw, CoinLedgerReason.CommerceReversal, sourceKey],
+            [binding.principal_type, binding.principal_id, amountToWithdraw, CoinLedgerReason.CommerceReversal, sourceKey],
           ),
         );
       } else {
@@ -224,10 +237,10 @@ export class CommerceLedgerRepository {
           await manager.query(
             `INSERT INTO economy.ai_credit_ledger_entries
                (principal_type, principal_id, amount, reason, source_key, granted, metadata)
-             VALUES ('account', $1, $2, $3, $4, true, NULL)
+             VALUES ($1, $2, $3, $4, $5, true, NULL)
              ON CONFLICT ON CONSTRAINT "UQ_ai_credit_ledger_entries_source_key" DO NOTHING
              RETURNING id`,
-            [binding.principal_id, amountToWithdraw, AiCreditLedgerReason.CommerceReversal, sourceKey],
+            [binding.principal_type, binding.principal_id, amountToWithdraw, AiCreditLedgerReason.CommerceReversal, sourceKey],
           ),
         );
       }
@@ -236,7 +249,7 @@ export class CommerceLedgerRepository {
         // Already reversed
         const currentBalance = await this.readBalance(
           manager,
-          'account',
+          binding.principal_type,
           binding.principal_id,
           currency === 'coin' ? 'coin_balances' : 'ai_credit_balances',
         );
@@ -254,12 +267,12 @@ export class CommerceLedgerRepository {
         const balanceRows = returningRows<BalanceRow>(
           await manager.query(
             `INSERT INTO economy.coin_balances (principal_type, principal_id, balance)
-             VALUES ('account', $1, $2)
+             VALUES ($1, $2, $3)
              ON CONFLICT ON CONSTRAINT "PK_coin_balances"
                DO UPDATE SET balance = economy.coin_balances.balance + EXCLUDED.balance,
                              updated_at = now()
              RETURNING balance`,
-            [binding.principal_id, amountToWithdraw],
+            [binding.principal_type, binding.principal_id, amountToWithdraw],
           ),
         );
         newBalance = Number(balanceRows[0].balance);
@@ -267,12 +280,12 @@ export class CommerceLedgerRepository {
         const balanceRows = returningRows<BalanceRow>(
           await manager.query(
             `INSERT INTO economy.ai_credit_balances (principal_type, principal_id, balance)
-             VALUES ('account', $1, $2)
+             VALUES ($1, $2, $3)
              ON CONFLICT ON CONSTRAINT "PK_ai_credit_balances"
                DO UPDATE SET balance = economy.ai_credit_balances.balance + EXCLUDED.balance,
                              updated_at = now()
              RETURNING balance`,
-            [binding.principal_id, amountToWithdraw],
+            [binding.principal_type, binding.principal_id, amountToWithdraw],
           ),
         );
         newBalance = Number(balanceRows[0].balance);

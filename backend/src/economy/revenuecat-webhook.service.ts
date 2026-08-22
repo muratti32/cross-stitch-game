@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 
@@ -7,6 +7,7 @@ import { CommerceLedgerRepository } from './commerce-ledger.repository';
 import { MembershipRepository } from './membership.repository';
 import { resolvePremiumProduct } from './membership.constants';
 import type { VerifiedMembershipEvent } from './membership-projection';
+import { GuestPurchaseAttemptService } from './guest-purchase-attempt.service';
 
 export interface RevenueCatWebhookOutcome {
   handled: boolean; // false for event types this ticket doesn't own
@@ -23,6 +24,7 @@ export class RevenueCatWebhookService {
     private readonly membership: MembershipRepository,
     @InjectRepository(RegisteredAccountEntity)
     private readonly accounts: Repository<RegisteredAccountEntity>,
+    @Optional() private readonly guestAttempts?: GuestPurchaseAttemptService,
   ) {}
 
   async handleEvent(body: unknown): Promise<RevenueCatWebhookOutcome> {
@@ -71,8 +73,29 @@ export class RevenueCatWebhookService {
     const appUserId = evt.app_user_id as string;
     const transactionId = evt.transaction_id as string;
     const productId = evt.product_id as string;
+    const account = UUID_PATTERN.test(appUserId)
+      ? await this.accounts.findOne({ where: { id: appUserId } })
+      : null;
 
-    const account = await this.accounts.findOne({ where: { id: appUserId } });
+    if (type === 'NON_RENEWING_PURCHASE') {
+      if (account && account.status === RegisteredAccountStatus.Active) {
+        return this.applyAccountPurchase(account.id, productId, environment, transactionId);
+      }
+      const aliases = Array.isArray(evt.aliases)
+        ? evt.aliases.filter((value): value is string => typeof value === 'string')
+        : [];
+      const originalAppUserId = typeof evt.original_app_user_id === 'string'
+        ? [evt.original_app_user_id]
+        : [];
+      const guestResult = this.guestAttempts === undefined ? null : await this.guestAttempts.applyWebhook(
+        [appUserId, ...aliases, ...originalAppUserId],
+        productId,
+        environment,
+        transactionId,
+      );
+      if (guestResult !== null) return guestResult;
+    }
+
     if (!account || account.status !== RegisteredAccountStatus.Active) {
       this.logger.warn(
         `RevenueCat webhook ${type} rejected: account ${appUserId} does not exist or is inactive`,
@@ -157,6 +180,11 @@ export class RevenueCatWebhookService {
       detail: 'ignored_event_type',
       duplicate: false,
     };
+  }
+
+  private async applyAccountPurchase(accountId: string, productId: string, environment: 'sandbox' | 'production', transactionId: string): Promise<RevenueCatWebhookOutcome> {
+    const result = await this.commerceLedger.processPurchase({ environment, providerTransactionId: transactionId, accountId, productId });
+    return { handled: true, detail: result.outcome, duplicate: result.outcome === 'replayed_same_account' };
   }
 
   /**

@@ -5,7 +5,7 @@ describe('CommerceCapabilitiesController', () => {
     const controller = new CommerceCapabilitiesController();
 
     expect(controller.getCapabilities()).toEqual({
-      guestCommerceAvailable: false,
+      guestCommerceAvailable: true,
     });
   });
 });

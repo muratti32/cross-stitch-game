@@ -3338,6 +3338,51 @@ describe('Stitch Wish backend integration', () => {
 
     const WEBHOOK_TOKEN = 'integration-test-only-revenuecat-webhook-auth-token-at-least-32-chars';
 
+    it('completes an iOS Guest Coin Pack attempt idempotently and scopes its status', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const otherGuest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      const userAgent = 'StitchWish/iOS';
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': userAgent };
+
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+        .set('Authorization', `Bearer ${guest.accessToken}`).send({ subscriberId }).expect(403);
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+        .set({ Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/Android' })
+        .send({ subscriberId }).expect(403);
+
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+        .set(headers).send({ subscriberId }).expect(201, { mapped: true });
+      const attemptResponse = await request(httpServer).post('/v1/commerce/guest/purchase-attempts')
+        .set(headers).send({
+          productId: 'com.avk.stitchwish.coin_pack_300',
+          idempotencyKey: `guest-${randomUUID()}`,
+          subscriberId,
+        }).expect(201);
+      const attemptId = readStringRecord(attemptResponse.body, 'id');
+      const supportReference = readStringRecord(attemptResponse.body, 'supportReference');
+      expect(supportReference).toMatch(/^SW-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/);
+
+      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`)
+        .set('Authorization', `Bearer ${otherGuest.accessToken}`).expect(404);
+      await request(httpServer).post('/v1/commerce/guest/purchase-attempts')
+        .set(headers).send({ productId: 'com.avk.stitchwish.coin_pack_300', idempotencyKey: `other-${randomUUID()}`, subscriberId }).expect(409);
+
+      const webhook = () => request(httpServer).post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+          type: 'NON_RENEWING_PURCHASE', app_user_id: subscriberId,
+          aliases: [subscriberId], transaction_id: 'guest-integration-tx',
+          product_id: 'com.avk.stitchwish.coin_pack_300', environment: 'SANDBOX',
+        } });
+      await webhook().expect(200, { status: 'ok' });
+      await webhook().expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/economy/balance')
+        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 300 });
+      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`)
+        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200)
+        .expect((response) => expect(response.body.status).toBe('granted'));
+    });
+
     it('CommerceLedgerRepository processes purchases and reversals idempotently', async () => {
       const account1 = await newRegisteredAccount();
       const account2 = await newRegisteredAccount();

@@ -32,6 +32,8 @@ import { CoinPackReconciliationService } from './coin-pack-reconciliation.servic
 import { AiCreditPackReconciliationController } from './ai-credit-pack-reconciliation.controller';
 import { AiCreditPackReconciliationService } from './ai-credit-pack-reconciliation.service';
 import { CommerceCapabilitiesController } from './commerce-capabilities.controller';
+import { GuestPurchaseAttemptController } from './guest-purchase-attempt.controller';
+import { GuestPurchaseAttemptService } from './guest-purchase-attempt.service';
 
 @Module({
   imports: [
@@ -51,6 +53,7 @@ import { CommerceCapabilitiesController } from './commerce-capabilities.controll
     CoinPackReconciliationController,
     AiCreditPackReconciliationController,
     CommerceCapabilitiesController,
+    GuestPurchaseAttemptController,
   ],
   providers: [
     CoinLedgerRepository,
@@ -68,6 +71,7 @@ import { CommerceCapabilitiesController } from './commerce-capabilities.controll
     MembershipService,
     CoinPackReconciliationService,
     AiCreditPackReconciliationService,
+    GuestPurchaseAttemptService,
   ],
 
   exports: [
