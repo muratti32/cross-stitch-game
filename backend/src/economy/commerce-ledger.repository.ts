@@ -307,11 +307,11 @@ export class CommerceLedgerRepository {
     });
   }
 
-  async getAiCreditBalance(accountId: string): Promise<number> {
+  async getAiCreditBalance(principal: { type: 'account' | 'guest'; id: string }): Promise<number> {
     return this.readBalance(
       this.dataSource.manager,
-      'account',
-      accountId,
+      principal.type,
+      principal.id,
       'ai_credit_balances',
     );
   }

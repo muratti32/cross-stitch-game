@@ -76,17 +76,17 @@ export class RevenueCatWebhookService {
     const account = UUID_PATTERN.test(appUserId)
       ? await this.accounts.findOne({ where: { id: appUserId } })
       : null;
+    const aliases = Array.isArray(evt.aliases)
+      ? evt.aliases.filter((value): value is string => typeof value === 'string')
+      : [];
+    const originalAppUserId = typeof evt.original_app_user_id === 'string'
+      ? [evt.original_app_user_id]
+      : [];
 
     if (type === 'NON_RENEWING_PURCHASE') {
       if (account && account.status === RegisteredAccountStatus.Active) {
         return this.applyAccountPurchase(account.id, productId, environment, transactionId);
       }
-      const aliases = Array.isArray(evt.aliases)
-        ? evt.aliases.filter((value): value is string => typeof value === 'string')
-        : [];
-      const originalAppUserId = typeof evt.original_app_user_id === 'string'
-        ? [evt.original_app_user_id]
-        : [];
       const guestResult = this.guestAttempts === undefined ? null : await this.guestAttempts.applyWebhook(
         [appUserId, ...aliases, ...originalAppUserId],
         productId,
@@ -96,6 +96,33 @@ export class RevenueCatWebhookService {
       if (guestResult !== null) return guestResult;
     }
 
+    const premiumProduct = resolvePremiumProduct(productId);
+    if (premiumProduct && MEMBERSHIP_EVENT_TYPES.has(type) && (!account || account.status !== RegisteredAccountStatus.Active)) {
+      const mapped = this.guestAttempts === undefined
+        ? null
+        : await this.guestAttempts.resolveMappedGuest([appUserId, ...aliases, ...originalAppUserId]);
+      if (mapped?.guestId === '') {
+        return { handled: false, detail: 'guest_subscriber_alias_conflict', duplicate: false };
+      }
+      if (mapped !== null) {
+        const membershipEvent = parseMembershipEvent(evt, environment, {
+          type: 'guest', guestInstallationId: mapped.guestId,
+        });
+        if (membershipEvent.periodType === 'TRIAL' && premiumProduct.plan !== 'monthly') {
+          throw new BadRequestException('Only the Monthly Premium Plan may have a trial');
+        }
+        const result = await this.membership.recordVerifiedEvent(membershipEvent);
+        await this.guestAttempts?.markMembershipWebhook(
+          [appUserId, ...aliases, ...originalAppUserId], productId, transactionId,
+        );
+        return {
+          handled: true,
+          detail: result.recorded ? 'membership_event_recorded' : 'membership_event_replayed',
+          duplicate: !result.recorded,
+        };
+      }
+    }
+
     if (!account || account.status !== RegisteredAccountStatus.Active) {
       this.logger.warn(
         `RevenueCat webhook ${type} rejected: account ${appUserId} does not exist or is inactive`,
@@ -103,9 +130,10 @@ export class RevenueCatWebhookService {
       return { handled: false, detail: 'unknown_or_inactive_account', duplicate: false };
     }
 
-    const premiumProduct = resolvePremiumProduct(productId);
     if (premiumProduct && MEMBERSHIP_EVENT_TYPES.has(type)) {
-      const membershipEvent = parseMembershipEvent(evt, environment);
+      const membershipEvent = parseMembershipEvent(evt, environment, {
+        type: 'account', accountId: appUserId,
+      });
       if (
         membershipEvent.periodType === 'TRIAL' &&
         premiumProduct.plan !== 'monthly'
@@ -276,11 +304,11 @@ const MEMBERSHIP_EVENT_TYPES = new Set([
 function parseMembershipEvent(
   event: Record<string, unknown>,
   environment: 'sandbox' | 'production',
+  owner: import('./commerce-owner').CommerceOwner,
 ): VerifiedMembershipEvent {
   const providerEventId = requiredString(event, 'id');
   const providerTransactionId = requiredString(event, 'transaction_id');
   const originalTransactionId = requiredString(event, 'original_transaction_id');
-  const accountId = requiredString(event, 'app_user_id');
   const type = requiredString(event, 'type');
   const productId = requiredString(event, 'product_id');
   const periodType = requiredString(event, 'period_type');
@@ -299,7 +327,7 @@ function parseMembershipEvent(
     providerEventId,
     providerTransactionId,
     originalTransactionId,
-    accountId,
+    owner,
     type,
     productId,
     periodType,

@@ -181,7 +181,7 @@ export class SupportReferenceService {
                 provider_transaction_id AS "providerTransactionId", created_at AS "createdAt"
          FROM economy.coin_pack_purchase_reconciliations WHERE id = $1`,
       premium_purchase_reconciliation:
-        `SELECT id, account_id AS "accountId", operation, product_key AS "productKey",
+        `SELECT id, account_id AS "accountId", guest_installation_id AS "principalId", operation, product_key AS "productKey",
                 created_at AS "createdAt"
          FROM economy.premium_purchase_reconciliations WHERE id = $1`,
       pattern_conversion: `SELECT processing_job_id AS id, account_id AS "accountId",

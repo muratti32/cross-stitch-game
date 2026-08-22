@@ -1,5 +1,3 @@
-import { ForbiddenException } from '@nestjs/common';
-
 import { PrincipalType } from '../auth/entities';
 import { MembershipService } from './membership.service';
 
@@ -37,6 +35,7 @@ describe('MembershipService purchase reconciliation', () => {
       expect.stringContaining('premium_purchase_reconciliations'),
       [
         'ab8ee117-f10d-4b48-adae-36668984a200',
+        null,
         'purchase',
         'premium_annual',
       ],
@@ -51,7 +50,7 @@ describe('MembershipService purchase reconciliation', () => {
     });
   });
 
-  it('rejects Guest reconciliation records', async () => {
+  it('creates a Guest-scoped reconciliation Support Reference', async () => {
     await expect(service.startReconciliation({
       id: 'guest-id',
       tokenVersion: 1,
@@ -59,6 +58,6 @@ describe('MembershipService purchase reconciliation', () => {
     }, {
       operation: 'restore',
       productKey: null,
-    })).rejects.toBeInstanceOf(ForbiddenException);
+    })).resolves.toEqual({ supportReference: 'SW-ABCD-EFGH' });
   });
 });

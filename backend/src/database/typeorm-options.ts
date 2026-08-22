@@ -161,6 +161,7 @@ import { AddCommerceCatalogIncompleteGameplayEvent1788739200000 } from './migrat
 import { CreateBulkPatternRemovals1788825600000 } from './migrations/1788825600000-CreateBulkPatternRemovals';
 import { CreateGuestCommercePurchaseAttempts1788998400000 } from './migrations/1788998400000-CreateGuestCommercePurchaseAttempts';
 import { AddCommerceOwnerToTransactionBindings1788912000000 } from './migrations/1788912000000-AddCommerceOwnerToTransactionBindings';
+import { AddCommerceOwnerToPremiumMembership1789084800000 } from './migrations/1789084800000-AddCommerceOwnerToPremiumMembership';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -307,6 +308,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateBulkPatternRemovals1788825600000,
       AddCommerceOwnerToTransactionBindings1788912000000,
       CreateGuestCommercePurchaseAttempts1788998400000,
+      AddCommerceOwnerToPremiumMembership1789084800000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

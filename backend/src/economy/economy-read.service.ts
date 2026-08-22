@@ -41,7 +41,7 @@ export class EconomyReadService {
 
   async getAiCreditBalance(principal: AuthPrincipal): Promise<{ balance: number }> {
     const ledgerPrincipal = toLedgerPrincipal(principal);
-    const balance = await this.commerceLedger.getAiCreditBalance(ledgerPrincipal.id);
+    const balance = await this.commerceLedger.getAiCreditBalance(ledgerPrincipal);
     return { balance };
   }
 

@@ -1,4 +1,5 @@
 import { resolvePremiumProduct, type PremiumPlan } from './membership.constants';
+import type { CommerceOwner } from './commerce-owner';
 
 export type MembershipLifecycle =
   | 'trial'
@@ -15,7 +16,7 @@ export interface VerifiedMembershipEvent {
   providerEventId: string;
   providerTransactionId: string;
   originalTransactionId: string;
-  accountId: string;
+  owner: CommerceOwner;
   type: string;
   productId: string;
   periodType: string;
@@ -27,7 +28,7 @@ export interface VerifiedMembershipEvent {
 }
 
 export interface MembershipPeriodProjection {
-  accountId: string;
+  owner: CommerceOwner;
   originalTransactionId: string;
   productId: string;
   plan: PremiumPlan;
@@ -95,7 +96,7 @@ export function projectMembershipPeriod(
   const endsAt = latest.gracePeriodExpiresAt ?? latest.expiresAt ?? purchase.expiresAt;
 
   return {
-    accountId: purchase.accountId,
+    owner: purchase.owner,
     originalTransactionId: purchase.originalTransactionId,
     productId: purchase.productId,
     plan: product.plan,

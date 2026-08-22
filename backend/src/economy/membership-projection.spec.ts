@@ -16,7 +16,7 @@ function membershipEvent(
     providerEventId: 'event-1',
     providerTransactionId: 'transaction-1',
     originalTransactionId: 'original-1',
-    accountId: ACCOUNT_ID,
+    owner: { type: 'account', accountId: ACCOUNT_ID },
     type: 'INITIAL_PURCHASE',
     productId: 'com.avk.stitchwish.premium_monthly',
     periodType: 'NORMAL',
@@ -44,6 +44,11 @@ describe('membership period projection', () => {
       creditAmount: 0,
     });
     expect(periodHasEntitlement(projection!, new Date('2026-07-04T00:00:00.000Z'))).toBe(true);
+  });
+
+  it('preserves a Guest Installation Identity owner through projection', () => {
+    const owner = { type: 'guest' as const, guestInstallationId: '22222222-2222-4222-8222-222222222222' };
+    expect(projectMembershipPeriod([membershipEvent({ owner })])).toMatchObject({ owner });
   });
 
   it.each([

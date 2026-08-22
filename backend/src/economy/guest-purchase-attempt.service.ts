@@ -8,6 +8,7 @@ import { AppConfigService } from '../config/app-config.service';
 import { SupportReferenceService } from '../support/support-reference.service';
 import { CommerceLedgerRepository } from './commerce-ledger.repository';
 import { GUEST_COIN_PACK_PRODUCT_IDS, type GuestPurchaseAttemptDto } from './guest-purchase-attempt.dto';
+import { resolvePremiumProduct } from './membership.constants';
 import { assertIosGuestCommerceClientHint } from './commerce-capabilities';
 
 interface AttemptRow {
@@ -54,8 +55,8 @@ export class GuestPurchaseAttemptService {
   async start(principal: AuthPrincipal, input: GuestPurchaseAttemptDto, userAgent?: string) {
     this.requireGuest(principal);
     this.requireIosGuestCommerce(userAgent);
-    if (!GUEST_COIN_PACK_PRODUCT_IDS.includes(input.productId)) {
-      throw new ForbiddenException('Guest commerce supports Stitch Coin Packs only');
+    if (!GUEST_COIN_PACK_PRODUCT_IDS.some((productId) => productId === input.productId) && resolvePremiumProduct(input.productId) === null) {
+      throw new ForbiddenException('Guest commerce product is not eligible');
     }
     try {
       return await this.dataSource.transaction(async (manager) => {
@@ -129,20 +130,29 @@ export class GuestPurchaseAttemptService {
     return rows[0]?.guest_installation_id ?? null;
   }
 
-  async applyWebhook(subscriberIds: string | readonly string[], productId: string, environment: 'sandbox' | 'production', transactionId: string) {
-    const ids = [...new Set(typeof subscriberIds === 'string' ? [subscriberIds] : subscriberIds)];
+  async resolveMappedGuest(subscriberIds: readonly string[]): Promise<{ guestId: string; ids: string[] } | null> {
+    const ids = [...new Set(subscriberIds)];
     const guestIds = await Promise.all(ids.map((id) => this.resolveSubscriber(id)));
     const guestId = guestIds.find((id): id is string => id !== null) ?? null;
     if (guestId === null) return null;
-    if (guestIds.some((id) => id !== null && id !== guestId)) {
-      return { handled: false, detail: 'guest_subscriber_alias_conflict', duplicate: false };
-    }
+    if (guestIds.some((id) => id !== null && id !== guestId)) return { guestId: '', ids };
     await this.dataSource.query(
       `INSERT INTO economy.revenuecat_subscriber_mappings (subscriber_id, guest_installation_id)
        SELECT value, $1 FROM unnest($2::varchar[]) AS value
        ON CONFLICT (subscriber_id) DO UPDATE SET updated_at = now()`,
       [guestId, ids],
     );
+    return { guestId, ids };
+  }
+
+  async applyWebhook(subscriberIds: string | readonly string[], productId: string, environment: 'sandbox' | 'production', transactionId: string) {
+    const ids = [...new Set(typeof subscriberIds === 'string' ? [subscriberIds] : subscriberIds)];
+    const resolved = await this.resolveMappedGuest(ids);
+    if (resolved === null) return null;
+    const { guestId } = resolved;
+    if (guestId === '') {
+      return { handled: false, detail: 'guest_subscriber_alias_conflict', duplicate: false };
+    }
     const placeholders = ids.map((_, index) => `$${index + 2}`).join(', ');
     const rows = await this.dataSource.query<readonly AttemptRow[]>(
       `SELECT * FROM economy.purchase_attempts
@@ -160,6 +170,31 @@ export class GuestPurchaseAttemptService {
     const result = await this.commerceLedger.processPurchase({ environment, providerTransactionId: transactionId, owner: { type: 'guest', guestInstallationId: guestId }, productId });
     await this.dataSource.query(`UPDATE economy.purchase_attempts SET status = $2, updated_at = now() WHERE id = $1`, [attempt.id, result.outcome === 'granted' || result.outcome === 'replayed_same_account' ? 'granted' : 'failed']);
     return { handled: true, detail: result.outcome, duplicate: result.outcome === 'replayed_same_account' };
+  }
+
+  async markMembershipWebhook(
+    subscriberIds: readonly string[],
+    productId: string,
+    transactionId: string,
+  ): Promise<void> {
+    const resolved = await this.resolveMappedGuest(subscriberIds);
+    if (resolved === null || resolved.guestId === '') return;
+    const rows = await this.dataSource.query<readonly AttemptRow[]>(
+      `SELECT * FROM economy.purchase_attempts
+       WHERE principal_type = 'guest' AND principal_id = $1 AND product_id = $2
+         AND subscriber_id = ANY($3::varchar[]) AND status IN ('created', 'verifying')
+       ORDER BY created_at ASC
+       LIMIT 1`,
+      [resolved.guestId, productId, resolved.ids],
+    );
+    if (rows[0] !== undefined) {
+      await this.dataSource.query(
+        `UPDATE economy.purchase_attempts
+         SET status = 'granted', provider_transaction_id = $2, updated_at = now()
+         WHERE id = $1`,
+        [rows[0].id, transactionId],
+      );
+    }
   }
 
   private response(attempt: AttemptRow, supportReference: string) {
