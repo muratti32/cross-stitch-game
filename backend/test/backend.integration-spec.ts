@@ -3426,7 +3426,22 @@ describe('Stitch Wish backend integration', () => {
           subscriberId,
         }).expect(201);
 
-      // No client state is reused after the restart; the durable attempt is enough.
+      // A restarted client keeps only the attempt id from its Local Identity Namespace.
+      const attemptId = readStringRecord(attempt.body, 'id');
+      const supportReference = readStringRecord(attempt.body, 'supportReference');
+
+      // Before the delayed webhook arrives, recovery must expose the unresolved attempt
+      // and the same Support Reference, so the player can retry or contact support.
+      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`)
+        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200)
+        .expect((response) => {
+          expect(readStringRecord(response.body, 'status')).toBe('created');
+          expect(readStringRecord(response.body, 'supportReference')).toBe(supportReference);
+        });
+      // Nothing was granted while the webhook was still in flight.
+      await request(httpServer).get('/v1/economy/balance')
+        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 0 });
+
       await request(httpServer).post('/v1/commerce/revenuecat/webhook')
         .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
           type: 'NON_RENEWING_PURCHASE', app_user_id: subscriberId, aliases: [subscriberId],
@@ -3435,12 +3450,15 @@ describe('Stitch Wish backend integration', () => {
         } }).expect(200, { status: 'ok' });
       await request(httpServer).get('/v1/economy/balance')
         .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 300 });
-      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${readStringRecord(attempt.body, 'id')}`)
+      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`)
         .set('Authorization', `Bearer ${guest.accessToken}`).expect(200)
-        .expect((response) => expect(response.body.status).toBe('granted'));
+        .expect((response) => {
+          expect(readStringRecord(response.body, 'status')).toBe('granted');
+          expect(readStringRecord(response.body, 'supportReference')).toBe(supportReference);
+        });
     });
 
-    it('keeps the final state correct when a later webhook arrives before an earlier one', async () => {
+    it('ignores a second distinct provider transaction once the attempt is already granted', async () => {
       const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
       const subscriberId = `$RCAnonymousID:${randomUUID()}`;
       const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
@@ -3460,8 +3478,8 @@ describe('Stitch Wish backend integration', () => {
           transaction_id: transactionId, product_id: 'com.avk.stitchwish.coin_pack_300',
           environment: 'SANDBOX',
         } });
-      await webhook(`later-${randomUUID()}`).expect(200, { status: 'ok' });
-      await webhook(`earlier-${randomUUID()}`).expect(200, { status: 'ok' });
+      await webhook(`first-${randomUUID()}`).expect(200, { status: 'ok' });
+      await webhook(`second-${randomUUID()}`).expect(200, { status: 'ok' });
       await request(httpServer).get('/v1/economy/balance')
         .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 300 });
     });
