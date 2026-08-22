@@ -101,7 +101,7 @@ export class RevenueCatWebhookService {
       const mapped = this.guestAttempts === undefined
         ? null
         : await this.guestAttempts.resolveMappedGuest([appUserId, ...aliases, ...originalAppUserId]);
-      if (mapped?.guestId === '') {
+      if (mapped?.status === 'alias_conflict') {
         return { handled: false, detail: 'guest_subscriber_alias_conflict', duplicate: false };
       }
       if (mapped !== null) {
@@ -112,9 +112,17 @@ export class RevenueCatWebhookService {
           throw new BadRequestException('Only the Monthly Premium Plan may have a trial');
         }
         const result = await this.membership.recordVerifiedEvent(membershipEvent);
+        if (result.rejectedOtherAccount) {
+          this.logger.warn(
+            `RevenueCat membership fraud signal: transaction ${transactionId} is bound to another account`,
+          );
+        }
         await this.guestAttempts?.markMembershipWebhook(
-          [appUserId, ...aliases, ...originalAppUserId], productId, transactionId,
+          mapped, productId, transactionId, type, membershipEvent.originalTransactionId, result,
         );
+        if (result.rejectedOtherAccount) {
+          return { handled: true, detail: 'rejected_other_account', duplicate: false };
+        }
         return {
           handled: true,
           detail: result.recorded ? 'membership_event_recorded' : 'membership_event_replayed',
@@ -246,10 +254,15 @@ export class RevenueCatWebhookService {
     const fromAccountIds = transferredFrom.filter(
       (candidate) => UUID_PATTERN.test(candidate) && candidate !== toAccountId,
     );
+    const mappedGuest = this.guestAttempts === undefined
+      ? null
+      : await this.guestAttempts.resolveMappedGuest(transferredFrom);
+    const fromGuestIds = mappedGuest?.status === 'resolved' ? [mappedGuest.guestId] : [];
 
     const moved = await this.membership.transferMembership({
       environment,
       fromAccountIds,
+      ...(fromGuestIds.length > 0 ? { fromGuestIds } : {}),
       toAccountId,
     });
     this.logger.log(

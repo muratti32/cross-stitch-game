@@ -11,10 +11,9 @@ import { Card } from './Card';
 
 interface PremiumDailyCoinClaimCardProps {
   readonly enabled: boolean;
-  readonly isAccount: boolean;
 }
 
-export function PremiumDailyCoinClaimCard({ enabled, isAccount }: PremiumDailyCoinClaimCardProps) {
+export function PremiumDailyCoinClaimCard({ enabled }: PremiumDailyCoinClaimCardProps) {
   const router = useRouter();
   const membership = useMembership(enabled);
   const claim = usePremiumDailyClaim();

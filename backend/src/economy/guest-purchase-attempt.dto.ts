@@ -6,7 +6,7 @@ export const GUEST_COIN_PACK_PRODUCT_IDS = [
   'com.avk.stitchwish.coin_pack_900',
   'com.avk.stitchwish.coin_pack_2000',
 ] as const;
-export const GUEST_PREMIUM_PRODUCT_IDS = Object.keys(PREMIUM_PRODUCT_CATALOG);
+export const GUEST_PREMIUM_PRODUCT_IDS = Object.keys(PREMIUM_PRODUCT_CATALOG) as Array<keyof typeof PREMIUM_PRODUCT_CATALOG>;
 export const GUEST_PURCHASABLE_PRODUCT_IDS = [
   ...GUEST_COIN_PACK_PRODUCT_IDS,
   ...GUEST_PREMIUM_PRODUCT_IDS,

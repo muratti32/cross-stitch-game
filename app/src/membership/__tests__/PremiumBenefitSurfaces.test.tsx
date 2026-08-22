@@ -75,14 +75,14 @@ beforeEach(() => {
 });
 
 it('shows availability, loading, and the successful backend claim result', () => {
-  const renderer = render(<PremiumDailyCoinClaimCard enabled isAccount />);
+  const renderer = render(<PremiumDailyCoinClaimCard enabled />);
   expect(allText(renderer.root)).toContain('20 Stitch Coins available now');
 
   act(() => pressByText(renderer.root, 'Claim 20 Coins'));
   expect(mockClaim).toHaveBeenCalledTimes(1);
 
   mockClaimMutation = { ...mockClaimMutation, isPending: true };
-  act(() => renderer.update(<PremiumDailyCoinClaimCard enabled isAccount />));
+  act(() => renderer.update(<PremiumDailyCoinClaimCard enabled />));
   expect(renderer.root.findAllByType(ActivityIndicator)).not.toHaveLength(0);
 
   mockClaimMutation = {
@@ -90,7 +90,7 @@ it('shows availability, loading, and the successful backend claim result', () =>
     data: { amount: 20, balance: 140, claimed: true, coinsConsumed: 30, replayed: false },
     isPending: false,
   };
-  act(() => renderer.update(<PremiumDailyCoinClaimCard enabled isAccount />));
+  act(() => renderer.update(<PremiumDailyCoinClaimCard enabled />));
   expect(allText(renderer.root)).toContain(
     '20 Stitch Coins added by the Game Backend. Balance: 140.',
   );
@@ -102,14 +102,14 @@ it('distinguishes claimed and exhausted shared-pool states', () => {
     active: true,
     dailyClaim: { claimed: true, coinsAvailable: 0, resetsAt: '2026-07-30T00:00:00Z' },
   });
-  const renderer = render(<PremiumDailyCoinClaimCard enabled isAccount />);
+  const renderer = render(<PremiumDailyCoinClaimCard enabled />);
   expect(allText(renderer.root)).toContain('Already claimed for this Reward Day.');
 
   mockMembershipQuery = membershipQuery({
     active: true,
     dailyClaim: { claimed: false, coinsAvailable: 0, resetsAt: '2026-07-30T00:00:00Z' },
   });
-  act(() => renderer.update(<PremiumDailyCoinClaimCard enabled isAccount />));
+  act(() => renderer.update(<PremiumDailyCoinClaimCard enabled />));
   expect(allText(renderer.root)).toContain(
     "Today's shared reward pool is exhausted. It resets at the next Reward Day.",
   );
@@ -124,7 +124,7 @@ it('shows actionable availability and claim errors', () => {
     isLoading: false,
     refetch: mockRefetchMembership,
   };
-  const renderer = render(<PremiumDailyCoinClaimCard enabled isAccount />);
+  const renderer = render(<PremiumDailyCoinClaimCard enabled />);
   expect(allText(renderer.root)).toEqual(expect.arrayContaining([
     'Membership temporarily unavailable.',
     'Try again',
@@ -140,7 +140,7 @@ it('shows actionable availability and claim errors', () => {
     ...mockClaimMutation,
     error: new Error('Could not reach the Game Backend.'),
   };
-  act(() => renderer.update(<PremiumDailyCoinClaimCard enabled isAccount />));
+  act(() => renderer.update(<PremiumDailyCoinClaimCard enabled />));
   expect(allText(renderer.root)).toEqual(expect.arrayContaining([
     'Could not reach the Game Backend.',
     'Try claim again',
@@ -153,7 +153,7 @@ it('gates the claim and opens Premium with the premium_benefit source', () => {
     active: false,
     dailyClaim: { claimed: false, coinsAvailable: 0, resetsAt: '2026-07-30T00:00:00Z' },
   });
-  const renderer = render(<PremiumDailyCoinClaimCard enabled isAccount />);
+  const renderer = render(<PremiumDailyCoinClaimCard enabled />);
   expect(renderer.root.findByProps({ testID: 'premium-daily-claim-locked' })).toBeDefined();
   act(() => pressByText(renderer.root, 'View Premium plans'));
   expect(mockRouter.push).toHaveBeenCalledWith({

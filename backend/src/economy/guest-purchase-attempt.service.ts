@@ -22,6 +22,10 @@ interface AttemptRow {
   support_reference_id: string;
 }
 
+export type MappedGuest =
+  | { status: 'resolved'; guestId: string; ids: string[] }
+  | { status: 'alias_conflict' };
+
 @Injectable()
 export class GuestPurchaseAttemptService {
   constructor(
@@ -130,29 +134,29 @@ export class GuestPurchaseAttemptService {
     return rows[0]?.guest_installation_id ?? null;
   }
 
-  async resolveMappedGuest(subscriberIds: readonly string[]): Promise<{ guestId: string; ids: string[] } | null> {
+  async resolveMappedGuest(subscriberIds: readonly string[]): Promise<MappedGuest | null> {
     const ids = [...new Set(subscriberIds)];
     const guestIds = await Promise.all(ids.map((id) => this.resolveSubscriber(id)));
     const guestId = guestIds.find((id): id is string => id !== null) ?? null;
     if (guestId === null) return null;
-    if (guestIds.some((id) => id !== null && id !== guestId)) return { guestId: '', ids };
+    if (guestIds.some((id) => id !== null && id !== guestId)) return { status: 'alias_conflict' };
     await this.dataSource.query(
       `INSERT INTO economy.revenuecat_subscriber_mappings (subscriber_id, guest_installation_id)
        SELECT value, $1 FROM unnest($2::varchar[]) AS value
        ON CONFLICT (subscriber_id) DO UPDATE SET updated_at = now()`,
       [guestId, ids],
     );
-    return { guestId, ids };
+    return { status: 'resolved', guestId, ids };
   }
 
   async applyWebhook(subscriberIds: string | readonly string[], productId: string, environment: 'sandbox' | 'production', transactionId: string) {
     const ids = [...new Set(typeof subscriberIds === 'string' ? [subscriberIds] : subscriberIds)];
     const resolved = await this.resolveMappedGuest(ids);
     if (resolved === null) return null;
-    const { guestId } = resolved;
-    if (guestId === '') {
+    if (resolved.status === 'alias_conflict') {
       return { handled: false, detail: 'guest_subscriber_alias_conflict', duplicate: false };
     }
+    const { guestId } = resolved;
     const placeholders = ids.map((_, index) => `$${index + 2}`).join(', ');
     const rows = await this.dataSource.query<readonly AttemptRow[]>(
       `SELECT * FROM economy.purchase_attempts
@@ -173,26 +177,41 @@ export class GuestPurchaseAttemptService {
   }
 
   async markMembershipWebhook(
-    subscriberIds: readonly string[],
+    resolved: Extract<MappedGuest, { status: 'resolved' }>,
     productId: string,
     transactionId: string,
+    eventType: string,
+    originalTransactionId: string,
+    outcome: { recorded: boolean; rejectedOtherAccount: boolean; periodExists: boolean },
   ): Promise<void> {
-    const resolved = await this.resolveMappedGuest(subscriberIds);
-    if (resolved === null || resolved.guestId === '') return;
     const rows = await this.dataSource.query<readonly AttemptRow[]>(
       `SELECT * FROM economy.purchase_attempts
-       WHERE principal_type = 'guest' AND principal_id = $1 AND product_id = $2
-         AND subscriber_id = ANY($3::varchar[]) AND status IN ('created', 'verifying')
+         WHERE principal_type = 'guest' AND principal_id = $1 AND product_id = $2
+           AND subscriber_id = ANY($3::varchar[]) AND status IN ('created', 'verifying')
+           AND (
+             $4 = 'INITIAL_PURCHASE'
+             OR ($4 = 'RENEWAL' AND EXISTS (
+               SELECT 1 FROM economy.membership_periods
+               WHERE guest_installation_id = $1 AND product_id = $2
+                 AND original_transaction_id = $5 AND period_type = 'TRIAL'
+             ))
+           )
        ORDER BY created_at ASC
        LIMIT 1`,
-      [resolved.guestId, productId, resolved.ids],
+      [resolved.guestId, productId, resolved.ids, eventType, originalTransactionId],
     );
     if (rows[0] !== undefined) {
+      const status = outcome.rejectedOtherAccount
+        ? 'failed'
+        : outcome.recorded && outcome.periodExists
+          ? 'granted'
+          : null;
+      if (status === null) return;
       await this.dataSource.query(
         `UPDATE economy.purchase_attempts
-         SET status = 'granted', provider_transaction_id = $2, updated_at = now()
+         SET status = $2, provider_transaction_id = $3, updated_at = now()
          WHERE id = $1`,
-        [rows[0].id, transactionId],
+        [rows[0].id, status, transactionId],
       );
     }
   }

@@ -37,6 +37,7 @@ export class AddCommerceOwnerToPremiumMembership1789084800000 implements Migrati
     await queryRunner.query('DROP INDEX IF EXISTS "economy"."IDX_premium_purchase_reconciliations_guest"');
     await queryRunner.query('ALTER TABLE "economy"."premium_purchase_reconciliations" DROP CONSTRAINT "CHK_premium_purchase_reconciliations_owner"');
     await queryRunner.query('ALTER TABLE "economy"."premium_purchase_reconciliations" DROP CONSTRAINT "FK_premium_purchase_reconciliations_guest"');
+    await queryRunner.query('DELETE FROM "economy"."premium_purchase_reconciliations" WHERE "account_id" IS NULL');
     await queryRunner.query('ALTER TABLE "economy"."premium_purchase_reconciliations" DROP COLUMN "guest_installation_id"');
     await queryRunner.query('ALTER TABLE "economy"."premium_purchase_reconciliations" ALTER COLUMN "account_id" SET NOT NULL');
     await queryRunner.query('DROP INDEX IF EXISTS "economy"."IDX_membership_periods_guest_entitlement"');
@@ -44,6 +45,7 @@ export class AddCommerceOwnerToPremiumMembership1789084800000 implements Migrati
     for (const table of ['membership_periods', 'membership_events']) {
       await queryRunner.query(`ALTER TABLE "economy"."${table}" DROP CONSTRAINT "CHK_${table}_owner"`);
       await queryRunner.query(`ALTER TABLE "economy"."${table}" DROP CONSTRAINT "FK_${table}_guest_installation"`);
+      await queryRunner.query(`DELETE FROM "economy"."${table}" WHERE "account_id" IS NULL`);
       await queryRunner.query(`ALTER TABLE "economy"."${table}" DROP COLUMN "guest_installation_id"`);
       await queryRunner.query(`ALTER TABLE "economy"."${table}" ALTER COLUMN "account_id" SET NOT NULL`);
     }

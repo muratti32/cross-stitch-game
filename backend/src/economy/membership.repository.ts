@@ -59,6 +59,7 @@ interface PoolRow {
 export interface MembershipEventResult {
   recorded: boolean;
   rejectedOtherAccount: boolean;
+  periodExists: boolean;
   creditGranted: number;
   creditReversed: number;
 }
@@ -66,6 +67,7 @@ export interface MembershipEventResult {
 export interface MembershipTransferInput {
   environment: 'sandbox' | 'production';
   fromAccountIds: readonly string[];
+  fromGuestIds?: readonly string[];
   toAccountId: string;
 }
 
@@ -123,6 +125,7 @@ export class MembershipRepository {
         return {
           recorded: false,
           rejectedOtherAccount: true,
+          periodExists: false,
           creditGranted: 0,
           creditReversed: 0,
         };
@@ -170,6 +173,7 @@ export class MembershipRepository {
         return {
           recorded: inserted.length > 0,
           rejectedOtherAccount: false,
+          periodExists: false,
           creditGranted: 0,
           creditReversed: 0,
         };
@@ -194,6 +198,7 @@ export class MembershipRepository {
       return {
         recorded: inserted.length > 0,
         rejectedOtherAccount: false,
+        periodExists: true,
         creditGranted,
         creditReversed,
       };
@@ -208,7 +213,8 @@ export class MembershipRepository {
    * cross-account claims while a real transfer stops looking like one.
    */
   async transferMembership(input: MembershipTransferInput): Promise<MembershipTransferResult> {
-    if (input.fromAccountIds.length === 0) {
+    const fromGuestIds = input.fromGuestIds ?? [];
+    if (input.fromAccountIds.length === 0 && fromGuestIds.length === 0) {
       return { eventsMoved: 0, periodsMoved: 0 };
     }
     return this.dataSource.transaction('SERIALIZABLE', async (manager) => {
@@ -217,9 +223,10 @@ export class MembershipRepository {
       >(
         `SELECT DISTINCT provider_transaction_id
          FROM economy.membership_events
-         WHERE environment = $1 AND account_id = ANY($2::uuid[])
+         WHERE environment = $1
+           AND (account_id = ANY($2::uuid[]) OR guest_installation_id = ANY($3::uuid[]))
          ORDER BY provider_transaction_id`,
-        [input.environment, [...input.fromAccountIds]],
+        [input.environment, [...input.fromAccountIds], [...fromGuestIds]],
       );
       // Take the same per-transaction locks recordVerifiedEvent takes, in a
       // stable order, so a transfer and an in-flight event for one of these
@@ -239,10 +246,10 @@ export class MembershipRepository {
       }
       const movedEvents = await manager.query<readonly { provider_event_id: string }[]>(
         `UPDATE economy.membership_events
-         SET account_id = $3
+         SET account_id = $3, guest_installation_id = NULL
          WHERE environment = $1
            AND provider_transaction_id = ANY($2::varchar[])
-           AND account_id <> $3
+           AND (account_id IS DISTINCT FROM $3 OR guest_installation_id IS NOT NULL)
          RETURNING provider_event_id`,
         [input.environment, transactionIds, input.toAccountId],
       );
@@ -250,10 +257,10 @@ export class MembershipRepository {
         readonly { provider_transaction_id: string }[]
       >(
         `UPDATE economy.membership_periods
-         SET account_id = $3, updated_at = now()
+         SET account_id = $3, guest_installation_id = NULL, updated_at = now()
          WHERE environment = $1
            AND provider_transaction_id = ANY($2::varchar[])
-           AND account_id <> $3
+           AND (account_id IS DISTINCT FROM $3 OR guest_installation_id IS NOT NULL)
          RETURNING provider_transaction_id`,
         [input.environment, transactionIds, input.toAccountId],
       );

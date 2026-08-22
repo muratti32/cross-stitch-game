@@ -359,7 +359,6 @@ export default function ProfileScreen() {
       <DailyTasksCard enabled={isAuthenticated && !isPending && !isOfflinePending} />
       <PremiumDailyCoinClaimCard
         enabled={isAuthenticated && !isPending && !isOfflinePending}
-        isAccount={isAccount}
       />
       <RewardedAdCard enabled={!isPending && !isOfflinePending} />
 

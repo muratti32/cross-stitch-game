@@ -3958,6 +3958,161 @@ describe('Stitch Wish backend integration', () => {
       await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 15 });
     });
 
+    it('keeps a Guest Premium attempt pending for lifecycle events and exposes its Support Reference', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `guest-pending-${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      const productId = 'com.avk.stitchwish.premium_monthly';
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+      const attempt = await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId, idempotencyKey: `pending-${randomUUID()}`, subscriberId,
+      }).expect(201);
+      const event = (type: string, transactionId = `pending-tx-${randomUUID()}`) => request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+          id: `pending-event-${randomUUID()}`, type, app_user_id: subscriberId, aliases: [subscriberId],
+          transaction_id: transactionId, original_transaction_id: `pending-original-${randomUUID()}`,
+          product_id: productId, period_type: 'NORMAL', environment: 'SANDBOX',
+          event_timestamp_ms: Date.now(), purchased_at_ms: Date.now(), expiration_at_ms: Date.now() + 86_400_000,
+        } });
+
+      await event('BILLING_ISSUE').expect(200, { status: 'ok' });
+      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attempt.body.id}`).set(headers)
+        .expect(200).expect((response) => expect(response.body).toMatchObject({
+          status: 'created', supportReference: attempt.body.supportReference,
+        }));
+      await request(httpServer).post('/v1/commerce/membership/reconciliations').set(headers)
+        .send({ operation: 'purchase', productKey: 'premium_monthly' }).expect(201)
+        .expect((response) => expect(response.body.supportReference).toMatch(/^SW-/));
+    });
+
+    it('does not grant a Guest Premium attempt from EXPIRATION or a rejected transaction', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const account = await newRegisteredAccount();
+      const subscriberId = `guest-negative-${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      const productId = 'com.avk.stitchwish.premium_weekly';
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+      const attempt = await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId, idempotencyKey: `negative-${randomUUID()}`, subscriberId,
+      }).expect(201);
+      const transactionId = `owned-by-account-${randomUUID()}`;
+      const base = {
+        original_transaction_id: `negative-original-${randomUUID()}`, product_id: productId,
+        period_type: 'NORMAL', environment: 'SANDBOX', event_timestamp_ms: Date.now(),
+        purchased_at_ms: Date.now(), expiration_at_ms: Date.now() + 86_400_000,
+      };
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+        ...base, id: `owner-event-${randomUUID()}`, type: 'INITIAL_PURCHASE', app_user_id: account.accountId,
+        transaction_id: transactionId,
+      } }).expect(200, { status: 'ok' });
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+        ...base, id: `guest-rejected-${randomUUID()}`, type: 'INITIAL_PURCHASE', app_user_id: subscriberId,
+        aliases: [subscriberId], transaction_id: transactionId,
+      } }).expect(503);
+      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attempt.body.id}`).set(headers)
+        .expect(200).expect((response) => expect(response.body.status).toBe('failed'));
+
+      const second = await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId, idempotencyKey: `expiration-${randomUUID()}`, subscriberId,
+      }).expect(201);
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+        ...base, id: `expiration-${randomUUID()}`, type: 'EXPIRATION', app_user_id: subscriberId,
+        aliases: [subscriberId], transaction_id: `expired-${randomUUID()}`,
+      } }).expect(200, { status: 'ok' });
+      await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${second.body.id}`).set(headers)
+        .expect(200).expect((response) => expect(response.body.status).toBe('created'));
+    });
+
+    it('transfers Guest-owned Premium rows to the Registered Account and clears the Guest owner', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const account = await newRegisteredAccount();
+      const subscriberId = `guest-transfer-${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+      const now = Date.now();
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+        id: `transfer-initial-${randomUUID()}`, type: 'INITIAL_PURCHASE', app_user_id: subscriberId, aliases: [subscriberId],
+        transaction_id: `transfer-tx-${randomUUID()}`, original_transaction_id: `transfer-original-${randomUUID()}`,
+        product_id: 'com.avk.stitchwish.premium_annual', period_type: 'NORMAL', environment: 'SANDBOX',
+        event_timestamp_ms: now, purchased_at_ms: now, expiration_at_ms: now + 365 * 86_400_000,
+      } }).expect(200, { status: 'ok' });
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+        id: `transfer-${randomUUID()}`, type: 'TRANSFER', environment: 'SANDBOX',
+        transferred_from: [subscriberId], transferred_to: [account.accountId],
+      } }).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/commerce/membership').set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(200).expect((response) => expect(response.body.active).toBe(false));
+      await request(httpServer).get('/v1/commerce/membership').set('Authorization', `Bearer ${account.accessToken}`)
+        .expect(200).expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'annual' }));
+    });
+
+    it('projects Guest billing retry, grace, expiration, and product changes through membership status', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `guest-lifecycle-${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      const webhook = (event: Record<string, unknown>) => request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event });
+      const now = Date.now();
+      const original = `lifecycle-original-${randomUUID()}`;
+      const weeklyTx = `lifecycle-weekly-${randomUUID()}`;
+      const base = { app_user_id: subscriberId, aliases: [subscriberId], original_transaction_id: original,
+        product_id: 'com.avk.stitchwish.premium_weekly', period_type: 'NORMAL', environment: 'SANDBOX' };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+      await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'INITIAL_PURCHASE', transaction_id: weeklyTx,
+        event_timestamp_ms: now, purchased_at_ms: now, expiration_at_ms: now + 5 * 86_400_000 }).expect(200, { status: 'ok' });
+      await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'BILLING_ISSUE', transaction_id: weeklyTx,
+        event_timestamp_ms: now + 1_000, purchased_at_ms: now, expiration_at_ms: now + 5 * 86_400_000,
+        grace_period_expiration_at_ms: now + 86_400_000 }).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'weekly', lifecycle: 'grace' }));
+      await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'EXPIRATION', transaction_id: weeklyTx,
+        event_timestamp_ms: now + 2_000, purchased_at_ms: now, expiration_at_ms: now - 1_000 }).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: false, lifecycle: 'expired' }));
+
+      const annualTx = `lifecycle-annual-${randomUUID()}`;
+      await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'PRODUCT_CHANGE', transaction_id: annualTx,
+        product_id: 'com.avk.stitchwish.premium_annual', event_timestamp_ms: now + 3_000,
+        purchased_at_ms: now + 3_000, expiration_at_ms: now + 365 * 86_400_000 }).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'annual' }));
+      await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'EXPIRATION', transaction_id: annualTx,
+        product_id: 'com.avk.stitchwish.premium_annual', event_timestamp_ms: now + 4_000,
+        purchased_at_ms: now + 3_000, expiration_at_ms: now - 1_000 }).expect(200, { status: 'ok' });
+      const downgradeTx = `lifecycle-downgrade-${randomUUID()}`;
+      await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'PRODUCT_CHANGE', transaction_id: downgradeTx,
+        product_id: 'com.avk.stitchwish.premium_weekly', event_timestamp_ms: now + 5_000,
+        purchased_at_ms: now + 5_000, expiration_at_ms: now + 6 * 86_400_000 }).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'weekly' }));
+    });
+
+    it('handles out-of-order Guest deliveries idempotently for period, AI credit, and daily claim', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `guest-order-${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      const now = Date.now();
+      const transactionId = `guest-order-tx-${randomUUID()}`;
+      const base = { app_user_id: subscriberId, aliases: [subscriberId], transaction_id: transactionId,
+        original_transaction_id: `guest-order-original-${randomUUID()}`, product_id: 'com.avk.stitchwish.premium_monthly',
+        period_type: 'NORMAL', environment: 'SANDBOX', purchased_at_ms: now, expiration_at_ms: now + 30 * 86_400_000 };
+      const initial = { ...base, id: `order-initial-${randomUUID()}`, type: 'INITIAL_PURCHASE', event_timestamp_ms: now - 2_000 };
+      const renewal = { ...base, id: `order-renewal-${randomUUID()}`, type: 'RENEWAL', event_timestamp_ms: now - 1_000 };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers).send({ subscriberId }).expect(201);
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: renewal }).expect(200, { status: 'ok' });
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: initial }).expect(200, { status: 'ok' });
+      const replay = await request(httpServer).post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: initial });
+      expect(replay.status).toBe(200);
+      await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'monthly' }));
+      const periods = await dataSource.query(`SELECT provider_transaction_id FROM economy.membership_periods WHERE guest_installation_id = $1`, [guest.guestId]);
+      expect(periods).toHaveLength(1);
+      await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 15 });
+      await request(httpServer).post('/v1/commerce/membership/daily-claim').set(headers).expect(201);
+      await request(httpServer).post('/v1/commerce/membership/daily-claim').set(headers).expect(201)
+        .expect((response) => expect(response.body.replayed).toBe(true));
+    });
+
     it('derives Premium Membership from periods and shares the daily Coin pool', async () => {
       const account = await newRegisteredAccount();
       const originalTransactionId = `premium-original-${randomUUID()}`;
