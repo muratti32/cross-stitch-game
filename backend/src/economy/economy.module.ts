@@ -31,6 +31,7 @@ import { CoinPackReconciliationController } from './coin-pack-reconciliation.con
 import { CoinPackReconciliationService } from './coin-pack-reconciliation.service';
 import { AiCreditPackReconciliationController } from './ai-credit-pack-reconciliation.controller';
 import { AiCreditPackReconciliationService } from './ai-credit-pack-reconciliation.service';
+import { CommerceCapabilitiesController } from './commerce-capabilities.controller';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { AiCreditPackReconciliationService } from './ai-credit-pack-reconciliati
     MembershipController,
     CoinPackReconciliationController,
     AiCreditPackReconciliationController,
+    CommerceCapabilitiesController,
   ],
   providers: [
     CoinLedgerRepository,

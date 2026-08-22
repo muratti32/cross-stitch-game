@@ -7,6 +7,20 @@ import { adoptPreIdentityDatabase, openNamespace, deleteNamespaceFiles } from '.
 import { performAuthenticatedRequest, resetAccountDeletionTrigger } from '../api/authenticatedRequest';
 import { useGameplayStore } from '../store';
 import { queryClient } from '../providers';
+import {
+  clearSessionEnvelope,
+  emptySessionEnvelope,
+  readSessionEnvelope,
+  type SessionEnvelope,
+  type SessionStore,
+  writeSessionEnvelope,
+} from './sessionEnvelope';
+import {
+  advanceGeneration,
+  captureGeneration,
+  createSessionLifecycle,
+  isCurrentGeneration,
+} from './sessionLifecycle';
 
 const SECURE_KEYS = {
   INSTALLATION_KEY: 'stitch_wish.installation_key',
@@ -23,6 +37,9 @@ const SECURE_KEYS = {
   ACCOUNT_EMAIL: 'stitch_wish.account_email',
   ACCOUNT_PROVIDER: 'stitch_wish.account_provider',
 };
+
+const sessionStore: SessionStore = SecureStore;
+const lifecycle = createSessionLifecycle();
 
 export type AccountProvider = 'apple' | 'email' | 'google';
 
@@ -68,7 +85,7 @@ export function setAccessToken(token: string | null): void {
  */
 export async function getRefreshToken(): Promise<string | null> {
   try {
-    return await SecureStore.getItemAsync(SECURE_KEYS.REFRESH_TOKEN);
+    return (await readEnvelope()).refreshToken;
   } catch (err) {
     console.error('Failed to read refresh token from SecureStore:', err);
     return null;
@@ -152,6 +169,7 @@ export interface IdentityState {
   isPending: boolean;
   isOfflinePending: boolean;
   requiresSignIn: boolean;
+  isHydrated: boolean;
   bootstrap: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -167,6 +185,7 @@ export const useIdentityStore = create<IdentityState>((set) => ({
   isPending: false,
   isOfflinePending: false,
   requiresSignIn: false,
+  isHydrated: false,
 
   bootstrap: async () => {
     await bootstrap();
@@ -181,6 +200,54 @@ function updateStoreState(updates: Partial<Omit<IdentityState, 'bootstrap' | 'lo
   useIdentityStore.setState(updates);
 }
 
+function updateStoreStateIfCurrent(
+  generation: number,
+  updates: Partial<Omit<IdentityState, 'bootstrap' | 'logout'>>,
+): boolean {
+  if (!isCurrentGeneration(lifecycle, generation)) return false;
+  updateStoreState(updates);
+  return true;
+}
+
+function legacyKeys() {
+  return {
+    guestId: SECURE_KEYS.GUEST_ID,
+    guestCreatedAt: SECURE_KEYS.GUEST_CREATED_AT,
+    accountId: SECURE_KEYS.ACCOUNT_ID,
+    accountEmail: SECURE_KEYS.ACCOUNT_EMAIL,
+    accountProvider: SECURE_KEYS.ACCOUNT_PROVIDER,
+    refreshToken: SECURE_KEYS.REFRESH_TOKEN,
+    requiresSignIn: SECURE_KEYS.REQUIRES_SIGN_IN,
+  };
+}
+
+function principalState(envelope: SessionEnvelope) {
+  const isAccount = envelope.kind === 'account' && !envelope.requiresSignIn;
+  return {
+    guestId: isAccount ? null : envelope.guestId,
+    guestCreatedAt: isAccount ? null : envelope.guestCreatedAt,
+    accountId: isAccount ? envelope.accountId : null,
+    accountEmail: isAccount ? envelope.accountEmail : null,
+    accountProvider: isAccount
+      ? envelope.accountProvider ?? (envelope.accountEmail ? 'email' : null)
+      : null,
+    isAccount,
+    requiresSignIn: envelope.requiresSignIn,
+  };
+}
+
+async function readEnvelope(): Promise<SessionEnvelope> {
+  return (await readSessionEnvelope(sessionStore, legacyKeys())) ?? emptySessionEnvelope();
+}
+
+async function writeEnvelope(envelope: SessionEnvelope): Promise<void> {
+  await writeSessionEnvelope(sessionStore, envelope);
+}
+
+async function deleteLegacySessionKeys(): Promise<void> {
+  await Promise.all(Object.values(legacyKeys()).map((key) => SecureStore.deleteItemAsync(key)));
+}
+
 /**
  * Bootstraps the guest identity. Collapses concurrent calls (single-flight).
  * Generates credentials if missing, attempts token refresh if refresh token exists,
@@ -192,11 +259,12 @@ export async function bootstrap(): Promise<void> {
     return activeBootstrapPromise;
   }
 
+  const generation = captureGeneration(lifecycle);
   activeBootstrapPromise = (async () => {
     updateStoreState({ isPending: true });
 
     try {
-      // 1. Get or create installation credentials
+      // Installation credentials remain separate from the session envelope.
       let installationKey = await SecureStore.getItemAsync(SECURE_KEYS.INSTALLATION_KEY);
       let credentialSecret = await SecureStore.getItemAsync(SECURE_KEYS.CREDENTIAL_SECRET);
 
@@ -209,124 +277,37 @@ export async function bootstrap(): Promise<void> {
         await SecureStore.setItemAsync(SECURE_KEYS.CREDENTIAL_SECRET, credentialSecret);
       }
 
-      // 2. Read stored identity details
-      const savedGuestId = await SecureStore.getItemAsync(SECURE_KEYS.GUEST_ID);
-      const savedGuestCreatedAt = await SecureStore.getItemAsync(SECURE_KEYS.GUEST_CREATED_AT);
-      const savedAccountId = await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_ID);
-      const savedAccountEmail = await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_EMAIL);
-      const savedAccountProvider = parseAccountProvider(
-        await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_PROVIDER),
-      );
-      let refreshToken = await SecureStore.getItemAsync(SECURE_KEYS.REFRESH_TOKEN);
-      const requiresSignIn =
-        (await SecureStore.getItemAsync(SECURE_KEYS.REQUIRES_SIGN_IN)) === 'true';
+      const envelope = await readEnvelope();
+      const principal = principalState(envelope);
+      updateStoreStateIfCurrent(generation, {
+        ...principal,
+        isAuthenticated: false,
+        isHydrated: true,
+        isPending: true,
+        isOfflinePending: false,
+      });
 
-      if (savedAccountId && requiresSignIn) {
-        updateStoreState({
-          guestId: null,
-          guestCreatedAt: null,
-          accountId: null,
-          accountEmail: null,
-          accountProvider: null,
-          isAccount: false,
-          isAuthenticated: false,
-          isPending: false,
-          isOfflinePending: false,
-          requiresSignIn: true,
-        });
+      if (envelope.requiresSignIn) {
         return;
       }
 
-      // 2a. Registered Account session takes precedence over Guest. The account
-      // namespace is keyed by accountId, so unsynchronized local data reopens.
-      if (savedAccountId && refreshToken) {
+      if (envelope.refreshToken) {
         try {
-          const tokens = await performRefreshRequest(refreshToken);
-          setAccessToken(tokens.accessToken);
-          await SecureStore.setItemAsync(SECURE_KEYS.REFRESH_TOKEN, tokens.refreshToken);
-
-          await openNamespace(savedAccountId);
-
-          updateStoreState({
-            guestId: null,
-            guestCreatedAt: null,
-            accountId: savedAccountId,
-            accountEmail: savedAccountEmail,
-            accountProvider:
-              savedAccountProvider ?? (savedAccountEmail ? 'email' : null),
-            isAccount: true,
-            isAuthenticated: true,
-            isPending: false,
-            isOfflinePending: false,
-          });
-
+          await refreshSession();
           resetRetryDelay();
           return;
         } catch (err: unknown) {
           if (hasHttpStatus(err) && err.status === 401) {
-            // Account refresh family revoked/expired. Keep the account
-            // namespace reserved and require the player to authenticate again.
-            await SecureStore.deleteItemAsync(SECURE_KEYS.REFRESH_TOKEN);
-            await SecureStore.setItemAsync(SECURE_KEYS.REQUIRES_SIGN_IN, 'true');
-            updateStoreState({
-              guestId: null,
-              guestCreatedAt: null,
-              accountId: null,
-              accountEmail: null,
-              accountProvider: null,
-              isAccount: false,
-              isAuthenticated: false,
-              isPending: false,
-              isOfflinePending: false,
-              requiresSignIn: true,
-            });
-            return;
+            if (envelope.kind === 'account') return;
+            await clearSessionStateOnly();
           } else {
-            // Connectivity error: stay offline-pending and retry.
-            updateStoreState({ isPending: false, isOfflinePending: true });
+            updateStoreStateIfCurrent(generation, { isPending: false, isOfflinePending: true });
             scheduleRetryBootstrap();
             throw err;
           }
         }
       }
 
-      // 3. Try to use existing refresh token if it exists
-      if (refreshToken) {
-        try {
-          const tokens = await performRefreshRequest(refreshToken);
-          setAccessToken(tokens.accessToken);
-          await SecureStore.setItemAsync(SECURE_KEYS.REFRESH_TOKEN, tokens.refreshToken);
-
-          // Open the namespace database for this guest
-          await openNamespace(savedGuestId);
-
-          updateStoreState({
-            guestId: savedGuestId,
-            guestCreatedAt: savedGuestCreatedAt,
-            isAuthenticated: true,
-            isPending: false,
-            isOfflinePending: false,
-          });
-
-          resetRetryDelay();
-          return;
-        } catch (err: unknown) {
-          if (hasHttpStatus(err) && err.status === 401) {
-            // Revoked/expired refresh token family, clear and request guest auth
-            await SecureStore.deleteItemAsync(SECURE_KEYS.REFRESH_TOKEN);
-          } else {
-            // Connectivity error
-            updateStoreState({
-              isPending: false,
-              isOfflinePending: true,
-            });
-            scheduleRetryBootstrap();
-            throw err;
-          }
-        }
-      }
-
-      // 4. Register/Login as guest using stored installation credentials
       try {
         const response = await fetch(`${Config.apiBaseUrl}/v1/auth/guest`, {
           method: 'POST',
@@ -344,21 +325,24 @@ export async function bootstrap(): Promise<void> {
           const { guestId, accessToken, refreshToken: newRefreshToken } = data;
           const nowStr = new Date().toISOString();
 
-          await SecureStore.setItemAsync(SECURE_KEYS.GUEST_ID, guestId);
-          await SecureStore.setItemAsync(SECURE_KEYS.REFRESH_TOKEN, newRefreshToken);
-
-          let createdAtVal = savedGuestCreatedAt;
-          if (!createdAtVal) {
-            createdAtVal = nowStr;
-            await SecureStore.setItemAsync(SECURE_KEYS.GUEST_CREATED_AT, createdAtVal);
-          }
+          const createdAtVal = envelope.guestCreatedAt ?? nowStr;
+          const nextEnvelope: SessionEnvelope = {
+            ...emptySessionEnvelope(),
+            kind: 'guest',
+            guestId,
+            guestCreatedAt: createdAtVal,
+            refreshToken: newRefreshToken,
+          };
+          if (!isCurrentGeneration(lifecycle, generation)) return;
+          const committedGeneration = advanceGeneration(lifecycle);
+          await writeEnvelope(nextEnvelope);
 
           setAccessToken(accessToken);
 
           // Adopt the pre-identity database namespace for this guest (atomic file rename)
           await adoptPreIdentityDatabase(guestId);
 
-          updateStoreState({
+          updateStoreStateIfCurrent(committedGeneration, {
             guestId,
             guestCreatedAt: createdAtVal,
             accountId: null,
@@ -368,6 +352,7 @@ export async function bootstrap(): Promise<void> {
             isAuthenticated: true,
             isPending: false,
             isOfflinePending: false,
+            isHydrated: true,
           });
 
           resetRetryDelay();
@@ -377,7 +362,7 @@ export async function bootstrap(): Promise<void> {
           // Data Reset is an explicit player action (issue #10). Surface a
           // pending state and let retries reuse the same stored credentials.
           console.warn('Backend rejected the stored guest credentials.');
-          updateStoreState({
+          updateStoreStateIfCurrent(generation, {
             isPending: false,
             isOfflinePending: true,
           });
@@ -388,7 +373,7 @@ export async function bootstrap(): Promise<void> {
         }
       } catch (err) {
         // Network or server degradation - proceed offline-first
-        updateStoreState({
+        updateStoreStateIfCurrent(generation, {
           isPending: false,
           isOfflinePending: true,
         });
@@ -396,7 +381,7 @@ export async function bootstrap(): Promise<void> {
         throw err;
       }
     } finally {
-      updateStoreState({ isPending: false });
+      updateStoreStateIfCurrent(generation, { isPending: false });
     }
   })().finally(() => {
     activeBootstrapPromise = null;
@@ -413,47 +398,29 @@ export async function refreshSession(): Promise<string> {
     return activeRefreshPromise;
   }
 
+  const generation = captureGeneration(lifecycle);
   activeRefreshPromise = (async () => {
-    const refreshToken = await getRefreshToken();
+    const envelope = await readEnvelope();
+    const refreshToken = envelope.refreshToken;
     if (!refreshToken) {
       throw new Error('No refresh token available');
     }
 
     try {
       const tokens = await performRefreshRequest(refreshToken);
-      setAccessToken(tokens.accessToken);
-      await SecureStore.setItemAsync(SECURE_KEYS.REFRESH_TOKEN, tokens.refreshToken);
-
-      const accountId = await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_ID);
-      if (accountId) {
-        const accountEmail = await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_EMAIL);
-        const accountProvider = parseAccountProvider(
-          await SecureStore.getItemAsync(SECURE_KEYS.ACCOUNT_PROVIDER),
-        );
-        updateStoreState({
-          guestId: null,
-          guestCreatedAt: null,
-          accountId,
-          accountEmail,
-          accountProvider: accountProvider ?? (accountEmail ? 'email' : null),
-          isAccount: true,
-          isAuthenticated: true,
-          isOfflinePending: false,
-        });
-      } else {
-        const guestId = await SecureStore.getItemAsync(SECURE_KEYS.GUEST_ID);
-        const guestCreatedAt = await SecureStore.getItemAsync(SECURE_KEYS.GUEST_CREATED_AT);
-        updateStoreState({
-          guestId,
-          guestCreatedAt,
-          accountId: null,
-          accountEmail: null,
-          accountProvider: null,
-          isAccount: false,
-          isAuthenticated: true,
-          isOfflinePending: false,
-        });
+      if (!isCurrentGeneration(lifecycle, generation)) {
+        throw new Error('Stale identity refresh result');
       }
+      const nextEnvelope = { ...envelope, refreshToken: tokens.refreshToken };
+      await writeEnvelope(nextEnvelope);
+      setAccessToken(tokens.accessToken);
+      await openNamespace(envelope.kind === 'account' ? envelope.accountId : envelope.guestId);
+      updateStoreStateIfCurrent(generation, {
+        ...principalState(nextEnvelope),
+        isAuthenticated: true,
+        isHydrated: true,
+        isOfflinePending: false,
+      });
 
       return tokens.accessToken;
     } catch (err: unknown) {
@@ -461,7 +428,7 @@ export async function refreshSession(): Promise<string> {
         // Expired/rotated refresh token reuse detection: require account
         // reauthentication, while guests may bootstrap a fresh guest session.
         console.warn('Refresh token is invalid or reuse detected. Revoking and re-bootstrapping.');
-        if (useIdentityStore.getState().isAccount) {
+        if (envelope.kind === 'account') {
           await requireAccountSignIn();
         } else {
           await clearSessionStateOnly();
@@ -485,17 +452,19 @@ export async function refreshSession(): Promise<string> {
  */
 export async function clearSessionStateOnly(): Promise<void> {
   setAccessToken(null);
-  await SecureStore.deleteItemAsync(SECURE_KEYS.REFRESH_TOKEN);
+  const envelope = await readEnvelope();
+  await writeEnvelope({ ...envelope, refreshToken: null });
   updateStoreState({
     isAuthenticated: false,
   });
 }
 
 async function requireAccountSignIn(): Promise<void> {
+  advanceGeneration(lifecycle);
   setAccessToken(null);
   clearRefreshSchedule();
-  await SecureStore.deleteItemAsync(SECURE_KEYS.REFRESH_TOKEN);
-  await SecureStore.setItemAsync(SECURE_KEYS.REQUIRES_SIGN_IN, 'true');
+  const envelope = await readEnvelope();
+  await writeEnvelope({ ...envelope, kind: 'account', refreshToken: null, requiresSignIn: true });
   updateStoreState({
     guestId: null,
     guestCreatedAt: null,
@@ -507,6 +476,7 @@ async function requireAccountSignIn(): Promise<void> {
     isPending: false,
     isOfflinePending: false,
     requiresSignIn: true,
+    isHydrated: true,
   });
 }
 
@@ -521,6 +491,7 @@ export async function handleAuthenticationRequired(): Promise<void> {
  * tokens, guest identity metadata, and switches the database namespace to null (pre-identity).
  */
 export async function logout(): Promise<void> {
+  advanceGeneration(lifecycle);
   const refreshToken = await getRefreshToken();
   if (refreshToken) {
     try {
@@ -540,16 +511,7 @@ export async function logout(): Promise<void> {
   resetRetryDelay();
   setAccessToken(null);
 
-  await SecureStore.deleteItemAsync(SECURE_KEYS.REFRESH_TOKEN);
-  await SecureStore.deleteItemAsync(SECURE_KEYS.GUEST_ID);
-  await SecureStore.deleteItemAsync(SECURE_KEYS.GUEST_CREATED_AT);
-  // Registered Account sign-out: forget who is signed in, but NEVER delete the
-  // namespace DB files. Unsynchronized local data survives on disk and reopens
-  // when the same account signs back in (namespace keyed by accountId).
-  await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_ID);
-  await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_EMAIL);
-  await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_PROVIDER);
-  await SecureStore.deleteItemAsync(SECURE_KEYS.REQUIRES_SIGN_IN);
+  await clearSessionEnvelope(sessionStore);
 
   // Switch back to pre-identity database namespace
   await openNamespace(null);
@@ -564,6 +526,7 @@ export async function logout(): Promise<void> {
     isAuthenticated: false,
     isOfflinePending: false,
     requiresSignIn: false,
+    isHydrated: true,
   });
 }
 
@@ -606,22 +569,20 @@ export async function adoptEmailAccountSession(
 export async function adoptAccountSession(
   session: AccountSession,
 ): Promise<void> {
+  advanceGeneration(lifecycle);
   resetAccountDeletionTrigger();
   clearRefreshSchedule();
   resetRetryDelay();
 
-  await SecureStore.setItemAsync(SECURE_KEYS.REFRESH_TOKEN, session.refreshToken);
-  await SecureStore.deleteItemAsync(SECURE_KEYS.REQUIRES_SIGN_IN);
-  await SecureStore.setItemAsync(SECURE_KEYS.ACCOUNT_ID, session.accountId);
-  await SecureStore.setItemAsync(SECURE_KEYS.ACCOUNT_PROVIDER, session.provider);
-  if (session.email === null) {
-    await SecureStore.deleteItemAsync(SECURE_KEYS.ACCOUNT_EMAIL);
-  } else {
-    await SecureStore.setItemAsync(SECURE_KEYS.ACCOUNT_EMAIL, session.email);
-  }
-  // A Registered Account supersedes any prior Guest Installation on this device.
-  await SecureStore.deleteItemAsync(SECURE_KEYS.GUEST_ID);
-  await SecureStore.deleteItemAsync(SECURE_KEYS.GUEST_CREATED_AT);
+  await writeEnvelope({
+    ...emptySessionEnvelope(),
+    kind: 'account',
+    accountId: session.accountId,
+    accountEmail: session.email,
+    accountProvider: session.provider,
+    refreshToken: session.refreshToken,
+  });
+  await deleteLegacySessionKeys();
 
   setAccessToken(session.accessToken);
 
@@ -638,13 +599,8 @@ export async function adoptAccountSession(
     isPending: false,
     isOfflinePending: false,
     requiresSignIn: false,
+    isHydrated: true,
   });
-}
-
-function parseAccountProvider(value: string | null): AccountProvider | null {
-  return value === 'apple' || value === 'email' || value === 'google'
-    ? value
-    : null;
 }
 
 /**
@@ -704,6 +660,7 @@ interface TokenResponse {
  * 5) Reset in-memory stores (identity store, gameplay store) and TanStack Query cache.
  */
 export async function resetGuestData(): Promise<void> {
+  advanceGeneration(lifecycle);
   const response = await performAuthenticatedRequest(
     '/v1/auth/guest/reset',
     { method: 'POST' },
@@ -724,9 +681,8 @@ export async function resetGuestData(): Promise<void> {
 
   await SecureStore.deleteItemAsync(SECURE_KEYS.INSTALLATION_KEY);
   await SecureStore.deleteItemAsync(SECURE_KEYS.CREDENTIAL_SECRET);
-  await SecureStore.deleteItemAsync(SECURE_KEYS.GUEST_ID);
-  await SecureStore.deleteItemAsync(SECURE_KEYS.GUEST_CREATED_AT);
-  await SecureStore.deleteItemAsync(SECURE_KEYS.REFRESH_TOKEN);
+  await clearSessionEnvelope(sessionStore);
+  await deleteLegacySessionKeys();
 
   updateStoreState({
     guestId: null,
@@ -734,6 +690,7 @@ export async function resetGuestData(): Promise<void> {
     isAuthenticated: false,
     isPending: false,
     isOfflinePending: false,
+    isHydrated: true,
   });
 
   await bootstrap();

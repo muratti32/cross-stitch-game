@@ -2,8 +2,15 @@ import { Check, Column, CreateDateColumn, Entity, PrimaryColumn } from 'typeorm'
 
 @Entity({ name: 'commerce_transaction_bindings', schema: 'economy' })
 @Check('CHK_commerce_transaction_bindings_environment', '"environment" IN (\'sandbox\', \'production\')')
-@Check('CHK_commerce_transaction_bindings_principal_type', '"principal_type" = \'account\'')
+@Check(
+  'CHK_commerce_transaction_bindings_principal_type',
+  '"principal_type" IN (\'account\', \'guest\')',
+)
 @Check('CHK_commerce_transaction_bindings_currency', '"currency" IN (\'coin\', \'ai_credit\')')
+@Check(
+  'CHK_commerce_transaction_bindings_owner',
+  '("principal_type" = \'account\' AND "account_id" = "principal_id" AND "guest_installation_id" IS NULL) OR ("principal_type" = \'guest\' AND "guest_installation_id" = "principal_id" AND "account_id" IS NULL)',
+)
 export class CommerceTransactionBindingEntity {
   @PrimaryColumn({ name: 'environment', type: 'varchar', length: 16 })
   environment!: string; // 'sandbox' | 'production'
@@ -12,10 +19,18 @@ export class CommerceTransactionBindingEntity {
   providerTransactionId!: string;
 
   @Column({ name: 'principal_type', type: 'varchar', length: 16 })
-  principalType!: string; // always 'account' — Guests cannot purchase (ADR-0011)
+  principalType!: string; // 'account' today; capability-gated 'guest' rows arrive in a later ticket (ADR-0044)
 
   @Column({ name: 'principal_id', type: 'uuid' })
-  principalId!: string; // Registered Account id
+  principalId!: string; // Registered Account id or, once enabled, Guest Installation Identity id
+
+  // CommerceOwner (ADR-0044): exactly one of these mirrors principalId, enforced by
+  // CHK_commerce_transaction_bindings_owner. Guest commerce is capability-gated OFF today.
+  @Column({ type: 'uuid', nullable: true, name: 'account_id' })
+  accountId!: string | null;
+
+  @Column({ type: 'uuid', nullable: true, name: 'guest_installation_id' })
+  guestInstallationId!: string | null;
 
   @Column({ name: 'product_id', type: 'varchar', length: 64 })
   productId!: string;
