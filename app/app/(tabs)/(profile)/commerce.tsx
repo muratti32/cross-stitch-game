@@ -871,12 +871,24 @@ export default function CommerceScreen() {
 
   const restorePurchases = useCallback(async () => {
     if (!isAccount) {
-      explainGuestRestore(() => {
-        router.push({
-          pathname: '/(tabs)/(settings)/sign-in',
-          params: { returnTo: 'commerce' },
-        });
-      });
+      setRestoringPurchases(true);
+      setPurchaseError(null);
+      try {
+        const subscriberId = await getRevenueCatSubscriberId();
+        await mapGuestRevenueCatSubscriber(subscriberId);
+        await restoreRevenueCatPurchases(null);
+        await queryClient.refetchQueries({ queryKey: ['commerce', 'membership'] });
+        await queryClient.refetchQueries({ queryKey: ['economy'] });
+        Alert.alert(
+          'Restore requested',
+          'Verified Premium access will appear after the store webhook is reconciled. '
+            + 'Stitch Coin and AI Credit packs are never restored.',
+        );
+      } catch (error: unknown) {
+        setPurchaseError(purchaseErrorMessage(error));
+      } finally {
+        setRestoringPurchases(false);
+      }
       return;
     }
     setRestoringPurchases(true);
@@ -1279,7 +1291,7 @@ export default function CommerceScreen() {
                 <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
               ) : (
                 <Text style={styles.restoreText}>
-                  {isAccount ? 'Restore purchases' : 'Sign in to restore purchases'}
+                  {isAccount ? 'Restore purchases' : 'Restore Guest Premium'}
                 </Text>
               )}
             </Pressable>
@@ -1713,18 +1725,8 @@ function packSummary(packs: readonly CommerceProduct[], noun: string): string {
 
 // A Guest Player learns why sign-in is being asked of them before anything
 // navigates, so the control never reads as a dead button. A single continue
-// action keeps the explanation on the way to sign-in rather than in front of it.
-// The identity gate itself does not move: the RevenueCat wrapper still refuses
-// to restore without an account identifier (ADR-0032).
-function explainGuestRestore(onContinue: () => void): void {
-  Alert.alert(
-    'Sign in to restore purchases',
-    'Purchases are attached to a Registered Account rather than to this device. '
-      + 'Signing in with the account that made them recovers your Premium Membership '
-      + 'and pack grants.',
-    [{ onPress: onContinue, text: 'Sign in' }],
-  );
-}
+// Guest restore maps the anonymous RevenueCat subscriber first; the backend
+// webhook then decides which verified Premium entitlement can be re-owned.
 
 // A trial is advertised only when the store carries a free introductory offer
 // for this exact product and reports the player eligible for it. A missing or

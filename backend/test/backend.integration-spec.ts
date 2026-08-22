@@ -710,6 +710,39 @@ describe('Stitch Wish backend integration', () => {
     expect(freshCreated.guestId).not.toBe(created.guestId);
   });
 
+  it('blocks Guest Data Reset while a Purchase Attempt is unresolved', async () => {
+    const created = await createGuestThroughApi(
+      httpServer,
+      randomUUID(),
+      createCredentialSecret(),
+    );
+    const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+    const headers = {
+      Authorization: `Bearer ${created.accessToken}`,
+      'User-Agent': 'StitchWish/iOS',
+    };
+
+    await request(httpServer)
+      .post('/v1/commerce/guest/revenuecat-mapping')
+      .set(headers)
+      .send({ subscriberId })
+      .expect(201);
+    await request(httpServer)
+      .post('/v1/commerce/guest/purchase-attempts')
+      .set(headers)
+      .send({
+        productId: 'com.avk.stitchwish.coin_pack_300',
+        idempotencyKey: randomUUID(),
+        subscriberId,
+      })
+      .expect(201);
+
+    await request(httpServer)
+      .post('/v1/auth/guest/reset')
+      .set('Authorization', `Bearer ${created.accessToken}`)
+      .expect(409);
+  });
+
   it('commits the Processing Job and Job Outbox row together', async () => {
     const processingJobId = await createDemoJobThroughApi(
       httpServer,
