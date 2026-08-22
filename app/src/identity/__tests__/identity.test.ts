@@ -743,6 +743,45 @@ describe('Email Sign-In (Registered Account) flows', () => {
     expect(JSON.parse(mockSecureStore[SESSION_ENVELOPE])).toMatchObject({ requiresSignIn: true });
   });
 
+  test('a transient refresh network failure keeps the account visible as reconnecting', async () => {
+    jest.useFakeTimers();
+    const fetchMock = global.fetch;
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    try {
+      mockSecureStore['stitch_wish.session_envelope_v1'] = JSON.stringify({
+        version: 1,
+        kind: 'account',
+        guestId: null,
+        guestCreatedAt: null,
+        accountId: 'acc_transient',
+        accountEmail: 'transient@example.com',
+        accountProvider: 'apple',
+        refreshToken: 'refresh_transient',
+        requiresSignIn: false,
+      });
+
+      global.fetch = jest.fn((url: string) => {
+        if (url.includes('/v1/auth/refresh')) {
+          return Promise.reject(new Error('Network request failed'));
+        }
+        return Promise.resolve({ status: 200, json: async () => ({}) } as Response);
+      }) as typeof fetch;
+
+      await expect(bootstrap()).rejects.toThrow('Network request failed');
+
+      const state = useIdentityStore.getState();
+      expect(state.isAccount).toBe(true);
+      expect(state.accountId).toBe('acc_transient');
+      expect(state.requiresSignIn).toBe(false);
+      expect(state.isOfflinePending).toBe(true);
+    } finally {
+      global.fetch = fetchMock;
+      consoleErrorSpy.mockRestore();
+      jest.useRealTimers();
+    }
+  });
+
   test('logout of an account clears keys but preserves namespace data', async () => {
     const localDb = require('../../local-db');
     const openMock = localDb.openNamespace;
