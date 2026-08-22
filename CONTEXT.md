@@ -176,6 +176,10 @@ _Avoid_: AI Credit Pack, Premium Membership, currency exchange
 The Game Backend source of truth for a Guest Installation Identity's Stitch Coin balance, reward grants, spends, and permanent Pattern Unlocks. Every mutation is idempotent and auditable. Offline gameplay may create Pending Coin Rewards, but changing the spendable balance, spending Coin, and acquiring an Unlock require backend reconciliation and connectivity; the client cannot directly mutate the ledger.
 _Avoid_: Local Coin balance, Commerce Ledger, client save data
 
+**CommerceOwner**:
+The single owner reference a Commerce Ledger record carries: either a Registered Account or a Guest Installation Identity, and never both or neither. Commerce Transaction Binding rows hold it as a nullable account reference and a nullable Guest Installation reference under one database constraint enforcing exactly one is set, alongside the existing account-only principal columns kept unchanged for backward compatibility. Its Guest form exists so a Registered Account and a future Guest Installation Identity can both own Commerce Ledger records without changing already-released behavior; a backend capability reports Guest commerce unavailable until a later, iOS-first ticket deliberately enables it, and ADR-0011, ADR-0012, and ADR-0032's account-only purchase rules stay in force until then.
+_Avoid_: Guest purchase (first release), principal_id alone, polymorphic owner without a DB constraint
+
 **Commerce Ledger**:
 The backend source of truth for verified store transactions, their Commerce Transaction Bindings, normalized Membership Periods, and the account grants they produce. Each provider transaction identifier and paid membership period is recorded idempotently and can produce its grant exactly once; the mobile client cannot mutate paid balances or entitlements directly.
 _Avoid_: Client purchase history, local receipt cache, balance endpoint
@@ -185,7 +189,7 @@ The non-failure state shown after the store reports a completed purchase or rest
 _Avoid_: Purchase success, purchase failure, repurchase prompt, local grant
 
 **Commerce Transaction Binding**:
-The permanent association created when a verified Apple or Google store transaction is first granted to one Registered Account. Resubmitting or restoring it for the same account is idempotent; another account cannot claim, transfer, or merge it. Account Deletion may remove bounded receipt and account detail but retains a minimal one-way provider-transaction tombstone for the life of the service to prevent regranting. Deletion does not cancel the platform subscription or move it to a later account.
+The permanent association created when a verified Apple or Google store transaction is first granted to one Registered Account. Resubmitting or restoring it for the same account is idempotent; another account cannot claim, transfer, or merge it. Account Deletion may remove bounded receipt and account detail but retains a minimal one-way provider-transaction tombstone for the life of the service to prevent regranting. Deletion does not cancel the platform subscription or move it to a later account. Its schema carries a CommerceOwner so a future Guest Installation Identity can hold the same kind of row, but every binding still resolves to exactly one Registered Account today; Guest-owned bindings remain rejected until a later ticket enables the Guest commerce capability.
 _Avoid_: Store account, receipt ownership transfer, purchase restore grant
 
 **Membership Period**:
