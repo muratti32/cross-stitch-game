@@ -5,6 +5,7 @@ jest.mock('react-native-purchases', () => ({
     checkTrialOrIntroductoryPriceEligibility: jest.fn(),
     getAppUserID: jest.fn(),
     getOfferings: jest.fn(),
+    enableAdServicesAttributionTokenCollection: jest.fn(),
     isAnonymous: jest.fn(),
     logIn: jest.fn(),
     logOut: jest.fn(),
@@ -101,10 +102,29 @@ describe('RevenueCat commerce boundary', () => {
 
     expect(mockPurchases.configure).toHaveBeenCalledTimes(1);
     expect(mockPurchases.configure).toHaveBeenCalledWith({ apiKey: 'test_public_key' });
+    expect(mockPurchases.enableAdServicesAttributionTokenCollection).toHaveBeenCalledTimes(1);
     expect(mockPurchases.configure.mock.calls[0][0]).not.toHaveProperty('appUserID');
     expect(mockPurchases.logIn).not.toHaveBeenCalled();
     expect(mockPurchases.logOut).not.toHaveBeenCalled();
     expect(offerings.current?.availablePackages).toEqual([]);
+  });
+
+  test('keeps commerce ready when AdServices attribution collection fails', async () => {
+    const warning = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    mockPurchases.enableAdServicesAttributionTokenCollection.mockRejectedValueOnce(
+      new Error('AdServices unavailable'),
+    );
+
+    try {
+      await expect(initializeRevenueCat()).resolves.toBe(true);
+      expect(useRevenueCatRuntime.getState()).toMatchObject({ status: 'ready' });
+      expect(warning).toHaveBeenCalledWith(
+        'Apple Search Ads attribution collection deferred:',
+        'AdServices unavailable',
+      );
+    } finally {
+      warning.mockRestore();
+    }
   });
 
   test('associates and removes a Registered Account exactly once across repeated calls', async () => {

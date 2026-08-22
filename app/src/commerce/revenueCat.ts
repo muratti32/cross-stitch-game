@@ -136,6 +136,20 @@ export async function initializeRevenueCat(): Promise<boolean> {
       // which is allowed to browse the catalog but is never a Guest Installation
       // Identity from the Game Backend (ADR-0032).
       Purchases.configure({ apiKey: configuration.apiKey });
+      if (Platform.OS === 'ios') {
+        // RevenueCat collects the AdServices token and resolves Apple Search Ads
+        // campaign/ad-group/keyword attribution in the background. This is a
+        // best-effort analytics integration and must never make commerce
+        // unavailable when an older OS or native SDK has a transient failure.
+        try {
+          await Purchases.enableAdServicesAttributionTokenCollection();
+        } catch (error: unknown) {
+          console.warn(
+            'Apple Search Ads attribution collection deferred:',
+            error instanceof Error ? error.message : String(error),
+          );
+        }
+      }
       configured = true;
       useRevenueCatRuntime.setState({
         status: 'ready',

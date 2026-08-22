@@ -59,6 +59,7 @@ Modular monolith. Modules communicate through injected services in-process; anyt
 | `catalog` | Official/Community Patterns, Catalog Submissions (immutable snapshots), Catalog Precheck orchestration, Catalog Review workflow, Metadata Revisions + appeals, Withdrawal, Safety Removal + appeal, discovery (Staff Picks, New, categories/tags), Catalog Search. |
 | `economy` | Stitch Coin ledgers (account + Guest Ledger), Pattern Unlocks, Reward Day, Daily Tasks, Ad-Equivalent Coin Pool, Pending Coin Reward validation, First Completion Rewards. |
 | `commerce` | RevenueCat webhook ingestion, Commerce Ledger, Commerce Transaction Bindings, Membership Periods, Membership Credit Grants, reversals, AdMob SSV endpoint. |
+| `marketing` | Apple Ads spend plus RevenueCat Apple Search Ads attribution reconciliation and 7/30/90-day cohort ROAS reporting; no provider secret or raw export is owned by the mobile client. |
 | `ai-generation` | Prompt Safety Check, AI Credit Reservation, fal.ai Processing Job orchestration, AI Artwork Delivery, AI Artwork Library. |
 | `conversion` | Conversion Uploads, Processing Jobs for Pattern Conversion, Conversion Recipes, Personal Patterns, Derived Personal Patterns, Pending Personal Pattern sync. |
 | `sessions` | Session Preparation (idempotent), Artifact Access Grants, Progress Sync ingestion, Progress Merge, Session Completion, Replay Sessions, Late Progress Operation acknowledgement. |
@@ -104,6 +105,8 @@ Client uploads operation batches (device id + monotonic sequence). Server applie
 
 ### Commerce
 Client purchases through RevenueCat SDK → RevenueCat webhook (signature-verified, idempotent per provider transaction) → Commerce Ledger → grant (Stitch Coin / AI Credit / Membership Period + Credit Grant). Webhooks arrive duplicated and out of order (renewals, expirations, refunds, plan changes), so current Premium entitlement is always derived from the immutable commerce history, never from webhook arrival order. Sandbox and production transactions are segregated per environment. Client reads entitlements and balances from the backend only. Refunds/chargebacks apply idempotent reversals with the negative-balance rule.
+
+Apple Ads ROAS: iOS RevenueCat SDK → AdServices attribution token → RevenueCat Apple Search Ads attribution and net proceeds; Apple Ads Campaign Management API → marketing reporting → join on `(cohortDate, campaignId, adGroupId?, keywordId?)` → 7/30/90-day ROAS. RevenueCat does not provide spend, and Apple Ads does not provide RevenueCat proceeds, so neither side is treated as the sole reporting source. The normalized calculation is implemented in `backend/src/marketing/apple-ads-roas.ts`; dashboard authorization and export ingestion remain deployment work.
 
 Rewarded Ads: client asks the backend to open an ad attempt (Ad-Equivalent Coin Pool check) → backend issues a single-use nonce bound to identity, placement, and expiry, passed as SSV `custom_data` → AdMob SSV callback is verified against Google's rotating public keys, the nonce is consumed, and the provider transaction id is unique-constrained → grant → client refreshes balance. "Ad shown" client-side never implies reward.
 
