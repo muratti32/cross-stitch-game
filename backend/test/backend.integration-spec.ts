@@ -4113,6 +4113,57 @@ describe('Stitch Wish backend integration', () => {
         .expect((response) => expect(response.body.replayed).toBe(true));
     });
 
+    it('stops new Guest Premium purchases with the toggle off without abandoning an existing period', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `guest-toggle-${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      const now = Date.now();
+      const original = `toggle-original-${randomUUID()}`;
+      const base = {
+        app_user_id: subscriberId, aliases: [subscriberId], original_transaction_id: original,
+        product_id: 'com.avk.stitchwish.premium_monthly', period_type: 'NORMAL', environment: 'SANDBOX',
+      };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(headers)
+        .send({ subscriberId }).expect(201);
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+          ...base, id: `toggle-initial-${randomUUID()}`, type: 'INITIAL_PURCHASE',
+          transaction_id: `toggle-tx-${randomUUID()}`, event_timestamp_ms: now,
+          purchased_at_ms: now, expiration_at_ms: now + 30 * 86_400_000,
+        } }).expect(200, { status: 'ok' });
+
+      const config = app.get(AppConfigService);
+      const toggle = jest.spyOn(config, 'iosGuestCommerceEnabled', 'get').mockReturnValue(false);
+      try {
+        // The toggle is the rollback control: it stops new purchases only.
+        await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+          productId: 'com.avk.stitchwish.premium_monthly',
+          idempotencyKey: `toggle-${randomUUID()}`,
+          subscriberId,
+        }).expect(403);
+
+        // Everything the Guest already paid for keeps working.
+        await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
+          .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'monthly' }));
+        await request(httpServer).post('/v1/commerce/membership/daily-claim').set(headers).expect(201)
+          .expect((response) => expect(response.body).toMatchObject({ replayed: false }));
+        const renewalTransactionId = `toggle-renewal-${randomUUID()}`;
+        await request(httpServer).post('/v1/commerce/revenuecat/webhook')
+          .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+            ...base, id: `toggle-renewal-event-${randomUUID()}`, type: 'RENEWAL',
+            transaction_id: renewalTransactionId, event_timestamp_ms: now + 30 * 86_400_000,
+            purchased_at_ms: now + 30 * 86_400_000, expiration_at_ms: now + 60 * 86_400_000,
+          } }).expect(200, { status: 'ok' });
+        const periods = await dataSource.query(
+          `SELECT provider_transaction_id FROM economy.membership_periods WHERE guest_installation_id = $1`,
+          [guest.guestId],
+        );
+        expect(periods).toHaveLength(2);
+      } finally {
+        toggle.mockRestore();
+      }
+    });
+
     it('derives Premium Membership from periods and shares the daily Coin pool', async () => {
       const account = await newRegisteredAccount();
       const originalTransactionId = `premium-original-${randomUUID()}`;
