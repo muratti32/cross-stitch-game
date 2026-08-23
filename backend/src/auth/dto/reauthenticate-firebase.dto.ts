@@ -1,7 +1,8 @@
-import { IsString, MinLength } from 'class-validator';
+import { IsJWT, IsString, MaxLength } from 'class-validator';
 
 export class ReauthenticateFirebaseDto {
+  @IsJWT()
   @IsString()
-  @MinLength(16)
+  @MaxLength(10_000)
   idToken!: string;
 }
