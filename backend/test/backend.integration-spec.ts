@@ -3745,6 +3745,24 @@ describe('Stitch Wish backend integration', () => {
       }).expect(201);
     });
 
+    it('allows retry after the client cancels a store-rejected Guest attempt', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+        .set(headers).send({ subscriberId }).expect(201);
+      const first = await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId: 'com.avk.stitchwish.coin_pack_300', idempotencyKey: `rejected-${randomUUID()}`, subscriberId,
+      }).expect(201);
+
+      await request(httpServer)
+        .post(`/v1/commerce/guest/purchase-attempts/${readStringRecord(first.body, 'id')}/cancel`)
+        .set(headers).expect(201).expect((response) => expect(response.body.status).toBe('cancelled'));
+      await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId: 'com.avk.stitchwish.coin_pack_300', idempotencyKey: `retry-${randomUUID()}`, subscriberId,
+      }).expect(201);
+    });
+
     it('returns one clean conflict when concurrent starts race the unresolved-product unique index', async () => {
       const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
       const subscriberId = `$RCAnonymousID:${randomUUID()}`;

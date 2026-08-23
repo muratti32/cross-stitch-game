@@ -49,3 +49,11 @@ export async function fetchGuestPurchaseAttempt(id: string): Promise<GuestPurcha
   if (!response.ok) throw new Error(`Guest purchase status could not be read: ${response.status}`);
   return (await response.json()) as GuestPurchaseAttemptReference;
 }
+
+export async function cancelGuestPurchaseAttempt(id: string): Promise<GuestPurchaseAttemptReference> {
+  const response = await apiFetch(`/v1/commerce/guest/purchase-attempts/${id}/cancel`, {
+    method: 'POST',
+  });
+  if (!response.ok) throw guestCommerceError('Guest purchase could not be cancelled', response.status);
+  return (await response.json()) as GuestPurchaseAttemptReference;
+}

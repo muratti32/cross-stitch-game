@@ -135,6 +135,17 @@ export class GuestPurchaseAttemptService {
     return this.response(attempt, supportReference ?? '');
   }
 
+  async cancel(principal: AuthPrincipal, id: string) {
+    this.requireGuest(principal);
+    await this.dataSource.query(
+      `UPDATE economy.purchase_attempts
+       SET status = 'cancelled', updated_at = now()
+       WHERE id = $1 AND principal_type = 'guest' AND principal_id = $2 AND status = 'created'`,
+      [id, principal.id],
+    );
+    return this.status(principal, id);
+  }
+
   async resolveSubscriber(subscriberId: string): Promise<string | null> {
     const rows = await this.dataSource.query<readonly { guest_installation_id: string }[]>(
       `SELECT guest_installation_id FROM economy.revenuecat_subscriber_mappings WHERE subscriber_id = $1`, [subscriberId],

@@ -23,4 +23,9 @@ export class GuestPurchaseAttemptController {
   status(@CurrentPrincipal() principal: AuthPrincipal, @Param('id') id: string) {
     return this.attempts.status(principal, id);
   }
+
+  @Post('purchase-attempts/:id/cancel')
+  cancel(@CurrentPrincipal() principal: AuthPrincipal, @Param('id') id: string) {
+    return this.attempts.cancel(principal, id);
+  }
 }

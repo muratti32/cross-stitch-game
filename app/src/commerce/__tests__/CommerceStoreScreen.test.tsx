@@ -41,6 +41,7 @@ const mockCreateCoinPackReconciliation = jest.fn();
 const mockFetchCoinPackReconciliation = jest.fn();
 const mockFetchCoinBalance = jest.fn();
 const mockCreateGuestPurchaseAttempt = jest.fn();
+const mockCancelGuestPurchaseAttempt = jest.fn();
 const mockFetchGuestPurchaseAttempt = jest.fn();
 const mockMapGuestRevenueCatSubscriber = jest.fn();
 const mockCreateAiCreditPackReconciliation = jest.fn();
@@ -174,6 +175,7 @@ jest.mock('@/commerce/revenueCat', () => ({
 }));
 
 jest.mock('@/api/guestPurchase', () => ({
+  cancelGuestPurchaseAttempt: (...args: unknown[]) => mockCancelGuestPurchaseAttempt(...args),
   createGuestPurchaseAttempt: (...args: unknown[]) => mockCreateGuestPurchaseAttempt(...args),
   fetchGuestPurchaseAttempt: (...args: unknown[]) => mockFetchGuestPurchaseAttempt(...args),
   mapGuestRevenueCatSubscriber: (...args: unknown[]) => mockMapGuestRevenueCatSubscriber(...args),
@@ -260,6 +262,7 @@ beforeEach(() => {
     id: 'guest-attempt-81', status: 'created', productId: 'com.avk.stitchwish.coin_pack_300',
     supportReference: 'SW-GUEST-COIN', providerTransactionId: null,
   });
+  mockCancelGuestPurchaseAttempt.mockResolvedValue({ status: 'cancelled' });
   mockFetchGuestPurchaseAttempt.mockResolvedValue({ status: 'granted', balance: 420 });
   mockCreateAiCreditPackReconciliation.mockResolvedValue({
     id: '86d57c4b-4329-4f8c-a37f-b26c3bdca382',
@@ -685,6 +688,19 @@ it('lets a Guest purchase Premium end-to-end without ever requiring registration
   expect(allText(renderer!.root)).toContain('Annual Premium is verified and active.');
 });
 
+it('cancels the prepared Guest attempt when the store rejects the purchase', async () => {
+  mockPurchasePackage.mockRejectedValue({ code: '42', userCancelled: false });
+  await renderScreen();
+
+  await act(async () => pressByText(renderer!.root, 'Choose Annual'));
+  await act(async () => pressByText(renderer!.root, 'Continue as Guest'));
+  await act(async () => pressByText(renderer!.root, 'Confirm Annual'));
+  await dismissPremiumConfirmation();
+
+  expect(mockCancelGuestPurchaseAttempt).toHaveBeenCalledWith('guest-attempt-81');
+  expect(mockFetchGuestPurchaseAttempt).not.toHaveBeenCalled();
+});
+
 it('leaves a Registered Account restore on the Purchase Reconciliation path', async () => {
   const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
   mockIdentity = { accountId: 'account_80', isAccount: true };
@@ -965,6 +981,7 @@ it('keeps an exact AI Credit Pack intent pending and blocks repeat purchase', as
 it('treats AI Credit Pack cancellation as non-error without reconciliation', async () => {
   mockIdentity = { accountId: 'account_82', isAccount: true };
   mockPurchasePackage.mockRejectedValue({ userCancelled: true });
+  const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
   await renderScreen();
   await confirmSmallAiCreditPackPurchase();
 
@@ -974,11 +991,18 @@ it('treats AI Credit Pack cancellation as non-error without reconciliation', asy
   });
   expect(mockCreateAiCreditPackReconciliation).not.toHaveBeenCalled();
   expect(allText(renderer!.root)).not.toContain('Purchase Reconciliation Pending');
+  expect(alert).not.toHaveBeenCalled();
+  alert.mockRestore();
 });
 
 it('reports an AI Credit Pack store failure without starting reconciliation', async () => {
   mockIdentity = { accountId: 'account_82', isAccount: true };
-  mockPurchasePackage.mockRejectedValue(new Error('store unavailable'));
+  mockPurchasePackage.mockRejectedValue({
+    code: '42',
+    message: 'Purchase failure simulated successfully in Test Store.',
+    userCancelled: false,
+  });
+  const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
   await renderScreen();
   await confirmSmallAiCreditPackPurchase();
 
@@ -988,7 +1012,12 @@ it('reports an AI Credit Pack store failure without starting reconciliation', as
     failure_stage: 'store',
   });
   expect(mockCreateAiCreditPackReconciliation).not.toHaveBeenCalled();
-  expect(allText(renderer!.root)).toContain('store unavailable');
+  const expectedMessage =
+    'The test purchase was declined. No payment was made. Choose a different Test Store result in Settings, then try again.';
+  expect(allText(renderer!.root)).toContain(expectedMessage);
+  expect(visibleModalCount(renderer!.root)).toBe(0);
+  expect(alert).toHaveBeenCalledWith('Purchase failed', expectedMessage);
+  alert.mockRestore();
 });
 
 it.each([
@@ -1104,6 +1133,7 @@ it('requires explicit Coin Pack confirmation and treats cancellation as a non-er
 
 it('keeps the exact Coin Pack intent pending with Support Reference and blocks repurchase', async () => {
   mockIdentity = { accountId: 'account_81', isAccount: true };
+  const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
   await renderScreen();
   await confirmSmallCoinPackPurchase();
 
@@ -1123,6 +1153,11 @@ it('keeps the exact Coin Pack intent pending with Support Reference and blocks r
   await act(async () => pressAncestor(renderer!.root.findByProps({ testID: 'open-stitch-coin-packs' })));
   expect(pressableByText(renderer!.root, 'Buy').props.disabled).toBe(true);
   expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+  expect(alert).toHaveBeenCalledWith(
+    'Purchase received',
+    'The store accepted 300 Stitch Coins. Verifying your purchase now.',
+  );
+  alert.mockRestore();
 });
 
 it('reports a Coin Pack store failure without starting backend reconciliation', async () => {
@@ -1138,6 +1173,7 @@ it('reports a Coin Pack store failure without starting backend reconciliation', 
   });
   expect(mockCreateCoinPackReconciliation).not.toHaveBeenCalled();
   expect(allText(renderer!.root)).toContain('store unavailable');
+  expect(visibleModalCount(renderer!.root)).toBe(0);
 });
 
 it('keeps an exact-product verification mismatch pending without encouraging repurchase', async () => {

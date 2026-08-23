@@ -27,6 +27,7 @@ import {
   type CoinPackProductKey,
 } from '@/api/coinPack';
 import {
+  cancelGuestPurchaseAttempt,
   createGuestPurchaseAttempt,
   fetchGuestPurchaseAttempt,
   mapGuestRevenueCatSubscriber,
@@ -756,8 +757,9 @@ export default function CommerceScreen() {
     let failureStage: 'store' | 'verification' = product.category === 'premium'
       ? 'verification'
       : 'store';
+    let guestAttempt: GuestPurchaseAttemptReference | null = null;
+    let storePurchaseAccepted = false;
     try {
-      let guestAttempt: GuestPurchaseAttemptReference | null = null;
       if (!isAccount) {
         if (Platform.OS !== 'ios') throw new Error('Guest Stitch Coin purchases are available on iOS only.');
         const subscriberId = await getRevenueCatSubscriberId();
@@ -782,6 +784,12 @@ export default function CommerceScreen() {
       const purchaseResult = await withProtectedRoundTrip('commerce', () =>
         purchaseRevenueCatPackage(product.package, accountId, !isAccount),
       );
+      storePurchaseAccepted = true;
+      Alert.alert(
+        'Purchase received',
+        `The store accepted ${product.label}. Verifying your purchase now.`,
+      );
+      failureStage = 'verification';
       if (product.category === 'premium') {
         await beginPremiumReconciliation(product, 'purchase', baselineMembership, guestAttempt);
       } else if (product.category === 'stitch_coin') {
@@ -798,6 +806,12 @@ export default function CommerceScreen() {
         );
       }
     } catch (error: unknown) {
+      if (guestAttempt !== null && !storePurchaseAccepted) {
+        const cancelledAttempt = await cancelGuestPurchaseAttempt(guestAttempt.id).catch(() => null);
+        if (cancelledAttempt?.status === 'cancelled' && guestId !== null) {
+          await clearGuestPurchaseAttempt(guestId).catch(() => undefined);
+        }
+      }
       if (isPurchaseCancelled(error)) {
         await captureGameplayEvent('purchase_cancelled', {
           product_kind: product.productKind,
@@ -805,12 +819,18 @@ export default function CommerceScreen() {
         });
         return;
       }
+      // Pack purchases run inside the ProductSheet modal. Close it before
+      // showing the page-level error banner; otherwise the failure is hidden
+      // behind the still-visible sheet and looks like a no-op.
+      setOpenCategory(null);
       await captureGameplayEvent('purchase_failed', {
         product_kind: product.productKind,
         product_key: product.productKey,
         failure_stage: failureStage,
       });
-      setPurchaseError(purchaseErrorMessage(error));
+      const message = purchaseErrorMessage(error);
+      setPurchaseError(message);
+      Alert.alert('Purchase failed', message);
     } finally {
       setPurchasingKey(null);
     }
@@ -1797,9 +1817,36 @@ function isPurchaseCancelled(error: unknown): boolean {
 }
 
 function purchaseErrorMessage(error: unknown): string {
-  return error instanceof Error && error.message
-    ? error.message
-    : 'Purchase failed. Please try again.';
+  const code = purchaseErrorCode(error);
+
+  switch (code) {
+    case '2':
+      return 'The store is temporarily unavailable. Please try again in a few minutes.';
+    case '3':
+      return 'Purchases are not allowed on this device. Check your store account or parental controls.';
+    case '4':
+    case '5':
+      return 'This item is not available for purchase right now. Please choose another item or try again later.';
+    case '6':
+      return 'You already own this purchase. Use Restore Purchases to refresh your access.';
+    case '10':
+    case '35':
+      return 'Could not connect to the store. Check your internet connection and try again.';
+    case '20':
+      return 'Your payment is pending approval. Your purchase will appear after the store completes it.';
+    case '42':
+      return 'The test purchase was declined. No payment was made. Choose a different Test Store result in Settings, then try again.';
+    default:
+      return error instanceof Error && error.message
+        ? error.message
+        : 'We could not complete your purchase. No payment was taken. Please try again.';
+  }
+}
+
+function purchaseErrorCode(error: unknown): string | null {
+  if (typeof error !== 'object' || error === null || !('code' in error)) return null;
+  const { code } = error;
+  return typeof code === 'string' || typeof code === 'number' ? String(code) : null;
 }
 
 function capitalize(value: string): string {

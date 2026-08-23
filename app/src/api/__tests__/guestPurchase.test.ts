@@ -1,4 +1,5 @@
 import {
+  cancelGuestPurchaseAttempt,
   createGuestPurchaseAttempt,
   fetchGuestPurchaseAttempt,
   mapGuestRevenueCatSubscriber,
@@ -75,5 +76,18 @@ describe('guest purchase client', () => {
     await expect(fetchGuestPurchaseAttempt('attempt-1')).rejects.toThrow(
       'Guest purchase status could not be read: 404',
     );
+  });
+
+  test('cancels a Guest Purchase Attempt after the store rejects it', async () => {
+    const cancelled = {
+      id: 'attempt-1', status: 'cancelled', productId: 'com.avk.stitchwish.coin_pack_300',
+      supportReference: 'SW-TEST-0001', providerTransactionId: null,
+    };
+    apiFetch.mockResolvedValue(jsonResponse(201, cancelled));
+
+    await expect(cancelGuestPurchaseAttempt('attempt-1')).resolves.toEqual(cancelled);
+    expect(apiFetch).toHaveBeenCalledWith('/v1/commerce/guest/purchase-attempts/attempt-1/cancel', {
+      method: 'POST',
+    });
   });
 });
