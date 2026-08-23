@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   Alert,
+  Animated,
   Linking,
   Modal,
   Platform,
@@ -1689,28 +1690,79 @@ function ProductSheet({
   onClose: () => void;
   onPurchase: (product: CommerceProduct) => void;
 }) {
+  const requestedVisible = category === 'stitch_coin' || category === 'ai_credit';
+  const sheetTranslateY = useRef(new Animated.Value(640)).current;
+  const backdropOpacity = useRef(new Animated.Value(0)).current;
+  const backdropClosingRef = useRef(false);
+
+  useEffect(() => {
+    if (!requestedVisible) {
+      sheetTranslateY.stopAnimation();
+      backdropOpacity.stopAnimation();
+      backdropOpacity.setValue(0);
+      backdropClosingRef.current = false;
+      return;
+    }
+    sheetTranslateY.setValue(640);
+    backdropOpacity.setValue(0);
+    Animated.timing(sheetTranslateY, {
+      duration: 260,
+      toValue: 0,
+      useNativeDriver: true,
+    }).start();
+    Animated.sequence([
+      Animated.delay(70),
+      Animated.timing(backdropOpacity, {
+        duration: 180,
+        toValue: 1,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [backdropOpacity, requestedVisible, sheetTranslateY]);
+
+  const closeWithBackdropFade = useCallback(() => {
+    if (backdropClosingRef.current) return;
+    backdropClosingRef.current = true;
+    backdropOpacity.stopAnimation();
+    Animated.timing(backdropOpacity, {
+      duration: 150,
+      toValue: 0,
+      useNativeDriver: true,
+    }).start(() => onClose());
+  }, [backdropOpacity, onClose]);
+
   const title = category === 'stitch_coin' ? 'Stitch Coin Packs' : 'AI Credit Packs';
   return (
     <Modal
-      animationType="slide"
-      onRequestClose={onClose}
+      animationType="none"
+      onRequestClose={closeWithBackdropFade}
+      testID="product-sheet-modal"
       transparent
-      visible={category === 'stitch_coin' || category === 'ai_credit'}
+      visible={requestedVisible}
     >
       <View style={styles.modalRoot}>
-        <Pressable
-          accessibilityLabel="Close product sheet"
-          onPress={onClose}
-          style={styles.modalBackdrop}
-        />
-        <View accessibilityViewIsModal style={styles.sheet}>
+        <Animated.View
+          style={[styles.modalBackdrop, { opacity: backdropOpacity }]}
+          testID="product-sheet-backdrop"
+        >
+          <Pressable
+            accessibilityLabel="Close product sheet"
+            onPress={closeWithBackdropFade}
+            style={styles.modalBackdropPressable}
+          />
+        </Animated.View>
+        <Animated.View
+          accessibilityViewIsModal
+          style={[styles.sheet, { transform: [{ translateY: sheetTranslateY }] }]}
+          testID="product-sheet-panel"
+        >
           <View style={styles.sheetHandle} />
           <View style={styles.sheetHeader}>
             <View>
               <Text style={styles.sheetTitle}>{title}</Text>
               <Text style={styles.sheetSubtitle}>Current prices from the app store</Text>
             </View>
-            <Pressable accessibilityLabel="Close" onPress={onClose} style={styles.sheetClose}>
+            <Pressable accessibilityLabel="Close" onPress={closeWithBackdropFade} style={styles.sheetClose}>
               <Ionicons name="close" size={22} color={Theme.colors.textPrimary} />
             </Pressable>
           </View>
@@ -1735,7 +1787,7 @@ function ProductSheet({
               </View>
             ))}
           </View>
-        </View>
+        </Animated.View>
         {confirmation}
       </View>
     </Modal>
@@ -2233,6 +2285,7 @@ const styles = StyleSheet.create({
   confirmationActions: { flexDirection: 'row', gap: Theme.spacing.sm, justifyContent: 'flex-end' },
   modalRoot: { flex: 1, justifyContent: 'flex-end' },
   modalBackdrop: { backgroundColor: 'rgba(25, 24, 22, 0.42)', flex: 1 },
+  modalBackdropPressable: { flex: 1 },
   sheet: {
     backgroundColor: Theme.colors.background,
     borderTopLeftRadius: Theme.radii.xl,

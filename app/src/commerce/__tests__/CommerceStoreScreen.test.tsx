@@ -1057,13 +1057,18 @@ it('updates AI Credit balance and completes only after the exact backend grant',
 });
 
 it('offers Retry after a delayed AI Credit grant without another store purchase', async () => {
+  mockIdentity = { accountId: 'account_82', isAccount: true };
+  await renderScreen();
+  await openAiCreditPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
   const now = jest.spyOn(Date, 'now')
     .mockReturnValueOnce(1_000)
     .mockReturnValueOnce(1_000)
     .mockReturnValue(12_000);
-  mockIdentity = { accountId: 'account_82', isAccount: true };
-  await renderScreen();
-  await confirmSmallAiCreditPackPurchase();
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 5 AI Credits');
+    await flushPromises();
+  });
 
   expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
     'Purchase Reconciliation Pending',
@@ -1098,6 +1103,18 @@ it('never stacks the pack confirmation in a second Modal over the open product s
     renderer!.root.findByProps({ testID: 'ai-credit-pack-confirmation' })
       .findAllByType(Modal),
   ).toHaveLength(0);
+});
+
+it('slides only the product sheet while fading the backdrop independently', async () => {
+  await renderScreen();
+  await openCoinPacks();
+
+  const modal = renderer!.root.findByProps({ testID: 'product-sheet-modal' });
+  expect(modal.props.animationType).toBe('none');
+  expect(renderer!.root.findByProps({ testID: 'product-sheet-backdrop' }).props.style)
+    .toEqual(expect.arrayContaining([expect.objectContaining({ opacity: expect.anything() })]));
+  expect(renderer!.root.findByProps({ testID: 'product-sheet-panel' }).props.style)
+    .toEqual(expect.arrayContaining([expect.objectContaining({ transform: expect.any(Array) })]));
 });
 
 it('requires explicit Coin Pack confirmation and treats cancellation as a non-error', async () => {
@@ -1234,13 +1251,18 @@ it('updates the wallet and emits completion only after the matching backend Coin
 });
 
 it('keeps a delayed Coin grant pending and offers Retry without another store purchase', async () => {
+  mockIdentity = { accountId: 'account_81', isAccount: true };
+  await renderScreen();
+  await openCoinPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
   const now = jest.spyOn(Date, 'now')
     .mockReturnValueOnce(1_000)
     .mockReturnValueOnce(1_000)
     .mockReturnValue(12_000);
-  mockIdentity = { accountId: 'account_81', isAccount: true };
-  await renderScreen();
-  await confirmSmallCoinPackPurchase();
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
+    await flushPromises();
+  });
 
   expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
     'Purchase Reconciliation Pending',
