@@ -6,13 +6,20 @@ import { FirebaseAdminIdentityVerifier } from './firebase-admin-identity.verifie
 import { FirebaseAuthController } from './firebase-auth.controller';
 import { FirebaseAuthService } from './firebase-auth.service';
 import { FIREBASE_IDENTITY_VERIFIER } from './firebase-identity-verifier';
+import { AccountReauthenticationController } from './account-reauthentication.controller';
+import { AccountReauthenticationService } from './account-reauthentication.service';
 import { AuthIdentitiesController } from './auth-identities.controller';
 import { PromotionModule } from '../promotion/promotion.module';
 
 @Module({
-  controllers: [FirebaseAuthController, AuthIdentitiesController],
+  controllers: [
+    FirebaseAuthController,
+    AuthIdentitiesController,
+    AccountReauthenticationController,
+  ],
   imports: [AuthModule, EmailAuthModule, PromotionModule],
   providers: [
+    AccountReauthenticationService,
     FirebaseAdminIdentityVerifier,
     FirebaseAuthService,
     {
