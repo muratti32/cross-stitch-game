@@ -655,13 +655,65 @@ it('keeps a prolonged reconciliation pending and offers Retry without repurchase
     'Support Reference: SW-ABCD-EFGH',
   ]));
   expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
-  // A prolonged wait is not a failure: the pending modal from store
-  // acceptance stays up rather than flipping to the failed variant.
+  // A prolonged wait is not a failure: the modal moves to the informational
+  // variant instead of flipping to the failed variant, and offers no retry
+  // of its own — Retry stays on the page-level banner above.
   expect(resultModalVisible(renderer!.root)).toBe(true);
-  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
-    'Purchase received',
+  const modalText = resultModalText(renderer!.root);
+  expect(modalText).toEqual(expect.arrayContaining([
+    'Still verifying',
   ]));
+  expect(modalText.join(' ').toLowerCase()).not.toContain('fail');
+  expect(modalText.join(' ').toLowerCase()).not.toContain('try again');
+  expect(modalText.join(' ').toLowerCase()).not.toContain('buy it again');
   now.mockRestore();
+});
+
+it('flips from pending to the informational variant once verification runs past the internal threshold', async () => {
+  // Fake timers here only: modern fake timers fake Date.now, so advancing them
+  // is what actually crosses the screen's internal RECONCILIATION_DELAY_MS
+  // threshold rather than mocking Date.now directly. The rest of the suite
+  // keeps real timers.
+  jest.useFakeTimers();
+  try {
+    mockIdentity = { accountId: 'account_prolonged_fake_timers', isAccount: true };
+    mockPurchasePackage.mockResolvedValue({});
+    // Never terminal: membership stays inactive on every poll.
+    mockFetchMembership.mockResolvedValue(inactiveMembership());
+    await renderScreen();
+
+    await act(async () => pressByText(renderer!.root, 'Choose Annual'));
+    await act(async () => {
+      pressByText(renderer!.root, 'Confirm Annual');
+      await flushPromises();
+    });
+    await dismissPremiumConfirmation();
+
+    expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+      'Purchase received',
+    ]));
+
+    // Advance past the ~10s threshold in RECONCILIATION_POLL_MS-sized steps,
+    // flushing the reconciliation promise chain between each poll.
+    for (let elapsed = 0; elapsed < 12_000; elapsed += 2_000) {
+      await act(async () => {
+        jest.advanceTimersByTime(2_000);
+        await flushPromises();
+      });
+    }
+
+    const modalText = resultModalText(renderer!.root);
+    expect(modalText).toEqual(expect.arrayContaining([
+      'Still verifying',
+      'Verification is still under way. Premium will activate once the Game Backend confirms it.',
+    ]));
+    expect(modalText).not.toEqual(expect.arrayContaining(['Purchase received']));
+    expect(modalText.join(' ').toLowerCase()).not.toContain('fail');
+    expect(modalText.join(' ').toLowerCase()).not.toContain('try again');
+    expect(modalText.join(' ').toLowerCase()).not.toContain('buy it again');
+  } finally {
+    jest.useRealTimers();
+  }
 });
 
 it('routes restore through pending and completes from the backend-observed plan', async () => {
@@ -686,7 +738,7 @@ it('routes restore through pending and completes from the backend-observed plan'
   });
 });
 
-it('restores a Guest Player Premium entitlement without restoring consumables', async () => {
+it('restores a Guest Player Premium entitlement through the informational modal, not a native alert', async () => {
   const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
   await renderScreen();
 
@@ -699,9 +751,16 @@ it('restores a Guest Player Premium entitlement without restoring consumables', 
 
   expect(mockMapGuestRevenueCatSubscriber).toHaveBeenCalledWith('anonymous-subscriber');
   expect(mockRestorePurchases).toHaveBeenCalledWith(null);
-  expect(alert).toHaveBeenCalledWith(
+  expect(alert).not.toHaveBeenCalled();
+  expect(resultModalVisible(renderer!.root)).toBe(true);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
     'Restore requested',
-    expect.stringContaining('Stitch Coin and AI Credit packs are never restored.'),
+  ]));
+  expect(resultModalText(renderer!.root).join(' ')).toContain(
+    'Verified Premium access will appear after the store webhook is reconciled.',
+  );
+  expect(resultModalText(renderer!.root).join(' ')).toContain(
+    'Stitch Coin and AI Credit packs are never restored.',
   );
   expect(mockRouter.push).not.toHaveBeenCalled();
   expect(mockCreateReconciliation).not.toHaveBeenCalled();
@@ -1205,9 +1264,15 @@ it('offers Retry after a delayed AI Credit grant without another store purchase'
     'Support Reference: SW-AI-CREDIT',
   ]));
   expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
-  // A prolonged wait is not a failure: the pending modal stays up.
+  // A prolonged wait is not a failure: the modal moves to the informational
+  // variant, offering no retry of its own.
   expect(resultModalVisible(renderer!.root)).toBe(true);
-  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining(['Purchase received']));
+  const modalText = resultModalText(renderer!.root);
+  expect(modalText).toEqual(expect.arrayContaining([
+    'Still verifying',
+    'Verification is still under way. Your AI Credit balance will update once it completes.',
+  ]));
+  expect(modalText.join(' ').toLowerCase()).not.toContain('fail');
   now.mockRestore();
 });
 
@@ -1487,9 +1552,15 @@ it('keeps a delayed Coin grant pending and offers Retry without another store pu
     'Support Reference: SW-COIN-PACK',
   ]));
   expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
-  // A prolonged wait is not a failure: the pending modal stays up.
+  // A prolonged wait is not a failure: the modal moves to the informational
+  // variant, offering no retry of its own.
   expect(resultModalVisible(renderer!.root)).toBe(true);
-  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining(['Purchase received']));
+  const modalText = resultModalText(renderer!.root);
+  expect(modalText).toEqual(expect.arrayContaining([
+    'Still verifying',
+    'Verification is still under way. Your Stitch Coin balance will update once it completes.',
+  ]));
+  expect(modalText.join(' ').toLowerCase()).not.toContain('fail');
   now.mockRestore();
 });
 

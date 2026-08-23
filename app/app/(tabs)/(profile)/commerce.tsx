@@ -78,6 +78,10 @@ import {
 
 const RECONCILIATION_POLL_MS = 2_000;
 const RECONCILIATION_DELAY_MS = 10_000;
+// Both prolonged branches in reconcilePremium report the same wait, so the copy
+// lives in one place rather than being repeated at each site.
+const PREMIUM_RECONCILIATION_PENDING_BODY =
+  'Verification is still under way. Premium will activate once the Game Backend confirms it.';
 
 interface PremiumReconciliation {
   readonly baselineMembership: string | null;
@@ -352,6 +356,13 @@ export default function CommerceScreen() {
     });
   }, []);
 
+  // A prolonged wait is not a failure: the Purchase Reconciliation Pending state
+  // says verification is still under way and the balance will update, and offers
+  // no retry — retry stays on the page-level banner, one path only.
+  const showReconciliationPendingModal = useCallback((body: string) => {
+    setResultModal({ variant: 'info', title: 'Still verifying', body, detail: null });
+  }, []);
+
   const reconcilePremium = useCallback(async (attempt: PremiumReconciliation) => {
     if (reconciliationRef.current?.id !== attempt.id) return;
     let verifiedMembership: MembershipView | null = null;
@@ -359,8 +370,12 @@ export default function CommerceScreen() {
       if (attempt.guestAttemptId !== null) {
         const guestAttempt = await fetchGuestPurchaseAttempt(attempt.guestAttemptId);
         if (guestAttempt.status === 'created' || guestAttempt.status === 'verifying') {
-          if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) updateReconciliation({ ...attempt, prolonged: true });
-          else scheduleReconciliation(attempt);
+          if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) {
+            updateReconciliation({ ...attempt, prolonged: true });
+            showReconciliationPendingModal(PREMIUM_RECONCILIATION_PENDING_BODY);
+          } else {
+            scheduleReconciliation(attempt);
+          }
           return;
         }
         if (guestAttempt.status !== 'granted') {
@@ -382,6 +397,7 @@ export default function CommerceScreen() {
       if (!backendVerified) {
         if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) {
           updateReconciliation({ ...attempt, prolonged: true });
+          showReconciliationPendingModal(PREMIUM_RECONCILIATION_PENDING_BODY);
         } else {
           scheduleReconciliation(attempt);
         }
@@ -423,7 +439,7 @@ export default function CommerceScreen() {
       setPurchaseError(message);
       showFailureModal(message, attempt.supportReference);
     }
-  }, [clearIntent, products, refetchCommerceState, scheduleReconciliation, showFailureModal, updateReconciliation]);
+  }, [clearIntent, products, refetchCommerceState, scheduleReconciliation, showFailureModal, showReconciliationPendingModal, updateReconciliation]);
 
   const beginPremiumReconciliation = useCallback(async (
     product: CommerceProduct,
@@ -492,6 +508,9 @@ export default function CommerceScreen() {
       if (reconciliation.status === 'pending' || reconciliation.status === 'created' || reconciliation.status === 'verifying') {
         if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) {
           updateCoinReconciliation({ ...attempt, prolonged: true });
+          showReconciliationPendingModal(
+            'Verification is still under way. Your Stitch Coin balance will update once it completes.',
+          );
         } else {
           scheduleCoinReconciliation(attempt);
         }
@@ -558,7 +577,7 @@ export default function CommerceScreen() {
       setPurchaseError(message);
       showFailureModal(message, attempt.supportReference);
     }
-  }, [clearIntent, guestId, isAccount, queryClient, scheduleCoinReconciliation, showFailureModal, updateCoinReconciliation]);
+  }, [clearIntent, guestId, isAccount, queryClient, scheduleCoinReconciliation, showFailureModal, showReconciliationPendingModal, updateCoinReconciliation]);
 
   const beginCoinPackReconciliation = useCallback(async (
     product: CommerceProduct,
@@ -662,6 +681,9 @@ export default function CommerceScreen() {
       if (reconciliation.status === 'pending' || reconciliation.status === 'created' || reconciliation.status === 'verifying') {
         if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) {
           updateAiCreditReconciliation({ ...attempt, prolonged: true });
+          showReconciliationPendingModal(
+            'Verification is still under way. Your AI Credit balance will update once it completes.',
+          );
         } else {
           scheduleAiCreditReconciliation(attempt);
         }
@@ -728,7 +750,7 @@ export default function CommerceScreen() {
       setPurchaseError(message);
       showFailureModal(message, attempt.supportReference);
     }
-  }, [clearIntent, guestId, isAccount, queryClient, scheduleAiCreditReconciliation, showFailureModal, updateAiCreditReconciliation]);
+  }, [clearIntent, guestId, isAccount, queryClient, scheduleAiCreditReconciliation, showFailureModal, showReconciliationPendingModal, updateAiCreditReconciliation]);
 
   const beginAiCreditPackReconciliation = useCallback(async (
     product: CommerceProduct,
@@ -997,11 +1019,13 @@ export default function CommerceScreen() {
     await restoreRevenueCatPurchases(null);
     await queryClient.refetchQueries({ queryKey: ['commerce', 'membership'] });
     await queryClient.refetchQueries({ queryKey: ['economy'] });
-    Alert.alert(
-      'Restore requested',
-      'Verified Premium access will appear after the store webhook is reconciled. '
+    setResultModal({
+      variant: 'info',
+      title: 'Restore requested',
+      body: 'Verified Premium access will appear after the store webhook is reconciled. '
         + 'Stitch Coin and AI Credit packs are never restored.',
-    );
+      detail: null,
+    });
   }, [queryClient]);
 
   const restoreAccountPurchases = useCallback(async () => {
