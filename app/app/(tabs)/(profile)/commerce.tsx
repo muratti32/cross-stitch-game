@@ -800,7 +800,7 @@ export default function CommerceScreen() {
     } finally {
       setPurchasingKey(null);
     }
-  }, [accountId, beginAiCreditPackReconciliation, beginCoinPackReconciliation, beginPremiumReconciliation, isAccount]);
+  }, [accountId, beginAiCreditPackReconciliation, beginCoinPackReconciliation, beginPremiumReconciliation, guestId, isAccount]);
 
   const confirmPremiumPurchase = useCallback((product: CommerceProduct) => {
     if (premiumPurchaseInFlightRef.current) return;
