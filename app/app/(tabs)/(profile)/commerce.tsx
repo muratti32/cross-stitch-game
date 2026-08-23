@@ -64,7 +64,8 @@ import {
   showRevenueCatManageSubscriptions,
   useRevenueCatRuntime,
 } from '@/commerce/revenueCat';
-import { Button, Card, GuestDataRiskNotice, Screen } from '@/components';
+import { Button, Card, GuestDataRiskNotice, PurchaseResultModal, Screen } from '@/components';
+import type { PurchaseResultVariant } from '@/components';
 import { WebLinks } from '@/config';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
@@ -114,6 +115,13 @@ interface AiCreditPackReconciliation {
   readonly guestAttemptId: string | null;
 }
 
+interface PurchaseResultModalState {
+  readonly variant: PurchaseResultVariant;
+  readonly title: string;
+  readonly body: string;
+  readonly detail: string | null;
+}
+
 export default function CommerceScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ category?: string; source?: string }>();
@@ -148,6 +156,10 @@ export default function CommerceScreen() {
   const [aiCreditPurchasePending, setAiCreditPurchasePending] = useState<AiCreditPackReconciliation | null>(null);
   const [guestCommerceProduct, setGuestCommerceProduct] = useState<CommerceProduct | null>(null);
   const [restoringPurchases, setRestoringPurchases] = useState(false);
+  // One imperative slot for the in-game purchase result. The screen's purchase
+  // flow is already imperative, so the modal is set at the call sites rather
+  // than re-derived from reconciliation and query state.
+  const [resultModal, setResultModal] = useState<PurchaseResultModalState | null>(null);
 
   // The pack sheet is a native RN <Modal>, and the Premium/Coin/AI Credit
   // confirmations and the GuestDataRiskNotice are Modals too. iOS never
@@ -747,6 +759,7 @@ export default function CommerceScreen() {
   const purchase = useCallback(async (product: CommerceProduct) => {
     setPurchaseError(null);
     setPurchaseSuccess(null);
+    setResultModal(null);
     setPurchasingKey(product.productKey);
     setConfirmingPremium(null);
     setConfirmingCoinPack(null);
@@ -831,7 +844,20 @@ export default function CommerceScreen() {
       });
       const message = purchaseErrorMessage(error);
       setPurchaseError(message);
-      Alert.alert('Purchase failed', message);
+      // The page-level banner above keeps the durable recovery copy; the modal
+      // only reports the outcome and offers dismissal, so there is one retry
+      // path rather than two competing ones.
+      // The reference is shown for every Guest failure, cancelled attempts
+      // included: the Purchase Attempt record outlives its cancellation and is
+      // what support looks the player up by.
+      setResultModal({
+        variant: 'failed',
+        title: 'Purchase failed',
+        body: message,
+        detail: guestAttempt === null
+          ? null
+          : `Support Reference: ${guestAttempt.supportReference}`,
+      });
     } finally {
       setPurchasingKey(null);
     }
@@ -1394,6 +1420,16 @@ export default function CommerceScreen() {
         }}
         onDismiss={() => setGuestCommerceProduct(null)}
       />
+      {resultModal !== null && (
+        <PurchaseResultModal
+          visible
+          variant={resultModal.variant}
+          title={resultModal.title}
+          body={resultModal.body}
+          detail={resultModal.detail}
+          onDismiss={() => setResultModal(null)}
+        />
+      )}
       <PremiumConfirmation
         onDismiss={handlePremiumConfirmationDismiss}
         product={confirmingPremium}

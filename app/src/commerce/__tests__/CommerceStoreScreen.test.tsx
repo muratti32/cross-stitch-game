@@ -108,6 +108,9 @@ jest.mock('@/components', () => {
         ),
       )
       : null,
+    // The purchase result modal is exercised for real here: its variant copy
+    // and button labels are part of what the player observes.
+    PurchaseResultModal: require('@/components/PurchaseResultModal').PurchaseResultModal,
   };
 });
 
@@ -701,6 +704,23 @@ it('cancels the prepared Guest attempt when the store rejects the purchase', asy
   expect(mockFetchGuestPurchaseAttempt).not.toHaveBeenCalled();
 });
 
+it('shows a Guest Player the Support Reference when the purchase fails', async () => {
+  // Support cannot locate the Purchase Attempt without the reference, so the
+  // failure modal carries it as the detail line for a Guest Player.
+  mockPurchasePackage.mockRejectedValue(new Error('store unavailable'));
+  await renderScreen();
+
+  await act(async () => pressByText(renderer!.root, 'Choose Annual'));
+  await act(async () => pressByText(renderer!.root, 'Continue as Guest'));
+  await act(async () => pressByText(renderer!.root, 'Confirm Annual'));
+  await dismissPremiumConfirmation();
+
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase failed',
+    'Support Reference: SW-GUEST-COIN',
+  ]));
+});
+
 it('leaves a Registered Account restore on the Purchase Reconciliation path', async () => {
   const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
   mockIdentity = { accountId: 'account_80', isAccount: true };
@@ -991,6 +1011,7 @@ it('treats AI Credit Pack cancellation as non-error without reconciliation', asy
   });
   expect(mockCreateAiCreditPackReconciliation).not.toHaveBeenCalled();
   expect(allText(renderer!.root)).not.toContain('Purchase Reconciliation Pending');
+  expect(resultModalVisible(renderer!.root)).toBe(false);
   expect(alert).not.toHaveBeenCalled();
   alert.mockRestore();
 });
@@ -1015,8 +1036,15 @@ it('reports an AI Credit Pack store failure without starting reconciliation', as
   const expectedMessage =
     'The test purchase was declined. No payment was made. Choose a different Test Store result in Settings, then try again.';
   expect(allText(renderer!.root)).toContain(expectedMessage);
-  expect(visibleModalCount(renderer!.root)).toBe(0);
-  expect(alert).toHaveBeenCalledWith('Purchase failed', expectedMessage);
+  // The pack sheet closed and the in-game result modal replaced the native
+  // alert, so the failure is the only thing presented.
+  expect(allText(renderer!.root)).not.toContain('Buy');
+  expect(visibleModalCount(renderer!.root)).toBe(1);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase failed',
+    expectedMessage,
+  ]));
+  expect(alert).not.toHaveBeenCalled();
   alert.mockRestore();
 });
 
@@ -1190,7 +1218,19 @@ it('reports a Coin Pack store failure without starting backend reconciliation', 
   });
   expect(mockCreateCoinPackReconciliation).not.toHaveBeenCalled();
   expect(allText(renderer!.root)).toContain('store unavailable');
-  expect(visibleModalCount(renderer!.root)).toBe(0);
+  expect(allText(renderer!.root)).not.toContain('Buy');
+  expect(visibleModalCount(renderer!.root)).toBe(1);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase failed',
+    'store unavailable',
+  ]));
+  // Retry lives only on the page-level banner, which outlives the modal.
+  expect(resultModalText(renderer!.root)).not.toContain('Retry reconciliation');
+
+  await act(async () => pressByText(renderer!.root, 'Close'));
+
+  expect(resultModalVisible(renderer!.root)).toBe(false);
+  expect(allText(renderer!.root)).toContain('store unavailable');
 });
 
 it('keeps an exact-product verification mismatch pending without encouraging repurchase', async () => {
@@ -1393,6 +1433,16 @@ it('does not offer a pack category the store returned no packs for', async () =>
 
 function subscriptionDisclosure(): ReactTestInstance {
   return renderer!.root.findByProps({ testID: 'commerce-subscription-disclosure' });
+}
+
+function resultModalVisible(root: ReactTestInstance): boolean {
+  return root.findAllByProps({ testID: 'purchase-result-modal' }).length > 0;
+}
+
+function resultModalText(root: ReactTestInstance): string[] {
+  const modals = root.findAllByProps({ testID: 'purchase-result-modal' });
+  if (modals.length === 0) throw new Error('Missing purchase result modal');
+  return allText(modals[0]!);
 }
 
 function visibleModalCount(root: ReactTestInstance): number {
