@@ -537,6 +537,12 @@ export interface EmailAccountSession {
   refreshToken: string;
 }
 
+export interface ReauthenticatedAccountSession {
+  accessToken: string;
+  accountId: string;
+  refreshToken: string;
+}
+
 export interface AccountSession {
   accountId: string;
   accessToken: string;
@@ -600,6 +606,35 @@ export async function adoptAccountSession(
     isOfflinePending: false,
     requiresSignIn: false,
     isHydrated: true,
+  });
+}
+
+/**
+ * Adopts a refreshed session for the account this device is already signed
+ * into, as issued by deletion reauthentication.
+ *
+ * This is the client-side half of the same-account guarantee: a session for any
+ * other account is refused outright rather than adopted. Because the principal
+ * has not changed, the lifecycle generation, the displayed account, and the
+ * Local Identity Namespace are all left exactly as they are — only the rotating
+ * refresh token and the in-memory access token move forward.
+ */
+export async function adoptReauthenticatedSession(
+  session: ReauthenticatedAccountSession,
+): Promise<void> {
+  const envelope = await readEnvelope();
+  if (envelope.kind !== 'account' || envelope.accountId !== session.accountId) {
+    throw new Error(
+      'That sign-in belongs to a different account. Use a sign-in method linked to this account.',
+    );
+  }
+
+  await writeEnvelope({ ...envelope, refreshToken: session.refreshToken });
+  setAccessToken(session.accessToken);
+  updateStoreState({
+    isAuthenticated: true,
+    isOfflinePending: false,
+    requiresSignIn: false,
   });
 }
 

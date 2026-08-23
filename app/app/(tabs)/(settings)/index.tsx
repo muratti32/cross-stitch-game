@@ -14,6 +14,16 @@ import { shortenGuestId } from '@/identity/identityLogic';
 import { resetGuestData, removeLocalData, useIdentityStore, logout } from '@/identity/guestIdentity';
 import { useAccountDeletionStatus, useRequestAccountDeletion, useCancelAccountDeletion, AccountDeletionApiError } from '@/api/accountDeletion';
 import { withProtectedRoundTrip } from '@/navigation/foregroundEntryNavigation';
+import { useMembership } from '@/api/membership';
+import {
+  AccountReauthenticationApiError,
+  getReauthenticationIdentities,
+  reauthenticateWithEmail,
+  reauthenticateWithFirebase,
+  requestReauthenticationEmailCode,
+  type ReauthenticationIdentity,
+} from '@/api/accountReauthentication';
+import { acquireAppleProviderIdToken, acquireGoogleProviderIdToken } from '@/identity/firebaseSso';
 
 // App identity is read from the Expo config so the settings footer can never
 // drift away from app.json / app.config.ts.
@@ -33,6 +43,7 @@ export default function SettingsScreen() {
   const { data: health, isLoading, error, refetch, isRefetching } = useHealthCheck();
   const { data: sessionData, isLoading: sessionLoading, error: sessionError } = useBackendSession();
   const isAccount = useIdentityStore((state) => state.isAccount);
+  const { data: membership } = useMembership(isAccount);
 
   const {
     data: deletionStatus,
@@ -54,6 +65,14 @@ export default function SettingsScreen() {
   const [deleteConfirmation, setDeleteConfirmation] = React.useState('');
   const [isSubmittingDeletion, setIsSubmittingDeletion] = React.useState(false);
   const [isCancellingDeletion, setIsCancellingDeletion] = React.useState(false);
+  const [reauthVisible, setReauthVisible] = React.useState(false);
+  const [reauthIdentities, setReauthIdentities] = React.useState<ReauthenticationIdentity[]>([]);
+  const [reauthLoading, setReauthLoading] = React.useState(false);
+  const [reauthProvider, setReauthProvider] = React.useState<'apple' | 'google' | null>(null);
+  const [reauthEmail, setReauthEmail] = React.useState<string | null>(null);
+  const [reauthCode, setReauthCode] = React.useState('');
+  const [reauthCodeSent, setReauthCodeSent] = React.useState(false);
+  const [reauthError, setReauthError] = React.useState<string | null>(null);
 
   const isOffline = !isLoading && (!!error || !health || health.status !== 'ok');
 
@@ -141,51 +160,117 @@ export default function SettingsScreen() {
     });
   };
 
-  const handleRequestDeletion = async () => {
-    if (deleteConfirmation !== 'DELETE') {
-      return;
+  const finishDeletionRequest = async () => {
+    const result = await requestDeletion();
+    setDeleteModalVisible(false);
+    setReauthVisible(false);
+    setDeleteConfirmation('');
+    setDeletionStage(1);
+    Alert.alert(
+      'Account Deletion Requested',
+      `Your deletion request is pending through ${formatRecoveryWindowEnd(result.recoveryWindowEndsAt)}. Your account has been logged out. Sign in again before then if you wish to cancel this deletion.`,
+    );
+    void logout().catch(() => {
+      Alert.alert('Local Sign-out Failed', 'Your deletion request is still pending. Please sign out again from Settings.');
+    });
+  };
+
+  const openReauthentication = async () => {
+    setDeleteModalVisible(false);
+    setReauthVisible(true);
+    setReauthLoading(true);
+    setReauthError(null);
+    setReauthCodeSent(false);
+    setReauthCode('');
+    try {
+      setReauthIdentities(await getReauthenticationIdentities());
+    } catch {
+      setReauthIdentities([]);
+      setReauthError('Could not load your linked sign-in methods. Check your connection and retry.');
+    } finally {
+      setReauthLoading(false);
     }
+  };
+
+  const handleRequestDeletion = async () => {
+    if (deleteConfirmation !== 'DELETE') return;
     setIsSubmittingDeletion(true);
     try {
-      const result = await requestDeletion();
-      setDeleteModalVisible(false);
-      setDeleteConfirmation('');
-      setDeletionStage(1);
-
-      const dateStr = formatRecoveryWindowEnd(result.recoveryWindowEndsAt);
-
-      Alert.alert(
-        'Account Deletion Requested',
-        `Your deletion request is pending through ${dateStr}. Your account has been logged out. Sign in again before then if you wish to cancel this deletion.`,
-      );
-      void logout().catch((logoutError: unknown) => {
-        const message = logoutError instanceof Error ? logoutError.message : 'Unknown error';
-        Alert.alert('Local Sign-out Failed', `Your deletion request is still pending: ${message}`);
-      });
-    } catch (err: unknown) {
-      if (err instanceof AccountDeletionApiError && err.reauthenticationRequired) {
-        setDeleteModalVisible(false);
-        setDeleteConfirmation('');
-        setDeletionStage(1);
-        Alert.alert(
-          'Reauthentication Required',
-          'For security, you must sign in again before requesting account deletion.',
-          [
-            {
-              text: 'Sign In',
-              onPress: () => {
-                router.push('/(tabs)/(settings)/sign-in');
-              },
-            },
-            { text: 'Cancel', style: 'cancel' },
-          ]
-        );
+      await finishDeletionRequest();
+    } catch (error: unknown) {
+      if (error instanceof AccountDeletionApiError && error.reauthenticationRequired) {
+        await openReauthentication();
       } else {
-        const msg = err instanceof Error ? err.message : 'Unknown error';
-        Alert.alert('Request Failed', `Failed to request account deletion: ${msg}`);
+        Alert.alert('Request Failed', 'Your deletion request was not submitted. Check your connection and try again.');
       }
     } finally {
       setIsSubmittingDeletion(false);
+    }
+  };
+
+  const reauthenticationErrorMessage = (error: unknown): string => {
+    if (error instanceof AccountReauthenticationApiError && error.reason === 'different_account') {
+      return 'That sign-in belongs to a different account. Your current account was not changed.';
+    }
+    if (error instanceof AccountReauthenticationApiError && error.reason === 'provider_rejected') {
+      return 'That verification was rejected. Check the account or code and retry.';
+    }
+    return 'Reauthentication failed. Check your connection and retry.';
+  };
+
+  const resumeDeletion = async () => {
+    try {
+      await finishDeletionRequest();
+    } catch {
+      setReauthError('Your identity was verified, but deletion was not submitted. Close this dialog and retry deletion.');
+    }
+  };
+
+  const handleSocialReauthentication = async (provider: 'apple' | 'google') => {
+    setReauthProvider(provider);
+    setReauthError(null);
+    try {
+      const proof = await withProtectedRoundTrip('authentication', () => provider === 'apple' ? acquireAppleProviderIdToken() : acquireGoogleProviderIdToken());
+      if (proof.kind === 'cancelled') return;
+      await reauthenticateWithFirebase(proof.idToken);
+      await resumeDeletion();
+    } catch (error: unknown) {
+      setReauthError(reauthenticationErrorMessage(error));
+    } finally {
+      setReauthProvider(null);
+    }
+  };
+
+  const handleEmailReauthentication = async (identity: ReauthenticationIdentity) => {
+    if (identity.email === null) {
+      setReauthError('This linked email method has no address. Choose another method.');
+      return;
+    }
+    setReauthLoading(true);
+    setReauthError(null);
+    try {
+      await requestReauthenticationEmailCode(identity.email);
+      setReauthEmail(identity.email);
+      setReauthCodeSent(true);
+    } catch (error: unknown) {
+      setReauthError(reauthenticationErrorMessage(error));
+    } finally {
+      setReauthLoading(false);
+    }
+  };
+
+  const handleVerifyReauthenticationCode = async () => {
+    if (reauthEmail === null || reauthCode.length !== 6) return;
+    setReauthLoading(true);
+    setReauthError(null);
+    try {
+      await reauthenticateWithEmail(reauthEmail, reauthCode);
+      await resumeDeletion();
+    } catch (error: unknown) {
+      setReauthCode('');
+      setReauthError(reauthenticationErrorMessage(error));
+    } finally {
+      setReauthLoading(false);
     }
   };
 
@@ -337,7 +422,7 @@ export default function SettingsScreen() {
               Validates your active guest registration session via the API.
             </Text>
           </View>
-          
+
           {sessionLoading ? (
             <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
           ) : sessionError ? (
@@ -376,6 +461,51 @@ export default function SettingsScreen() {
 
       {/* Registered Account (email sign-in / sign-out) */}
       <AccountSection />
+
+      {isAccount && (
+        <View>
+          <Text style={styles.sectionTitle}>Account Deletion</Text>
+          <Card style={styles.card}>
+            {deletionLoading ? (
+              <View style={styles.settingRow}>
+                <View style={styles.settingTextContainer}>
+                  <Text style={styles.settingTitle}>Account Deletion Status</Text>
+                  <Text style={styles.settingDescription}>Checking status...</Text>
+                </View>
+                <ActivityIndicator size="small" color={Theme.colors.accentRose} />
+              </View>
+            ) : deletionStatus?.status === 'pending' ? (
+              <View style={styles.pendingDeletionContainer}>
+                <View style={styles.settingTextContainer}>
+                  <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>Account Deletion Pending</Text>
+                  <Text style={styles.settingDescription}>Your account deletion is scheduled. Sign in again before the recovery window ends to cancel it.</Text>
+                  <Text style={styles.recoveryEndText}>Recovery Window Ends: {formatRecoveryWindowEnd(deletionStatus.recoveryWindowEndsAt)}</Text>
+                </View>
+                <Button title={isCancellingDeletion ? 'Cancelling...' : 'Cancel deletion'} onPress={handleCancelDeletion} disabled={isCancellingDeletion} style={styles.cancelDeletionButton} textStyle={styles.cancelDeletionButtonText} />
+              </View>
+            ) : (
+              <View>
+                {deletionError && (
+                  <View style={styles.deletionStatusError}>
+                    <Text style={styles.deletionStatusErrorText}>Could not check deletion status. Check your connection and retry.</Text>
+                    <Button title="Retry" onPress={() => refetchDeletionStatus()} variant="secondary" style={styles.retryButtonSmall} textStyle={styles.retryButtonSmallText} />
+                  </View>
+                )}
+                <Pressable
+                  onPress={() => { setDeletionStage(1); setDeleteConfirmation(''); setDeleteModalVisible(true); }}
+                  style={({ pressed }) => [styles.settingRow, pressed && styles.linkPressed]}
+                >
+                  <View style={styles.settingTextContainer}>
+                    <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>Delete Account</Text>
+                    <Text style={styles.settingDescription}>Permanently delete your account, progress, and all unlocks after a 30-day recovery window.</Text>
+                  </View>
+                  <Ionicons name="trash-bin-outline" size={20} color={Theme.colors.error} />
+                </Pressable>
+              </View>
+            )}
+          </Card>
+        </View>
+      )}
 
       <Text style={styles.sectionTitle}>Appearance</Text>
       <ThemeCollectionCard />
@@ -522,81 +652,6 @@ export default function SettingsScreen() {
           <Ionicons name="phone-portrait-outline" size={20} color={Theme.colors.error} />
         </Pressable>
 
-        {isAccount && (
-          <>
-            <View style={styles.rowDivider} />
-            {deletionLoading ? (
-              <View style={styles.settingRow}>
-                <View style={styles.settingTextContainer}>
-                  <Text style={styles.settingTitle}>Account Deletion Status</Text>
-                  <Text style={styles.settingDescription}>Checking status...</Text>
-                </View>
-                <ActivityIndicator size="small" color={Theme.colors.accentRose} />
-              </View>
-            ) : deletionError ? (
-              <View style={styles.settingRow}>
-                <View style={styles.settingTextContainer}>
-                  <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>
-                    Account Deletion Error
-                  </Text>
-                  <Text style={styles.settingDescription}>
-                    {deletionError instanceof Error ? deletionError.message : 'Could not check status.'}
-                  </Text>
-                </View>
-                <Button
-                  title="Retry"
-                  onPress={() => refetchDeletionStatus()}
-                  variant="secondary"
-                  style={styles.retryButtonSmall}
-                  textStyle={styles.retryButtonSmallText}
-                />
-              </View>
-            ) : deletionStatus?.status === 'pending' ? (
-              <View style={styles.pendingDeletionContainer}>
-                <View style={styles.settingTextContainer}>
-                  <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>
-                    Account Deletion Pending
-                  </Text>
-                  <Text style={styles.settingDescription}>
-                    Your account deletion is scheduled. Sign in again before the recovery window ends to cancel it.
-                  </Text>
-                  <Text style={styles.recoveryEndText}>
-                    Recovery Window Ends: {formatRecoveryWindowEnd(deletionStatus.recoveryWindowEndsAt)}
-                  </Text>
-                </View>
-                <Button
-                  title={isCancellingDeletion ? 'Cancelling...' : 'Cancel deletion'}
-                  onPress={handleCancelDeletion}
-                  disabled={isCancellingDeletion}
-                  style={styles.cancelDeletionButton}
-                  textStyle={styles.cancelDeletionButtonText}
-                />
-              </View>
-            ) : (
-              <Pressable
-                onPress={() => {
-                  setDeletionStage(1);
-                  setDeleteConfirmation('');
-                  setDeleteModalVisible(true);
-                }}
-                style={({ pressed }) => [
-                  styles.settingRow,
-                  pressed && styles.linkPressed,
-                ]}
-              >
-                <View style={styles.settingTextContainer}>
-                  <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>
-                    Delete Account
-                  </Text>
-                  <Text style={styles.settingDescription}>
-                    Permanently delete your account, progress, and all unlocks after a 30-day recovery window.
-                  </Text>
-                </View>
-                <Ionicons name="trash-bin-outline" size={20} color={Theme.colors.error} />
-              </Pressable>
-            )}
-          </>
-        )}
       </Card>
 
       {/* Links Section */}
@@ -610,7 +665,7 @@ export default function SettingsScreen() {
           <Ionicons name="chevron-forward" size={16} color={Theme.colors.textSecondary} />
         </Pressable>
         <View style={styles.rowDivider} />
-        
+
         <Pressable
           onPress={() => handleLinkPress('Terms of Service', WebLinks.termsOfService)}
           style={({ pressed }) => [styles.linkRow, pressed && styles.linkPressed]}
@@ -664,7 +719,7 @@ export default function SettingsScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Reset Guest Data?</Text>
-            
+
             <Text style={styles.modalWarningText}>
               This action will irreversibly close your guest identity on the server and permanently delete your:
             </Text>
@@ -757,17 +812,22 @@ export default function SettingsScreen() {
                   At the end of the recovery window, these are erased or forfeited with no refund or transfer. Published Community Patterns are withdrawn from the catalog, attribution becomes <Text style={{ fontWeight: 'bold' }}>Deleted Creator</Text>, and your username stays permanently reserved.
                 </Text>
 
-                <Text style={[styles.modalWarningText, { color: Theme.colors.error, fontWeight: Theme.typography.weights.medium }]}>
-                  Important: This does NOT cancel your Apple or Google store subscription. Please cancel it separately.
-                </Text>
-
-                <Button
-                  title="Manage Subscriptions"
-                  onPress={handleSubscriptionManagePress}
-                  variant="secondary"
-                  style={styles.manageSubscriptionButton}
-                  textStyle={styles.manageSubscriptionButtonText}
-                />
+                {membership?.active && (
+                  <View style={styles.membershipDeletionWarning}>
+                    <Text style={[styles.modalWarningText, { color: Theme.colors.error, fontWeight: Theme.typography.weights.medium }]}>
+                      Your Premium Membership may keep billing after account deletion. Deletion does not cancel it; manage it separately before continuing if you want billing to stop.
+                    </Text>
+                    {Platform.OS === 'ios' && (
+                      <Button
+                        title="Manage Apple Subscription"
+                        onPress={handleSubscriptionManagePress}
+                        variant="secondary"
+                        style={styles.manageSubscriptionButton}
+                        textStyle={styles.manageSubscriptionButtonText}
+                      />
+                    )}
+                  </View>
+                )}
 
                 <View style={[styles.modalButtonsRow, { marginTop: Theme.spacing.lg }]}>
                   <Button
@@ -834,6 +894,67 @@ export default function SettingsScreen() {
                 )}
               </View>
             )}
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={reauthVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => { if (!reauthLoading && reauthProvider === null) setReauthVisible(false); }}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Verify Your Identity</Text>
+            <Text style={styles.modalWarningText}>For security, verify with a sign-in method already linked to this account. Deletion resumes automatically after verification.</Text>
+
+            {reauthError && <Text style={styles.reauthErrorText}>{reauthError}</Text>}
+
+            {reauthLoading && !reauthCodeSent ? (
+              <View style={styles.modalLoadingContainer}>
+                <ActivityIndicator size="small" color={Theme.colors.accentRose} />
+                <Text style={styles.modalLoadingText}>Loading sign-in methods...</Text>
+              </View>
+            ) : reauthCodeSent ? (
+              <View>
+                <Text style={styles.confirmationInstruction}>Enter the 6-digit code sent to {reauthEmail}.</Text>
+                <TextInput
+                  style={styles.textInput}
+                  value={reauthCode}
+                  onChangeText={(value) => setReauthCode(value.replace(/[^0-9]/g, ''))}
+                  placeholder="000000"
+                  placeholderTextColor={Theme.colors.textSecondary}
+                  keyboardType="number-pad"
+                  maxLength={6}
+                  editable={!reauthLoading}
+                />
+                <Button title="Verify and Delete" onPress={handleVerifyReauthenticationCode} disabled={reauthCode.length !== 6 || reauthLoading} loading={reauthLoading} />
+              </View>
+            ) : (
+              <View style={styles.reauthProviders}>
+                {reauthIdentities.map((identity) => (
+                  <Button
+                    key={`${identity.provider}:${identity.email ?? ''}`}
+                    title={identity.provider === 'email' ? `Email ${identity.email ?? ''}`.trim() : `Continue with ${identity.provider === 'apple' ? 'Apple' : 'Google'}`}
+                    onPress={() => identity.provider === 'email' ? void handleEmailReauthentication(identity) : void handleSocialReauthentication(identity.provider)}
+                    disabled={reauthProvider !== null || reauthLoading}
+                    loading={reauthProvider === identity.provider}
+                    variant="secondary"
+                  />
+                ))}
+                {reauthIdentities.length === 0 && !reauthError && (
+                  <Text style={styles.reauthErrorText}>No linked sign-in method is available. Contact support before retrying deletion.</Text>
+                )}
+              </View>
+            )}
+
+            <View style={styles.reauthFooter}>
+              {reauthError && !reauthCodeSent && (
+                <Button title="Retry" onPress={() => void openReauthentication()} variant="secondary" disabled={reauthLoading} />
+              )}
+              <Button title="Cancel" onPress={() => setReauthVisible(false)} variant="secondary" disabled={reauthLoading || reauthProvider !== null} />
+            </View>
           </View>
         </View>
       </Modal>
@@ -1233,6 +1354,33 @@ const styles = StyleSheet.create({
   },
   retryButtonSmallText: {
     fontSize: Theme.typography.sizes.xs,
+  },
+  deletionStatusError: {
+    padding: Theme.spacing.lg,
+    paddingBottom: 0,
+    gap: Theme.spacing.sm,
+    alignItems: 'flex-start',
+  },
+  deletionStatusErrorText: {
+    color: Theme.colors.error,
+    fontSize: Theme.typography.sizes.sm,
+    lineHeight: 18,
+  },
+  membershipDeletionWarning: {
+    marginBottom: Theme.spacing.md,
+  },
+  reauthProviders: {
+    gap: Theme.spacing.md,
+  },
+  reauthErrorText: {
+    color: Theme.colors.error,
+    fontSize: Theme.typography.sizes.sm,
+    lineHeight: 18,
+    marginBottom: Theme.spacing.md,
+  },
+  reauthFooter: {
+    gap: Theme.spacing.sm,
+    marginTop: Theme.spacing.lg,
   },
   manageSubscriptionButton: {
     height: 40,
