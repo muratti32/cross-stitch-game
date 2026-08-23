@@ -339,6 +339,19 @@ export default function CommerceScreen() {
     }, RECONCILIATION_POLL_MS);
   }, []);
 
+  // Every terminal reconciliation failure below already computes the copy it
+  // hands to the page-level error banner; this hoists the same string into
+  // the in-game result modal instead of duplicating it. Non-terminal
+  // "prolonged" waits never call this — they are not a failure.
+  const showFailureModal = useCallback((message: string, supportReference: string | null) => {
+    setResultModal({
+      variant: 'failed',
+      title: 'Purchase failed',
+      body: message,
+      detail: supportReference === null ? null : `Support Reference: ${supportReference}`,
+    });
+  }, []);
+
   const reconcilePremium = useCallback(async (attempt: PremiumReconciliation) => {
     if (reconciliationRef.current?.id !== attempt.id) return;
     let verifiedMembership: MembershipView | null = null;
@@ -352,7 +365,9 @@ export default function CommerceScreen() {
         }
         if (guestAttempt.status !== 'granted') {
           updateReconciliation({ ...attempt, failureStage: 'verification' });
-          setPurchaseError('The Game Backend could not verify this purchase. Retry reconciliation; do not buy it again.');
+          const message = 'The Game Backend could not verify this purchase. Retry reconciliation; do not buy it again.';
+          setPurchaseError(message);
+          showFailureModal(message, attempt.supportReference);
           return;
         }
       }
@@ -402,11 +417,13 @@ export default function CommerceScreen() {
         failure_stage: failureStage,
       });
       updateReconciliation({ ...attempt, failureStage });
-      setPurchaseError(failureStage === 'verification'
+      const message = failureStage === 'verification'
         ? 'The Game Backend could not verify this purchase yet. Retry reconciliation; do not buy it again.'
-        : 'Premium was verified, but membership and AI Credit state could not be refreshed. Retry reconciliation.');
+        : 'Premium was verified, but membership and AI Credit state could not be refreshed. Retry reconciliation.';
+      setPurchaseError(message);
+      showFailureModal(message, attempt.supportReference);
     }
-  }, [clearIntent, products, refetchCommerceState, scheduleReconciliation, updateReconciliation]);
+  }, [clearIntent, products, refetchCommerceState, scheduleReconciliation, showFailureModal, updateReconciliation]);
 
   const beginPremiumReconciliation = useCallback(async (
     product: CommerceProduct,
@@ -445,11 +462,12 @@ export default function CommerceScreen() {
         failure_stage: 'verification',
       });
       updateReconciliation({ ...attempt, failureStage: 'verification' });
-      setPurchaseError(
-        'Purchase reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.',
-      );
+      const message =
+        'Purchase reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.';
+      setPurchaseError(message);
+      showFailureModal(message, attempt.supportReference);
     }
-  }, [reconcilePremium, updateReconciliation]);
+  }, [reconcilePremium, showFailureModal, updateReconciliation]);
 
   reconciliationRunnerRef.current = reconcilePremium;
 
@@ -486,9 +504,10 @@ export default function CommerceScreen() {
           failure_stage: 'verification',
         });
         updateCoinReconciliation({ ...attempt, failureStage: 'verification' });
-        setPurchaseError(
-          'The store transaction did not match this Coin Pack. Retry verification or contact support; do not buy it again.',
-        );
+        const message =
+          'The store transaction did not match this Coin Pack. Retry verification or contact support; do not buy it again.';
+        setPurchaseError(message);
+        showFailureModal(message, attempt.supportReference);
         return;
       }
       if (reconciliation.status === 'grant_failed') {
@@ -498,9 +517,10 @@ export default function CommerceScreen() {
           failure_stage: 'grant',
         });
         updateCoinReconciliation({ ...attempt, failureStage: 'grant' });
-        setPurchaseError(
-          'The purchase was verified, but the Stitch Coin grant is unavailable. Retry reconciliation; do not buy it again.',
-        );
+        const message =
+          'The purchase was verified, but the Stitch Coin grant is unavailable. Retry reconciliation; do not buy it again.';
+        setPurchaseError(message);
+        showFailureModal(message, attempt.supportReference);
         return;
       }
 
@@ -532,11 +552,13 @@ export default function CommerceScreen() {
         failure_stage: failureStage,
       });
       updateCoinReconciliation({ ...attempt, failureStage });
-      setPurchaseError(grantVerified
+      const message = grantVerified
         ? 'The Coin grant was verified, but the current Stitch Coin balance could not be refreshed. Retry reconciliation.'
-        : 'The Game Backend could not verify this Coin Pack yet. Retry reconciliation; do not buy it again.');
+        : 'The Game Backend could not verify this Coin Pack yet. Retry reconciliation; do not buy it again.';
+      setPurchaseError(message);
+      showFailureModal(message, attempt.supportReference);
     }
-  }, [clearIntent, guestId, isAccount, queryClient, scheduleCoinReconciliation, updateCoinReconciliation]);
+  }, [clearIntent, guestId, isAccount, queryClient, scheduleCoinReconciliation, showFailureModal, updateCoinReconciliation]);
 
   const beginCoinPackReconciliation = useCallback(async (
     product: CommerceProduct,
@@ -585,11 +607,12 @@ export default function CommerceScreen() {
         failure_stage: 'verification',
       });
       updateCoinReconciliation({ ...attempt, failureStage: 'verification' });
-      setPurchaseError(
-        'Coin Pack reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.',
-      );
+      const message =
+        'Coin Pack reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.';
+      setPurchaseError(message);
+      showFailureModal(message, attempt.supportReference);
     }
-  }, [reconcileCoinPack, updateCoinReconciliation]);
+  }, [reconcileCoinPack, showFailureModal, updateCoinReconciliation]);
 
   coinReconciliationRunnerRef.current = reconcileCoinPack;
 
@@ -651,9 +674,10 @@ export default function CommerceScreen() {
           failure_stage: 'verification',
         });
         updateAiCreditReconciliation({ ...attempt, failureStage: 'verification' });
-        setPurchaseError(
-          'The store transaction did not match this AI Credit Pack. Retry verification or contact support; do not buy it again.',
-        );
+        const message =
+          'The store transaction did not match this AI Credit Pack. Retry verification or contact support; do not buy it again.';
+        setPurchaseError(message);
+        showFailureModal(message, attempt.supportReference);
         return;
       }
       if (reconciliation.status === 'grant_failed') {
@@ -663,9 +687,10 @@ export default function CommerceScreen() {
           failure_stage: 'grant',
         });
         updateAiCreditReconciliation({ ...attempt, failureStage: 'grant' });
-        setPurchaseError(
-          'The purchase was verified, but the AI Credit grant is unavailable. Retry reconciliation; do not buy it again.',
-        );
+        const message =
+          'The purchase was verified, but the AI Credit grant is unavailable. Retry reconciliation; do not buy it again.';
+        setPurchaseError(message);
+        showFailureModal(message, attempt.supportReference);
         return;
       }
 
@@ -697,11 +722,13 @@ export default function CommerceScreen() {
         failure_stage: failureStage,
       });
       updateAiCreditReconciliation({ ...attempt, failureStage });
-      setPurchaseError(grantVerified
+      const message = grantVerified
         ? 'The AI Credit grant was verified, but the current balance could not be refreshed. Retry reconciliation.'
-        : 'The Game Backend could not verify this AI Credit Pack yet. Retry reconciliation; do not buy it again.');
+        : 'The Game Backend could not verify this AI Credit Pack yet. Retry reconciliation; do not buy it again.';
+      setPurchaseError(message);
+      showFailureModal(message, attempt.supportReference);
     }
-  }, [clearIntent, guestId, isAccount, queryClient, scheduleAiCreditReconciliation, updateAiCreditReconciliation]);
+  }, [clearIntent, guestId, isAccount, queryClient, scheduleAiCreditReconciliation, showFailureModal, updateAiCreditReconciliation]);
 
   const beginAiCreditPackReconciliation = useCallback(async (
     product: CommerceProduct,
@@ -715,7 +742,7 @@ export default function CommerceScreen() {
       prolonged: false,
       reconciliationId: guestAttempt?.id ?? null,
       startedAt: Date.now(),
-      supportReference: null,
+      supportReference: guestAttempt?.supportReference ?? null,
       transactionIdentifier,
       guestAttemptId: guestAttempt?.id ?? null,
     };
@@ -744,11 +771,12 @@ export default function CommerceScreen() {
         failure_stage: 'verification',
       });
       updateAiCreditReconciliation({ ...attempt, failureStage: 'verification' });
-      setPurchaseError(
-        'AI Credit Pack reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.',
-      );
+      const message =
+        'AI Credit Pack reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.';
+      setPurchaseError(message);
+      showFailureModal(message, attempt.supportReference);
     }
-  }, [reconcileAiCreditPack, updateAiCreditReconciliation]);
+  }, [reconcileAiCreditPack, showFailureModal, updateAiCreditReconciliation]);
 
   aiCreditReconciliationRunnerRef.current = reconcileAiCreditPack;
 

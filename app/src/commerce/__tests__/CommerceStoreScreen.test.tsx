@@ -629,6 +629,14 @@ it('keeps verified Premium pending when AI Credit refresh fails at the grant sta
     'Retry reconciliation',
     'Premium was verified, but membership and AI Credit state could not be refreshed. Retry reconciliation.',
   ]));
+  // The stale "Verifying your purchase now" pending modal must not survive a
+  // terminal failure — it flips to the failed variant carrying the same
+  // reason the page-level banner shows.
+  expect(resultModalText(renderer!.root).join(' ')).not.toContain('Verifying your purchase now');
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase failed',
+    'Premium was verified, but membership and AI Credit state could not be refreshed. Retry reconciliation.',
+  ]));
 });
 
 it('keeps a prolonged reconciliation pending and offers Retry without repurchase', async () => {
@@ -647,6 +655,12 @@ it('keeps a prolonged reconciliation pending and offers Retry without repurchase
     'Support Reference: SW-ABCD-EFGH',
   ]));
   expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+  // A prolonged wait is not a failure: the pending modal from store
+  // acceptance stays up rather than flipping to the failed variant.
+  expect(resultModalVisible(renderer!.root)).toBe(true);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase received',
+  ]));
   now.mockRestore();
 });
 
@@ -918,6 +932,24 @@ it('drives the Guest purchase through mapping, durable attempt, verification and
   expect(allText(renderer!.root)).toContain('300 Stitch Coins grant verified. Stitch Coin balance: 420.');
 });
 
+it('shows a Guest Player the Support Reference when Coin Pack reconciliation fails', async () => {
+  mockFetchGuestPurchaseAttempt.mockResolvedValue({ status: 'failed', balance: null });
+  await renderScreen();
+  await openCoinPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  await act(async () => pressByText(renderer!.root, 'Continue as Guest'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
+    await flushPromises();
+  });
+
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase failed',
+    'The store transaction did not match this Coin Pack. Retry verification or contact support; do not buy it again.',
+    'Support Reference: SW-GUEST-COIN',
+  ]));
+});
+
 it('opens current Coin Pack prices directly for a Stitch Coin shortfall', async () => {
   mockParams = { category: 'stitch_coin', source: 'stitch_coin_shortfall' };
   await renderScreen();
@@ -1096,6 +1128,9 @@ it.each([
   });
   expect(allText(renderer!.root).join(' ')).toContain(message);
   expect(allText(renderer!.root)).toContain('Retry reconciliation');
+  expect(resultModalText(renderer!.root).join(' ')).not.toContain('Verifying your purchase now');
+  expect(resultModalText(renderer!.root)).toContain('Purchase failed');
+  expect(resultModalText(renderer!.root).join(' ')).toContain(message);
 });
 
 it('updates AI Credit balance and completes only after the exact backend grant', async () => {
@@ -1170,6 +1205,9 @@ it('offers Retry after a delayed AI Credit grant without another store purchase'
     'Support Reference: SW-AI-CREDIT',
   ]));
   expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+  // A prolonged wait is not a failure: the pending modal stays up.
+  expect(resultModalVisible(renderer!.root)).toBe(true);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining(['Purchase received']));
   now.mockRestore();
 });
 
@@ -1316,6 +1354,13 @@ it('keeps an exact-product verification mismatch pending without encouraging rep
     'Retry reconciliation',
     'The store transaction did not match this Coin Pack. Retry verification or contact support; do not buy it again.',
   ]));
+  // The pending modal opened at store acceptance must not still claim
+  // verification is under way once the backend has reported a mismatch.
+  expect(resultModalText(renderer!.root).join(' ')).not.toContain('Verifying your purchase now');
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase failed',
+    'The store transaction did not match this Coin Pack. Retry verification or contact support; do not buy it again.',
+  ]));
 });
 
 it('reports a verified transaction with a missing Coin grant at the grant stage', async () => {
@@ -1333,6 +1378,10 @@ it('reports a verified transaction with a missing Coin grant at the grant stage'
   expect(allText(renderer!.root)).toContain(
     'The purchase was verified, but the Stitch Coin grant is unavailable. Retry reconciliation; do not buy it again.',
   );
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase failed',
+    'The purchase was verified, but the Stitch Coin grant is unavailable. Retry reconciliation; do not buy it again.',
+  ]));
 });
 
 it('updates the wallet and emits completion only after the matching backend Coin grant', async () => {
@@ -1438,6 +1487,9 @@ it('keeps a delayed Coin grant pending and offers Retry without another store pu
     'Support Reference: SW-COIN-PACK',
   ]));
   expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+  // A prolonged wait is not a failure: the pending modal stays up.
+  expect(resultModalVisible(renderer!.root)).toBe(true);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining(['Purchase received']));
   now.mockRestore();
 });
 
