@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { BadRequestException, Injectable, Logger, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
@@ -18,6 +19,14 @@ export interface RevenueCatWebhookOutcome {
 @Injectable()
 export class RevenueCatWebhookService {
   private readonly logger = new Logger(RevenueCatWebhookService.name);
+
+  private redactTransaction(transactionId: string): string {
+    return `txn_${createHash('sha256').update(transactionId).digest('hex').slice(0, 12)}`;
+  }
+
+  private redactPrincipal(id: string): string {
+    return `acct_${createHash('sha256').update(id).digest('hex').slice(0, 10)}`;
+  }
 
   constructor(
     private readonly commerceLedger: CommerceLedgerRepository,
@@ -114,7 +123,7 @@ export class RevenueCatWebhookService {
         const result = await this.membership.recordVerifiedEvent(membershipEvent);
         if (result.rejectedOtherAccount) {
           this.logger.warn(
-            `RevenueCat membership fraud signal: transaction ${transactionId} is bound to another account`,
+            `RevenueCat membership fraud signal: transaction ${this.redactTransaction(transactionId)} is bound to another account`,
           );
         }
         await this.guestAttempts?.markMembershipWebhook(
@@ -131,9 +140,34 @@ export class RevenueCatWebhookService {
       }
     }
 
+    // A Commerce Reversal is keyed by the provider transaction alone, so it must
+    // run before the Registered Account guard below: a refunded Guest purchase has
+    // no account to resolve, and RevenueCat may deliver the refund under a
+    // different subscriber alias than the one that made the purchase.
+    if (
+      !premiumProduct &&
+      (type === 'REFUND' ||
+        (type === 'CANCELLATION' && evt.cancel_reason === 'CUSTOMER_SUPPORT'))
+    ) {
+      const result = await this.commerceLedger.processReversal({
+        environment,
+        providerTransactionId: transactionId,
+      });
+
+      this.logger.log(
+        `RevenueCat webhook REFUND transaction ${this.redactTransaction(transactionId)}: applied=${result.applied} currency=${result.currency} amount=${result.amount} balance=${result.balance}`,
+      );
+
+      return {
+        handled: true,
+        detail: result.applied ? 'reversed' : 'no_binding_to_reverse',
+        duplicate: !result.applied,
+      };
+    }
+
     if (!account || account.status !== RegisteredAccountStatus.Active) {
       this.logger.warn(
-        `RevenueCat webhook ${type} rejected: account ${appUserId} does not exist or is inactive`,
+        `RevenueCat webhook ${type} rejected: account ${this.redactPrincipal(appUserId)} does not exist or is inactive`,
       );
       return { handled: false, detail: 'unknown_or_inactive_account', duplicate: false };
     }
@@ -151,12 +185,12 @@ export class RevenueCatWebhookService {
       const result = await this.membership.recordVerifiedEvent(membershipEvent);
       if (result.rejectedOtherAccount) {
         this.logger.warn(
-          `RevenueCat membership fraud signal: transaction ${transactionId} is bound to another account`,
+          `RevenueCat membership fraud signal: transaction ${this.redactTransaction(transactionId)} is bound to another account`,
         );
         return { handled: true, detail: 'rejected_other_account', duplicate: false };
       }
       this.logger.log(
-        `RevenueCat membership ${type} transaction ${transactionId}: recorded=${result.recorded} granted=${result.creditGranted} reversed=${result.creditReversed}`,
+        `RevenueCat membership ${type} transaction ${this.redactTransaction(transactionId)}: recorded=${result.recorded} granted=${result.creditGranted} reversed=${result.creditReversed}`,
       );
       return {
         handled: true,
@@ -175,11 +209,11 @@ export class RevenueCatWebhookService {
 
       if (result.outcome === 'rejected_other_account') {
         this.logger.warn(
-          `RevenueCat webhook NON_RENEWING_PURCHASE fraud signal: transaction ${transactionId} already bound to a different account (claimed by ${appUserId})`,
+          `RevenueCat webhook NON_RENEWING_PURCHASE fraud signal: transaction ${this.redactTransaction(transactionId)} already bound to a different account (claimed by ${this.redactPrincipal(appUserId)})`,
         );
       } else {
         this.logger.log(
-          `RevenueCat webhook NON_RENEWING_PURCHASE transaction ${transactionId}: outcome=${result.outcome} currency=${result.currency} amount=${result.amount} balance=${result.balance}`,
+          `RevenueCat webhook NON_RENEWING_PURCHASE transaction ${this.redactTransaction(transactionId)}: outcome=${result.outcome} currency=${result.currency} amount=${result.amount} balance=${result.balance}`,
         );
       }
 
@@ -187,26 +221,6 @@ export class RevenueCatWebhookService {
         handled: true,
         detail: result.outcome,
         duplicate: result.outcome === 'replayed_same_account',
-      };
-    }
-
-    if (
-      type === 'REFUND' ||
-      (type === 'CANCELLATION' && evt.cancel_reason === 'CUSTOMER_SUPPORT')
-    ) {
-      const result = await this.commerceLedger.processReversal({
-        environment,
-        providerTransactionId: transactionId,
-      });
-
-      this.logger.log(
-        `RevenueCat webhook REFUND transaction ${transactionId}: applied=${result.applied} currency=${result.currency} amount=${result.amount} balance=${result.balance}`,
-      );
-
-      return {
-        handled: true,
-        detail: result.applied ? 'reversed' : 'no_binding_to_reverse',
-        duplicate: !result.applied,
       };
     }
 
@@ -266,7 +280,7 @@ export class RevenueCatWebhookService {
       toAccountId,
     });
     this.logger.log(
-      `RevenueCat webhook TRANSFER to account ${toAccountId}: events=${moved.eventsMoved} periods=${moved.periodsMoved}`,
+      `RevenueCat webhook TRANSFER to account ${this.redactPrincipal(toAccountId)}: events=${moved.eventsMoved} periods=${moved.periodsMoved}`,
     );
     return {
       handled: true,
