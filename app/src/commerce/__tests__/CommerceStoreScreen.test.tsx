@@ -99,10 +99,12 @@ jest.mock('@/components', () => {
       onSignIn: () => void;
       onDismiss: () => void;
     }) => visible
-      ? React.createElement(View, null,
-        React.createElement(Pressable, { onPress: onProceed }, React.createElement(Text, null, 'Continue as Guest')),
-        React.createElement(Pressable, { onPress: onSignIn }, React.createElement(Text, null, 'Sign in instead')),
-        React.createElement(Pressable, { onPress: onDismiss }, React.createElement(Text, null, 'Dismiss')),
+      ? React.createElement(require('react-native').Modal, { visible },
+        React.createElement(View, null,
+          React.createElement(Pressable, { onPress: onProceed }, React.createElement(Text, null, 'Continue as Guest')),
+          React.createElement(Pressable, { onPress: onSignIn }, React.createElement(Text, null, 'Sign in instead')),
+          React.createElement(Pressable, { onPress: onDismiss }, React.createElement(Text, null, 'Dismiss')),
+        ),
       )
       : null,
   };
@@ -925,7 +927,6 @@ it('preserves Guest AI Credit Pack selection through Guest confirmation', async 
     pressByText(renderer!.root, 'Continue as Guest');
     await flushPromises();
   });
-  await act(async () => pressByText(renderer!.root, 'Buy'));
   expect(allText(renderer!.root)).toContain('Confirm AI Credit purchase');
   expect(mockPurchasePackage).not.toHaveBeenCalled();
 });

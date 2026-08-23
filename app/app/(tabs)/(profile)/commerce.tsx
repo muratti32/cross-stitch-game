@@ -869,6 +869,10 @@ export default function CommerceScreen() {
         setPurchaseError('Guest purchases are available on iOS only.');
         return;
       }
+      // The pack sheet is already a native Modal. Close it before presenting
+      // the Guest risk notice; iOS refuses to present a second Modal on top of
+      // the currently visible sheet, which makes Buy appear unresponsive.
+      setOpenCategory(null);
       setGuestCommerceProduct(product);
       return;
     }
@@ -1352,9 +1356,16 @@ export default function CommerceScreen() {
         onProceed={() => {
           const product = guestCommerceProduct;
           setGuestCommerceProduct(null);
-          if (product?.category === 'premium') setConfirmingPremium(product);
-          else if (product?.category === 'stitch_coin') setConfirmingCoinPack(product);
-          else if (product !== null) setConfirmingAiCreditPack(product);
+          if (product === null) return;
+          if (product.category === 'premium') {
+            setConfirmingPremium(product);
+          } else if (product.category === 'stitch_coin') {
+            setOpenCategory('stitch_coin');
+            setConfirmingCoinPack(product);
+          } else {
+            setOpenCategory('ai_credit');
+            setConfirmingAiCreditPack(product);
+          }
         }}
         onSignIn={() => {
           closeCommerceOverlays();
