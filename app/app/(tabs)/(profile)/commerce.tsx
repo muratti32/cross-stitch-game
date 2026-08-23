@@ -146,6 +146,20 @@ export default function CommerceScreen() {
   const [aiCreditPurchasePending, setAiCreditPurchasePending] = useState<AiCreditPackReconciliation | null>(null);
   const [guestCommerceProduct, setGuestCommerceProduct] = useState<CommerceProduct | null>(null);
   const [restoringPurchases, setRestoringPurchases] = useState(false);
+
+  // The pack sheet is a native RN <Modal>, and the Premium/Coin/AI Credit
+  // confirmations and the GuestDataRiskNotice are Modals too. iOS never
+  // presents a routed screen over an already-presented Modal, so anything
+  // that navigates away from this screen (sign-in included) must close every
+  // commerce overlay first or the destination renders unreachable behind it.
+  const closeCommerceOverlays = useCallback(() => {
+    setOpenCategory(null);
+    setGuestCommerceProduct(null);
+    setConfirmingPremium(null);
+    setConfirmingCoinPack(null);
+    setConfirmingAiCreditPack(null);
+  }, []);
+
   const viewedSourceRef = useRef<string | null>(null);
   const pendingPremiumPurchaseRef = useRef<CommerceProduct | null>(null);
   const premiumPurchaseInFlightRef = useRef(false);
@@ -847,6 +861,7 @@ export default function CommerceScreen() {
 
     if (!isAccount) {
       if (product.category !== 'premium' && product.category !== 'stitch_coin' && product.category !== 'ai_credit') {
+        closeCommerceOverlays();
         router.push({ pathname: '/(tabs)/(settings)/sign-in', params: { returnTo: 'commerce' } });
         return;
       }
@@ -867,7 +882,7 @@ export default function CommerceScreen() {
       return;
     }
     setConfirmingAiCreditPack(product);
-  }, [isAccount, pendingIntent, preserveIntent, router, setGuestCommerceProduct, source]);
+  }, [closeCommerceOverlays, isAccount, pendingIntent, preserveIntent, router, setGuestCommerceProduct, source]);
 
   // A Guest restore re-owns provider-verified Premium only, so it maps the
   // anonymous subscriber first and never opens a reconciliation for packs.
@@ -1011,7 +1026,7 @@ export default function CommerceScreen() {
           </View>
           <View style={styles.walletSummary}>
             <WalletValue icon="leaf" value={coinBalance ?? 0} color={Theme.colors.accentHoney} />
-            <WalletValue icon="sparkles" value={isAccount ? aiCreditBalance ?? 0 : 0} color={Theme.colors.accentRose} />
+            <WalletValue icon="sparkles" value={aiCreditBalance ?? 0} color={Theme.colors.accentRose} />
           </View>
         </View>
 
@@ -1242,7 +1257,10 @@ export default function CommerceScreen() {
                       testID="commerce-subscription-disclosure"
                     />
                     <Button
-                      title={isAccount ? `Choose ${selectedPremium.label}` : `Sign in for ${selectedPremium.label}`}
+                      // A Guest can complete this purchase without registering: attemptPurchase
+                      // routes a Guest through the Guest Data Risk Notice, where sign-in is offered
+                      // as an alternative, never a precondition (Guideline 5.1.1(v)).
+                      title={`Choose ${selectedPremium.label}`}
                       onPress={() => attemptPurchase(selectedPremium)}
                       loading={purchasingKey === selectedPremium.productKey}
                       disabled={purchasingKey !== null || purchasePending !== null}
@@ -1339,7 +1357,7 @@ export default function CommerceScreen() {
           else if (product !== null) setConfirmingAiCreditPack(product);
         }}
         onSignIn={() => {
-          setGuestCommerceProduct(null);
+          closeCommerceOverlays();
           router.push({ pathname: '/(tabs)/(settings)/sign-in', params: { returnTo: 'commerce' } });
         }}
         onDismiss={() => setGuestCommerceProduct(null)}

@@ -17,6 +17,7 @@ import { useCommerceIntentStore } from '../commerceIntent';
 
 let mockParams: { category?: string; source?: string } = { source: 'profile' };
 let mockIdentity = { accountId: null as string | null, isAccount: false };
+let mockAiCreditWalletBalance = 4;
 let mockMembership: Record<string, unknown> | undefined;
 
 const mockRouter = {
@@ -130,7 +131,7 @@ jest.mock('@/api/aiCreditPack', () => ({
 
 jest.mock('@/api/commerce', () => ({
   fetchAiCreditBalance: (...args: unknown[]) => mockFetchAiCreditBalance(...args),
-  useAiCreditBalance: () => ({ data: 4 }),
+  useAiCreditBalance: () => ({ data: mockAiCreditWalletBalance }),
 }));
 
 jest.mock('@/api/membership', () => ({
@@ -233,6 +234,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   mockParams = { source: 'profile' };
   mockIdentity = { accountId: null, isAccount: false };
+  mockAiCreditWalletBalance = 4;
   mockMembership = undefined;
   mockGetOfferings.mockResolvedValue(offering());
   mockMissingCanonicalProducts.mockReturnValue([]);
@@ -652,6 +654,35 @@ it('restores a Guest Player Premium entitlement without restoring consumables', 
   alert.mockRestore();
 });
 
+it('lets a Guest purchase Premium end-to-end without ever requiring registration', async () => {
+  // Guideline 5.1.1(v): the CTA must never read as a sign-in requirement, and
+  // choosing it must not require becoming a Registered Account to complete.
+  mockFetchMembership
+    .mockResolvedValueOnce(inactiveMembership())
+    .mockResolvedValue(activeMembership('annual'));
+  await renderScreen();
+
+  expect(pressableByText(renderer!.root, 'Choose Annual')).toBeTruthy();
+  expect(allText(renderer!.root)).not.toContain('Sign in for Annual');
+
+  await act(async () => pressByText(renderer!.root, 'Choose Annual'));
+  expect(allText(renderer!.root)).toContain('Continue as Guest');
+
+  await act(async () => pressByText(renderer!.root, 'Continue as Guest'));
+  expect(allText(renderer!.root)).toContain('Confirm Premium purchase');
+
+  await act(async () => pressByText(renderer!.root, 'Confirm Annual'));
+  await dismissPremiumConfirmation();
+
+  expect(mockMapGuestRevenueCatSubscriber).toHaveBeenCalledWith('anonymous-subscriber');
+  expect(mockCreateGuestPurchaseAttempt).toHaveBeenCalledWith(
+    'com.avk.stitchwish.premium_annual', expect.any(String), 'anonymous-subscriber',
+  );
+  expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+  expect(mockRouter.push).not.toHaveBeenCalled();
+  expect(allText(renderer!.root)).toContain('Annual Premium is verified and active.');
+});
+
 it('leaves a Registered Account restore on the Purchase Reconciliation path', async () => {
   const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
   mockIdentity = { accountId: 'account_80', isAccount: true };
@@ -763,6 +794,38 @@ it('keeps Guest catalog intent and makes Continue as Guest primary', async () =>
   expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('commerce_store_viewed', {
     source: 'sign_in_return',
   });
+});
+
+it('shows a Guest their real AI Credit wallet balance instead of a hardcoded 0', async () => {
+  // A Guest can buy AI Credit packs and the balance is granted to their Guest
+  // Ledger server-side (economy-read.service.ts resolves both principal
+  // types identically); the wallet must not lie about it (Guideline 2.1(a)).
+  mockAiCreditWalletBalance = 1234;
+  await renderScreen();
+
+  expect(allText(renderer!.root)).toContain('1,234');
+  expect(allText(renderer!.root)).not.toContain('0');
+});
+
+it('closes the pack sheet before routing a Guest to sign-in so the destination is reachable', async () => {
+  // iOS never presents a routed screen over an already-presented Modal, so
+  // leaving the pack sheet's <Modal> open when navigating to sign-in makes the
+  // sign-in screen render unreachable behind it (App Review Guideline 2.1(a)).
+  await renderScreen();
+  await openCoinPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+
+  expect(visibleModalCount(renderer!.root)).toBe(1);
+  expect(allText(renderer!.root)).toContain('Sign in instead');
+
+  await act(async () => pressByText(renderer!.root, 'Sign in instead'));
+
+  expect(mockRouter.push).toHaveBeenCalledWith({
+    pathname: '/(tabs)/(settings)/sign-in',
+    params: { returnTo: 'commerce' },
+  });
+  expect(visibleModalCount(renderer!.root)).toBe(0);
+  expect(allText(renderer!.root)).not.toContain('Sign in instead');
 });
 
 it('drives the Guest purchase through mapping, durable attempt, verification and refreshed balance', async () => {
