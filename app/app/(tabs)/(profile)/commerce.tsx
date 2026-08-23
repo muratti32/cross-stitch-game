@@ -386,6 +386,14 @@ export default function CommerceScreen() {
       clearIntent();
       setPurchaseError(null);
       setPurchaseSuccess(`${completedProduct.label} Premium is verified and active.`);
+      setResultModal({
+        variant: 'success',
+        title: 'Premium is active',
+        body: completedProduct.billingPeriod === null
+          ? `${completedProduct.label} Premium is now active.`
+          : `${completedProduct.label} Premium is now active, billed every ${completedProduct.billingPeriod}.`,
+        detail: null,
+      });
     } catch (error: unknown) {
       const failureStage = verifiedMembership === null ? 'verification' : 'grant';
       await captureGameplayEvent('purchase_failed', {
@@ -510,6 +518,12 @@ export default function CommerceScreen() {
       setPurchaseSuccess(
         `${attempt.product.label} grant verified. Stitch Coin balance: ${refreshedBalance.toLocaleString()}.`,
       );
+      setResultModal({
+        variant: 'success',
+        title: 'Stitch Coins granted',
+        body: `${attempt.product.quantity.toLocaleString()} Stitch Coins have been added to your balance.`,
+        detail: null,
+      });
     } catch {
       const failureStage = grantVerified ? 'grant' : 'verification';
       await captureGameplayEvent('purchase_failed', {
@@ -669,6 +683,12 @@ export default function CommerceScreen() {
       setPurchaseSuccess(
         `${attempt.product.label} grant verified. AI Credit balance: ${refreshedBalance.toLocaleString()}.`,
       );
+      setResultModal({
+        variant: 'success',
+        title: 'AI Credits granted',
+        body: `${attempt.product.quantity.toLocaleString()} AI Credits have been added to your balance.`,
+        detail: null,
+      });
     } catch {
       const failureStage = grantVerified ? 'grant' : 'verification';
       await captureGameplayEvent('purchase_failed', {
@@ -799,10 +819,16 @@ export default function CommerceScreen() {
         purchaseRevenueCatPackage(product.package, accountId, !isAccount),
       );
       storePurchaseAccepted = true;
-      Alert.alert(
-        'Purchase received',
-        `The store accepted ${product.label}. Verifying your purchase now.`,
-      );
+      // Close the pack sheet before presenting the pending modal: iOS never
+      // presents a Modal over an already-presented one, and the reconciliation
+      // starters below close it too late to cover this first paint.
+      setOpenCategory(null);
+      setResultModal({
+        variant: 'pending',
+        title: 'Purchase received',
+        body: `The store accepted ${product.label}. Verifying your purchase now.`,
+        detail: null,
+      });
       failureStage = 'verification';
       if (product.category === 'premium') {
         await beginPremiumReconciliation(product, 'purchase', baselineMembership, guestAttempt);

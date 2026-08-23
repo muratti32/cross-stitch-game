@@ -561,6 +561,38 @@ it('emits completion only after verified membership and AI Credit refresh', asyn
   expect(allText(renderer!.root)).not.toContain('Purchase Reconciliation Pending');
 });
 
+it('carries the purchase result modal from pending to a verified Premium grant with its billing period', async () => {
+  mockIdentity = { accountId: 'account_premium_modal', isAccount: true };
+  mockPurchasePackage.mockResolvedValue({});
+  let resolveVerification: (value: ReturnType<typeof activeMembership>) => void = () => undefined;
+  mockFetchMembership
+    .mockResolvedValueOnce(inactiveMembership())
+    .mockReturnValueOnce(new Promise((resolve) => { resolveVerification = resolve; }));
+  await renderScreen();
+
+  await act(async () => pressByText(renderer!.root, 'Choose Annual'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm Annual');
+    await flushPromises();
+  });
+  await dismissPremiumConfirmation();
+
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase received',
+    'The store accepted Annual. Verifying your purchase now.',
+  ]));
+
+  await act(async () => {
+    resolveVerification(activeMembership('annual'));
+    await flushPromises();
+  });
+
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Premium is active',
+    'Annual Premium is now active, billed every 1 year.',
+  ]));
+});
+
 it('reports backend verification failures before opening the store', async () => {
   mockIdentity = { accountId: 'account_80', isAccount: true };
   mockFetchMembership.mockRejectedValue(new Error('backend offline'));
@@ -1084,6 +1116,40 @@ it('updates AI Credit balance and completes only after the exact backend grant',
   );
 });
 
+it('carries the purchase result modal from pending to a verified AI Credit Pack grant', async () => {
+  mockIdentity = { accountId: 'account_ai_modal', isAccount: true };
+  let resolveReconciliation: (value: { status: string; balance: number | null }) => void = () => undefined;
+  mockFetchAiCreditPackReconciliation.mockReturnValue(
+    new Promise((resolve) => { resolveReconciliation = resolve; }),
+  );
+  await renderScreen();
+  await openAiCreditPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 5 AI Credits');
+    await flushPromises();
+  });
+
+  // The pack sheet closed before the pending modal opened.
+  expect(allText(renderer!.root)).not.toContain('Buy');
+  expect(visibleModalCount(renderer!.root)).toBe(1);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase received',
+    'The store accepted 5 AI Credits. Verifying your purchase now.',
+  ]));
+
+  await act(async () => {
+    resolveReconciliation({ status: 'granted', balance: 9 });
+    await flushPromises();
+  });
+
+  expect(visibleModalCount(renderer!.root)).toBe(1);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'AI Credits granted',
+    '5 AI Credits have been added to your balance.',
+  ]));
+});
+
 it('offers Retry after a delayed AI Credit grant without another store purchase', async () => {
   mockIdentity = { accountId: 'account_82', isAccount: true };
   await renderScreen();
@@ -1198,10 +1264,8 @@ it('keeps the exact Coin Pack intent pending with Support Reference and blocks r
   await act(async () => pressAncestor(renderer!.root.findByProps({ testID: 'open-stitch-coin-packs' })));
   expect(pressableByText(renderer!.root, 'Buy').props.disabled).toBe(true);
   expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
-  expect(alert).toHaveBeenCalledWith(
-    'Purchase received',
-    'The store accepted 300 Stitch Coins. Verifying your purchase now.',
-  );
+  // Store acceptance replaced the native alert with the in-game result modal.
+  expect(alert).not.toHaveBeenCalled();
   alert.mockRestore();
 });
 
@@ -1288,6 +1352,70 @@ it('updates the wallet and emits completion only after the matching backend Coin
     '300 Stitch Coins grant verified. Stitch Coin balance: 420.',
   );
   expect(allText(renderer!.root)).not.toContain('Purchase Reconciliation Pending');
+});
+
+it('carries the purchase result modal from pending to a verified Coin Pack grant', async () => {
+  mockIdentity = { accountId: 'account_coin_modal', isAccount: true };
+  let resolveReconciliation: (value: { status: string; balance: number | null }) => void = () => undefined;
+  mockFetchCoinPackReconciliation.mockReturnValue(
+    new Promise((resolve) => { resolveReconciliation = resolve; }),
+  );
+  await renderScreen();
+  await openCoinPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
+    await flushPromises();
+  });
+
+  // The pack sheet closed before the pending modal opened.
+  expect(allText(renderer!.root)).not.toContain('Buy');
+  expect(visibleModalCount(renderer!.root)).toBe(1);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase received',
+    'The store accepted 300 Stitch Coins. Verifying your purchase now.',
+  ]));
+
+  await act(async () => {
+    resolveReconciliation({ status: 'granted', balance: 420 });
+    await flushPromises();
+  });
+
+  expect(visibleModalCount(renderer!.root)).toBe(1);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Stitch Coins granted',
+    '300 Stitch Coins have been added to your balance.',
+  ]));
+});
+
+it('lets the pending modal be dismissed without stopping Coin Pack reconciliation', async () => {
+  mockIdentity = { accountId: 'account_coin_dismiss', isAccount: true };
+  let resolveReconciliation: (value: { status: string; balance: number | null }) => void = () => undefined;
+  mockFetchCoinPackReconciliation.mockReturnValue(
+    new Promise((resolve) => { resolveReconciliation = resolve; }),
+  );
+  await renderScreen();
+  await openCoinPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
+    await flushPromises();
+  });
+
+  expect(resultModalVisible(renderer!.root)).toBe(true);
+
+  await act(async () => pressByText(renderer!.root, 'Got it'));
+
+  expect(resultModalVisible(renderer!.root)).toBe(false);
+
+  await act(async () => {
+    resolveReconciliation({ status: 'granted', balance: 420 });
+    await flushPromises();
+  });
+
+  expect(allText(renderer!.root)).toContain(
+    '300 Stitch Coins grant verified. Stitch Coin balance: 420.',
+  );
 });
 
 it('keeps a delayed Coin grant pending and offers Retry without another store purchase', async () => {
