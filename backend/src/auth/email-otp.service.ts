@@ -14,6 +14,16 @@ import {
 import { EmailOutboxEntity } from './email-outbox.entity';
 import { EmailOtpRateLimiterService } from './email-otp-rate-limiter.service';
 
+/**
+ * Outcome of consuming an Email Sign-In code for deletion reauthentication.
+ * `accountId` is `null` when the code was valid but no Auth Identity exists for
+ * that address, which the caller must reject rather than turn into a new
+ * Registered Account.
+ */
+export type EmailReauthenticationOutcome =
+  | { kind: 'invalid-code' }
+  | { kind: 'verified'; accountId: string | null };
+
 @Injectable()
 export class EmailOtpService {
   constructor(
@@ -143,6 +153,35 @@ export class EmailOtpService {
         manager,
       );
     });
+  }
+
+  /**
+   * Consumes an Email Sign-In code for reauthentication only. Unlike `verify`
+   * this never creates or opens a Registered Account: it resolves the existing
+   * email Auth Identity, so a code for an unknown address cannot mint one.
+   */
+  async verifyForReauthentication(
+    email: string,
+    code: string,
+  ): Promise<EmailReauthenticationOutcome> {
+    const normalizedEmail = normalizeEmail(email);
+    const verified = await this.dataSource.transaction(async (manager) => {
+      await manager.query(
+        'SELECT pg_advisory_xact_lock(hashtextextended($1, 0))',
+        [normalizedEmail],
+      );
+      return this.verifyOtpOnly(normalizedEmail, code, manager);
+    });
+
+    if (!verified) {
+      return { kind: 'invalid-code' };
+    }
+
+    const accountId = await this.accountIdentities.findAccountIdForIdentity(
+      'email',
+      normalizedEmail,
+    );
+    return { accountId, kind: 'verified' };
   }
 
   async verifyAndLink(

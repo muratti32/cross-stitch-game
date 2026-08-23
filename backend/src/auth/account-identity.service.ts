@@ -73,6 +73,39 @@ export class AccountIdentityService {
     return accountId;
   }
 
+  /**
+   * Resolves an already-verified `(provider, subject)` pair to the Registered
+   * Account that owns it. This lookup is deliberately read-only: deletion
+   * reauthentication must be able to reject an unknown or foreign Auth Identity
+   * without creating, adopting, linking, or switching an account.
+   */
+  async findAccountIdForIdentity(
+    provider: AuthIdentityProvider,
+    subject: string,
+  ): Promise<string | null> {
+    const existing = await this.dataSource
+      .getRepository(AuthIdentityEntity)
+      .findOne({ where: { provider, subject } });
+    return existing?.accountId ?? null;
+  }
+
+  /**
+   * Lists the Auth Identities bound to an account without their provider
+   * subjects, so a client can offer exactly the sign-in methods that account
+   * owns and nothing more.
+   */
+  async listForAccount(
+    accountId: string,
+  ): Promise<readonly { email: string | null; provider: AuthIdentityProvider }[]> {
+    const identities = await this.dataSource
+      .getRepository(AuthIdentityEntity)
+      .find({ order: { provider: 'ASC' }, where: { accountId } });
+    return identities.map((identity) => ({
+      email: identity.email,
+      provider: identity.provider,
+    }));
+  }
+
   link(accountId: string, identity: VerifiedAuthIdentity): Promise<void> {
     return this.dataSource.transaction((manager) =>
       this.linkWithManager(accountId, identity, manager),
