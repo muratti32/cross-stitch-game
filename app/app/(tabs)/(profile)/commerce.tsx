@@ -57,6 +57,7 @@ import {
 import {
   getRevenueCatOfferings,
   getRevenueCatSubscriberId,
+  prepareGuestRevenueCatSubscriber,
   isRevenueCatTrialEligible,
   missingCanonicalRevenueCatProducts,
   purchaseRevenueCatPackage,
@@ -843,11 +844,13 @@ export default function CommerceScreen() {
       ? 'verification'
       : 'store';
     let guestAttempt: GuestPurchaseAttemptReference | null = null;
+    let guestSubscriberId: string | null = null;
     let storePurchaseAccepted = false;
     try {
       if (!isAccount) {
         if (Platform.OS !== 'ios') throw new Error('Guest Stitch Coin purchases are available on iOS only.');
-        const subscriberId = await getRevenueCatSubscriberId();
+        const subscriberId = await prepareGuestRevenueCatSubscriber();
+        guestSubscriberId = subscriberId;
         await mapGuestRevenueCatSubscriber(subscriberId);
         guestAttempt = await createGuestPurchaseAttempt(
           product.package.product.identifier,
@@ -870,6 +873,15 @@ export default function CommerceScreen() {
         purchaseRevenueCatPackage(product.package, accountId, !isAccount),
       );
       storePurchaseAccepted = true;
+      // RevenueCat can still rotate the anonymous subscriber while the store
+      // sheet is up, and it reports the purchase under whichever identifier is
+      // current. Claiming that identifier keeps the webhook resolvable.
+      if (guestSubscriberId !== null) {
+        const purchasedSubscriberId = await getRevenueCatSubscriberId();
+        if (purchasedSubscriberId !== guestSubscriberId) {
+          await mapGuestRevenueCatSubscriber(purchasedSubscriberId);
+        }
+      }
       // Close the pack sheet before presenting the pending modal: iOS never
       // presents a Modal over an already-presented one, and the reconciliation
       // starters below close it too late to cover this first paint.
@@ -1015,9 +1027,13 @@ export default function CommerceScreen() {
   // A Guest restore re-owns provider-verified Premium only, so it maps the
   // anonymous subscriber first and never opens a reconciliation for packs.
   const restoreGuestPremium = useCallback(async () => {
-    const subscriberId = await getRevenueCatSubscriberId();
+    const subscriberId = await prepareGuestRevenueCatSubscriber();
     await mapGuestRevenueCatSubscriber(subscriberId);
     await restoreRevenueCatPurchases(null);
+    const restoredSubscriberId = await getRevenueCatSubscriberId();
+    if (restoredSubscriberId !== subscriberId) {
+      await mapGuestRevenueCatSubscriber(restoredSubscriberId);
+    }
     await queryClient.refetchQueries({ queryKey: ['commerce', 'membership'] });
     await queryClient.refetchQueries({ queryKey: ['economy'] });
     setResultModal({

@@ -6,9 +6,10 @@ import { In, Repository } from 'typeorm';
 import { RegisteredAccountEntity, RegisteredAccountStatus } from '../auth/entities';
 import { CommerceLedgerRepository } from './commerce-ledger.repository';
 import { MembershipRepository } from './membership.repository';
-import { resolvePremiumProduct } from './membership.constants';
+import { resolvePremiumProduct, type PremiumProduct } from './membership.constants';
 import type { VerifiedMembershipEvent } from './membership-projection';
-import { GuestPurchaseAttemptService } from './guest-purchase-attempt.service';
+import { GuestPurchaseAttemptService, type MappedGuest } from './guest-purchase-attempt.service';
+import type { CommerceOwner } from './commerce-owner';
 
 export interface RevenueCatWebhookOutcome {
   handled: boolean; // false for event types this ticket doesn't own
@@ -103,16 +104,40 @@ export class RevenueCatWebhookService {
         transactionId,
       );
       if (guestResult !== null) return guestResult;
+      // A subscriber the app user id no longer names can still be mapped to a
+      // Registered Account after a promotion or a transfer.
+      const mappedOwner = this.guestAttempts === undefined
+        ? null
+        : await this.guestAttempts.resolveMappedOwner([appUserId, ...aliases, ...originalAppUserId]);
+      if (mappedOwner?.status === 'resolved' && mappedOwner.owner.type === 'account') {
+        const mappedAccount = await this.accounts.findOne({ where: { id: mappedOwner.owner.accountId } });
+        if (mappedAccount && mappedAccount.status === RegisteredAccountStatus.Active) {
+          return this.applyAccountPurchase(mappedAccount.id, productId, environment, transactionId);
+        }
+      }
     }
 
     const premiumProduct = resolvePremiumProduct(productId);
     if (premiumProduct && MEMBERSHIP_EVENT_TYPES.has(type) && (!account || account.status !== RegisteredAccountStatus.Active)) {
-      const mapped = this.guestAttempts === undefined
+      const mappedOwner = this.guestAttempts === undefined
         ? null
-        : await this.guestAttempts.resolveMappedGuest([appUserId, ...aliases, ...originalAppUserId]);
-      if (mapped?.status === 'alias_conflict') {
+        : await this.guestAttempts.resolveMappedOwner([appUserId, ...aliases, ...originalAppUserId]);
+      if (mappedOwner?.status === 'alias_conflict') {
         return { handled: false, detail: 'guest_subscriber_alias_conflict', duplicate: false };
       }
+      // A mapping that names a Registered Account belongs to a promoted Guest,
+      // so the Membership is recorded on that account rather than on a Guest
+      // Installation that no longer owns the entitlement.
+      if (mappedOwner !== null && mappedOwner.owner.type === 'account') {
+        const owner = mappedOwner.owner;
+        const mappedAccount = await this.accounts.findOne({ where: { id: owner.accountId } });
+        if (mappedAccount && mappedAccount.status === RegisteredAccountStatus.Active) {
+          return this.applyAccountMembership(evt, environment, owner.accountId, premiumProduct, type, transactionId);
+        }
+      }
+      const mapped: MappedGuest | null = mappedOwner !== null && mappedOwner.owner.type === 'guest'
+        ? { status: 'resolved', guestId: mappedOwner.owner.guestInstallationId, ids: mappedOwner.ids }
+        : null;
       if (mapped !== null) {
         const membershipEvent = parseMembershipEvent(evt, environment, {
           type: 'guest', guestInstallationId: mapped.guestId,
@@ -173,30 +198,7 @@ export class RevenueCatWebhookService {
     }
 
     if (premiumProduct && MEMBERSHIP_EVENT_TYPES.has(type)) {
-      const membershipEvent = parseMembershipEvent(evt, environment, {
-        type: 'account', accountId: appUserId,
-      });
-      if (
-        membershipEvent.periodType === 'TRIAL' &&
-        premiumProduct.plan !== 'monthly'
-      ) {
-        throw new BadRequestException('Only the Monthly Premium Plan may have a trial');
-      }
-      const result = await this.membership.recordVerifiedEvent(membershipEvent);
-      if (result.rejectedOtherAccount) {
-        this.logger.warn(
-          `RevenueCat membership fraud signal: transaction ${this.redactTransaction(transactionId)} is bound to another account`,
-        );
-        return { handled: true, detail: 'rejected_other_account', duplicate: false };
-      }
-      this.logger.log(
-        `RevenueCat membership ${type} transaction ${this.redactTransaction(transactionId)}: recorded=${result.recorded} granted=${result.creditGranted} reversed=${result.creditReversed}`,
-      );
-      return {
-        handled: true,
-        detail: result.recorded ? 'membership_event_recorded' : 'membership_event_replayed',
-        duplicate: !result.recorded,
-      };
+      return this.applyAccountMembership(evt, environment, appUserId, premiumProduct, type, transactionId);
     }
 
     if (type === 'NON_RENEWING_PURCHASE') {
@@ -232,6 +234,37 @@ export class RevenueCatWebhookService {
     };
   }
 
+  private async applyAccountMembership(
+    evt: Record<string, unknown>,
+    environment: 'sandbox' | 'production',
+    accountId: string,
+    premiumProduct: PremiumProduct,
+    type: string,
+    transactionId: string,
+  ): Promise<RevenueCatWebhookOutcome> {
+    const membershipEvent = parseMembershipEvent(evt, environment, {
+      type: 'account', accountId,
+    });
+    if (membershipEvent.periodType === 'TRIAL' && premiumProduct.plan !== 'monthly') {
+      throw new BadRequestException('Only the Monthly Premium Plan may have a trial');
+    }
+    const result = await this.membership.recordVerifiedEvent(membershipEvent);
+    if (result.rejectedOtherAccount) {
+      this.logger.warn(
+        `RevenueCat membership fraud signal: transaction ${this.redactTransaction(transactionId)} is bound to another account`,
+      );
+      return { handled: true, detail: 'rejected_other_account', duplicate: false };
+    }
+    this.logger.log(
+      `RevenueCat membership ${type} transaction ${this.redactTransaction(transactionId)}: recorded=${result.recorded} granted=${result.creditGranted} reversed=${result.creditReversed}`,
+    );
+    return {
+      handled: true,
+      detail: result.recorded ? 'membership_event_recorded' : 'membership_event_replayed',
+      duplicate: !result.recorded,
+    };
+  }
+
   private async applyAccountPurchase(accountId: string, productId: string, environment: 'sandbox' | 'production', transactionId: string): Promise<RevenueCatWebhookOutcome> {
     const result = await this.commerceLedger.processPurchase({ environment, providerTransactionId: transactionId, accountId, productId });
     return { handled: true, detail: result.outcome, duplicate: result.outcome === 'replayed_same_account' };
@@ -258,35 +291,94 @@ export class RevenueCatWebhookService {
     const transferredFrom = appUserIdList(event, 'transferred_from');
 
     const targets = await this.activeAccountIds(transferredTo);
-    if (targets.length !== 1) {
+    if (targets.length > 1) {
       this.logger.warn(
         `RevenueCat webhook TRANSFER rejected: transferred_to resolves to ${targets.length} active accounts`,
       );
       return { handled: false, detail: 'transfer_target_unresolved', duplicate: false };
     }
-    const toAccountId = targets[0];
+
+    const resolvedTarget = await this.resolveTransferTarget(transferredTo, transferredFrom, targets);
+    if (resolvedTarget === null) {
+      this.logger.warn(
+        'RevenueCat webhook TRANSFER rejected: transferred_to resolves to 0 active accounts',
+      );
+      return { handled: false, detail: 'transfer_target_unresolved', duplicate: false };
+    }
+    if (resolvedTarget === 'alias_conflict') {
+      return { handled: false, detail: 'guest_subscriber_alias_conflict', duplicate: false };
+    }
+    const toOwner = resolvedTarget;
+
+    const toAccountId = toOwner.type === 'account' ? toOwner.accountId : null;
     const fromAccountIds = transferredFrom.filter(
       (candidate) => UUID_PATTERN.test(candidate) && candidate !== toAccountId,
     );
     const mappedGuest = this.guestAttempts === undefined
       ? null
       : await this.guestAttempts.resolveMappedGuest(transferredFrom);
-    const fromGuestIds = mappedGuest?.status === 'resolved' ? [mappedGuest.guestId] : [];
+    const toGuestId = toOwner.type === 'guest' ? toOwner.guestInstallationId : null;
+    const fromGuestIds = mappedGuest?.status === 'resolved' && mappedGuest.guestId !== toGuestId
+      ? [mappedGuest.guestId]
+      : [];
 
     const moved = await this.membership.transferMembership({
       environment,
       fromAccountIds,
       ...(fromGuestIds.length > 0 ? { fromGuestIds } : {}),
-      toAccountId,
+      toOwner,
     });
     this.logger.log(
-      `RevenueCat webhook TRANSFER to account ${this.redactPrincipal(toAccountId)}: events=${moved.eventsMoved} periods=${moved.periodsMoved}`,
+      `RevenueCat webhook TRANSFER to ${toOwner.type} ${this.redactPrincipal(toAccountId ?? toGuestId ?? '')}: events=${moved.eventsMoved} periods=${moved.periodsMoved}`,
     );
     return {
       handled: true,
       detail: moved.eventsMoved > 0 ? 'transfer_applied' : 'transfer_noop',
       duplicate: moved.eventsMoved === 0,
     };
+  }
+
+  /**
+   * RevenueCat rotates the anonymous subscriber identifier on sign-out and
+   * reports the rotation as a TRANSFER whose destination is that brand new
+   * identifier: it is neither a Registered Account nor a mapped Guest yet.
+   * Inheriting the source owner and claiming the destination identifiers for it
+   * is what keeps the following RENEWAL events resolvable; without it every
+   * later event for this subscription is rejected as an unknown principal.
+   */
+  private async resolveTransferTarget(
+    transferredTo: readonly string[],
+    transferredFrom: readonly string[],
+    activeTargets: readonly string[],
+  ): Promise<CommerceOwner | 'alias_conflict' | null> {
+    const target = activeTargets[0];
+    if (target !== undefined) return { type: 'account', accountId: target };
+    if (this.guestAttempts === undefined) return null;
+
+    const mappedTarget = await this.guestAttempts.resolveMappedOwner(transferredTo);
+    if (mappedTarget?.status === 'alias_conflict') return 'alias_conflict';
+    if (mappedTarget !== null) return mappedTarget.owner;
+
+    // The destination is unmapped, so the owner can only come from the source
+    // side of the move.
+    const sourceAccounts = await this.activeAccountIds(transferredFrom);
+    if (sourceAccounts.length > 1) return null;
+    const mappedSource = await this.guestAttempts.resolveMappedOwner(transferredFrom);
+    if (mappedSource?.status === 'alias_conflict') return 'alias_conflict';
+    const sourceAccountId = sourceAccounts[0];
+    const inherited: CommerceOwner | null = mappedSource !== null
+      ? mappedSource.owner
+      : sourceAccountId !== undefined
+        ? { type: 'account', accountId: sourceAccountId }
+        : null;
+    if (inherited === null) return null;
+    if (mappedSource !== null && sourceAccountId !== undefined && inherited.type === 'guest') {
+      // The source carries both an active account and a Guest mapping; which of
+      // them owns the subscription cannot be decided from this event alone.
+      return 'alias_conflict';
+    }
+    await this.guestAttempts.bindSubscribers(inherited, transferredTo);
+    return inherited;
   }
 
   private async activeAccountIds(appUserIds: readonly string[]): Promise<string[]> {

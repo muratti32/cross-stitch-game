@@ -70,7 +70,7 @@ export interface MembershipTransferInput {
   environment: 'sandbox' | 'production';
   fromAccountIds: readonly string[];
   fromGuestIds?: readonly string[];
-  toAccountId: string;
+  toOwner: CommerceOwner;
 }
 
 export interface MembershipTransferResult {
@@ -249,25 +249,31 @@ export class MembershipRepository {
       if (transactionIds.length === 0) {
         return { eventsMoved: 0, periodsMoved: 0 };
       }
+      // The destination may be a Guest Installation: RevenueCat moves the store
+      // purchases to a fresh anonymous subscriber when the player signs out, and
+      // the Membership has to follow that identity rather than stay stranded on
+      // the previous owner (ADR-0044).
+      const toAccountId = input.toOwner.type === 'account' ? input.toOwner.accountId : null;
+      const toGuestId = input.toOwner.type === 'guest' ? input.toOwner.guestInstallationId : null;
       const movedEvents = await manager.query<readonly { provider_event_id: string }[]>(
         `UPDATE economy.membership_events
-         SET account_id = $3, guest_installation_id = NULL
+         SET account_id = $3, guest_installation_id = $4
          WHERE environment = $1
            AND provider_transaction_id = ANY($2::varchar[])
-           AND (account_id IS DISTINCT FROM $3 OR guest_installation_id IS NOT NULL)
+           AND (account_id IS DISTINCT FROM $3 OR guest_installation_id IS DISTINCT FROM $4)
          RETURNING provider_event_id`,
-        [input.environment, transactionIds, input.toAccountId],
+        [input.environment, transactionIds, toAccountId, toGuestId],
       );
       const movedPeriods = await manager.query<
         readonly { provider_transaction_id: string }[]
       >(
         `UPDATE economy.membership_periods
-         SET account_id = $3, guest_installation_id = NULL, updated_at = now()
+         SET account_id = $3, guest_installation_id = $4, updated_at = now()
          WHERE environment = $1
            AND provider_transaction_id = ANY($2::varchar[])
-           AND (account_id IS DISTINCT FROM $3 OR guest_installation_id IS NOT NULL)
+           AND (account_id IS DISTINCT FROM $3 OR guest_installation_id IS DISTINCT FROM $4)
          RETURNING provider_transaction_id`,
-        [input.environment, transactionIds, input.toAccountId],
+        [input.environment, transactionIds, toAccountId, toGuestId],
       );
 
       return {

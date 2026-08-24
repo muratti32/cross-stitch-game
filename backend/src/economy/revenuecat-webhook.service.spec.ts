@@ -8,11 +8,21 @@ import { RevenueCatWebhookService } from './revenuecat-webhook.service';
 
 const OLD_ACCOUNT_ID = '8f1f3d6c-2c6e-4b3f-9a1e-1d0c9b8a7654';
 const NEW_ACCOUNT_ID = 'd278d6bc-2ba1-42aa-a940-8a6d2a4b3d8b';
+const GUEST_ID = 'b7c2f5ea-52d9-4f1e-9a30-1f6a5c0f2d11';
+const ANON_ID = '$RCAnonymousID:b23fc87a5bb346b9a6c74ce20704f991';
+const OLD_ANON_ID = '$RCAnonymousID:7068e7ea825f4092a62a4b49ac7bc4e9';
+
+interface GuestAttemptsStub {
+  applyWebhook?: jest.Mock;
+  resolveMappedOwner?: jest.Mock;
+  resolveMappedGuest?: jest.Mock;
+  bindSubscribers?: jest.Mock;
+}
 
 function buildService(overrides: {
   accounts?: readonly { id: string; status: RegisteredAccountStatus }[];
   transferMembership?: jest.Mock;
-  guestAttempts?: { applyWebhook: jest.Mock };
+  guestAttempts?: GuestAttemptsStub;
   processPurchase?: jest.Mock;
   account?: { id: string; status: RegisteredAccountStatus } | null;
 }) {
@@ -30,9 +40,19 @@ function buildService(overrides: {
     findOne: jest.fn().mockResolvedValue(overrides.account ?? null),
   } as unknown as Repository<RegisteredAccountEntity>;
 
+  const guestAttempts = overrides.guestAttempts === undefined
+    ? undefined
+    : {
+      applyWebhook: overrides.guestAttempts.applyWebhook ?? jest.fn().mockResolvedValue(null),
+      resolveMappedOwner: overrides.guestAttempts.resolveMappedOwner ?? jest.fn().mockResolvedValue(null),
+      resolveMappedGuest: overrides.guestAttempts.resolveMappedGuest ?? jest.fn().mockResolvedValue(null),
+      bindSubscribers: overrides.guestAttempts.bindSubscribers ?? jest.fn().mockResolvedValue(undefined),
+    };
+
   return {
-    service: new RevenueCatWebhookService(commerceLedger, membership, accounts, overrides.guestAttempts as never),
+    service: new RevenueCatWebhookService(commerceLedger, membership, accounts, guestAttempts as never),
     accounts,
+    guestAttempts,
     transferMembership,
     processPurchase,
   };
@@ -67,7 +87,7 @@ describe('RevenueCatWebhookService TRANSFER', () => {
     expect(transferMembership).toHaveBeenCalledWith({
       environment: 'sandbox',
       fromAccountIds: [OLD_ACCOUNT_ID],
-      toAccountId: NEW_ACCOUNT_ID,
+      toOwner: { type: 'account', accountId: NEW_ACCOUNT_ID },
     });
   });
 
@@ -83,13 +103,102 @@ describe('RevenueCatWebhookService TRANSFER', () => {
     });
   });
 
-  it('does not move membership when the destination is not one active account', async () => {
+  it('does not move membership when neither side resolves to an owner', async () => {
     const { service, transferMembership } = buildService({ accounts: [] });
 
     await expect(service.handleEvent(transferEvent())).resolves.toEqual({
       handled: false,
       detail: 'transfer_target_unresolved',
       duplicate: false,
+    });
+    expect(transferMembership).not.toHaveBeenCalled();
+  });
+
+  it('moves membership onto the Guest the destination subscriber is mapped to', async () => {
+    const resolveMappedOwner = jest.fn().mockResolvedValue({
+      status: 'resolved', owner: { type: 'guest', guestInstallationId: GUEST_ID }, ids: [ANON_ID],
+    });
+    const { service, transferMembership, guestAttempts } = buildService({
+      accounts: [],
+      guestAttempts: { resolveMappedOwner },
+    });
+
+    await expect(
+      service.handleEvent(transferEvent({ transferred_to: [ANON_ID] })),
+    ).resolves.toEqual({ handled: true, detail: 'transfer_applied', duplicate: false });
+    expect(transferMembership).toHaveBeenCalledWith({
+      environment: 'sandbox',
+      fromAccountIds: [OLD_ACCOUNT_ID],
+      toOwner: { type: 'guest', guestInstallationId: GUEST_ID },
+    });
+    expect(guestAttempts?.bindSubscribers).not.toHaveBeenCalled();
+  });
+
+  it('inherits the source owner and claims the rotated subscriber when the destination is unmapped', async () => {
+    // RevenueCat rotates the anonymous identifier on sign-out: without this the
+    // following RENEWAL is rejected as an unknown principal.
+    const resolveMappedOwner = jest.fn()
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({
+        status: 'resolved', owner: { type: 'guest', guestInstallationId: GUEST_ID }, ids: [OLD_ANON_ID],
+      });
+    const { service, transferMembership, guestAttempts } = buildService({
+      accounts: [],
+      guestAttempts: { resolveMappedOwner },
+    });
+
+    await expect(
+      service.handleEvent(transferEvent({
+        transferred_from: [OLD_ANON_ID],
+        transferred_to: [ANON_ID],
+      })),
+    ).resolves.toEqual({ handled: true, detail: 'transfer_applied', duplicate: false });
+    expect(guestAttempts?.bindSubscribers).toHaveBeenCalledWith(
+      { type: 'guest', guestInstallationId: GUEST_ID },
+      [ANON_ID],
+    );
+    expect(transferMembership).toHaveBeenCalledWith({
+      environment: 'sandbox',
+      fromAccountIds: [],
+      toOwner: { type: 'guest', guestInstallationId: GUEST_ID },
+    });
+  });
+
+  it('inherits an active source account when the destination is an unmapped subscriber', async () => {
+    const { service, transferMembership, guestAttempts } = buildService({
+      accounts: [{ id: OLD_ACCOUNT_ID, status: RegisteredAccountStatus.Active }],
+      guestAttempts: {},
+    });
+
+    await expect(
+      service.handleEvent(transferEvent({ transferred_to: [ANON_ID] })),
+    ).resolves.toEqual({ handled: true, detail: 'transfer_applied', duplicate: false });
+    expect(guestAttempts?.bindSubscribers).toHaveBeenCalledWith(
+      { type: 'account', accountId: OLD_ACCOUNT_ID },
+      [ANON_ID],
+    );
+    expect(transferMembership).toHaveBeenCalledWith({
+      environment: 'sandbox',
+      fromAccountIds: [],
+      toOwner: { type: 'account', accountId: OLD_ACCOUNT_ID },
+    });
+  });
+
+  it('refuses to guess an owner when the source carries both an account and a Guest mapping', async () => {
+    const resolveMappedOwner = jest.fn()
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({
+        status: 'resolved', owner: { type: 'guest', guestInstallationId: GUEST_ID }, ids: [OLD_ANON_ID],
+      });
+    const { service, transferMembership } = buildService({
+      accounts: [{ id: OLD_ACCOUNT_ID, status: RegisteredAccountStatus.Active }],
+      guestAttempts: { resolveMappedOwner },
+    });
+
+    await expect(
+      service.handleEvent(transferEvent({ transferred_to: [ANON_ID] })),
+    ).resolves.toEqual({
+      handled: false, detail: 'guest_subscriber_alias_conflict', duplicate: false,
     });
     expect(transferMembership).not.toHaveBeenCalled();
   });

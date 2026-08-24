@@ -7,6 +7,7 @@ import { PrincipalType } from '../auth/entities';
 import { AppConfigService } from '../config/app-config.service';
 import { SupportReferenceService } from '../support/support-reference.service';
 import { CommerceLedgerRepository } from './commerce-ledger.repository';
+import type { CommerceOwner } from './commerce-owner';
 import { GUEST_COIN_PACK_PRODUCT_IDS, type GuestPurchaseAttemptDto } from './guest-purchase-attempt.dto';
 import { resolvePremiumProduct } from './membership.constants';
 import { resolveCommerceProduct } from './commerce.constants';
@@ -27,6 +28,41 @@ export type MappedGuest =
   | { status: 'resolved'; guestId: string; ids: string[] }
   | { status: 'alias_conflict' };
 
+/**
+ * A RevenueCat subscriber can belong to a Guest Installation or, once the Guest
+ * was promoted, to a Registered Account: CommercePromotionService rebinds the
+ * mapping row instead of dropping it. Ownership lookups therefore have to read
+ * both columns, otherwise a promoted player's later store events resolve to
+ * nobody (ADR-0044).
+ */
+export type MappedOwner =
+  | { status: 'resolved'; owner: CommerceOwner; ids: string[] }
+  | { status: 'alias_conflict' };
+
+interface MappingRow {
+  guest_installation_id: string | null;
+  account_id: string | null;
+}
+
+function mappingOwner(row: MappingRow | undefined): CommerceOwner | null {
+  if (row === undefined) return null;
+  if (row.guest_installation_id !== null) {
+    return { type: 'guest', guestInstallationId: row.guest_installation_id };
+  }
+  if (row.account_id !== null) return { type: 'account', accountId: row.account_id };
+  return null;
+}
+
+function sameOwner(left: CommerceOwner, right: CommerceOwner): boolean {
+  if (left.type === 'guest' && right.type === 'guest') {
+    return left.guestInstallationId === right.guestInstallationId;
+  }
+  if (left.type === 'account' && right.type === 'account') {
+    return left.accountId === right.accountId;
+  }
+  return false;
+}
+
 @Injectable()
 export class GuestPurchaseAttemptService {
   constructor(
@@ -40,11 +76,18 @@ export class GuestPurchaseAttemptService {
     this.requireGuest(principal);
     this.requireIosGuestCommerce(userAgent);
     return this.dataSource.transaction(async (manager) => {
-      const existing = await manager.query<readonly { guest_installation_id: string }[]>(
-        `SELECT guest_installation_id FROM economy.revenuecat_subscriber_mappings WHERE subscriber_id = $1 FOR UPDATE`,
+      // A promoted Guest leaves an account-owned mapping row behind, so the
+      // guard has to read both owner columns: claiming such a row for a Guest
+      // would hand a Registered Account's store purchases to this device.
+      const existing = await manager.query<readonly MappingRow[]>(
+        `SELECT guest_installation_id, account_id FROM economy.revenuecat_subscriber_mappings WHERE subscriber_id = $1 FOR UPDATE`,
         [subscriberId],
       );
-      if (existing[0] !== undefined && existing[0].guest_installation_id !== principal.id) {
+      const existingOwner = mappingOwner(existing[0]);
+      if (
+        existingOwner !== null &&
+        !sameOwner(existingOwner, { type: 'guest', guestInstallationId: principal.id })
+      ) {
         throw new ConflictException('RevenueCat subscriber is already mapped');
       }
       await manager.query(
@@ -147,25 +190,62 @@ export class GuestPurchaseAttemptService {
   }
 
   async resolveSubscriber(subscriberId: string): Promise<string | null> {
-    const rows = await this.dataSource.query<readonly { guest_installation_id: string }[]>(
-      `SELECT guest_installation_id FROM economy.revenuecat_subscriber_mappings WHERE subscriber_id = $1`, [subscriberId],
+    const owner = await this.resolveSubscriberOwner(subscriberId);
+    return owner?.type === 'guest' ? owner.guestInstallationId : null;
+  }
+
+  async resolveSubscriberOwner(subscriberId: string): Promise<CommerceOwner | null> {
+    const rows = await this.dataSource.query<readonly MappingRow[]>(
+      `SELECT guest_installation_id, account_id FROM economy.revenuecat_subscriber_mappings WHERE subscriber_id = $1`,
+      [subscriberId],
     );
-    return rows[0]?.guest_installation_id ?? null;
+    return mappingOwner(rows[0]);
   }
 
   async resolveMappedGuest(subscriberIds: readonly string[]): Promise<MappedGuest | null> {
+    const resolved = await this.resolveMappedOwner(subscriberIds);
+    if (resolved === null) return null;
+    if (resolved.status === 'alias_conflict') return { status: 'alias_conflict' };
+    if (resolved.owner.type !== 'guest') return null;
+    return { status: 'resolved', guestId: resolved.owner.guestInstallationId, ids: resolved.ids };
+  }
+
+  /**
+   * RevenueCat rotates the anonymous subscriber identifier whenever the app
+   * logs out, and delivers later events under the new identifier only. Widening
+   * the mapping to every identifier seen together keeps the owner reachable
+   * after that rotation instead of stranding the purchase (ADR-0045).
+   */
+  async resolveMappedOwner(subscriberIds: readonly string[]): Promise<MappedOwner | null> {
     const ids = [...new Set(subscriberIds)];
-    const guestIds = await Promise.all(ids.map((id) => this.resolveSubscriber(id)));
-    const guestId = guestIds.find((id): id is string => id !== null) ?? null;
-    if (guestId === null) return null;
-    if (guestIds.some((id) => id !== null && id !== guestId)) return { status: 'alias_conflict' };
+    const owners = await Promise.all(ids.map((id) => this.resolveSubscriberOwner(id)));
+    const owner = owners.find((candidate): candidate is CommerceOwner => candidate !== null) ?? null;
+    if (owner === null) return null;
+    if (owners.some((candidate) => candidate !== null && !sameOwner(candidate, owner))) {
+      return { status: 'alias_conflict' };
+    }
+    await this.bindSubscribers(owner, ids);
+    return { status: 'resolved', owner, ids };
+  }
+
+  /**
+   * Claims every subscriber identifier for one owner. A TRANSFER hands the
+   * store purchases to an identifier that has never been mapped, so the binding
+   * has to be written from the event rather than waiting for a purchase the
+   * player may never make again.
+   */
+  async bindSubscribers(owner: CommerceOwner, subscriberIds: readonly string[]): Promise<void> {
+    const ids = [...new Set(subscriberIds)];
+    if (ids.length === 0) return;
+    const guestId = owner.type === 'guest' ? owner.guestInstallationId : null;
+    const accountId = owner.type === 'account' ? owner.accountId : null;
     await this.dataSource.query(
-      `INSERT INTO economy.revenuecat_subscriber_mappings (subscriber_id, guest_installation_id)
-       SELECT value, $1 FROM unnest($2::varchar[]) AS value
-       ON CONFLICT (subscriber_id) DO UPDATE SET updated_at = now()`,
-      [guestId, ids],
+      `INSERT INTO economy.revenuecat_subscriber_mappings (subscriber_id, guest_installation_id, account_id)
+       SELECT value, $1, $2 FROM unnest($3::varchar[]) AS value
+       ON CONFLICT (subscriber_id) DO UPDATE
+         SET guest_installation_id = $1, account_id = $2, updated_at = now()`,
+      [guestId, accountId, ids],
     );
-    return { status: 'resolved', guestId, ids };
   }
 
   async applyWebhook(subscriberIds: string | readonly string[], productId: string, environment: 'sandbox' | 'production', transactionId: string) {

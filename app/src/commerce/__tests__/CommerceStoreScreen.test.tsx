@@ -165,6 +165,9 @@ jest.mock('@/analytics/gameplayEvents', () => ({
   captureGameplayEvent: (...args: unknown[]) => mockCaptureGameplayEvent(...args),
 }));
 
+const mockGetSubscriberId = jest.fn<Promise<string>, unknown[]>();
+const mockPrepareGuestSubscriber = jest.fn<Promise<string>, unknown[]>();
+
 jest.mock('@/commerce/revenueCat', () => ({
   getRevenueCatOfferings: (...args: unknown[]) => mockGetOfferings(...args),
   isRevenueCatTrialEligible: (...args: unknown[]) => mockTrialEligible(...args),
@@ -174,7 +177,8 @@ jest.mock('@/commerce/revenueCat', () => ({
   restoreRevenueCatPurchases: (...args: unknown[]) => mockRestorePurchases(...args),
   showRevenueCatManageSubscriptions: (...args: unknown[]) => mockManageSubscriptions(...args),
   useRevenueCatRuntime: () => ({ message: null, status: 'ready' }),
-  getRevenueCatSubscriberId: jest.fn().mockResolvedValue('anonymous-subscriber'),
+  getRevenueCatSubscriberId: (...args: unknown[]) => mockGetSubscriberId(...args),
+  prepareGuestRevenueCatSubscriber: (...args: unknown[]) => mockPrepareGuestSubscriber(...args),
 }));
 
 jest.mock('@/api/guestPurchase', () => ({
@@ -261,6 +265,8 @@ beforeEach(() => {
   mockFetchCoinPackReconciliation.mockResolvedValue({ status: 'pending', balance: null });
   mockFetchCoinBalance.mockResolvedValue(420);
   mockMapGuestRevenueCatSubscriber.mockResolvedValue(undefined);
+  mockGetSubscriberId.mockResolvedValue('anonymous-subscriber');
+  mockPrepareGuestSubscriber.mockResolvedValue('anonymous-subscriber');
   mockCreateGuestPurchaseAttempt.mockResolvedValue({
     id: 'guest-attempt-81', status: 'created', productId: 'com.avk.stitchwish.coin_pack_300',
     supportReference: 'SW-GUEST-COIN', providerTransactionId: null,
@@ -989,6 +995,26 @@ it('drives the Guest purchase through mapping, durable attempt, verification and
   expect(mockFetchGuestPurchaseAttempt).toHaveBeenCalledWith('guest-attempt-81');
   expect(mockFetchCoinBalance).toHaveBeenCalledWith();
   expect(allText(renderer!.root)).toContain('300 Stitch Coins grant verified. Stitch Coin balance: 420.');
+});
+
+it('claims the rotated anonymous subscriber when RevenueCat re-identifies during the purchase', async () => {
+  // RevenueCat rotates the anonymous identifier on sign-out and reports the
+  // purchase under whichever identifier is current, so the Game Backend mapping
+  // has to follow it or the store webhook resolves to nobody.
+  mockPrepareGuestSubscriber.mockResolvedValue('anonymous-subscriber');
+  mockGetSubscriberId.mockResolvedValue('rotated-subscriber');
+
+  await renderScreen();
+  await openCoinPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  await act(async () => pressByText(renderer!.root, 'Continue as Guest'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
+    await flushPromises();
+  });
+
+  expect(mockMapGuestRevenueCatSubscriber).toHaveBeenNthCalledWith(1, 'anonymous-subscriber');
+  expect(mockMapGuestRevenueCatSubscriber).toHaveBeenNthCalledWith(2, 'rotated-subscriber');
 });
 
 it('shows a Guest Player the Support Reference when Coin Pack reconciliation fails', async () => {

@@ -299,6 +299,42 @@ describe('Commerce reversal and operational recovery', () => {
     });
   });
 
+  describe('TRANSFER onto a rotated anonymous subscriber', () => {
+    // RevenueCat rotates the anonymous subscriber when the app signs out and
+    // moves the store purchases onto it. The destination is neither a
+    // Registered Account nor a mapped Guest, so without inheriting the source
+    // owner every later RENEWAL is rejected and the player's Premium silently
+    // stops reconciling.
+    it('inherits the Guest owner and keeps renewing the membership under the new subscriber', async () => {
+      const guest = await newGuest();
+      const oldSubscriber = `$RCAnonymousID:${randomUUID()}`;
+      const rotatedSubscriber = `$RCAnonymousID:${randomUUID()}`;
+      const transactionId = `rotate-${randomUUID()}`;
+      const originalTransactionId = `rotate-original-${randomUUID()}`;
+      await mapGuest(guest, oldSubscriber);
+      await webhook(premiumEvent({ subscriberId: oldSubscriber, transactionId, originalTransactionId })).expect(200);
+
+      await webhook({
+        id: `transfer-${randomUUID()}`, type: 'TRANSFER', environment: 'SANDBOX',
+        transferred_from: [oldSubscriber], transferred_to: [rotatedSubscriber],
+      }).expect(200);
+
+      const renewalTransactionId = `rotate-renewal-${randomUUID()}`;
+      await webhook(premiumEvent({
+        subscriberId: rotatedSubscriber, transactionId: renewalTransactionId, originalTransactionId,
+        type: 'RENEWAL', expirationAtMs: Date.now() + 60 * 86_400_000,
+      })).expect(200);
+
+      await request(httpServer).get('/v1/commerce/membership').set(guestHeaders(guest.accessToken)).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'monthly' }));
+      const mapping = await dataSource.query<readonly { guest_installation_id: string }[]>(
+        `SELECT guest_installation_id FROM economy.revenuecat_subscriber_mappings WHERE subscriber_id = $1`,
+        [rotatedSubscriber],
+      );
+      expect(mapping).toEqual([{ guest_installation_id: guest.guestId }]);
+    });
+  });
+
   describe('Concurrent webhook delivery cannot double-bind or double-grant', () => {
     it('binds a raced Coin transaction to only one Account', async () => {
       const first = await newRegisteredAccount(); const second = await newRegisteredAccount(); const transactionId = `race-${randomUUID()}`;

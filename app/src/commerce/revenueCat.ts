@@ -258,6 +258,18 @@ export async function purchaseRevenueCatPackage(
   return Purchases.purchasePackage(pkg);
 }
 
+/**
+ * Guest commerce keys the Game Backend mapping on the RevenueCat subscriber, so
+ * the identifier has to be read after the SDK identity has settled. Reading it
+ * first lets a queued sign-out rotate the anonymous identifier between the
+ * mapping write and the store purchase, and RevenueCat then reports the
+ * purchase under an identifier the Game Backend cannot resolve (ADR-0045).
+ */
+export async function prepareGuestRevenueCatSubscriber(): Promise<string> {
+  await synchronizeRevenueCatIdentity(null);
+  return getRevenueCatSubscriberId();
+}
+
 export async function getRevenueCatSubscriberId(): Promise<string> {
   if (!(await initializeRevenueCat())) {
     throw new Error(useRevenueCatRuntime.getState().message ?? 'Commerce is not configured.');
