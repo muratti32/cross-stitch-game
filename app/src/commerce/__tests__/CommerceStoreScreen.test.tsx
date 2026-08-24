@@ -108,6 +108,9 @@ jest.mock('@/components', () => {
         ),
       )
       : null,
+    // The purchase result modal is exercised for real here: its variant copy
+    // and button labels are part of what the player observes.
+    PurchaseResultModal: require('@/components/PurchaseResultModal').PurchaseResultModal,
   };
 });
 
@@ -558,6 +561,38 @@ it('emits completion only after verified membership and AI Credit refresh', asyn
   expect(allText(renderer!.root)).not.toContain('Purchase Reconciliation Pending');
 });
 
+it('carries the purchase result modal from pending to a verified Premium grant with its billing period', async () => {
+  mockIdentity = { accountId: 'account_premium_modal', isAccount: true };
+  mockPurchasePackage.mockResolvedValue({});
+  let resolveVerification: (value: ReturnType<typeof activeMembership>) => void = () => undefined;
+  mockFetchMembership
+    .mockResolvedValueOnce(inactiveMembership())
+    .mockReturnValueOnce(new Promise((resolve) => { resolveVerification = resolve; }));
+  await renderScreen();
+
+  await act(async () => pressByText(renderer!.root, 'Choose Annual'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm Annual');
+    await flushPromises();
+  });
+  await dismissPremiumConfirmation();
+
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase received',
+    'The store accepted Annual. Verifying your purchase now.',
+  ]));
+
+  await act(async () => {
+    resolveVerification(activeMembership('annual'));
+    await flushPromises();
+  });
+
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Premium is active',
+    'Annual Premium is now active, billed every 1 year.',
+  ]));
+});
+
 it('reports backend verification failures before opening the store', async () => {
   mockIdentity = { accountId: 'account_80', isAccount: true };
   mockFetchMembership.mockRejectedValue(new Error('backend offline'));
@@ -594,6 +629,14 @@ it('keeps verified Premium pending when AI Credit refresh fails at the grant sta
     'Retry reconciliation',
     'Premium was verified, but membership and AI Credit state could not be refreshed. Retry reconciliation.',
   ]));
+  // The stale "Verifying your purchase now" pending modal must not survive a
+  // terminal failure — it flips to the failed variant carrying the same
+  // reason the page-level banner shows.
+  expect(resultModalText(renderer!.root).join(' ')).not.toContain('Verifying your purchase now');
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase failed',
+    'Premium was verified, but membership and AI Credit state could not be refreshed. Retry reconciliation.',
+  ]));
 });
 
 it('keeps a prolonged reconciliation pending and offers Retry without repurchase', async () => {
@@ -612,7 +655,65 @@ it('keeps a prolonged reconciliation pending and offers Retry without repurchase
     'Support Reference: SW-ABCD-EFGH',
   ]));
   expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+  // A prolonged wait is not a failure: the modal moves to the informational
+  // variant instead of flipping to the failed variant, and offers no retry
+  // of its own — Retry stays on the page-level banner above.
+  expect(resultModalVisible(renderer!.root)).toBe(true);
+  const modalText = resultModalText(renderer!.root);
+  expect(modalText).toEqual(expect.arrayContaining([
+    'Still verifying',
+  ]));
+  expect(modalText.join(' ').toLowerCase()).not.toContain('fail');
+  expect(modalText.join(' ').toLowerCase()).not.toContain('try again');
+  expect(modalText.join(' ').toLowerCase()).not.toContain('buy it again');
   now.mockRestore();
+});
+
+it('flips from pending to the informational variant once verification runs past the internal threshold', async () => {
+  // Fake timers here only: modern fake timers fake Date.now, so advancing them
+  // is what actually crosses the screen's internal RECONCILIATION_DELAY_MS
+  // threshold rather than mocking Date.now directly. The rest of the suite
+  // keeps real timers.
+  jest.useFakeTimers();
+  try {
+    mockIdentity = { accountId: 'account_prolonged_fake_timers', isAccount: true };
+    mockPurchasePackage.mockResolvedValue({});
+    // Never terminal: membership stays inactive on every poll.
+    mockFetchMembership.mockResolvedValue(inactiveMembership());
+    await renderScreen();
+
+    await act(async () => pressByText(renderer!.root, 'Choose Annual'));
+    await act(async () => {
+      pressByText(renderer!.root, 'Confirm Annual');
+      await flushPromises();
+    });
+    await dismissPremiumConfirmation();
+
+    expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+      'Purchase received',
+    ]));
+
+    // Advance past the ~10s threshold in RECONCILIATION_POLL_MS-sized steps,
+    // flushing the reconciliation promise chain between each poll.
+    for (let elapsed = 0; elapsed < 12_000; elapsed += 2_000) {
+      await act(async () => {
+        jest.advanceTimersByTime(2_000);
+        await flushPromises();
+      });
+    }
+
+    const modalText = resultModalText(renderer!.root);
+    expect(modalText).toEqual(expect.arrayContaining([
+      'Still verifying',
+      'Verification is still under way. Premium will activate once the Game Backend confirms it.',
+    ]));
+    expect(modalText).not.toEqual(expect.arrayContaining(['Purchase received']));
+    expect(modalText.join(' ').toLowerCase()).not.toContain('fail');
+    expect(modalText.join(' ').toLowerCase()).not.toContain('try again');
+    expect(modalText.join(' ').toLowerCase()).not.toContain('buy it again');
+  } finally {
+    jest.useRealTimers();
+  }
 });
 
 it('routes restore through pending and completes from the backend-observed plan', async () => {
@@ -637,7 +738,7 @@ it('routes restore through pending and completes from the backend-observed plan'
   });
 });
 
-it('restores a Guest Player Premium entitlement without restoring consumables', async () => {
+it('restores a Guest Player Premium entitlement through the informational modal, not a native alert', async () => {
   const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
   await renderScreen();
 
@@ -650,9 +751,16 @@ it('restores a Guest Player Premium entitlement without restoring consumables', 
 
   expect(mockMapGuestRevenueCatSubscriber).toHaveBeenCalledWith('anonymous-subscriber');
   expect(mockRestorePurchases).toHaveBeenCalledWith(null);
-  expect(alert).toHaveBeenCalledWith(
+  expect(alert).not.toHaveBeenCalled();
+  expect(resultModalVisible(renderer!.root)).toBe(true);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
     'Restore requested',
-    expect.stringContaining('Stitch Coin and AI Credit packs are never restored.'),
+  ]));
+  expect(resultModalText(renderer!.root).join(' ')).toContain(
+    'Verified Premium access will appear after the store webhook is reconciled.',
+  );
+  expect(resultModalText(renderer!.root).join(' ')).toContain(
+    'Stitch Coin and AI Credit packs are never restored.',
   );
   expect(mockRouter.push).not.toHaveBeenCalled();
   expect(mockCreateReconciliation).not.toHaveBeenCalled();
@@ -699,6 +807,23 @@ it('cancels the prepared Guest attempt when the store rejects the purchase', asy
 
   expect(mockCancelGuestPurchaseAttempt).toHaveBeenCalledWith('guest-attempt-81');
   expect(mockFetchGuestPurchaseAttempt).not.toHaveBeenCalled();
+});
+
+it('shows a Guest Player the Support Reference when the purchase fails', async () => {
+  // Support cannot locate the Purchase Attempt without the reference, so the
+  // failure modal carries it as the detail line for a Guest Player.
+  mockPurchasePackage.mockRejectedValue(new Error('store unavailable'));
+  await renderScreen();
+
+  await act(async () => pressByText(renderer!.root, 'Choose Annual'));
+  await act(async () => pressByText(renderer!.root, 'Continue as Guest'));
+  await act(async () => pressByText(renderer!.root, 'Confirm Annual'));
+  await dismissPremiumConfirmation();
+
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase failed',
+    'Support Reference: SW-GUEST-COIN',
+  ]));
 });
 
 it('leaves a Registered Account restore on the Purchase Reconciliation path', async () => {
@@ -866,6 +991,24 @@ it('drives the Guest purchase through mapping, durable attempt, verification and
   expect(allText(renderer!.root)).toContain('300 Stitch Coins grant verified. Stitch Coin balance: 420.');
 });
 
+it('shows a Guest Player the Support Reference when Coin Pack reconciliation fails', async () => {
+  mockFetchGuestPurchaseAttempt.mockResolvedValue({ status: 'failed', balance: null });
+  await renderScreen();
+  await openCoinPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  await act(async () => pressByText(renderer!.root, 'Continue as Guest'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
+    await flushPromises();
+  });
+
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase failed',
+    'The store transaction did not match this Coin Pack. Retry verification or contact support; do not buy it again.',
+    'Support Reference: SW-GUEST-COIN',
+  ]));
+});
+
 it('opens current Coin Pack prices directly for a Stitch Coin shortfall', async () => {
   mockParams = { category: 'stitch_coin', source: 'stitch_coin_shortfall' };
   await renderScreen();
@@ -991,6 +1134,7 @@ it('treats AI Credit Pack cancellation as non-error without reconciliation', asy
   });
   expect(mockCreateAiCreditPackReconciliation).not.toHaveBeenCalled();
   expect(allText(renderer!.root)).not.toContain('Purchase Reconciliation Pending');
+  expect(resultModalVisible(renderer!.root)).toBe(false);
   expect(alert).not.toHaveBeenCalled();
   alert.mockRestore();
 });
@@ -1015,8 +1159,15 @@ it('reports an AI Credit Pack store failure without starting reconciliation', as
   const expectedMessage =
     'The test purchase was declined. No payment was made. Choose a different Test Store result in Settings, then try again.';
   expect(allText(renderer!.root)).toContain(expectedMessage);
-  expect(visibleModalCount(renderer!.root)).toBe(0);
-  expect(alert).toHaveBeenCalledWith('Purchase failed', expectedMessage);
+  // The pack sheet closed and the in-game result modal replaced the native
+  // alert, so the failure is the only thing presented.
+  expect(allText(renderer!.root)).not.toContain('Buy');
+  expect(visibleModalCount(renderer!.root)).toBe(1);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase failed',
+    expectedMessage,
+  ]));
+  expect(alert).not.toHaveBeenCalled();
   alert.mockRestore();
 });
 
@@ -1036,6 +1187,9 @@ it.each([
   });
   expect(allText(renderer!.root).join(' ')).toContain(message);
   expect(allText(renderer!.root)).toContain('Retry reconciliation');
+  expect(resultModalText(renderer!.root).join(' ')).not.toContain('Verifying your purchase now');
+  expect(resultModalText(renderer!.root)).toContain('Purchase failed');
+  expect(resultModalText(renderer!.root).join(' ')).toContain(message);
 });
 
 it('updates AI Credit balance and completes only after the exact backend grant', async () => {
@@ -1054,6 +1208,40 @@ it('updates AI Credit balance and completes only after the exact backend grant',
   expect(allText(renderer!.root)).toContain(
     '5 AI Credits grant verified. AI Credit balance: 9.',
   );
+});
+
+it('carries the purchase result modal from pending to a verified AI Credit Pack grant', async () => {
+  mockIdentity = { accountId: 'account_ai_modal', isAccount: true };
+  let resolveReconciliation: (value: { status: string; balance: number | null }) => void = () => undefined;
+  mockFetchAiCreditPackReconciliation.mockReturnValue(
+    new Promise((resolve) => { resolveReconciliation = resolve; }),
+  );
+  await renderScreen();
+  await openAiCreditPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 5 AI Credits');
+    await flushPromises();
+  });
+
+  // The pack sheet closed before the pending modal opened.
+  expect(allText(renderer!.root)).not.toContain('Buy');
+  expect(visibleModalCount(renderer!.root)).toBe(1);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase received',
+    'The store accepted 5 AI Credits. Verifying your purchase now.',
+  ]));
+
+  await act(async () => {
+    resolveReconciliation({ status: 'granted', balance: 9 });
+    await flushPromises();
+  });
+
+  expect(visibleModalCount(renderer!.root)).toBe(1);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'AI Credits granted',
+    '5 AI Credits have been added to your balance.',
+  ]));
 });
 
 it('offers Retry after a delayed AI Credit grant without another store purchase', async () => {
@@ -1076,6 +1264,15 @@ it('offers Retry after a delayed AI Credit grant without another store purchase'
     'Support Reference: SW-AI-CREDIT',
   ]));
   expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+  // A prolonged wait is not a failure: the modal moves to the informational
+  // variant, offering no retry of its own.
+  expect(resultModalVisible(renderer!.root)).toBe(true);
+  const modalText = resultModalText(renderer!.root);
+  expect(modalText).toEqual(expect.arrayContaining([
+    'Still verifying',
+    'Verification is still under way. Your AI Credit balance will update once it completes.',
+  ]));
+  expect(modalText.join(' ').toLowerCase()).not.toContain('fail');
   now.mockRestore();
 });
 
@@ -1170,10 +1367,8 @@ it('keeps the exact Coin Pack intent pending with Support Reference and blocks r
   await act(async () => pressAncestor(renderer!.root.findByProps({ testID: 'open-stitch-coin-packs' })));
   expect(pressableByText(renderer!.root, 'Buy').props.disabled).toBe(true);
   expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
-  expect(alert).toHaveBeenCalledWith(
-    'Purchase received',
-    'The store accepted 300 Stitch Coins. Verifying your purchase now.',
-  );
+  // Store acceptance replaced the native alert with the in-game result modal.
+  expect(alert).not.toHaveBeenCalled();
   alert.mockRestore();
 });
 
@@ -1190,7 +1385,19 @@ it('reports a Coin Pack store failure without starting backend reconciliation', 
   });
   expect(mockCreateCoinPackReconciliation).not.toHaveBeenCalled();
   expect(allText(renderer!.root)).toContain('store unavailable');
-  expect(visibleModalCount(renderer!.root)).toBe(0);
+  expect(allText(renderer!.root)).not.toContain('Buy');
+  expect(visibleModalCount(renderer!.root)).toBe(1);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase failed',
+    'store unavailable',
+  ]));
+  // Retry lives only on the page-level banner, which outlives the modal.
+  expect(resultModalText(renderer!.root)).not.toContain('Retry reconciliation');
+
+  await act(async () => pressByText(renderer!.root, 'Close'));
+
+  expect(resultModalVisible(renderer!.root)).toBe(false);
+  expect(allText(renderer!.root)).toContain('store unavailable');
 });
 
 it('keeps an exact-product verification mismatch pending without encouraging repurchase', async () => {
@@ -1212,6 +1419,13 @@ it('keeps an exact-product verification mismatch pending without encouraging rep
     'Retry reconciliation',
     'The store transaction did not match this Coin Pack. Retry verification or contact support; do not buy it again.',
   ]));
+  // The pending modal opened at store acceptance must not still claim
+  // verification is under way once the backend has reported a mismatch.
+  expect(resultModalText(renderer!.root).join(' ')).not.toContain('Verifying your purchase now');
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase failed',
+    'The store transaction did not match this Coin Pack. Retry verification or contact support; do not buy it again.',
+  ]));
 });
 
 it('reports a verified transaction with a missing Coin grant at the grant stage', async () => {
@@ -1229,6 +1443,10 @@ it('reports a verified transaction with a missing Coin grant at the grant stage'
   expect(allText(renderer!.root)).toContain(
     'The purchase was verified, but the Stitch Coin grant is unavailable. Retry reconciliation; do not buy it again.',
   );
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase failed',
+    'The purchase was verified, but the Stitch Coin grant is unavailable. Retry reconciliation; do not buy it again.',
+  ]));
 });
 
 it('updates the wallet and emits completion only after the matching backend Coin grant', async () => {
@@ -1248,6 +1466,70 @@ it('updates the wallet and emits completion only after the matching backend Coin
     '300 Stitch Coins grant verified. Stitch Coin balance: 420.',
   );
   expect(allText(renderer!.root)).not.toContain('Purchase Reconciliation Pending');
+});
+
+it('carries the purchase result modal from pending to a verified Coin Pack grant', async () => {
+  mockIdentity = { accountId: 'account_coin_modal', isAccount: true };
+  let resolveReconciliation: (value: { status: string; balance: number | null }) => void = () => undefined;
+  mockFetchCoinPackReconciliation.mockReturnValue(
+    new Promise((resolve) => { resolveReconciliation = resolve; }),
+  );
+  await renderScreen();
+  await openCoinPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
+    await flushPromises();
+  });
+
+  // The pack sheet closed before the pending modal opened.
+  expect(allText(renderer!.root)).not.toContain('Buy');
+  expect(visibleModalCount(renderer!.root)).toBe(1);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Purchase received',
+    'The store accepted 300 Stitch Coins. Verifying your purchase now.',
+  ]));
+
+  await act(async () => {
+    resolveReconciliation({ status: 'granted', balance: 420 });
+    await flushPromises();
+  });
+
+  expect(visibleModalCount(renderer!.root)).toBe(1);
+  expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Stitch Coins granted',
+    '300 Stitch Coins have been added to your balance.',
+  ]));
+});
+
+it('lets the pending modal be dismissed without stopping Coin Pack reconciliation', async () => {
+  mockIdentity = { accountId: 'account_coin_dismiss', isAccount: true };
+  let resolveReconciliation: (value: { status: string; balance: number | null }) => void = () => undefined;
+  mockFetchCoinPackReconciliation.mockReturnValue(
+    new Promise((resolve) => { resolveReconciliation = resolve; }),
+  );
+  await renderScreen();
+  await openCoinPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
+    await flushPromises();
+  });
+
+  expect(resultModalVisible(renderer!.root)).toBe(true);
+
+  await act(async () => pressByText(renderer!.root, 'Got it'));
+
+  expect(resultModalVisible(renderer!.root)).toBe(false);
+
+  await act(async () => {
+    resolveReconciliation({ status: 'granted', balance: 420 });
+    await flushPromises();
+  });
+
+  expect(allText(renderer!.root)).toContain(
+    '300 Stitch Coins grant verified. Stitch Coin balance: 420.',
+  );
 });
 
 it('keeps a delayed Coin grant pending and offers Retry without another store purchase', async () => {
@@ -1270,6 +1552,15 @@ it('keeps a delayed Coin grant pending and offers Retry without another store pu
     'Support Reference: SW-COIN-PACK',
   ]));
   expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+  // A prolonged wait is not a failure: the modal moves to the informational
+  // variant, offering no retry of its own.
+  expect(resultModalVisible(renderer!.root)).toBe(true);
+  const modalText = resultModalText(renderer!.root);
+  expect(modalText).toEqual(expect.arrayContaining([
+    'Still verifying',
+    'Verification is still under way. Your Stitch Coin balance will update once it completes.',
+  ]));
+  expect(modalText.join(' ').toLowerCase()).not.toContain('fail');
   now.mockRestore();
 });
 
@@ -1393,6 +1684,16 @@ it('does not offer a pack category the store returned no packs for', async () =>
 
 function subscriptionDisclosure(): ReactTestInstance {
   return renderer!.root.findByProps({ testID: 'commerce-subscription-disclosure' });
+}
+
+function resultModalVisible(root: ReactTestInstance): boolean {
+  return root.findAllByProps({ testID: 'purchase-result-modal' }).length > 0;
+}
+
+function resultModalText(root: ReactTestInstance): string[] {
+  const modals = root.findAllByProps({ testID: 'purchase-result-modal' });
+  if (modals.length === 0) throw new Error('Missing purchase result modal');
+  return allText(modals[0]!);
 }
 
 function visibleModalCount(root: ReactTestInstance): number {
