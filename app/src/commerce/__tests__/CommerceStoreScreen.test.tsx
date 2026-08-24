@@ -1001,6 +1001,7 @@ it('shows a Guest Player the Support Reference when Coin Pack reconciliation fai
     pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
     await flushPromises();
   });
+  await dismissProductSheet();
 
   expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
     'Purchase failed',
@@ -1224,8 +1225,12 @@ it('carries the purchase result modal from pending to a verified AI Credit Pack 
     await flushPromises();
   });
 
-  // The pack sheet closed before the pending modal opened.
+  // iOS still owns the dismissed native sheet until onDismiss. Presenting the
+  // result modal before that callback makes it disappear and leaves touches
+  // captured by the stale sheet.
   expect(allText(renderer!.root)).not.toContain('Buy');
+  expect(resultModalVisible(renderer!.root)).toBe(false);
+  await dismissProductSheet();
   expect(visibleModalCount(renderer!.root)).toBe(1);
   expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
     'Purchase received',
@@ -1257,6 +1262,7 @@ it('offers Retry after a delayed AI Credit grant without another store purchase'
     pressByText(renderer!.root, 'Confirm 5 AI Credits');
     await flushPromises();
   });
+  await dismissProductSheet();
 
   expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
     'Purchase Reconciliation Pending',
@@ -1481,8 +1487,9 @@ it('carries the purchase result modal from pending to a verified Coin Pack grant
     pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
     await flushPromises();
   });
+  await dismissProductSheet();
 
-  // The pack sheet closed before the pending modal opened.
+  // The pending modal opens only after native dismissal completes.
   expect(allText(renderer!.root)).not.toContain('Buy');
   expect(visibleModalCount(renderer!.root)).toBe(1);
   expect(resultModalText(renderer!.root)).toEqual(expect.arrayContaining([
@@ -1515,6 +1522,7 @@ it('lets the pending modal be dismissed without stopping Coin Pack reconciliatio
     pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
     await flushPromises();
   });
+  await dismissProductSheet();
 
   expect(resultModalVisible(renderer!.root)).toBe(true);
 
@@ -1545,6 +1553,7 @@ it('keeps a delayed Coin grant pending and offers Retry without another store pu
     pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
     await flushPromises();
   });
+  await dismissProductSheet();
 
   expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
     'Purchase Reconciliation Pending',
@@ -1765,12 +1774,14 @@ async function dismissPremiumConfirmation(): Promise<void> {
 async function openCoinPacks(): Promise<void> {
   await act(async () => {
     pressAncestor(renderer!.root.findByProps({ testID: 'open-stitch-coin-packs' }));
+    renderer!.root.findByProps({ testID: 'product-sheet-modal' }).props.onShow();
   });
 }
 
 async function openAiCreditPacks(): Promise<void> {
   await act(async () => {
     pressAncestor(renderer!.root.findByProps({ testID: 'open-ai-credit-packs' }));
+    renderer!.root.findByProps({ testID: 'product-sheet-modal' }).props.onShow();
   });
 }
 
@@ -1781,6 +1792,7 @@ async function confirmSmallCoinPackPurchase(): Promise<void> {
     pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
     await flushPromises();
   });
+  await dismissProductSheet();
 }
 
 async function confirmSmallAiCreditPackPurchase(): Promise<void> {
@@ -1788,6 +1800,14 @@ async function confirmSmallAiCreditPackPurchase(): Promise<void> {
   await act(async () => pressByText(renderer!.root, 'Buy'));
   await act(async () => {
     pressByText(renderer!.root, 'Confirm 5 AI Credits');
+    await flushPromises();
+  });
+  await dismissProductSheet();
+}
+
+async function dismissProductSheet(): Promise<void> {
+  await act(async () => {
+    renderer!.root.findByProps({ testID: 'product-sheet-modal' }).props.onDismiss();
     await flushPromises();
   });
 }

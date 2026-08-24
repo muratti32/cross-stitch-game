@@ -164,6 +164,7 @@ export default function CommerceScreen() {
   // flow is already imperative, so the modal is set at the call sites rather
   // than re-derived from reconciliation and query state.
   const [resultModal, setResultModal] = useState<PurchaseResultModalState | null>(null);
+  const [productSheetPresented, setProductSheetPresented] = useState(false);
 
   // The pack sheet is a native RN <Modal>, and the Premium/Coin/AI Credit
   // confirmations and the GuestDataRiskNotice are Modals too. iOS never
@@ -1473,6 +1474,8 @@ export default function CommerceScreen() {
           setConfirmingAiCreditPack(null);
           setOpenCategory(null);
         }}
+        onDismiss={() => setProductSheetPresented(false)}
+        onShow={() => setProductSheetPresented(true)}
         onPurchase={attemptPurchase}
       />
       <GuestDataRiskNotice
@@ -1498,7 +1501,7 @@ export default function CommerceScreen() {
         }}
         onDismiss={() => setGuestCommerceProduct(null)}
       />
-      {resultModal !== null && (
+      {resultModal !== null && !productSheetPresented && (
         <PurchaseResultModal
           visible
           variant={resultModal.variant}
@@ -1793,6 +1796,8 @@ function ProductSheet({
   reconcilingProductKey,
   confirmation,
   onClose,
+  onDismiss,
+  onShow,
   onPurchase,
 }: {
   category: CommerceCategory | null;
@@ -1802,6 +1807,8 @@ function ProductSheet({
   reconcilingProductKey: string | null;
   confirmation: React.ReactNode;
   onClose: () => void;
+  onDismiss: () => void;
+  onShow: () => void;
   onPurchase: (product: CommerceProduct) => void;
 }) {
   const requestedVisible = category === 'stitch_coin' || category === 'ai_credit';
@@ -1849,7 +1856,9 @@ function ProductSheet({
   return (
     <Modal
       animationType="none"
+      onDismiss={onDismiss}
       onRequestClose={closeWithBackdropFade}
+      onShow={onShow}
       testID="product-sheet-modal"
       transparent
       visible={requestedVisible}
