@@ -916,6 +916,150 @@ it('classifies the reverse direction as a plan change on iOS', async () => {
   expect(allText(renderer!.root)).not.toContain('UPGRADE');
 });
 
+it('opens an in-app upgrade confirmation showing the Current Plan, target price, billing period, and credit allowance', async () => {
+  mockIdentity = { accountId: 'account_upgrade_confirm', isAccount: true };
+  mockMembership = activeMembership('weekly');
+  await renderScreen();
+
+  await act(async () => {
+    renderer!.root.findByProps({ testID: 'premium-premium_monthly' }).props.onPress();
+  });
+
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('commerce_product_selected', {
+    product_kind: 'premium_membership',
+    product_key: 'premium_monthly',
+  });
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    'Confirm Premium upgrade',
+    'Current Plan: Weekly',
+    'Upgrade to Monthly · $7.99 every 1 month',
+    '15 credits / paid month',
+  ]));
+  expect(allText(renderer!.root).join(' ')).toContain(
+    'The App Store controls the final charge and effective date for this upgrade.',
+  );
+  expect(mockPurchasePackage).not.toHaveBeenCalled();
+});
+
+it('never opens the upgrade confirmation for the reverse (plan change) direction', async () => {
+  mockIdentity = { accountId: 'account_downgrade_noop', isAccount: true };
+  mockMembership = activeMembership('annual');
+  await renderScreen();
+
+  await act(async () => {
+    renderer!.root.findByProps({ testID: 'premium-premium_weekly' }).props.onPress();
+  });
+
+  expect(allText(renderer!.root)).not.toContain('Confirm Premium upgrade');
+});
+
+it('completes a direct iOS upgrade through the ordinary purchase and reconciliation path with subscription_change analytics', async () => {
+  mockIdentity = { accountId: 'account_upgrade_flow', isAccount: true };
+  mockMembership = activeMembership('weekly');
+  mockPurchasePackage.mockResolvedValue({});
+  mockFetchMembership
+    .mockResolvedValueOnce(activeMembership('weekly'))
+    .mockResolvedValue(activeMembership('monthly'));
+  await renderScreen();
+
+  await act(async () => {
+    renderer!.root.findByProps({ testID: 'premium-premium_monthly' }).props.onPress();
+  });
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm upgrade');
+    await flushPromises();
+  });
+  await act(async () => {
+    renderer!.root
+      .findByProps({ testID: 'plan-change-confirmation-modal' })
+      .props.onDismiss();
+    await flushPromises();
+  });
+
+  expect(mockPurchasePackage).toHaveBeenCalledTimes(1);
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_started', {
+    product_kind: 'premium_membership',
+    product_key: 'premium_monthly',
+  });
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('subscription_change_started', {
+    source_plan: 'premium_weekly',
+    target_plan: 'premium_monthly',
+    platform: 'ios',
+  });
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_completed', {
+    product_kind: 'premium_membership',
+    product_key: 'premium_monthly',
+  });
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('subscription_change_completed', {
+    source_plan: 'premium_weekly',
+    target_plan: 'premium_monthly',
+    platform: 'ios',
+  });
+});
+
+it('treats an upgrade store cancellation as a non-error and reports subscription_change_cancelled', async () => {
+  mockIdentity = { accountId: 'account_upgrade_cancel', isAccount: true };
+  mockMembership = activeMembership('weekly');
+  mockPurchasePackage.mockRejectedValue({ userCancelled: true });
+  await renderScreen();
+
+  await act(async () => {
+    renderer!.root.findByProps({ testID: 'premium-premium_monthly' }).props.onPress();
+  });
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm upgrade');
+    await flushPromises();
+  });
+  await act(async () => {
+    renderer!.root
+      .findByProps({ testID: 'plan-change-confirmation-modal' })
+      .props.onDismiss();
+    await flushPromises();
+  });
+
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_cancelled', {
+    product_kind: 'premium_membership',
+    product_key: 'premium_monthly',
+  });
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('subscription_change_cancelled', {
+    source_plan: 'premium_weekly',
+    target_plan: 'premium_monthly',
+    platform: 'ios',
+  });
+  // Cancellation preserves the Current Plan: no failure surfaces and Weekly
+  // remains selected, not the plan the player backed out of.
+  expect(allText(renderer!.root)).not.toContain('Purchase failed');
+});
+
+it('reports a genuine upgrade store failure with subscription_change_failed at the store stage', async () => {
+  mockIdentity = { accountId: 'account_upgrade_store_fail', isAccount: true };
+  mockMembership = activeMembership('weekly');
+  mockPurchasePackage.mockRejectedValue(new Error('store unavailable'));
+  await renderScreen();
+
+  await act(async () => {
+    renderer!.root.findByProps({ testID: 'premium-premium_monthly' }).props.onPress();
+  });
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm upgrade');
+    await flushPromises();
+  });
+  await act(async () => {
+    renderer!.root
+      .findByProps({ testID: 'plan-change-confirmation-modal' })
+      .props.onDismiss();
+    await flushPromises();
+  });
+
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('subscription_change_failed', {
+    source_plan: 'premium_weekly',
+    target_plan: 'premium_monthly',
+    platform: 'ios',
+    failure_stage: 'store',
+  });
+  expect(allText(renderer!.root)).toContain('Purchase failed');
+});
+
 it.each([
   ['grace' as const],
   ['billing_retry' as const],
