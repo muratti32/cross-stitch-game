@@ -6,6 +6,7 @@ import { returningRows } from '../database/query-results';
 import { DAILY_POOL_COIN } from './economy.constants';
 import { AiCreditLedgerReason, CoinLedgerReason } from './entities';
 import {
+  isPremiumPlanDowngrade,
   periodHasEntitlement,
   projectMembershipPeriod,
   projectScheduledChange,
@@ -16,7 +17,7 @@ import {
   type VerifiedMembershipEvent,
 } from './membership-projection';
 import type { PremiumPlan } from './membership.constants';
-import { premiumDailyClaimAmount } from './membership.constants';
+import { premiumDailyClaimAmount, resolvePremiumProduct } from './membership.constants';
 import type { CommerceOwner } from './commerce-owner';
 import { toCommerceOwnerPrincipal } from './commerce-owner';
 import { paidDebitUpdateExpression } from './paid-reserve';
@@ -61,12 +62,28 @@ interface PoolRow {
   premium_claimed: boolean;
 }
 
+/**
+ * A Scheduled Plan Change that has just become the paid period, reported from
+ * the same server-side projection that made the change visible in the first
+ * place (issue #126). `activationKey` names the plan-change request, not the
+ * device that observed it, so the activation can be recorded exactly once no
+ * matter how many devices the player signs in from — or none at all.
+ */
+export interface MembershipPlanChangeActivation {
+  owner: CommerceOwner;
+  sourcePlan: PremiumPlan;
+  targetPlan: PremiumPlan;
+  activatedAt: Date;
+  activationKey: string;
+}
+
 export interface MembershipEventResult {
   recorded: boolean;
   rejectedOtherAccount: boolean;
   periodExists: boolean;
   creditGranted: number;
   creditReversed: number;
+  planChangeActivated: MembershipPlanChangeActivation | null;
 }
 
 export interface MembershipTransferInput {
@@ -141,6 +158,7 @@ export class MembershipRepository {
             periodExists: false,
             creditGranted: 0,
             creditReversed: 0,
+            planChangeActivated: null,
           };
         }
       }
@@ -191,10 +209,16 @@ export class MembershipRepository {
           periodExists: false,
           creditGranted: 0,
           creditReversed: 0,
+          planChangeActivated: null,
         };
       }
 
       await this.upsertPeriod(manager, event, projection);
+      const planChangeActivated = await this.detectPlanChangeActivation(
+        manager,
+        event.environment,
+        projection,
+      );
       const creditGranted = await this.applyCreditGrant(
         manager,
         event.environment,
@@ -216,6 +240,7 @@ export class MembershipRepository {
         periodExists: true,
         creditGranted,
         creditReversed,
+        planChangeActivated,
       };
     });
   }
@@ -521,6 +546,45 @@ export class MembershipRepository {
     );
     const row = rows[0];
     return projectScheduledChange(row === undefined ? undefined : toVerifiedEvent(row), active);
+  }
+
+  /**
+   * Reports the PRODUCT_CHANGE that the period just projected has activated:
+   * the exact inverse of the `NOT EXISTS` clause in getScheduledChange, so a
+   * change stops being scheduled and starts being activated in one step. Only
+   * a downgrade qualifies, for the same reason projectScheduledChange only
+   * projects one — an upgrade never waits, so it is reconciled in-app by the
+   * device that requested it and has no deferred activation to report.
+   */
+  private async detectPlanChangeActivation(
+    manager: EntityManager,
+    environment: 'sandbox' | 'production',
+    projection: MembershipPeriodProjection,
+  ): Promise<MembershipPlanChangeActivation | null> {
+    const rows = await manager.query<readonly MembershipEventRow[]>(
+      `SELECT *
+       FROM economy.membership_events
+       WHERE environment = $1 AND original_transaction_id = $2
+         AND event_type = 'PRODUCT_CHANGE' AND new_product_id = $3
+       ORDER BY event_at DESC, provider_event_id DESC
+       LIMIT 1`,
+      [environment, projection.originalTransactionId, projection.productId],
+    );
+    const row = rows[0];
+    if (row === undefined) return null;
+    const source = resolvePremiumProduct(row.product_id);
+    if (source === null) return null;
+    if (!isPremiumPlanDowngrade(source.plan, projection.plan)) return null;
+    return {
+      owner: projection.owner,
+      sourcePlan: source.plan,
+      targetPlan: projection.plan,
+      activatedAt: projection.startsAt,
+      // The provider event id names the one plan-change request this period
+      // fulfils, so a later change back and forth over the same lineage is a
+      // separate activation rather than a suppressed duplicate.
+      activationKey: `${row.environment}:${row.provider_event_id}`,
+    };
   }
 
   /**

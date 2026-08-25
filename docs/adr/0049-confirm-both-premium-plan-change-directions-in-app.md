@@ -6,7 +6,7 @@ The confirmation is symmetric because the decision is the game's, not the store'
 
 ## Consequences
 
-- A confirmed downgrade emits `subscription_change_started` and, once the Scheduled Plan Change is visible, neither `purchase_completed` nor `subscription_change_completed`: nothing has been granted yet. Both fire later, from the activation the Membership read model reports at the next renewal, so a change requested on one device still completes exactly once wherever the player is signed in.
+- A confirmed downgrade emits `subscription_change_started` and, once the Scheduled Plan Change is visible, neither `purchase_completed` nor `subscription_change_completed`: nothing has been granted yet. `subscription_change_completed` fires later, from the activation the Game Backend observes at the next renewal (ADR-0050), so a change requested on one device is recorded exactly once no matter how many devices the player holds. `purchase_completed` is not fired for it at all: the renewal grants the ordinary Membership Credit for a period, not a purchase the player made.
 - Dismissing the in-app confirmation emits `subscription_change_cancelled`, the same kind the store sheet's own cancellation emits. The two are distinguished by whether the store was reached at all, not by the event.
 - Every Premium Plan action stays locked while a plan change is reconciling, downgrade included, so a second change cannot overlap in the subscription group before the first settles.
 - Android has no single-group ordering to classify against, so it keeps Manage Subscription as its only plan-change surface and this ADR does not apply there.

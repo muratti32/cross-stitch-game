@@ -225,11 +225,6 @@ export default function CommerceScreen() {
   const aiCreditReconciliationRunnerRef = useRef<(
     attempt: AiCreditPackReconciliation,
   ) => Promise<void>>(async () => undefined);
-  // Remembers the last observed scheduled downgrade so its eventual RENEWAL
-  // activation can be told apart from every other reason `membership` changes
-  // (issue #124: `subscription_change_completed` fires exactly once here, not
-  // through the in-app reconciliation path #123 uses for a direct upgrade).
-  const lastScheduledChangeRef = useRef<{ sourcePlan: PurchaseProductKey; targetPlan: PurchaseProductKey } | null>(null);
 
   const loadStore = useCallback(async () => {
     setLoadingStore(true);
@@ -412,38 +407,11 @@ export default function CommerceScreen() {
     }
   }, [currentPlanMapped, currentPlanProductKey, entitledLifecycle]);
 
-  // A scheduled downgrade activates long after the session that requested it,
-  // and it may have been requested from another device or through Manage
-  // Subscription, so its `subscription_change_completed` cannot come from the
-  // in-app reconciliation path. It is fired exactly once here, the moment the
-  // Membership API reports the target plan active and the scheduled state
-  // cleared — recognized by comparing
-  // against the last scheduled change this screen itself observed, since the
-  // Membership API exposes no separate "just activated" signal.
-  useEffect(() => {
-    if (membership === undefined) return;
-    const lastScheduled = lastScheduledChangeRef.current;
-    const targetKey = membership.scheduledChange != null
-      ? premiumProductKey(membership.scheduledChange.targetPlan)
-      : null;
-    const currentKey = premiumProductKey(membership.plan);
-    if (membership.scheduledChange != null && targetKey !== null && currentKey !== null) {
-      lastScheduledChangeRef.current = { sourcePlan: currentKey, targetPlan: targetKey };
-    } else if (
-      membership.scheduledChange == null
-      && lastScheduled !== null
-      && currentKey === lastScheduled.targetPlan
-    ) {
-      lastScheduledChangeRef.current = null;
-      void captureGameplayEvent('subscription_change_completed', {
-        source_plan: lastScheduled.sourcePlan,
-        target_plan: lastScheduled.targetPlan,
-        platform: Platform.OS === 'ios' ? 'ios' : 'android',
-      });
-    } else if (membership.scheduledChange == null) {
-      lastScheduledChangeRef.current = null;
-    }
-  }, [membership]);
+  // A Scheduled Plan Change activates at the next renewal, long after the
+  // session that requested it and possibly on no device at all, so its
+  // `subscription_change_completed` is derived once by the Game Backend from
+  // the activation it already projects (issue #126) rather than guessed here
+  // from a device-local memory of the scheduled state.
   const openCategoryPacks = openCategory === 'stitch_coin'
     ? coinPacks
     : openCategory === 'ai_credit'
@@ -553,8 +521,10 @@ export default function CommerceScreen() {
         : attempt.product;
       // A scheduled change grants nothing yet, so it reports neither the
       // Commerce Ledger grant (`purchase_completed`) nor the change itself
-      // (`subscription_change_completed`): both belong to the activation the
-      // membership effect below observes at the next renewal.
+      // (`subscription_change_completed`). Both belong to the activation at the
+      // next renewal, which no device is guaranteed to witness: the Game
+      // Backend derives `subscription_change_completed` from it instead
+      // (issue #126).
       if (!attempt.deferred) {
         await captureGameplayEvent('purchase_completed', {
           product_kind: 'premium_membership',

@@ -1025,7 +1025,7 @@ it('verifies a confirmed downgrade against the Scheduled Plan Change and reports
     `Premium changes to Weekly on ${new Date('2026-09-15T00:00:00Z').toLocaleDateString()}.`,
   );
   // Nothing is granted until the change activates, so neither completion event
-  // fires here: the membership effect owns both at the next renewal.
+  // fires here: the Game Backend reports the activation at the next renewal.
   expect(mockCaptureGameplayEvent).not.toHaveBeenCalledWith(
     'purchase_completed', expect.anything(),
   );
@@ -1048,7 +1048,7 @@ it('shows the scheduled downgrade target and effective date while the Current Pl
   expect(allText(renderer!.root)).toContain('CURRENT PLAN');
 });
 
-it('fires subscription_change_completed exactly once when a scheduled downgrade activates (issue #124)', async () => {
+it('leaves an activated scheduled downgrade to the Game Backend instead of reporting it per device (issue #126)', async () => {
   mockIdentity = { accountId: 'account_scheduled_complete', isAccount: true };
   mockMembership = activeMembership('annual', 'active', {
     targetPlan: 'weekly',
@@ -1056,25 +1056,17 @@ it('fires subscription_change_completed exactly once when a scheduled downgrade 
   });
   await renderScreen();
 
-  expect(mockCaptureGameplayEvent).not.toHaveBeenCalledWith(
-    'subscription_change_completed', expect.anything(),
-  );
-
   await act(async () => {
     mockMembership = activeMembership('weekly');
     renderer!.update(React.createElement(CommerceScreen));
     await flushPromises();
   });
 
-  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('subscription_change_completed', {
-    source_plan: 'premium_annual',
-    target_plan: 'premium_weekly',
-    platform: 'ios',
-  });
-  const completions = mockCaptureGameplayEvent.mock.calls.filter(
-    ([kind]) => kind === 'subscription_change_completed',
+  // Every signed-in device observes this same activation, and a player who
+  // never opens the store observes none, so the screen reports nothing.
+  expect(mockCaptureGameplayEvent).not.toHaveBeenCalledWith(
+    'subscription_change_completed', expect.anything(),
   );
-  expect(completions).toHaveLength(1);
 });
 
 it('completes a direct iOS upgrade through the ordinary purchase and reconciliation path with subscription_change analytics', async () => {

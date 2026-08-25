@@ -26,6 +26,7 @@ import { MembershipController } from './membership.controller';
 import { MembershipRepository } from './membership.repository';
 import { MembershipService } from './membership.service';
 import { WebhookArchiveModule } from '../webhooks';
+import { EventsModule } from '../events';
 import { SupportModule } from '../support/support.module';
 import { CoinPackReconciliationController } from './coin-pack-reconciliation.controller';
 import { CoinPackReconciliationService } from './coin-pack-reconciliation.service';
@@ -34,6 +35,7 @@ import { AiCreditPackReconciliationService } from './ai-credit-pack-reconciliati
 import { CommerceCapabilitiesController } from './commerce-capabilities.controller';
 import { GuestPurchaseAttemptController } from './guest-purchase-attempt.controller';
 import { GuestPurchaseAttemptService } from './guest-purchase-attempt.service';
+import { SubscriptionChangeReporter } from './subscription-change-reporter.service';
 
 @Module({
   imports: [
@@ -43,6 +45,7 @@ import { GuestPurchaseAttemptService } from './guest-purchase-attempt.service';
     forwardRef(() => PromotionModule),
     SupportModule,
     WebhookArchiveModule,
+    EventsModule,
   ],
   controllers: [
     AdMobSsvController,
@@ -72,6 +75,7 @@ import { GuestPurchaseAttemptService } from './guest-purchase-attempt.service';
     CoinPackReconciliationService,
     AiCreditPackReconciliationService,
     GuestPurchaseAttemptService,
+    SubscriptionChangeReporter,
   ],
 
   exports: [
