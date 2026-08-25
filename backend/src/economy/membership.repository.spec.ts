@@ -29,6 +29,7 @@ describe('MembershipRepository Guest ownership', () => {
             expires_at: new Date(Date.now() + 86_400_000),
             grace_period_expires_at: null,
             cancel_reason: null,
+            new_product_id: null,
           }];
         }
         if (sql.includes('SELECT id FROM economy.ai_credit_ledger_entries')) return [{ id: 'old-grant' }];
@@ -57,6 +58,7 @@ describe('MembershipRepository Guest ownership', () => {
       expiresAt: new Date(Date.now() + 86_400_000),
       gracePeriodExpiresAt: null,
       cancelReason: null,
+      newProductId: null,
     });
 
     expect(result.rejectedOtherAccount).toBe(false);
@@ -89,6 +91,7 @@ describe('MembershipRepository Guest ownership', () => {
             expires_at: new Date(Date.now() + 86_400_000),
             grace_period_expires_at: null,
             cancel_reason: null,
+            new_product_id: null,
           }];
         }
         return [];
@@ -116,6 +119,7 @@ describe('MembershipRepository Guest ownership', () => {
       expiresAt: new Date(Date.now() + 86_400_000),
       gracePeriodExpiresAt: null,
       cancelReason: null,
+      newProductId: null,
     });
 
     // The restored subscription still exists for the fresh Guest, but the
@@ -127,6 +131,78 @@ describe('MembershipRepository Guest ownership', () => {
     expect(queries.some(({ sql, params }) =>
       sql.includes('FROM economy.commerce_grant_tombstones')
       && params[0] === 'membership:production:transaction-1')).toBe(true);
+  });
+
+  it('surfaces a pending downgrade alongside the still-active Current Plan (issue #124)', async () => {
+    const now = new Date('2026-08-01T00:00:00.000Z');
+    const effectiveAt = new Date('2026-09-01T00:00:00.000Z');
+    const manager = {
+      query: jest.fn((sql: string) => {
+        if (sql.includes('FROM economy.membership_events me')) {
+          return Promise.resolve([{
+            environment: 'production',
+            provider_event_id: 'change-1',
+            provider_transaction_id: 'txn-change',
+            original_transaction_id: 'txn-original',
+            account_id: 'account-1',
+            guest_installation_id: null,
+            event_type: 'PRODUCT_CHANGE',
+            product_id: 'com.avk.stitchwish.premium_annual',
+            period_type: 'NORMAL',
+            event_at: new Date('2026-08-01T00:00:00.000Z'),
+            purchased_at: new Date('2026-08-01T00:00:00.000Z'),
+            expires_at: effectiveAt,
+            grace_period_expires_at: null,
+            cancel_reason: null,
+            new_product_id: 'com.avk.stitchwish.premium_monthly',
+          }]);
+        }
+        if (sql.includes('FROM economy.membership_periods')) {
+          return Promise.resolve([{
+            plan: 'annual',
+            current_status: 'active',
+            ends_at: effectiveAt,
+            status_event_at: new Date('2026-08-01T00:00:00.000Z'),
+          }]);
+        }
+        return Promise.resolve([]);
+      }),
+    };
+    const dataSource = { manager } as unknown as DataSource;
+    const repository = new MembershipRepository(dataSource);
+
+    const status = await repository.getStatus({ type: 'account', accountId: 'account-1' }, now);
+
+    expect(status.active).toBe(true);
+    expect(status.plan).toBe('annual');
+    expect(status.scheduledChange).toEqual({
+      targetPlan: 'monthly',
+      effectiveAt: effectiveAt.toISOString(),
+    });
+  });
+
+  it('reports no scheduled change once the candidate PRODUCT_CHANGE has resolved', async () => {
+    const now = new Date('2026-08-01T00:00:00.000Z');
+    const manager = {
+      query: jest.fn((sql: string) => {
+        if (sql.includes('FROM economy.membership_events me')) return Promise.resolve([]);
+        if (sql.includes('FROM economy.membership_periods')) {
+          return Promise.resolve([{
+            plan: 'monthly',
+            current_status: 'active',
+            ends_at: new Date('2026-09-01T00:00:00.000Z'),
+            status_event_at: new Date('2026-08-01T00:00:00.000Z'),
+          }]);
+        }
+        return Promise.resolve([]);
+      }),
+    };
+    const dataSource = { manager } as unknown as DataSource;
+    const repository = new MembershipRepository(dataSource);
+
+    const status = await repository.getStatus({ type: 'account', accountId: 'account-1' }, now);
+
+    expect(status.scheduledChange).toBeNull();
   });
 
   it('uses a Guest principal and collision-free daily source key', async () => {

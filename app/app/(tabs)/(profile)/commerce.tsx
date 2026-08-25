@@ -212,6 +212,11 @@ export default function CommerceScreen() {
   const aiCreditReconciliationRunnerRef = useRef<(
     attempt: AiCreditPackReconciliation,
   ) => Promise<void>>(async () => undefined);
+  // Remembers the last observed scheduled downgrade so its eventual RENEWAL
+  // activation can be told apart from every other reason `membership` changes
+  // (issue #124: `subscription_change_completed` fires exactly once here, not
+  // through the in-app reconciliation path #123 uses for a direct upgrade).
+  const lastScheduledChangeRef = useRef<{ sourcePlan: PurchaseProductKey; targetPlan: PurchaseProductKey } | null>(null);
 
   const loadStore = useCallback(async () => {
     setLoadingStore(true);
@@ -307,12 +312,23 @@ export default function CommerceScreen() {
   useEffect(() => {
     const handleAppStateChange = (status: AppStateStatus) => {
       if (status !== 'active') return;
+      // Scheduled Plan changes are server-authoritative and RevenueCat client
+      // entitlement never decides visibility, so foreground has to re-pull the
+      // Membership API rather than trust whatever it last held (issue #124).
+      void queryClient.refetchQueries({ queryKey: ['commerce', 'membership'] });
       const attempt = reconciliationRef.current;
       if (attempt !== null) void reconciliationRunnerRef.current(attempt);
     };
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     return () => subscription.remove();
-  }, []);
+  }, [queryClient]);
+
+  // The Commerce Store opening is the other refresh point multi-device
+  // convergence relies on: a scheduled change made on another device must
+  // become visible here without waiting out the query's normal staleness.
+  useEffect(() => {
+    void queryClient.refetchQueries({ queryKey: ['commerce', 'membership'] });
+  }, [queryClient]);
 
   const updateReconciliation = useCallback((next: PremiumReconciliation | null) => {
     reconciliationRef.current = next;
@@ -379,6 +395,38 @@ export default function CommerceScreen() {
       setSelectedPremiumKey(currentPlanProductKey);
     }
   }, [currentPlanLifecycle, currentPlanMapped, currentPlanProductKey]);
+
+  // A scheduled downgrade never gets an in-app confirmation (it is requested
+  // through Manage Subscription, outside the app), so it never fires
+  // `subscription_change_started`. It does need `subscription_change_completed`
+  // fired exactly once, the moment the Membership API reports the target plan
+  // active and the scheduled state cleared — recognized here by comparing
+  // against the last scheduled change this screen itself observed, since the
+  // Membership API exposes no separate "just activated" signal.
+  useEffect(() => {
+    if (membership === undefined) return;
+    const lastScheduled = lastScheduledChangeRef.current;
+    const targetKey = membership.scheduledChange !== null
+      ? premiumProductKey(membership.scheduledChange.targetPlan)
+      : null;
+    const currentKey = premiumProductKey(membership.plan);
+    if (membership.scheduledChange !== null && targetKey !== null && currentKey !== null) {
+      lastScheduledChangeRef.current = { sourcePlan: currentKey, targetPlan: targetKey };
+    } else if (
+      membership.scheduledChange === null
+      && lastScheduled !== null
+      && currentKey === lastScheduled.targetPlan
+    ) {
+      lastScheduledChangeRef.current = null;
+      void captureGameplayEvent('subscription_change_completed', {
+        source_plan: lastScheduled.sourcePlan,
+        target_plan: lastScheduled.targetPlan,
+        platform: Platform.OS === 'ios' ? 'ios' : 'android',
+      });
+    } else if (membership.scheduledChange === null) {
+      lastScheduledChangeRef.current = null;
+    }
+  }, [membership]);
   const openCategoryPacks = openCategory === 'stitch_coin'
     ? coinPacks
     : openCategory === 'ai_credit'
@@ -1355,6 +1403,12 @@ export default function CommerceScreen() {
             <Text style={styles.membershipActionsBody}>
               Daily rewards are in Profile. Themes are under Settings › Appearance.
             </Text>
+            {membership?.scheduledChange != null && (
+              <Text style={styles.scheduledChangeNotice} testID="scheduled-plan-change-notice">
+                {`Changes to ${capitalize(membership.scheduledChange.targetPlan)} on `
+                  + new Date(membership.scheduledChange.effectiveAt).toLocaleDateString()}
+              </Text>
+            )}
             <Button
               title="Manage Subscription"
               onPress={() => {
@@ -1496,9 +1550,11 @@ export default function CommerceScreen() {
                     const trialOffer = premiumTrialOffer(plan, trialEligibleKeys);
                     // A held plan can never invoke its own repurchase. A
                     // different plan is tappable only where a direct change is
-                    // actually supported (iOS, mapped catalog). Only an upgrade
-                    // opens the in-app confirmation here; a downgrade
-                    // (`plan_change`) stays a placeholder hook for #124.
+                    // actually supported (iOS, mapped catalog). An upgrade opens
+                    // the in-app confirmation; a downgrade (`plan_change`) has no
+                    // app-owned confirmation at all (issue #121) and instead
+                    // routes straight to Manage Subscription, the only surface
+                    // that can request or cancel a deferred downgrade.
                     const planChangeKind: PremiumPlanChangeKind | null = currentPlanLifecycle
                       && !isCurrentPlan
                       && currentPlanProductKey !== null
@@ -1514,6 +1570,13 @@ export default function CommerceScreen() {
                           });
                           if (planChangeKind === 'upgrade' && currentPlanProduct !== undefined) {
                             setConfirmingPlanChange({ current: currentPlanProduct, target: plan });
+                          } else if (planChangeKind === 'plan_change') {
+                            void withProtectedRoundTrip('subscription-management', () =>
+                              showRevenueCatManageSubscriptions(),
+                              { keepUntilForeground: true },
+                            ).catch(() => {
+                              Alert.alert('Unable to open subscriptions', 'Try again from your device store account.');
+                            });
                           }
                         })
                       : () => {
@@ -2463,6 +2526,11 @@ const styles = StyleSheet.create({
     color: Theme.colors.textSecondary,
     fontSize: Theme.typography.sizes.sm,
     lineHeight: 20,
+  },
+  scheduledChangeNotice: {
+    color: Theme.colors.accentTeal,
+    fontSize: Theme.typography.sizes.sm,
+    fontWeight: Theme.typography.weights.semibold,
   },
   errorBanner: {
     alignItems: 'center',

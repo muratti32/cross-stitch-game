@@ -8,9 +8,11 @@ import { AiCreditLedgerReason, CoinLedgerReason } from './entities';
 import {
   periodHasEntitlement,
   projectMembershipPeriod,
+  projectScheduledChange,
   selectMembershipPeriod,
   type MembershipLifecycle,
   type MembershipPeriodProjection,
+  type MembershipScheduledChange,
   type VerifiedMembershipEvent,
 } from './membership-projection';
 import type { PremiumPlan } from './membership.constants';
@@ -34,6 +36,7 @@ interface MembershipEventRow {
   expires_at: Date | string | null;
   grace_period_expires_at: Date | string | null;
   cancel_reason: string | null;
+  new_product_id: string | null;
 }
 
 interface MembershipPeriodRow {
@@ -78,12 +81,18 @@ export interface MembershipTransferResult {
   periodsMoved: number;
 }
 
+export interface MembershipScheduledChangeView {
+  targetPlan: PremiumPlan;
+  effectiveAt: string;
+}
+
 export interface MembershipStatus {
   active: boolean;
   plan: PremiumPlan | null;
   lifecycle: MembershipLifecycle | null;
   expiresAt: string | null;
   themeAccess: boolean;
+  scheduledChange: MembershipScheduledChangeView | null;
 }
 
 export interface PremiumDailyClaimResult {
@@ -142,8 +151,8 @@ export class MembershipRepository {
              (environment, provider_event_id, provider_transaction_id,
               original_transaction_id, account_id, guest_installation_id, event_type, product_id,
               period_type, event_at, purchased_at, expires_at,
-              grace_period_expires_at, cancel_reason)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+              grace_period_expires_at, cancel_reason, new_product_id)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
            ON CONFLICT ON CONSTRAINT "PK_membership_events" DO NOTHING
            RETURNING provider_event_id`,
           [
@@ -161,6 +170,7 @@ export class MembershipRepository {
             event.expiresAt,
             event.gracePeriodExpiresAt,
             event.cancelReason,
+            event.newProductId,
           ],
         ),
       );
@@ -463,16 +473,54 @@ export class MembershipRepository {
         lifecycle: null,
         expiresAt: null,
         themeAccess: false,
+        scheduledChange: null,
       };
     }
     const active = periodHasEntitlement(selected, now);
+    const scheduledChange = active
+      ? await this.getScheduledChange(manager, owner, { plan: selected.plan, endsAt: selected.endsAt })
+      : null;
     return {
       active,
       plan: selected.plan,
       lifecycle: selected.currentStatus,
       expiresAt: selected.endsAt?.toISOString() ?? null,
       themeAccess: active,
+      scheduledChange: scheduledChange === null
+        ? null
+        : { targetPlan: scheduledChange.targetPlan, effectiveAt: scheduledChange.effectiveAt.toISOString() },
     };
+  }
+
+  /**
+   * Finds the latest PRODUCT_CHANGE naming a downgrade target that has not yet
+   * been superseded by a Membership Period on the same subscription lineage
+   * (`original_transaction_id`) for that target product — the provider groups
+   * a plan change and its eventual activating RENEWAL under one lineage but
+   * distinct provider transaction ids, so lineage rather than transaction id is
+   * what proves activation happened.
+   */
+  private async getScheduledChange(
+    manager: EntityManager,
+    owner: CommerceOwner,
+    active: { plan: PremiumPlan; endsAt: Date | null },
+  ): Promise<MembershipScheduledChange | null> {
+    const rows = await manager.query<readonly MembershipEventRow[]>(
+      `SELECT me.*
+       FROM economy.membership_events me
+       WHERE me.${ownerWhere(owner)} AND me.event_type = 'PRODUCT_CHANGE' AND me.new_product_id IS NOT NULL
+         AND NOT EXISTS (
+           SELECT 1 FROM economy.membership_periods mp
+           WHERE mp.environment = me.environment
+             AND mp.original_transaction_id = me.original_transaction_id
+             AND mp.product_id = me.new_product_id
+         )
+       ORDER BY me.event_at DESC, me.provider_event_id DESC
+       LIMIT 1`,
+      [ownerId(owner)],
+    );
+    const row = rows[0];
+    return projectScheduledChange(row === undefined ? undefined : toVerifiedEvent(row), active);
   }
 
   /**
@@ -737,6 +785,7 @@ function toVerifiedEvent(row: MembershipEventRow): VerifiedMembershipEvent {
     expiresAt: toDate(row.expires_at),
     gracePeriodExpiresAt: toDate(row.grace_period_expires_at),
     cancelReason: row.cancel_reason,
+    newProductId: row.new_product_id,
   };
 }
 

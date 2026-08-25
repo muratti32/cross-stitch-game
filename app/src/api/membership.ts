@@ -14,12 +14,18 @@ export type MembershipLifecycle =
   | 'expired'
   | 'refunded';
 
+export interface MembershipScheduledChange {
+  targetPlan: PremiumPlan;
+  effectiveAt: string;
+}
+
 export interface MembershipView {
   active: boolean;
   plan: PremiumPlan | null;
   lifecycle: MembershipLifecycle | null;
   expiresAt: string | null;
   themeAccess: boolean;
+  scheduledChange: MembershipScheduledChange | null;
   dailyClaim: {
     claimed: boolean;
     coinsAvailable: number;

@@ -941,16 +941,62 @@ it('opens an in-app upgrade confirmation showing the Current Plan, target price,
   expect(mockPurchasePackage).not.toHaveBeenCalled();
 });
 
-it('never opens the upgrade confirmation for the reverse (plan change) direction', async () => {
+it('routes a downgrade tap straight to Manage Subscription instead of an in-app confirmation (issue #124)', async () => {
   mockIdentity = { accountId: 'account_downgrade_noop', isAccount: true };
   mockMembership = activeMembership('annual');
   await renderScreen();
 
   await act(async () => {
     renderer!.root.findByProps({ testID: 'premium-premium_weekly' }).props.onPress();
+    await flushPromises();
   });
 
   expect(allText(renderer!.root)).not.toContain('Confirm Premium upgrade');
+  expect(mockManageSubscriptions).toHaveBeenCalledTimes(1);
+  expect(mockPurchasePackage).not.toHaveBeenCalled();
+});
+
+it('shows the scheduled downgrade target and effective date while the Current Plan stays active (issue #124)', async () => {
+  mockIdentity = { accountId: 'account_scheduled_change', isAccount: true };
+  mockMembership = activeMembership('annual', 'active', {
+    targetPlan: 'weekly',
+    effectiveAt: '2026-09-15T00:00:00Z',
+  });
+  await renderScreen();
+
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    `Changes to Weekly on ${new Date('2026-09-15T00:00:00Z').toLocaleDateString()}`,
+  ]));
+  expect(allText(renderer!.root)).toContain('CURRENT PLAN');
+});
+
+it('fires subscription_change_completed exactly once when a scheduled downgrade activates (issue #124)', async () => {
+  mockIdentity = { accountId: 'account_scheduled_complete', isAccount: true };
+  mockMembership = activeMembership('annual', 'active', {
+    targetPlan: 'weekly',
+    effectiveAt: '2026-09-15T00:00:00Z',
+  });
+  await renderScreen();
+
+  expect(mockCaptureGameplayEvent).not.toHaveBeenCalledWith(
+    'subscription_change_completed', expect.anything(),
+  );
+
+  await act(async () => {
+    mockMembership = activeMembership('weekly');
+    renderer!.update(React.createElement(CommerceScreen));
+    await flushPromises();
+  });
+
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('subscription_change_completed', {
+    source_plan: 'premium_annual',
+    target_plan: 'premium_weekly',
+    platform: 'ios',
+  });
+  const completions = mockCaptureGameplayEvent.mock.calls.filter(
+    ([kind]) => kind === 'subscription_change_completed',
+  );
+  expect(completions).toHaveLength(1);
 });
 
 it('completes a direct iOS upgrade through the ordinary purchase and reconciliation path with subscription_change analytics', async () => {
@@ -2116,6 +2162,7 @@ function inactiveMembership() {
     lifecycle: null,
     expiresAt: null,
     themeAccess: false,
+    scheduledChange: null,
     dailyClaim: { claimed: false, coinsAvailable: 0, resetsAt: '2026-07-30T00:00:00Z' },
   };
 }
@@ -2123,6 +2170,7 @@ function inactiveMembership() {
 function activeMembership(
   plan: 'weekly' | 'monthly' | 'annual',
   lifecycle: 'active' | 'trial' | 'grace' | 'billing_retry' | 'paused' | 'cancelled' = 'active',
+  scheduledChange: { targetPlan: 'weekly' | 'monthly' | 'annual'; effectiveAt: string } | null = null,
 ) {
   return {
     active: true,
@@ -2130,6 +2178,7 @@ function activeMembership(
     lifecycle,
     expiresAt: '2026-08-29T00:00:00Z',
     themeAccess: true,
+    scheduledChange,
     dailyClaim: { claimed: false, coinsAvailable: 30, resetsAt: '2026-07-30T00:00:00Z' },
   };
 }
@@ -2141,6 +2190,7 @@ function inactiveLifecycleMembership(plan: 'weekly' | 'monthly' | 'annual', life
     lifecycle,
     expiresAt: '2026-08-29T00:00:00Z',
     themeAccess: false,
+    scheduledChange: null,
     dailyClaim: { claimed: false, coinsAvailable: 0, resetsAt: '2026-07-30T00:00:00Z' },
   };
 }
