@@ -4447,6 +4447,84 @@ describe('Stitch Wish backend integration', () => {
         .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'annual' }));
     });
 
+    it('represents a deferred iOS Premium downgrade as a scheduled change for both a Guest and a Registered Account (issue #124)', async () => {
+      const webhook = (event: Record<string, unknown>) => request(httpServer)
+        .post('/v1/commerce/revenuecat/webhook').set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event });
+      const now = Date.now();
+      const effectiveAt = now + 20 * 86_400_000;
+
+      async function exercise(
+        headers: Record<string, string>,
+        subscriberId: string,
+        checkCredit: boolean,
+      ): Promise<void> {
+        const original = `deferred-original-${randomUUID()}`;
+        const annualTx = `deferred-annual-${randomUUID()}`;
+        const base = { app_user_id: subscriberId, aliases: [subscriberId], original_transaction_id: original,
+          period_type: 'NORMAL', environment: 'SANDBOX' };
+        await webhook({ ...base, id: `deferred-${randomUUID()}`, type: 'INITIAL_PURCHASE', transaction_id: annualTx,
+          product_id: 'com.avk.stitchwish.premium_annual',
+          event_timestamp_ms: now, purchased_at_ms: now, expiration_at_ms: effectiveAt }).expect(200, { status: 'ok' });
+
+        const changeTx = `deferred-change-${randomUUID()}`;
+        await webhook({ ...base, id: `deferred-${randomUUID()}`, type: 'PRODUCT_CHANGE', transaction_id: changeTx,
+          product_id: 'com.avk.stitchwish.premium_annual', new_product_id: 'com.avk.stitchwish.premium_weekly',
+          event_timestamp_ms: now + 1_000, purchased_at_ms: now + 1_000, expiration_at_ms: effectiveAt })
+          .expect(200, { status: 'ok' });
+
+        // The Current Plan stays active and current; the target plan and its
+        // effective date are exposed separately, and no target Membership
+        // Credit Grant exists yet.
+        const scheduled = await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200);
+        expect(scheduled.body).toMatchObject({
+          active: true,
+          plan: 'annual',
+          scheduledChange: { targetPlan: 'weekly', effectiveAt: new Date(effectiveAt).toISOString() },
+        });
+        if (checkCredit) {
+          // The Annual purchase already granted its 180-credit period; the
+          // scheduled Weekly downgrade must not add its own credit yet.
+          await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 180 });
+        }
+
+        // A later verified RENEWAL activates the target plan, grants its paid
+        // period exactly once, and clears the scheduled state.
+        const weeklyTx = `deferred-weekly-${randomUUID()}`;
+        await webhook({ ...base, id: `deferred-${randomUUID()}`, type: 'RENEWAL', transaction_id: weeklyTx,
+          product_id: 'com.avk.stitchwish.premium_weekly',
+          event_timestamp_ms: effectiveAt, purchased_at_ms: effectiveAt,
+          expiration_at_ms: effectiveAt + 7 * 86_400_000 }).expect(200, { status: 'ok' });
+
+        const activated = await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200);
+        expect(activated.body).toMatchObject({ active: true, plan: 'weekly', scheduledChange: null });
+        if (checkCredit) {
+          await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 183 });
+        }
+
+        // Replaying the activating RENEWAL must not grant the credit twice.
+        const replay = await webhook({ ...base, id: `deferred-${randomUUID()}`, type: 'RENEWAL', transaction_id: weeklyTx,
+          product_id: 'com.avk.stitchwish.premium_weekly',
+          event_timestamp_ms: effectiveAt, purchased_at_ms: effectiveAt,
+          expiration_at_ms: effectiveAt + 7 * 86_400_000 });
+        expect(replay.status).toBe(200);
+        if (checkCredit) {
+          await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 183 });
+        }
+      }
+
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const guestSubscriberId = `deferred-guest-${randomUUID()}`;
+      const guestHeaders = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+        .set(guestHeaders).send({ subscriberId: guestSubscriberId }).expect(201);
+      await exercise(guestHeaders, guestSubscriberId, true);
+
+      const account = await newRegisteredAccount();
+      const accountSubscriberId = account.accountId;
+      const accountHeaders = { Authorization: `Bearer ${account.accessToken}` };
+      await exercise(accountHeaders, accountSubscriberId, false);
+    });
+
     it('handles out-of-order Guest deliveries idempotently for period, AI credit, and daily claim', async () => {
       const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
       const subscriberId = `guest-order-${randomUUID()}`;

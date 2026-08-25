@@ -518,6 +518,8 @@ function parseMembershipEvent(
   );
   const cancelReason =
     typeof event.cancel_reason === 'string' ? event.cancel_reason : null;
+  const newProductId =
+    typeof event.new_product_id === 'string' ? event.new_product_id : null;
 
   return {
     environment,
@@ -533,6 +535,7 @@ function parseMembershipEvent(
     expiresAt,
     gracePeriodExpiresAt,
     cancelReason,
+    newProductId,
   };
 }
 

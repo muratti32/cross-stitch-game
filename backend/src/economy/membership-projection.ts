@@ -1,6 +1,12 @@
 import { resolvePremiumProduct, type PremiumPlan } from './membership.constants';
 import type { CommerceOwner } from './commerce-owner';
 
+const PLAN_RANK: Readonly<Record<PremiumPlan, number>> = {
+  weekly: 0,
+  monthly: 1,
+  annual: 2,
+};
+
 export type MembershipLifecycle =
   | 'trial'
   | 'active'
@@ -25,6 +31,12 @@ export interface VerifiedMembershipEvent {
   expiresAt: Date | null;
   gracePeriodExpiresAt: Date | null;
   cancelReason: string | null;
+  /**
+   * The target product a PRODUCT_CHANGE names for a plan cross-grade or
+   * downgrade. Null for every other event type and for a PRODUCT_CHANGE the
+   * provider sent without one.
+   */
+  newProductId: string | null;
 }
 
 export interface MembershipPeriodProjection {
@@ -53,6 +65,38 @@ const STATUS_PRIORITY: Readonly<Record<string, number>> = {
   EXPIRATION: 90,
   REFUND: 100,
 };
+
+export interface MembershipScheduledChange {
+  targetPlan: PremiumPlan;
+  effectiveAt: Date;
+}
+
+/**
+ * Represents an unactivated PRODUCT_CHANGE as a visible scheduled downgrade,
+ * distinct from the short reconciliation window a direct upgrade goes through
+ * (issue #124). Only a downgrade relative to the currently active plan
+ * qualifies: an upgrade activates immediately through #123's in-app
+ * confirmation and reconciliation path instead. `active.endsAt` already
+ * having moved past the candidate's effective date means the active
+ * subscription renewed on its original plan instead of the scheduled target —
+ * the provider either never delivered the change or the player cancelled it
+ * through Manage Subscription — so the candidate is stale rather than a
+ * current scheduled change.
+ */
+export function projectScheduledChange(
+  candidate: VerifiedMembershipEvent | undefined,
+  active: { plan: PremiumPlan; endsAt: Date | null } | null,
+): MembershipScheduledChange | null {
+  if (candidate === undefined || active === null) return null;
+  if (candidate.type !== 'PRODUCT_CHANGE' || candidate.newProductId === null) return null;
+  const target = resolvePremiumProduct(candidate.newProductId);
+  if (target === null) return null;
+  if (PLAN_RANK[target.plan] >= PLAN_RANK[active.plan]) return null;
+  const effectiveAt = candidate.gracePeriodExpiresAt ?? candidate.expiresAt;
+  if (effectiveAt === null) return null;
+  if (active.endsAt !== null && active.endsAt.getTime() > effectiveAt.getTime()) return null;
+  return { targetPlan: target.plan, effectiveAt };
+}
 
 export function isMembershipRefund(event: VerifiedMembershipEvent): boolean {
   return (
