@@ -19,6 +19,10 @@ export const GAMEPLAY_EVENT_KINDS = [
   'purchase_completed',
   'purchase_cancelled',
   'purchase_failed',
+  'subscription_change_started',
+  'subscription_change_completed',
+  'subscription_change_cancelled',
+  'subscription_change_failed',
 ] as const;
 
 export type GameplayEventKind = (typeof GAMEPLAY_EVENT_KINDS)[number];
@@ -73,6 +77,16 @@ type CommerceStoreViewedPayload = {
 type PurchaseFailedPayload = PurchasePayload & {
   failure_stage: 'store' | 'verification' | 'grant';
 };
+// No account, subscriber, transaction, or Support Reference identifiers: only
+// the plan pair and platform (issue #121's plan-change analytics rule).
+type SubscriptionChangePayload = {
+  source_plan: 'premium_weekly' | 'premium_monthly' | 'premium_annual';
+  target_plan: 'premium_weekly' | 'premium_monthly' | 'premium_annual';
+  platform: 'ios' | 'android';
+};
+type SubscriptionChangeFailedPayload = SubscriptionChangePayload & {
+  failure_stage: 'store' | 'verification' | 'grant';
+};
 
 export type GameplayEventPayload =
   | SessionPayload
@@ -85,6 +99,8 @@ export type GameplayEventPayload =
   | CommerceStoreViewedPayload
   | PurchasePayload
   | PurchaseFailedPayload
+  | SubscriptionChangePayload
+  | SubscriptionChangeFailedPayload
   | Record<string, never>;
 
 type PayloadRule = {
@@ -125,6 +141,8 @@ const PRODUCT_KEYS_BY_KIND: Readonly<Record<string, ReadonlySet<string>>> = {
   stitch_coin_pack: new Set(['coin_pack_300', 'coin_pack_900', 'coin_pack_2000']),
 };
 const PURCHASE_FAILURE_STAGES = new Set(['store', 'verification', 'grant']);
+const PREMIUM_PLAN_KEYS = PRODUCT_KEYS_BY_KIND.premium_membership;
+const SUBSCRIPTION_CHANGE_PLATFORMS = new Set(['ios', 'android']);
 
 const payloadRules: Readonly<Record<GameplayEventKind, PayloadRule>> = {
   session_started: sessionRule(),
@@ -181,6 +199,15 @@ const payloadRules: Readonly<Record<GameplayEventKind, PayloadRule>> = {
       isPurchaseProduct(payload) &&
       isMember(payload.failure_stage, PURCHASE_FAILURE_STAGES),
   },
+  subscription_change_started: subscriptionChangeRule(),
+  subscription_change_completed: subscriptionChangeRule(),
+  subscription_change_cancelled: subscriptionChangeRule(),
+  subscription_change_failed: {
+    allowedFields: ['source_plan', 'target_plan', 'platform', 'failure_stage'],
+    validate: (payload) =>
+      isSubscriptionChangeProduct(payload) &&
+      isMember(payload.failure_stage, PURCHASE_FAILURE_STAGES),
+  },
 };
 
 export function validateGameplayEventPayload(
@@ -233,6 +260,21 @@ function isPurchaseProduct(payload: Record<string, unknown>): boolean {
   return isMember(
     payload.product_key,
     PRODUCT_KEYS_BY_KIND[payload.product_kind as string] ?? new Set<string>(),
+  );
+}
+
+function subscriptionChangeRule(): PayloadRule {
+  return {
+    allowedFields: ['source_plan', 'target_plan', 'platform'],
+    validate: isSubscriptionChangeProduct,
+  };
+}
+
+function isSubscriptionChangeProduct(payload: Record<string, unknown>): boolean {
+  return (
+    isMember(payload.source_plan, PREMIUM_PLAN_KEYS) &&
+    isMember(payload.target_plan, PREMIUM_PLAN_KEYS) &&
+    isMember(payload.platform, SUBSCRIPTION_CHANGE_PLATFORMS)
   );
 }
 
