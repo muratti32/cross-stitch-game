@@ -116,7 +116,12 @@ describe('membership period projection', () => {
     expect(periodHasEntitlement(projection!, new Date('2026-08-09T00:00:00.000Z'))).toBe(false);
   });
 
-  it('anchors a period on a lone PRODUCT_CHANGE event (plan cross-grade arrives under a new transaction id)', () => {
+  it('does not anchor a period on a lone PRODUCT_CHANGE event (issue #123: intent only, never activation)', () => {
+    // PRODUCT_CHANGE carries a new provider_transaction_id (plan cross-grade or
+    // upgrade); its own event history never contains an INITIAL_PURCHASE or
+    // RENEWAL row. It must not create a target Membership Period grant on its
+    // own — activation only happens once the provider reports the effective
+    // paid period (RENEWAL on Apple, INITIAL_PURCHASE on Google Play).
     const projection = projectMembershipPeriod([
       membershipEvent({
         providerEventId: 'product-change-1',
@@ -125,6 +130,31 @@ describe('membership period projection', () => {
         productId: 'com.avk.stitchwish.premium_annual',
         eventAt: new Date('2026-08-01T00:00:01.000Z'),
         purchasedAt: new Date('2026-08-01T00:00:00.000Z'),
+        expiresAt: new Date('2027-08-01T00:00:00.000Z'),
+      }),
+    ]);
+
+    expect(projection).toBeNull();
+  });
+
+  it('anchors a period once the effective RENEWAL for the changed plan is delivered', () => {
+    const projection = projectMembershipPeriod([
+      membershipEvent({
+        providerEventId: 'product-change-1',
+        providerTransactionId: 'transaction-2',
+        type: 'PRODUCT_CHANGE',
+        productId: 'com.avk.stitchwish.premium_annual',
+        eventAt: new Date('2026-08-01T00:00:01.000Z'),
+        purchasedAt: new Date('2026-08-01T00:00:00.000Z'),
+        expiresAt: new Date('2027-08-01T00:00:00.000Z'),
+      }),
+      membershipEvent({
+        providerEventId: 'renewal-1',
+        providerTransactionId: 'transaction-2',
+        type: 'RENEWAL',
+        productId: 'com.avk.stitchwish.premium_annual',
+        eventAt: new Date('2026-08-01T00:00:02.000Z'),
+        purchasedAt: new Date('2026-08-01T00:00:01.000Z'),
         expiresAt: new Date('2027-08-01T00:00:00.000Z'),
       }),
     ]);

@@ -74,15 +74,13 @@ export function projectMembershipPeriod(
     return left.providerEventId.localeCompare(right.providerEventId);
   });
   const latest = ordered[ordered.length - 1];
-  // PRODUCT_CHANGE carries a new provider_transaction_id (plan cross-grade/upgrade),
-  // so its own event history never contains an INITIAL_PURCHASE/RENEWAL row. Its
-  // payload already has full period state (product_id, period_type, expiry), so it
-  // is a valid anchor on its own — otherwise plan switches are silently dropped.
+  // PRODUCT_CHANGE records change intent only (issue #123): it carries a new
+  // provider_transaction_id (plan cross-grade/upgrade) and never anchors a
+  // period on its own, so a bare PRODUCT_CHANGE history projects to nothing —
+  // the current entitlement is left untouched until the provider reports the
+  // effective paid period (RENEWAL on Apple, INITIAL_PURCHASE on Google Play).
   const purchase = ordered.find(
-    (event) =>
-      event.type === 'INITIAL_PURCHASE' ||
-      event.type === 'RENEWAL' ||
-      event.type === 'PRODUCT_CHANGE',
+    (event) => event.type === 'INITIAL_PURCHASE' || event.type === 'RENEWAL',
   );
   if (!purchase) return null;
 

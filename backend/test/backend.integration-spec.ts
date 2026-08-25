@@ -3745,7 +3745,7 @@ describe('Stitch Wish backend integration', () => {
       }).expect(201);
     });
 
-    it('settles a Guest Premium attempt delivered as a PRODUCT_CHANGE of the running plan', async () => {
+    it('leaves a Guest Premium attempt unresolved on a PRODUCT_CHANGE and settles it once the effective RENEWAL lands', async () => {
       const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
       const subscriberId = `$RCAnonymousID:${randomUUID()}`;
       const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
@@ -3756,22 +3756,60 @@ describe('Stitch Wish backend integration', () => {
         idempotencyKey: `change-${randomUUID()}`,
         subscriberId,
       }).expect(201);
-      const transactionId = `product-change-${randomUUID()}`;
+      const originalTransactionId = `product-change-original-${randomUUID()}`;
+      const changeTransactionId = `product-change-${randomUUID()}`;
       const now = Date.now();
       await request(httpServer).post('/v1/commerce/revenuecat/webhook')
         .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
           type: 'PRODUCT_CHANGE', id: `evt-${randomUUID()}`, app_user_id: subscriberId, aliases: [subscriberId],
-          transaction_id: transactionId, original_transaction_id: transactionId,
+          transaction_id: changeTransactionId, original_transaction_id: originalTransactionId,
           product_id: 'com.avk.stitchwish.premium_monthly',
           new_product_id: 'com.avk.stitchwish.premium_weekly',
           period_type: 'NORMAL', environment: 'SANDBOX',
           event_timestamp_ms: now, purchased_at_ms: now, expiration_at_ms: now + 7 * 24 * 60 * 60 * 1000,
         } }).expect(200, { status: 'ok' });
 
+      // PRODUCT_CHANGE records intent only: it must not activate the target
+      // plan or resolve the Guest Purchase Attempt (issue #123).
+      await request(httpServer)
+        .get(`/v1/commerce/guest/purchase-attempts/${readStringRecord(attempt.body, 'id')}`)
+        .set(headers).expect(200)
+        .expect((response) => expect(response.body.status).toBe('created'));
+      await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
+        .expect((response) => expect(response.body.active).toBe(false));
+
+      const renewalTransactionId = `product-change-renewal-${randomUUID()}`;
+      const renewalEventId = `evt-renewal-${randomUUID()}`;
+      const renewalEvent = {
+        type: 'RENEWAL', id: renewalEventId, app_user_id: subscriberId, aliases: [subscriberId],
+        transaction_id: renewalTransactionId, original_transaction_id: originalTransactionId,
+        product_id: 'com.avk.stitchwish.premium_weekly',
+        period_type: 'NORMAL', environment: 'SANDBOX',
+        event_timestamp_ms: now + 1_000, purchased_at_ms: now + 1_000,
+        expiration_at_ms: now + 7 * 24 * 60 * 60 * 1000,
+      };
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: renewalEvent })
+        .expect(200, { status: 'ok' });
+
       await request(httpServer)
         .get(`/v1/commerce/guest/purchase-attempts/${readStringRecord(attempt.body, 'id')}`)
         .set(headers).expect(200)
         .expect((response) => expect(response.body.status).toBe('granted'));
+      await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'weekly' }));
+      await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 3 });
+
+      // A replayed RENEWAL delivery (same provider event id) cannot duplicate
+      // the credit grant or the attempt resolution.
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: renewalEvent })
+        .expect(200, { status: 'ok' });
+      await request(httpServer)
+        .get(`/v1/commerce/guest/purchase-attempts/${readStringRecord(attempt.body, 'id')}`)
+        .set(headers).expect(200)
+        .expect((response) => expect(response.body.status).toBe('granted'));
+      await request(httpServer).get('/v1/economy/ai-credit-balance').set(headers).expect(200, { balance: 3 });
     });
 
     it('lets a new idempotency key supersede an unresolved attempt that can no longer settle', async () => {
@@ -4382,21 +4420,31 @@ describe('Stitch Wish backend integration', () => {
       await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
         .expect((response) => expect(response.body).toMatchObject({ active: false, lifecycle: 'expired' }));
 
+      // A PRODUCT_CHANGE records intent only (issue #123): it must not activate
+      // the target plan or disturb the already-expired entitlement above.
       const annualTx = `lifecycle-annual-${randomUUID()}`;
       await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'PRODUCT_CHANGE', transaction_id: annualTx,
         product_id: 'com.avk.stitchwish.premium_annual', event_timestamp_ms: now + 3_000,
         purchased_at_ms: now + 3_000, expiration_at_ms: now + 365 * 86_400_000 }).expect(200, { status: 'ok' });
       await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
-        .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'annual' }));
-      await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'EXPIRATION', transaction_id: annualTx,
+        .expect((response) => expect(response.body).toMatchObject({ active: false, lifecycle: 'expired' }));
+
+      // The effective RENEWAL for that changed plan activates it.
+      await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'RENEWAL', transaction_id: annualTx,
         product_id: 'com.avk.stitchwish.premium_annual', event_timestamp_ms: now + 4_000,
-        purchased_at_ms: now + 3_000, expiration_at_ms: now - 1_000 }).expect(200, { status: 'ok' });
+        purchased_at_ms: now + 4_000, expiration_at_ms: now + 365 * 86_400_000 }).expect(200, { status: 'ok' });
+      await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'annual' }));
+
+      // A later PRODUCT_CHANGE (a scheduled downgrade) likewise stays inert
+      // until its own effective period is delivered; representing that
+      // scheduled state is #124's scope.
       const downgradeTx = `lifecycle-downgrade-${randomUUID()}`;
       await webhook({ ...base, id: `lifecycle-${randomUUID()}`, type: 'PRODUCT_CHANGE', transaction_id: downgradeTx,
         product_id: 'com.avk.stitchwish.premium_weekly', event_timestamp_ms: now + 5_000,
         purchased_at_ms: now + 5_000, expiration_at_ms: now + 6 * 86_400_000 }).expect(200, { status: 'ok' });
       await request(httpServer).get('/v1/commerce/membership').set(headers).expect(200)
-        .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'weekly' }));
+        .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'annual' }));
     });
 
     it('handles out-of-order Guest deliveries idempotently for period, AI credit, and daily claim', async () => {

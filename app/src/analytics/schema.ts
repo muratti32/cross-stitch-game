@@ -16,7 +16,11 @@ export type AnalyticsGameplayEventKind =
   | 'purchase_reconciliation_pending'
   | 'purchase_completed'
   | 'purchase_cancelled'
-  | 'purchase_failed';
+  | 'purchase_failed'
+  | 'subscription_change_started'
+  | 'subscription_change_completed'
+  | 'subscription_change_cancelled'
+  | 'subscription_change_failed';
 
 export type DailyTaskKey = 'cells_100' | 'three_colors_10' | 'color_completion';
 export type ArtworkSourceKind = 'photo_artwork' | 'ai_artwork';
@@ -50,10 +54,20 @@ export type CommerceEntrySource =
   | 'sign_in_return'
   | 'direct';
 export type PurchaseFailureStage = 'store' | 'verification' | 'grant';
+export type SubscriptionChangePlatform = 'ios' | 'android';
+export type SubscriptionChangeFailureStage = 'store' | 'verification' | 'grant';
 
 type PurchasePayload = {
   product_kind: PurchaseProductKind;
   product_key: PurchaseProductKey;
+};
+
+// No account, subscriber, transaction, or Support Reference identifiers: only
+// the plan pair and platform (issue #121's plan-change analytics rule).
+type SubscriptionChangePayload = {
+  source_plan: PurchaseProductKey;
+  target_plan: PurchaseProductKey;
+  platform: SubscriptionChangePlatform;
 };
 
 export type AnalyticsGameplayEventPayload =
@@ -86,6 +100,13 @@ export type AnalyticsGameplayEventPayload =
   | {
       kind: 'purchase_failed';
       payload: PurchasePayload & { failure_stage: PurchaseFailureStage };
+    }
+  | { kind: 'subscription_change_started'; payload: SubscriptionChangePayload }
+  | { kind: 'subscription_change_completed'; payload: SubscriptionChangePayload }
+  | { kind: 'subscription_change_cancelled'; payload: SubscriptionChangePayload }
+  | {
+      kind: 'subscription_change_failed';
+      payload: SubscriptionChangePayload & { failure_stage: SubscriptionChangeFailureStage };
     };
 
 export interface AnalyticsGameplayEvent {

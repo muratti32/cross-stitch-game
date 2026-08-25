@@ -159,7 +159,6 @@ export class RevenueCatWebhookService {
           [productId, ...(typeof evt.new_product_id === 'string' ? [evt.new_product_id] : [])],
           transactionId,
           type,
-          membershipEvent.originalTransactionId,
           result,
         );
         if (result.rejectedOtherAccount) {
