@@ -22,7 +22,16 @@ interface AttemptRow {
   status: 'created' | 'verifying' | 'granted' | 'failed' | 'cancelled';
   provider_transaction_id: string | null;
   support_reference_id: string;
+  created_at: string | Date;
 }
+
+/**
+ * How long an unresolved Purchase Attempt keeps blocking new purchases of the
+ * same product. RevenueCat delivers a matching webhook within seconds, so an
+ * attempt older than this was abandoned or was never settleable, and it must
+ * not wedge the player out of buying that product again.
+ */
+const UNRESOLVED_ATTEMPT_STALE_SECONDS = 15 * 60;
 
 export type MappedGuest =
   | { status: 'resolved'; guestId: string; ids: string[] }
@@ -125,10 +134,23 @@ export class GuestPurchaseAttemptService {
          FOR UPDATE`,
         [principal.id, input.productId],
       );
+      const stale = existing[0] !== undefined
+        && Date.now() - new Date(existing[0].created_at).getTime() >= UNRESOLVED_ATTEMPT_STALE_SECONDS * 1000;
       if (existing[0] !== undefined && existing[0].idempotency_key !== input.idempotencyKey) {
-        throw new ConflictException(GUEST_COIN_PACK_PRODUCT_IDS.some((productId) => productId === input.productId)
-          ? 'A purchase for this Stitch Coin Pack is already being verified'
-          : 'A purchase for this product is already being verified');
+        // A store purchase that never produced a matching webhook would keep
+        // its Purchase Attempt unresolved forever, and the unresolved-product
+        // guard would then refuse every later purchase of that product. An
+        // attempt this old can no longer be settled by a delivery, so a fresh
+        // idempotency key supersedes it instead of being refused.
+        if (!stale) {
+          throw new ConflictException(GUEST_COIN_PACK_PRODUCT_IDS.some((productId) => productId === input.productId)
+            ? 'A purchase for this Stitch Coin Pack is already being verified'
+            : 'A purchase for this product is already being verified');
+        }
+        await manager.query(
+          `UPDATE economy.purchase_attempts SET status = 'failed', updated_at = now() WHERE id = $1`,
+          [existing[0].id],
+        );
       }
       const byKey = await manager.query<readonly AttemptRow[]>(
         `SELECT * FROM economy.purchase_attempts WHERE principal_type = 'guest' AND principal_id = $1 AND idempotency_key = $2`,
@@ -277,27 +299,32 @@ export class GuestPurchaseAttemptService {
 
   async markMembershipWebhook(
     resolved: Extract<MappedGuest, { status: 'resolved' }>,
-    productId: string,
+    productIds: string | readonly string[],
     transactionId: string,
     eventType: string,
     originalTransactionId: string,
     outcome: { recorded: boolean; rejectedOtherAccount: boolean; periodExists: boolean },
   ): Promise<void> {
+    // A plan bought while another Premium Plan is still active arrives as a
+    // PRODUCT_CHANGE, whose product_id still names the outgoing plan and whose
+    // new_product_id names the one the player just bought. Matching both keeps
+    // that Purchase Attempt from staying unresolved forever.
+    const ids = [...new Set(typeof productIds === 'string' ? [productIds] : productIds)];
     const rows = await this.dataSource.query<readonly AttemptRow[]>(
       `SELECT * FROM economy.purchase_attempts
-         WHERE principal_type = 'guest' AND principal_id = $1 AND product_id = $2
+         WHERE principal_type = 'guest' AND principal_id = $1 AND product_id = ANY($2::varchar[])
            AND subscriber_id = ANY($3::varchar[]) AND status IN ('created', 'verifying')
            AND (
-             $4 = 'INITIAL_PURCHASE'
+             $4 IN ('INITIAL_PURCHASE', 'PRODUCT_CHANGE')
              OR ($4 = 'RENEWAL' AND EXISTS (
                SELECT 1 FROM economy.membership_periods
-               WHERE guest_installation_id = $1 AND product_id = $2
+               WHERE guest_installation_id = $1 AND product_id = ANY($2::varchar[])
                  AND original_transaction_id = $5 AND period_type = 'TRIAL'
              ))
            )
        ORDER BY created_at ASC
        LIMIT 1`,
-      [resolved.guestId, productId, resolved.ids, eventType, originalTransactionId],
+      [resolved.guestId, ids, resolved.ids, eventType, originalTransactionId],
     );
     if (rows[0] !== undefined) {
       const status = outcome.rejectedOtherAccount

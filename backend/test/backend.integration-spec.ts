@@ -3745,6 +3745,62 @@ describe('Stitch Wish backend integration', () => {
       }).expect(201);
     });
 
+    it('settles a Guest Premium attempt delivered as a PRODUCT_CHANGE of the running plan', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+        .set(headers).send({ subscriberId }).expect(201);
+      const attempt = await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId: 'com.avk.stitchwish.premium_weekly',
+        idempotencyKey: `change-${randomUUID()}`,
+        subscriberId,
+      }).expect(201);
+      const transactionId = `product-change-${randomUUID()}`;
+      const now = Date.now();
+      await request(httpServer).post('/v1/commerce/revenuecat/webhook')
+        .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
+          type: 'PRODUCT_CHANGE', id: `evt-${randomUUID()}`, app_user_id: subscriberId, aliases: [subscriberId],
+          transaction_id: transactionId, original_transaction_id: transactionId,
+          product_id: 'com.avk.stitchwish.premium_monthly',
+          new_product_id: 'com.avk.stitchwish.premium_weekly',
+          period_type: 'NORMAL', environment: 'SANDBOX',
+          event_timestamp_ms: now, purchased_at_ms: now, expiration_at_ms: now + 7 * 24 * 60 * 60 * 1000,
+        } }).expect(200, { status: 'ok' });
+
+      await request(httpServer)
+        .get(`/v1/commerce/guest/purchase-attempts/${readStringRecord(attempt.body, 'id')}`)
+        .set(headers).expect(200)
+        .expect((response) => expect(response.body.status).toBe('granted'));
+    });
+
+    it('lets a new idempotency key supersede an unresolved attempt that can no longer settle', async () => {
+      const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      const headers = { Authorization: `Bearer ${guest.accessToken}`, 'User-Agent': 'StitchWish/iOS' };
+      await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping')
+        .set(headers).send({ subscriberId }).expect(201);
+      const stuck = await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId: 'com.avk.stitchwish.premium_weekly', idempotencyKey: `stuck-${randomUUID()}`, subscriberId,
+      }).expect(201);
+      await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId: 'com.avk.stitchwish.premium_weekly', idempotencyKey: `fresh-${randomUUID()}`, subscriberId,
+      }).expect(409);
+
+      await dataSource.query(
+        `UPDATE economy.purchase_attempts SET created_at = now() - interval '30 minutes' WHERE id = $1`,
+        [readStringRecord(stuck.body, 'id')],
+      );
+
+      await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(headers).send({
+        productId: 'com.avk.stitchwish.premium_weekly', idempotencyKey: `after-stale-${randomUUID()}`, subscriberId,
+      }).expect(201);
+      await request(httpServer)
+        .get(`/v1/commerce/guest/purchase-attempts/${readStringRecord(stuck.body, 'id')}`)
+        .set(headers).expect(200)
+        .expect((response) => expect(response.body.status).toBe('failed'));
+    });
+
     it('allows retry after the client cancels a store-rejected Guest attempt', async () => {
       const guest = await createGuestThroughApi(httpServer, randomUUID(), createCredentialSecret());
       const subscriberId = `$RCAnonymousID:${randomUUID()}`;
