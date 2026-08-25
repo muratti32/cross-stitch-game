@@ -216,6 +216,34 @@ export function productsInCategory(
   return products.filter((product) => product.category === category);
 }
 
+export type PremiumPlanChangeKind = 'upgrade' | 'plan_change';
+
+// App Store subscription-group ordering for the three Premium Plans (Annual,
+// Monthly, Weekly): moving to a higher rank is an upgrade, the reverse is a
+// store-controlled plan change (ADR pending #123's confirmation flow).
+const PREMIUM_PLAN_RANK: Readonly<Record<'premium_weekly' | 'premium_monthly' | 'premium_annual', number>> = {
+  premium_weekly: 0,
+  premium_monthly: 1,
+  premium_annual: 2,
+};
+
+/**
+ * Classifies a target Premium Plan relative to the plan currently held. Only
+ * meaningful on iOS, where the subscription group enforces one ordering;
+ * Android has no equivalent direct plan-change action to classify.
+ */
+export function classifyPremiumPlanChange(
+  currentProductKey: string,
+  targetProductKey: string,
+): PremiumPlanChangeKind | null {
+  const currentRank = PREMIUM_PLAN_RANK[currentProductKey as keyof typeof PREMIUM_PLAN_RANK];
+  const targetRank = PREMIUM_PLAN_RANK[targetProductKey as keyof typeof PREMIUM_PLAN_RANK];
+  if (currentRank === undefined || targetRank === undefined || currentRank === targetRank) {
+    return null;
+  }
+  return targetRank > currentRank ? 'upgrade' : 'plan_change';
+}
+
 // Google Play appends `:basePlanId` to subscriptions. ADR-0043 permits only
 // this one normalization; Apple and consumable identifiers are unchanged.
 export function storeProductId(identifier: string): string {

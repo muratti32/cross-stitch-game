@@ -44,11 +44,13 @@ import {
 import { captureGameplayEvent } from '@/analytics/gameplayEvents';
 import type { PurchaseProductKey } from '@/analytics/schema';
 import {
+  classifyPremiumPlanChange,
   commerceProductIdentity,
   commerceProductsFromOfferings,
   productsInCategory,
   type CommerceCategory,
   type CommerceProduct,
+  type PremiumPlanChangeKind,
 } from '@/commerce/catalog';
 import {
   commerceEntrySource,
@@ -316,6 +318,38 @@ export default function CommerceScreen() {
   const selectedPremium = premiumPlans.find(
     (product) => product.productKey === selectedPremiumKey,
   ) ?? premiumPlans[0];
+
+  // A `trial` or `active` lifecycle already holds the plan it names, so it is
+  // the Current Plan: not repurchasable, and never displaced by an automatic
+  // preselection. `grace`, `billing_retry`, `paused`, and `cancelled` remain
+  // entitled but expose no direct plan-change action at all — Manage
+  // Subscription is the only control for those, same as inactive lifecycles
+  // fall through to the ordinary new-plan purchase journey below.
+  const currentPlanLifecycle = membership?.active === true
+    && (membership.lifecycle === 'active' || membership.lifecycle === 'trial');
+  const restrictedLifecycle = membership?.active === true && !currentPlanLifecycle;
+  const currentPlanProductKey = currentPlanLifecycle
+    ? premiumProductKey(membership.plan)
+    : null;
+  const currentPlanMapped = currentPlanProductKey !== null
+    && premiumPlans.some((plan) => plan.productKey === currentPlanProductKey);
+  // Only iOS carries a single subscription group whose ordering makes an
+  // Upgrade vs. Plan Change classification meaningful; Android and an
+  // unmappable Current Plan or target package both disable the action while
+  // Manage Subscription remains available (the incomplete-catalog warning
+  // already covers an unmapped canonical product from the store load above).
+  const directPlanChangeAvailable = currentPlanLifecycle
+    && currentPlanMapped
+    && Platform.OS === 'ios';
+  const showPremiumPlanGrid = restrictedLifecycle
+    ? false
+    : currentPlanLifecycle ? currentPlanMapped : true;
+
+  useEffect(() => {
+    if (currentPlanLifecycle && currentPlanMapped && currentPlanProductKey !== null) {
+      setSelectedPremiumKey(currentPlanProductKey);
+    }
+  }, [currentPlanLifecycle, currentPlanMapped, currentPlanProductKey]);
   const openCategoryPacks = openCategory === 'stitch_coin'
     ? coinPacks
     : openCategory === 'ai_credit'
@@ -1218,7 +1252,7 @@ export default function CommerceScreen() {
           )}
         </View>
 
-        {isAccount && membership?.active && (
+        {membership?.active === true && (
           <Card style={styles.membershipActionsCard}>
             <Text style={styles.membershipActionsTitle}>Active Premium Membership</Text>
             <Text style={styles.membershipActionsBody}>
@@ -1350,24 +1384,51 @@ export default function CommerceScreen() {
           </Card>
         ) : (
           <>
-            {premiumPlans.length > 0 && (
+            {showPremiumPlanGrid && premiumPlans.length > 0 && (
               <View style={styles.planSection}>
-                <Text style={styles.sectionTitle}>Choose a Premium plan</Text>
+                <Text style={styles.sectionTitle}>
+                  {currentPlanLifecycle ? 'Your Premium plan' : 'Choose a Premium plan'}
+                </Text>
                 <View style={styles.planRow}>
                   {premiumPlans.map((plan) => {
-                    const selected = plan.productKey === selectedPremium?.productKey;
+                    const isCurrentPlan = currentPlanLifecycle
+                      && plan.productKey === currentPlanProductKey;
+                    const selected = currentPlanLifecycle
+                      ? isCurrentPlan
+                      : plan.productKey === selectedPremium?.productKey;
                     const trialOffer = premiumTrialOffer(plan, trialEligibleKeys);
-                    return (
-                      <Pressable
-                        key={plan.id}
-                        accessibilityRole="button"
-                        onPress={() => {
-                          setSelectedPremiumKey(plan.productKey);
+                    // A held plan can never invoke its own repurchase. A
+                    // different plan is tappable only where a direct change is
+                    // actually supported (iOS, mapped catalog) — the tap itself
+                    // is a placeholder hook for #123's confirmation flow, not a
+                    // purchase.
+                    const planChangeKind: PremiumPlanChangeKind | null = currentPlanLifecycle
+                      && !isCurrentPlan
+                      && currentPlanProductKey !== null
+                      ? classifyPremiumPlanChange(currentPlanProductKey, plan.productKey)
+                      : null;
+                    const onPressPlan = currentPlanLifecycle
+                      ? (isCurrentPlan || !directPlanChangeAvailable || planChangeKind === null
+                        ? undefined
+                        : () => {
                           void captureGameplayEvent('commerce_product_selected', {
                             product_kind: plan.productKind,
                             product_key: plan.productKey,
                           });
-                        }}
+                        })
+                      : () => {
+                        setSelectedPremiumKey(plan.productKey);
+                        void captureGameplayEvent('commerce_product_selected', {
+                          product_kind: plan.productKind,
+                          product_key: plan.productKey,
+                        });
+                      };
+                    return (
+                      <Pressable
+                        key={plan.id}
+                        accessibilityRole="button"
+                        disabled={onPressPlan === undefined}
+                        onPress={onPressPlan}
                         style={({ pressed }) => [
                           styles.planCard,
                           selected && styles.planCardSelected,
@@ -1375,8 +1436,16 @@ export default function CommerceScreen() {
                         ]}
                         testID={`premium-${plan.productKey}`}
                       >
-                        {plan.productKey === 'premium_annual' && (
-                          <Text style={styles.bestValue}>BEST VALUE</Text>
+                        {isCurrentPlan ? (
+                          <Text style={styles.bestValue}>CURRENT PLAN</Text>
+                        ) : planChangeKind !== null && directPlanChangeAvailable ? (
+                          <Text style={styles.bestValue}>
+                            {planChangeKind === 'upgrade' ? 'UPGRADE' : 'PLAN CHANGE'}
+                          </Text>
+                        ) : (
+                          !currentPlanLifecycle && plan.productKey === 'premium_annual' && (
+                            <Text style={styles.bestValue}>BEST VALUE</Text>
+                          )
                         )}
                         <Text style={styles.planName}>{plan.label}</Text>
                         <Text style={styles.planPrice}>{plan.priceString}</Text>
@@ -1395,7 +1464,7 @@ export default function CommerceScreen() {
                     );
                   })}
                 </View>
-                {selectedPremium !== undefined && (
+                {!currentPlanLifecycle && selectedPremium !== undefined && (
                   <>
                     <SubscriptionDisclosure
                       plan={selectedPremium}
