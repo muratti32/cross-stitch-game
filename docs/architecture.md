@@ -38,7 +38,7 @@ Stitch Wish system architecture. Domain language: `CONTEXT.md`. Decisions: `docs
 
 | Deployable | Stack | Responsibility |
 |---|---|---|
-| `app` | Expo SDK 54, dev client + EAS, Expo Router, `@shopify/react-native-skia` | The game. Local-first play, rendering, sync, purchases UI. |
+| `app` | Expo SDK 57, dev client + EAS, Expo Router, `@shopify/react-native-skia` | The game. Local-first play, rendering, sync, purchases UI. |
 | `backend-api` | NestJS + PostgreSQL | All domain APIs, webhook endpoints, admin API. |
 | `backend-worker` | Same NestJS codebase, standalone application context | BullMQ consumers, Job Outbox dispatcher, scheduled reconciliation. |
 | `conversion-engine` | Python + FastAPI, stateless | Source Artwork → DMC grid, palette, preview, statistics. Private network only. |
