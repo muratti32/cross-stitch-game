@@ -6,6 +6,8 @@ import {
   ActivityIndicator,
   Alert,
   Animated,
+  AppState,
+  type AppStateStatus,
   Linking,
   Modal,
   Platform,
@@ -44,11 +46,13 @@ import {
 import { captureGameplayEvent } from '@/analytics/gameplayEvents';
 import type { PurchaseProductKey } from '@/analytics/schema';
 import {
+  classifyPremiumPlanChange,
   commerceProductIdentity,
   commerceProductsFromOfferings,
   productsInCategory,
   type CommerceCategory,
   type CommerceProduct,
+  type PremiumPlanChangeKind,
 } from '@/commerce/catalog';
 import {
   commerceEntrySource,
@@ -94,6 +98,10 @@ interface PremiumReconciliation {
   readonly startedAt: number;
   readonly supportReference: string | null;
   readonly guestAttemptId: string | null;
+  // Set only when this reconciliation began as a direct Premium Plan change
+  // (issue #123's upgrade confirmation), so the `subscription_change_*`
+  // analytics events can be reported alongside the ordinary purchase events.
+  readonly sourcePlanKey: PurchaseProductKey | null;
 }
 
 interface CoinPackReconciliation {
@@ -153,6 +161,10 @@ export default function CommerceScreen() {
   const [purchaseError, setPurchaseError] = useState<string | null>(null);
   const [purchaseSuccess, setPurchaseSuccess] = useState<string | null>(null);
   const [confirmingPremium, setConfirmingPremium] = useState<CommerceProduct | null>(null);
+  const [confirmingPlanChange, setConfirmingPlanChange] = useState<{
+    readonly current: CommerceProduct;
+    readonly target: CommerceProduct;
+  } | null>(null);
   const [confirmingCoinPack, setConfirmingCoinPack] = useState<CommerceProduct | null>(null);
   const [confirmingAiCreditPack, setConfirmingAiCreditPack] = useState<CommerceProduct | null>(null);
   const [trialEligibleKeys, setTrialEligibleKeys] = useState<readonly PurchaseProductKey[]>([]);
@@ -176,12 +188,14 @@ export default function CommerceScreen() {
     setOpenCategory(null);
     setGuestCommerceProduct(null);
     setConfirmingPremium(null);
+    setConfirmingPlanChange(null);
     setConfirmingCoinPack(null);
     setConfirmingAiCreditPack(null);
   }, []);
 
   const viewedSourceRef = useRef<string | null>(null);
   const pendingPremiumPurchaseRef = useRef<CommerceProduct | null>(null);
+  const pendingPlanChangeSourceRef = useRef<PurchaseProductKey | null>(null);
   const premiumPurchaseInFlightRef = useRef(false);
   const reconciliationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reconciliationRef = useRef<PremiumReconciliation | null>(null);
@@ -198,6 +212,11 @@ export default function CommerceScreen() {
   const aiCreditReconciliationRunnerRef = useRef<(
     attempt: AiCreditPackReconciliation,
   ) => Promise<void>>(async () => undefined);
+  // Remembers the last observed scheduled downgrade so its eventual RENEWAL
+  // activation can be told apart from every other reason `membership` changes
+  // (issue #124: `subscription_change_completed` fires exactly once here, not
+  // through the in-app reconciliation path #123 uses for a direct upgrade).
+  const lastScheduledChangeRef = useRef<{ sourcePlan: PurchaseProductKey; targetPlan: PurchaseProductKey } | null>(null);
 
   const loadStore = useCallback(async () => {
     setLoadingStore(true);
@@ -286,6 +305,31 @@ export default function CommerceScreen() {
     }
   }, []);
 
+  // A backgrounded app suspends JS timers, so a scheduled reconciliation poll
+  // can be stale by the time the app returns. Foreground resumes any unresolved
+  // Premium reconciliation immediately rather than waiting out the rest of its
+  // poll interval.
+  useEffect(() => {
+    const handleAppStateChange = (status: AppStateStatus) => {
+      if (status !== 'active') return;
+      // Scheduled Plan changes are server-authoritative and RevenueCat client
+      // entitlement never decides visibility, so foreground has to re-pull the
+      // Membership API rather than trust whatever it last held (issue #124).
+      void queryClient.refetchQueries({ queryKey: ['commerce', 'membership'] });
+      const attempt = reconciliationRef.current;
+      if (attempt !== null) void reconciliationRunnerRef.current(attempt);
+    };
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription.remove();
+  }, [queryClient]);
+
+  // The Commerce Store opening is the other refresh point multi-device
+  // convergence relies on: a scheduled change made on another device must
+  // become visible here without waiting out the query's normal staleness.
+  useEffect(() => {
+    void queryClient.refetchQueries({ queryKey: ['commerce', 'membership'] });
+  }, [queryClient]);
+
   const updateReconciliation = useCallback((next: PremiumReconciliation | null) => {
     reconciliationRef.current = next;
     setPurchasePending(next);
@@ -316,6 +360,73 @@ export default function CommerceScreen() {
   const selectedPremium = premiumPlans.find(
     (product) => product.productKey === selectedPremiumKey,
   ) ?? premiumPlans[0];
+
+  // A `trial` or `active` lifecycle already holds the plan it names, so it is
+  // the Current Plan: not repurchasable, and never displaced by an automatic
+  // preselection. `grace`, `billing_retry`, `paused`, and `cancelled` remain
+  // entitled but expose no direct plan-change action at all — Manage
+  // Subscription is the only control for those, same as inactive lifecycles
+  // fall through to the ordinary new-plan purchase journey below.
+  const currentPlanLifecycle = membership?.active === true
+    && (membership.lifecycle === 'active' || membership.lifecycle === 'trial');
+  const restrictedLifecycle = membership?.active === true && !currentPlanLifecycle;
+  const currentPlanProductKey = currentPlanLifecycle
+    ? premiumProductKey(membership.plan)
+    : null;
+  const currentPlanMapped = currentPlanProductKey !== null
+    && premiumPlans.some((plan) => plan.productKey === currentPlanProductKey);
+  const currentPlanProduct = premiumPlans.find(
+    (plan) => plan.productKey === currentPlanProductKey,
+  );
+  // Only iOS carries a single subscription group whose ordering makes an
+  // Upgrade vs. Plan Change classification meaningful; Android and an
+  // unmappable Current Plan or target package both disable the action while
+  // Manage Subscription remains available (the incomplete-catalog warning
+  // already covers an unmapped canonical product from the store load above).
+  const directPlanChangeAvailable = currentPlanLifecycle
+    && currentPlanMapped
+    && Platform.OS === 'ios';
+  const showPremiumPlanGrid = restrictedLifecycle
+    ? false
+    : currentPlanLifecycle ? currentPlanMapped : true;
+
+  useEffect(() => {
+    if (currentPlanLifecycle && currentPlanMapped && currentPlanProductKey !== null) {
+      setSelectedPremiumKey(currentPlanProductKey);
+    }
+  }, [currentPlanLifecycle, currentPlanMapped, currentPlanProductKey]);
+
+  // A scheduled downgrade never gets an in-app confirmation (it is requested
+  // through Manage Subscription, outside the app), so it never fires
+  // `subscription_change_started`. It does need `subscription_change_completed`
+  // fired exactly once, the moment the Membership API reports the target plan
+  // active and the scheduled state cleared — recognized here by comparing
+  // against the last scheduled change this screen itself observed, since the
+  // Membership API exposes no separate "just activated" signal.
+  useEffect(() => {
+    if (membership === undefined) return;
+    const lastScheduled = lastScheduledChangeRef.current;
+    const targetKey = membership.scheduledChange !== null
+      ? premiumProductKey(membership.scheduledChange.targetPlan)
+      : null;
+    const currentKey = premiumProductKey(membership.plan);
+    if (membership.scheduledChange !== null && targetKey !== null && currentKey !== null) {
+      lastScheduledChangeRef.current = { sourcePlan: currentKey, targetPlan: targetKey };
+    } else if (
+      membership.scheduledChange === null
+      && lastScheduled !== null
+      && currentKey === lastScheduled.targetPlan
+    ) {
+      lastScheduledChangeRef.current = null;
+      void captureGameplayEvent('subscription_change_completed', {
+        source_plan: lastScheduled.sourcePlan,
+        target_plan: lastScheduled.targetPlan,
+        platform: Platform.OS === 'ios' ? 'ios' : 'android',
+      });
+    } else if (membership.scheduledChange === null) {
+      lastScheduledChangeRef.current = null;
+    }
+  }, [membership]);
   const openCategoryPacks = openCategory === 'stitch_coin'
     ? coinPacks
     : openCategory === 'ai_credit'
@@ -415,6 +526,13 @@ export default function CommerceScreen() {
         product_kind: 'premium_membership',
         product_key: completedProduct.productKey,
       });
+      if (attempt.sourcePlanKey !== null) {
+        await captureGameplayEvent('subscription_change_completed', {
+          source_plan: attempt.sourcePlanKey,
+          target_plan: completedProduct.productKey,
+          platform: Platform.OS === 'ios' ? 'ios' : 'android',
+        });
+      }
       updateReconciliation(null);
       clearIntent();
       setPurchaseError(null);
@@ -434,6 +552,14 @@ export default function CommerceScreen() {
         product_key: attempt.product.productKey,
         failure_stage: failureStage,
       });
+      if (attempt.sourcePlanKey !== null) {
+        await captureGameplayEvent('subscription_change_failed', {
+          source_plan: attempt.sourcePlanKey,
+          target_plan: attempt.product.productKey,
+          platform: Platform.OS === 'ios' ? 'ios' : 'android',
+          failure_stage: failureStage,
+        });
+      }
       updateReconciliation({ ...attempt, failureStage });
       const message = failureStage === 'verification'
         ? 'The Game Backend could not verify this purchase yet. Retry reconciliation; do not buy it again.'
@@ -448,6 +574,7 @@ export default function CommerceScreen() {
     operation: 'purchase' | 'restore',
     baselineMembership: string | null = null,
     guestAttempt: GuestPurchaseAttemptReference | null = null,
+    sourcePlanKey: PurchaseProductKey | null = null,
   ) => {
     const attempt: PremiumReconciliation = {
       baselineMembership,
@@ -459,6 +586,7 @@ export default function CommerceScreen() {
       startedAt: Date.now(),
       supportReference: guestAttempt?.supportReference ?? null,
       guestAttemptId: guestAttempt?.id ?? null,
+      sourcePlanKey,
     };
     updateReconciliation(attempt);
     setPurchaseSuccess(null);
@@ -828,18 +956,30 @@ export default function CommerceScreen() {
     return () => { cancelled = true; };
   }, [aiCreditPurchasePending, guestId, isAccount, products, reconcileAiCreditPack, updateAiCreditReconciliation]);
 
-  const purchase = useCallback(async (product: CommerceProduct) => {
+  const purchase = useCallback(async (
+    product: CommerceProduct,
+    sourcePlanKey: PurchaseProductKey | null = null,
+  ) => {
     setPurchaseError(null);
     setPurchaseSuccess(null);
     setResultModal(null);
     setPurchasingKey(product.productKey);
     setConfirmingPremium(null);
+    setConfirmingPlanChange(null);
     setConfirmingCoinPack(null);
     setConfirmingAiCreditPack(null);
     await captureGameplayEvent('purchase_started', {
       product_kind: product.productKind,
       product_key: product.productKey,
     });
+    const platform = Platform.OS === 'ios' ? 'ios' : 'android';
+    if (sourcePlanKey !== null) {
+      await captureGameplayEvent('subscription_change_started', {
+        source_plan: sourcePlanKey,
+        target_plan: product.productKey,
+        platform,
+      });
+    }
     let failureStage: 'store' | 'verification' = product.category === 'premium'
       ? 'verification'
       : 'store';
@@ -894,7 +1034,9 @@ export default function CommerceScreen() {
       });
       failureStage = 'verification';
       if (product.category === 'premium') {
-        await beginPremiumReconciliation(product, 'purchase', baselineMembership, guestAttempt);
+        await beginPremiumReconciliation(
+          product, 'purchase', baselineMembership, guestAttempt, sourcePlanKey,
+        );
       } else if (product.category === 'stitch_coin') {
         await beginCoinPackReconciliation(
           product,
@@ -920,6 +1062,13 @@ export default function CommerceScreen() {
           product_kind: product.productKind,
           product_key: product.productKey,
         });
+        if (sourcePlanKey !== null) {
+          await captureGameplayEvent('subscription_change_cancelled', {
+            source_plan: sourcePlanKey,
+            target_plan: product.productKey,
+            platform,
+          });
+        }
         return;
       }
       // Pack purchases run inside the ProductSheet modal. Close it before
@@ -931,6 +1080,14 @@ export default function CommerceScreen() {
         product_key: product.productKey,
         failure_stage: failureStage,
       });
+      if (sourcePlanKey !== null) {
+        await captureGameplayEvent('subscription_change_failed', {
+          source_plan: sourcePlanKey,
+          target_plan: product.productKey,
+          platform,
+          failure_stage: failureStage,
+        });
+      }
       const message = purchaseErrorMessage(error);
       setPurchaseError(message);
       // The page-level banner above keeps the durable recovery copy; the modal
@@ -974,9 +1131,31 @@ export default function CommerceScreen() {
     const product = pendingPremiumPurchaseRef.current;
     if (product === null) return;
     pendingPremiumPurchaseRef.current = null;
-    void purchase(product).finally(() => {
+    const sourcePlanKey = pendingPlanChangeSourceRef.current;
+    pendingPlanChangeSourceRef.current = null;
+    void purchase(product, sourcePlanKey).finally(() => {
       premiumPurchaseInFlightRef.current = false;
     });
+  }, [purchase]);
+
+  // A direct Premium Plan upgrade only (issue #123's scope; a downgrade stays a
+  // placeholder for #124). Shares the same iOS modal-dismiss handshake as a
+  // fresh Premium purchase so RevenueCat's store sheet never races the
+  // confirmation's own dismissal.
+  const confirmPlanChangePurchase = useCallback((product: CommerceProduct, sourcePlanKey: PurchaseProductKey) => {
+    if (premiumPurchaseInFlightRef.current) return;
+    premiumPurchaseInFlightRef.current = true;
+
+    if (Platform.OS !== 'ios') {
+      void purchase(product, sourcePlanKey).finally(() => {
+        premiumPurchaseInFlightRef.current = false;
+      });
+      return;
+    }
+
+    pendingPremiumPurchaseRef.current = product;
+    pendingPlanChangeSourceRef.current = sourcePlanKey;
+    setConfirmingPlanChange(null);
   }, [purchase]);
 
   const attemptPurchase = useCallback((product: CommerceProduct) => {
@@ -1218,12 +1397,18 @@ export default function CommerceScreen() {
           )}
         </View>
 
-        {isAccount && membership?.active && (
+        {membership?.active === true && (
           <Card style={styles.membershipActionsCard}>
             <Text style={styles.membershipActionsTitle}>Active Premium Membership</Text>
             <Text style={styles.membershipActionsBody}>
               Daily rewards are in Profile. Themes are under Settings › Appearance.
             </Text>
+            {membership?.scheduledChange != null && (
+              <Text style={styles.scheduledChangeNotice} testID="scheduled-plan-change-notice">
+                {`Changes to ${capitalize(membership.scheduledChange.targetPlan)} on `
+                  + new Date(membership.scheduledChange.effectiveAt).toLocaleDateString()}
+              </Text>
+            )}
             <Button
               title="Manage Subscription"
               onPress={() => {
@@ -1350,24 +1535,63 @@ export default function CommerceScreen() {
           </Card>
         ) : (
           <>
-            {premiumPlans.length > 0 && (
+            {showPremiumPlanGrid && premiumPlans.length > 0 && (
               <View style={styles.planSection}>
-                <Text style={styles.sectionTitle}>Choose a Premium plan</Text>
+                <Text style={styles.sectionTitle}>
+                  {currentPlanLifecycle ? 'Your Premium plan' : 'Choose a Premium plan'}
+                </Text>
                 <View style={styles.planRow}>
                   {premiumPlans.map((plan) => {
-                    const selected = plan.productKey === selectedPremium?.productKey;
+                    const isCurrentPlan = currentPlanLifecycle
+                      && plan.productKey === currentPlanProductKey;
+                    const selected = currentPlanLifecycle
+                      ? isCurrentPlan
+                      : plan.productKey === selectedPremium?.productKey;
                     const trialOffer = premiumTrialOffer(plan, trialEligibleKeys);
-                    return (
-                      <Pressable
-                        key={plan.id}
-                        accessibilityRole="button"
-                        onPress={() => {
-                          setSelectedPremiumKey(plan.productKey);
+                    // A held plan can never invoke its own repurchase. A
+                    // different plan is tappable only where a direct change is
+                    // actually supported (iOS, mapped catalog). An upgrade opens
+                    // the in-app confirmation; a downgrade (`plan_change`) has no
+                    // app-owned confirmation at all (issue #121) and instead
+                    // routes straight to Manage Subscription, the only surface
+                    // that can request or cancel a deferred downgrade.
+                    const planChangeKind: PremiumPlanChangeKind | null = currentPlanLifecycle
+                      && !isCurrentPlan
+                      && currentPlanProductKey !== null
+                      ? classifyPremiumPlanChange(currentPlanProductKey, plan.productKey)
+                      : null;
+                    const onPressPlan = currentPlanLifecycle
+                      ? (isCurrentPlan || !directPlanChangeAvailable || planChangeKind === null
+                        ? undefined
+                        : () => {
                           void captureGameplayEvent('commerce_product_selected', {
                             product_kind: plan.productKind,
                             product_key: plan.productKey,
                           });
-                        }}
+                          if (planChangeKind === 'upgrade' && currentPlanProduct !== undefined) {
+                            setConfirmingPlanChange({ current: currentPlanProduct, target: plan });
+                          } else if (planChangeKind === 'plan_change') {
+                            void withProtectedRoundTrip('subscription-management', () =>
+                              showRevenueCatManageSubscriptions(),
+                              { keepUntilForeground: true },
+                            ).catch(() => {
+                              Alert.alert('Unable to open subscriptions', 'Try again from your device store account.');
+                            });
+                          }
+                        })
+                      : () => {
+                        setSelectedPremiumKey(plan.productKey);
+                        void captureGameplayEvent('commerce_product_selected', {
+                          product_kind: plan.productKind,
+                          product_key: plan.productKey,
+                        });
+                      };
+                    return (
+                      <Pressable
+                        key={plan.id}
+                        accessibilityRole="button"
+                        disabled={onPressPlan === undefined}
+                        onPress={onPressPlan}
                         style={({ pressed }) => [
                           styles.planCard,
                           selected && styles.planCardSelected,
@@ -1375,8 +1599,16 @@ export default function CommerceScreen() {
                         ]}
                         testID={`premium-${plan.productKey}`}
                       >
-                        {plan.productKey === 'premium_annual' && (
-                          <Text style={styles.bestValue}>BEST VALUE</Text>
+                        {isCurrentPlan ? (
+                          <Text style={styles.bestValue}>CURRENT PLAN</Text>
+                        ) : planChangeKind !== null && directPlanChangeAvailable ? (
+                          <Text style={styles.bestValue}>
+                            {planChangeKind === 'upgrade' ? 'UPGRADE' : 'PLAN CHANGE'}
+                          </Text>
+                        ) : (
+                          !currentPlanLifecycle && plan.productKey === 'premium_annual' && (
+                            <Text style={styles.bestValue}>BEST VALUE</Text>
+                          )
                         )}
                         <Text style={styles.planName}>{plan.label}</Text>
                         <Text style={styles.planPrice}>{plan.priceString}</Text>
@@ -1395,7 +1627,7 @@ export default function CommerceScreen() {
                     );
                   })}
                 </View>
-                {selectedPremium !== undefined && (
+                {!currentPlanLifecycle && selectedPremium !== undefined && (
                   <>
                     <SubscriptionDisclosure
                       plan={selectedPremium}
@@ -1536,6 +1768,17 @@ export default function CommerceScreen() {
         onCancel={() => setConfirmingPremium(null)}
         onConfirm={confirmPremiumPurchase}
       />
+      <PlanChangeConfirmation
+        onDismiss={handlePremiumConfirmationDismiss}
+        current={confirmingPlanChange?.current ?? null}
+        target={confirmingPlanChange?.target ?? null}
+        onCancel={() => setConfirmingPlanChange(null)}
+        onConfirm={(target) => {
+          if (confirmingPlanChange !== null) {
+            confirmPlanChangePurchase(target, confirmingPlanChange.current.productKey);
+          }
+        }}
+      />
     </>
   );
 }
@@ -1618,6 +1861,74 @@ function PremiumConfirmation({
                 <View style={styles.confirmationActions}>
                   <Button title="Cancel" onPress={onCancel} variant="secondary" />
                   <Button title={`Confirm ${product.label}`} onPress={() => onConfirm(product)} variant="rose" />
+                </View>
+              </>
+            )}
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+/**
+ * The direct iOS upgrade confirmation (issue #123). Shows the Current Plan,
+ * the target plan's localized price, billing period, and Membership Credit
+ * Grant allowance, and states that the App Store controls the final charge
+ * and effective date. Reuses SubscriptionDisclosure rather than writing new
+ * trial copy: the store-standard forfeiture clause already covers a plan
+ * change without generically promising either trial loss or preservation.
+ */
+function PlanChangeConfirmation({
+  current,
+  target,
+  onCancel,
+  onConfirm,
+  onDismiss,
+}: {
+  current: CommerceProduct | null;
+  target: CommerceProduct | null;
+  onCancel: () => void;
+  onConfirm: (product: CommerceProduct) => void;
+  onDismiss: () => void;
+}) {
+  const visible = current !== null && target !== null;
+  return (
+    <Modal
+      animationType="fade"
+      onDismiss={onDismiss}
+      onRequestClose={onCancel}
+      testID="plan-change-confirmation-modal"
+      transparent
+      visible={visible}
+    >
+      <View style={styles.confirmationRoot}>
+        <View
+          accessibilityViewIsModal
+          style={[styles.confirmationCard, styles.premiumConfirmationCard]}
+        >
+          <ScrollView contentContainerStyle={styles.premiumConfirmationContent}>
+            <Text style={styles.confirmationTitle}>Confirm Premium upgrade</Text>
+            {current !== null && target !== null && (
+              <>
+                <Text style={styles.confirmationPlan}>Current Plan: {current.label}</Text>
+                <Text style={styles.confirmationPlan}>
+                  {`Upgrade to ${target.label} · ${paidOfferLabel(target)}`}
+                </Text>
+                {target.credits !== undefined && (
+                  <Text style={styles.planCredits}>
+                    {creditAllowanceLabel(target.credits, target.creditPeriod)}
+                  </Text>
+                )}
+                <Text style={styles.confirmationBody}>
+                  The App Store controls the final charge and effective date for this
+                  upgrade. Premium reflects {target.label} only after the Game Backend
+                  verifies it.
+                </Text>
+                <SubscriptionDisclosure plan={target} testID="plan-change-confirmation-disclosure" />
+                <View style={styles.confirmationActions}>
+                  <Button title="Cancel" onPress={onCancel} variant="secondary" />
+                  <Button title="Confirm upgrade" onPress={() => onConfirm(target)} variant="rose" />
                 </View>
               </>
             )}
@@ -2215,6 +2526,11 @@ const styles = StyleSheet.create({
     color: Theme.colors.textSecondary,
     fontSize: Theme.typography.sizes.sm,
     lineHeight: 20,
+  },
+  scheduledChangeNotice: {
+    color: Theme.colors.accentTeal,
+    fontSize: Theme.typography.sizes.sm,
+    fontWeight: Theme.typography.weights.semibold,
   },
   errorBanner: {
     alignItems: 'center',

@@ -302,29 +302,25 @@ export class GuestPurchaseAttemptService {
     productIds: string | readonly string[],
     transactionId: string,
     eventType: string,
-    originalTransactionId: string,
     outcome: { recorded: boolean; rejectedOtherAccount: boolean; periodExists: boolean },
   ): Promise<void> {
-    // A plan bought while another Premium Plan is still active arrives as a
-    // PRODUCT_CHANGE, whose product_id still names the outgoing plan and whose
-    // new_product_id names the one the player just bought. Matching both keeps
-    // that Purchase Attempt from staying unresolved forever.
+    // A plan bought while another Premium Plan is still active arrives first as
+    // a PRODUCT_CHANGE, whose product_id still names the outgoing plan and whose
+    // new_product_id names the one the player just bought; matching both keeps
+    // this lookup able to find the attempt. PRODUCT_CHANGE itself never resolves
+    // the attempt (issue #123): it records intent only, so `outcome.periodExists`
+    // is false for it and the caller's status computation below leaves the
+    // attempt unresolved until the effective INITIAL_PURCHASE/RENEWAL activates
+    // the target plan.
     const ids = [...new Set(typeof productIds === 'string' ? [productIds] : productIds)];
     const rows = await this.dataSource.query<readonly AttemptRow[]>(
       `SELECT * FROM economy.purchase_attempts
          WHERE principal_type = 'guest' AND principal_id = $1 AND product_id = ANY($2::varchar[])
            AND subscriber_id = ANY($3::varchar[]) AND status IN ('created', 'verifying')
-           AND (
-             $4 IN ('INITIAL_PURCHASE', 'PRODUCT_CHANGE')
-             OR ($4 = 'RENEWAL' AND EXISTS (
-               SELECT 1 FROM economy.membership_periods
-               WHERE guest_installation_id = $1 AND product_id = ANY($2::varchar[])
-                 AND original_transaction_id = $5 AND period_type = 'TRIAL'
-             ))
-           )
+           AND $4 IN ('INITIAL_PURCHASE', 'PRODUCT_CHANGE', 'RENEWAL')
        ORDER BY created_at ASC
        LIMIT 1`,
-      [resolved.guestId, ids, resolved.ids, eventType, originalTransactionId],
+      [resolved.guestId, ids, resolved.ids, eventType],
     );
     if (rows[0] !== undefined) {
       const status = outcome.rejectedOtherAccount

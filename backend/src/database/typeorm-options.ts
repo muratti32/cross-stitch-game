@@ -168,6 +168,7 @@ import { AddPaidBalanceProvenance1789257600000 } from './migrations/178925760000
 import { CreateCommercePromotionHandoffs1789344000000 } from './migrations/1789344000000-CreateCommercePromotionHandoffs';
 import { FixCommercePromotionOwnership1789344000001 } from './migrations/1789344000001-FixCommercePromotionOwnership';
 import { CreateCommerceGrantTombstones1789430400000 } from './migrations/1789430400000-CreateCommerceGrantTombstones';
+import { AddNewProductIdToMembershipEvents1789516800000 } from './migrations/1789516800000-AddNewProductIdToMembershipEvents';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -321,6 +322,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateCommercePromotionHandoffs1789344000000,
       FixCommercePromotionOwnership1789344000001,
       CreateCommerceGrantTombstones1789430400000,
+      AddNewProductIdToMembershipEvents1789516800000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

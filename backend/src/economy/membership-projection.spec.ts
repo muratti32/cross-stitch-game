@@ -1,6 +1,7 @@
 import {
   periodHasEntitlement,
   projectMembershipPeriod,
+  projectScheduledChange,
   selectMembershipPeriod,
   type VerifiedMembershipEvent,
 } from './membership-projection';
@@ -25,6 +26,7 @@ function membershipEvent(
     expiresAt: new Date('2026-08-01T00:00:00.000Z'),
     gracePeriodExpiresAt: null,
     cancelReason: null,
+    newProductId: null,
     ...overrides,
   };
 }
@@ -116,7 +118,12 @@ describe('membership period projection', () => {
     expect(periodHasEntitlement(projection!, new Date('2026-08-09T00:00:00.000Z'))).toBe(false);
   });
 
-  it('anchors a period on a lone PRODUCT_CHANGE event (plan cross-grade arrives under a new transaction id)', () => {
+  it('does not anchor a period on a lone PRODUCT_CHANGE event (issue #123: intent only, never activation)', () => {
+    // PRODUCT_CHANGE carries a new provider_transaction_id (plan cross-grade or
+    // upgrade); its own event history never contains an INITIAL_PURCHASE or
+    // RENEWAL row. It must not create a target Membership Period grant on its
+    // own — activation only happens once the provider reports the effective
+    // paid period (RENEWAL on Apple, INITIAL_PURCHASE on Google Play).
     const projection = projectMembershipPeriod([
       membershipEvent({
         providerEventId: 'product-change-1',
@@ -129,12 +136,102 @@ describe('membership period projection', () => {
       }),
     ]);
 
+    expect(projection).toBeNull();
+  });
+
+  it('anchors a period once the effective RENEWAL for the changed plan is delivered', () => {
+    const projection = projectMembershipPeriod([
+      membershipEvent({
+        providerEventId: 'product-change-1',
+        providerTransactionId: 'transaction-2',
+        type: 'PRODUCT_CHANGE',
+        productId: 'com.avk.stitchwish.premium_annual',
+        eventAt: new Date('2026-08-01T00:00:01.000Z'),
+        purchasedAt: new Date('2026-08-01T00:00:00.000Z'),
+        expiresAt: new Date('2027-08-01T00:00:00.000Z'),
+      }),
+      membershipEvent({
+        providerEventId: 'renewal-1',
+        providerTransactionId: 'transaction-2',
+        type: 'RENEWAL',
+        productId: 'com.avk.stitchwish.premium_annual',
+        eventAt: new Date('2026-08-01T00:00:02.000Z'),
+        purchasedAt: new Date('2026-08-01T00:00:01.000Z'),
+        expiresAt: new Date('2027-08-01T00:00:00.000Z'),
+      }),
+    ]);
+
     expect(projection).toMatchObject({
       plan: 'annual',
       currentStatus: 'active',
       creditAmount: 180,
     });
     expect(periodHasEntitlement(projection!, new Date('2026-08-04T00:00:00.000Z'))).toBe(true);
+  });
+});
+
+describe('scheduled Premium Plan change projection (issue #124)', () => {
+  const active = { plan: 'annual' as const, endsAt: new Date('2027-07-01T00:00:00.000Z') };
+
+  it('returns null when there is no candidate PRODUCT_CHANGE', () => {
+    expect(projectScheduledChange(undefined, active)).toBeNull();
+  });
+
+  it('surfaces a downgrade target with its provider effective-date evidence', () => {
+    const candidate = membershipEvent({
+      type: 'PRODUCT_CHANGE',
+      newProductId: 'com.avk.stitchwish.premium_monthly',
+      expiresAt: new Date('2027-07-01T00:00:00.000Z'),
+    });
+
+    expect(projectScheduledChange(candidate, active)).toEqual({
+      targetPlan: 'monthly',
+      effectiveAt: new Date('2027-07-01T00:00:00.000Z'),
+    });
+  });
+
+  it('ignores an upgrade candidate: upgrades activate immediately, not as a scheduled change', () => {
+    const candidate = membershipEvent({
+      type: 'PRODUCT_CHANGE',
+      newProductId: 'com.avk.stitchwish.premium_annual',
+      expiresAt: new Date('2027-07-01T00:00:00.000Z'),
+    });
+
+    expect(projectScheduledChange(candidate, { plan: 'weekly', endsAt: null })).toBeNull();
+  });
+
+  it('ignores a non-PRODUCT_CHANGE event', () => {
+    const candidate = membershipEvent({
+      type: 'RENEWAL',
+      newProductId: 'com.avk.stitchwish.premium_weekly',
+      expiresAt: new Date('2027-07-01T00:00:00.000Z'),
+    });
+
+    expect(projectScheduledChange(candidate, active)).toBeNull();
+  });
+
+  it('withholds the change until the provider effective-date evidence arrives', () => {
+    const candidate = membershipEvent({
+      type: 'PRODUCT_CHANGE',
+      newProductId: 'com.avk.stitchwish.premium_monthly',
+      expiresAt: null,
+      gracePeriodExpiresAt: null,
+    });
+
+    expect(projectScheduledChange(candidate, active)).toBeNull();
+  });
+
+  it('treats a stale candidate as cleared once the active period renewed past its effective date', () => {
+    // The active subscription renewed on its original plan beyond the
+    // candidate's effective date, so the provider never carried out the
+    // downgrade (delivery never arrived, or it was cancelled).
+    const candidate = membershipEvent({
+      type: 'PRODUCT_CHANGE',
+      newProductId: 'com.avk.stitchwish.premium_monthly',
+      expiresAt: new Date('2027-01-01T00:00:00.000Z'),
+    });
+
+    expect(projectScheduledChange(candidate, active)).toBeNull();
   });
 });
 
