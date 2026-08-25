@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useQueryClient } from '@tanstack/react-query';
+import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -1446,9 +1447,7 @@ export default function CommerceScreen() {
                 Do not purchase this plan again.
               </Text>
               {purchasePending.supportReference !== null && (
-                <Text selectable style={styles.supportReference}>
-                  Support Reference: {purchasePending.supportReference}
-                </Text>
+                <SupportReferenceRow reference={purchasePending.supportReference} />
               )}
               {(purchasePending.prolonged || purchasePending.failureStage !== null) && (
                 <Button
@@ -1474,9 +1473,7 @@ export default function CommerceScreen() {
                 exposes the matching Commerce Ledger grant. Do not purchase this pack again.
               </Text>
               {coinPurchasePending.supportReference !== null && (
-                <Text selectable style={styles.supportReference}>
-                  Support Reference: {coinPurchasePending.supportReference}
-                </Text>
+                <SupportReferenceRow reference={coinPurchasePending.supportReference} />
               )}
               {(coinPurchasePending.prolonged || coinPurchasePending.failureStage !== null) && (
                 <Button
@@ -1498,9 +1495,7 @@ export default function CommerceScreen() {
                 exposes the matching Commerce Ledger grant. Do not purchase this pack again.
               </Text>
               {aiCreditPurchasePending.supportReference !== null && (
-                <Text selectable style={styles.supportReference}>
-                  Support Reference: {aiCreditPurchasePending.supportReference}
-                </Text>
+                <SupportReferenceRow reference={aiCreditPurchasePending.supportReference} />
               )}
               {(aiCreditPurchasePending.prolonged
                 || aiCreditPurchasePending.failureStage !== null) && (
@@ -1780,6 +1775,50 @@ export default function CommerceScreen() {
         }}
       />
     </>
+  );
+}
+
+function SupportReferenceRow({ reference }: { readonly reference: string }) {
+  const [copied, setCopied] = useState(false);
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (resetTimer.current !== null) {
+      clearTimeout(resetTimer.current);
+    }
+  }, []);
+
+  const copyReference = useCallback(() => {
+    void (async () => {
+      try {
+        await Clipboard.setStringAsync(reference);
+        setCopied(true);
+        if (resetTimer.current !== null) {
+          clearTimeout(resetTimer.current);
+        }
+        resetTimer.current = setTimeout(() => setCopied(false), 2000);
+      } catch {
+        Alert.alert('Copy failed', 'The support reference could not be copied. Select the text to copy it manually.');
+      }
+    })();
+  }, [reference]);
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={`Copy support reference ${reference}`}
+      accessibilityHint="Copies the support reference to the clipboard"
+      onPress={copyReference}
+      style={({ pressed }) => [styles.supportReferenceRow, pressed && styles.supportReferenceRowPressed]}
+    >
+      <Text style={styles.supportReference}>Support Reference: {reference}</Text>
+      <Ionicons
+        name={copied ? 'checkmark-outline' : 'copy-outline'}
+        size={14}
+        color={copied ? Theme.colors.success : Theme.colors.textSecondary}
+      />
+      {copied && <Text style={styles.supportReferenceCopied}>Copied</Text>}
+    </Pressable>
   );
 }
 
@@ -2573,8 +2612,23 @@ const styles = StyleSheet.create({
   },
   supportReference: {
     color: Theme.colors.textSecondary,
+    flexShrink: 1,
     fontFamily: 'monospace',
     fontSize: Theme.typography.sizes.xs,
+  },
+  supportReferenceCopied: {
+    color: Theme.colors.success,
+    fontSize: Theme.typography.sizes.xs,
+  },
+  supportReferenceRow: {
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    gap: Theme.spacing.xs,
+    paddingVertical: Theme.spacing.xs,
+  },
+  supportReferenceRowPressed: {
+    opacity: 0.6,
   },
   storeState: {
     alignItems: 'center',
