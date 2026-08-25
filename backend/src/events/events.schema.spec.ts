@@ -83,4 +83,72 @@ describe('Gameplay event schema', () => {
       product_key: 'coin_pack_300',
     })).toThrow(BadRequestException);
   });
+
+  it.each([
+    'subscription_change_started',
+    'subscription_change_completed',
+    'subscription_change_cancelled',
+  ] as const)('accepts a %s plan-change payload with no identifiers', (kind) => {
+    const payload = {
+      source_plan: 'premium_weekly',
+      target_plan: 'premium_monthly',
+      platform: 'ios',
+    };
+    expect(validateGameplayEventPayload(kind, payload)).toEqual({ kind, payload });
+  });
+
+  it('accepts subscription_change_failed with its failure stage', () => {
+    const payload = {
+      source_plan: 'premium_weekly',
+      target_plan: 'premium_annual',
+      platform: 'android',
+      failure_stage: 'store',
+    };
+    expect(validateGameplayEventPayload('subscription_change_failed', payload)).toEqual({
+      kind: 'subscription_change_failed',
+      payload,
+    });
+  });
+
+  it('rejects an unexpected failure_stage field on subscription_change_completed', () => {
+    expect(() => validateGameplayEventPayload('subscription_change_completed', {
+      source_plan: 'premium_weekly',
+      target_plan: 'premium_monthly',
+      platform: 'ios',
+      failure_stage: 'store',
+    })).toThrow(BadRequestException);
+  });
+
+  it('rejects a subscription_change payload carrying an account, subscriber, transaction, or Support Reference identifier', () => {
+    expect(() => validateGameplayEventPayload('subscription_change_started', {
+      source_plan: 'premium_weekly',
+      target_plan: 'premium_monthly',
+      platform: 'ios',
+      account_id: '11111111-1111-4111-8111-111111111111',
+    })).toThrow(BadRequestException);
+  });
+
+  it('rejects a one-time-pack product key on a subscription_change event', () => {
+    expect(() => validateGameplayEventPayload('subscription_change_started', {
+      source_plan: 'premium_weekly',
+      target_plan: 'coin_pack_300',
+      platform: 'ios',
+    })).toThrow(BadRequestException);
+  });
+
+  it('rejects an unsupported subscription_change platform', () => {
+    expect(() => validateGameplayEventPayload('subscription_change_started', {
+      source_plan: 'premium_weekly',
+      target_plan: 'premium_monthly',
+      platform: 'web',
+    })).toThrow(BadRequestException);
+  });
+
+  it('rejects subscription_change_failed missing its required failure_stage', () => {
+    expect(() => validateGameplayEventPayload('subscription_change_failed', {
+      source_plan: 'premium_weekly',
+      target_plan: 'premium_monthly',
+      platform: 'ios',
+    })).toThrow(BadRequestException);
+  });
 });
