@@ -16,12 +16,15 @@ interface GuestAttemptsStub {
   applyWebhook?: jest.Mock;
   resolveMappedOwner?: jest.Mock;
   resolveMappedGuest?: jest.Mock;
+  resolveSubscriberOwner?: jest.Mock;
   bindSubscribers?: jest.Mock;
 }
 
 function buildService(overrides: {
   accounts?: readonly { id: string; status: RegisteredAccountStatus }[];
   transferMembership?: jest.Mock;
+  recordVerifiedEvent?: jest.Mock;
+  getTransactionOwners?: jest.Mock;
   guestAttempts?: GuestAttemptsStub;
   processPurchase?: jest.Mock;
   account?: { id: string; status: RegisteredAccountStatus } | null;
@@ -32,7 +35,16 @@ function buildService(overrides: {
   const transferMembership =
     overrides.transferMembership ??
     jest.fn().mockResolvedValue({ eventsMoved: 3, periodsMoved: 1 });
-  const membership = { transferMembership } as unknown as MembershipRepository;
+  const recordVerifiedEvent = overrides.recordVerifiedEvent
+    ?? jest.fn().mockResolvedValue({
+      recorded: true, rejectedOtherAccount: false, periodExists: true,
+      creditGranted: 0, creditReversed: 0,
+    });
+  const getTransactionOwners = overrides.getTransactionOwners
+    ?? jest.fn().mockResolvedValue([]);
+  const membership = {
+    transferMembership, recordVerifiedEvent, getTransactionOwners,
+  } as unknown as MembershipRepository;
   const processPurchase = overrides.processPurchase ?? jest.fn();
   const commerceLedger = { processPurchase } as unknown as CommerceLedgerRepository;
   const accounts = {
@@ -46,6 +58,7 @@ function buildService(overrides: {
       applyWebhook: overrides.guestAttempts.applyWebhook ?? jest.fn().mockResolvedValue(null),
       resolveMappedOwner: overrides.guestAttempts.resolveMappedOwner ?? jest.fn().mockResolvedValue(null),
       resolveMappedGuest: overrides.guestAttempts.resolveMappedGuest ?? jest.fn().mockResolvedValue(null),
+      resolveSubscriberOwner: overrides.guestAttempts.resolveSubscriberOwner ?? jest.fn().mockResolvedValue(null),
       bindSubscribers: overrides.guestAttempts.bindSubscribers ?? jest.fn().mockResolvedValue(undefined),
     };
 
@@ -54,6 +67,8 @@ function buildService(overrides: {
     accounts,
     guestAttempts,
     transferMembership,
+    recordVerifiedEvent,
+    getTransactionOwners,
     processPurchase,
   };
 }
@@ -243,5 +258,117 @@ describe('RevenueCatWebhookService guest/account routing', () => {
     } })).resolves.toMatchObject({ handled: true, detail: 'granted' });
     expect(applyWebhook).not.toHaveBeenCalled();
     expect(processPurchase).toHaveBeenCalledWith(expect.objectContaining({ accountId: NEW_ACCOUNT_ID }));
+  });
+});
+
+describe('RevenueCatWebhookService alias-owned Membership adoption', () => {
+  const membershipEvent = (overrides: Record<string, unknown> = {}) => ({
+    event: {
+      id: 'event-product-change-1',
+      type: 'PRODUCT_CHANGE',
+      environment: 'SANDBOX',
+      app_user_id: NEW_ACCOUNT_ID,
+      aliases: [NEW_ACCOUNT_ID, ANON_ID],
+      original_app_user_id: ANON_ID,
+      transaction_id: 'txn-premium-1',
+      original_transaction_id: 'txn-premium-original',
+      product_id: 'com.avk.stitchwish.premium_monthly',
+      period_type: 'NORMAL',
+      event_timestamp_ms: 1787603638984,
+      purchased_at_ms: 1787601740000,
+      expiration_at_ms: 1787688140000,
+      ...overrides,
+    },
+  });
+
+  it('moves a Guest-owned subscription onto the account its aliases now name', async () => {
+    const recordVerifiedEvent = jest.fn()
+      .mockResolvedValueOnce({
+        recorded: false, rejectedOtherAccount: true, periodExists: false,
+        creditGranted: 0, creditReversed: 0,
+      })
+      .mockResolvedValueOnce({
+        recorded: true, rejectedOtherAccount: false, periodExists: true,
+        creditGranted: 0, creditReversed: 0,
+      });
+    const getTransactionOwners = jest.fn().mockResolvedValue([
+      { type: 'guest', guestInstallationId: GUEST_ID },
+    ]);
+    const resolveSubscriberOwner = jest.fn().mockImplementation((id: string) =>
+      Promise.resolve(id === ANON_ID ? { type: 'guest', guestInstallationId: GUEST_ID } : null));
+    const bindSubscribers = jest.fn().mockResolvedValue(undefined);
+    const transferMembership = jest.fn().mockResolvedValue({ eventsMoved: 2, periodsMoved: 1 });
+    const { service } = buildService({
+      account: { id: NEW_ACCOUNT_ID, status: RegisteredAccountStatus.Active },
+      recordVerifiedEvent,
+      getTransactionOwners,
+      transferMembership,
+      guestAttempts: { resolveSubscriberOwner, bindSubscribers },
+    });
+
+    await expect(service.handleEvent(membershipEvent())).resolves.toEqual({
+      handled: true, detail: 'membership_event_recorded', duplicate: false,
+    });
+    expect(transferMembership).toHaveBeenCalledWith({
+      environment: 'sandbox',
+      fromAccountIds: [],
+      fromGuestIds: [GUEST_ID],
+      toOwner: { type: 'account', accountId: NEW_ACCOUNT_ID },
+    });
+    expect(bindSubscribers).toHaveBeenCalledWith(
+      { type: 'account', accountId: NEW_ACCOUNT_ID },
+      [NEW_ACCOUNT_ID, ANON_ID],
+    );
+    expect(recordVerifiedEvent).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps refusing a subscription owned by another Registered Account', async () => {
+    const recordVerifiedEvent = jest.fn().mockResolvedValue({
+      recorded: false, rejectedOtherAccount: true, periodExists: false,
+      creditGranted: 0, creditReversed: 0,
+    });
+    const getTransactionOwners = jest.fn().mockResolvedValue([
+      { type: 'account', accountId: OLD_ACCOUNT_ID },
+    ]);
+    const transferMembership = jest.fn();
+    const { service } = buildService({
+      account: { id: NEW_ACCOUNT_ID, status: RegisteredAccountStatus.Active },
+      recordVerifiedEvent,
+      getTransactionOwners,
+      transferMembership,
+      guestAttempts: {},
+    });
+
+    await expect(service.handleEvent(membershipEvent())).resolves.toEqual({
+      handled: true, detail: 'rejected_other_account', duplicate: false,
+    });
+    expect(transferMembership).not.toHaveBeenCalled();
+  });
+
+  it('refuses adoption when an alias is claimed by a different principal', async () => {
+    const recordVerifiedEvent = jest.fn().mockResolvedValue({
+      recorded: false, rejectedOtherAccount: true, periodExists: false,
+      creditGranted: 0, creditReversed: 0,
+    });
+    const getTransactionOwners = jest.fn().mockResolvedValue([
+      { type: 'guest', guestInstallationId: GUEST_ID },
+    ]);
+    const resolveSubscriberOwner = jest.fn().mockImplementation((id: string) =>
+      Promise.resolve(id === ANON_ID
+        ? { type: 'guest', guestInstallationId: GUEST_ID }
+        : { type: 'account', accountId: OLD_ACCOUNT_ID }));
+    const transferMembership = jest.fn();
+    const { service } = buildService({
+      account: { id: NEW_ACCOUNT_ID, status: RegisteredAccountStatus.Active },
+      recordVerifiedEvent,
+      getTransactionOwners,
+      transferMembership,
+      guestAttempts: { resolveSubscriberOwner },
+    });
+
+    await expect(service.handleEvent(membershipEvent())).resolves.toEqual({
+      handled: true, detail: 'rejected_other_account', duplicate: false,
+    });
+    expect(transferMembership).not.toHaveBeenCalled();
   });
 });

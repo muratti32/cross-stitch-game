@@ -217,6 +217,34 @@ export class MembershipRepository {
    * the ownership guard in recordVerifiedEvent keeps rejecting genuine
    * cross-account claims while a real transfer stops looking like one.
    */
+  /**
+   * Reports who currently owns every recorded event of one provider
+   * transaction. A webhook that is refused as owned by somebody else needs the
+   * current owner to decide whether the claim is a real conflict or the same
+   * player reaching their purchase through a new identity.
+   */
+  async getTransactionOwners(
+    environment: 'sandbox' | 'production',
+    providerTransactionId: string,
+  ): Promise<readonly CommerceOwner[]> {
+    const rows = await this.dataSource.query<
+      readonly { account_id: string | null; guest_installation_id: string | null }[]
+    >(
+      `SELECT DISTINCT account_id, guest_installation_id
+       FROM economy.membership_events
+       WHERE environment = $1 AND provider_transaction_id = $2`,
+      [environment, providerTransactionId],
+    );
+    return rows.flatMap<CommerceOwner>((row) => {
+      if (row.account_id !== null) {
+        return [{ type: 'account', accountId: row.account_id }];
+      }
+      return row.guest_installation_id === null
+        ? []
+        : [{ type: 'guest', guestInstallationId: row.guest_installation_id }];
+    });
+  }
+
   async transferMembership(input: MembershipTransferInput): Promise<MembershipTransferResult> {
     const fromGuestIds = input.fromGuestIds ?? [];
     if (input.fromAccountIds.length === 0 && fromGuestIds.length === 0) {

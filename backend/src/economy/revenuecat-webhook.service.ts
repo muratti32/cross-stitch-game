@@ -132,7 +132,10 @@ export class RevenueCatWebhookService {
         const owner = mappedOwner.owner;
         const mappedAccount = await this.accounts.findOne({ where: { id: owner.accountId } });
         if (mappedAccount && mappedAccount.status === RegisteredAccountStatus.Active) {
-          return this.applyAccountMembership(evt, environment, owner.accountId, premiumProduct, type, transactionId);
+          return this.applyAccountMembership(
+            evt, environment, owner.accountId, premiumProduct, type, transactionId,
+            [appUserId, ...aliases, ...originalAppUserId],
+          );
         }
       }
       const mapped: MappedGuest | null = mappedOwner !== null && mappedOwner.owner.type === 'guest'
@@ -198,7 +201,10 @@ export class RevenueCatWebhookService {
     }
 
     if (premiumProduct && MEMBERSHIP_EVENT_TYPES.has(type)) {
-      return this.applyAccountMembership(evt, environment, appUserId, premiumProduct, type, transactionId);
+      return this.applyAccountMembership(
+        evt, environment, appUserId, premiumProduct, type, transactionId,
+        [appUserId, ...aliases, ...originalAppUserId],
+      );
     }
 
     if (type === 'NON_RENEWING_PURCHASE') {
@@ -241,6 +247,7 @@ export class RevenueCatWebhookService {
     premiumProduct: PremiumProduct,
     type: string,
     transactionId: string,
+    subscriberIds: readonly string[] = [],
   ): Promise<RevenueCatWebhookOutcome> {
     const membershipEvent = parseMembershipEvent(evt, environment, {
       type: 'account', accountId,
@@ -248,7 +255,21 @@ export class RevenueCatWebhookService {
     if (membershipEvent.periodType === 'TRIAL' && premiumProduct.plan !== 'monthly') {
       throw new BadRequestException('Only the Monthly Premium Plan may have a trial');
     }
-    const result = await this.membership.recordVerifiedEvent(membershipEvent);
+    let result = await this.membership.recordVerifiedEvent(membershipEvent);
+    if (result.rejectedOtherAccount) {
+      // Signing in to an existing Registered Account is not a transfer for
+      // RevenueCat: it aliases the Guest's anonymous subscriber onto the
+      // account and keeps delivering the same subscription under the account
+      // id. The Membership still sits on the Guest Installation that bought
+      // it, so the ownership guard sees a conflict for a purchase that never
+      // changed hands (ADR-0048).
+      const adopted = await this.adoptAliasOwnedMembership(
+        environment, transactionId, accountId, subscriberIds,
+      );
+      if (adopted) {
+        result = await this.membership.recordVerifiedEvent(membershipEvent);
+      }
+    }
     if (result.rejectedOtherAccount) {
       this.logger.warn(
         `RevenueCat membership fraud signal: transaction ${this.redactTransaction(transactionId)} is bound to another account`,
@@ -263,6 +284,59 @@ export class RevenueCatWebhookService {
       detail: result.recorded ? 'membership_event_recorded' : 'membership_event_replayed',
       duplicate: !result.recorded,
     };
+  }
+
+  /**
+   * Moves a Guest-owned Membership onto the Registered Account the same
+   * RevenueCat customer now signs in as. The move is taken only when every
+   * recorded owner of the transaction is one Guest Installation and the
+   * event's own alias list still maps to that Guest: RevenueCat states those
+   * identifiers belong to one customer, so the claim is the same player rather
+   * than a second one reaching for a purchase they never made.
+   */
+  private async adoptAliasOwnedMembership(
+    environment: 'sandbox' | 'production',
+    transactionId: string,
+    accountId: string,
+    subscriberIds: readonly string[],
+  ): Promise<boolean> {
+    const guestAttempts = this.guestAttempts;
+    if (guestAttempts === undefined || subscriberIds.length === 0) return false;
+    const owners = await this.membership.getTransactionOwners(environment, transactionId);
+    const guestIds = new Set<string>();
+    for (const owner of owners) {
+      if (owner.type !== 'guest') return false;
+      guestIds.add(owner.guestInstallationId);
+    }
+    if (guestIds.size !== 1) return false;
+    const [guestId] = [...guestIds];
+    if (guestId === undefined) return false;
+
+    const ids = [...new Set(subscriberIds)];
+    const mapped = await Promise.all(
+      ids.map((id) => guestAttempts.resolveSubscriberOwner(id)),
+    );
+    const claims = mapped.filter((owner): owner is CommerceOwner => owner !== null);
+    if (claims.length === 0) return false;
+    // A subscriber already claimed by a different principal makes the alias
+    // list ambiguous, so the Membership stays where it is and support decides.
+    const aliasesAgree = claims.every((owner) =>
+      (owner.type === 'guest' && owner.guestInstallationId === guestId)
+      || (owner.type === 'account' && owner.accountId === accountId));
+    if (!aliasesAgree) return false;
+    if (!claims.some((owner) => owner.type === 'guest')) return false;
+
+    const moved = await this.membership.transferMembership({
+      environment,
+      fromAccountIds: [],
+      fromGuestIds: [guestId],
+      toOwner: { type: 'account', accountId },
+    });
+    await guestAttempts.bindSubscribers({ type: 'account', accountId }, ids);
+    this.logger.log(
+      `RevenueCat membership adopted by ${this.redactPrincipal(accountId)} from an aliased Guest: events=${moved.eventsMoved} periods=${moved.periodsMoved}`,
+    );
+    return moved.eventsMoved > 0;
   }
 
   private async applyAccountPurchase(accountId: string, productId: string, environment: 'sandbox' | 'production', transactionId: string): Promise<RevenueCatWebhookOutcome> {

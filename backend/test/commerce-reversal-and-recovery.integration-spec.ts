@@ -335,6 +335,68 @@ describe('Commerce reversal and operational recovery', () => {
     });
   });
 
+  describe('Sign-in onto an existing account adopts the Guest-owned Membership', () => {
+    // Signing in to an account RevenueCat already knows is an alias, not a
+    // TRANSFER: the same subscription keeps arriving, now under the account id,
+    // while the Membership rows still name the Guest that bought it. Refusing
+    // that claim leaves the player paying for a Membership the backend never
+    // reconciles again.
+    it('moves the subscription onto the account the aliases now name and keeps renewing it', async () => {
+      const guest = await newGuest();
+      const account = await newRegisteredAccount();
+      const subscriberId = `$RCAnonymousID:${randomUUID()}`;
+      const transactionId = `adopt-${randomUUID()}`;
+      const originalTransactionId = `adopt-original-${randomUUID()}`;
+      await mapGuest(guest, subscriberId);
+      await webhook(premiumEvent({ subscriberId, transactionId, originalTransactionId })).expect(200);
+
+      // RevenueCat keeps the same provider transaction across a plan change, so
+      // the account-side event lands on the row the Guest already owns.
+      await webhook({
+        ...premiumEvent({
+          subscriberId: account.accountId, transactionId,
+          originalTransactionId, type: 'RENEWAL',
+          expirationAtMs: Date.now() + 60 * 86_400_000,
+        }),
+        aliases: [account.accountId, subscriberId],
+        original_app_user_id: subscriberId,
+      }).expect(200);
+
+      await request(httpServer).get('/v1/commerce/membership').set(authHeaders(account.accessToken)).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: true, plan: 'monthly' }));
+      await request(httpServer).get('/v1/commerce/membership').set(guestHeaders(guest.accessToken)).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: false }));
+      const mapping = await dataSource.query<readonly { account_id: string | null; guest_installation_id: string | null }[]>(
+        `SELECT account_id, guest_installation_id FROM economy.revenuecat_subscriber_mappings WHERE subscriber_id = $1`,
+        [subscriberId],
+      );
+      expect(mapping).toEqual([{ account_id: account.accountId, guest_installation_id: null }]);
+    });
+
+    it('refuses to adopt a subscription owned by another Registered Account', async () => {
+      const owner = await newRegisteredAccount();
+      const claimant = await newRegisteredAccount();
+      const transactionId = `adopt-conflict-${randomUUID()}`;
+      const originalTransactionId = `adopt-conflict-original-${randomUUID()}`;
+      await webhook(premiumEvent({
+        subscriberId: owner.accountId, transactionId, originalTransactionId,
+      })).expect(200);
+
+      await webhook({
+        ...premiumEvent({
+          subscriberId: claimant.accountId, transactionId, originalTransactionId,
+          type: 'RENEWAL',
+        }),
+        aliases: [claimant.accountId, owner.accountId],
+      }).expect(503);
+
+      await request(httpServer).get('/v1/commerce/membership').set(authHeaders(claimant.accessToken)).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: false }));
+      await request(httpServer).get('/v1/commerce/membership').set(authHeaders(owner.accessToken)).expect(200)
+        .expect((response) => expect(response.body).toMatchObject({ active: true }));
+    });
+  });
+
   describe('Concurrent webhook delivery cannot double-bind or double-grant', () => {
     it('binds a raced Coin transaction to only one Account', async () => {
       const first = await newRegisteredAccount(); const second = await newRegisteredAccount(); const transactionId = `race-${randomUUID()}`;
