@@ -5,6 +5,7 @@ import { RegisteredAccountStatus, type RegisteredAccountEntity } from '../auth/e
 import type { CommerceLedgerRepository } from './commerce-ledger.repository';
 import type { MembershipRepository } from './membership.repository';
 import { RevenueCatWebhookService } from './revenuecat-webhook.service';
+import type { SubscriptionChangeReporter } from './subscription-change-reporter.service';
 
 const OLD_ACCOUNT_ID = '8f1f3d6c-2c6e-4b3f-9a1e-1d0c9b8a7654';
 const NEW_ACCOUNT_ID = 'd278d6bc-2ba1-42aa-a940-8a6d2a4b3d8b';
@@ -27,6 +28,7 @@ function buildService(overrides: {
   getTransactionOwners?: jest.Mock;
   guestAttempts?: GuestAttemptsStub;
   processPurchase?: jest.Mock;
+  reportPlanChangeActivated?: jest.Mock;
   account?: { id: string; status: RegisteredAccountStatus } | null;
 }) {
   const accountRows = overrides.accounts ?? [
@@ -38,7 +40,7 @@ function buildService(overrides: {
   const recordVerifiedEvent = overrides.recordVerifiedEvent
     ?? jest.fn().mockResolvedValue({
       recorded: true, rejectedOtherAccount: false, periodExists: true,
-      creditGranted: 0, creditReversed: 0,
+      creditGranted: 0, creditReversed: 0, planChangeActivated: null,
     });
   const getTransactionOwners = overrides.getTransactionOwners
     ?? jest.fn().mockResolvedValue([]);
@@ -62,8 +64,17 @@ function buildService(overrides: {
       bindSubscribers: overrides.guestAttempts.bindSubscribers ?? jest.fn().mockResolvedValue(undefined),
     };
 
+  const reportPlanChangeActivated = overrides.reportPlanChangeActivated
+    ?? jest.fn().mockResolvedValue(true);
+  const subscriptionChanges = {
+    reportPlanChangeActivated,
+  } as unknown as SubscriptionChangeReporter;
+
   return {
-    service: new RevenueCatWebhookService(commerceLedger, membership, accounts, guestAttempts as never),
+    service: new RevenueCatWebhookService(
+      commerceLedger, membership, accounts, subscriptionChanges, guestAttempts as never,
+    ),
+    reportPlanChangeActivated,
     accounts,
     guestAttempts,
     transferMembership,
@@ -370,5 +381,79 @@ describe('RevenueCatWebhookService alias-owned Membership adoption', () => {
       handled: true, detail: 'rejected_other_account', duplicate: false,
     });
     expect(transferMembership).not.toHaveBeenCalled();
+  });
+});
+
+describe('RevenueCatWebhookService Scheduled Plan Change activation', () => {
+  const ACTIVATION = {
+    owner: { type: 'account' as const, accountId: NEW_ACCOUNT_ID },
+    sourcePlan: 'annual' as const,
+    targetPlan: 'weekly' as const,
+    activatedAt: new Date('2026-09-15T00:00:00Z'),
+    activationKey: 'sandbox:event-product-change-1',
+  };
+
+  const renewalEvent = (overrides: Record<string, unknown> = {}) => ({
+    event: {
+      id: 'event-renewal-1',
+      type: 'RENEWAL',
+      environment: 'SANDBOX',
+      store: 'APP_STORE',
+      app_user_id: NEW_ACCOUNT_ID,
+      transaction_id: 'txn-premium-2',
+      original_transaction_id: 'txn-premium-original',
+      product_id: 'com.avk.stitchwish.premium_weekly',
+      period_type: 'NORMAL',
+      event_timestamp_ms: 1789603638984,
+      purchased_at_ms: 1789601740000,
+      expiration_at_ms: 1789688140000,
+      ...overrides,
+    },
+  });
+
+  const activating = () => jest.fn().mockResolvedValue({
+    recorded: true, rejectedOtherAccount: false, periodExists: true,
+    creditGranted: 0, creditReversed: 0, planChangeActivated: ACTIVATION,
+  });
+
+  it('reports the activation the repository detected, with the store the event names', async () => {
+    const { service, reportPlanChangeActivated } = buildService({
+      account: { id: NEW_ACCOUNT_ID, status: RegisteredAccountStatus.Active },
+      recordVerifiedEvent: activating(),
+    });
+
+    await expect(service.handleEvent(renewalEvent())).resolves.toEqual({
+      handled: true, detail: 'membership_event_recorded', duplicate: false,
+    });
+    expect(reportPlanChangeActivated).toHaveBeenCalledWith(ACTIVATION, 'ios');
+  });
+
+  it('reports a Play Store activation as android', async () => {
+    const { service, reportPlanChangeActivated } = buildService({
+      account: { id: NEW_ACCOUNT_ID, status: RegisteredAccountStatus.Active },
+      recordVerifiedEvent: activating(),
+    });
+
+    await service.handleEvent(renewalEvent({ store: 'PLAY_STORE' }));
+    expect(reportPlanChangeActivated).toHaveBeenCalledWith(ACTIVATION, 'android');
+  });
+
+  it('reports nothing for a store the gameplay event schema cannot name', async () => {
+    const { service, reportPlanChangeActivated } = buildService({
+      account: { id: NEW_ACCOUNT_ID, status: RegisteredAccountStatus.Active },
+      recordVerifiedEvent: activating(),
+    });
+
+    await service.handleEvent(renewalEvent({ store: 'STRIPE' }));
+    expect(reportPlanChangeActivated).not.toHaveBeenCalled();
+  });
+
+  it('reports nothing when the event activated no Scheduled Plan Change', async () => {
+    const { service, reportPlanChangeActivated } = buildService({
+      account: { id: NEW_ACCOUNT_ID, status: RegisteredAccountStatus.Active },
+    });
+
+    await service.handleEvent(renewalEvent());
+    expect(reportPlanChangeActivated).not.toHaveBeenCalled();
   });
 });

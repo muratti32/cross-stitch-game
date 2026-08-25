@@ -218,9 +218,11 @@ export function productsInCategory(
 
 export type PremiumPlanChangeKind = 'upgrade' | 'plan_change';
 
-// App Store subscription-group ordering for the three Premium Plans (Annual,
-// Monthly, Weekly): moving to a higher rank is an upgrade, the reverse is a
-// store-controlled plan change (ADR pending #123's confirmation flow).
+// App Store subscription-group ordering for the three Premium Plans, mirroring
+// the `Premium Membership` group levels recorded in ADR-0043 (Annual 1,
+// Monthly 2, Weekly 3): moving to a higher rank is an immediate upgrade, the
+// reverse is a store-controlled deferred plan change. The backend keeps the
+// same ordering as `PLAN_RANK` in `backend/src/economy/membership-projection.ts`.
 const PREMIUM_PLAN_RANK: Readonly<Record<'premium_weekly' | 'premium_monthly' | 'premium_annual', number>> = {
   premium_weekly: 0,
   premium_monthly: 1,

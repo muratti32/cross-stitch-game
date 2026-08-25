@@ -44,8 +44,10 @@ export class EventsService {
     private readonly partitions: EventsPartitionService,
   ) {}
 
+  // Only the principal's identity reaches the row, so a server-side emitter
+  // that owns no session can supply one without inventing token state.
   async ingest(
-    principal: AuthPrincipal,
+    principal: Pick<AuthPrincipal, 'id' | 'type'>,
     incomingEvents: readonly IngestGameplayEventDto[],
   ): Promise<IngestGameplayEventsResult> {
     const now = new Date();

@@ -291,3 +291,98 @@ describe('MembershipRepository Guest ownership', () => {
       sql.includes('INSERT INTO economy.coin_ledger_entries'))).toBe(false);
   });
 });
+
+describe('MembershipRepository Scheduled Plan Change activation', () => {
+  const renewal = (productId: string) => ({
+    environment: 'production' as const,
+    provider_event_id: 'event-renewal-1',
+    provider_transaction_id: 'transaction-2',
+    original_transaction_id: 'original-1',
+    account_id: 'account-1',
+    guest_installation_id: null,
+    event_type: 'RENEWAL',
+    product_id: productId,
+    period_type: 'NORMAL',
+    event_at: new Date('2026-09-15T00:00:00Z'),
+    purchased_at: new Date('2026-09-15T00:00:00Z'),
+    expires_at: new Date('2026-09-22T00:00:00Z'),
+    grace_period_expires_at: null,
+    cancel_reason: null,
+    new_product_id: null,
+  });
+
+  const productChange = (productId: string, newProductId: string) => ({
+    ...renewal(productId),
+    provider_event_id: 'event-change-1',
+    provider_transaction_id: 'transaction-1',
+    event_type: 'PRODUCT_CHANGE',
+    event_at: new Date('2026-08-15T00:00:00Z'),
+    new_product_id: newProductId,
+  });
+
+  async function record(change: ReturnType<typeof productChange> | null, activatedProductId: string) {
+    const manager = {
+      query: jest.fn(async (sql: string) => {
+        if (sql.includes("event_type = 'PRODUCT_CHANGE'")) return change === null ? [] : [change];
+        if (sql.includes('SELECT *') && sql.includes('FROM economy.membership_events')) {
+          return [renewal(activatedProductId)];
+        }
+        if (sql.includes('RETURNING provider_event_id')) return [{ provider_event_id: 'event-renewal-1' }];
+        return [];
+      }),
+    };
+    const dataSource = {
+      transaction: jest.fn(async (...args: unknown[]) => {
+        const work = args[args.length - 1] as (value: typeof manager) => unknown;
+        return work(manager);
+      }),
+    } as unknown as DataSource;
+
+    return new MembershipRepository(dataSource).recordVerifiedEvent({
+      environment: 'production',
+      providerEventId: 'event-renewal-1',
+      providerTransactionId: 'transaction-2',
+      originalTransactionId: 'original-1',
+      owner: { type: 'account', accountId: 'account-1' },
+      type: 'RENEWAL',
+      productId: activatedProductId,
+      periodType: 'NORMAL',
+      eventAt: new Date('2026-09-15T00:00:00Z'),
+      purchasedAt: new Date('2026-09-15T00:00:00Z'),
+      expiresAt: new Date('2026-09-22T00:00:00Z'),
+      gracePeriodExpiresAt: null,
+      cancelReason: null,
+      newProductId: null,
+    });
+  }
+
+  it('reports the plan-change request the renewed period fulfils', async () => {
+    const result = await record(
+      productChange('com.avk.stitchwish.premium_annual', 'com.avk.stitchwish.premium_weekly'),
+      'com.avk.stitchwish.premium_weekly',
+    );
+
+    expect(result.planChangeActivated).toEqual({
+      owner: { type: 'account', accountId: 'account-1' },
+      sourcePlan: 'annual',
+      targetPlan: 'weekly',
+      activatedAt: new Date('2026-09-15T00:00:00Z'),
+      activationKey: 'production:event-change-1',
+    });
+  });
+
+  it('reports nothing for an upgrade, which activates at once and is reconciled in-app', async () => {
+    const result = await record(
+      productChange('com.avk.stitchwish.premium_weekly', 'com.avk.stitchwish.premium_annual'),
+      'com.avk.stitchwish.premium_annual',
+    );
+
+    expect(result.planChangeActivated).toBeNull();
+  });
+
+  it('reports nothing for a renewal that fulfils no plan-change request', async () => {
+    const result = await record(null, 'com.avk.stitchwish.premium_weekly');
+
+    expect(result.planChangeActivated).toBeNull();
+  });
+});

@@ -66,6 +66,15 @@ const STATUS_PRIORITY: Readonly<Record<string, number>> = {
   REFUND: 100,
 };
 
+/**
+ * Only a downgrade is deferred to the end of the paid period; an upgrade takes
+ * effect at once. Both the projection of a scheduled change and the detection
+ * of its eventual activation ask the same question, so they ask it here.
+ */
+export function isPremiumPlanDowngrade(source: PremiumPlan, target: PremiumPlan): boolean {
+  return PLAN_RANK[target] < PLAN_RANK[source];
+}
+
 export interface MembershipScheduledChange {
   targetPlan: PremiumPlan;
   effectiveAt: Date;
@@ -91,7 +100,7 @@ export function projectScheduledChange(
   if (candidate.type !== 'PRODUCT_CHANGE' || candidate.newProductId === null) return null;
   const target = resolvePremiumProduct(candidate.newProductId);
   if (target === null) return null;
-  if (PLAN_RANK[target.plan] >= PLAN_RANK[active.plan]) return null;
+  if (!isPremiumPlanDowngrade(active.plan, target.plan)) return null;
   const effectiveAt = candidate.gracePeriodExpiresAt ?? candidate.expiresAt;
   if (effectiveAt === null) return null;
   if (active.endsAt !== null && active.endsAt.getTime() > effectiveAt.getTime()) return null;

@@ -5,7 +5,8 @@ import { In, Repository } from 'typeorm';
 
 import { RegisteredAccountEntity, RegisteredAccountStatus } from '../auth/entities';
 import { CommerceLedgerRepository } from './commerce-ledger.repository';
-import { MembershipRepository } from './membership.repository';
+import { MembershipRepository, type MembershipEventResult } from './membership.repository';
+import { SubscriptionChangeReporter } from './subscription-change-reporter.service';
 import { resolvePremiumProduct, type PremiumProduct } from './membership.constants';
 import type { VerifiedMembershipEvent } from './membership-projection';
 import { GuestPurchaseAttemptService, type MappedGuest } from './guest-purchase-attempt.service';
@@ -34,8 +35,27 @@ export class RevenueCatWebhookService {
     private readonly membership: MembershipRepository,
     @InjectRepository(RegisteredAccountEntity)
     private readonly accounts: Repository<RegisteredAccountEntity>,
+    private readonly subscriptionChanges: SubscriptionChangeReporter,
     @Optional() private readonly guestAttempts?: GuestPurchaseAttemptService,
   ) {}
+
+  /**
+   * Reports a Scheduled Plan Change that this event activated. The store the
+   * event came from is the only place the platform can be read: the activation
+   * is recognized from recorded history, which deliberately keeps no store
+   * column, and a store outside the two the schema names has no plan change to
+   * report (issue #126).
+   */
+  private async reportPlanChangeActivation(
+    result: MembershipEventResult,
+    evt: Record<string, unknown>,
+  ): Promise<void> {
+    const activation = result.planChangeActivated;
+    if (activation === null) return;
+    const platform = platformForStore(evt.store);
+    if (platform === null) return;
+    await this.subscriptionChanges.reportPlanChangeActivated(activation, platform);
+  }
 
   async handleEvent(body: unknown): Promise<RevenueCatWebhookOutcome> {
     if (body === null || typeof body !== 'object') {
@@ -164,6 +184,7 @@ export class RevenueCatWebhookService {
         if (result.rejectedOtherAccount) {
           return { handled: true, detail: 'rejected_other_account', duplicate: false };
         }
+        await this.reportPlanChangeActivation(result, evt);
         return {
           handled: true,
           detail: result.recorded ? 'membership_event_recorded' : 'membership_event_replayed',
@@ -283,6 +304,7 @@ export class RevenueCatWebhookService {
     this.logger.log(
       `RevenueCat membership ${type} transaction ${this.redactTransaction(transactionId)}: recorded=${result.recorded} granted=${result.creditGranted} reversed=${result.creditReversed}`,
     );
+    await this.reportPlanChangeActivation(result, evt);
     return {
       handled: true,
       detail: result.recorded ? 'membership_event_recorded' : 'membership_event_replayed',
@@ -483,6 +505,17 @@ function appUserIdList(event: Record<string, unknown>, field: string): string[] 
   return value.filter(
     (entry): entry is string => typeof entry === 'string' && entry.trim().length > 0,
   );
+}
+
+/**
+ * RevenueCat names the storefront a subscription was bought through. Only the
+ * two the gameplay event schema knows are reportable; anything else (a web or
+ * promotional store) has no Premium Plan change to speak of.
+ */
+function platformForStore(store: unknown): 'ios' | 'android' | null {
+  if (store === 'APP_STORE' || store === 'MAC_APP_STORE') return 'ios';
+  if (store === 'PLAY_STORE') return 'android';
+  return null;
 }
 
 const MEMBERSHIP_EVENT_TYPES = new Set([
