@@ -390,6 +390,10 @@ export default function CommerceScreen() {
   const showPremiumPlanGrid = restrictedLifecycle
     ? false
     : currentPlanLifecycle ? currentPlanMapped : true;
+  // Store acceptance locks every Premium Plan action until the Game Backend
+  // settles the outcome (issue #121): a second upgrade or plan change started
+  // over an unverified one would overlap in the subscription group.
+  const premiumActionsLocked = purchasePending !== null || purchasingKey !== null;
 
   useEffect(() => {
     if (currentPlanLifecycle && currentPlanMapped && currentPlanProductKey !== null) {
@@ -407,14 +411,14 @@ export default function CommerceScreen() {
   useEffect(() => {
     if (membership === undefined) return;
     const lastScheduled = lastScheduledChangeRef.current;
-    const targetKey = membership.scheduledChange !== null
+    const targetKey = membership.scheduledChange != null
       ? premiumProductKey(membership.scheduledChange.targetPlan)
       : null;
     const currentKey = premiumProductKey(membership.plan);
-    if (membership.scheduledChange !== null && targetKey !== null && currentKey !== null) {
+    if (membership.scheduledChange != null && targetKey !== null && currentKey !== null) {
       lastScheduledChangeRef.current = { sourcePlan: currentKey, targetPlan: targetKey };
     } else if (
-      membership.scheduledChange === null
+      membership.scheduledChange == null
       && lastScheduled !== null
       && currentKey === lastScheduled.targetPlan
     ) {
@@ -424,7 +428,7 @@ export default function CommerceScreen() {
         target_plan: lastScheduled.targetPlan,
         platform: Platform.OS === 'ios' ? 'ios' : 'android',
       });
-    } else if (membership.scheduledChange === null) {
+    } else if (membership.scheduledChange == null) {
       lastScheduledChangeRef.current = null;
     }
   }, [membership]);
@@ -1442,20 +1446,31 @@ export default function CommerceScreen() {
             <Ionicons name="time-outline" size={18} color={Theme.colors.accentTeal} />
             <View style={styles.pendingCopy}>
               <Text style={styles.pendingTitle}>Purchase Reconciliation Pending</Text>
+              {/* The plan under verification is named so the player can tell a
+                  plan change apart from a first purchase while every Premium
+                  Plan action is locked (issue #121). */}
               <Text style={styles.pendingText}>
-                The store response is received. Premium activates only after Game Backend verification.
+                {purchasePending.sourcePlanKey !== null
+                  ? `The store accepted the change to ${purchasePending.product.label}. `
+                  : `The store response for ${purchasePending.product.label} is received. `}
+                Premium activates only after Game Backend verification.
                 Do not purchase this plan again.
               </Text>
               {purchasePending.supportReference !== null && (
                 <SupportReferenceRow reference={purchasePending.supportReference} />
               )}
-              {(purchasePending.prolonged || purchasePending.failureStage !== null) && (
-                <Button
-                  title="Retry reconciliation"
-                  onPress={() => void retryPremiumReconciliation()}
-                  variant="secondary"
-                />
-              )}
+              {/* Refresh is offered from the first moment of the wait, not only
+                  once it turns prolonged: a short verification that has already
+                  landed should not leave the player without a way to ask. */}
+              <Button
+                title={
+                  purchasePending.prolonged || purchasePending.failureStage !== null
+                    ? 'Retry reconciliation'
+                    : 'Refresh status'
+                }
+                onPress={() => void retryPremiumReconciliation()}
+                variant="secondary"
+              />
             </View>
           </View>
         )}
@@ -1556,7 +1571,10 @@ export default function CommerceScreen() {
                       ? classifyPremiumPlanChange(currentPlanProductKey, plan.productKey)
                       : null;
                     const onPressPlan = currentPlanLifecycle
-                      ? (isCurrentPlan || !directPlanChangeAvailable || planChangeKind === null
+                      ? (isCurrentPlan
+                        || !directPlanChangeAvailable
+                        || planChangeKind === null
+                        || premiumActionsLocked
                         ? undefined
                         : () => {
                           void captureGameplayEvent('commerce_product_selected', {
