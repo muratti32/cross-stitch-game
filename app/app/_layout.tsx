@@ -5,10 +5,10 @@ import * as Sentry from '@sentry/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryProvider } from '../src/providers';
 import * as SplashScreen from 'expo-splash-screen';
-import { initDatabase, getHandedness } from '../src/local-db';
-import { loadOnboardingState, type OnboardingPosition } from '../src/onboarding/state';
+import type { OnboardingPosition } from '../src/onboarding/state';
+import { prepareOnboardingStartup } from '../src/onboarding/startup';
 import { useGameplayStore } from '../src/store/gameplayStore';
-import { bootstrap, hydrateStoredIdentity, useIdentityStore } from '../src/identity/guestIdentity';
+import { bootstrap, useIdentityStore } from '../src/identity/guestIdentity';
 import { synchronizeRevenueCatIdentity } from '../src/commerce/revenueCat';
 import { initializeAdMob } from '../src/ads';
 import { initSentry, syncSentryPlayerReferenceWithIdentity } from '../src/observability/sentry';
@@ -20,6 +20,7 @@ import {
   foregroundEntryCoordinator,
   isApplicationInboundUrl,
   isActiveStitchingSessionRoute,
+  isRootEntryPrepared,
 } from '../src/navigation/foregroundEntryNavigation';
 
 const ANALYTICS_RETRY_INITIAL_MS = 1_000;
@@ -101,10 +102,7 @@ function RootLayout() {
   useEffect(() => {
     async function prepare() {
       try {
-        await initDatabase();
-        await hydrateStoredIdentity();
-        const savedHandedness = await getHandedness();
-        const onboarding = await loadOnboardingState();
+        const { handedness: savedHandedness, onboarding } = await prepareOnboardingStartup();
         setOnboardingPosition(onboarding.position);
         useGameplayStore.getState().setHandedness(savedHandedness);
         // Trigger lazy guest identity bootstrap in the background (non-blocking)
@@ -140,6 +138,7 @@ function RootLayout() {
   }, [flushAnalytics]);
 
   useEffect(() => {
+    if (!isRootEntryPrepared(dbReady, onboardingPosition)) return;
     const inboundSubscription = Linking.addEventListener('url', ({ url }) => {
       // Native URL delivery can race AppState active; mark it before the
       // foreground coordinator evaluates its ordinary-return default.
@@ -188,7 +187,7 @@ function RootLayout() {
       sub.remove();
       inboundSubscription.remove();
     };
-  }, [flushAnalytics, onboardingPosition, pathname, requiresSignIn, segments]);
+  }, [dbReady, flushAnalytics, onboardingPosition, pathname, requiresSignIn, segments]);
 
   useEffect(() => {
     const timer = setInterval(() => {

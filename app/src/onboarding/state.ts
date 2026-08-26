@@ -30,7 +30,7 @@ const KEYS = {
   nextBeat: 'tutorial.v1.next_beat',
   completedBeats: 'tutorial.v1.completed_beats',
 } as const;
-const TUTORIAL_PATTERN_ID = 'starter_heart';
+export const ONBOARDING_STARTER_PATTERN_ID = 'starter_heart';
 
 let startupState: OnboardingState | null = null;
 
@@ -54,10 +54,10 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
   // kill window by adopting the idempotently-created canonical session.
   let recoveredTutorialSessionId: string | null = null;
   if (persistedPosition === 'welcome') {
-    const starterSession = await findActiveSessionForPattern(TUTORIAL_PATTERN_ID, 'bundled');
+    const starterSession = await findActiveSessionForPattern(ONBOARDING_STARTER_PATTERN_ID, 'bundled');
     if (starterSession) {
       recoveredTutorialSessionId = starterSession.id;
-      await persistTutorialStart(starterSession.id);
+      await persistTutorialStart(tutorialStartState(starterSession.id));
       persistedPosition = 'in_tutorial';
     }
   }
@@ -98,25 +98,29 @@ export async function saveOnboardingPosition(value: Exclude<OnboardingPosition, 
 }
 
 export async function startTutorial(sessionId: string): Promise<void> {
-  await persistTutorialStart(sessionId);
+  const nextState = tutorialStartState(sessionId);
+  await persistTutorialStart(nextState);
   if (startupState) {
-    startupState = {
-      ...startupState,
-      position: 'in_tutorial',
-      tutorialRunState: 'running',
-      tutorialSessionId: sessionId,
-      nextBeat: 1,
-      completedBeats: [],
-    };
+    startupState = nextState;
   }
 }
 
-async function persistTutorialStart(sessionId: string): Promise<void> {
+function tutorialStartState(sessionId: string): OnboardingState {
+  return {
+    position: 'in_tutorial',
+    tutorialRunState: 'running',
+    tutorialSessionId: sessionId,
+    nextBeat: 1,
+    completedBeats: [],
+  };
+}
+
+async function persistTutorialStart(state: OnboardingState): Promise<void> {
   await setDeviceConfigValues([
-    [KEYS.position, 'in_tutorial'],
-    [KEYS.tutorialRunState, 'running'],
-    [KEYS.tutorialSessionId, sessionId],
-    [KEYS.nextBeat, '1'],
-    [KEYS.completedBeats, '[]'],
+    [KEYS.position, state.position],
+    [KEYS.tutorialRunState, state.tutorialRunState],
+    [KEYS.tutorialSessionId, state.tutorialSessionId ?? ''],
+    [KEYS.nextBeat, String(state.nextBeat)],
+    [KEYS.completedBeats, JSON.stringify(state.completedBeats)],
   ]);
 }

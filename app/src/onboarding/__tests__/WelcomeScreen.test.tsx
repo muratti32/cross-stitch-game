@@ -13,6 +13,7 @@ jest.mock('expo-router', () => ({ useRouter: () => ({ navigate: mockNavigate }) 
 jest.mock('@/store/gameplayStore', () => ({ useGameplayStore: () => ({ handedness: 'right', setHandedness: mockSetHandedness }) }));
 jest.mock('@/local-db', () => ({ setHandedness: (...args: unknown[]) => mockPersistHandedness(...args) }));
 jest.mock('@/onboarding/state', () => ({
+  ONBOARDING_STARTER_PATTERN_ID: 'starter_heart',
   saveOnboardingPosition: (...args: unknown[]) => mockSavePosition(...args),
   startTutorial: (...args: unknown[]) => mockStartTutorial(...args),
 }));
@@ -50,7 +51,10 @@ async function renderWelcome() {
 }
 
 describe('Welcome screen', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockPersistHandedness.mockResolvedValue(undefined);
+  });
 
   it('renders Right by default and persists a handedness toggle immediately', async () => {
     const renderer = await renderWelcome();
@@ -60,6 +64,18 @@ describe('Welcome screen', () => {
     await act(async () => press(renderer.root, 'Controls on the left'));
     expect(mockSetHandedness).toHaveBeenCalledWith('left');
     expect(mockPersistHandedness).toHaveBeenCalledWith('left');
+  });
+
+  it('keeps the durable handedness selected and offers retry after a write failure', async () => {
+    mockPersistHandedness.mockRejectedValueOnce(new Error('disk full'));
+    const renderer = await renderWelcome();
+    await act(async () => press(renderer.root, 'Controls on the left'));
+
+    expect(mockSetHandedness).not.toHaveBeenCalled();
+    expect(renderer.root.findAllByType(Text).map((node) => node.props.children)).toContain('Couldn’t save that choice.');
+
+    await act(async () => press(renderer.root, 'Try again'));
+    expect(mockSetHandedness).toHaveBeenCalledWith('left');
   });
 
   it('starts the canonical bundled session without a network dependency', async () => {

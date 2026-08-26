@@ -243,6 +243,8 @@ async function readEnvelope(): Promise<SessionEnvelope> {
 /** Hydrates the durable sign-in gate without waiting for any network bootstrap. */
 export async function hydrateStoredIdentity(): Promise<void> {
   const envelope = await readEnvelope();
+  const namespaceIdentity = envelope.kind === 'account' ? envelope.accountId : envelope.guestId;
+  await openNamespace(namespaceIdentity);
   updateStoreState({
     ...principalState(envelope),
     isAuthenticated: false,

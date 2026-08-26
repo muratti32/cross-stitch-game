@@ -36,6 +36,13 @@ export function isActiveStitchingSessionRoute(segments: readonly string[]): bool
   return child !== undefined && child !== 'index';
 }
 
+export function isRootEntryPrepared(
+  databaseReady: boolean,
+  onboardingPosition: import('../onboarding/state').OnboardingPosition,
+): boolean {
+  return databaseReady && onboardingPosition !== 'absent';
+}
+
 export function applyForegroundEntryDecision(
   decision: ForegroundEntryDecision | undefined,
   router: ForegroundNavigationRouter,

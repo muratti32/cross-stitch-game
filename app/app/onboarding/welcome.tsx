@@ -5,26 +5,29 @@ import { useRouter } from 'expo-router';
 import { BUNDLED_PATTERNS } from '@/bundled-patterns';
 import { Button, PatternImage, Screen } from '@/components';
 import { setHandedness as persistHandedness } from '@/local-db';
-import { saveOnboardingPosition, startTutorial } from '@/onboarding/state';
+import { ONBOARDING_STARTER_PATTERN_ID, saveOnboardingPosition, startTutorial } from '@/onboarding/state';
 import { prepareBundledSession } from '@/session-preparation';
 import { useGameplayStore } from '@/store/gameplayStore';
 import { Theme } from '@/theme/theme';
-
-const STARTER_ID = 'starter_heart';
 
 export default function WelcomeScreen() {
   const router = useRouter();
   const { handedness, setHandedness } = useGameplayStore();
   const [starting, setStarting] = useState(false);
-  const starter = BUNDLED_PATTERNS.find((pattern) => pattern.id === STARTER_ID);
+  const [handednessError, setHandednessError] = useState<'left' | 'right' | null>(null);
+  const starter = BUNDLED_PATTERNS.find((pattern) => pattern.id === ONBOARDING_STARTER_PATTERN_ID);
 
   if (!starter) throw new Error('Canonical starter_heart bundled pattern is missing');
 
-  const chooseHandedness = (value: 'left' | 'right') => {
-    setHandedness(value);
-    void persistHandedness(value).catch((error: unknown) => {
+  const chooseHandedness = async (value: 'left' | 'right') => {
+    setHandednessError(null);
+    try {
+      await persistHandedness(value);
+      setHandedness(value);
+    } catch (error: unknown) {
       console.warn('Failed to save onboarding handedness:', error);
-    });
+      setHandednessError(value);
+    }
   };
 
   const start = async () => {
@@ -69,7 +72,7 @@ export default function WelcomeScreen() {
             key={value}
             accessibilityRole="radio"
             accessibilityState={{ selected: handedness === value }}
-            onPress={() => chooseHandedness(value)}
+            onPress={() => void chooseHandedness(value)}
             style={[styles.segment, handedness === value && styles.segmentSelected]}
           >
             <Text style={[styles.segmentText, handedness === value && styles.segmentTextSelected]}>
@@ -78,6 +81,14 @@ export default function WelcomeScreen() {
           </Pressable>
         ))}
       </View>
+      {handednessError ? (
+        <View accessibilityRole="alert" style={styles.preferenceError}>
+          <Text style={styles.preferenceErrorText}>Couldn’t save that choice.</Text>
+          <Pressable onPress={() => void chooseHandedness(handednessError)} style={styles.retryPreference}>
+            <Text style={styles.retryPreferenceText}>Try again</Text>
+          </Pressable>
+        </View>
+      ) : null}
       <Text style={styles.note}>You can change this later in Settings.</Text>
       <Button title={starting ? 'Starting…' : 'Start stitching'} onPress={() => void start()} loading={starting} />
       <Button title="Browse starters" variant="secondary" onPress={() => void browse()} />
@@ -104,6 +115,10 @@ const styles = StyleSheet.create({
   segmentText: { color: Theme.colors.textSecondary, fontSize: Theme.typography.sizes.sm, fontWeight: Theme.typography.weights.semibold },
   segmentTextSelected: { color: Theme.colors.accentTeal },
   note: { color: Theme.colors.textSecondary, fontSize: Theme.typography.sizes.sm, textAlign: 'center' },
+  preferenceError: { alignItems: 'center', gap: Theme.spacing.sm },
+  preferenceErrorText: { color: Theme.colors.error, fontSize: Theme.typography.sizes.sm },
+  retryPreference: { justifyContent: 'center', minHeight: 48, paddingHorizontal: Theme.spacing.lg },
+  retryPreferenceText: { color: Theme.colors.accentTeal, fontWeight: Theme.typography.weights.semibold },
   signIn: { alignItems: 'center', minHeight: 48, justifyContent: 'center' },
   signInText: { color: Theme.colors.textSecondary, fontSize: Theme.typography.sizes.sm, textDecorationLine: 'underline' },
 });

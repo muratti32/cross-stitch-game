@@ -4,6 +4,7 @@ import {
   handleForegroundLifecycle,
   isApplicationInboundUrl,
   isActiveStitchingSessionRoute,
+  isRootEntryPrepared,
   withProtectedRoundTrip,
 } from '../foregroundEntryNavigation';
 
@@ -12,6 +13,12 @@ describe('foreground entry navigation seam', () => {
     foregroundEntryCoordinator.clearProtectedRoundTrip();
     foregroundEntryCoordinator.clearInboundNavigationPending();
     foregroundEntryCoordinator.onLifecycleChange('active');
+  });
+
+  it('waits for database and onboarding preparation before root routing', () => {
+    expect(isRootEntryPrepared(false, 'absent')).toBe(false);
+    expect(isRootEntryPrepared(true, 'absent')).toBe(false);
+    expect(isRootEntryPrepared(true, 'complete')).toBe(true);
   });
 
   it('selects the catalog tab without dismissing its nested stack', () => {
