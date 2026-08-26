@@ -6,7 +6,9 @@
  * safe to exercise without mounting a running application).
  */
 
-export type ForegroundEntryAction = 'select-catalog' | 'preserve-current-route';
+import type { OnboardingPosition } from '../onboarding/state';
+
+export type ForegroundEntryAction = 'select-catalog' | 'select-welcome' | 'preserve-current-route';
 
 export type ForegroundEntryReason =
   | 'ordinary-return'
@@ -14,7 +16,8 @@ export type ForegroundEntryReason =
   | 'active-stitching-session'
   | 'required-sign-in'
   | 'pending-inbound-navigation'
-  | 'protected-round-trip';
+  | 'protected-round-trip'
+  | 'onboarding-welcome';
 
 export type ProtectedRoundTripKind =
   | 'photo-picker'
@@ -42,6 +45,7 @@ export interface ForegroundEntryContext {
   /** An inbound universal/custom-scheme/deep-link intent not yet handled. */
   readonly pendingInboundNavigation?: boolean;
   readonly protectedRoundTrip?: ProtectedRoundTrip;
+  readonly onboardingPosition?: OnboardingPosition;
 }
 
 /**
@@ -63,6 +67,12 @@ export function decideForegroundEntry(
   if (context.protectedRoundTrip) {
     return { action: 'preserve-current-route', reason: 'protected-round-trip' };
   }
+  if (
+    context.ordinaryReturn &&
+    (context.onboardingPosition === 'absent' || context.onboardingPosition === 'welcome')
+  ) {
+    return { action: 'select-welcome', reason: 'onboarding-welcome' };
+  }
   if (context.ordinaryReturn) {
     return { action: 'select-catalog', reason: 'ordinary-return' };
   }
@@ -76,6 +86,7 @@ export interface LifecycleEntryContext {
   readonly activeStitchingSession?: boolean;
   readonly requiresSignIn?: boolean;
   readonly pendingInboundNavigation?: boolean;
+  readonly onboardingPosition?: OnboardingPosition;
 }
 
 /**
@@ -150,6 +161,7 @@ export class ForegroundEntryCoordinator {
       pendingInboundNavigation:
         context.pendingInboundNavigation ?? this.pendingInboundNavigation,
       protectedRoundTrip: this.protectedRoundTrip,
+      onboardingPosition: context.onboardingPosition,
     });
 
     this.settledState = 'active';

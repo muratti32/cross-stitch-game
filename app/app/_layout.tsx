@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryProvider } from '../src/providers';
 import * as SplashScreen from 'expo-splash-screen';
 import { initDatabase, getHandedness } from '../src/local-db';
+import { loadOnboardingState, type OnboardingPosition } from '../src/onboarding/state';
 import { useGameplayStore } from '../src/store/gameplayStore';
 import { bootstrap, useIdentityStore } from '../src/identity/guestIdentity';
 import { synchronizeRevenueCatIdentity } from '../src/commerce/revenueCat';
@@ -38,6 +39,7 @@ SplashScreen.preventAutoHideAsync();
 
 function RootLayout() {
   const [dbReady, setDbReady] = useState(false);
+  const [onboardingPosition, setOnboardingPosition] = useState<OnboardingPosition>('absent');
   const pathname = usePathname();
   const segments = useSegments();
   const requiresSignIn = useIdentityStore((state) => state.requiresSignIn);
@@ -101,6 +103,8 @@ function RootLayout() {
       try {
         await initDatabase();
         const savedHandedness = await getHandedness();
+        const onboarding = await loadOnboardingState();
+        setOnboardingPosition(onboarding.position);
         useGameplayStore.getState().setHandedness(savedHandedness);
         // Trigger lazy guest identity bootstrap in the background (non-blocking)
         bootstrap().catch((err) => {
@@ -149,6 +153,7 @@ function RootLayout() {
         'active',
         {
           requiresSignIn,
+          onboardingPosition,
           // A mounted session must remain visible through an ordinary return.
           activeStitchingSession: isActiveStitchingSessionRoute(segments),
         },
@@ -182,7 +187,7 @@ function RootLayout() {
       sub.remove();
       inboundSubscription.remove();
     };
-  }, [flushAnalytics, pathname, requiresSignIn, segments]);
+  }, [flushAnalytics, onboardingPosition, pathname, requiresSignIn, segments]);
 
   useEffect(() => {
     const timer = setInterval(() => {

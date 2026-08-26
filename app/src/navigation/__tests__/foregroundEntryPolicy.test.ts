@@ -23,6 +23,20 @@ describe('foreground entry policy', () => {
     expect(decideForegroundEntry(context)).toEqual({ action, reason });
   });
 
+  it.each([
+    ['absent', 'select-welcome'],
+    ['welcome', 'select-welcome'],
+    ['deferred', 'select-catalog'],
+    ['complete', 'select-catalog'],
+  ] as const)('routes onboarding %s to %s', (onboardingPosition, action) => {
+    expect(decideForegroundEntry({ ordinaryReturn: true, onboardingPosition }).action).toBe(action);
+  });
+
+  it('keeps sign-in and an active session ahead of onboarding', () => {
+    expect(decideForegroundEntry({ ordinaryReturn: true, onboardingPosition: 'absent', requiresSignIn: true }).reason).toBe('required-sign-in');
+    expect(decideForegroundEntry({ ordinaryReturn: true, onboardingPosition: 'welcome', activeStitchingSession: true }).reason).toBe('active-stitching-session');
+  });
+
   it('lets explicit inbound navigation win over every other foreground default', () => {
     expect(decideForegroundEntry({
       ordinaryReturn: true,

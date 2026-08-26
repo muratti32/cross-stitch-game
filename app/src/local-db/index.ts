@@ -552,6 +552,37 @@ export async function setHandedness(handedness: 'left' | 'right'): Promise<void>
   );
 }
 
+export async function getDeviceConfigValue(key: string): Promise<string | null> {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{ value: string }>(
+    'SELECT value FROM device_config WHERE key = ?',
+    key,
+  );
+  return row?.value ?? null;
+}
+
+export async function setDeviceConfigValue(key: string, value: string): Promise<void> {
+  const db = await getDatabase();
+  await db.runAsync(
+    'INSERT OR REPLACE INTO device_config (key, value) VALUES (?, ?)',
+    key,
+    value,
+  );
+}
+
+/** Existing sessions or operations identify an upgraded install, not a first launch. */
+export async function hasPlayHistory(): Promise<boolean> {
+  const db = await getDatabase();
+  const row = await db.getFirstAsync<{ present: number }>(`
+    SELECT EXISTS(
+      SELECT 1 FROM sessions LIMIT 1
+    ) OR EXISTS(
+      SELECT 1 FROM progress_ops LIMIT 1
+    ) AS present
+  `);
+  return row?.present === 1;
+}
+
 /**
  * Checks if the player has seen the guest data risk notice.
  */
