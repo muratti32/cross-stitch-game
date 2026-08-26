@@ -134,6 +134,7 @@ export function reduceTutorial(state: TutorialState, event: TutorialDomainEvent)
     return transition(state, skipLearned(next));
   }
   if (event.type === 'thread_color_completed') {
+    if (state.nextBeat !== 6) return { state, effects: [] };
     return transition(state, { ...state, threadColorCompletionObserved: true });
   }
   if (event.desiredState === 'incomplete') {
