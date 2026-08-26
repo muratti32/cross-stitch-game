@@ -9,7 +9,8 @@ export interface TutorialState {
 
 export type TutorialDomainEvent =
   | { readonly type: 'active_thread_color_changed'; readonly dmcCode: string }
-  | { readonly type: 'skip_requested' };
+  | { readonly type: 'skip_requested' }
+  | { readonly type: 'resume_requested' };
 
 export type TutorialEffect =
   | { readonly type: 'clear_active_thread_color' }
@@ -38,6 +39,18 @@ export function reduceTutorial(
   state: TutorialState,
   event: TutorialDomainEvent,
 ): TutorialTransition {
+  if (event.type === 'resume_requested') {
+    if (state.runState !== 'paused') return { state, effects: [] };
+    const nextState = { ...state, runState: 'running' as const };
+    return {
+      state: nextState,
+      effects: [
+        { type: 'persist', state: nextState },
+        ...initialTutorialEffects(nextState),
+      ],
+    };
+  }
+
   if (state.runState !== 'running' || state.nextBeat !== 1) {
     return { state, effects: [] };
   }

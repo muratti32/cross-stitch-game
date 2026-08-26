@@ -6,6 +6,7 @@ import { Config, isSentryConfigured } from '@/config';
 import * as Sentry from '@sentry/react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { resetOnboarding } from '@/onboarding/state';
 
 interface DebugSectionProps {
   title: string;
@@ -49,6 +50,28 @@ export default function DebugScreen() {
     throw new Error('Sentry debug: intentional uncaught error');
   };
 
+  const handleResetOnboarding = () => {
+    Alert.alert(
+      'Reset onboarding?',
+      'The tutorial state will be cleared. Your next cold start will show the Welcome screen.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset onboarding',
+          style: 'destructive',
+          onPress: () => {
+            void resetOnboarding().then(() => {
+              Alert.alert('Onboarding reset', 'Restart the app to test the fresh-install flow.');
+            }).catch((error: unknown) => {
+              const message = error instanceof Error ? error.message : String(error);
+              Alert.alert('Reset failed', message);
+            });
+          },
+        },
+      ],
+    );
+  };
+
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
       <View style={styles.header}>
@@ -83,6 +106,15 @@ export default function DebugScreen() {
             style={styles.actionButton}
           />
         </View>
+      </DebugSection>
+      <DebugSection title="Onboarding">
+        <Text style={styles.statusText}>Clear tutorial progress and show Welcome after the next cold start.</Text>
+        <Button
+          title="Reset onboarding"
+          onPress={handleResetOnboarding}
+          variant="secondary"
+          style={styles.actionButton}
+        />
       </DebugSection>
     </Screen>
   );

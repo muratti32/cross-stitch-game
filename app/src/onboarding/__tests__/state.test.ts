@@ -10,8 +10,10 @@ import * as localDb from '../../local-db';
 import {
   loadOnboardingState,
   persistTutorialTransition,
+  resumeTutorial,
   saveOnboardingPosition,
   startTutorial,
+  resetOnboarding,
 } from '../state';
 
 describe('onboarding persistence', () => {
@@ -93,5 +95,37 @@ describe('onboarding persistence', () => {
       tutorialSessionId: 'session-heart', nextBeat: 2, activeDmcCode: '321',
     });
     expect(localDb.findActiveSessionForPattern).not.toHaveBeenCalled();
+  });
+
+  it('resets onboarding atomically to the fresh-install state', async () => {
+    await resetOnboarding();
+    expect(localDb.setDeviceConfigValues).toHaveBeenCalledWith([
+      ['onboarding.v1.status', 'welcome'],
+      ['tutorial.v1.status', 'running'],
+      ['tutorial.v1.session_id', ''],
+      ['tutorial.v1.next_beat', '1'],
+      ['tutorial.v1.completed_beats', '[]'],
+      ['tutorial.v1.active_dmc_code', ''],
+    ]);
+  });
+
+  it('resumes a paused tutorial without changing its session or beat cursor', async () => {
+    jest.mocked(localDb.getDeviceConfigValue).mockImplementation(async (key) => ({
+      'onboarding.v1.status': 'in_tutorial',
+      'tutorial.v1.status': 'paused',
+      'tutorial.v1.session_id': 'session-heart',
+      'tutorial.v1.next_beat': '4',
+      'tutorial.v1.completed_beats': '["thread_palette","mismatched_tap"]',
+    }[key] ?? null));
+    await loadOnboardingState();
+
+    await resumeTutorial('session-heart');
+
+    expect(localDb.setDeviceConfigValues).toHaveBeenLastCalledWith([
+      ['onboarding.v1.status', 'in_tutorial'],
+      ['tutorial.v1.status', 'running'],
+      ['tutorial.v1.next_beat', '4'],
+      ['tutorial.v1.completed_beats', '["thread_palette","mismatched_tap"]'],
+    ]);
   });
 });
