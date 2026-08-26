@@ -420,7 +420,7 @@ export default function SessionReadyScreen() {
                 <Pressable
                   key={index}
                   onPress={() => {
-                    void tutorial.selectThreadColor(index, color.dmcCode);
+                    void tutorial.selectThreadColor(index, selectedColorIndex, color.dmcCode);
                   }}
                   style={[
                     styles.paletteChip,
