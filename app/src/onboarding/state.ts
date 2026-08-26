@@ -22,6 +22,8 @@ export interface OnboardingState {
   nextBeat: number;
   completedBeats: readonly string[];
   activeDmcCode: string | null;
+  undoneCellIndex?: number;
+  lastCompletedCellIndex?: number;
 }
 
 const KEYS = {
@@ -31,6 +33,8 @@ const KEYS = {
   nextBeat: 'tutorial.v1.next_beat',
   completedBeats: 'tutorial.v1.completed_beats',
   activeDmcCode: 'tutorial.v1.active_dmc_code',
+  undoneCellIndex: 'tutorial.v1.undone_cell_index',
+  lastCompletedCellIndex: 'tutorial.v1.last_completed_cell_index',
 } as const;
 export const ONBOARDING_STARTER_PATTERN_ID = 'starter_heart';
 
@@ -64,12 +68,14 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     }
   }
 
-  const [runState, tutorialSessionId, nextBeatValue, completedBeatsValue, activeDmcCode] = await Promise.all([
+  const [runState, tutorialSessionId, nextBeatValue, completedBeatsValue, activeDmcCode, undoneCellIndexValue, lastCompletedCellIndexValue] = await Promise.all([
     getDeviceConfigValue(KEYS.tutorialRunState),
     getDeviceConfigValue(KEYS.tutorialSessionId),
     getDeviceConfigValue(KEYS.nextBeat),
     getDeviceConfigValue(KEYS.completedBeats),
     getDeviceConfigValue(KEYS.activeDmcCode),
+    getDeviceConfigValue(KEYS.undoneCellIndex),
+    getDeviceConfigValue(KEYS.lastCompletedCellIndex),
   ]);
   let completedBeats: string[] = [];
   try {
@@ -85,6 +91,12 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     nextBeat: Math.max(1, Number.parseInt(nextBeatValue ?? '1', 10) || 1),
     completedBeats,
     activeDmcCode,
+    undoneCellIndex: undoneCellIndexValue !== null && Number.isInteger(Number(undoneCellIndexValue))
+      ? Number(undoneCellIndexValue)
+      : undefined,
+    lastCompletedCellIndex: lastCompletedCellIndexValue !== null && Number.isInteger(Number(lastCompletedCellIndexValue))
+      ? Number(lastCompletedCellIndexValue)
+      : undefined,
   };
   return startupState;
 }
@@ -146,7 +158,7 @@ export async function resetOnboarding(): Promise<void> {
 }
 
 export async function persistTutorialTransition(
-  tutorial: Pick<OnboardingState, 'tutorialRunState' | 'nextBeat' | 'completedBeats'>,
+  tutorial: Pick<OnboardingState, 'tutorialRunState' | 'nextBeat' | 'completedBeats' | 'undoneCellIndex' | 'lastCompletedCellIndex'>,
   observedActiveDmcCode?: string,
 ): Promise<void> {
   const entries: (readonly [string, string])[] = [
@@ -154,6 +166,8 @@ export async function persistTutorialTransition(
     [KEYS.tutorialRunState, tutorial.tutorialRunState],
     [KEYS.nextBeat, String(tutorial.nextBeat)],
     [KEYS.completedBeats, JSON.stringify(tutorial.completedBeats)],
+    [KEYS.undoneCellIndex, tutorial.undoneCellIndex === undefined ? '' : String(tutorial.undoneCellIndex)],
+    [KEYS.lastCompletedCellIndex, tutorial.lastCompletedCellIndex === undefined ? '' : String(tutorial.lastCompletedCellIndex)],
   ];
   if (observedActiveDmcCode) {
     entries.push([KEYS.activeDmcCode, observedActiveDmcCode]);
@@ -167,6 +181,8 @@ export async function persistTutorialTransition(
       nextBeat: tutorial.nextBeat,
       completedBeats: tutorial.completedBeats,
       activeDmcCode: observedActiveDmcCode ?? startupState.activeDmcCode,
+      undoneCellIndex: tutorial.undoneCellIndex,
+      lastCompletedCellIndex: tutorial.lastCompletedCellIndex,
     };
   }
 }
@@ -189,5 +205,7 @@ async function persistTutorialStart(state: OnboardingState): Promise<void> {
     [KEYS.tutorialSessionId, state.tutorialSessionId ?? ''],
     [KEYS.nextBeat, String(state.nextBeat)],
     [KEYS.completedBeats, JSON.stringify(state.completedBeats)],
+    [KEYS.undoneCellIndex, ''],
+    [KEYS.lastCompletedCellIndex, ''],
   ]);
 }

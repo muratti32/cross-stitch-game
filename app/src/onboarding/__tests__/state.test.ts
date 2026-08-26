@@ -51,6 +51,8 @@ describe('onboarding persistence', () => {
       ['tutorial.v1.session_id', 'session-heart'],
       ['tutorial.v1.next_beat', '1'],
       ['tutorial.v1.completed_beats', '[]'],
+      ['tutorial.v1.undone_cell_index', ''],
+      ['tutorial.v1.last_completed_cell_index', ''],
     ]);
   });
 
@@ -77,6 +79,8 @@ describe('onboarding persistence', () => {
       ['tutorial.v1.status', 'running'],
       ['tutorial.v1.next_beat', '2'],
       ['tutorial.v1.completed_beats', '["thread_palette"]'],
+      ['tutorial.v1.undone_cell_index', ''],
+      ['tutorial.v1.last_completed_cell_index', ''],
       ['tutorial.v1.active_dmc_code', '321'],
     ]);
   });
@@ -126,6 +130,12 @@ describe('onboarding persistence', () => {
       ['tutorial.v1.status', 'running'],
       ['tutorial.v1.next_beat', '4'],
       ['tutorial.v1.completed_beats', '["thread_palette","mismatched_tap"]'],
+      ['tutorial.v1.undone_cell_index', ''],
+      ['tutorial.v1.last_completed_cell_index', ''],
     ]);
+  });
+
+  it('does not treat a missing undo cell as cell zero', async () => {
+    await expect(loadOnboardingState()).resolves.toMatchObject({ undoneCellIndex: undefined });
   });
 });
