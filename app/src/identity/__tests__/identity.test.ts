@@ -1,6 +1,6 @@
 import { getDatabaseFilename, shouldAdopt } from '../../local-db/namespaceLogic';
 import { decodeJwt, calculateRefreshDelay, isTokenOlderThan12Minutes, shortenGuestId } from '../identityLogic';
-import { adoptAccountSession, bootstrap, refreshSession, useIdentityStore, setAccessToken, getAccessToken, resetGuestData, removeLocalData, logout } from '../guestIdentity';
+import { adoptAccountSession, bootstrap, hydrateStoredIdentity, refreshSession, useIdentityStore, setAccessToken, getAccessToken, resetGuestData, removeLocalData, logout } from '../guestIdentity';
 import { requestEmailOtp, verifyEmailOtp } from '../emailAuth';
 import { exchangeFirebaseIdToken } from '../federatedAuth';
 import { apiFetch } from '../../api/apiFetch';
@@ -169,6 +169,25 @@ describe('Guest Identity Client State Machine', () => {
     expect(useIdentityStore.getState().guestId).toBe('guest_abc');
     expect(useIdentityStore.getState().isAuthenticated).toBe(true);
     expect(getAccessToken()).toBe('access_abc.eyJpZCI6ImcxIiwiaWF0IjoxMDAwLCJleHAiOjE5MDB9.sig');
+  });
+
+  test('hydrates and opens the durable identity namespace before startup reads', async () => {
+    mockSecureStore[SESSION_ENVELOPE] = JSON.stringify({
+      version: 1,
+      kind: 'account',
+      guestId: null,
+      guestCreatedAt: null,
+      accountId: 'account-existing',
+      accountEmail: 'player@example.com',
+      accountProvider: 'email',
+      refreshToken: null,
+      requiresSignIn: true,
+    });
+
+    await hydrateStoredIdentity();
+
+    expect(require('../../local-db').openNamespace).toHaveBeenCalledWith('account-existing');
+    expect(useIdentityStore.getState().requiresSignIn).toBe(true);
   });
 
   test('expected connectivity failures do not emit background retry errors', async () => {

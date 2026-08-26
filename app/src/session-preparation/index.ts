@@ -199,6 +199,8 @@ export async function preparePendingPersonalSession(
   });
 }
 
+const bundledPreparationInFlight = new Map<string, Promise<StitchingSession>>();
+
 // Bundled patterns skip online Session Preparation (ADR 0037) but still
 // follow the one-active-session-per-pattern rule, so repeated taps resume
 // the same local session instead of inserting duplicates.
@@ -206,12 +208,24 @@ export async function prepareBundledSession(
   patternId: string,
   checksum: string,
 ): Promise<StitchingSession> {
-  const existing = await findActiveSessionForPattern(patternId, 'bundled');
-  if (existing) {
-    return existing;
-  }
+  const current = bundledPreparationInFlight.get(patternId);
+  if (current) return current;
 
-  return createSession(patternId, checksum);
+  const preparation = (async () => {
+    const existing = await findActiveSessionForPattern(patternId, 'bundled');
+    if (existing) return existing;
+
+    return createSession(patternId, checksum);
+  })();
+  bundledPreparationInFlight.set(patternId, preparation);
+
+  try {
+    return await preparation;
+  } finally {
+    if (bundledPreparationInFlight.get(patternId) === preparation) {
+      bundledPreparationInFlight.delete(patternId);
+    }
+  }
 }
 
 async function prepareRemoteSession(
