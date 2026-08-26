@@ -29,6 +29,7 @@ const KEYS = {
   tutorialSessionId: 'tutorial.v1.session_id',
   nextBeat: 'tutorial.v1.next_beat',
   completedBeats: 'tutorial.v1.completed_beats',
+  activeDmcCode: 'tutorial.v1.active_dmc_code',
 } as const;
 export const ONBOARDING_STARTER_PATTERN_ID = 'starter_heart';
 
@@ -116,7 +117,7 @@ export async function persistTutorialTransition(
     [KEYS.completedBeats, JSON.stringify(tutorial.completedBeats)],
   ];
   if (observedActiveDmcCode) {
-    entries.push(['tutorial.v1.active_dmc_code', observedActiveDmcCode]);
+    entries.push([KEYS.activeDmcCode, observedActiveDmcCode]);
   }
   await setDeviceConfigValues(entries);
   if (startupState) {

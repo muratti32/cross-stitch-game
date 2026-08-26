@@ -20,7 +20,6 @@ import Animated, {
 import { useActiveMembershipTheme } from '@/membership/themes';
 import { exitSession } from '@/navigation/exitSession';
 import { TutorialCoachBanner } from '@/onboarding/TutorialCoachBanner';
-import { emitTutorialEvent } from '@/onboarding/tutorialEvents';
 import { TUTORIAL_HIGHLIGHT_DMC } from '@/onboarding/tutorialEngine';
 import { useTutorialExecutor } from '@/onboarding/useTutorialExecutor';
 
@@ -67,7 +66,10 @@ export default function SessionReadyScreen() {
   } = useStitchingSession(sessionId);
 
   const { selectedColorIndex, setSelectedColorIndex, handedness } = useGameplayStore();
-  const tutorial = useTutorialExecutor(sessionId);
+  const tutorial = useTutorialExecutor(sessionId, {
+    clearActiveThreadColor: () => setSelectedColorIndex(-1),
+    applyActiveThreadColor: setSelectedColorIndex,
+  });
   const initialSelectionDone = useRef(false);
 
   // Parent revision to trigger canvas updates from parent events
@@ -135,20 +137,21 @@ export default function SessionReadyScreen() {
 
   useEffect(() => {
     if (remainingCounts.length > 0) {
-      isColorCompletedShared.value = remainingCounts[selectedColorIndex] === 0;
+      isColorCompletedShared.value = selectedColorIndex >= 0
+        && remainingCounts[selectedColorIndex] === 0;
     }
   }, [remainingCounts, selectedColorIndex]);
 
   // Auto-select the first incomplete color on load (once)
   useEffect(() => {
-    if (!loading && remainingCounts.length > 0 && !initialSelectionDone.current) {
+    if (!loading && !tutorial.showThreadPaletteBeat && remainingCounts.length > 0 && !initialSelectionDone.current) {
       initialSelectionDone.current = true;
       const firstIncompleteIdx = remainingCounts.findIndex((count) => count > 0);
       if (firstIncompleteIdx !== -1) {
         setSelectedColorIndex(firstIncompleteIdx);
       }
     }
-  }, [loading, remainingCounts, setSelectedColorIndex]);
+  }, [loading, remainingCounts, setSelectedColorIndex, tutorial.showThreadPaletteBeat]);
 
   // Handle cell taps
   const handleCellTapped = (x: number, y: number) => {
@@ -279,8 +282,6 @@ export default function SessionReadyScreen() {
     ? Math.floor((completedCellsCount / totalCellsCount) * 100) 
     : 0;
 
-  const selectedColor = patternData.palette[selectedColorIndex];
-  
   const bPattern = patternData && session
     ? BUNDLED_PATTERNS.find((p) => p.id === session.patternId)
     : null;
@@ -359,10 +360,11 @@ export default function SessionReadyScreen() {
           <Pressable
             style={[
               styles.floatingButton,
-              remainingCounts[selectedColorIndex] === 0 && styles.floatingButtonDisabled,
+              (selectedColorIndex < 0 || remainingCounts[selectedColorIndex] === 0)
+                && styles.floatingButtonDisabled,
             ]}
             onPress={handleLocateNext}
-            disabled={remainingCounts[selectedColorIndex] === 0}
+            disabled={selectedColorIndex < 0 || remainingCounts[selectedColorIndex] === 0}
             accessibilityRole="button"
             accessibilityLabel="Locate next remaining cell of active thread color"
           >
@@ -418,11 +420,7 @@ export default function SessionReadyScreen() {
                 <Pressable
                   key={index}
                   onPress={() => {
-                    setSelectedColorIndex(index);
-                    emitTutorialEvent({
-                      type: 'active_thread_color_changed',
-                      dmcCode: color.dmcCode,
-                    });
+                    void tutorial.selectThreadColor(index, color.dmcCode);
                   }}
                   style={[
                     styles.paletteChip,

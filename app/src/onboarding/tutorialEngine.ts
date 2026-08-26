@@ -12,6 +12,7 @@ export type TutorialDomainEvent =
   | { readonly type: 'skip_requested' };
 
 export type TutorialEffect =
+  | { readonly type: 'clear_active_thread_color' }
   | { readonly type: 'show_coach_mark'; readonly beatId: typeof THREAD_PALETTE_BEAT_ID }
   | {
       readonly type: 'persist';
@@ -26,7 +27,10 @@ export interface TutorialTransition {
 
 export function initialTutorialEffects(state: TutorialState): readonly TutorialEffect[] {
   return state.runState === 'running' && state.nextBeat === 1
-    ? [{ type: 'show_coach_mark', beatId: THREAD_PALETTE_BEAT_ID }]
+    ? [
+        { type: 'clear_active_thread_color' },
+        { type: 'show_coach_mark', beatId: THREAD_PALETTE_BEAT_ID },
+      ]
     : [];
 }
 
@@ -44,7 +48,7 @@ export function reduceTutorial(
   }
 
   if (event.dmcCode !== TUTORIAL_HIGHLIGHT_DMC) {
-    return { state, effects: initialTutorialEffects(state) };
+    return { state, effects: [] };
   }
 
   const nextState = {

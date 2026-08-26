@@ -10,11 +10,12 @@ const running: TutorialState = { runState: 'running', nextBeat: 1, completedBeat
 describe('tutorial reducer beat 1', () => {
   it('shows one coach mark and ignores unrelated color changes', () => {
     expect(initialTutorialEffects(running)).toEqual([
+      { type: 'clear_active_thread_color' },
       { type: 'show_coach_mark', beatId: THREAD_PALETTE_BEAT_ID },
     ]);
     expect(reduceTutorial(running, {
       type: 'active_thread_color_changed', dmcCode: '310',
-    })).toEqual({ state: running, effects: initialTutorialEffects(running) });
+    })).toEqual({ state: running, effects: [] });
   });
 
   it('advances only after the highlighted active color is observed', () => {
