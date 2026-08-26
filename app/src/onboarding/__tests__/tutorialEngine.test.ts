@@ -36,6 +36,15 @@ describe('tutorial reducer beat 1', () => {
     expect(result.effects).toEqual([{ type: 'persist', state: result.state }]);
   });
 
+  it('keeps the advanced cursor stable through a later scripted event', () => {
+    const selected = reduceTutorial(running, {
+      type: 'active_thread_color_changed', dmcCode: '321',
+    });
+    const laterSkip = reduceTutorial(selected.state, { type: 'skip_requested' });
+
+    expect(laterSkip).toEqual({ state: selected.state, effects: [] });
+  });
+
   it('does nothing after pause or beat completion', () => {
     const paused = { ...running, runState: 'paused' as const };
     expect(reduceTutorial(paused, { type: 'active_thread_color_changed', dmcCode: '321' }))

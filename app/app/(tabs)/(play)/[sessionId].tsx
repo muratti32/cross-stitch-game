@@ -144,6 +144,18 @@ export default function SessionReadyScreen() {
 
   // Auto-select the first incomplete color on load (once)
   useEffect(() => {
+    if (!loading && patternData && tutorial.activeDmcCode && !initialSelectionDone.current) {
+      const restoredIndex = patternData.palette.findIndex(
+        (color) => color.dmcCode === tutorial.activeDmcCode,
+      );
+      if (restoredIndex !== -1) {
+        initialSelectionDone.current = true;
+        setSelectedColorIndex(restoredIndex);
+      }
+    }
+  }, [loading, patternData, setSelectedColorIndex, tutorial.activeDmcCode]);
+
+  useEffect(() => {
     if (!loading && !tutorial.showThreadPaletteBeat && remainingCounts.length > 0 && !initialSelectionDone.current) {
       initialSelectionDone.current = true;
       const firstIncompleteIdx = remainingCounts.findIndex((count) => count > 0);

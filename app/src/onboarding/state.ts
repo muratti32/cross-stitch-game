@@ -21,6 +21,7 @@ export interface OnboardingState {
   tutorialSessionId: string | null;
   nextBeat: number;
   completedBeats: readonly string[];
+  activeDmcCode: string | null;
 }
 
 const KEYS = {
@@ -63,11 +64,12 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     }
   }
 
-  const [runState, tutorialSessionId, nextBeatValue, completedBeatsValue] = await Promise.all([
+  const [runState, tutorialSessionId, nextBeatValue, completedBeatsValue, activeDmcCode] = await Promise.all([
     getDeviceConfigValue(KEYS.tutorialRunState),
     getDeviceConfigValue(KEYS.tutorialSessionId),
     getDeviceConfigValue(KEYS.nextBeat),
     getDeviceConfigValue(KEYS.completedBeats),
+    getDeviceConfigValue(KEYS.activeDmcCode),
   ]);
   let completedBeats: string[] = [];
   try {
@@ -82,6 +84,7 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     tutorialSessionId: recoveredTutorialSessionId ?? tutorialSessionId,
     nextBeat: Math.max(1, Number.parseInt(nextBeatValue ?? '1', 10) || 1),
     completedBeats,
+    activeDmcCode,
   };
   return startupState;
 }
@@ -89,7 +92,7 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
 export function getStartupOnboardingState(): OnboardingState {
   return startupState ?? {
     position: 'absent', tutorialRunState: 'running', tutorialSessionId: null,
-    nextBeat: 1, completedBeats: [],
+    nextBeat: 1, completedBeats: [], activeDmcCode: null,
   };
 }
 
@@ -127,6 +130,7 @@ export async function persistTutorialTransition(
       tutorialRunState: tutorial.tutorialRunState,
       nextBeat: tutorial.nextBeat,
       completedBeats: tutorial.completedBeats,
+      activeDmcCode: observedActiveDmcCode ?? startupState.activeDmcCode,
     };
   }
 }
@@ -138,6 +142,7 @@ function tutorialStartState(sessionId: string): OnboardingState {
     tutorialSessionId: sessionId,
     nextBeat: 1,
     completedBeats: [],
+    activeDmcCode: null,
   };
 }
 

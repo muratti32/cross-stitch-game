@@ -44,20 +44,30 @@ export function useTutorialExecutor(
     if (!enabled) return;
     return subscribeToTutorialEvents(async (event) => {
       const transition = reduceTutorial(stateRef.current, event);
+      if (transition.state === stateRef.current) return;
+
+      const previousState = stateRef.current;
+      stateRef.current = transition.state;
+      setCoachMarkVisible(
+        transition.effects.some((effect) => effect.type === 'show_coach_mark'),
+      );
+
       for (const effect of transition.effects) {
         if (effect.type === 'persist') {
-          await persistTutorialTransition({
-            tutorialRunState: effect.state.runState,
-            nextBeat: effect.state.nextBeat,
-            completedBeats: effect.state.completedBeats,
-          }, effect.observedActiveDmcCode);
+          try {
+            await persistTutorialTransition({
+              tutorialRunState: effect.state.runState,
+              nextBeat: effect.state.nextBeat,
+              completedBeats: effect.state.completedBeats,
+            }, effect.observedActiveDmcCode);
+          } catch (error) {
+            stateRef.current = previousState;
+            setCoachMarkVisible(
+              initialTutorialEffects(previousState).some((previousEffect) => previousEffect.type === 'show_coach_mark'),
+            );
+            throw error;
+          }
         }
-      }
-      if (transition.state !== stateRef.current) {
-        stateRef.current = transition.state;
-        setCoachMarkVisible(
-          transition.effects.some((effect) => effect.type === 'show_coach_mark'),
-        );
       }
     });
   }, [enabled]);
@@ -82,6 +92,7 @@ export function useTutorialExecutor(
   }, []);
   return {
     showThreadPaletteBeat: enabled && coachMarkVisible,
+    activeDmcCode: enabled ? startup.activeDmcCode : null,
     selectThreadColor,
     skip,
   };

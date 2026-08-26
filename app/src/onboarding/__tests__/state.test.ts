@@ -61,6 +61,7 @@ describe('onboarding persistence', () => {
     await expect(loadOnboardingState()).resolves.toMatchObject({
       position: 'in_tutorial',
       tutorialSessionId: 'session-heart',
+      activeDmcCode: null,
     });
     expect(localDb.setDeviceConfigValues).toHaveBeenCalled();
   });
@@ -76,5 +77,20 @@ describe('onboarding persistence', () => {
       ['tutorial.v1.completed_beats', '["thread_palette"]'],
       ['tutorial.v1.active_dmc_code', '321'],
     ]);
+  });
+
+  it('restores the durable active color with the tutorial cursor', async () => {
+    jest.mocked(localDb.getDeviceConfigValue).mockImplementation(async (key) => ({
+      'onboarding.v1.status': 'in_tutorial',
+      'tutorial.v1.status': 'running',
+      'tutorial.v1.session_id': 'session-heart',
+      'tutorial.v1.next_beat': '2',
+      'tutorial.v1.completed_beats': '["thread_palette"]',
+      'tutorial.v1.active_dmc_code': '321',
+    }[key] ?? null));
+
+    await expect(loadOnboardingState()).resolves.toMatchObject({
+      tutorialSessionId: 'session-heart', nextBeat: 2, activeDmcCode: '321',
+    });
   });
 });
