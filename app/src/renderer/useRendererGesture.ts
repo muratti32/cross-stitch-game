@@ -427,8 +427,12 @@ export function useRendererGesture({
       });
     });
 
+  // Cap travel distance so a pan/swipe used to browse the pattern doesn't
+  // fire the tap on finger lift — the play screen was treating that as a
+  // mis-stitch and responding with haptic feedback + a shake animation.
   const singleTapGesture = Gesture.Tap()
     .numberOfTaps(1)
+    .maxDistance(12)
     .onEnd((event) => {
       const curScale = scale.value;
       const cellPx = curScale * CELL_SIZE;
