@@ -20,8 +20,9 @@ import Animated, {
 import { useActiveMembershipTheme } from '@/membership/themes';
 import { exitSession } from '@/navigation/exitSession';
 import { TutorialCoachBanner } from '@/onboarding/TutorialCoachBanner';
-import { TUTORIAL_HIGHLIGHT_DMC } from '@/onboarding/tutorialEngine';
+import { TUTORIAL_HIGHLIGHT_DMC, type TutorialFocusTarget } from '@/onboarding/tutorialEngine';
 import { useTutorialExecutor } from '@/onboarding/useTutorialExecutor';
+import { emitTutorialEvent } from '@/onboarding/tutorialEvents';
 
 export default function SessionReadyScreen() {
   const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
@@ -66,10 +67,6 @@ export default function SessionReadyScreen() {
   } = useStitchingSession(sessionId);
 
   const { selectedColorIndex, setSelectedColorIndex, handedness } = useGameplayStore();
-  const tutorial = useTutorialExecutor(sessionId, {
-    clearActiveThreadColor: () => setSelectedColorIndex(-1),
-    applyActiveThreadColor: setSelectedColorIndex,
-  });
   const initialSelectionDone = useRef(false);
 
   // Parent revision to trigger canvas updates from parent events
@@ -83,6 +80,30 @@ export default function SessionReadyScreen() {
 
   const rendererRef = useRef<StitchRendererRef>(null);
   const lastLocatedIndex = useRef<number>(-1);
+
+  const focusTutorialCell = (target: TutorialFocusTarget) => {
+    if (!patternData || !rendererState) return;
+    const activeIndex = patternData.palette.findIndex((color) => color.dmcCode === TUTORIAL_HIGHLIGHT_DMC);
+    const cellIndex = patternData.grid.findIndex((colorIndex, index) => {
+      if (colorIndex === 0 || rendererState.isCompleted(index % patternData.width, Math.floor(index / patternData.width))) return false;
+      return target === 'matching_cell' ? colorIndex - 1 === activeIndex : colorIndex - 1 !== activeIndex;
+    });
+    if (cellIndex < 0) return;
+    const x = cellIndex % patternData.width;
+    const y = Math.floor(cellIndex / patternData.width);
+    rendererState.focusCell(x, y);
+    rendererRef.current?.locateCell(x, y);
+    setParentRevision((revision) => revision + 1);
+  };
+  const tutorial = useTutorialExecutor(sessionId, {
+    clearActiveThreadColor: () => setSelectedColorIndex(-1),
+    applyActiveThreadColor: setSelectedColorIndex,
+    acquireFocus: focusTutorialCell,
+    releaseFocus: () => {
+      rendererState?.focusCell(-1, -1);
+      setParentRevision((revision) => revision + 1);
+    },
+  });
 
   // Animation values for mismatch shake feedback
   const shakeOffset = useSharedValue(0);
@@ -179,6 +200,11 @@ export default function SessionReadyScreen() {
       }
       if (!wasCompleted) rendererRef.current?.placeCompletedStitch(x, y);
       setParentRevision((r) => r + 1);
+      if (!wasCompleted && patternData) {
+        const cellIndex = y * patternData.width + x;
+        void emitTutorialEvent({ type: 'completed_stitch_recorded', cellIndex });
+        void emitTutorialEvent({ type: 'progress_operation_recorded', desiredState: 'completed', cellIndex });
+      }
     } else {
       // Trigger haptic feedback + visual shake
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
@@ -190,6 +216,7 @@ export default function SessionReadyScreen() {
         withTiming(8, { duration: 40 }),
         withTiming(0, { duration: 40 })
       );
+      void emitTutorialEvent({ type: 'mismatched_tap_observed' });
     }
   };
 
@@ -204,6 +231,11 @@ export default function SessionReadyScreen() {
       completedShared.value = Uint8Array.from(completedShared.value);
       if (!wasCompleted) rendererRef.current?.placeCompletedStitch(x, y);
       setParentRevision((r) => r + 1);
+      if (!wasCompleted) {
+        const cellIndex = y * patternData.width + x;
+        void emitTutorialEvent({ type: 'completed_stitch_recorded', cellIndex });
+        void emitTutorialEvent({ type: 'progress_operation_recorded', desiredState: 'completed', cellIndex });
+      }
     }
   };
 
@@ -215,6 +247,8 @@ export default function SessionReadyScreen() {
         rendererRef.current?.undoCompletedStitch(undoneCell.x, undoneCell.y);
         completedShared.value = Uint8Array.from(rendererState.getCompletedArray());
         setParentRevision((r) => r + 1);
+        const cellIndex = undoneCell.y * patternData!.width + undoneCell.x;
+        void emitTutorialEvent({ type: 'progress_operation_recorded', desiredState: 'incomplete', cellIndex });
       }
     }
   };
@@ -411,7 +445,7 @@ export default function SessionReadyScreen() {
       {/* Bottom Thread Palette dock */}
       {!isSessionCompleted && (
         <View style={styles.paletteDock}>
-          {tutorial.showThreadPaletteBeat && <TutorialCoachBanner onSkip={tutorial.skip} />}
+          {tutorial.coachMarkBeat && <TutorialCoachBanner beatId={tutorial.coachMarkBeat} onSkip={tutorial.skip} />}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}

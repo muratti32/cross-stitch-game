@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getStartupOnboardingState, persistTutorialTransition } from './state';
 import { subscribeToTutorialEvents, emitTutorialEvent } from './tutorialEvents';
-import { initialTutorialEffects, reduceTutorial, type TutorialState } from './tutorialEngine';
+import { initialTutorialEffects, reduceTutorial, type TutorialFocusTarget, type TutorialState } from './tutorialEngine';
 
 interface ExecutorCallbacks {
   readonly clearActiveThreadColor: () => void;
   readonly applyActiveThreadColor: (index: number) => void;
+  readonly acquireFocus: (target: TutorialFocusTarget) => void;
+  readonly releaseFocus: () => void;
 }
 
 export function useTutorialExecutor(
@@ -22,11 +24,13 @@ export function useTutorialExecutor(
     runState: startup.tutorialRunState,
     nextBeat: startup.nextBeat,
     completedBeats: startup.completedBeats,
+    undoneCellIndex: startup.undoneCellIndex,
   };
   const stateRef = useRef(initial);
   const initialEffects = useRef(initialTutorialEffects(initial)).current;
-  const [coachMarkVisible, setCoachMarkVisible] = useState(
-    initialEffects.some((effect) => effect.type === 'show_coach_mark'),
+  const initialCoachMark = initialEffects.find((effect) => effect.type === 'show_coach_mark');
+  const [coachMarkBeat, setCoachMarkBeat] = useState(
+    initialCoachMark?.type === 'show_coach_mark' ? initialCoachMark.beatId : null,
   );
   const callbacksRef = useRef(callbacks);
   callbacksRef.current = callbacks;
@@ -36,6 +40,10 @@ export function useTutorialExecutor(
     for (const effect of initialEffects) {
       if (effect.type === 'clear_active_thread_color') {
         callbacksRef.current.clearActiveThreadColor();
+      } else if (effect.type === 'acquire_focus') {
+        callbacksRef.current.acquireFocus(effect.target);
+      } else if (effect.type === 'release_focus') {
+        callbacksRef.current.releaseFocus();
       }
     }
   }, [enabled, initialEffects]);
@@ -56,17 +64,20 @@ export function useTutorialExecutor(
               tutorialRunState: effect.state.runState,
               nextBeat: effect.state.nextBeat,
               completedBeats: effect.state.completedBeats,
+              undoneCellIndex: effect.state.undoneCellIndex,
             }, effect.observedActiveDmcCode);
           }
         }
-        setCoachMarkVisible(
-          transition.effects.some((effect) => effect.type === 'show_coach_mark'),
-        );
+        const coachMark = transition.effects.find((effect) => effect.type === 'show_coach_mark');
+        setCoachMarkBeat(coachMark?.type === 'show_coach_mark' ? coachMark.beatId : null);
+        for (const effect of transition.effects) {
+          if (effect.type === 'acquire_focus') callbacksRef.current.acquireFocus(effect.target);
+          if (effect.type === 'release_focus') callbacksRef.current.releaseFocus();
+        }
       } catch (error) {
         stateRef.current = previousState;
-        setCoachMarkVisible(
-          initialTutorialEffects(previousState).some((previousEffect) => previousEffect.type === 'show_coach_mark'),
-        );
+        const previousCoachMark = initialTutorialEffects(previousState).find((effect) => effect.type === 'show_coach_mark');
+        setCoachMarkBeat(previousCoachMark?.type === 'show_coach_mark' ? previousCoachMark.beatId : null);
         throw error;
       }
     });
@@ -91,7 +102,8 @@ export function useTutorialExecutor(
     }
   }, []);
   return {
-    showThreadPaletteBeat: enabled && coachMarkVisible,
+    coachMarkBeat: enabled ? coachMarkBeat : null,
+    showThreadPaletteBeat: enabled && coachMarkBeat === 'thread_palette',
     activeDmcCode: enabled ? startup.activeDmcCode : null,
     selectThreadColor,
     skip,

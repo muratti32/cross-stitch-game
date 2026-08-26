@@ -1,16 +1,25 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Theme } from '../theme/theme';
+import type { TutorialEffect } from './tutorialEngine';
 
 interface Props {
   readonly onSkip: () => void;
+  readonly beatId: Extract<TutorialEffect, { type: 'show_coach_mark' }>['beatId'];
 }
 
-export function TutorialCoachBanner({ onSkip }: Props) {
+const COPY: Record<Props['beatId'], string> = {
+  thread_palette: 'Select DMC 321 Christmas Red.',
+  stitch_action: 'Tap the highlighted matching cell.',
+  mismatched_tap: 'Tap the highlighted different cell. Wrong taps cost nothing.',
+  undo_action: 'Undo that stitch, then place it again.',
+};
+
+export function TutorialCoachBanner({ onSkip, beatId }: Props) {
   return (
     <View style={styles.banner} accessibilityRole="summary" pointerEvents="box-none">
       <Text style={styles.instruction} allowFontScaling>
-        Select DMC 321 Christmas Red.
+        {COPY[beatId]}
       </Text>
       <Pressable
         accessibilityRole="button"

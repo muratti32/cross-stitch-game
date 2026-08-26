@@ -11,7 +11,7 @@ describe('TutorialCoachBanner', () => {
     act(() => {
       renderer = TestRenderer.create(
         <View>
-          <TutorialCoachBanner onSkip={onSkip} />
+          <TutorialCoachBanner beatId="mismatched_tap" onSkip={onSkip} />
           <Pressable accessibilityRole="button" accessibilityLabel="Undo last stitch" onPress={onUndo}>
             <Text>Undo</Text>
           </Pressable>
@@ -27,8 +27,18 @@ describe('TutorialCoachBanner', () => {
     expect(onSkip).toHaveBeenCalledTimes(1);
     expect(renderer.root.findByProps({ accessibilityRole: 'summary' }).props.pointerEvents).toBe('box-none');
     const instruction = renderer.root.findAllByType(Text).find(
-      (node) => node.props.children === 'Select DMC 321 Christmas Red.',
+      (node) => node.props.children === 'Tap the highlighted different cell. Wrong taps cost nothing.',
     );
     expect(instruction?.props.allowFontScaling).toBe(true);
+  });
+
+  it('reassures the player before the mismatched tap', () => {
+    let renderer!: TestRenderer.ReactTestRenderer;
+    act(() => {
+      renderer = TestRenderer.create(<TutorialCoachBanner beatId="mismatched_tap" onSkip={jest.fn()} />);
+    });
+    expect(renderer.root.findAllByType(Text).some((node) =>
+      String(node.props.children).includes('cost nothing'),
+    )).toBe(true);
   });
 });

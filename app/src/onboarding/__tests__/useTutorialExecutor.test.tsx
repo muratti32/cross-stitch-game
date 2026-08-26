@@ -30,6 +30,8 @@ describe('tutorial executor', () => {
       tutorial = useTutorialExecutor('session-heart', {
         clearActiveThreadColor: jest.fn(),
         applyActiveThreadColor,
+        acquireFocus: jest.fn(),
+        releaseFocus: jest.fn(),
       });
       return null;
     }
