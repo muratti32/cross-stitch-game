@@ -59,7 +59,11 @@ export default function WelcomeScreen() {
         style={styles.preview}
       />
       <Text style={styles.sectionTitle}>Which side should the controls use?</Text>
-      <View style={styles.segments}>
+      <View
+        accessibilityRole="radiogroup"
+        accessibilityLabel="Control side"
+        style={styles.segments}
+      >
         {(['right', 'left'] as const).map((value) => (
           <Pressable
             key={value}

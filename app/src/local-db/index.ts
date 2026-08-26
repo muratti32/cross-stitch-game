@@ -570,6 +570,21 @@ export async function setDeviceConfigValue(key: string, value: string): Promise<
   );
 }
 
+export async function setDeviceConfigValues(
+  entries: readonly (readonly [key: string, value: string])[],
+): Promise<void> {
+  const db = await getDatabase();
+  await runInTransaction(db, async () => {
+    for (const [key, value] of entries) {
+      await db.runAsync(
+        'INSERT OR REPLACE INTO device_config (key, value) VALUES (?, ?)',
+        key,
+        value,
+      );
+    }
+  });
+}
+
 /** Existing sessions or operations identify an upgraded install, not a first launch. */
 export async function hasPlayHistory(): Promise<boolean> {
   const db = await getDatabase();

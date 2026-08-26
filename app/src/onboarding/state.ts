@@ -2,6 +2,7 @@ import {
   getDeviceConfigValue,
   hasPlayHistory,
   setDeviceConfigValue,
+  setDeviceConfigValues,
 } from '../local-db';
 
 export type OnboardingPosition =
@@ -31,14 +32,14 @@ const KEYS = {
 
 let startupState: OnboardingState | null = null;
 
-function position(value: string | null): OnboardingPosition | null {
+function parseOnboardingPosition(value: string | null): OnboardingPosition | null {
   return value === 'welcome' || value === 'in_tutorial' || value === 'deferred' || value === 'complete'
     ? value
     : null;
 }
 
 export async function loadOnboardingState(): Promise<OnboardingState> {
-  let persistedPosition = position(await getDeviceConfigValue(KEYS.position));
+  let persistedPosition = parseOnboardingPosition(await getDeviceConfigValue(KEYS.position));
   if (persistedPosition === null && await hasPlayHistory()) {
     persistedPosition = 'complete';
     await setDeviceConfigValue(KEYS.position, persistedPosition);
@@ -83,12 +84,12 @@ export async function saveOnboardingPosition(value: Exclude<OnboardingPosition, 
 }
 
 export async function startTutorial(sessionId: string): Promise<void> {
-  await Promise.all([
-    setDeviceConfigValue(KEYS.position, 'in_tutorial'),
-    setDeviceConfigValue(KEYS.tutorialRunState, 'running'),
-    setDeviceConfigValue(KEYS.tutorialSessionId, sessionId),
-    setDeviceConfigValue(KEYS.nextBeat, '1'),
-    setDeviceConfigValue(KEYS.completedBeats, '[]'),
+  await setDeviceConfigValues([
+    [KEYS.position, 'in_tutorial'],
+    [KEYS.tutorialRunState, 'running'],
+    [KEYS.tutorialSessionId, sessionId],
+    [KEYS.nextBeat, '1'],
+    [KEYS.completedBeats, '[]'],
   ]);
   if (startupState) {
     startupState = {

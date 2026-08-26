@@ -240,6 +240,16 @@ async function readEnvelope(): Promise<SessionEnvelope> {
   return (await readSessionEnvelope(sessionStore, legacyKeys())) ?? emptySessionEnvelope();
 }
 
+/** Hydrates the durable sign-in gate without waiting for any network bootstrap. */
+export async function hydrateStoredIdentity(): Promise<void> {
+  const envelope = await readEnvelope();
+  updateStoreState({
+    ...principalState(envelope),
+    isAuthenticated: false,
+    isHydrated: true,
+  });
+}
+
 async function writeEnvelope(envelope: SessionEnvelope): Promise<void> {
   await writeSessionEnvelope(sessionStore, envelope);
 }

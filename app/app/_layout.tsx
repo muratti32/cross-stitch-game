@@ -8,7 +8,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { initDatabase, getHandedness } from '../src/local-db';
 import { loadOnboardingState, type OnboardingPosition } from '../src/onboarding/state';
 import { useGameplayStore } from '../src/store/gameplayStore';
-import { bootstrap, useIdentityStore } from '../src/identity/guestIdentity';
+import { bootstrap, hydrateStoredIdentity, useIdentityStore } from '../src/identity/guestIdentity';
 import { synchronizeRevenueCatIdentity } from '../src/commerce/revenueCat';
 import { initializeAdMob } from '../src/ads';
 import { initSentry, syncSentryPlayerReferenceWithIdentity } from '../src/observability/sentry';
@@ -102,6 +102,7 @@ function RootLayout() {
     async function prepare() {
       try {
         await initDatabase();
+        await hydrateStoredIdentity();
         const savedHandedness = await getHandedness();
         const onboarding = await loadOnboardingState();
         setOnboardingPosition(onboarding.position);

@@ -1,11 +1,12 @@
 jest.mock('../../local-db', () => ({
   getDeviceConfigValue: jest.fn(),
   setDeviceConfigValue: jest.fn(),
+  setDeviceConfigValues: jest.fn(),
   hasPlayHistory: jest.fn(),
 }));
 
 import * as localDb from '../../local-db';
-import { loadOnboardingState, saveOnboardingPosition } from '../state';
+import { loadOnboardingState, saveOnboardingPosition, startTutorial } from '../state';
 
 describe('onboarding persistence', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -29,5 +30,16 @@ describe('onboarding persistence', () => {
   it('persists valid positions', async () => {
     await saveOnboardingPosition('deferred');
     expect(localDb.setDeviceConfigValue).toHaveBeenCalledWith('onboarding.v1.status', 'deferred');
+  });
+
+  it('persists the tutorial start as one atomic config transition', async () => {
+    await startTutorial('session-heart');
+    expect(localDb.setDeviceConfigValues).toHaveBeenCalledWith([
+      ['onboarding.v1.status', 'in_tutorial'],
+      ['tutorial.v1.status', 'running'],
+      ['tutorial.v1.session_id', 'session-heart'],
+      ['tutorial.v1.next_beat', '1'],
+      ['tutorial.v1.completed_beats', '[]'],
+    ]);
   });
 });
