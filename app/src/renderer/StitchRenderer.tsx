@@ -42,6 +42,9 @@ export interface StitchRendererProps {
   rendererState: RendererState;
   onCellTapped: (x: number, y: number) => void;
   onSweepStitch?: (x: number, y: number, gestureId: number) => void;
+  onPinch?: () => void;
+  onPlainDragWithoutStitch?: () => void;
+  onEdgeAutoPan?: () => void;
   gridShared: SharedValue<Uint8Array>;
   completedShared: SharedValue<Uint8Array>;
   activeColorIndexShared: SharedValue<number>;
@@ -69,6 +72,9 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     rendererState,
     onCellTapped,
     onSweepStitch,
+    onPinch,
+    onPlainDragWithoutStitch,
+    onEdgeAutoPan,
     gridShared,
     completedShared,
     activeColorIndexShared,
@@ -171,6 +177,9 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
       }
       setRevision((r) => r + 1);
     },
+    onPinch,
+    onPlainDragWithoutStitch,
+    onEdgeAutoPan,
     gridShared,
     completedShared,
     activeColorIndexShared,

@@ -113,6 +113,7 @@ describe('onboarding persistence', () => {
       ['tutorial.v1.completed_beats', '[]'],
       ['tutorial.v1.active_dmc_code', ''],
       ['tutorial.v1.thread_color_completion_observed', ''],
+      ['tutorial.v1.shown_hints', '[]'],
     ]);
   });
 

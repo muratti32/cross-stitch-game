@@ -28,6 +28,10 @@ export type TutorialDomainEvent =
   | { readonly type: 'progress_operation_recorded'; readonly desiredState: 'completed' | 'incomplete'; readonly cellIndex: number }
   | { readonly type: 'thread_color_completed'; readonly dmcCode: string }
   | { readonly type: 'session_completed' }
+  | { readonly type: 'pinch_observed' }
+  | { readonly type: 'plain_drag_without_stitch_observed' }
+  | { readonly type: 'edge_auto_pan_engaged' }
+  | { readonly type: 'locator_idle_observed' }
   | { readonly type: 'skip_requested' }
   | { readonly type: 'resume_requested' };
 
@@ -137,6 +141,7 @@ export function reduceTutorial(state: TutorialState, event: TutorialDomainEvent)
     if (state.nextBeat !== 6) return { state, effects: [] };
     return transition(state, { ...state, threadColorCompletionObserved: true });
   }
+  if (event.type !== 'progress_operation_recorded') return { state, effects: [] };
   if (event.desiredState === 'incomplete') {
     return event.cellIndex === state.lastCompletedCellIndex
       ? transition(state, { ...state, undoneCellIndex: event.cellIndex })

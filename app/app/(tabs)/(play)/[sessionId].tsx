@@ -26,6 +26,7 @@ import { emitTutorialEvent } from '@/onboarding/tutorialEvents';
 import { createFocusSlot } from '@/onboarding/focusSlot';
 import { findTutorialSweepRunStart } from '@/onboarding/tutorialSweepRun';
 import { TutorialRecapSheet } from '@/onboarding/TutorialRecapSheet';
+import { useJustInTimeHints } from '@/onboarding/useJustInTimeHints';
 
 export default function SessionReadyScreen() {
   const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
@@ -118,6 +119,10 @@ export default function SessionReadyScreen() {
         setParentRevision((revision) => revision + 1);
       }
     },
+  });
+  const hints = useJustInTimeHints({
+    mandatoryBeatInFlight: tutorial.coachMarkBeat !== null,
+    activeColorHasRemainingCells: selectedColorIndex >= 0 && (remainingCounts[selectedColorIndex] ?? 0) > 0,
   });
 
   useEffect(() => {
@@ -433,6 +438,9 @@ export default function SessionReadyScreen() {
           rendererState={rendererState}
           onCellTapped={handleCellTapped}
           onSweepStitch={handleSweepStitch}
+          onPinch={() => { void emitTutorialEvent({ type: 'pinch_observed' }); }}
+          onPlainDragWithoutStitch={() => { void emitTutorialEvent({ type: 'plain_drag_without_stitch_observed' }); }}
+          onEdgeAutoPan={() => { void emitTutorialEvent({ type: 'edge_auto_pan_engaged' }); }}
           gridShared={gridShared}
           completedShared={completedShared}
           activeColorIndexShared={activeColorIndexShared}
@@ -495,6 +503,9 @@ export default function SessionReadyScreen() {
       {!isSessionCompleted && (
         <View style={styles.paletteDock}>
           {tutorial.coachMarkBeat && <TutorialCoachBanner beatId={tutorial.coachMarkBeat} onSkip={tutorial.skip} />}
+          {!tutorial.coachMarkBeat && hints.visibleHint && (
+            <TutorialCoachBanner hintId={hints.visibleHint} onDismiss={hints.dismissHint} />
+          )}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}

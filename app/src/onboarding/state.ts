@@ -5,6 +5,7 @@ import {
   setDeviceConfigValue,
   setDeviceConfigValues,
 } from '../local-db';
+import { HINT_IDS, type HintId } from './justInTimeHints';
 
 export type OnboardingPosition =
   | 'absent'
@@ -25,6 +26,7 @@ export interface OnboardingState {
   undoneCellIndex?: number;
   lastCompletedCellIndex?: number;
   threadColorCompletionObserved?: boolean;
+  shownHints: readonly HintId[];
 }
 
 const KEYS = {
@@ -38,6 +40,7 @@ const KEYS = {
   lastCompletedCellIndex: 'tutorial.v1.last_completed_cell_index',
   threadColorCompletionObserved: 'tutorial.v1.thread_color_completion_observed',
   completedAt: 'onboarding.v1.completed_at',
+  shownHints: 'tutorial.v1.shown_hints',
 } as const;
 export const ONBOARDING_STARTER_PATTERN_ID = 'starter_heart';
 
@@ -71,7 +74,7 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     }
   }
 
-  const [runState, tutorialSessionId, nextBeatValue, completedBeatsValue, activeDmcCode, undoneCellIndexValue, lastCompletedCellIndexValue, threadColorCompletionObservedValue] = await Promise.all([
+  const [runState, tutorialSessionId, nextBeatValue, completedBeatsValue, activeDmcCode, undoneCellIndexValue, lastCompletedCellIndexValue, threadColorCompletionObservedValue, shownHintsValue] = await Promise.all([
     getDeviceConfigValue(KEYS.tutorialRunState),
     getDeviceConfigValue(KEYS.tutorialSessionId),
     getDeviceConfigValue(KEYS.nextBeat),
@@ -80,6 +83,7 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     getDeviceConfigValue(KEYS.undoneCellIndex),
     getDeviceConfigValue(KEYS.lastCompletedCellIndex),
     getDeviceConfigValue(KEYS.threadColorCompletionObserved),
+    getDeviceConfigValue(KEYS.shownHints),
   ]);
   let completedBeats: string[] = [];
   try {
@@ -87,6 +91,15 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     if (Array.isArray(parsed) && parsed.every((beat) => typeof beat === 'string')) completedBeats = parsed;
   } catch {
     // Corrupt optional tutorial state safely restarts the tutorial cursor.
+  }
+  let shownHints: HintId[] = [];
+  try {
+    const parsed = JSON.parse(shownHintsValue ?? '[]');
+    if (Array.isArray(parsed)) {
+      shownHints = parsed.filter((hint): hint is HintId => typeof hint === 'string' && HINT_IDS.includes(hint as HintId));
+    }
+  } catch {
+    // Corrupt optional hint state safely allows each hint to be shown once.
   }
   startupState = {
     position: persistedPosition,
@@ -102,6 +115,7 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
       ? Number(lastCompletedCellIndexValue)
       : undefined,
     threadColorCompletionObserved: threadColorCompletionObservedValue === '1',
+    shownHints,
   };
   return startupState;
 }
@@ -110,6 +124,7 @@ export function getStartupOnboardingState(): OnboardingState {
   return startupState ?? {
     position: 'absent', tutorialRunState: 'running', tutorialSessionId: null,
     nextBeat: 1, completedBeats: [], activeDmcCode: null,
+    shownHints: [],
   };
 }
 
@@ -119,7 +134,7 @@ export async function saveOnboardingPosition(value: Exclude<OnboardingPosition, 
 }
 
 export async function startTutorial(sessionId: string): Promise<void> {
-  const nextState = tutorialStartState(sessionId);
+  const nextState = { ...tutorialStartState(sessionId), shownHints: startupState?.shownHints ?? [] };
   await persistTutorialStart(nextState);
   if (startupState) {
     startupState = nextState;
@@ -152,6 +167,7 @@ export async function resetOnboarding(): Promise<void> {
     [KEYS.completedBeats, '[]'],
     [KEYS.activeDmcCode, ''],
     [KEYS.threadColorCompletionObserved, ''],
+    [KEYS.shownHints, '[]'],
   ]);
   startupState = {
     position: 'welcome',
@@ -161,6 +177,7 @@ export async function resetOnboarding(): Promise<void> {
     completedBeats: [],
     activeDmcCode: null,
     threadColorCompletionObserved: false,
+    shownHints: [],
   };
 }
 
@@ -197,6 +214,11 @@ export async function persistTutorialTransition(
   }
 }
 
+export async function persistShownHints(shownHints: readonly HintId[]): Promise<void> {
+  await setDeviceConfigValue(KEYS.shownHints, JSON.stringify(shownHints));
+  if (startupState) startupState = { ...startupState, shownHints };
+}
+
 function tutorialStartState(sessionId: string): OnboardingState {
   return {
     position: 'in_tutorial',
@@ -205,6 +227,7 @@ function tutorialStartState(sessionId: string): OnboardingState {
     nextBeat: 1,
     completedBeats: [],
     activeDmcCode: null,
+    shownHints: startupState?.shownHints ?? [],
   };
 }
 

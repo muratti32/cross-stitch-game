@@ -24,6 +24,9 @@ export interface UseRendererGestureOptions {
   panSlack?: { left?: number; right?: number; top?: number; bottom?: number };
   onCellTapped?: (x: number, y: number) => void;
   onSweepStitch?: (x: number, y: number, gestureId: number) => void;
+  onPinch?: () => void;
+  onPlainDragWithoutStitch?: () => void;
+  onEdgeAutoPan?: () => void;
   gridShared: SharedValue<Uint8Array>;
   completedShared: SharedValue<Uint8Array>;
   activeColorIndexShared: SharedValue<number>;
@@ -42,6 +45,9 @@ export function useRendererGesture({
   panSlack = {},
   onCellTapped,
   onSweepStitch,
+  onPinch,
+  onPlainDragWithoutStitch,
+  onEdgeAutoPan,
   gridShared,
   completedShared,
   activeColorIndexShared,
@@ -90,6 +96,7 @@ export function useRendererGesture({
   const lastStitchedX = useSharedValue(-1);
   const lastStitchedY = useSharedValue(-1);
   const sweepMovementThreshold = 8;
+  const edgeAutoPanObserved = useSharedValue(false);
 
   // Helper worklet to clamp translations so content doesn't fly off screen
   const clampTranslations = (currentScale: number) => {
@@ -153,6 +160,10 @@ export function useRendererGesture({
     const vy = computeEdgePanVelocity(fingerY.value, cH, margin, maxSpeed);
 
     if (vx !== 0 || vy !== 0) {
+      if (!edgeAutoPanObserved.value && onEdgeAutoPan) {
+        edgeAutoPanObserved.value = true;
+        runOnJS(onEdgeAutoPan)();
+      }
       translateX.value = translateX.value + vx * timeDiff;
       translateY.value = translateY.value + vy * timeDiff;
       clampTranslations(scale.value);
@@ -299,6 +310,7 @@ export function useRendererGesture({
   // overwriting each other's translation.
   const pinchGesture = Gesture.Pinch()
     .onStart(() => {
+      if (onPinch) runOnJS(onPinch)();
       cancelAnimation(scale);
       cancelAnimation(translateX);
       cancelAnimation(translateY);
@@ -372,6 +384,7 @@ export function useRendererGesture({
       if (!isSweepActive.value && isSweepCandidate.value
         && Math.hypot(event.translationX, event.translationY) >= sweepMovementThreshold) {
         isSweepActive.value = true;
+        edgeAutoPanObserved.value = false;
         sweepGestureId.value += 1;
         const startX = sweepStartCellX.value;
         const startY = sweepStartCellY.value;
@@ -438,6 +451,7 @@ export function useRendererGesture({
       isSweepCandidate.value = false;
       sweepStartCellX.value = -1;
       sweepStartCellY.value = -1;
+      if (onPlainDragWithoutStitch) runOnJS(onPlainDragWithoutStitch)();
 
       const cW = containerWidth.value;
       const cH = containerHeight.value;

@@ -2,13 +2,18 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Theme } from '../theme/theme';
 import type { TutorialEffect } from './tutorialEngine';
+import type { HintId } from './justInTimeHints';
+
+type BeatId = Extract<TutorialEffect, { type: 'show_coach_mark' }>['beatId'];
 
 interface Props {
-  readonly onSkip: () => void;
-  readonly beatId: Extract<TutorialEffect, { type: 'show_coach_mark' }>['beatId'];
+  readonly onSkip?: () => void;
+  readonly onDismiss?: () => void;
+  readonly beatId?: BeatId;
+  readonly hintId?: HintId;
 }
 
-const COPY: Record<Props['beatId'], string> = {
+const BEAT_COPY: Record<BeatId, string> = {
   thread_palette: 'Select DMC 321 Christmas Red.',
   stitch_action: 'Tap the highlighted matching cell.',
   mismatched_tap: 'Tap the highlighted different cell. Wrong taps cost nothing.',
@@ -17,20 +22,29 @@ const COPY: Record<Props['beatId'], string> = {
   thread_color_completion: 'Finish the highlighted white thread, then choose your next color.',
 };
 
-export function TutorialCoachBanner({ onSkip, beatId }: Props) {
+const HINT_COPY: Record<HintId, string> = {
+  anchored_zoom: 'Pinch to zoom while keeping the cells under your fingers in place.',
+  pan_vs_sweep: 'Dragging pans the fabric. Start on a matching cell to stitch a sweep.',
+  edge_auto_pan: 'Keep sweeping near the edge and the fabric follows your finger.',
+  remaining_cell_locator: 'Use the locator to find the next remaining cell for this thread.',
+};
+
+export function TutorialCoachBanner({ onSkip, onDismiss, beatId, hintId }: Props) {
+  const copy = beatId ? BEAT_COPY[beatId] : HINT_COPY[hintId!];
   return (
     <View style={styles.banner} accessibilityRole="summary" pointerEvents="box-none">
       <Text style={styles.instruction} allowFontScaling>
-        {COPY[beatId]}
+        {copy}
       </Text>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Skip tutorial for now"
-        onPress={onSkip}
-        style={styles.skip}
-      >
-        <Text style={styles.skipText} allowFontScaling>Skip for now</Text>
-      </Pressable>
+      {beatId ? (
+        <Pressable accessibilityRole="button" accessibilityLabel="Skip tutorial for now" onPress={onSkip} style={styles.skip}>
+          <Text style={styles.skipText} allowFontScaling>Skip for now</Text>
+        </Pressable>
+      ) : (
+        <Pressable accessibilityRole="button" accessibilityLabel="Dismiss hint" onPress={onDismiss} style={styles.skip}>
+          <Text style={styles.skipText} allowFontScaling>Got it</Text>
+        </Pressable>
+      )}
     </View>
   );
 }
