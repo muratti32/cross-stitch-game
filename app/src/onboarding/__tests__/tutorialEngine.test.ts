@@ -39,7 +39,10 @@ describe('tutorial reducer beat 1', () => {
   it('pauses without changing the beat cursor', () => {
     const result = reduceTutorial(running, { type: 'skip_requested' });
     expect(result.state).toEqual({ ...running, runState: 'paused' });
-    expect(result.effects).toEqual([{ type: 'persist', state: result.state }]);
+    expect(result.effects).toEqual([
+      { type: 'release_focus' },
+      { type: 'persist', state: result.state },
+    ]);
   });
 
   it('keeps the advanced cursor stable through a later color change', () => {
@@ -70,6 +73,11 @@ describe('tutorial reducer beats 2 through 4', () => {
     expect(result.state.nextBeat).toBe(3);
     expect(result.effects).toContainEqual({ type: 'release_focus' });
     expect(result.effects).toContainEqual({ type: 'acquire_focus', target: 'non_matching_cell' });
+  });
+
+  it('releases the focused cell when a focused beat is skipped', () => {
+    const state: TutorialState = { runState: 'running', nextBeat: 2, completedBeats: [THREAD_PALETTE_BEAT_ID] };
+    expect(reduceTutorial(state, { type: 'skip_requested' }).effects).toContainEqual({ type: 'release_focus' });
   });
 
   it('advances beat 3 on a mismatched tap and remembers an early mismatched tap', () => {

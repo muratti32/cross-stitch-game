@@ -88,7 +88,9 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     nextBeat: Math.max(1, Number.parseInt(nextBeatValue ?? '1', 10) || 1),
     completedBeats,
     activeDmcCode,
-    undoneCellIndex: Number.isInteger(Number(undoneCellIndexValue)) ? Number(undoneCellIndexValue) : undefined,
+    undoneCellIndex: undoneCellIndexValue !== null && Number.isInteger(Number(undoneCellIndexValue))
+      ? Number(undoneCellIndexValue)
+      : undefined,
   };
   return startupState;
 }

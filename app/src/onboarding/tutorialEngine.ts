@@ -55,8 +55,14 @@ function skipLearned(state: TutorialState): TutorialState {
 function transition(state: TutorialState, nextState: TutorialState, observedActiveDmcCode?: string): TutorialTransition {
   if (nextState === state) return { state, effects: [] };
   const effects: TutorialEffect[] = [];
-  if (state.nextBeat !== nextState.nextBeat) effects.push({ type: 'release_focus' });
-  effects.push({ type: 'persist', state: nextState, observedActiveDmcCode });
+  if (state.nextBeat !== nextState.nextBeat || state.runState !== nextState.runState) {
+    effects.push({ type: 'release_focus' });
+  }
+  effects.push({
+    type: 'persist',
+    state: nextState,
+    ...(observedActiveDmcCode ? { observedActiveDmcCode } : {}),
+  });
   if (nextState.runState === 'running') effects.push(...beatEffects(nextState.nextBeat));
   return { state: nextState, effects };
 }

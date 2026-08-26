@@ -96,4 +96,8 @@ describe('onboarding persistence', () => {
     });
     expect(localDb.findActiveSessionForPattern).not.toHaveBeenCalled();
   });
+
+  it('does not treat a missing undo cell as cell zero', async () => {
+    await expect(loadOnboardingState()).resolves.toMatchObject({ undoneCellIndex: undefined });
+  });
 });
