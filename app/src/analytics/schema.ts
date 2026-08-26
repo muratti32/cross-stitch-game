@@ -20,7 +20,31 @@ export type AnalyticsGameplayEventKind =
   | 'subscription_change_started'
   | 'subscription_change_completed'
   | 'subscription_change_cancelled'
-  | 'subscription_change_failed';
+  | 'subscription_change_failed'
+  | 'onboarding_started'
+  | 'onboarding_step_viewed'
+  | 'onboarding_handedness_selected'
+  | 'onboarding_start_choice'
+  | 'stitching_session_started'
+  | 'tutorial_beat_started'
+  | 'tutorial_beat_completed'
+  | 'tutorial_hint_shown'
+  | 'tutorial_paused'
+  | 'tutorial_resumed'
+  | 'onboarding_finished'
+  | 'account_soft_prompt_shown'
+  | 'account_soft_prompt_action';
+
+export type OnboardingVersion = string;
+export type OnboardingStep = 'welcome' | 'tutorial' | 'recap';
+export type OnboardingHandedness = 'left' | 'right';
+export type OnboardingStartChoice = 'start_stitching' | 'browse_starters' | 'sign_in';
+export type OnboardingOutcome = 'completed' | 'deferred';
+export type OnboardingDestination = 'stitching' | 'catalog' | 'sign_in';
+export type TutorialHintId = 'anchored_zoom' | 'pan_vs_sweep' | 'edge_auto_pan' | 'remaining_cell_locator';
+export type AccountSoftPromptContext = 'welcome' | 'tutorial' | 'recap';
+export type AccountSoftPromptAction = 'sign_in' | 'dismissed';
+export type OnboardingPayloadBase = { onboarding_version: OnboardingVersion };
 
 export type DailyTaskKey = 'cells_100' | 'three_colors_10' | 'color_completion';
 export type ArtworkSourceKind = 'photo_artwork' | 'ai_artwork';
@@ -107,7 +131,20 @@ export type AnalyticsGameplayEventPayload =
   | {
       kind: 'subscription_change_failed';
       payload: SubscriptionChangePayload & { failure_stage: SubscriptionChangeFailureStage };
-    };
+    }
+  | { kind: 'onboarding_started'; payload: OnboardingPayloadBase & { is_resume: boolean } }
+  | { kind: 'onboarding_step_viewed'; payload: OnboardingPayloadBase & { step: OnboardingStep; is_resume: boolean } }
+  | { kind: 'onboarding_handedness_selected'; payload: OnboardingPayloadBase & { handedness: OnboardingHandedness; was_default: boolean } }
+  | { kind: 'onboarding_start_choice'; payload: OnboardingPayloadBase & { choice: OnboardingStartChoice } }
+  | { kind: 'stitching_session_started'; payload: OnboardingPayloadBase & { session_id: string; pattern_id: string; pattern_source: 'bundled'; source: 'onboarding' } }
+  | { kind: 'tutorial_beat_started'; payload: OnboardingPayloadBase & { beat_id: string; beat_number: number } }
+  | { kind: 'tutorial_beat_completed'; payload: OnboardingPayloadBase & { beat_id: string; elapsed_ms: number; attempt_count: number; auto_satisfied: boolean } }
+  | { kind: 'tutorial_hint_shown'; payload: OnboardingPayloadBase & { hint_id: TutorialHintId; trigger: string } }
+  | { kind: 'tutorial_paused'; payload: OnboardingPayloadBase & { beat_id: string; destination: string } }
+  | { kind: 'tutorial_resumed'; payload: OnboardingPayloadBase & { beat_id: string; resume_source: string } }
+  | { kind: 'onboarding_finished'; payload: OnboardingPayloadBase & { outcome: OnboardingOutcome; destination: OnboardingDestination; duration_ms: number; stitch_count: number } }
+  | { kind: 'account_soft_prompt_shown'; payload: OnboardingPayloadBase & { context: AccountSoftPromptContext } }
+  | { kind: 'account_soft_prompt_action'; payload: OnboardingPayloadBase & { context: AccountSoftPromptContext; action: AccountSoftPromptAction } };
 
 export interface AnalyticsGameplayEvent {
   eventId: string;

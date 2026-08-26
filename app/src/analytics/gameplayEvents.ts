@@ -7,6 +7,7 @@ import type {
   AnalyticsGameplayEventKind,
   AnalyticsGameplayEventPayload,
 } from './schema';
+import type { OnboardingPayloadBase } from './schema';
 
 /**
  * Persists an analytics event without allowing telemetry storage failures to
@@ -43,6 +44,15 @@ export async function captureSessionGameplayEvent(
   } catch {
     // Session analytics cannot interfere with entering or completing a session.
   }
+}
+
+/** Onboarding telemetry is deliberately fire-and-forget and carries its version in payload. */
+export async function captureOnboardingEvent<K extends Extract<AnalyticsGameplayEventKind, `onboarding_${string}` | `tutorial_${string}` | 'stitching_session_started' | 'account_soft_prompt_shown' | 'account_soft_prompt_action'>>(
+  kind: K,
+  payload: Omit<Extract<AnalyticsGameplayEventPayload, { kind: K }>['payload'], keyof OnboardingPayloadBase>,
+  dedupeKey?: string,
+): Promise<void> {
+  await captureGameplayEvent(kind, { ...payload, onboarding_version: '1' } as Extract<AnalyticsGameplayEventPayload, { kind: K }>['payload'], dedupeKey);
 }
 
 type AnalyticsGameplayEventPayloadByKind<K extends AnalyticsGameplayEventKind> =
