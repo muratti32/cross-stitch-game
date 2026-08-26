@@ -39,6 +39,7 @@ import { PatternData } from '../pattern-artifact';
 import { RendererState } from '../renderer';
 import { useIdentityStore } from '../identity/guestIdentity';
 import { syncSession, completeSession } from '../sync/progressSyncEngine';
+import { emitTutorialEvent } from '../onboarding/tutorialEvents';
 import { ProgressSyncError } from '../api/progressSync';
 import {
   captureGameplayEvent,
