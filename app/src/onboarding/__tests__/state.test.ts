@@ -3,13 +3,17 @@ jest.mock('../../local-db', () => ({
   setDeviceConfigValue: jest.fn(),
   setDeviceConfigValues: jest.fn(),
   hasPlayHistory: jest.fn(),
+  findActiveSessionForPattern: jest.fn(),
 }));
 
 import * as localDb from '../../local-db';
 import { loadOnboardingState, saveOnboardingPosition, startTutorial } from '../state';
 
 describe('onboarding persistence', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.mocked(localDb.findActiveSessionForPattern).mockResolvedValue(null);
+  });
 
   it('backfills an existing install to complete', async () => {
     jest.mocked(localDb.getDeviceConfigValue).mockResolvedValue(null);
@@ -41,5 +45,18 @@ describe('onboarding persistence', () => {
       ['tutorial.v1.next_beat', '1'],
       ['tutorial.v1.completed_beats', '[]'],
     ]);
+  });
+
+  it('recovers a starter session created just before a kill', async () => {
+    jest.mocked(localDb.getDeviceConfigValue).mockImplementation(async (key) =>
+      key === 'onboarding.v1.status' ? 'welcome' : null,
+    );
+    jest.mocked(localDb.findActiveSessionForPattern).mockResolvedValue({ id: 'session-heart' } as never);
+
+    await expect(loadOnboardingState()).resolves.toMatchObject({
+      position: 'in_tutorial',
+      tutorialSessionId: 'session-heart',
+    });
+    expect(localDb.setDeviceConfigValues).toHaveBeenCalled();
   });
 });

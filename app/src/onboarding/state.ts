@@ -1,5 +1,6 @@
 import {
   getDeviceConfigValue,
+  findActiveSessionForPattern,
   hasPlayHistory,
   setDeviceConfigValue,
   setDeviceConfigValues,
@@ -29,6 +30,7 @@ const KEYS = {
   nextBeat: 'tutorial.v1.next_beat',
   completedBeats: 'tutorial.v1.completed_beats',
 } as const;
+const TUTORIAL_PATTERN_ID = 'starter_heart';
 
 let startupState: OnboardingState | null = null;
 
@@ -48,6 +50,18 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     await setDeviceConfigValue(KEYS.position, persistedPosition);
   }
 
+  // Session creation commits before the onboarding keys. Recover the narrow
+  // kill window by adopting the idempotently-created canonical session.
+  let recoveredTutorialSessionId: string | null = null;
+  if (persistedPosition === 'welcome') {
+    const starterSession = await findActiveSessionForPattern(TUTORIAL_PATTERN_ID, 'bundled');
+    if (starterSession) {
+      recoveredTutorialSessionId = starterSession.id;
+      await persistTutorialStart(starterSession.id);
+      persistedPosition = 'in_tutorial';
+    }
+  }
+
   const [runState, tutorialSessionId, nextBeatValue, completedBeatsValue] = await Promise.all([
     getDeviceConfigValue(KEYS.tutorialRunState),
     getDeviceConfigValue(KEYS.tutorialSessionId),
@@ -64,7 +78,7 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
   startupState = {
     position: persistedPosition,
     tutorialRunState: runState === 'paused' || runState === 'complete' ? runState : 'running',
-    tutorialSessionId,
+    tutorialSessionId: recoveredTutorialSessionId ?? tutorialSessionId,
     nextBeat: Math.max(1, Number.parseInt(nextBeatValue ?? '1', 10) || 1),
     completedBeats,
   };
@@ -84,13 +98,7 @@ export async function saveOnboardingPosition(value: Exclude<OnboardingPosition, 
 }
 
 export async function startTutorial(sessionId: string): Promise<void> {
-  await setDeviceConfigValues([
-    [KEYS.position, 'in_tutorial'],
-    [KEYS.tutorialRunState, 'running'],
-    [KEYS.tutorialSessionId, sessionId],
-    [KEYS.nextBeat, '1'],
-    [KEYS.completedBeats, '[]'],
-  ]);
+  await persistTutorialStart(sessionId);
   if (startupState) {
     startupState = {
       ...startupState,
@@ -101,4 +109,14 @@ export async function startTutorial(sessionId: string): Promise<void> {
       completedBeats: [],
     };
   }
+}
+
+async function persistTutorialStart(sessionId: string): Promise<void> {
+  await setDeviceConfigValues([
+    [KEYS.position, 'in_tutorial'],
+    [KEYS.tutorialRunState, 'running'],
+    [KEYS.tutorialSessionId, sessionId],
+    [KEYS.nextBeat, '1'],
+    [KEYS.completedBeats, '[]'],
+  ]);
 }
