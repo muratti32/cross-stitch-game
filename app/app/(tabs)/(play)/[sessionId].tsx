@@ -317,6 +317,16 @@ export default function SessionReadyScreen() {
             {completedCellsCount} / {totalCellsCount} cells ({percentComplete}% complete)
           </Text>
         </View>
+        {tutorial.canResume && (
+          <Pressable
+            onPress={tutorial.resume}
+            style={styles.tutorialHelpButton}
+            accessibilityRole="button"
+            accessibilityLabel="Resume tutorial"
+          >
+            <Ionicons name="help-circle-outline" size={24} color={Theme.colors.accentTeal} />
+          </Pressable>
+        )}
       </View>
 
       {/* Safety Removal deletion instruction: session is no longer playable. */}
@@ -610,6 +620,13 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.xs,
     color: Theme.colors.textSecondary,
     marginTop: 1,
+  },
+  tutorialHelpButton: {
+    alignItems: 'center',
+    height: 48,
+    justifyContent: 'center',
+    marginLeft: Theme.spacing.sm,
+    width: 48,
   },
   canvasWrapper: {
     flex: 1,

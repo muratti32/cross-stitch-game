@@ -24,6 +24,7 @@ export function useTutorialExecutor(
     completedBeats: startup.completedBeats,
   };
   const stateRef = useRef(initial);
+  const [runState, setRunState] = useState(initial.runState);
   const initialEffects = useRef(initialTutorialEffects(initial)).current;
   const [coachMarkVisible, setCoachMarkVisible] = useState(
     initialEffects.some((effect) => effect.type === 'show_coach_mark'),
@@ -58,12 +59,17 @@ export function useTutorialExecutor(
               completedBeats: effect.state.completedBeats,
             }, effect.observedActiveDmcCode);
           }
+          if (effect.type === 'clear_active_thread_color') {
+            callbacksRef.current.clearActiveThreadColor();
+          }
         }
+        setRunState(transition.state.runState);
         setCoachMarkVisible(
           transition.effects.some((effect) => effect.type === 'show_coach_mark'),
         );
       } catch (error) {
         stateRef.current = previousState;
+        setRunState(previousState.runState);
         setCoachMarkVisible(
           initialTutorialEffects(previousState).some((previousEffect) => previousEffect.type === 'show_coach_mark'),
         );
@@ -75,6 +81,11 @@ export function useTutorialExecutor(
   const skip = useCallback(() => {
     void emitTutorialEvent({ type: 'skip_requested' }).catch((error) => {
       console.warn('Failed to pause tutorial:', error);
+    });
+  }, []);
+  const resume = useCallback(() => {
+    void emitTutorialEvent({ type: 'resume_requested' }).catch((error) => {
+      console.warn('Failed to resume tutorial:', error);
     });
   }, []);
   const selectThreadColor = useCallback(async (
@@ -93,7 +104,9 @@ export function useTutorialExecutor(
   return {
     showThreadPaletteBeat: enabled && coachMarkVisible,
     activeDmcCode: enabled ? startup.activeDmcCode : null,
+    canResume: enabled && runState === 'paused',
     selectThreadColor,
     skip,
+    resume,
   };
 }

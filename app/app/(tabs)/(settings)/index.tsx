@@ -24,6 +24,7 @@ import {
   type ReauthenticationIdentity,
 } from '@/api/accountReauthentication';
 import { acquireAppleProviderIdToken, acquireGoogleProviderIdToken } from '@/identity/firebaseSso';
+import { loadOnboardingState, resumeTutorial, saveOnboardingPosition } from '@/onboarding/state';
 
 // App identity is read from the Expo config so the settings footer can never
 // drift away from app.json / app.config.ts.
@@ -138,6 +139,27 @@ export default function SettingsScreen() {
       await setHandednessDb(value);
     } catch (err) {
       console.error('Failed to save handedness preference to database:', err);
+    }
+  };
+
+  const handleLearnControls = async () => {
+    try {
+      const onboarding = await loadOnboardingState();
+      if (onboarding.position === 'deferred') {
+        await saveOnboardingPosition('welcome');
+        router.navigate('/onboarding/welcome');
+        return;
+      }
+      if (onboarding.tutorialRunState === 'paused' && onboarding.tutorialSessionId) {
+        await resumeTutorial(onboarding.tutorialSessionId);
+        router.navigate({
+          pathname: '/(tabs)/(play)/[sessionId]',
+          params: { sessionId: onboarding.tutorialSessionId },
+        });
+      }
+    } catch (error) {
+      console.warn('Failed to resume tutorial:', error);
+      Alert.alert('Tutorial unavailable', 'Could not resume the tutorial. Please try again.');
     }
   };
 
@@ -444,6 +466,20 @@ export default function SettingsScreen() {
             <Text style={styles.settingDescription}>Unknown state</Text>
           )}
         </View>
+      </Card>
+
+      <Text style={styles.sectionTitle}>Tutorial</Text>
+      <Card style={styles.card}>
+        <Pressable
+          onPress={() => void handleLearnControls()}
+          style={({ pressed }) => [styles.linkRow, pressed && styles.linkPressed]}
+        >
+          <View style={styles.settingTextContainer}>
+            <Text style={styles.settingTitle}>Learn the controls</Text>
+            <Text style={styles.settingDescription}>Resume the stitching tutorial when you are ready.</Text>
+          </View>
+          <Ionicons name="help-circle-outline" size={20} color={Theme.colors.textSecondary} />
+        </Pressable>
       </Card>
 
       <Text style={styles.sectionTitle}>Developer</Text>

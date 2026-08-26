@@ -109,6 +109,42 @@ export async function startTutorial(sessionId: string): Promise<void> {
   }
 }
 
+export async function resumeTutorial(sessionId: string): Promise<void> {
+  const state = startupState;
+  if (
+    !state
+    || state.position !== 'in_tutorial'
+    || state.tutorialRunState !== 'paused'
+    || state.tutorialSessionId !== sessionId
+  ) {
+    throw new Error('No paused tutorial exists for this session');
+  }
+  await persistTutorialTransition({
+    tutorialRunState: 'running',
+    nextBeat: state.nextBeat,
+    completedBeats: state.completedBeats,
+  });
+}
+
+export async function resetOnboarding(): Promise<void> {
+  await setDeviceConfigValues([
+    [KEYS.position, 'welcome'],
+    [KEYS.tutorialRunState, 'running'],
+    [KEYS.tutorialSessionId, ''],
+    [KEYS.nextBeat, '1'],
+    [KEYS.completedBeats, '[]'],
+    [KEYS.activeDmcCode, ''],
+  ]);
+  startupState = {
+    position: 'welcome',
+    tutorialRunState: 'running',
+    tutorialSessionId: null,
+    nextBeat: 1,
+    completedBeats: [],
+    activeDmcCode: null,
+  };
+}
+
 export async function persistTutorialTransition(
   tutorial: Pick<OnboardingState, 'tutorialRunState' | 'nextBeat' | 'completedBeats'>,
   observedActiveDmcCode?: string,

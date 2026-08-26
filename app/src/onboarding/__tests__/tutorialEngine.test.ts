@@ -50,4 +50,13 @@ describe('tutorial reducer beat 1', () => {
     expect(reduceTutorial(paused, { type: 'active_thread_color_changed', dmcCode: '321' }))
       .toEqual({ state: paused, effects: [] });
   });
+
+  it('resumes at the stored cursor without restarting beat one', () => {
+    const paused: TutorialState = {
+      runState: 'paused', nextBeat: 2, completedBeats: [THREAD_PALETTE_BEAT_ID],
+    };
+    const result = reduceTutorial(paused, { type: 'resume_requested' });
+    expect(result.state).toEqual({ ...paused, runState: 'running' });
+    expect(result.effects).toEqual([{ type: 'persist', state: result.state }]);
+  });
 });
