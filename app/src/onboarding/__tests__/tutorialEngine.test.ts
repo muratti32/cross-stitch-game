@@ -2,6 +2,7 @@ import {
   initialTutorialEffects,
   MISMATCHED_TAP_BEAT_ID,
   reduceTutorial,
+  STITCH_SWEEP_BEAT_ID,
   STITCH_ACTION_BEAT_ID,
   THREAD_PALETTE_BEAT_ID,
   UNDO_ACTION_BEAT_ID,
@@ -71,6 +72,58 @@ describe('tutorial reducer beat 1', () => {
       { type: 'acquire_focus', target: 'matching_cell' },
       { type: 'show_coach_mark', beatId: STITCH_ACTION_BEAT_ID },
     ]));
+  });
+});
+
+describe('tutorial reducer beat 5', () => {
+  const sweepState: TutorialState = {
+    runState: 'running',
+    nextBeat: 5,
+    completedBeats: [THREAD_PALETTE_BEAT_ID, STITCH_ACTION_BEAT_ID, MISMATCHED_TAP_BEAT_ID, UNDO_ACTION_BEAT_ID],
+  };
+
+  it('advances only after three recorded stitches share one sweep gesture identity', () => {
+    const first = reduceTutorial(sweepState, {
+      type: 'completed_stitch_recorded', cellIndex: 20, targeted: true, sweepGestureId: 41,
+    });
+    const second = reduceTutorial(first.state, {
+      type: 'completed_stitch_recorded', cellIndex: 21, targeted: true, sweepGestureId: 41,
+    });
+    const result = reduceTutorial(second.state, {
+      type: 'completed_stitch_recorded', cellIndex: 22, targeted: true, sweepGestureId: 41,
+    });
+
+    expect(initialTutorialEffects(sweepState)).toEqual([
+      { type: 'acquire_focus', target: 'sweep_run' },
+      { type: 'show_coach_mark', beatId: STITCH_SWEEP_BEAT_ID },
+    ]);
+    expect(result.state).toMatchObject({
+      nextBeat: 6,
+      activeSweepGestureId: 41,
+      activeSweepStitchCount: 3,
+      completedBeats: expect.arrayContaining([STITCH_SWEEP_BEAT_ID]),
+    });
+  });
+
+  it('does not advance for three taps or stitches split across gestures', () => {
+    let taps = sweepState;
+    for (const cellIndex of [20, 21, 22]) {
+      taps = reduceTutorial(taps, { type: 'completed_stitch_recorded', cellIndex, targeted: true }).state;
+    }
+    expect(taps.completedBeats).not.toContain(STITCH_SWEEP_BEAT_ID);
+    expect(taps.nextBeat).toBe(5);
+
+    const first = reduceTutorial(sweepState, {
+      type: 'completed_stitch_recorded', cellIndex: 20, targeted: true, sweepGestureId: 1,
+    });
+    const second = reduceTutorial(first.state, {
+      type: 'completed_stitch_recorded', cellIndex: 21, targeted: true, sweepGestureId: 2,
+    });
+    const split = reduceTutorial(second.state, {
+      type: 'completed_stitch_recorded', cellIndex: 22, targeted: true, sweepGestureId: 3,
+    });
+    expect(split.state.completedBeats).not.toContain(STITCH_SWEEP_BEAT_ID);
+    expect(split.state.nextBeat).toBe(5);
   });
 });
 

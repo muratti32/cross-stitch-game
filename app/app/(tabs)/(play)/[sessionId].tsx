@@ -24,6 +24,7 @@ import { TUTORIAL_HIGHLIGHT_DMC, type TutorialFocusTarget } from '@/onboarding/t
 import { useTutorialExecutor } from '@/onboarding/useTutorialExecutor';
 import { emitTutorialEvent } from '@/onboarding/tutorialEvents';
 import { createFocusSlot } from '@/onboarding/focusSlot';
+import { findTutorialSweepRunStart } from '@/onboarding/tutorialSweepRun';
 
 export default function SessionReadyScreen() {
   const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
@@ -86,10 +87,18 @@ export default function SessionReadyScreen() {
   const focusTutorialCell = (target: TutorialFocusTarget) => {
     if (!patternData || !rendererState) return;
     const activeIndex = patternData.palette.findIndex((color) => color.dmcCode === TUTORIAL_HIGHLIGHT_DMC);
-    const cellIndex = patternData.grid.findIndex((colorIndex, index) => {
-      if (colorIndex === 0 || rendererState.isCompleted(index % patternData.width, Math.floor(index / patternData.width))) return false;
-      return target === 'matching_cell' ? colorIndex - 1 === activeIndex : colorIndex - 1 !== activeIndex;
-    });
+    const cellIndex = target === 'sweep_run'
+      ? findTutorialSweepRunStart(
+        patternData.grid,
+        patternData.width,
+        patternData.height,
+        activeIndex,
+        (index) => rendererState.isCompleted(index % patternData.width, Math.floor(index / patternData.width)),
+      )
+      : patternData.grid.findIndex((colorIndex, index) => {
+        if (colorIndex === 0 || rendererState.isCompleted(index % patternData.width, Math.floor(index / patternData.width))) return false;
+        return target === 'matching_cell' ? colorIndex - 1 === activeIndex : colorIndex - 1 !== activeIndex;
+      });
     if (cellIndex < 0) return;
     const x = cellIndex % patternData.width;
     const y = Math.floor(cellIndex / patternData.width);
@@ -111,9 +120,10 @@ export default function SessionReadyScreen() {
   });
 
   useEffect(() => {
-    if (!loading && (tutorial.coachMarkBeat === 'stitch_action' || tutorial.coachMarkBeat === 'mismatched_tap')) {
-      focusTutorialCell(tutorial.coachMarkBeat === 'stitch_action' ? 'matching_cell' : 'non_matching_cell');
-    }
+    if (loading) return;
+    if (tutorial.coachMarkBeat === 'stitch_action') focusTutorialCell('matching_cell');
+    if (tutorial.coachMarkBeat === 'mismatched_tap') focusTutorialCell('non_matching_cell');
+    if (tutorial.coachMarkBeat === 'stitch_sweep') focusTutorialCell('sweep_run');
   }, [loading, patternData, rendererState, tutorial.coachMarkBeat]);
 
   // Animation values for mismatch shake feedback
@@ -240,7 +250,7 @@ export default function SessionReadyScreen() {
   };
 
   // Handle sweep stitch events
-  const handleSweepStitch = (x: number, y: number) => {
+  const handleSweepStitch = (x: number, y: number, sweepGestureId: number) => {
     if (isSessionCompleted) return;
     const wasCompleted = rendererState?.isCompleted(x, y) ?? true;
     const success = stitchCell(x, y, selectedColorIndex);
@@ -256,7 +266,7 @@ export default function SessionReadyScreen() {
       const isTutorialTarget = !isRequiredTarget || (focused?.x === x && focused.y === y);
       if (!wasCompleted) {
         const cellIndex = y * patternData.width + x;
-        void emitTutorialEvent({ type: 'completed_stitch_recorded', cellIndex, targeted: isTutorialTarget });
+        void emitTutorialEvent({ type: 'completed_stitch_recorded', cellIndex, targeted: isTutorialTarget, sweepGestureId });
         void emitTutorialEvent({ type: 'progress_operation_recorded', desiredState: 'completed', cellIndex });
       }
     }

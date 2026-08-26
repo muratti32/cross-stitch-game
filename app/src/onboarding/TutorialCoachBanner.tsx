@@ -13,6 +13,7 @@ const COPY: Record<Props['beatId'], string> = {
   stitch_action: 'Tap the highlighted matching cell.',
   mismatched_tap: 'Tap the highlighted different cell. Wrong taps cost nothing.',
   undo_action: 'Undo that stitch, then place it again.',
+  stitch_sweep: 'Press a matching cell, then drag across the highlighted run.',
 };
 
 export function TutorialCoachBanner({ onSkip, beatId }: Props) {

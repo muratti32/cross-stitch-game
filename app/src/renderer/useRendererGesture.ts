@@ -23,7 +23,7 @@ export interface UseRendererGestureOptions {
   maxScale?: number;
   panSlack?: { left?: number; right?: number; top?: number; bottom?: number };
   onCellTapped?: (x: number, y: number) => void;
-  onSweepStitch?: (x: number, y: number) => void;
+  onSweepStitch?: (x: number, y: number, gestureId: number) => void;
   gridShared: SharedValue<Uint8Array>;
   completedShared: SharedValue<Uint8Array>;
   activeColorIndexShared: SharedValue<number>;
@@ -81,10 +81,15 @@ export function useRendererGesture({
 
   // Sweep gesture state tracking
   const isSweepActive = useSharedValue(false);
+  const isSweepCandidate = useSharedValue(false);
+  const sweepGestureId = useSharedValue(0);
   const fingerX = useSharedValue(0.0);
   const fingerY = useSharedValue(0.0);
+  const sweepStartCellX = useSharedValue(-1);
+  const sweepStartCellY = useSharedValue(-1);
   const lastStitchedX = useSharedValue(-1);
   const lastStitchedY = useSharedValue(-1);
+  const sweepMovementThreshold = 8;
 
   // Helper worklet to clamp translations so content doesn't fly off screen
   const clampTranslations = (currentScale: number) => {
@@ -172,7 +177,7 @@ export function useRendererGesture({
             lastStitchedX.value = cellX;
             lastStitchedY.value = cellY;
             if (onSweepStitch) {
-              runOnJS(onSweepStitch)(cellX, cellY);
+              runOnJS(onSweepStitch)(cellX, cellY, sweepGestureId.value);
             }
           }
         }
@@ -336,19 +341,22 @@ export function useRendererGesture({
           const isUnfinished = completedShared.value[idx] === 0;
 
           if (matchesColor && isUnfinished) {
-            isSweepActive.value = true;
+            isSweepCandidate.value = true;
+            isSweepActive.value = false;
             fingerX.value = event.x;
             fingerY.value = event.y;
-            lastStitchedX.value = cellX;
-            lastStitchedY.value = cellY;
-            if (onSweepStitch) {
-              runOnJS(onSweepStitch)(cellX, cellY);
-            }
+            sweepStartCellX.value = cellX;
+            sweepStartCellY.value = cellY;
+            lastStitchedX.value = -1;
+            lastStitchedY.value = -1;
             return;
           }
         }
       }
       isSweepActive.value = false;
+      isSweepCandidate.value = false;
+      sweepStartCellX.value = -1;
+      sweepStartCellY.value = -1;
       lastStitchedX.value = -1;
       lastStitchedY.value = -1;
     })
@@ -361,9 +369,25 @@ export function useRendererGesture({
       fingerX.value = event.x;
       fingerY.value = event.y;
 
+      if (!isSweepActive.value && isSweepCandidate.value
+        && Math.hypot(event.translationX, event.translationY) >= sweepMovementThreshold) {
+        isSweepActive.value = true;
+        sweepGestureId.value += 1;
+        const startX = sweepStartCellX.value;
+        const startY = sweepStartCellY.value;
+        lastStitchedX.value = startX;
+        lastStitchedY.value = startY;
+        if (onSweepStitch) {
+          runOnJS(onSweepStitch)(startX, startY, sweepGestureId.value);
+        }
+      }
+
       if (isSweepActive.value) {
         if (isColorCompletedShared.value) {
           isSweepActive.value = false;
+          isSweepCandidate.value = false;
+          sweepStartCellX.value = -1;
+          sweepStartCellY.value = -1;
           lastStitchedX.value = -1;
           lastStitchedY.value = -1;
           return;
@@ -389,7 +413,7 @@ export function useRendererGesture({
               lastStitchedX.value = cellX;
               lastStitchedY.value = cellY;
               if (onSweepStitch) {
-                runOnJS(onSweepStitch)(cellX, cellY);
+                runOnJS(onSweepStitch)(cellX, cellY, sweepGestureId.value);
               }
             }
           }
@@ -403,10 +427,17 @@ export function useRendererGesture({
     .onEnd((event) => {
       if (isSweepActive.value) {
         isSweepActive.value = false;
+        isSweepCandidate.value = false;
+        sweepStartCellX.value = -1;
+        sweepStartCellY.value = -1;
         lastStitchedX.value = -1;
         lastStitchedY.value = -1;
         return;
       }
+
+      isSweepCandidate.value = false;
+      sweepStartCellX.value = -1;
+      sweepStartCellY.value = -1;
 
       const cW = containerWidth.value;
       const cH = containerHeight.value;

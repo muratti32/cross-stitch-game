@@ -41,7 +41,7 @@ export interface StitchRendererProps {
   pattern: PatternData;
   rendererState: RendererState;
   onCellTapped: (x: number, y: number) => void;
-  onSweepStitch?: (x: number, y: number) => void;
+  onSweepStitch?: (x: number, y: number, gestureId: number) => void;
   gridShared: SharedValue<Uint8Array>;
   completedShared: SharedValue<Uint8Array>;
   activeColorIndexShared: SharedValue<number>;
@@ -165,9 +165,9 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
       onCellTapped(x, y);
       setRevision((r) => r + 1);
     },
-    onSweepStitch: (x, y) => {
+    onSweepStitch: (x, y, gestureId) => {
       if (onSweepStitch) {
-        onSweepStitch(x, y);
+        onSweepStitch(x, y, gestureId);
       }
       setRevision((r) => r + 1);
     },

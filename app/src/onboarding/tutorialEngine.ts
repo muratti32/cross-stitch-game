@@ -2,10 +2,11 @@ export const THREAD_PALETTE_BEAT_ID = 'thread_palette';
 export const STITCH_ACTION_BEAT_ID = 'stitch_action';
 export const MISMATCHED_TAP_BEAT_ID = 'mismatched_tap';
 export const UNDO_ACTION_BEAT_ID = 'undo_action';
+export const STITCH_SWEEP_BEAT_ID = 'stitch_sweep';
 export const TUTORIAL_HIGHLIGHT_DMC = '321';
 
-const BEAT_IDS = [THREAD_PALETTE_BEAT_ID, STITCH_ACTION_BEAT_ID, MISMATCHED_TAP_BEAT_ID, UNDO_ACTION_BEAT_ID] as const;
-export type TutorialFocusTarget = 'matching_cell' | 'non_matching_cell';
+const BEAT_IDS = [THREAD_PALETTE_BEAT_ID, STITCH_ACTION_BEAT_ID, MISMATCHED_TAP_BEAT_ID, UNDO_ACTION_BEAT_ID, STITCH_SWEEP_BEAT_ID] as const;
+export type TutorialFocusTarget = 'matching_cell' | 'non_matching_cell' | 'sweep_run';
 
 export interface TutorialState {
   readonly runState: 'running' | 'paused' | 'complete';
@@ -13,11 +14,13 @@ export interface TutorialState {
   readonly completedBeats: readonly string[];
   readonly undoneCellIndex?: number;
   readonly lastCompletedCellIndex?: number;
+  readonly activeSweepGestureId?: number;
+  readonly activeSweepStitchCount?: number;
 }
 
 export type TutorialDomainEvent =
   | { readonly type: 'active_thread_color_changed'; readonly dmcCode: string }
-  | { readonly type: 'completed_stitch_recorded'; readonly cellIndex: number; readonly targeted: boolean }
+  | { readonly type: 'completed_stitch_recorded'; readonly cellIndex: number; readonly targeted: boolean; readonly sweepGestureId?: number }
   | { readonly type: 'mismatched_tap_observed'; readonly targeted: boolean }
   | { readonly type: 'progress_operation_recorded'; readonly desiredState: 'completed' | 'incomplete'; readonly cellIndex: number }
   | { readonly type: 'skip_requested' }
@@ -37,7 +40,8 @@ function beatEffects(nextBeat: number): readonly TutorialEffect[] {
   if (!beatId) return [];
   const target: TutorialFocusTarget | null = nextBeat === 2
     ? 'matching_cell'
-    : nextBeat === 3 ? 'non_matching_cell' : null;
+    : nextBeat === 3 ? 'non_matching_cell'
+    : nextBeat === 5 ? 'sweep_run' : null;
   return [...(target ? [{ type: 'acquire_focus' as const, target }] : []), { type: 'show_coach_mark', beatId }];
 }
 
@@ -86,6 +90,20 @@ export function reduceTutorial(state: TutorialState, event: TutorialDomainEvent)
     if (state.nextBeat === 2 && !event.targeted) return { state, effects: [] };
     let next = learned({ ...state, lastCompletedCellIndex: event.cellIndex }, STITCH_ACTION_BEAT_ID);
     if (state.nextBeat === 2) next = { ...next, nextBeat: 3 };
+    if (event.sweepGestureId !== undefined) {
+      const sweepStitchCount = state.activeSweepGestureId === event.sweepGestureId
+        ? (state.activeSweepStitchCount ?? 0) + 1
+        : 1;
+      next = {
+        ...next,
+        activeSweepGestureId: event.sweepGestureId,
+        activeSweepStitchCount: sweepStitchCount,
+      };
+      if (sweepStitchCount >= 3) {
+        next = learned(next, STITCH_SWEEP_BEAT_ID);
+        if (state.nextBeat === 5) next = { ...next, nextBeat: 6 };
+      }
+    }
     return transition(state, skipLearned(next));
   }
   if (event.type === 'mismatched_tap_observed') {
