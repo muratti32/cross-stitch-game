@@ -68,7 +68,8 @@ describe('tutorial reducer beats 2 through 4', () => {
       { type: 'acquire_focus', target: 'matching_cell' },
       { type: 'show_coach_mark', beatId: STITCH_ACTION_BEAT_ID },
     ]);
-    expect(reduceTutorial(state, { type: 'mismatched_tap_observed' }).state.nextBeat).toBe(2);
+    expect(reduceTutorial(state, { type: 'completed_stitch_recorded', cellIndex: 11, targeted: false }))
+      .toEqual({ state, effects: [] });
     const result = reduceTutorial(state, { type: 'completed_stitch_recorded', cellIndex: 12 });
     expect(result.state.nextBeat).toBe(3);
     expect(result.effects).toContainEqual({ type: 'release_focus' });

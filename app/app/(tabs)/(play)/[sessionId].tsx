@@ -215,9 +215,9 @@ export default function SessionReadyScreen() {
       const isRequiredTarget = tutorial.coachMarkBeat === 'stitch_action'
         || tutorial.coachMarkBeat === 'mismatched_tap';
       const isTutorialTarget = !isRequiredTarget || (focused?.x === x && focused.y === y);
-      if (!wasCompleted && patternData && isTutorialTarget) {
+      if (!wasCompleted && patternData) {
         const cellIndex = y * patternData.width + x;
-        void emitTutorialEvent({ type: 'completed_stitch_recorded', cellIndex });
+        void emitTutorialEvent({ type: 'completed_stitch_recorded', cellIndex, targeted: isTutorialTarget });
         void emitTutorialEvent({ type: 'progress_operation_recorded', desiredState: 'completed', cellIndex });
       }
     } else {
@@ -232,9 +232,10 @@ export default function SessionReadyScreen() {
         withTiming(0, { duration: 40 })
       );
       const focused = rendererState?.getFocusedCell();
-      if (tutorial.coachMarkBeat !== 'mismatched_tap' || (focused.x === x && focused.y === y)) {
-        void emitTutorialEvent({ type: 'mismatched_tap_observed' });
-      }
+      void emitTutorialEvent({
+        type: 'mismatched_tap_observed',
+        targeted: tutorial.coachMarkBeat !== 'mismatched_tap' || (focused?.x === x && focused?.y === y),
+      });
     }
   };
 
@@ -253,9 +254,9 @@ export default function SessionReadyScreen() {
       const isRequiredTarget = tutorial.coachMarkBeat === 'stitch_action'
         || tutorial.coachMarkBeat === 'mismatched_tap';
       const isTutorialTarget = !isRequiredTarget || (focused?.x === x && focused.y === y);
-      if (!wasCompleted && isTutorialTarget) {
+      if (!wasCompleted) {
         const cellIndex = y * patternData.width + x;
-        void emitTutorialEvent({ type: 'completed_stitch_recorded', cellIndex });
+        void emitTutorialEvent({ type: 'completed_stitch_recorded', cellIndex, targeted: isTutorialTarget });
         void emitTutorialEvent({ type: 'progress_operation_recorded', desiredState: 'completed', cellIndex });
       }
     }
