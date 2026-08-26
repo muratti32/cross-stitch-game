@@ -92,11 +92,29 @@ describe('tutorial reducer beats 2 through 4', () => {
   });
 
   it('advances beat 4 only after an incomplete operation is followed by a completed operation for that cell', () => {
-    const state: TutorialState = { runState: 'running', nextBeat: 4, completedBeats: [THREAD_PALETTE_BEAT_ID, STITCH_ACTION_BEAT_ID, MISMATCHED_TAP_BEAT_ID] };
+    const state: TutorialState = { runState: 'running', nextBeat: 4, completedBeats: [THREAD_PALETTE_BEAT_ID, STITCH_ACTION_BEAT_ID, MISMATCHED_TAP_BEAT_ID], lastCompletedCellIndex: 7 };
     const undone = reduceTutorial(state, { type: 'progress_operation_recorded', desiredState: 'incomplete', cellIndex: 7 });
     expect(undone.state.undoneCellIndex).toBe(7);
     expect(reduceTutorial(undone.state, { type: 'progress_operation_recorded', desiredState: 'completed', cellIndex: 8 }).state.nextBeat).toBe(4);
     const result = reduceTutorial(undone.state, { type: 'progress_operation_recorded', desiredState: 'completed', cellIndex: 7 });
     expect(result.state).toMatchObject({ nextBeat: 5, undoneCellIndex: undefined, completedBeats: expect.arrayContaining([UNDO_ACTION_BEAT_ID]) });
+  });
+
+  it('does not learn undo from a different completed stitch', () => {
+    const state: TutorialState = { runState: 'running', nextBeat: 4, completedBeats: [], lastCompletedCellIndex: 7 };
+    expect(reduceTutorial(state, { type: 'progress_operation_recorded', desiredState: 'incomplete', cellIndex: 6 }))
+      .toEqual({ state, effects: [] });
+  });
+
+  it('skips all mechanics already learned before their beat starts', () => {
+    const afterStitch = reduceTutorial(running, { type: 'completed_stitch_recorded', cellIndex: 7 });
+    const afterMismatch = reduceTutorial(afterStitch.state, { type: 'mismatched_tap_observed' });
+    const afterUndo = reduceTutorial(afterMismatch.state, { type: 'progress_operation_recorded', desiredState: 'incomplete', cellIndex: 7 });
+    const learned = reduceTutorial(afterUndo.state, { type: 'progress_operation_recorded', desiredState: 'completed', cellIndex: 7 });
+    const afterPalette = reduceTutorial(learned.state, { type: 'active_thread_color_changed', dmcCode: '321' });
+    expect(afterPalette.state.nextBeat).toBe(5);
+    expect(afterPalette.state.completedBeats).toEqual(expect.arrayContaining([
+      STITCH_ACTION_BEAT_ID, MISMATCHED_TAP_BEAT_ID, UNDO_ACTION_BEAT_ID,
+    ]));
   });
 });

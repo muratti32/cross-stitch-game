@@ -23,6 +23,7 @@ import { TutorialCoachBanner } from '@/onboarding/TutorialCoachBanner';
 import { TUTORIAL_HIGHLIGHT_DMC, type TutorialFocusTarget } from '@/onboarding/tutorialEngine';
 import { useTutorialExecutor } from '@/onboarding/useTutorialExecutor';
 import { emitTutorialEvent } from '@/onboarding/tutorialEvents';
+import { createFocusSlot } from '@/onboarding/focusSlot';
 
 export default function SessionReadyScreen() {
   const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
@@ -80,6 +81,7 @@ export default function SessionReadyScreen() {
 
   const rendererRef = useRef<StitchRendererRef>(null);
   const lastLocatedIndex = useRef<number>(-1);
+  const focusSlot = useRef(createFocusSlot());
 
   const focusTutorialCell = (target: TutorialFocusTarget) => {
     if (!patternData || !rendererState) return;
@@ -92,6 +94,7 @@ export default function SessionReadyScreen() {
     const x = cellIndex % patternData.width;
     const y = Math.floor(cellIndex / patternData.width);
     rendererState.focusCell(x, y);
+    focusSlot.current.acquire('tutorial');
     rendererRef.current?.locateCell(x, y);
     setParentRevision((revision) => revision + 1);
   };
@@ -100,10 +103,18 @@ export default function SessionReadyScreen() {
     applyActiveThreadColor: setSelectedColorIndex,
     acquireFocus: focusTutorialCell,
     releaseFocus: () => {
-      rendererState?.focusCell(-1, -1);
-      setParentRevision((revision) => revision + 1);
+      if (focusSlot.current.release('tutorial')) {
+        rendererState?.focusCell(-1, -1);
+        setParentRevision((revision) => revision + 1);
+      }
     },
   });
+
+  useEffect(() => {
+    if (!loading && (tutorial.coachMarkBeat === 'stitch_action' || tutorial.coachMarkBeat === 'mismatched_tap')) {
+      focusTutorialCell(tutorial.coachMarkBeat === 'stitch_action' ? 'matching_cell' : 'non_matching_cell');
+    }
+  }, [loading, patternData, rendererState, tutorial.coachMarkBeat]);
 
   // Animation values for mismatch shake feedback
   const shakeOffset = useSharedValue(0);
@@ -200,7 +211,11 @@ export default function SessionReadyScreen() {
       }
       if (!wasCompleted) rendererRef.current?.placeCompletedStitch(x, y);
       setParentRevision((r) => r + 1);
-      if (!wasCompleted && patternData) {
+      const focused = rendererState?.getFocusedCell();
+      const isRequiredTarget = tutorial.coachMarkBeat === 'stitch_action'
+        || tutorial.coachMarkBeat === 'mismatched_tap';
+      const isTutorialTarget = !isRequiredTarget || (focused?.x === x && focused.y === y);
+      if (!wasCompleted && patternData && isTutorialTarget) {
         const cellIndex = y * patternData.width + x;
         void emitTutorialEvent({ type: 'completed_stitch_recorded', cellIndex });
         void emitTutorialEvent({ type: 'progress_operation_recorded', desiredState: 'completed', cellIndex });
@@ -216,7 +231,10 @@ export default function SessionReadyScreen() {
         withTiming(8, { duration: 40 }),
         withTiming(0, { duration: 40 })
       );
-      void emitTutorialEvent({ type: 'mismatched_tap_observed' });
+      const focused = rendererState?.getFocusedCell();
+      if (tutorial.coachMarkBeat !== 'mismatched_tap' || (focused.x === x && focused.y === y)) {
+        void emitTutorialEvent({ type: 'mismatched_tap_observed' });
+      }
     }
   };
 
@@ -231,7 +249,11 @@ export default function SessionReadyScreen() {
       completedShared.value = Uint8Array.from(completedShared.value);
       if (!wasCompleted) rendererRef.current?.placeCompletedStitch(x, y);
       setParentRevision((r) => r + 1);
-      if (!wasCompleted) {
+      const focused = rendererState?.getFocusedCell();
+      const isRequiredTarget = tutorial.coachMarkBeat === 'stitch_action'
+        || tutorial.coachMarkBeat === 'mismatched_tap';
+      const isTutorialTarget = !isRequiredTarget || (focused?.x === x && focused.y === y);
+      if (!wasCompleted && isTutorialTarget) {
         const cellIndex = y * patternData.width + x;
         void emitTutorialEvent({ type: 'completed_stitch_recorded', cellIndex });
         void emitTutorialEvent({ type: 'progress_operation_recorded', desiredState: 'completed', cellIndex });
@@ -272,6 +294,7 @@ export default function SessionReadyScreen() {
       const cy = Math.floor(nextIdx / patternData.width);
 
       lastLocatedIndex.current = nextIdx;
+      focusSlot.current.acquire('locator');
       rendererState.focusCell(cx, cy);
       setParentRevision((r) => r + 1);
 

@@ -12,6 +12,7 @@ export interface TutorialState {
   readonly nextBeat: number;
   readonly completedBeats: readonly string[];
   readonly undoneCellIndex?: number;
+  readonly lastCompletedCellIndex?: number;
 }
 
 export type TutorialDomainEvent =
@@ -75,7 +76,7 @@ export function reduceTutorial(state: TutorialState, event: TutorialDomainEvent)
     return transition(state, skipLearned(learned({ ...state, nextBeat: 2 }, THREAD_PALETTE_BEAT_ID)), event.dmcCode);
   }
   if (event.type === 'completed_stitch_recorded') {
-    let next = learned(state, STITCH_ACTION_BEAT_ID);
+    let next = learned({ ...state, lastCompletedCellIndex: event.cellIndex }, STITCH_ACTION_BEAT_ID);
     if (state.nextBeat === 2) next = { ...next, nextBeat: 3 };
     return transition(state, skipLearned(next));
   }
@@ -84,7 +85,11 @@ export function reduceTutorial(state: TutorialState, event: TutorialDomainEvent)
     if (state.nextBeat === 3) next = { ...next, nextBeat: 4 };
     return transition(state, skipLearned(next));
   }
-  if (event.desiredState === 'incomplete') return transition(state, { ...state, undoneCellIndex: event.cellIndex });
+  if (event.desiredState === 'incomplete') {
+    return event.cellIndex === state.lastCompletedCellIndex
+      ? transition(state, { ...state, undoneCellIndex: event.cellIndex })
+      : { state, effects: [] };
+  }
   if (state.undoneCellIndex !== event.cellIndex) return { state, effects: [] };
   let next = learned({ ...state, undoneCellIndex: undefined }, UNDO_ACTION_BEAT_ID);
   if (state.nextBeat === 4) next = { ...next, nextBeat: 5 };

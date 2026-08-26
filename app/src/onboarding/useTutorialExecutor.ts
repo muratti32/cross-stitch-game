@@ -25,6 +25,7 @@ export function useTutorialExecutor(
     nextBeat: startup.nextBeat,
     completedBeats: startup.completedBeats,
     undoneCellIndex: startup.undoneCellIndex,
+    lastCompletedCellIndex: startup.lastCompletedCellIndex,
   };
   const stateRef = useRef(initial);
   const initialEffects = useRef(initialTutorialEffects(initial)).current;
@@ -65,6 +66,7 @@ export function useTutorialExecutor(
               nextBeat: effect.state.nextBeat,
               completedBeats: effect.state.completedBeats,
               undoneCellIndex: effect.state.undoneCellIndex,
+              lastCompletedCellIndex: effect.state.lastCompletedCellIndex,
             }, effect.observedActiveDmcCode);
           }
         }

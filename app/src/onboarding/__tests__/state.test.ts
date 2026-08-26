@@ -50,6 +50,7 @@ describe('onboarding persistence', () => {
       ['tutorial.v1.next_beat', '1'],
       ['tutorial.v1.completed_beats', '[]'],
       ['tutorial.v1.undone_cell_index', ''],
+      ['tutorial.v1.last_completed_cell_index', ''],
     ]);
   });
 
@@ -77,6 +78,7 @@ describe('onboarding persistence', () => {
       ['tutorial.v1.next_beat', '2'],
       ['tutorial.v1.completed_beats', '["thread_palette"]'],
       ['tutorial.v1.undone_cell_index', ''],
+      ['tutorial.v1.last_completed_cell_index', ''],
       ['tutorial.v1.active_dmc_code', '321'],
     ]);
   });
