@@ -48,4 +48,20 @@ describe('prepareBundledSession', () => {
     expect(result).toBe(existing);
     expect(localDb.createSession).not.toHaveBeenCalled();
   });
+
+  test('coalesces concurrent taps into one session creation', async () => {
+    localDb.findActiveSessionForPattern.mockResolvedValue(null);
+    let release!: (session: object) => void;
+    localDb.createSession.mockImplementation(() => new Promise((resolve) => { release = resolve; }));
+
+    const first = prepareBundledSession('starter_heart', 'chk');
+    const second = prepareBundledSession('starter_heart', 'chk');
+    await Promise.resolve();
+    const created = { id: 'session_one', patternId: 'starter_heart' };
+    release(created);
+
+    await expect(Promise.all([first, second])).resolves.toEqual([created, created]);
+    expect(localDb.findActiveSessionForPattern).toHaveBeenCalledTimes(1);
+    expect(localDb.createSession).toHaveBeenCalledTimes(1);
+  });
 });
