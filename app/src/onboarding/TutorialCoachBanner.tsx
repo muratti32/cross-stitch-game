@@ -8,7 +8,7 @@ interface Props {
 
 export function TutorialCoachBanner({ onSkip }: Props) {
   return (
-    <View style={styles.banner} accessibilityRole="summary">
+    <View style={styles.banner} accessibilityRole="summary" pointerEvents="box-none">
       <Text style={styles.instruction} allowFontScaling>
         Select DMC 321 Christmas Red.
       </Text>

@@ -25,6 +25,7 @@ describe('TutorialCoachBanner', () => {
 
     act(() => renderer.root.findByProps({ accessibilityLabel: 'Skip tutorial for now' }).props.onPress());
     expect(onSkip).toHaveBeenCalledTimes(1);
+    expect(renderer.root.findByProps({ accessibilityRole: 'summary' }).props.pointerEvents).toBe('box-none');
     const instruction = renderer.root.findAllByType(Text).find(
       (node) => node.props.children === 'Select DMC 321 Christmas Red.',
     );

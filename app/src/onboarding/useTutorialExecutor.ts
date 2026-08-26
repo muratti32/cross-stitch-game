@@ -48,26 +48,26 @@ export function useTutorialExecutor(
 
       const previousState = stateRef.current;
       stateRef.current = transition.state;
-      setCoachMarkVisible(
-        transition.effects.some((effect) => effect.type === 'show_coach_mark'),
-      );
 
-      for (const effect of transition.effects) {
-        if (effect.type === 'persist') {
-          try {
+      try {
+        for (const effect of transition.effects) {
+          if (effect.type === 'persist') {
             await persistTutorialTransition({
               tutorialRunState: effect.state.runState,
               nextBeat: effect.state.nextBeat,
               completedBeats: effect.state.completedBeats,
             }, effect.observedActiveDmcCode);
-          } catch (error) {
-            stateRef.current = previousState;
-            setCoachMarkVisible(
-              initialTutorialEffects(previousState).some((previousEffect) => previousEffect.type === 'show_coach_mark'),
-            );
-            throw error;
           }
         }
+        setCoachMarkVisible(
+          transition.effects.some((effect) => effect.type === 'show_coach_mark'),
+        );
+      } catch (error) {
+        stateRef.current = previousState;
+        setCoachMarkVisible(
+          initialTutorialEffects(previousState).some((previousEffect) => previousEffect.type === 'show_coach_mark'),
+        );
+        throw error;
       }
     });
   }, [enabled]);
