@@ -92,5 +92,6 @@ describe('onboarding persistence', () => {
     await expect(loadOnboardingState()).resolves.toMatchObject({
       tutorialSessionId: 'session-heart', nextBeat: 2, activeDmcCode: '321',
     });
+    expect(localDb.findActiveSessionForPattern).not.toHaveBeenCalled();
   });
 });
