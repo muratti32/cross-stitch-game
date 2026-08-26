@@ -5,6 +5,7 @@ import {
   setDeviceConfigValue,
   setDeviceConfigValues,
 } from '../local-db';
+import { HINT_IDS, type HintId } from './justInTimeHints';
 
 export type OnboardingPosition =
   | 'absent'
@@ -24,6 +25,7 @@ export interface OnboardingState {
   activeDmcCode: string | null;
   undoneCellIndex?: number;
   lastCompletedCellIndex?: number;
+  shownHints: readonly HintId[];
 }
 
 const KEYS = {
@@ -35,6 +37,7 @@ const KEYS = {
   activeDmcCode: 'tutorial.v1.active_dmc_code',
   undoneCellIndex: 'tutorial.v1.undone_cell_index',
   lastCompletedCellIndex: 'tutorial.v1.last_completed_cell_index',
+  shownHints: 'tutorial.v1.shown_hints',
 } as const;
 export const ONBOARDING_STARTER_PATTERN_ID = 'starter_heart';
 
@@ -68,7 +71,7 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     }
   }
 
-  const [runState, tutorialSessionId, nextBeatValue, completedBeatsValue, activeDmcCode, undoneCellIndexValue, lastCompletedCellIndexValue] = await Promise.all([
+  const [runState, tutorialSessionId, nextBeatValue, completedBeatsValue, activeDmcCode, undoneCellIndexValue, lastCompletedCellIndexValue, shownHintsValue] = await Promise.all([
     getDeviceConfigValue(KEYS.tutorialRunState),
     getDeviceConfigValue(KEYS.tutorialSessionId),
     getDeviceConfigValue(KEYS.nextBeat),
@@ -76,6 +79,7 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     getDeviceConfigValue(KEYS.activeDmcCode),
     getDeviceConfigValue(KEYS.undoneCellIndex),
     getDeviceConfigValue(KEYS.lastCompletedCellIndex),
+    getDeviceConfigValue(KEYS.shownHints),
   ]);
   let completedBeats: string[] = [];
   try {
@@ -83,6 +87,15 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     if (Array.isArray(parsed) && parsed.every((beat) => typeof beat === 'string')) completedBeats = parsed;
   } catch {
     // Corrupt optional tutorial state safely restarts the tutorial cursor.
+  }
+  let shownHints: HintId[] = [];
+  try {
+    const parsed = JSON.parse(shownHintsValue ?? '[]');
+    if (Array.isArray(parsed)) {
+      shownHints = parsed.filter((hint): hint is HintId => typeof hint === 'string' && HINT_IDS.includes(hint as HintId));
+    }
+  } catch {
+    // Corrupt optional hint state safely allows each hint to be shown once.
   }
   startupState = {
     position: persistedPosition,
@@ -97,6 +110,7 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     lastCompletedCellIndex: lastCompletedCellIndexValue !== null && Number.isInteger(Number(lastCompletedCellIndexValue))
       ? Number(lastCompletedCellIndexValue)
       : undefined,
+    shownHints,
   };
   return startupState;
 }
@@ -105,6 +119,7 @@ export function getStartupOnboardingState(): OnboardingState {
   return startupState ?? {
     position: 'absent', tutorialRunState: 'running', tutorialSessionId: null,
     nextBeat: 1, completedBeats: [], activeDmcCode: null,
+    shownHints: [],
   };
 }
 
@@ -114,7 +129,7 @@ export async function saveOnboardingPosition(value: Exclude<OnboardingPosition, 
 }
 
 export async function startTutorial(sessionId: string): Promise<void> {
-  const nextState = tutorialStartState(sessionId);
+  const nextState = { ...tutorialStartState(sessionId), shownHints: startupState?.shownHints ?? [] };
   await persistTutorialStart(nextState);
   if (startupState) {
     startupState = nextState;
@@ -154,6 +169,7 @@ export async function resetOnboarding(): Promise<void> {
     nextBeat: 1,
     completedBeats: [],
     activeDmcCode: null,
+    shownHints: startupState?.shownHints ?? [],
   };
 }
 
@@ -187,6 +203,11 @@ export async function persistTutorialTransition(
   }
 }
 
+export async function persistShownHints(shownHints: readonly HintId[]): Promise<void> {
+  await setDeviceConfigValue(KEYS.shownHints, JSON.stringify(shownHints));
+  if (startupState) startupState = { ...startupState, shownHints };
+}
+
 function tutorialStartState(sessionId: string): OnboardingState {
   return {
     position: 'in_tutorial',
@@ -195,6 +216,7 @@ function tutorialStartState(sessionId: string): OnboardingState {
     nextBeat: 1,
     completedBeats: [],
     activeDmcCode: null,
+    shownHints: startupState?.shownHints ?? [],
   };
 }
 

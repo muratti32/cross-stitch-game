@@ -23,6 +23,10 @@ export type TutorialDomainEvent =
   | { readonly type: 'completed_stitch_recorded'; readonly cellIndex: number; readonly targeted: boolean; readonly sweepGestureId?: number }
   | { readonly type: 'mismatched_tap_observed'; readonly targeted: boolean }
   | { readonly type: 'progress_operation_recorded'; readonly desiredState: 'completed' | 'incomplete'; readonly cellIndex: number }
+  | { readonly type: 'pinch_observed' }
+  | { readonly type: 'plain_drag_without_stitch_observed' }
+  | { readonly type: 'edge_auto_pan_engaged' }
+  | { readonly type: 'locator_idle_observed' }
   | { readonly type: 'skip_requested' }
   | { readonly type: 'resume_requested' };
 
@@ -112,6 +116,7 @@ export function reduceTutorial(state: TutorialState, event: TutorialDomainEvent)
     if (state.nextBeat === 3) next = { ...next, nextBeat: 4 };
     return transition(state, skipLearned(next));
   }
+  if (event.type !== 'progress_operation_recorded') return { state, effects: [] };
   if (event.desiredState === 'incomplete') {
     return event.cellIndex === state.lastCompletedCellIndex
       ? transition(state, { ...state, undoneCellIndex: event.cellIndex })
