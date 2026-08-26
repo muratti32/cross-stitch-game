@@ -20,11 +20,12 @@ import Animated, {
 import { useActiveMembershipTheme } from '@/membership/themes';
 import { exitSession } from '@/navigation/exitSession';
 import { TutorialCoachBanner } from '@/onboarding/TutorialCoachBanner';
-import { TUTORIAL_HIGHLIGHT_DMC, type TutorialFocusTarget } from '@/onboarding/tutorialEngine';
+import { TUTORIAL_COMPLETION_DMC, TUTORIAL_HIGHLIGHT_DMC, type TutorialFocusTarget } from '@/onboarding/tutorialEngine';
 import { useTutorialExecutor } from '@/onboarding/useTutorialExecutor';
 import { emitTutorialEvent } from '@/onboarding/tutorialEvents';
 import { createFocusSlot } from '@/onboarding/focusSlot';
 import { findTutorialSweepRunStart } from '@/onboarding/tutorialSweepRun';
+import { TutorialRecapSheet } from '@/onboarding/TutorialRecapSheet';
 
 export default function SessionReadyScreen() {
   const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
@@ -118,6 +119,10 @@ export default function SessionReadyScreen() {
       }
     },
   });
+
+  useEffect(() => {
+    if (isSessionCompleted) void emitTutorialEvent({ type: 'session_completed' });
+  }, [isSessionCompleted]);
 
   useEffect(() => {
     if (loading) return;
@@ -518,6 +523,9 @@ export default function SessionReadyScreen() {
                     tutorial.showThreadPaletteBeat
                       && color.dmcCode === TUTORIAL_HIGHLIGHT_DMC
                       && styles.paletteChipTutorialHighlight,
+                    tutorial.coachMarkBeat === 'thread_color_completion'
+                      && color.dmcCode === TUTORIAL_COMPLETION_DMC
+                      && styles.paletteChipTutorialHighlight,
                     isCompleted && styles.paletteChipCompleted,
                   ]}
                   accessibilityRole="button"
@@ -589,6 +597,14 @@ export default function SessionReadyScreen() {
           </View>
         </View>
       )}
+      <TutorialRecapSheet
+        visible={tutorial.recapVisible}
+        onContinue={tutorial.dismissRecap}
+        onBrowsePatterns={() => {
+          tutorial.dismissRecap();
+          router.navigate('/(tabs)/(catalog)');
+        }}
+      />
     </Screen>
   );
 }
