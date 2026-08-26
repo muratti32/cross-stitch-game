@@ -2,6 +2,16 @@ export const CELL_SIZE = 16.0;
 export const TILE_CELLS = 32;
 export const TILE_SIZE = CELL_SIZE * TILE_CELLS; // 512.0
 
+/**
+ * Thread stroke widths for completed cross stitches. Both the cached tile
+ * pictures and the live (animating) stitches must draw with these values so
+ * a stitch does not change weight when it leaves the dynamic layer.
+ */
+export const THREAD_WIDTH_TEXTURED = 4.1;
+export const THREAD_WIDTH_PLAIN = 3.5;
+export const THREAD_SHADOW_DELTA = 1.0;
+export const THREAD_HIGHLIGHT_WIDTH = 0.9;
+
 export interface Viewport {
   translateX: number;
   translateY: number;
