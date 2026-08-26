@@ -19,6 +19,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useActiveMembershipTheme } from '@/membership/themes';
 import { exitSession } from '@/navigation/exitSession';
+import { TutorialCoachBanner } from '@/onboarding/TutorialCoachBanner';
+import { TUTORIAL_HIGHLIGHT_DMC } from '@/onboarding/tutorialEngine';
+import { useTutorialExecutor } from '@/onboarding/useTutorialExecutor';
 
 export default function SessionReadyScreen() {
   const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
@@ -63,6 +66,10 @@ export default function SessionReadyScreen() {
   } = useStitchingSession(sessionId);
 
   const { selectedColorIndex, setSelectedColorIndex, handedness } = useGameplayStore();
+  const tutorial = useTutorialExecutor(sessionId, {
+    clearActiveThreadColor: () => setSelectedColorIndex(-1),
+    applyActiveThreadColor: setSelectedColorIndex,
+  });
   const initialSelectionDone = useRef(false);
 
   // Parent revision to trigger canvas updates from parent events
@@ -130,20 +137,33 @@ export default function SessionReadyScreen() {
 
   useEffect(() => {
     if (remainingCounts.length > 0) {
-      isColorCompletedShared.value = remainingCounts[selectedColorIndex] === 0;
+      isColorCompletedShared.value = selectedColorIndex >= 0
+        && remainingCounts[selectedColorIndex] === 0;
     }
   }, [remainingCounts, selectedColorIndex]);
 
   // Auto-select the first incomplete color on load (once)
   useEffect(() => {
-    if (!loading && remainingCounts.length > 0 && !initialSelectionDone.current) {
+    if (!loading && patternData && tutorial.activeDmcCode && !initialSelectionDone.current) {
+      const restoredIndex = patternData.palette.findIndex(
+        (color) => color.dmcCode === tutorial.activeDmcCode,
+      );
+      if (restoredIndex !== -1) {
+        initialSelectionDone.current = true;
+        setSelectedColorIndex(restoredIndex);
+      }
+    }
+  }, [loading, patternData, setSelectedColorIndex, tutorial.activeDmcCode]);
+
+  useEffect(() => {
+    if (!loading && !tutorial.showThreadPaletteBeat && remainingCounts.length > 0 && !initialSelectionDone.current) {
       initialSelectionDone.current = true;
       const firstIncompleteIdx = remainingCounts.findIndex((count) => count > 0);
       if (firstIncompleteIdx !== -1) {
         setSelectedColorIndex(firstIncompleteIdx);
       }
     }
-  }, [loading, remainingCounts, setSelectedColorIndex]);
+  }, [loading, remainingCounts, setSelectedColorIndex, tutorial.showThreadPaletteBeat]);
 
   // Handle cell taps
   const handleCellTapped = (x: number, y: number) => {
@@ -274,8 +294,6 @@ export default function SessionReadyScreen() {
     ? Math.floor((completedCellsCount / totalCellsCount) * 100) 
     : 0;
 
-  const selectedColor = patternData.palette[selectedColorIndex];
-  
   const bPattern = patternData && session
     ? BUNDLED_PATTERNS.find((p) => p.id === session.patternId)
     : null;
@@ -354,10 +372,11 @@ export default function SessionReadyScreen() {
           <Pressable
             style={[
               styles.floatingButton,
-              remainingCounts[selectedColorIndex] === 0 && styles.floatingButtonDisabled,
+              (selectedColorIndex < 0 || remainingCounts[selectedColorIndex] === 0)
+                && styles.floatingButtonDisabled,
             ]}
             onPress={handleLocateNext}
-            disabled={remainingCounts[selectedColorIndex] === 0}
+            disabled={selectedColorIndex < 0 || remainingCounts[selectedColorIndex] === 0}
             accessibilityRole="button"
             accessibilityLabel="Locate next remaining cell of active thread color"
           >
@@ -392,6 +411,7 @@ export default function SessionReadyScreen() {
       {/* Bottom Thread Palette dock */}
       {!isSessionCompleted && (
         <View style={styles.paletteDock}>
+          {tutorial.showThreadPaletteBeat && <TutorialCoachBanner onSkip={tutorial.skip} />}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -411,10 +431,15 @@ export default function SessionReadyScreen() {
               return (
                 <Pressable
                   key={index}
-                  onPress={() => setSelectedColorIndex(index)}
+                  onPress={() => {
+                    void tutorial.selectThreadColor(index, selectedColorIndex, color.dmcCode);
+                  }}
                   style={[
                     styles.paletteChip,
                     isSelected && styles.paletteChipSelected,
+                    tutorial.showThreadPaletteBeat
+                      && color.dmcCode === TUTORIAL_HIGHLIGHT_DMC
+                      && styles.paletteChipTutorialHighlight,
                     isCompleted && styles.paletteChipCompleted,
                   ]}
                   accessibilityRole="button"
@@ -659,6 +684,10 @@ const styles = StyleSheet.create({
   },
   paletteChipCompleted: {
     opacity: 0.8,
+  },
+  paletteChipTutorialHighlight: {
+    borderColor: Theme.colors.accentTeal,
+    borderWidth: 2,
   },
   chipSwatch: {
     width: 24,

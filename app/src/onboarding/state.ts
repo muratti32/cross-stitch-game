@@ -21,6 +21,7 @@ export interface OnboardingState {
   tutorialSessionId: string | null;
   nextBeat: number;
   completedBeats: readonly string[];
+  activeDmcCode: string | null;
 }
 
 const KEYS = {
@@ -29,6 +30,7 @@ const KEYS = {
   tutorialSessionId: 'tutorial.v1.session_id',
   nextBeat: 'tutorial.v1.next_beat',
   completedBeats: 'tutorial.v1.completed_beats',
+  activeDmcCode: 'tutorial.v1.active_dmc_code',
 } as const;
 export const ONBOARDING_STARTER_PATTERN_ID = 'starter_heart';
 
@@ -62,11 +64,12 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     }
   }
 
-  const [runState, tutorialSessionId, nextBeatValue, completedBeatsValue] = await Promise.all([
+  const [runState, tutorialSessionId, nextBeatValue, completedBeatsValue, activeDmcCode] = await Promise.all([
     getDeviceConfigValue(KEYS.tutorialRunState),
     getDeviceConfigValue(KEYS.tutorialSessionId),
     getDeviceConfigValue(KEYS.nextBeat),
     getDeviceConfigValue(KEYS.completedBeats),
+    getDeviceConfigValue(KEYS.activeDmcCode),
   ]);
   let completedBeats: string[] = [];
   try {
@@ -81,6 +84,7 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     tutorialSessionId: recoveredTutorialSessionId ?? tutorialSessionId,
     nextBeat: Math.max(1, Number.parseInt(nextBeatValue ?? '1', 10) || 1),
     completedBeats,
+    activeDmcCode,
   };
   return startupState;
 }
@@ -88,7 +92,7 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
 export function getStartupOnboardingState(): OnboardingState {
   return startupState ?? {
     position: 'absent', tutorialRunState: 'running', tutorialSessionId: null,
-    nextBeat: 1, completedBeats: [],
+    nextBeat: 1, completedBeats: [], activeDmcCode: null,
   };
 }
 
@@ -105,6 +109,32 @@ export async function startTutorial(sessionId: string): Promise<void> {
   }
 }
 
+export async function persistTutorialTransition(
+  tutorial: Pick<OnboardingState, 'tutorialRunState' | 'nextBeat' | 'completedBeats'>,
+  observedActiveDmcCode?: string,
+): Promise<void> {
+  const entries: (readonly [string, string])[] = [
+    [KEYS.position, 'in_tutorial'],
+    [KEYS.tutorialRunState, tutorial.tutorialRunState],
+    [KEYS.nextBeat, String(tutorial.nextBeat)],
+    [KEYS.completedBeats, JSON.stringify(tutorial.completedBeats)],
+  ];
+  if (observedActiveDmcCode) {
+    entries.push([KEYS.activeDmcCode, observedActiveDmcCode]);
+  }
+  await setDeviceConfigValues(entries);
+  if (startupState) {
+    startupState = {
+      ...startupState,
+      position: 'in_tutorial',
+      tutorialRunState: tutorial.tutorialRunState,
+      nextBeat: tutorial.nextBeat,
+      completedBeats: tutorial.completedBeats,
+      activeDmcCode: observedActiveDmcCode ?? startupState.activeDmcCode,
+    };
+  }
+}
+
 function tutorialStartState(sessionId: string): OnboardingState {
   return {
     position: 'in_tutorial',
@@ -112,6 +142,7 @@ function tutorialStartState(sessionId: string): OnboardingState {
     tutorialSessionId: sessionId,
     nextBeat: 1,
     completedBeats: [],
+    activeDmcCode: null,
   };
 }
 
