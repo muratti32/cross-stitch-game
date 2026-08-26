@@ -8,6 +8,7 @@ import {
 import { getStartupOnboardingState, persistShownHints } from './state';
 import { subscribeToTutorialEvents } from './tutorialEvents';
 import type { TutorialDomainEvent } from './tutorialEngine';
+import { tutorialHintShown } from '../analytics/onboarding';
 
 export const LOCATOR_HINT_IDLE_MS = 10_000;
 
@@ -44,7 +45,10 @@ export function useJustInTimeHints({ mandatoryBeatInFlight, activeColorHasRemain
     try {
       await persistShownHints(transition.state.shownHints);
       const effect = transition.effects.find((candidate) => candidate.type === 'show_hint');
-      if (effect?.type === 'show_hint') setVisibleHint(effect.hintId);
+      if (effect?.type === 'show_hint') {
+        setVisibleHint(effect.hintId);
+        tutorialHintShown(effect.hintId, event.type);
+      }
     } catch (error) {
       stateRef.current = previous;
       throw error;
