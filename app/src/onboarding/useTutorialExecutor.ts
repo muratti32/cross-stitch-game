@@ -26,6 +26,7 @@ export function useTutorialExecutor(
     completedBeats: startup.completedBeats,
     undoneCellIndex: startup.undoneCellIndex,
     lastCompletedCellIndex: startup.lastCompletedCellIndex,
+    threadColorCompletionObserved: startup.threadColorCompletionObserved,
   };
   const stateRef = useRef(initial);
   const [runState, setRunState] = useState(initial.runState);
@@ -34,6 +35,7 @@ export function useTutorialExecutor(
   const [coachMarkBeat, setCoachMarkBeat] = useState(
     initialCoachMark?.type === 'show_coach_mark' ? initialCoachMark.beatId : null,
   );
+  const [recapVisible, setRecapVisible] = useState(false);
   const callbacksRef = useRef(callbacks);
   callbacksRef.current = callbacks;
 
@@ -68,6 +70,7 @@ export function useTutorialExecutor(
               completedBeats: effect.state.completedBeats,
               undoneCellIndex: effect.state.undoneCellIndex,
               lastCompletedCellIndex: effect.state.lastCompletedCellIndex,
+              threadColorCompletionObserved: effect.state.threadColorCompletionObserved,
             }, effect.observedActiveDmcCode);
           }
           if (effect.type === 'clear_active_thread_color') {
@@ -77,6 +80,7 @@ export function useTutorialExecutor(
         setRunState(transition.state.runState);
         const coachMark = transition.effects.find((effect) => effect.type === 'show_coach_mark');
         setCoachMarkBeat(coachMark?.type === 'show_coach_mark' ? coachMark.beatId : null);
+        if (transition.effects.some((effect) => effect.type === 'open_recap')) setRecapVisible(true);
         for (const effect of transition.effects) {
           if (effect.type === 'acquire_focus') callbacksRef.current.acquireFocus(effect.target);
           if (effect.type === 'release_focus') callbacksRef.current.releaseFocus();
@@ -119,6 +123,8 @@ export function useTutorialExecutor(
     showThreadPaletteBeat: enabled && coachMarkBeat === 'thread_palette',
     activeDmcCode: enabled ? startup.activeDmcCode : null,
     canResume: enabled && runState === 'paused',
+    recapVisible: enabled && recapVisible,
+    dismissRecap: () => setRecapVisible(false),
     selectThreadColor,
     skip,
     resume,

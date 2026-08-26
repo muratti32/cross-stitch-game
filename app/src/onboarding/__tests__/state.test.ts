@@ -53,6 +53,7 @@ describe('onboarding persistence', () => {
       ['tutorial.v1.completed_beats', '[]'],
       ['tutorial.v1.undone_cell_index', ''],
       ['tutorial.v1.last_completed_cell_index', ''],
+      ['tutorial.v1.thread_color_completion_observed', ''],
     ]);
   });
 
@@ -81,6 +82,7 @@ describe('onboarding persistence', () => {
       ['tutorial.v1.completed_beats', '["thread_palette"]'],
       ['tutorial.v1.undone_cell_index', ''],
       ['tutorial.v1.last_completed_cell_index', ''],
+      ['tutorial.v1.thread_color_completion_observed', ''],
       ['tutorial.v1.active_dmc_code', '321'],
     ]);
   });
@@ -110,6 +112,7 @@ describe('onboarding persistence', () => {
       ['tutorial.v1.next_beat', '1'],
       ['tutorial.v1.completed_beats', '[]'],
       ['tutorial.v1.active_dmc_code', ''],
+      ['tutorial.v1.thread_color_completion_observed', ''],
     ]);
   });
 
@@ -132,10 +135,23 @@ describe('onboarding persistence', () => {
       ['tutorial.v1.completed_beats', '["thread_palette","mismatched_tap"]'],
       ['tutorial.v1.undone_cell_index', ''],
       ['tutorial.v1.last_completed_cell_index', ''],
+      ['tutorial.v1.thread_color_completion_observed', ''],
     ]);
   });
 
   it('does not treat a missing undo cell as cell zero', async () => {
     await expect(loadOnboardingState()).resolves.toMatchObject({ undoneCellIndex: undefined });
+  });
+
+  it('marks onboarding complete with a completion timestamp atomically', async () => {
+    await persistTutorialTransition({
+      tutorialRunState: 'complete', nextBeat: 7, completedBeats: ['thread_color_completion'],
+    });
+
+    expect(localDb.setDeviceConfigValues).toHaveBeenCalledWith(expect.arrayContaining([
+      ['onboarding.v1.status', 'complete'],
+      ['tutorial.v1.status', 'complete'],
+      ['onboarding.v1.completed_at', expect.any(String)],
+    ]));
   });
 });
