@@ -14,6 +14,7 @@ const COPY: Record<Props['beatId'], string> = {
   mismatched_tap: 'Tap the highlighted different cell. Wrong taps cost nothing.',
   undo_action: 'Undo that stitch, then place it again.',
   stitch_sweep: 'Press a matching cell, then drag across the highlighted run.',
+  thread_color_completion: 'Finish the highlighted white thread, then choose your next color.',
 };
 
 export function TutorialCoachBanner({ onSkip, beatId }: Props) {

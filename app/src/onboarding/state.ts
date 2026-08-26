@@ -24,6 +24,7 @@ export interface OnboardingState {
   activeDmcCode: string | null;
   undoneCellIndex?: number;
   lastCompletedCellIndex?: number;
+  threadColorCompletionObserved?: boolean;
 }
 
 const KEYS = {
@@ -35,6 +36,8 @@ const KEYS = {
   activeDmcCode: 'tutorial.v1.active_dmc_code',
   undoneCellIndex: 'tutorial.v1.undone_cell_index',
   lastCompletedCellIndex: 'tutorial.v1.last_completed_cell_index',
+  threadColorCompletionObserved: 'tutorial.v1.thread_color_completion_observed',
+  completedAt: 'onboarding.v1.completed_at',
 } as const;
 export const ONBOARDING_STARTER_PATTERN_ID = 'starter_heart';
 
@@ -68,7 +71,7 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     }
   }
 
-  const [runState, tutorialSessionId, nextBeatValue, completedBeatsValue, activeDmcCode, undoneCellIndexValue, lastCompletedCellIndexValue] = await Promise.all([
+  const [runState, tutorialSessionId, nextBeatValue, completedBeatsValue, activeDmcCode, undoneCellIndexValue, lastCompletedCellIndexValue, threadColorCompletionObservedValue] = await Promise.all([
     getDeviceConfigValue(KEYS.tutorialRunState),
     getDeviceConfigValue(KEYS.tutorialSessionId),
     getDeviceConfigValue(KEYS.nextBeat),
@@ -76,6 +79,7 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     getDeviceConfigValue(KEYS.activeDmcCode),
     getDeviceConfigValue(KEYS.undoneCellIndex),
     getDeviceConfigValue(KEYS.lastCompletedCellIndex),
+    getDeviceConfigValue(KEYS.threadColorCompletionObserved),
   ]);
   let completedBeats: string[] = [];
   try {
@@ -97,6 +101,7 @@ export async function loadOnboardingState(): Promise<OnboardingState> {
     lastCompletedCellIndex: lastCompletedCellIndexValue !== null && Number.isInteger(Number(lastCompletedCellIndexValue))
       ? Number(lastCompletedCellIndexValue)
       : undefined,
+    threadColorCompletionObserved: threadColorCompletionObservedValue === '1',
   };
   return startupState;
 }
@@ -146,6 +151,7 @@ export async function resetOnboarding(): Promise<void> {
     [KEYS.nextBeat, '1'],
     [KEYS.completedBeats, '[]'],
     [KEYS.activeDmcCode, ''],
+    [KEYS.threadColorCompletionObserved, ''],
   ]);
   startupState = {
     position: 'welcome',
@@ -154,21 +160,24 @@ export async function resetOnboarding(): Promise<void> {
     nextBeat: 1,
     completedBeats: [],
     activeDmcCode: null,
+    threadColorCompletionObserved: false,
   };
 }
 
 export async function persistTutorialTransition(
-  tutorial: Pick<OnboardingState, 'tutorialRunState' | 'nextBeat' | 'completedBeats' | 'undoneCellIndex' | 'lastCompletedCellIndex'>,
+  tutorial: Pick<OnboardingState, 'tutorialRunState' | 'nextBeat' | 'completedBeats' | 'undoneCellIndex' | 'lastCompletedCellIndex' | 'threadColorCompletionObserved'>,
   observedActiveDmcCode?: string,
 ): Promise<void> {
   const entries: (readonly [string, string])[] = [
-    [KEYS.position, 'in_tutorial'],
+    [KEYS.position, tutorial.tutorialRunState === 'complete' ? 'complete' : 'in_tutorial'],
     [KEYS.tutorialRunState, tutorial.tutorialRunState],
     [KEYS.nextBeat, String(tutorial.nextBeat)],
     [KEYS.completedBeats, JSON.stringify(tutorial.completedBeats)],
     [KEYS.undoneCellIndex, tutorial.undoneCellIndex === undefined ? '' : String(tutorial.undoneCellIndex)],
     [KEYS.lastCompletedCellIndex, tutorial.lastCompletedCellIndex === undefined ? '' : String(tutorial.lastCompletedCellIndex)],
+    [KEYS.threadColorCompletionObserved, tutorial.threadColorCompletionObserved ? '1' : ''],
   ];
+  if (tutorial.tutorialRunState === 'complete') entries.push([KEYS.completedAt, new Date().toISOString()]);
   if (observedActiveDmcCode) {
     entries.push([KEYS.activeDmcCode, observedActiveDmcCode]);
   }
@@ -176,13 +185,14 @@ export async function persistTutorialTransition(
   if (startupState) {
     startupState = {
       ...startupState,
-      position: 'in_tutorial',
+      position: tutorial.tutorialRunState === 'complete' ? 'complete' : 'in_tutorial',
       tutorialRunState: tutorial.tutorialRunState,
       nextBeat: tutorial.nextBeat,
       completedBeats: tutorial.completedBeats,
       activeDmcCode: observedActiveDmcCode ?? startupState.activeDmcCode,
       undoneCellIndex: tutorial.undoneCellIndex,
       lastCompletedCellIndex: tutorial.lastCompletedCellIndex,
+      threadColorCompletionObserved: tutorial.threadColorCompletionObserved,
     };
   }
 }
@@ -207,5 +217,6 @@ async function persistTutorialStart(state: OnboardingState): Promise<void> {
     [KEYS.completedBeats, JSON.stringify(state.completedBeats)],
     [KEYS.undoneCellIndex, ''],
     [KEYS.lastCompletedCellIndex, ''],
+    [KEYS.threadColorCompletionObserved, ''],
   ]);
 }

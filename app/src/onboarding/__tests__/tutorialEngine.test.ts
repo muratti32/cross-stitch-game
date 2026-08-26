@@ -5,6 +5,7 @@ import {
   STITCH_SWEEP_BEAT_ID,
   STITCH_ACTION_BEAT_ID,
   THREAD_PALETTE_BEAT_ID,
+  THREAD_COLOR_COMPLETION_BEAT_ID,
   UNDO_ACTION_BEAT_ID,
   type TutorialState,
 } from '../tutorialEngine';
@@ -124,6 +125,35 @@ describe('tutorial reducer beat 5', () => {
     });
     expect(split.state.completedBeats).not.toContain(STITCH_SWEEP_BEAT_ID);
     expect(split.state.nextBeat).toBe(5);
+  });
+});
+
+describe('tutorial reducer beat 6', () => {
+  const beatSix: TutorialState = {
+    runState: 'running',
+    nextBeat: 6,
+    completedBeats: [THREAD_PALETTE_BEAT_ID, STITCH_ACTION_BEAT_ID, MISMATCHED_TAP_BEAT_ID, UNDO_ACTION_BEAT_ID, STITCH_SWEEP_BEAT_ID],
+  };
+
+  it('waits for a thread completion and a later explicit color selection before opening the recap', () => {
+    expect(initialTutorialEffects(beatSix)).toContainEqual({ type: 'show_coach_mark', beatId: THREAD_COLOR_COMPLETION_BEAT_ID });
+    const completedColor = reduceTutorial(beatSix, { type: 'thread_color_completed', dmcCode: 'white' });
+    const result = reduceTutorial(completedColor.state, { type: 'active_thread_color_changed', dmcCode: '310' });
+
+    expect(result.state).toMatchObject({ runState: 'complete', nextBeat: 7 });
+    expect(result.state.completedBeats).toContain(THREAD_COLOR_COMPLETION_BEAT_ID);
+    expect(result.effects).toContainEqual({ type: 'open_recap' });
+  });
+
+  it('accepts any thread color completion followed by any explicit color selection', () => {
+    const completedColor = reduceTutorial(beatSix, { type: 'thread_color_completed', dmcCode: '321' });
+    expect(reduceTutorial(completedColor.state, { type: 'active_thread_color_changed', dmcCode: '666' }).state.runState).toBe('complete');
+  });
+
+  it('force-completes an open tutorial when the session completes', () => {
+    const result = reduceTutorial({ ...beatSix, runState: 'paused' }, { type: 'session_completed' });
+    expect(result.state.runState).toBe('complete');
+    expect(result.effects).toContainEqual({ type: 'open_recap' });
   });
 });
 

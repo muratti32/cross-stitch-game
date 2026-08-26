@@ -39,6 +39,7 @@ import { PatternData } from '../pattern-artifact';
 import { RendererState } from '../renderer';
 import { useIdentityStore } from '../identity/guestIdentity';
 import { syncSession, completeSession } from '../sync/progressSyncEngine';
+import { emitTutorialEvent } from '../onboarding/tutorialEvents';
 import { ProgressSyncError } from '../api/progressSync';
 import {
   captureGameplayEvent,
@@ -546,6 +547,9 @@ export function useStitchingSession(sessionId: string | undefined) {
 
       // O(1) incremental counters — no grid scan on the stitch path
       remainingCountsRef.current[colorIdx - 1]--;
+      if (remainingCountsRef.current[colorIdx - 1] === 0) {
+        void emitTutorialEvent({ type: 'thread_color_completed', dmcCode: pat.palette[activeColorIndex].dmcCode });
+      }
 
       const remoteSessionId = remoteSessionIdRef.current;
       if (remoteSessionId) {
@@ -582,6 +586,7 @@ export function useStitchingSession(sessionId: string | undefined) {
 
       const isAllDone = completedCellsRef.current === totalCellsRef.current;
       if (isAllDone) {
+        void emitTutorialEvent({ type: 'session_completed' });
         // Complete the session
         const ts = new Date().toISOString();
         setSession((prev) => prev ? { ...prev, status: 'completed', completedAt: ts } : null);
