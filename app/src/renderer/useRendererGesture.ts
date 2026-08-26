@@ -96,7 +96,6 @@ export function useRendererGesture({
   const lastStitchedX = useSharedValue(-1);
   const lastStitchedY = useSharedValue(-1);
   const sweepMovementThreshold = 8;
-  const pinchObserved = useSharedValue(false);
   const edgeAutoPanObserved = useSharedValue(false);
 
   // Helper worklet to clamp translations so content doesn't fly off screen
@@ -311,10 +310,7 @@ export function useRendererGesture({
   // overwriting each other's translation.
   const pinchGesture = Gesture.Pinch()
     .onStart(() => {
-      if (!pinchObserved.value && onPinch) {
-        pinchObserved.value = true;
-        runOnJS(onPinch)();
-      }
+      if (onPinch) runOnJS(onPinch)();
       cancelAnimation(scale);
       cancelAnimation(translateX);
       cancelAnimation(translateY);
@@ -388,6 +384,7 @@ export function useRendererGesture({
       if (!isSweepActive.value && isSweepCandidate.value
         && Math.hypot(event.translationX, event.translationY) >= sweepMovementThreshold) {
         isSweepActive.value = true;
+        edgeAutoPanObserved.value = false;
         sweepGestureId.value += 1;
         const startX = sweepStartCellX.value;
         const startY = sweepStartCellY.value;
