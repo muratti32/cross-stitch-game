@@ -17,8 +17,8 @@ export interface TutorialState {
 
 export type TutorialDomainEvent =
   | { readonly type: 'active_thread_color_changed'; readonly dmcCode: string }
-  | { readonly type: 'completed_stitch_recorded'; readonly cellIndex: number; readonly targeted?: boolean }
-  | { readonly type: 'mismatched_tap_observed'; readonly targeted?: boolean }
+  | { readonly type: 'completed_stitch_recorded'; readonly cellIndex: number; readonly targeted: boolean }
+  | { readonly type: 'mismatched_tap_observed'; readonly targeted: boolean }
   | { readonly type: 'progress_operation_recorded'; readonly desiredState: 'completed' | 'incomplete'; readonly cellIndex: number }
   | { readonly type: 'skip_requested' };
 
@@ -78,13 +78,13 @@ export function reduceTutorial(state: TutorialState, event: TutorialDomainEvent)
     return transition(state, skipLearned(learned({ ...state, nextBeat: 2 }, THREAD_PALETTE_BEAT_ID)), event.dmcCode);
   }
   if (event.type === 'completed_stitch_recorded') {
-    if (state.nextBeat === 2 && event.targeted === false) return { state, effects: [] };
+    if (state.nextBeat === 2 && !event.targeted) return { state, effects: [] };
     let next = learned({ ...state, lastCompletedCellIndex: event.cellIndex }, STITCH_ACTION_BEAT_ID);
     if (state.nextBeat === 2) next = { ...next, nextBeat: 3 };
     return transition(state, skipLearned(next));
   }
   if (event.type === 'mismatched_tap_observed') {
-    if (state.nextBeat === 3 && event.targeted === false) return { state, effects: [] };
+    if (state.nextBeat === 3 && !event.targeted) return { state, effects: [] };
     let next = learned(state, MISMATCHED_TAP_BEAT_ID);
     if (state.nextBeat === 3) next = { ...next, nextBeat: 4 };
     return transition(state, skipLearned(next));

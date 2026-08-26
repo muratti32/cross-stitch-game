@@ -70,7 +70,7 @@ describe('tutorial reducer beats 2 through 4', () => {
     ]);
     expect(reduceTutorial(state, { type: 'completed_stitch_recorded', cellIndex: 11, targeted: false }))
       .toEqual({ state, effects: [] });
-    const result = reduceTutorial(state, { type: 'completed_stitch_recorded', cellIndex: 12 });
+    const result = reduceTutorial(state, { type: 'completed_stitch_recorded', cellIndex: 12, targeted: true });
     expect(result.state.nextBeat).toBe(3);
     expect(result.effects).toContainEqual({ type: 'release_focus' });
     expect(result.effects).toContainEqual({ type: 'acquire_focus', target: 'non_matching_cell' });
@@ -83,10 +83,10 @@ describe('tutorial reducer beats 2 through 4', () => {
 
   it('advances beat 3 on a mismatched tap and remembers an early mismatched tap', () => {
     const state: TutorialState = { runState: 'running', nextBeat: 3, completedBeats: [THREAD_PALETTE_BEAT_ID, STITCH_ACTION_BEAT_ID] };
-    const result = reduceTutorial(state, { type: 'mismatched_tap_observed' });
+    const result = reduceTutorial(state, { type: 'mismatched_tap_observed', targeted: true });
     expect(result.state).toMatchObject({ nextBeat: 4, completedBeats: expect.arrayContaining([MISMATCHED_TAP_BEAT_ID]) });
 
-    const early = reduceTutorial(running, { type: 'mismatched_tap_observed' });
+    const early = reduceTutorial(running, { type: 'mismatched_tap_observed', targeted: false });
     expect(early.state.completedBeats).toContain(MISMATCHED_TAP_BEAT_ID);
     const afterPalette = reduceTutorial(early.state, { type: 'active_thread_color_changed', dmcCode: '321' });
     expect(afterPalette.state.nextBeat).toBe(2);
@@ -108,8 +108,8 @@ describe('tutorial reducer beats 2 through 4', () => {
   });
 
   it('skips all mechanics already learned before their beat starts', () => {
-    const afterStitch = reduceTutorial(running, { type: 'completed_stitch_recorded', cellIndex: 7 });
-    const afterMismatch = reduceTutorial(afterStitch.state, { type: 'mismatched_tap_observed' });
+    const afterStitch = reduceTutorial(running, { type: 'completed_stitch_recorded', cellIndex: 7, targeted: false });
+    const afterMismatch = reduceTutorial(afterStitch.state, { type: 'mismatched_tap_observed', targeted: false });
     const afterUndo = reduceTutorial(afterMismatch.state, { type: 'progress_operation_recorded', desiredState: 'incomplete', cellIndex: 7 });
     const learned = reduceTutorial(afterUndo.state, { type: 'progress_operation_recorded', desiredState: 'completed', cellIndex: 7 });
     const afterPalette = reduceTutorial(learned.state, { type: 'active_thread_color_changed', dmcCode: '321' });

@@ -8,7 +8,7 @@ it('delivers back-to-back tutorial events in order', async () => {
   });
 
   await Promise.all([
-    emitTutorialEvent({ type: 'completed_stitch_recorded', cellIndex: 4 }),
+    emitTutorialEvent({ type: 'completed_stitch_recorded', cellIndex: 4, targeted: true }),
     emitTutorialEvent({ type: 'progress_operation_recorded', desiredState: 'completed', cellIndex: 4 }),
   ]);
 
