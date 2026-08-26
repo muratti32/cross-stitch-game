@@ -52,7 +52,11 @@ export async function captureOnboardingEvent<K extends Extract<AnalyticsGameplay
   payload: Omit<Extract<AnalyticsGameplayEventPayload, { kind: K }>['payload'], keyof OnboardingPayloadBase>,
   dedupeKey?: string,
 ): Promise<void> {
-  await captureGameplayEvent(kind, { ...payload, onboarding_version: '1' } as Extract<AnalyticsGameplayEventPayload, { kind: K }>['payload'], dedupeKey);
+  await captureGameplayEvent(
+    kind,
+    { ...payload, onboarding_version: '1' } as unknown as AnalyticsGameplayEventPayloadByKind<K>,
+    dedupeKey,
+  );
 }
 
 type AnalyticsGameplayEventPayloadByKind<K extends AnalyticsGameplayEventKind> =

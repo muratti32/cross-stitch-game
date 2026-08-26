@@ -9,7 +9,7 @@ import { ONBOARDING_STARTER_PATTERN_ID, saveOnboardingPosition, startTutorial } 
 import { prepareBundledSession } from '@/session-preparation';
 import { useGameplayStore } from '@/store/gameplayStore';
 import { Theme } from '@/theme/theme';
-import { onboardingFinished, onboardingHandednessSelected, onboardingStartChoice, onboardingStepViewed, stitchingSessionStarted } from '@/analytics/onboarding';
+import { beginOnboardingSession, onboardingDurationMs, onboardingFinished, onboardingHandednessSelected, onboardingStartChoice, onboardingStepViewed, onboardingStitchCount, stitchingSessionStarted } from '@/analytics/onboarding';
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function WelcomeScreen() {
   const [handednessError, setHandednessError] = useState<'left' | 'right' | null>(null);
   const starter = BUNDLED_PATTERNS.find((pattern) => pattern.id === ONBOARDING_STARTER_PATTERN_ID);
 
-  React.useEffect(() => { onboardingStepViewed('welcome', false); }, []);
+  React.useEffect(() => { beginOnboardingSession(false); onboardingStepViewed('welcome', false); }, []);
 
   if (!starter) throw new Error('Canonical starter_heart bundled pattern is missing');
 
@@ -54,7 +54,7 @@ export default function WelcomeScreen() {
   const browse = async () => {
     onboardingStartChoice('browse_starters');
     await saveOnboardingPosition('deferred');
-    onboardingFinished('deferred', 'catalog', 0, 0);
+    onboardingFinished('deferred', 'catalog', onboardingDurationMs(), onboardingStitchCount());
     router.navigate('/(tabs)/(catalog)');
   };
 

@@ -1,4 +1,4 @@
-import { captureGameplayEvent } from '../gameplayEvents';
+import { captureGameplayEvent, captureOnboardingEvent } from '../gameplayEvents';
 import * as localDb from '../../local-db';
 
 jest.mock('../../local-db', () => ({
@@ -86,5 +86,19 @@ describe('captureGameplayEvent', () => {
         product_key: 'ai_credit_pack_20',
       }),
     ).resolves.toBeUndefined();
+  });
+
+  it('adds onboarding version and preserves required dedupe keys', async () => {
+    mockedDb.enqueueAnalyticsGameplayEvent.mockResolvedValue(undefined);
+    await captureOnboardingEvent('onboarding_started', { is_resume: false }, 'onboarding_started');
+    await captureOnboardingEvent('tutorial_beat_completed', {
+      beat_id: 'stitch_action', elapsed_ms: 42, attempt_count: 1, auto_satisfied: false,
+    }, 'tutorial_beat_completed:stitch_action');
+    expect(mockedDb.enqueueAnalyticsGameplayEvent).toHaveBeenNthCalledWith(1, expect.objectContaining({
+      kind: 'onboarding_started', dedupeKey: 'onboarding_started', payload: { onboarding_version: '1', is_resume: false },
+    }));
+    expect(mockedDb.enqueueAnalyticsGameplayEvent).toHaveBeenNthCalledWith(2, expect.objectContaining({
+      kind: 'tutorial_beat_completed', dedupeKey: 'tutorial_beat_completed:stitch_action',
+    }));
   });
 });

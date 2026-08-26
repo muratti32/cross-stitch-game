@@ -1,6 +1,16 @@
 import { captureOnboardingEvent } from './gameplayEvents';
 
 export const ONBOARDING_VERSION = '1' as const;
+let startedAt: number | null = null;
+let stitchCount = 0;
+
+export function beginOnboardingSession(isResume: boolean): void {
+  if (startedAt === null) startedAt = Date.now();
+  onboardingStarted(isResume);
+}
+export function recordOnboardingStitch(): void { stitchCount += 1; }
+export function onboardingDurationMs(): number { return startedAt === null ? 0 : Math.max(0, Date.now() - startedAt); }
+export function onboardingStitchCount(): number { return stitchCount; }
 
 export function onboardingStarted(isResume: boolean): void {
   void captureOnboardingEvent('onboarding_started', { is_resume: isResume }, 'onboarding_started');
