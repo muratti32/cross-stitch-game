@@ -19,6 +19,10 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useActiveMembershipTheme } from '@/membership/themes';
 import { exitSession } from '@/navigation/exitSession';
+import { TutorialCoachBanner } from '@/onboarding/TutorialCoachBanner';
+import { emitTutorialEvent } from '@/onboarding/tutorialEvents';
+import { TUTORIAL_HIGHLIGHT_DMC } from '@/onboarding/tutorialEngine';
+import { useTutorialExecutor } from '@/onboarding/useTutorialExecutor';
 
 export default function SessionReadyScreen() {
   const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
@@ -63,6 +67,7 @@ export default function SessionReadyScreen() {
   } = useStitchingSession(sessionId);
 
   const { selectedColorIndex, setSelectedColorIndex, handedness } = useGameplayStore();
+  const tutorial = useTutorialExecutor(sessionId);
   const initialSelectionDone = useRef(false);
 
   // Parent revision to trigger canvas updates from parent events
@@ -392,6 +397,7 @@ export default function SessionReadyScreen() {
       {/* Bottom Thread Palette dock */}
       {!isSessionCompleted && (
         <View style={styles.paletteDock}>
+          {tutorial.showThreadPaletteBeat && <TutorialCoachBanner onSkip={tutorial.skip} />}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -411,10 +417,19 @@ export default function SessionReadyScreen() {
               return (
                 <Pressable
                   key={index}
-                  onPress={() => setSelectedColorIndex(index)}
+                  onPress={() => {
+                    setSelectedColorIndex(index);
+                    emitTutorialEvent({
+                      type: 'active_thread_color_changed',
+                      dmcCode: color.dmcCode,
+                    });
+                  }}
                   style={[
                     styles.paletteChip,
                     isSelected && styles.paletteChipSelected,
+                    tutorial.showThreadPaletteBeat
+                      && color.dmcCode === TUTORIAL_HIGHLIGHT_DMC
+                      && styles.paletteChipTutorialHighlight,
                     isCompleted && styles.paletteChipCompleted,
                   ]}
                   accessibilityRole="button"
@@ -659,6 +674,10 @@ const styles = StyleSheet.create({
   },
   paletteChipCompleted: {
     opacity: 0.8,
+  },
+  paletteChipTutorialHighlight: {
+    borderColor: Theme.colors.accentTeal,
+    borderWidth: 2,
   },
   chipSwatch: {
     width: 24,

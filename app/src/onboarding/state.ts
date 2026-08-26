@@ -105,6 +105,31 @@ export async function startTutorial(sessionId: string): Promise<void> {
   }
 }
 
+export async function persistTutorialTransition(
+  tutorial: Pick<OnboardingState, 'tutorialRunState' | 'nextBeat' | 'completedBeats'>,
+  observedActiveDmcCode?: string,
+): Promise<void> {
+  const entries: (readonly [string, string])[] = [
+    [KEYS.position, 'in_tutorial'],
+    [KEYS.tutorialRunState, tutorial.tutorialRunState],
+    [KEYS.nextBeat, String(tutorial.nextBeat)],
+    [KEYS.completedBeats, JSON.stringify(tutorial.completedBeats)],
+  ];
+  if (observedActiveDmcCode) {
+    entries.push(['tutorial.v1.active_dmc_code', observedActiveDmcCode]);
+  }
+  await setDeviceConfigValues(entries);
+  if (startupState) {
+    startupState = {
+      ...startupState,
+      position: 'in_tutorial',
+      tutorialRunState: tutorial.tutorialRunState,
+      nextBeat: tutorial.nextBeat,
+      completedBeats: tutorial.completedBeats,
+    };
+  }
+}
+
 function tutorialStartState(sessionId: string): OnboardingState {
   return {
     position: 'in_tutorial',

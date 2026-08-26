@@ -7,7 +7,12 @@ jest.mock('../../local-db', () => ({
 }));
 
 import * as localDb from '../../local-db';
-import { loadOnboardingState, saveOnboardingPosition, startTutorial } from '../state';
+import {
+  loadOnboardingState,
+  persistTutorialTransition,
+  saveOnboardingPosition,
+  startTutorial,
+} from '../state';
 
 describe('onboarding persistence', () => {
   beforeEach(() => {
@@ -58,5 +63,18 @@ describe('onboarding persistence', () => {
       tutorialSessionId: 'session-heart',
     });
     expect(localDb.setDeviceConfigValues).toHaveBeenCalled();
+  });
+
+  it('atomically persists the observed active color with the advanced cursor', async () => {
+    await persistTutorialTransition({
+      tutorialRunState: 'running', nextBeat: 2, completedBeats: ['thread_palette'],
+    }, '321');
+    expect(localDb.setDeviceConfigValues).toHaveBeenCalledWith([
+      ['onboarding.v1.status', 'in_tutorial'],
+      ['tutorial.v1.status', 'running'],
+      ['tutorial.v1.next_beat', '2'],
+      ['tutorial.v1.completed_beats', '["thread_palette"]'],
+      ['tutorial.v1.active_dmc_code', '321'],
+    ]);
   });
 });
