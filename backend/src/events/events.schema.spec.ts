@@ -151,4 +151,35 @@ describe('Gameplay event schema', () => {
       platform: 'ios',
     })).toThrow(BadRequestException);
   });
+
+  it('accepts every onboarding kind with its documented payload', () => {
+    const payloads = {
+      onboarding_started: { onboarding_version: '1', is_resume: false },
+      onboarding_step_viewed: { onboarding_version: '1', step: 'welcome', is_resume: false },
+      onboarding_handedness_selected: { onboarding_version: '1', handedness: 'right', was_default: true },
+      onboarding_start_choice: { onboarding_version: '1', choice: 'start_stitching' },
+      stitching_session_started: { onboarding_version: '1', session_id: '11111111-1111-4111-8111-111111111111', pattern_id: 'starter_heart', pattern_source: 'bundled', source: 'onboarding' },
+      tutorial_beat_started: { onboarding_version: '1', beat_id: 'stitch_action', beat_number: 2 },
+      tutorial_beat_completed: { onboarding_version: '1', beat_id: 'stitch_action', elapsed_ms: 100, attempt_count: 1, auto_satisfied: false },
+      tutorial_hint_shown: { onboarding_version: '1', hint_id: 'anchored_zoom', trigger: 'pinch_observed' },
+      tutorial_paused: { onboarding_version: '1', beat_id: 'stitch_action', destination: 'session' },
+      tutorial_resumed: { onboarding_version: '1', beat_id: 'stitch_action', resume_source: 'settings' },
+      onboarding_finished: { onboarding_version: '1', outcome: 'completed', destination: 'stitching', duration_ms: 1000, stitch_count: 3 },
+      account_soft_prompt_shown: { onboarding_version: '1', context: 'tutorial' },
+      account_soft_prompt_action: { onboarding_version: '1', context: 'tutorial', action: 'dismissed' },
+    } as const;
+    for (const [kind, payload] of Object.entries(payloads)) {
+      expect(validateGameplayEventPayload(kind, payload)).toEqual({ kind, payload });
+    }
+  });
+
+  it('rejects malformed onboarding payloads and unknown fields', () => {
+    expect(() => validateGameplayEventPayload('onboarding_started', { onboarding_version: '1' })).toThrow(BadRequestException);
+    expect(() => validateGameplayEventPayload('tutorial_beat_completed', {
+      onboarding_version: '1', beat_id: 'x', elapsed_ms: -1, attempt_count: 0, auto_satisfied: false,
+    })).toThrow(BadRequestException);
+    expect(() => validateGameplayEventPayload('onboarding_finished', {
+      onboarding_version: '1', outcome: 'completed', destination: 'stitching', duration_ms: 1, stitch_count: 1, email: 'secret',
+    })).toThrow(BadRequestException);
+  });
 });

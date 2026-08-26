@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { getStartupOnboardingState, persistTutorialTransition } from './state';
 import { subscribeToTutorialEvents, emitTutorialEvent } from './tutorialEvents';
 import { initialTutorialEffects, reduceTutorial, type TutorialFocusTarget, type TutorialState } from './tutorialEngine';
+import { beginOnboardingSession, onboardingDurationMs, onboardingStitchCount, onboardingFinished, recordOnboardingStitch, tutorialBeatCompleted, tutorialBeatStarted, tutorialPaused, tutorialResumed, onboardingStepViewed } from '../analytics/onboarding';
 
 interface ExecutorCallbacks {
   readonly clearActiveThreadColor: () => void;
@@ -37,10 +38,15 @@ export function useTutorialExecutor(
   );
   const [recapVisible, setRecapVisible] = useState(false);
   const callbacksRef = useRef(callbacks);
+  const beatStartedAtRef = useRef(Date.now());
+  const beatAttemptsRef = useRef(0);
   callbacksRef.current = callbacks;
 
   useEffect(() => {
     if (!enabled) return;
+    beginOnboardingSession(initial.runState === 'paused');
+    onboardingStepViewed('tutorial', initial.runState === 'paused');
+    if (initial.nextBeat <= 6) tutorialBeatStarted(['', 'thread_palette', 'stitch_action', 'mismatched_tap', 'undo_action', 'stitch_sweep', 'thread_color_completion'][initial.nextBeat] ?? '', initial.nextBeat);
     for (const effect of initialEffects) {
       if (effect.type === 'clear_active_thread_color') {
         callbacksRef.current.clearActiveThreadColor();
@@ -60,6 +66,26 @@ export function useTutorialExecutor(
 
       const previousState = stateRef.current;
       stateRef.current = transition.state;
+      if (event.type === 'skip_requested') tutorialPaused(String(previousState.nextBeat), 'session');
+      if (event.type === 'resume_requested') tutorialResumed(String(previousState.nextBeat), 'session');
+      if (event.type === 'completed_stitch_recorded') { beatAttemptsRef.current += 1; recordOnboardingStitch(); }
+      if (event.type === 'mismatched_tap_observed' || event.type === 'progress_operation_recorded') beatAttemptsRef.current += 1;
+      const ids = ['', 'thread_palette', 'stitch_action', 'mismatched_tap', 'undo_action', 'stitch_sweep', 'thread_color_completion'];
+      const newlyCompleted = transition.state.completedBeats.filter((id) => !previousState.completedBeats.includes(id));
+      if (newlyCompleted.length > 0) {
+        for (const completedBeat of newlyCompleted) {
+          tutorialBeatCompleted(completedBeat, Date.now() - beatStartedAtRef.current, beatAttemptsRef.current, event.type === 'session_completed');
+        }
+      }
+      if (transition.state.nextBeat !== previousState.nextBeat && previousState.nextBeat <= 6) {
+        beatAttemptsRef.current = 0;
+        beatStartedAtRef.current = Date.now();
+        if (transition.state.nextBeat <= 6) tutorialBeatStarted(ids[transition.state.nextBeat], transition.state.nextBeat);
+      }
+      if (transition.effects.some((effect) => effect.type === 'open_recap')) {
+        onboardingStepViewed('recap', false);
+        onboardingFinished('completed', 'stitching', onboardingDurationMs(), onboardingStitchCount());
+      }
 
       try {
         for (const effect of transition.effects) {

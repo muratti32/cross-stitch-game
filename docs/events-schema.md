@@ -34,6 +34,19 @@ Every event has `event_id` (client UUID), `occurred_at` (ISO-8601 timestamp), an
 | `subscription_change_completed` | `source_plan`; `target_plan`; `platform` (same closed values as `subscription_change_started`) |
 | `subscription_change_cancelled` | `source_plan`; `target_plan`; `platform` (same closed values as `subscription_change_started`) |
 | `subscription_change_failed` | `source_plan`; `target_plan`; `platform` (same closed values as `subscription_change_started`); `failure_stage`: `store` \| `verification` \| `grant` |
+| `onboarding_started` | `onboarding_version`: `1`; `is_resume` (boolean) |
+| `onboarding_step_viewed` | `onboarding_version`: `1`; `step`: `welcome` \| `tutorial` \| `recap`; `is_resume` (boolean) |
+| `onboarding_handedness_selected` | `onboarding_version`: `1`; `handedness`: `left` \| `right`; `was_default` (boolean) |
+| `onboarding_start_choice` | `onboarding_version`: `1`; `choice`: `start_stitching` \| `browse_starters` \| `sign_in` |
+| `stitching_session_started` | `onboarding_version`: `1`; `session_id`; `pattern_id`; `pattern_source`: `bundled`; `source`: `onboarding` |
+| `tutorial_beat_started` | `onboarding_version`: `1`; `beat_id`; `beat_number` |
+| `tutorial_beat_completed` | `onboarding_version`: `1`; `beat_id`; `elapsed_ms`; `attempt_count`; `auto_satisfied` |
+| `tutorial_hint_shown` | `onboarding_version`: `1`; `hint_id`; `trigger` |
+| `tutorial_paused` | `onboarding_version`: `1`; `beat_id`; `destination` |
+| `tutorial_resumed` | `onboarding_version`: `1`; `beat_id`; `resume_source` |
+| `onboarding_finished` | `onboarding_version`: `1`; `outcome`: `completed` \| `deferred`; `destination`; `duration_ms`; `stitch_count` |
+| `account_soft_prompt_shown` | `onboarding_version`: `1`; `context` |
+| `account_soft_prompt_action` | `onboarding_version`: `1`; `context`; `action` |
 
 The four `subscription_change_*` kinds cover a Premium Plan change between the three Premium Plans, which is distinct from a first purchase: `source_plan` is the plan held when the change was requested and `target_plan` the plan requested, so both are always present and never equal in practice. `subscription_change_completed` is emitted only once the Game Backend exposes the new plan as the active membership, never on a store-side success alone; `subscription_change_cancelled` covers the player dismissing the in-app plan-change confirmation, dismissing the store sheet, or cancelling a Scheduled Plan Change before it activates. A confirmed downgrade is deferred by the store, so it reports no `subscription_change_completed` when the Scheduled Plan Change appears — only when that change activates (ADR-0049). That activation is the one kind the Game Backend records for itself, from the Membership Period that fulfils the plan-change request rather than from a client observation, so it counts once per change instead of once per device that happens to be watching (ADR-0050).
 

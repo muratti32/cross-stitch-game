@@ -9,6 +9,7 @@ import { ONBOARDING_STARTER_PATTERN_ID, saveOnboardingPosition, startTutorial } 
 import { prepareBundledSession } from '@/session-preparation';
 import { useGameplayStore } from '@/store/gameplayStore';
 import { Theme } from '@/theme/theme';
+import { beginOnboardingSession, onboardingDurationMs, onboardingFinished, onboardingHandednessSelected, onboardingStartChoice, onboardingStepViewed, onboardingStitchCount, stitchingSessionStarted } from '@/analytics/onboarding';
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -17,6 +18,8 @@ export default function WelcomeScreen() {
   const [handednessError, setHandednessError] = useState<'left' | 'right' | null>(null);
   const starter = BUNDLED_PATTERNS.find((pattern) => pattern.id === ONBOARDING_STARTER_PATTERN_ID);
 
+  React.useEffect(() => { beginOnboardingSession(false); onboardingStepViewed('welcome', false); }, []);
+
   if (!starter) throw new Error('Canonical starter_heart bundled pattern is missing');
 
   const chooseHandedness = async (value: 'left' | 'right') => {
@@ -24,6 +27,7 @@ export default function WelcomeScreen() {
     try {
       await persistHandedness(value);
       setHandedness(value);
+      onboardingHandednessSelected(value, value === 'right');
     } catch (error: unknown) {
       console.warn('Failed to save onboarding handedness:', error);
       setHandednessError(value);
@@ -34,8 +38,10 @@ export default function WelcomeScreen() {
     if (starting) return;
     setStarting(true);
     try {
+      onboardingStartChoice('start_stitching');
       const session = await prepareBundledSession(starter.id, starter.checksum);
       await startTutorial(session.id);
+      stitchingSessionStarted(session.id, starter.id);
       router.navigate({
         pathname: '/(tabs)/(play)/[sessionId]',
         params: { sessionId: session.id },
@@ -46,7 +52,9 @@ export default function WelcomeScreen() {
   };
 
   const browse = async () => {
+    onboardingStartChoice('browse_starters');
     await saveOnboardingPosition('deferred');
+    onboardingFinished('deferred', 'catalog', onboardingDurationMs(), onboardingStitchCount());
     router.navigate('/(tabs)/(catalog)');
   };
 
@@ -94,7 +102,7 @@ export default function WelcomeScreen() {
       <Button title="Browse starters" variant="secondary" onPress={() => void browse()} />
       <Pressable
         accessibilityRole="link"
-        onPress={() => router.navigate({ pathname: '/(tabs)/(settings)/sign-in', params: { returnTo: '/onboarding/welcome' } })}
+        onPress={() => { onboardingStartChoice('sign_in'); router.navigate({ pathname: '/(tabs)/(settings)/sign-in', params: { returnTo: '/onboarding/welcome' } }); }}
         style={styles.signIn}
       >
         <Text style={styles.signInText}>Sign in</Text>
