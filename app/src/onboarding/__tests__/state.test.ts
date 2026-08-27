@@ -4,6 +4,7 @@ jest.mock('../../local-db', () => ({
   setDeviceConfigValues: jest.fn(),
   hasPlayHistory: jest.fn(),
   findActiveSessionForPattern: jest.fn(),
+  deleteSession: jest.fn(),
 }));
 
 import * as localDb from '../../local-db';
@@ -101,6 +102,14 @@ describe('onboarding persistence', () => {
       tutorialSessionId: 'session-heart', nextBeat: 2, activeDmcCode: '321',
     });
     expect(localDb.findActiveSessionForPattern).not.toHaveBeenCalled();
+  });
+
+  it('deletes the leftover starter session so the tutorial restarts from the first beat', async () => {
+    jest.mocked(localDb.findActiveSessionForPattern).mockResolvedValue({ id: 'session-heart' } as never);
+
+    await resetOnboarding();
+
+    expect(localDb.deleteSession).toHaveBeenCalledWith('session-heart');
   });
 
   it('resets onboarding atomically to the fresh-install state', async () => {

@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { BUNDLED_PATTERNS } from '@/bundled-patterns';
-import { Button, PatternImage, Screen } from '@/components';
+import { Button, Screen } from '@/components';
 import { setHandedness as persistHandedness } from '@/local-db';
 import { ONBOARDING_STARTER_PATTERN_ID, saveOnboardingPosition, startTutorial } from '@/onboarding/state';
 import { prepareBundledSession } from '@/session-preparation';
 import { useGameplayStore } from '@/store/gameplayStore';
 import { Theme } from '@/theme/theme';
 import { beginOnboardingSession, onboardingDurationMs, onboardingFinished, onboardingHandednessSelected, onboardingStartChoice, onboardingStepViewed, onboardingStitchCount, stitchingSessionStarted } from '@/analytics/onboarding';
+
+/** Welcome hero art; the stitched Pattern stays the canonical starter_heart. */
+const WELCOME_HERO = require('../../assets/onboarding-welcome-hero.png');
 
 export default function WelcomeScreen() {
   const router = useRouter();
@@ -62,12 +65,12 @@ export default function WelcomeScreen() {
     <Screen scrollable contentContainerStyle={styles.container} clearsTabBar={false}>
       <Text style={styles.eyebrow}>WELCOME TO STITCH WISH</Text>
       <Text style={styles.title}>Pick a color, tap the matching squares.</Text>
-      <PatternImage
-        assets={{}}
-        variant="detail"
-        localAsset={starter.previewAsset}
+      <Image
+        source={WELCOME_HERO}
+        accessible
         accessibilityLabel="Cozy Heart starter pattern preview"
         style={styles.preview}
+        resizeMode="cover"
       />
       <Text style={styles.sectionTitle}>Which side should the controls use?</Text>
       <View
@@ -115,7 +118,7 @@ const styles = StyleSheet.create({
   container: { flexGrow: 1, gap: Theme.spacing.lg, padding: Theme.spacing.xl, justifyContent: 'center' },
   eyebrow: { color: Theme.colors.accentRose, fontSize: Theme.typography.sizes.xs, fontWeight: Theme.typography.weights.bold, letterSpacing: 1.4, textAlign: 'center' },
   title: { color: Theme.colors.textPrimary, fontSize: Theme.typography.sizes.xxl, fontWeight: Theme.typography.weights.bold, textAlign: 'center' },
-  preview: { alignSelf: 'center', aspectRatio: 1, borderRadius: Theme.radii.xl, maxHeight: 280, width: '82%' },
+  preview: { alignSelf: 'center', aspectRatio: 1, backgroundColor: Theme.colors.patternImageBackdrop, borderRadius: Theme.radii.xl, maxHeight: 280, overflow: 'hidden', width: '82%' },
   sectionTitle: { color: Theme.colors.textPrimary, fontSize: Theme.typography.sizes.md, fontWeight: Theme.typography.weights.semibold, textAlign: 'center' },
   segments: { flexDirection: 'row', gap: Theme.spacing.sm },
   segment: { alignItems: 'center', borderColor: Theme.colors.border, borderRadius: Theme.radii.lg, borderWidth: 2, flex: 1, minHeight: 48, justifyContent: 'center', padding: Theme.spacing.sm },

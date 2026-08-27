@@ -1,4 +1,5 @@
 import {
+  deleteSession,
   getDeviceConfigValue,
   findActiveSessionForPattern,
   hasPlayHistory,
@@ -159,6 +160,16 @@ export async function resumeTutorial(sessionId: string): Promise<void> {
 }
 
 export async function resetOnboarding(): Promise<void> {
+  // The starter session is reused idempotently, so a leftover one would resume
+  // mid-tutorial with stitched cells instead of restarting from the beginning.
+  const staleSessionIds = new Set<string>();
+  if (startupState?.tutorialSessionId) staleSessionIds.add(startupState.tutorialSessionId);
+  const starterSession = await findActiveSessionForPattern(ONBOARDING_STARTER_PATTERN_ID, 'bundled');
+  if (starterSession) staleSessionIds.add(starterSession.id);
+  for (const sessionId of staleSessionIds) {
+    await deleteSession(sessionId);
+  }
+
   await setDeviceConfigValues([
     [KEYS.position, 'welcome'],
     [KEYS.tutorialRunState, 'running'],

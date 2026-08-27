@@ -729,7 +729,9 @@ const styles = StyleSheet.create({
   },
   floatingRail: {
     position: 'absolute',
-    bottom: 96,
+    // Keep both controls above the variable-height palette/coach dock.
+    // At 96 the second button is covered by the dock on onboarding screens.
+    bottom: 210,
     gap: Theme.spacing.md,
     zIndex: 20,
   },
