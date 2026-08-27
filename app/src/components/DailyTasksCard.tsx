@@ -9,6 +9,7 @@ import {
   DailyTaskStatus,
   DAILY_TASK_COIN,
 } from '../api/dailyTasks';
+import { OfflineError } from '../api/networkErrors';
 
 const TASK_COPY: Record<
   DailyTaskKey,
@@ -47,7 +48,8 @@ interface DailyTasksCardProps {
 }
 
 export function DailyTasksCard({ enabled }: DailyTasksCardProps) {
-  const { data, isLoading, isError, refetch } = useDailyTaskBoard(enabled);
+  const { data, isLoading, isError, error, refetch } = useDailyTaskBoard(enabled);
+  const isOffline = error instanceof OfflineError;
 
   if (!enabled) {
     return null;
@@ -68,7 +70,9 @@ export function DailyTasksCard({ enabled }: DailyTasksCardProps) {
       <Card style={styles.card}>
         <View style={styles.centerRow}>
           <Ionicons name="cloud-offline-outline" size={20} color={Theme.colors.error} />
-          <Text style={styles.errorText}>Couldn't load Daily Tasks</Text>
+          <Text style={styles.errorText}>
+            {isOffline ? "You're offline - Daily Tasks need a connection" : "Couldn't load Daily Tasks"}
+          </Text>
           <Pressable onPress={() => refetch()} hitSlop={8}>
             <Text style={styles.retryText}>Retry</Text>
           </Pressable>

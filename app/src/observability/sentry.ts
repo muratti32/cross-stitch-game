@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/react-native';
 import { Config, isSentryConfigured } from '../config';
 import { useIdentityStore } from '../identity/guestIdentity';
+import { isOfflineNetworkError } from '../api/networkErrors';
 
 /**
  * ADR-0035: Sentry events are scrubbed before send. No prompt text, artwork,
@@ -56,6 +57,26 @@ function scrub(value: unknown, seen: WeakSet<object> = new WeakSet()): unknown {
   return out;
 }
 
+/**
+ * #152/#153: a normal offline condition was reaching Sentry as two separate
+ * crash-class events, grouped apart only because the platform message string
+ * differs. Reuses the single classifier from ../api/networkErrors so the
+ * offline message list is never duplicated between the network layer and
+ * this filter.
+ */
+function isOfflineNetworkEvent(event: Sentry.Event): boolean {
+  const candidateMessages: string[] = [];
+  if (typeof event.message === 'string') {
+    candidateMessages.push(event.message);
+  }
+  for (const exceptionValue of event.exception?.values ?? []) {
+    if (typeof exceptionValue.value === 'string') {
+      candidateMessages.push(exceptionValue.value);
+    }
+  }
+  return candidateMessages.some((message) => isOfflineNetworkError(new Error(message)));
+}
+
 function scrubBreadcrumb(breadcrumb: Sentry.Breadcrumb): Sentry.Breadcrumb {
   return {
     ...breadcrumb,
@@ -96,6 +117,18 @@ export function initSentry(): void {
       return scrubBreadcrumb(breadcrumb);
     },
     beforeSend(event) {
+      // A connectivity failure is an expected condition, not a defect (#152,
+      // #153) - downgrade it to a breadcrumb for context on whatever event
+      // comes next, and drop this one so it never counts as an error.
+      if (isOfflineNetworkEvent(event)) {
+        Sentry.addBreadcrumb({
+          category: 'network',
+          message: 'Offline network error suppressed from Sentry reporting',
+          level: 'info',
+        });
+        return null;
+      }
+
       // Drop request data outright (can carry auth headers/cookies).
       event.request = undefined;
 
