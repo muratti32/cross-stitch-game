@@ -1,0 +1,75 @@
+{
+  "common": {
+    "back": "← Back",
+    "searchPlaceholder": "Search patterns, creators, tags…",
+    "offlineBanner": "Offline — catalog may be out of date",
+    "sectionError": {
+      "title": "Couldn't Load",
+      "retry": "Try Again"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} colors",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} cols",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "English"
+    },
+    "accessibilityLabel": "Written in {{language}}"
+  },
+  "index": {
+    "subtitle": "Craft your cozy world, stitch by stitch.",
+    "searchBar": {
+      "accessibilityLabel": "Search the pattern catalog"
+    },
+    "sections": {
+      "starterPatterns": "Starter Patterns",
+      "staffPicks": "Staff Picks",
+      "categories": "Categories",
+      "newPatterns": "New Patterns"
+    },
+    "staffPicks": {
+      "emptyTitle": "No Staff Picks Yet",
+      "emptyBody": "Our hand-picked collection of cozy designs will appear here soon.",
+      "errorBody": "The catalog could not be reached and nothing is cached yet."
+    },
+    "categories": {
+      "count": "{{count}} patterns",
+      "errorBody": "The catalog could not be reached and nothing is cached yet."
+    },
+    "newPatterns": {
+      "emptyTitle": "New Patterns are Crafting",
+      "emptyBody": "Fresh arrivals are on the way!",
+      "errorBody": "The catalog could not be reached and nothing is cached yet.",
+      "showMore": "Show more",
+      "loading": "Loading…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Browse",
+    "error": {
+      "body": "This catalog page could not be reached and nothing is cached yet."
+    },
+    "empty": {
+      "title": "Nothing Here Yet",
+      "body": "No patterns match this selection yet. New designs arrive regularly."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Catalog search input",
+    "inactive": {
+      "title": "Search the Catalog",
+      "body": "Type at least two characters to search patterns by title, creator, or tag."
+    },
+    "error": {
+      "title": "Search Needs a Connection",
+      "body": "Catalog search is unavailable offline. Cached catalog pages stay browsable from the catalog tab."
+    },
+    "noResults": {
+      "title": "No Matches",
+      "body": "Nothing in the catalog matches “{{query}}” yet."
+    }
+  }
+}

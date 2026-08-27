@@ -1,0 +1,75 @@
+{
+  "common": {
+    "back": "← Geri",
+    "searchPlaceholder": "Desen, tasarımcı, etiket ara…",
+    "offlineBanner": "Çevrimdışı — katalog güncel olmayabilir",
+    "sectionError": {
+      "title": "Yüklenemedi",
+      "retry": "Tekrar Dene"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} renk",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} renk",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "İngilizce"
+    },
+    "accessibilityLabel": "{{language}} dilinde yazılmış"
+  },
+  "index": {
+    "subtitle": "Rahat dünyanı ilmek ilmek işle.",
+    "searchBar": {
+      "accessibilityLabel": "Desen kataloğunda ara"
+    },
+    "sections": {
+      "starterPatterns": "Başlangıç Desenleri",
+      "staffPicks": "Ekip Seçimi",
+      "categories": "Kategoriler",
+      "newPatterns": "Yeni Desenler"
+    },
+    "staffPicks": {
+      "emptyTitle": "Henüz Ekip Seçimi Yok",
+      "emptyBody": "Özenle seçilmiş rahat tasarım koleksiyonumuz yakında burada olacak.",
+      "errorBody": "Kataloğa ulaşılamadı ve henüz önbellekte bir şey yok."
+    },
+    "categories": {
+      "count": "{{count}} desen",
+      "errorBody": "Kataloğa ulaşılamadı ve henüz önbellekte bir şey yok."
+    },
+    "newPatterns": {
+      "emptyTitle": "Yeni Desenler Hazırlanıyor",
+      "emptyBody": "Yeni gelenler yolda!",
+      "errorBody": "Kataloğa ulaşılamadı ve henüz önbellekte bir şey yok.",
+      "showMore": "Daha fazla göster",
+      "loading": "Yükleniyor…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Gözat",
+    "error": {
+      "body": "Bu katalog sayfasına ulaşılamadı ve henüz önbellekte bir şey yok."
+    },
+    "empty": {
+      "title": "Henüz Burada Bir Şey Yok",
+      "body": "Bu seçime uyan desen yok. Yeni tasarımlar düzenli olarak ekleniyor."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Katalog arama girişi",
+    "inactive": {
+      "title": "Kataloğu Ara",
+      "body": "Desenleri başlığa, tasarımcıya veya etikete göre aramak için en az iki karakter yazın."
+    },
+    "error": {
+      "title": "Arama İçin Bağlantı Gerekiyor",
+      "body": "Katalog araması çevrimdışıyken kullanılamıyor. Önbelleğe alınmış katalog sayfaları katalog sekmesinden taranabilir kalır."
+    },
+    "noResults": {
+      "title": "Sonuç Bulunamadı",
+      "body": "Kataloğda “{{query}}” ile eşleşen bir şey yok."
+    }
+  }
+}

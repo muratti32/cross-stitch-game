@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView, ActivityIndicator, Pressable, RefreshControl } from 'react-native';
-import { Screen, EmptyState, SectionHeader, Card, Button, PatternImage } from '@/components';
+import { useTranslation } from 'react-i18next';
+import { Screen, EmptyState, SectionHeader, Card, Button, PatternImage, SourceLanguageBadge } from '@/components';
 import { Theme } from '@/theme/theme';
 import { BUNDLED_PATTERNS } from '@/bundled-patterns';
 import { useRouter } from 'expo-router';
@@ -8,6 +9,7 @@ import {
   CatalogPatternItem,
   absolutePreviewUrl,
   absoluteThumbnailUrls,
+  presentCatalogError,
   useCatalogCategories,
   useCatalogTags,
   useNewPatterns,
@@ -18,6 +20,7 @@ import { useLocalLikes } from '@/api/social';
 import { useIdentityStore } from '@/identity/guestIdentity';
 
 export default function CatalogScreen() {
+  const { t } = useTranslation('catalog');
   const router = useRouter();
   const staffPicks = useStaffPicks();
   const newPatterns = useNewPatterns();
@@ -66,28 +69,26 @@ export default function CatalogScreen() {
     >
       <View style={styles.header}>
         <Text style={styles.appName}>Stitch Wish</Text>
-        <Text style={styles.subtitle}>Craft your cozy world, stitch by stitch.</Text>
+        <Text style={styles.subtitle}>{t('index.subtitle')}</Text>
       </View>
 
       <Pressable
         style={({ pressed }) => [styles.searchBar, pressed && styles.searchBarPressed]}
         onPress={() => router.push('/(tabs)/(catalog)/search')}
         accessibilityRole="search"
-        accessibilityLabel="Search the pattern catalog"
+        accessibilityLabel={t('index.searchBar.accessibilityLabel')}
       >
-        <Text style={styles.searchBarText}>Search patterns, creators, tags…</Text>
+        <Text style={styles.searchBarText}>{t('common.searchPlaceholder')}</Text>
       </Pressable>
 
       {servedFromCache && (
         <View style={styles.offlineBanner}>
-          <Text style={styles.offlineBannerText}>
-            Offline — catalog may be out of date
-          </Text>
+          <Text style={styles.offlineBannerText}>{t('common.offlineBanner')}</Text>
         </View>
       )}
 
       {/* Bundled Starter Patterns — always available, even offline */}
-      <SectionHeader title="Starter Patterns" />
+      <SectionHeader title={t('index.sections.starterPatterns')} />
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -111,7 +112,11 @@ export default function CatalogScreen() {
                 {pattern.title}
               </Text>
               <Text style={styles.patternMeta}>
-                {pattern.width}×{pattern.height} • {pattern.colorsCount} colors
+                {t('common.patternMeta.dimensionsColors', {
+                  width: pattern.width,
+                  height: pattern.height,
+                  count: pattern.colorsCount,
+                })}
               </Text>
             </View>
           </Card>
@@ -119,17 +124,21 @@ export default function CatalogScreen() {
       </ScrollView>
 
       {/* Staff Picks */}
-      <SectionHeader title="Staff Picks" />
+      <SectionHeader title={t('index.sections.staffPicks')} />
       {staffPicks.isLoading ? (
         <SectionLoading />
       ) : staffPicks.isError ? (
-        <SectionError onRetry={() => staffPicks.refetch()} />
+        <SectionError
+          error={staffPicks.error}
+          fallbackBody={t('index.staffPicks.errorBody')}
+          onRetry={() => staffPicks.refetch()}
+        />
       ) : (staffPicks.data?.data.length ?? 0) === 0 ? (
         <View style={styles.sectionPadding}>
           <EmptyState
             icon="star-outline"
-            title="No Staff Picks Yet"
-            body="Our hand-picked collection of cozy designs will appear here soon."
+            title={t('index.staffPicks.emptyTitle')}
+            body={t('index.staffPicks.emptyBody')}
           />
         </View>
       ) : (
@@ -149,11 +158,15 @@ export default function CatalogScreen() {
       )}
 
       {/* Categories */}
-      <SectionHeader title="Categories" />
+      <SectionHeader title={t('index.sections.categories')} />
       {categories.isLoading ? (
         <SectionLoading />
       ) : categories.isError ? (
-        <SectionError onRetry={() => categories.refetch()} />
+        <SectionError
+          error={categories.error}
+          fallbackBody={t('index.categories.errorBody')}
+          onRetry={() => categories.refetch()}
+        />
       ) : (
         <View style={styles.categoryGrid}>
           {categories.data?.data.map((category) => (
@@ -169,7 +182,9 @@ export default function CatalogScreen() {
               <Text style={styles.categoryName} numberOfLines={1}>
                 {category.label}
               </Text>
-              <Text style={styles.categoryCount}>{category.count} patterns</Text>
+              <Text style={styles.categoryCount}>
+                {t('index.categories.count', { count: category.count })}
+              </Text>
             </Card>
           ))}
         </View>
@@ -199,17 +214,21 @@ export default function CatalogScreen() {
       )}
 
       {/* New Patterns */}
-      <SectionHeader title="New Patterns" />
+      <SectionHeader title={t('index.sections.newPatterns')} />
       {newPatterns.isLoading ? (
         <SectionLoading />
       ) : newPatterns.isError ? (
-        <SectionError onRetry={() => newPatterns.refetch()} />
+        <SectionError
+          error={newPatterns.error}
+          fallbackBody={t('index.newPatterns.errorBody')}
+          onRetry={() => newPatterns.refetch()}
+        />
       ) : newItems.length === 0 ? (
         <View style={styles.sectionPadding}>
           <EmptyState
             icon="time-outline"
-            title="New Patterns are Crafting"
-            body="Fresh arrivals are on the way!"
+            title={t('index.newPatterns.emptyTitle')}
+            body={t('index.newPatterns.emptyBody')}
           />
         </View>
       ) : (
@@ -223,7 +242,11 @@ export default function CatalogScreen() {
           ))}
           {newPatterns.hasNextPage && (
             <Button
-              title={newPatterns.isFetchingNextPage ? 'Loading…' : 'Show more'}
+              title={
+                newPatterns.isFetchingNextPage
+                  ? t('index.newPatterns.loading')
+                  : t('index.newPatterns.showMore')
+              }
               variant="secondary"
               loading={newPatterns.isFetchingNextPage}
               onPress={() => {
@@ -245,6 +268,7 @@ function ServerPatternCard({
   pattern: CatalogPatternItem;
   onPress: () => void;
 }) {
+  const { t } = useTranslation('catalog');
   const { data: localLikes } = useLocalLikes();
   const { isAccount } = useIdentityStore();
   const isLiked = isAccount ? pattern.viewerLiked : !!localLikes?.[pattern.id];
@@ -263,8 +287,16 @@ function ServerPatternCard({
         <Text style={styles.patternTitle} numberOfLines={1}>
           {pattern.title}
         </Text>
+        <SourceLanguageBadge
+          sourceLanguage={pattern.sourceLanguage}
+          style={styles.sourceLanguageBadge}
+        />
         <Text style={styles.patternMeta}>
-          {pattern.width}×{pattern.height} • {pattern.paletteSize} cols
+          {t('common.patternMeta.dimensionsCols', {
+            width: pattern.width,
+            height: pattern.height,
+            count: pattern.paletteSize,
+          })}
         </Text>
         <View style={styles.cardLikesRow}>
           <Ionicons
@@ -286,6 +318,7 @@ function NewPatternRow({
   pattern: CatalogPatternItem;
   onPress: () => void;
 }) {
+  const { t } = useTranslation('catalog');
   const { data: localLikes } = useLocalLikes();
   const { isAccount } = useIdentityStore();
   const isLiked = isAccount ? pattern.viewerLiked : !!localLikes?.[pattern.id];
@@ -314,8 +347,16 @@ function NewPatternRow({
             <Text style={styles.cardLikesText}>{pattern.likeCount}</Text>
           </View>
         </View>
+        <SourceLanguageBadge
+          sourceLanguage={pattern.sourceLanguage}
+          style={styles.sourceLanguageBadge}
+        />
         <Text style={styles.patternMeta}>
-          {pattern.creatorName} • {pattern.width}×{pattern.height}
+          {t('common.patternMeta.creatorDimensions', {
+            creatorName: pattern.creatorName,
+            width: pattern.width,
+            height: pattern.height,
+          })}
         </Text>
         <View style={styles.newRowTags}>
           {pattern.tags.slice(0, 3).map((tag) => (
@@ -337,14 +378,29 @@ function SectionLoading() {
   );
 }
 
-function SectionError({ onRetry }: { onRetry: () => void }) {
+function SectionError({
+  error,
+  fallbackBody,
+  onRetry,
+}: {
+  error: unknown;
+  fallbackBody: string;
+  onRetry: () => void;
+}) {
+  const { t } = useTranslation('catalog');
+  const genericTitle = t('common.sectionError.title');
+  const presentation = presentCatalogError(error, {
+    genericTitle,
+    title: genericTitle,
+    body: fallbackBody,
+  });
   return (
     <View style={styles.sectionPadding}>
       <EmptyState
         icon="cloud-offline-outline"
-        title="Couldn't Load"
-        body="The catalog could not be reached and nothing is cached yet."
-        actionLabel="Try Again"
+        title={presentation.title}
+        body={presentation.body}
+        actionLabel={t('common.sectionError.retry')}
         onAction={onRetry}
         actionVariant="secondary"
       />
@@ -429,6 +485,9 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.md,
     fontWeight: Theme.typography.weights.semibold,
     color: Theme.colors.textPrimary,
+  },
+  sourceLanguageBadge: {
+    marginTop: Theme.spacing.xs,
   },
   patternMeta: {
     fontSize: Theme.typography.sizes.xs,

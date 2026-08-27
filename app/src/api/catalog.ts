@@ -5,6 +5,7 @@ import { getCatalogCache, setCatalogCache } from '../local-db';
 import { getSurfaceKey, getCacheKey, localeCacheLookupOrder } from '../catalog-cache-logic';
 import { getActiveLocale } from '../i18n/activeLocale';
 import { SUPPORTED_LOCALES } from '../i18n/supportedLocales';
+import { isServerApiError, localizeServerError } from './localizeServerError';
 import type { PatternThumbnailUrls } from '../pattern-assets';
 
 export type UnlockPriceTier = 'small' | 'medium' | 'large' | null;
@@ -71,12 +72,66 @@ export function absoluteThumbnailUrls(
   };
 }
 
+// Typed, ServerApiErrorLike (status + reason) the same way
+// AccountDeletionApiError and the other per-module API error classes are,
+// so a genuine backend failure on a catalog request can be resolved to a
+// localized, reason-coded message via localizeServerError (#159) instead of
+// the raw English `message` the backend returns.
+export class CatalogApiError extends Error {
+  constructor(
+    readonly status: number,
+    message: string,
+    readonly reason: string | null,
+  ) {
+    super(message);
+    this.name = 'CatalogApiError';
+  }
+}
+
+async function parseCatalogError(response: Response): Promise<CatalogApiError> {
+  let message = `Catalog request failed with status ${response.status}`;
+  let reason: string | null = null;
+  try {
+    const body = (await response.json()) as { message?: unknown; reason?: unknown };
+    if (typeof body.message === 'string') message = body.message;
+    if (typeof body.reason === 'string') reason = body.reason;
+  } catch {
+    // ignore - response had no JSON body
+  }
+  return new CatalogApiError(response.status, message, reason);
+}
+
 async function fetchCatalogJson<T>(path: string): Promise<T> {
   const response = await apiFetch(path);
   if (!response.ok) {
-    throw new Error(`Catalog request failed with status ${response.status}`);
+    throw await parseCatalogError(response);
   }
   return (await response.json()) as T;
+}
+
+export interface CatalogErrorPresentation {
+  title: string;
+  body: string;
+}
+
+/**
+ * Resolves a catalog screen's error state to the title and body the player
+ * sees. A genuine backend failure (CatalogApiError, ServerApiErrorLike)
+ * always gets `genericTitle` plus its #159 reason-coded or
+ * generic-plus-Support-Reference message, never a connectivity-specific
+ * title - pairing e.g. "Search Needs a Connection" with a server-side
+ * failure message would misleadingly suggest the fix is reconnecting.
+ * Anything else (typically an OfflineError with nothing cached yet) falls
+ * back to the screen's own catalog-specific copy.
+ */
+export function presentCatalogError(
+  error: unknown,
+  fallback: CatalogErrorPresentation & { genericTitle: string },
+): CatalogErrorPresentation {
+  if (isServerApiError(error)) {
+    return { title: fallback.genericTitle, body: localizeServerError(error) };
+  }
+  return { title: fallback.title, body: fallback.body };
 }
 
 // Offline Catalog Cache: on success the payload overwrites the cached surface
