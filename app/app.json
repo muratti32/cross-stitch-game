@@ -82,7 +82,14 @@
         "@sentry/react-native/expo",
         {
           "organization": "avk-corp",
-          "project": "stitch-wish"
+          "project": "stitch-wish",
+          "experimental_android": {
+            "enableAndroidGradlePlugin": true,
+            "uploadNativeSymbols": true,
+            "autoUploadNativeSymbols": true,
+            "includeProguardMapping": true,
+            "autoUploadProguardMapping": true
+          }
         }
       ],
       [
