@@ -1,4 +1,4 @@
-import type { LodBand } from './tileMath';
+import { THREAD_WIDTH_PLAIN, THREAD_WIDTH_TEXTURED, type LodBand } from './tileMath';
 import type { ThreadFinish } from '../membership/themes';
 
 export type CompletedStitchOrigin = 'local' | 'restored' | 'synchronized';
@@ -6,6 +6,15 @@ export type CompletedStitchPhase = 'placing' | 'removing' | 'settled' | 'hidden'
 export type CompletedStitchRepresentation = 'textured-cross' | 'cross' | 'mosaic' | 'none';
 export interface CompletedStitchThemeTreatment {
   readonly finish: ThreadFinish;
+}
+
+/**
+ * Base stroke width for one strand of a Completed Stitch. A textured cross
+ * carries the heavier thread; every other cross representation uses the plain
+ * width. Both render layers must ask here so they cannot disagree.
+ */
+export function getThreadWidth(representation: CompletedStitchRepresentation): number {
+  return representation === 'textured-cross' ? THREAD_WIDTH_TEXTURED : THREAD_WIDTH_PLAIN;
 }
 
 export interface ThreadSurfaceColors {

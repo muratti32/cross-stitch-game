@@ -3,14 +3,96 @@ export const TILE_CELLS = 32;
 export const TILE_SIZE = CELL_SIZE * TILE_CELLS; // 512.0
 
 /**
- * Thread stroke widths for completed cross stitches. Both the cached tile
- * pictures and the live (animating) stitches must draw with these values so
- * a stitch does not change weight when it leaves the dynamic layer.
+ * Thread stroke widths for a Completed Stitch. Both the cached tile pictures
+ * and the live (animating) stitches must draw with these values so a stitch
+ * does not change weight when it leaves the dynamic layer.
  */
 export const THREAD_WIDTH_TEXTURED = 4.1;
 export const THREAD_WIDTH_PLAIN = 3.5;
 export const THREAD_SHADOW_DELTA = 1.0;
 export const THREAD_HIGHLIGHT_WIDTH = 0.9;
+
+/** Inset from the cell edge to a strand endpoint, in pattern units. */
+export const THREAD_INSET = 2.5;
+
+/**
+ * Inset of the fabric rectangle painted under a Completed Stitch. The grid
+ * lines sit on the cell boundary, so no thread may reach inside this margin.
+ */
+export const FABRIC_INSET = 0.6;
+
+/** Along-strand trim at each end of the highlight stroke, in pattern units. */
+export const THREAD_HIGHLIGHT_SHORTEN = 1.0;
+
+/** Perpendicular shift of the highlight stroke toward the lit edge. */
+export const THREAD_HIGHLIGHT_OFFSET = 0.3;
+
+/** Widest stroke drawn for one strand: the shadow pass under a textured cross. */
+export const THREAD_WIDEST_STROKE = THREAD_WIDTH_TEXTURED + THREAD_SHADOW_DELTA;
+
+const SQRT_HALF = Math.SQRT1_2;
+
+export interface Point {
+  x: number;
+  y: number;
+}
+
+/**
+ * Endpoints of one cross stitch, in pattern units relative to the cell's
+ * top-left corner. The lower strand runs bottom-left to top-right and is drawn
+ * first; the upper strand runs top-left to bottom-right and crosses over it.
+ *
+ * Progress values grow both strands outward from the cell center, so a fully
+ * drawn stitch (progress 1) lands exactly on THREAD_INSET. The cached tile
+ * pictures and the dynamic layer must both source their geometry here, or a
+ * stitch shifts when it moves between the two layers.
+ */
+export interface StitchGeometry {
+  lowerStart: Point;
+  lowerEnd: Point;
+  upperStart: Point;
+  upperEnd: Point;
+  highlightStart: Point;
+  highlightEnd: Point;
+}
+
+export function getStitchGeometry(lowerProgress = 1, upperProgress = 1): StitchGeometry {
+  const center = CELL_SIZE / 2;
+  const radius = center - THREAD_INSET;
+  const lowerRadius = radius * lowerProgress;
+  const upperRadius = radius * upperProgress;
+
+  const upperStart = { x: center - upperRadius, y: center - upperRadius };
+  const upperEnd = { x: center + upperRadius, y: center + upperRadius };
+
+  // The highlight rides the upper strand: trimmed at both ends, then nudged
+  // perpendicular so it reads as a lit edge rather than a second thread.
+  const trim = THREAD_HIGHLIGHT_SHORTEN * SQRT_HALF;
+  const shift = THREAD_HIGHLIGHT_OFFSET * SQRT_HALF;
+
+  return {
+    lowerStart: { x: center - lowerRadius, y: center + lowerRadius },
+    lowerEnd: { x: center + lowerRadius, y: center - lowerRadius },
+    upperStart,
+    upperEnd,
+    highlightStart: { x: upperStart.x + trim + shift, y: upperStart.y + trim - shift },
+    highlightEnd: { x: upperEnd.x - trim + shift, y: upperEnd.y - trim - shift },
+  };
+}
+
+/**
+ * Margin in pattern units between the widest thread stroke and the fabric
+ * rectangle, at the strand endpoints where the stroke reaches closest to the
+ * cell edge. Strokes use the default butt cap, so the stroke does not extend
+ * along the strand; only the perpendicular half-width matters.
+ *
+ * This margin is small by design. It is the budget any future thread widening
+ * spends: once it reaches zero, threads cross the grid lines.
+ */
+export function getThreadClearance(): number {
+  const perpendicularReach = (THREAD_WIDEST_STROKE / 2) * SQRT_HALF;
+  return THREAD_INSET - perpendicularReach - FABRIC_INSET;
+}
 
 export interface Viewport {
   translateX: number;

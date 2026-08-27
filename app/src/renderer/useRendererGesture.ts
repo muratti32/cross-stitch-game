@@ -17,6 +17,20 @@ import {
   translationBounds,
 } from './tileMath';
 
+/**
+ * Screen-space cell size at which cell contents become readable. Below this
+ * scale a Stitch Action is refused, matching the cell-readable bound of
+ * Anchored Zoom.
+ */
+const CELL_READABLE_PX = 14.0;
+
+/**
+ * Finger slop allowed on a single tap, in screen pixels. Travel beyond this is
+ * a viewport pan or a Stitch Sweep, not a tap, so it must not reach the play
+ * screen as a Stitch Action or a Mismatched Tap.
+ */
+const TAP_MAX_TRAVEL_PX = 12;
+
 export interface UseRendererGestureOptions {
   patternWidth: number;
   patternHeight: number;
@@ -81,6 +95,11 @@ export function useRendererGesture({
 
   // Sweep gesture state tracking
   const isSweepActive = useSharedValue(false);
+  // Latched for the whole touch: a Stitch Sweep begins on press, so without
+  // this the tap would fire a second Stitch Action on the same cell at release.
+  // Only the pan's onBegin clears it, so the tap reads this touch's value
+  // whichever handler's onEnd runs first.
+  const sweptThisTouch = useSharedValue(false);
   const fingerX = useSharedValue(0.0);
   const fingerY = useSharedValue(0.0);
   const lastStitchedX = useSharedValue(-1);
@@ -186,7 +205,7 @@ export function useRendererGesture({
     const cH = containerHeight.value;
     if (cW <= 0 || cH <= 0) return;
 
-    const readableScale = 14.0 / CELL_SIZE;
+    const readableScale = CELL_READABLE_PX / CELL_SIZE;
     const targetScale = scale.value < readableScale ? readableScale : scale.value;
 
     const px = (cx + 0.5) * CELL_SIZE;
@@ -315,10 +334,11 @@ export function useRendererGesture({
 
   const panGesture = Gesture.Pan()
     .onBegin((event) => {
+      sweptThisTouch.value = false;
       const curScale = scale.value;
       const cellPx = curScale * CELL_SIZE;
 
-      if (cellPx >= 14.0) {
+      if (cellPx >= CELL_READABLE_PX) {
         const patX = (event.x - translateX.value) / curScale;
         const patY = (event.y - translateY.value) / curScale;
         const cellX = Math.floor(patX / CELL_SIZE);
@@ -337,6 +357,7 @@ export function useRendererGesture({
 
           if (matchesColor && isUnfinished) {
             isSweepActive.value = true;
+            sweptThisTouch.value = true;
             fingerX.value = event.x;
             fingerY.value = event.y;
             lastStitchedX.value = cellX;
@@ -427,18 +448,23 @@ export function useRendererGesture({
       });
     });
 
-  // Cap travel distance so a pan/swipe used to browse the pattern doesn't
-  // fire the tap on finger lift — the play screen was treating that as a
-  // mis-stitch and responding with haptic feedback + a shake animation.
+  // Cap travel distance so a viewport pan used to browse the Pattern does not
+  // fire the tap on finger lift; the play screen read that as a Mismatched Tap
+  // and answered with haptic feedback and a shake animation. maxDuration is
+  // left at its default so slow deliberate taps still stitch.
   const singleTapGesture = Gesture.Tap()
     .numberOfTaps(1)
-    .maxDistance(12)
+    .maxDistance(TAP_MAX_TRAVEL_PX)
     .onEnd((event) => {
+      // A Stitch Sweep already stitched the pressed cell from onBegin, so this
+      // touch has had its Stitch Action.
+      if (sweptThisTouch.value) return;
+
       const curScale = scale.value;
       const cellPx = curScale * CELL_SIZE;
 
       // Only allow stitching at cell-readable zoom band
-      if (cellPx < 14.0) return;
+      if (cellPx < CELL_READABLE_PX) return;
 
       const patX = (event.x - translateX.value) / curScale;
       const patY = (event.y - translateY.value) / curScale;
