@@ -26,6 +26,10 @@ _Avoid_: App offline error, global loading screen, network reachability guess
 The short opaque code a player can copy from a failed or delayed sync, Processing Job, purchase, promotion, or moderation flow so support can find the corresponding server records. It contains no email, provider identifier, prompt, artwork, Pattern bytes, or access credential and can be shared without exposing another player's data.
 _Avoid_: Raw log, transaction receipt, error stack
 
+**App Display Language**:
+The language the mobile app renders its own interface text in, resolved from the device language and overridable per device in Settings. It is a device preference rather than account data, never syncs between a player's devices, and resolves without connectivity. It selects only app-authored interface text and the localized Catalog Tag and Catalog Category labels the Game Backend already serves; it never translates player-authored or moderator-authored text.
+_Avoid_: Catalog Source Language, account language setting, server locale
+
 ### Player Identity
 
 **Guest Player**:
@@ -659,8 +663,8 @@ The owner's single opportunity to request another human review of the exact immu
 _Avoid_: Catalog Appeal, edited revision, new Catalog Submission
 
 **Catalog Source Language**:
-The single language selected by the submitting player for a Community Pattern's title and description. The immutable metadata stores that language together with the authored text. The first release does not generate or publish automatic translations: catalog surfaces show the original text with its language label, while localized Catalog Categories and Catalog Tags provide cross-language discovery.
-_Avoid_: App locale, automatic translation, multilingual submission
+The single language selected by the submitting player for a Community Pattern's title and description. The immutable metadata stores that language together with the authored text. It is independent of the reading player's App Display Language. The first release does not generate or publish automatic translations: catalog surfaces show the original text with its language label, while localized Catalog Categories and Catalog Tags provide cross-language discovery.
+_Avoid_: App Display Language, app locale, automatic translation, multilingual submission
 
 **Publication Rights Declaration**:
 The mandatory affirmation by the submitting Registered Account that the player created the submitted content or otherwise holds the rights necessary to publish it in the Pattern Catalog and grants the Catalog Publication License. The declaration, submitting account, license version, and submission time are stored with the immutable Catalog Submission and shown to the moderator; the declaration is an attestation, not automatic proof of ownership or a substitute for Catalog Review.
