@@ -5,7 +5,8 @@ import * as Sentry from '@sentry/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryProvider } from '../src/providers';
 import * as SplashScreen from 'expo-splash-screen';
-import { initDatabase, getHandedness } from '../src/local-db';
+import type { OnboardingPosition } from '../src/onboarding/state';
+import { prepareOnboardingStartup } from '../src/onboarding/startup';
 import { useGameplayStore } from '../src/store/gameplayStore';
 import { bootstrap, useIdentityStore } from '../src/identity/guestIdentity';
 import { synchronizeRevenueCatIdentity } from '../src/commerce/revenueCat';
@@ -19,6 +20,7 @@ import {
   foregroundEntryCoordinator,
   isApplicationInboundUrl,
   isActiveStitchingSessionRoute,
+  isRootEntryPrepared,
 } from '../src/navigation/foregroundEntryNavigation';
 
 const ANALYTICS_RETRY_INITIAL_MS = 1_000;
@@ -38,6 +40,7 @@ SplashScreen.preventAutoHideAsync();
 
 function RootLayout() {
   const [dbReady, setDbReady] = useState(false);
+  const [onboardingPosition, setOnboardingPosition] = useState<OnboardingPosition>('absent');
   const pathname = usePathname();
   const segments = useSegments();
   const requiresSignIn = useIdentityStore((state) => state.requiresSignIn);
@@ -99,8 +102,8 @@ function RootLayout() {
   useEffect(() => {
     async function prepare() {
       try {
-        await initDatabase();
-        const savedHandedness = await getHandedness();
+        const { handedness: savedHandedness, onboarding } = await prepareOnboardingStartup();
+        setOnboardingPosition(onboarding.position);
         useGameplayStore.getState().setHandedness(savedHandedness);
         // Trigger lazy guest identity bootstrap in the background (non-blocking)
         bootstrap().catch((err) => {
@@ -135,6 +138,7 @@ function RootLayout() {
   }, [flushAnalytics]);
 
   useEffect(() => {
+    if (!isRootEntryPrepared(dbReady, onboardingPosition)) return;
     const inboundSubscription = Linking.addEventListener('url', ({ url }) => {
       // Native URL delivery can race AppState active; mark it before the
       // foreground coordinator evaluates its ordinary-return default.
@@ -149,6 +153,7 @@ function RootLayout() {
         'active',
         {
           requiresSignIn,
+          onboardingPosition,
           // A mounted session must remain visible through an ordinary return.
           activeStitchingSession: isActiveStitchingSessionRoute(segments),
         },
@@ -182,7 +187,7 @@ function RootLayout() {
       sub.remove();
       inboundSubscription.remove();
     };
-  }, [flushAnalytics, pathname, requiresSignIn, segments]);
+  }, [dbReady, flushAnalytics, onboardingPosition, pathname, requiresSignIn, segments]);
 
   useEffect(() => {
     const timer = setInterval(() => {

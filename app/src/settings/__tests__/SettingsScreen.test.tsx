@@ -19,8 +19,11 @@ const mockReauthenticateFirebase = jest.fn();
 const mockRequestEmailCode = jest.fn();
 const mockAppleProof = jest.fn();
 const mockGoogleProof = jest.fn();
+const mockLoadOnboardingState = jest.fn();
+const mockResumeTutorial = jest.fn();
+const mockSaveOnboardingPosition = jest.fn();
 
-jest.mock('expo-router', () => ({ router: { push: jest.fn(), replace: jest.fn() } }));
+jest.mock('expo-router', () => ({ router: { push: jest.fn(), replace: jest.fn(), navigate: jest.fn() } }));
 jest.mock('@expo/vector-icons', () => {
   const React = require('react');
   const { Text } = require('react-native');
@@ -78,6 +81,11 @@ jest.mock('@/identity/firebaseSso', () => ({
   acquireGoogleProviderIdToken: (...args: unknown[]) => mockGoogleProof(...args),
 }));
 jest.mock('@/navigation/foregroundEntryNavigation', () => ({ withProtectedRoundTrip: (_key: string, run: () => Promise<unknown>) => run() }));
+jest.mock('@/onboarding/state', () => ({
+  loadOnboardingState: (...args: unknown[]) => mockLoadOnboardingState(...args),
+  resumeTutorial: (...args: unknown[]) => mockResumeTutorial(...args),
+  saveOnboardingPosition: (...args: unknown[]) => mockSaveOnboardingPosition(...args),
+}));
 
 function textValue(value: unknown): string[] {
   if (typeof value === 'string' || typeof value === 'number') return [String(value)];
@@ -112,12 +120,36 @@ describe('SettingsScreen account deletion', () => {
     mockGetIdentities.mockResolvedValue([]);
     mockAppleProof.mockResolvedValue({ kind: 'token', idToken: 'apple-token' });
     mockGoogleProof.mockResolvedValue({ kind: 'token', idToken: 'google-token' });
+    mockLoadOnboardingState.mockResolvedValue({ position: 'complete' });
+    mockResumeTutorial.mockResolvedValue(undefined);
+    mockSaveOnboardingPosition.mockResolvedValue(undefined);
   });
 
   it('shows normal status directly below Account', async () => {
     const text = allText((await renderScreen()).root);
     expect(text.indexOf('AccountSection')).toBeLessThan(text.indexOf('Account Deletion'));
     expect(text).toContain('Delete Account');
+  });
+
+  it('resumes the paused tutorial in its existing session', async () => {
+    mockLoadOnboardingState.mockResolvedValue({
+      position: 'in_tutorial', tutorialRunState: 'paused', tutorialSessionId: 'session-heart',
+    });
+    const renderer = await renderScreen();
+    await press(renderer, 'Learn the controls');
+    expect(mockResumeTutorial).toHaveBeenCalledWith('session-heart');
+    expect(require('expo-router').router.navigate).toHaveBeenCalledWith({
+      pathname: '/(tabs)/(play)/[sessionId]', params: { sessionId: 'session-heart' },
+    });
+  });
+
+  it('returns a deferred tutorial to Welcome without launching play', async () => {
+    mockLoadOnboardingState.mockResolvedValue({ position: 'deferred' });
+    const renderer = await renderScreen();
+    await press(renderer, 'Learn the controls');
+    expect(mockSaveOnboardingPosition).toHaveBeenCalledWith('welcome');
+    expect(require('expo-router').router.navigate).toHaveBeenCalledWith('/onboarding/welcome');
+    expect(mockResumeTutorial).not.toHaveBeenCalled();
   });
 
   it('keeps the action on status failure and retries', async () => {

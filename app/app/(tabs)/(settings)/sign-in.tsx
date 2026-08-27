@@ -44,6 +44,10 @@ export default function SignInScreen() {
   const validCode = code.length === 6;
 
   const finishSignIn = () => {
+    if (params.returnTo === '/onboarding/welcome') {
+      router.replace('/onboarding/welcome');
+      return;
+    }
     if (isCommerceReturnTarget(params.returnTo)) {
       router.replace({
         pathname: '/(tabs)/(profile)/commerce',
