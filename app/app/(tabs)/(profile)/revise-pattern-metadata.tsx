@@ -16,7 +16,7 @@ export default function RevisePatternMetadataScreen() {
   const isAccount = useIdentityStore((state) => state.isAccount);
   const patternsQuery = useMyPublishedPatterns(accountId, isAccount);
   const categoriesQuery = useCatalogCategories();
-  const tagsQuery = useCatalogTags('en');
+  const tagsQuery = useCatalogTags();
   const mutation = useCreateCatalogMetadataRevision(accountId);
   const pattern = patternsQuery.data?.find((item) => item.id === patternId) ?? null;
   const initialized = React.useRef(false);

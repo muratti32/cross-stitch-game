@@ -26,7 +26,7 @@ export default function SubmitPatternScreen() {
   const isAccount = useIdentityStore((state) => state.isAccount);
   const profileQuery = useCreatorProfile(accountId, isAccount);
   const categoriesQuery = useCatalogCategories();
-  const tagsQuery = useCatalogTags('en');
+  const tagsQuery = useCatalogTags();
   const mutation = useCreateCatalogSubmission(accountId);
   const creatorProfile = profileQuery.data ?? null;
   const [pattern, setPattern] = useState<PersonalPattern | null>(null);
