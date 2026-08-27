@@ -18,6 +18,8 @@ import enSettings from './locales/en/settings.json';
 import trSettings from './locales/tr/settings.json';
 import enErrors from './locales/en/errors.json';
 import trErrors from './locales/tr/errors.json';
+import enOnboarding from './locales/en/onboarding.json';
+import trOnboarding from './locales/tr/onboarding.json';
 import { FALLBACK_LOCALE } from './resolveAppLanguage';
 import { resolveMissingTranslation, reportMissingTranslationKey } from './missingKeyHandler';
 import { SUPPORTED_LOCALES } from './supportedLocales';
@@ -30,8 +32,8 @@ export const DEFAULT_NAMESPACE = 'settings';
 // error surface regardless of which localization slice that screen belongs
 // to - see src/api/serverErrorPresentation.ts.
 const resources = {
-  en: { settings: enSettings, errors: enErrors },
-  tr: { settings: trSettings, errors: trErrors },
+  en: { settings: enSettings, errors: enErrors, onboarding: enOnboarding },
+  tr: { settings: trSettings, errors: trErrors, onboarding: trOnboarding },
 };
 
 let initialized = false;

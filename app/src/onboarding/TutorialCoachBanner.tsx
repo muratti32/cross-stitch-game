@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Theme } from '../theme/theme';
 import type { TutorialEffect } from './tutorialEngine';
 import type { HintId } from './justInTimeHints';
@@ -13,36 +14,37 @@ interface Props {
   readonly hintId?: HintId;
 }
 
-const BEAT_COPY: Record<BeatId, string> = {
-  thread_palette: 'Select DMC 321 Christmas Red.',
-  stitch_action: 'Tap the highlighted matching cell.',
-  mismatched_tap: 'Tap the highlighted different cell. Wrong taps cost nothing.',
-  undo_action: 'Undo that stitch, then place it again.',
-  stitch_sweep: 'Press a matching cell, then drag across the highlighted run.',
-  thread_color_completion: 'Finish the highlighted white thread, then choose your next color.',
+const BEAT_KEYS: Record<BeatId, string> = {
+  thread_palette: 'coachBanner.beats.threadPalette',
+  stitch_action: 'coachBanner.beats.stitchAction',
+  mismatched_tap: 'coachBanner.beats.mismatchedTap',
+  undo_action: 'coachBanner.beats.undoAction',
+  stitch_sweep: 'coachBanner.beats.stitchSweep',
+  thread_color_completion: 'coachBanner.beats.threadColorCompletion',
 };
 
-const HINT_COPY: Record<HintId, string> = {
-  anchored_zoom: 'Pinch to zoom while keeping the cells under your fingers in place.',
-  pan_vs_sweep: 'Dragging pans the fabric. Start on a matching cell to stitch a sweep.',
-  edge_auto_pan: 'Keep sweeping near the edge and the fabric follows your finger.',
-  remaining_cell_locator: 'Use the locator to find the next remaining cell for this thread.',
+const HINT_KEYS: Record<HintId, string> = {
+  anchored_zoom: 'coachBanner.hints.anchoredZoom',
+  pan_vs_sweep: 'coachBanner.hints.panVsSweep',
+  edge_auto_pan: 'coachBanner.hints.edgeAutoPan',
+  remaining_cell_locator: 'coachBanner.hints.remainingCellLocator',
 };
 
 export function TutorialCoachBanner({ onSkip, onDismiss, beatId, hintId }: Props) {
-  const copy = beatId ? BEAT_COPY[beatId] : HINT_COPY[hintId!];
+  const { t } = useTranslation('onboarding');
+  const copy = beatId ? t(BEAT_KEYS[beatId]) : t(HINT_KEYS[hintId!]);
   return (
     <View style={styles.banner} accessibilityRole="summary" pointerEvents="box-none">
       <Text style={styles.instruction} allowFontScaling>
         {copy}
       </Text>
       {beatId ? (
-        <Pressable accessibilityRole="button" accessibilityLabel="Skip tutorial for now" onPress={onSkip} style={styles.skip}>
-          <Text style={styles.skipText} allowFontScaling>Skip for now</Text>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('coachBanner.skipAccessibilityLabel')} onPress={onSkip} style={styles.skip}>
+          <Text style={styles.skipText} allowFontScaling>{t('coachBanner.skip')}</Text>
         </Pressable>
       ) : (
-        <Pressable accessibilityRole="button" accessibilityLabel="Dismiss hint" onPress={onDismiss} style={styles.skip}>
-          <Text style={styles.skipText} allowFontScaling>Got it</Text>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('coachBanner.dismissAccessibilityLabel')} onPress={onDismiss} style={styles.skip}>
+          <Text style={styles.skipText} allowFontScaling>{t('coachBanner.dismiss')}</Text>
         </Pressable>
       )}
     </View>
