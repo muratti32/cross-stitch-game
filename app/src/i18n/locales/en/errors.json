@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "That sign-in belongs to a different account. Your current account was not changed.",
+    "providerRejected": "That verification was rejected. Check the account or code and retry."
+  },
+  "generic": {
+    "failure": "Something went wrong. Please try again.",
+    "supportReferenceLabel": "Support Reference: {{reference}}"
+  }
+}

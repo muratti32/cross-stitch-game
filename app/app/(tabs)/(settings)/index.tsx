@@ -16,13 +16,13 @@ import { useAccountDeletionStatus, useRequestAccountDeletion, useCancelAccountDe
 import { withProtectedRoundTrip } from '@/navigation/foregroundEntryNavigation';
 import { useMembership } from '@/api/membership';
 import {
-  AccountReauthenticationApiError,
   getReauthenticationIdentities,
   reauthenticateWithEmail,
   reauthenticateWithFirebase,
   requestReauthenticationEmailCode,
   type ReauthenticationIdentity,
 } from '@/api/accountReauthentication';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 import { acquireAppleProviderIdToken, acquireGoogleProviderIdToken } from '@/identity/firebaseSso';
 import { loadOnboardingState, resumeTutorial, saveOnboardingPosition } from '@/onboarding/state';
 import { useTranslation } from 'react-i18next';
@@ -268,11 +268,11 @@ export default function SettingsScreen() {
   };
 
   const reauthenticationErrorMessage = (error: unknown): string => {
-    if (error instanceof AccountReauthenticationApiError && error.reason === 'different_account') {
-      return t('reauthModal.differentAccount');
-    }
-    if (error instanceof AccountReauthenticationApiError && error.reason === 'provider_rejected') {
-      return t('reauthModal.providerRejected');
+    // #159: reason-code mapping is centralized in localizeServerError, not
+    // duplicated per call site, and its generic fallback carries a Support
+    // Reference that this ad hoc version did not.
+    if (isServerApiError(error)) {
+      return localizeServerError(error);
     }
     return t('reauthModal.genericFailure');
   };
@@ -354,8 +354,12 @@ export default function SettingsScreen() {
           ]
         );
       } else {
-        const msg = err instanceof Error ? err.message : 'Unknown error';
-        Alert.alert(t('accountDeletion.cancelFailedTitle'), t('accountDeletion.cancelFailedMessage', { message: msg }));
+        // #159: the server's raw `message` never reaches the player; an
+        // AccountDeletionApiError's `reason` maps to localized text instead.
+        Alert.alert(
+          t('accountDeletion.cancelFailedTitle'),
+          isServerApiError(err) ? localizeServerError(err) : t('accountDeletion.cancelFailedGeneric'),
+        );
       }
     } finally {
       setIsCancellingDeletion(false);

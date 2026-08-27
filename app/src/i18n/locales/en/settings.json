@@ -60,7 +60,7 @@
     "reauthRequiredMessage": "For security, you must sign in again before cancelling account deletion.",
     "signInAction": "Sign In",
     "cancelFailedTitle": "Cancel Failed",
-    "cancelFailedMessage": "Failed to cancel account deletion: {{message}}"
+    "cancelFailedGeneric": "Failed to cancel account deletion. Check your connection and try again."
   },
   "appearance": {
     "sectionTitle": "Appearance"
@@ -174,8 +174,6 @@
     "loadFailed": "Could not load your linked sign-in methods. Check your connection and retry.",
     "retryFailed": "Your identity was verified, but deletion was not submitted. Close this dialog and retry deletion.",
     "emailMissing": "This linked email method has no address. Choose another method.",
-    "differentAccount": "That sign-in belongs to a different account. Your current account was not changed.",
-    "providerRejected": "That verification was rejected. Check the account or code and retry.",
     "genericFailure": "Reauthentication failed. Check your connection and retry."
   },
   "actions": {

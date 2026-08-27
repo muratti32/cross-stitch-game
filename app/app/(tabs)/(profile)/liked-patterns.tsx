@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 
 import { useLikedPatterns } from '@/api/social';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 import { Card, EmptyState, Screen, PatternImage } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
@@ -62,7 +63,13 @@ export default function LikedPatternsScreen() {
         <EmptyState
           icon="cloud-offline-outline"
           title="Liked Patterns Unavailable"
-          body={query.error instanceof Error ? query.error.message : 'Could not load liked patterns.'}
+          body={
+            query.error
+              ? isServerApiError(query.error)
+                ? localizeServerError(query.error)
+                : query.error.message
+              : 'Could not load liked patterns.'
+          }
           actionLabel="Try Again"
           onAction={() => void query.refetch()}
           actionVariant="rose"

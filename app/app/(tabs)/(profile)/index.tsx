@@ -14,6 +14,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAiCreditBalance } from '@/api/commerce';
 import { absolutePreviewUrl, absoluteThumbnailUrls } from '@/api/catalog';
 import { useCreatorProfile } from '@/api/creatorProfile';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 import {
   DAILY_TASK_COIN,
   useDailyTaskBoard,
@@ -384,8 +385,12 @@ export default function ProfileScreen() {
           </View>
           <Text style={styles.displayName}>Public profile unavailable</Text>
           <Text style={styles.profileHelpText}>
-            {creatorProfileQuery.error instanceof Error
-              ? creatorProfileQuery.error.message
+            {creatorProfileQuery.error
+              ? isServerApiError(creatorProfileQuery.error)
+                ? localizeServerError(creatorProfileQuery.error)
+                : creatorProfileQuery.error instanceof Error
+                  ? creatorProfileQuery.error.message
+                  : 'Check your connection and try again.'
               : 'Check your connection and try again.'}
           </Text>
           <Pressable

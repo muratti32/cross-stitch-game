@@ -60,7 +60,7 @@
     "reauthRequiredMessage": "Güvenlik amacıyla, hesap silmeyi iptal etmeden önce tekrar giriş yapmanız gerekir.",
     "signInAction": "Giriş Yap",
     "cancelFailedTitle": "İptal Başarısız",
-    "cancelFailedMessage": "Hesap silme iptal edilemedi: {{message}}"
+    "cancelFailedGeneric": "Hesap silme işlemi iptal edilemedi. Bağlantınızı kontrol edip yeniden deneyin."
   },
   "appearance": {
     "sectionTitle": "Görünüm"
@@ -174,8 +174,6 @@
     "loadFailed": "Bağlı giriş yöntemleriniz yüklenemedi. Bağlantınızı kontrol edip yeniden deneyin.",
     "retryFailed": "Kimliğiniz doğrulandı, ancak silme işlemi gönderilemedi. Bu iletişim kutusunu kapatıp silme işlemini yeniden deneyin.",
     "emailMissing": "Bu bağlı e-posta yönteminin adresi yok. Başka bir yöntem seçin.",
-    "differentAccount": "Bu giriş başka bir hesaba ait. Geçerli hesabınız değiştirilmedi.",
-    "providerRejected": "Bu doğrulama reddedildi. Hesabı veya kodu kontrol edip yeniden deneyin.",
     "genericFailure": "Yeniden kimlik doğrulama başarısız. Bağlantınızı kontrol edip yeniden deneyin."
   },
   "actions": {

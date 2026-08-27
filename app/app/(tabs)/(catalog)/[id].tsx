@@ -12,6 +12,7 @@ import { useCoinBalance, useUnlockedPatternIds, useUnlockPattern, InsufficientCo
 import { hasSeenGuestDataRiskNotice, markGuestDataRiskNoticeSeen } from '@/local-db';
 import { Ionicons } from '@expo/vector-icons';
 import { useLikeToggle, useLocalLikes, useBlockCreator } from '@/api/social';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 
 export default function PatternDetailScreen() {
   const { id, returnTo } = useLocalSearchParams<{ id: string; returnTo?: string }>();
@@ -241,7 +242,11 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
       },
       {
         onError: (err) => {
-          setPrepareError(err instanceof Error ? err.message : 'Failed to update like status');
+          // #159: SocialApiError's server-supplied `message` never reaches
+          // the player; its `reason` maps to localized text instead.
+          setPrepareError(
+            isServerApiError(err) ? localizeServerError(err) : err instanceof Error ? err.message : 'Failed to update like status',
+          );
         },
       }
     );
@@ -262,7 +267,7 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
                 await blockMutation.mutateAsync(item.creatorProfileId);
                 Alert.alert('Blocked', `${item.creatorName} has been blocked.`);
               } catch (err) {
-                Alert.alert('Error', err instanceof Error ? err.message : 'Failed to block creator.');
+                Alert.alert('Error', isServerApiError(err) ? localizeServerError(err) : err instanceof Error ? err.message : 'Failed to block creator.');
               }
             }
           },
@@ -450,7 +455,12 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
       {(prepareError || toggleLike.error) && (
         <View style={styles.errorBanner}>
           <Text style={styles.errorBannerText}>
-            {prepareError || toggleLike.error?.message || 'Failed to update like status'}
+            {prepareError ||
+              (toggleLike.error
+                ? isServerApiError(toggleLike.error)
+                  ? localizeServerError(toggleLike.error)
+                  : toggleLike.error.message
+                : 'Failed to update like status')}
           </Text>
         </View>
       )}

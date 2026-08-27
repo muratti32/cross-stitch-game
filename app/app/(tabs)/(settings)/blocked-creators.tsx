@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
 import { useCreatorBlocks, useUnblockCreator } from '@/api/social';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 import { Button, Card, EmptyState, Screen } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
@@ -48,7 +49,9 @@ export default function BlockedCreatorsScreen() {
             unblockMutation.mutate(id, {
               onSuccess: () => Alert.alert('Success', `${name} has been unblocked.`),
               onError: (err: unknown) => {
-                const msg = err instanceof Error ? err.message : 'Unknown error';
+                // #159: SocialApiError's server-supplied `message` never
+                // reaches the player; its `reason` maps to localized text.
+                const msg = isServerApiError(err) ? localizeServerError(err) : err instanceof Error ? err.message : 'Unknown error';
                 Alert.alert('Error', `Failed to unblock creator: ${msg}`);
               },
             });
@@ -78,7 +81,13 @@ export default function BlockedCreatorsScreen() {
         <EmptyState
           icon="cloud-offline-outline"
           title="List Unavailable"
-          body={query.error instanceof Error ? query.error.message : 'Could not load blocked creators.'}
+          body={
+            query.error
+              ? isServerApiError(query.error)
+                ? localizeServerError(query.error)
+                : query.error.message
+              : 'Could not load blocked creators.'
+          }
           actionLabel="Try Again"
           onAction={() => void query.refetch()}
           actionVariant="rose"

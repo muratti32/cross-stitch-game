@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Bu oturum açma işlemi farklı bir hesaba ait. Mevcut hesabınız değiştirilmedi.",
+    "providerRejected": "Bu doğrulama reddedildi. Hesabı veya kodu kontrol edip yeniden deneyin."
+  },
+  "generic": {
+    "failure": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
+    "supportReferenceLabel": "Destek Referansı: {{reference}}"
+  }
+}

@@ -17,6 +17,7 @@ import {
   useCreatorProfile,
   useSaveCreatorProfile,
 } from '@/api/creatorProfile';
+import { localizeServerError } from '@/api/localizeServerError';
 import { Button, Card, EmptyState, Screen } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
@@ -126,8 +127,11 @@ export default function PublicProfileScreen() {
       );
       router.back();
     } catch (caught: unknown) {
+      // #159: neither the server's raw `message` nor its machine-readable
+      // `reason` code (which the backend has been observed sending as a
+      // full English sentence on this endpoint) is shown verbatim.
       if (caught instanceof CreatorProfileApiError) {
-        setError(caught.reason ?? caught.message);
+        setError(localizeServerError(caught));
       } else {
         setError(caught instanceof Error ? caught.message : 'Could not save your public profile');
       }

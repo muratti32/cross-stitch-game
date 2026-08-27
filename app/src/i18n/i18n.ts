@@ -16,6 +16,8 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import enSettings from './locales/en/settings.json';
 import trSettings from './locales/tr/settings.json';
+import enErrors from './locales/en/errors.json';
+import trErrors from './locales/tr/errors.json';
 import { FALLBACK_LOCALE } from './resolveAppLanguage';
 import { resolveMissingTranslation, reportMissingTranslationKey } from './missingKeyHandler';
 import { SUPPORTED_LOCALES } from './supportedLocales';
@@ -23,11 +25,13 @@ import { SUPPORTED_LOCALES } from './supportedLocales';
 export const DEFAULT_NAMESPACE = 'settings';
 
 // One namespace per feature, mirroring the feature directories under src/.
-// Only the Settings feature is localized so far (#157); later slices add a
-// namespace per feature they localize.
+// `errors` is the exception: it is not one screen's feature but the shared,
+// cross-cutting backend-error presentation text from #159, reused by every
+// error surface regardless of which localization slice that screen belongs
+// to - see src/api/serverErrorPresentation.ts.
 const resources = {
-  en: { settings: enSettings },
-  tr: { settings: trSettings },
+  en: { settings: enSettings, errors: enErrors },
+  tr: { settings: trSettings, errors: trErrors },
 };
 
 let initialized = false;
