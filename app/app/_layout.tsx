@@ -12,6 +12,7 @@ import { bootstrap, useIdentityStore } from '../src/identity/guestIdentity';
 import { synchronizeRevenueCatIdentity } from '../src/commerce/revenueCat';
 import { initializeAdMob } from '../src/ads';
 import { initSentry, syncSentryPlayerReferenceWithIdentity } from '../src/observability/sentry';
+import { initI18n, applyResolvedLanguage } from '../src/i18n';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { syncPendingPersonalPatterns } from '../src/pattern-editor/sync';
 import { flushAnalyticsGameplayEvents } from '../src/sync/analyticsGameplayEventEngine';
@@ -34,6 +35,7 @@ const ANALYTICS_FLUSH_INTERVAL_MS = 60_000;
 // Must run before anything else that could throw.
 initSentry();
 syncSentryPlayerReferenceWithIdentity();
+initI18n();
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -120,6 +122,14 @@ function RootLayout() {
         syncPendingPersonalPatterns().catch((err: unknown) => {
           console.log(
             'Pending Personal Pattern sync deferred:',
+            err instanceof Error ? err.message : String(err),
+          );
+        });
+        // Resolves from device language + stored override; pinned to
+        // English by the migration gate until #167 (see src/i18n).
+        applyResolvedLanguage().catch((err: unknown) => {
+          console.log(
+            'App Display Language resolution deferred:',
             err instanceof Error ? err.message : String(err),
           );
         });

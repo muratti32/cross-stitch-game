@@ -25,6 +25,15 @@ import {
 } from '@/api/accountReauthentication';
 import { acquireAppleProviderIdToken, acquireGoogleProviderIdToken } from '@/identity/firebaseSso';
 import { loadOnboardingState, resumeTutorial, saveOnboardingPosition } from '@/onboarding/state';
+import { useTranslation } from 'react-i18next';
+import {
+  LANGUAGE_MIGRATION_GATE_OPEN,
+  SUPPORTED_LOCALES,
+  getLanguageOverride,
+  setActiveLanguageOverride,
+  clearActiveLanguageOverride,
+  type SupportedLocale,
+} from '@/i18n';
 
 // App identity is read from the Expo config so the settings footer can never
 // drift away from app.json / app.config.ts.
@@ -40,6 +49,7 @@ const appScheme = Array.isArray(expoConfig?.scheme)
   : expoConfig?.scheme ?? 'unknown';
 
 export default function SettingsScreen() {
+  const { t } = useTranslation('settings');
   const { showGridLines, toggleGridLines, handedness, setHandedness } = useGameplayStore();
   const { data: health, isLoading, error, refetch, isRefetching } = useHealthCheck();
   const { data: sessionData, isLoading: sessionLoading, error: sessionError } = useBackendSession();
@@ -75,16 +85,25 @@ export default function SettingsScreen() {
   const [reauthCodeSent, setReauthCodeSent] = React.useState(false);
   const [reauthError, setReauthError] = React.useState<string | null>(null);
 
+  // #157's migration gate: the picker below only ever mounts while it is
+  // open (see LANGUAGE_MIGRATION_GATE_OPEN), so this state is a no-op read
+  // for every player until #167.
+  const [languageOverride, setLanguageOverrideState] = React.useState<string | null>(null);
+  React.useEffect(() => {
+    if (!LANGUAGE_MIGRATION_GATE_OPEN) return;
+    getLanguageOverride().then(setLanguageOverrideState).catch(() => setLanguageOverrideState(null));
+  }, []);
+
   const isOffline = !isLoading && (!!error || !health || health.status !== 'ok');
 
   const formatRecoveryWindowEnd = (recoveryWindowEndsAt?: string): string => {
     if (!recoveryWindowEndsAt) {
-      return 'Unavailable';
+      return t('common.unavailable');
     }
 
     const endDate = new Date(recoveryWindowEndsAt);
     return Number.isNaN(endDate.getTime())
-      ? 'Unavailable'
+      ? t('common.unavailable')
       : endDate.toLocaleDateString();
   };
 
@@ -97,10 +116,10 @@ export default function SettingsScreen() {
       await resetGuestData();
       setResetModalVisible(false);
       setTypedConfirmation('');
-      Alert.alert('Success', 'Guest data has been fully reset.');
+      Alert.alert(t('resetModal.successTitle'), t('resetModal.successMessage'));
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Unknown error';
-      Alert.alert('Reset Failed', `Guest data reset failed: ${msg}. Please try again.`);
+      Alert.alert(t('resetModal.failedTitle'), t('resetModal.failedMessage', { message: msg }));
     } finally {
       setIsResetting(false);
     }
@@ -108,21 +127,21 @@ export default function SettingsScreen() {
 
   const handleRemoveLocalData = () => {
     Alert.alert(
-      'Remove Local Data?',
-      'Warning: This will delete your local database files from this device only. Any unsynchronized records will be permanently lost.',
+      t('data.removeLocalConfirmTitle'),
+      t('data.removeLocalConfirmMessage'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('actions.cancel'), style: 'cancel' },
         {
-          text: 'Remove',
+          text: t('data.removeLocalConfirmAction'),
           style: 'destructive',
           onPress: async () => {
             setIsRemovingLocal(true);
             try {
               await removeLocalData();
-              Alert.alert('Success', 'Local data has been removed from this device.');
+              Alert.alert(t('data.removeLocalSuccessTitle'), t('data.removeLocalSuccessMessage'));
             } catch (err: unknown) {
               const msg = err instanceof Error ? err.message : 'Unknown error';
-              Alert.alert('Removal Failed', `Failed to remove local data: ${msg}`);
+              Alert.alert(t('data.removeLocalFailedTitle'), t('data.removeLocalFailedMessage', { message: msg }));
             } finally {
               setIsRemovingLocal(false);
             }
@@ -139,6 +158,24 @@ export default function SettingsScreen() {
       await setHandednessDb(value);
     } catch (err) {
       console.error('Failed to save handedness preference to database:', err);
+    }
+  };
+
+  const handleSelectLanguage = async (locale: SupportedLocale) => {
+    setLanguageOverrideState(locale);
+    try {
+      await setActiveLanguageOverride(locale);
+    } catch (err) {
+      console.error('Failed to save language override:', err);
+    }
+  };
+
+  const handleFollowDeviceLanguage = async () => {
+    setLanguageOverrideState(null);
+    try {
+      await clearActiveLanguageOverride();
+    } catch (err) {
+      console.error('Failed to clear language override:', err);
     }
   };
 
@@ -159,7 +196,7 @@ export default function SettingsScreen() {
       }
     } catch (error) {
       console.warn('Failed to resume tutorial:', error);
-      Alert.alert('Tutorial unavailable', 'Could not resume the tutorial. Please try again.');
+      Alert.alert(t('tutorial.unavailableTitle'), t('tutorial.unavailableMessage'));
     }
   };
 
@@ -167,7 +204,7 @@ export default function SettingsScreen() {
     void withProtectedRoundTrip('external-link', () => Linking.openURL(url), {
       keepUntilForeground: true,
     }).catch(() => {
-      Alert.alert(title, `Could not open link: ${url}`);
+      Alert.alert(title, t('links.openFailedMessage', { url }));
     });
   };
 
@@ -178,7 +215,7 @@ export default function SettingsScreen() {
     void withProtectedRoundTrip('subscription-management', () => Linking.openURL(url), {
       keepUntilForeground: true,
     }).catch(() => {
-      Alert.alert('Error', `Could not open link: ${url}`);
+      Alert.alert(t('links.openFailedGenericTitle'), t('links.openFailedMessage', { url }));
     });
   };
 
@@ -189,11 +226,11 @@ export default function SettingsScreen() {
     setDeleteConfirmation('');
     setDeletionStage(1);
     Alert.alert(
-      'Account Deletion Requested',
-      `Your deletion request is pending through ${formatRecoveryWindowEnd(result.recoveryWindowEndsAt)}. Your account has been logged out. Sign in again before then if you wish to cancel this deletion.`,
+      t('accountDeletion.requestedTitle'),
+      t('accountDeletion.requestedMessage', { date: formatRecoveryWindowEnd(result.recoveryWindowEndsAt) }),
     );
     void logout().catch(() => {
-      Alert.alert('Local Sign-out Failed', 'Your deletion request is still pending. Please sign out again from Settings.');
+      Alert.alert(t('accountDeletion.signOutFailedTitle'), t('accountDeletion.signOutFailedMessage'));
     });
   };
 
@@ -208,7 +245,7 @@ export default function SettingsScreen() {
       setReauthIdentities(await getReauthenticationIdentities());
     } catch {
       setReauthIdentities([]);
-      setReauthError('Could not load your linked sign-in methods. Check your connection and retry.');
+      setReauthError(t('reauthModal.loadFailed'));
     } finally {
       setReauthLoading(false);
     }
@@ -223,7 +260,7 @@ export default function SettingsScreen() {
       if (error instanceof AccountDeletionApiError && error.reauthenticationRequired) {
         await openReauthentication();
       } else {
-        Alert.alert('Request Failed', 'Your deletion request was not submitted. Check your connection and try again.');
+        Alert.alert(t('accountDeletion.requestFailedTitle'), t('accountDeletion.requestFailedMessage'));
       }
     } finally {
       setIsSubmittingDeletion(false);
@@ -232,19 +269,19 @@ export default function SettingsScreen() {
 
   const reauthenticationErrorMessage = (error: unknown): string => {
     if (error instanceof AccountReauthenticationApiError && error.reason === 'different_account') {
-      return 'That sign-in belongs to a different account. Your current account was not changed.';
+      return t('reauthModal.differentAccount');
     }
     if (error instanceof AccountReauthenticationApiError && error.reason === 'provider_rejected') {
-      return 'That verification was rejected. Check the account or code and retry.';
+      return t('reauthModal.providerRejected');
     }
-    return 'Reauthentication failed. Check your connection and retry.';
+    return t('reauthModal.genericFailure');
   };
 
   const resumeDeletion = async () => {
     try {
       await finishDeletionRequest();
     } catch {
-      setReauthError('Your identity was verified, but deletion was not submitted. Close this dialog and retry deletion.');
+      setReauthError(t('reauthModal.retryFailed'));
     }
   };
 
@@ -265,7 +302,7 @@ export default function SettingsScreen() {
 
   const handleEmailReauthentication = async (identity: ReauthenticationIdentity) => {
     if (identity.email === null) {
-      setReauthError('This linked email method has no address. Choose another method.');
+      setReauthError(t('reauthModal.emailMissing'));
       return;
     }
     setReauthLoading(true);
@@ -300,25 +337,25 @@ export default function SettingsScreen() {
     setIsCancellingDeletion(true);
     try {
       await cancelDeletion();
-      Alert.alert('Success', 'Your account deletion request has been cancelled.');
+      Alert.alert(t('accountDeletion.cancelSuccessTitle'), t('accountDeletion.cancelSuccessMessage'));
     } catch (err: unknown) {
       if (err instanceof AccountDeletionApiError && err.reauthenticationRequired) {
         Alert.alert(
-          'Reauthentication Required',
-          'For security, you must sign in again before cancelling account deletion.',
+          t('accountDeletion.reauthRequiredTitle'),
+          t('accountDeletion.reauthRequiredMessage'),
           [
             {
-              text: 'Sign In',
+              text: t('accountDeletion.signInAction'),
               onPress: () => {
                 router.push('/(tabs)/(settings)/sign-in');
               },
             },
-            { text: 'Cancel', style: 'cancel' },
+            { text: t('actions.cancel'), style: 'cancel' },
           ]
         );
       } else {
         const msg = err instanceof Error ? err.message : 'Unknown error';
-        Alert.alert('Cancel Failed', `Failed to cancel account deletion: ${msg}`);
+        Alert.alert(t('accountDeletion.cancelFailedTitle'), t('accountDeletion.cancelFailedMessage', { message: msg }));
       }
     } finally {
       setIsCancellingDeletion(false);
@@ -328,21 +365,21 @@ export default function SettingsScreen() {
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Settings</Text>
+        <Text style={styles.title}>{t('header.title')}</Text>
         <Text style={styles.subtitle}>
           {__DEV__
-            ? 'Configure preferences and inspect backend systems.'
-            : 'Configure your preferences.'}
+            ? t('header.subtitleDev')
+            : t('header.subtitleProd')}
         </Text>
       </View>
 
       {/* Backend Health Section (dev-only diagnostics) */}
       {__DEV__ && (
       <>
-      <Text style={styles.sectionTitle}>Service Status</Text>
+      <Text style={styles.sectionTitle}>{t('serviceStatus.sectionTitle')}</Text>
       <Card style={styles.healthCard}>
         <View style={styles.healthHeader}>
-          <Text style={styles.healthTitle}>API connection</Text>
+          <Text style={styles.healthTitle}>{t('serviceStatus.apiConnectionTitle')}</Text>
           <Text style={styles.apiUrlText} numberOfLines={1} ellipsizeMode="tail">
             {Config.apiBaseUrl}
           </Text>
@@ -351,19 +388,19 @@ export default function SettingsScreen() {
         {isLoading || isRefetching ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
-            <Text style={styles.loadingText}>Testing api connection...</Text>
+            <Text style={styles.loadingText}>{t('serviceStatus.testingConnection')}</Text>
           </View>
         ) : error ? (
           <View style={styles.errorContainer}>
             <View style={styles.statusBadgeError}>
               <View style={[styles.statusDot, { backgroundColor: Theme.colors.error }]} />
-              <Text style={styles.errorText}>Offline / Unreachable</Text>
+              <Text style={styles.errorText}>{t('serviceStatus.offlineUnreachable')}</Text>
             </View>
             <Text style={styles.errorSubtext}>
-              {error instanceof Error ? error.message : 'Unknown connection error'}
+              {error instanceof Error ? error.message : t('serviceStatus.unknownConnectionError')}
             </Text>
             <Button
-              title="Retry Connection"
+              title={t('serviceStatus.retryConnection')}
               onPress={() => refetch()}
               variant="secondary"
               style={styles.retryButton}
@@ -386,14 +423,14 @@ export default function SettingsScreen() {
                   ]}
                 />
                 <Text style={health.status === 'ok' ? styles.successText : styles.errorText}>
-                  {health.status === 'ok' ? 'Healthy' : 'Degraded'}
+                  {health.status === 'ok' ? t('serviceStatus.healthy') : t('serviceStatus.degraded')}
                 </Text>
               </View>
             </View>
 
             <View style={styles.subServicesContainer}>
               <View style={styles.subServiceRow}>
-                <Text style={styles.subServiceName}>PostgreSQL Database</Text>
+                <Text style={styles.subServiceName}>{t('serviceStatus.postgresLabel')}</Text>
                 <View style={styles.subServiceBadge}>
                   <View
                     style={[
@@ -413,7 +450,7 @@ export default function SettingsScreen() {
               <View style={styles.subServiceDivider} />
 
               <View style={styles.subServiceRow}>
-                <Text style={styles.subServiceName}>Redis Cache</Text>
+                <Text style={styles.subServiceName}>{t('serviceStatus.redisLabel')}</Text>
                 <View style={styles.subServiceBadge}>
                   <View
                     style={[
@@ -435,13 +472,13 @@ export default function SettingsScreen() {
       </Card>
 
       {/* Session Status Section (dev-only diagnostics) */}
-      <Text style={styles.sectionTitle}>Identity & Session</Text>
+      <Text style={styles.sectionTitle}>{t('session.sectionTitle')}</Text>
       <Card style={styles.card}>
         <View style={styles.settingRow}>
           <View style={styles.settingTextContainer}>
-            <Text style={styles.settingTitle}>Backend Session Status</Text>
+            <Text style={styles.settingTitle}>{t('session.statusTitle')}</Text>
             <Text style={styles.settingDescription}>
-              Validates your active guest registration session via the API.
+              {t('session.statusDescription')}
             </Text>
           </View>
 
@@ -450,45 +487,45 @@ export default function SettingsScreen() {
           ) : sessionError ? (
             <View style={styles.statusBadgeError}>
               <View style={[styles.statusDot, { backgroundColor: Theme.colors.error }]} />
-              <Text style={styles.errorText}>No Active Session</Text>
+              <Text style={styles.errorText}>{t('session.noActiveSession')}</Text>
             </View>
           ) : sessionData ? (
             <View style={styles.sessionStatusContainer}>
               <View style={styles.statusBadgeSuccess}>
                 <View style={[styles.statusDot, { backgroundColor: Theme.colors.success }]} />
-                <Text style={styles.successText}>Session Active</Text>
+                <Text style={styles.successText}>{t('session.sessionActive')}</Text>
               </View>
               <Text style={styles.sessionInfoText}>
-                ID: {shortenGuestId(sessionData.id)} (v{sessionData.tokenVersion})
+                {t('session.idLabel', { id: shortenGuestId(sessionData.id), version: sessionData.tokenVersion })}
               </Text>
             </View>
           ) : (
-            <Text style={styles.settingDescription}>Unknown state</Text>
+            <Text style={styles.settingDescription}>{t('session.unknownState')}</Text>
           )}
         </View>
       </Card>
 
-      <Text style={styles.sectionTitle}>Tutorial</Text>
+      <Text style={styles.sectionTitle}>{t('tutorial.sectionTitle')}</Text>
       <Card style={styles.card}>
         <Pressable
           onPress={() => void handleLearnControls()}
           style={({ pressed }) => [styles.linkRow, pressed && styles.linkPressed]}
         >
           <View style={styles.settingTextContainer}>
-            <Text style={styles.settingTitle}>Learn the controls</Text>
-            <Text style={styles.settingDescription}>Resume the stitching tutorial when you are ready.</Text>
+            <Text style={styles.settingTitle}>{t('tutorial.learnControlsTitle')}</Text>
+            <Text style={styles.settingDescription}>{t('tutorial.learnControlsDescription')}</Text>
           </View>
           <Ionicons name="help-circle-outline" size={20} color={Theme.colors.textSecondary} />
         </Pressable>
       </Card>
 
-      <Text style={styles.sectionTitle}>Developer</Text>
+      <Text style={styles.sectionTitle}>{t('developer.sectionTitle')}</Text>
       <Card style={styles.card}>
         <Pressable
           onPress={() => router.push('/(tabs)/(settings)/debug')}
           style={({ pressed }) => [styles.linkRow, pressed && styles.linkPressed]}
         >
-          <Text style={styles.linkText}>Debug / Diagnostics</Text>
+          <Text style={styles.linkText}>{t('developer.debugDiagnostics')}</Text>
           <Ionicons name="chevron-forward" size={16} color={Theme.colors.textSecondary} />
         </Pressable>
       </Card>
@@ -500,31 +537,31 @@ export default function SettingsScreen() {
 
       {isAccount && (
         <View>
-          <Text style={styles.sectionTitle}>Account Deletion</Text>
+          <Text style={styles.sectionTitle}>{t('accountDeletion.sectionTitle')}</Text>
           <Card style={styles.card}>
             {deletionLoading ? (
               <View style={styles.settingRow}>
                 <View style={styles.settingTextContainer}>
-                  <Text style={styles.settingTitle}>Account Deletion Status</Text>
-                  <Text style={styles.settingDescription}>Checking status...</Text>
+                  <Text style={styles.settingTitle}>{t('accountDeletion.statusTitle')}</Text>
+                  <Text style={styles.settingDescription}>{t('accountDeletion.checkingStatus')}</Text>
                 </View>
                 <ActivityIndicator size="small" color={Theme.colors.accentRose} />
               </View>
             ) : deletionStatus?.status === 'pending' ? (
               <View style={styles.pendingDeletionContainer}>
                 <View style={styles.settingTextContainer}>
-                  <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>Account Deletion Pending</Text>
-                  <Text style={styles.settingDescription}>Your account deletion is scheduled. Sign in again before the recovery window ends to cancel it.</Text>
-                  <Text style={styles.recoveryEndText}>Recovery Window Ends: {formatRecoveryWindowEnd(deletionStatus.recoveryWindowEndsAt)}</Text>
+                  <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>{t('accountDeletion.pendingTitle')}</Text>
+                  <Text style={styles.settingDescription}>{t('accountDeletion.pendingDescription')}</Text>
+                  <Text style={styles.recoveryEndText}>{t('accountDeletion.recoveryWindowEnds', { date: formatRecoveryWindowEnd(deletionStatus.recoveryWindowEndsAt) })}</Text>
                 </View>
-                <Button title={isCancellingDeletion ? 'Cancelling...' : 'Cancel deletion'} onPress={handleCancelDeletion} disabled={isCancellingDeletion} style={styles.cancelDeletionButton} textStyle={styles.cancelDeletionButtonText} />
+                <Button title={isCancellingDeletion ? t('accountDeletion.cancelling') : t('accountDeletion.cancelDeletion')} onPress={handleCancelDeletion} disabled={isCancellingDeletion} style={styles.cancelDeletionButton} textStyle={styles.cancelDeletionButtonText} />
               </View>
             ) : (
               <View>
                 {deletionError && (
                   <View style={styles.deletionStatusError}>
-                    <Text style={styles.deletionStatusErrorText}>Could not check deletion status. Check your connection and retry.</Text>
-                    <Button title="Retry" onPress={() => refetchDeletionStatus()} variant="secondary" style={styles.retryButtonSmall} textStyle={styles.retryButtonSmallText} />
+                    <Text style={styles.deletionStatusErrorText}>{t('accountDeletion.statusError')}</Text>
+                    <Button title={t('actions.retry')} onPress={() => refetchDeletionStatus()} variant="secondary" style={styles.retryButtonSmall} textStyle={styles.retryButtonSmallText} />
                   </View>
                 )}
                 <Pressable
@@ -532,8 +569,8 @@ export default function SettingsScreen() {
                   style={({ pressed }) => [styles.settingRow, pressed && styles.linkPressed]}
                 >
                   <View style={styles.settingTextContainer}>
-                    <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>Delete Account</Text>
-                    <Text style={styles.settingDescription}>Permanently delete your account, progress, and all unlocks after a 30-day recovery window.</Text>
+                    <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>{t('accountDeletion.deleteAccountTitle')}</Text>
+                    <Text style={styles.settingDescription}>{t('accountDeletion.deleteAccountDescription')}</Text>
                   </View>
                   <Ionicons name="trash-bin-outline" size={20} color={Theme.colors.error} />
                 </Pressable>
@@ -543,17 +580,64 @@ export default function SettingsScreen() {
         </View>
       )}
 
-      <Text style={styles.sectionTitle}>Appearance</Text>
+      <Text style={styles.sectionTitle}>{t('appearance.sectionTitle')}</Text>
       <ThemeCollectionCard />
 
+      {/* Language picker (#157): hidden behind the migration gate until
+          every localization slice has landed - see src/i18n/migrationGate.ts
+          and #167. */}
+      {LANGUAGE_MIGRATION_GATE_OPEN && (
+        <>
+          <Text style={styles.sectionTitle}>{t('language.sectionTitle')}</Text>
+          <Card style={styles.card}>
+            <View style={styles.languageDescriptionRow}>
+              <Text style={styles.settingDescription}>{t('language.description')}</Text>
+            </View>
+            <View style={styles.rowDivider} />
+            {SUPPORTED_LOCALES.map((locale) => (
+              <React.Fragment key={locale}>
+                <Pressable
+                  onPress={() => void handleSelectLanguage(locale)}
+                  style={({ pressed }) => [styles.languageRow, pressed && styles.linkPressed]}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected: languageOverride === locale }}
+                >
+                  <Text style={styles.languageOptionText}>
+                    {locale === 'tr' ? t('language.optionTurkish') : t('language.optionEnglish')}
+                  </Text>
+                  {languageOverride === locale && (
+                    <Ionicons name="checkmark-circle" size={20} color={Theme.colors.accentTeal} />
+                  )}
+                </Pressable>
+                <View style={styles.rowDivider} />
+              </React.Fragment>
+            ))}
+            <Pressable
+              onPress={() => void handleFollowDeviceLanguage()}
+              style={({ pressed }) => [styles.languageRow, pressed && styles.linkPressed]}
+              accessibilityRole="button"
+              accessibilityState={{ selected: languageOverride === null }}
+            >
+              <View style={styles.languageFollowTextContainer}>
+                <Text style={styles.languageOptionText}>{t('language.followDevice')}</Text>
+                <Text style={styles.settingDescription}>{t('language.followDeviceDescription')}</Text>
+              </View>
+              {languageOverride === null && (
+                <Ionicons name="checkmark-circle" size={20} color={Theme.colors.accentTeal} />
+              )}
+            </Pressable>
+          </Card>
+        </>
+      )}
+
       {/* Gameplay Preferences */}
-      <Text style={styles.sectionTitle}>Gameplay Settings</Text>
+      <Text style={styles.sectionTitle}>{t('gameplay.sectionTitle')}</Text>
       <Card style={styles.card}>
         <View style={styles.settingRow}>
           <View style={styles.settingTextContainer}>
-            <Text style={styles.settingTitle}>Show Grid Lines</Text>
+            <Text style={styles.settingTitle}>{t('gameplay.showGridLinesTitle')}</Text>
             <Text style={styles.settingDescription}>
-              Display boundaries between sewing canvas cells
+              {t('gameplay.showGridLinesDescription')}
             </Text>
           </View>
           <Switch
@@ -566,9 +650,9 @@ export default function SettingsScreen() {
         <View style={styles.rowDivider} />
         <View style={styles.settingRow}>
           <View style={styles.settingTextContainer}>
-            <Text style={styles.settingTitle}>Handedness Layout</Text>
+            <Text style={styles.settingTitle}>{t('gameplay.handednessTitle')}</Text>
             <Text style={styles.settingDescription}>
-              Align interactive controls for left- or right-handed play
+              {t('gameplay.handednessDescription')}
             </Text>
           </View>
           <View style={styles.segmentedControl}>
@@ -579,7 +663,7 @@ export default function SettingsScreen() {
               ]}
               onPress={() => handleHandednessChange('left')}
               accessibilityRole="button"
-              accessibilityLabel="Left handed layout"
+              accessibilityLabel={t('gameplay.leftHandedLayout')}
             >
               <Text
                 style={[
@@ -587,7 +671,7 @@ export default function SettingsScreen() {
                   handedness === 'left' && styles.segmentTextActive,
                 ]}
               >
-                Left
+                {t('gameplay.left')}
               </Text>
             </Pressable>
             <Pressable
@@ -597,7 +681,7 @@ export default function SettingsScreen() {
               ]}
               onPress={() => handleHandednessChange('right')}
               accessibilityRole="button"
-              accessibilityLabel="Right handed layout"
+              accessibilityLabel={t('gameplay.rightHandedLayout')}
             >
               <Text
                 style={[
@@ -605,7 +689,7 @@ export default function SettingsScreen() {
                   handedness === 'right' && styles.segmentTextActive,
                 ]}
               >
-                Right
+                {t('gameplay.right')}
               </Text>
             </Pressable>
           </View>
@@ -614,13 +698,13 @@ export default function SettingsScreen() {
 
       {isAccount && (
         <>
-          <Text style={styles.sectionTitle}>Social & Privacy</Text>
+          <Text style={styles.sectionTitle}>{t('social.sectionTitle')}</Text>
           <Card style={styles.card}>
             <Pressable
               onPress={() => router.push('/(tabs)/(settings)/blocked-creators')}
               style={({ pressed }) => [styles.linkRow, pressed && styles.linkPressed]}
             >
-              <Text style={styles.linkText}>Blocked Creators</Text>
+              <Text style={styles.linkText}>{t('social.blockedCreators')}</Text>
               <Ionicons name="chevron-forward" size={16} color={Theme.colors.textSecondary} />
             </Pressable>
           </Card>
@@ -628,7 +712,7 @@ export default function SettingsScreen() {
       )}
 
       {/* Data Section */}
-      <Text style={styles.sectionTitle}>Data</Text>
+      <Text style={styles.sectionTitle}>{t('data.sectionTitle')}</Text>
       <Card style={styles.card}>
         {/* Guest Data Reset belongs to the Guest identity only; a Registered
             Account closes its identity through Account Deletion below. */}
@@ -645,18 +729,18 @@ export default function SettingsScreen() {
             >
               <View style={styles.settingTextContainer}>
                 <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>
-                  Reset guest data
+                  {t('data.resetGuestTitle')}
                 </Text>
                 <Text style={styles.settingDescription}>
-                  Irreversibly close the guest identity on the server and wipe all device data.
+                  {t('data.resetGuestDescription')}
                 </Text>
                 {isOffline && (
                   <Text style={styles.offlineExplanation}>
-                    Offline: Active server connection required to reset guest data.
+                    {t('data.resetGuestOffline')}
                   </Text>
                 )}
                 <Text style={styles.offlineExplanation}>
-                  Reset is blocked while a purchase is still being verified. Consumables and private Guest data cannot be recovered afterward.
+                  {t('data.resetGuestPurchaseLock')}
                 </Text>
               </View>
               <Ionicons
@@ -679,10 +763,10 @@ export default function SettingsScreen() {
         >
           <View style={styles.settingTextContainer}>
             <Text style={[styles.settingTitle, { color: Theme.colors.error }]}>
-              Remove local data
+              {t('data.removeLocalTitle')}
             </Text>
             <Text style={styles.settingDescription}>
-              Delete your local identity namespace database from this device.
+              {t('data.removeLocalDescription')}
             </Text>
           </View>
           <Ionicons name="phone-portrait-outline" size={20} color={Theme.colors.error} />
@@ -691,55 +775,55 @@ export default function SettingsScreen() {
       </Card>
 
       {/* Links Section */}
-      <Text style={styles.sectionTitle}>Information & Links</Text>
+      <Text style={styles.sectionTitle}>{t('links.sectionTitle')}</Text>
       <Card style={styles.card}>
         <Pressable
-          onPress={() => handleLinkPress('Privacy Policy', WebLinks.privacyPolicy)}
+          onPress={() => handleLinkPress(t('links.privacyPolicy'), WebLinks.privacyPolicy)}
           style={({ pressed }) => [styles.linkRow, pressed && styles.linkPressed]}
         >
-          <Text style={styles.linkText}>Privacy Policy</Text>
+          <Text style={styles.linkText}>{t('links.privacyPolicy')}</Text>
           <Ionicons name="chevron-forward" size={16} color={Theme.colors.textSecondary} />
         </Pressable>
         <View style={styles.rowDivider} />
 
         <Pressable
-          onPress={() => handleLinkPress('Terms of Service', WebLinks.termsOfService)}
+          onPress={() => handleLinkPress(t('links.termsOfService'), WebLinks.termsOfService)}
           style={({ pressed }) => [styles.linkRow, pressed && styles.linkPressed]}
         >
-          <Text style={styles.linkText}>Terms of Service</Text>
+          <Text style={styles.linkText}>{t('links.termsOfService')}</Text>
           <Ionicons name="chevron-forward" size={16} color={Theme.colors.textSecondary} />
         </Pressable>
         <View style={styles.rowDivider} />
 
         <Pressable
-          onPress={() => handleLinkPress('Contact Support', WebLinks.support)}
+          onPress={() => handleLinkPress(t('links.contactSupport'), WebLinks.support)}
           style={({ pressed }) => [styles.linkRow, pressed && styles.linkPressed]}
         >
-          <Text style={styles.linkText}>Contact Support</Text>
+          <Text style={styles.linkText}>{t('links.contactSupport')}</Text>
           <Ionicons name="chevron-forward" size={16} color={Theme.colors.textSecondary} />
         </Pressable>
         <View style={styles.rowDivider} />
 
         <Pressable
-          onPress={() => handleLinkPress('Account Deletion', WebLinks.accountDeletion)}
+          onPress={() => handleLinkPress(t('links.accountDeletion'), WebLinks.accountDeletion)}
           style={({ pressed }) => [styles.linkRow, pressed && styles.linkPressed]}
         >
-          <Text style={styles.linkText}>Account Deletion</Text>
+          <Text style={styles.linkText}>{t('links.accountDeletion')}</Text>
           <Ionicons name="chevron-forward" size={16} color={Theme.colors.textSecondary} />
         </Pressable>
       </Card>
 
       {/* App details card */}
       <View style={styles.appDetails}>
-        <Text style={styles.appDetailsText}>Stitch Wish — Cozy Pixel-Art Needlecraft</Text>
-        <Text style={styles.appDetailsVersion}>Version {appVersion}</Text>
+        <Text style={styles.appDetailsText}>{t('appDetails.appName')}</Text>
+        <Text style={styles.appDetailsVersion}>{t('appDetails.version', { version: appVersion })}</Text>
         {__DEV__ && (
           <>
             {sdkVersion !== undefined && (
-              <Text style={styles.appDetailsVersion}>Expo SDK {sdkVersion}</Text>
+              <Text style={styles.appDetailsVersion}>{t('appDetails.sdk', { sdk: sdkVersion })}</Text>
             )}
-            <Text style={styles.appDetailsIdentifier}>Package: {appIdentifier}</Text>
-            <Text style={styles.appDetailsScheme}>Scheme: {appScheme}://</Text>
+            <Text style={styles.appDetailsIdentifier}>{t('appDetails.packageLabel', { id: appIdentifier })}</Text>
+            <Text style={styles.appDetailsScheme}>{t('appDetails.schemeLabel', { scheme: appScheme })}</Text>
           </>
         )}
       </View>
@@ -754,22 +838,22 @@ export default function SettingsScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Reset Guest Data?</Text>
+            <Text style={styles.modalTitle}>{t('resetModal.title')}</Text>
 
             <Text style={styles.modalWarningText}>
-              This action will irreversibly close your guest identity on the server and permanently delete your:
+              {t('resetModal.warning')}
             </Text>
 
             <View style={styles.bulletsContainer}>
-              <Text style={styles.bulletItem}>• local progress</Text>
-              <Text style={styles.bulletItem}>• pending rewards</Text>
-              <Text style={styles.bulletItem}>• likes</Text>
-              <Text style={styles.bulletItem}>• unlock access</Text>
-              <Text style={styles.bulletItem}>• offline pattern data</Text>
+              <Text style={styles.bulletItem}>{t('resetModal.bulletProgress')}</Text>
+              <Text style={styles.bulletItem}>{t('resetModal.bulletRewards')}</Text>
+              <Text style={styles.bulletItem}>{t('resetModal.bulletLikes')}</Text>
+              <Text style={styles.bulletItem}>{t('resetModal.bulletUnlockAccess')}</Text>
+              <Text style={styles.bulletItem}>{t('resetModal.bulletOfflinePatterns')}</Text>
             </View>
 
             <Text style={styles.confirmationInstruction}>
-              Type <Text style={{ fontWeight: 'bold' }}>RESET</Text> below to confirm:
+              {t('resetModal.confirmPrefix')}<Text style={{ fontWeight: 'bold' }}>RESET</Text>{t('resetModal.confirmSuffix')}
             </Text>
 
             <TextInput
@@ -785,12 +869,12 @@ export default function SettingsScreen() {
             {isResetting ? (
               <View style={styles.modalLoadingContainer}>
                 <ActivityIndicator size="small" color={Theme.colors.error} />
-                <Text style={styles.modalLoadingText}>Resetting guest data...</Text>
+                <Text style={styles.modalLoadingText}>{t('resetModal.resetting')}</Text>
               </View>
             ) : (
               <View style={styles.modalButtonsRow}>
                 <Button
-                  title="Cancel"
+                  title={t('actions.cancel')}
                   onPress={() => {
                     setResetModalVisible(false);
                     setTypedConfirmation('');
@@ -799,7 +883,7 @@ export default function SettingsScreen() {
                   style={styles.modalCancelButton}
                 />
                 <Button
-                  title="Reset Data"
+                  title={t('resetModal.confirmAction')}
                   onPress={handleResetGuestData}
                   disabled={typedConfirmation !== 'RESET' || isOffline}
                   style={
@@ -831,31 +915,31 @@ export default function SettingsScreen() {
           <View style={styles.modalContent}>
             {deletionStage === 1 ? (
               <View>
-                <Text style={styles.modalTitle}>Delete Account?</Text>
+                <Text style={styles.modalTitle}>{t('deleteModal.title')}</Text>
 
                 <Text style={styles.modalWarningText}>
-                  Your account enters a <Text style={{ fontWeight: 'bold' }}>30-day Deletion Recovery Window</Text>. Sign in again during this window to cancel the deletion.
+                  {t('deleteModal.recoveryPrefix')}<Text style={{ fontWeight: 'bold' }}>{t('deleteModal.recoveryBold')}</Text>{t('deleteModal.recoverySuffix')}
                 </Text>
 
                 <View style={styles.bulletsContainer}>
-                  <Text style={styles.bulletItem}>• Stitch Coin and AI Credit balances</Text>
-                  <Text style={styles.bulletItem}>• All Pattern Unlocks</Text>
-                  <Text style={styles.bulletItem}>• AI Artwork and Personal Patterns</Text>
-                  <Text style={styles.bulletItem}>• Synchronized progress and Likes</Text>
+                  <Text style={styles.bulletItem}>{t('deleteModal.bulletBalances')}</Text>
+                  <Text style={styles.bulletItem}>{t('deleteModal.bulletUnlocks')}</Text>
+                  <Text style={styles.bulletItem}>{t('deleteModal.bulletArtwork')}</Text>
+                  <Text style={styles.bulletItem}>{t('deleteModal.bulletProgress')}</Text>
                 </View>
 
                 <Text style={styles.modalWarningText}>
-                  At the end of the recovery window, these are erased or forfeited with no refund or transfer. Published Community Patterns are withdrawn from the catalog, attribution becomes <Text style={{ fontWeight: 'bold' }}>Deleted Creator</Text>, and your username stays permanently reserved.
+                  {t('deleteModal.consequencesPrefix')}<Text style={{ fontWeight: 'bold' }}>{t('deleteModal.consequencesBold')}</Text>{t('deleteModal.consequencesSuffix')}
                 </Text>
 
                 {membership?.active && (
                   <View style={styles.membershipDeletionWarning}>
                     <Text style={[styles.modalWarningText, { color: Theme.colors.error, fontWeight: Theme.typography.weights.medium }]}>
-                      Your Premium Membership may keep billing after account deletion. Deletion does not cancel it; manage it separately before continuing if you want billing to stop.
+                      {t('deleteModal.membershipWarning')}
                     </Text>
                     {Platform.OS === 'ios' && (
                       <Button
-                        title="Manage Apple Subscription"
+                        title={t('deleteModal.manageAppleSubscription')}
                         onPress={handleSubscriptionManagePress}
                         variant="secondary"
                         style={styles.manageSubscriptionButton}
@@ -867,13 +951,13 @@ export default function SettingsScreen() {
 
                 <View style={[styles.modalButtonsRow, { marginTop: Theme.spacing.lg }]}>
                   <Button
-                    title="Cancel"
+                    title={t('actions.cancel')}
                     onPress={() => setDeleteModalVisible(false)}
                     variant="secondary"
                     style={styles.modalCancelButton}
                   />
                   <Button
-                    title="Continue"
+                    title={t('deleteModal.continueAction')}
                     onPress={() => setDeletionStage(2)}
                     style={{ backgroundColor: Theme.colors.error }}
                     textStyle={{ color: Theme.colors.textLight }}
@@ -882,10 +966,10 @@ export default function SettingsScreen() {
               </View>
             ) : (
               <View>
-                <Text style={styles.modalTitle}>Confirm Deletion</Text>
+                <Text style={styles.modalTitle}>{t('deleteModal.confirmTitle')}</Text>
 
                 <Text style={styles.modalWarningText}>
-                  To confirm that you want to delete your account, type <Text style={{ fontWeight: 'bold' }}>DELETE</Text> in the box below:
+                  {t('deleteModal.confirmPrefix')}<Text style={{ fontWeight: 'bold' }}>DELETE</Text>{t('deleteModal.confirmSuffix')}
                 </Text>
 
                 <TextInput
@@ -901,18 +985,18 @@ export default function SettingsScreen() {
                 {isSubmittingDeletion ? (
                   <View style={styles.modalLoadingContainer}>
                     <ActivityIndicator size="small" color={Theme.colors.error} />
-                    <Text style={styles.modalLoadingText}>Submitting deletion request...</Text>
+                    <Text style={styles.modalLoadingText}>{t('deleteModal.submitting')}</Text>
                   </View>
                 ) : (
                   <View style={styles.modalButtonsRow}>
                     <Button
-                      title="Back"
+                      title={t('deleteModal.backAction')}
                       onPress={() => setDeletionStage(1)}
                       variant="secondary"
                       style={styles.modalCancelButton}
                     />
                     <Button
-                      title="Confirm"
+                      title={t('deleteModal.confirmAction')}
                       onPress={handleRequestDeletion}
                       disabled={deleteConfirmation !== 'DELETE'}
                       style={
@@ -942,19 +1026,19 @@ export default function SettingsScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Verify Your Identity</Text>
-            <Text style={styles.modalWarningText}>For security, verify with a sign-in method already linked to this account. Deletion resumes automatically after verification.</Text>
+            <Text style={styles.modalTitle}>{t('reauthModal.title')}</Text>
+            <Text style={styles.modalWarningText}>{t('reauthModal.description')}</Text>
 
             {reauthError && <Text style={styles.reauthErrorText}>{reauthError}</Text>}
 
             {reauthLoading && !reauthCodeSent ? (
               <View style={styles.modalLoadingContainer}>
                 <ActivityIndicator size="small" color={Theme.colors.accentRose} />
-                <Text style={styles.modalLoadingText}>Loading sign-in methods...</Text>
+                <Text style={styles.modalLoadingText}>{t('reauthModal.loading')}</Text>
               </View>
             ) : reauthCodeSent ? (
               <View>
-                <Text style={styles.confirmationInstruction}>Enter the 6-digit code sent to {reauthEmail}.</Text>
+                <Text style={styles.confirmationInstruction}>{t('reauthModal.codeSentMessage', { email: reauthEmail })}</Text>
                 <TextInput
                   style={styles.textInput}
                   value={reauthCode}
@@ -965,14 +1049,20 @@ export default function SettingsScreen() {
                   maxLength={6}
                   editable={!reauthLoading}
                 />
-                <Button title="Verify and Delete" onPress={handleVerifyReauthenticationCode} disabled={reauthCode.length !== 6 || reauthLoading} loading={reauthLoading} />
+                <Button title={t('reauthModal.verifyAndDelete')} onPress={handleVerifyReauthenticationCode} disabled={reauthCode.length !== 6 || reauthLoading} loading={reauthLoading} />
               </View>
             ) : (
               <View style={styles.reauthProviders}>
                 {reauthIdentities.map((identity) => (
                   <Button
                     key={`${identity.provider}:${identity.email ?? ''}`}
-                    title={identity.provider === 'email' ? `Email ${identity.email ?? ''}`.trim() : `Continue with ${identity.provider === 'apple' ? 'Apple' : 'Google'}`}
+                    title={
+                      identity.provider === 'email'
+                        ? t('reauthModal.emailButton', { email: identity.email ?? '' }).trim()
+                        : t('reauthModal.continueWithProvider', {
+                            provider: identity.provider === 'apple' ? t('reauthModal.providerApple') : t('reauthModal.providerGoogle'),
+                          })
+                    }
                     onPress={() => identity.provider === 'email' ? void handleEmailReauthentication(identity) : void handleSocialReauthentication(identity.provider)}
                     disabled={reauthProvider !== null || reauthLoading}
                     loading={reauthProvider === identity.provider}
@@ -980,16 +1070,16 @@ export default function SettingsScreen() {
                   />
                 ))}
                 {reauthIdentities.length === 0 && !reauthError && (
-                  <Text style={styles.reauthErrorText}>No linked sign-in method is available. Contact support before retrying deletion.</Text>
+                  <Text style={styles.reauthErrorText}>{t('reauthModal.noLinkedMethod')}</Text>
                 )}
               </View>
             )}
 
             <View style={styles.reauthFooter}>
               {reauthError && !reauthCodeSent && (
-                <Button title="Retry" onPress={() => void openReauthentication()} variant="secondary" disabled={reauthLoading} />
+                <Button title={t('actions.retry')} onPress={() => void openReauthentication()} variant="secondary" disabled={reauthLoading} />
               )}
-              <Button title="Cancel" onPress={() => setReauthVisible(false)} variant="secondary" disabled={reauthLoading || reauthProvider !== null} />
+              <Button title={t('actions.cancel')} onPress={() => setReauthVisible(false)} variant="secondary" disabled={reauthLoading || reauthProvider !== null} />
             </View>
           </View>
         </View>
@@ -1426,5 +1516,28 @@ const styles = StyleSheet.create({
   manageSubscriptionButtonText: {
     fontSize: Theme.typography.sizes.sm,
     color: Theme.colors.textPrimary,
+  },
+  languageDescriptionRow: {
+    paddingHorizontal: Theme.spacing.lg,
+    paddingTop: Theme.spacing.lg,
+    paddingBottom: Theme.spacing.sm,
+  },
+  languageRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: Theme.spacing.lg,
+    paddingStart: Theme.spacing.lg,
+    paddingEnd: Theme.spacing.lg,
+  },
+  languageOptionText: {
+    fontSize: Theme.typography.sizes.md,
+    fontWeight: Theme.typography.weights.medium,
+    color: Theme.colors.textPrimary,
+  },
+  languageFollowTextContainer: {
+    flex: 1,
+    marginEnd: Theme.spacing.md,
+    gap: Theme.spacing.xs,
   },
 });

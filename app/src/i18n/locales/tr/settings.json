@@ -1,0 +1,188 @@
+{
+  "header": {
+    "title": "Ayarlar",
+    "subtitleDev": "Tercihleri yapılandırın ve sunucu sistemlerini inceleyin.",
+    "subtitleProd": "Tercihlerinizi yapılandırın."
+  },
+  "serviceStatus": {
+    "sectionTitle": "Servis Durumu",
+    "apiConnectionTitle": "API bağlantısı",
+    "testingConnection": "API bağlantısı test ediliyor...",
+    "offlineUnreachable": "Çevrimdışı / Erişilemiyor",
+    "unknownConnectionError": "Bilinmeyen bağlantı hatası",
+    "retryConnection": "Bağlantıyı Yeniden Dene",
+    "healthy": "Sağlıklı",
+    "degraded": "Sorunlu",
+    "postgresLabel": "PostgreSQL Veritabanı",
+    "redisLabel": "Redis Önbelleği"
+  },
+  "session": {
+    "sectionTitle": "Kimlik ve Oturum",
+    "statusTitle": "Sunucu Oturum Durumu",
+    "statusDescription": "API üzerinden etkin misafir kayıt oturumunuzu doğrular.",
+    "noActiveSession": "Etkin Oturum Yok",
+    "sessionActive": "Oturum Etkin",
+    "idLabel": "Kimlik: {{id}} (v{{version}})",
+    "unknownState": "Bilinmeyen durum"
+  },
+  "tutorial": {
+    "sectionTitle": "Eğitim",
+    "learnControlsTitle": "Kontrolleri öğren",
+    "learnControlsDescription": "Hazır olduğunuzda dikiş eğitimine devam edin.",
+    "unavailableTitle": "Eğitim kullanılamıyor",
+    "unavailableMessage": "Eğitime devam edilemedi. Lütfen tekrar deneyin."
+  },
+  "developer": {
+    "sectionTitle": "Geliştirici",
+    "debugDiagnostics": "Hata Ayıklama / Tanılama"
+  },
+  "accountDeletion": {
+    "sectionTitle": "Hesap Silme",
+    "statusTitle": "Hesap Silme Durumu",
+    "checkingStatus": "Durum kontrol ediliyor...",
+    "pendingTitle": "Hesap Silme Beklemede",
+    "pendingDescription": "Hesap silme işleminiz planlandı. İptal etmek için kurtarma süresi bitmeden önce tekrar giriş yapın.",
+    "recoveryWindowEnds": "Kurtarma Süresi Bitiş: {{date}}",
+    "cancelling": "İptal ediliyor...",
+    "cancelDeletion": "Silmeyi iptal et",
+    "statusError": "Silme durumu kontrol edilemedi. Bağlantınızı kontrol edip yeniden deneyin.",
+    "deleteAccountTitle": "Hesabı Sil",
+    "deleteAccountDescription": "30 günlük kurtarma süresinin ardından hesabınızı, ilerlemenizi ve tüm kilit açmalarınızı kalıcı olarak silin.",
+    "requestedTitle": "Hesap Silme Talep Edildi",
+    "requestedMessage": "Silme talebiniz {{date}} tarihine kadar beklemede. Hesabınızdan çıkış yapıldı. Bu silme işlemini iptal etmek isterseniz o tarihten önce tekrar giriş yapın.",
+    "signOutFailedTitle": "Yerel Çıkış Başarısız",
+    "signOutFailedMessage": "Silme talebiniz hâlâ beklemede. Lütfen Ayarlar'dan tekrar çıkış yapın.",
+    "requestFailedTitle": "Talep Başarısız",
+    "requestFailedMessage": "Silme talebiniz gönderilemedi. Bağlantınızı kontrol edip yeniden deneyin.",
+    "cancelSuccessTitle": "Başarılı",
+    "cancelSuccessMessage": "Hesap silme talebiniz iptal edildi.",
+    "reauthRequiredTitle": "Yeniden Kimlik Doğrulama Gerekli",
+    "reauthRequiredMessage": "Güvenlik amacıyla, hesap silmeyi iptal etmeden önce tekrar giriş yapmanız gerekir.",
+    "signInAction": "Giriş Yap",
+    "cancelFailedTitle": "İptal Başarısız",
+    "cancelFailedMessage": "Hesap silme iptal edilemedi: {{message}}"
+  },
+  "appearance": {
+    "sectionTitle": "Görünüm"
+  },
+  "gameplay": {
+    "sectionTitle": "Oynanış Ayarları",
+    "showGridLinesTitle": "Izgara Çizgilerini Göster",
+    "showGridLinesDescription": "Dikiş tuvali hücreleri arasındaki sınırları göster",
+    "handednessTitle": "El Tercihi Düzeni",
+    "handednessDescription": "Etkileşimli kontrolleri sağ veya sol elini kullananlara göre hizala",
+    "left": "Sol",
+    "right": "Sağ",
+    "leftHandedLayout": "Sol el düzeni",
+    "rightHandedLayout": "Sağ el düzeni"
+  },
+  "language": {
+    "sectionTitle": "Dil",
+    "description": "Stitch Wish'in arayüzünü hangi dilde göstereceğini seçin.",
+    "followDevice": "Cihaz dilini takip et",
+    "followDeviceDescription": "Cihazınızın dil ayarını takip etmek için geçersiz kılmayı temizleyin.",
+    "optionEnglish": "English",
+    "optionTurkish": "Türkçe"
+  },
+  "social": {
+    "sectionTitle": "Sosyal ve Gizlilik",
+    "blockedCreators": "Engellenen Üreticiler"
+  },
+  "data": {
+    "sectionTitle": "Veri",
+    "resetGuestTitle": "Misafir verilerini sıfırla",
+    "resetGuestDescription": "Sunucudaki misafir kimliğinizi geri alınamaz şekilde kapatır ve tüm cihaz verilerini siler.",
+    "resetGuestOffline": "Çevrimdışı: Misafir verilerini sıfırlamak için etkin bir sunucu bağlantısı gerekir.",
+    "resetGuestPurchaseLock": "Bir satın alma hâlâ doğrulanırken sıfırlama engellenir. Tüketilebilirler ve gizli Misafir verileri daha sonra kurtarılamaz.",
+    "removeLocalTitle": "Yerel verileri kaldır",
+    "removeLocalDescription": "Bu cihazdaki yerel kimlik alan adı veritabanınızı silin.",
+    "removeLocalConfirmTitle": "Yerel Veriler Kaldırılsın mı?",
+    "removeLocalConfirmMessage": "Uyarı: Bu işlem, yalnızca bu cihazdaki yerel veritabanı dosyalarınızı silecektir. Eşitlenmemiş kayıtlar kalıcı olarak kaybolur.",
+    "removeLocalConfirmAction": "Kaldır",
+    "removeLocalSuccessTitle": "Başarılı",
+    "removeLocalSuccessMessage": "Yerel veriler bu cihazdan kaldırıldı.",
+    "removeLocalFailedTitle": "Kaldırma Başarısız",
+    "removeLocalFailedMessage": "Yerel veriler kaldırılamadı: {{message}}"
+  },
+  "links": {
+    "sectionTitle": "Bilgi ve Bağlantılar",
+    "privacyPolicy": "Gizlilik Politikası",
+    "termsOfService": "Kullanım Şartları",
+    "contactSupport": "Destek ile İletişim",
+    "accountDeletion": "Hesap Silme",
+    "openFailedMessage": "Bağlantı açılamadı: {{url}}",
+    "openFailedGenericTitle": "Hata"
+  },
+  "appDetails": {
+    "appName": "Stitch Wish — Rahat Piksel Sanatı El İşi",
+    "version": "Sürüm {{version}}",
+    "sdk": "Expo SDK {{sdk}}",
+    "packageLabel": "Paket: {{id}}",
+    "schemeLabel": "Şema: {{scheme}}://"
+  },
+  "resetModal": {
+    "title": "Misafir Verileri Sıfırlansın mı?",
+    "warning": "Bu işlem, sunucudaki misafir kimliğinizi geri alınamaz şekilde kapatacak ve şunları kalıcı olarak silecektir:",
+    "bulletProgress": "• yerel ilerleme",
+    "bulletRewards": "• bekleyen ödüller",
+    "bulletLikes": "• beğeniler",
+    "bulletUnlockAccess": "• kilit açma erişimi",
+    "bulletOfflinePatterns": "• çevrimdışı desen verileri",
+    "confirmPrefix": "Onaylamak için aşağıya ",
+    "confirmSuffix": " yazın:",
+    "confirmAction": "Verileri Sıfırla",
+    "resetting": "Misafir verileri sıfırlanıyor...",
+    "successTitle": "Başarılı",
+    "successMessage": "Misafir verileri tamamen sıfırlandı.",
+    "failedTitle": "Sıfırlama Başarısız",
+    "failedMessage": "Misafir verileri sıfırlanamadı: {{message}}. Lütfen tekrar deneyin."
+  },
+  "deleteModal": {
+    "title": "Hesap Silinsin mi?",
+    "recoveryPrefix": "Hesabınız ",
+    "recoveryBold": "30 günlük Silme Kurtarma Süresine",
+    "recoverySuffix": " girer. Silme işlemini iptal etmek için bu süre içinde tekrar giriş yapın.",
+    "bulletBalances": "• Stitch Coin ve AI Kredisi bakiyeleri",
+    "bulletUnlocks": "• Tüm Desen Kilit Açmaları",
+    "bulletArtwork": "• AI Eserleri ve Kişisel Desenler",
+    "bulletProgress": "• Eşitlenmiş ilerleme ve Beğeniler",
+    "consequencesPrefix": "Kurtarma süresinin sonunda bunlar iade veya transfer olmadan silinir ya da kaybedilir. Yayınlanmış Topluluk Desenleri katalogdan geri çekilir, atıf ",
+    "consequencesBold": "Silinmiş Üretici",
+    "consequencesSuffix": " olur ve kullanıcı adınız kalıcı olarak ayrılmış kalır.",
+    "membershipWarning": "Premium Üyeliğiniz hesap silindikten sonra da faturalandırılmaya devam edebilir. Silme işlemi bunu iptal etmez; faturalandırmanın durmasını istiyorsanız devam etmeden önce ayrıca yönetin.",
+    "manageAppleSubscription": "Apple Aboneliğini Yönet",
+    "continueAction": "Devam Et",
+    "confirmTitle": "Silmeyi Onayla",
+    "confirmPrefix": "Hesabınızı silmek istediğinizi onaylamak için aşağıdaki kutuya ",
+    "confirmBold": "DELETE",
+    "confirmSuffix": " yazın:",
+    "submitting": "Silme talebi gönderiliyor...",
+    "backAction": "Geri",
+    "confirmAction": "Onayla"
+  },
+  "reauthModal": {
+    "title": "Kimliğinizi Doğrulayın",
+    "description": "Güvenlik amacıyla, bu hesaba bağlı bir giriş yöntemiyle doğrulayın. Doğrulamadan sonra silme işlemi otomatik olarak devam eder.",
+    "loading": "Giriş yöntemleri yükleniyor...",
+    "codeSentMessage": "{{email}} adresine gönderilen 6 haneli kodu girin.",
+    "verifyAndDelete": "Doğrula ve Sil",
+    "emailButton": "E-posta {{email}}",
+    "continueWithProvider": "{{provider}} ile devam et",
+    "providerApple": "Apple",
+    "providerGoogle": "Google",
+    "noLinkedMethod": "Bağlı bir giriş yöntemi yok. Silme işlemini yeniden denemeden önce destek ile iletişime geçin.",
+    "loadFailed": "Bağlı giriş yöntemleriniz yüklenemedi. Bağlantınızı kontrol edip yeniden deneyin.",
+    "retryFailed": "Kimliğiniz doğrulandı, ancak silme işlemi gönderilemedi. Bu iletişim kutusunu kapatıp silme işlemini yeniden deneyin.",
+    "emailMissing": "Bu bağlı e-posta yönteminin adresi yok. Başka bir yöntem seçin.",
+    "differentAccount": "Bu giriş başka bir hesaba ait. Geçerli hesabınız değiştirilmedi.",
+    "providerRejected": "Bu doğrulama reddedildi. Hesabı veya kodu kontrol edip yeniden deneyin.",
+    "genericFailure": "Yeniden kimlik doğrulama başarısız. Bağlantınızı kontrol edip yeniden deneyin."
+  },
+  "actions": {
+    "cancel": "Vazgeç",
+    "retry": "Yeniden Dene"
+  },
+  "common": {
+    "unavailable": "Kullanılamıyor"
+  }
+}
