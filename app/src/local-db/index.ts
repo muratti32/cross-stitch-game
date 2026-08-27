@@ -117,20 +117,192 @@ export function getActiveIdentity(): string | null {
 }
 
 /**
- * Namespace manager: openNamespace(identity) returns the DB handle for the active identity.
- * It closes the existing handle if the identity changes.
- * 
- * Note on iOS Storage Protection:
- * iOS database files created under the Documents/Library directories are protected by
- * default with iOS hardware-based Data Protection, ensuring encryption while locked.
+ * ---------------------------------------------------------------------------
+ * Access serialization
+ * ---------------------------------------------------------------------------
+ *
+ * `dbInstance` is a single shared native handle. Two classes of operation touch
+ * it:
+ *   - "structural" operations (open / close / adopt) which replace or tear
+ *     down the handle entirely, and
+ *   - "query" operations (every runAsync/getAllAsync/getFirstAsync/
+ *     prepareAsync/transaction call) which read the current handle and use it.
+ *
+ * Without coordination, a structural operation can call `closeAsync()` while a
+ * query still holds a reference to the same handle, or two structural
+ * operations can race each other (both missing the "already open" fast path
+ * and both closing + reopening). That is a use-after-free on the native side:
+ * SIGSEGV in pthread_mutex_lock/sqlite3_reset, EXC_BAD_ACCESS in
+ * SQLiteModule.finalize, SIGSEGV in sqlite3_exec, and NPEs out of
+ * NativeDatabase.prepareAsync all trace back to this race.
+ *
+ * This is a writer-preferring reader/writer gate:
+ *   - any number of "shared" leases (queries) may be held concurrently against
+ *     the current handle;
+ *   - "exclusive" operations (structural changes) wait for every outstanding
+ *     shared lease to drain before they touch `dbInstance`;
+ *   - as soon as an exclusive operation is requested - even before it starts
+ *     waiting for the drain - no *new* shared lease is granted until every
+ *     currently pending-or-active exclusive operation has finished. This
+ *     bounds the drain: once a structural op is queued, in-flight queries are
+ *     still allowed to finish (they already hold their lease), but no new one
+ *     can start and refill `sharedCount`, so it is guaranteed to reach 0.
+ *     Without this, continuous query load (e.g. steady stitch/progress writes
+ *     during gameplay) could keep granting new shared leases forever and an
+ *     openNamespace()/adoptPreIdentityDatabase()/deleteNamespaceFiles() call
+ *     would never proceed - trading the original use-after-free crash for an
+ *     indefinite hang on identity switch, which is just as unacceptable.
+ *   - exclusive operations are additionally serialized against each other via
+ *     `exclusiveChain`, so concurrent openNamespace/adopt/delete calls never
+ *     interleave.
+ *
+ * This gate is intentionally NOT reentrant: a caller that already holds a
+ * shared lease must never try to acquire another one (it would queue behind
+ * its own exclusive-pending check and deadlock). Every function in this file
+ * that is called both as a public entry point (via withDatabase) and
+ * internally by another such function is split into a `xWithDb(db, ...)`
+ * helper that takes the already-acquired handle and never calls
+ * withDatabase/acquireShared itself - see getSessionWithDb,
+ * getLatestCheckpointWithDb, and getProgressOpsWithDb below.
  */
-export async function openNamespace(identity: string | null): Promise<SQLite.SQLiteDatabase> {
-  // If we already have a dbInstance open and identity matches, return it
+
+let sharedCount = 0;
+let exclusiveActive = false;
+let exclusivePending = 0;
+let sharedWaiters: Array<() => void> = [];
+let drainWaiters: Array<() => void> = [];
+let exclusiveChain: Promise<void> = Promise.resolve();
+
+function acquireShared(): Promise<void> {
+  if (!exclusiveActive && exclusivePending === 0) {
+    sharedCount++;
+    return Promise.resolve();
+  }
+  return new Promise<void>((resolve) => {
+    sharedWaiters.push(() => {
+      sharedCount++;
+      resolve();
+    });
+  });
+}
+
+function releaseShared(): void {
+  sharedCount--;
+  if (sharedCount === 0 && drainWaiters.length > 0) {
+    const waiters = drainWaiters;
+    drainWaiters = [];
+    waiters.forEach((resolve) => resolve());
+  }
+}
+
+function waitForSharedDrain(): Promise<void> {
+  if (sharedCount === 0) {
+    return Promise.resolve();
+  }
+  return new Promise<void>((resolve) => {
+    drainWaiters.push(resolve);
+  });
+}
+
+/**
+ * Runs `fn` as an exclusive structural operation: waits for every in-flight
+ * shared lease (query) against the current handle to drain, serializes
+ * against any other queued exclusive operation, and blocks new shared leases
+ * from starting until `fn` completes. Failures are logged and rethrown - they
+ * are never swallowed - so a failed open/close/adopt surfaces as a normal
+ * rejection to whoever awaited it instead of vanishing or crashing a later,
+ * unrelated query.
+ */
+function withExclusive<T>(fn: () => Promise<T>): Promise<T> {
+  // Counted the instant the caller asks for exclusive access - not once it
+  // actually starts running - so acquireShared() stops granting new leases
+  // right away instead of only once this op reaches the front of
+  // `exclusiveChain` and begins its own drain-wait.
+  exclusivePending++;
+  const run = exclusiveChain.then(
+    () => runExclusive(fn),
+    () => runExclusive(fn)
+  );
+  exclusiveChain = run.then(
+    () => undefined,
+    () => undefined
+  );
+  const onSettled = () => {
+    exclusivePending--;
+    // Only release queued shared waiters once no exclusive op is pending or
+    // active anymore - otherwise a lease handed out here could still race a
+    // different exclusive op that is next in `exclusiveChain`.
+    if (exclusivePending === 0 && !exclusiveActive && sharedWaiters.length > 0) {
+      const waiters = sharedWaiters;
+      sharedWaiters = [];
+      waiters.forEach((resolve) => resolve());
+    }
+  };
+  run.then(onSettled, onSettled);
+  return run;
+}
+
+async function runExclusive<T>(fn: () => Promise<T>): Promise<T> {
+  await waitForSharedDrain();
+  exclusiveActive = true;
+  try {
+    return await fn();
+  } catch (error) {
+    console.error('Database structural operation failed:', error);
+    throw error;
+  } finally {
+    exclusiveActive = false;
+    // Shared leases are only released back to waiters once every
+    // pending-or-active exclusive op has drained (see the exclusivePending
+    // decrement in withExclusive) - not here. Waking them the instant THIS
+    // op's `exclusiveActive` flips off would hand out leases while another
+    // exclusive op is still queued right behind it, defeating the
+    // writer-preference guarantee that bounds the next drain.
+  }
+}
+
+/**
+ * Acquires a shared lease on the currently open database and runs `fn` with
+ * it. Opens the namespace lazily (matching the previous getDatabase()
+ * behavior) if nothing is open yet. This is the sole internal access point for
+ * every query in this module: it guarantees the handle passed to `fn` cannot
+ * be closed out from under it, and that a failure is logged before it
+ * propagates (never silently swallowed).
+ */
+async function withDatabase<T>(fn: (db: SQLite.SQLiteDatabase) => Promise<T>): Promise<T> {
+  for (;;) {
+    if (!dbInstance) {
+      await openNamespace(activeIdentity);
+      continue;
+    }
+    await acquireShared();
+    const db = dbInstance;
+    if (!db) {
+      // Closed by a structural operation between the check above and
+      // acquiring the lease. Release and retry against whatever is open now.
+      releaseShared();
+      continue;
+    }
+    try {
+      return await fn(db);
+    } catch (error) {
+      console.error('Database query failed:', error);
+      throw error;
+    } finally {
+      releaseShared();
+    }
+  }
+}
+
+/**
+ * Opens (or replaces) the current handle for `identity`, without acquiring
+ * the exclusive lock itself. Callers must already hold it via withExclusive.
+ */
+async function openNamespaceLocked(identity: string | null): Promise<SQLite.SQLiteDatabase> {
   if (dbInstance && activeIdentity === identity) {
     return dbInstance;
   }
 
-  // Close old database instance if it exists
   if (dbInstance) {
     try {
       await dbInstance.closeAsync();
@@ -143,22 +315,50 @@ export async function openNamespace(identity: string | null): Promise<SQLite.SQL
   activeIdentity = identity;
 
   const filename = getDatabaseFilename(identity);
-  dbInstance = await SQLite.openDatabaseAsync(filename);
+  const opened = await SQLite.openDatabaseAsync(filename);
+  dbInstance = opened;
 
   // Auto-initialize the newly opened database
-  await initDatabaseForDb(dbInstance);
+  await initDatabaseForDb(opened);
 
-  return dbInstance;
+  return opened;
+}
+
+/**
+ * Namespace manager: openNamespace(identity) returns the DB handle for the active identity.
+ * It closes the existing handle if the identity changes.
+ *
+ * Safe under concurrent calls: identical concurrent calls (same identity) are
+ * serialized behind the exclusive lock and every one after the first just
+ * observes the already-open handle via the fast path; concurrent calls with
+ * different identities are likewise serialized so only one close+reopen ever
+ * happens at a time, and no in-flight query can observe a half-closed handle.
+ *
+ * Note on iOS Storage Protection:
+ * iOS database files created under the Documents/Library directories are protected by
+ * default with iOS hardware-based Data Protection, ensuring encryption while locked.
+ */
+export async function openNamespace(identity: string | null): Promise<SQLite.SQLiteDatabase> {
+  // Fast path outside the lock: avoids queuing behind the exclusive chain in
+  // the overwhelmingly common case where nothing needs to change. Safe
+  // because openNamespaceLocked() re-checks the same condition once it
+  // actually holds the lock, so a race here just falls through to the lock.
+  if (dbInstance && activeIdentity === identity) {
+    return dbInstance;
+  }
+  return withExclusive(() => openNamespaceLocked(identity));
 }
 
 /**
  * Gets the open database instance, opening it if it doesn't exist yet.
+ *
+ * Kept for external callers (e.g. the perf harness) that need direct access to
+ * the raw handle. Internal code in this module must use withDatabase()
+ * instead, which additionally holds a lease for the duration of the query so
+ * the handle cannot be closed underneath it.
  */
 export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
-  if (!dbInstance) {
-    dbInstance = await openNamespace(activeIdentity);
-  }
-  return dbInstance;
+  return withDatabase(async (db) => db);
 }
 
 let transactionQueue = Promise.resolve();
@@ -180,6 +380,11 @@ async function runInTransaction(
 /**
  * Adopts the offline/pre-identity database as the target guest's database.
  * Moves the database file and WAL/SHM files atomically if the pre-identity database exists.
+ *
+ * Runs as a single exclusive operation end-to-end (close -> move files ->
+ * reopen), so no concurrent query or other structural operation can observe
+ * the intermediate state where the pre-identity handle is closed but the
+ * guest namespace isn't open yet.
  */
 export async function adoptPreIdentityDatabase(guestId: string): Promise<void> {
   const documentDirectory = FileSystem.documentDirectory;
@@ -189,58 +394,65 @@ export async function adoptPreIdentityDatabase(guestId: string): Promise<void> {
     return;
   }
 
-  const preDbName = getDatabaseFilename(null);
-  const guestDbName = getDatabaseFilename(guestId);
+  await withExclusive(async () => {
+    const preDbName = getDatabaseFilename(null);
+    const guestDbName = getDatabaseFilename(guestId);
 
-  const preDbPath = getDatabasePath(documentDirectory, preDbName);
-  const guestDbPath = getDatabasePath(documentDirectory, guestDbName);
+    const preDbPath = getDatabasePath(documentDirectory, preDbName);
+    const guestDbPath = getDatabasePath(documentDirectory, guestDbName);
 
-  const preInfo = await FileSystem.getInfoAsync(preDbPath);
-  const guestInfo = await FileSystem.getInfoAsync(guestDbPath);
+    const preInfo = await FileSystem.getInfoAsync(preDbPath);
+    const guestInfo = await FileSystem.getInfoAsync(guestDbPath);
 
-  const hasPre = preInfo.exists;
-  const hasGuest = guestInfo.exists;
+    const hasPre = preInfo.exists;
+    const hasGuest = guestInfo.exists;
 
-  if (shouldAdopt(hasPre, hasGuest)) {
-    // 1. Close current dbInstance if open
-    if (dbInstance) {
-      await dbInstance.closeAsync();
-      dbInstance = null;
-    }
+    if (shouldAdopt(hasPre, hasGuest)) {
+      // 1. Close current dbInstance if open
+      if (dbInstance) {
+        try {
+          await dbInstance.closeAsync();
+        } catch (e) {
+          console.error('Failed to close database instance before adoption:', e);
+        }
+        dbInstance = null;
+      }
 
-    // 2. Rename the database file
-    await FileSystem.moveAsync({
-      from: preDbPath,
-      to: guestDbPath,
-    });
+      // 2. Rename the database file
+      await FileSystem.moveAsync({
+        from: preDbPath,
+        to: guestDbPath,
+      });
 
-    // 3. Move -wal and -shm files if they exist
-    const walPathFrom = `${preDbPath}-wal`;
-    const walPathTo = `${guestDbPath}-wal`;
-    const shmPathFrom = `${preDbPath}-shm`;
-    const shmPathTo = `${guestDbPath}-shm`;
+      // 3. Move -wal and -shm files if they exist
+      const walPathFrom = `${preDbPath}-wal`;
+      const walPathTo = `${guestDbPath}-wal`;
+      const shmPathFrom = `${preDbPath}-shm`;
+      const shmPathTo = `${guestDbPath}-shm`;
 
-    const walInfo = await FileSystem.getInfoAsync(walPathFrom);
-    if (walInfo.exists) {
-      try {
-        await FileSystem.moveAsync({ from: walPathFrom, to: walPathTo });
-      } catch (err) {
-        console.error('Failed to move wal file:', err);
+      const walInfo = await FileSystem.getInfoAsync(walPathFrom);
+      if (walInfo.exists) {
+        try {
+          await FileSystem.moveAsync({ from: walPathFrom, to: walPathTo });
+        } catch (err) {
+          console.error('Failed to move wal file:', err);
+        }
+      }
+
+      const shmInfo = await FileSystem.getInfoAsync(shmPathFrom);
+      if (shmInfo.exists) {
+        try {
+          await FileSystem.moveAsync({ from: shmPathFrom, to: shmPathTo });
+        } catch (err) {
+          console.error('Failed to move shm file:', err);
+        }
       }
     }
 
-    const shmInfo = await FileSystem.getInfoAsync(shmPathFrom);
-    if (shmInfo.exists) {
-      try {
-        await FileSystem.moveAsync({ from: shmPathFrom, to: shmPathTo });
-      } catch (err) {
-        console.error('Failed to move shm file:', err);
-      }
-    }
-  }
-
-  // 4. Open the new namespace
-  await openNamespace(guestId);
+    // 4. Open the new namespace (in the same exclusive op, so nobody can
+    // observe the closed-but-not-yet-reopened gap).
+    await openNamespaceLocked(guestId);
+  });
 }
 
 import { packCompletedBitmap, unpackCompletedBitmap, generateUUID } from './helpers';
@@ -252,7 +464,7 @@ export { packCompletedBitmap, unpackCompletedBitmap, generateUUID };
 export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void> {
   // Enable WAL mode
   await db.execAsync('PRAGMA journal_mode=WAL;');
-  
+
   // Ensure the base sessions table exists
   await db.execAsync(`
     CREATE TABLE IF NOT EXISTS sessions (
@@ -504,119 +716,127 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
  * Initializes the database tables and runs migrations.
  */
 export async function initDatabase(): Promise<void> {
-  const db = await getDatabase();
-  await initDatabaseForDb(db);
+  await withDatabase((db) => initDatabaseForDb(db));
 }
 
 /**
  * Retrieves the device ID, generating it once if it doesn't exist yet.
  */
 export async function getDeviceId(): Promise<string> {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{ value: string }>(
-    "SELECT value FROM device_config WHERE key = 'device_id'"
-  );
-  if (row) {
-    return row.value;
-  }
-  const newId = generateUUID();
-  await db.runAsync(
-    "INSERT OR REPLACE INTO device_config (key, value) VALUES ('device_id', ?)",
-    newId
-  );
-  return newId;
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{ value: string }>(
+      "SELECT value FROM device_config WHERE key = 'device_id'"
+    );
+    if (row) {
+      return row.value;
+    }
+    const newId = generateUUID();
+    await db.runAsync(
+      "INSERT OR REPLACE INTO device_config (key, value) VALUES ('device_id', ?)",
+      newId
+    );
+    return newId;
+  });
 }
 
 /**
  * Retrieves the player's handedness layout preference, default to 'right'.
  */
 export async function getHandedness(): Promise<'left' | 'right'> {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{ value: string }>(
-    "SELECT value FROM device_config WHERE key = 'handedness'"
-  );
-  if (row && (row.value === 'left' || row.value === 'right')) {
-    return row.value as 'left' | 'right';
-  }
-  return 'right';
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{ value: string }>(
+      "SELECT value FROM device_config WHERE key = 'handedness'"
+    );
+    if (row && (row.value === 'left' || row.value === 'right')) {
+      return row.value as 'left' | 'right';
+    }
+    return 'right';
+  });
 }
 
 /**
  * Saves the player's handedness layout preference.
  */
 export async function setHandedness(handedness: 'left' | 'right'): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    "INSERT OR REPLACE INTO device_config (key, value) VALUES ('handedness', ?)",
-    handedness
-  );
+  await withDatabase(async (db) => {
+    await db.runAsync(
+      "INSERT OR REPLACE INTO device_config (key, value) VALUES ('handedness', ?)",
+      handedness
+    );
+  });
 }
 
 export async function getDeviceConfigValue(key: string): Promise<string | null> {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{ value: string }>(
-    'SELECT value FROM device_config WHERE key = ?',
-    key,
-  );
-  return row?.value ?? null;
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{ value: string }>(
+      'SELECT value FROM device_config WHERE key = ?',
+      key,
+    );
+    return row?.value ?? null;
+  });
 }
 
 export async function setDeviceConfigValue(key: string, value: string): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    'INSERT OR REPLACE INTO device_config (key, value) VALUES (?, ?)',
-    key,
-    value,
-  );
+  await withDatabase(async (db) => {
+    await db.runAsync(
+      'INSERT OR REPLACE INTO device_config (key, value) VALUES (?, ?)',
+      key,
+      value,
+    );
+  });
 }
 
 export async function setDeviceConfigValues(
   entries: readonly (readonly [key: string, value: string])[],
 ): Promise<void> {
-  const db = await getDatabase();
-  await runInTransaction(db, async () => {
-    for (const [key, value] of entries) {
-      await db.runAsync(
-        'INSERT OR REPLACE INTO device_config (key, value) VALUES (?, ?)',
-        key,
-        value,
-      );
-    }
+  await withDatabase(async (db) => {
+    await runInTransaction(db, async () => {
+      for (const [key, value] of entries) {
+        await db.runAsync(
+          'INSERT OR REPLACE INTO device_config (key, value) VALUES (?, ?)',
+          key,
+          value,
+        );
+      }
+    });
   });
 }
 
 /** Existing sessions or operations identify an upgraded install, not a first launch. */
 export async function hasPlayHistory(): Promise<boolean> {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{ present: number }>(`
-    SELECT EXISTS(
-      SELECT 1 FROM sessions LIMIT 1
-    ) OR EXISTS(
-      SELECT 1 FROM progress_ops LIMIT 1
-    ) AS present
-  `);
-  return row?.present === 1;
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{ present: number }>(`
+      SELECT EXISTS(
+        SELECT 1 FROM sessions LIMIT 1
+      ) OR EXISTS(
+        SELECT 1 FROM progress_ops LIMIT 1
+      ) AS present
+    `);
+    return row?.present === 1;
+  });
 }
 
 /**
  * Checks if the player has seen the guest data risk notice.
  */
 export async function hasSeenGuestDataRiskNotice(): Promise<boolean> {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{ value: string }>(
-    "SELECT value FROM device_config WHERE key = 'guest_data_risk_notice_seen'"
-  );
-  return row?.value === '1';
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{ value: string }>(
+      "SELECT value FROM device_config WHERE key = 'guest_data_risk_notice_seen'"
+    );
+    return row?.value === '1';
+  });
 }
 
 /**
  * Marks that the player has seen the guest data risk notice.
  */
 export async function markGuestDataRiskNoticeSeen(): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    "INSERT OR REPLACE INTO device_config (key, value) VALUES ('guest_data_risk_notice_seen', '1')"
-  );
+  await withDatabase(async (db) => {
+    await db.runAsync(
+      "INSERT OR REPLACE INTO device_config (key, value) VALUES ('guest_data_risk_notice_seen', '1')"
+    );
+  });
 }
 
 
@@ -624,19 +844,20 @@ export async function markGuestDataRiskNoticeSeen(): Promise<void> {
  * Gets and increments the global monotonic sequence counter for this device.
  */
 export async function getNextDeviceSeq(): Promise<number> {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{ value: string }>(
-    "SELECT value FROM device_config WHERE key = 'device_seq'"
-  );
-  let nextSeq = 1;
-  if (row) {
-    nextSeq = parseInt(row.value, 10) + 1;
-  }
-  await db.runAsync(
-    "INSERT OR REPLACE INTO device_config (key, value) VALUES ('device_seq', ?)",
-    nextSeq.toString()
-  );
-  return nextSeq;
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{ value: string }>(
+      "SELECT value FROM device_config WHERE key = 'device_seq'"
+    );
+    let nextSeq = 1;
+    if (row) {
+      nextSeq = parseInt(row.value, 10) + 1;
+    }
+    await db.runAsync(
+      "INSERT OR REPLACE INTO device_config (key, value) VALUES ('device_seq', ?)",
+      nextSeq.toString()
+    );
+    return nextSeq;
+  });
 }
 
 /**
@@ -646,22 +867,24 @@ export async function getNextDeviceSeq(): Promise<number> {
  * replay of an already-applied sequence.
  */
 export async function getDeviceSeqHigh(): Promise<number> {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{ value: string }>(
-    "SELECT value FROM device_config WHERE key = 'device_seq'"
-  );
-  return row ? parseInt(row.value, 10) : 0;
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{ value: string }>(
+      "SELECT value FROM device_config WHERE key = 'device_seq'"
+    );
+    return row ? parseInt(row.value, 10) : 0;
+  });
 }
 
 /**
  * Persists the device's monotonic sequence high-water mark.
  */
 export async function setDeviceSeqHigh(value: number): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    "INSERT OR REPLACE INTO device_config (key, value) VALUES ('device_seq', ?)",
-    value.toString()
-  );
+  await withDatabase(async (db) => {
+    await db.runAsync(
+      "INSERT OR REPLACE INTO device_config (key, value) VALUES ('device_seq', ?)",
+      value.toString()
+    );
+  });
 }
 
 /**
@@ -683,43 +906,44 @@ export async function createSession(
   remoteSessionId: string | null = null,
   patternMeta: SessionPatternMeta | null = null
 ): Promise<StitchingSession> {
-  const db = await getDatabase();
-  const id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  const createdAt = new Date().toISOString();
+  return withDatabase(async (db) => {
+    const id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const createdAt = new Date().toISOString();
 
-  await db.runAsync(
-    `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, remote_session_id, title, preview_url, thumbnail_url, pattern_width, pattern_height)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    id,
-    patternId,
-    source,
-    checksum,
-    createdAt,
-    createdAt,
-    status,
-    remoteSessionId,
-    patternMeta?.title ?? null,
-    patternMeta?.previewUrl ?? null,
-    patternMeta?.thumbnailUrl ?? null,
-    patternMeta?.width ?? null,
-    patternMeta?.height ?? null
-  );
+    await db.runAsync(
+      `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, remote_session_id, title, preview_url, thumbnail_url, pattern_width, pattern_height)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      id,
+      patternId,
+      source,
+      checksum,
+      createdAt,
+      createdAt,
+      status,
+      remoteSessionId,
+      patternMeta?.title ?? null,
+      patternMeta?.previewUrl ?? null,
+      patternMeta?.thumbnailUrl ?? null,
+      patternMeta?.width ?? null,
+      patternMeta?.height ?? null
+    );
 
-  return {
-    id,
-    patternId,
-    source,
-    artifactChecksum: checksum,
-    createdAt,
-    updatedAt: createdAt,
-    status,
-    remoteSessionId,
-    title: patternMeta?.title ?? null,
-    previewUrl: patternMeta?.previewUrl ?? null,
-    thumbnailUrl: patternMeta?.thumbnailUrl ?? null,
-    patternWidth: patternMeta?.width ?? null,
-    patternHeight: patternMeta?.height ?? null,
-  };
+    return {
+      id,
+      patternId,
+      source,
+      artifactChecksum: checksum,
+      createdAt,
+      updatedAt: createdAt,
+      status,
+      remoteSessionId,
+      title: patternMeta?.title ?? null,
+      previewUrl: patternMeta?.previewUrl ?? null,
+      thumbnailUrl: patternMeta?.thumbnailUrl ?? null,
+      patternWidth: patternMeta?.width ?? null,
+      patternHeight: patternMeta?.height ?? null,
+    };
+  });
 }
 
 /**
@@ -728,114 +952,116 @@ export async function createSession(
 export async function createReplaySession(
   parentSessionId: string
 ): Promise<StitchingSession> {
-  const db = await getDatabase();
-  const parent = await getSession(parentSessionId);
-  if (!parent) {
-    throw new Error(`Parent session ${parentSessionId} not found`);
-  }
+  return withDatabase(async (db) => {
+    const parent = await getSessionWithDb(db, parentSessionId);
+    if (!parent) {
+      throw new Error(`Parent session ${parentSessionId} not found`);
+    }
 
-  const id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  const createdAt = new Date().toISOString();
-  const status = 'ready';
-  const source = parent.source;
-  const checksum = parent.artifactChecksum;
-  const patternId = parent.patternId;
+    const id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const createdAt = new Date().toISOString();
+    const status = 'ready';
+    const source = parent.source;
+    const checksum = parent.artifactChecksum;
+    const patternId = parent.patternId;
 
-  await db.runAsync(
-    `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, replay_of, title, preview_url, thumbnail_url, pattern_width, pattern_height)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    id,
-    patternId,
-    source,
-    checksum,
-    createdAt,
-    createdAt,
-    status,
-    parentSessionId,
-    parent.title ?? null,
-    parent.previewUrl ?? null,
-    parent.thumbnailUrl ?? null,
-    parent.patternWidth ?? null,
-    parent.patternHeight ?? null,
-  );
+    await db.runAsync(
+      `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, replay_of, title, preview_url, thumbnail_url, pattern_width, pattern_height)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      id,
+      patternId,
+      source,
+      checksum,
+      createdAt,
+      createdAt,
+      status,
+      parentSessionId,
+      parent.title ?? null,
+      parent.previewUrl ?? null,
+      parent.thumbnailUrl ?? null,
+      parent.patternWidth ?? null,
+      parent.patternHeight ?? null,
+    );
 
-  return {
-    id,
-    patternId,
-    source,
-    artifactChecksum: checksum,
-    createdAt,
-    updatedAt: createdAt,
-    status,
-    replayOf: parentSessionId,
-    title: parent.title ?? null,
-    previewUrl: parent.previewUrl ?? null,
-    thumbnailUrl: parent.thumbnailUrl ?? null,
-    patternWidth: parent.patternWidth ?? null,
-    patternHeight: parent.patternHeight ?? null,
-  };
+    return {
+      id,
+      patternId,
+      source,
+      artifactChecksum: checksum,
+      createdAt,
+      updatedAt: createdAt,
+      status,
+      replayOf: parentSessionId,
+      title: parent.title ?? null,
+      previewUrl: parent.previewUrl ?? null,
+      thumbnailUrl: parent.thumbnailUrl ?? null,
+      patternWidth: parent.patternWidth ?? null,
+      patternHeight: parent.patternHeight ?? null,
+    };
+  });
 }
 
 export async function findActiveSessionForPattern(
   patternId: string,
   source: PatternSource,
 ): Promise<StitchingSession | null> {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{ id: string }>(
-    "SELECT id FROM sessions WHERE pattern_id = ? AND source = ? AND status <> 'completed' ORDER BY created_at DESC",
-    patternId,
-    source,
-  );
-  if (!row) return null;
-  return getSession(row.id);
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{ id: string }>(
+      "SELECT id FROM sessions WHERE pattern_id = ? AND source = ? AND status <> 'completed' ORDER BY created_at DESC",
+      patternId,
+      source,
+    );
+    if (!row) return null;
+    return getSessionWithDb(db, row.id);
+  });
 }
 
 export async function getSessions(): Promise<StitchingSession[]> {
-  const db = await getDatabase();
-  const rows = await db.getAllAsync<{
-    id: string;
-    pattern_id: string;
-    source: string;
-    artifact_checksum: string;
-    created_at: string;
-    updated_at: string;
-    status: string;
-    completed_at?: string | null;
-    replay_of?: string | null;
-    remote_session_id?: string | null;
-    error_note?: string | null;
-    title?: string | null;
-    preview_url?: string | null;
-    thumbnail_url?: string | null;
-    pattern_width?: number | null;
-    pattern_height?: number | null;
-  }>('SELECT * FROM sessions ORDER BY updated_at DESC');
+  return withDatabase(async (db) => {
+    const rows = await db.getAllAsync<{
+      id: string;
+      pattern_id: string;
+      source: string;
+      artifact_checksum: string;
+      created_at: string;
+      updated_at: string;
+      status: string;
+      completed_at?: string | null;
+      replay_of?: string | null;
+      remote_session_id?: string | null;
+      error_note?: string | null;
+      title?: string | null;
+      preview_url?: string | null;
+      thumbnail_url?: string | null;
+      pattern_width?: number | null;
+      pattern_height?: number | null;
+    }>('SELECT * FROM sessions ORDER BY updated_at DESC');
 
-  return rows.map((row) => ({
-    id: row.id,
-    patternId: row.pattern_id,
-    source: row.source as PatternSource,
-    artifactChecksum: row.artifact_checksum,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-    status: row.status as 'preparing' | 'ready' | 'active' | 'completed',
-    completedAt: row.completed_at,
-    replayOf: row.replay_of,
-    remoteSessionId: row.remote_session_id,
-    errorNote: row.error_note,
-    title: row.title ?? null,
-    previewUrl: row.preview_url ?? null,
-    thumbnailUrl: row.thumbnail_url ?? null,
-    patternWidth: row.pattern_width ?? null,
-    patternHeight: row.pattern_height ?? null,
-  }));
+    return rows.map((row) => ({
+      id: row.id,
+      patternId: row.pattern_id,
+      source: row.source as PatternSource,
+      artifactChecksum: row.artifact_checksum,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+      status: row.status as 'preparing' | 'ready' | 'active' | 'completed',
+      completedAt: row.completed_at,
+      replayOf: row.replay_of,
+      remoteSessionId: row.remote_session_id,
+      errorNote: row.error_note,
+      title: row.title ?? null,
+      previewUrl: row.preview_url ?? null,
+      thumbnailUrl: row.thumbnail_url ?? null,
+      patternWidth: row.pattern_width ?? null,
+      patternHeight: row.pattern_height ?? null,
+    }));
+  });
 }
 
-/**
- * Retrieves a single stitching session by its ID.
- */
-export async function getSession(id: string): Promise<StitchingSession | null> {
-  const db = await getDatabase();
+async function getSessionWithDb(
+  db: SQLite.SQLiteDatabase,
+  id: string
+): Promise<StitchingSession | null> {
   const row = await db.getFirstAsync<{
     id: string;
     pattern_id: string;
@@ -880,6 +1106,13 @@ export async function getSession(id: string): Promise<StitchingSession | null> {
 }
 
 /**
+ * Retrieves a single stitching session by its ID.
+ */
+export async function getSession(id: string): Promise<StitchingSession | null> {
+  return withDatabase((db) => getSessionWithDb(db, id));
+}
+
+/**
  * Updates the status of a session, and completed_at if completed.
  */
 export async function updateSessionStatus(
@@ -887,25 +1120,26 @@ export async function updateSessionStatus(
   status: 'preparing' | 'ready' | 'active' | 'completed',
   completedAt?: string | null
 ): Promise<void> {
-  const db = await getDatabase();
-  const updatedAt = new Date().toISOString();
-  if (status === 'completed') {
-    const ts = completedAt || updatedAt;
-    await db.runAsync(
-      'UPDATE sessions SET status = ?, completed_at = ?, updated_at = ? WHERE id = ?',
-      status,
-      ts,
-      updatedAt,
-      id
-    );
-  } else {
-    await db.runAsync(
-      'UPDATE sessions SET status = ?, error_note = NULL, updated_at = ? WHERE id = ?',
-      status,
-      updatedAt,
-      id
-    );
-  }
+  await withDatabase(async (db) => {
+    const updatedAt = new Date().toISOString();
+    if (status === 'completed') {
+      const ts = completedAt || updatedAt;
+      await db.runAsync(
+        'UPDATE sessions SET status = ?, completed_at = ?, updated_at = ? WHERE id = ?',
+        status,
+        ts,
+        updatedAt,
+        id
+      );
+    } else {
+      await db.runAsync(
+        'UPDATE sessions SET status = ?, error_note = NULL, updated_at = ? WHERE id = ?',
+        status,
+        updatedAt,
+        id
+      );
+    }
+  });
 }
 
 /**
@@ -922,14 +1156,15 @@ export async function updateSessionAssetUrls(
   source: PatternSource,
   urls: { previewUrl: string | null; thumbnailUrl: string | null }
 ): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    'UPDATE sessions SET preview_url = ?, thumbnail_url = ? WHERE pattern_id = ? AND source = ?',
-    urls.previewUrl,
-    urls.thumbnailUrl,
-    patternId,
-    source
-  );
+  await withDatabase(async (db) => {
+    await db.runAsync(
+      'UPDATE sessions SET preview_url = ?, thumbnail_url = ? WHERE pattern_id = ? AND source = ?',
+      urls.previewUrl,
+      urls.thumbnailUrl,
+      patternId,
+      source
+    );
+  });
 }
 
 /**
@@ -939,22 +1174,24 @@ export async function updateSessionError(
   id: string,
   errorNote: string | null
 ): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    'UPDATE sessions SET error_note = ? WHERE id = ?',
-    errorNote,
-    id
-  );
+  await withDatabase(async (db) => {
+    await db.runAsync(
+      'UPDATE sessions SET error_note = ? WHERE id = ?',
+      errorNote,
+      id
+    );
+  });
 }
 
 /**
  * Deletes a session by its ID.
  */
 export async function deleteSession(id: string): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync('DELETE FROM sessions WHERE id = ?', id);
-  await db.runAsync('DELETE FROM progress_ops WHERE session_id = ?', id);
-  await db.runAsync('DELETE FROM checkpoints WHERE session_id = ?', id);
+  await withDatabase(async (db) => {
+    await db.runAsync('DELETE FROM sessions WHERE id = ?', id);
+    await db.runAsync('DELETE FROM progress_ops WHERE session_id = ?', id);
+    await db.runAsync('DELETE FROM checkpoints WHERE session_id = ?', id);
+  });
 }
 
 /**
@@ -962,46 +1199,47 @@ export async function deleteSession(id: string): Promise<void> {
  */
 export async function insertProgressOpsBatch(ops: ProgressOperation[]): Promise<void> {
   if (ops.length === 0) return;
-  const db = await getDatabase();
-  const latestBySession = new Map<string, string>();
-  await runInTransaction(db, async () => {
-    for (const op of ops) {
-      await db.runAsync(
-        `INSERT OR IGNORE INTO progress_ops (op_id, session_id, device_id, device_seq, cell_index, desired_state, base_revision, server_base_revision, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        op.opId,
-        op.sessionId,
-        op.deviceId,
-        op.deviceSeq,
-        op.cellIndex,
-        op.desiredState,
-        op.baseRevision,
-        op.serverBaseRevision ?? 0,
-        op.createdAt
-      );
-      const latest = latestBySession.get(op.sessionId);
-      if (!latest || op.createdAt > latest) {
-        latestBySession.set(op.sessionId, op.createdAt);
+  await withDatabase(async (db) => {
+    const latestBySession = new Map<string, string>();
+    await runInTransaction(db, async () => {
+      for (const op of ops) {
+        await db.runAsync(
+          `INSERT OR IGNORE INTO progress_ops (op_id, session_id, device_id, device_seq, cell_index, desired_state, base_revision, server_base_revision, created_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          op.opId,
+          op.sessionId,
+          op.deviceId,
+          op.deviceSeq,
+          op.cellIndex,
+          op.desiredState,
+          op.baseRevision,
+          op.serverBaseRevision ?? 0,
+          op.createdAt
+        );
+        const latest = latestBySession.get(op.sessionId);
+        if (!latest || op.createdAt > latest) {
+          latestBySession.set(op.sessionId, op.createdAt);
+        }
       }
-    }
-    for (const [sessionId, updatedAt] of latestBySession) {
-      await db.runAsync(
-        'UPDATE sessions SET updated_at = ? WHERE id = ?',
-        updatedAt,
-        sessionId
-      );
-    }
+      for (const [sessionId, updatedAt] of latestBySession) {
+        await db.runAsync(
+          'UPDATE sessions SET updated_at = ? WHERE id = ?',
+          updatedAt,
+          sessionId
+        );
+      }
+    });
   });
 }
 
 /**
  * Retrieves all progress operations for a session since a specific base revision.
  */
-export async function getProgressOps(
+async function getProgressOpsWithDb(
+  db: SQLite.SQLiteDatabase,
   sessionId: string,
   sinceRevision: number = 0
 ): Promise<ProgressOperation[]> {
-  const db = await getDatabase();
   const rows = await db.getAllAsync<ProgressOpRow>(
     'SELECT * FROM progress_ops WHERE session_id = ? AND base_revision >= ? ORDER BY device_seq ASC',
     sessionId,
@@ -1009,6 +1247,13 @@ export async function getProgressOps(
   );
 
   return rows.map(mapProgressOpRow);
+}
+
+export async function getProgressOps(
+  sessionId: string,
+  sinceRevision: number = 0
+): Promise<ProgressOperation[]> {
+  return withDatabase((db) => getProgressOpsWithDb(db, sessionId, sinceRevision));
 }
 
 interface ProgressOpRow {
@@ -1045,12 +1290,13 @@ function mapProgressOpRow(row: ProgressOpRow): ProgressOperation {
 export async function getUnackedProgressOps(
   sessionId: string
 ): Promise<ProgressOperation[]> {
-  const db = await getDatabase();
-  const rows = await db.getAllAsync<ProgressOpRow>(
-    'SELECT * FROM progress_ops WHERE session_id = ? AND acked = 0 ORDER BY device_seq ASC',
-    sessionId
-  );
-  return rows.map(mapProgressOpRow);
+  return withDatabase(async (db) => {
+    const rows = await db.getAllAsync<ProgressOpRow>(
+      'SELECT * FROM progress_ops WHERE session_id = ? AND acked = 0 ORDER BY device_seq ASC',
+      sessionId
+    );
+    return rows.map(mapProgressOpRow);
+  });
 }
 
 /**
@@ -1061,63 +1307,67 @@ export async function getUnackedProgressOps(
 export async function markProgressOpsAcked(opIds: string[]): Promise<void> {
   if (opIds.length === 0) return;
   markCriticalPathActivity('db-reconciliation', 'markProgressOpsAcked');
-  const db = await getDatabase();
-  await runInTransaction(db, async () => {
-    for (const opId of opIds) {
-      await db.runAsync('DELETE FROM progress_ops WHERE op_id = ?', opId);
-    }
+  await withDatabase(async (db) => {
+    await runInTransaction(db, async () => {
+      for (const opId of opIds) {
+        await db.runAsync('DELETE FROM progress_ops WHERE op_id = ?', opId);
+      }
+    });
   });
 }
 
 export async function insertGameplayEventsBatch(events: GameplayEvent[]): Promise<void> {
   if (events.length === 0) return;
-  const db = await getDatabase();
-  await runInTransaction(db, async () => {
-    for (const event of events) {
-      await db.runAsync(
-        `INSERT OR IGNORE INTO gameplay_events (event_id, session_id, kind, dmc_code, client_seq, occurred_at)
-         VALUES (?, ?, ?, ?, ?, ?)`,
-        event.eventId,
-        event.sessionId,
-        event.kind,
-        event.dmcCode,
-        event.clientSeq,
-        event.occurredAt,
-      );
-    }
+  await withDatabase(async (db) => {
+    await runInTransaction(db, async () => {
+      for (const event of events) {
+        await db.runAsync(
+          `INSERT OR IGNORE INTO gameplay_events (event_id, session_id, kind, dmc_code, client_seq, occurred_at)
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          event.eventId,
+          event.sessionId,
+          event.kind,
+          event.dmcCode,
+          event.clientSeq,
+          event.occurredAt,
+        );
+      }
+    });
   });
 }
 
 export async function getUnackedGameplayEvents(limit: number): Promise<GameplayEvent[]> {
-  const db = await getDatabase();
-  const rows = await db.getAllAsync<{
-    event_id: string;
-    session_id: string;
-    kind: string;
-    dmc_code: string;
-    client_seq: number;
-    occurred_at: string;
-  }>(
-    'SELECT event_id, session_id, kind, dmc_code, client_seq, occurred_at FROM gameplay_events WHERE acked = 0 ORDER BY rowid ASC LIMIT ?',
-    limit,
-  );
-  return rows.map((row) => ({
-    eventId: row.event_id,
-    sessionId: row.session_id,
-    kind: row.kind as GameplayEventKind,
-    dmcCode: row.dmc_code,
-    clientSeq: row.client_seq,
-    occurredAt: row.occurred_at,
-  }));
+  return withDatabase(async (db) => {
+    const rows = await db.getAllAsync<{
+      event_id: string;
+      session_id: string;
+      kind: string;
+      dmc_code: string;
+      client_seq: number;
+      occurred_at: string;
+    }>(
+      'SELECT event_id, session_id, kind, dmc_code, client_seq, occurred_at FROM gameplay_events WHERE acked = 0 ORDER BY rowid ASC LIMIT ?',
+      limit,
+    );
+    return rows.map((row) => ({
+      eventId: row.event_id,
+      sessionId: row.session_id,
+      kind: row.kind as GameplayEventKind,
+      dmcCode: row.dmc_code,
+      clientSeq: row.client_seq,
+      occurredAt: row.occurred_at,
+    }));
+  });
 }
 
 export async function markGameplayEventsAcked(eventIds: string[]): Promise<void> {
   if (eventIds.length === 0) return;
-  const db = await getDatabase();
-  await runInTransaction(db, async () => {
-    for (const eventId of eventIds) {
-      await db.runAsync('DELETE FROM gameplay_events WHERE event_id = ?', eventId);
-    }
+  await withDatabase(async (db) => {
+    await runInTransaction(db, async () => {
+      for (const eventId of eventIds) {
+        await db.runAsync('DELETE FROM gameplay_events WHERE event_id = ?', eventId);
+      }
+    });
   });
 }
 
@@ -1135,68 +1385,71 @@ export function analyticsGameplayEventQueueOverflow(count: number): number {
 export async function enqueueAnalyticsGameplayEvent(
   event: AnalyticsGameplayEvent,
 ): Promise<void> {
-  const db = await getDatabase();
-  await runInTransaction(db, async () => {
-    await db.runAsync(
-      `INSERT OR IGNORE INTO analytics_gameplay_events
-        (event_id, occurred_at, kind, payload_json, dedupe_key)
-       VALUES (?, ?, ?, ?, ?)`,
-      event.eventId,
-      event.occurredAt,
-      event.kind,
-      JSON.stringify(event.payload),
-      event.dedupeKey ?? null,
-    );
-
-    const countRow = await db.getFirstAsync<{ count: number }>(
-      'SELECT COUNT(*) AS count FROM analytics_gameplay_events',
-    );
-    const overflow = analyticsGameplayEventQueueOverflow(countRow?.count ?? 0);
-    if (overflow > 0) {
+  await withDatabase(async (db) => {
+    await runInTransaction(db, async () => {
       await db.runAsync(
-        `DELETE FROM analytics_gameplay_events WHERE rowid IN (
-          SELECT rowid FROM analytics_gameplay_events ORDER BY rowid ASC LIMIT ?
-        )`,
-        overflow,
+        `INSERT OR IGNORE INTO analytics_gameplay_events
+          (event_id, occurred_at, kind, payload_json, dedupe_key)
+         VALUES (?, ?, ?, ?, ?)`,
+        event.eventId,
+        event.occurredAt,
+        event.kind,
+        JSON.stringify(event.payload),
+        event.dedupeKey ?? null,
       );
-    }
+
+      const countRow = await db.getFirstAsync<{ count: number }>(
+        'SELECT COUNT(*) AS count FROM analytics_gameplay_events',
+      );
+      const overflow = analyticsGameplayEventQueueOverflow(countRow?.count ?? 0);
+      if (overflow > 0) {
+        await db.runAsync(
+          `DELETE FROM analytics_gameplay_events WHERE rowid IN (
+            SELECT rowid FROM analytics_gameplay_events ORDER BY rowid ASC LIMIT ?
+          )`,
+          overflow,
+        );
+      }
+    });
   });
 }
 
 export async function getUnackedAnalyticsGameplayEvents(
   limit: number,
 ): Promise<AnalyticsGameplayEvent[]> {
-  const db = await getDatabase();
-  const rows = await db.getAllAsync<{
-    event_id: string;
-    occurred_at: string;
-    kind: AnalyticsGameplayEvent['kind'];
-    payload_json: string;
-    dedupe_key: string | null;
-  }>(
-    `SELECT event_id, occurred_at, kind, payload_json, dedupe_key
-     FROM analytics_gameplay_events ORDER BY rowid ASC LIMIT ?`,
-    limit,
-  );
-  return rows.map((row) => ({
-    eventId: row.event_id,
-    occurredAt: row.occurred_at,
-    kind: row.kind,
-    payload: JSON.parse(row.payload_json) as AnalyticsGameplayEventPayload['payload'],
-    dedupeKey: row.dedupe_key ?? undefined,
-  }));
+  return withDatabase(async (db) => {
+    const rows = await db.getAllAsync<{
+      event_id: string;
+      occurred_at: string;
+      kind: AnalyticsGameplayEvent['kind'];
+      payload_json: string;
+      dedupe_key: string | null;
+    }>(
+      `SELECT event_id, occurred_at, kind, payload_json, dedupe_key
+       FROM analytics_gameplay_events ORDER BY rowid ASC LIMIT ?`,
+      limit,
+    );
+    return rows.map((row) => ({
+      eventId: row.event_id,
+      occurredAt: row.occurred_at,
+      kind: row.kind,
+      payload: JSON.parse(row.payload_json) as AnalyticsGameplayEventPayload['payload'],
+      dedupeKey: row.dedupe_key ?? undefined,
+    }));
+  });
 }
 
 export async function markAnalyticsGameplayEventsAcked(eventIds: string[]): Promise<void> {
   if (eventIds.length === 0) return;
-  const db = await getDatabase();
-  await runInTransaction(db, async () => {
-    for (const eventId of eventIds) {
-      await db.runAsync(
-        'DELETE FROM analytics_gameplay_events WHERE event_id = ?',
-        eventId,
-      );
-    }
+  await withDatabase(async (db) => {
+    await runInTransaction(db, async () => {
+      for (const eventId of eventIds) {
+        await db.runAsync(
+          'DELETE FROM analytics_gameplay_events WHERE event_id = ?',
+          eventId,
+        );
+      }
+    });
   });
 }
 
@@ -1206,50 +1459,53 @@ export async function markAnalyticsGameplayEventsAcked(eventIds: string[]): Prom
  * schema-valid and correlated across restart without exposing pattern data.
  */
 export async function getAnalyticsSessionId(sessionId: string): Promise<string> {
-  const db = await getDatabase();
-  const existing = await db.getFirstAsync<{ analytics_session_id: string }>(
-    'SELECT analytics_session_id FROM analytics_session_ids WHERE session_id = ?',
-    sessionId,
-  );
-  if (existing) {
-    return existing.analytics_session_id;
-  }
-
-  const analyticsSessionId = generateUUID();
-  await runInTransaction(db, async () => {
-    await db.runAsync(
-      `INSERT OR IGNORE INTO analytics_session_ids (session_id, analytics_session_id)
-       VALUES (?, ?)`,
+  return withDatabase(async (db) => {
+    const existing = await db.getFirstAsync<{ analytics_session_id: string }>(
+      'SELECT analytics_session_id FROM analytics_session_ids WHERE session_id = ?',
       sessionId,
-      analyticsSessionId,
     );
+    if (existing) {
+      return existing.analytics_session_id;
+    }
+
+    const analyticsSessionId = generateUUID();
+    await runInTransaction(db, async () => {
+      await db.runAsync(
+        `INSERT OR IGNORE INTO analytics_session_ids (session_id, analytics_session_id)
+         VALUES (?, ?)`,
+        sessionId,
+        analyticsSessionId,
+      );
+    });
+    const created = await db.getFirstAsync<{ analytics_session_id: string }>(
+      'SELECT analytics_session_id FROM analytics_session_ids WHERE session_id = ?',
+      sessionId,
+    );
+    if (!created) {
+      throw new Error('Could not persist analytics session identifier');
+    }
+    return created.analytics_session_id;
   });
-  const created = await db.getFirstAsync<{ analytics_session_id: string }>(
-    'SELECT analytics_session_id FROM analytics_session_ids WHERE session_id = ?',
-    sessionId,
-  );
-  if (!created) {
-    throw new Error('Could not persist analytics session identifier');
-  }
-  return created.analytics_session_id;
 }
 
 export async function getGameplaySeqHigh(sessionId: string): Promise<number> {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{ seq: number }>(
-    'SELECT seq FROM gameplay_event_seq WHERE session_id = ?',
-    sessionId,
-  );
-  return row?.seq ?? 0;
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{ seq: number }>(
+      'SELECT seq FROM gameplay_event_seq WHERE session_id = ?',
+      sessionId,
+    );
+    return row?.seq ?? 0;
+  });
 }
 
 export async function setGameplaySeqHigh(sessionId: string, value: number): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    'INSERT OR REPLACE INTO gameplay_event_seq (session_id, seq) VALUES (?, ?)',
-    sessionId,
-    value,
-  );
+  await withDatabase(async (db) => {
+    await db.runAsync(
+      'INSERT OR REPLACE INTO gameplay_event_seq (session_id, seq) VALUES (?, ?)',
+      sessionId,
+      value,
+    );
+  });
 }
 
 /**
@@ -1259,22 +1515,23 @@ export async function getSyncSnapshot(
   sessionId: string
 ): Promise<SyncSnapshot | null> {
   markCriticalPathActivity('db-reconciliation', 'getSyncSnapshot');
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{
-    session_id: string;
-    server_revision: number;
-    packed_bitmap: Uint8Array | ArrayBuffer | number[];
-    terminal: number;
-    updated_at: string;
-  }>('SELECT * FROM sync_snapshots WHERE session_id = ?', sessionId);
-  if (!row) return null;
-  return {
-    sessionId: row.session_id,
-    serverRevision: row.server_revision,
-    packedBitmap: normalizePackedBitmap(row.packed_bitmap),
-    terminal: row.terminal === 1,
-    updatedAt: row.updated_at,
-  };
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{
+      session_id: string;
+      server_revision: number;
+      packed_bitmap: Uint8Array | ArrayBuffer | number[];
+      terminal: number;
+      updated_at: string;
+    }>('SELECT * FROM sync_snapshots WHERE session_id = ?', sessionId);
+    if (!row) return null;
+    return {
+      sessionId: row.session_id,
+      serverRevision: row.server_revision,
+      packedBitmap: normalizePackedBitmap(row.packed_bitmap),
+      terminal: row.terminal === 1,
+      updatedAt: row.updated_at,
+    };
+  });
 }
 
 /**
@@ -1287,16 +1544,17 @@ export async function saveSyncSnapshot(
   terminal: boolean
 ): Promise<void> {
   markCriticalPathActivity('db-reconciliation', 'saveSyncSnapshot');
-  const db = await getDatabase();
-  await db.runAsync(
-    `INSERT OR REPLACE INTO sync_snapshots (session_id, server_revision, packed_bitmap, terminal, updated_at)
-     VALUES (?, ?, ?, ?, ?)`,
-    sessionId,
-    serverRevision,
-    packCompletedBitmap(completed),
-    terminal ? 1 : 0,
-    new Date().toISOString()
-  );
+  await withDatabase(async (db) => {
+    await db.runAsync(
+      `INSERT OR REPLACE INTO sync_snapshots (session_id, server_revision, packed_bitmap, terminal, updated_at)
+       VALUES (?, ?, ?, ?, ?)`,
+      sessionId,
+      serverRevision,
+      packCompletedBitmap(completed),
+      terminal ? 1 : 0,
+      new Date().toISOString()
+    );
+  });
 }
 
 function normalizePackedBitmap(
@@ -1316,34 +1574,32 @@ export async function saveCheckpoint(
   revision: number,
   completed: Uint8Array
 ): Promise<void> {
-  const db = await getDatabase();
-  const packed = packCompletedBitmap(completed);
-  const createdAt = new Date().toISOString();
+  await withDatabase(async (db) => {
+    const packed = packCompletedBitmap(completed);
+    const createdAt = new Date().toISOString();
 
-  await db.runAsync(
-    `INSERT OR REPLACE INTO checkpoints (session_id, revision, packed_bitmap, created_at)
-     VALUES (?, ?, ?, ?)`,
-    sessionId,
-    revision,
-    packed,
-    createdAt
-  );
+    await db.runAsync(
+      `INSERT OR REPLACE INTO checkpoints (session_id, revision, packed_bitmap, created_at)
+       VALUES (?, ?, ?, ?)`,
+      sessionId,
+      revision,
+      packed,
+      createdAt
+    );
 
-  // Compact: delete progress operations older than this checkpoint
-  await db.runAsync(
-    `DELETE FROM progress_ops WHERE session_id = ? AND base_revision < ?`,
-    sessionId,
-    revision
-  );
+    // Compact: delete progress operations older than this checkpoint
+    await db.runAsync(
+      `DELETE FROM progress_ops WHERE session_id = ? AND base_revision < ?`,
+      sessionId,
+      revision
+    );
+  });
 }
 
-/**
- * Retrieves the latest checkpoint for a session.
- */
-export async function getLatestCheckpoint(
+async function getLatestCheckpointWithDb(
+  db: SQLite.SQLiteDatabase,
   sessionId: string
 ): Promise<Checkpoint | null> {
-  const db = await getDatabase();
   const row = await db.getFirstAsync<{
     session_id: string;
     revision: number;
@@ -1378,6 +1634,15 @@ export async function getLatestCheckpoint(
 }
 
 /**
+ * Retrieves the latest checkpoint for a session.
+ */
+export async function getLatestCheckpoint(
+  sessionId: string
+): Promise<Checkpoint | null> {
+  return withDatabase((db) => getLatestCheckpointWithDb(db, sessionId));
+}
+
+/**
  * Retrieves the count of completed cells for a session by combining the latest checkpoint and any newer operations.
  */
 export async function getSessionCompletedCount(
@@ -1385,46 +1650,50 @@ export async function getSessionCompletedCount(
   width: number,
   height: number
 ): Promise<number> {
-  const cellsLength = width * height;
-  const checkpoint = await getLatestCheckpoint(sessionId);
-  let completed: Uint8Array;
-  let revision = 0;
-  if (checkpoint) {
-    completed = unpackCompletedBitmap(checkpoint.packedBitmap, cellsLength);
-    revision = checkpoint.revision;
-  } else {
-    completed = new Uint8Array(cellsLength);
-  }
-
-  const ops = await getProgressOps(sessionId, revision);
-  for (const op of ops) {
-    if (op.cellIndex >= 0 && op.cellIndex < cellsLength) {
-      completed[op.cellIndex] = op.desiredState === 'completed' ? 1 : 0;
+  return withDatabase(async (db) => {
+    const cellsLength = width * height;
+    const checkpoint = await getLatestCheckpointWithDb(db, sessionId);
+    let completed: Uint8Array;
+    let revision = 0;
+    if (checkpoint) {
+      completed = unpackCompletedBitmap(checkpoint.packedBitmap, cellsLength);
+      revision = checkpoint.revision;
+    } else {
+      completed = new Uint8Array(cellsLength);
     }
-  }
 
-  let count = 0;
-  for (let i = 0; i < completed.length; i++) {
-    if (completed[i] === 1) {
-      count++;
+    const ops = await getProgressOpsWithDb(db, sessionId, revision);
+    for (const op of ops) {
+      if (op.cellIndex >= 0 && op.cellIndex < cellsLength) {
+        completed[op.cellIndex] = op.desiredState === 'completed' ? 1 : 0;
+      }
     }
-  }
-  return count;
+
+    let count = 0;
+    for (let i = 0; i < completed.length; i++) {
+      if (completed[i] === 1) {
+        count++;
+      }
+    }
+    return count;
+  });
 }
 
 /**
  * Deletes the database files (db, wal, shm) for a given identity from the device.
  */
 export async function deleteNamespaceFiles(identity: string | null): Promise<void> {
-  if (dbInstance && activeIdentity === identity) {
-    try {
-      await dbInstance.closeAsync();
-    } catch (e) {
-      console.error('Failed to close database instance before deletion:', e);
+  await withExclusive(async () => {
+    if (dbInstance && activeIdentity === identity) {
+      try {
+        await dbInstance.closeAsync();
+      } catch (e) {
+        console.error('Failed to close database instance before deletion:', e);
+      }
+      dbInstance = null;
+      activeIdentity = null;
     }
-    dbInstance = null;
-    activeIdentity = null;
-  }
+  });
 
   const documentDirectory = FileSystem.documentDirectory;
   if (!documentDirectory) {
@@ -1456,74 +1725,80 @@ export interface CatalogCacheEntry {
 }
 
 export async function getCatalogCache(surfaceKey: string): Promise<CatalogCacheEntry | null> {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{
-    surface_key: string;
-    payload_json: string;
-    fetched_at: string;
-  }>('SELECT * FROM catalog_cache WHERE surface_key = ?', surfaceKey);
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{
+      surface_key: string;
+      payload_json: string;
+      fetched_at: string;
+    }>('SELECT * FROM catalog_cache WHERE surface_key = ?', surfaceKey);
 
-  if (!row) return null;
-  return {
-    surfaceKey: row.surface_key,
-    payloadJson: row.payload_json,
-    fetchedAt: row.fetched_at,
-  };
+    if (!row) return null;
+    return {
+      surfaceKey: row.surface_key,
+      payloadJson: row.payload_json,
+      fetchedAt: row.fetched_at,
+    };
+  });
 }
 
 export async function setCatalogCache(surfaceKey: string, payloadJson: string): Promise<void> {
-  const db = await getDatabase();
-  const fetchedAt = new Date().toISOString();
-  await db.runAsync(
-    'INSERT OR REPLACE INTO catalog_cache (surface_key, payload_json, fetched_at) VALUES (?, ?, ?)',
-    surfaceKey,
-    payloadJson,
-    fetchedAt
-  );
+  await withDatabase(async (db) => {
+    const fetchedAt = new Date().toISOString();
+    await db.runAsync(
+      'INSERT OR REPLACE INTO catalog_cache (surface_key, payload_json, fetched_at) VALUES (?, ?, ?)',
+      surfaceKey,
+      payloadJson,
+      fetchedAt
+    );
+  });
 }
 
 export async function addPendingCancel(remoteSessionId: string): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    'INSERT OR IGNORE INTO pending_cancels (remote_session_id) VALUES (?)',
-    remoteSessionId
-  );
+  await withDatabase(async (db) => {
+    await db.runAsync(
+      'INSERT OR IGNORE INTO pending_cancels (remote_session_id) VALUES (?)',
+      remoteSessionId
+    );
+  });
 }
 
 export async function getPendingCancels(): Promise<string[]> {
-  const db = await getDatabase();
-  const rows = await db.getAllAsync<{ remote_session_id: string }>(
-    'SELECT remote_session_id FROM pending_cancels'
-  );
-  return rows.map((row) => row.remote_session_id);
+  return withDatabase(async (db) => {
+    const rows = await db.getAllAsync<{ remote_session_id: string }>(
+      'SELECT remote_session_id FROM pending_cancels'
+    );
+    return rows.map((row) => row.remote_session_id);
+  });
 }
 
 export async function removePendingCancel(remoteSessionId: string): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync(
-    'DELETE FROM pending_cancels WHERE remote_session_id = ?',
-    remoteSessionId
-  );
+  await withDatabase(async (db) => {
+    await db.runAsync(
+      'DELETE FROM pending_cancels WHERE remote_session_id = ?',
+      remoteSessionId
+    );
+  });
 }
 
 export async function getEditorDraft(sourcePatternId: string): Promise<EditorDraft | null> {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{
-    source_pattern_id: string;
-    width: number;
-    height: number;
-    history_json: string;
-    updated_at: string;
-  }>('SELECT * FROM editor_drafts WHERE source_pattern_id = ?', sourcePatternId);
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{
+      source_pattern_id: string;
+      width: number;
+      height: number;
+      history_json: string;
+      updated_at: string;
+    }>('SELECT * FROM editor_drafts WHERE source_pattern_id = ?', sourcePatternId);
 
-  if (!row) return null;
-  return {
-    sourcePatternId: row.source_pattern_id,
-    width: row.width,
-    height: row.height,
-    history: JSON.parse(row.history_json),
-    updatedAt: row.updated_at,
-  };
+    if (!row) return null;
+    return {
+      sourcePatternId: row.source_pattern_id,
+      width: row.width,
+      height: row.height,
+      history: JSON.parse(row.history_json),
+      updatedAt: row.updated_at,
+    };
+  });
 }
 
 export async function saveEditorDraft(
@@ -1532,104 +1807,112 @@ export async function saveEditorDraft(
   height: number,
   history: EditorDraftHistory,
 ): Promise<void> {
-  const db = await getDatabase();
-  const updatedAt = new Date().toISOString();
-  const historyJson = JSON.stringify(history);
-  await db.runAsync(
-    'INSERT OR REPLACE INTO editor_drafts (source_pattern_id, width, height, history_json, updated_at) VALUES (?, ?, ?, ?, ?)',
-    sourcePatternId,
-    width,
-    height,
-    historyJson,
-    updatedAt,
-  );
+  await withDatabase(async (db) => {
+    const updatedAt = new Date().toISOString();
+    const historyJson = JSON.stringify(history);
+    await db.runAsync(
+      'INSERT OR REPLACE INTO editor_drafts (source_pattern_id, width, height, history_json, updated_at) VALUES (?, ?, ?, ?, ?)',
+      sourcePatternId,
+      width,
+      height,
+      historyJson,
+      updatedAt,
+    );
+  });
 }
 
 export async function deleteEditorDraft(sourcePatternId: string): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync('DELETE FROM editor_drafts WHERE source_pattern_id = ?', sourcePatternId);
+  await withDatabase(async (db) => {
+    await db.runAsync('DELETE FROM editor_drafts WHERE source_pattern_id = ?', sourcePatternId);
+  });
 }
 
 export async function addPendingPersonalPattern(record: PendingPersonalPattern): Promise<void> {
-  const db = await getDatabase();
-  const paletteJson = JSON.stringify(record.palette);
-  await db.runAsync(
-    'INSERT OR IGNORE INTO pending_personal_patterns (pattern_id, source_pattern_id, title, width, height, palette_json, grid_base64, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-    record.patternId,
-    record.sourcePatternId,
-    record.title,
-    record.width,
-    record.height,
-    paletteJson,
-    record.gridBase64,
-    record.createdAt,
-  );
+  await withDatabase(async (db) => {
+    const paletteJson = JSON.stringify(record.palette);
+    await db.runAsync(
+      'INSERT OR IGNORE INTO pending_personal_patterns (pattern_id, source_pattern_id, title, width, height, palette_json, grid_base64, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      record.patternId,
+      record.sourcePatternId,
+      record.title,
+      record.width,
+      record.height,
+      paletteJson,
+      record.gridBase64,
+      record.createdAt,
+    );
+  });
 }
 
 export async function getPendingPersonalPatterns(): Promise<PendingPersonalPattern[]> {
-  const db = await getDatabase();
-  const rows = await db.getAllAsync<{
-    pattern_id: string;
-    source_pattern_id: string;
-    title: string;
-    width: number;
-    height: number;
-    palette_json: string;
-    grid_base64: string;
-    created_at: string;
-  }>('SELECT * FROM pending_personal_patterns');
+  return withDatabase(async (db) => {
+    const rows = await db.getAllAsync<{
+      pattern_id: string;
+      source_pattern_id: string;
+      title: string;
+      width: number;
+      height: number;
+      palette_json: string;
+      grid_base64: string;
+      created_at: string;
+    }>('SELECT * FROM pending_personal_patterns');
 
-  return rows.map((row) => ({
-    patternId: row.pattern_id,
-    sourcePatternId: row.source_pattern_id,
-    title: row.title,
-    width: row.width,
-    height: row.height,
-    palette: JSON.parse(row.palette_json),
-    gridBase64: row.grid_base64,
-    createdAt: row.created_at,
-  }));
+    return rows.map((row) => ({
+      patternId: row.pattern_id,
+      sourcePatternId: row.source_pattern_id,
+      title: row.title,
+      width: row.width,
+      height: row.height,
+      palette: JSON.parse(row.palette_json),
+      gridBase64: row.grid_base64,
+      createdAt: row.created_at,
+    }));
+  });
 }
 
 export async function removePendingPersonalPattern(patternId: string): Promise<void> {
-  const db = await getDatabase();
-  await db.runAsync('DELETE FROM pending_personal_patterns WHERE pattern_id = ?', patternId);
+  await withDatabase(async (db) => {
+    await db.runAsync('DELETE FROM pending_personal_patterns WHERE pattern_id = ?', patternId);
+  });
 }
 
 export async function setLocalPatternLike(patternId: string, liked: boolean): Promise<void> {
-  const db = await getDatabase();
-  if (liked) {
-    const likedAt = new Date().toISOString();
-    await db.runAsync(
-      'INSERT OR REPLACE INTO pattern_likes (pattern_id, liked_at) VALUES (?, ?)',
-      patternId,
-      likedAt
-    );
-  } else {
-    await db.runAsync(
-      'DELETE FROM pattern_likes WHERE pattern_id = ?',
-      patternId
-    );
-  }
+  await withDatabase(async (db) => {
+    if (liked) {
+      const likedAt = new Date().toISOString();
+      await db.runAsync(
+        'INSERT OR REPLACE INTO pattern_likes (pattern_id, liked_at) VALUES (?, ?)',
+        patternId,
+        likedAt
+      );
+    } else {
+      await db.runAsync(
+        'DELETE FROM pattern_likes WHERE pattern_id = ?',
+        patternId
+      );
+    }
+  });
 }
 
 export async function isLocalPatternLiked(patternId: string): Promise<boolean> {
-  const db = await getDatabase();
-  const row = await db.getFirstAsync<{ pattern_id: string }>(
-    'SELECT pattern_id FROM pattern_likes WHERE pattern_id = ?',
-    patternId
-  );
-  return !!row;
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{ pattern_id: string }>(
+      'SELECT pattern_id FROM pattern_likes WHERE pattern_id = ?',
+      patternId
+    );
+    return !!row;
+  });
 }
 
 export async function getLocalPatternLikes(): Promise<Record<string, boolean>> {
-  const db = await getDatabase();
-  const rows = await db.getAllAsync<{ pattern_id: string }>(
-    'SELECT pattern_id FROM pattern_likes'
-  );
-  const result: Record<string, boolean> = {};
-  for (const row of rows) {
-    result[row.pattern_id] = true;
-  }
-  return result;
+  return withDatabase(async (db) => {
+    const rows = await db.getAllAsync<{ pattern_id: string }>(
+      'SELECT pattern_id FROM pattern_likes'
+    );
+    const result: Record<string, boolean> = {};
+    for (const row of rows) {
+      result[row.pattern_id] = true;
+    }
+    return result;
+  });
 }
