@@ -169,6 +169,7 @@ import { CreateCommercePromotionHandoffs1789344000000 } from './migrations/17893
 import { FixCommercePromotionOwnership1789344000001 } from './migrations/1789344000001-FixCommercePromotionOwnership';
 import { CreateCommerceGrantTombstones1789430400000 } from './migrations/1789430400000-CreateCommerceGrantTombstones';
 import { AddNewProductIdToMembershipEvents1789516800000 } from './migrations/1789516800000-AddNewProductIdToMembershipEvents';
+import { AddOnboardingGameplayEvents1789603200000 } from './migrations/1789603200000-AddOnboardingGameplayEvents';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -323,6 +324,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       FixCommercePromotionOwnership1789344000001,
       CreateCommerceGrantTombstones1789430400000,
       AddNewProductIdToMembershipEvents1789516800000,
+      AddOnboardingGameplayEvents1789603200000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

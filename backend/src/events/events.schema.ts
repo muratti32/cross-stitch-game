@@ -23,6 +23,19 @@ export const GAMEPLAY_EVENT_KINDS = [
   'subscription_change_completed',
   'subscription_change_cancelled',
   'subscription_change_failed',
+  'onboarding_started',
+  'onboarding_step_viewed',
+  'onboarding_handedness_selected',
+  'onboarding_start_choice',
+  'stitching_session_started',
+  'tutorial_beat_started',
+  'tutorial_beat_completed',
+  'tutorial_hint_shown',
+  'tutorial_paused',
+  'tutorial_resumed',
+  'onboarding_finished',
+  'account_soft_prompt_shown',
+  'account_soft_prompt_action',
 ] as const;
 
 export type GameplayEventKind = (typeof GAMEPLAY_EVENT_KINDS)[number];
@@ -87,6 +100,8 @@ type SubscriptionChangePayload = {
 type SubscriptionChangeFailedPayload = SubscriptionChangePayload & {
   failure_stage: 'store' | 'verification' | 'grant';
 };
+type OnboardingBase = { onboarding_version: string };
+type OnboardingPayload = OnboardingBase & Record<string, unknown>;
 
 export type GameplayEventPayload =
   | SessionPayload
@@ -101,7 +116,8 @@ export type GameplayEventPayload =
   | PurchaseFailedPayload
   | SubscriptionChangePayload
   | SubscriptionChangeFailedPayload
-  | Record<string, never>;
+  | Record<string, never>
+  | OnboardingPayload;
 
 type PayloadRule = {
   readonly allowedFields: readonly string[];
@@ -208,6 +224,19 @@ const payloadRules: Readonly<Record<GameplayEventKind, PayloadRule>> = {
       isSubscriptionChangeProduct(payload) &&
       isMember(payload.failure_stage, PURCHASE_FAILURE_STAGES),
   },
+  onboarding_started: onboardingRule(['is_resume'], p => typeof p.is_resume === 'boolean'),
+  onboarding_step_viewed: onboardingRule(['step', 'is_resume'], p => isMember(p.step, new Set(['welcome', 'tutorial', 'recap'])) && typeof p.is_resume === 'boolean'),
+  onboarding_handedness_selected: onboardingRule(['handedness', 'was_default'], p => isMember(p.handedness, new Set(['left', 'right'])) && typeof p.was_default === 'boolean'),
+  onboarding_start_choice: onboardingRule(['choice'], p => isMember(p.choice, new Set(['start_stitching', 'browse_starters', 'sign_in']))),
+  stitching_session_started: onboardingRule(['session_id', 'pattern_id', 'pattern_source', 'source'], p => typeof p.session_id === 'string' && UUID_PATTERN.test(p.session_id as string) && typeof p.pattern_id === 'string' && p.pattern_source === 'bundled' && p.source === 'onboarding'),
+  tutorial_beat_started: onboardingRule(['beat_id', 'beat_number'], p => typeof p.beat_id === 'string' && Number.isInteger(p.beat_number) && (p.beat_number as number) > 0),
+  tutorial_beat_completed: onboardingRule(['beat_id', 'elapsed_ms', 'attempt_count', 'auto_satisfied'], p => typeof p.beat_id === 'string' && isNonNegativeInteger(p.elapsed_ms) && isNonNegativeInteger(p.attempt_count) && typeof p.auto_satisfied === 'boolean'),
+  tutorial_hint_shown: onboardingRule(['hint_id', 'trigger'], p => isMember(p.hint_id, new Set(['anchored_zoom', 'pan_vs_sweep', 'edge_auto_pan', 'remaining_cell_locator'])) && typeof p.trigger === 'string'),
+  tutorial_paused: onboardingRule(['beat_id', 'destination'], p => typeof p.beat_id === 'string' && typeof p.destination === 'string'),
+  tutorial_resumed: onboardingRule(['beat_id', 'resume_source'], p => typeof p.beat_id === 'string' && typeof p.resume_source === 'string'),
+  onboarding_finished: onboardingRule(['outcome', 'destination', 'duration_ms', 'stitch_count'], p => isMember(p.outcome, new Set(['completed', 'deferred'])) && typeof p.destination === 'string' && isNonNegativeInteger(p.duration_ms) && isNonNegativeInteger(p.stitch_count)),
+  account_soft_prompt_shown: onboardingRule(['context'], p => isMember(p.context, new Set(['welcome', 'tutorial', 'recap']))),
+  account_soft_prompt_action: onboardingRule(['context', 'action'], p => isMember(p.context, new Set(['welcome', 'tutorial', 'recap'])) && isMember(p.action, new Set(['sign_in', 'dismissed']))),
 };
 
 export function validateGameplayEventPayload(
@@ -283,6 +312,14 @@ function emptyPayloadRule(): PayloadRule {
     allowedFields: [],
     validate: () => true,
   };
+}
+
+function onboardingRule(fields: readonly string[], validate: (payload: Record<string, unknown>) => boolean): PayloadRule {
+  return { allowedFields: ['onboarding_version', ...fields], validate: (payload) => typeof payload.onboarding_version === 'string' && payload.onboarding_version.length > 0 && payload.onboarding_version.length <= 32 && validate(payload) };
+}
+
+function isNonNegativeInteger(value: unknown): boolean {
+  return typeof value === 'number' && Number.isInteger(value) && value >= 0;
 }
 
 function isMember(value: unknown, values: ReadonlySet<string>): boolean {

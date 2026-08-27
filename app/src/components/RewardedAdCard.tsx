@@ -7,6 +7,7 @@ import { Card } from './Card';
 import { Button } from './Button';
 import { useRewardDay, useOpenAdAttempt, useClaimAdReward } from '../api/economy';
 import { useRewardedAd } from '../hooks/useRewardedAd';
+import { OfflineError } from '../api/networkErrors';
 
 /** Hardcoded 10 coin reward per ad attempt, locked by ADR-0011 / ADR-0033. */
 const AD_REWARD_COIN = 10;
@@ -27,7 +28,8 @@ interface RewardedAdCardProps {
 }
 
 export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
-  const { data, isLoading, isError, refetch } = useRewardDay();
+  const { data, isLoading, isError, error: rewardDayError, refetch } = useRewardDay();
+  const isOffline = rewardDayError instanceof OfflineError;
   const { mutateAsync: openAdAttempt } = useOpenAdAttempt();
   const { mutateAsync: claimAdReward } = useClaimAdReward();
   const queryClient = useQueryClient();
@@ -150,7 +152,9 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
       <Card style={styles.card}>
         <View style={styles.centerRow}>
           <Ionicons name="cloud-offline-outline" size={20} color={Theme.colors.error} />
-          <Text style={styles.errorText}>Couldn't load Reward Day status</Text>
+          <Text style={styles.errorText}>
+            {isOffline ? "You're offline - Reward Day needs a connection" : "Couldn't load Reward Day status"}
+          </Text>
           <Pressable onPress={() => refetch()} hitSlop={8}>
             <Text style={styles.retryText}>Retry</Text>
           </Pressable>

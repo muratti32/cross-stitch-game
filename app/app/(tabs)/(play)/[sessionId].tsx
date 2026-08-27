@@ -19,6 +19,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useActiveMembershipTheme } from '@/membership/themes';
 import { exitSession } from '@/navigation/exitSession';
+import { TutorialCoachBanner } from '@/onboarding/TutorialCoachBanner';
+import { TUTORIAL_COMPLETION_DMC, TUTORIAL_HIGHLIGHT_DMC, type TutorialFocusTarget } from '@/onboarding/tutorialEngine';
+import { useTutorialExecutor } from '@/onboarding/useTutorialExecutor';
+import { emitTutorialEvent } from '@/onboarding/tutorialEvents';
+import { createFocusSlot } from '@/onboarding/focusSlot';
+import { findTutorialSweepRunStart } from '@/onboarding/tutorialSweepRun';
+import { TutorialRecapSheet } from '@/onboarding/TutorialRecapSheet';
+import { useJustInTimeHints } from '@/onboarding/useJustInTimeHints';
 
 export default function SessionReadyScreen() {
   const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
@@ -76,6 +84,57 @@ export default function SessionReadyScreen() {
 
   const rendererRef = useRef<StitchRendererRef>(null);
   const lastLocatedIndex = useRef<number>(-1);
+  const focusSlot = useRef(createFocusSlot());
+
+  const focusTutorialCell = (target: TutorialFocusTarget) => {
+    if (!patternData || !rendererState) return;
+    const activeIndex = patternData.palette.findIndex((color) => color.dmcCode === TUTORIAL_HIGHLIGHT_DMC);
+    const cellIndex = target === 'sweep_run'
+      ? findTutorialSweepRunStart(
+        patternData.grid,
+        patternData.width,
+        patternData.height,
+        activeIndex,
+        (index) => rendererState.isCompleted(index % patternData.width, Math.floor(index / patternData.width)),
+      )
+      : patternData.grid.findIndex((colorIndex, index) => {
+        if (colorIndex === 0 || rendererState.isCompleted(index % patternData.width, Math.floor(index / patternData.width))) return false;
+        return target === 'matching_cell' ? colorIndex - 1 === activeIndex : colorIndex - 1 !== activeIndex;
+      });
+    if (cellIndex < 0) return;
+    const x = cellIndex % patternData.width;
+    const y = Math.floor(cellIndex / patternData.width);
+    rendererState.focusCell(x, y);
+    focusSlot.current.acquire('tutorial');
+    rendererRef.current?.locateCell(x, y);
+    setParentRevision((revision) => revision + 1);
+  };
+  const tutorial = useTutorialExecutor(sessionId, {
+    clearActiveThreadColor: () => setSelectedColorIndex(-1),
+    applyActiveThreadColor: setSelectedColorIndex,
+    acquireFocus: focusTutorialCell,
+    releaseFocus: () => {
+      if (focusSlot.current.release('tutorial')) {
+        rendererState?.focusCell(-1, -1);
+        setParentRevision((revision) => revision + 1);
+      }
+    },
+  });
+  const hints = useJustInTimeHints({
+    mandatoryBeatInFlight: tutorial.coachMarkBeat !== null,
+    activeColorHasRemainingCells: selectedColorIndex >= 0 && (remainingCounts[selectedColorIndex] ?? 0) > 0,
+  });
+
+  useEffect(() => {
+    if (isSessionCompleted) void emitTutorialEvent({ type: 'session_completed' });
+  }, [isSessionCompleted]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (tutorial.coachMarkBeat === 'stitch_action') focusTutorialCell('matching_cell');
+    if (tutorial.coachMarkBeat === 'mismatched_tap') focusTutorialCell('non_matching_cell');
+    if (tutorial.coachMarkBeat === 'stitch_sweep') focusTutorialCell('sweep_run');
+  }, [loading, patternData, rendererState, tutorial.coachMarkBeat]);
 
   // Animation values for mismatch shake feedback
   const shakeOffset = useSharedValue(0);
@@ -130,20 +189,33 @@ export default function SessionReadyScreen() {
 
   useEffect(() => {
     if (remainingCounts.length > 0) {
-      isColorCompletedShared.value = remainingCounts[selectedColorIndex] === 0;
+      isColorCompletedShared.value = selectedColorIndex >= 0
+        && remainingCounts[selectedColorIndex] === 0;
     }
   }, [remainingCounts, selectedColorIndex]);
 
   // Auto-select the first incomplete color on load (once)
   useEffect(() => {
-    if (!loading && remainingCounts.length > 0 && !initialSelectionDone.current) {
+    if (!loading && patternData && tutorial.activeDmcCode && !initialSelectionDone.current) {
+      const restoredIndex = patternData.palette.findIndex(
+        (color) => color.dmcCode === tutorial.activeDmcCode,
+      );
+      if (restoredIndex !== -1) {
+        initialSelectionDone.current = true;
+        setSelectedColorIndex(restoredIndex);
+      }
+    }
+  }, [loading, patternData, setSelectedColorIndex, tutorial.activeDmcCode]);
+
+  useEffect(() => {
+    if (!loading && !tutorial.showThreadPaletteBeat && remainingCounts.length > 0 && !initialSelectionDone.current) {
       initialSelectionDone.current = true;
       const firstIncompleteIdx = remainingCounts.findIndex((count) => count > 0);
       if (firstIncompleteIdx !== -1) {
         setSelectedColorIndex(firstIncompleteIdx);
       }
     }
-  }, [loading, remainingCounts, setSelectedColorIndex]);
+  }, [loading, remainingCounts, setSelectedColorIndex, tutorial.showThreadPaletteBeat]);
 
   // Handle cell taps
   const handleCellTapped = (x: number, y: number) => {
@@ -159,6 +231,15 @@ export default function SessionReadyScreen() {
       }
       if (!wasCompleted) rendererRef.current?.placeCompletedStitch(x, y);
       setParentRevision((r) => r + 1);
+      const focused = rendererState?.getFocusedCell();
+      const isRequiredTarget = tutorial.coachMarkBeat === 'stitch_action'
+        || tutorial.coachMarkBeat === 'mismatched_tap';
+      const isTutorialTarget = !isRequiredTarget || (focused?.x === x && focused.y === y);
+      if (!wasCompleted && patternData) {
+        const cellIndex = y * patternData.width + x;
+        void emitTutorialEvent({ type: 'completed_stitch_recorded', cellIndex, targeted: isTutorialTarget });
+        void emitTutorialEvent({ type: 'progress_operation_recorded', desiredState: 'completed', cellIndex });
+      }
     } else {
       // Trigger haptic feedback + visual shake
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
@@ -170,11 +251,16 @@ export default function SessionReadyScreen() {
         withTiming(8, { duration: 40 }),
         withTiming(0, { duration: 40 })
       );
+      const focused = rendererState?.getFocusedCell();
+      void emitTutorialEvent({
+        type: 'mismatched_tap_observed',
+        targeted: tutorial.coachMarkBeat !== 'mismatched_tap' || (focused?.x === x && focused?.y === y),
+      });
     }
   };
 
   // Handle sweep stitch events
-  const handleSweepStitch = (x: number, y: number) => {
+  const handleSweepStitch = (x: number, y: number, sweepGestureId: number) => {
     if (isSessionCompleted) return;
     const wasCompleted = rendererState?.isCompleted(x, y) ?? true;
     const success = stitchCell(x, y, selectedColorIndex);
@@ -184,6 +270,15 @@ export default function SessionReadyScreen() {
       completedShared.value = Uint8Array.from(completedShared.value);
       if (!wasCompleted) rendererRef.current?.placeCompletedStitch(x, y);
       setParentRevision((r) => r + 1);
+      const focused = rendererState?.getFocusedCell();
+      const isRequiredTarget = tutorial.coachMarkBeat === 'stitch_action'
+        || tutorial.coachMarkBeat === 'mismatched_tap';
+      const isTutorialTarget = !isRequiredTarget || (focused?.x === x && focused.y === y);
+      if (!wasCompleted) {
+        const cellIndex = y * patternData.width + x;
+        void emitTutorialEvent({ type: 'completed_stitch_recorded', cellIndex, targeted: isTutorialTarget, sweepGestureId });
+        void emitTutorialEvent({ type: 'progress_operation_recorded', desiredState: 'completed', cellIndex });
+      }
     }
   };
 
@@ -195,6 +290,8 @@ export default function SessionReadyScreen() {
         rendererRef.current?.undoCompletedStitch(undoneCell.x, undoneCell.y);
         completedShared.value = Uint8Array.from(rendererState.getCompletedArray());
         setParentRevision((r) => r + 1);
+        const cellIndex = undoneCell.y * patternData!.width + undoneCell.x;
+        void emitTutorialEvent({ type: 'progress_operation_recorded', desiredState: 'incomplete', cellIndex });
       }
     }
   };
@@ -218,6 +315,7 @@ export default function SessionReadyScreen() {
       const cy = Math.floor(nextIdx / patternData.width);
 
       lastLocatedIndex.current = nextIdx;
+      focusSlot.current.acquire('locator');
       rendererState.focusCell(cx, cy);
       setParentRevision((r) => r + 1);
 
@@ -274,8 +372,6 @@ export default function SessionReadyScreen() {
     ? Math.floor((completedCellsCount / totalCellsCount) * 100) 
     : 0;
 
-  const selectedColor = patternData.palette[selectedColorIndex];
-  
   const bPattern = patternData && session
     ? BUNDLED_PATTERNS.find((p) => p.id === session.patternId)
     : null;
@@ -299,6 +395,16 @@ export default function SessionReadyScreen() {
             {completedCellsCount} / {totalCellsCount} cells ({percentComplete}% complete)
           </Text>
         </View>
+        {tutorial.canResume && (
+          <Pressable
+            onPress={tutorial.resume}
+            style={styles.tutorialHelpButton}
+            accessibilityRole="button"
+            accessibilityLabel="Resume tutorial"
+          >
+            <Ionicons name="help-circle-outline" size={24} color={Theme.colors.accentTeal} />
+          </Pressable>
+        )}
       </View>
 
       {/* Safety Removal deletion instruction: session is no longer playable. */}
@@ -332,6 +438,9 @@ export default function SessionReadyScreen() {
           rendererState={rendererState}
           onCellTapped={handleCellTapped}
           onSweepStitch={handleSweepStitch}
+          onPinch={() => { void emitTutorialEvent({ type: 'pinch_observed' }); }}
+          onPlainDragWithoutStitch={() => { void emitTutorialEvent({ type: 'plain_drag_without_stitch_observed' }); }}
+          onEdgeAutoPan={() => { void emitTutorialEvent({ type: 'edge_auto_pan_engaged' }); }}
           gridShared={gridShared}
           completedShared={completedShared}
           activeColorIndexShared={activeColorIndexShared}
@@ -354,10 +463,11 @@ export default function SessionReadyScreen() {
           <Pressable
             style={[
               styles.floatingButton,
-              remainingCounts[selectedColorIndex] === 0 && styles.floatingButtonDisabled,
+              (selectedColorIndex < 0 || remainingCounts[selectedColorIndex] === 0)
+                && styles.floatingButtonDisabled,
             ]}
             onPress={handleLocateNext}
-            disabled={remainingCounts[selectedColorIndex] === 0}
+            disabled={selectedColorIndex < 0 || remainingCounts[selectedColorIndex] === 0}
             accessibilityRole="button"
             accessibilityLabel="Locate next remaining cell of active thread color"
           >
@@ -392,6 +502,10 @@ export default function SessionReadyScreen() {
       {/* Bottom Thread Palette dock */}
       {!isSessionCompleted && (
         <View style={styles.paletteDock}>
+          {tutorial.coachMarkBeat && <TutorialCoachBanner beatId={tutorial.coachMarkBeat} onSkip={tutorial.skip} />}
+          {!tutorial.coachMarkBeat && hints.visibleHint && (
+            <TutorialCoachBanner hintId={hints.visibleHint} onDismiss={hints.dismissHint} />
+          )}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -411,10 +525,18 @@ export default function SessionReadyScreen() {
               return (
                 <Pressable
                   key={index}
-                  onPress={() => setSelectedColorIndex(index)}
+                  onPress={() => {
+                    void tutorial.selectThreadColor(index, selectedColorIndex, color.dmcCode);
+                  }}
                   style={[
                     styles.paletteChip,
                     isSelected && styles.paletteChipSelected,
+                    tutorial.showThreadPaletteBeat
+                      && color.dmcCode === TUTORIAL_HIGHLIGHT_DMC
+                      && styles.paletteChipTutorialHighlight,
+                    tutorial.coachMarkBeat === 'thread_color_completion'
+                      && color.dmcCode === TUTORIAL_COMPLETION_DMC
+                      && styles.paletteChipTutorialHighlight,
                     isCompleted && styles.paletteChipCompleted,
                   ]}
                   accessibilityRole="button"
@@ -486,6 +608,14 @@ export default function SessionReadyScreen() {
           </View>
         </View>
       )}
+      <TutorialRecapSheet
+        visible={tutorial.recapVisible}
+        onContinue={tutorial.dismissRecap}
+        onBrowsePatterns={() => {
+          tutorial.dismissRecap();
+          router.navigate('/(tabs)/(catalog)');
+        }}
+      />
     </Screen>
   );
 }
@@ -586,13 +716,22 @@ const styles = StyleSheet.create({
     color: Theme.colors.textSecondary,
     marginTop: 1,
   },
+  tutorialHelpButton: {
+    alignItems: 'center',
+    height: 48,
+    justifyContent: 'center',
+    marginLeft: Theme.spacing.sm,
+    width: 48,
+  },
   canvasWrapper: {
     flex: 1,
     zIndex: 1,
   },
   floatingRail: {
     position: 'absolute',
-    bottom: 96,
+    // Keep both controls above the variable-height palette/coach dock.
+    // At 96 the second button is covered by the dock on onboarding screens.
+    bottom: 210,
     gap: Theme.spacing.md,
     zIndex: 20,
   },
@@ -659,6 +798,10 @@ const styles = StyleSheet.create({
   },
   paletteChipCompleted: {
     opacity: 0.8,
+  },
+  paletteChipTutorialHighlight: {
+    borderColor: Theme.colors.accentTeal,
+    borderWidth: 2,
   },
   chipSwatch: {
     width: 24,

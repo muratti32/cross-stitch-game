@@ -2,7 +2,7 @@
   "expo": {
     "name": "Stitch Wish",
     "slug": "stitch-wish",
-    "version": "1.1",
+    "version": "1.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -82,7 +82,14 @@
         "@sentry/react-native/expo",
         {
           "organization": "avk-corp",
-          "project": "stitch-wish"
+          "project": "stitch-wish",
+          "experimental_android": {
+            "enableAndroidGradlePlugin": true,
+            "uploadNativeSymbols": true,
+            "autoUploadNativeSymbols": true,
+            "includeProguardMapping": true,
+            "autoUploadProguardMapping": true
+          }
         }
       ],
       [

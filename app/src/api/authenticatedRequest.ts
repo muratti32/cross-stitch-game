@@ -1,4 +1,5 @@
 import { Config } from '../config';
+import { isOfflineNetworkError, OfflineError } from './networkErrors';
 
 export interface AuthSessionProvider {
   getAccessToken: () => string | null;
@@ -21,6 +22,24 @@ export function resetAccountDeletionTrigger(): void {
 }
 
 /**
+ * Runs `fetch` and converts a thrown connectivity failure into a typed,
+ * catchable `OfflineError` instead of letting the platform's raw `Error`
+ * (message text varies by OS/RN version - see networkErrors.ts) propagate.
+ * A genuine backend failure still resolves to a `Response` here and is
+ * untouched; only a *thrown* offline error is reclassified.
+ */
+async function fetchOrOffline(url: string, init: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, init);
+  } catch (error) {
+    if (isOfflineNetworkError(error)) {
+      throw new OfflineError(error);
+    }
+    throw error;
+  }
+}
+
+/**
  * Performs an authenticated backend request and replays it once after a
  * successful token refresh. Keeping this helper independent from the identity
  * store prevents the identity bootstrap and API facade from importing each
@@ -39,7 +58,7 @@ export async function performAuthenticatedRequest(
     headers.set('Authorization', `Bearer ${token}`);
   }
 
-  const response = await fetch(url, {
+  const response = await fetchOrOffline(url, {
     ...options,
     headers,
   });
@@ -88,7 +107,7 @@ export async function performAuthenticatedRequest(
     const retryHeaders = new Headers(options.headers || {});
     retryHeaders.set('Authorization', `Bearer ${newToken}`);
 
-    const retryResponse = await fetch(url, {
+    const retryResponse = await fetchOrOffline(url, {
       ...options,
       headers: retryHeaders,
     });
@@ -129,7 +148,7 @@ export async function performAuthenticatedRequest(
 
     return retryResponse;
   } catch (err) {
-    if (err instanceof AccountClosingError) {
+    if (err instanceof AccountClosingError || err instanceof OfflineError) {
       throw err;
     }
     return response;

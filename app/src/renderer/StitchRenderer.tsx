@@ -16,12 +16,17 @@ import {
   CELL_SIZE,
   TILE_SIZE,
   TILE_CELLS,
+  THREAD_SHADOW_DELTA,
+  THREAD_HIGHLIGHT_WIDTH,
+  FABRIC_INSET,
+  getStitchGeometry,
   getVisibleTiles,
   getLodBand,
+  type Point,
 } from './tileMath';
 import { createSymbolAtlas, type SymbolAtlas } from './symbolAtlas';
 import { RendererState } from './RendererState';
-import { deriveThreadSurfaceColors } from './completedStitchVisualState';
+import { deriveThreadSurfaceColors, getThreadWidth } from './completedStitchVisualState';
 import { useRendererGesture } from './useRendererGesture';
 import { PatternData } from '../pattern-artifact';
 import {
@@ -41,7 +46,10 @@ export interface StitchRendererProps {
   pattern: PatternData;
   rendererState: RendererState;
   onCellTapped: (x: number, y: number) => void;
-  onSweepStitch?: (x: number, y: number) => void;
+  onSweepStitch?: (x: number, y: number, gestureId: number) => void;
+  onPinch?: () => void;
+  onPlainDragWithoutStitch?: () => void;
+  onEdgeAutoPan?: () => void;
   gridShared: SharedValue<Uint8Array>;
   completedShared: SharedValue<Uint8Array>;
   activeColorIndexShared: SharedValue<number>;
@@ -63,12 +71,31 @@ export interface StitchRendererRef {
   settleCompletedStitch: (cx: number, cy: number) => void;
 }
 
+/**
+ * Draws one strand of a Completed Stitch into a tile picture. Geometry arrives
+ * in cell-local pattern units from getStitchGeometry; this only offsets it to
+ * the cell's position inside the tile.
+ */
+function drawStrand(
+  canvas: ReturnType<ReturnType<typeof Skia.PictureRecorder>['beginRecording']>,
+  paint: ReturnType<typeof Skia.Paint>,
+  left: number,
+  top: number,
+  start: Point,
+  end: Point,
+): void {
+  canvas.drawLine(left + start.x, top + start.y, left + end.x, top + end.y, paint);
+}
+
 export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRendererProps>((
   {
     pattern,
     rendererState,
     onCellTapped,
     onSweepStitch,
+    onPinch,
+    onPlainDragWithoutStitch,
+    onEdgeAutoPan,
     gridShared,
     completedShared,
     activeColorIndexShared,
@@ -165,12 +192,15 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
       onCellTapped(x, y);
       setRevision((r) => r + 1);
     },
-    onSweepStitch: (x, y) => {
+    onSweepStitch: (x, y, gestureId) => {
       if (onSweepStitch) {
-        onSweepStitch(x, y);
+        onSweepStitch(x, y, gestureId);
       }
       setRevision((r) => r + 1);
     },
+    onPinch,
+    onPlainDragWithoutStitch,
+    onEdgeAutoPan,
     gridShared,
     completedShared,
     activeColorIndexShared,
@@ -524,7 +554,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
                   stitchPaint.setStyle(PaintStyle.Fill);
                   stitchPaint.setColor(Skia.Color(theme.gridBackground));
                   canvas.drawRect(
-                    Skia.XYWHRect(left + 0.6, top + 0.6, CELL_SIZE - 1.2, CELL_SIZE - 1.2),
+                    Skia.XYWHRect(left + FABRIC_INSET, top + FABRIC_INSET, CELL_SIZE - FABRIC_INSET * 2, CELL_SIZE - FABRIC_INSET * 2),
                     stitchPaint,
                   );
                 }
@@ -542,21 +572,20 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
                   // Grid pictures are drawn underneath this layer, preserving the
                   // fabric margin and preventing lines crossing the thread.
                   stitchPaint.setStyle(PaintStyle.Stroke);
-                  const threadWidth = decision.representation === 'textured-cross' ? 3.1 : 2.5;
+                  const threadWidth = getThreadWidth(decision.representation);
                   const surface = deriveThreadSurfaceColors(decision.dmcColor, decision.finish);
-                  stitchPaint.setStrokeWidth(threadWidth + 0.8);
+                  const geom = getStitchGeometry();
+                  stitchPaint.setStrokeWidth(threadWidth + THREAD_SHADOW_DELTA);
                   stitchPaint.setColor(Skia.Color(surface.shadow));
-                  canvas.drawLine(left + 2.5, top + CELL_SIZE - 2.5, left + CELL_SIZE - 2.5, top + 2.5, stitchPaint);
+                  drawStrand(canvas, stitchPaint, left, top, geom.lowerStart, geom.lowerEnd);
                   stitchPaint.setStrokeWidth(threadWidth);
                   stitchPaint.setColor(Skia.Color(surface.base));
-                  canvas.drawLine(left + 2.5, top + CELL_SIZE - 2.5, left + CELL_SIZE - 2.5, top + 2.5, stitchPaint);
-                  stitchPaint.setStrokeWidth(threadWidth);
-                  stitchPaint.setColor(Skia.Color(surface.base));
-                  canvas.drawLine(left + 2.5, top + 2.5, left + CELL_SIZE - 2.5, top + CELL_SIZE - 2.5, stitchPaint);
+                  drawStrand(canvas, stitchPaint, left, top, geom.lowerStart, geom.lowerEnd);
+                  drawStrand(canvas, stitchPaint, left, top, geom.upperStart, geom.upperEnd);
                   if (decision.representation === 'textured-cross') {
-                    stitchPaint.setStrokeWidth(0.7);
+                    stitchPaint.setStrokeWidth(THREAD_HIGHLIGHT_WIDTH);
                     stitchPaint.setColor(Skia.Color(surface.highlight));
-                    canvas.drawLine(left + 3.4, top + 3.0, left + CELL_SIZE - 3.0, top + CELL_SIZE - 3.4, stitchPaint);
+                    drawStrand(canvas, stitchPaint, left, top, geom.highlightStart, geom.highlightEnd);
                   }
                 }
               }
@@ -736,26 +765,30 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
             {dynamicStitches.map(({ cellIndex, x, y, decision }) => {
               const left = x * CELL_SIZE;
               const top = y * CELL_SIZE;
-              const centerX = left + CELL_SIZE / 2;
-              const centerY = top + CELL_SIZE / 2;
-              const inset = 2.5;
-              const radius = CELL_SIZE / 2 - inset;
-              const lowerProgress = decision.lowerStrandProgress;
-              const upperProgress = decision.upperStrandProgress;
-              const lowerStart = vec(centerX - radius * lowerProgress, centerY + radius * lowerProgress);
-              const lowerEnd = vec(centerX + radius * lowerProgress, centerY - radius * lowerProgress);
-              const upperStart = vec(centerX - radius * upperProgress, centerY - radius * upperProgress);
-              const upperEnd = vec(centerX + radius * upperProgress, centerY + radius * upperProgress);
+              const geom = getStitchGeometry(
+                decision.lowerStrandProgress,
+                decision.upperStrandProgress,
+              );
+              const lowerStart = vec(left + geom.lowerStart.x, top + geom.lowerStart.y);
+              const lowerEnd = vec(left + geom.lowerEnd.x, top + geom.lowerEnd.y);
+              const upperStart = vec(left + geom.upperStart.x, top + geom.upperStart.y);
+              const upperEnd = vec(left + geom.upperEnd.x, top + geom.upperEnd.y);
               const surface = deriveThreadSurfaceColors(decision.dmcColor, decision.finish);
-              const threadWidth = decision.representation === 'textured-cross' ? 3.1 : 2.5;
+              const threadWidth = getThreadWidth(decision.representation);
               return (
                 <Group key={`dynamic-${cellIndex}`}>
-                  <Rect x={left + 0.6} y={top + 0.6} width={CELL_SIZE - 1.2} height={CELL_SIZE - 1.2} color={theme.gridBackground} />
-                  <Line p1={lowerStart} p2={lowerEnd} color={surface.shadow} style="stroke" strokeWidth={threadWidth + 0.8} />
+                  <Rect x={left + FABRIC_INSET} y={top + FABRIC_INSET} width={CELL_SIZE - FABRIC_INSET * 2} height={CELL_SIZE - FABRIC_INSET * 2} color={theme.gridBackground} />
+                  <Line p1={lowerStart} p2={lowerEnd} color={surface.shadow} style="stroke" strokeWidth={threadWidth + THREAD_SHADOW_DELTA} />
                   <Line p1={lowerStart} p2={lowerEnd} color={surface.base} style="stroke" strokeWidth={threadWidth} />
                   <Line p1={upperStart} p2={upperEnd} color={surface.base} style="stroke" strokeWidth={threadWidth} />
                   {decision.representation === 'textured-cross' && (
-                    <Line p1={upperStart} p2={upperEnd} color={surface.highlight} style="stroke" strokeWidth={0.7} />
+                    <Line
+                      p1={vec(left + geom.highlightStart.x, top + geom.highlightStart.y)}
+                      p2={vec(left + geom.highlightEnd.x, top + geom.highlightEnd.y)}
+                      color={surface.highlight}
+                      style="stroke"
+                      strokeWidth={THREAD_HIGHLIGHT_WIDTH}
+                    />
                   )}
                 </Group>
               );

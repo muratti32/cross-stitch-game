@@ -1,5 +1,6 @@
 export { apiFetch } from './apiFetch';
 export type { ApiFetchOptions } from './apiFetch';
+export { OfflineError, isOfflineNetworkError } from './networkErrors';
 export * from './catalog';
 export * from './economy';
 export * from './dailyTasks';

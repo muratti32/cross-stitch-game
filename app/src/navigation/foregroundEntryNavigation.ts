@@ -8,6 +8,7 @@ import {
 } from './foregroundEntryPolicy';
 
 export const CATALOG_TAB_ROOT = '/(tabs)/(catalog)' as Href;
+export const ONBOARDING_WELCOME = '/onboarding/welcome' as Href;
 
 export type ForegroundNavigationRouter = {
   /** Expo Router's tab-level navigate preserves an existing catalog stack. */
@@ -35,12 +36,23 @@ export function isActiveStitchingSessionRoute(segments: readonly string[]): bool
   return child !== undefined && child !== 'index';
 }
 
+export function isRootEntryPrepared(
+  databaseReady: boolean,
+  onboardingPosition: import('../onboarding/state').OnboardingPosition,
+): boolean {
+  return databaseReady && onboardingPosition !== 'absent';
+}
+
 export function applyForegroundEntryDecision(
   decision: ForegroundEntryDecision | undefined,
   router: ForegroundNavigationRouter,
   pathname: string,
   segments: readonly string[] = [],
 ): void {
+  if (decision?.action === 'select-welcome') {
+    if (!pathname.includes('/onboarding/welcome')) router.navigate(ONBOARDING_WELCOME);
+    return;
+  }
   if (decision?.action !== 'select-catalog') return;
   // A return while Catalog is already visible is intentionally idempotent.
   if (isCatalogRoute(segments, pathname)) return;

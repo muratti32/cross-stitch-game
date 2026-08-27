@@ -17,13 +17,30 @@ import {
   translationBounds,
 } from './tileMath';
 
+/**
+ * Screen-space cell size at which cell contents become readable. Below this
+ * scale a Stitch Action is refused, matching the cell-readable bound of
+ * Anchored Zoom.
+ */
+const CELL_READABLE_PX = 14.0;
+
+/**
+ * Finger slop allowed on a single tap, in screen pixels. Travel beyond this is
+ * a viewport pan or a Stitch Sweep, not a tap, so it must not reach the play
+ * screen as a Stitch Action or a Mismatched Tap.
+ */
+const TAP_MAX_TRAVEL_PX = 12;
+
 export interface UseRendererGestureOptions {
   patternWidth: number;
   patternHeight: number;
   maxScale?: number;
   panSlack?: { left?: number; right?: number; top?: number; bottom?: number };
   onCellTapped?: (x: number, y: number) => void;
-  onSweepStitch?: (x: number, y: number) => void;
+  onSweepStitch?: (x: number, y: number, gestureId: number) => void;
+  onPinch?: () => void;
+  onPlainDragWithoutStitch?: () => void;
+  onEdgeAutoPan?: () => void;
   gridShared: SharedValue<Uint8Array>;
   completedShared: SharedValue<Uint8Array>;
   activeColorIndexShared: SharedValue<number>;
@@ -42,6 +59,9 @@ export function useRendererGesture({
   panSlack = {},
   onCellTapped,
   onSweepStitch,
+  onPinch,
+  onPlainDragWithoutStitch,
+  onEdgeAutoPan,
   gridShared,
   completedShared,
   activeColorIndexShared,
@@ -81,10 +101,20 @@ export function useRendererGesture({
 
   // Sweep gesture state tracking
   const isSweepActive = useSharedValue(false);
+  const isSweepCandidate = useSharedValue(false);
+  // Latched once movement promotes this touch from a tap candidate to a sweep.
+  // The simultaneous tap recognizer checks it on release to avoid a duplicate
+  // Stitch Action for movement between the sweep and tap distance thresholds.
+  const sweptThisTouch = useSharedValue(false);
+  const sweepGestureId = useSharedValue(0);
   const fingerX = useSharedValue(0.0);
   const fingerY = useSharedValue(0.0);
+  const sweepStartCellX = useSharedValue(-1);
+  const sweepStartCellY = useSharedValue(-1);
   const lastStitchedX = useSharedValue(-1);
   const lastStitchedY = useSharedValue(-1);
+  const sweepMovementThreshold = 8;
+  const edgeAutoPanObserved = useSharedValue(false);
 
   // Helper worklet to clamp translations so content doesn't fly off screen
   const clampTranslations = (currentScale: number) => {
@@ -148,6 +178,10 @@ export function useRendererGesture({
     const vy = computeEdgePanVelocity(fingerY.value, cH, margin, maxSpeed);
 
     if (vx !== 0 || vy !== 0) {
+      if (!edgeAutoPanObserved.value && onEdgeAutoPan) {
+        edgeAutoPanObserved.value = true;
+        runOnJS(onEdgeAutoPan)();
+      }
       translateX.value = translateX.value + vx * timeDiff;
       translateY.value = translateY.value + vy * timeDiff;
       clampTranslations(scale.value);
@@ -172,7 +206,7 @@ export function useRendererGesture({
             lastStitchedX.value = cellX;
             lastStitchedY.value = cellY;
             if (onSweepStitch) {
-              runOnJS(onSweepStitch)(cellX, cellY);
+              runOnJS(onSweepStitch)(cellX, cellY, sweepGestureId.value);
             }
           }
         }
@@ -186,7 +220,7 @@ export function useRendererGesture({
     const cH = containerHeight.value;
     if (cW <= 0 || cH <= 0) return;
 
-    const readableScale = 14.0 / CELL_SIZE;
+    const readableScale = CELL_READABLE_PX / CELL_SIZE;
     const targetScale = scale.value < readableScale ? readableScale : scale.value;
 
     const px = (cx + 0.5) * CELL_SIZE;
@@ -294,6 +328,7 @@ export function useRendererGesture({
   // overwriting each other's translation.
   const pinchGesture = Gesture.Pinch()
     .onStart(() => {
+      if (onPinch) runOnJS(onPinch)();
       cancelAnimation(scale);
       cancelAnimation(translateX);
       cancelAnimation(translateY);
@@ -315,10 +350,11 @@ export function useRendererGesture({
 
   const panGesture = Gesture.Pan()
     .onBegin((event) => {
+      sweptThisTouch.value = false;
       const curScale = scale.value;
       const cellPx = curScale * CELL_SIZE;
 
-      if (cellPx >= 14.0) {
+      if (cellPx >= CELL_READABLE_PX) {
         const patX = (event.x - translateX.value) / curScale;
         const patY = (event.y - translateY.value) / curScale;
         const cellX = Math.floor(patX / CELL_SIZE);
@@ -336,19 +372,22 @@ export function useRendererGesture({
           const isUnfinished = completedShared.value[idx] === 0;
 
           if (matchesColor && isUnfinished) {
-            isSweepActive.value = true;
+            isSweepCandidate.value = true;
+            isSweepActive.value = false;
             fingerX.value = event.x;
             fingerY.value = event.y;
-            lastStitchedX.value = cellX;
-            lastStitchedY.value = cellY;
-            if (onSweepStitch) {
-              runOnJS(onSweepStitch)(cellX, cellY);
-            }
+            sweepStartCellX.value = cellX;
+            sweepStartCellY.value = cellY;
+            lastStitchedX.value = -1;
+            lastStitchedY.value = -1;
             return;
           }
         }
       }
       isSweepActive.value = false;
+      isSweepCandidate.value = false;
+      sweepStartCellX.value = -1;
+      sweepStartCellY.value = -1;
       lastStitchedX.value = -1;
       lastStitchedY.value = -1;
     })
@@ -361,9 +400,27 @@ export function useRendererGesture({
       fingerX.value = event.x;
       fingerY.value = event.y;
 
+      if (!isSweepActive.value && isSweepCandidate.value
+        && Math.hypot(event.translationX, event.translationY) >= sweepMovementThreshold) {
+        isSweepActive.value = true;
+        sweptThisTouch.value = true;
+        edgeAutoPanObserved.value = false;
+        sweepGestureId.value += 1;
+        const startX = sweepStartCellX.value;
+        const startY = sweepStartCellY.value;
+        lastStitchedX.value = startX;
+        lastStitchedY.value = startY;
+        if (onSweepStitch) {
+          runOnJS(onSweepStitch)(startX, startY, sweepGestureId.value);
+        }
+      }
+
       if (isSweepActive.value) {
         if (isColorCompletedShared.value) {
           isSweepActive.value = false;
+          isSweepCandidate.value = false;
+          sweepStartCellX.value = -1;
+          sweepStartCellY.value = -1;
           lastStitchedX.value = -1;
           lastStitchedY.value = -1;
           return;
@@ -389,7 +446,7 @@ export function useRendererGesture({
               lastStitchedX.value = cellX;
               lastStitchedY.value = cellY;
               if (onSweepStitch) {
-                runOnJS(onSweepStitch)(cellX, cellY);
+                runOnJS(onSweepStitch)(cellX, cellY, sweepGestureId.value);
               }
             }
           }
@@ -403,10 +460,18 @@ export function useRendererGesture({
     .onEnd((event) => {
       if (isSweepActive.value) {
         isSweepActive.value = false;
+        isSweepCandidate.value = false;
+        sweepStartCellX.value = -1;
+        sweepStartCellY.value = -1;
         lastStitchedX.value = -1;
         lastStitchedY.value = -1;
         return;
       }
+
+      isSweepCandidate.value = false;
+      sweepStartCellX.value = -1;
+      sweepStartCellY.value = -1;
+      if (onPlainDragWithoutStitch) runOnJS(onPlainDragWithoutStitch)();
 
       const cW = containerWidth.value;
       const cH = containerHeight.value;
@@ -427,14 +492,23 @@ export function useRendererGesture({
       });
     });
 
+  // Cap travel distance so a viewport pan used to browse the Pattern does not
+  // fire the tap on finger lift; the play screen read that as a Mismatched Tap
+  // and answered with haptic feedback and a shake animation. maxDuration is
+  // left at its default so slow deliberate taps still stitch.
   const singleTapGesture = Gesture.Tap()
     .numberOfTaps(1)
+    .maxDistance(TAP_MAX_TRAVEL_PX)
     .onEnd((event) => {
+      // A Stitch Sweep already stitched the pressed cell from onBegin, so this
+      // touch has had its Stitch Action.
+      if (sweptThisTouch.value) return;
+
       const curScale = scale.value;
       const cellPx = curScale * CELL_SIZE;
 
       // Only allow stitching at cell-readable zoom band
-      if (cellPx < 14.0) return;
+      if (cellPx < CELL_READABLE_PX) return;
 
       const patX = (event.x - translateX.value) / curScale;
       const patY = (event.y - translateY.value) / curScale;
