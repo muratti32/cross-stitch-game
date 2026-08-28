@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Ese inicio de sesión pertenece a una cuenta diferente. Tu cuenta actual no se modificó.",
+    "providerRejected": "Esa verificación fue rechazada. Revisa la cuenta o el código e inténtalo de nuevo."
+  },
+  "generic": {
+    "failure": "Algo salió mal. Por favor, inténtalo de nuevo.",
+    "supportReferenceLabel": "Referencia de soporte: {{reference}}"
+  }
+}

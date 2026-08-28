@@ -1400,6 +1400,1407 @@
       }
     }
   },
+  "es": {
+    "catalog": {
+      "common": {
+        "back": "← Atrás",
+        "searchPlaceholder": "Buscar patrones, creadores, etiquetas…",
+        "offlineBanner": "Sin conexión: el catálogo puede estar desactualizado",
+        "sectionError": {
+          "title": "No se pudo cargar",
+          "retry": "Volver a intentar"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} colores",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} columnas",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "Inglés"
+        },
+        "accessibilityLabel": "Escrito en {{language}}"
+      },
+      "index": {
+        "subtitle": "Crea tu propio mundo acogedor, puntada a puntada.",
+        "searchBar": {
+          "accessibilityLabel": "Buscar en el catálogo de patrones"
+        },
+        "sections": {
+          "starterPatterns": "Patrones de inicio",
+          "staffPicks": "Selección del equipo",
+          "categories": "Categorías",
+          "newPatterns": "Nuevos patrones"
+        },
+        "staffPicks": {
+          "emptyTitle": "Aún no hay selecciones del equipo",
+          "emptyBody": "Nuestra colección de diseños acogedores seleccionados a mano aparecerá aquí pronto.",
+          "errorBody": "No se pudo acceder al catálogo y aún no hay nada guardado en caché."
+        },
+        "categories": {
+          "count": "{{count}} patrones",
+          "errorBody": "No se pudo acceder al catálogo y aún no hay nada guardado en caché."
+        },
+        "newPatterns": {
+          "emptyTitle": "Se están creando nuevos patrones",
+          "emptyBody": "¡Hay novedades en camino!",
+          "errorBody": "No se pudo acceder al catálogo y aún no hay nada guardado en caché.",
+          "showMore": "Mostrar más",
+          "loading": "Cargando…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "Explorar",
+        "error": {
+          "body": "No se pudo acceder a esta página del catálogo y aún no hay nada guardado en caché."
+        },
+        "empty": {
+          "title": "Aún no hay nada aquí",
+          "body": "Ningún patrón coincide con esta selección por ahora. Llegarán nuevos diseños con frecuencia."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "Campo de búsqueda del catálogo",
+        "inactive": {
+          "title": "Buscar en el catálogo",
+          "body": "Escribe al menos dos caracteres para buscar patrones por título, creador o etiqueta."
+        },
+        "error": {
+          "title": "La búsqueda requiere conexión",
+          "body": "La búsqueda en el catálogo no está disponible sin conexión. Las páginas del catálogo guardadas en caché se pueden seguir explorando desde la pestaña del catálogo."
+        },
+        "noResults": {
+          "title": "Sin coincidencias",
+          "body": "Aún no hay nada en el catálogo que coincida con «{{query}}»."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "Jugando como invitado",
+        "body": "Tus Stitch Coins y tu progreso se guardan solo en este dispositivo como invitado. Si se pierde la instalación, es posible que el registro de invitado y el progreso sean irrecuperables. Iniciar sesión protege tu progreso."
+      },
+      "detail": {
+        "noDescription": "No hay descripción disponible.",
+        "specs": {
+          "dimensions": "Dimensiones",
+          "totalStitches": "Total de puntadas",
+          "colors": "Colores",
+          "category": "Categoría"
+        },
+        "threadsSuffix": "{{count}} hilos",
+        "palette": {
+          "title": "Hilos requeridos",
+          "loading": "Leyendo la paleta de hilos...",
+          "loadFailed": "Error al cargar la paleta: {{error}}",
+          "retry": "Reintentar carga"
+        },
+        "actions": {
+          "startStitching": "Empezar a bordar",
+          "starting": "Iniciando...",
+          "preparing": "Preparando…"
+        },
+        "loadFailedGeneric": "Error al descodificar el archivo del patrón.",
+        "sessionCreateFailed": "Error al crear la sesión de bordado. Vuelve a intentarlo.",
+        "unavailable": {
+          "title": "Patrón no disponible",
+          "body": "No se pudo cargar este patrón. Es posible que haya sido eliminado o que no tengas conexión.",
+          "goBack": "Volver"
+        },
+        "byCreator": "por {{creatorName}}",
+        "byCreatorWithUsername": "por {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "Bloquear creador",
+          "message": "¿De verdad quieres bloquear a {{creatorName}}? Esta es una acción privada y reversible que ocultará sus patrones de las búsquedas y de la exploración. No reportará al creador ni interrumpirá tu sesión de bordado actual.",
+          "cancel": "Cancelar",
+          "confirm": "Bloquear",
+          "blockedTitle": "Bloqueado",
+          "blockedMessage": "Se ha bloqueado a {{creatorName}}.",
+          "errorTitle": "Error",
+          "failedGeneric": "Error al bloquear al creador."
+        },
+        "likeFailedGeneric": "Error al actualizar el estado de Me gusta",
+        "connectToPlay": {
+          "title": "Conéctate para jugar",
+          "body": "Iniciar un patrón del catálogo requiere conexión para preparar tu sesión. Los patrones de inicio se pueden jugar ahora mismo, incluso sin conexión."
+        },
+        "insufficientCoins": {
+          "title": "Monedas insuficientes",
+          "body": "Este patrón cuesta {{price}} Stitch Coins, pero solo tienes {{balance}} monedas.\n\nFaltan: {{shortfall}} monedas.\n\n¡Gana Stitch Coins completando otros patrones! Las recompensas por primera finalización ya están disponibles.",
+          "getCoins": "Conseguir Stitch Coins",
+          "findPatterns": "Buscar patrones para bordar",
+          "back": "Atrás"
+        },
+        "unlockFailedGeneric": "Error al desbloquear. Comprueba tu conexión y vuelve a intentarlo.",
+        "preparationFailedGeneric": "No se pudo iniciar la preparación. Comprueba tu conexión y vuelve a intentarlo.",
+        "price": {
+          "label": "Precio"
+        },
+        "balance": {
+          "label": "Tu saldo",
+          "loading": "…"
+        },
+        "unlockButton": "Desbloquear por {{price}} moneda",
+        "communityReport": {
+          "button": "Reportar este patrón",
+          "title": "Reportar {{patternTitle}}",
+          "body": "Elige el motivo que mejor describa el problema. Los reportes nunca ocultan ni cambian un patrón de forma automática.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "Contenido inapropiado o no seguro",
+            "copyright_or_publication_rights": "Derechos de autor o de publicación",
+            "duplicate_or_spam": "Duplicado o spam",
+            "misleading_title_or_tags": "Título o etiquetas engañosos",
+            "other": "Otro"
+          },
+          "explanationLabel": "Prueba o explicación {{requirement}}",
+          "explanationRequired": "(obligatorio)",
+          "explanationOptional": "(opcional)",
+          "explanationPlaceholder": "Comparte detalles que ayuden a un moderador a revisar el patrón.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "Cancelar",
+          "submit": "Enviar reporte",
+          "submitFailedGeneric": "No se pudo enviar el reporte. Comprueba tu conexión y vuelve a intentarlo.",
+          "receivedTitle": "Reporte recibido",
+          "alreadyReceivedTitle": "El reporte ya fue recibido",
+          "receivedBody": "Ahora un moderador puede revisar este patrón. El reporte no cambia automáticamente su disponibilidad.",
+          "alreadyReceivedBody": "Tu reporte actual ya forma parte de la revisión abierta.",
+          "signInRequired": {
+            "title": "Inicia sesión para reportar",
+            "message": "Los reportes de la comunidad requieren una cuenta registrada. No se ha enviado nada.",
+            "cancel": "Cancelar",
+            "signIn": "Iniciar sesión"
+          },
+          "validation": {
+            "chooseReason": "Elige un motivo para el reporte.",
+            "explainRequired": "Explica por qué estás reportando este patrón.",
+            "tooLong": "La explicación debe tener 2000 caracteres o menos.",
+            "needsContent": "La explicación debe incluir letras o números."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "Atrás",
+        "title": "Tienda comercial",
+        "subtitle": "Membresía y recargas únicas"
+      },
+      "signInReturn": {
+        "notice": "Has iniciado sesión. {{label}} sigue seleccionado. Revísalo y toca Comprar cuando estés listo."
+      },
+      "premiumHero": {
+        "eyebrow": "MEMBRESÍA PREMIUM",
+        "title": "Crea más. Reclama una pequeña recompensa cada día.",
+        "body": "Créditos de IA en cada período de pago, temas premium y un reclamo diario de Stitch Coins.",
+        "benefitAiCredits": "Créditos de IA",
+        "benefitDailyCoins": "Monedas diarias",
+        "benefitThemes": "Temas",
+        "statusNoActiveMembership": "Sin membresía activa",
+        "statusBrowseAsGuest": "Explora los planes como jugador invitado",
+        "periodEndsLabel": "El período actual finaliza",
+        "periodRenewsLabel": "Se renueva",
+        "lifecycleActive": "Activa"
+      },
+      "membershipActions": {
+        "title": "Membresía Premium activa",
+        "body": "Las recompensas diarias están en Perfil. Los temas están en Configuración › Apariencia.",
+        "scheduledChangeNotice": "Cambios a {{plan}} el {{date}}",
+        "manageSubscription": "Gestionar suscripción",
+        "manageSubscriptionFailedTitle": "No se pudieron abrir las suscripciones",
+        "manageSubscriptionFailedBody": "Inténtalo de nuevo desde la cuenta de la tienda de tu dispositivo."
+      },
+      "pending": {
+        "title": "Conciliación de compra pendiente",
+        "verifyingTitle": "Verificando compra",
+        "premiumChangeAccepted": "La tienda aceptó el cambio a {{label}}. ",
+        "premiumResponseReceived": "Se recibió la respuesta de la tienda para {{label}}. ",
+        "premiumDeferredSuffix": "El cambio se programará solo después de la verificación del backend del juego y entrará en vigor cuando finalice tu período actual.",
+        "premiumSuffix": "Premium se activa solo después de la verificación del backend del juego.",
+        "doNotPurchasePlanAgain": " No vuelvas a comprar este plan.",
+        "coinPackBody": "Se recibió la respuesta de la tienda. El saldo de Stitch Coins se actualizará solo después de que el backend del juego registre la concesión correspondiente en el registro de transacciones. No vuelvas a comprar este paquete.",
+        "aiCreditPackBody": "Se recibió la respuesta de la tienda. Los créditos de IA se actualizarán solo después de que el backend del juego registre la concesión correspondiente en el registro de transacciones. No vuelvas a comprar este paquete.",
+        "refreshStatus": "Actualizar estado",
+        "retryReconciliation": "Reintentar conciliación"
+      },
+      "store": {
+        "loadingPrices": "Cargando precios actuales de la tienda…",
+        "unavailableTitle": "Tienda temporalmente no disponible",
+        "unavailableBody": "La información de tu monedero y membresía sigue estando disponible.",
+        "retry": "Reintentar"
+      },
+      "plans": {
+        "choosePremiumPlan": "Elige un plan Premium",
+        "yourPremiumPlan": "Tu plan Premium",
+        "currentPlan": "PLAN ACTUAL",
+        "upgrade": "MEJORAR",
+        "planChange": "CAMBIO DE PLAN",
+        "bestValue": "MEJOR OPCIÓN",
+        "billedEvery": "Facturado cada {{period}}",
+        "chooseLabel": "Elegir {{label}}",
+        "freeTrial": "Gratis durante {{offer}}, luego {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "Paquetes de compra única",
+        "stitchCoinPacksTitle": "Paquetes de Stitch Coins",
+        "aiCreditPacksTitle": "Paquetes de créditos de IA",
+        "coinsNoun": "Coins",
+        "creditsNoun": "Créditos",
+        "fromPrice": "Desde {{price}}"
+      },
+      "restore": {
+        "restorePurchases": "Restaurar compras",
+        "restoreGuestPremium": "Restaurar Premium de invitado",
+        "requestedTitle": "Restauración solicitada",
+        "requestedBody": "El acceso Premium verificado aparecerá después de conciliar el webhook de la tienda. Los paquetes de Stitch Coins y de créditos de IA nunca se restauran."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "Precios actuales de la tienda de aplicaciones",
+        "closeAccessibilityLabel": "Cerrar hoja de productos",
+        "closeButtonAccessibilityLabel": "Cerrar",
+        "selectedBeforeSignIn": "Seleccionado antes de iniciar sesión",
+        "buy": "Comprar"
+      },
+      "confirmation": {
+        "cancel": "Cancelar",
+        "confirmLabel": "Confirmar {{label}}",
+        "confirmPremiumTitle": "Confirmar compra de Premium",
+        "introductoryOffer": "Tu tienda indica esta oferta introductoria: {{offer}}.",
+        "premiumAppearsAfterVerification": "Premium aparecerá solo después de que el backend del juego verifique la transacción de la tienda.",
+        "confirmPremiumUpgradeTitle": "Confirmar mejora a Premium",
+        "confirmPremiumPlanChangeTitle": "Confirmar cambio de plan Premium",
+        "currentPlanLabel": "Plan actual: {{label}}",
+        "upgradeToLabel": "Mejorar a {{label}} · {{offer}}",
+        "changeToLabel": "Cambiar a {{label}} · {{offer}}",
+        "upgradeBody": "La App Store controla el cargo final y la fecha de vigencia de esta mejora. Premium reflejará {{label}} solo después de que el backend del juego lo verifique.",
+        "planChangeBody": "La App Store aplaza este cambio hasta el final de tu período actual: {{currentLabel}} seguirá activo hasta entonces y {{targetLabel}} se facturará a partir de la fecha de cambio. Puedes cancelar el cambio desde Gestionar suscripción.",
+        "confirmUpgrade": "Confirmar mejora",
+        "confirmPlanChange": "Confirmar cambio de plan",
+        "confirmStitchCoinTitle": "Confirmar compra de Stitch Coins",
+        "confirmAiCreditTitle": "Confirmar compra de créditos de IA",
+        "balanceChangesAfterVerificationCoin": "Tu saldo cambiará solo después de que el backend del juego verifique la transacción de la tienda y registre la concesión correspondiente en el registro de transacciones.",
+        "balanceChangesAfterVerificationAiCredit": "Tu saldo cambiará solo después de que el backend del juego verifique la transacción de la tienda y registre la concesión correspondiente en el registro de transacciones. No se requiere una membresía Premium."
+      },
+      "disclosure": {
+        "subscriptionTerms": "El pago se cargará a tu cuenta de {{store}} al confirmar la compra. {{label}} Premium se renueva automáticamente a {{offer}} a menos que la renovación automática se desactive al menos 24 horas antes del final del período actual. Cualquier parte no utilizada de una prueba gratuita se perderá al adquirir una suscripción. Puedes cancelar en cualquier momento desde tu cuenta de {{store}}.",
+        "privacyPolicy": "Política de privacidad",
+        "termsOfService": "Condiciones del servicio",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "No se pudo abrir el enlace: {{url}}"
+      },
+      "supportReference": {
+        "label": "Referencia de soporte: {{reference}}",
+        "copyAccessibilityLabel": "Copiar referencia de soporte {{reference}}",
+        "copyAccessibilityHint": "Copia la referencia de soporte al portapapeles",
+        "copied": "Copiado",
+        "copyFailedTitle": "Error al copiar",
+        "copyFailedBody": "No se pudo copiar la referencia de soporte. Selecciona el texto para copiarlo manualmente."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "Las compras de Stitch Coins como invitado solo están disponibles en iOS.",
+        "guestIosOnlyGeneric": "Las compras como invitado solo están disponibles en iOS.",
+        "purchaseFailedTitle": "Error en la compra",
+        "premiumVerificationNotYet": "El backend del juego no pudo verificar esta compra. Reintenta la conciliación; no vuelvas a comprar el producto.",
+        "premiumVerificationFailedRetry": "El backend del juego aún no ha podido verificar esta compra. Reintenta la conciliación; no vuelvas a comprar el producto.",
+        "premiumGrantRefreshFailed": "Se verificó Premium, pero no se pudo actualizar el estado de la membresía ni de los créditos de IA. Reintenta la conciliación.",
+        "premiumReconciliationUnreachable": "La conciliación de la compra no pudo conectarse con el backend del juego. Reintenta la conciliación; no vuelvas a comprar el producto.",
+        "coinPackVerificationMismatch": "La transacción de la tienda no coincide con este paquete de monedas. Reintenta la verificación o contacta al soporte técnico; no vuelvas a comprar el producto.",
+        "coinPackGrantUnavailable": "La compra fue verificada, pero la concesión de Stitch Coins no está disponible. Reintenta la conciliación; no vuelvas a comprar el producto.",
+        "coinPackBalanceRefreshFailed": "Se verificó la concesión de monedas, pero no se pudo actualizar el saldo actual de Stitch Coins. Reintenta la conciliación.",
+        "coinPackVerificationFailedRetry": "El backend del juego aún no ha podido verificar este paquete de monedas. Reintenta la conciliación; no vuelvas a comprar el producto.",
+        "coinPackReconciliationUnreachable": "La conciliación del paquete de monedas no pudo conectarse con el backend del juego. Reintenta la conciliación; no vuelvas a comprar el producto.",
+        "aiCreditPackVerificationMismatch": "La transacción de la tienda no coincide con este paquete de créditos de IA. Reintenta la verificación o contacta al soporte técnico; no vuelvas a comprar el producto.",
+        "aiCreditPackGrantUnavailable": "La compra fue verificada, pero la concesión de créditos de IA no está disponible. Reintenta la conciliación; no vuelvas a comprar el producto.",
+        "aiCreditPackBalanceRefreshFailed": "Se verificó la concesión de créditos de IA, pero no se pudo actualizar el saldo actual. Reintenta la conciliación.",
+        "aiCreditPackVerificationFailedRetry": "El backend del juego aún no ha podido verificar este paquete de créditos de IA. Reintenta la conciliación; no vuelvas a comprar el producto.",
+        "aiCreditPackReconciliationUnreachable": "La conciliación del paquete de créditos de IA no pudo conectarse con el backend del juego. Reintenta la conciliación; no vuelvas a comprar el producto.",
+        "reconciliationStillUnavailable": "El backend del juego sigue sin estar disponible. Vuelve a intentar la conciliación más tarde.",
+        "storeTemporarilyUnavailable": "La tienda no está disponible temporalmente. Inténtalo de nuevo en unos minutos.",
+        "purchasesNotAllowed": "No se permiten realizar compras en este dispositivo. Comprueba la cuenta de tu tienda o los controles parentales.",
+        "itemNotAvailable": "Este artículo no está disponible para su compra en este momento. Elige otro artículo o inténtalo de nuevo más tarde.",
+        "alreadyOwned": "Ya posees esta compra. Usa Restaurar compras para actualizar tu acceso.",
+        "couldNotConnectToStore": "No se pudo conectar con la tienda. Comprueba tu conexión a internet e inténtalo de nuevo.",
+        "paymentPendingApproval": "Tu pago está pendiente de aprobación. Tu compra aparecerá después de que la tienda la complete.",
+        "testPurchaseDeclined": "La compra de prueba fue rechazada. No se realizó ningún pago. Elige un resultado de tienda de prueba diferente en Configuración e inténtalo de nuevo.",
+        "genericPurchaseFailure": "No pudimos completar tu compra. No se realizó ningún cargo. Inténtalo de nuevo."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "Aún verificando",
+        "premiumPending": "La verificación aún está en curso. Premium se activará una vez que el backend del juego la confirme.",
+        "premiumPlanChangePending": "La verificación aún está en curso. El cambio de tu plan se programará una vez que el backend del juego lo confirme.",
+        "coinPackPending": "La verificación aún está en curso. El saldo de tus Stitch Coins se actualizará una vez que finalice.",
+        "aiCreditPackPending": "La verificación aún está en curso. Tu saldo de créditos de IA se actualizará una vez que finalice."
+      },
+      "success": {
+        "purchaseReceivedTitle": "Compra recibida",
+        "storeAcceptedPlanChange": "La tienda aceptó el cambio a {{label}}. Se confirmará cuando entre en vigor.",
+        "storeAcceptedPurchase": "La tienda aceptó {{label}}. Verificando tu compra ahora.",
+        "premiumChanges": "Premium cambiará a {{label}}{{effectiveOn}}.",
+        "effectiveOnDate": " el {{date}}",
+        "planChangeScheduledTitle": "Cambio de plan programado",
+        "planChangeScheduledBody": "Tu membresía Premium conservará su plan actual hasta que cambie a {{label}}{{effectiveOn}}. Puedes cancelar el cambio desde Gestionar suscripción.",
+        "premiumIsActiveTitle": "Premium está activo",
+        "premiumVerifiedAndActive": "{{label}} Premium está verificado y activo.",
+        "premiumNowActiveNoBilling": "{{label}} Premium ya está activo.",
+        "premiumNowActiveBilled": "{{label}} Premium ya está activo, facturado cada {{period}}.",
+        "coinPackGrantedTitle": "Stitch Coins otorgadas",
+        "coinPackGrantVerified": "Concesión de {{label}} verificada. Saldo de Stitch Coins: {{balance}}.",
+        "coinPackAddedToBalance": "Se han añadido {{quantity}} Stitch Coins a tu saldo.",
+        "aiCreditPackGrantedTitle": "Créditos de IA otorgados",
+        "aiCreditPackGrantVerified": "Concesión de {{label}} verificada. Saldo de créditos de IA: {{balance}}.",
+        "aiCreditPackAddedToBalance": "Se han añadido {{quantity}} créditos de IA a tu saldo."
+      },
+      "products": {
+        "premiumAnnual": "Anual",
+        "premiumMonthly": "Mensual",
+        "premiumWeekly": "Semanal",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+        "aiCreditPack_one": "{{formattedCount}} AI Credit",
+        "aiCreditPack_other": "{{formattedCount}} AI Credits",
+        "billedEveryOffer": "{{price}} cada {{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} créditos / período de pago",
+        "creditAllowancePaidNoun": "{{credits}} créditos / {{period}} pagado"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "Comprar como invitado",
+        "commerceBody": "Puedes comprar sin registrarte. La membresía Premium se puede restaurar desde la tienda, pero las Stitch Coins, los créditos de IA y el contenido privado de invitado no se podrán recuperar si se pierde esta instalación. Registrarte los protege y nunca interrumpe tu partida como invitado.",
+        "continueAsGuest": "Continuar como invitado",
+        "signInInstead": "Iniciar sesión en su lugar",
+        "closeAccessibilityLabel": "Cerrar"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "Entendido",
+        "successButton": "Genial",
+        "failedButton": "Cerrar",
+        "infoButton": "Entendido",
+        "closeAccessibilityLabel": "Cerrar"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "Atrás",
+        "cancel": "Cancelar",
+        "duplicateTitle": "Ya tienes un Patrón Personal llamado “{{title}}”. Elige un título diferente.",
+        "cellsCount_one": "celda",
+        "cellsCount_other": "celdas",
+        "colorsCount_one": "color",
+        "colorsCount_other": "colores"
+      },
+      "hub": {
+        "title": "Centro de Creación",
+        "subtitle": "Da vida a tus propios diseños con patrones de punto de cruz personalizados.",
+        "opening": "Abriendo…",
+        "photoImport": {
+          "title": "Importación de fotos",
+          "description": "Sube una imagen de tu carrete y conviértela en un patrón para bordar.",
+          "action": "Importar foto"
+        },
+        "aiGenerator": {
+          "title": "Generador de IA",
+          "description": "Describe una idea acogedora y deja que la inteligencia artificial genere un diseño de píxeles personalizado.",
+          "action": "Generar diseño"
+        }
+      },
+      "aspects": {
+        "square": "Cuadrado",
+        "portrait_4_3": "Vertical 4:3",
+        "landscape_4_3": "Horizontal 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "La conversión del patrón falló. Por favor, inténtalo de nuevo.",
+          "timeout": "La conversión del patrón aún se está procesando. Inténtalo de nuevo en unos momentos.",
+          "generic": "No se pudo completar la conversión del patrón. Por favor, inténtalo de nuevo."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "Se requiere una cuenta registrada",
+          "body": "Las obras de arte de IA y su biblioteca seguirán siendo privadas en tu cuenta.",
+          "signIn": "Iniciar sesión"
+        },
+        "header": {
+          "title": "Generador de IA",
+          "backAccessibilityLabel": "Atrás"
+        },
+        "prompt": {
+          "label": "Describe tu obra de arte",
+          "placeholder": "Un acogedor jardín de una cabaña al atardecer…"
+        },
+        "generate": {
+          "working": "Procesando…",
+          "action": "Generar — 1 crédito de IA",
+          "errors": {
+            "promptRejected": "Esa indicación no está permitida. Intenta describir otra cosa.",
+            "generic": "No se pudo iniciar la generación por IA. Por favor, inténtalo de nuevo."
+          }
+        },
+        "library": {
+          "title": "Tu biblioteca de obras de IA",
+          "status": {
+            "pending": "Pendiente",
+            "dispatched": "Enviado",
+            "running": "En ejecución",
+            "delivered": "Entregado",
+            "safety_rejected": "Rechazado por seguridad",
+            "failed": "Fallido",
+            "deleted": "Eliminado",
+            "unknown": "No disponible"
+          },
+          "failure": {
+            "safety_rejected": "Esta obra de arte no pasó el control de seguridad del proveedor.",
+            "failed": "No se pudo generar esta obra de arte."
+          },
+          "approve": "Aprobar como patrón",
+          "delete": "Eliminar",
+          "deleteAccessibilityLabel": "Eliminar esta obra de IA",
+          "errors": {
+            "loadFailed": "No se pudo cargar tu biblioteca de obras de IA. Por favor, inténtalo de nuevo."
+          }
+        },
+        "approve": {
+          "modalTitle": "Crear Patrón Personal",
+          "titleLabel": "Título del patrón",
+          "titleAccessibilityLabel": "Título del patrón",
+          "defaultTitle": "Mi patrón de IA",
+          "placeholder": "Mi patrón de IA",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "Cancelar",
+          "creating": "Creando patrón…",
+          "create": "Crear patrón",
+          "errors": {
+            "generic": "No se pudo crear el Patrón Personal. Por favor, inténtalo de nuevo."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "Se requiere una cuenta registrada",
+          "body": "Los Patrones Personales pertenecen a tu cuenta para que sigan siendo privados y estén disponibles en todos tus dispositivos.",
+          "signIn": "Iniciar sesión o crear cuenta",
+          "back": "Atrás"
+        },
+        "header": {
+          "title": "Patrón de Foto",
+          "subtitle": "Encuadra localmente y aprueba la conversión",
+          "backAccessibilityLabel": "Atrás"
+        },
+        "picker": {
+          "chooseTitle": "Elige una foto",
+          "helpText": "El archivo local de la foto en resolución completa permanece en este dispositivo. No se convertirá nada hasta que apruebes el encuadre.",
+          "choose": "Elegir de la biblioteca",
+          "chooseAnother": "Elegir otra",
+          "opening": "Abriendo…",
+          "errors": {
+            "permissionDenied": "Se requiere acceso a la biblioteca de fotos para elegir un archivo local de foto.",
+            "invalidDimensions": "La foto seleccionada no tiene dimensiones válidas.",
+            "generic": "No se pudo abrir la biblioteca de fotos. Por favor, inténtalo de nuevo."
+          }
+        },
+        "framing": {
+          "title": "Encuadre de la obra",
+          "gestureHint": "Arrastra para mover · pellizca para hacer zoom",
+          "aspectLabel": "Relación de aspecto"
+        },
+        "profile": {
+          "title": "Perfil de conversión",
+          "options": {
+            "easy": "Fácil",
+            "standard": "Estándar",
+            "detailed": "Detallado"
+          },
+          "custom": "Personalizado",
+          "customMeta": "Gratis · forma bloqueada",
+          "unavailable": "No se adapta a este encuadre",
+          "customShortEdgeLabel": "Borde corto",
+          "customColorLimitLabel": "Límite de colores DMC",
+          "exceedsLimit": "Estos valores personalizados superan el límite de tamaño de patrón de {{max}} celdas."
+        },
+        "titleCard": {
+          "label": "Título del patrón",
+          "placeholder": "Mi patrón de foto",
+          "defaultTitle": "Mi patrón de foto",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · hasta {{maxColors}} DMC {{colorsUnit}}",
+          "privacyNotice": "Al aprobar, solo se subirá la versión recortada y a menor escala. La foto original permanecerá en el dispositivo.",
+          "approve": "Aprobar obra y convertir"
+        },
+        "processing": {
+          "preparingFrame": "Preparando el encuadre aprobado en este dispositivo…",
+          "uploading": "Subiendo únicamente el encuadre recortado a menor escala…",
+          "waitingForWorker": "Esperando al proceso de conversión…",
+          "buildingGrid": "Creando la cuadrícula de puntos y la paleta DMC…",
+          "preparingSession": "Preparando el Patrón Personal para jugar…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "Este perfil ya no se adapta al encuadre final. Elige Fácil o reduce el detalle.",
+            "generic": "No se pudo convertir esta foto. Por favor, inténtalo de nuevo."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "Ningún patrón seleccionado",
+          "noPatternBody": "Esta pantalla debe abrirse desde un Patrón Personal existente en tu biblioteca.",
+          "accountTitle": "Se requiere una cuenta registrada",
+          "accountBody": "Los Patrones Personales pertenecen a tu cuenta para que sigan siendo privados y estén disponibles en todos tus dispositivos.",
+          "signIn": "Iniciar sesión o crear cuenta",
+          "back": "Atrás"
+        },
+        "loading": "Reanudando el borrador del editor...",
+        "load": {
+          "failedTitle": "Error al cargar el patrón",
+          "retry": "Reintentar",
+          "back": "Atrás",
+          "errors": {
+            "generic": "No se pudo cargar este Patrón Personal. Por favor, inténtalo de nuevo."
+          }
+        },
+        "header": {
+          "title": "Editor de patrones",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "Atrás"
+        },
+        "toolbar": {
+          "undo": "Deshacer",
+          "redo": "Rehacer"
+        },
+        "mode": {
+          "paint": "Pintar",
+          "replaceColor": "Reemplazar color",
+          "replaceStep1": "1. Toca un color en el patrón de abajo para reemplazarlo:",
+          "replaceStep2": "2. Selecciona un color DMC de destino abajo para realizar el reemplazo:",
+          "paintSelected": "Seleccionado: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "Selecciona un color abajo, luego toca las celdas para pintar."
+        },
+        "errors": {
+          "pickColorFirst": "Elige un color primero",
+          "paletteLimit": "Este patrón ya utiliza el máximo de {{max}} colores de hilo."
+        },
+        "picker": {
+          "title": "Colores de hilo DMC",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "Guardar patrón editado",
+          "placeholder": "Título de mi patrón editado",
+          "action": "Guardar como nuevo",
+          "offlineTitle": "Guardado sin conexión",
+          "offlineBody": "El patrón editado se ha guardado en este dispositivo y se sincronizará con tu cuenta cuando vuelvas a tener conexión.",
+          "errors": {
+            "generic": "No se pudo guardar este Patrón Personal. Por favor, inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "Ese inicio de sesión pertenece a una cuenta diferente. Tu cuenta actual no se modificó.",
+        "providerRejected": "Esa verificación fue rechazada. Revisa la cuenta o el código e inténtalo de nuevo."
+      },
+      "generic": {
+        "failure": "Algo salió mal. Por favor, inténtalo de nuevo.",
+        "supportReferenceLabel": "Referencia de soporte: {{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Stitch Wish utiliza las fotos seleccionadas para crear Patrones Personales o elegir una foto de perfil de creador pública."
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "BIENVENIDO A STITCH WISH",
+        "title": "Elige un color, toca las casillas correspondientes.",
+        "heroAlt": "Vista previa del patrón inicial Cozy Heart",
+        "handedness": {
+          "sectionTitle": "¿En qué lado deben estar los controles?",
+          "groupLabel": "Lado de los controles",
+          "optionRight": "Controles a la derecha",
+          "optionLeft": "Controles a la izquierda",
+          "saveErrorText": "No se pudo guardar esa elección.",
+          "retry": "Intentar de nuevo"
+        },
+        "note": "Puedes cambiar esto más tarde en Ajustes.",
+        "start": "Empezar a bordar",
+        "starting": "Iniciando…",
+        "browse": "Explorar patrones iniciales",
+        "signIn": "Iniciar sesión"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "Selecciona el color Rojo Navidad DMC 321.",
+          "stitchAction": "Toca la celda resaltada correspondiente.",
+          "mismatchedTap": "Toca la celda resaltada diferente. Los toques incorrectos no te costarán nada.",
+          "undoAction": "Deshaz esa puntada y colócala de nuevo.",
+          "stitchSweep": "Presiona una celda correspondiente y arrastra por el tramo resaltado.",
+          "threadColorCompletion": "Termina el hilo blanco resaltado y luego elige tu siguiente color."
+        },
+        "hints": {
+          "anchoredZoom": "Pellizca para ampliar manteniendo fijas las celdas bajo tus dedos.",
+          "panVsSweep": "Arrastrar desplaza la tela. Empieza en una celda correspondiente para realizar un barrido.",
+          "edgeAutoPan": "Sigue barriendo cerca del borde y la tela seguirá tu dedo.",
+          "remainingCellLocator": "Usa el localizador para encontrar la siguiente celda restante de este hilo."
+        },
+        "skip": "Omitir por ahora",
+        "skipAccessibilityLabel": "Omitir tutorial por ahora",
+        "dismiss": "Entendido",
+        "dismissAccessibilityLabel": "Descartar pista"
+      },
+      "recap": {
+        "title": "¡Ya lo tienes!",
+        "lines": {
+          "matchNumbers": "Haz coincidir los números para colocar cada puntada.",
+          "dragSweep": "Arrastra por las celdas correspondientes para hacer un barrido.",
+          "pinchZoom": "Pellizca para ampliar cuando necesites ver más de cerca.",
+          "undoLocator": "Deshacer y el localizador siempre son gratis."
+        },
+        "continue": "Continuar bordando",
+        "browsePatterns": "Explorar patrones"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "Mesa de costura",
+        "subtitle": "Retoma tu trabajo donde lo dejaste o continúa una labor reciente.",
+        "loading": "Cargando tus puntadas...",
+        "empty": {
+          "title": "Sin labores activas",
+          "body": "Tu bastidor está vacío actualmente. ¡Explora el catálogo de patrones para encontrar algo hermoso que bordar!",
+          "action": "Explorar catálogo"
+        },
+        "unknownPattern": "Patrón desconocido",
+        "idLabel": "ID: {{id}}",
+        "unknownPatternLabel": "Patrón {{id}}",
+        "deleteSessionAccessibilityLabel": "Eliminar sesión",
+        "viewFinishedAccessibilityLabel": "Ver labor terminada",
+        "resumeAccessibilityLabel": "Reanudar bordado",
+        "status": {
+          "ready": "Listo",
+          "done": "Terminado",
+          "active": "Activo",
+          "preparing": "Preparando",
+          "failed": "Error"
+        },
+        "deleteConfirm": {
+          "title": "Eliminar progreso",
+          "message": "¿Seguro que quieres eliminar tu progreso en «{{title}}»? Esto no se puede deshacer.",
+          "cancel": "Cancelar",
+          "confirm": "Eliminar"
+        },
+        "preparingCard": {
+          "discardTitle": "Descartar sesión",
+          "cancelTitle": "Cancelar descarga",
+          "discardMessage": "¿Seguro que quieres descartar esta sesión fallida?",
+          "cancelMessage": "¿Seguro que quieres cancelar la descarga de este patrón?",
+          "keep": "Conservar",
+          "discard": "Descartar",
+          "cancel": "Cancelar"
+        }
+      },
+      "loading": {
+        "text": "Abriendo sesión y preparando la tela..."
+      },
+      "error": {
+        "title": "Error al cargar la sesión",
+        "fallbackMessage": "No se pudo cargar tu sesión de bordado.",
+        "backButton": "Volver",
+        "tableButton": "Ir a la mesa"
+      },
+      "header": {
+        "backButton": "← Atrás",
+        "tableButton": "← Mesa",
+        "defaultTitle": "Sesión de bordado",
+        "progress": "{{completed}} / {{total}} celdas ({{percent}}% completado)",
+        "resumeTutorialAccessibilityLabel": "Reanudar tutorial"
+      },
+      "banners": {
+        "patternRemoved": "Este patrón se eliminó por moderación y ya no está disponible. Toca para salir.",
+        "syncConflict": "Sincronizado con otro dispositivo: se actualizaron algunas celdas. Toca para cerrar."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "Localizar la siguiente celda restante del color de hilo activo",
+        "undoAccessibilityLabel": "Deshacer última puntada"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "Color {{number}}: DMC {{dmcCode}}, queda {{count}} puntada",
+        "chipAccessibilityLabel_other": "Color {{number}}: DMC {{dmcCode}}, quedan {{count}} puntadas",
+        "done": "Completado",
+        "remaining_one": "Queda {{count}}",
+        "remaining_other": "Quedan {{count}}"
+      },
+      "celebration": {
+        "title": "¡Preciosa labor!",
+        "subtitle": "Has completado todas las puntadas de esta tela.",
+        "stitchesLabel_one": "Puntada",
+        "stitchesLabel_other": "Puntadas",
+        "colorsLabel_one": "Color",
+        "colorsLabel_other": "Colores",
+        "replayButton": "Bordar de nuevo",
+        "catalogButton": "Volver al catálogo"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "Volver atrás",
+        "tryAgain": "Intentar de nuevo"
+      },
+      "rejectionReasons": {
+        "safety": "Seguridad",
+        "publication_rights": "Derechos de publicación",
+        "duplicate_or_spam": "Duplicado o spam",
+        "technical_invalidity": "Invalidez técnica",
+        "quality_standard": "Estándar de calidad"
+      },
+      "submissionStatus": {
+        "accepted": "Publicado",
+        "appeal_pending": "Apelación pendiente",
+        "appeal_upheld": "Apelación rechazada",
+        "precheck_failed": "Verificación previa no disponible",
+        "precheck_pending": "Verificando",
+        "quarantined": "Requiere revisión",
+        "rejected": "Rechazado",
+        "review_pending": "En revisión"
+      },
+      "revisionStatus": {
+        "accepted": "Publicado",
+        "appeal_pending": "Apelación pendiente",
+        "appeal_upheld": "Apelación rechazada",
+        "pending": "En revisión",
+        "rejected": "Rechazado",
+        "withdrawn": "Retirado"
+      },
+      "home": {
+        "identity": {
+          "establishing": "Estableciendo identidad...",
+          "pendingTitle": "Identidad pendiente",
+          "offline": "Sin conexión",
+          "retryConnection": "Reintentar conexión",
+          "loadingPublicProfile": "Cargando perfil público...",
+          "unavailableTitle": "Perfil público no disponible",
+          "checkConnection": "Comprueba tu conexión e inténtalo de nuevo.",
+          "createTitle": "Crea tu perfil público",
+          "createBody": "Elige el nombre de usuario permanente que se mostrará con tus patrones de la comunidad. Los datos de tu cuenta seguirán siendo privados.",
+          "createAction": "Crear perfil público",
+          "editAction": "Editar perfil público",
+          "offlinePendingSync": "Sin conexión: sincronización pendiente",
+          "guestPlayer": "Jugador invitado",
+          "playingSince": "Jugando desde el {{date}}",
+          "creatorSince": "Creador desde el {{date}}"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "Abrir tienda comercial",
+          "title": "Saldos del estudio",
+          "commerceStoreLink": "Tienda comercial",
+          "stitchCoinsAccessibilityLabel": "Saldo de Stitch Coins: {{balance}}. Toca para obtener monedas.",
+          "packs": "Paquetes",
+          "stitchCoinsLabel": "Stitch Coins",
+          "stitchCoinsSub": "Para desbloquear patrones",
+          "aiCreditsAccessibilityLabel": "Saldo de créditos de IA: {{balance}}. Toca para obtener créditos.",
+          "aiCreditsSignInAccessibilityLabel": "Créditos de IA. Inicia sesión para comprar.",
+          "aiCreditsLabel": "Créditos de IA",
+          "aiCreditsSubOwned": "Para arte de patrones con IA",
+          "aiCreditsSubGuest": "Inicia sesión para tenerlos",
+          "membershipActiveAccessibilityLabel": "Suscripción Premium activa ({{plan}}). Toca para administrar.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Premium. Toca para ver los planes.",
+          "membershipActiveTitle": "Premium activa · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "Anual",
+          "planMonthly": "Mensual",
+          "planWeekly": "Semanal",
+          "planActive": "Activo",
+          "trialBadge": "Prueba",
+          "membershipSubActive": "Todos los temas desbloqueados · Reclamación instantánea de monedas diarias",
+          "membershipSubInactive": "30 monedas diarias instantáneas, temas personalizados y créditos de IA",
+          "manage": "Administrar",
+          "explore": "Explorar"
+        },
+        "quickNav": {
+          "sectionEyebrow": "CUENTA Y COMUNIDAD",
+          "submissionsAccessibilityLabel": "Envíos al catálogo: realiza un seguimiento de revisiones, decisiones y apelaciones",
+          "submissionsTitle": "Envíos",
+          "submissionsSub": "Seguir revisiones",
+          "publishedAccessibilityLabel": "Patrones publicados: revisa metadatos, retira patrones y realiza un seguimiento de las apelaciones",
+          "publishedTitle": "Publicados",
+          "publishedSub": "Administrar patrones",
+          "moderationAccessibilityLabel": "Avisos de moderación: revisa las decisiones del catálogo que afectan a tus patrones",
+          "moderationTitle": "Moderación",
+          "moderationSub": "Avisos de políticas",
+          "likedAccessibilityLabel": "Patrones favoritos: tu colección privada de patrones de la comunidad que te gustan",
+          "likedTitle": "Patrones favoritos",
+          "likedSavedCount_one": "{{count}} guardado",
+          "likedSavedCount_other": "{{count}} guardados",
+          "likedSavedDefault": "Patrones guardados"
+        },
+        "dailySection": {
+          "title": "Costura diaria y recompensas",
+          "tasksGroupLabel": "Tareas diarias (+30 monedas máx.)",
+          "connectToTrack": "Conéctate para registrar el progreso de las tareas diarias.",
+          "loadingTasks": "Cargando tareas...",
+          "loadFailed": "No se pudieron cargar las tareas diarias.",
+          "retry": "Reintentar",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "Restableciendo...",
+          "resetsInHoursMinutes": "Se restablece en {{hours}}h {{minutes}}m",
+          "resetsInMinutes": "Se restablece en {{minutes}}m"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 puntadas",
+            "body": "Completa 100 celdas coincidentes hoy"
+          },
+          "three_colors_10": {
+            "title": "3 colores, 10 puntadas cada uno",
+            "body": "Realiza 10 puntadas en 3 colores de hilo"
+          },
+          "color_completion": {
+            "title": "Completar un color de hilo",
+            "body": "Termina de coser cualquier color por completo"
+          }
+        },
+        "dailyPool": {
+          "title": "Fondo de recompensa diaria de 30 monedas",
+          "premiumInstantClaim": "Reclamación instantánea Premium",
+          "rewardedAds": "Anuncios con recompensa",
+          "claimedAmount": "¡Has reclamado {{amount}} Stitch Coins para hoy!",
+          "poolAlreadyClosed": "El fondo de recompensas de hoy ya se había cerrado.",
+          "claimedForToday": "Reclamado para hoy. Se restablece en el próximo día de recompensas.",
+          "poolExhausted": "El fondo de recompensas de 30 monedas de hoy se ha agotado.",
+          "claimButtonRetry": "Intentar reclamar de nuevo",
+          "claimButtonInstant": "Reclamar {{count}} monedas (al instante)",
+          "poolClaimedResetsTomorrow": "El fondo de monedas de hoy ya se reclamó. Se restablece mañana.",
+          "allAdRewardsCompleted": "¡Todas las recompensas por anuncios de hoy se han completado! (30/30 monedas)",
+          "watchAdButton": "Ver anuncio para obtener +10 monedas (quedan {{count}})",
+          "adPerkNote": "Mira hasta 3 anuncios al día · Premium desbloquea la reclamación instantánea de 30 monedas",
+          "adRewardEarned": "¡Recompensa de anuncio obtenida! Verificando con el servidor...",
+          "claimFailed": "Error al reclamar: {{message}}",
+          "claimFailedGeneric": "Algo salió mal. Inténtalo de nuevo.",
+          "adLoadFailedDefault": "No se pudo cargar el anuncio",
+          "adAttemptFailedDefault": "No se pudo abrir el intento de anuncio"
+        },
+        "tabs": {
+          "myCreations": "Mis creaciones {{count}}",
+          "likedPatterns": "Patrones favoritos {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "Inicia sesión para ver tus patrones",
+          "signInBody": "Se requiere una cuenta registrada para crear y poseer de forma privada patrones a partir de fotos convertidas.",
+          "signIn": "Iniciar sesión",
+          "patternMeta": "{{width}}×{{height}} · {{count}} colores",
+          "pendingSync": "Sincronización pendiente",
+          "play": "Jugar",
+          "edit": "Editar",
+          "submitAccessibilityLabel": "Enviar {{title}} al catálogo de la comunidad",
+          "emptyTitle": "Sin creaciones personales",
+          "emptyBody": "Aún no has convertido fotos ni generado arte con IA. ¡Ve a la sección Crear para empezar tu primera obra maestra!",
+          "emptyAction": "Comenzar a crear",
+          "actionFailedGeneric": "Algo salió mal. Inténtalo de nuevo."
+        },
+        "likedTab": {
+          "unavailableTitle": "Patrones favoritos no disponibles",
+          "unavailableDefault": "No se pudieron cargar los patrones favoritos.",
+          "byCreator": "por {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} colores",
+          "emptyTitle": "Sin patrones favoritos",
+          "emptyBody": "Explora el catálogo y toca el icono del corazón en cualquier diseño para guardarlo aquí para más tarde.",
+          "emptyAction": "Descubrir patrones"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Reclamación diaria de monedas Premium",
+        "description": "Reclama el resto del fondo común de recompensas de 30 monedas de hoy.",
+        "connectPrompt": "Conéctate al servidor del juego para comprobar la recompensa de hoy.",
+        "checkingReward": "Comprobando la recompensa Premium de hoy...",
+        "unavailableGeneric": "La recompensa Premium de hoy no está disponible.",
+        "tryAgain": "Intentar de nuevo",
+        "resultAdded": "{{amount}} Stitch Coins añadidas por el servidor del juego. Saldo: {{balance}}.",
+        "poolAlreadyClosed": "El fondo común de recompensas de hoy ya se había cerrado.",
+        "alreadyClaimed": "Ya se ha reclamado para este día de recompensas.",
+        "poolExhausted": "El fondo común de recompensas de hoy se ha agotado. Se restablecerá en el próximo día de recompensas.",
+        "availableNow": "{{count}} Stitch Coins disponibles ahora",
+        "resetsAt": "Se restablece el {{date}}",
+        "claimButtonRetry": "Intentar reclamar de nuevo",
+        "claimButtonInstant": "Reclamar {{count}} monedas",
+        "lockedDescription": "La suscripción Premium, que incluye una prueba mensual elegible, desbloquea esta reclamación diaria.",
+        "viewPremiumPlans": "Ver planes Premium"
+      },
+      "publicProfile": {
+        "editTitle": "Editar perfil público",
+        "createTitle": "Crear perfil público",
+        "signInTitle": "Se requiere iniciar sesión",
+        "signInBody": "Se requiere una cuenta registrada para crear una identidad pública de creador.",
+        "signInAction": "Iniciar sesión",
+        "unavailableTitle": "Perfil no disponible",
+        "unavailableBody": "No se pudo cargar tu perfil público. Comprueba tu conexión e inténtalo de nuevo.",
+        "tryAgain": "Intentar de nuevo",
+        "intro": "Este nombre y foto serán visibles junto con tus patrones de la comunidad. Tu correo electrónico y proveedor de inicio de sesión seguirán siendo privados.",
+        "choosePhoto": "Elegir foto",
+        "changePhoto": "Cambiar foto",
+        "remove": "Eliminar",
+        "avatarHelper": "Opcional · JPEG, PNG o WebP · hasta 5 MB",
+        "usernameLabel": "Nombre de usuario",
+        "usernameAccessibilityLabel": "Nombre de usuario público",
+        "usernamePlaceholder": "nombre_creador",
+        "usernameHelperLocked": "Tu nombre de usuario es permanente.",
+        "usernameHelperEditable": "Entre 3 y 30 letras minúsculas, números o guiones bajos. No se podrá cambiar más adelante.",
+        "displayNameLabel": "Nombre para mostrar",
+        "displayNameAccessibilityLabel": "Nombre público para mostrar",
+        "displayNamePlaceholder": "Tu nombre de creador",
+        "displayNameHelper": "Puedes cambiarlo más adelante.",
+        "safetyNotice": "Los nombres y las fotos se revisan antes de su publicación. Si se rechaza un cambio, tu perfil público actual permanecerá sin modificaciones.",
+        "saveAction": "Guardar perfil público",
+        "publishAction": "Publicar perfil público",
+        "photoPermissionRequired": "Se requiere acceso a la biblioteca de fotos para elegir una foto de perfil.",
+        "photoTypeInvalid": "Las fotos de perfil deben ser en formato JPEG, PNG o WebP.",
+        "photoTooLarge": "Las fotos de perfil deben ser de 5 MB o menos.",
+        "saveFailedDefault": "No se pudo guardar tu perfil público"
+      },
+      "submissions": {
+        "title": "Envíos al catálogo",
+        "unavailableTitle": "Envíos no disponibles",
+        "unavailableDefault": "No se pudieron cargar tus envíos.",
+        "emptyTitle": "Sin envíos al catálogo",
+        "emptyBody": "Envía un patrón personal sincronizado desde Mis creaciones.",
+        "emptyAction": "Volver a Mis creaciones",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "Las comprobaciones automáticas no se pudieron completar. Esta captura no se publicó.",
+        "publishedToCatalog": "Publicado en el catálogo de la comunidad.",
+        "appealAction": "Apelar decisión",
+        "appealHelp": "Puedes apelar esta captura sin cambios una sola vez.",
+        "appealNoteAccessibilityLabel": "Nota de apelación",
+        "appealNotePlaceholder": "Contexto opcional para el moderador encargado de la revisión",
+        "cancelAction": "Cancelar",
+        "submitAppealAction": "Enviar apelación"
+      },
+      "publishedPatterns": {
+        "title": "Patrones publicados",
+        "unavailableTitle": "Patrones no disponibles",
+        "unavailableDefault": "No se pudieron cargar tus patrones publicados.",
+        "emptyTitle": "Sin patrones publicados",
+        "emptyBody": "Los patrones que publiques en el catálogo de la comunidad aparecerán aquí.",
+        "emptyAction": "Volver al perfil",
+        "withdrawnFromCatalog": "Retirado del catálogo",
+        "underReviewHold": "Retención en revisión",
+        "meta": "{{category}} · Publicado el {{date}}",
+        "withdrawnHelp": "Esta identidad está permanentemente retirada. Los jugadores con una sesión de costura existente conservan su progreso y acceso.",
+        "reviewHoldHelp": "Este patrón no está disponible temporalmente para descubrirlo y no se pueden iniciar nuevas sesiones con él. Las sesiones de costura existentes siguen siendo jugables. Aún puedes proponer una revisión de los metadatos.",
+        "reviseAction": "Revisar metadatos",
+        "withdrawRevisionAction": "Retirar revisión",
+        "appealAction": "Apelar decisión",
+        "withdrawFromCatalogAction": "Retirar del catálogo",
+        "appealHelp": "Puedes apelar esta captura sin cambios una sola vez. Enviar una nueva revisión en su lugar anula esta apelación.",
+        "appealNoteAccessibilityLabel": "Nota de apelación",
+        "appealNotePlaceholder": "Contexto opcional para el moderador encargado de la revisión",
+        "cancelAction": "Cancelar",
+        "submitAppealAction": "Enviar apelación",
+        "withdrawRevisionFailedTitle": "No se pudo retirar la revisión",
+        "withdrawPatternFailedTitle": "No se pudo retirar el patrón",
+        "withdrawPatternSuccessTitle": "Patrón retirado",
+        "withdrawPatternSuccessBody": "Ya no se puede descubrir ni se pueden iniciar nuevas sesiones con él. Las sesiones de costura existentes conservan su progreso y datos de juego.",
+        "withdrawConfirmTitle": "¿Retirar del catálogo de la comunidad?",
+        "withdrawConfirmBody": "«{{title}}» desaparecerá de las búsquedas y no se podrán iniciar nuevas sesiones con él. Esta identidad de patrón nunca podrá ser restaurada. Las sesiones de costura existentes y su progreso siguen siendo jugables.",
+        "withdrawConfirmCancel": "Cancelar",
+        "withdrawConfirmAction": "Retirar permanentemente"
+      },
+      "revisePatternMetadata": {
+        "title": "Revisar metadatos",
+        "signInTitle": "Se requiere una cuenta registrada",
+        "signInBody": "Inicia sesión antes de revisar los metadatos de un patrón de la comunidad.",
+        "signInAction": "Iniciar sesión",
+        "notFoundTitle": "Patrón de la comunidad no encontrado",
+        "notFoundBody": "Solo se pueden revisar los patrones de la comunidad que tú mismo hayas publicado.",
+        "notFoundAction": "Volver a patrones publicados",
+        "inProgressTitle": "Revisión ya en curso",
+        "inProgressBody": "Este patrón ya tiene una revisión pendiente o una apelación activa. Retírala antes de enviar otra.",
+        "inProgressAction": "Volver a patrones publicados",
+        "currentlyPublished": "Publicado actualmente en el catálogo de la comunidad",
+        "titleFieldLabel": "Título del catálogo",
+        "titlePlaceholder": "Título del patrón",
+        "titleAccessibilityLabel": "Título del catálogo",
+        "descriptionFieldLabel": "Descripción",
+        "descriptionPlaceholder": "Describe el diseño, el tema y la experiencia de costura.",
+        "descriptionAccessibilityLabel": "Descripción del catálogo",
+        "sourceLanguageFieldLabel": "Idioma de origen",
+        "categoryFieldLabel": "Categoría",
+        "tagsFieldLabel": "Etiquetas",
+        "notice": "Al revisar se toma una nueva captura inmutable. Tus metadatos actualmente publicados seguirán visibles hasta que un moderador acepte esta revisión.",
+        "submitAction": "Enviar revisión"
+      },
+      "submitPattern": {
+        "title": "Enviar a la comunidad",
+        "signInTitle": "Se requiere una cuenta registrada",
+        "signInBody": "Inicia sesión antes de enviar un patrón personal al catálogo de la comunidad.",
+        "signInAction": "Iniciar sesión",
+        "createProfileTitle": "Crear un perfil público de creador",
+        "createProfileBody": "Los patrones de la comunidad se atribuyen a tu identidad pública de creador.",
+        "createProfileAction": "Crear perfil",
+        "patternNotFoundTitle": "Patrón personal no encontrado",
+        "patternNotFoundBody": "Solo se pueden enviar patrones personales sincronizados.",
+        "patternNotFoundAction": "Volver al perfil",
+        "patternMeta": "{{width}}×{{height}} · {{count}} colores",
+        "byCreator": "Por @{{username}}",
+        "titleFieldLabel": "Título del catálogo",
+        "titlePlaceholder": "Título del patrón",
+        "titleAccessibilityLabel": "Título del catálogo",
+        "descriptionFieldLabel": "Descripción",
+        "descriptionPlaceholder": "Describe el diseño, el tema y la experiencia de costura.",
+        "descriptionAccessibilityLabel": "Descripción del catálogo",
+        "sourceLanguageFieldLabel": "Idioma de origen",
+        "categoryFieldLabel": "Categoría",
+        "tagsFieldLabel": "Etiquetas",
+        "rightsDeclaration": "He creado esta obra o tengo los derechos necesarios para publicarla según la Declaración de derechos de publicación v1.",
+        "notice": "El envío genera una copia inmutable. Las comprobaciones automáticas proporcionan pruebas, pero un moderador toma cada decisión final.",
+        "submitAction": "Enviar para revisión"
+      },
+      "moderationNotices": {
+        "title": "Avisos de moderación",
+        "signInTitle": "Inicia sesión para ver los avisos",
+        "signInBody": "Los avisos de moderación pertenecen a la cuenta registrada que publicó el patrón de la comunidad afectado.",
+        "signInAction": "Iniciar sesión",
+        "unavailableTitle": "Avisos no disponibles",
+        "unavailableDefault": "No se pudieron cargar los avisos de moderación.",
+        "emptyTitle": "Sin avisos de moderación",
+        "emptyBody": "Las decisiones de moderación del catálogo visibles para el propietario aparecerán aquí.",
+        "emptyAction": "Volver al perfil",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "Corrección de metadatos del catálogo",
+          "no_violation": "Revisión cerrada: sin infracción",
+          "review_hold": "Retención en revisión",
+          "safety_removal": "Eliminación por seguridad"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "El título, la descripción y las etiquetas seleccionadas se reemplazaron con valores seguros. La disponibilidad, el archivo del patrón y la vista previa no se ven afectados. Puedes enviar una nueva revisión de los metadatos del catálogo en cualquier momento.",
+          "no_violation": "La revisión posterior a la publicación se ha cerrado y este patrón vuelve a estar plenamente disponible para su descubrimiento y para nuevas sesiones de costura.",
+          "review_hold": "Este patrón no está disponible temporalmente para su descubrimiento ni para nuevas sesiones. Las sesiones de costura existentes, el progreso y los datos del patrón sin conexión siguen siendo jugables.",
+          "safety_removal": "Este patrón se eliminó por una infracción de seguridad, legal o de políticas. Se retiró de las búsquedas, las sesiones de costura existentes dejaron de ser accesibles y se eliminaron los datos del patrón sin conexión de tus dispositivos. Puedes enviar una sola apelación por eliminación de seguridad."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "Tareas diarias",
+        "offline": "Estás sin conexión. Las tareas diarias necesitan conexión a internet.",
+        "unavailable": "No se pudieron cargar las tareas diarias.",
+        "empty": "No hay tareas disponibles hoy."
+      },
+      "rewardedAdCard": {
+        "offline": "Estás sin conexión. El día de recompensas necesita conexión a internet.",
+        "unavailable": "No se pudo cargar el estado del día de recompensas.",
+        "premiumClaimClosedPool": "Tu reclamación diaria Premium cerró el fondo común de monedas de hoy.",
+        "allRewardsClaimed": "Has reclamado todas las recompensas por anuncios de hoy. ¡Vuelve mañana!",
+        "remaining_one": "Queda {{count}} anuncio hoy ({{coins}} monedas disponibles)",
+        "remaining_other": "Quedan {{count}} anuncios hoy ({{coins}} monedas disponibles)",
+        "watchForCoins": "Ver anuncio para obtener {{count}} monedas"
+      },
+      "likedPatterns": {
+        "title": "Patrones favoritos",
+        "signInTitle": "Se requiere una cuenta registrada",
+        "signInBody": "Inicia sesión antes de ver tu colección privada de patrones favoritos.",
+        "signInAction": "Iniciar sesión",
+        "unavailableTitle": "Patrones favoritos no disponibles",
+        "unavailableDefault": "No se pudieron cargar los patrones favoritos.",
+        "emptyTitle": "Sin patrones favoritos",
+        "emptyBody": "Explora el catálogo de patrones y toca el icono del corazón en cualquier diseño para guardarlo aquí.",
+        "emptyAction": "Descubrir patrones",
+        "byCreator": "por {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} colores · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "Configuración",
+        "subtitleDev": "Configura tus preferencias e inspecciona los sistemas del backend.",
+        "subtitleProd": "Configura tus preferencias."
+      },
+      "serviceStatus": {
+        "sectionTitle": "Estado del servicio",
+        "apiConnectionTitle": "Conexión con la API",
+        "testingConnection": "Probando la conexión con la API...",
+        "offlineUnreachable": "Desconectado / Inalcanzable",
+        "unknownConnectionError": "Error de conexión desconocido",
+        "retryConnection": "Reintentar conexión",
+        "healthy": "Operativo",
+        "degraded": "Degradado",
+        "postgresLabel": "Base de datos PostgreSQL",
+        "redisLabel": "Caché de Redis"
+      },
+      "session": {
+        "sectionTitle": "Identidad y sesión",
+        "statusTitle": "Estado de la sesión del backend",
+        "statusDescription": "Valida tu sesión activa de registro de invitado a través de la API.",
+        "noActiveSession": "Sin sesión activa",
+        "sessionActive": "Sesión activa",
+        "idLabel": "ID: {{id}} (v{{version}})",
+        "unknownState": "Estado desconocido"
+      },
+      "tutorial": {
+        "sectionTitle": "Tutorial",
+        "learnControlsTitle": "Aprende los controles",
+        "learnControlsDescription": "Reanuda el tutorial de costura cuando estés listo.",
+        "unavailableTitle": "Tutorial no disponible",
+        "unavailableMessage": "No se pudo reanudar el tutorial. Inténtalo de nuevo."
+      },
+      "developer": {
+        "sectionTitle": "Desarrollador",
+        "debugDiagnostics": "Depuración / Diagnósticos",
+        "debug": {
+          "backAccessibilityLabel": "Volver",
+          "title": "Depurar",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: configurado · env: {{environment}}",
+            "dsnNotConfigured": "DSN: no configurado",
+            "sendTestEvent": "Enviar evento de prueba",
+            "throwError": "Lanzar error",
+            "disabledTitle": "Sentry desactivado",
+            "disabledMessage": "Sentry no está configurado (no se encontró ningún DSN), por lo que no se enviará ningún evento de prueba.",
+            "testEventSent": "Evento de prueba enviado. ID del evento: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "Error",
+            "testEventFailedMessage": "Error al enviar el evento de prueba: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Onboarding",
+            "description": "Borra el progreso del tutorial y comienza de nuevo desde la pantalla de bienvenida.",
+            "restart": "Reiniciar introducción",
+            "confirmTitle": "¿Reiniciar introducción?",
+            "confirmMessage": "Se borrará el estado del tutorial y la introducción comenzará desde la pantalla de bienvenida.",
+            "cancel": "Cancelar",
+            "resetFailedTitle": "Error al reiniciar"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "Eliminación de cuenta",
+        "statusTitle": "Estado de eliminación de cuenta",
+        "checkingStatus": "Comprobando estado...",
+        "pendingTitle": "Eliminación de cuenta pendiente",
+        "pendingDescription": "La eliminación de tu cuenta está programada. Vuelve a iniciar sesión antes de que termine el plazo de recuperación para cancelarla.",
+        "recoveryWindowEnds": "El plazo de recuperación termina: {{date}}",
+        "cancelling": "Cancelando...",
+        "cancelDeletion": "Cancelar eliminación",
+        "statusError": "No se pudo comprobar el estado de eliminación. Comprueba tu conexión e inténtalo de nuevo.",
+        "deleteAccountTitle": "Eliminar cuenta",
+        "deleteAccountDescription": "Elimina de forma permanente tu cuenta, progreso y todos los desbloqueos tras un plazo de recuperación de 30 días.",
+        "requestedTitle": "Eliminación de cuenta solicitada",
+        "requestedMessage": "Tu solicitud de eliminación está pendiente hasta el {{date}}. Se ha cerrado la sesión de tu cuenta. Inicia sesión de nuevo antes de esa fecha si deseas cancelar esta eliminación.",
+        "signOutFailedTitle": "Error al cerrar sesión localmente",
+        "signOutFailedMessage": "Tu solicitud de eliminación aún está pendiente. Cierra sesión de nuevo desde Ajustes.",
+        "requestFailedTitle": "Error en la solicitud",
+        "requestFailedMessage": "No se envió tu solicitud de eliminación. Comprueba tu conexión e inténtalo de nuevo.",
+        "cancelSuccessTitle": "Éxito",
+        "cancelSuccessMessage": "Se ha cancelado tu solicitud de eliminación de cuenta.",
+        "reauthRequiredTitle": "Se requiere volver a autenticarse",
+        "reauthRequiredMessage": "Por seguridad, debes iniciar sesión de nuevo antes de cancelar la eliminación de la cuenta.",
+        "signInAction": "Iniciar sesión",
+        "cancelFailedTitle": "Error al cancelar",
+        "cancelFailedGeneric": "Error al cancelar la eliminación de la cuenta. Comprueba tu conexión e inténtalo de nuevo."
+      },
+      "appearance": {
+        "sectionTitle": "Apariencia"
+      },
+      "themeCollectionCard": {
+        "title": "Colección de temas",
+        "description": "Cambia la apariencia de la cuadrícula, las puntadas y la finalización sin afectar a la jugabilidad.",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "Requiere suscripción Premium",
+        "selected": "Seleccionado",
+        "accessActive": "El acceso a los temas Premium está activo, incluso durante una prueba mensual elegible.",
+        "lockedPreview": "Previsualiza la colección aquí. La suscripción Premium o una prueba mensual elegible desbloquean la selección.",
+        "viewPremiumPlans": "Ver planes Premium"
+      },
+      "gameplay": {
+        "sectionTitle": "Ajustes de jugabilidad",
+        "showGridLinesTitle": "Mostrar líneas de cuadrícula",
+        "showGridLinesDescription": "Muestra los límites entre las celdas del lienzo de costura",
+        "handednessTitle": "Orientación de controles",
+        "handednessDescription": "Alinea los controles interactivos para jugar con la mano izquierda o derecha",
+        "left": "Izquierda",
+        "right": "Derecha",
+        "leftHandedLayout": "Diseño para zurdos",
+        "rightHandedLayout": "Diseño para diestros"
+      },
+      "language": {
+        "sectionTitle": "Idioma",
+        "description": "Elige el idioma en el que Stitch Wish muestra su interfaz.",
+        "followDevice": "Usar el idioma del dispositivo",
+        "followDeviceDescription": "Borra tu selección personalizada para seguir la configuración de idioma de tu dispositivo.",
+        "optionEnglish": "English",
+        "optionTurkish": "Türkçe"
+      },
+      "social": {
+        "sectionTitle": "Social y privacidad",
+        "blockedCreators": "Creadores bloqueados"
+      },
+      "account": {
+        "sectionTitle": "Cuenta",
+        "notSignedInTitle": "Sesión no iniciada",
+        "signInRequiredTitle": "Inicio de sesión requerido",
+        "notSignedInDescription": "Inicia sesión para sincronizar tu progreso en varios dispositivos.",
+        "signIn": "Iniciar sesión",
+        "reconnecting": "Reconectando…",
+        "signOut": "Cerrar sesión",
+        "signOutConfirmTitle": "¿Cerrar sesión?",
+        "signOutConfirmMessage": "Tu progreso no sincronizado permanecerá en este dispositivo y se restablecerá cuando vuelvas a iniciar sesión.",
+        "signOutConfirmAction": "Cerrar sesión",
+        "signOutFailedTitle": "Error al cerrar sesión",
+        "signOutFailedGeneric": "Inténtalo de nuevo.",
+        "providerAppleAccount": "Cuenta de Apple",
+        "providerGoogleAccount": "Cuenta de Google",
+        "providerGenericAccount": "Cuenta registrada"
+      },
+      "signIn": {
+        "emailHeading": "Inicia sesión o crea una cuenta",
+        "emailSubtitle": "Mantén tu progreso disponible en varios dispositivos.",
+        "codeHeading": "Introduce tu código",
+        "codeSubtitle": "Introduce el código de 6 dígitos que enviamos a {{email}}.",
+        "continueWithGoogle": "Continuar con Google",
+        "orUseEmail": "o usa el correo electrónico",
+        "ssoUnavailable": "El inicio de sesión con Google y Apple no está disponible en esta versión.",
+        "emailLabel": "Dirección de correo electrónico",
+        "emailPlaceholder": "Dirección de correo electrónico",
+        "sendCode": "Enviar código",
+        "cancel": "Cancelar",
+        "verify": "Verificar",
+        "resendCode": "Reenviar código",
+        "resending": "Reenviando...",
+        "codeSent": "Código enviado",
+        "useDifferentEmail": "Usar otro correo electrónico",
+        "sendCodeFailed": "No se pudo enviar el código. Comprueba tu conexión e inténtalo de nuevo.",
+        "codeIncorrect": "Ese código es incorrecto o ha caducado.",
+        "verifyFailedGeneric": "Algo salió mal. Inténtalo de nuevo.",
+        "socialSignInFailed": "No se pudo iniciar sesión con {{provider}}. Inténtalo de nuevo.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "Volver",
+        "title": "Creadores bloqueados",
+        "infoText": "Bloquear es privado y reversible. Oculta los patrones de la comunidad del creador en las vistas del catálogo, la búsqueda y las listas de descubrimiento. Esto no es una denuncia ni una retirada de contenido.",
+        "signInRequiredTitle": "Se requiere una cuenta registrada",
+        "signInRequiredBody": "Inicia sesión antes de gestionar tu lista de creadores bloqueados.",
+        "signInAction": "Iniciar sesión",
+        "listUnavailableTitle": "Lista no disponible",
+        "listUnavailableDefault": "No se pudieron cargar los creadores bloqueados.",
+        "tryAgain": "Intentar de nuevo",
+        "emptyTitle": "Sin creadores bloqueados",
+        "emptyBody": "No has bloqueado a nadie. Puedes bloquear a un creador desde cualquiera de sus páginas de detalles del patrón.",
+        "backToSettings": "Volver a Ajustes",
+        "unblock": "Desbloquear",
+        "unblockConfirmTitle": "Desbloquear creador",
+        "unblockConfirmMessage": "¿De verdad quieres desbloquear a {{name}}? Sus patrones volverán a aparecer en tus resultados de búsqueda y exploración.",
+        "cancel": "Cancelar",
+        "successTitle": "Éxito",
+        "unblockedMessage": "Se ha desbloqueado a {{name}}.",
+        "errorTitle": "Error",
+        "unblockFailedMessage": "Error al desbloquear al creador: {{message}}",
+        "unblockFailedGeneric": "Error desconocido"
+      },
+      "data": {
+        "sectionTitle": "Datos",
+        "resetGuestTitle": "Restablecer datos de invitado",
+        "resetGuestDescription": "Cierra de forma irreversible la identidad de invitado en el servidor y borra todos los datos del dispositivo.",
+        "resetGuestOffline": "Sin conexión: Se requiere una conexión activa al servidor para restablecer los datos de invitado.",
+        "resetGuestPurchaseLock": "El restablecimiento está bloqueado mientras se verifica una compra. Los artículos consumibles y los datos privados de invitado no se podrán recuperar después.",
+        "removeLocalTitle": "Eliminar datos locales",
+        "removeLocalDescription": "Elimina la base de datos de tu espacio de nombres de identidad local de este dispositivo.",
+        "removeLocalConfirmTitle": "¿Eliminar datos locales?",
+        "removeLocalConfirmMessage": "Advertencia: Esto eliminará los archivos de tu base de datos local solo de este dispositivo. Todos los registros no sincronizados se perderán de forma permanente.",
+        "removeLocalConfirmAction": "Eliminar",
+        "removeLocalSuccessTitle": "Éxito",
+        "removeLocalSuccessMessage": "Los datos locales se han eliminado de este dispositivo.",
+        "removeLocalFailedTitle": "Error al eliminar",
+        "removeLocalFailedMessage": "Error al eliminar los datos locales: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "Información y enlaces",
+        "privacyPolicy": "Política de privacidad",
+        "termsOfService": "Condiciones del servicio",
+        "contactSupport": "Contactar con soporte",
+        "accountDeletion": "Eliminación de cuenta",
+        "openFailedMessage": "No se pudo abrir el enlace: {{url}}",
+        "openFailedGenericTitle": "Error"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — Costura acogedora en pixel art",
+        "version": "Versión {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "Paquete: {{id}}",
+        "schemeLabel": "Esquema: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "¿Restablecer datos de invitado?",
+        "warning": "Esta acción cerrará de forma irreversible tu identidad de invitado en el servidor y eliminará permanentemente:",
+        "bulletProgress": "• progreso local",
+        "bulletRewards": "• recompensas pendientes",
+        "bulletLikes": "• me gusta",
+        "bulletUnlockAccess": "• acceso a desbloqueos",
+        "bulletOfflinePatterns": "• datos de patrones sin conexión",
+        "confirmPrefix": "Escribe ",
+        "confirmSuffix": " a continuación para confirmar:",
+        "confirmAction": "Restablecer datos",
+        "resetting": "Restableciendo datos de invitado...",
+        "successTitle": "Éxito",
+        "successMessage": "Los datos de invitado se han restablecido por completo.",
+        "failedTitle": "Error al restablecer",
+        "failedMessage": "Error al restablecer los datos de invitado: {{message}}. Inténtalo de nuevo."
+      },
+      "deleteModal": {
+        "title": "¿Eliminar cuenta?",
+        "recoveryPrefix": "Tu cuenta entrará en un ",
+        "recoveryBold": "plazo de recuperación de eliminación de 30 días",
+        "recoverySuffix": ". Inicia sesión de nuevo durante este plazo para cancelar la eliminación.",
+        "bulletBalances": "• Saldos de Stitch Coins y créditos de IA",
+        "bulletUnlocks": "• Todos los patrones desbloqueados",
+        "bulletArtwork": "• Obras de arte de IA y patrones personales",
+        "bulletProgress": "• Progreso sincronizado y me gusta",
+        "consequencesPrefix": "Al final del plazo de recuperación, estos elementos se borrarán o se perderán sin reembolso ni transferencia. Los patrones de la comunidad publicados se retirarán del catálogo, la atribución pasará a ser ",
+        "consequencesBold": "Creador eliminado",
+        "consequencesSuffix": ", y tu nombre de usuario quedará reservado de forma permanente.",
+        "membershipWarning": "Es posible que tu suscripción Premium se siga facturando después de eliminar la cuenta. La eliminación de la cuenta no la cancela; gestiónala por separado antes de continuar si deseas detener la facturación.",
+        "manageAppleSubscription": "Gestionar suscripción de Apple",
+        "continueAction": "Continuar",
+        "confirmTitle": "Confirmar eliminación",
+        "confirmPrefix": "Para confirmar que quieres eliminar tu cuenta, escribe ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": " en la casilla de abajo:",
+        "submitting": "Enviando solicitud de eliminación...",
+        "backAction": "Atrás",
+        "confirmAction": "Confirmar"
+      },
+      "reauthModal": {
+        "title": "Verifica tu identidad",
+        "description": "Por seguridad, realiza la verificación con un método de inicio de sesión ya vinculado a esta cuenta. La eliminación se reanudará automáticamente tras la verificación.",
+        "loading": "Cargando métodos de inicio de sesión...",
+        "codeSentMessage": "Introduce el código de 6 dígitos enviado a {{email}}.",
+        "verifyAndDelete": "Verificar y eliminar",
+        "emailButton": "Enviar correo a {{email}}",
+        "continueWithProvider": "Continuar con {{provider}}",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "No hay ningún método de inicio de sesión vinculado disponible. Ponte en contacto con el servicio de soporte antes de intentar eliminar la cuenta de nuevo.",
+        "loadFailed": "No se pudieron cargar tus métodos de inicio de sesión vinculados. Comprueba tu conexión e inténtalo de nuevo.",
+        "retryFailed": "Se verificó tu identidad, pero no se envió la solicitud de eliminación. Cierra este cuadro de diálogo e intenta eliminar la cuenta de nuevo.",
+        "emailMissing": "Este método de correo electrónico vinculado no tiene dirección. Elige otro método.",
+        "genericFailure": "Error de reautenticación. Comprueba tu conexión e inténtalo de nuevo."
+      },
+      "actions": {
+        "cancel": "Cancelar",
+        "retry": "Reintentar"
+      },
+      "common": {
+        "unavailable": "No disponible"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "Catálogo",
+        "stitch": "Bordar",
+        "create": "Crear",
+        "profile": "Perfil",
+        "settings": "Ajustes"
+      }
+    }
+  },
   "fr": {
     "catalog": {
       "common": {

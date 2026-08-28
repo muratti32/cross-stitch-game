@@ -44,4 +44,13 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'profile:submitPattern.descriptionFieldLabel': '"Description" is an identical cognate in French.',
   'profile:submitPattern.tagsFieldLabel': '"Tags" is a common French loanword.',
   'settings:appDetails.version': '"Version" is an identical cognate in French.',
+  'catalog:detail.blockConfirm.errorTitle': '"Error" is an identical cognate in Spanish.',
+  'create:common.colorsCount_one': '"Color" is an identical cognate in Spanish.',
+  'play:celebration.colorsLabel_one': '"Color" is an identical cognate in Spanish.',
+  'play:home.idLabel': '"ID" is used identically in Spanish tech/UI copy.',
+  'settings:blockedCreators.errorTitle': '"Error" is an identical cognate in Spanish.',
+  'settings:developer.debug.sentry.testEventFailedTitle': '"Error" is an identical cognate in Spanish.',
+  'settings:links.openFailedGenericTitle': '"Error" is an identical cognate in Spanish.',
+  'settings:session.idLabel': '"ID" is used identically in Spanish tech/UI copy.',
+  'settings:tutorial.sectionTitle': '"Tutorial" is an identical cognate in Spanish.',
 };

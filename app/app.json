@@ -124,7 +124,8 @@
     "locales": {
       "en": "./src/i18n/locales/en/native.json",
       "tr": "./src/i18n/locales/tr/native.json",
-      "fr": "./src/i18n/locales/fr/native.json"
+      "fr": "./src/i18n/locales/fr/native.json",
+      "es": "./src/i18n/locales/es/native.json"
     },
     "experiments": {
       "typedRoutes": true,

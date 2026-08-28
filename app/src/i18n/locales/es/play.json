@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Mesa de costura",
+    "subtitle": "Retoma tu trabajo donde lo dejaste o continúa una labor reciente.",
+    "loading": "Cargando tus puntadas...",
+    "empty": {
+      "title": "Sin labores activas",
+      "body": "Tu bastidor está vacío actualmente. ¡Explora el catálogo de patrones para encontrar algo hermoso que bordar!",
+      "action": "Explorar catálogo"
+    },
+    "unknownPattern": "Patrón desconocido",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Patrón {{id}}",
+    "deleteSessionAccessibilityLabel": "Eliminar sesión",
+    "viewFinishedAccessibilityLabel": "Ver labor terminada",
+    "resumeAccessibilityLabel": "Reanudar bordado",
+    "status": {
+      "ready": "Listo",
+      "done": "Terminado",
+      "active": "Activo",
+      "preparing": "Preparando",
+      "failed": "Error"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar progreso",
+      "message": "¿Seguro que quieres eliminar tu progreso en «{{title}}»? Esto no se puede deshacer.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar"
+    },
+    "preparingCard": {
+      "discardTitle": "Descartar sesión",
+      "cancelTitle": "Cancelar descarga",
+      "discardMessage": "¿Seguro que quieres descartar esta sesión fallida?",
+      "cancelMessage": "¿Seguro que quieres cancelar la descarga de este patrón?",
+      "keep": "Conservar",
+      "discard": "Descartar",
+      "cancel": "Cancelar"
+    }
+  },
+  "loading": {
+    "text": "Abriendo sesión y preparando la tela..."
+  },
+  "error": {
+    "title": "Error al cargar la sesión",
+    "fallbackMessage": "No se pudo cargar tu sesión de bordado.",
+    "backButton": "Volver",
+    "tableButton": "Ir a la mesa"
+  },
+  "header": {
+    "backButton": "← Atrás",
+    "tableButton": "← Mesa",
+    "defaultTitle": "Sesión de bordado",
+    "progress": "{{completed}} / {{total}} celdas ({{percent}}% completado)",
+    "resumeTutorialAccessibilityLabel": "Reanudar tutorial"
+  },
+  "banners": {
+    "patternRemoved": "Este patrón se eliminó por moderación y ya no está disponible. Toca para salir.",
+    "syncConflict": "Sincronizado con otro dispositivo: se actualizaron algunas celdas. Toca para cerrar."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Localizar la siguiente celda restante del color de hilo activo",
+    "undoAccessibilityLabel": "Deshacer última puntada"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Color {{number}}: DMC {{dmcCode}}, queda {{count}} puntada",
+    "chipAccessibilityLabel_other": "Color {{number}}: DMC {{dmcCode}}, quedan {{count}} puntadas",
+    "done": "Completado",
+    "remaining_one": "Queda {{count}}",
+    "remaining_other": "Quedan {{count}}"
+  },
+  "celebration": {
+    "title": "¡Preciosa labor!",
+    "subtitle": "Has completado todas las puntadas de esta tela.",
+    "stitchesLabel_one": "Puntada",
+    "stitchesLabel_other": "Puntadas",
+    "colorsLabel_one": "Color",
+    "colorsLabel_other": "Colores",
+    "replayButton": "Bordar de nuevo",
+    "catalogButton": "Volver al catálogo"
+  }
+}

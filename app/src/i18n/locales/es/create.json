@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Atrás",
+    "cancel": "Cancelar",
+    "duplicateTitle": "Ya tienes un Patrón Personal llamado “{{title}}”. Elige un título diferente.",
+    "cellsCount_one": "celda",
+    "cellsCount_other": "celdas",
+    "colorsCount_one": "color",
+    "colorsCount_other": "colores"
+  },
+  "hub": {
+    "title": "Centro de Creación",
+    "subtitle": "Da vida a tus propios diseños con patrones de punto de cruz personalizados.",
+    "opening": "Abriendo…",
+    "photoImport": {
+      "title": "Importación de fotos",
+      "description": "Sube una imagen de tu carrete y conviértela en un patrón para bordar.",
+      "action": "Importar foto"
+    },
+    "aiGenerator": {
+      "title": "Generador de IA",
+      "description": "Describe una idea acogedora y deja que la inteligencia artificial genere un diseño de píxeles personalizado.",
+      "action": "Generar diseño"
+    }
+  },
+  "aspects": {
+    "square": "Cuadrado",
+    "portrait_4_3": "Vertical 4:3",
+    "landscape_4_3": "Horizontal 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "La conversión del patrón falló. Por favor, inténtalo de nuevo.",
+      "timeout": "La conversión del patrón aún se está procesando. Inténtalo de nuevo en unos momentos.",
+      "generic": "No se pudo completar la conversión del patrón. Por favor, inténtalo de nuevo."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Se requiere una cuenta registrada",
+      "body": "Las obras de arte de IA y su biblioteca seguirán siendo privadas en tu cuenta.",
+      "signIn": "Iniciar sesión"
+    },
+    "header": {
+      "title": "Generador de IA",
+      "backAccessibilityLabel": "Atrás"
+    },
+    "prompt": {
+      "label": "Describe tu obra de arte",
+      "placeholder": "Un acogedor jardín de una cabaña al atardecer…"
+    },
+    "generate": {
+      "working": "Procesando…",
+      "action": "Generar — 1 crédito de IA",
+      "errors": {
+        "promptRejected": "Esa indicación no está permitida. Intenta describir otra cosa.",
+        "generic": "No se pudo iniciar la generación por IA. Por favor, inténtalo de nuevo."
+      }
+    },
+    "library": {
+      "title": "Tu biblioteca de obras de IA",
+      "status": {
+        "pending": "Pendiente",
+        "dispatched": "Enviado",
+        "running": "En ejecución",
+        "delivered": "Entregado",
+        "safety_rejected": "Rechazado por seguridad",
+        "failed": "Fallido",
+        "deleted": "Eliminado",
+        "unknown": "No disponible"
+      },
+      "failure": {
+        "safety_rejected": "Esta obra de arte no pasó el control de seguridad del proveedor.",
+        "failed": "No se pudo generar esta obra de arte."
+      },
+      "approve": "Aprobar como patrón",
+      "delete": "Eliminar",
+      "deleteAccessibilityLabel": "Eliminar esta obra de IA",
+      "errors": {
+        "loadFailed": "No se pudo cargar tu biblioteca de obras de IA. Por favor, inténtalo de nuevo."
+      }
+    },
+    "approve": {
+      "modalTitle": "Crear Patrón Personal",
+      "titleLabel": "Título del patrón",
+      "titleAccessibilityLabel": "Título del patrón",
+      "defaultTitle": "Mi patrón de IA",
+      "placeholder": "Mi patrón de IA",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Cancelar",
+      "creating": "Creando patrón…",
+      "create": "Crear patrón",
+      "errors": {
+        "generic": "No se pudo crear el Patrón Personal. Por favor, inténtalo de nuevo."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Se requiere una cuenta registrada",
+      "body": "Los Patrones Personales pertenecen a tu cuenta para que sigan siendo privados y estén disponibles en todos tus dispositivos.",
+      "signIn": "Iniciar sesión o crear cuenta",
+      "back": "Atrás"
+    },
+    "header": {
+      "title": "Patrón de Foto",
+      "subtitle": "Encuadra localmente y aprueba la conversión",
+      "backAccessibilityLabel": "Atrás"
+    },
+    "picker": {
+      "chooseTitle": "Elige una foto",
+      "helpText": "El archivo local de la foto en resolución completa permanece en este dispositivo. No se convertirá nada hasta que apruebes el encuadre.",
+      "choose": "Elegir de la biblioteca",
+      "chooseAnother": "Elegir otra",
+      "opening": "Abriendo…",
+      "errors": {
+        "permissionDenied": "Se requiere acceso a la biblioteca de fotos para elegir un archivo local de foto.",
+        "invalidDimensions": "La foto seleccionada no tiene dimensiones válidas.",
+        "generic": "No se pudo abrir la biblioteca de fotos. Por favor, inténtalo de nuevo."
+      }
+    },
+    "framing": {
+      "title": "Encuadre de la obra",
+      "gestureHint": "Arrastra para mover · pellizca para hacer zoom",
+      "aspectLabel": "Relación de aspecto"
+    },
+    "profile": {
+      "title": "Perfil de conversión",
+      "options": {
+        "easy": "Fácil",
+        "standard": "Estándar",
+        "detailed": "Detallado"
+      },
+      "custom": "Personalizado",
+      "customMeta": "Gratis · forma bloqueada",
+      "unavailable": "No se adapta a este encuadre",
+      "customShortEdgeLabel": "Borde corto",
+      "customColorLimitLabel": "Límite de colores DMC",
+      "exceedsLimit": "Estos valores personalizados superan el límite de tamaño de patrón de {{max}} celdas."
+    },
+    "titleCard": {
+      "label": "Título del patrón",
+      "placeholder": "Mi patrón de foto",
+      "defaultTitle": "Mi patrón de foto",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · hasta {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "Al aprobar, solo se subirá la versión recortada y a menor escala. La foto original permanecerá en el dispositivo.",
+      "approve": "Aprobar obra y convertir"
+    },
+    "processing": {
+      "preparingFrame": "Preparando el encuadre aprobado en este dispositivo…",
+      "uploading": "Subiendo únicamente el encuadre recortado a menor escala…",
+      "waitingForWorker": "Esperando al proceso de conversión…",
+      "buildingGrid": "Creando la cuadrícula de puntos y la paleta DMC…",
+      "preparingSession": "Preparando el Patrón Personal para jugar…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Este perfil ya no se adapta al encuadre final. Elige Fácil o reduce el detalle.",
+        "generic": "No se pudo convertir esta foto. Por favor, inténtalo de nuevo."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Ningún patrón seleccionado",
+      "noPatternBody": "Esta pantalla debe abrirse desde un Patrón Personal existente en tu biblioteca.",
+      "accountTitle": "Se requiere una cuenta registrada",
+      "accountBody": "Los Patrones Personales pertenecen a tu cuenta para que sigan siendo privados y estén disponibles en todos tus dispositivos.",
+      "signIn": "Iniciar sesión o crear cuenta",
+      "back": "Atrás"
+    },
+    "loading": "Reanudando el borrador del editor...",
+    "load": {
+      "failedTitle": "Error al cargar el patrón",
+      "retry": "Reintentar",
+      "back": "Atrás",
+      "errors": {
+        "generic": "No se pudo cargar este Patrón Personal. Por favor, inténtalo de nuevo."
+      }
+    },
+    "header": {
+      "title": "Editor de patrones",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Atrás"
+    },
+    "toolbar": {
+      "undo": "Deshacer",
+      "redo": "Rehacer"
+    },
+    "mode": {
+      "paint": "Pintar",
+      "replaceColor": "Reemplazar color",
+      "replaceStep1": "1. Toca un color en el patrón de abajo para reemplazarlo:",
+      "replaceStep2": "2. Selecciona un color DMC de destino abajo para realizar el reemplazo:",
+      "paintSelected": "Seleccionado: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Selecciona un color abajo, luego toca las celdas para pintar."
+    },
+    "errors": {
+      "pickColorFirst": "Elige un color primero",
+      "paletteLimit": "Este patrón ya utiliza el máximo de {{max}} colores de hilo."
+    },
+    "picker": {
+      "title": "Colores de hilo DMC",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Guardar patrón editado",
+      "placeholder": "Título de mi patrón editado",
+      "action": "Guardar como nuevo",
+      "offlineTitle": "Guardado sin conexión",
+      "offlineBody": "El patrón editado se ha guardado en este dispositivo y se sincronizará con tu cuenta cuando vuelvas a tener conexión.",
+      "errors": {
+        "generic": "No se pudo guardar este Patrón Personal. Por favor, inténtalo de nuevo."
+      }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "BIENVENIDO A STITCH WISH",
+    "title": "Elige un color, toca las casillas correspondientes.",
+    "heroAlt": "Vista previa del patrón inicial Cozy Heart",
+    "handedness": {
+      "sectionTitle": "¿En qué lado deben estar los controles?",
+      "groupLabel": "Lado de los controles",
+      "optionRight": "Controles a la derecha",
+      "optionLeft": "Controles a la izquierda",
+      "saveErrorText": "No se pudo guardar esa elección.",
+      "retry": "Intentar de nuevo"
+    },
+    "note": "Puedes cambiar esto más tarde en Ajustes.",
+    "start": "Empezar a bordar",
+    "starting": "Iniciando…",
+    "browse": "Explorar patrones iniciales",
+    "signIn": "Iniciar sesión"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Selecciona el color Rojo Navidad DMC 321.",
+      "stitchAction": "Toca la celda resaltada correspondiente.",
+      "mismatchedTap": "Toca la celda resaltada diferente. Los toques incorrectos no te costarán nada.",
+      "undoAction": "Deshaz esa puntada y colócala de nuevo.",
+      "stitchSweep": "Presiona una celda correspondiente y arrastra por el tramo resaltado.",
+      "threadColorCompletion": "Termina el hilo blanco resaltado y luego elige tu siguiente color."
+    },
+    "hints": {
+      "anchoredZoom": "Pellizca para ampliar manteniendo fijas las celdas bajo tus dedos.",
+      "panVsSweep": "Arrastrar desplaza la tela. Empieza en una celda correspondiente para realizar un barrido.",
+      "edgeAutoPan": "Sigue barriendo cerca del borde y la tela seguirá tu dedo.",
+      "remainingCellLocator": "Usa el localizador para encontrar la siguiente celda restante de este hilo."
+    },
+    "skip": "Omitir por ahora",
+    "skipAccessibilityLabel": "Omitir tutorial por ahora",
+    "dismiss": "Entendido",
+    "dismissAccessibilityLabel": "Descartar pista"
+  },
+  "recap": {
+    "title": "¡Ya lo tienes!",
+    "lines": {
+      "matchNumbers": "Haz coincidir los números para colocar cada puntada.",
+      "dragSweep": "Arrastra por las celdas correspondientes para hacer un barrido.",
+      "pinchZoom": "Pellizca para ampliar cuando necesites ver más de cerca.",
+      "undoLocator": "Deshacer y el localizador siempre son gratis."
+    },
+    "continue": "Continuar bordando",
+    "browsePatterns": "Explorar patrones"
+  }
+}

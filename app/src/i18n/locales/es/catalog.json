@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Atrás",
+    "searchPlaceholder": "Buscar patrones, creadores, etiquetas…",
+    "offlineBanner": "Sin conexión: el catálogo puede estar desactualizado",
+    "sectionError": {
+      "title": "No se pudo cargar",
+      "retry": "Volver a intentar"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} colores",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} columnas",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Inglés"
+    },
+    "accessibilityLabel": "Escrito en {{language}}"
+  },
+  "index": {
+    "subtitle": "Crea tu propio mundo acogedor, puntada a puntada.",
+    "searchBar": {
+      "accessibilityLabel": "Buscar en el catálogo de patrones"
+    },
+    "sections": {
+      "starterPatterns": "Patrones de inicio",
+      "staffPicks": "Selección del equipo",
+      "categories": "Categorías",
+      "newPatterns": "Nuevos patrones"
+    },
+    "staffPicks": {
+      "emptyTitle": "Aún no hay selecciones del equipo",
+      "emptyBody": "Nuestra colección de diseños acogedores seleccionados a mano aparecerá aquí pronto.",
+      "errorBody": "No se pudo acceder al catálogo y aún no hay nada guardado en caché."
+    },
+    "categories": {
+      "count": "{{count}} patrones",
+      "errorBody": "No se pudo acceder al catálogo y aún no hay nada guardado en caché."
+    },
+    "newPatterns": {
+      "emptyTitle": "Se están creando nuevos patrones",
+      "emptyBody": "¡Hay novedades en camino!",
+      "errorBody": "No se pudo acceder al catálogo y aún no hay nada guardado en caché.",
+      "showMore": "Mostrar más",
+      "loading": "Cargando…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Explorar",
+    "error": {
+      "body": "No se pudo acceder a esta página del catálogo y aún no hay nada guardado en caché."
+    },
+    "empty": {
+      "title": "Aún no hay nada aquí",
+      "body": "Ningún patrón coincide con esta selección por ahora. Llegarán nuevos diseños con frecuencia."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Campo de búsqueda del catálogo",
+    "inactive": {
+      "title": "Buscar en el catálogo",
+      "body": "Escribe al menos dos caracteres para buscar patrones por título, creador o etiqueta."
+    },
+    "error": {
+      "title": "La búsqueda requiere conexión",
+      "body": "La búsqueda en el catálogo no está disponible sin conexión. Las páginas del catálogo guardadas en caché se pueden seguir explorando desde la pestaña del catálogo."
+    },
+    "noResults": {
+      "title": "Sin coincidencias",
+      "body": "Aún no hay nada en el catálogo que coincida con «{{query}}»."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Jugando como invitado",
+    "body": "Tus Stitch Coins y tu progreso se guardan solo en este dispositivo como invitado. Si se pierde la instalación, es posible que el registro de invitado y el progreso sean irrecuperables. Iniciar sesión protege tu progreso."
+  },
+  "detail": {
+    "noDescription": "No hay descripción disponible.",
+    "specs": {
+      "dimensions": "Dimensiones",
+      "totalStitches": "Total de puntadas",
+      "colors": "Colores",
+      "category": "Categoría"
+    },
+    "threadsSuffix": "{{count}} hilos",
+    "palette": {
+      "title": "Hilos requeridos",
+      "loading": "Leyendo la paleta de hilos...",
+      "loadFailed": "Error al cargar la paleta: {{error}}",
+      "retry": "Reintentar carga"
+    },
+    "actions": {
+      "startStitching": "Empezar a bordar",
+      "starting": "Iniciando...",
+      "preparing": "Preparando…"
+    },
+    "loadFailedGeneric": "Error al descodificar el archivo del patrón.",
+    "sessionCreateFailed": "Error al crear la sesión de bordado. Vuelve a intentarlo.",
+    "unavailable": {
+      "title": "Patrón no disponible",
+      "body": "No se pudo cargar este patrón. Es posible que haya sido eliminado o que no tengas conexión.",
+      "goBack": "Volver"
+    },
+    "byCreator": "por {{creatorName}}",
+    "byCreatorWithUsername": "por {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Bloquear creador",
+      "message": "¿De verdad quieres bloquear a {{creatorName}}? Esta es una acción privada y reversible que ocultará sus patrones de las búsquedas y de la exploración. No reportará al creador ni interrumpirá tu sesión de bordado actual.",
+      "cancel": "Cancelar",
+      "confirm": "Bloquear",
+      "blockedTitle": "Bloqueado",
+      "blockedMessage": "Se ha bloqueado a {{creatorName}}.",
+      "errorTitle": "Error",
+      "failedGeneric": "Error al bloquear al creador."
+    },
+    "likeFailedGeneric": "Error al actualizar el estado de Me gusta",
+    "connectToPlay": {
+      "title": "Conéctate para jugar",
+      "body": "Iniciar un patrón del catálogo requiere conexión para preparar tu sesión. Los patrones de inicio se pueden jugar ahora mismo, incluso sin conexión."
+    },
+    "insufficientCoins": {
+      "title": "Monedas insuficientes",
+      "body": "Este patrón cuesta {{price}} Stitch Coins, pero solo tienes {{balance}} monedas.\n\nFaltan: {{shortfall}} monedas.\n\n¡Gana Stitch Coins completando otros patrones! Las recompensas por primera finalización ya están disponibles.",
+      "getCoins": "Conseguir Stitch Coins",
+      "findPatterns": "Buscar patrones para bordar",
+      "back": "Atrás"
+    },
+    "unlockFailedGeneric": "Error al desbloquear. Comprueba tu conexión y vuelve a intentarlo.",
+    "preparationFailedGeneric": "No se pudo iniciar la preparación. Comprueba tu conexión y vuelve a intentarlo.",
+    "price": {
+      "label": "Precio"
+    },
+    "balance": {
+      "label": "Tu saldo",
+      "loading": "…"
+    },
+    "unlockButton": "Desbloquear por {{price}} moneda",
+    "communityReport": {
+      "button": "Reportar este patrón",
+      "title": "Reportar {{patternTitle}}",
+      "body": "Elige el motivo que mejor describa el problema. Los reportes nunca ocultan ni cambian un patrón de forma automática.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Contenido inapropiado o no seguro",
+        "copyright_or_publication_rights": "Derechos de autor o de publicación",
+        "duplicate_or_spam": "Duplicado o spam",
+        "misleading_title_or_tags": "Título o etiquetas engañosos",
+        "other": "Otro"
+      },
+      "explanationLabel": "Prueba o explicación {{requirement}}",
+      "explanationRequired": "(obligatorio)",
+      "explanationOptional": "(opcional)",
+      "explanationPlaceholder": "Comparte detalles que ayuden a un moderador a revisar el patrón.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Cancelar",
+      "submit": "Enviar reporte",
+      "submitFailedGeneric": "No se pudo enviar el reporte. Comprueba tu conexión y vuelve a intentarlo.",
+      "receivedTitle": "Reporte recibido",
+      "alreadyReceivedTitle": "El reporte ya fue recibido",
+      "receivedBody": "Ahora un moderador puede revisar este patrón. El reporte no cambia automáticamente su disponibilidad.",
+      "alreadyReceivedBody": "Tu reporte actual ya forma parte de la revisión abierta.",
+      "signInRequired": {
+        "title": "Inicia sesión para reportar",
+        "message": "Los reportes de la comunidad requieren una cuenta registrada. No se ha enviado nada.",
+        "cancel": "Cancelar",
+        "signIn": "Iniciar sesión"
+      },
+      "validation": {
+        "chooseReason": "Elige un motivo para el reporte.",
+        "explainRequired": "Explica por qué estás reportando este patrón.",
+        "tooLong": "La explicación debe tener 2000 caracteres o menos.",
+        "needsContent": "La explicación debe incluir letras o números."
+      }
+    }
+  }
+}
