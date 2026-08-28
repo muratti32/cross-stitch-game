@@ -1,0 +1,33 @@
+import type { CopiedEnglishAllowlist } from './copiedEnglish';
+
+/** Existing Turkish values that intentionally remain identical: product, provider, format, or technical names. */
+export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
+  'catalog:common.patternMeta.creatorDimensions': 'Dimensions use a locale-neutral format string.',
+  'catalog:detail.balance.loading': 'Ellipsis is a universal loading indicator.',
+  'catalog:detail.communityReport.characterCount': 'Character-count syntax is a UI format.',
+  'commerce:disclosure.appStore': 'Apple product name.',
+  'commerce:disclosure.googlePlay': 'Google product name.',
+  'commerce:products.stitchCoinPack_one': 'Stitch Coin is the branded in-game currency.',
+  'commerce:products.aiCreditPack_one': 'AI Credit is the branded in-game currency.',
+  'create:aiGeneration.approve.characterCount': 'Character-count syntax is a UI format.',
+  'create:patternEditor.header.dimensions': 'Dimensions use a locale-neutral format string.',
+  'create:patternEditor.picker.colorAccessibilityLabel': 'DMC is the thread system name.',
+  'play:palette.chipNumber': 'Palette numbering is a UI format.',
+  'profile:home.walletCard.membershipInactiveTitle': 'Cross-Stitch Premium is the product name.',
+  'profile:home.dailySection.taskCoinReward': 'Coin reward syntax is a UI format.',
+  'profile:home.dailySection.taskProgress': 'Progress syntax is a UI format.',
+  'profile:submissions.meta': 'Metadata separator is a UI format.',
+  'profile:moderationNotices.meta': 'Metadata separator is a UI format.',
+  'settings:developer.debug.sentry.sectionTitle': 'Sentry product name.',
+  'settings:developer.debug.sentry.testEventTitle': 'Sentry product name.',
+  'settings:developer.debug.onboarding.sectionTitle': 'Onboarding is a technical feature name.',
+  'settings:themeCollectionCard.premiumBadge': 'Premium is the product tier name.',
+  'settings:language.optionEnglish': 'English language self-name.',
+  'settings:language.optionTurkish': 'Türkçe language self-name.',
+  'settings:signIn.providerApple': 'Apple provider name.',
+  'settings:signIn.providerGoogle': 'Google provider name.',
+  'settings:appDetails.sdk': 'Expo SDK is a technical product name.',
+  'settings:deleteModal.confirmBold': 'Destructive confirmation intentionally uses English system copy.',
+  'settings:reauthModal.providerApple': 'Apple provider name.',
+  'settings:reauthModal.providerGoogle': 'Google provider name.',
+};

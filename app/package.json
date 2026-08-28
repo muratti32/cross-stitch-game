@@ -16,6 +16,7 @@
     "perf:gate": "tsx scripts/perf-gate.ts",
     "i18n:generate": "tsx scripts/generate-i18n-resources.ts",
     "i18n:gate": "tsx scripts/generate-i18n-resources.ts --check && tsx scripts/i18n-locale-gate.ts",
+    "i18n:release-readiness": "tsx scripts/i18n-release-readiness-gate.ts",
     "bundled:generate": "tsx scripts/generate-bundled-patterns.ts"
   },
   "dependencies": {
