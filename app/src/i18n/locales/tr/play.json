@@ -1,0 +1,44 @@
+{
+  "loading": {
+    "text": "Oturum açılıyor ve kumaş hazırlanıyor..."
+  },
+  "error": {
+    "title": "Oturum Yüklenemedi",
+    "fallbackMessage": "Dikiş oturumun yüklenemedi.",
+    "backButton": "Geri Dön",
+    "tableButton": "Masaya Git"
+  },
+  "header": {
+    "backButton": "← Geri",
+    "tableButton": "← Masa",
+    "defaultTitle": "Dikiş Oturumu",
+    "progress": "{{completed}} / {{total}} kare (%{{percent}} tamamlandı)",
+    "resumeTutorialAccessibilityLabel": "Öğreticiye devam et"
+  },
+  "banners": {
+    "patternRemoved": "Bu desen moderasyon tarafından kaldırıldı ve artık kullanılamıyor. Çıkmak için dokun.",
+    "syncConflict": "Başka bir cihazla senkronize edildi — bazı kareler güncellendi. Kapatmak için dokun."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Etkin iplik renginin kalan bir sonraki karesini bul",
+    "undoAccessibilityLabel": "Son dikişi geri al"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Renk {{number}}: DMC {{dmcCode}}, {{count}} dikiş kaldı",
+    "chipAccessibilityLabel_other": "Renk {{number}}: DMC {{dmcCode}}, {{count}} dikiş kaldı",
+    "done": "Tamamlandı",
+    "remaining_one": "{{count}} kaldı",
+    "remaining_other": "{{count}} kaldı"
+  },
+  "celebration": {
+    "title": "Güzelce İşlendi!",
+    "subtitle": "Bu kumaştaki her bir dikişi tamamladın.",
+    "stitchesLabel_one": "Dikiş",
+    "stitchesLabel_other": "Dikiş",
+    "colorsLabel_one": "Renk",
+    "colorsLabel_other": "Renk",
+    "replayButton": "Yeniden Dikiş Yap",
+    "catalogButton": "Kataloğa Dön"
+  }
+}

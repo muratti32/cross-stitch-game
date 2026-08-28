@@ -1,0 +1,44 @@
+{
+  "loading": {
+    "text": "Opening session & preparing fabric..."
+  },
+  "error": {
+    "title": "Session Load Failed",
+    "fallbackMessage": "Unable to load your stitching session.",
+    "backButton": "Go Back",
+    "tableButton": "Go to Table"
+  },
+  "header": {
+    "backButton": "← Back",
+    "tableButton": "← Table",
+    "defaultTitle": "Stitch Session",
+    "progress": "{{completed}} / {{total}} cells ({{percent}}% complete)",
+    "resumeTutorialAccessibilityLabel": "Resume tutorial"
+  },
+  "banners": {
+    "patternRemoved": "This Pattern was removed by moderation and is no longer available. Tap to leave.",
+    "syncConflict": "Synced with another device — some cells were updated. Tap to dismiss."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Locate next remaining cell of active thread color",
+    "undoAccessibilityLabel": "Undo last stitch"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Color {{number}}: DMC {{dmcCode}}, {{count}} stitch remaining",
+    "chipAccessibilityLabel_other": "Color {{number}}: DMC {{dmcCode}}, {{count}} stitches remaining",
+    "done": "Done",
+    "remaining_one": "{{count}} left",
+    "remaining_other": "{{count}} left"
+  },
+  "celebration": {
+    "title": "Beautifully Crafted!",
+    "subtitle": "You have completed every single stitch on this fabric.",
+    "stitchesLabel_one": "Stitch",
+    "stitchesLabel_other": "Stitches",
+    "colorsLabel_one": "Color",
+    "colorsLabel_other": "Colors",
+    "replayButton": "Stitch Again",
+    "catalogButton": "Back to Catalog"
+  }
+}
