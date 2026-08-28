@@ -95,7 +95,7 @@ export function PatternMetadataForm({
                   .filter((category) => category.active || category.code === pattern.categoryCode)
                   .map((category) => (
                     <SelectItem key={category.code} value={category.code}>
-                      {category.label}
+                      {category.labels.find((label) => label.locale === 'en')?.label ?? category.code}
                       {!category.active && ' (inactive)'}
                     </SelectItem>
                   ))}

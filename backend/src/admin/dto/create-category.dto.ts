@@ -1,4 +1,6 @@
-import { IsString, Length, Matches } from 'class-validator';
+import { Type } from 'class-transformer';
+import { ArrayMinSize, IsArray, IsString, Length, Matches, ValidateNested } from 'class-validator';
+import { CategoryLabelInputDto } from './category-label-input.dto';
 
 export class CreateCategoryDto {
   @IsString()
@@ -8,7 +10,9 @@ export class CreateCategoryDto {
   })
   code!: string;
 
-  @IsString()
-  @Length(1, 255)
-  label!: string;
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  @Type(() => CategoryLabelInputDto)
+  labels!: CategoryLabelInputDto[];
 }

@@ -108,7 +108,10 @@ export function PatternsTable({
             </TableCell>
             <TableCell>{pattern.creatorName}</TableCell>
             <TableCell className="capitalize">{pattern.patternType}</TableCell>
-            <TableCell>{categoriesByCode.get(pattern.categoryCode)?.label ?? pattern.categoryCode}</TableCell>
+            <TableCell>
+              {categoriesByCode.get(pattern.categoryCode)?.labels.find((label) => label.locale === 'en')?.label ??
+                pattern.categoryCode}
+            </TableCell>
             <TableCell>
               {pattern.unlockPriceTier === null ? 'Free' : PRICE_TIER_UNIT_LABELS[pattern.unlockPriceTier]}
             </TableCell>

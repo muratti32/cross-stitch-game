@@ -112,7 +112,7 @@ export function DraftPublishForm({
                   .filter((category) => category.active)
                   .map((category) => (
                     <SelectItem key={category.code} value={category.code}>
-                      {category.label}
+                      {category.labels.find((label) => label.locale === 'en')?.label ?? category.code}
                     </SelectItem>
                   ))}
               </SelectContent>

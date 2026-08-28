@@ -192,9 +192,9 @@ export class CatalogService {
     };
   }
 
-  async getCategories() {
+  async getCategories(locale: string = 'en') {
     const [categories, counts] = await Promise.all([
-      this.categoryRepository.find({ order: { code: 'ASC' }, where: { active: true } }),
+      this.categoryRepository.find({ relations: ['labels'], order: { code: 'ASC' }, where: { active: true } }),
       this.patternRepository
         .createQueryBuilder('pattern')
         .select('pattern.categoryCode', 'categoryCode')
@@ -214,11 +214,14 @@ export class CatalogService {
 
     return categories.map(category => {
       const count = countMap.get(category.code) || 0;
+      const labelEntity = category.labels?.find(l => l.locale === locale) ||
+                          category.labels?.find(l => l.locale === 'en');
+      const label = labelEntity ? labelEntity.label : category.code;
       return {
         id: category.code,
         code: category.code,
-        name: category.label,
-        label: category.label,
+        name: label,
+        label,
         count,
         patternCount: count,
       };

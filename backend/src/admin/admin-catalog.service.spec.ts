@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 
-import { PatternEntity } from '../catalog/entities';
+import { CategoryEntity, CategoryLabelEntity, PatternEntity } from '../catalog/entities';
 import { AdminCatalogService } from './admin-catalog.service';
 
 function pattern(overrides: Partial<PatternEntity> = {}): PatternEntity {
@@ -52,6 +52,7 @@ function serviceWithTransactionPattern(value: PatternEntity) {
     {} as never,
     {} as never,
     {} as never,
+    {} as never,
   );
   return { auditLog, save, service };
 }
@@ -78,6 +79,7 @@ describe('AdminCatalogService Pattern contract', () => {
       { publicUrl: (key: string) => `https://cdn.test/${key}` } as never,
       {} as never,
       patterns as never,
+      {} as never,
       {} as never,
       {} as never,
       {} as never,
@@ -119,6 +121,50 @@ describe('AdminCatalogService Pattern contract', () => {
     expect(entity.status).toBe('available');
     expect(save).not.toHaveBeenCalled();
     expect(auditLog.record).not.toHaveBeenCalled();
+  });
+});
+
+/* eslint-disable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unnecessary-type-assertion */
+describe('AdminCatalogService category labels', () => {
+  it('creates and updates multiple locale labels without changing the code', async () => {
+    const category = Object.assign(new CategoryEntity(), { code: 'animals', active: true, labels: [] });
+    const categories = {
+      create: jest.fn((value) => value),
+      find: jest.fn().mockResolvedValue([category]),
+      findOne: jest.fn(({ where }) => Promise.resolve(where.code === 'animals' ? category : null)),
+      save: jest.fn().mockImplementation((value) => Promise.resolve(value)),
+    };
+    const labelRows: CategoryLabelEntity[] = [];
+    const labels = {
+      create: jest.fn((value) => value),
+      findOne: jest.fn(({ where }) => Promise.resolve(labelRows.find((row) => row.locale === where.locale) ?? null)),
+      save: jest.fn().mockImplementation((value) => {
+        for (const row of Array.isArray(value) ? value : [value]) {
+          const index = labelRows.findIndex((existing) => existing.locale === row.locale);
+          if (index === -1) labelRows.push(row);
+          else labelRows[index] = row;
+        }
+        return Promise.resolve(value);
+      }),
+    };
+    const manager = {
+      getRepository: jest.fn((entity) => entity === CategoryEntity ? categories : labels),
+    };
+    const service = new AdminCatalogService(
+      { transaction: jest.fn((callback) => callback(manager)) } as never,
+      {} as never,
+      { record: jest.fn().mockResolvedValue(undefined) } as never,
+      {} as never, {} as never, {} as never, {} as never, categories as never, labels as never,
+    );
+
+    await service.createCategory('operator', 'new-category', [
+      { locale: 'en', label: 'New Category' }, { locale: 'tr', label: 'Yeni Kategori' },
+    ], 'request');
+    expect(labels.save).toHaveBeenCalled();
+    expect(await service.updateCategoryLabels('operator', 'animals', [
+      { locale: 'en', label: 'Animals Updated' }, { locale: 'tr', label: 'Hayvanlar' },
+    ], 'request')).toMatchObject({ code: 'animals', labels: [{ locale: 'en' }, { locale: 'tr' }] });
+    expect(category.code).toBe('animals');
   });
 });
 
@@ -171,7 +217,7 @@ describe('AdminCatalogService bulk removal', () => {
       dataSource as never,
       { publicUrl: (key: string) => `https://cdn.test/${key}` } as never,
       auditLog as never,
-      {} as never, {} as never, {} as never, {} as never, {} as never,
+      {} as never, {} as never, {} as never, {} as never, {} as never, {} as never,
     );
     return { auditLog, deleteExecute, patternSave, receiptRepository, service, staffSave };
   }

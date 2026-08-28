@@ -29,8 +29,8 @@ export class CatalogController {
   }
 
   @Get('categories')
-  async getCategories() {
-    return this.catalogService.getCategories();
+  async getCategories(@Query('locale') locale?: string) {
+    return this.catalogService.getCategories(locale || 'en');
   }
 
   @Get('tags')

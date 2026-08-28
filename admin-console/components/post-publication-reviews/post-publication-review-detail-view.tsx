@@ -308,7 +308,7 @@ export function PostPublicationReviewDetailView({ reviewId }: { reviewId: string
                     <SelectContent>
                       {categoriesQuery.data?.map((category) => (
                         <SelectItem key={category.code} value={category.code}>
-                          {category.label}
+                          {category.labels.find((label) => label.locale === 'en')?.label ?? category.code}
                         </SelectItem>
                       ))}
                     </SelectContent>

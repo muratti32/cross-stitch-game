@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Pencil } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -20,29 +20,30 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useUpdateCategoryLabel } from '@/hooks/use-categories';
+import { useUpdateCategoryLabels } from '@/hooks/use-categories';
 import { ApiError } from '@/lib/client/fetcher';
 import type { Category } from '@/lib/types';
 
-// Mirrors backend UpdateCategoryLabelDto constraints.
-const updateLabelSchema = z.object({
-  label: z.string().min(1, 'Label is required').max(255),
+// Mirrors backend UpdateCategoryLabelsDto constraints.
+const updateLabelsSchema = z.object({
+  labels: z.array(z.object({ existing: z.boolean(), label: z.string().min(1).max(255), locale: z.string().min(2).max(8) })).min(1).refine((labels) => labels.some((label) => label.locale === 'en'), 'English label is required'),
 });
-type UpdateLabelValues = z.infer<typeof updateLabelSchema>;
+type UpdateLabelsValues = z.infer<typeof updateLabelsSchema>;
 
 export function EditCategoryLabelDialog({ category }: { category: Category }) {
   const [open, setOpen] = useState(false);
-  const updateMutation = useUpdateCategoryLabel(category.code);
+  const updateMutation = useUpdateCategoryLabels(category.code);
 
-  const form = useForm<UpdateLabelValues>({
-    defaultValues: { label: category.label },
-    resolver: zodResolver(updateLabelSchema),
+  const form = useForm<UpdateLabelsValues>({
+    defaultValues: { labels: category.labels.map((label) => ({ existing: true, ...label })) },
+    resolver: zodResolver(updateLabelsSchema),
   });
+  const labelsArray = useFieldArray({ control: form.control, name: 'labels' });
 
-  async function handleSubmit(values: UpdateLabelValues): Promise<void> {
+  async function handleSubmit(values: UpdateLabelsValues): Promise<void> {
     try {
-      await updateMutation.mutateAsync(values.label);
-      toast.success(`Label for "${category.code}" updated.`);
+      await updateMutation.mutateAsync(values.labels.map(({ label, locale }) => ({ label, locale })));
+      toast.success(`Labels for "${category.code}" updated.`);
       setOpen(false);
     } catch (error) {
       toast.error(error instanceof ApiError ? error.message : 'Failed to update category label.');
@@ -58,29 +59,29 @@ export function EditCategoryLabelDialog({ category }: { category: Category }) {
         }
         setOpen(next);
         if (next) {
-          form.reset({ label: category.label });
+          form.reset({ labels: category.labels.map((label) => ({ existing: true, ...label })) });
           updateMutation.reset();
         }
       }}
     >
       <DialogTrigger render={<Button variant="ghost" size="sm" />}>
         <Pencil className="size-4" />
-        Edit label
+        Edit labels
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit label for “{category.code}”</DialogTitle>
-          <DialogDescription>The code is permanent; only the display label can change.</DialogDescription>
+          <DialogTitle>Edit labels for “{category.code}”</DialogTitle>
+          <DialogDescription>The code is permanent; English is required and labels are upserted per locale.</DialogDescription>
         </DialogHeader>
 
         <form className="space-y-4" onSubmit={form.handleSubmit(handleSubmit)}>
-          <div className="space-y-1.5">
-            <Label htmlFor="category-label">Label</Label>
-            <Input id="category-label" {...form.register('label')} />
-            {form.formState.errors.label !== undefined && (
-              <p className="text-sm text-destructive">{form.formState.errors.label.message}</p>
-            )}
-          </div>
+          <div className="space-y-1.5"><Label>Labels</Label><div className="space-y-2">{labelsArray.fields.map((field, index) => (
+            <div key={field.id} className="flex items-start gap-2">
+              <Input className="w-20" aria-label="Locale" readOnly={field.existing} {...form.register(`labels.${index}.locale`)} />
+              <Input className="flex-1" aria-label="Label" {...form.register(`labels.${index}.label`)} />
+              <Button type="button" variant="ghost" size="icon-sm" disabled={field.existing} onClick={() => labelsArray.remove(index)}><Trash2 className="size-4" /></Button>
+            </div>
+          ))}</div><Button type="button" variant="outline" size="sm" onClick={() => labelsArray.append({ existing: false, label: '', locale: '' })}><Plus className="size-4" /> Add locale</Button></div>
 
           {updateMutation.isError && (
             <Alert variant="destructive">
@@ -94,7 +95,7 @@ export function EditCategoryLabelDialog({ category }: { category: Category }) {
 
           <DialogFooter>
             <Button type="submit" disabled={updateMutation.isPending}>
-              {updateMutation.isPending ? 'Saving…' : 'Save label'}
+              {updateMutation.isPending ? 'Saving…' : 'Save labels'}
             </Button>
           </DialogFooter>
         </form>

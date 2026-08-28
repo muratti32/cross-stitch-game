@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Plus } from 'lucide-react';
-import { useForm } from 'react-hook-form';
+import { Plus, Trash2 } from 'lucide-react';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -30,7 +30,7 @@ const createCategorySchema = z.object({
     .min(1, 'Code is required')
     .max(64, 'At most 64 characters')
     .regex(/^[a-z0-9-]+$/, 'Lowercase letters, digits, and hyphens only'),
-  label: z.string().min(1, 'Label is required').max(255),
+  labels: z.array(z.object({ label: z.string().min(1, 'Label is required').max(255), locale: z.string().min(2).max(8) })).min(1).refine((labels) => labels.some((label) => label.locale === 'en'), 'English label is required'),
 });
 type CreateCategoryValues = z.infer<typeof createCategorySchema>;
 
@@ -39,9 +39,10 @@ export function CreateCategoryDialog() {
   const createMutation = useCreateCategory();
 
   const form = useForm<CreateCategoryValues>({
-    defaultValues: { code: '', label: '' },
+    defaultValues: { code: '', labels: [{ label: '', locale: 'en' }] },
     resolver: zodResolver(createCategorySchema),
   });
+  const labelsArray = useFieldArray({ control: form.control, name: 'labels' });
 
   async function handleSubmit(values: CreateCategoryValues): Promise<void> {
     try {
@@ -75,7 +76,7 @@ export function CreateCategoryDialog() {
         <DialogHeader>
           <DialogTitle>Create Catalog Category</DialogTitle>
           <DialogDescription>
-            The code is permanent and referenced by patterns; the label is shown to players.
+            The code is permanent and referenced by patterns; labels are shown per locale.
           </DialogDescription>
         </DialogHeader>
 
@@ -89,11 +90,15 @@ export function CreateCategoryDialog() {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="category-label">Label</Label>
-            <Input id="category-label" placeholder="e.g. Animals" {...form.register('label')} />
-            {form.formState.errors.label !== undefined && (
-              <p className="text-sm text-destructive">{form.formState.errors.label.message}</p>
-            )}
+            <Label>Labels</Label>
+            <div className="space-y-2">{labelsArray.fields.map((field, index) => (
+              <div key={field.id} className="flex items-start gap-2">
+                <Input className="w-20" placeholder="Locale" aria-label="Locale" {...form.register(`labels.${index}.locale`)} />
+                <Input className="flex-1" placeholder="Label" aria-label="Label" {...form.register(`labels.${index}.label`)} />
+                <Button type="button" variant="ghost" size="icon-sm" disabled={index === 0} onClick={() => labelsArray.remove(index)}><Trash2 className="size-4" /></Button>
+              </div>
+            ))}</div>
+            <Button type="button" variant="outline" size="sm" onClick={() => labelsArray.append({ label: '', locale: '' })}><Plus className="size-4" /> Add locale</Button>
           </div>
 
           {createMutation.isError && (

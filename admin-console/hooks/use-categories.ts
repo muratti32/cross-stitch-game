@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api } from '@/lib/client/fetcher';
-import type { Category } from '@/lib/types';
+import type { Category, TagLabel } from '@/lib/types';
 
 export function useCategories() {
   return useQuery({
@@ -15,17 +15,17 @@ export function useCategories() {
 export function useCreateCategory() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: { code: string; label: string }) => api.post<Category>('/api/admin/categories', input),
+    mutationFn: (input: { code: string; labels: TagLabel[] }) => api.post<Category>('/api/admin/categories', input),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['categories'] });
     },
   });
 }
 
-export function useUpdateCategoryLabel(code: string) {
+export function useUpdateCategoryLabels(code: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (label: string) => api.put<Category>(`/api/admin/categories/${code}/label`, { label }),
+    mutationFn: (labels: TagLabel[]) => api.put<Category>(`/api/admin/categories/${code}/labels`, { labels }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['categories'] });
     },

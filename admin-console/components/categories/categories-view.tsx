@@ -74,7 +74,7 @@ export function CategoriesView() {
             <TableHeader>
               <TableRow>
                 <TableHead>Code</TableHead>
-                <TableHead>Label</TableHead>
+                <TableHead>Labels</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -102,7 +102,7 @@ function CategoryRow({ category }: { category: Category }) {
   return (
     <TableRow className={category.active ? undefined : 'text-muted-foreground'}>
       <TableCell className="font-mono text-xs">{category.code}</TableCell>
-      <TableCell>{category.label}</TableCell>
+      <TableCell><div className="flex flex-wrap gap-1.5">{category.labels.map((label) => <Badge key={label.locale} variant="outline"><span className="text-muted-foreground">{label.locale}:</span> {label.label}</Badge>)}</div></TableCell>
       <TableCell>
         <Badge variant={category.active ? 'secondary' : 'outline'}>
           {category.active ? 'Active' : 'Inactive'}

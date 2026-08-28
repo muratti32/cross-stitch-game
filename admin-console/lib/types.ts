@@ -133,8 +133,8 @@ export interface DiscardDraftResponse {
 
 export interface Category {
   code: string;
-  label: string;
   active: boolean;
+  labels: TagLabel[];
 }
 
 export interface OperatorProfile {

@@ -4,6 +4,7 @@ import { DataSource, EntityManager, Repository } from 'typeorm';
 
 import {
   CategoryEntity,
+  CategoryLabelEntity,
   CatalogWithdrawalEntity,
   PatternEntity,
   PatternStatus,
@@ -67,6 +68,8 @@ export class AdminCatalogService {
     private readonly staffPicks: Repository<StaffPickEntity>,
     @InjectRepository(CategoryEntity)
     private readonly categories: Repository<CategoryEntity>,
+    @InjectRepository(CategoryLabelEntity)
+    private readonly categoryLabels: Repository<CategoryLabelEntity>,
   ) {}
 
   async listPatterns(options: {
@@ -522,32 +525,39 @@ export class AdminCatalogService {
     });
   }
 
-  async listCategories(): Promise<{ code: string; label: string; active: boolean }[]> {
-    const categories = await this.categories.find({ order: { code: 'ASC' } });
+  async listCategories(): Promise<{ code: string; active: boolean; labels: { locale: string; label: string }[] }[]> {
+    const categories = await this.categories.find({ order: { code: 'ASC' }, relations: ['labels'] });
     return categories.map((category) => ({
       active: category.active,
       code: category.code,
-      label: category.label,
+      labels: (category.labels ?? []).map((label) => ({ label: label.label, locale: label.locale })),
     }));
   }
 
   async createCategory(
     operatorAccountId: string,
     code: string,
-    label: string,
+    labels: { locale: string; label: string }[],
     requestId: string | null,
-  ): Promise<{ code: string; label: string; active: boolean }> {
+  ): Promise<{ code: string; active: boolean; labels: { locale: string; label: string }[] }> {
+    if (!labels.some((label) => label.locale === 'en')) {
+      throw new BadRequestException('Category labels must include English (en)');
+    }
     return this.dataSource.transaction(async (manager) => {
       const categoryRepository = manager.getRepository(CategoryEntity);
+      const categoryLabelRepository = manager.getRepository(CategoryLabelEntity);
 
       const existing = await categoryRepository.findOne({ where: { code } });
       if (existing !== null) {
         throw new BadRequestException(`Category code "${code}" already exists`);
       }
 
-      await categoryRepository.save(categoryRepository.create({ active: true, code, label }));
+      await categoryRepository.save(categoryRepository.create({ active: true, code }));
+      await categoryLabelRepository.save(
+        labels.map((label) => categoryLabelRepository.create({ categoryCode: code, label: label.label, locale: label.locale })),
+      );
 
-      const after = { active: true, code, label };
+      const after = { active: true, code, labels };
       await this.auditLog.record(manager, {
         action: 'category.create',
         after,
@@ -562,27 +572,37 @@ export class AdminCatalogService {
     });
   }
 
-  async updateCategoryLabel(
+  async updateCategoryLabels(
     operatorAccountId: string,
     code: string,
-    label: string,
+    labels: { locale: string; label: string }[],
     requestId: string | null,
-  ): Promise<{ code: string; label: string; active: boolean }> {
+  ): Promise<{ code: string; active: boolean; labels: { locale: string; label: string }[] }> {
+    if (!labels.some((label) => label.locale === 'en')) {
+      throw new BadRequestException('Category labels must include English (en)');
+    }
     return this.dataSource.transaction(async (manager) => {
       const categoryRepository = manager.getRepository(CategoryEntity);
+      const categoryLabelRepository = manager.getRepository(CategoryLabelEntity);
 
-      const category = await categoryRepository.findOne({ where: { code } });
+      const category = await categoryRepository.findOne({ relations: ['labels'], where: { code } });
       if (category === null) {
         throw new NotFoundException(`Category code "${code}" was not found`);
       }
-      const before = { active: category.active, code: category.code, label: category.label };
+      const before = { active: category.active, code: category.code, labels: (category.labels ?? []).map((label) => ({ label: label.label, locale: label.locale })) };
+      for (const input of labels) {
+        const existingLabel = await categoryLabelRepository.findOne({ where: { locale: input.locale, categoryCode: code } });
+        if (existingLabel !== null) {
+          existingLabel.label = input.label;
+          await categoryLabelRepository.save(existingLabel);
+        } else {
+          await categoryLabelRepository.save(categoryLabelRepository.create({ categoryCode: code, label: input.label, locale: input.locale }));
+        }
+      }
 
-      category.label = label;
-      await categoryRepository.save(category);
-
-      const after = { active: category.active, code, label };
+      const after = { active: category.active, code, labels };
       await this.auditLog.record(manager, {
-        action: 'category.label.update',
+        action: 'category.labels.update',
         after,
         before,
         operatorAccountId,

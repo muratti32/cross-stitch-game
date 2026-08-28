@@ -11,6 +11,7 @@ import {
   TagLabelEntity,
   StaffPickEntity,
   CategoryEntity,
+  CategoryLabelEntity,
 } from '../catalog/entities';
 import { ConversionModule } from '../conversion/conversion.module';
 import { CreatorProfileModule } from '../creator-profile/creator-profile.module';
@@ -104,6 +105,7 @@ import { OperationalAlertsAdminService } from './operational-alerts-admin.servic
       TagLabelEntity,
       StaffPickEntity,
       CategoryEntity,
+      CategoryLabelEntity,
     ]),
     // A separate JwtModule instance (own secret, issuer, audience) scoped to
     // this module only: OperatorAuthGuard's JwtService can never be the same

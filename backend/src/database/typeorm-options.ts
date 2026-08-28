@@ -14,6 +14,7 @@ import {
   TagLabelEntity,
   StaffPickEntity,
   CategoryEntity,
+  CategoryLabelEntity,
   CommunityReportEntity,
   PostPublicationReviewEntity,
   PostPublicationReviewClosureEntity,
@@ -170,6 +171,7 @@ import { FixCommercePromotionOwnership1789344000001 } from './migrations/1789344
 import { CreateCommerceGrantTombstones1789430400000 } from './migrations/1789430400000-CreateCommerceGrantTombstones';
 import { AddNewProductIdToMembershipEvents1789516800000 } from './migrations/1789516800000-AddNewProductIdToMembershipEvents';
 import { AddOnboardingGameplayEvents1789603200000 } from './migrations/1789603200000-AddOnboardingGameplayEvents';
+import { LocalizeCatalogCategoryLabels1789689600000 } from './migrations/1789689600000-LocalizeCatalogCategoryLabels';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -187,6 +189,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       TagLabelEntity,
       StaffPickEntity,
       CategoryEntity,
+      CategoryLabelEntity,
       StitchingSessionEntity,
       SessionProgressFlagEntity,
       ObjectRegistryEntity,
@@ -325,6 +328,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CreateCommerceGrantTombstones1789430400000,
       AddNewProductIdToMembershipEvents1789516800000,
       AddOnboardingGameplayEvents1789603200000,
+      LocalizeCatalogCategoryLabels1789689600000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

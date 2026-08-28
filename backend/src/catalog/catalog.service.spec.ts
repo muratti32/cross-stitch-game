@@ -335,3 +335,46 @@ describe('CatalogService - Creator Block Filtering', () => {
     });
   });
 });
+
+describe('CatalogService category labels', () => {
+  it('resolves the requested locale and falls back to English', async () => {
+    const categoryRepository = {
+      find: jest.fn().mockResolvedValue([
+        { code: 'animals', active: true, labels: [
+          { locale: 'en', label: 'Animals' },
+          { locale: 'tr', label: 'Hayvanlar' },
+        ] },
+        { code: 'nature', active: true, labels: [{ locale: 'en', label: 'Nature' }] },
+      ]),
+    };
+    const countsQuery = {
+      addSelect: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      getRawMany: jest.fn().mockResolvedValue([]),
+      groupBy: jest.fn().mockReturnThis(),
+      leftJoin: jest.fn().mockReturnThis(),
+      select: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+    };
+    const patternRepository = { createQueryBuilder: jest.fn().mockReturnValue(countsQuery) };
+    const service = new CatalogService(
+      patternRepository as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      categoryRepository as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      {} as never,
+    );
+
+    await expect(service.getCategories('tr')).resolves.toEqual([
+      { id: 'animals', code: 'animals', name: 'Hayvanlar', label: 'Hayvanlar', count: 0, patternCount: 0 },
+      { id: 'nature', code: 'nature', name: 'Nature', label: 'Nature', count: 0, patternCount: 0 },
+    ]);
+    expect(categoryRepository.find).toHaveBeenCalledWith({
+      relations: ['labels'], order: { code: 'ASC' }, where: { active: true },
+    });
+  });
+});

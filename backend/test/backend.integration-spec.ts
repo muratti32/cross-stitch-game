@@ -2171,6 +2171,37 @@ describe('Stitch Wish backend integration', () => {
       expect(withdrawnDetail).toHaveLength(0);
     });
 
+    it('honors the requested Catalog Category locale and falls back to English', async () => {
+      await dataSource.query(
+        `INSERT INTO "catalog"."category_labels" ("category_code", "locale", "label")
+         VALUES ('fantasy', 'tr', 'ITest Fantezi')
+         ON CONFLICT ("category_code", "locale") DO UPDATE SET "label" = EXCLUDED."label"`,
+      );
+
+      const turkish = await request(httpServer)
+        .get('/v1/catalog/categories?locale=tr')
+        .expect(200);
+      const fantasyTr = (turkish.body as { code: string; label: string }[]).find(
+        (category) => category.code === 'fantasy',
+      );
+      expect(fantasyTr?.label).toBe('ITest Fantezi');
+
+      const unsupportedLocale = await request(httpServer)
+        .get('/v1/catalog/categories?locale=de')
+        .expect(200);
+      const fantasyFallback = (
+        unsupportedLocale.body as { code: string; label: string }[]
+      ).find((category) => category.code === 'fantasy');
+      expect(fantasyFallback?.label).toBe('Fantasy');
+
+      // Category code stays stable regardless of which locale label resolved.
+      const codesTurkish = (turkish.body as { code: string }[]).map((c) => c.code).sort();
+      const codesFallback = (unsupportedLocale.body as { code: string }[])
+        .map((c) => c.code)
+        .sort();
+      expect(codesTurkish).toEqual(codesFallback);
+    });
+
     it('serves ordered staff picks and searches title, creator, and tag labels', async () => {
       const catalog = app.get(CatalogService);
       await catalog.upsertTagLabels('itest-woodland', [

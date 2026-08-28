@@ -10,6 +10,7 @@ import { CatalogPrecheckService } from '../src/catalog/catalog-precheck.service'
 import { CatalogWithdrawalService } from '../src/catalog/catalog-withdrawal.service';
 import {
   CategoryEntity,
+  CategoryLabelEntity,
   PatternEntity,
   StaffPickEntity,
   TagEntity,
@@ -97,6 +98,7 @@ describe('Catalog Withdrawal', () => {
       dataSource.getRepository(TagLabelEntity),
       dataSource.getRepository(StaffPickEntity),
       dataSource.getRepository(CategoryEntity),
+      dataSource.getRepository(CategoryLabelEntity),
     );
   });
 
