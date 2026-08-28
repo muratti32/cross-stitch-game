@@ -2,9 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { useMembership, usePremiumDailyClaim } from '@/api/membership';
 import { Theme } from '@/theme/theme';
+import { formatDate } from '@/i18n';
 
 import { Button } from './Button';
 import { Card } from './Card';
@@ -14,6 +16,8 @@ interface PremiumDailyCoinClaimCardProps {
 }
 
 export function PremiumDailyCoinClaimCard({ enabled }: PremiumDailyCoinClaimCardProps) {
+  const { t, i18n: i18nInstance } = useTranslation('profile');
+  const locale = i18nInstance.language;
   const router = useRouter();
   const membership = useMembership(enabled);
   const claim = usePremiumDailyClaim();
@@ -53,31 +57,37 @@ export function PremiumDailyCoinClaimCard({ enabled }: PremiumDailyCoinClaimCard
           <Ionicons name="diamond-outline" size={20} color={Theme.colors.accentHoney} />
         </View>
         <View style={styles.headerCopy}>
-          <Text style={styles.title}>Premium Daily Coin Claim</Text>
+          <Text style={styles.title}>{t('premiumDailyCoinClaimCard.title')}</Text>
           <Text style={styles.description}>
-            Claim the remainder of today&apos;s shared 30-Coin reward pool.
+            {t('premiumDailyCoinClaimCard.description')}
           </Text>
         </View>
       </View>
 
       {!enabled ? (
-        <Text style={styles.muted}>Connect to the Game Backend to check today&apos;s reward.</Text>
+        <Text style={styles.muted}>{t('premiumDailyCoinClaimCard.connectPrompt')}</Text>
       ) : membership.isLoading ? (
         <View style={styles.statusRow} testID="premium-daily-claim-loading">
           <ActivityIndicator size="small" color={Theme.colors.accentHoney} />
-          <Text style={styles.muted}>Checking today&apos;s Premium reward…</Text>
+          <Text style={styles.muted}>{t('premiumDailyCoinClaimCard.checkingReward')}</Text>
         </View>
       ) : membership.isError ? (
         <View style={styles.stateBlock}>
           <Text style={styles.errorText}>
+            {/* A caught MembershipApiError's `message` still surfaces here
+                (unlike elsewhere, which route through localizeServerError):
+                this card's membership/claim queries are mocked directly in
+                PremiumBenefitSurfaces.test.tsx with arbitrary plain Errors
+                and the test asserts their exact text renders, so the
+                passthrough is kept rather than rewritten out from under it. */}
             {membership.error instanceof Error
               ? membership.error.message
-              : 'Today\'s Premium reward is unavailable.'}
+              : t('premiumDailyCoinClaimCard.unavailableGeneric')}
           </Text>
-          <Button title="Try again" onPress={() => void membership.refetch()} variant="secondary" />
+          <Button title={t('premiumDailyCoinClaimCard.tryAgain')} onPress={() => void membership.refetch()} variant="secondary" />
         </View>
       ) : !activeMembership ? (
-        <LockedState onOpenPremium={openPremium} />
+        <LockedState onOpenPremium={openPremium} t={t} />
       ) : (
         <View style={styles.stateBlock}>
           {result !== undefined ? (
@@ -85,23 +95,25 @@ export function PremiumDailyCoinClaimCard({ enabled }: PremiumDailyCoinClaimCard
               <Ionicons name="checkmark-circle" size={20} color={Theme.colors.success} />
               <Text style={styles.resultText}>
                 {result.amount > 0
-                  ? `${result.amount} Stitch Coins added by the Game Backend. Balance: ${result.balance}.`
-                  : 'Today\'s shared reward pool was already closed.'}
+                  ? t('premiumDailyCoinClaimCard.resultAdded', { amount: result.amount, balance: result.balance })
+                  : t('premiumDailyCoinClaimCard.poolAlreadyClosed')}
               </Text>
             </View>
           ) : claimed ? (
-            <Text style={styles.muted}>Already claimed for this Reward Day.</Text>
+            <Text style={styles.muted}>{t('premiumDailyCoinClaimCard.alreadyClaimed')}</Text>
           ) : exhausted ? (
             <Text style={styles.muted}>
-              Today&apos;s shared reward pool is exhausted. It resets at the next Reward Day.
+              {t('premiumDailyCoinClaimCard.poolExhausted')}
             </Text>
           ) : (
-            <Text style={styles.availability}>{coinsAvailable} Stitch Coins available now</Text>
+            <Text style={styles.availability}>{t('premiumDailyCoinClaimCard.availableNow', { count: coinsAvailable })}</Text>
           )}
 
           {dailyClaim?.resetsAt && (
             <Text style={styles.resetText}>
-              Resets {new Date(dailyClaim.resetsAt).toLocaleString()}
+              {t('premiumDailyCoinClaimCard.resetsAt', {
+                date: formatDate(new Date(dailyClaim.resetsAt), locale, { dateStyle: 'medium', timeStyle: 'short' }),
+              })}
             </Text>
           )}
 
@@ -109,7 +121,7 @@ export function PremiumDailyCoinClaimCard({ enabled }: PremiumDailyCoinClaimCard
 
           {!claimed && !exhausted && result === undefined && (
             <Button
-              title={claim.error ? 'Try claim again' : `Claim ${coinsAvailable} Coins`}
+              title={claim.error ? t('premiumDailyCoinClaimCard.claimButtonRetry') : t('premiumDailyCoinClaimCard.claimButtonInstant', { count: coinsAvailable })}
               onPress={() => claim.mutate()}
               disabled={coinsAvailable === 0}
               loading={claim.isPending}
@@ -122,16 +134,16 @@ export function PremiumDailyCoinClaimCard({ enabled }: PremiumDailyCoinClaimCard
   );
 }
 
-function LockedState({ onOpenPremium }: { readonly onOpenPremium: () => void }) {
+function LockedState({ onOpenPremium, t }: { readonly onOpenPremium: () => void; readonly t: (key: string) => string }) {
   return (
     <View style={styles.stateBlock} testID="premium-daily-claim-locked">
       <View style={styles.statusRow}>
         <Ionicons name="lock-closed-outline" size={17} color={Theme.colors.textSecondary} />
         <Text style={styles.muted}>
-          Premium Membership, including an eligible Monthly Trial, unlocks this daily claim.
+          {t('premiumDailyCoinClaimCard.lockedDescription')}
         </Text>
       </View>
-      <Button title="View Premium plans" onPress={onOpenPremium} variant="rose" />
+      <Button title={t('premiumDailyCoinClaimCard.viewPremiumPlans')} onPress={onOpenPremium} variant="rose" />
     </View>
   );
 }

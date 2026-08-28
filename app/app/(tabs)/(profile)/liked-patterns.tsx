@@ -14,7 +14,7 @@ import { absolutePreviewUrl, absoluteThumbnailUrls } from '@/api/catalog';
 export default function LikedPatternsScreen() {
   const { t } = useTranslation('profile');
   const isAccount = useIdentityStore((state) => state.isAccount);
-  const query = useLikedPatterns('en');
+  const query = useLikedPatterns();
 
   useFocusEffect(
     useCallback(() => {

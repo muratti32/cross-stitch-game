@@ -22,6 +22,32 @@ export class InsufficientCoinError extends Error {
   }
 }
 
+// #159/#166: shaped like CreatorProfileApiError, SocialApiError, and
+// CatalogSubmissionApiError (06c8eb0) so a caught economy failure routes
+// through localizeServerError instead of the server's raw English message.
+export class EconomyApiError extends Error {
+  constructor(readonly status: number, message: string, readonly reason: string | null) {
+    super(message);
+    this.name = 'EconomyApiError';
+  }
+}
+
+async function parseEconomyError(response: Response, fallback: string): Promise<EconomyApiError> {
+  let message = fallback;
+  let reason: string | null = null;
+  try {
+    const body = (await response.json()) as { message?: unknown; reason?: unknown };
+    if (typeof body.message === 'string') message = body.message;
+    if (Array.isArray(body.message)) {
+      message = body.message.filter((item): item is string => typeof item === 'string').join(', ');
+    }
+    if (typeof body.reason === 'string') reason = body.reason;
+  } catch {
+    // Keep the actionable fallback.
+  }
+  return new EconomyApiError(response.status, message, reason);
+}
+
 export interface UnlockResult {
   patternId: string;
   alreadyUnlocked: boolean;
@@ -43,7 +69,7 @@ export async function unlockPattern(patternId: string): Promise<UnlockResult> {
   }
 
   if (!res.ok) {
-    throw new Error('Unlock failed: ' + res.status);
+    throw await parseEconomyError(res, 'Unlock failed: ' + res.status);
   }
 
   return (await res.json()) as UnlockResult;
@@ -52,7 +78,7 @@ export async function unlockPattern(patternId: string): Promise<UnlockResult> {
 export async function fetchCoinBalance(): Promise<number> {
   const res = await apiFetch('/v1/economy/balance');
   if (!res.ok) {
-    throw new Error('Failed to fetch coin balance: ' + res.status);
+    throw await parseEconomyError(res, 'Failed to fetch coin balance: ' + res.status);
   }
   const data = (await res.json()) as { balance: number };
   return data.balance;
@@ -61,7 +87,7 @@ export async function fetchCoinBalance(): Promise<number> {
 export async function fetchUnlockedPatternIds(): Promise<string[]> {
   const res = await apiFetch('/v1/economy/unlocks');
   if (!res.ok) {
-    throw new Error('Failed to fetch unlocked patterns: ' + res.status);
+    throw await parseEconomyError(res, 'Failed to fetch unlocked patterns: ' + res.status);
   }
   const data = (await res.json()) as { patternIds: string[] };
   return data.patternIds;
@@ -103,7 +129,7 @@ export interface RewardDayView {
 export async function fetchRewardDay(): Promise<RewardDayView> {
   const res = await apiFetch('/v1/economy/reward-day');
   if (!res.ok) {
-    throw new Error('Failed to fetch reward day: ' + res.status);
+    throw await parseEconomyError(res, 'Failed to fetch reward day: ' + res.status);
   }
   return (await res.json()) as RewardDayView;
 }
@@ -125,7 +151,7 @@ export async function openAdAttempt(): Promise<AdAttempt> {
     method: 'POST',
   });
   if (!res.ok) {
-    throw new Error('Failed to open ad attempt: ' + res.status);
+    throw await parseEconomyError(res, 'Failed to open ad attempt: ' + res.status);
   }
   return (await res.json()) as AdAttempt;
 }
@@ -152,10 +178,7 @@ export async function claimAdReward(nonce: string): Promise<AdRewardGrantResult>
     body: JSON.stringify({ nonce }),
   });
   if (!res.ok) {
-    const errBody = await res.json().catch(() => null);
-    const rawMsg = errBody?.message;
-    const msg = Array.isArray(rawMsg) ? rawMsg.join(', ') : rawMsg || `HTTP ${res.status}`;
-    throw new Error(msg);
+    throw await parseEconomyError(res, `HTTP ${res.status}`);
   }
   return (await res.json()) as AdRewardGrantResult;
 }

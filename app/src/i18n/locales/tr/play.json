@@ -1,4 +1,42 @@
 {
+  "home": {
+    "title": "Dikiş Masası",
+    "subtitle": "Kaldığın yerden devam et veya son bir çalışmayı sürdür.",
+    "loading": "Dikişlerin yükleniyor...",
+    "empty": {
+      "title": "Aktif Çalışma Yok",
+      "body": "Dikiş çerçeven şu anda boş. Dikilecek güzel bir şey bulmak için desen kataloğuna gözat!",
+      "action": "Kataloğa Gözat"
+    },
+    "unknownPattern": "Bilinmeyen Desen",
+    "idLabel": "Kimlik: {{id}}",
+    "unknownPatternLabel": "Desen {{id}}",
+    "deleteSessionAccessibilityLabel": "Oturumu sil",
+    "viewFinishedAccessibilityLabel": "Tamamlanan çalışmayı görüntüle",
+    "resumeAccessibilityLabel": "Dikişe devam et",
+    "status": {
+      "ready": "Hazır",
+      "done": "Tamamlandı",
+      "active": "Aktif",
+      "preparing": "Hazırlanıyor",
+      "failed": "Başarısız"
+    },
+    "deleteConfirm": {
+      "title": "İlerleme Silinsin mi",
+      "message": "\"{{title}}\" için ilerlemeni silmek istediğine emin misin? Bu işlem geri alınamaz.",
+      "cancel": "Vazgeç",
+      "confirm": "Sil"
+    },
+    "preparingCard": {
+      "discardTitle": "Oturumu At",
+      "cancelTitle": "İndirmeyi İptal Et",
+      "discardMessage": "Bu başarısız oturumu atmak istediğine emin misin?",
+      "cancelMessage": "Bu desenin indirilmesini iptal etmek istediğine emin misin?",
+      "keep": "Tut",
+      "discard": "At",
+      "cancel": "İptal Et"
+    }
+  },
   "loading": {
     "text": "Oturum açılıyor ve kumaş hazırlanıyor..."
   },

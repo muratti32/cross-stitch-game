@@ -1,4 +1,42 @@
 {
+  "home": {
+    "title": "Stitching Table",
+    "subtitle": "Pick up where you left off or resume a recent craft.",
+    "loading": "Loading your stitches...",
+    "empty": {
+      "title": "No Active Crafts",
+      "body": "Your stitching frame is currently empty. Browse the pattern catalog to find something beautiful to stitch!",
+      "action": "Browse Catalog"
+    },
+    "unknownPattern": "Unknown Pattern",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Pattern {{id}}",
+    "deleteSessionAccessibilityLabel": "Delete session",
+    "viewFinishedAccessibilityLabel": "View finished craft",
+    "resumeAccessibilityLabel": "Resume stitching",
+    "status": {
+      "ready": "Ready",
+      "done": "Done",
+      "active": "Active",
+      "preparing": "Preparing",
+      "failed": "Failed"
+    },
+    "deleteConfirm": {
+      "title": "Delete Progress",
+      "message": "Are you sure you want to delete your progress for \"{{title}}\"? This cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Delete"
+    },
+    "preparingCard": {
+      "discardTitle": "Discard Session",
+      "cancelTitle": "Cancel Download",
+      "discardMessage": "Are you sure you want to discard this failed session?",
+      "cancelMessage": "Are you sure you want to cancel downloading this pattern?",
+      "keep": "Keep",
+      "discard": "Discard",
+      "cancel": "Cancel"
+    }
+  },
   "loading": {
     "text": "Opening session & preparing fabric..."
   },

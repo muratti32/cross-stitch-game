@@ -14,15 +14,13 @@ interface Props {
   commerce?: boolean;
 }
 
-// Shared by the Commerce Store purchase flow (#164, in scope) and the
-// catalog's Guest play risk notice (out of this slice's scope - its own
-// localization ticket). Only the commerce-variant title/body and the two
-// shared button labels route through commerce.json here; the non-commerce
-// title/body stay the pre-translation English literal until the catalog
-// slice localizes them, so this change does not plant catalog strings in
-// the commerce namespace.
+// Shared by the Commerce Store purchase flow (#164) and the catalog's
+// Guest unlock risk notice (#166). The commerce-variant title/body and the
+// two shared button labels route through commerce.json; the non-commerce
+// title/body route through catalog.json so this component never plants one
+// feature's strings in another's namespace.
 export function GuestDataRiskNotice({ visible, onProceed, onSignIn, onDismiss, commerce = false }: Props) {
-  const { t } = useTranslation('commerce');
+  const { t } = useTranslation(['commerce', 'catalog']);
   return (
     <Modal
       transparent
@@ -37,30 +35,28 @@ export function GuestDataRiskNotice({ visible, onProceed, onSignIn, onDismiss, c
             onPress={onDismiss}
             hitSlop={12}
             accessibilityRole="button"
-            accessibilityLabel={t('guestDataRiskNotice.closeAccessibilityLabel')}
+            accessibilityLabel={t('commerce:guestDataRiskNotice.closeAccessibilityLabel')}
           >
             <Ionicons name="close" size={24} color={Theme.colors.textSecondary} />
           </Pressable>
 
           <Text style={styles.title}>
-            {commerce ? t('guestDataRiskNotice.commerceTitle') : 'Playing as Guest'}
+            {commerce ? t('commerce:guestDataRiskNotice.commerceTitle') : t('catalog:guestDataRiskNotice.title')}
           </Text>
 
           <Text style={styles.body}>
-            {commerce
-              ? t('guestDataRiskNotice.commerceBody')
-              : 'Stitch Coin and progress live only on this device as a Guest. If the installation is lost, the Guest ledger and progress may be unrecoverable. Signing in protects your progress.'}
+            {commerce ? t('commerce:guestDataRiskNotice.commerceBody') : t('catalog:guestDataRiskNotice.body')}
           </Text>
 
           <View style={styles.buttonContainer}>
             <Button
-              title={t('guestDataRiskNotice.continueAsGuest')}
+              title={t('commerce:guestDataRiskNotice.continueAsGuest')}
               onPress={onProceed}
               variant={commerce ? 'primary' : 'secondary'}
               style={styles.button}
             />
             <Button
-              title={t('guestDataRiskNotice.signInInstead')}
+              title={t('commerce:guestDataRiskNotice.signInInstead')}
               onPress={onSignIn}
               variant={commerce ? 'secondary' : 'primary'}
               style={styles.button}

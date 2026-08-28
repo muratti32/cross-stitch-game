@@ -133,6 +133,7 @@
       "adPerkNote": "Günde en fazla 3 reklam izleyin · Premium, anında 30 para talebinin kilidini açar",
       "adRewardEarned": "Reklam ödülü kazanıldı! Sunucuyla doğrulanıyor…",
       "claimFailed": "Talep başarısız: {{message}}",
+      "claimFailedGeneric": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
       "adLoadFailedDefault": "Reklam yüklenemedi",
       "adAttemptFailedDefault": "Reklam denemesi açılamadı"
     },
@@ -151,7 +152,8 @@
       "submitAccessibilityLabel": "{{title}} desenini Topluluk Kataloğuna gönder",
       "emptyTitle": "Kişisel Eser Yok",
       "emptyBody": "Henüz hiçbir fotoğraf dönüştürmediniz veya yapay zeka sanatı oluşturmadınız. İlk eserinizi oluşturmak için Oluştur bölümüne gidin!",
-      "emptyAction": "Oluşturmaya Başla"
+      "emptyAction": "Oluşturmaya Başla",
+      "actionFailedGeneric": "Bir şeyler ters gitti. Lütfen tekrar deneyin."
     },
     "likedTab": {
       "unavailableTitle": "Beğenilen Desenler Kullanılamıyor",
@@ -162,6 +164,24 @@
       "emptyBody": "Kataloğa göz atın ve daha sonra kaydetmek için herhangi bir tasarımdaki kalp simgesine dokunun.",
       "emptyAction": "Desenleri Keşfet"
     }
+  },
+  "premiumDailyCoinClaimCard": {
+    "title": "Premium Günlük Coin Talebi",
+    "description": "Bugünün paylaşımlı 30-Coin ödül havuzunun kalanını talep et.",
+    "connectPrompt": "Bugünkü ödülü kontrol etmek için Oyun Sunucusuna bağlan.",
+    "checkingReward": "Bugünkü Premium ödülü kontrol ediliyor…",
+    "unavailableGeneric": "Bugünkü Premium ödülü kullanılamıyor.",
+    "tryAgain": "Tekrar dene",
+    "resultAdded": "Oyun Sunucusu tarafından {{amount}} Stitch Coin eklendi. Bakiye: {{balance}}.",
+    "poolAlreadyClosed": "Bugünün paylaşımlı ödül havuzu zaten kapatıldı.",
+    "alreadyClaimed": "Bu Ödül Günü için zaten talep edildi.",
+    "poolExhausted": "Bugünün paylaşımlı ödül havuzu tükendi. Bir sonraki Ödül Günü'nde sıfırlanır.",
+    "availableNow": "{{count}} Stitch Coin şu anda kullanılabilir",
+    "resetsAt": "Sıfırlanma: {{date}}",
+    "claimButtonRetry": "Talebi tekrar dene",
+    "claimButtonInstant": "{{count}} Coin Talep Et",
+    "lockedDescription": "Premium Üyelik, uygun bir Aylık Deneme dahil, bu günlük talebi açar.",
+    "viewPremiumPlans": "Premium planları görüntüle"
   },
   "publicProfile": {
     "editTitle": "Herkese Açık Profili Düzenle",

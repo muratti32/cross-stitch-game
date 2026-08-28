@@ -32,6 +32,7 @@ import {
   getLanguageOverride,
   setActiveLanguageOverride,
   clearActiveLanguageOverride,
+  formatDate,
   type SupportedLocale,
 } from '@/i18n';
 
@@ -49,7 +50,8 @@ const appScheme = Array.isArray(expoConfig?.scheme)
   : expoConfig?.scheme ?? 'unknown';
 
 export default function SettingsScreen() {
-  const { t } = useTranslation('settings');
+  const { t, i18n: i18nInstance } = useTranslation('settings');
+  const locale = i18nInstance.language;
   const { showGridLines, toggleGridLines, handedness, setHandedness } = useGameplayStore();
   const { data: health, isLoading, error, refetch, isRefetching } = useHealthCheck();
   const { data: sessionData, isLoading: sessionLoading, error: sessionError } = useBackendSession();
@@ -104,7 +106,7 @@ export default function SettingsScreen() {
     const endDate = new Date(recoveryWindowEndsAt);
     return Number.isNaN(endDate.getTime())
       ? t('common.unavailable')
-      : endDate.toLocaleDateString();
+      : formatDate(endDate, locale);
   };
 
   const handleResetGuestData = async () => {

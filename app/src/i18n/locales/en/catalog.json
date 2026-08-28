@@ -71,5 +71,107 @@
       "title": "No Matches",
       "body": "Nothing in the catalog matches “{{query}}” yet."
     }
+  },
+  "guestDataRiskNotice": {
+    "title": "Playing as Guest",
+    "body": "Stitch Coin and progress live only on this device as a Guest. If the installation is lost, the Guest ledger and progress may be unrecoverable. Signing in protects your progress."
+  },
+  "detail": {
+    "noDescription": "No description available.",
+    "specs": {
+      "dimensions": "Dimensions",
+      "totalStitches": "Total Stitches",
+      "colors": "Colors",
+      "category": "Category"
+    },
+    "threadsSuffix": "{{count}} Threads",
+    "palette": {
+      "title": "Required Threads",
+      "loading": "Reading thread palette...",
+      "loadFailed": "Failed to load palette: {{error}}",
+      "retry": "Retry Loading"
+    },
+    "actions": {
+      "startStitching": "Start Stitching",
+      "starting": "Starting...",
+      "preparing": "Preparing…"
+    },
+    "loadFailedGeneric": "Failed to decode pattern file.",
+    "sessionCreateFailed": "Failed to create a stitching session. Please try again.",
+    "unavailable": {
+      "title": "Pattern Unavailable",
+      "body": "This pattern could not be loaded. It may have been removed, or you may be offline.",
+      "goBack": "Go Back"
+    },
+    "byCreator": "by {{creatorName}}",
+    "byCreatorWithUsername": "by {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Block Creator",
+      "message": "Are you sure you want to block {{creatorName}}? This is a private, reversible action that hides their patterns from search/browse. It does not report the creator and will not interrupt your current stitching session.",
+      "cancel": "Cancel",
+      "confirm": "Block",
+      "blockedTitle": "Blocked",
+      "blockedMessage": "{{creatorName}} has been blocked.",
+      "errorTitle": "Error",
+      "failedGeneric": "Failed to block creator."
+    },
+    "likeFailedGeneric": "Failed to update like status",
+    "connectToPlay": {
+      "title": "Connect to play",
+      "body": "Starting a catalog pattern needs a connection to prepare your session. Starter Patterns are playable right now, even offline."
+    },
+    "insufficientCoins": {
+      "title": "Insufficient Coins",
+      "body": "This pattern costs {{price}} Stitch Coins, but you only have {{balance}} Coins.\n\nShortfall: {{shortfall}} Coins.\n\nEarn Stitch Coins by completing other patterns! First Completion rewards are live.",
+      "getCoins": "Get Stitch Coins",
+      "findPatterns": "Find patterns to stitch",
+      "back": "Back"
+    },
+    "unlockFailedGeneric": "Unlock failed. Check your connection and try again.",
+    "preparationFailedGeneric": "Could not start preparation. Check your connection and try again.",
+    "price": {
+      "label": "Price"
+    },
+    "balance": {
+      "label": "Your Balance",
+      "loading": "…"
+    },
+    "unlockButton": "Unlock for {{price}} Coin",
+    "communityReport": {
+      "button": "Report this pattern",
+      "title": "Report {{patternTitle}}",
+      "body": "Choose the reason that best describes the issue. Reports never hide or change a pattern automatically.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Inappropriate or Unsafe Content",
+        "copyright_or_publication_rights": "Copyright or Publication Rights",
+        "duplicate_or_spam": "Duplicate or Spam",
+        "misleading_title_or_tags": "Misleading Title or Tags",
+        "other": "Other"
+      },
+      "explanationLabel": "Evidence or explanation {{requirement}}",
+      "explanationRequired": "(required)",
+      "explanationOptional": "(optional)",
+      "explanationPlaceholder": "Share details that will help a moderator review the pattern.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Cancel",
+      "submit": "Submit report",
+      "submitFailedGeneric": "Could not submit your report. Check your connection and try again.",
+      "receivedTitle": "Report received",
+      "alreadyReceivedTitle": "Report already received",
+      "receivedBody": "A moderator can now review this pattern. The report does not automatically change its availability.",
+      "alreadyReceivedBody": "Your existing report is already part of the open review.",
+      "signInRequired": {
+        "title": "Sign in to report",
+        "message": "Community Reports require a Registered Account. Nothing has been submitted.",
+        "cancel": "Cancel",
+        "signIn": "Sign in"
+      },
+      "validation": {
+        "chooseReason": "Choose a report reason.",
+        "explainRequired": "Explain why you are reporting this pattern.",
+        "tooLong": "The explanation must be 2,000 characters or fewer.",
+        "needsContent": "The explanation must include letters or numbers."
+      }
+    }
   }
 }

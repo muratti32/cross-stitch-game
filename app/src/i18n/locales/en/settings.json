@@ -34,7 +34,33 @@
   },
   "developer": {
     "sectionTitle": "Developer",
-    "debugDiagnostics": "Debug / Diagnostics"
+    "debugDiagnostics": "Debug / Diagnostics",
+    "debug": {
+      "backAccessibilityLabel": "Go back",
+      "title": "Debug",
+      "sentry": {
+        "sectionTitle": "Sentry",
+        "dsnConfigured": "DSN: configured · env: {{environment}}",
+        "dsnNotConfigured": "DSN: not configured",
+        "sendTestEvent": "Send Test Event",
+        "throwError": "Throw Error",
+        "disabledTitle": "Sentry Disabled",
+        "disabledMessage": "Sentry is not configured (no DSN found), so no test event will be sent.",
+        "testEventSent": "Test event sent. Event ID: {{eventId}}",
+        "testEventTitle": "Sentry",
+        "testEventFailedTitle": "Error",
+        "testEventFailedMessage": "Failed to send test event: {{message}}"
+      },
+      "onboarding": {
+        "sectionTitle": "Onboarding",
+        "description": "Clear tutorial progress and start again from Welcome.",
+        "restart": "Restart onboarding",
+        "confirmTitle": "Restart onboarding?",
+        "confirmMessage": "The tutorial state will be cleared and onboarding will start from the Welcome screen.",
+        "cancel": "Cancel",
+        "resetFailedTitle": "Reset failed"
+      }
+    }
   },
   "accountDeletion": {
     "sectionTitle": "Account Deletion",
@@ -65,6 +91,16 @@
   "appearance": {
     "sectionTitle": "Appearance"
   },
+  "themeCollectionCard": {
+    "title": "Theme Collection",
+    "description": "Change grid, stitch, and completion cosmetics without affecting gameplay.",
+    "premiumBadge": "Premium",
+    "lockedAccessibilityHint": "Requires Premium Membership",
+    "selected": "Selected",
+    "accessActive": "Premium theme access is active, including during an eligible Monthly Trial.",
+    "lockedPreview": "Preview the collection here. Premium Membership or an eligible Monthly Trial unlocks selection.",
+    "viewPremiumPlans": "View Premium plans"
+  },
   "gameplay": {
     "sectionTitle": "Gameplay Settings",
     "showGridLinesTitle": "Show Grid Lines",
@@ -87,6 +123,70 @@
   "social": {
     "sectionTitle": "Social & Privacy",
     "blockedCreators": "Blocked Creators"
+  },
+  "account": {
+    "sectionTitle": "Account",
+    "notSignedInTitle": "Not signed in",
+    "signInRequiredTitle": "Sign in required",
+    "notSignedInDescription": "Sign in to sync progress across devices.",
+    "signIn": "Sign in",
+    "reconnecting": "Reconnecting…",
+    "signOut": "Sign out",
+    "signOutConfirmTitle": "Sign out?",
+    "signOutConfirmMessage": "Your unsynchronized progress stays on this device and reopens when you sign back in.",
+    "signOutConfirmAction": "Sign out",
+    "signOutFailedTitle": "Sign out failed",
+    "signOutFailedGeneric": "Please try again.",
+    "providerAppleAccount": "Apple account",
+    "providerGoogleAccount": "Google account",
+    "providerGenericAccount": "Registered account"
+  },
+  "signIn": {
+    "emailHeading": "Sign in or create account",
+    "emailSubtitle": "Keep your progress available across devices.",
+    "codeHeading": "Enter your code",
+    "codeSubtitle": "Enter the 6-digit code we sent to {{email}}.",
+    "continueWithGoogle": "Continue with Google",
+    "orUseEmail": "or use email",
+    "ssoUnavailable": "Google and Apple sign-in are unavailable in this build.",
+    "emailLabel": "Email address",
+    "emailPlaceholder": "Email address",
+    "sendCode": "Send code",
+    "cancel": "Cancel",
+    "verify": "Verify",
+    "resendCode": "Resend code",
+    "resending": "Resending...",
+    "codeSent": "Code sent",
+    "useDifferentEmail": "Use a different email",
+    "sendCodeFailed": "Couldn't send the code. Check your connection and try again.",
+    "codeIncorrect": "That code is incorrect or has expired.",
+    "verifyFailedGeneric": "Something went wrong. Please try again.",
+    "socialSignInFailed": "Couldn't sign in with {{provider}}. Please try again.",
+    "providerApple": "Apple",
+    "providerGoogle": "Google"
+  },
+  "blockedCreators": {
+    "backAccessibilityLabel": "Go back",
+    "title": "Blocked Creators",
+    "infoText": "Blocking is private and reversible. It hides the creator's community patterns from your catalog views, search, and discovery lists. This is not a report or a content takedown.",
+    "signInRequiredTitle": "Registered Account Required",
+    "signInRequiredBody": "Sign in before managing your blocked creators list.",
+    "signInAction": "Sign In",
+    "listUnavailableTitle": "List Unavailable",
+    "listUnavailableDefault": "Could not load blocked creators.",
+    "tryAgain": "Try Again",
+    "emptyTitle": "No Blocked Creators",
+    "emptyBody": "You haven't blocked anyone. You can block a creator from any of their pattern detail pages.",
+    "backToSettings": "Back to Settings",
+    "unblock": "Unblock",
+    "unblockConfirmTitle": "Unblock Creator",
+    "unblockConfirmMessage": "Are you sure you want to unblock {{name}}? Their patterns will reappear in your search and browse results.",
+    "cancel": "Cancel",
+    "successTitle": "Success",
+    "unblockedMessage": "{{name}} has been unblocked.",
+    "errorTitle": "Error",
+    "unblockFailedMessage": "Failed to unblock creator: {{message}}",
+    "unblockFailedGeneric": "Unknown error"
   },
   "data": {
     "sectionTitle": "Data",

@@ -71,5 +71,107 @@
       "title": "Sonuç Bulunamadı",
       "body": "Kataloğda “{{query}}” ile eşleşen bir şey yok."
     }
+  },
+  "guestDataRiskNotice": {
+    "title": "Misafir Olarak Oynuyorsun",
+    "body": "Stitch Coin ve ilerlemen Misafir olarak yalnızca bu cihazda bulunur. Kurulum kaybedilirse Misafir defteri ve ilerleme kurtarılamayabilir. Oturum açmak ilerlemeni korur."
+  },
+  "detail": {
+    "noDescription": "Açıklama yok.",
+    "specs": {
+      "dimensions": "Boyutlar",
+      "totalStitches": "Toplam Dikiş",
+      "colors": "Renkler",
+      "category": "Kategori"
+    },
+    "threadsSuffix": "{{count}} İplik",
+    "palette": {
+      "title": "Gerekli İplikler",
+      "loading": "İplik paleti okunuyor...",
+      "loadFailed": "Palet yüklenemedi: {{error}}",
+      "retry": "Yeniden Yükle"
+    },
+    "actions": {
+      "startStitching": "Dikişe Başla",
+      "starting": "Başlatılıyor...",
+      "preparing": "Hazırlanıyor…"
+    },
+    "loadFailedGeneric": "Desen dosyası çözümlenemedi.",
+    "sessionCreateFailed": "Dikiş oturumu oluşturulamadı. Lütfen tekrar deneyin.",
+    "unavailable": {
+      "title": "Desen Kullanılamıyor",
+      "body": "Bu desen yüklenemedi. Kaldırılmış olabilir veya çevrimdışı olabilirsin.",
+      "goBack": "Geri Dön"
+    },
+    "byCreator": "{{creatorName}} tarafından",
+    "byCreatorWithUsername": "{{creatorName}} tarafından · @{{username}}",
+    "blockConfirm": {
+      "title": "Tasarımcıyı Engelle",
+      "message": "{{creatorName}} adlı tasarımcıyı engellemek istediğine emin misin? Bu, onların desenlerini arama/gözatmada gizleyen özel ve geri alınabilir bir işlemdir. Tasarımcıyı şikayet etmez ve geçerli dikiş oturumunu kesintiye uğratmaz.",
+      "cancel": "Vazgeç",
+      "confirm": "Engelle",
+      "blockedTitle": "Engellendi",
+      "blockedMessage": "{{creatorName}} engellendi.",
+      "errorTitle": "Hata",
+      "failedGeneric": "Tasarımcı engellenemedi."
+    },
+    "likeFailedGeneric": "Beğeni durumu güncellenemedi",
+    "connectToPlay": {
+      "title": "Oynamak için bağlan",
+      "body": "Katalog deseniyle başlamak için oturumunu hazırlayacak bir bağlantı gerekir. Başlangıç Desenleri çevrimdışı bile şimdi oynanabilir."
+    },
+    "insufficientCoins": {
+      "title": "Yetersiz Coin",
+      "body": "Bu desen {{price}} Stitch Coin tutuyor, ancak sadece {{balance}} Coin var.\n\nAçık: {{shortfall}} Coin.\n\nDiğer desenleri tamamlayarak Stitch Coin kazan! İlk Tamamlama ödülleri aktif.",
+      "getCoins": "Stitch Coin Al",
+      "findPatterns": "Dikilecek desen bul",
+      "back": "Geri"
+    },
+    "unlockFailedGeneric": "Kilit açma başarısız oldu. Bağlantını kontrol edip tekrar dene.",
+    "preparationFailedGeneric": "Hazırlık başlatılamadı. Bağlantını kontrol edip tekrar dene.",
+    "price": {
+      "label": "Fiyat"
+    },
+    "balance": {
+      "label": "Bakiyen",
+      "loading": "…"
+    },
+    "unlockButton": "{{price}} Coin ile Kilidi Aç",
+    "communityReport": {
+      "button": "Bu deseni şikayet et",
+      "title": "{{patternTitle}} Şikayet Et",
+      "body": "Sorunu en iyi tanımlayan nedeni seç. Şikayetler bir deseni otomatik olarak gizlemez veya değiştirmez.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Uygunsuz veya Güvensiz İçerik",
+        "copyright_or_publication_rights": "Telif Hakkı veya Yayın Hakları",
+        "duplicate_or_spam": "Tekrar veya Spam",
+        "misleading_title_or_tags": "Yanıltıcı Başlık veya Etiketler",
+        "other": "Diğer"
+      },
+      "explanationLabel": "Kanıt veya açıklama {{requirement}}",
+      "explanationRequired": "(gerekli)",
+      "explanationOptional": "(isteğe bağlı)",
+      "explanationPlaceholder": "Bir moderatörün deseni incelemesine yardımcı olacak ayrıntıları paylaş.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Vazgeç",
+      "submit": "Şikayeti gönder",
+      "submitFailedGeneric": "Şikayetin gönderilemedi. Bağlantını kontrol edip tekrar dene.",
+      "receivedTitle": "Şikayet alındı",
+      "alreadyReceivedTitle": "Şikayet zaten alındı",
+      "receivedBody": "Bir moderatör artık bu deseni inceleyebilir. Şikayet, kullanılabilirliğini otomatik olarak değiştirmez.",
+      "alreadyReceivedBody": "Mevcut şikayetin zaten açık incelemenin bir parçası.",
+      "signInRequired": {
+        "title": "Şikayet etmek için oturum aç",
+        "message": "Topluluk Şikayetleri bir Kayıtlı Hesap gerektirir. Hiçbir şey gönderilmedi.",
+        "cancel": "Vazgeç",
+        "signIn": "Oturum aç"
+      },
+      "validation": {
+        "chooseReason": "Bir şikayet nedeni seç.",
+        "explainRequired": "Bu deseni neden şikayet ettiğini açıkla.",
+        "tooLong": "Açıklama en fazla 2.000 karakter olmalı.",
+        "needsContent": "Açıklama harf veya rakam içermeli."
+      }
+    }
   }
 }

@@ -16,8 +16,10 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { isCommerceReturnTarget } from '@/commerce/commerceIntent';
 import { useIdentityStore } from '@/identity/guestIdentity';
+import { useTranslation } from 'react-i18next';
 
 export default function SignInScreen() {
+  const { t } = useTranslation('settings');
   const params = useLocalSearchParams<{ returnTo?: string }>();
   const isAccount = useIdentityStore((state) => state.isAccount);
   const [step, setStep] = useState<'email' | 'code'>('email');
@@ -79,7 +81,7 @@ export default function SignInScreen() {
       await requestEmailOtp(trimmedEmail);
       setStep('code');
     } catch {
-      setError("Couldn't send the code. Check your connection and try again.");
+      setError(t('signIn.sendCodeFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -93,11 +95,11 @@ export default function SignInScreen() {
       if (r.kind === 'verified') {
         finishSignIn();
       } else {
-        setError('That code is incorrect or has expired.');
+        setError(t('signIn.codeIncorrect'));
         setCode('');
       }
     } catch {
-      setError('Something went wrong. Please try again.');
+      setError(t('signIn.verifyFailedGeneric'));
     } finally {
       setSubmitting(false);
     }
@@ -114,7 +116,7 @@ export default function SignInScreen() {
         setResent(false);
       }, 3000);
     } catch {
-      setError("Couldn't send the code. Check your connection and try again.");
+      setError(t('signIn.sendCodeFailed'));
     } finally {
       setResending(false);
     }
@@ -141,7 +143,9 @@ export default function SignInScreen() {
         signInError instanceof Error &&
           signInError.name === 'FirebaseSsoConfigurationError'
           ? signInError.message
-          : `Couldn't sign in with ${provider === 'apple' ? 'Apple' : 'Google'}. Please try again.`,
+          : t('signIn.socialSignInFailed', {
+              provider: provider === 'apple' ? t('signIn.providerApple') : t('signIn.providerGoogle'),
+            }),
       );
     } finally {
       setSocialProvider(null);
@@ -153,9 +157,9 @@ export default function SignInScreen() {
       <Card style={styles.card}>
         {step === 'email' ? (
           <View>
-            <Text style={styles.heading}>Sign in or create account</Text>
+            <Text style={styles.heading}>{t('signIn.emailHeading')}</Text>
             <Text style={styles.subtitle}>
-              Keep your progress available across devices.
+              {t('signIn.emailSubtitle')}
             </Text>
 
             {error && (
@@ -181,7 +185,7 @@ export default function SignInScreen() {
                 ) : (
                   <Ionicons name="logo-google" size={20} color={Theme.colors.googleBlue} />
                 )}
-                <Text style={styles.googleButtonText}>Continue with Google</Text>
+                <Text style={styles.googleButtonText}>{t('signIn.continueWithGoogle')}</Text>
               </Pressable>
             )}
 
@@ -203,22 +207,22 @@ export default function SignInScreen() {
             {(googleAvailable || appleAvailable) && (
               <View style={styles.dividerRow}>
                 <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>or use email</Text>
+                <Text style={styles.dividerText}>{t('signIn.orUseEmail')}</Text>
                 <View style={styles.dividerLine} />
               </View>
             )}
 
             {!firebaseConfigured && (
               <Text style={styles.configurationHint}>
-                Google and Apple sign-in are unavailable in this build.
+                {t('signIn.ssoUnavailable')}
               </Text>
             )}
 
-            <Text style={styles.emailLabel}>Email address</Text>
+            <Text style={styles.emailLabel}>{t('signIn.emailLabel')}</Text>
 
             <TextInput
               style={styles.input}
-              placeholder="Email address"
+              placeholder={t('signIn.emailPlaceholder')}
               placeholderTextColor={Theme.colors.textSecondary}
               value={email}
               onChangeText={setEmail}
@@ -230,20 +234,20 @@ export default function SignInScreen() {
             />
 
             <Button
-              title="Send code"
+              title={t('signIn.sendCode')}
               variant="primary"
               loading={submitting}
               disabled={!validEmail || submitting}
               onPress={onSendCode}
             />
             <View style={styles.buttonSpacer} />
-            <Button title="Cancel" variant="secondary" onPress={onCancel} />
+            <Button title={t('signIn.cancel')} variant="secondary" onPress={onCancel} />
           </View>
         ) : (
           <View>
-            <Text style={styles.heading}>Enter your code</Text>
+            <Text style={styles.heading}>{t('signIn.codeHeading')}</Text>
             <Text style={styles.subtitle}>
-              Enter the 6-digit code we sent to {trimmedEmail}.
+              {t('signIn.codeSubtitle', { email: trimmedEmail })}
             </Text>
 
             {error && (
@@ -264,7 +268,7 @@ export default function SignInScreen() {
             />
 
             <Button
-              title="Verify"
+              title={t('signIn.verify')}
               variant="primary"
               loading={submitting}
               disabled={!validCode || submitting}
@@ -274,12 +278,12 @@ export default function SignInScreen() {
             <View style={styles.pressableRow}>
               <Pressable onPress={onResendCode} disabled={resending}>
                 <Text style={[styles.linkText, resending && styles.linkTextDisabled]}>
-                  {resending ? 'Resending...' : resent ? 'Code sent' : 'Resend code'}
+                  {resending ? t('signIn.resending') : resent ? t('signIn.codeSent') : t('signIn.resendCode')}
                 </Text>
               </Pressable>
 
               <Pressable onPress={onUseDifferentEmail}>
-                <Text style={styles.linkText}>Use a different email</Text>
+                <Text style={styles.linkText}>{t('signIn.useDifferentEmail')}</Text>
               </Pressable>
             </View>
           </View>

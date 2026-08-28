@@ -28,6 +28,8 @@ import enCommerce from './locales/en/commerce.json';
 import trCommerce from './locales/tr/commerce.json';
 import enProfile from './locales/en/profile.json';
 import trProfile from './locales/tr/profile.json';
+import enShell from './locales/en/shell.json';
+import trShell from './locales/tr/shell.json';
 import { FALLBACK_LOCALE } from './resolveAppLanguage';
 import { resolveMissingTranslation, reportMissingTranslationKey } from './missingKeyHandler';
 import { SUPPORTED_LOCALES } from './supportedLocales';
@@ -35,18 +37,21 @@ import { SUPPORTED_LOCALES } from './supportedLocales';
 export const DEFAULT_NAMESPACE = 'settings';
 
 // One namespace per feature, mirroring the feature directories under src/.
-// `errors` is the exception: it is not one screen's feature but the shared,
-// cross-cutting backend-error presentation text from #159, reused by every
-// error surface regardless of which localization slice that screen belongs
-// to - see src/api/serverErrorPresentation.ts.
+// `errors` and `shell` are the exceptions: `errors` is not one screen's
+// feature but the shared, cross-cutting backend-error presentation text
+// from #159, reused by every error surface regardless of which
+// localization slice that screen belongs to - see
+// src/api/serverErrorPresentation.ts. `shell` (#166) is the app-shell chrome
+// itself - the bottom tab bar titles in app/(tabs)/_layout.tsx - which has
+// no single owning feature directory.
 const resources = {
   en: {
     settings: enSettings, errors: enErrors, onboarding: enOnboarding, catalog: enCatalog,
-    play: enPlay, commerce: enCommerce, profile: enProfile,
+    play: enPlay, commerce: enCommerce, profile: enProfile, shell: enShell,
   },
   tr: {
     settings: trSettings, errors: trErrors, onboarding: trOnboarding, catalog: trCatalog,
-    play: trPlay, commerce: trCommerce, profile: trProfile,
+    play: trPlay, commerce: trCommerce, profile: trProfile, shell: trShell,
   },
 };
 

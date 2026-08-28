@@ -4,6 +4,7 @@ import { CatalogPatternItem, CatalogPage, CachedResult } from './catalog';
 import { getSurfaceKey } from '../catalog-cache-logic';
 import { setLocalPatternLike, getLocalPatternLikes } from '../local-db';
 import { useIdentityStore } from '../identity/guestIdentity';
+import { getActiveLocale } from '../i18n/activeLocale';
 
 export interface BlockedCreator {
   id: string;
@@ -233,7 +234,10 @@ export function useLikeToggle() {
   });
 }
 
-export function useLikedPatterns(locale = 'en') {
+// #160's convention (src/api/catalog.ts): the active App Display Language,
+// not a hardcoded 'en', drives which locale's Catalog Tag/Category labels
+// come back - a caller may still override it explicitly.
+export function useLikedPatterns(locale: string = getActiveLocale()) {
   const { isAccount } = useIdentityStore();
   return useInfiniteQuery<CatalogPage>({
     queryKey: ['me', 'liked-patterns', locale],

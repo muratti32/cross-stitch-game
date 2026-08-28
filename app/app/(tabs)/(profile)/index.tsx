@@ -93,7 +93,7 @@ export default function ProfileScreen() {
 
   // Creator & Social Queries
   const creatorProfileQuery = useCreatorProfile(accountId, isAccount && isAuthenticated && !isPending);
-  const likedPatternsQuery = useLikedPatterns('en');
+  const likedPatternsQuery = useLikedPatterns();
   const creatorProfile = creatorProfileQuery.data ?? null;
 
   // Daily Tasks & Rewarded Ads
@@ -127,7 +127,9 @@ export default function ProfileScreen() {
         ]);
       } catch (err: unknown) {
         claimingNonceRef.current.delete(nonce);
-        const msg = err instanceof Error ? err.message : String(err);
+        // #159/#166: EconomyApiError's server-supplied `message` never
+        // reaches the player; its `reason` maps to localized text instead.
+        const msg = isServerApiError(err) ? localizeServerError(err) : t('home.dailyPool.claimFailedGeneric');
         setAdLocalError(t('home.dailyPool.claimFailed', { message: msg }));
       }
     },
@@ -194,7 +196,7 @@ export default function ProfileScreen() {
     } catch (err) {
       activeNonceRef.current = null;
       setAdAttemptPending(false);
-      setAdLocalError(err instanceof Error ? err.message : t('home.dailyPool.adAttemptFailedDefault'));
+      setAdLocalError(isServerApiError(err) ? localizeServerError(err) : t('home.dailyPool.adAttemptFailedDefault'));
     }
   };
 
@@ -241,7 +243,7 @@ export default function ProfileScreen() {
         })
         .catch((error: unknown) => {
           if (active) {
-            setPatternsError(error instanceof Error ? error.message : String(error));
+            setPatternsError(isServerApiError(error) ? localizeServerError(error) : t('home.myPatterns.actionFailedGeneric'));
           }
         })
         .finally(() => {
@@ -376,12 +378,8 @@ export default function ProfileScreen() {
           </View>
           <Text style={styles.displayName}>{t('home.identity.unavailableTitle')}</Text>
           <Text style={styles.profileHelpText}>
-            {creatorProfileQuery.error
-              ? isServerApiError(creatorProfileQuery.error)
-                ? localizeServerError(creatorProfileQuery.error)
-                : creatorProfileQuery.error instanceof Error
-                  ? creatorProfileQuery.error.message
-                  : t('home.identity.checkConnection')
+            {creatorProfileQuery.error && isServerApiError(creatorProfileQuery.error)
+              ? localizeServerError(creatorProfileQuery.error)
               : t('home.identity.checkConnection')}
           </Text>
           <Pressable
@@ -835,7 +833,11 @@ export default function ProfileScreen() {
               )}
 
               {premiumClaimMutation.error && (
-                <Text style={styles.errorText}>{premiumClaimMutation.error.message}</Text>
+                <Text style={styles.errorText}>
+                  {isServerApiError(premiumClaimMutation.error)
+                    ? localizeServerError(premiumClaimMutation.error)
+                    : t('home.dailyPool.claimFailedGeneric')}
+                </Text>
               )}
             </View>
           ) : (
@@ -1000,12 +1002,8 @@ export default function ProfileScreen() {
             icon="cloud-offline-outline"
             title={t('home.likedTab.unavailableTitle')}
             body={
-              likedPatternsQuery.error
-                ? isServerApiError(likedPatternsQuery.error)
-                  ? localizeServerError(likedPatternsQuery.error)
-                  : likedPatternsQuery.error instanceof Error
-                    ? likedPatternsQuery.error.message
-                    : t('home.likedTab.unavailableDefault')
+              likedPatternsQuery.error && isServerApiError(likedPatternsQuery.error)
+                ? localizeServerError(likedPatternsQuery.error)
                 : t('home.likedTab.unavailableDefault')
             }
             actionLabel={t('common.tryAgain')}

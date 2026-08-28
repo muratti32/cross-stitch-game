@@ -133,6 +133,7 @@
       "adPerkNote": "Watch up to 3 ads/day · Premium unlocks instant 30-coin claim",
       "adRewardEarned": "Ad reward earned! Verifying with backend…",
       "claimFailed": "Claim failed: {{message}}",
+      "claimFailedGeneric": "Something went wrong. Please try again.",
       "adLoadFailedDefault": "Failed to load ad",
       "adAttemptFailedDefault": "Failed to open ad attempt"
     },
@@ -151,7 +152,8 @@
       "submitAccessibilityLabel": "Submit {{title}} to the Community Catalog",
       "emptyTitle": "No Personal Creations",
       "emptyBody": "You haven't converted any photos or generated AI art yet. Head over to Create to start your first masterwork!",
-      "emptyAction": "Start Creating"
+      "emptyAction": "Start Creating",
+      "actionFailedGeneric": "Something went wrong. Please try again."
     },
     "likedTab": {
       "unavailableTitle": "Liked Patterns Unavailable",
@@ -162,6 +164,24 @@
       "emptyBody": "Browse the catalog and tap the heart icon on any design to save it here for later.",
       "emptyAction": "Discover Patterns"
     }
+  },
+  "premiumDailyCoinClaimCard": {
+    "title": "Premium Daily Coin Claim",
+    "description": "Claim the remainder of today's shared 30-Coin reward pool.",
+    "connectPrompt": "Connect to the Game Backend to check today's reward.",
+    "checkingReward": "Checking today's Premium reward…",
+    "unavailableGeneric": "Today's Premium reward is unavailable.",
+    "tryAgain": "Try again",
+    "resultAdded": "{{amount}} Stitch Coins added by the Game Backend. Balance: {{balance}}.",
+    "poolAlreadyClosed": "Today's shared reward pool was already closed.",
+    "alreadyClaimed": "Already claimed for this Reward Day.",
+    "poolExhausted": "Today's shared reward pool is exhausted. It resets at the next Reward Day.",
+    "availableNow": "{{count}} Stitch Coins available now",
+    "resetsAt": "Resets {{date}}",
+    "claimButtonRetry": "Try claim again",
+    "claimButtonInstant": "Claim {{count}} Coins",
+    "lockedDescription": "Premium Membership, including an eligible Monthly Trial, unlocks this daily claim.",
+    "viewPremiumPlans": "View Premium plans"
   },
   "publicProfile": {
     "editTitle": "Edit Public Profile",
