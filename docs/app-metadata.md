@@ -7,8 +7,8 @@ identifiers and secret-manager *reference names* belong here — never secret
 values.
 
 > **Coverage status:** this file is incomplete. It currently documents app
-> identity and the Sentry integration only. Store listing, supported
-> languages, RevenueCat, Firebase/auth, push, backend/infrastructure hosting,
+> identity, App Display Languages, and the Sentry integration. Store listing,
+> RevenueCat, Firebase/auth, push, backend/infrastructure hosting,
 > and privacy posture are **not yet inventoried here** — absence of a service
 > below means "not documented yet", never "not provisioned". Extend this file
 > as each area is confirmed.
@@ -31,6 +31,30 @@ Every EAS build regenerates them from `app/app.json` + config plugins via
 `expo prebuild`, so the config plugin options in `app.json` are the actual
 source of truth for native build configuration (not anything hand-edited
 under `ios/`/`android/`, which is scratch output).
+
+## App Display Languages
+
+| Status | Languages |
+| --- | --- |
+| Currently bundled | English (`en`), Turkish (`tr`) |
+| Approved next release cohort | Spanish (`es`), German (`de`), French (`fr`), Brazilian Portuguese (`pt-BR`), Italian (`it`) |
+
+The approved cohort expands the mobile interface from two to seven bundled
+languages. Store-listing localization is a later, separate phase. App Display
+Language scope follows `CONTEXT.md` and ADR-0051; locale identity and fallback
+follow ADR-0052.
+
+The next cohort must declare all seven languages to the generated iOS and
+Android projects, support both the OS app-language setting and the existing
+in-app selector, show every language using its own name, and localize native
+permission copy. `Stitch Wish` remains the untranslated brand and display
+name.
+
+The later store-localization phase owns App Store and Google Play listing
+copy, in-app-purchase and subscription names and descriptions, and
+subscription-group localization. Until that phase, store-controlled purchase
+copy may remain English even while app-owned commerce UI uses the selected App
+Display Language.
 
 ## External services
 

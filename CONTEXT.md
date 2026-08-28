@@ -27,7 +27,7 @@ The short opaque code a player can copy from a failed or delayed sync, Processin
 _Avoid_: Raw log, transaction receipt, error stack
 
 **App Display Language**:
-The language the mobile app renders its own interface text in, resolved from the device language and overridable per device in Settings. It is a device preference rather than account data, never syncs between a player's devices, and resolves without connectivity. It selects only app-authored interface text and the localized Catalog Tag and Catalog Category labels the Game Backend already serves; it never translates player-authored or moderator-authored text.
+The language the mobile app renders its own interface text in, resolved from the device language and overridable per device in Settings. It is a device preference rather than account data, never syncs between a player's devices, and resolves without connectivity. Region or script variants are distinct App Display Languages when the product supports them. It selects only app-authored interface text and the localized Catalog Tag and Catalog Category labels the Game Backend already serves; it never translates player-authored or moderator-authored text.
 _Avoid_: Catalog Source Language, account language setting, server locale
 
 ### Player Identity
@@ -475,11 +475,11 @@ The non-personalized search over a Pattern's current approved title, its creator
 _Avoid_: AI recommendations, full Pattern Artifact search, private-content search
 
 **Catalog Category**:
-The single required, operator-managed primary classification assigned to every Official Pattern and Community Pattern. The first-release seed values are Animals, Nature and Flowers, People, Places and Architecture, Food and Drink, Holidays and Seasons, Fantasy, Geometric and Abstract, Words and Symbols, and Other; operators may add further categories or relabel existing ones from the Operator Console the same way they manage Catalog Tags (ADR-0040). A referenced category is deactivated, never deleted.
+The single required, operator-managed primary classification assigned to every Official Pattern and Community Pattern. Each category has a stable language-neutral code and localized display labels; it cannot become active until every released App Display Language has a label, and an English fallback represents exceptional incomplete data rather than a valid translated state. Catalog Submission Metadata stores the selected code rather than a rendered label. The first-release seed values are Animals, Nature and Flowers, People, Places and Architecture, Food and Drink, Holidays and Seasons, Fantasy, Geometric and Abstract, Words and Symbols, and Other; operators may add further categories or relabel existing ones from the Operator Console the same way they manage Catalog Tags (ADR-0040). A referenced category is deactivated, never deleted.
 _Avoid_: Tag, collection, multiple categories
 
 **Catalog Tag**:
-One of at most five operator-managed search descriptors attached to an Official Pattern or Community Pattern. Each tag has a stable language-neutral code and localized display labels; Catalog Submission Metadata stores the selected codes rather than the rendered labels. A player may select existing tags but cannot create a new tag in the first release. Tags refine discovery within and across Catalog Categories but do not replace the single required primary category.
+One of at most five operator-managed search descriptors attached to an Official Pattern or Community Pattern. Each tag has a stable language-neutral code and localized display labels; it cannot become active until every released App Display Language has a label, and an English fallback represents exceptional incomplete data rather than a valid translated state. Catalog Submission Metadata stores the selected codes rather than the rendered labels. A player may select existing tags but cannot create a new tag in the first release. Tags refine discovery within and across Catalog Categories but do not replace the single required primary category.
 _Avoid_: Category, keyword stuffing, private label
 
 **Catalog Share Link**:
@@ -663,7 +663,7 @@ The owner's single opportunity to request another human review of the exact immu
 _Avoid_: Catalog Appeal, edited revision, new Catalog Submission
 
 **Catalog Source Language**:
-The single language selected by the submitting player for a Community Pattern's title and description. The immutable metadata stores that language together with the authored text. It is independent of the reading player's App Display Language. The first release does not generate or publish automatic translations: catalog surfaces show the original text with its language label, while localized Catalog Categories and Catalog Tags provide cross-language discovery.
+The single supported language recorded with a Community Pattern's title and description. The first release accepts only English. The immutable metadata stores that language together with the authored text, independently of the reading player's App Display Language. The game does not generate or publish automatic translations: catalog surfaces show the original text with its language label, while localized Catalog Categories and Catalog Tags provide cross-language discovery.
 _Avoid_: App Display Language, app locale, automatic translation, multilingual submission
 
 **Publication Rights Declaration**:

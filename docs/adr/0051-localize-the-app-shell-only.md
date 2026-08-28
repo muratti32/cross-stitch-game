@@ -21,15 +21,16 @@ oversight:
 
 - **Player-authored catalog text.** Community Pattern titles and
   descriptions keep their Catalog Source Language, which the first release
-  already decided not to auto-translate. Cross-language discovery keeps
-  running through localized Catalog Tags and Catalog Categories.
+  keeps English-only and does not auto-translate. Cross-language discovery
+  keeps running through localized Catalog Tags and Catalog Categories.
 - **Moderator-authored text.** A Catalog Rejection Reason is written by a
   human moderator and cannot be mapped to a translation key. The app wraps it
   in localized framing and shows the reason itself verbatim.
 - **Official Pattern titles**, including the bundled starter patterns.
   Translating a bundled title in the app while the same Official Pattern
   keeps its English title in the catalog would present one pattern under two
-  names.
+  names. Catalog surfaces keep showing the Pattern's source-language label
+  when that metadata is present.
 
 ## Consequences
 
