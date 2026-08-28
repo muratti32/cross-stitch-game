@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { useLikedPatterns } from '@/api/social';
 import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
@@ -11,6 +12,7 @@ import { Theme } from '@/theme/theme';
 import { absolutePreviewUrl, absoluteThumbnailUrls } from '@/api/catalog';
 
 export default function LikedPatternsScreen() {
+  const { t } = useTranslation('profile');
   const isAccount = useIdentityStore((state) => state.isAccount);
   const query = useLikedPatterns('en');
 
@@ -27,17 +29,17 @@ export default function LikedPatternsScreen() {
     return (
       <Screen style={styles.screen}>
         <View style={styles.header}>
-          <Pressable accessibilityLabel="Go back" hitSlop={12} onPress={() => router.back()}>
+          <Pressable accessibilityLabel={t('common.goBackAccessibilityLabel')} hitSlop={12} onPress={() => router.back()}>
             <Ionicons name="chevron-back" size={26} color={Theme.colors.textPrimary} />
           </Pressable>
-          <Text style={styles.headerTitle}>Liked Patterns</Text>
+          <Text style={styles.headerTitle}>{t('likedPatterns.title')}</Text>
           <View style={styles.headerSpacer} />
         </View>
         <EmptyState
           icon="person-circle-outline"
-          title="Registered Account Required"
-          body="Sign in before viewing your private Liked Patterns collection."
-          actionLabel="Sign In"
+          title={t('likedPatterns.signInTitle')}
+          body={t('likedPatterns.signInBody')}
+          actionLabel={t('likedPatterns.signInAction')}
           onAction={() => router.push('/(tabs)/(settings)/sign-in')}
           actionVariant="rose"
         />
@@ -50,10 +52,10 @@ export default function LikedPatternsScreen() {
   return (
     <Screen style={styles.screen}>
       <View style={styles.header}>
-        <Pressable accessibilityLabel="Go back" hitSlop={12} onPress={() => router.back()}>
+        <Pressable accessibilityLabel={t('common.goBackAccessibilityLabel')} hitSlop={12} onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={26} color={Theme.colors.textPrimary} />
         </Pressable>
-        <Text style={styles.headerTitle}>Liked Patterns</Text>
+        <Text style={styles.headerTitle}>{t('likedPatterns.title')}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -62,24 +64,24 @@ export default function LikedPatternsScreen() {
       ) : query.isError ? (
         <EmptyState
           icon="cloud-offline-outline"
-          title="Liked Patterns Unavailable"
+          title={t('likedPatterns.unavailableTitle')}
           body={
             query.error
               ? isServerApiError(query.error)
                 ? localizeServerError(query.error)
                 : query.error.message
-              : 'Could not load liked patterns.'
+              : t('likedPatterns.unavailableDefault')
           }
-          actionLabel="Try Again"
+          actionLabel={t('common.tryAgain')}
           onAction={() => void query.refetch()}
           actionVariant="rose"
         />
       ) : items.length === 0 ? (
         <EmptyState
           icon="heart-outline"
-          title="No Liked Patterns"
-          body="Browse the pattern catalog and tap the heart icon on any design to save it here."
-          actionLabel="Discover Patterns"
+          title={t('likedPatterns.emptyTitle')}
+          body={t('likedPatterns.emptyBody')}
+          actionLabel={t('likedPatterns.emptyAction')}
           onAction={() => router.navigate('/(tabs)/(catalog)')}
           actionVariant="sage"
         />
@@ -122,9 +124,14 @@ export default function LikedPatternsScreen() {
                 />
                 <View style={styles.info}>
                   <Text numberOfLines={1} style={styles.title}>{item.title}</Text>
-                  <Text style={styles.meta}>by {item.creatorName}</Text>
+                  <Text style={styles.meta}>{t('likedPatterns.byCreator', { creatorName: item.creatorName })}</Text>
                   <Text style={styles.specs}>
-                    {item.width}×{item.height} · {item.paletteSize} colors · {item.categoryCode}
+                    {t('likedPatterns.specs', {
+                      category: item.categoryCode,
+                      count: item.paletteSize,
+                      height: item.height,
+                      width: item.width,
+                    })}
                   </Text>
                 </View>
                 <Ionicons name="chevron-forward" size={18} color={Theme.colors.textSecondary} />

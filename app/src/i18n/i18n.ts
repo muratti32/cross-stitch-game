@@ -26,6 +26,8 @@ import enPlay from './locales/en/play.json';
 import trPlay from './locales/tr/play.json';
 import enCommerce from './locales/en/commerce.json';
 import trCommerce from './locales/tr/commerce.json';
+import enProfile from './locales/en/profile.json';
+import trProfile from './locales/tr/profile.json';
 import { FALLBACK_LOCALE } from './resolveAppLanguage';
 import { resolveMissingTranslation, reportMissingTranslationKey } from './missingKeyHandler';
 import { SUPPORTED_LOCALES } from './supportedLocales';
@@ -40,11 +42,11 @@ export const DEFAULT_NAMESPACE = 'settings';
 const resources = {
   en: {
     settings: enSettings, errors: enErrors, onboarding: enOnboarding, catalog: enCatalog,
-    play: enPlay, commerce: enCommerce,
+    play: enPlay, commerce: enCommerce, profile: enProfile,
   },
   tr: {
     settings: trSettings, errors: trErrors, onboarding: trOnboarding, catalog: trCatalog,
-    play: trPlay, commerce: trCommerce,
+    play: trPlay, commerce: trCommerce, profile: trProfile,
   },
 };
 

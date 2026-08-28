@@ -2,30 +2,22 @@ import React, { useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import {
-  type CatalogRejectionReason,
   type CatalogSubmission,
-  type CatalogSubmissionStatus,
   useCatalogSubmissions,
   useCreateCatalogAppeal,
 } from '@/api/catalogSubmissions';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 import { Button, Card, EmptyState, Screen } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
+import { formatDate } from '@/i18n';
 import { Theme } from '@/theme/theme';
 
-const STATUS_LABELS: Record<CatalogSubmissionStatus, string> = {
-  accepted: 'Published', appeal_pending: 'Appeal pending', appeal_upheld: 'Appeal rejected',
-  precheck_failed: 'Precheck unavailable', precheck_pending: 'Checking', quarantined: 'Needs review',
-  rejected: 'Rejected', review_pending: 'In review',
-};
-
-const REASON_LABELS: Record<CatalogRejectionReason, string> = {
-  duplicate_or_spam: 'Duplicate or Spam', publication_rights: 'Publication Rights',
-  quality_standard: 'Quality Standard', safety: 'Safety', technical_invalidity: 'Technical Invalidity',
-};
-
 export default function CatalogSubmissionsScreen() {
+  const { t, i18n: i18nInstance } = useTranslation('profile');
+  const locale = i18nInstance.language;
   const accountId = useIdentityStore((state) => state.accountId);
   const isAccount = useIdentityStore((state) => state.isAccount);
   const query = useCatalogSubmissions(accountId, isAccount);
@@ -41,17 +33,23 @@ export default function CatalogSubmissionsScreen() {
       setAppealId(null);
       setAppealNote('');
     } catch (caught: unknown) {
-      setError(caught instanceof Error ? caught.message : String(caught));
+      setError(
+        isServerApiError(caught)
+          ? localizeServerError(caught)
+          : caught instanceof Error
+            ? caught.message
+            : String(caught),
+      );
     }
   };
 
   return (
     <Screen style={styles.screen}>
       <View style={styles.header}>
-        <Pressable accessibilityLabel="Go back" hitSlop={12} onPress={() => router.back()}>
+        <Pressable accessibilityLabel={t('common.goBackAccessibilityLabel')} hitSlop={12} onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={26} color={Theme.colors.textPrimary} />
         </Pressable>
-        <Text style={styles.headerTitle}>Catalog Submissions</Text>
+        <Text style={styles.headerTitle}>{t('submissions.title')}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -60,18 +58,26 @@ export default function CatalogSubmissionsScreen() {
       ) : query.isError ? (
         <EmptyState
           icon="cloud-offline-outline"
-          title="Submissions Unavailable"
-          body={query.error instanceof Error ? query.error.message : 'Could not load your submissions.'}
-          actionLabel="Try Again"
+          title={t('submissions.unavailableTitle')}
+          body={
+            query.error
+              ? isServerApiError(query.error)
+                ? localizeServerError(query.error)
+                : query.error instanceof Error
+                  ? query.error.message
+                  : t('submissions.unavailableDefault')
+              : t('submissions.unavailableDefault')
+          }
+          actionLabel={t('common.tryAgain')}
           onAction={() => void query.refetch()}
           actionVariant="rose"
         />
       ) : (query.data?.length ?? 0) === 0 ? (
         <EmptyState
           icon="cloud-upload-outline"
-          title="No Catalog Submissions"
-          body="Submit a synced Personal Pattern from My Creations."
-          actionLabel="Back to My Creations"
+          title={t('submissions.emptyTitle')}
+          body={t('submissions.emptyBody')}
+          actionLabel={t('submissions.emptyAction')}
           onAction={() => router.back()}
           actionVariant="sage"
         />
@@ -88,7 +94,9 @@ export default function CatalogSubmissionsScreen() {
               appealNote={appealNote}
               error={appealId === item.id ? error : null}
               item={item}
+              locale={locale}
               submitting={appeal.isPending && appealId === item.id}
+              t={t}
               onAppealNoteChange={setAppealNote}
               onCancelAppeal={() => { setAppealId(null); setAppealNote(''); setError(null); }}
               onOpenAppeal={() => { setAppealId(item.id); setAppealNote(''); setError(null); }}
@@ -102,44 +110,52 @@ export default function CatalogSubmissionsScreen() {
 }
 
 function SubmissionCard({
-  appealId, appealNote, error, item, onAppealNoteChange, onCancelAppeal, onOpenAppeal,
-  onSubmitAppeal, submitting,
+  appealId, appealNote, error, item, locale, onAppealNoteChange, onCancelAppeal, onOpenAppeal,
+  onSubmitAppeal, submitting, t,
 }: {
-  appealId: string | null; appealNote: string; error: string | null; item: CatalogSubmission;
+  appealId: string | null; appealNote: string; error: string | null; item: CatalogSubmission; locale: string;
   onAppealNoteChange: (value: string) => void; onCancelAppeal: () => void; onOpenAppeal: () => void;
-  onSubmitAppeal: () => void; submitting: boolean;
+  onSubmitAppeal: () => void; submitting: boolean; t: (key: string, options?: Record<string, unknown>) => string;
 }) {
   const canAppeal = item.status === 'rejected' && !item.appealed;
   return (
     <Card style={styles.card}>
       <View style={styles.titleRow}>
         <Text numberOfLines={2} style={styles.title}>{item.title}</Text>
-        <View style={styles.badge}><Text style={styles.badgeText}>{STATUS_LABELS[item.status]}</Text></View>
+        <View style={styles.badge}><Text style={styles.badgeText}>{t(`submissionStatus.${item.status}`)}</Text></View>
       </View>
-      <Text style={styles.meta}>{item.categoryCode} · {new Date(item.createdAt).toLocaleDateString()}</Text>
+      <Text style={styles.meta}>
+        {t('submissions.meta', { category: item.categoryCode, date: formatDate(new Date(item.createdAt), locale) })}
+      </Text>
       <Text numberOfLines={3} style={styles.description}>{item.description}</Text>
       {item.rejectionReason !== null && (
         <View style={styles.rejection}>
-          <Text style={styles.rejectionTitle}>{REASON_LABELS[item.rejectionReason]}</Text>
+          {/* #165: `rejectionReason` is the mandatory structured reason
+              (CONTEXT.md) from a fixed, known set - translatable like any
+              other enum label. `rejectionNote` is the optional free-form
+              moderator note and renders verbatim inside this localized
+              framing, the same pattern ADR-0051 uses for player-authored
+              catalog text. */}
+          <Text style={styles.rejectionTitle}>{t(`rejectionReasons.${item.rejectionReason}`)}</Text>
           {item.rejectionNote !== null && <Text style={styles.rejectionNote}>{item.rejectionNote}</Text>}
         </View>
       )}
       {item.status === 'precheck_failed' && (
-        <Text style={styles.help}>Automated checks could not complete. This snapshot was not published.</Text>
+        <Text style={styles.help}>{t('submissions.precheckFailedHelp')}</Text>
       )}
-      {item.communityPatternId !== null && <Text style={styles.success}>Published to the Community Catalog.</Text>}
+      {item.communityPatternId !== null && <Text style={styles.success}>{t('submissions.publishedToCatalog')}</Text>}
       {canAppeal && appealId !== item.id && (
-        <Button title="Appeal Decision" variant="secondary" onPress={onOpenAppeal} />
+        <Button title={t('submissions.appealAction')} variant="secondary" onPress={onOpenAppeal} />
       )}
       {appealId === item.id && (
         <View style={styles.appealForm}>
-          <Text style={styles.help}>You can appeal this unchanged snapshot once.</Text>
+          <Text style={styles.help}>{t('submissions.appealHelp')}</Text>
           <TextInput
-            accessibilityLabel="Appeal note"
+            accessibilityLabel={t('submissions.appealNoteAccessibilityLabel')}
             maxLength={1000}
             multiline
             onChangeText={onAppealNoteChange}
-            placeholder="Optional context for the reviewing moderator"
+            placeholder={t('submissions.appealNotePlaceholder')}
             placeholderTextColor={Theme.colors.textSecondary}
             style={styles.input}
             textAlignVertical="top"
@@ -147,8 +163,8 @@ function SubmissionCard({
           />
           {error !== null && <Text style={styles.error}>{error}</Text>}
           <View style={styles.actions}>
-            <Button title="Cancel" variant="secondary" onPress={onCancelAppeal} style={styles.action} />
-            <Button title="Submit Appeal" variant="rose" loading={submitting} onPress={onSubmitAppeal} style={styles.action} />
+            <Button title={t('submissions.cancelAction')} variant="secondary" onPress={onCancelAppeal} style={styles.action} />
+            <Button title={t('submissions.submitAppealAction')} variant="rose" loading={submitting} onPress={onSubmitAppeal} style={styles.action} />
           </View>
         </View>
       )}

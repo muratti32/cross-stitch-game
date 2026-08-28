@@ -51,6 +51,29 @@ export interface CreateCatalogSubmissionInput {
   title: string;
 }
 
+/**
+ * #165: carries the backend's (status, reason) pair in the same shape
+ * CreatorProfileApiError and SocialApiError already use, so
+ * isServerApiError/localizeServerError apply to submission and appeal
+ * failures without this module importing either one itself (see
+ * localizeServerError.ts's duck-typing rationale). The backend's catalog
+ * submission DTOs validate via plain class-validator, not a reason-code
+ * contract, so `reason` is null for any failure observed so far; that
+ * still routes through presentServerError's generic-failure-plus-Support-
+ * Reference fallback rather than rendering the server's raw English
+ * `message` to players.
+ */
+export class CatalogSubmissionApiError extends Error {
+  constructor(
+    readonly status: number,
+    message: string,
+    readonly reason: string | null,
+  ) {
+    super(message);
+    this.name = 'CatalogSubmissionApiError';
+  }
+}
+
 function submissionsKey(accountId: string | null) {
   return ['catalog-submissions', 'me', accountId] as const;
 }
@@ -117,19 +140,22 @@ async function catalogSubmissionRequest<T>(
   fallback: string,
 ): Promise<T> {
   const response = await apiFetch(path, options);
-  if (!response.ok) throw new Error(await readMessage(response, fallback));
+  if (!response.ok) throw await submissionError(response, fallback);
   return (await response.json()) as T;
 }
 
-async function readMessage(response: Response, fallback: string): Promise<string> {
+async function submissionError(response: Response, fallback: string): Promise<CatalogSubmissionApiError> {
+  let message = fallback;
+  let reason: string | null = null;
   try {
-    const body = (await response.json()) as { message?: unknown };
-    if (typeof body.message === 'string') return body.message;
+    const body = (await response.json()) as { message?: unknown; reason?: unknown };
+    if (typeof body.message === 'string') message = body.message;
     if (Array.isArray(body.message)) {
-      return body.message.filter((item): item is string => typeof item === 'string').join(', ');
+      message = body.message.filter((item): item is string => typeof item === 'string').join(', ');
     }
+    if (typeof body.reason === 'string') reason = body.reason;
   } catch {
     // Preserve the actionable fallback when the server did not return JSON.
   }
-  return `${fallback} (${response.status})`;
+  return new CatalogSubmissionApiError(response.status, message, reason);
 }

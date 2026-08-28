@@ -58,6 +58,22 @@ export interface CreateCatalogMetadataRevisionInput {
   title: string;
 }
 
+/**
+ * #165: same (status, reason) shape as CatalogSubmissionApiError, so
+ * isServerApiError/localizeServerError apply here too - see that class's
+ * comment in catalogSubmissions.ts for the rationale.
+ */
+export class CatalogMetadataRevisionApiError extends Error {
+  constructor(
+    readonly status: number,
+    message: string,
+    readonly reason: string | null,
+  ) {
+    super(message);
+    this.name = 'CatalogMetadataRevisionApiError';
+  }
+}
+
 function revisionsKey(accountId: string | null) {
   return ['catalog-metadata-revisions', 'me', accountId] as const;
 }
@@ -153,19 +169,22 @@ async function catalogMetadataRevisionRequest<T>(
   fallback: string,
 ): Promise<T> {
   const response = await apiFetch(path, options);
-  if (!response.ok) throw new Error(await readMessage(response, fallback));
+  if (!response.ok) throw await revisionError(response, fallback);
   return (await response.json()) as T;
 }
 
-async function readMessage(response: Response, fallback: string): Promise<string> {
+async function revisionError(response: Response, fallback: string): Promise<CatalogMetadataRevisionApiError> {
+  let message = fallback;
+  let reason: string | null = null;
   try {
-    const body = (await response.json()) as { message?: unknown };
-    if (typeof body.message === 'string') return body.message;
+    const body = (await response.json()) as { message?: unknown; reason?: unknown };
+    if (typeof body.message === 'string') message = body.message;
     if (Array.isArray(body.message)) {
-      return body.message.filter((item): item is string => typeof item === 'string').join(', ');
+      message = body.message.filter((item): item is string => typeof item === 'string').join(', ');
     }
+    if (typeof body.reason === 'string') reason = body.reason;
   } catch {
     // Preserve the actionable fallback when the server did not return JSON.
   }
-  return `${fallback} (${response.status})`;
+  return new CatalogMetadataRevisionApiError(response.status, message, reason);
 }
