@@ -10,6 +10,7 @@ import { PNG } from 'pngjs';
 
 import { configureApi } from '../src/api/configure-api';
 import { CatalogService } from '../src/catalog/catalog.service';
+import { AdminCatalogService } from '../src/admin/admin-catalog.service';
 import { CommercePromotionService } from '../src/promotion/commerce-promotion.service';
 import { encodePatternArtifactV1 } from '../src/catalog/pattern-artifact-encoder';
 import { LocalObjectStorage } from '../src/catalog/storage/local-object-storage';
@@ -2200,6 +2201,85 @@ describe('Stitch Wish backend integration', () => {
         .map((c) => c.code)
         .sort();
       expect(codesTurkish).toEqual(codesFallback);
+    });
+
+    it('enforces complete taxonomy label sets and serves exact requested locales', async () => {
+      const adminCatalog = app.get(AdminCatalogService);
+      const operatorId = randomUUID();
+      const suffix = randomUUID().slice(0, 8);
+      const categoryCode = `itest-category-${suffix}`;
+      const tagCode = `itest-tag-${suffix}`;
+      await dataSource.query(
+        `INSERT INTO admin.operator_accounts (id, email, password_hash, totp_secret_encrypted)
+         VALUES ($1, $2, 'hash', 'ciphertext')`,
+        [operatorId, `taxonomy-${suffix}@example.test`],
+      );
+
+      await adminCatalog.createCategory(operatorId, categoryCode, [
+        { locale: 'en', label: `English ${suffix}` },
+        { locale: 'tr', label: `Türkçe ${suffix}` },
+      ], null);
+      await adminCatalog.createTag(operatorId, tagCode, [
+        { locale: 'en', label: `Tag English ${suffix}` },
+        { locale: 'tr', label: `Tag Türkçe ${suffix}` },
+      ], null);
+
+      await expect(adminCatalog.createCategory(operatorId, `itest-incomplete-category-${suffix}`, [
+        { locale: 'en', label: 'Incomplete' },
+      ], null)).rejects.toThrow('tr');
+      await expect(adminCatalog.createTag(operatorId, `itest-incomplete-tag-${suffix}`, [
+        { locale: 'en', label: 'Incomplete' },
+      ], null)).rejects.toThrow('tr');
+      expect(await dataSource.query(
+        'SELECT 1 FROM catalog.categories WHERE code = $1',
+        [`itest-incomplete-category-${suffix}`],
+      )).toHaveLength(0);
+      expect(await dataSource.query(
+        'SELECT 1 FROM catalog.tags WHERE code = $1',
+        [`itest-incomplete-tag-${suffix}`],
+      )).toHaveLength(0);
+      expect(await dataSource.query(
+        'SELECT 1 FROM catalog.category_labels WHERE category_code = $1',
+        [`itest-incomplete-category-${suffix}`],
+      )).toHaveLength(0);
+      expect(await dataSource.query(
+        'SELECT 1 FROM catalog.tag_labels WHERE tag_code = $1',
+        [`itest-incomplete-tag-${suffix}`],
+      )).toHaveLength(0);
+
+      const categoryLabelsBefore = await dataSource.query(
+        'SELECT locale, label FROM catalog.category_labels WHERE category_code = $1 ORDER BY locale',
+        [categoryCode],
+      );
+      const tagLabelsBefore = await dataSource.query(
+        'SELECT locale, label FROM catalog.tag_labels WHERE tag_code = $1 ORDER BY locale',
+        [tagCode],
+      );
+      await expect(adminCatalog.updateCategoryLabels(operatorId, categoryCode, [
+        { locale: 'en', label: 'Only English' },
+      ], null)).rejects.toThrow('tr');
+      await expect(adminCatalog.updateTagLabels(operatorId, tagCode, [
+        { locale: 'en', label: 'Only English' },
+      ], null)).rejects.toThrow('tr');
+      expect(await dataSource.query(
+        'SELECT locale, label FROM catalog.category_labels WHERE category_code = $1 ORDER BY locale',
+        [categoryCode],
+      )).toEqual(categoryLabelsBefore);
+      expect(await dataSource.query(
+        'SELECT locale, label FROM catalog.tag_labels WHERE tag_code = $1 ORDER BY locale',
+        [tagCode],
+      )).toEqual(tagLabelsBefore);
+
+      const categoriesTr = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=tr`)
+        .expect(200);
+      const tagsTr = await request(httpServer)
+        .get(`/v1/catalog/tags?locale=tr`)
+        .expect(200);
+      expect((categoriesTr.body as { code: string; label: string }[]).find((item) => item.code === categoryCode)?.label)
+        .toBe(`Türkçe ${suffix}`);
+      expect((tagsTr.body as { code: string; label: string }[]).find((item) => item.code === tagCode)?.label)
+        .toBe(`Tag Türkçe ${suffix}`);
     });
 
     it('serves ordered staff picks and searches title, creator, and tag labels', async () => {

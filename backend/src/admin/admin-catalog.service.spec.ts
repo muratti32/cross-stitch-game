@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 
-import { CategoryEntity, CategoryLabelEntity, PatternEntity } from '../catalog/entities';
+import { CategoryEntity, CategoryLabelEntity, PatternEntity, TagEntity, TagLabelEntity } from '../catalog/entities';
 import { AdminCatalogService } from './admin-catalog.service';
 
 function pattern(overrides: Partial<PatternEntity> = {}): PatternEntity {
@@ -165,6 +165,57 @@ describe('AdminCatalogService category labels', () => {
       { locale: 'en', label: 'Animals Updated' }, { locale: 'tr', label: 'Hayvanlar' },
     ], 'request')).toMatchObject({ code: 'animals', labels: [{ locale: 'en' }, { locale: 'tr' }] });
     expect(category.code).toBe('animals');
+  });
+});
+
+describe('AdminCatalogService taxonomy label completeness', () => {
+  function makeService() {
+    const categorySave = jest.fn();
+    const tagSave = jest.fn();
+    const categoryLabels = { save: jest.fn(), create: jest.fn((value) => value), findOne: jest.fn() };
+    const tagLabels = { save: jest.fn(), create: jest.fn((value) => value), findOne: jest.fn() };
+    const categories = { save: categorySave, create: jest.fn((value) => value), findOne: jest.fn().mockResolvedValue(null) };
+    const tags = { save: tagSave, create: jest.fn((value) => value), findOne: jest.fn().mockResolvedValue(null) };
+    const manager = {
+      getRepository: jest.fn((entity) => {
+        if (entity === CategoryEntity) return categories;
+        if (entity === CategoryLabelEntity) return categoryLabels;
+        if (entity === TagEntity) return tags;
+        return tagLabels;
+      }),
+    };
+    const dataSource = { transaction: jest.fn((callback) => callback(manager)) };
+    const service = new AdminCatalogService(
+      dataSource as never, {} as never, { record: jest.fn() } as never,
+      {} as never, tags as never, tagLabels as never, {} as never,
+      categories as never, categoryLabels as never,
+    );
+    return { service, categorySave, tagSave, dataSource };
+  }
+
+  it.each([
+    ['create category', (service: AdminCatalogService) => service.createCategory('operator', 'animals', [{ locale: 'en', label: 'Animals' }], null)],
+    ['update category labels', (service: AdminCatalogService) => service.updateCategoryLabels('operator', 'animals', [{ locale: 'en', label: 'Animals' }], null)],
+    ['create tag', (service: AdminCatalogService) => service.createTag('operator', 'animals', [{ locale: 'en', label: 'Animals' }], null)],
+    ['update tag labels', (service: AdminCatalogService) => service.updateTagLabels('operator', 'animals', [{ locale: 'en', label: 'Animals' }], null)],
+  ])('%s rejects missing released locale before writes', async (_name, operation) => {
+    const { service, categorySave, tagSave, dataSource } = makeService();
+
+    await expect(operation(service)).rejects.toThrow('tr');
+    expect(categorySave).not.toHaveBeenCalled();
+    expect(tagSave).not.toHaveBeenCalled();
+    expect(dataSource.transaction).not.toHaveBeenCalled();
+  });
+
+  it('names English when both released labels are missing', async () => {
+    const { service } = makeService();
+    await expect(service.createTag('operator', 'animals', [], null)).rejects.toThrow(/en.*tr|tr.*en/);
+  });
+
+  it('names English when the submitted set omits English', async () => {
+    const { service } = makeService();
+    await expect(service.createCategory('operator', 'animals', [{ locale: 'tr', label: 'Hayvanlar' }], null))
+      .rejects.toThrow('en');
   });
 });
 

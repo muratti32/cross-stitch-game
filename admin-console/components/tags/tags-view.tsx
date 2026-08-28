@@ -75,6 +75,7 @@ export function TagsView() {
               <TableRow>
                 <TableHead>Code</TableHead>
                 <TableHead>Labels</TableHead>
+                <TableHead>Completeness</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -111,6 +112,7 @@ function TagRow({ tag }: { tag: Tag }) {
           ))}
         </div>
       </TableCell>
+      <TableCell>{tag.missingLocales.length > 0 && <Badge variant="destructive">Missing: {tag.missingLocales.join(', ')}</Badge>}</TableCell>
       <TableCell>
         <Badge variant={tag.active ? 'secondary' : 'outline'}>
           {tag.active ? 'Active' : 'Inactive'}

@@ -7,6 +7,7 @@ import { PrincipalType } from '../auth/entities';
 import { AuthPrincipal } from '../auth/auth.types';
 import { Repository, DataSource } from 'typeorm';
 import { ObjectStorage } from './storage/object-storage.interface';
+import * as observability from '../observability';
 
 describe('CatalogService - Creator Block Filtering', () => {
   let service: CatalogService;
@@ -376,5 +377,63 @@ describe('CatalogService category labels', () => {
     expect(categoryRepository.find).toHaveBeenCalledWith({
       relations: ['labels'], order: { code: 'ASC' }, where: { active: true },
     });
+  });
+});
+
+describe('CatalogService taxonomy fallback alerts', () => {
+  let captureAlert: jest.SpyInstance;
+
+  beforeEach(() => {
+    captureAlert = jest.spyOn(observability, 'captureOperationalAlert').mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    captureAlert.mockRestore();
+  });
+
+  function categoryService(labels: { locale: string; label: string }[]) {
+    const countsQuery = {
+      addSelect: jest.fn().mockReturnThis(), andWhere: jest.fn().mockReturnThis(),
+      getRawMany: jest.fn().mockResolvedValue([]), groupBy: jest.fn().mockReturnThis(),
+      leftJoin: jest.fn().mockReturnThis(), select: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+    };
+    return new CatalogService(
+      { createQueryBuilder: jest.fn().mockReturnValue(countsQuery) } as never,
+      {} as never, {} as never, {} as never,
+      { find: jest.fn().mockResolvedValue([{ code: 'animals', labels }]) } as never,
+      { publicUrl: jest.fn((key: string) => `https://cdn.test/${key}`) } as never,
+      {} as never, {} as never, {} as never,
+    );
+  }
+
+  it('reports unexpected fallback for a released category locale', async () => {
+    await categoryService([{ locale: 'en', label: 'Animals' }]).getCategories('tr');
+
+    expect(captureAlert).toHaveBeenCalledWith(
+      'Unexpected catalog taxonomy locale fallback', 'warning', 'catalog-taxonomy-fallback',
+      { taxonomyType: 'category', code: 'animals', requestedLocale: 'tr' },
+    );
+  });
+
+  it('does not report complete or unsupported-locale resolutions', async () => {
+    await categoryService([
+      { locale: 'en', label: 'Animals' }, { locale: 'tr', label: 'Hayvanlar' },
+    ]).getCategories('tr');
+    await categoryService([{ locale: 'en', label: 'Animals' }]).getCategories('de');
+
+    expect(captureAlert).not.toHaveBeenCalled();
+  });
+
+  it('reports tag fallback through pattern formatting', () => {
+    const service = categoryService([]);
+    service.formatPattern({
+      id: 'pattern', publishedAt: new Date(), tags: [{ code: 'animals', labels: [{ locale: 'en', label: 'Animals' }] }],
+    } as never, 'tr');
+
+    expect(captureAlert).toHaveBeenCalledWith(
+      'Unexpected catalog taxonomy locale fallback', 'warning', 'catalog-taxonomy-fallback',
+      { taxonomyType: 'tag', code: 'animals', requestedLocale: 'tr' },
+    );
   });
 });

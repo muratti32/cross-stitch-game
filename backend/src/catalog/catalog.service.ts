@@ -10,6 +10,8 @@ import { CreatorBlockService } from '../social/creator-block.service';
 import { encodeCursor, decodeCursor } from './catalog.utils';
 import { OBJECT_STORAGE, ObjectStorage } from './storage/object-storage.interface';
 import { patternImageUrls } from './pattern-image-urls';
+import { RELEASED_APP_DISPLAY_LOCALES } from './released-locales.constant';
+import { captureOperationalAlert } from '../observability';
 
 export interface UpsertPatternInput {
   // Only used when no existing Pattern matches (title, creatorName); ignored
@@ -70,6 +72,7 @@ export class CatalogService {
       tags: (pattern.tags || []).map(tag => {
         const labelEntity = tag.labels?.find(l => l.locale === locale) ||
                              tag.labels?.find(l => l.locale === 'en');
+        this.reportTaxonomyFallbackIfUnexpected('tag', tag.code, locale, labelEntity?.locale);
         return {
           code: tag.code,
           label: labelEntity ? labelEntity.label : tag.code,
@@ -216,6 +219,7 @@ export class CatalogService {
       const count = countMap.get(category.code) || 0;
       const labelEntity = category.labels?.find(l => l.locale === locale) ||
                           category.labels?.find(l => l.locale === 'en');
+      this.reportTaxonomyFallbackIfUnexpected('category', category.code, locale, labelEntity?.locale);
       const label = labelEntity ? labelEntity.label : category.code;
       return {
         id: category.code,
@@ -236,6 +240,7 @@ export class CatalogService {
     return tags.map(tag => {
       const labelEntity = tag.labels?.find(l => l.locale === locale) ||
                            tag.labels?.find(l => l.locale === 'en');
+      this.reportTaxonomyFallbackIfUnexpected('tag', tag.code, locale, labelEntity?.locale);
       return {
         code: tag.code,
         label: labelEntity ? labelEntity.label : tag.code,
@@ -400,6 +405,26 @@ export class CatalogService {
         : new Set<string>();
 
     return patterns.map((p) => this.formatPattern(p, locale, likedIds.has(p.id)));
+  }
+
+  private reportTaxonomyFallbackIfUnexpected(
+    taxonomyType: 'category' | 'tag',
+    code: string,
+    requestedLocale: string,
+    resolvedLocale: string | undefined,
+  ): void {
+    if (
+      resolvedLocale !== undefined &&
+      resolvedLocale !== requestedLocale &&
+      RELEASED_APP_DISPLAY_LOCALES.includes(requestedLocale as typeof RELEASED_APP_DISPLAY_LOCALES[number])
+    ) {
+      captureOperationalAlert(
+        'Unexpected catalog taxonomy locale fallback',
+        'warning',
+        'catalog-taxonomy-fallback',
+        { taxonomyType, code, requestedLocale },
+      );
+    }
   }
 
   upsertPattern(data: UpsertPatternInput): Promise<PatternEntity> {

@@ -73,6 +73,7 @@ export interface Tag {
   code: string;
   active: boolean;
   labels: TagLabel[];
+  missingLocales: string[];
 }
 
 export type OfficialPatternDraftStatus =
@@ -135,6 +136,7 @@ export interface Category {
   code: string;
   active: boolean;
   labels: TagLabel[];
+  missingLocales: string[];
 }
 
 export interface OperatorProfile {

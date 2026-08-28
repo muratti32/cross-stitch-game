@@ -16,6 +16,7 @@ import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage
 import { MAX_TAG_CODES_PER_PATTERN } from './admin.constants';
 import { BulkPatternRemovalEntity } from './entities';
 import { OperatorAuditLogService } from './operator-audit-log.service';
+import { RELEASED_APP_DISPLAY_LOCALES } from '../catalog/released-locales.constant';
 
 export interface AdminPatternListItem {
   id: string;
@@ -399,12 +400,13 @@ export class AdminCatalogService {
     });
   }
 
-  async listTags(): Promise<{ code: string; active: boolean; labels: { locale: string; label: string }[] }[]> {
+  async listTags(): Promise<{ code: string; active: boolean; labels: { locale: string; label: string }[]; missingLocales: string[] }[]> {
     const tags = await this.tags.find({ order: { code: 'ASC' }, relations: ['labels'] });
     return tags.map((tag) => ({
       active: tag.active,
       code: tag.code,
       labels: (tag.labels ?? []).map((label) => ({ label: label.label, locale: label.locale })),
+      missingLocales: this.getMissingLocales(tag.labels ?? []),
     }));
   }
 
@@ -414,6 +416,7 @@ export class AdminCatalogService {
     labels: { locale: string; label: string }[],
     requestId: string | null,
   ): Promise<{ code: string; active: boolean; labels: { locale: string; label: string }[] }> {
+    this.assertCompleteLabelSet(labels, 'tag');
     return this.dataSource.transaction(async (manager) => {
       const tagRepository = manager.getRepository(TagEntity);
       const tagLabelRepository = manager.getRepository(TagLabelEntity);
@@ -451,6 +454,7 @@ export class AdminCatalogService {
     labels: { locale: string; label: string }[],
     requestId: string | null,
   ): Promise<{ code: string; active: boolean; labels: { locale: string; label: string }[] }> {
+    this.assertCompleteLabelSet(labels, 'tag');
     return this.dataSource.transaction(async (manager) => {
       const tagRepository = manager.getRepository(TagEntity);
       const tagLabelRepository = manager.getRepository(TagLabelEntity);
@@ -525,12 +529,13 @@ export class AdminCatalogService {
     });
   }
 
-  async listCategories(): Promise<{ code: string; active: boolean; labels: { locale: string; label: string }[] }[]> {
+  async listCategories(): Promise<{ code: string; active: boolean; labels: { locale: string; label: string }[]; missingLocales: string[] }[]> {
     const categories = await this.categories.find({ order: { code: 'ASC' }, relations: ['labels'] });
     return categories.map((category) => ({
       active: category.active,
       code: category.code,
       labels: (category.labels ?? []).map((label) => ({ label: label.label, locale: label.locale })),
+      missingLocales: this.getMissingLocales(category.labels ?? []),
     }));
   }
 
@@ -540,9 +545,7 @@ export class AdminCatalogService {
     labels: { locale: string; label: string }[],
     requestId: string | null,
   ): Promise<{ code: string; active: boolean; labels: { locale: string; label: string }[] }> {
-    if (!labels.some((label) => label.locale === 'en')) {
-      throw new BadRequestException('Category labels must include English (en)');
-    }
+    this.assertCompleteLabelSet(labels, 'category');
     return this.dataSource.transaction(async (manager) => {
       const categoryRepository = manager.getRepository(CategoryEntity);
       const categoryLabelRepository = manager.getRepository(CategoryLabelEntity);
@@ -578,9 +581,7 @@ export class AdminCatalogService {
     labels: { locale: string; label: string }[],
     requestId: string | null,
   ): Promise<{ code: string; active: boolean; labels: { locale: string; label: string }[] }> {
-    if (!labels.some((label) => label.locale === 'en')) {
-      throw new BadRequestException('Category labels must include English (en)');
-    }
+    this.assertCompleteLabelSet(labels, 'category');
     return this.dataSource.transaction(async (manager) => {
       const categoryRepository = manager.getRepository(CategoryEntity);
       const categoryLabelRepository = manager.getRepository(CategoryLabelEntity);
@@ -644,6 +645,23 @@ export class AdminCatalogService {
       });
       return { active: false, code };
     });
+  }
+
+  private getMissingLocales(labels: { locale: string }[]): string[] {
+    const locales = new Set(labels.map((label) => label.locale));
+    return RELEASED_APP_DISPLAY_LOCALES.filter((locale) => !locales.has(locale));
+  }
+
+  private assertCompleteLabelSet(
+    labels: { locale: string; label: string }[],
+    taxonomyType: 'category' | 'tag',
+  ): void {
+    const missingLocales = this.getMissingLocales(labels);
+    if (missingLocales.length > 0) {
+      throw new BadRequestException(
+        `${taxonomyType[0].toUpperCase()}${taxonomyType.slice(1)} labels are missing released locales: ${missingLocales.join(', ')}`,
+      );
+    }
   }
 
   private async applyStatusTransition(

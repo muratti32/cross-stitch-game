@@ -75,6 +75,7 @@ export function CategoriesView() {
               <TableRow>
                 <TableHead>Code</TableHead>
                 <TableHead>Labels</TableHead>
+                <TableHead>Completeness</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -103,6 +104,7 @@ function CategoryRow({ category }: { category: Category }) {
     <TableRow className={category.active ? undefined : 'text-muted-foreground'}>
       <TableCell className="font-mono text-xs">{category.code}</TableCell>
       <TableCell><div className="flex flex-wrap gap-1.5">{category.labels.map((label) => <Badge key={label.locale} variant="outline"><span className="text-muted-foreground">{label.locale}:</span> {label.label}</Badge>)}</div></TableCell>
+      <TableCell>{category.missingLocales.length > 0 && <Badge variant="destructive">Missing: {category.missingLocales.join(', ')}</Badge>}</TableCell>
       <TableCell>
         <Badge variant={category.active ? 'secondary' : 'outline'}>
           {category.active ? 'Active' : 'Inactive'}
