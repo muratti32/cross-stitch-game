@@ -3,6 +3,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import {
   ActivityIndicator,
   Alert,
@@ -19,6 +21,8 @@ import {
   View,
 } from 'react-native';
 
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
+import { formatDate, formatNumber } from '@/i18n';
 import { fetchAiCreditBalance, useAiCreditBalance } from '@/api/commerce';
 import {
   createAiCreditPackReconciliation,
@@ -84,14 +88,6 @@ import {
 
 const RECONCILIATION_POLL_MS = 2_000;
 const RECONCILIATION_DELAY_MS = 10_000;
-// Both prolonged branches in reconcilePremium report the same wait, so the copy
-// lives in one place rather than being repeated at each site.
-const PREMIUM_RECONCILIATION_PENDING_BODY =
-  'Verification is still under way. Premium will activate once the Game Backend confirms it.';
-// A deferred plan change activates only at the next renewal, so the same wait
-// promises a scheduled change rather than an activation (issue #125).
-const PREMIUM_PLAN_CHANGE_PENDING_BODY =
-  'Verification is still under way. Your plan change will be scheduled once the Game Backend confirms it.';
 
 interface PremiumReconciliation {
   readonly baselineMembership: string | null;
@@ -144,7 +140,39 @@ interface PurchaseResultModalState {
   readonly detail: string | null;
 }
 
+// Product names are app-authored display text, not the store price, so
+// they localize through translation keys like everything else on this
+// screen (#164). The Stitch Coin/AI Credit pack quantity is an in-app
+// number and goes through formatNumber per the active locale; the three
+// Premium Plan names have no count to interpolate.
+const PREMIUM_PRODUCT_LABEL_KEYS: Readonly<Record<string, string>> = {
+  premium_annual: 'products.premiumAnnual',
+  premium_monthly: 'products.premiumMonthly',
+  premium_weekly: 'products.premiumWeekly',
+};
+
+function productLabel(product: CommerceProduct, t: TFunction, locale: string): string {
+  const premiumKey = PREMIUM_PRODUCT_LABEL_KEYS[product.productKey];
+  if (premiumKey !== undefined) return t(premiumKey);
+  const packKey = product.category === 'stitch_coin' ? 'products.stitchCoinPack' : 'products.aiCreditPack';
+  return t(packKey, {
+    count: product.quantity,
+    formattedCount: formatNumber(product.quantity, locale),
+  });
+}
+
+// `membership.plan`/`scheduledChange.targetPlan` are the same three Premium
+// Plan names as PREMIUM_PRODUCT_LABEL_KEYS above, just keyed by the plan enum
+// rather than a productKey, so this reuses the same translated labels instead
+// of leaving them as a raw English `capitalize()` of the backend value.
+function premiumPlanLabel(plan: string, t: TFunction): string {
+  const key = PREMIUM_PRODUCT_LABEL_KEYS[`premium_${plan}`];
+  return key === undefined ? capitalize(plan) : t(key);
+}
+
 export default function CommerceScreen() {
+  const { t, i18n: i18nInstance } = useTranslation('commerce');
+  const locale = i18nInstance.language;
   const router = useRouter();
   const params = useLocalSearchParams<{ category?: string; source?: string }>();
   const queryClient = useQueryClient();
@@ -448,18 +476,18 @@ export default function CommerceScreen() {
   const showFailureModal = useCallback((message: string, supportReference: string | null) => {
     setResultModal({
       variant: 'failed',
-      title: 'Purchase failed',
+      title: t('errors.purchaseFailedTitle'),
       body: message,
-      detail: supportReference === null ? null : `Support Reference: ${supportReference}`,
+      detail: supportReference === null ? null : t('supportReference.label', { reference: supportReference }),
     });
-  }, []);
+  }, [t]);
 
   // A prolonged wait is not a failure: the Purchase Reconciliation Pending state
   // says verification is still under way and the balance will update, and offers
   // no retry — retry stays on the page-level banner, one path only.
   const showReconciliationPendingModal = useCallback((body: string) => {
-    setResultModal({ variant: 'info', title: 'Still verifying', body, detail: null });
-  }, []);
+    setResultModal({ variant: 'info', title: t('pendingModal.stillVerifyingTitle'), body, detail: null });
+  }, [t]);
 
   const reconcilePremium = useCallback(async (attempt: PremiumReconciliation) => {
     if (reconciliationRef.current?.id !== attempt.id) return;
@@ -471,8 +499,8 @@ export default function CommerceScreen() {
           if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) {
             updateReconciliation({ ...attempt, prolonged: true });
             showReconciliationPendingModal(attempt.deferred
-              ? PREMIUM_PLAN_CHANGE_PENDING_BODY
-              : PREMIUM_RECONCILIATION_PENDING_BODY);
+              ? t('pendingModal.premiumPlanChangePending')
+              : t('pendingModal.premiumPending'));
           } else {
             scheduleReconciliation(attempt);
           }
@@ -480,7 +508,7 @@ export default function CommerceScreen() {
         }
         if (guestAttempt.status !== 'granted') {
           updateReconciliation({ ...attempt, failureStage: 'verification' });
-          const message = 'The Game Backend could not verify this purchase. Retry reconciliation; do not buy it again.';
+          const message = t('errors.premiumVerificationNotYet');
           setPurchaseError(message);
           showFailureModal(message, attempt.supportReference);
           return;
@@ -506,8 +534,8 @@ export default function CommerceScreen() {
         if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) {
           updateReconciliation({ ...attempt, prolonged: true });
           showReconciliationPendingModal(attempt.deferred
-            ? PREMIUM_PLAN_CHANGE_PENDING_BODY
-            : PREMIUM_RECONCILIATION_PENDING_BODY);
+            ? t('pendingModal.premiumPlanChangePending')
+            : t('pendingModal.premiumPending'));
         } else {
           scheduleReconciliation(attempt);
         }
@@ -541,25 +569,26 @@ export default function CommerceScreen() {
       updateReconciliation(null);
       clearIntent();
       setPurchaseError(null);
+      const completedLabel = productLabel(completedProduct, t, locale);
       if (attempt.deferred) {
         const effectiveOn = verifiedMembership.scheduledChange == null
           ? ''
-          : ` on ${new Date(verifiedMembership.scheduledChange.effectiveAt).toLocaleDateString()}`;
-        setPurchaseSuccess(`Premium changes to ${completedProduct.label}${effectiveOn}.`);
+          : t('success.effectiveOnDate', { date: formatDate(new Date(verifiedMembership.scheduledChange.effectiveAt), locale) });
+        setPurchaseSuccess(t('success.premiumChanges', { label: completedLabel, effectiveOn }));
         setResultModal({
           variant: 'success',
-          title: 'Plan change scheduled',
-          body: `Your Premium Membership keeps its current plan until it changes to ${completedProduct.label}${effectiveOn}. Cancel the change from Manage Subscription.`,
+          title: t('success.planChangeScheduledTitle'),
+          body: t('success.planChangeScheduledBody', { label: completedLabel, effectiveOn }),
           detail: null,
         });
       } else {
-        setPurchaseSuccess(`${completedProduct.label} Premium is verified and active.`);
+        setPurchaseSuccess(t('success.premiumVerifiedAndActive', { label: completedLabel }));
         setResultModal({
           variant: 'success',
-          title: 'Premium is active',
+          title: t('success.premiumIsActiveTitle'),
           body: completedProduct.billingPeriod === null
-            ? `${completedProduct.label} Premium is now active.`
-            : `${completedProduct.label} Premium is now active, billed every ${completedProduct.billingPeriod}.`,
+            ? t('success.premiumNowActiveNoBilling', { label: completedLabel })
+            : t('success.premiumNowActiveBilled', { label: completedLabel, period: completedProduct.billingPeriod }),
           detail: null,
         });
       }
@@ -579,13 +608,15 @@ export default function CommerceScreen() {
         });
       }
       updateReconciliation({ ...attempt, failureStage });
-      const message = failureStage === 'verification'
-        ? 'The Game Backend could not verify this purchase yet. Retry reconciliation; do not buy it again.'
-        : 'Premium was verified, but membership and AI Credit state could not be refreshed. Retry reconciliation.';
+      const message = isServerApiError(error)
+        ? localizeServerError(error)
+        : failureStage === 'verification'
+          ? t('errors.premiumVerificationFailedRetry')
+          : t('errors.premiumGrantRefreshFailed');
       setPurchaseError(message);
       showFailureModal(message, attempt.supportReference);
     }
-  }, [clearIntent, products, refetchCommerceState, scheduleReconciliation, showFailureModal, showReconciliationPendingModal, updateReconciliation]);
+  }, [clearIntent, locale, products, refetchCommerceState, scheduleReconciliation, showFailureModal, showReconciliationPendingModal, t, updateReconciliation]);
 
   const beginPremiumReconciliation = useCallback(async (
     product: CommerceProduct,
@@ -621,19 +652,20 @@ export default function CommerceScreen() {
       const next = { ...attempt, supportReference: reference.supportReference };
       updateReconciliation(next);
       await reconcilePremium(next);
-    } catch {
+    } catch (error: unknown) {
       await captureGameplayEvent('purchase_failed', {
         product_kind: 'premium_membership',
         product_key: product.productKey,
         failure_stage: 'verification',
       });
       updateReconciliation({ ...attempt, failureStage: 'verification' });
-      const message =
-        'Purchase reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.';
+      const message = isServerApiError(error)
+        ? localizeServerError(error)
+        : t('errors.premiumReconciliationUnreachable');
       setPurchaseError(message);
       showFailureModal(message, attempt.supportReference);
     }
-  }, [reconcilePremium, showFailureModal, updateReconciliation]);
+  }, [reconcilePremium, showFailureModal, t, updateReconciliation]);
 
   reconciliationRunnerRef.current = reconcilePremium;
 
@@ -658,9 +690,7 @@ export default function CommerceScreen() {
       if (reconciliation.status === 'pending' || reconciliation.status === 'created' || reconciliation.status === 'verifying') {
         if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) {
           updateCoinReconciliation({ ...attempt, prolonged: true });
-          showReconciliationPendingModal(
-            'Verification is still under way. Your Stitch Coin balance will update once it completes.',
-          );
+          showReconciliationPendingModal(t('pendingModal.coinPackPending'));
         } else {
           scheduleCoinReconciliation(attempt);
         }
@@ -673,8 +703,7 @@ export default function CommerceScreen() {
           failure_stage: 'verification',
         });
         updateCoinReconciliation({ ...attempt, failureStage: 'verification' });
-        const message =
-          'The store transaction did not match this Coin Pack. Retry verification or contact support; do not buy it again.';
+        const message = t('errors.coinPackVerificationMismatch');
         setPurchaseError(message);
         showFailureModal(message, attempt.supportReference);
         return;
@@ -686,8 +715,7 @@ export default function CommerceScreen() {
           failure_stage: 'grant',
         });
         updateCoinReconciliation({ ...attempt, failureStage: 'grant' });
-        const message =
-          'The purchase was verified, but the Stitch Coin grant is unavailable. Retry reconciliation; do not buy it again.';
+        const message = t('errors.coinPackGrantUnavailable');
         setPurchaseError(message);
         showFailureModal(message, attempt.supportReference);
         return;
@@ -704,16 +732,17 @@ export default function CommerceScreen() {
       if (!isAccount && guestId !== null) await clearGuestPurchaseAttempt(guestId);
       clearIntent();
       setPurchaseError(null);
+      const label = productLabel(attempt.product, t, locale);
       setPurchaseSuccess(
-        `${attempt.product.label} grant verified. Stitch Coin balance: ${refreshedBalance.toLocaleString()}.`,
+        t('success.coinPackGrantVerified', { label, balance: formatNumber(refreshedBalance, locale) }),
       );
       setResultModal({
         variant: 'success',
-        title: 'Stitch Coins granted',
-        body: `${attempt.product.quantity.toLocaleString()} Stitch Coins have been added to your balance.`,
+        title: t('success.coinPackGrantedTitle'),
+        body: t('success.coinPackAddedToBalance', { quantity: formatNumber(attempt.product.quantity, locale) }),
         detail: null,
       });
-    } catch {
+    } catch (error: unknown) {
       const failureStage = grantVerified ? 'grant' : 'verification';
       await captureGameplayEvent('purchase_failed', {
         product_kind: 'stitch_coin_pack',
@@ -721,13 +750,15 @@ export default function CommerceScreen() {
         failure_stage: failureStage,
       });
       updateCoinReconciliation({ ...attempt, failureStage });
-      const message = grantVerified
-        ? 'The Coin grant was verified, but the current Stitch Coin balance could not be refreshed. Retry reconciliation.'
-        : 'The Game Backend could not verify this Coin Pack yet. Retry reconciliation; do not buy it again.';
+      const message = isServerApiError(error)
+        ? localizeServerError(error)
+        : grantVerified
+          ? t('errors.coinPackBalanceRefreshFailed')
+          : t('errors.coinPackVerificationFailedRetry');
       setPurchaseError(message);
       showFailureModal(message, attempt.supportReference);
     }
-  }, [clearIntent, guestId, isAccount, queryClient, scheduleCoinReconciliation, showFailureModal, showReconciliationPendingModal, updateCoinReconciliation]);
+  }, [clearIntent, guestId, isAccount, locale, queryClient, scheduleCoinReconciliation, showFailureModal, showReconciliationPendingModal, t, updateCoinReconciliation]);
 
   const beginCoinPackReconciliation = useCallback(async (
     product: CommerceProduct,
@@ -769,19 +800,20 @@ export default function CommerceScreen() {
       };
       updateCoinReconciliation(next);
       await reconcileCoinPack(next);
-    } catch {
+    } catch (error: unknown) {
       await captureGameplayEvent('purchase_failed', {
         product_kind: 'stitch_coin_pack',
         product_key: product.productKey,
         failure_stage: 'verification',
       });
       updateCoinReconciliation({ ...attempt, failureStage: 'verification' });
-      const message =
-        'Coin Pack reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.';
+      const message = isServerApiError(error)
+        ? localizeServerError(error)
+        : t('errors.coinPackReconciliationUnreachable');
       setPurchaseError(message);
       showFailureModal(message, attempt.supportReference);
     }
-  }, [reconcileCoinPack, showFailureModal, updateCoinReconciliation]);
+  }, [reconcileCoinPack, showFailureModal, t, updateCoinReconciliation]);
 
   coinReconciliationRunnerRef.current = reconcileCoinPack;
 
@@ -831,9 +863,7 @@ export default function CommerceScreen() {
       if (reconciliation.status === 'pending' || reconciliation.status === 'created' || reconciliation.status === 'verifying') {
         if (Date.now() - attempt.startedAt >= RECONCILIATION_DELAY_MS) {
           updateAiCreditReconciliation({ ...attempt, prolonged: true });
-          showReconciliationPendingModal(
-            'Verification is still under way. Your AI Credit balance will update once it completes.',
-          );
+          showReconciliationPendingModal(t('pendingModal.aiCreditPackPending'));
         } else {
           scheduleAiCreditReconciliation(attempt);
         }
@@ -846,8 +876,7 @@ export default function CommerceScreen() {
           failure_stage: 'verification',
         });
         updateAiCreditReconciliation({ ...attempt, failureStage: 'verification' });
-        const message =
-          'The store transaction did not match this AI Credit Pack. Retry verification or contact support; do not buy it again.';
+        const message = t('errors.aiCreditPackVerificationMismatch');
         setPurchaseError(message);
         showFailureModal(message, attempt.supportReference);
         return;
@@ -859,8 +888,7 @@ export default function CommerceScreen() {
           failure_stage: 'grant',
         });
         updateAiCreditReconciliation({ ...attempt, failureStage: 'grant' });
-        const message =
-          'The purchase was verified, but the AI Credit grant is unavailable. Retry reconciliation; do not buy it again.';
+        const message = t('errors.aiCreditPackGrantUnavailable');
         setPurchaseError(message);
         showFailureModal(message, attempt.supportReference);
         return;
@@ -877,16 +905,17 @@ export default function CommerceScreen() {
       if (!isAccount && guestId !== null) await clearGuestPurchaseAttempt(guestId);
       clearIntent();
       setPurchaseError(null);
+      const label = productLabel(attempt.product, t, locale);
       setPurchaseSuccess(
-        `${attempt.product.label} grant verified. AI Credit balance: ${refreshedBalance.toLocaleString()}.`,
+        t('success.aiCreditPackGrantVerified', { label, balance: formatNumber(refreshedBalance, locale) }),
       );
       setResultModal({
         variant: 'success',
-        title: 'AI Credits granted',
-        body: `${attempt.product.quantity.toLocaleString()} AI Credits have been added to your balance.`,
+        title: t('success.aiCreditPackGrantedTitle'),
+        body: t('success.aiCreditPackAddedToBalance', { quantity: formatNumber(attempt.product.quantity, locale) }),
         detail: null,
       });
-    } catch {
+    } catch (error: unknown) {
       const failureStage = grantVerified ? 'grant' : 'verification';
       await captureGameplayEvent('purchase_failed', {
         product_kind: 'ai_credit_pack',
@@ -894,13 +923,15 @@ export default function CommerceScreen() {
         failure_stage: failureStage,
       });
       updateAiCreditReconciliation({ ...attempt, failureStage });
-      const message = grantVerified
-        ? 'The AI Credit grant was verified, but the current balance could not be refreshed. Retry reconciliation.'
-        : 'The Game Backend could not verify this AI Credit Pack yet. Retry reconciliation; do not buy it again.';
+      const message = isServerApiError(error)
+        ? localizeServerError(error)
+        : grantVerified
+          ? t('errors.aiCreditPackBalanceRefreshFailed')
+          : t('errors.aiCreditPackVerificationFailedRetry');
       setPurchaseError(message);
       showFailureModal(message, attempt.supportReference);
     }
-  }, [clearIntent, guestId, isAccount, queryClient, scheduleAiCreditReconciliation, showFailureModal, showReconciliationPendingModal, updateAiCreditReconciliation]);
+  }, [clearIntent, guestId, isAccount, locale, queryClient, scheduleAiCreditReconciliation, showFailureModal, showReconciliationPendingModal, t, updateAiCreditReconciliation]);
 
   const beginAiCreditPackReconciliation = useCallback(async (
     product: CommerceProduct,
@@ -936,19 +967,20 @@ export default function CommerceScreen() {
       };
       updateAiCreditReconciliation(next);
       await reconcileAiCreditPack(next);
-    } catch {
+    } catch (error: unknown) {
       await captureGameplayEvent('purchase_failed', {
         product_kind: 'ai_credit_pack',
         product_key: product.productKey,
         failure_stage: 'verification',
       });
       updateAiCreditReconciliation({ ...attempt, failureStage: 'verification' });
-      const message =
-        'AI Credit Pack reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.';
+      const message = isServerApiError(error)
+        ? localizeServerError(error)
+        : t('errors.aiCreditPackReconciliationUnreachable');
       setPurchaseError(message);
       showFailureModal(message, attempt.supportReference);
     }
-  }, [reconcileAiCreditPack, showFailureModal, updateAiCreditReconciliation]);
+  }, [reconcileAiCreditPack, showFailureModal, t, updateAiCreditReconciliation]);
 
   aiCreditReconciliationRunnerRef.current = reconcileAiCreditPack;
 
@@ -1009,7 +1041,7 @@ export default function CommerceScreen() {
     let storePurchaseAccepted = false;
     try {
       if (!isAccount) {
-        if (Platform.OS !== 'ios') throw new Error('Guest Stitch Coin purchases are available on iOS only.');
+        if (Platform.OS !== 'ios') throw new Error(t('errors.guestIosOnlyStitchCoin'));
         const subscriberId = await prepareGuestRevenueCatSubscriber();
         guestSubscriberId = subscriberId;
         await mapGuestRevenueCatSubscriber(subscriberId);
@@ -1047,12 +1079,13 @@ export default function CommerceScreen() {
       // presents a Modal over an already-presented one, and the reconciliation
       // starters below close it too late to cover this first paint.
       setOpenCategory(null);
+      const purchasedLabel = productLabel(product, t, locale);
       setResultModal({
         variant: 'pending',
-        title: 'Purchase received',
+        title: t('success.purchaseReceivedTitle'),
         body: planChangeKind === 'plan_change'
-          ? `The store accepted the change to ${product.label}. Confirming when it takes effect.`
-          : `The store accepted ${product.label}. Verifying your purchase now.`,
+          ? t('success.storeAcceptedPlanChange', { label: purchasedLabel })
+          : t('success.storeAcceptedPurchase', { label: purchasedLabel }),
         detail: null,
       });
       failureStage = 'verification';
@@ -1116,7 +1149,7 @@ export default function CommerceScreen() {
           failure_stage: failureStage,
         });
       }
-      const message = purchaseErrorMessage(error);
+      const message = isServerApiError(error) ? localizeServerError(error) : purchaseErrorMessage(error, t);
       setPurchaseError(message);
       // The page-level banner above keeps the durable recovery copy; the modal
       // only reports the outcome and offers dismissal, so there is one retry
@@ -1126,16 +1159,16 @@ export default function CommerceScreen() {
       // what support looks the player up by.
       setResultModal({
         variant: 'failed',
-        title: 'Purchase failed',
+        title: t('errors.purchaseFailedTitle'),
         body: message,
         detail: guestAttempt === null
           ? null
-          : `Support Reference: ${guestAttempt.supportReference}`,
+          : t('supportReference.label', { reference: guestAttempt.supportReference }),
       });
     } finally {
       setPurchasingKey(null);
     }
-  }, [accountId, beginAiCreditPackReconciliation, beginCoinPackReconciliation, beginPremiumReconciliation, guestId, isAccount]);
+  }, [accountId, beginAiCreditPackReconciliation, beginCoinPackReconciliation, beginPremiumReconciliation, guestId, isAccount, locale, t]);
 
   const confirmPremiumPurchase = useCallback((product: CommerceProduct) => {
     if (premiumPurchaseInFlightRef.current) return;
@@ -1218,7 +1251,7 @@ export default function CommerceScreen() {
         return;
       }
       if (Platform.OS !== 'ios') {
-        setPurchaseError('Guest purchases are available on iOS only.');
+        setPurchaseError(t('errors.guestIosOnlyGeneric'));
         return;
       }
       // The pack sheet is already a native Modal. Close it before presenting
@@ -1238,7 +1271,7 @@ export default function CommerceScreen() {
       return;
     }
     setConfirmingAiCreditPack(product);
-  }, [closeCommerceOverlays, isAccount, pendingIntent, preserveIntent, router, setGuestCommerceProduct, source]);
+  }, [closeCommerceOverlays, isAccount, pendingIntent, preserveIntent, router, setGuestCommerceProduct, source, t]);
 
   // A Guest restore re-owns provider-verified Premium only, so it maps the
   // anonymous subscriber first and never opens a reconciliation for packs.
@@ -1254,12 +1287,11 @@ export default function CommerceScreen() {
     await queryClient.refetchQueries({ queryKey: ['economy'] });
     setResultModal({
       variant: 'info',
-      title: 'Restore requested',
-      body: 'Verified Premium access will appear after the store webhook is reconciled. '
-        + 'Stitch Coin and AI Credit packs are never restored.',
+      title: t('restore.requestedTitle'),
+      body: t('restore.requestedBody'),
       detail: null,
     });
-  }, [queryClient]);
+  }, [queryClient, t]);
 
   const restoreAccountPurchases = useCallback(async () => {
     await restoreRevenueCatPurchases(accountId);
@@ -1284,11 +1316,11 @@ export default function CommerceScreen() {
           failure_stage: 'store',
         });
       }
-      setPurchaseError(purchaseErrorMessage(error));
+      setPurchaseError(isServerApiError(error) ? localizeServerError(error) : purchaseErrorMessage(error, t));
     } finally {
       setRestoringPurchases(false);
     }
-  }, [isAccount, restoreAccountPurchases, restoreGuestPremium, selectedPremium]);
+  }, [isAccount, restoreAccountPurchases, restoreGuestPremium, selectedPremium, t]);
 
   const retryPremiumReconciliation = useCallback(async () => {
     const attempt = reconciliationRef.current;
@@ -1305,14 +1337,14 @@ export default function CommerceScreen() {
         const next = { ...reset, supportReference: reference.supportReference };
         updateReconciliation(next);
         await reconcilePremium(next);
-      } catch {
-        setPurchaseError('The Game Backend is still unavailable. Try reconciliation again later.');
+      } catch (error: unknown) {
+        setPurchaseError(isServerApiError(error) ? localizeServerError(error) : t('errors.reconciliationStillUnavailable'));
         updateReconciliation({ ...reset, failureStage: 'verification' });
       }
       return;
     }
     await reconcilePremium(reset);
-  }, [reconcilePremium, updateReconciliation]);
+  }, [reconcilePremium, t, updateReconciliation]);
 
   const retryCoinPackReconciliation = useCallback(async () => {
     const attempt = coinReconciliationRef.current;
@@ -1333,14 +1365,14 @@ export default function CommerceScreen() {
         };
         updateCoinReconciliation(next);
         await reconcileCoinPack(next);
-      } catch {
-        setPurchaseError('The Game Backend is still unavailable. Try reconciliation again later.');
+      } catch (error: unknown) {
+        setPurchaseError(isServerApiError(error) ? localizeServerError(error) : t('errors.reconciliationStillUnavailable'));
         updateCoinReconciliation({ ...reset, failureStage: 'verification' });
       }
       return;
     }
     await reconcileCoinPack(reset);
-  }, [reconcileCoinPack, updateCoinReconciliation]);
+  }, [reconcileCoinPack, t, updateCoinReconciliation]);
 
   const retryAiCreditPackReconciliation = useCallback(async () => {
     const attempt = aiCreditReconciliationRef.current;
@@ -1361,21 +1393,21 @@ export default function CommerceScreen() {
         };
         updateAiCreditReconciliation(next);
         await reconcileAiCreditPack(next);
-      } catch {
-        setPurchaseError('The Game Backend is still unavailable. Try reconciliation again later.');
+      } catch (error: unknown) {
+        setPurchaseError(isServerApiError(error) ? localizeServerError(error) : t('errors.reconciliationStillUnavailable'));
         updateAiCreditReconciliation({ ...reset, failureStage: 'verification' });
       }
       return;
     }
     await reconcileAiCreditPack(reset);
-  }, [reconcileAiCreditPack, updateAiCreditReconciliation]);
+  }, [reconcileAiCreditPack, t, updateAiCreditReconciliation]);
 
   return (
     <>
       <Screen scrollable contentContainerStyle={styles.container}>
         <View style={styles.titleRow} testID="commerce-store-screen">
           <Pressable
-            accessibilityLabel="Back"
+            accessibilityLabel={t('screen.backAccessibilityLabel')}
             accessibilityRole="button"
             onPress={() => router.back()}
             style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
@@ -1383,8 +1415,8 @@ export default function CommerceScreen() {
             <Ionicons name="arrow-back" size={22} color={Theme.colors.accentTeal} />
           </Pressable>
           <View style={styles.titleCopy}>
-            <Text style={styles.title}>Commerce Store</Text>
-            <Text style={styles.subtitle}>Membership and one-time top-ups</Text>
+            <Text style={styles.title}>{t('screen.title')}</Text>
+            <Text style={styles.subtitle}>{t('screen.subtitle')}</Text>
           </View>
           <View style={styles.walletSummary}>
             <WalletValue icon="leaf" value={coinBalance ?? 0} color={Theme.colors.accentHoney} />
@@ -1396,7 +1428,7 @@ export default function CommerceScreen() {
           <View style={styles.returnNotice} testID="sign-in-return-notice">
             <Ionicons name="checkmark-circle" size={20} color={Theme.colors.success} />
             <Text style={styles.returnNoticeText}>
-              You’re signed in. {returnedProduct.label} is still selected. Review it and tap Buy when ready.
+              {t('signInReturn.notice', { label: productLabel(returnedProduct, t, locale) })}
             </Text>
           </View>
         )}
@@ -1407,53 +1439,58 @@ export default function CommerceScreen() {
               <Ionicons name="diamond-outline" size={24} color={Theme.colors.accentRose} />
             </View>
             <View style={styles.premiumHeroCopy}>
-              <Text style={styles.eyebrow}>PREMIUM MEMBERSHIP</Text>
-              <Text style={styles.premiumTitle}>Create more. Collect a little reward every day.</Text>
+              <Text style={styles.eyebrow}>{t('premiumHero.eyebrow')}</Text>
+              <Text style={styles.premiumTitle}>{t('premiumHero.title')}</Text>
             </View>
           </View>
           <Text style={styles.premiumBody}>
-            AI Credits each paid period, Premium themes, and a daily Stitch Coin claim.
+            {t('premiumHero.body')}
           </Text>
           <View style={styles.benefitRow}>
-            <Benefit icon="sparkles-outline" label="AI Credits" />
-            <Benefit icon="calendar-outline" label="Daily Coins" />
-            <Benefit icon="color-palette-outline" label="Themes" />
+            <Benefit icon="sparkles-outline" label={t('premiumHero.benefitAiCredits')} />
+            <Benefit icon="calendar-outline" label={t('premiumHero.benefitDailyCoins')} />
+            <Benefit icon="color-palette-outline" label={t('premiumHero.benefitThemes')} />
           </View>
           <Text style={styles.membershipStatus}>
             {membership?.active
-              ? `${membershipLifecycleLabel(membership.lifecycle)}${membership.plan ? ` · ${capitalize(membership.plan)}` : ''}`
+              ? `${membershipLifecycleLabel(membership.lifecycle, t)}${membership.plan ? ` · ${premiumPlanLabel(membership.plan, t)}` : ''}`
               : isAccount
-                ? 'No active membership'
-                : 'Browse plans as a Guest Player'}
+                ? t('premiumHero.statusNoActiveMembership')
+                : t('premiumHero.statusBrowseAsGuest')}
           </Text>
           {membership?.active && membership.expiresAt && (
             <Text style={styles.membershipPeriod}>
-              {membershipPeriodLabel(membership.lifecycle)}{' '}
-              {new Date(membership.expiresAt).toLocaleDateString()}
+              {membershipPeriodLabel(membership.lifecycle, t)}{' '}
+              {formatDate(new Date(membership.expiresAt), locale)}
             </Text>
           )}
         </View>
 
         {membership?.active === true && (
           <Card style={styles.membershipActionsCard}>
-            <Text style={styles.membershipActionsTitle}>Active Premium Membership</Text>
+            <Text style={styles.membershipActionsTitle}>{t('membershipActions.title')}</Text>
             <Text style={styles.membershipActionsBody}>
-              Daily rewards are in Profile. Themes are under Settings › Appearance.
+              {t('membershipActions.body')}
             </Text>
             {membership?.scheduledChange != null && (
               <Text style={styles.scheduledChangeNotice} testID="scheduled-plan-change-notice">
-                {`Changes to ${capitalize(membership.scheduledChange.targetPlan)} on `
-                  + new Date(membership.scheduledChange.effectiveAt).toLocaleDateString()}
+                {t('membershipActions.scheduledChangeNotice', {
+                  plan: premiumPlanLabel(membership.scheduledChange.targetPlan, t),
+                  date: formatDate(new Date(membership.scheduledChange.effectiveAt), locale),
+                })}
               </Text>
             )}
             <Button
-              title="Manage Subscription"
+              title={t('membershipActions.manageSubscription')}
               onPress={() => {
                 void withProtectedRoundTrip('subscription-management', () =>
                   showRevenueCatManageSubscriptions(),
                   { keepUntilForeground: true },
                 ).catch(() => {
-                  Alert.alert('Unable to open subscriptions', 'Try again from your device store account.');
+                  Alert.alert(
+                    t('membershipActions.manageSubscriptionFailedTitle'),
+                    t('membershipActions.manageSubscriptionFailedBody'),
+                  );
                 });
               }}
               variant="secondary"
@@ -1477,18 +1514,18 @@ export default function CommerceScreen() {
           <View style={styles.pendingBanner}>
             <Ionicons name="time-outline" size={18} color={Theme.colors.accentTeal} />
             <View style={styles.pendingCopy}>
-              <Text style={styles.pendingTitle}>Purchase Reconciliation Pending</Text>
+              <Text style={styles.pendingTitle}>{t('pending.title')}</Text>
               {/* The plan under verification is named so the player can tell a
                   plan change apart from a first purchase while every Premium
                   Plan action is locked (issue #121). */}
               <Text style={styles.pendingText}>
                 {purchasePending.sourcePlanKey !== null
-                  ? `The store accepted the change to ${purchasePending.product.label}. `
-                  : `The store response for ${purchasePending.product.label} is received. `}
+                  ? t('pending.premiumChangeAccepted', { label: productLabel(purchasePending.product, t, locale) })
+                  : t('pending.premiumResponseReceived', { label: productLabel(purchasePending.product, t, locale) })}
                 {purchasePending.deferred
-                  ? 'The change is scheduled only after Game Backend verification, and takes effect when your current period ends.'
-                  : 'Premium activates only after Game Backend verification.'}
-                {' '}Do not purchase this plan again.
+                  ? t('pending.premiumDeferredSuffix')
+                  : t('pending.premiumSuffix')}
+                {t('pending.doNotPurchasePlanAgain')}
               </Text>
               {purchasePending.supportReference !== null && (
                 <SupportReferenceRow reference={purchasePending.supportReference} />
@@ -1499,8 +1536,8 @@ export default function CommerceScreen() {
               <Button
                 title={
                   purchasePending.prolonged || purchasePending.failureStage !== null
-                    ? 'Retry reconciliation'
-                    : 'Refresh status'
+                    ? t('pending.retryReconciliation')
+                    : t('pending.refreshStatus')
                 }
                 onPress={() => void retryPremiumReconciliation()}
                 variant="secondary"
@@ -1514,19 +1551,18 @@ export default function CommerceScreen() {
             <View style={styles.pendingCopy}>
               <Text style={styles.pendingTitle}>
                 {coinPurchasePending.guestAttemptId !== null
-                  ? 'Verifying purchase'
-                  : 'Purchase Reconciliation Pending'}
+                  ? t('pending.verifyingTitle')
+                  : t('pending.title')}
               </Text>
               <Text style={styles.pendingText}>
-                The store response is received. Stitch Coin updates only after the Game Backend
-                exposes the matching Commerce Ledger grant. Do not purchase this pack again.
+                {t('pending.coinPackBody')}
               </Text>
               {coinPurchasePending.supportReference !== null && (
                 <SupportReferenceRow reference={coinPurchasePending.supportReference} />
               )}
               {(coinPurchasePending.prolonged || coinPurchasePending.failureStage !== null) && (
                 <Button
-                  title="Retry reconciliation"
+                  title={t('pending.retryReconciliation')}
                   onPress={() => void retryCoinPackReconciliation()}
                   variant="secondary"
                 />
@@ -1538,10 +1574,9 @@ export default function CommerceScreen() {
           <View style={styles.pendingBanner}>
             <Ionicons name="time-outline" size={18} color={Theme.colors.accentTeal} />
             <View style={styles.pendingCopy}>
-              <Text style={styles.pendingTitle}>Purchase Reconciliation Pending</Text>
+              <Text style={styles.pendingTitle}>{t('pending.title')}</Text>
               <Text style={styles.pendingText}>
-                The store response is received. AI Credit updates only after the Game Backend
-                exposes the matching Commerce Ledger grant. Do not purchase this pack again.
+                {t('pending.aiCreditPackBody')}
               </Text>
               {aiCreditPurchasePending.supportReference !== null && (
                 <SupportReferenceRow reference={aiCreditPurchasePending.supportReference} />
@@ -1549,7 +1584,7 @@ export default function CommerceScreen() {
               {(aiCreditPurchasePending.prolonged
                 || aiCreditPurchasePending.failureStage !== null) && (
                 <Button
-                  title="Retry reconciliation"
+                  title={t('pending.retryReconciliation')}
                   onPress={() => void retryAiCreditPackReconciliation()}
                   variant="secondary"
                 />
@@ -1561,17 +1596,17 @@ export default function CommerceScreen() {
         {loadingStore ? (
           <View style={styles.storeState}>
             <ActivityIndicator size="large" color={Theme.colors.accentRose} />
-            <Text style={styles.storeStateBody}>Loading current store prices…</Text>
+            <Text style={styles.storeStateBody}>{t('store.loadingPrices')}</Text>
           </View>
         ) : storeUnavailable ? (
           <Card style={styles.storeState}>
             <Ionicons name="cloud-offline-outline" size={28} color={Theme.colors.textSecondary} />
-            <Text style={styles.storeStateTitle}>Store temporarily unavailable</Text>
+            <Text style={styles.storeStateTitle}>{t('store.unavailableTitle')}</Text>
             <Text style={styles.storeStateBody}>
-              Your wallet and membership information are still available.
+              {t('store.unavailableBody')}
             </Text>
             <Button
-              title="Retry"
+              title={t('store.retry')}
               onPress={() => void loadStore()}
               variant="rose"
               style={styles.retryButton}
@@ -1582,7 +1617,7 @@ export default function CommerceScreen() {
             {showPremiumPlanGrid && premiumPlans.length > 0 && (
               <View style={styles.planSection}>
                 <Text style={styles.sectionTitle}>
-                  {entitledLifecycle ? 'Your Premium plan' : 'Choose a Premium plan'}
+                  {entitledLifecycle ? t('plans.yourPremiumPlan') : t('plans.choosePremiumPlan')}
                 </Text>
                 <View style={styles.planRow}>
                   {premiumPlans.map((plan) => {
@@ -1591,7 +1626,7 @@ export default function CommerceScreen() {
                     const selected = entitledLifecycle
                       ? isCurrentPlan
                       : plan.productKey === selectedPremium?.productKey;
-                    const trialOffer = premiumTrialOffer(plan, trialEligibleKeys);
+                    const trialOffer = premiumTrialOffer(plan, trialEligibleKeys, t);
                     // A held plan can never invoke its own repurchase, and a
                     // restricted lifecycle keeps the identification without any
                     // tappable plan at all. A different plan is tappable only
@@ -1642,24 +1677,24 @@ export default function CommerceScreen() {
                         testID={`premium-${plan.productKey}`}
                       >
                         {isCurrentPlan ? (
-                          <Text style={styles.bestValue}>CURRENT PLAN</Text>
+                          <Text style={styles.bestValue}>{t('plans.currentPlan')}</Text>
                         ) : planChangeKind !== null ? (
                           <Text style={styles.bestValue}>
-                            {planChangeKind === 'upgrade' ? 'UPGRADE' : 'PLAN CHANGE'}
+                            {planChangeKind === 'upgrade' ? t('plans.upgrade') : t('plans.planChange')}
                           </Text>
                         ) : (
                           !entitledLifecycle && plan.productKey === 'premium_annual' && (
-                            <Text style={styles.bestValue}>BEST VALUE</Text>
+                            <Text style={styles.bestValue}>{t('plans.bestValue')}</Text>
                           )
                         )}
-                        <Text style={styles.planName}>{plan.label}</Text>
+                        <Text style={styles.planName}>{productLabel(plan, t, locale)}</Text>
                         <Text style={styles.planPrice}>{plan.priceString}</Text>
                         {plan.billingPeriod !== null && (
-                          <Text style={styles.planPeriod}>Billed every {plan.billingPeriod}</Text>
+                          <Text style={styles.planPeriod}>{t('plans.billedEvery', { period: plan.billingPeriod })}</Text>
                         )}
                         {plan.credits !== undefined && (
                           <Text style={styles.planCredits}>
-                            {creditAllowanceLabel(plan.credits, plan.creditPeriod)}
+                            {creditAllowanceLabel(plan.credits, plan.creditPeriod, t, locale)}
                           </Text>
                         )}
                         {trialOffer !== null && (
@@ -1680,7 +1715,7 @@ export default function CommerceScreen() {
                       // A Guest can complete this purchase without registering: attemptPurchase
                       // routes a Guest through the Guest Data Risk Notice, where sign-in is offered
                       // as an alternative, never a precondition (Guideline 5.1.1(v)).
-                      title={`Choose ${selectedPremium.label}`}
+                      title={t('plans.chooseLabel', { label: productLabel(selectedPremium, t, locale) })}
                       onPress={() => attemptPurchase(selectedPremium)}
                       loading={purchasingKey === selectedPremium.productKey}
                       disabled={purchasingKey !== null || purchasePending !== null}
@@ -1692,7 +1727,7 @@ export default function CommerceScreen() {
             )}
 
             {(coinPacks.length > 0 || aiCreditPacks.length > 0) && (
-              <Text style={styles.sectionTitle}>One-time packs</Text>
+              <Text style={styles.sectionTitle}>{t('onetime.sectionTitle')}</Text>
             )}
             {/* Packs the store did not return are not advertised, and the summary
                 line and "from" price describe only what is purchasable. Category
@@ -1700,8 +1735,8 @@ export default function CommerceScreen() {
             {coinPacks.length > 0 && (
               <CategoryCard
                 icon="leaf-outline"
-                title="Stitch Coin Packs"
-                detail={packSummary(coinPacks, 'Coins')}
+                title={t('onetime.stitchCoinPacksTitle')}
+                detail={packSummary(coinPacks, t('onetime.coinsNoun'), locale)}
                 price={coinPacks[0]?.priceString}
                 color={Theme.colors.accentHoney}
                 onPress={() => setOpenCategory('stitch_coin')}
@@ -1711,8 +1746,8 @@ export default function CommerceScreen() {
             {aiCreditPacks.length > 0 && (
               <CategoryCard
                 icon="sparkles-outline"
-                title="AI Credit Packs"
-                detail={packSummary(aiCreditPacks, 'Credits')}
+                title={t('onetime.aiCreditPacksTitle')}
+                detail={packSummary(aiCreditPacks, t('onetime.creditsNoun'), locale)}
                 price={aiCreditPacks[0]?.priceString}
                 color={Theme.colors.accentRose}
                 onPress={() => setOpenCategory('ai_credit')}
@@ -1730,7 +1765,7 @@ export default function CommerceScreen() {
                 <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
               ) : (
                 <Text style={styles.restoreText}>
-                  {isAccount ? 'Restore purchases' : 'Restore Guest Premium'}
+                  {isAccount ? t('restore.restorePurchases') : t('restore.restoreGuestPremium')}
                 </Text>
               )}
             </Pressable>
@@ -1806,7 +1841,7 @@ export default function CommerceScreen() {
         product={confirmingPremium}
         trialOffer={confirmingPremium === null
           ? null
-          : premiumTrialOffer(confirmingPremium, trialEligibleKeys)}
+          : premiumTrialOffer(confirmingPremium, trialEligibleKeys, t)}
         onCancel={() => setConfirmingPremium(null)}
         onConfirm={confirmPremiumPurchase}
       />
@@ -1840,6 +1875,7 @@ export default function CommerceScreen() {
 }
 
 function SupportReferenceRow({ reference }: { readonly reference: string }) {
+  const { t } = useTranslation('commerce');
   const [copied, setCopied] = useState(false);
   const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -1859,26 +1895,26 @@ function SupportReferenceRow({ reference }: { readonly reference: string }) {
         }
         resetTimer.current = setTimeout(() => setCopied(false), 2000);
       } catch {
-        Alert.alert('Copy failed', 'The support reference could not be copied. Select the text to copy it manually.');
+        Alert.alert(t('supportReference.copyFailedTitle'), t('supportReference.copyFailedBody'));
       }
     })();
-  }, [reference]);
+  }, [reference, t]);
 
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`Copy support reference ${reference}`}
-      accessibilityHint="Copies the support reference to the clipboard"
+      accessibilityLabel={t('supportReference.copyAccessibilityLabel', { reference })}
+      accessibilityHint={t('supportReference.copyAccessibilityHint')}
       onPress={copyReference}
       style={({ pressed }) => [styles.supportReferenceRow, pressed && styles.supportReferenceRowPressed]}
     >
-      <Text style={styles.supportReference}>Support Reference: {reference}</Text>
+      <Text style={styles.supportReference}>{t('supportReference.label', { reference })}</Text>
       <Ionicons
         name={copied ? 'checkmark-outline' : 'copy-outline'}
         size={14}
         color={copied ? Theme.colors.success : Theme.colors.textSecondary}
       />
-      {copied && <Text style={styles.supportReferenceCopied}>Copied</Text>}
+      {copied && <Text style={styles.supportReferenceCopied}>{t('supportReference.copied')}</Text>}
     </Pressable>
   );
 }
@@ -1892,10 +1928,13 @@ function WalletValue({
   value: number;
   color: string;
 }) {
+  // A Stitch Coin/AI Credit balance is an in-app number, not a store price,
+  // so it formats for the active App Display Language (#164, #157).
+  const { i18n: i18nInstance } = useTranslation();
   return (
     <View style={styles.walletValue}>
       <Ionicons name={icon} size={13} color={color} />
-      <Text style={styles.walletValueText}>{value.toLocaleString()}</Text>
+      <Text style={styles.walletValueText}>{formatNumber(value, i18nInstance.language)}</Text>
     </View>
   );
 }
@@ -1922,6 +1961,8 @@ function PremiumConfirmation({
   onConfirm: (product: CommerceProduct) => void;
   onDismiss: () => void;
 }) {
+  const { t, i18n: i18nInstance } = useTranslation('commerce');
+  const locale = i18nInstance.language;
   return (
     <Modal
       animationType="fade"
@@ -1940,27 +1981,31 @@ function PremiumConfirmation({
           style={[styles.confirmationCard, styles.premiumConfirmationCard]}
         >
           <ScrollView contentContainerStyle={styles.premiumConfirmationContent}>
-            <Text style={styles.confirmationTitle}>Confirm Premium purchase</Text>
+            <Text style={styles.confirmationTitle}>{t('confirmation.confirmPremiumTitle')}</Text>
             {product !== null && (
               <>
                 <Text style={styles.confirmationPlan}>
-                  {`${product.label} · ${paidOfferLabel(product)}`}
+                  {`${productLabel(product, t, locale)} · ${paidOfferLabel(product, t)}`}
                 </Text>
                 {trialOffer !== null && (
                   <Text style={styles.trial}>
-                    {`Your store reports this introductory offer: ${trialOffer}.`}
+                    {t('confirmation.introductoryOffer', { offer: trialOffer })}
                   </Text>
                 )}
                 <Text style={styles.confirmationBody}>
-                  Premium appears only after the Game Backend verifies the store transaction.
+                  {t('confirmation.premiumAppearsAfterVerification')}
                 </Text>
                 <SubscriptionDisclosure
                   plan={product}
                   testID="premium-confirmation-disclosure"
                 />
                 <View style={styles.confirmationActions}>
-                  <Button title="Cancel" onPress={onCancel} variant="secondary" />
-                  <Button title={`Confirm ${product.label}`} onPress={() => onConfirm(product)} variant="rose" />
+                  <Button title={t('confirmation.cancel')} onPress={onCancel} variant="secondary" />
+                  <Button
+                    title={t('confirmation.confirmLabel', { label: productLabel(product, t, locale) })}
+                    onPress={() => onConfirm(product)}
+                    variant="rose"
+                  />
                 </View>
               </>
             )}
@@ -2001,6 +2046,8 @@ function PlanChangeConfirmation({
   onConfirm: (product: CommerceProduct) => void;
   onDismiss: () => void;
 }) {
+  const { t, i18n: i18nInstance } = useTranslation('commerce');
+  const locale = i18nInstance.language;
   const visible = current !== null && target !== null;
   const upgrade = kind === 'upgrade';
   return (
@@ -2019,29 +2066,37 @@ function PlanChangeConfirmation({
         >
           <ScrollView contentContainerStyle={styles.premiumConfirmationContent}>
             <Text style={styles.confirmationTitle}>
-              {upgrade ? 'Confirm Premium upgrade' : 'Confirm Premium plan change'}
+              {upgrade ? t('confirmation.confirmPremiumUpgradeTitle') : t('confirmation.confirmPremiumPlanChangeTitle')}
             </Text>
             {current !== null && target !== null && (
               <>
-                <Text style={styles.confirmationPlan}>Current Plan: {current.label}</Text>
                 <Text style={styles.confirmationPlan}>
-                  {`${upgrade ? 'Upgrade' : 'Change'} to ${target.label} · ${paidOfferLabel(target)}`}
+                  {t('confirmation.currentPlanLabel', { label: productLabel(current, t, locale) })}
+                </Text>
+                <Text style={styles.confirmationPlan}>
+                  {t(upgrade ? 'confirmation.upgradeToLabel' : 'confirmation.changeToLabel', {
+                    label: productLabel(target, t, locale),
+                    offer: paidOfferLabel(target, t),
+                  })}
                 </Text>
                 {target.credits !== undefined && (
                   <Text style={styles.planCredits}>
-                    {creditAllowanceLabel(target.credits, target.creditPeriod)}
+                    {creditAllowanceLabel(target.credits, target.creditPeriod, t, locale)}
                   </Text>
                 )}
                 <Text style={styles.confirmationBody}>
                   {upgrade
-                    ? `The App Store controls the final charge and effective date for this upgrade. Premium reflects ${target.label} only after the Game Backend verifies it.`
-                    : `The App Store defers this change to the end of your current period: ${current.label} keeps running until then, and ${target.label} is billed from the change date. Cancel the change from Manage Subscription.`}
+                    ? t('confirmation.upgradeBody', { label: productLabel(target, t, locale) })
+                    : t('confirmation.planChangeBody', {
+                      currentLabel: productLabel(current, t, locale),
+                      targetLabel: productLabel(target, t, locale),
+                    })}
                 </Text>
                 <SubscriptionDisclosure plan={target} testID="plan-change-confirmation-disclosure" />
                 <View style={styles.confirmationActions}>
-                  <Button title="Cancel" onPress={onCancel} variant="secondary" />
+                  <Button title={t('confirmation.cancel')} onPress={onCancel} variant="secondary" />
                   <Button
-                    title={upgrade ? 'Confirm upgrade' : 'Confirm plan change'}
+                    title={upgrade ? t('confirmation.confirmUpgrade') : t('confirmation.confirmPlanChange')}
                     onPress={() => onConfirm(target)}
                     variant="rose"
                   />
@@ -2070,6 +2125,10 @@ function SubscriptionDisclosure({
   presentation?: 'card' | 'compact';
   testID: string;
 }) {
+  const { t, i18n: i18nInstance } = useTranslation('commerce');
+  const locale = i18nInstance.language;
+  const privacyPolicyLabel = t('disclosure.privacyPolicy');
+  const termsOfServiceLabel = t('disclosure.termsOfService');
   return (
     <View
       style={[
@@ -2078,22 +2137,22 @@ function SubscriptionDisclosure({
       ]}
       testID={testID}
     >
-      <Text style={styles.disclosureText}>{subscriptionTerms(plan)}</Text>
+      <Text style={styles.disclosureText}>{subscriptionTerms(plan, t, locale)}</Text>
       <View style={styles.disclosureLinks}>
         <Pressable
           accessibilityRole="link"
-          onPress={() => openLegalLink('Privacy Policy', WebLinks.privacyPolicy)}
+          onPress={() => openLegalLink(privacyPolicyLabel, WebLinks.privacyPolicy, t)}
           style={({ pressed }) => [pressed && styles.pressed]}
         >
-          <Text style={styles.disclosureLink}>Privacy Policy</Text>
+          <Text style={styles.disclosureLink}>{privacyPolicyLabel}</Text>
         </Pressable>
         <Text style={styles.disclosureSeparator}>·</Text>
         <Pressable
           accessibilityRole="link"
-          onPress={() => openLegalLink('Terms of Service', WebLinks.termsOfService)}
+          onPress={() => openLegalLink(termsOfServiceLabel, WebLinks.termsOfService, t)}
           style={({ pressed }) => [pressed && styles.pressed]}
         >
-          <Text style={styles.disclosureLink}>Terms of Service</Text>
+          <Text style={styles.disclosureLink}>{termsOfServiceLabel}</Text>
         </Pressable>
       </View>
     </View>
@@ -2106,29 +2165,29 @@ function SubscriptionDisclosure({
  * disclosure lie. A package that carries no subscription period simply drops the
  * period clause rather than asserting one.
  */
-function subscriptionTerms(plan: CommerceProduct): string {
-  const store = storeAccountName();
-  return `Payment is charged to your ${store} account at confirmation. `
-    + `${plan.label} Premium renews automatically at ${paidOfferLabel(plan)} unless `
-    + 'auto-renew is turned off at least 24 hours before the end of the current period. '
-    + 'Any unused portion of a free trial is forfeited when you purchase a subscription. '
-    + `You can cancel at any time from your ${store} account.`;
+function subscriptionTerms(plan: CommerceProduct, t: TFunction, locale: string): string {
+  const store = storeAccountName(t);
+  return t('disclosure.subscriptionTerms', {
+    store,
+    label: productLabel(plan, t, locale),
+    offer: paidOfferLabel(plan, t),
+  });
 }
 
 // The disclosure names the store the player is actually holding, so the
 // cancellation instructions match the device in their hand.
-function storeAccountName(): string {
-  return Platform.OS === 'ios' ? 'App Store' : 'Google Play';
+function storeAccountName(t: TFunction): string {
+  return Platform.OS === 'ios' ? t('disclosure.appStore') : t('disclosure.googlePlay');
 }
 
 // Same destinations and same failure handling Settings already uses for these
 // two documents: a link that cannot be opened tells the player instead of
 // failing silently at the point of purchase.
-function openLegalLink(title: string, url: string): void {
+function openLegalLink(title: string, url: string, t: TFunction): void {
   void withProtectedRoundTrip('external-link', () => Linking.openURL(url), {
     keepUntilForeground: true,
   }).catch(() => {
-    Alert.alert(title, `Could not open link: ${url}`);
+    Alert.alert(title, t('disclosure.linkOpenFailedBody', { url }));
   });
 }
 
@@ -2144,21 +2203,26 @@ function CoinPackConfirmation({
   onCancel: () => void;
   onConfirm: (product: CommerceProduct) => void;
 }) {
+  const { t, i18n: i18nInstance } = useTranslation('commerce');
   if (product === null) return null;
+  const label = productLabel(product, t, i18nInstance.language);
   return (
     <View style={styles.confirmationOverlay} testID="coin-pack-confirmation">
       <View accessibilityViewIsModal style={styles.confirmationCard}>
-        <Text style={styles.confirmationTitle}>Confirm Stitch Coin purchase</Text>
+        <Text style={styles.confirmationTitle}>{t('confirmation.confirmStitchCoinTitle')}</Text>
         <Text style={styles.confirmationPlan}>
-          {product.label} · {product.priceString}
+          {label} · {product.priceString}
         </Text>
         <Text style={styles.confirmationBody}>
-          Your balance changes only after the Game Backend verifies the store transaction
-          and records the matching Commerce Ledger grant.
+          {t('confirmation.balanceChangesAfterVerificationCoin')}
         </Text>
         <View style={styles.confirmationActions}>
-          <Button title="Cancel" onPress={onCancel} variant="secondary" />
-          <Button title={`Confirm ${product.label}`} onPress={() => onConfirm(product)} variant="honey" />
+          <Button title={t('confirmation.cancel')} onPress={onCancel} variant="secondary" />
+          <Button
+            title={t('confirmation.confirmLabel', { label })}
+            onPress={() => onConfirm(product)}
+            variant="honey"
+          />
         </View>
       </View>
     </View>
@@ -2176,21 +2240,26 @@ function AiCreditPackConfirmation({
   onCancel: () => void;
   onConfirm: (product: CommerceProduct) => void;
 }) {
+  const { t, i18n: i18nInstance } = useTranslation('commerce');
   if (product === null) return null;
+  const label = productLabel(product, t, i18nInstance.language);
   return (
     <View style={styles.confirmationOverlay} testID="ai-credit-pack-confirmation">
       <View accessibilityViewIsModal style={styles.confirmationCard}>
-        <Text style={styles.confirmationTitle}>Confirm AI Credit purchase</Text>
+        <Text style={styles.confirmationTitle}>{t('confirmation.confirmAiCreditTitle')}</Text>
         <Text style={styles.confirmationPlan}>
-          {product.label} · {product.priceString}
+          {label} · {product.priceString}
         </Text>
         <Text style={styles.confirmationBody}>
-          Your balance changes only after the Game Backend verifies the store transaction
-          and records the matching Commerce Ledger grant. Premium Membership is not required.
+          {t('confirmation.balanceChangesAfterVerificationAiCredit')}
         </Text>
         <View style={styles.confirmationActions}>
-          <Button title="Cancel" onPress={onCancel} variant="secondary" />
-          <Button title={`Confirm ${product.label}`} onPress={() => onConfirm(product)} variant="rose" />
+          <Button title={t('confirmation.cancel')} onPress={onCancel} variant="secondary" />
+          <Button
+            title={t('confirmation.confirmLabel', { label })}
+            onPress={() => onConfirm(product)}
+            variant="rose"
+          />
         </View>
       </View>
     </View>
@@ -2214,6 +2283,7 @@ function CategoryCard({
   onPress: () => void;
   testID: string;
 }) {
+  const { t } = useTranslation('commerce');
   return (
     <Card onPress={onPress} style={styles.categoryCard}>
       <View testID={testID} style={styles.categoryContent}>
@@ -2223,7 +2293,7 @@ function CategoryCard({
         <View style={styles.categoryCopy}>
           <Text style={styles.categoryTitle}>{title}</Text>
           <Text style={styles.categoryDetail}>{detail}</Text>
-          {price && <Text style={styles.categoryPrice}>From {price}</Text>}
+          {price && <Text style={styles.categoryPrice}>{t('onetime.fromPrice', { price })}</Text>}
         </View>
         <Ionicons name="chevron-forward" size={20} color={Theme.colors.textSecondary} />
       </View>
@@ -2254,6 +2324,8 @@ function ProductSheet({
   onShow: () => void;
   onPurchase: (product: CommerceProduct) => void;
 }) {
+  const { t, i18n: i18nInstance } = useTranslation('commerce');
+  const locale = i18nInstance.language;
   const requestedVisible = category === 'stitch_coin' || category === 'ai_credit';
   const sheetTranslateY = useRef(new Animated.Value(640)).current;
   const backdropOpacity = useRef(new Animated.Value(0)).current;
@@ -2295,7 +2367,9 @@ function ProductSheet({
     }).start(() => onClose());
   }, [backdropOpacity, onClose]);
 
-  const title = category === 'stitch_coin' ? 'Stitch Coin Packs' : 'AI Credit Packs';
+  const title = category === 'stitch_coin'
+    ? t('onetime.stitchCoinPacksTitle')
+    : t('onetime.aiCreditPacksTitle');
   return (
     <Modal
       animationType="none"
@@ -2312,7 +2386,7 @@ function ProductSheet({
           testID="product-sheet-backdrop"
         >
           <Pressable
-            accessibilityLabel="Close product sheet"
+            accessibilityLabel={t('sheet.closeAccessibilityLabel')}
             onPress={closeWithBackdropFade}
             style={styles.modalBackdropPressable}
           />
@@ -2326,9 +2400,13 @@ function ProductSheet({
           <View style={styles.sheetHeader}>
             <View>
               <Text style={styles.sheetTitle}>{title}</Text>
-              <Text style={styles.sheetSubtitle}>Current prices from the app store</Text>
+              <Text style={styles.sheetSubtitle}>{t('sheet.currentPricesSubtitle')}</Text>
             </View>
-            <Pressable accessibilityLabel="Close" onPress={closeWithBackdropFade} style={styles.sheetClose}>
+            <Pressable
+              accessibilityLabel={t('sheet.closeButtonAccessibilityLabel')}
+              onPress={closeWithBackdropFade}
+              style={styles.sheetClose}
+            >
               <Ionicons name="close" size={22} color={Theme.colors.textPrimary} />
             </Pressable>
           </View>
@@ -2336,14 +2414,14 @@ function ProductSheet({
             {products.map((product) => (
               <View key={product.id} style={styles.sheetProduct}>
                 <View style={styles.sheetProductCopy}>
-                  <Text style={styles.sheetProductTitle}>{product.label}</Text>
+                  <Text style={styles.sheetProductTitle}>{productLabel(product, t, locale)}</Text>
                   <Text style={styles.sheetProductPrice}>{product.priceString}</Text>
                   {pendingProductKey === product.productKey && (
-                    <Text style={styles.preservedLabel}>Selected before sign-in</Text>
+                    <Text style={styles.preservedLabel}>{t('sheet.selectedBeforeSignIn')}</Text>
                   )}
                 </View>
                 <Button
-                  title="Buy"
+                  title={t('sheet.buy')}
                   onPress={() => onPurchase(product)}
                   loading={purchasingKey === product.productKey}
                   disabled={purchasingKey !== null || reconcilingProductKey === product.productKey}
@@ -2385,10 +2463,11 @@ async function reportMissingCanonicalProducts(missing: readonly string[]): Promi
   }));
 }
 
-// Quantities are grouped for the English pack copy they sit in, not for the
-// device locale, so the summary always matches the pack labels beside it.
-function packSummary(packs: readonly CommerceProduct[], noun: string): string {
-  return `${packs.map((pack) => pack.quantity.toLocaleString('en-US')).join(' · ')} ${noun}`;
+// Quantities are in-app numbers, not store prices, so they format for the
+// active locale (#164, #157) - the same locale the pack labels beside this
+// summary now use, so the two never disagree.
+function packSummary(packs: readonly CommerceProduct[], noun: string, locale: string): string {
+  return `${packs.map((pack) => formatNumber(pack.quantity, locale)).join(' · ')} ${noun}`;
 }
 
 // A Guest Player learns why sign-in is being asked of them before anything
@@ -2403,28 +2482,39 @@ function packSummary(packs: readonly CommerceProduct[], noun: string): string {
 function premiumTrialOffer(
   product: CommerceProduct,
   eligibleProductKeys: readonly PurchaseProductKey[],
+  t: TFunction,
 ): string | null {
   if (product.freeIntroductoryOffer === null) return null;
   if (!eligibleProductKeys.includes(product.productKey)) return null;
-  return `Free for ${product.freeIntroductoryOffer}, then ${paidOfferLabel(product)}`;
+  return t('plans.freeTrial', {
+    offer: product.freeIntroductoryOffer,
+    paidOffer: paidOfferLabel(product, t),
+  });
 }
 
 // One rendering of a plan's recurring charge — "$7.99 every 1 month" — shared by
 // the disclosure, the confirmation and the trial line, so the same plan can
-// never be quoted three different ways.
-function paidOfferLabel(product: CommerceProduct): string {
+// never be quoted three different ways. `priceString` is the store price and
+// is interpolated verbatim, never reformatted (#164's hard line).
+function paidOfferLabel(product: CommerceProduct, t: TFunction): string {
   return product.billingPeriod === null
     ? product.priceString
-    : `${product.priceString} every ${product.billingPeriod}`;
+    : t('products.billedEveryOffer', { price: product.priceString, period: product.billingPeriod });
 }
 
 // A Membership Credit Grant is attached to each verified *paid* Membership
 // Period, so the allowance stays qualified as paid while naming this plan's own
 // period instead of a generic one.
-function creditAllowanceLabel(credits: number, creditPeriod: string | null): string {
+function creditAllowanceLabel(
+  credits: number,
+  creditPeriod: string | null,
+  t: TFunction,
+  locale: string,
+): string {
+  const formattedCredits = formatNumber(credits, locale);
   return creditPeriod === null
-    ? `${credits} credits / paid period`
-    : `${credits} credits / paid ${creditPeriod}`;
+    ? t('products.creditAllowancePaidPeriod', { credits: formattedCredits })
+    : t('products.creditAllowancePaidNoun', { credits: formattedCredits, period: creditPeriod });
 }
 
 function isPurchaseCancelled(error: unknown): boolean {
@@ -2434,30 +2524,30 @@ function isPurchaseCancelled(error: unknown): boolean {
     && error.userCancelled === true;
 }
 
-function purchaseErrorMessage(error: unknown): string {
+function purchaseErrorMessage(error: unknown, t: TFunction): string {
   const code = purchaseErrorCode(error);
 
   switch (code) {
     case '2':
-      return 'The store is temporarily unavailable. Please try again in a few minutes.';
+      return t('errors.storeTemporarilyUnavailable');
     case '3':
-      return 'Purchases are not allowed on this device. Check your store account or parental controls.';
+      return t('errors.purchasesNotAllowed');
     case '4':
     case '5':
-      return 'This item is not available for purchase right now. Please choose another item or try again later.';
+      return t('errors.itemNotAvailable');
     case '6':
-      return 'You already own this purchase. Use Restore Purchases to refresh your access.';
+      return t('errors.alreadyOwned');
     case '10':
     case '35':
-      return 'Could not connect to the store. Check your internet connection and try again.';
+      return t('errors.couldNotConnectToStore');
     case '20':
-      return 'Your payment is pending approval. Your purchase will appear after the store completes it.';
+      return t('errors.paymentPendingApproval');
     case '42':
-      return 'The test purchase was declined. No payment was made. Choose a different Test Store result in Settings, then try again.';
+      return t('errors.testPurchaseDeclined');
     default:
       return error instanceof Error && error.message
         ? error.message
-        : 'We could not complete your purchase. No payment was taken. Please try again.';
+        : t('errors.genericPurchaseFailure');
   }
 }
 
@@ -2485,16 +2575,19 @@ function membershipFingerprint(membership: MembershipView | undefined): string |
   ]);
 }
 
-function membershipPeriodLabel(lifecycle: MembershipView['lifecycle']): string {
+function membershipPeriodLabel(lifecycle: MembershipView['lifecycle'], t: TFunction): string {
   return lifecycle === 'cancelled' || lifecycle === 'paused'
     || lifecycle === 'expired' || lifecycle === 'refunded'
-    ? 'Current period ends'
-    : 'Renews';
+    ? t('premiumHero.periodEndsLabel')
+    : t('premiumHero.periodRenewsLabel');
 }
 
-function membershipLifecycleLabel(lifecycle: MembershipView['lifecycle']): string {
+// The lifecycle value itself (`trial`, `billing_retry`, ...) is a backend
+// enum, not app-authored prose, so it keeps its English wording here exactly
+// as before; only the `null` default routes through a translation key.
+function membershipLifecycleLabel(lifecycle: MembershipView['lifecycle'], t: TFunction): string {
   return lifecycle === null
-    ? 'Active'
+    ? t('premiumHero.lifecycleActive')
     : lifecycle.split('_').map(capitalize).join(' ');
 }
 
@@ -2935,6 +3028,9 @@ const styles = StyleSheet.create({
     fontWeight: Theme.typography.weights.semibold,
     marginTop: Theme.spacing.xs,
   },
-  sheetBuyButton: { width: 84 },
+  // A fixed width clipped or wrapped the longer Turkish label ("Satın Al" vs.
+  // "Buy"); minWidth keeps the English sizing while letting a longer
+  // translation grow the button instead of truncating inside it (#164).
+  sheetBuyButton: { minWidth: 84 },
   pressed: { opacity: 0.78 },
 });

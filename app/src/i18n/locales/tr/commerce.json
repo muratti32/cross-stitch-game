@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Geri",
+    "title": "Mağaza",
+    "subtitle": "Üyelik ve tek seferlik yüklemeler"
+  },
+  "signInReturn": {
+    "notice": "Oturum açtınız. {{label}} hâlâ seçili. Gözden geçirip hazır olduğunuzda Satın Al'a dokunun."
+  },
+  "premiumHero": {
+    "eyebrow": "PREMİUM ÜYELİK",
+    "title": "Daha fazla oluştur. Her gün küçük bir ödül topla.",
+    "body": "Her ödemeli dönemde AI Credit, Premium temalar ve günlük Stitch Coin hakkı.",
+    "benefitAiCredits": "AI Credit",
+    "benefitDailyCoins": "Günlük Coin",
+    "benefitThemes": "Temalar",
+    "statusNoActiveMembership": "Etkin üyelik yok",
+    "statusBrowseAsGuest": "Planları Misafir Oyuncu olarak incele",
+    "periodEndsLabel": "Geçerli dönem sona eriyor",
+    "periodRenewsLabel": "Yenileniyor",
+    "lifecycleActive": "Etkin"
+  },
+  "membershipActions": {
+    "title": "Etkin Premium Üyelik",
+    "body": "Günlük ödüller Profil altında. Temalar Ayarlar › Görünüm altında.",
+    "scheduledChangeNotice": "{{date}} tarihinde {{plan}} planına geçiyor",
+    "manageSubscription": "Üyeliği Yönet",
+    "manageSubscriptionFailedTitle": "Üyelik ayarları açılamadı",
+    "manageSubscriptionFailedBody": "Cihazınızdaki mağaza hesabından tekrar deneyin."
+  },
+  "pending": {
+    "title": "Satın Alma Doğrulaması Bekleniyor",
+    "verifyingTitle": "Satın alma doğrulanıyor",
+    "premiumChangeAccepted": "Mağaza {{label}} planına geçişi kabul etti. ",
+    "premiumResponseReceived": "Mağazadan {{label}} için yanıt alındı. ",
+    "premiumDeferredSuffix": "Değişiklik yalnızca Oyun Sunucusu doğrulamasından sonra planlanır ve geçerli döneminiz bittiğinde etkinleşir.",
+    "premiumSuffix": "Premium yalnızca Oyun Sunucusu doğrulamasından sonra etkinleşir.",
+    "doNotPurchasePlanAgain": " Bu planı tekrar satın almayın.",
+    "coinPackBody": "Mağazadan yanıt alındı. Stitch Coin bakiyesi, Oyun Sunucusu eşleşen Ticaret Defteri hakkını gösterdikten sonra güncellenir. Bu paketi tekrar satın almayın.",
+    "aiCreditPackBody": "Mağazadan yanıt alındı. AI Credit bakiyesi, Oyun Sunucusu eşleşen Ticaret Defteri hakkını gösterdikten sonra güncellenir. Bu paketi tekrar satın almayın.",
+    "refreshStatus": "Durumu yenile",
+    "retryReconciliation": "Doğrulamayı tekrar dene"
+  },
+  "store": {
+    "loadingPrices": "Güncel mağaza fiyatları yükleniyor…",
+    "unavailableTitle": "Mağaza şu anda kullanılamıyor",
+    "unavailableBody": "Cüzdan ve üyelik bilgileriniz hâlâ kullanılabilir.",
+    "retry": "Tekrar dene"
+  },
+  "plans": {
+    "choosePremiumPlan": "Bir Premium plan seçin",
+    "yourPremiumPlan": "Premium planınız",
+    "currentPlan": "GEÇERLİ PLAN",
+    "upgrade": "YÜKSELT",
+    "planChange": "PLAN DEĞİŞİKLİĞİ",
+    "bestValue": "EN İYİ DEĞER",
+    "billedEvery": "Her {{period}} faturalanır",
+    "chooseLabel": "{{label}} Seç",
+    "freeTrial": "{{offer}} ücretsiz, ardından {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Tek seferlik paketler",
+    "stitchCoinPacksTitle": "Stitch Coin Paketleri",
+    "aiCreditPacksTitle": "AI Credit Paketleri",
+    "coinsNoun": "Coin",
+    "creditsNoun": "Credit",
+    "fromPrice": "{{price}}'den başlayan"
+  },
+  "restore": {
+    "restorePurchases": "Satın alımları geri yükle",
+    "restoreGuestPremium": "Misafir Premium'unu geri yükle",
+    "requestedTitle": "Geri yükleme istendi",
+    "requestedBody": "Doğrulanmış Premium erişimi, mağaza webhook'u eşleştirildikten sonra görünür. Stitch Coin ve AI Credit paketleri hiçbir zaman geri yüklenmez."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Uygulama mağazasındaki güncel fiyatlar",
+    "closeAccessibilityLabel": "Ürün sayfasını kapat",
+    "closeButtonAccessibilityLabel": "Kapat",
+    "selectedBeforeSignIn": "Oturum açmadan önce seçildi",
+    "buy": "Satın Al"
+  },
+  "confirmation": {
+    "cancel": "Vazgeç",
+    "confirmLabel": "{{label}} Onayla",
+    "confirmPremiumTitle": "Premium satın alımını onayla",
+    "introductoryOffer": "Mağazanız şu tanıtım teklifini bildiriyor: {{offer}}.",
+    "premiumAppearsAfterVerification": "Premium yalnızca Oyun Sunucusu mağaza işlemini doğruladıktan sonra görünür.",
+    "confirmPremiumUpgradeTitle": "Premium yükseltmesini onayla",
+    "confirmPremiumPlanChangeTitle": "Premium plan değişikliğini onayla",
+    "currentPlanLabel": "Geçerli Plan: {{label}}",
+    "upgradeToLabel": "{{label}} · {{offer}} planına yükselt",
+    "changeToLabel": "{{label}} · {{offer}} planına geç",
+    "upgradeBody": "Bu yükseltme için nihai ücret ve geçerlilik tarihini App Store belirler. Premium, yalnızca Oyun Sunucusu doğruladıktan sonra {{label}} olarak yansır.",
+    "planChangeBody": "App Store bu değişikliği geçerli döneminizin sonuna bırakır: {{currentLabel}} o zamana kadar devam eder ve {{targetLabel}}, değişiklik tarihinden itibaren faturalanır. Değişikliği Üyeliği Yönet'ten iptal edebilirsiniz.",
+    "confirmUpgrade": "Yükseltmeyi onayla",
+    "confirmPlanChange": "Plan değişikliğini onayla",
+    "confirmStitchCoinTitle": "Stitch Coin satın alımını onayla",
+    "confirmAiCreditTitle": "AI Credit satın alımını onayla",
+    "balanceChangesAfterVerificationCoin": "Bakiyeniz yalnızca Oyun Sunucusu mağaza işlemini doğruladıktan ve eşleşen Ticaret Defteri hakkını kaydettikten sonra değişir.",
+    "balanceChangesAfterVerificationAiCredit": "Bakiyeniz yalnızca Oyun Sunucusu mağaza işlemini doğruladıktan ve eşleşen Ticaret Defteri hakkını kaydettikten sonra değişir. Premium Üyelik gerekmez."
+  },
+  "disclosure": {
+    "subscriptionTerms": "Ödeme, onay anında {{store}} hesabınızdan tahsil edilir. {{label}} Premium, geçerli dönemin bitiminden en az 24 saat önce otomatik yenileme kapatılmadığı sürece {{offer}} üzerinden otomatik olarak yenilenir. Bir abonelik satın aldığınızda kullanılmamış ücretsiz deneme süresi kaybedilir. {{store}} hesabınızdan istediğiniz zaman iptal edebilirsiniz.",
+    "privacyPolicy": "Gizlilik Politikası",
+    "termsOfService": "Kullanım Şartları",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Bağlantı açılamadı: {{url}}"
+  },
+  "supportReference": {
+    "label": "Destek Referansı: {{reference}}",
+    "copyAccessibilityLabel": "Destek referansını kopyala {{reference}}",
+    "copyAccessibilityHint": "Destek referansını panoya kopyalar",
+    "copied": "Kopyalandı",
+    "copyFailedTitle": "Kopyalama başarısız",
+    "copyFailedBody": "Destek referansı kopyalanamadı. Elle kopyalamak için metni seçin."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Misafir Stitch Coin satın alımları yalnızca iOS'ta kullanılabilir.",
+    "guestIosOnlyGeneric": "Misafir satın alımları yalnızca iOS'ta kullanılabilir.",
+    "purchaseFailedTitle": "Satın alma başarısız",
+    "premiumVerificationNotYet": "Oyun Sunucusu bu satın alımı doğrulayamadı. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+    "premiumVerificationFailedRetry": "Oyun Sunucusu bu satın alımı henüz doğrulayamadı. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+    "premiumGrantRefreshFailed": "Premium doğrulandı, ancak üyelik ve AI Credit durumu yenilenemedi. Doğrulamayı tekrar deneyin.",
+    "premiumReconciliationUnreachable": "Satın alma doğrulaması Oyun Sunucusuna erişemedi. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+    "coinPackVerificationMismatch": "Mağaza işlemi bu Coin Paketiyle eşleşmedi. Doğrulamayı tekrar deneyin veya destekle iletişime geçin; tekrar satın almayın.",
+    "coinPackGrantUnavailable": "Satın alım doğrulandı, ancak Stitch Coin hakkı şu anda verilemiyor. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+    "coinPackBalanceRefreshFailed": "Coin hakkı doğrulandı, ancak geçerli Stitch Coin bakiyesi yenilenemedi. Doğrulamayı tekrar deneyin.",
+    "coinPackVerificationFailedRetry": "Oyun Sunucusu bu Coin Paketini henüz doğrulayamadı. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+    "coinPackReconciliationUnreachable": "Coin Paketi doğrulaması Oyun Sunucusuna erişemedi. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+    "aiCreditPackVerificationMismatch": "Mağaza işlemi bu AI Credit Paketiyle eşleşmedi. Doğrulamayı tekrar deneyin veya destekle iletişime geçin; tekrar satın almayın.",
+    "aiCreditPackGrantUnavailable": "Satın alım doğrulandı, ancak AI Credit hakkı şu anda verilemiyor. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+    "aiCreditPackBalanceRefreshFailed": "AI Credit hakkı doğrulandı, ancak geçerli bakiye yenilenemedi. Doğrulamayı tekrar deneyin.",
+    "aiCreditPackVerificationFailedRetry": "Oyun Sunucusu bu AI Credit Paketini henüz doğrulayamadı. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+    "aiCreditPackReconciliationUnreachable": "AI Credit Paketi doğrulaması Oyun Sunucusuna erişemedi. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+    "reconciliationStillUnavailable": "Oyun Sunucusu hâlâ kullanılamıyor. Doğrulamayı daha sonra tekrar deneyin.",
+    "storeTemporarilyUnavailable": "Mağaza şu anda kullanılamıyor. Lütfen birkaç dakika içinde tekrar deneyin.",
+    "purchasesNotAllowed": "Bu cihazda satın alımlara izin verilmiyor. Mağaza hesabınızı veya ebeveyn kontrollerini kontrol edin.",
+    "itemNotAvailable": "Bu ürün şu anda satın alınamıyor. Lütfen başka bir ürün seçin veya daha sonra tekrar deneyin.",
+    "alreadyOwned": "Bu satın alıma zaten sahipsiniz. Erişiminizi yenilemek için Satın Alımları Geri Yükle'yi kullanın.",
+    "couldNotConnectToStore": "Mağazaya bağlanılamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.",
+    "paymentPendingApproval": "Ödemeniz onay bekliyor. Satın alımınız mağaza tamamlandıktan sonra görünecek.",
+    "testPurchaseDeclined": "Test satın alımı reddedildi. Ödeme yapılmadı. Ayarlar'dan farklı bir Test Mağazası sonucu seçip tekrar deneyin.",
+    "genericPurchaseFailure": "Satın alımınız tamamlanamadı. Ödeme alınmadı. Lütfen tekrar deneyin."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Hâlâ doğrulanıyor",
+    "premiumPending": "Doğrulama hâlâ sürüyor. Premium, Oyun Sunucusu onayladıktan sonra etkinleşecek.",
+    "premiumPlanChangePending": "Doğrulama hâlâ sürüyor. Plan değişikliğiniz, Oyun Sunucusu onayladıktan sonra planlanacak.",
+    "coinPackPending": "Doğrulama hâlâ sürüyor. Stitch Coin bakiyeniz tamamlandığında güncellenecek.",
+    "aiCreditPackPending": "Doğrulama hâlâ sürüyor. AI Credit bakiyeniz tamamlandığında güncellenecek."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Satın alım alındı",
+    "storeAcceptedPlanChange": "Mağaza {{label}} planına geçişi kabul etti. Etkinleştiğinde onaylanacak.",
+    "storeAcceptedPurchase": "Mağaza {{label}} satın alımını kabul etti. Satın alımınız şu an doğrulanıyor.",
+    "premiumChanges": "Premium {{label}} planına geçiyor{{effectiveOn}}.",
+    "effectiveOnDate": ", {{date}} tarihinde",
+    "planChangeScheduledTitle": "Plan değişikliği planlandı",
+    "planChangeScheduledBody": "Premium Üyeliğiniz, {{label}}{{effectiveOn}} planına geçene kadar geçerli planında kalır. Değişikliği Üyeliği Yönet'ten iptal edebilirsiniz.",
+    "premiumIsActiveTitle": "Premium etkin",
+    "premiumVerifiedAndActive": "{{label}} Premium doğrulandı ve etkin.",
+    "premiumNowActiveNoBilling": "{{label}} Premium şu anda etkin.",
+    "premiumNowActiveBilled": "{{label}} Premium şu anda etkin, her {{period}} faturalanır.",
+    "coinPackGrantedTitle": "Stitch Coin verildi",
+    "coinPackGrantVerified": "{{label}} hakkı doğrulandı. Stitch Coin bakiyesi: {{balance}}.",
+    "coinPackAddedToBalance": "{{quantity}} Stitch Coin bakiyenize eklendi.",
+    "aiCreditPackGrantedTitle": "AI Credit verildi",
+    "aiCreditPackGrantVerified": "{{label}} hakkı doğrulandı. AI Credit bakiyesi: {{balance}}.",
+    "aiCreditPackAddedToBalance": "{{quantity}} AI Credit bakiyenize eklendi."
+  },
+  "products": {
+    "premiumAnnual": "Yıllık",
+    "premiumMonthly": "Aylık",
+    "premiumWeekly": "Haftalık",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coin",
+    "aiCreditPack_one": "{{formattedCount}} AI Credit",
+    "aiCreditPack_other": "{{formattedCount}} AI Credit",
+    "billedEveryOffer": "Her {{period}}, {{price}}",
+    "creditAllowancePaidPeriod": "ödemeli dönem başına {{credits}} credit",
+    "creditAllowancePaidNoun": "ödemeli {{period}} başına {{credits}} credit"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Misafir Olarak Satın Al",
+    "commerceBody": "Kayıt olmadan satın alabilirsiniz. Premium Üyelik mağazadan geri yüklenebilir, ancak bu kurulum kaybedilirse Stitch Coin, AI Credit ve özel Misafir içeriği kurtarılamaz. Kayıt olmak bunları korur ve Misafir olarak oynamayı hiçbir zaman kesintiye uğratmaz.",
+    "continueAsGuest": "Misafir Olarak Devam Et",
+    "signInInstead": "Bunun yerine oturum aç",
+    "closeAccessibilityLabel": "Kapat"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "Tamam",
+    "successButton": "Harika",
+    "failedButton": "Kapat",
+    "infoButton": "Tamam",
+    "closeAccessibilityLabel": "Kapat"
+  }
+}

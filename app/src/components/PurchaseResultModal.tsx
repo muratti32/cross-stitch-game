@@ -6,6 +6,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Theme } from '../theme/theme';
 import { Card } from './Card';
 import { Button } from './Button';
@@ -28,29 +29,29 @@ interface Props {
 interface VariantConfig {
   readonly iconName: React.ComponentProps<typeof Ionicons>['name'];
   readonly iconColor: string;
-  readonly buttonLabel: string;
+  readonly buttonLabelKey: string;
 }
 
 const VARIANTS: Record<PurchaseResultVariant, VariantConfig> = {
   pending: {
     iconName: 'time-outline',
     iconColor: Theme.colors.warning,
-    buttonLabel: 'Got it',
+    buttonLabelKey: 'purchaseResultModal.pendingButton',
   },
   success: {
     iconName: 'checkmark-circle-outline',
     iconColor: Theme.colors.success,
-    buttonLabel: 'Great',
+    buttonLabelKey: 'purchaseResultModal.successButton',
   },
   failed: {
     iconName: 'close-circle-outline',
     iconColor: Theme.colors.error,
-    buttonLabel: 'Close',
+    buttonLabelKey: 'purchaseResultModal.failedButton',
   },
   info: {
     iconName: 'information-circle-outline',
     iconColor: Theme.colors.accentTeal,
-    buttonLabel: 'Got it',
+    buttonLabelKey: 'purchaseResultModal.infoButton',
   },
 };
 
@@ -64,6 +65,7 @@ export function PurchaseResultModal({
   detail,
   onDismiss,
 }: Props) {
+  const { t } = useTranslation('commerce');
   const config = VARIANTS[variant];
   const isSuccess = variant === 'success';
   const iconScale = useSharedValue(1);
@@ -98,7 +100,7 @@ export function PurchaseResultModal({
             onPress={onDismiss}
             hitSlop={12}
             accessibilityRole="button"
-            accessibilityLabel="Close"
+            accessibilityLabel={t('purchaseResultModal.closeAccessibilityLabel')}
           >
             <Ionicons name="close" size={24} color={Theme.colors.textSecondary} />
           </Pressable>
@@ -122,7 +124,7 @@ export function PurchaseResultModal({
           ) : null}
 
           <Button
-            title={config.buttonLabel}
+            title={t(config.buttonLabelKey)}
             onPress={onDismiss}
             variant="primary"
             style={styles.button}

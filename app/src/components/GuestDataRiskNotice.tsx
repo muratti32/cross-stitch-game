@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, StyleSheet, Text, View, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Theme } from '../theme/theme';
 import { Card } from './Card';
 import { Button } from './Button';
@@ -13,7 +14,15 @@ interface Props {
   commerce?: boolean;
 }
 
+// Shared by the Commerce Store purchase flow (#164, in scope) and the
+// catalog's Guest play risk notice (out of this slice's scope - its own
+// localization ticket). Only the commerce-variant title/body and the two
+// shared button labels route through commerce.json here; the non-commerce
+// title/body stay the pre-translation English literal until the catalog
+// slice localizes them, so this change does not plant catalog strings in
+// the commerce namespace.
 export function GuestDataRiskNotice({ visible, onProceed, onSignIn, onDismiss, commerce = false }: Props) {
+  const { t } = useTranslation('commerce');
   return (
     <Modal
       transparent
@@ -23,27 +32,35 @@ export function GuestDataRiskNotice({ visible, onProceed, onSignIn, onDismiss, c
     >
       <View style={styles.overlay}>
         <Card style={styles.card}>
-          <Pressable style={styles.closeButton} onPress={onDismiss} hitSlop={12}>
+          <Pressable
+            style={styles.closeButton}
+            onPress={onDismiss}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel={t('guestDataRiskNotice.closeAccessibilityLabel')}
+          >
             <Ionicons name="close" size={24} color={Theme.colors.textSecondary} />
           </Pressable>
 
-          <Text style={styles.title}>{commerce ? 'Purchase as Guest' : 'Playing as Guest'}</Text>
+          <Text style={styles.title}>
+            {commerce ? t('guestDataRiskNotice.commerceTitle') : 'Playing as Guest'}
+          </Text>
 
           <Text style={styles.body}>
             {commerce
-              ? 'You can purchase without registration. Premium Membership can be restored from the store, but Stitch Coin, AI Credit, and private Guest content are unrecoverable if this installation is lost. Registering protects them and never interrupts playing as a Guest.'
+              ? t('guestDataRiskNotice.commerceBody')
               : 'Stitch Coin and progress live only on this device as a Guest. If the installation is lost, the Guest ledger and progress may be unrecoverable. Signing in protects your progress.'}
           </Text>
 
           <View style={styles.buttonContainer}>
             <Button
-              title="Continue as Guest"
+              title={t('guestDataRiskNotice.continueAsGuest')}
               onPress={onProceed}
               variant={commerce ? 'primary' : 'secondary'}
               style={styles.button}
             />
             <Button
-              title="Sign in instead"
+              title={t('guestDataRiskNotice.signInInstead')}
               onPress={onSignIn}
               variant={commerce ? 'secondary' : 'primary'}
               style={styles.button}
