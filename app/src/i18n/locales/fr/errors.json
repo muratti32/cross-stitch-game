@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Cette connexion appartient à un autre compte. Votre compte actuel n'a pas été modifié.",
+    "providerRejected": "Cette vérification a été rejetée. Vérifiez le compte ou le code et réessayez."
+  },
+  "generic": {
+    "failure": "Une erreur est survenue. Veuillez réessayer.",
+    "supportReferenceLabel": "Référence d'assistance : {{reference}}"
+  }
+}

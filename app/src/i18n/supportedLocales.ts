@@ -1,17 +1,26 @@
 /**
- * The locales the app binary bundles translations for (#155: English and
- * Turkish for the first release). The staged identifier/self-name catalog is
- * kept separately; only identifiers present in generated resources are
- * released to the app.
+ * The locales the app binary bundles translations for and exposes to
+ * players (#155: English and Turkish for the first release; see #169-185
+ * for the seven-locale expansion). A locale folder existing under
+ * `locales/` (and therefore an entry in resources.generated.json) means a
+ * *candidate* pack has been prepared for review - it does NOT by itself
+ * mean the locale is released. RELEASED_APP_DISPLAY_LOCALES is the
+ * explicit release list (mirrors backend/src/catalog/released-locales.constant.ts;
+ * keep both in sync - the cross-cutting parity gate is issue #173) and is
+ * the only thing that gates what SUPPORTED_LOCALES/players actually see.
  */
 import resources from './resources.generated.json';
 import { APP_LOCALE_CATALOG, type AppLocale } from './localeCatalog';
 
-export type SupportedLocale = Extract<keyof typeof resources, AppLocale>;
+/** Explicitly released locales. Adding a locale here is the activation step (#184). */
+export const RELEASED_APP_DISPLAY_LOCALES = ['en', 'tr'] as const;
+type ReleasedAppDisplayLocale = (typeof RELEASED_APP_DISPLAY_LOCALES)[number];
+
+export type SupportedLocale = Extract<keyof typeof resources, AppLocale> & ReleasedAppDisplayLocale;
 type SupportedLocaleCatalogEntry = Extract<(typeof APP_LOCALE_CATALOG)[number], { identifier: SupportedLocale }>;
 
 export const SUPPORTED_LOCALES = Object.keys(resources).filter((identifier): identifier is SupportedLocale =>
-  APP_LOCALE_CATALOG.some((locale) => locale.identifier === identifier),
+  (RELEASED_APP_DISPLAY_LOCALES as readonly string[]).includes(identifier),
 );
 
 export const SUPPORTED_LOCALE_CATALOG = APP_LOCALE_CATALOG.filter((locale): locale is SupportedLocaleCatalogEntry =>

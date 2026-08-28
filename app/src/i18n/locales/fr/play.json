@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Table de broderie",
+    "subtitle": "Reprenez là où vous vous étiez arrêté ou poursuivez un ouvrage récent.",
+    "loading": "Chargement de vos points...",
+    "empty": {
+      "title": "Aucun ouvrage en cours",
+      "body": "Votre métier à broder est actuellement vide. Parcourez le catalogue de modèles pour trouver une magnifique création à broder !",
+      "action": "Parcurir le catalogue"
+    },
+    "unknownPattern": "Modèle inconnu",
+    "idLabel": "ID : {{id}}",
+    "unknownPatternLabel": "Modèle {{id}}",
+    "deleteSessionAccessibilityLabel": "Supprimer la session",
+    "viewFinishedAccessibilityLabel": "Voir l'ouvrage terminé",
+    "resumeAccessibilityLabel": "Reprendre la broderie",
+    "status": {
+      "ready": "Prêt",
+      "done": "Terminé",
+      "active": "Actif",
+      "preparing": "Préparation",
+      "failed": "Échoué"
+    },
+    "deleteConfirm": {
+      "title": "Supprimer la progression",
+      "message": "Voulez-vous vraiment supprimer votre progression pour « {{title}} » ? Cette action est irréversible.",
+      "cancel": "Annuler",
+      "confirm": "Supprimer"
+    },
+    "preparingCard": {
+      "discardTitle": "Abandonner la session",
+      "cancelTitle": "Annuler le téléchargement",
+      "discardMessage": "Voulez-vous vraiment abandonner cette session ayant échoué ?",
+      "cancelMessage": "Voulez-vous vraiment annuler le téléchargement de ce modèle ?",
+      "keep": "Garder",
+      "discard": "Abandonner",
+      "cancel": "Annuler"
+    }
+  },
+  "loading": {
+    "text": "Ouverture de la session et préparation de la toile..."
+  },
+  "error": {
+    "title": "Échec du chargement de la session",
+    "fallbackMessage": "Impossible de charger votre session de broderie.",
+    "backButton": "Retour",
+    "tableButton": "Aller à la table"
+  },
+  "header": {
+    "backButton": "← Retour",
+    "tableButton": "← Table",
+    "defaultTitle": "Session de broderie",
+    "progress": "{{completed}} / {{total}} cases ({{percent}} % terminées)",
+    "resumeTutorialAccessibilityLabel": "Reprendre le tutoriel"
+  },
+  "banners": {
+    "patternRemoved": "Ce modèle a été supprimé par la modération et n'est plus disponible. Appuyez pour quitter.",
+    "syncConflict": "Synchronisé avec un autre appareil — certaines cases ont été mises à jour. Appuyez pour ignorer."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Localiser la prochaine case restante de la couleur de fil active",
+    "undoAccessibilityLabel": "Annuler le dernier point"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Couleur {{number}} : DMC {{dmcCode}}, {{count}} point restant",
+    "chipAccessibilityLabel_other": "Couleur {{number}} : DMC {{dmcCode}}, {{count}} points restants",
+    "done": "Terminé",
+    "remaining_one": "{{count}} restant",
+    "remaining_other": "{{count}} restants"
+  },
+  "celebration": {
+    "title": "Magnifiquement brodé !",
+    "subtitle": "Vous avez terminé jusqu'au tout dernier point sur cette toile.",
+    "stitchesLabel_one": "Point",
+    "stitchesLabel_other": "Points",
+    "colorsLabel_one": "Couleur",
+    "colorsLabel_other": "Couleurs",
+    "replayButton": "Broder à nouveau",
+    "catalogButton": "Retour au catalogue"
+  }
+}

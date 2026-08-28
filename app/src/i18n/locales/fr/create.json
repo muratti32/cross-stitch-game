@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Retour",
+    "cancel": "Annuler",
+    "duplicateTitle": "Vous avez déjà un motif personnel nommé « {{title}} ». Choisissez un autre titre.",
+    "cellsCount_one": "case",
+    "cellsCount_other": "cases",
+    "colorsCount_one": "couleur",
+    "colorsCount_other": "couleurs"
+  },
+  "hub": {
+    "title": "Centre de création",
+    "subtitle": "Donnez vie à vos propres créations grâce à des motifs de point de croix personnalisés.",
+    "opening": "Ouverture…",
+    "photoImport": {
+      "title": "Importation de photo",
+      "description": "Téléchargez une image depuis votre pellicule et convertissez-la en motif à broder.",
+      "action": "Importer une photo"
+    },
+    "aiGenerator": {
+      "title": "Générateur IA",
+      "description": "Décrivez une idée chaleureuse et laissez l'intelligence artificielle générer un dessin en pixels personnalisé.",
+      "action": "Générer le dessin"
+    }
+  },
+  "aspects": {
+    "square": "Carré",
+    "portrait_4_3": "Portrait 4:3",
+    "landscape_4_3": "Paysage 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "La conversion du motif a échoué. Veuillez réessayer.",
+      "timeout": "La conversion du motif est toujours en cours. Réessayez dans un instant.",
+      "generic": "Impossible de finaliser la conversion du motif. Veuillez réessayer."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Compte enregistré requis",
+      "body": "Les œuvres de l'IA et leur bibliothèque restent privées et associées à votre compte.",
+      "signIn": "Se connecter"
+    },
+    "header": {
+      "title": "Générateur IA",
+      "backAccessibilityLabel": "Retour"
+    },
+    "prompt": {
+      "label": "Décrivez votre œuvre",
+      "placeholder": "Un jardin de chaumière chaleureux au coucher du soleil…"
+    },
+    "generate": {
+      "working": "Génération en cours…",
+      "action": "Générer — 1 crédit IA",
+      "errors": {
+        "promptRejected": "Cette description n'est pas autorisée. Essayez de décrire autre chose.",
+        "generic": "Impossible de démarrer la génération par IA. Veuillez réessayer."
+      }
+    },
+    "library": {
+      "title": "Votre bibliothèque d'œuvres IA",
+      "status": {
+        "pending": "En attente",
+        "dispatched": "Envoyé",
+        "running": "En cours",
+        "delivered": "Livré",
+        "safety_rejected": "Refusé par sécurité",
+        "failed": "Échoué",
+        "deleted": "Supprimé",
+        "unknown": "Indisponible"
+      },
+      "failure": {
+        "safety_rejected": "Cette œuvre n'a pas passé le contrôle de sécurité du fournisseur.",
+        "failed": "Cette œuvre n'a pas pu être générée."
+      },
+      "approve": "Approuver pour créer un motif",
+      "delete": "Supprimer",
+      "deleteAccessibilityLabel": "Supprimer cette œuvre IA",
+      "errors": {
+        "loadFailed": "Impossible de charger votre bibliothèque d'œuvres IA. Veuillez réessayer."
+      }
+    },
+    "approve": {
+      "modalTitle": "Créer un motif personnel",
+      "titleLabel": "Titre du motif",
+      "titleAccessibilityLabel": "Titre du motif",
+      "defaultTitle": "Mon motif IA",
+      "placeholder": "Mon motif IA",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Annuler",
+      "creating": "Création du motif…",
+      "create": "Créer le motif",
+      "errors": {
+        "generic": "Impossible de créer le motif personnel. Veuillez réessayer."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Compte enregistré requis",
+      "body": "Les motifs personnels appartiennent à votre compte afin de rester privés et disponibles sur tous vos appareils.",
+      "signIn": "Se connecter ou créer un compte",
+      "back": "Retour"
+    },
+    "header": {
+      "title": "Motif photo",
+      "subtitle": "Cadrez localement, puis approuvez la conversion",
+      "backAccessibilityLabel": "Retour"
+    },
+    "picker": {
+      "chooseTitle": "Choisir une photo",
+      "helpText": "La photo locale d'origine en pleine résolution reste sur cet appareil. Rien n'est converti tant que vous n'avez pas approuvé le cadre.",
+      "choose": "Choisir dans la bibliothèque",
+      "chooseAnother": "En choisir une autre",
+      "opening": "Ouverture…",
+      "errors": {
+        "permissionDenied": "L'accès à la bibliothèque de photos est requis pour choisir une photo locale.",
+        "invalidDimensions": "La photo sélectionnée ne présente pas de dimensions exploitables.",
+        "generic": "Impossible d'ouvrir la bibliothèque de photos. Veuillez réessayer."
+      }
+    },
+    "framing": {
+      "title": "Cadrage de l'œuvre",
+      "gestureHint": "Faites glisser pour positionner · pincez pour zoomer",
+      "aspectLabel": "Format du cadre"
+    },
+    "profile": {
+      "title": "Profil de conversion",
+      "options": {
+        "easy": "Facile",
+        "standard": "Standard",
+        "detailed": "Détaillé"
+      },
+      "custom": "Personnalisé",
+      "customMeta": "Gratuit · forme verrouillée",
+      "unavailable": "Ne convient pas à ce cadre",
+      "customShortEdgeLabel": "Côté court",
+      "customColorLimitLabel": "Limite de couleurs DMC",
+      "exceedsLimit": "Ces valeurs personnalisées dépassent la limite de taille de motif de {{max}} cases."
+    },
+    "titleCard": {
+      "label": "Titre du motif",
+      "placeholder": "Mon motif photo",
+      "defaultTitle": "Mon motif photo",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · jusqu'à {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "L'approbation n'envoie que la version recadrée et réduite. La photo d'origine reste sur l'appareil.",
+      "approve": "Approuver l'œuvre et convertir"
+    },
+    "processing": {
+      "preparingFrame": "Préparation du cadre approuvé sur cet appareil…",
+      "uploading": "Envoi du cadre recadré et réduit uniquement…",
+      "waitingForWorker": "Attente du serveur de conversion…",
+      "buildingGrid": "Création de la grille de points et de la palette DMC…",
+      "preparingSession": "Préparation du motif personnel pour le jeu…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Ce profil ne correspond plus au cadre final. Choisissez Facile ou réduisez les détails.",
+        "generic": "Impossible de convertir cette photo. Veuillez réessayer."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Aucun motif sélectionné",
+      "noPatternBody": "Cet écran doit être ouvert depuis un motif personnel existant dans votre bibliothèque.",
+      "accountTitle": "Compte enregistré requis",
+      "accountBody": "Les motifs personnels appartiennent à votre compte afin de rester privés et disponibles sur tous vos appareils.",
+      "signIn": "Se connecter ou créer un compte",
+      "back": "Retour"
+    },
+    "loading": "Reprise du brouillon de l'éditeur...",
+    "load": {
+      "failedTitle": "Impossible de charger le motif",
+      "retry": "Réessayer",
+      "back": "Retour",
+      "errors": {
+        "generic": "Impossible de charger ce motif personnel. Veuillez réessayer."
+      }
+    },
+    "header": {
+      "title": "Éditeur de motif",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Retour"
+    },
+    "toolbar": {
+      "undo": "Annuler",
+      "redo": "Rétablir"
+    },
+    "mode": {
+      "paint": "Peindre",
+      "replaceColor": "Remplacer la couleur",
+      "replaceStep1": "1. Appuyez sur une couleur du motif ci-dessous à remplacer :",
+      "replaceStep2": "2. Sélectionnez une couleur DMC cible ci-dessous pour effectuer le remplacement :",
+      "paintSelected": "Sélectionné : DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Sélectionnez une couleur ci-dessous, puis appuyez sur les cases pour peindre."
+    },
+    "errors": {
+      "pickColorFirst": "Sélectionnez d'abord une couleur",
+      "paletteLimit": "Ce motif utilise déjà le nombre maximum de {{max}} couleurs de fil."
+    },
+    "picker": {
+      "title": "Couleurs de fils DMC",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Enregistrer le motif modifié",
+      "placeholder": "Titre de mon motif modifié",
+      "action": "Enregistrer comme nouveau",
+      "offlineTitle": "Enregistré hors ligne",
+      "offlineBody": "Votre motif modifié a été enregistré sur cet appareil et sera synchronisé avec votre compte dès que vous serez de nouveau en ligne.",
+      "errors": {
+        "generic": "Impossible d'enregistrer ce motif personnel. Veuillez réessayer."
+      }
+    }
+  }
+}

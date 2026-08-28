@@ -2273,11 +2273,16 @@ describe('Stitch Wish backend integration', () => {
       const categoriesTr = await request(httpServer)
         .get(`/v1/catalog/categories?locale=tr`)
         .expect(200);
+      const categoriesFr = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=fr`)
+        .expect(200);
       const tagsTr = await request(httpServer)
         .get(`/v1/catalog/tags?locale=tr`)
         .expect(200);
       expect((categoriesTr.body as { code: string; label: string }[]).find((item) => item.code === categoryCode)?.label)
         .toBe(`Türkçe ${suffix}`);
+      expect((categoriesFr.body as { code: string; label: string }[]).find((item) => item.code === 'fantasy')?.label)
+        .toBe('Fantaisie');
       expect((tagsTr.body as { code: string; label: string }[]).find((item) => item.code === tagCode)?.label)
         .toBe(`Tag Türkçe ${suffix}`);
     });

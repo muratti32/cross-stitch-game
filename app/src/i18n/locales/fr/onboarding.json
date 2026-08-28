@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "BIENVENUE DANS STITCH WISH",
+    "title": "Choisissez une couleur, appuyez sur les cases correspondantes.",
+    "heroAlt": "Aperçu du modèle de départ Cozy Heart",
+    "handedness": {
+      "sectionTitle": "De quel côté placer les commandes ?",
+      "groupLabel": "Côté des commandes",
+      "optionRight": "Commandes à droite",
+      "optionLeft": "Commandes à gauche",
+      "saveErrorText": "Impossible d'enregistrer ce choix.",
+      "retry": "Réessayer"
+    },
+    "note": "Vous pouvez modifier cela plus tard dans les Paramètres.",
+    "start": "Commencer à broder",
+    "starting": "Démarrage…",
+    "browse": "Parcourir les modèles de départ",
+    "signIn": "Se connecter"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Sélectionnez DMC 321 Rouge de Noël.",
+      "stitchAction": "Appuyez sur la case correspondante en surbrillance.",
+      "mismatchedTap": "Appuyez sur la case différente en surbrillance. Les mauvais appuis ne coûtent rien.",
+      "undoAction": "Annulez ce point, puis placez-le à nouveau.",
+      "stitchSweep": "Appuyez sur une case correspondante, puis faites glisser votre doigt sur la série en surbrillance.",
+      "threadColorCompletion": "Terminez le fil blanc en surbrillance, puis choisissez votre prochaine couleur."
+    },
+    "hints": {
+      "anchoredZoom": "Pincez l'écran pour zoomer tout en gardant les cases sous vos doigts en place.",
+      "panVsSweep": "Faire glisser permet de déplacer la toile. Commencez sur une case correspondante pour broder en continu.",
+      "edgeAutoPan": "Continuez à broder en glissant près du bord et la toile suivra votre doigt.",
+      "remainingCellLocator": "Utilisez le localisateur pour trouver la prochaine case restante pour ce fil."
+    },
+    "skip": "Passer pour le moment",
+    "skipAccessibilityLabel": "Passer le didacticiel pour le moment",
+    "dismiss": "Compris",
+    "dismissAccessibilityLabel": "Masquer l'astuce"
+  },
+  "recap": {
+    "title": "Vous avez tout compris !",
+    "lines": {
+      "matchNumbers": "Faites correspondre les numéros pour placer chaque point.",
+      "dragSweep": "Faites glisser votre doigt sur les cases correspondantes pour broder en continu.",
+      "pinchZoom": "Pincez l'écran pour zoomer lorsque vous avez besoin de regarder de plus près.",
+      "undoLocator": "L'annulation et le localisateur sont toujours gratuits."
+    },
+    "continue": "Continuer à broder",
+    "browsePatterns": "Parcourir les modèles"
+  }
+}

@@ -43,6 +43,10 @@ function localeNamespaces(localesDir: string, locale: string): Set<string> {
 
 function declaredNativeLocales(appJsonPath: string): string[] {
   const expo = JSON.parse(fs.readFileSync(appJsonPath, 'utf8')).expo ?? {};
+  const localeFiles = expo.locales;
+  if (localeFiles && typeof localeFiles === 'object' && !Array.isArray(localeFiles)) {
+    return Object.keys(localeFiles);
+  }
   const ios = expo.ios?.infoPlist?.CFBundleLocalizations;
   const android = expo.android?.locales;
   return [...new Set([...(Array.isArray(ios) ? ios : []), ...(Array.isArray(android) ? android : [])])];

@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Retour",
+    "searchPlaceholder": "Rechercher des modèles, créateurs, tags…",
+    "offlineBanner": "Hors ligne — le catalogue peut ne pas être à jour",
+    "sectionError": {
+      "title": "Chargement impossible",
+      "retry": "Réessayer"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} couleurs",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} col.",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Anglais"
+    },
+    "accessibilityLabel": "Écrit en {{language}}"
+  },
+  "index": {
+    "subtitle": "Créez votre univers douillet, point par point.",
+    "searchBar": {
+      "accessibilityLabel": "Rechercher dans le catalogue de modèles"
+    },
+    "sections": {
+      "starterPatterns": "Modèles de départ",
+      "staffPicks": "Coups de cœur de l'équipe",
+      "categories": "Catégories",
+      "newPatterns": "Nouveautés"
+    },
+    "staffPicks": {
+      "emptyTitle": "Aucun coup de cœur de l'équipe pour l'instant",
+      "emptyBody": "Notre collection de modèles douillets sélectionnés avec soin apparaîtra bientôt ici.",
+      "errorBody": "Le catalogue est inaccessible et aucun contenu n'est actuellement mis en cache."
+    },
+    "categories": {
+      "count": "{{count}} modèles",
+      "errorBody": "Le catalogue est inaccessible et aucun contenu n'est actuellement mis en cache."
+    },
+    "newPatterns": {
+      "emptyTitle": "Nouveaux modèles en préparation",
+      "emptyBody": "De nouveaux modèles arrivent très bientôt !",
+      "errorBody": "Le catalogue est inaccessible et aucun contenu n'est actuellement mis en cache.",
+      "showMore": "Afficher plus",
+      "loading": "Chargement…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Parcourir",
+    "error": {
+      "body": "Cette page du catalogue est inaccessible et aucun contenu n'est actuellement mis en cache."
+    },
+    "empty": {
+      "title": "Rien pour le moment",
+      "body": "Aucun modèle ne correspond à cette sélection pour l'instant. De nouvelles créations sont ajoutées régulièrement."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Champ de recherche du catalogue",
+    "inactive": {
+      "title": "Rechercher dans le catalogue",
+      "body": "Saisissez au moins deux caractères pour rechercher des modèles par titre, créateur ou tag."
+    },
+    "error": {
+      "title": "Recherche hors ligne indisponible",
+      "body": "La recherche dans le catalogue n'est pas disponible hors ligne. Les pages du catalogue mises en cache restent consultables depuis l'onglet catalogue."
+    },
+    "noResults": {
+      "title": "Aucun résultat",
+      "body": "Aucun élément du catalogue ne correspond à « {{query}} » pour le moment."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Partie en mode Invité",
+    "body": "Les Stitch Coins et votre progression ne sont enregistrés que sur cet appareil en mode Invité. En cas de perte de l'application, les données du compte invité et votre progression risquent d'être irrécupérables. Se connecter permet de sécuriser votre progression."
+  },
+  "detail": {
+    "noDescription": "Aucune description disponible.",
+    "specs": {
+      "dimensions": "Dimensions",
+      "totalStitches": "Nombre total de points",
+      "colors": "Couleurs",
+      "category": "Catégorie"
+    },
+    "threadsSuffix": "{{count}} fils",
+    "palette": {
+      "title": "Fils requis",
+      "loading": "Lecture de la palette de fils...",
+      "loadFailed": "Échec du chargement de la palette : {{error}}",
+      "retry": "Réessayer le chargement"
+    },
+    "actions": {
+      "startStitching": "Commencer à broder",
+      "starting": "Démarrage...",
+      "preparing": "Préparation…"
+    },
+    "loadFailedGeneric": "Échec du décodage du fichier de modèle.",
+    "sessionCreateFailed": "Échec de la création de la session de broderie. Veuillez réessayer.",
+    "unavailable": {
+      "title": "Modèle indisponible",
+      "body": "Ce modèle n'a pas pu être chargé. Il a peut-être été supprimé, ou vous êtes peut-être hors ligne.",
+      "goBack": "Retour"
+    },
+    "byCreator": "par {{creatorName}}",
+    "byCreatorWithUsername": "par {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Bloquer le créateur",
+      "message": "Voulez-vous vraiment bloquer {{creatorName}} ? Cette action privée et réversible masquera ses modèles dans la recherche et la navigation. Elle ne signale pas le créateur et n'interrompra pas votre session de broderie en cours.",
+      "cancel": "Annuler",
+      "confirm": "Bloquer",
+      "blockedTitle": "Bloqué",
+      "blockedMessage": "{{creatorName}} a été bloqué.",
+      "errorTitle": "Erreur",
+      "failedGeneric": "Échec du blocage du créateur."
+    },
+    "likeFailedGeneric": "Échec de la mise à jour de la mention J'aime",
+    "connectToPlay": {
+      "title": "Se connecter pour jouer",
+      "body": "Le lancement d'un modèle du catalogue nécessite une connexion pour préparer votre session. Les modèles de départ sont jouables dès maintenant, même hors ligne."
+    },
+    "insufficientCoins": {
+      "title": "Stitch Coins insuffisants",
+      "body": "Ce modèle coûte {{price}} Stitch Coins, mais vous n'avez que {{balance}} pièces.\n\nManque : {{shortfall}} pièces.\n\nGagnez des Stitch Coins en terminant d'autres modèles ! Les récompenses de première réalisation sont actives.",
+      "getCoins": "Obtenir des Stitch Coins",
+      "findPatterns": "Trouver des modèles à broder",
+      "back": "Retour"
+    },
+    "unlockFailedGeneric": "Échec du déverrouillage. Vérifiez votre connexion et réessayez.",
+    "preparationFailedGeneric": "Impossible de démarrer la préparation. Vérifiez votre connexion et réessayez.",
+    "price": {
+      "label": "Prix"
+    },
+    "balance": {
+      "label": "Votre solde",
+      "loading": "…"
+    },
+    "unlockButton": "Déverrouiller pour {{price}} Stitch Coin",
+    "communityReport": {
+      "button": "Signaler ce modèle",
+      "title": "Signaler {{patternTitle}}",
+      "body": "Choisissez le motif qui décrit le mieux le problème. Les signalements ne masquent et ne modifient jamais automatiquement un modèle.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Contenu inapproprié ou dangereux",
+        "copyright_or_publication_rights": "Droits d'auteur ou de publication",
+        "duplicate_or_spam": "Doublon ou spam",
+        "misleading_title_or_tags": "Titre ou tags trompeurs",
+        "other": "Autre"
+      },
+      "explanationLabel": "Preuve ou explication {{requirement}}",
+      "explanationRequired": "(obligatoire)",
+      "explanationOptional": "(facultatif)",
+      "explanationPlaceholder": "Partagez des détails qui aideront un modérateur à examiner ce modèle.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Annuler",
+      "submit": "Envoyer le signalement",
+      "submitFailedGeneric": "Impossible d'envoyer votre signalement. Vérifiez votre connexion et réessayez.",
+      "receivedTitle": "Signalement reçu",
+      "alreadyReceivedTitle": "Signalement déjà reçu",
+      "receivedBody": "Un modérateur peut maintenant examiner ce modèle. Le signalement ne modifie pas automatiquement sa disponibilité.",
+      "alreadyReceivedBody": "Votre signalement existant est déjà pris en compte dans l'examen en cours.",
+      "signInRequired": {
+        "title": "Se connecter pour signaler",
+        "message": "Les signalements de la communauté nécessitent un compte enregistré. Rien n'a été envoyé.",
+        "cancel": "Annuler",
+        "signIn": "Se connecter"
+      },
+      "validation": {
+        "chooseReason": "Choisissez un motif de signalement.",
+        "explainRequired": "Expliquez pourquoi vous signalez ce modèle.",
+        "tooLong": "L'explication ne doit pas dépasser 2 000 caractères.",
+        "needsContent": "L'explication doit contenir des lettres ou des chiffres."
+      }
+    }
+  }
+}

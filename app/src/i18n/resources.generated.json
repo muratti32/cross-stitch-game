@@ -602,6 +602,9 @@
         "supportReferenceLabel": "Support Reference: {{reference}}"
       }
     },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Stitch Wish uses selected photos to create Personal Patterns or choose a public creator profile photo."
+    },
     "onboarding": {
       "welcome": {
         "eyebrow": "WELCOME TO STITCH WISH",
@@ -1397,6 +1400,1407 @@
       }
     }
   },
+  "fr": {
+    "catalog": {
+      "common": {
+        "back": "← Retour",
+        "searchPlaceholder": "Rechercher des modèles, créateurs, tags…",
+        "offlineBanner": "Hors ligne — le catalogue peut ne pas être à jour",
+        "sectionError": {
+          "title": "Chargement impossible",
+          "retry": "Réessayer"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} couleurs",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} col.",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "Anglais"
+        },
+        "accessibilityLabel": "Écrit en {{language}}"
+      },
+      "index": {
+        "subtitle": "Créez votre univers douillet, point par point.",
+        "searchBar": {
+          "accessibilityLabel": "Rechercher dans le catalogue de modèles"
+        },
+        "sections": {
+          "starterPatterns": "Modèles de départ",
+          "staffPicks": "Coups de cœur de l'équipe",
+          "categories": "Catégories",
+          "newPatterns": "Nouveautés"
+        },
+        "staffPicks": {
+          "emptyTitle": "Aucun coup de cœur de l'équipe pour l'instant",
+          "emptyBody": "Notre collection de modèles douillets sélectionnés avec soin apparaîtra bientôt ici.",
+          "errorBody": "Le catalogue est inaccessible et aucun contenu n'est actuellement mis en cache."
+        },
+        "categories": {
+          "count": "{{count}} modèles",
+          "errorBody": "Le catalogue est inaccessible et aucun contenu n'est actuellement mis en cache."
+        },
+        "newPatterns": {
+          "emptyTitle": "Nouveaux modèles en préparation",
+          "emptyBody": "De nouveaux modèles arrivent très bientôt !",
+          "errorBody": "Le catalogue est inaccessible et aucun contenu n'est actuellement mis en cache.",
+          "showMore": "Afficher plus",
+          "loading": "Chargement…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "Parcourir",
+        "error": {
+          "body": "Cette page du catalogue est inaccessible et aucun contenu n'est actuellement mis en cache."
+        },
+        "empty": {
+          "title": "Rien pour le moment",
+          "body": "Aucun modèle ne correspond à cette sélection pour l'instant. De nouvelles créations sont ajoutées régulièrement."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "Champ de recherche du catalogue",
+        "inactive": {
+          "title": "Rechercher dans le catalogue",
+          "body": "Saisissez au moins deux caractères pour rechercher des modèles par titre, créateur ou tag."
+        },
+        "error": {
+          "title": "Recherche hors ligne indisponible",
+          "body": "La recherche dans le catalogue n'est pas disponible hors ligne. Les pages du catalogue mises en cache restent consultables depuis l'onglet catalogue."
+        },
+        "noResults": {
+          "title": "Aucun résultat",
+          "body": "Aucun élément du catalogue ne correspond à « {{query}} » pour le moment."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "Partie en mode Invité",
+        "body": "Les Stitch Coins et votre progression ne sont enregistrés que sur cet appareil en mode Invité. En cas de perte de l'application, les données du compte invité et votre progression risquent d'être irrécupérables. Se connecter permet de sécuriser votre progression."
+      },
+      "detail": {
+        "noDescription": "Aucune description disponible.",
+        "specs": {
+          "dimensions": "Dimensions",
+          "totalStitches": "Nombre total de points",
+          "colors": "Couleurs",
+          "category": "Catégorie"
+        },
+        "threadsSuffix": "{{count}} fils",
+        "palette": {
+          "title": "Fils requis",
+          "loading": "Lecture de la palette de fils...",
+          "loadFailed": "Échec du chargement de la palette : {{error}}",
+          "retry": "Réessayer le chargement"
+        },
+        "actions": {
+          "startStitching": "Commencer à broder",
+          "starting": "Démarrage...",
+          "preparing": "Préparation…"
+        },
+        "loadFailedGeneric": "Échec du décodage du fichier de modèle.",
+        "sessionCreateFailed": "Échec de la création de la session de broderie. Veuillez réessayer.",
+        "unavailable": {
+          "title": "Modèle indisponible",
+          "body": "Ce modèle n'a pas pu être chargé. Il a peut-être été supprimé, ou vous êtes peut-être hors ligne.",
+          "goBack": "Retour"
+        },
+        "byCreator": "par {{creatorName}}",
+        "byCreatorWithUsername": "par {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "Bloquer le créateur",
+          "message": "Voulez-vous vraiment bloquer {{creatorName}} ? Cette action privée et réversible masquera ses modèles dans la recherche et la navigation. Elle ne signale pas le créateur et n'interrompra pas votre session de broderie en cours.",
+          "cancel": "Annuler",
+          "confirm": "Bloquer",
+          "blockedTitle": "Bloqué",
+          "blockedMessage": "{{creatorName}} a été bloqué.",
+          "errorTitle": "Erreur",
+          "failedGeneric": "Échec du blocage du créateur."
+        },
+        "likeFailedGeneric": "Échec de la mise à jour de la mention J'aime",
+        "connectToPlay": {
+          "title": "Se connecter pour jouer",
+          "body": "Le lancement d'un modèle du catalogue nécessite une connexion pour préparer votre session. Les modèles de départ sont jouables dès maintenant, même hors ligne."
+        },
+        "insufficientCoins": {
+          "title": "Stitch Coins insuffisants",
+          "body": "Ce modèle coûte {{price}} Stitch Coins, mais vous n'avez que {{balance}} pièces.\n\nManque : {{shortfall}} pièces.\n\nGagnez des Stitch Coins en terminant d'autres modèles ! Les récompenses de première réalisation sont actives.",
+          "getCoins": "Obtenir des Stitch Coins",
+          "findPatterns": "Trouver des modèles à broder",
+          "back": "Retour"
+        },
+        "unlockFailedGeneric": "Échec du déverrouillage. Vérifiez votre connexion et réessayez.",
+        "preparationFailedGeneric": "Impossible de démarrer la préparation. Vérifiez votre connexion et réessayez.",
+        "price": {
+          "label": "Prix"
+        },
+        "balance": {
+          "label": "Votre solde",
+          "loading": "…"
+        },
+        "unlockButton": "Déverrouiller pour {{price}} Stitch Coin",
+        "communityReport": {
+          "button": "Signaler ce modèle",
+          "title": "Signaler {{patternTitle}}",
+          "body": "Choisissez le motif qui décrit le mieux le problème. Les signalements ne masquent et ne modifient jamais automatiquement un modèle.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "Contenu inapproprié ou dangereux",
+            "copyright_or_publication_rights": "Droits d'auteur ou de publication",
+            "duplicate_or_spam": "Doublon ou spam",
+            "misleading_title_or_tags": "Titre ou tags trompeurs",
+            "other": "Autre"
+          },
+          "explanationLabel": "Preuve ou explication {{requirement}}",
+          "explanationRequired": "(obligatoire)",
+          "explanationOptional": "(facultatif)",
+          "explanationPlaceholder": "Partagez des détails qui aideront un modérateur à examiner ce modèle.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "Annuler",
+          "submit": "Envoyer le signalement",
+          "submitFailedGeneric": "Impossible d'envoyer votre signalement. Vérifiez votre connexion et réessayez.",
+          "receivedTitle": "Signalement reçu",
+          "alreadyReceivedTitle": "Signalement déjà reçu",
+          "receivedBody": "Un modérateur peut maintenant examiner ce modèle. Le signalement ne modifie pas automatiquement sa disponibilité.",
+          "alreadyReceivedBody": "Votre signalement existant est déjà pris en compte dans l'examen en cours.",
+          "signInRequired": {
+            "title": "Se connecter pour signaler",
+            "message": "Les signalements de la communauté nécessitent un compte enregistré. Rien n'a été envoyé.",
+            "cancel": "Annuler",
+            "signIn": "Se connecter"
+          },
+          "validation": {
+            "chooseReason": "Choisissez un motif de signalement.",
+            "explainRequired": "Expliquez pourquoi vous signalez ce modèle.",
+            "tooLong": "L'explication ne doit pas dépasser 2 000 caractères.",
+            "needsContent": "L'explication doit contenir des lettres ou des chiffres."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "Retour",
+        "title": "Boutique",
+        "subtitle": "Abonnements et recharges uniques"
+      },
+      "signInReturn": {
+        "notice": "Vous êtes connecté. {{label}} est toujours sélectionné. Vérifiez-le et appuyez sur Acheter quand vous êtes prêt."
+      },
+      "premiumHero": {
+        "eyebrow": "ABONNEMENT PREMIUM",
+        "title": "Créez plus. Récupérez une petite récompense chaque jour.",
+        "body": "Crédits IA à chaque période payée, thèmes Premium et Stitch Coins à récupérer quotidiennement.",
+        "benefitAiCredits": "Crédits IA",
+        "benefitDailyCoins": "Coins quotidiens",
+        "benefitThemes": "Thèmes",
+        "statusNoActiveMembership": "Aucun abonnement actif",
+        "statusBrowseAsGuest": "Découvrir les offres en tant que joueur invité",
+        "periodEndsLabel": "Fin de la période en cours",
+        "periodRenewsLabel": "Renouvellement",
+        "lifecycleActive": "Actif"
+      },
+      "membershipActions": {
+        "title": "Abonnement Premium actif",
+        "body": "Les récompenses quotidiennes sont dans Profil. Les thèmes se trouvent sous Paramètres › Apparence.",
+        "scheduledChangeNotice": "Passage à {{plan}} le {{date}}",
+        "manageSubscription": "Gérer l'abonnement",
+        "manageSubscriptionFailedTitle": "Impossible d'ouvrir les abonnements",
+        "manageSubscriptionFailedBody": "Réessayez depuis le compte de la boutique de votre appareil."
+      },
+      "pending": {
+        "title": "Rapprochement d'achat en attente",
+        "verifyingTitle": "Vérification de l'achat",
+        "premiumChangeAccepted": "La boutique a accepté le passage à {{label}}. ",
+        "premiumResponseReceived": "La réponse de la boutique pour {{label}} a été reçue. ",
+        "premiumDeferredSuffix": "Le changement ne sera programmé qu'après vérification par le serveur de jeu, et prendra effet à la fin de votre période en cours.",
+        "premiumSuffix": "Premium ne s'active qu'après vérification par le serveur de jeu.",
+        "doNotPurchasePlanAgain": " N'achetez pas cette offre à nouveau.",
+        "coinPackBody": "La réponse de la boutique a été reçue. Les Stitch Coins ne seront mis à jour qu'après la validation par le serveur de jeu de l'attribution correspondante dans le registre commercial. N'achetez pas ce pack à nouveau.",
+        "aiCreditPackBody": "La réponse de la boutique a été reçue. Les crédits IA ne seront mis à jour qu'après la validation par le serveur de jeu de l'attribution correspondante dans le registre commercial. N'achetez pas ce pack à nouveau.",
+        "refreshStatus": "Actualiser le statut",
+        "retryReconciliation": "Réessayer le rapprochement"
+      },
+      "store": {
+        "loadingPrices": "Chargement des prix de la boutique…",
+        "unavailableTitle": "Boutique temporairement indisponible",
+        "unavailableBody": "Votre portefeuille et vos informations d'abonnement restent disponibles.",
+        "retry": "Réessayer"
+      },
+      "plans": {
+        "choosePremiumPlan": "Choisissez une offre Premium",
+        "yourPremiumPlan": "Votre offre Premium",
+        "currentPlan": "OFFRE ACTUELLE",
+        "upgrade": "AMÉLIORER",
+        "planChange": "CHANGEMENT D'OFFRE",
+        "bestValue": "MEILLEURE OFFRE",
+        "billedEvery": "Facturé chaque {{period}}",
+        "chooseLabel": "Choisir {{label}}",
+        "freeTrial": "Gratuit pendant {{offer}}, puis {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "Packs uniques",
+        "stitchCoinPacksTitle": "Packs de Stitch Coins",
+        "aiCreditPacksTitle": "Packs de crédits IA",
+        "coinsNoun": "Coins",
+        "creditsNoun": "Crédits",
+        "fromPrice": "À partir de {{price}}"
+      },
+      "restore": {
+        "restorePurchases": "Restaurer les achats",
+        "restoreGuestPremium": "Restaurer Premium invité",
+        "requestedTitle": "Restauration demandée",
+        "requestedBody": "L'accès Premium vérifié apparaîtra après le rapprochement du webhook de la boutique. Les packs de Stitch Coins et de crédits IA ne sont jamais restaurés."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "Prix actuels de la boutique d'applications",
+        "closeAccessibilityLabel": "Fermer la fiche produit",
+        "closeButtonAccessibilityLabel": "Fermer",
+        "selectedBeforeSignIn": "Sélectionné avant la connexion",
+        "buy": "Acheter"
+      },
+      "confirmation": {
+        "cancel": "Annuler",
+        "confirmLabel": "Confirmer {{label}}",
+        "confirmPremiumTitle": "Confirmer l'achat Premium",
+        "introductoryOffer": "Votre boutique indique cette offre d'introduction : {{offer}}.",
+        "premiumAppearsAfterVerification": "Le statut Premium n'apparaîtra qu'après la vérification de la transaction par le serveur de jeu.",
+        "confirmPremiumUpgradeTitle": "Confirmer l'amélioration Premium",
+        "confirmPremiumPlanChangeTitle": "Confirmer le changement d'offre Premium",
+        "currentPlanLabel": "Offre actuelle : {{label}}",
+        "upgradeToLabel": "Passer à {{label}} · {{offer}}",
+        "changeToLabel": "Changer pour {{label}} · {{offer}}",
+        "upgradeBody": "L'App Store contrôle le montant final et la date d'effet de cette amélioration. Le statut Premium ne prendra en compte {{label}} qu'après sa vérification par le serveur de jeu.",
+        "planChangeBody": "L'App Store reporte ce changement à la fin de votre période en cours : {{currentLabel}} reste actif jusque-là, et {{targetLabel}} sera facturé à partir de la date du changement. Vous pouvez annuler ce changement depuis Gérer l'abonnement.",
+        "confirmUpgrade": "Confirmer l'amélioration",
+        "confirmPlanChange": "Confirmer le changement d'offre",
+        "confirmStitchCoinTitle": "Confirmer l'achat de Stitch Coins",
+        "confirmAiCreditTitle": "Confirmer l'achat de crédits IA",
+        "balanceChangesAfterVerificationCoin": "Votre solde ne sera mis à jour qu'après la vérification de la transaction par le serveur de jeu et l'enregistrement de l'attribution correspondante dans le registre commercial.",
+        "balanceChangesAfterVerificationAiCredit": "Votre solde ne sera mis à jour qu'après la vérification de la transaction par le serveur de jeu et l'enregistrement de l'attribution correspondante dans le registre commercial. L'abonnement Premium n'est pas requis."
+      },
+      "disclosure": {
+        "subscriptionTerms": "Le paiement sera débité de votre compte {{store}} lors de la confirmation. L'abonnement {{label}} Premium se renouvelle automatiquement au tarif de {{offer}}, sauf si le renouvellement automatique est désactivé au moins 24 heures avant la fin de la période en cours. Toute portion inutilisée d'un essai gratuit est perdue lors de l'achat d'un abonnement. Vous pouvez l'annuler à tout moment depuis votre compte {{store}}.",
+        "privacyPolicy": "Politique de confidentialité",
+        "termsOfService": "Conditions d'utilisation",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "Impossible d'ouvrir le lien : {{url}}"
+      },
+      "supportReference": {
+        "label": "Référence de l'assistance : {{reference}}",
+        "copyAccessibilityLabel": "Copier la référence de l'assistance {{reference}}",
+        "copyAccessibilityHint": "Copie la référence de l'assistance dans le presse-papiers",
+        "copied": "Copié",
+        "copyFailedTitle": "Échec de la copie",
+        "copyFailedBody": "La référence de l'assistance n'a pas pu être copiée. Sélectionnez le texte pour le copier manuellement."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "Les achats de Stitch Coins en tant qu'invité ne sont disponibles que sur iOS.",
+        "guestIosOnlyGeneric": "Les achats en tant qu'invité ne sont disponibles que sur iOS.",
+        "purchaseFailedTitle": "Échec de l'achat",
+        "premiumVerificationNotYet": "Le serveur de jeu n'a pas pu vérifier cet achat. Réessayez le rapprochement ; ne l'achetez pas à nouveau.",
+        "premiumVerificationFailedRetry": "Le serveur de jeu n'a pas encore pu vérifier cet achat. Réessayez le rapprochement ; ne l'achetez pas à nouveau.",
+        "premiumGrantRefreshFailed": "Le statut Premium a été vérifié, mais l'abonnement et le statut des crédits IA n'ont pas pu être actualisés. Réessayez le rapprochement.",
+        "premiumReconciliationUnreachable": "Le rapprochement de l'achat n'a pas pu contacter le serveur de jeu. Réessayez le rapprochement ; ne l'achetez pas à nouveau.",
+        "coinPackVerificationMismatch": "La transaction de la boutique ne correspond pas à ce pack de Stitch Coins. Réessayez la vérification ou contactez l'assistance ; ne l'achetez pas à nouveau.",
+        "coinPackGrantUnavailable": "L'achat a été vérifié, mais l'attribution de Stitch Coins est indisponible. Réessayez le rapprochement ; ne l'achetez pas à nouveau.",
+        "coinPackBalanceRefreshFailed": "L'attribution de Stitch Coins a été vérifiée, mais le solde actuel de Stitch Coins n'a pas pu être actualisé. Réessayez le rapprochement.",
+        "coinPackVerificationFailedRetry": "Le serveur de jeu n'a pas encore pu vérifier ce pack de Stitch Coins. Réessayez le rapprochement ; ne l'achetez pas à nouveau.",
+        "coinPackReconciliationUnreachable": "Le rapprochement du pack de Stitch Coins n'a pas pu contacter le serveur de jeu. Réessayez le rapprochement ; ne l'achetez pas à nouveau.",
+        "aiCreditPackVerificationMismatch": "La transaction de la boutique ne correspond pas à ce pack de crédits IA. Réessayez la vérification ou contactez l'assistance ; ne l'achetez pas à nouveau.",
+        "aiCreditPackGrantUnavailable": "L'achat a été vérifié, mais l'attribution de crédits IA est indisponible. Réessayez le rapprochement ; ne l'achetez pas à nouveau.",
+        "aiCreditPackBalanceRefreshFailed": "L'attribution de crédits IA a été vérifiée, mais le solde actuel n'a pas pu être actualisé. Réessayez le rapprochement.",
+        "aiCreditPackVerificationFailedRetry": "Le serveur de jeu n'a pas encore pu vérifier ce pack de crédits IA. Réessayez le rapprochement ; ne l'achetez pas à nouveau.",
+        "aiCreditPackReconciliationUnreachable": "Le rapprochement du pack de crédits IA n'a pas pu contacter le serveur de jeu. Réessayez le rapprochement ; ne l'achetez pas à nouveau.",
+        "reconciliationStillUnavailable": "Le serveur de jeu est toujours indisponible. Réessayez le rapprochement plus tard.",
+        "storeTemporarilyUnavailable": "La boutique est temporairement indisponible. Veuillez réessayer dans quelques minutes.",
+        "purchasesNotAllowed": "Les achats ne sont pas autorisés sur cet appareil. Vérifiez le compte de votre boutique ou le contrôle parental.",
+        "itemNotAvailable": "Cet article n'est pas disponible à l'achat pour le moment. Veuillez choisir un autre article ou réessayer plus tard.",
+        "alreadyOwned": "Vous possédez déjà cet achat. Utilisez Restaurer les achats pour actualiser votre accès.",
+        "couldNotConnectToStore": "Impossible de se connecter à la boutique. Vérifiez votre connexion Internet et réessayez.",
+        "paymentPendingApproval": "Votre paiement est en attente d'approbation. Votre achat apparaîtra une fois finalisé par la boutique.",
+        "testPurchaseDeclined": "L'achat de test a été refusé. Aucun paiement n'a été effectué. Choisissez un autre résultat de boutique de test dans les paramètres, puis réessayez.",
+        "genericPurchaseFailure": "Nous n'avons pas pu finaliser votre achat. Aucun paiement n'a été prélevé. Veuillez réessayer."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "Vérification en cours",
+        "premiumPending": "La vérification est toujours en cours. Premium s'activera une fois confirmée par le serveur de jeu.",
+        "premiumPlanChangePending": "La vérification est toujours en cours. Votre changement d'offre sera programmé une fois confirmé par le serveur de jeu.",
+        "coinPackPending": "La vérification est toujours en cours. Votre solde de Stitch Coins sera mis à jour une fois celle-ci terminée.",
+        "aiCreditPackPending": "La vérification est toujours en cours. Votre solde de crédits IA sera mis à jour une fois celle-ci terminée."
+      },
+      "success": {
+        "purchaseReceivedTitle": "Achat reçu",
+        "storeAcceptedPlanChange": "La boutique a accepté le passage à {{label}}. Confirmation dès sa prise d'effet.",
+        "storeAcceptedPurchase": "La boutique a accepté {{label}}. Vérification de votre achat en cours.",
+        "premiumChanges": "Premium passera à {{label}}{{effectiveOn}}.",
+        "effectiveOnDate": " le {{date}}",
+        "planChangeScheduledTitle": "Changement d'offre programmé",
+        "planChangeScheduledBody": "Votre abonnement Premium conserve son offre actuelle jusqu'au passage à {{label}}{{effectiveOn}}. Vous pouvez annuler ce changement depuis Gérer l'abonnement.",
+        "premiumIsActiveTitle": "Premium est actif",
+        "premiumVerifiedAndActive": "{{label}} Premium est vérifié et actif.",
+        "premiumNowActiveNoBilling": "{{label}} Premium est désormais actif.",
+        "premiumNowActiveBilled": "{{label}} Premium est désormais actif, facturé tous les {{period}}.",
+        "coinPackGrantedTitle": "Stitch Coins attribués",
+        "coinPackGrantVerified": "Attribution de {{label}} vérifiée. Solde de Stitch Coins : {{balance}}.",
+        "coinPackAddedToBalance": "{{quantity}} Stitch Coins ont été ajoutés à votre solde.",
+        "aiCreditPackGrantedTitle": "Crédits IA attribués",
+        "aiCreditPackGrantVerified": "Attribution de {{label}} vérifiée. Solde de crédits IA : {{balance}}.",
+        "aiCreditPackAddedToBalance": "{{quantity}} crédits IA ont été ajoutés à votre solde."
+      },
+      "products": {
+        "premiumAnnual": "Annuel",
+        "premiumMonthly": "Mensuel",
+        "premiumWeekly": "Hebdomadaire",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+        "aiCreditPack_one": "{{formattedCount}} AI Credit",
+        "aiCreditPack_other": "{{formattedCount}} AI Credits",
+        "billedEveryOffer": "{{price}} chaque {{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} crédits / période payée",
+        "creditAllowancePaidNoun": "{{credits}} crédits / {{period}} payé"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "Acheter en tant qu'invité",
+        "commerceBody": "Vous pouvez effectuer des achats sans inscription. L'abonnement Premium peut être restauré depuis la boutique, mais les Stitch Coins, les crédits IA et le contenu privé invité seront définitivement perdus si cette installation est supprimée. L'inscription protège ces éléments sans jamais interrompre votre partie en tant qu'invité.",
+        "continueAsGuest": "Continuer en tant qu'invité",
+        "signInInstead": "Se connecter plutôt",
+        "closeAccessibilityLabel": "Fermer"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "Compris",
+        "successButton": "Super",
+        "failedButton": "Fermer",
+        "infoButton": "Compris",
+        "closeAccessibilityLabel": "Fermer"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "Retour",
+        "cancel": "Annuler",
+        "duplicateTitle": "Vous avez déjà un motif personnel nommé « {{title}} ». Choisissez un autre titre.",
+        "cellsCount_one": "case",
+        "cellsCount_other": "cases",
+        "colorsCount_one": "couleur",
+        "colorsCount_other": "couleurs"
+      },
+      "hub": {
+        "title": "Centre de création",
+        "subtitle": "Donnez vie à vos propres créations grâce à des motifs de point de croix personnalisés.",
+        "opening": "Ouverture…",
+        "photoImport": {
+          "title": "Importation de photo",
+          "description": "Téléchargez une image depuis votre pellicule et convertissez-la en motif à broder.",
+          "action": "Importer une photo"
+        },
+        "aiGenerator": {
+          "title": "Générateur IA",
+          "description": "Décrivez une idée chaleureuse et laissez l'intelligence artificielle générer un dessin en pixels personnalisé.",
+          "action": "Générer le dessin"
+        }
+      },
+      "aspects": {
+        "square": "Carré",
+        "portrait_4_3": "Portrait 4:3",
+        "landscape_4_3": "Paysage 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "La conversion du motif a échoué. Veuillez réessayer.",
+          "timeout": "La conversion du motif est toujours en cours. Réessayez dans un instant.",
+          "generic": "Impossible de finaliser la conversion du motif. Veuillez réessayer."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "Compte enregistré requis",
+          "body": "Les œuvres de l'IA et leur bibliothèque restent privées et associées à votre compte.",
+          "signIn": "Se connecter"
+        },
+        "header": {
+          "title": "Générateur IA",
+          "backAccessibilityLabel": "Retour"
+        },
+        "prompt": {
+          "label": "Décrivez votre œuvre",
+          "placeholder": "Un jardin de chaumière chaleureux au coucher du soleil…"
+        },
+        "generate": {
+          "working": "Génération en cours…",
+          "action": "Générer — 1 crédit IA",
+          "errors": {
+            "promptRejected": "Cette description n'est pas autorisée. Essayez de décrire autre chose.",
+            "generic": "Impossible de démarrer la génération par IA. Veuillez réessayer."
+          }
+        },
+        "library": {
+          "title": "Votre bibliothèque d'œuvres IA",
+          "status": {
+            "pending": "En attente",
+            "dispatched": "Envoyé",
+            "running": "En cours",
+            "delivered": "Livré",
+            "safety_rejected": "Refusé par sécurité",
+            "failed": "Échoué",
+            "deleted": "Supprimé",
+            "unknown": "Indisponible"
+          },
+          "failure": {
+            "safety_rejected": "Cette œuvre n'a pas passé le contrôle de sécurité du fournisseur.",
+            "failed": "Cette œuvre n'a pas pu être générée."
+          },
+          "approve": "Approuver pour créer un motif",
+          "delete": "Supprimer",
+          "deleteAccessibilityLabel": "Supprimer cette œuvre IA",
+          "errors": {
+            "loadFailed": "Impossible de charger votre bibliothèque d'œuvres IA. Veuillez réessayer."
+          }
+        },
+        "approve": {
+          "modalTitle": "Créer un motif personnel",
+          "titleLabel": "Titre du motif",
+          "titleAccessibilityLabel": "Titre du motif",
+          "defaultTitle": "Mon motif IA",
+          "placeholder": "Mon motif IA",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "Annuler",
+          "creating": "Création du motif…",
+          "create": "Créer le motif",
+          "errors": {
+            "generic": "Impossible de créer le motif personnel. Veuillez réessayer."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "Compte enregistré requis",
+          "body": "Les motifs personnels appartiennent à votre compte afin de rester privés et disponibles sur tous vos appareils.",
+          "signIn": "Se connecter ou créer un compte",
+          "back": "Retour"
+        },
+        "header": {
+          "title": "Motif photo",
+          "subtitle": "Cadrez localement, puis approuvez la conversion",
+          "backAccessibilityLabel": "Retour"
+        },
+        "picker": {
+          "chooseTitle": "Choisir une photo",
+          "helpText": "La photo locale d'origine en pleine résolution reste sur cet appareil. Rien n'est converti tant que vous n'avez pas approuvé le cadre.",
+          "choose": "Choisir dans la bibliothèque",
+          "chooseAnother": "En choisir une autre",
+          "opening": "Ouverture…",
+          "errors": {
+            "permissionDenied": "L'accès à la bibliothèque de photos est requis pour choisir une photo locale.",
+            "invalidDimensions": "La photo sélectionnée ne présente pas de dimensions exploitables.",
+            "generic": "Impossible d'ouvrir la bibliothèque de photos. Veuillez réessayer."
+          }
+        },
+        "framing": {
+          "title": "Cadrage de l'œuvre",
+          "gestureHint": "Faites glisser pour positionner · pincez pour zoomer",
+          "aspectLabel": "Format du cadre"
+        },
+        "profile": {
+          "title": "Profil de conversion",
+          "options": {
+            "easy": "Facile",
+            "standard": "Standard",
+            "detailed": "Détaillé"
+          },
+          "custom": "Personnalisé",
+          "customMeta": "Gratuit · forme verrouillée",
+          "unavailable": "Ne convient pas à ce cadre",
+          "customShortEdgeLabel": "Côté court",
+          "customColorLimitLabel": "Limite de couleurs DMC",
+          "exceedsLimit": "Ces valeurs personnalisées dépassent la limite de taille de motif de {{max}} cases."
+        },
+        "titleCard": {
+          "label": "Titre du motif",
+          "placeholder": "Mon motif photo",
+          "defaultTitle": "Mon motif photo",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · jusqu'à {{maxColors}} DMC {{colorsUnit}}",
+          "privacyNotice": "L'approbation n'envoie que la version recadrée et réduite. La photo d'origine reste sur l'appareil.",
+          "approve": "Approuver l'œuvre et convertir"
+        },
+        "processing": {
+          "preparingFrame": "Préparation du cadre approuvé sur cet appareil…",
+          "uploading": "Envoi du cadre recadré et réduit uniquement…",
+          "waitingForWorker": "Attente du serveur de conversion…",
+          "buildingGrid": "Création de la grille de points et de la palette DMC…",
+          "preparingSession": "Préparation du motif personnel pour le jeu…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "Ce profil ne correspond plus au cadre final. Choisissez Facile ou réduisez les détails.",
+            "generic": "Impossible de convertir cette photo. Veuillez réessayer."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "Aucun motif sélectionné",
+          "noPatternBody": "Cet écran doit être ouvert depuis un motif personnel existant dans votre bibliothèque.",
+          "accountTitle": "Compte enregistré requis",
+          "accountBody": "Les motifs personnels appartiennent à votre compte afin de rester privés et disponibles sur tous vos appareils.",
+          "signIn": "Se connecter ou créer un compte",
+          "back": "Retour"
+        },
+        "loading": "Reprise du brouillon de l'éditeur...",
+        "load": {
+          "failedTitle": "Impossible de charger le motif",
+          "retry": "Réessayer",
+          "back": "Retour",
+          "errors": {
+            "generic": "Impossible de charger ce motif personnel. Veuillez réessayer."
+          }
+        },
+        "header": {
+          "title": "Éditeur de motif",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "Retour"
+        },
+        "toolbar": {
+          "undo": "Annuler",
+          "redo": "Rétablir"
+        },
+        "mode": {
+          "paint": "Peindre",
+          "replaceColor": "Remplacer la couleur",
+          "replaceStep1": "1. Appuyez sur une couleur du motif ci-dessous à remplacer :",
+          "replaceStep2": "2. Sélectionnez une couleur DMC cible ci-dessous pour effectuer le remplacement :",
+          "paintSelected": "Sélectionné : DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "Sélectionnez une couleur ci-dessous, puis appuyez sur les cases pour peindre."
+        },
+        "errors": {
+          "pickColorFirst": "Sélectionnez d'abord une couleur",
+          "paletteLimit": "Ce motif utilise déjà le nombre maximum de {{max}} couleurs de fil."
+        },
+        "picker": {
+          "title": "Couleurs de fils DMC",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "Enregistrer le motif modifié",
+          "placeholder": "Titre de mon motif modifié",
+          "action": "Enregistrer comme nouveau",
+          "offlineTitle": "Enregistré hors ligne",
+          "offlineBody": "Votre motif modifié a été enregistré sur cet appareil et sera synchronisé avec votre compte dès que vous serez de nouveau en ligne.",
+          "errors": {
+            "generic": "Impossible d'enregistrer ce motif personnel. Veuillez réessayer."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "Cette connexion appartient à un autre compte. Votre compte actuel n'a pas été modifié.",
+        "providerRejected": "Cette vérification a été rejetée. Vérifiez le compte ou le code et réessayez."
+      },
+      "generic": {
+        "failure": "Une erreur est survenue. Veuillez réessayer.",
+        "supportReferenceLabel": "Référence d'assistance : {{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Stitch Wish utilise les photos sélectionnées pour créer des modèles personnels ou choisir la photo de votre profil public de créateur."
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "BIENVENUE DANS STITCH WISH",
+        "title": "Choisissez une couleur, appuyez sur les cases correspondantes.",
+        "heroAlt": "Aperçu du modèle de départ Cozy Heart",
+        "handedness": {
+          "sectionTitle": "De quel côté placer les commandes ?",
+          "groupLabel": "Côté des commandes",
+          "optionRight": "Commandes à droite",
+          "optionLeft": "Commandes à gauche",
+          "saveErrorText": "Impossible d'enregistrer ce choix.",
+          "retry": "Réessayer"
+        },
+        "note": "Vous pouvez modifier cela plus tard dans les Paramètres.",
+        "start": "Commencer à broder",
+        "starting": "Démarrage…",
+        "browse": "Parcourir les modèles de départ",
+        "signIn": "Se connecter"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "Sélectionnez DMC 321 Rouge de Noël.",
+          "stitchAction": "Appuyez sur la case correspondante en surbrillance.",
+          "mismatchedTap": "Appuyez sur la case différente en surbrillance. Les mauvais appuis ne coûtent rien.",
+          "undoAction": "Annulez ce point, puis placez-le à nouveau.",
+          "stitchSweep": "Appuyez sur une case correspondante, puis faites glisser votre doigt sur la série en surbrillance.",
+          "threadColorCompletion": "Terminez le fil blanc en surbrillance, puis choisissez votre prochaine couleur."
+        },
+        "hints": {
+          "anchoredZoom": "Pincez l'écran pour zoomer tout en gardant les cases sous vos doigts en place.",
+          "panVsSweep": "Faire glisser permet de déplacer la toile. Commencez sur une case correspondante pour broder en continu.",
+          "edgeAutoPan": "Continuez à broder en glissant près du bord et la toile suivra votre doigt.",
+          "remainingCellLocator": "Utilisez le localisateur pour trouver la prochaine case restante pour ce fil."
+        },
+        "skip": "Passer pour le moment",
+        "skipAccessibilityLabel": "Passer le didacticiel pour le moment",
+        "dismiss": "Compris",
+        "dismissAccessibilityLabel": "Masquer l'astuce"
+      },
+      "recap": {
+        "title": "Vous avez tout compris !",
+        "lines": {
+          "matchNumbers": "Faites correspondre les numéros pour placer chaque point.",
+          "dragSweep": "Faites glisser votre doigt sur les cases correspondantes pour broder en continu.",
+          "pinchZoom": "Pincez l'écran pour zoomer lorsque vous avez besoin de regarder de plus près.",
+          "undoLocator": "L'annulation et le localisateur sont toujours gratuits."
+        },
+        "continue": "Continuer à broder",
+        "browsePatterns": "Parcourir les modèles"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "Table de broderie",
+        "subtitle": "Reprenez là où vous vous étiez arrêté ou poursuivez un ouvrage récent.",
+        "loading": "Chargement de vos points...",
+        "empty": {
+          "title": "Aucun ouvrage en cours",
+          "body": "Votre métier à broder est actuellement vide. Parcourez le catalogue de modèles pour trouver une magnifique création à broder !",
+          "action": "Parcurir le catalogue"
+        },
+        "unknownPattern": "Modèle inconnu",
+        "idLabel": "ID : {{id}}",
+        "unknownPatternLabel": "Modèle {{id}}",
+        "deleteSessionAccessibilityLabel": "Supprimer la session",
+        "viewFinishedAccessibilityLabel": "Voir l'ouvrage terminé",
+        "resumeAccessibilityLabel": "Reprendre la broderie",
+        "status": {
+          "ready": "Prêt",
+          "done": "Terminé",
+          "active": "Actif",
+          "preparing": "Préparation",
+          "failed": "Échoué"
+        },
+        "deleteConfirm": {
+          "title": "Supprimer la progression",
+          "message": "Voulez-vous vraiment supprimer votre progression pour « {{title}} » ? Cette action est irréversible.",
+          "cancel": "Annuler",
+          "confirm": "Supprimer"
+        },
+        "preparingCard": {
+          "discardTitle": "Abandonner la session",
+          "cancelTitle": "Annuler le téléchargement",
+          "discardMessage": "Voulez-vous vraiment abandonner cette session ayant échoué ?",
+          "cancelMessage": "Voulez-vous vraiment annuler le téléchargement de ce modèle ?",
+          "keep": "Garder",
+          "discard": "Abandonner",
+          "cancel": "Annuler"
+        }
+      },
+      "loading": {
+        "text": "Ouverture de la session et préparation de la toile..."
+      },
+      "error": {
+        "title": "Échec du chargement de la session",
+        "fallbackMessage": "Impossible de charger votre session de broderie.",
+        "backButton": "Retour",
+        "tableButton": "Aller à la table"
+      },
+      "header": {
+        "backButton": "← Retour",
+        "tableButton": "← Table",
+        "defaultTitle": "Session de broderie",
+        "progress": "{{completed}} / {{total}} cases ({{percent}} % terminées)",
+        "resumeTutorialAccessibilityLabel": "Reprendre le tutoriel"
+      },
+      "banners": {
+        "patternRemoved": "Ce modèle a été supprimé par la modération et n'est plus disponible. Appuyez pour quitter.",
+        "syncConflict": "Synchronisé avec un autre appareil — certaines cases ont été mises à jour. Appuyez pour ignorer."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "Localiser la prochaine case restante de la couleur de fil active",
+        "undoAccessibilityLabel": "Annuler le dernier point"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "Couleur {{number}} : DMC {{dmcCode}}, {{count}} point restant",
+        "chipAccessibilityLabel_other": "Couleur {{number}} : DMC {{dmcCode}}, {{count}} points restants",
+        "done": "Terminé",
+        "remaining_one": "{{count}} restant",
+        "remaining_other": "{{count}} restants"
+      },
+      "celebration": {
+        "title": "Magnifiquement brodé !",
+        "subtitle": "Vous avez terminé jusqu'au tout dernier point sur cette toile.",
+        "stitchesLabel_one": "Point",
+        "stitchesLabel_other": "Points",
+        "colorsLabel_one": "Couleur",
+        "colorsLabel_other": "Couleurs",
+        "replayButton": "Broder à nouveau",
+        "catalogButton": "Retour au catalogue"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "Retour",
+        "tryAgain": "Réessayer"
+      },
+      "rejectionReasons": {
+        "safety": "Sécurité",
+        "publication_rights": "Droits de publication",
+        "duplicate_or_spam": "Doublon ou spam",
+        "technical_invalidity": "Invalidité technique",
+        "quality_standard": "Norme de qualité"
+      },
+      "submissionStatus": {
+        "accepted": "Publié",
+        "appeal_pending": "Appel en attente",
+        "appeal_upheld": "Appel rejeté",
+        "precheck_failed": "Vérification préliminaire indisponible",
+        "precheck_pending": "Vérification en cours",
+        "quarantined": "Examen requis",
+        "rejected": "Rejeté",
+        "review_pending": "En cours d'examen"
+      },
+      "revisionStatus": {
+        "accepted": "Publié",
+        "appeal_pending": "Appel en attente",
+        "appeal_upheld": "Appel rejeté",
+        "pending": "En cours d'examen",
+        "rejected": "Rejeté",
+        "withdrawn": "Retiré"
+      },
+      "home": {
+        "identity": {
+          "establishing": "Établissement de l'identité...",
+          "pendingTitle": "Identité en attente",
+          "offline": "Hors ligne",
+          "retryConnection": "Réessayer la connexion",
+          "loadingPublicProfile": "Chargement du profil public...",
+          "unavailableTitle": "Profil public indisponible",
+          "checkConnection": "Vérifiez votre connexion et réessayez.",
+          "createTitle": "Créez votre profil public",
+          "createBody": "Choisissez le nom d'utilisateur permanent qui apparaîtra avec vos motifs de la communauté. Les détails de votre compte restent privés.",
+          "createAction": "Créer un profil public",
+          "editAction": "Modifier le profil public",
+          "offlinePendingSync": "Hors ligne — en attente de synchronisation",
+          "guestPlayer": "Joueur invité",
+          "playingSince": "Joue depuis le {{date}}",
+          "creatorSince": "Créateur depuis le {{date}}"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "Ouvrir la boutique",
+          "title": "Soldes du studio",
+          "commerceStoreLink": "Boutique",
+          "stitchCoinsAccessibilityLabel": "Solde de Stitch Coins : {{balance}}. Appuyez pour obtenir des pièces.",
+          "packs": "Packs",
+          "stitchCoinsLabel": "Stitch Coins",
+          "stitchCoinsSub": "Pour déverrouiller des motifs",
+          "aiCreditsAccessibilityLabel": "Solde de crédits IA : {{balance}}. Appuyez pour obtenir des crédits.",
+          "aiCreditsSignInAccessibilityLabel": "Crédits IA. Connectez-vous pour acheter.",
+          "aiCreditsLabel": "Crédits IA",
+          "aiCreditsSubOwned": "Pour les motifs générés par IA",
+          "aiCreditsSubGuest": "Connectez-vous pour posséder",
+          "membershipActiveAccessibilityLabel": "Abonnement Premium actif ({{plan}}). Appuyez pour gérer.",
+          "membershipInactiveAccessibilityLabel": "Abonnement Premium Point de croix. Appuyez pour voir les offres.",
+          "membershipActiveTitle": "Premium actif · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "Annuel",
+          "planMonthly": "Mensuel",
+          "planWeekly": "Hebdomadaire",
+          "planActive": "Actif",
+          "trialBadge": "Essai",
+          "membershipSubActive": "Tous les thèmes déverrouillés · Réclamation instantanée des pièces quotidiennes",
+          "membershipSubInactive": "30 pièces quotidiennes instantanées, thèmes personnalisés et crédits IA",
+          "manage": "Gérer",
+          "explore": "Explorer"
+        },
+        "quickNav": {
+          "sectionEyebrow": "COMPTE ET COMMUNAUTÉ",
+          "submissionsAccessibilityLabel": "Soumissions au catalogue : suivez les examens, les décisions et les appels",
+          "submissionsTitle": "Soumissions",
+          "submissionsSub": "Suivre les examens",
+          "publishedAccessibilityLabel": "Motifs publiés : révisez les métadonnées, retirez des motifs et suivez les appels",
+          "publishedTitle": "Publié",
+          "publishedSub": "Gérer les motifs",
+          "moderationAccessibilityLabel": "Avis de modération : examinez les décisions du catalogue affectant vos motifs",
+          "moderationTitle": "Modération",
+          "moderationSub": "Avis de politique",
+          "likedAccessibilityLabel": "Motifs aimés : votre collection privée de motifs de la communauté aimés",
+          "likedTitle": "Motifs aimés",
+          "likedSavedCount_one": "{{count}} enregistré",
+          "likedSavedCount_other": "{{count}} enregistrés",
+          "likedSavedDefault": "Motifs enregistrés"
+        },
+        "dailySection": {
+          "title": "Broderie et récompenses quotidiennes",
+          "tasksGroupLabel": "Tâches quotidiennes (+30 pièces max)",
+          "connectToTrack": "Connectez-vous pour suivre la progression des tâches quotidiennes.",
+          "loadingTasks": "Chargement des tâches…",
+          "loadFailed": "Impossible de charger les tâches quotidiennes.",
+          "retry": "Réessayer",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "Réinitialisation…",
+          "resetsInHoursMinutes": "Réinitialisation dans {{hours}}h {{minutes}}m",
+          "resetsInMinutes": "Réinitialisation dans {{minutes}}m"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 actions de broderie",
+            "body": "Remplissez 100 cases correspondantes aujourd'hui"
+          },
+          "three_colors_10": {
+            "title": "3 couleurs, 10 actions chacune",
+            "body": "Atteignez 10 actions dans 3 couleurs de fil"
+          },
+          "color_completion": {
+            "title": "Compléter une couleur de fil",
+            "body": "Terminez entièrement la broderie d'une couleur"
+          }
+        },
+        "dailyPool": {
+          "title": "Cagnotte quotidienne de 30 pièces",
+          "premiumInstantClaim": "Réclamation instantanée Premium",
+          "rewardedAds": "Publicités avec récompense",
+          "claimedAmount": "{{amount}} Stitch Coins réclamés pour aujourd'hui !",
+          "poolAlreadyClosed": "La cagnotte de récompense d'aujourd'hui était déjà fermée.",
+          "claimedForToday": "Réclamé pour aujourd'hui. Réinitialisation au prochain jour de récompense.",
+          "poolExhausted": "La cagnotte de récompense de 30 pièces d'aujourd'hui est épuisée.",
+          "claimButtonRetry": "Réessayer la réclamation",
+          "claimButtonInstant": "Réclamer {{count}} pièces (instantané)",
+          "poolClaimedResetsTomorrow": "La cagnotte de pièces d'aujourd'hui a été réclamée. Réinitialisation demain.",
+          "allAdRewardsCompleted": "Toutes les récompenses publicitaires ont été obtenues pour aujourd'hui ! (30/30 pièces)",
+          "watchAdButton": "Regarder une publicité pour +10 pièces (encore {{count}})",
+          "adPerkNote": "Regardez jusqu'à 3 publicités par jour · Le statut Premium déverrouille la réclamation instantanée de 30 pièces",
+          "adRewardEarned": "Récompense publicitaire obtenue ! Vérification avec le serveur…",
+          "claimFailed": "Échec de la réclamation : {{message}}",
+          "claimFailedGeneric": "Une erreur est survenue. Veuillez réessayer.",
+          "adLoadFailedDefault": "Impossible de charger la publicité",
+          "adAttemptFailedDefault": "Échec du lancement de la publicité"
+        },
+        "tabs": {
+          "myCreations": "Mes créations {{count}}",
+          "likedPatterns": "Motifs aimés {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "Connectez-vous pour vos motifs personnels",
+          "signInBody": "Un compte enregistré est requis pour créer et posséder en privé des motifs convertis à partir de photos.",
+          "signIn": "Se connecter",
+          "patternMeta": "{{width}}×{{height}} · {{count}} couleurs",
+          "pendingSync": "Synchronisation en attente",
+          "play": "Jouer",
+          "edit": "Modifier",
+          "submitAccessibilityLabel": "Soumettre {{title}} au catalogue de la communauté",
+          "emptyTitle": "Aucune création personnelle",
+          "emptyBody": "Vous n'avez pas encore converti de photos ni généré d'art IA. Rendez-vous dans Créer pour commencer votre premier chef-d'œuvre !",
+          "emptyAction": "Commencer à créer",
+          "actionFailedGeneric": "Une erreur est survenue. Veuillez réessayer."
+        },
+        "likedTab": {
+          "unavailableTitle": "Motifs aimés indisponibles",
+          "unavailableDefault": "Impossible de charger les motifs aimés.",
+          "byCreator": "par {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} couleurs",
+          "emptyTitle": "Aucun motif aimé",
+          "emptyBody": "Parcourez le catalogue et appuyez sur l'icône de cœur sur n'importe quel modèle pour l'enregistrer ici.",
+          "emptyAction": "Découvrir des motifs"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Réclamation quotidienne de pièces Premium",
+        "description": "Réclamez le reste de la cagnotte partagée de 30 pièces d'aujourd'hui.",
+        "connectPrompt": "Connectez-vous au serveur du jeu pour vérifier la récompense d'aujourd'hui.",
+        "checkingReward": "Vérification de la récompense Premium d'aujourd'hui…",
+        "unavailableGeneric": "La récompense Premium d'aujourd'hui est indisponible.",
+        "tryAgain": "Réessayer",
+        "resultAdded": "{{amount}} Stitch Coins ajoutés par le serveur du jeu. Solde : {{balance}}.",
+        "poolAlreadyClosed": "La cagnotte de récompense partagée d'aujourd'hui était déjà fermée.",
+        "alreadyClaimed": "Déjà réclamée pour ce jour de récompense.",
+        "poolExhausted": "La cagnotte de récompense partagée d'aujourd'hui est épuisée. Elle se réinitialisera au prochain jour de récompense.",
+        "availableNow": "{{count}} Stitch Coins disponibles maintenant",
+        "resetsAt": "Réinitialisation le {{date}}",
+        "claimButtonRetry": "Réessayer la réclamation",
+        "claimButtonInstant": "Réclamer {{count}} pièces",
+        "lockedDescription": "L'abonnement Premium, y compris l'essai mensuel éligible, déverrouille cette réclamation quotidienne.",
+        "viewPremiumPlans": "Voir les abonnements Premium"
+      },
+      "publicProfile": {
+        "editTitle": "Modifier le profil public",
+        "createTitle": "Créer un profil public",
+        "signInTitle": "Connexion requise",
+        "signInBody": "Un compte enregistré est requis pour créer une identité de créateur publique.",
+        "signInAction": "Se connecter",
+        "unavailableTitle": "Profil indisponible",
+        "unavailableBody": "Votre profil public n'a pas pu être chargé. Vérifiez votre connexion et réessayez.",
+        "tryAgain": "Réessayer",
+        "intro": "Ce nom et cette photo sont visibles avec vos motifs de la communauté. Votre e-mail et votre fournisseur de connexion restent privés.",
+        "choosePhoto": "Choisir une photo",
+        "changePhoto": "Modifier la photo",
+        "remove": "Supprimer",
+        "avatarHelper": "Facultatif · JPEG, PNG ou WebP · jusqu'à 5 Mo",
+        "usernameLabel": "Nom d'utilisateur",
+        "usernameAccessibilityLabel": "Nom d'utilisateur public",
+        "usernamePlaceholder": "nom_brodeur",
+        "usernameHelperLocked": "Votre nom d'utilisateur est permanent.",
+        "usernameHelperEditable": "Entre 3 et 30 lettres minuscules, chiffres ou tirets du bas. Cela ne pourra pas être modifié ultérieurement.",
+        "displayNameLabel": "Nom d'affichage",
+        "displayNameAccessibilityLabel": "Nom d'affichage public",
+        "displayNamePlaceholder": "Votre nom de créateur",
+        "displayNameHelper": "Vous pourrez modifier cela plus tard.",
+        "safetyNotice": "Les noms et photos sont vérifiés avant publication. Si une modification est rejetée, votre profil public actuel reste inchangé.",
+        "saveAction": "Enregistrer le profil public",
+        "publishAction": "Publier le profil public",
+        "photoPermissionRequired": "L'accès à la bibliothèque de photos est requis pour choisir une photo de profil.",
+        "photoTypeInvalid": "Les photos de profil doivent être au format JPEG, PNG ou WebP.",
+        "photoTooLarge": "Les photos de profil ne doivent pas dépasser 5 Mo.",
+        "saveFailedDefault": "Impossible d'enregistrer votre profil public"
+      },
+      "submissions": {
+        "title": "Soumissions au catalogue",
+        "unavailableTitle": "Soumissions indisponibles",
+        "unavailableDefault": "Impossible de charger vos soumissions.",
+        "emptyTitle": "Aucune soumission au catalogue",
+        "emptyBody": "Soumettez un motif personnel synchronisé depuis Mes créations.",
+        "emptyAction": "Retour à Mes créations",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "Les vérifications automatisées n'ont pas pu se terminer. Cet instantané n'a pas été publié.",
+        "publishedToCatalog": "Publié dans le catalogue de la communauté.",
+        "appealAction": "Faire appel de la décision",
+        "appealHelp": "Vous pouvez faire appel de cet instantané inchangé une fois.",
+        "appealNoteAccessibilityLabel": "Note d'appel",
+        "appealNotePlaceholder": "Contexte facultatif pour le modérateur chargé de l'examen",
+        "cancelAction": "Annuler",
+        "submitAppealAction": "Soumettre l'appel"
+      },
+      "publishedPatterns": {
+        "title": "Motifs publiés",
+        "unavailableTitle": "Motifs indisponibles",
+        "unavailableDefault": "Impossible de charger vos motifs publiés.",
+        "emptyTitle": "Aucun motif publié",
+        "emptyBody": "Les motifs que vous publiez dans le catalogue de la communauté apparaîtront ici.",
+        "emptyAction": "Retour au profil",
+        "withdrawnFromCatalog": "Retiré du catalogue",
+        "underReviewHold": "Suspendu pour examen",
+        "meta": "{{category}} · Publié le {{date}}",
+        "withdrawnHelp": "Cette identité est définitivement retirée. Les joueurs ayant une session de broderie en cours conservent leur progression et leur accès.",
+        "reviewHoldHelp": "Ce motif est temporairement exclu de la recherche et ne peut pas démarrer de nouvelles sessions. Les sessions de broderie existantes restent jouables. Vous pouvez toujours proposer une révision des métadonnées.",
+        "reviseAction": "Réviser les métadonnées",
+        "withdrawRevisionAction": "Retirer la révision",
+        "appealAction": "Faire appel de la décision",
+        "withdrawFromCatalogAction": "Retirer du catalogue",
+        "appealHelp": "Vous pouvez faire appel de cet instantané inchangé une fois. Soumettre une nouvelle révision à la place annule cet appel.",
+        "appealNoteAccessibilityLabel": "Note d'appel",
+        "appealNotePlaceholder": "Contexte facultatif pour le modérateur chargé de l'examen",
+        "cancelAction": "Annuler",
+        "submitAppealAction": "Soumettre l'appel",
+        "withdrawRevisionFailedTitle": "Impossible de retirer la révision",
+        "withdrawPatternFailedTitle": "Impossible de retirer le motif",
+        "withdrawPatternSuccessTitle": "Motif retiré",
+        "withdrawPatternSuccessBody": "Il n'est plus disponible à la recherche et ne peut plus démarrer de nouvelles sessions. Les sessions de broderie existantes conservent leur progression et leurs données jouables.",
+        "withdrawConfirmTitle": "Retirer du catalogue de la communauté ?",
+        "withdrawConfirmBody": "« {{title}} » disparaîtra de la recherche et ne pourra plus démarrer de nouvelles sessions. Cette identité de motif ne pourra jamais être restaurée. Les sessions de broderie existantes et leur progression restent jouables.",
+        "withdrawConfirmCancel": "Annuler",
+        "withdrawConfirmAction": "Retirer définitivement"
+      },
+      "revisePatternMetadata": {
+        "title": "Réviser les métadonnées",
+        "signInTitle": "Compte enregistré requis",
+        "signInBody": "Connectez-vous avant de réviser les métadonnées d'un motif de la communauté.",
+        "signInAction": "Se connecter",
+        "notFoundTitle": "Motif de la communauté introuvable",
+        "notFoundBody": "Seuls vos propres motifs de la communauté publiés peuvent être révisés.",
+        "notFoundAction": "Retour aux motifs publiés",
+        "inProgressTitle": "Révision déjà en cours",
+        "inProgressBody": "Ce motif a déjà une révision en attente ou un appel actif. Retirez-le avant d'en soumettre un autre.",
+        "inProgressAction": "Retour aux motifs publiés",
+        "currentlyPublished": "Actuellement publié sur le catalogue de la communauté",
+        "titleFieldLabel": "Titre du catalogue",
+        "titlePlaceholder": "Titre du motif",
+        "titleAccessibilityLabel": "Titre du catalogue",
+        "descriptionFieldLabel": "Description",
+        "descriptionPlaceholder": "Décrivez le design, le sujet et l'expérience de broderie.",
+        "descriptionAccessibilityLabel": "Description du catalogue",
+        "sourceLanguageFieldLabel": "Langue source",
+        "categoryFieldLabel": "Catégorie",
+        "tagsFieldLabel": "Tags",
+        "notice": "La révision capture un nouvel instantané immuable. Vos métadonnées actuellement publiées restent visibles jusqu'à ce qu'un modérateur accepte cette révision.",
+        "submitAction": "Soumettre la révision"
+      },
+      "submitPattern": {
+        "title": "Soumettre à la communauté",
+        "signInTitle": "Compte enregistré requis",
+        "signInBody": "Connectez-vous avant de soumettre un motif personnel au catalogue de la communauté.",
+        "signInAction": "Se connecter",
+        "createProfileTitle": "Créer un profil de créateur public",
+        "createProfileBody": "Les motifs de la communauté sont attribués à votre identité de créateur publique.",
+        "createProfileAction": "Créer un profil",
+        "patternNotFoundTitle": "Motif personnel introuvable",
+        "patternNotFoundBody": "Seuls les motifs personnels synchronisés peuvent être soumis.",
+        "patternNotFoundAction": "Retour au profil",
+        "patternMeta": "{{width}}×{{height}} · {{count}} couleurs",
+        "byCreator": "Par @{{username}}",
+        "titleFieldLabel": "Titre du catalogue",
+        "titlePlaceholder": "Titre du motif",
+        "titleAccessibilityLabel": "Titre du catalogue",
+        "descriptionFieldLabel": "Description",
+        "descriptionPlaceholder": "Décrivez le design, le sujet et l'expérience de broderie.",
+        "descriptionAccessibilityLabel": "Description du catalogue",
+        "sourceLanguageFieldLabel": "Langue source",
+        "categoryFieldLabel": "Catégorie",
+        "tagsFieldLabel": "Tags",
+        "rightsDeclaration": "J'ai créé cette œuvre ou je possède les droits requis pour la publier en vertu de la Déclaration des droits de publication v1.",
+        "notice": "La soumission capture une copie immuable. Les vérifications automatisées fournissent des preuves, mais un modérateur prend toutes les décisions.",
+        "submitAction": "Soumettre pour examen"
+      },
+      "moderationNotices": {
+        "title": "Avis de modération",
+        "signInTitle": "Connectez-vous pour voir les avis",
+        "signInBody": "Les avis de modération appartiennent au compte enregistré qui a publié le motif de la communauté concerné.",
+        "signInAction": "Se connecter",
+        "unavailableTitle": "Avis indisponibles",
+        "unavailableDefault": "Impossible de charger les avis de modération.",
+        "emptyTitle": "Aucun avis de modération",
+        "emptyBody": "Les décisions de modération du catalogue visibles par le propriétaire apparaîtront ici.",
+        "emptyAction": "Retour au profil",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "Correction des métadonnées du catalogue",
+          "no_violation": "Examen clos — aucune violation",
+          "review_hold": "Suspension pour examen",
+          "safety_removal": "Retrait pour sécurité"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "Le titre, la description et les tags sélectionnés ont été remplacés par des valeurs sûres. La disponibilité, l'artéfact du motif et l'aperçu ne sont pas affectés. Vous pouvez soumettre une nouvelle révision des métadonnées du catalogue à tout moment.",
+          "no_violation": "L'examen post-publication est clos et ce motif est de nouveau entièrement disponible à la recherche et pour de nouvelles sessions de broderie.",
+          "review_hold": "Ce motif est temporairement indisponible pour la recherche et les nouvelles sessions. Les sessions de broderie existantes, la progression et les données de motif hors ligne restent jouables.",
+          "safety_removal": "Ce motif a été retiré en raison d'une violation des règles de sécurité, de la législation ou des politiques. Il a été exclu de la recherche, les sessions de broderie existantes sont devenues inaccessibles et les données de motif hors ligne sur vos appareils ont été supprimées. Vous pouvez soumettre un appel pour retrait de sécurité."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "Tâches quotidiennes",
+        "offline": "Vous êtes hors ligne — les tâches quotidiennes nécessitent une connexion.",
+        "unavailable": "Impossible de charger les tâches quotidiennes.",
+        "empty": "Aucune tâche disponible aujourd'hui."
+      },
+      "rewardedAdCard": {
+        "offline": "Vous êtes hors ligne — le jour de récompense nécessite une connexion.",
+        "unavailable": "Impossible de charger le statut du jour de récompense.",
+        "premiumClaimClosedPool": "Votre réclamation quotidienne Premium a fermé la cagnotte de pièces partagée d'aujourd'hui.",
+        "allRewardsClaimed": "Vous avez réclamé toutes les récompenses publicitaires pour aujourd'hui. Revenez demain !",
+        "remaining_one": "{{count}} publicité restante aujourd'hui ({{coins}} pièces disponibles)",
+        "remaining_other": "{{count}} publicités restantes aujourd'hui ({{coins}} pièces disponibles)",
+        "watchForCoins": "Regarder une publicité pour {{count}} pièces"
+      },
+      "likedPatterns": {
+        "title": "Motifs aimés",
+        "signInTitle": "Compte enregistré requis",
+        "signInBody": "Connectez-vous avant de voir votre collection privée de motifs aimés.",
+        "signInAction": "Se connecter",
+        "unavailableTitle": "Motifs aimés indisponibles",
+        "unavailableDefault": "Impossible de charger les motifs aimés.",
+        "emptyTitle": "Aucun motif aimé",
+        "emptyBody": "Parcourez le catalogue de motifs et appuyez sur l'icône de cœur sur n'importe quel modèle pour l'enregistrer ici.",
+        "emptyAction": "Découvrir des motifs",
+        "byCreator": "par {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} couleurs · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "Paramètres",
+        "subtitleDev": "Configurez vos préférences et inspectez les systèmes backend.",
+        "subtitleProd": "Configurez vos préférences."
+      },
+      "serviceStatus": {
+        "sectionTitle": "Statut des services",
+        "apiConnectionTitle": "Connexion à l'API",
+        "testingConnection": "Test de la connexion à l'API...",
+        "offlineUnreachable": "Hors ligne / Inaccessible",
+        "unknownConnectionError": "Erreur de connexion inconnue",
+        "retryConnection": "Réessayer la connexion",
+        "healthy": "Opérationnel",
+        "degraded": "Dégradé",
+        "postgresLabel": "Base de données PostgreSQL",
+        "redisLabel": "Cache Redis"
+      },
+      "session": {
+        "sectionTitle": "Identité et session",
+        "statusTitle": "Statut de la session backend",
+        "statusDescription": "Valide votre session d'inscription invité active via l'API.",
+        "noActiveSession": "Aucune session active",
+        "sessionActive": "Session active",
+        "idLabel": "ID : {{id}} (v{{version}})",
+        "unknownState": "État inconnu"
+      },
+      "tutorial": {
+        "sectionTitle": "Tutoriel",
+        "learnControlsTitle": "Apprendre les commandes",
+        "learnControlsDescription": "Reprenez le tutoriel de broderie lorsque vous serez prêt.",
+        "unavailableTitle": "Tutoriel indisponible",
+        "unavailableMessage": "Impossible de reprendre le tutoriel. Veuillez réessayer."
+      },
+      "developer": {
+        "sectionTitle": "Développeur",
+        "debugDiagnostics": "Débogage / Diagnostics",
+        "debug": {
+          "backAccessibilityLabel": "Retour",
+          "title": "Débogage",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN : configuré · env : {{environment}}",
+            "dsnNotConfigured": "DSN : non configuré",
+            "sendTestEvent": "Envoyer un événement de test",
+            "throwError": "Déclencher une erreur",
+            "disabledTitle": "Sentry désactivé",
+            "disabledMessage": "Sentry n'est pas configuré (aucun DSN trouvé), aucun événement de test ne sera donc envoyé.",
+            "testEventSent": "Événement de test envoyé. ID de l'événement : {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "Erreur",
+            "testEventFailedMessage": "Échec de l'envoi de l'événement de test : {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Onboarding",
+            "description": "Effacer la progression du tutoriel et recommencer depuis l'écran de bienvenue.",
+            "restart": "Recommencer l'intégration",
+            "confirmTitle": "Recommencer l'intégration ?",
+            "confirmMessage": "L'état du tutoriel sera effacé et l'intégration recommencera depuis l'écran de bienvenue.",
+            "cancel": "Annuler",
+            "resetFailedTitle": "Échec de la réinitialisation"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "Suppression de compte",
+        "statusTitle": "Statut de la suppression du compte",
+        "checkingStatus": "Vérification du statut...",
+        "pendingTitle": "Suppression du compte en attente",
+        "pendingDescription": "La suppression de votre compte est planifiée. Connectez-vous à nouveau avant la fin de la période de récupération pour l'annuler.",
+        "recoveryWindowEnds": "Fin de la période de récupération : {{date}}",
+        "cancelling": "Annulation en cours...",
+        "cancelDeletion": "Annuler la suppression",
+        "statusError": "Impossible de vérifier le statut de suppression. Vérifiez votre connexion et réessayez.",
+        "deleteAccountTitle": "Supprimer le compte",
+        "deleteAccountDescription": "Supprimez définitivement votre compte, votre progression et tous vos éléments débloqués après une période de récupération de 30 jours.",
+        "requestedTitle": "Suppression du compte demandée",
+        "requestedMessage": "Votre demande de suppression est en attente jusqu'au {{date}}. Vous avez été déconnecté de votre compte. Connectez-vous à nouveau avant cette date si vous souhaitez annuler cette suppression.",
+        "signOutFailedTitle": "Échec de la déconnexion locale",
+        "signOutFailedMessage": "Votre demande de suppression est toujours en attente. Veuillez vous déconnecter à nouveau depuis les paramètres.",
+        "requestFailedTitle": "Échec de la demande",
+        "requestFailedMessage": "Votre demande de suppression n'a pas été soumise. Vérifiez votre connexion et réessayez.",
+        "cancelSuccessTitle": "Succès",
+        "cancelSuccessMessage": "Votre demande de suppression de compte a été annulée.",
+        "reauthRequiredTitle": "Réauthentification requise",
+        "reauthRequiredMessage": "Pour des raisons de sécurité, vous devez vous reconnecter avant d'annuler la suppression du compte.",
+        "signInAction": "Se connecter",
+        "cancelFailedTitle": "Échec de l'annulation",
+        "cancelFailedGeneric": "Impossible d'annuler la suppression du compte. Vérifiez votre connexion et réessayez."
+      },
+      "appearance": {
+        "sectionTitle": "Apparence"
+      },
+      "themeCollectionCard": {
+        "title": "Collection de thèmes",
+        "description": "Modifiez les éléments cosmétiques de la grille, des points et de la complétion sans affecter le jeu.",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "Nécessite un abonnement Premium",
+        "selected": "Sélectionné",
+        "accessActive": "L'accès aux thèmes Premium est actif, y compris pendant une période d'essai mensuelle éligible.",
+        "lockedPreview": "Affichez un aperçu de la collection ici. Un abonnement Premium ou un essai mensuel éligible permet de débloquer la sélection.",
+        "viewPremiumPlans": "Voir les abonnements Premium"
+      },
+      "gameplay": {
+        "sectionTitle": "Paramètres de jeu",
+        "showGridLinesTitle": "Afficher le quadrillage",
+        "showGridLinesDescription": "Afficher les limites entre les cases du canevas de broderie",
+        "handednessTitle": "Disposition gaucher/droitier",
+        "handednessDescription": "Aligner les commandes interactives pour un jeu gaucher ou droitier",
+        "left": "Gauche",
+        "right": "Droite",
+        "leftHandedLayout": "Disposition pour gaucher",
+        "rightHandedLayout": "Disposition pour droitier"
+      },
+      "language": {
+        "sectionTitle": "Langue",
+        "description": "Choisissez la langue dans laquelle Stitch Wish affiche son interface.",
+        "followDevice": "Utiliser la langue de l'appareil",
+        "followDeviceDescription": "Effacez vos réglages personnalisés pour suivre la langue de votre appareil.",
+        "optionEnglish": "English",
+        "optionTurkish": "Türkçe"
+      },
+      "social": {
+        "sectionTitle": "Réseau et confidentialité",
+        "blockedCreators": "Créateurs bloqués"
+      },
+      "account": {
+        "sectionTitle": "Compte",
+        "notSignedInTitle": "Non connecté",
+        "signInRequiredTitle": "Connexion requise",
+        "notSignedInDescription": "Connectez-vous pour synchroniser votre progression sur plusieurs appareils.",
+        "signIn": "Se connecter",
+        "reconnecting": "Reconnexion en cours…",
+        "signOut": "Se déconnecter",
+        "signOutConfirmTitle": "Se déconnecter ?",
+        "signOutConfirmMessage": "Votre progression non synchronisée restera sur cet appareil et sera restaurée lorsque vous vous reconnecterez.",
+        "signOutConfirmAction": "Se déconnecter",
+        "signOutFailedTitle": "Échec de la déconnexion",
+        "signOutFailedGeneric": "Veuillez réessayer.",
+        "providerAppleAccount": "Compte Apple",
+        "providerGoogleAccount": "Compte Google",
+        "providerGenericAccount": "Compte enregistré"
+      },
+      "signIn": {
+        "emailHeading": "Se connecter ou créer un compte",
+        "emailSubtitle": "Conservez votre progression disponible sur tous vos appareils.",
+        "codeHeading": "Saisissez votre code",
+        "codeSubtitle": "Saisissez le code à 6 chiffres envoyé à {{email}}.",
+        "continueWithGoogle": "Continuer avec Google",
+        "orUseEmail": "ou utiliser une adresse e-mail",
+        "ssoUnavailable": "La connexion avec Google et Apple est indisponible dans cette version.",
+        "emailLabel": "Adresse e-mail",
+        "emailPlaceholder": "Adresse e-mail",
+        "sendCode": "Envoyer le code",
+        "cancel": "Annuler",
+        "verify": "Vérifier",
+        "resendCode": "Renvoyer le code",
+        "resending": "Renvoi en cours...",
+        "codeSent": "Code envoyé",
+        "useDifferentEmail": "Utiliser une autre adresse e-mail",
+        "sendCodeFailed": "Impossible d'envoyer le code. Vérifiez votre connexion et réessayez.",
+        "codeIncorrect": "Ce code est incorrect ou a expiré.",
+        "verifyFailedGeneric": "Une erreur est survenue. Veuillez réessayer.",
+        "socialSignInFailed": "Impossible de se connecter avec {{provider}}. Veuillez réessayer.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "Retour",
+        "title": "Créateurs bloqués",
+        "infoText": "Le blocage est privé et réversible. Il masque les motifs communautaires de ce créateur de vos vues de catalogue, de vos recherches et de vos listes de découverte. Il ne s'agit pas d'un signalement ni d'un retrait de contenu.",
+        "signInRequiredTitle": "Compte enregistré requis",
+        "signInRequiredBody": "Connectez-vous avant de gérer votre liste de créateurs bloqués.",
+        "signInAction": "Se connecter",
+        "listUnavailableTitle": "Liste indisponible",
+        "listUnavailableDefault": "Impossible de charger les créateurs bloqués.",
+        "tryAgain": "Réessayer",
+        "emptyTitle": "Aucun créateur bloqué",
+        "emptyBody": "Vous n'avez bloqué personne. Vous pouvez bloquer un créateur depuis la page de détails de n'importe lequel de ses motifs.",
+        "backToSettings": "Retour aux paramètres",
+        "unblock": "Débloquer",
+        "unblockConfirmTitle": "Débloquer le créateur",
+        "unblockConfirmMessage": "Êtes-vous sûr de vouloir débloquer {{name}} ? Ses motifs réapparaîtront dans vos résultats de recherche et de navigation.",
+        "cancel": "Annuler",
+        "successTitle": "Succès",
+        "unblockedMessage": "{{name}} a été débloqué.",
+        "errorTitle": "Erreur",
+        "unblockFailedMessage": "Impossible de débloquer le créateur : {{message}}",
+        "unblockFailedGeneric": "Erreur inconnue"
+      },
+      "data": {
+        "sectionTitle": "Données",
+        "resetGuestTitle": "Réinitialiser les données invité",
+        "resetGuestDescription": "Fermer définitivement l'identité invité sur le serveur et effacer toutes les données de l'appareil.",
+        "resetGuestOffline": "Hors ligne : une connexion active au serveur est requise pour réinitialiser les données invité.",
+        "resetGuestPurchaseLock": "La réinitialisation est bloquée pendant la vérification d'un achat. Les consommables et les données d'invité privées ne pourront plus être récupérés par la suite.",
+        "removeLocalTitle": "Supprimer les données locales",
+        "removeLocalDescription": "Supprimer la base de données locale de votre espace d'identité de cet appareil.",
+        "removeLocalConfirmTitle": "Supprimer les données locales ?",
+        "removeLocalConfirmMessage": "Attention : cette action supprimera vos fichiers de base de données locaux de cet appareil uniquement. Tous les enregistrements non synchronisés seront définitivement perdus.",
+        "removeLocalConfirmAction": "Supprimer",
+        "removeLocalSuccessTitle": "Succès",
+        "removeLocalSuccessMessage": "Les données locales ont été supprimées de cet appareil.",
+        "removeLocalFailedTitle": "Échec de la suppression",
+        "removeLocalFailedMessage": "Impossible de supprimer les données locales : {{message}}"
+      },
+      "links": {
+        "sectionTitle": "Informations et liens",
+        "privacyPolicy": "Politique de confidentialité",
+        "termsOfService": "Conditions d'utilisation",
+        "contactSupport": "Contacter l'assistance",
+        "accountDeletion": "Suppression de compte",
+        "openFailedMessage": "Impossible d'ouvrir le lien : {{url}}",
+        "openFailedGenericTitle": "Erreur"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — Broderie Pixel-Art Relaxante",
+        "version": "Version {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "Package : {{id}}",
+        "schemeLabel": "Schéma : {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "Réinitialiser les données invité ?",
+        "warning": "Cette action fermera définitivement votre identité invité sur le serveur et supprimera définitivement votre :",
+        "bulletProgress": "• progression locale",
+        "bulletRewards": "• récompenses en attente",
+        "bulletLikes": "• mentions J'aime",
+        "bulletUnlockAccess": "• accès aux éléments débloqués",
+        "bulletOfflinePatterns": "• données de motifs hors ligne",
+        "confirmPrefix": "Saisissez ",
+        "confirmSuffix": " ci-dessous pour confirmer :",
+        "confirmAction": "Réinitialiser les données",
+        "resetting": "Réinitialisation des données invité...",
+        "successTitle": "Succès",
+        "successMessage": "Les données invité ont été entièrement réinitialisées.",
+        "failedTitle": "Échec de la réinitialisation",
+        "failedMessage": "Échec de la réinitialisation des données invité : {{message}}. Veuillez réessayer."
+      },
+      "deleteModal": {
+        "title": "Supprimer le compte ?",
+        "recoveryPrefix": "Votre compte entre dans une ",
+        "recoveryBold": "période de récupération de suppression de 30 jours",
+        "recoverySuffix": ". Connectez-vous à nouveau pendant cette période pour annuler la suppression.",
+        "bulletBalances": "• soldes de Stitch Coins et de crédits IA",
+        "bulletUnlocks": "• tous les motifs débloqués",
+        "bulletArtwork": "• illustrations IA et motifs personnels",
+        "bulletProgress": "• progression synchronisée et mentions J'aime",
+        "consequencesPrefix": "À la fin de la période de récupération, ces éléments seront effacés ou perdus sans remboursement ni transfert. Les motifs communautaires publiés seront retirés du catalogue, l'attribution deviendra ",
+        "consequencesBold": "Créateur supprimé",
+        "consequencesSuffix": ", et votre nom d'utilisateur restera réservé de manière permanente.",
+        "membershipWarning": "Votre abonnement Premium peut continuer à vous être facturé après la suppression de votre compte. La suppression ne l'annule pas ; gérez-le séparément avant de continuer si vous souhaitez arrêter la facturation.",
+        "manageAppleSubscription": "Gérer l'abonnement Apple",
+        "continueAction": "Continuer",
+        "confirmTitle": "Confirmer la suppression",
+        "confirmPrefix": "Pour confirmer que vous souhaitez supprimer votre compte, saisissez ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": " dans la case ci-dessous :",
+        "submitting": "Soumission de la demande de suppression...",
+        "backAction": "Retour",
+        "confirmAction": "Confirmer"
+      },
+      "reauthModal": {
+        "title": "Vérifiez votre identité",
+        "description": "Pour des raisons de sécurité, vérifiez votre identité à l'aide d'une méthode de connexion déjà associée à ce compte. La suppression reprendra automatiquement après la vérification.",
+        "loading": "Chargement des méthodes de connexion...",
+        "codeSentMessage": "Saisissez le code à 6 chiffres envoyé à {{email}}.",
+        "verifyAndDelete": "Vérifier et supprimer",
+        "emailButton": "E-mail à {{email}}",
+        "continueWithProvider": "Continuer avec {{provider}}",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "Aucune méthode de connexion associée n'est disponible. Contactez l'assistance avant de réessayer la suppression.",
+        "loadFailed": "Impossible de charger vos méthodes de connexion associées. Vérifiez votre connexion et réessayez.",
+        "retryFailed": "Votre identity a été vérifiée, mais la demande de suppression n'a pas pu être soumise. Fermez cette boîte de dialogue et réessayez la suppression.",
+        "emailMissing": "Cette méthode d'e-mail associée ne comporte aucune adresse. Choisissez une autre méthode.",
+        "genericFailure": "Échec de la réauthentification. Vérifiez votre connexion et réessayez."
+      },
+      "actions": {
+        "cancel": "Annuler",
+        "retry": "Réessayer"
+      },
+      "common": {
+        "unavailable": "Indisponible"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "Catalogue",
+        "stitch": "Broder",
+        "create": "Créer",
+        "profile": "Profil",
+        "settings": "Paramètres"
+      }
+    }
+  },
   "tr": {
     "catalog": {
       "common": {
@@ -1999,6 +3403,9 @@
         "failure": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
         "supportReferenceLabel": "Destek Referansı: {{reference}}"
       }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Stitch Wish, seçtiğiniz fotoğrafları Kişisel Desenler oluşturmak veya herkese açık yaratıcı profiliniz için fotoğraf seçmek amacıyla kullanır."
     },
     "onboarding": {
       "welcome": {

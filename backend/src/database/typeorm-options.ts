@@ -172,6 +172,7 @@ import { CreateCommerceGrantTombstones1789430400000 } from './migrations/1789430
 import { AddNewProductIdToMembershipEvents1789516800000 } from './migrations/1789516800000-AddNewProductIdToMembershipEvents';
 import { AddOnboardingGameplayEvents1789603200000 } from './migrations/1789603200000-AddOnboardingGameplayEvents';
 import { LocalizeCatalogCategoryLabels1789689600000 } from './migrations/1789689600000-LocalizeCatalogCategoryLabels';
+import { AddFrenchCatalogCategoryLabels1789776000000 } from './migrations/1789776000000-AddFrenchCatalogCategoryLabels';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -329,6 +330,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddNewProductIdToMembershipEvents1789516800000,
       AddOnboardingGameplayEvents1789603200000,
       LocalizeCatalogCategoryLabels1789689600000,
+      AddFrenchCatalogCategoryLabels1789776000000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',
