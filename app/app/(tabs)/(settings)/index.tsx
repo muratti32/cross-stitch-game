@@ -27,7 +27,6 @@ import { acquireAppleProviderIdToken, acquireGoogleProviderIdToken } from '@/ide
 import { loadOnboardingState, resumeTutorial, saveOnboardingPosition } from '@/onboarding/state';
 import { useTranslation } from 'react-i18next';
 import {
-  LANGUAGE_MIGRATION_GATE_OPEN,
   SUPPORTED_LOCALES,
   getLanguageOverride,
   setActiveLanguageOverride,
@@ -87,12 +86,8 @@ export default function SettingsScreen() {
   const [reauthCodeSent, setReauthCodeSent] = React.useState(false);
   const [reauthError, setReauthError] = React.useState<string | null>(null);
 
-  // #157's migration gate: the picker below only ever mounts while it is
-  // open (see LANGUAGE_MIGRATION_GATE_OPEN), so this state is a no-op read
-  // for every player until #167.
   const [languageOverride, setLanguageOverrideState] = React.useState<string | null>(null);
   React.useEffect(() => {
-    if (!LANGUAGE_MIGRATION_GATE_OPEN) return;
     getLanguageOverride().then(setLanguageOverrideState).catch(() => setLanguageOverrideState(null));
   }, []);
 
@@ -589,52 +584,45 @@ export default function SettingsScreen() {
       <Text style={styles.sectionTitle}>{t('appearance.sectionTitle')}</Text>
       <ThemeCollectionCard />
 
-      {/* Language picker (#157): hidden behind the migration gate until
-          every localization slice has landed - see src/i18n/migrationGate.ts
-          and #167. */}
-      {LANGUAGE_MIGRATION_GATE_OPEN && (
-        <>
-          <Text style={styles.sectionTitle}>{t('language.sectionTitle')}</Text>
-          <Card style={styles.card}>
-            <View style={styles.languageDescriptionRow}>
-              <Text style={styles.settingDescription}>{t('language.description')}</Text>
-            </View>
-            <View style={styles.rowDivider} />
-            {SUPPORTED_LOCALES.map((locale) => (
-              <React.Fragment key={locale}>
-                <Pressable
-                  onPress={() => void handleSelectLanguage(locale)}
-                  style={({ pressed }) => [styles.languageRow, pressed && styles.linkPressed]}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected: languageOverride === locale }}
-                >
-                  <Text style={styles.languageOptionText}>
-                    {locale === 'tr' ? t('language.optionTurkish') : t('language.optionEnglish')}
-                  </Text>
-                  {languageOverride === locale && (
-                    <Ionicons name="checkmark-circle" size={20} color={Theme.colors.accentTeal} />
-                  )}
-                </Pressable>
-                <View style={styles.rowDivider} />
-              </React.Fragment>
-            ))}
+      <Text style={styles.sectionTitle}>{t('language.sectionTitle')}</Text>
+      <Card style={styles.card}>
+        <View style={styles.languageDescriptionRow}>
+          <Text style={styles.settingDescription}>{t('language.description')}</Text>
+        </View>
+        <View style={styles.rowDivider} />
+        {SUPPORTED_LOCALES.map((locale) => (
+          <React.Fragment key={locale}>
             <Pressable
-              onPress={() => void handleFollowDeviceLanguage()}
+              onPress={() => void handleSelectLanguage(locale)}
               style={({ pressed }) => [styles.languageRow, pressed && styles.linkPressed]}
               accessibilityRole="button"
-              accessibilityState={{ selected: languageOverride === null }}
+              accessibilityState={{ selected: languageOverride === locale }}
             >
-              <View style={styles.languageFollowTextContainer}>
-                <Text style={styles.languageOptionText}>{t('language.followDevice')}</Text>
-                <Text style={styles.settingDescription}>{t('language.followDeviceDescription')}</Text>
-              </View>
-              {languageOverride === null && (
+              <Text style={styles.languageOptionText}>
+                {locale === 'tr' ? t('language.optionTurkish') : t('language.optionEnglish')}
+              </Text>
+              {languageOverride === locale && (
                 <Ionicons name="checkmark-circle" size={20} color={Theme.colors.accentTeal} />
               )}
             </Pressable>
-          </Card>
-        </>
-      )}
+            <View style={styles.rowDivider} />
+          </React.Fragment>
+        ))}
+        <Pressable
+          onPress={() => void handleFollowDeviceLanguage()}
+          style={({ pressed }) => [styles.languageRow, pressed && styles.linkPressed]}
+          accessibilityRole="button"
+          accessibilityState={{ selected: languageOverride === null }}
+        >
+          <View style={styles.languageFollowTextContainer}>
+            <Text style={styles.languageOptionText}>{t('language.followDevice')}</Text>
+            <Text style={styles.settingDescription}>{t('language.followDeviceDescription')}</Text>
+          </View>
+          {languageOverride === null && (
+            <Ionicons name="checkmark-circle" size={20} color={Theme.colors.accentTeal} />
+          )}
+        </Pressable>
+      </Card>
 
       {/* Gameplay Preferences */}
       <Text style={styles.sectionTitle}>{t('gameplay.sectionTitle')}</Text>

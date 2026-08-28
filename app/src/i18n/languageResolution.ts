@@ -12,37 +12,23 @@
 import i18n from './i18n';
 import { getDeviceLanguages } from './deviceLanguages';
 import { getLanguageOverride, setLanguageOverride, clearLanguageOverride } from './languageOverride';
-import { FALLBACK_LOCALE, resolveAppLanguage } from './resolveAppLanguage';
+import { resolveAppLanguage } from './resolveAppLanguage';
 import { SUPPORTED_LOCALES } from './supportedLocales';
-import { LANGUAGE_MIGRATION_GATE_OPEN } from './migrationGate';
 
 /**
  * Resolves and applies the active App Display Language from the device
  * languages and any stored override, then re-renders the translated tree in
  * place - no app restart (#155).
  *
- * #157's migration gate: while LANGUAGE_MIGRATION_GATE_OPEN is false, the
- * active language stays pinned to English for every player regardless of
- * device language or a stored override. This still reads the override so
- * the underlying plumbing is exercised end-to-end; it just never acts on it
- * until #167 opens the gate.
  */
 export async function applyResolvedLanguage(): Promise<void> {
-  if (!LANGUAGE_MIGRATION_GATE_OPEN) {
-    await i18n.changeLanguage(FALLBACK_LOCALE);
-    return;
-  }
-
   const [override, deviceLanguages] = [await getLanguageOverride(), getDeviceLanguages()];
   const resolved = resolveAppLanguage(deviceLanguages, override, SUPPORTED_LOCALES);
   await i18n.changeLanguage(resolved);
 }
 
 /**
- * Sets the player's language override and applies it immediately. The
- * Settings language picker that calls this is itself hidden behind the
- * migration gate (see migrationGate.ts and SettingsScreen), so this stays
- * correct and ready for when #167 opens it.
+ * Sets the player's language override and applies it immediately.
  */
 export async function setActiveLanguageOverride(locale: string): Promise<void> {
   await setLanguageOverride(locale);

@@ -9,6 +9,5 @@ export { getActiveLocale } from './activeLocale';
 export { getLanguageOverride, setLanguageOverride, clearLanguageOverride } from './languageOverride';
 export { getDeviceLanguages } from './deviceLanguages';
 export { SUPPORTED_LOCALES, type SupportedLocale } from './supportedLocales';
-export { LANGUAGE_MIGRATION_GATE_OPEN } from './migrationGate';
 export { formatNumber, formatDate } from './formatting';
 export { resolveMissingTranslation, reportMissingTranslationKey } from './missingKeyHandler';

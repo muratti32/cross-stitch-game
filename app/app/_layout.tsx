@@ -125,8 +125,7 @@ function RootLayout() {
             err instanceof Error ? err.message : String(err),
           );
         });
-        // Resolves from device language + stored override; pinned to
-        // English by the migration gate until #167 (see src/i18n).
+        // Resolves from device language + stored override.
         applyResolvedLanguage().catch((err: unknown) => {
           console.log(
             'App Display Language resolution deferred:',
