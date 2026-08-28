@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Diese Anmeldung gehört zu einem anderen Account. Dein aktueller Account wurde nicht geändert.",
+    "providerRejected": "Diese Verifizierung wurde abgelehnt. Überprüfe deinen Account oder Code und versuche es noch einmal."
+  },
+  "generic": {
+    "failure": "Etwas ist schiefgelaufen. Bitte versuche es noch einmal.",
+    "supportReferenceLabel": "Support-Referenz: {{reference}}"
+  }
+}

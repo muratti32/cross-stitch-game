@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Zurück",
+    "cancel": "Abbrechen",
+    "duplicateTitle": "Du hast bereits ein persönliches Muster namens „{{title}}“. Wähle einen anderen Titel.",
+    "cellsCount_one": "Kästchen",
+    "cellsCount_other": "Kästchen",
+    "colorsCount_one": "Farbe",
+    "colorsCount_other": "Farben"
+  },
+  "hub": {
+    "title": "Kreativ-Hub",
+    "subtitle": "Erwecke deine eigenen Designs mit individuellen Kreuzstichmustern zum Leben.",
+    "opening": "Wird geöffnet…",
+    "photoImport": {
+      "title": "Foto-Import",
+      "description": "Lade ein Bild aus deiner Galerie hoch und verwandle es in ein stickbares Muster.",
+      "action": "Foto importieren"
+    },
+    "aiGenerator": {
+      "title": "KI-Generator",
+      "description": "Beschreibe ein gemütliches Motiv und lass die künstliche Intelligenz ein individuelles Pixel-Design erstellen.",
+      "action": "Design generieren"
+    }
+  },
+  "aspects": {
+    "square": "Quadratisch",
+    "portrait_4_3": "Hochformat 4:3",
+    "landscape_4_3": "Querformat 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Musterkonvertierung fehlgeschlagen. Bitte versuche es erneut.",
+      "timeout": "Die Musterkonvertierung läuft noch. Versuche es gleich noch einmal.",
+      "generic": "Die Musterkonvertierung konnte nicht abgeschlossen werden. Bitte versuche es erneut."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Registriertes Konto erforderlich",
+      "body": "Deine KI-Kunstwerke und deine Galerie bleiben privat in deinem Konto.",
+      "signIn": "Anmelden"
+    },
+    "header": {
+      "title": "KI-Generator",
+      "backAccessibilityLabel": "Zurück"
+    },
+    "prompt": {
+      "label": "Beschreibe dein Kunstwerk",
+      "placeholder": "Ein gemütlicher Landhausgarten bei Sonnenuntergang…"
+    },
+    "generate": {
+      "working": "Wird generiert…",
+      "action": "Generieren — 1 KI-Credit",
+      "errors": {
+        "promptRejected": "Diese Beschreibung war nicht erlaubt. Versuche, etwas anderes zu beschreiben.",
+        "generic": "KI-Generierung konnte nicht gestartet werden. Bitte versuche es erneut."
+      }
+    },
+    "library": {
+      "title": "Deine KI-Kunstgalerie",
+      "status": {
+        "pending": "Ausstehend",
+        "dispatched": "Gesendet",
+        "running": "In Arbeit",
+        "delivered": "Fertiggestellt",
+        "safety_rejected": "Sicherheitsprüfung nicht bestanden",
+        "failed": "Fehlgeschlagen",
+        "deleted": "Gelöscht",
+        "unknown": "Nicht verfügbar"
+      },
+      "failure": {
+        "safety_rejected": "Dieses Kunstwerk hat die Sicherheitsprüfung des Anbieters nicht bestanden.",
+        "failed": "Dieses Kunstwerk konnte nicht generiert werden."
+      },
+      "approve": "Als Muster freigeben",
+      "delete": "Löschen",
+      "deleteAccessibilityLabel": "Dieses KI-Kunstwerk löschen",
+      "errors": {
+        "loadFailed": "Deine KI-Kunstgalerie konnte nicht geladen werden. Bitte versuche es erneut."
+      }
+    },
+    "approve": {
+      "modalTitle": "Persönliches Muster erstellen",
+      "titleLabel": "Mustertitel",
+      "titleAccessibilityLabel": "Mustertitel",
+      "defaultTitle": "Mein KI-Muster",
+      "placeholder": "Mein KI-Muster",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Abbrechen",
+      "creating": "Muster wird erstellt…",
+      "create": "Muster erstellen",
+      "errors": {
+        "generic": "Das persönliche Muster konnte nicht erstellt werden. Bitte versuche es erneut."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Registriertes Konto erforderlich",
+      "body": "Persönliche Muster gehören zu deinem Konto, damit sie privat bleiben und auf allen Geräten verfügbar sind.",
+      "signIn": "Anmelden oder Konto erstellen",
+      "back": "Zurück"
+    },
+    "header": {
+      "title": "Foto-Muster",
+      "subtitle": "Ausschnitt wählen, dann Konvertierung freigeben",
+      "backAccessibilityLabel": "Zurück"
+    },
+    "picker": {
+      "chooseTitle": "Wähle ein Foto",
+      "helpText": "Das hochauflösende Originalfoto bleibt auf diesem Gerät. Es wird erst konvertiert, wenn du den Ausschnitt freigibst.",
+      "choose": "Aus Galerie auswählen",
+      "chooseAnother": "Anderes auswählen",
+      "opening": "Wird geöffnet…",
+      "errors": {
+        "permissionDenied": "Der Zugriff auf die Fotogalerie ist erforderlich, um ein Foto auszuwählen.",
+        "invalidDimensions": "Das ausgewählte Foto hat keine nutzbaren Abmessungen.",
+        "generic": "Die Fotogalerie konnte nicht geöffnet werden. Bitte versuche es erneut."
+      }
+    },
+    "framing": {
+      "title": "Bildausschnitt wählen",
+      "gestureHint": "Ziehen zum Positionieren · Zoomen mit zwei Fingern",
+      "aspectLabel": "Seitenverhältnis"
+    },
+    "profile": {
+      "title": "Konvertierungsprofil",
+      "options": {
+        "easy": "Einfach",
+        "standard": "Standard",
+        "detailed": "Detailliert"
+      },
+      "custom": "Benutzerdefiniert",
+      "customMeta": "Frei · Form gesperrt",
+      "unavailable": "Passt nicht in diesen Ausschnitt",
+      "customShortEdgeLabel": "Kurze Seite",
+      "customColorLimitLabel": "DMC-Farblimit",
+      "exceedsLimit": "Diese benutzerdefinierten Werte überschreiten das Limit von {{max}} Kästchen für die Mustergröße."
+    },
+    "titleCard": {
+      "label": "Mustertitel",
+      "placeholder": "Mein Foto-Muster",
+      "defaultTitle": "Mein Foto-Muster",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · bis zu {{maxColors}} DMC-{{colorsUnit}}",
+      "privacyNotice": "Bei Freigabe wird nur der zugeschnittene, verkleinerte Ausschnitt hochgeladen. Das Originalfoto bleibt auf deinem Gerät.",
+      "approve": "Bild freigeben & konvertieren"
+    },
+    "processing": {
+      "preparingFrame": "Der freigegebene Ausschnitt wird auf diesem Gerät vorbereitet…",
+      "uploading": "Nur der zugeschnittene, verkleinerte Ausschnitt wird hochgeladen…",
+      "waitingForWorker": "Warten auf den Konvertierungsdienst…",
+      "buildingGrid": "Raster und DMC-Farbpalette werden erstellt…",
+      "preparingSession": "Das persönliche Muster wird für das Spiel vorbereitet…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Dieses Profil passt nicht mehr zum endgültigen Ausschnitt. Wähle „Einfach“ oder reduziere die Details.",
+        "generic": "Dieses Foto konnte nicht konvertiert werden. Bitte versuche es erneut."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Kein Muster ausgewählt",
+      "noPatternBody": "Dieser Bildschirm muss aus einem vorhandenen persönlichen Muster in deiner Galerie geöffnet werden.",
+      "accountTitle": "Registriertes Konto erforderlich",
+      "accountBody": "Persönliche Muster gehören zu deinem Konto, damit sie privat bleiben und auf allen Geräten verfügbar sind.",
+      "signIn": "Anmelden oder Konto erstellen",
+      "back": "Zurück"
+    },
+    "loading": "Editor-Entwurf wird fortgesetzt...",
+    "load": {
+      "failedTitle": "Muster konnte nicht geladen werden",
+      "retry": "Wiederholen",
+      "back": "Zurück",
+      "errors": {
+        "generic": "Dieses persönliche Muster konnte nicht geladen werden. Bitte versuche es erneut."
+      }
+    },
+    "header": {
+      "title": "Muster-Editor",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Zurück"
+    },
+    "toolbar": {
+      "undo": "Rückgängig",
+      "redo": "Wiederholen"
+    },
+    "mode": {
+      "paint": "Malen",
+      "replaceColor": "Farbe ersetzen",
+      "replaceStep1": "1. Tippe unten im Muster auf eine Farbe, die du ersetzen möchtest:",
+      "replaceStep2": "2. Wähle unten eine DMC-Zielfarbe aus, um die Ersetzung durchzuführen:",
+      "paintSelected": "Ausgewählt: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Wähle unten eine Farbe aus und tippe auf Kästchen, um zu malen."
+    },
+    "errors": {
+      "pickColorFirst": "Wähle zuerst eine Farbe aus",
+      "paletteLimit": "Dieses Muster verwendet bereits die maximale Anzahl von {{max}} Garnfarben."
+    },
+    "picker": {
+      "title": "DMC-Garnfarben",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Bearbeitetes Muster speichern",
+      "placeholder": "Titel meines bearbeiteten Musters",
+      "action": "Als neu speichern",
+      "offlineTitle": "Offline gespeichert",
+      "offlineBody": "Dein bearbeitetes Muster wurde auf diesem Gerät gespeichert und wird mit deinem Konto synchronisiert, sobald du wieder online bist.",
+      "errors": {
+        "generic": "Das persönliche Muster konnte nicht gespeichert werden. Bitte versuche es erneut."
+      }
+    }
+  }
+}

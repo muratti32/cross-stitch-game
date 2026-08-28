@@ -55,4 +55,8 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'settings:tutorial.sectionTitle': '"Tutorial" is an identical cognate in Spanish.',
   'commerce:plans.upgrade': '"Upgrade" is a common English loanword in Brazilian Portuguese app/commerce UI.',
   'profile:home.identity.offline': '"Offline" is a common English loanword in Brazilian Portuguese tech UI.',
+  'catalog:detail.communityReport.explanationOptional': '"(optional)" is an identical cognate in German.',
+  'commerce:onetime.creditsNoun': '"Credits" is a common English loanword in German gaming UI.',
+  'profile:home.quickNav.moderationTitle': '"Moderation" is an identical cognate in German.',
+  'settings:developer.debug.title': '"Debug" is a common English loanword in German developer UI.',
 };

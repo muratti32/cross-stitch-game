@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Sticktisch",
+    "subtitle": "Mache da weiter, wo du aufgehört hast, oder setze ein aktuelles Projekt fort.",
+    "loading": "Deine Stiche werden geladen...",
+    "empty": {
+      "title": "Keine aktiven Projekte",
+      "body": "Dein Stickrahmen ist gerade leer. Stöbere im Vorlagenkatalog, um etwas Schönes zum Sticken zu finden!",
+      "action": "Katalog durchstöbern"
+    },
+    "unknownPattern": "Unbekannte Vorlage",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Vorlage {{id}}",
+    "deleteSessionAccessibilityLabel": "Sitzung löschen",
+    "viewFinishedAccessibilityLabel": "Fertiges Projekt ansehen",
+    "resumeAccessibilityLabel": "Sticken fortsetzen",
+    "status": {
+      "ready": "Bereit",
+      "done": "Fertig",
+      "active": "Aktiv",
+      "preparing": "Wird vorbereitet",
+      "failed": "Fehlgeschlagen"
+    },
+    "deleteConfirm": {
+      "title": "Fortschritt löschen",
+      "message": "Bist du sicher, dass du deinen Fortschritt für „{{title}}“ löschen möchtest? Dies kann nicht rückgängig gemacht werden.",
+      "cancel": "Abbrechen",
+      "confirm": "Löschen"
+    },
+    "preparingCard": {
+      "discardTitle": "Sitzung verwerfen",
+      "cancelTitle": "Download abbrechen",
+      "discardMessage": "Bist du sicher, dass du diese fehlgeschlagene Sitzung verwerfen möchtest?",
+      "cancelMessage": "Bist du sicher, dass du den Download dieser Vorlage abbrechen möchtest?",
+      "keep": "Behalten",
+      "discard": "Verwerfen",
+      "cancel": "Abbrechen"
+    }
+  },
+  "loading": {
+    "text": "Sitzung wird geöffnet & Stoff wird vorbereitet..."
+  },
+  "error": {
+    "title": "Laden der Sitzung fehlgeschlagen",
+    "fallbackMessage": "Deine Sticksitzung konnte nicht geladen werden.",
+    "backButton": "Zurückgehen",
+    "tableButton": "Zum Tisch"
+  },
+  "header": {
+    "backButton": "← Zurück",
+    "tableButton": "← Tisch",
+    "defaultTitle": "Sticksitzung",
+    "progress": "{{completed}} / {{total}} Kästchen ({{percent}}% abgeschlossen)",
+    "resumeTutorialAccessibilityLabel": "Tutorial fortsetzen"
+  },
+  "banners": {
+    "patternRemoved": "Diese Vorlage wurde von der Moderation entfernt und ist nicht mehr verfügbar. Tippe, um zu gehen.",
+    "syncConflict": "Mit einem anderen Gerät synchronisiert – einige Kästchen wurden aktualisiert. Tippe zum Schließen."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Nächstes verbleibendes Kästchen der aktiven Garnfarbe finden",
+    "undoAccessibilityLabel": "Letzten Stich rückgängig machen"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Farbe {{number}}: DMC {{dmcCode}}, {{count}} verbleibender Stich",
+    "chipAccessibilityLabel_other": "Farbe {{number}}: DMC {{dmcCode}}, {{count}} verbleibende Stiche",
+    "done": "Fertig",
+    "remaining_one": "noch {{count}}",
+    "remaining_other": "noch {{count}}"
+  },
+  "celebration": {
+    "title": "Wunderschön gestickt!",
+    "subtitle": "Du hast jeden einzelnen Stich auf diesem Stoff fertiggestellt.",
+    "stitchesLabel_one": "Stich",
+    "stitchesLabel_other": "Stiche",
+    "colorsLabel_one": "Farbe",
+    "colorsLabel_other": "Farben",
+    "replayButton": "Nochmal sticken",
+    "catalogButton": "Zurück zum Katalog"
+  }
+}

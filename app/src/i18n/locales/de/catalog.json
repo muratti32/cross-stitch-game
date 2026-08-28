@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Zurück",
+    "searchPlaceholder": "Suche nach Mustern, Erstellern, Tags…",
+    "offlineBanner": "Offline — Katalog ist möglicherweise nicht aktuell",
+    "sectionError": {
+      "title": "Laden fehlgeschlagen",
+      "retry": "Erneut versuchen"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} Farben",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} Farb.",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Englisch"
+    },
+    "accessibilityLabel": "Geschrieben auf {{language}}"
+  },
+  "index": {
+    "subtitle": "Erschaffe deine gemütliche Welt, Stich für Stich.",
+    "searchBar": {
+      "accessibilityLabel": "Musterkatalog durchsuchen"
+    },
+    "sections": {
+      "starterPatterns": "Starter-Muster",
+      "staffPicks": "Unsere Auswahl",
+      "categories": "Kategorien",
+      "newPatterns": "Neue Muster"
+    },
+    "staffPicks": {
+      "emptyTitle": "Noch keine Empfehlungen",
+      "emptyBody": "Unsere handverlesene Sammlung gemütlicher Designs wird bald hier erscheinen.",
+      "errorBody": "Der Katalog konnte nicht geladen werden und es ist noch nichts zwischengespeichert."
+    },
+    "categories": {
+      "count": "{{count}} Muster",
+      "errorBody": "Der Katalog konnte nicht geladen werden und es ist noch nichts zwischengespeichert."
+    },
+    "newPatterns": {
+      "emptyTitle": "Neue Muster entstehen gerade",
+      "emptyBody": "Neue Muster sind schon unterwegs!",
+      "errorBody": "Der Katalog konnte nicht geladen werden und es ist noch nichts zwischengespeichert.",
+      "showMore": "Mehr anzeigen",
+      "loading": "Lädt…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Stöbern",
+    "error": {
+      "body": "Diese Katalogseite konnte nicht geladen werden und es ist noch nichts zwischengespeichert."
+    },
+    "empty": {
+      "title": "Noch nichts hier",
+      "body": "Für diese Auswahl gibt es noch keine Muster. Neue Designs kommen regelmäßig dazu."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Katalog-Suchfeld",
+    "inactive": {
+      "title": "Katalog durchsuchen",
+      "body": "Gib mindestens zwei Zeichen ein, um nach Mustern nach Titel, Ersteller oder Tag zu suchen."
+    },
+    "error": {
+      "title": "Suche erfordert eine Verbindung",
+      "body": "Die Katalogsuche ist offline nicht verfügbar. Zwischengespeicherte Katalogseiten können weiterhin über den Katalog-Tab durchsucht werden."
+    },
+    "noResults": {
+      "title": "Keine Treffer",
+      "body": "Im Katalog gibt es noch nichts, was zu „{{query}}“ passt."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Als Gast spielen",
+    "body": "Deine Stitch Coins und dein Fortschritt werden als Gast nur auf diesem Gerät gespeichert. Wenn das Spiel gelöscht wird, sind das Gast-Guthaben und der Fortschritt möglicherweise unwiederbringlich verloren. Melde dich an, um deinen Fortschritt zu sichern."
+  },
+  "detail": {
+    "noDescription": "Keine Beschreibung verfügbar.",
+    "specs": {
+      "dimensions": "Maße",
+      "totalStitches": "Stiche insgesamt",
+      "colors": "Farben",
+      "category": "Kategorie"
+    },
+    "threadsSuffix": "{{count}} Fäden",
+    "palette": {
+      "title": "Benötigte Fäden",
+      "loading": "Garnpalette wird geladen…",
+      "loadFailed": "Garnpalette konnte nicht geladen werden: {{error}}",
+      "retry": "Erneut laden"
+    },
+    "actions": {
+      "startStitching": "Lossticken",
+      "starting": "Startet…",
+      "preparing": "Wird vorbereitet…"
+    },
+    "loadFailedGeneric": "Musterdatei konnte nicht dekodiert werden.",
+    "sessionCreateFailed": "Stick-Session konnte nicht erstellt werden. Bitte versuche es erneut.",
+    "unavailable": {
+      "title": "Muster nicht verfügbar",
+      "body": "Dieses Muster konnte nicht geladen werden. Vielleicht wurde es entfernt oder du bist offline.",
+      "goBack": "Zurück"
+    },
+    "byCreator": "von {{creatorName}}",
+    "byCreatorWithUsername": "von {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Ersteller blockieren",
+      "message": "Bist du sicher, dass du {{creatorName}} blockieren möchtest? Dies ist eine private Aktion, die du jederzeit rückgängig machen kannst. Dadurch werden die Muster dieses Erstellers in der Suche und beim Stöbern ausgeblendet. Der Ersteller wird nicht gemeldet und deine aktuelle Stick-Session wird nicht unterbrochen.",
+      "cancel": "Abbrechen",
+      "confirm": "Blockieren",
+      "blockedTitle": "Blockiert",
+      "blockedMessage": "{{creatorName}} wurde blockiert.",
+      "errorTitle": "Fehler",
+      "failedGeneric": "Ersteller konnte nicht blockiert werden."
+    },
+    "likeFailedGeneric": "Gefällt-mir-Status konnte nicht aktualisiert werden",
+    "connectToPlay": {
+      "title": "Verbinde dich zum Spielen",
+      "body": "Um ein Muster aus dem Katalog zu starten, wird eine Verbindung benötigt, um deine Session vorzubereiten. Starter-Muster können jederzeit gespielt werden, auch offline."
+    },
+    "insufficientCoins": {
+      "title": "Nicht genug Coins",
+      "body": "Dieses Muster kostet {{price}} Stitch Coins, aber du hast nur {{balance}} Coins.\n\nFehlend: {{shortfall}} Coins.\n\nVerdiene Stitch Coins, indem du andere Muster fertiglest! Belohnungen für den ersten Abschluss sind jetzt verfügbar.",
+      "getCoins": "Stitch Coins holen",
+      "findPatterns": "Muster zum Sticken finden",
+      "back": "Zurück"
+    },
+    "unlockFailedGeneric": "Freischalten fehlgeschlagen. Überprüfe deine Verbindung und versuche es erneut.",
+    "preparationFailedGeneric": "Vorbereitung konnte nicht gestartet werden. Überprüfe deine Verbindung und versuche es erneut.",
+    "price": {
+      "label": "Preis"
+    },
+    "balance": {
+      "label": "Dein Guthaben",
+      "loading": "…"
+    },
+    "unlockButton": "Für {{price}} Coins freischalten",
+    "communityReport": {
+      "button": "Dieses Muster melden",
+      "title": "{{patternTitle}} melden",
+      "body": "Wähle den Grund aus, der das Problem am besten beschreibt. Meldungen führen niemals dazu, dass ein Muster automatisch ausgeblendet oder geändert wird.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Unangemessene oder unsichere Inhalte",
+        "copyright_or_publication_rights": "Urheber- oder Veröffentlichungsrechte",
+        "duplicate_or_spam": "Duplikat oder Spam",
+        "misleading_title_or_tags": "Irreführender Titel oder Tags",
+        "other": "Anderer Grund"
+      },
+      "explanationLabel": "Beweis oder Erklärung {{requirement}}",
+      "explanationRequired": "(erforderlich)",
+      "explanationOptional": "(optional)",
+      "explanationPlaceholder": "Teile Details mit, die einem Moderator bei der Überprüfung des Musters helfen.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Abbrechen",
+      "submit": "Meldung senden",
+      "submitFailedGeneric": "Deine Meldung konnte nicht gesendet werden. Überprüfe deine Verbindung und versuche es erneut.",
+      "receivedTitle": "Meldung erhalten",
+      "alreadyReceivedTitle": "Meldung bereits erhalten",
+      "receivedBody": "Ein Moderator kann dieses Muster nun überprüfen. Die Meldung ändert nichts an der Verfügbarkeit des Musters.",
+      "alreadyReceivedBody": "Deine bereits gesendete Meldung ist bereits Teil der laufenden Überprüfung.",
+      "signInRequired": {
+        "title": "Zum Melden anmelden",
+        "message": "Community-Meldungen erfordern ein registriertes Konto. Es wurde nichts gesendet.",
+        "cancel": "Abbrechen",
+        "signIn": "Anmelden"
+      },
+      "validation": {
+        "chooseReason": "Wähle einen Grund für die Meldung aus.",
+        "explainRequired": "Erkläre, warum du dieses Muster meldest.",
+        "tooLong": "Die Erklärung darf maximal 2.000 Zeichen lang sein.",
+        "needsContent": "Die Erklärung muss Buchstaben oder Zahlen enthalten."
+      }
+    }
+  }
+}

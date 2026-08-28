@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "WILLKOMMEN BEI STITCH WISH",
+    "title": "Wähle eine Farbe, tippe auf die passenden Kästchen.",
+    "heroAlt": "Vorschau des Cozy Heart Starter-Musters",
+    "handedness": {
+      "sectionTitle": "Auf welcher Seite soll die Steuerung sein?",
+      "groupLabel": "Steuerungsseite",
+      "optionRight": "Steuerung rechts",
+      "optionLeft": "Steuerung links",
+      "saveErrorText": "Diese Auswahl konnte nicht gespeichert werden.",
+      "retry": "Nochmal versuchen"
+    },
+    "note": "Du kannst das später in den Einstellungen ändern.",
+    "start": "Jetzt sticken",
+    "starting": "Startet…",
+    "browse": "Starter-Muster durchstöbern",
+    "signIn": "Anmelden"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Wähle DMC 321 Weihnachtsrot.",
+      "stitchAction": "Tippe auf das hervorgehobene, passende Kästchen.",
+      "mismatchedTap": "Tippe auf das hervorgehobene, andere Kästchen. Falsches Tippen kostet nichts.",
+      "undoAction": "Mache diesen Stich rückgängig und platziere ihn erneut.",
+      "stitchSweep": "Drücke auf ein passendes Kästchen und ziehe über die hervorgehobene Reihe.",
+      "threadColorCompletion": "Sticke den hervorgehobenen weißen Faden fertig und wähle dann deine nächste Farbe."
+    },
+    "hints": {
+      "anchoredZoom": "Zoome mit zwei Fingern, während die Kästchen unter deinen Fingern an Ort und Stelle bleiben.",
+      "panVsSweep": "Durch Ziehen verschiebst du den Stoff. Beginne auf einem passenden Kästchen, um in einer Wischbewegung zu sticken.",
+      "edgeAutoPan": "Wische nahe am Rand weiter und der Stoff folgt deinem Finger.",
+      "remainingCellLocator": "Nutze den Finder, um das nächste verbleibende Kästchen für diesen Faden zu finden."
+    },
+    "skip": "Vorerst überspringen",
+    "skipAccessibilityLabel": "Tutorial vorerst überspringen",
+    "dismiss": "Alles klar",
+    "dismissAccessibilityLabel": "Hinweis ausblenden"
+  },
+  "recap": {
+    "title": "Du hast den Dreh raus!",
+    "lines": {
+      "matchNumbers": "Gleiche die Nummern ab, um jeden Stich zu platzieren.",
+      "dragSweep": "Ziehe über passende Kästchen, um in einer Wischbewegung zu sticken.",
+      "pinchZoom": "Zoome mit zwei Fingern, wenn du einen genaueren Blick brauchst.",
+      "undoLocator": "Rückgängig-Machen und der Finder sind immer kostenlos."
+    },
+    "continue": "Weitersticken",
+    "browsePatterns": "Muster durchstöbern"
+  }
+}
