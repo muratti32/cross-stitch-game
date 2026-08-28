@@ -27,7 +27,7 @@ import { acquireAppleProviderIdToken, acquireGoogleProviderIdToken } from '@/ide
 import { loadOnboardingState, resumeTutorial, saveOnboardingPosition } from '@/onboarding/state';
 import { useTranslation } from 'react-i18next';
 import {
-  SUPPORTED_LOCALES,
+  SUPPORTED_LOCALE_CATALOG,
   getLanguageOverride,
   setActiveLanguageOverride,
   clearActiveLanguageOverride,
@@ -590,18 +590,18 @@ export default function SettingsScreen() {
           <Text style={styles.settingDescription}>{t('language.description')}</Text>
         </View>
         <View style={styles.rowDivider} />
-        {SUPPORTED_LOCALES.map((locale) => (
-          <React.Fragment key={locale}>
+        {SUPPORTED_LOCALE_CATALOG.map(({ identifier, selfName }) => (
+          <React.Fragment key={identifier}>
             <Pressable
-              onPress={() => void handleSelectLanguage(locale)}
+              onPress={() => void handleSelectLanguage(identifier)}
               style={({ pressed }) => [styles.languageRow, pressed && styles.linkPressed]}
               accessibilityRole="button"
-              accessibilityState={{ selected: languageOverride === locale }}
+              accessibilityState={{ selected: languageOverride === identifier }}
             >
               <Text style={styles.languageOptionText}>
-                {locale === 'tr' ? t('language.optionTurkish') : t('language.optionEnglish')}
+                {selfName}
               </Text>
-              {languageOverride === locale && (
+              {languageOverride === identifier && (
                 <Ionicons name="checkmark-circle" size={20} color={Theme.colors.accentTeal} />
               )}
             </Pressable>

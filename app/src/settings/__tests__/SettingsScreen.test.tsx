@@ -222,3 +222,17 @@ describe('SettingsScreen account deletion', () => {
     expect(mockRequestDeletion).toHaveBeenCalledTimes(1); expect(mockLogout).not.toHaveBeenCalled();
   });
 });
+
+describe('SettingsScreen App Display Language', () => {
+  beforeEach(() => {
+    jest.clearAllMocks(); mockIsAccount = false; mockDeletionStatus = { status: 'none' }; mockDeletionError = null; mockMembershipActive = false;
+    mockLoadOnboardingState.mockResolvedValue({ position: 'complete' });
+  });
+
+  it('offers only released locales and uses catalog self-names', async () => {
+    const text = allText((await renderScreen()).root);
+
+    expect(text).toEqual(expect.arrayContaining(['English', 'Türkçe']));
+    expect(text).not.toEqual(expect.arrayContaining(['Español', 'Deutsch', 'Français', 'Português (Brasil)', 'Italiano']));
+  });
+});

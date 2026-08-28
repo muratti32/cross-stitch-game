@@ -66,6 +66,7 @@
     "zustand": "^5.0.10"
   },
   "devDependencies": {
+    "@react-native/jest-preset": "^0.86.3",
     "@types/jest": "^29.5.14",
     "@types/node": "^26.1.1",
     "@types/pako": "^2.0.4",

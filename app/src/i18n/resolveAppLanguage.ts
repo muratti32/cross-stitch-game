@@ -8,12 +8,31 @@
 /** English is the reference key set and the product's fixed fallback. */
 export const FALLBACK_LOCALE = 'en';
 
-/**
- * Normalizes a region-tagged language tag (e.g. 'tr-TR', 'tr_TR') to its
- * base language ('tr').
- */
-function normalizeToBaseLanguage(tag: string): string {
-  return tag.split(/[-_]/)[0].toLowerCase();
+function canonicalizeLanguageTag(tag: string): string | null {
+  try {
+    return Intl.getCanonicalLocales(tag.replace(/_/g, '-'))[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+function resolveCandidate(candidate: string, supportedLocales: readonly string[]): string | null {
+  const canonicalCandidate = canonicalizeLanguageTag(candidate);
+  if (canonicalCandidate === null) {
+    return null;
+  }
+
+  const canonicalSupported = supportedLocales.map((locale) => ({
+    locale,
+    canonical: canonicalizeLanguageTag(locale),
+  }));
+  const exact = canonicalSupported.find(({ canonical }) => canonical === canonicalCandidate);
+  if (exact) {
+    return exact.locale;
+  }
+
+  const baseLanguage = canonicalCandidate.split('-')[0].toLowerCase();
+  return canonicalSupported.find(({ canonical }) => canonical?.toLowerCase() === baseLanguage)?.locale ?? null;
 }
 
 /**
@@ -21,9 +40,9 @@ function normalizeToBaseLanguage(tag: string): string {
  * languages, an optional stored override, and the list of locales the app
  * bundles translations for.
  *
- * - A supported, non-null override wins outright.
- * - Otherwise the first supported device language (after normalizing any
- *   region tag) wins, in device preference order.
+ * - A supported, non-null override wins outright, using exact then base match.
+ * - Otherwise the first supported device language wins in device preference
+ *   order, using exact then base match.
  * - An absent/empty device language list, or no supported language found
  *   anywhere above, resolves to English.
  */
@@ -33,16 +52,16 @@ export function resolveAppLanguage(
   supportedLocales: readonly string[],
 ): string {
   if (override !== null) {
-    const normalizedOverride = normalizeToBaseLanguage(override);
-    if (supportedLocales.includes(normalizedOverride)) {
-      return normalizedOverride;
+    const resolvedOverride = resolveCandidate(override, supportedLocales);
+    if (resolvedOverride !== null) {
+      return resolvedOverride;
     }
   }
 
   for (const deviceLanguage of deviceLanguages) {
-    const normalized = normalizeToBaseLanguage(deviceLanguage);
-    if (supportedLocales.includes(normalized)) {
-      return normalized;
+    const resolvedDeviceLanguage = resolveCandidate(deviceLanguage, supportedLocales);
+    if (resolvedDeviceLanguage !== null) {
+      return resolvedDeviceLanguage;
     }
   }
 
