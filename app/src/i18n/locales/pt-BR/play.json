@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Mesa de Bordado",
+    "subtitle": "Continue de onde parou ou retome um projeto recente.",
+    "loading": "Carregando seus pontos...",
+    "empty": {
+      "title": "Nenhum Projeto Ativo",
+      "body": "Seu bastidor está vazio no momento. Navegue pelo catálogo de gráficos para encontrar algo lindo para bordar!",
+      "action": "Navegar pelo Catálogo"
+    },
+    "unknownPattern": "Gráfico Desconhecido",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Gráfico {{id}}",
+    "deleteSessionAccessibilityLabel": "Excluir sessão",
+    "viewFinishedAccessibilityLabel": "Visualizar projeto concluído",
+    "resumeAccessibilityLabel": "Retomar bordado",
+    "status": {
+      "ready": "Pronto",
+      "done": "Concluído",
+      "active": "Ativo",
+      "preparing": "Preparando",
+      "failed": "Falha"
+    },
+    "deleteConfirm": {
+      "title": "Excluir Progresso",
+      "message": "Tem certeza de que deseja excluir seu progresso em \"{{title}}\"? Esta ação não poderá ser desfeita.",
+      "cancel": "Cancelar",
+      "confirm": "Excluir"
+    },
+    "preparingCard": {
+      "discardTitle": "Descartar Sessão",
+      "cancelTitle": "Cancelar Download",
+      "discardMessage": "Tem certeza de que deseja descartar esta sessão com falha?",
+      "cancelMessage": "Tem certeza de que deseja cancelar o download deste gráfico?",
+      "keep": "Manter",
+      "discard": "Descartar",
+      "cancel": "Cancelar"
+    }
+  },
+  "loading": {
+    "text": "Abrindo sessão e preparando o tecido..."
+  },
+  "error": {
+    "title": "Falha ao Carregar Sessão",
+    "fallbackMessage": "Não foi possível carregar sua sessão de bordado.",
+    "backButton": "Voltar",
+    "tableButton": "Ir para a Mesa"
+  },
+  "header": {
+    "backButton": "← Voltar",
+    "tableButton": "← Mesa",
+    "defaultTitle": "Sessão de Bordado",
+    "progress": "{{completed}} / {{total}} células ({{percent}}% concluído)",
+    "resumeTutorialAccessibilityLabel": "Retomar tutorial"
+  },
+  "banners": {
+    "patternRemoved": "Este gráfico foi removido pela moderação e não está mais disponível. Toque para sair.",
+    "syncConflict": "Sincronizado com outro dispositivo — algumas células foram atualizadas. Toque para fechar."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Localizar próxima célula restante da cor da linha ativa",
+    "undoAccessibilityLabel": "Desfazer último ponto"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Cor {{number}}: DMC {{dmcCode}}, {{count}} ponto restante",
+    "chipAccessibilityLabel_other": "Cor {{number}}: DMC {{dmcCode}}, {{count}} pontos restantes",
+    "done": "Concluído",
+    "remaining_one": "Falta {{count}}",
+    "remaining_other": "Faltam {{count}}"
+  },
+  "celebration": {
+    "title": "Bordado com Perfeição!",
+    "subtitle": "Você concluiu cada um dos pontos deste tecido.",
+    "stitchesLabel_one": "Ponto",
+    "stitchesLabel_other": "Pontos",
+    "colorsLabel_one": "Cor",
+    "colorsLabel_other": "Cores",
+    "replayButton": "Bordar Novamente",
+    "catalogButton": "Voltar ao Catálogo"
+  }
+}

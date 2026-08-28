@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Voltar",
+    "searchPlaceholder": "Buscar padrões, criadores, tags…",
+    "offlineBanner": "Offline — o catálogo pode estar desatualizado",
+    "sectionError": {
+      "title": "Não foi possível carregar",
+      "retry": "Tentar novamente"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} cores",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} colunas",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Inglês"
+    },
+    "accessibilityLabel": "Escrito em {{language}}"
+  },
+  "index": {
+    "subtitle": "Crie seu mundo aconchegante, ponto por ponto.",
+    "searchBar": {
+      "accessibilityLabel": "Buscar no catálogo de padrões"
+    },
+    "sections": {
+      "starterPatterns": "Padrões Iniciais",
+      "staffPicks": "Escolhas da Equipe",
+      "categories": "Categorias",
+      "newPatterns": "Novos Padrões"
+    },
+    "staffPicks": {
+      "emptyTitle": "Nenhuma Escolha da Equipe ainda",
+      "emptyBody": "Nossa coleção selecionada a dedo de designs aconchegantes aparecerá aqui em breve.",
+      "errorBody": "Não foi possível acessar o catálogo e nada foi armazenado no cache ainda."
+    },
+    "categories": {
+      "count": "{{count}} padrões",
+      "errorBody": "Não foi possível acessar o catálogo e nada foi armazenado no cache ainda."
+    },
+    "newPatterns": {
+      "emptyTitle": "Novos padrões estão sendo criados",
+      "emptyBody": "Novidades estão a caminho!",
+      "errorBody": "Não foi possível acessar o catálogo e nada foi armazenado no cache ainda.",
+      "showMore": "Mostrar mais",
+      "loading": "Carregando…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Navegar",
+    "error": {
+      "body": "Não foi possível acessar esta página do catálogo e nada foi armazenado no cache ainda."
+    },
+    "empty": {
+      "title": "Nada aqui ainda",
+      "body": "Nenhum padrão corresponde a esta seleção ainda. Novos designs chegam regularmente."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Campo de busca do catálogo",
+    "inactive": {
+      "title": "Buscar no catálogo",
+      "body": "Digite pelo menos dois caracteres para buscar padrões por título, criador ou tag."
+    },
+    "error": {
+      "title": "A busca precisa de conexão",
+      "body": "A busca do catálogo não está disponível offline. As páginas do catálogo armazenadas no cache continuam navegáveis na aba do catálogo."
+    },
+    "noResults": {
+      "title": "Nenhum resultado",
+      "body": "Nada no catálogo corresponde a “{{query}}” ainda."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Jogando como Convidado",
+    "body": "Suas Stitch Coins e seu progresso ficam salvos apenas neste dispositivo como Convidado. Se o aplicativo for desinstalado, o registro de Convidado e seu progresso podem ser irrecuperáveis. Entrar protege seu progresso."
+  },
+  "detail": {
+    "noDescription": "Nenhuma descrição disponível.",
+    "specs": {
+      "dimensions": "Dimensões",
+      "totalStitches": "Total de pontos",
+      "colors": "Cores",
+      "category": "Categoria"
+    },
+    "threadsSuffix": "{{count}} Linhas",
+    "palette": {
+      "title": "Linhas necessárias",
+      "loading": "Lendo paleta de linhas...",
+      "loadFailed": "Falha ao carregar paleta: {{error}}",
+      "retry": "Tentar carregar novamente"
+    },
+    "actions": {
+      "startStitching": "Começar a bordar",
+      "starting": "Iniciando...",
+      "preparing": "Preparando…"
+    },
+    "loadFailedGeneric": "Falha ao decodificar o arquivo de padrão.",
+    "sessionCreateFailed": "Falha ao criar uma sessão de bordado. Tente novamente.",
+    "unavailable": {
+      "title": "Padrão indisponível",
+      "body": "Não foi possível carregar este padrão. Ele pode ter sido removido ou você pode estar offline.",
+      "goBack": "Voltar"
+    },
+    "byCreator": "por {{creatorName}}",
+    "byCreatorWithUsername": "por {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Bloquear criador",
+      "message": "Tem certeza de que deseja bloquear {{creatorName}}? Esta é uma ação privada e reversível que oculta os padrões deste criador da busca/exploração. Isso não denuncia o criador e não interromperá sua sessão de bordado atual.",
+      "cancel": "Cancelar",
+      "confirm": "Bloquear",
+      "blockedTitle": "Bloqueado",
+      "blockedMessage": "{{creatorName}} foi bloqueado.",
+      "errorTitle": "Erro",
+      "failedGeneric": "Falha ao bloquear criador."
+    },
+    "likeFailedGeneric": "Falha ao atualizar o status de curtida",
+    "connectToPlay": {
+      "title": "Conecte-se para jogar",
+      "body": "Iniciar um padrão do catálogo requer conexão para preparar sua sessão. Os Padrões Iniciais podem ser jogados agora mesmo, mesmo offline."
+    },
+    "insufficientCoins": {
+      "title": "Moedas insuficientes",
+      "body": "Este padrão custa {{price}} Stitch Coins, mas você só tem {{balance}} Stitch Coins.\n\nFaltam: {{shortfall}} Stitch Coins.\n\nGanhe Stitch Coins completando outros padrões! As recompensas de primeira conclusão estão ativas.",
+      "getCoins": "Obter Stitch Coins",
+      "findPatterns": "Encontrar padrões para bordar",
+      "back": "Voltar"
+    },
+    "unlockFailedGeneric": "Falha ao desbloquear. Verifique sua conexão e tente novamente.",
+    "preparationFailedGeneric": "Não foi possível iniciar a preparação. Verifique sua conexão e tente novamente.",
+    "price": {
+      "label": "Preço"
+    },
+    "balance": {
+      "label": "Seu saldo",
+      "loading": "…"
+    },
+    "unlockButton": "Desbloquear por {{price}} Stitch Coin",
+    "communityReport": {
+      "button": "Denunciar este padrão",
+      "title": "Denunciar {{patternTitle}}",
+      "body": "Escolha o motivo que melhor descreve o problema. As denúncias nunca ocultam ou alteram um padrão automaticamente.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Conteúdo inapropriado ou inseguro",
+        "copyright_or_publication_rights": "Direitos autorais ou de publicação",
+        "duplicate_or_spam": "Duplicado ou spam",
+        "misleading_title_or_tags": "Título ou tags enganosos",
+        "other": "Outro"
+      },
+      "explanationLabel": "Evidência ou explicação {{requirement}}",
+      "explanationRequired": "(obrigatório)",
+      "explanationOptional": "(opcional)",
+      "explanationPlaceholder": "Compartilhe detalhes que ajudarão o moderador a revisar o padrão.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Cancelar",
+      "submit": "Enviar denúncia",
+      "submitFailedGeneric": "Não foi possível enviar sua denúncia. Verifique sua conexão e tente novamente.",
+      "receivedTitle": "Denúncia recebida",
+      "alreadyReceivedTitle": "Denúncia já recebida",
+      "receivedBody": "Um moderador agora poderá revisar este padrão. A denúncia não altera automaticamente a disponibilidade dele.",
+      "alreadyReceivedBody": "Sua denúncia existente já faz parte da revisão aberta.",
+      "signInRequired": {
+        "title": "Entre para denunciar",
+        "message": "As denúncias da comunidade exigem uma conta registrada. Nada foi enviado.",
+        "cancel": "Cancelar",
+        "signIn": "Entrar"
+      },
+      "validation": {
+        "chooseReason": "Escolha um motivo para a denúncia.",
+        "explainRequired": "Explique por que você está denunciando este padrão.",
+        "tooLong": "A explicação deve ter 2.000 caracteres ou menos.",
+        "needsContent": "A explicação deve conter letras ou números."
+      }
+    }
+  }
+}

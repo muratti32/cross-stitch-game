@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "BOAS-VINDAS AO STITCH WISH",
+    "title": "Escolha uma cor, toque nos quadrados correspondentes.",
+    "heroAlt": "Prévia do gráfico inicial Coração Aconchegante",
+    "handedness": {
+      "sectionTitle": "De qual lado devem ficar os controles?",
+      "groupLabel": "Lado dos controles",
+      "optionRight": "Controles à direita",
+      "optionLeft": "Controles à esquerda",
+      "saveErrorText": "Não foi possível salvar essa escolha.",
+      "retry": "Tentar novamente"
+    },
+    "note": "Você pode alterar isso mais tarde nas Configurações.",
+    "start": "Começar a bordar",
+    "starting": "Iniciando…",
+    "browse": "Explorar gráficos iniciais",
+    "signIn": "Entrar"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Selecione DMC 321 Vermelho de Natal.",
+      "stitchAction": "Toque na célula correspondente destacada.",
+      "mismatchedTap": "Toque na célula destacada que é diferente. Toques errados não custam nada.",
+      "undoAction": "Desfaça esse ponto e depois coloque-o novamente.",
+      "stitchSweep": "Pressione uma célula correspondente e arraste pela sequência destacada.",
+      "threadColorCompletion": "Termine a linha branca destacada e depois escolha sua próxima cor."
+    },
+    "hints": {
+      "anchoredZoom": "Faça o movimento de pinça para dar zoom mantendo as células sob seus dedos no lugar.",
+      "panVsSweep": "Arrastar move o tecido. Comece em uma célula correspondente para bordar em sequência.",
+      "edgeAutoPan": "Continue bordando em sequência perto da borda e o tecido acompanhará seu dedo.",
+      "remainingCellLocator": "Use o localizador para encontrar a próxima célula restante para esta linha."
+    },
+    "skip": "Pular por enquanto",
+    "skipAccessibilityLabel": "Pular tutorial por enquanto",
+    "dismiss": "Entendi",
+    "dismissAccessibilityLabel": "Fechar dica"
+  },
+  "recap": {
+    "title": "Você pegou o jeito",
+    "lines": {
+      "matchNumbers": "Combine os números para fazer cada ponto.",
+      "dragSweep": "Arraste pelas células correspondentes para bordar em sequência.",
+      "pinchZoom": "Faça o movimento de pinça para dar zoom quando precisar ver de perto.",
+      "undoLocator": "Desfazer e o localizador são sempre gratuitos."
+    },
+    "continue": "Continuar bordando",
+    "browsePatterns": "Explorar gráficos"
+  }
+}

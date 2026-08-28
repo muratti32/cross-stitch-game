@@ -174,6 +174,7 @@ import { AddOnboardingGameplayEvents1789603200000 } from './migrations/178960320
 import { LocalizeCatalogCategoryLabels1789689600000 } from './migrations/1789689600000-LocalizeCatalogCategoryLabels';
 import { AddFrenchCatalogCategoryLabels1789776000000 } from './migrations/1789776000000-AddFrenchCatalogCategoryLabels';
 import { AddSpanishCatalogCategoryLabels1789862400000 } from './migrations/1789862400000-AddSpanishCatalogCategoryLabels';
+import { AddBrazilianPortugueseCatalogCategoryLabels1789948800000 } from './migrations/1789948800000-AddBrazilianPortugueseCatalogCategoryLabels';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -333,6 +334,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       LocalizeCatalogCategoryLabels1789689600000,
       AddFrenchCatalogCategoryLabels1789776000000,
       AddSpanishCatalogCategoryLabels1789862400000,
+      AddBrazilianPortugueseCatalogCategoryLabels1789948800000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

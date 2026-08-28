@@ -53,4 +53,6 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'settings:links.openFailedGenericTitle': '"Error" is an identical cognate in Spanish.',
   'settings:session.idLabel': '"ID" is used identically in Spanish tech/UI copy.',
   'settings:tutorial.sectionTitle': '"Tutorial" is an identical cognate in Spanish.',
+  'commerce:plans.upgrade': '"Upgrade" is a common English loanword in Brazilian Portuguese app/commerce UI.',
+  'profile:home.identity.offline': '"Offline" is a common English loanword in Brazilian Portuguese tech UI.',
 };

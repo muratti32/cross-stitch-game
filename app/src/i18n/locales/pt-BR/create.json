@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Voltar",
+    "cancel": "Cancelar",
+    "duplicateTitle": "Você já tem um Gráfico Pessoal chamado “{{title}}”. Escolha outro título.",
+    "cellsCount_one": "célula",
+    "cellsCount_other": "células",
+    "colorsCount_one": "cor",
+    "colorsCount_other": "cores"
+  },
+  "hub": {
+    "title": "Central de Criação",
+    "subtitle": "Dê vida aos seus próprios designs com gráficos de ponto cruz personalizados.",
+    "opening": "Abrindo…",
+    "photoImport": {
+      "title": "Importação de Foto",
+      "description": "Envie uma foto do seu rolo da câmera e converta-a em um gráfico para bordar.",
+      "action": "Importar foto"
+    },
+    "aiGenerator": {
+      "title": "Gerador de IA",
+      "description": "Descreva um prompt aconchegante e deixe a inteligência artificial gerar um design de pixel personalizado.",
+      "action": "Gerar design"
+    }
+  },
+  "aspects": {
+    "square": "Quadrado",
+    "portrait_4_3": "Retrato 4:3",
+    "landscape_4_3": "Paisagem 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "A conversão do gráfico falhou. Tente novamente.",
+      "timeout": "A conversão do gráfico ainda está em processamento. Tente novamente em breve.",
+      "generic": "Não foi possível concluir a conversão do gráfico. Tente novamente."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Conta Registrada Necessária",
+      "body": "As artes de IA e a biblioteca delas permanecem privadas na sua conta.",
+      "signIn": "Entrar"
+    },
+    "header": {
+      "title": "Gerador de IA",
+      "backAccessibilityLabel": "Voltar"
+    },
+    "prompt": {
+      "label": "Descreva sua arte",
+      "placeholder": "Um jardim aconchegante de chalé ao pôr do sol…"
+    },
+    "generate": {
+      "working": "Processando…",
+      "action": "Gerar — 1 Crédito de IA",
+      "errors": {
+        "promptRejected": "Esse prompt não é permitido. Tente descrever outra coisa.",
+        "generic": "Não foi possível iniciar a geração por IA. Tente novamente."
+      }
+    },
+    "library": {
+      "title": "Sua Biblioteca de Artes de IA",
+      "status": {
+        "pending": "Pendente",
+        "dispatched": "Enviado",
+        "running": "Executando",
+        "delivered": "Entregue",
+        "safety_rejected": "Rejeitado por segurança",
+        "failed": "Falhou",
+        "deleted": "Excluído",
+        "unknown": "Indisponível"
+      },
+      "failure": {
+        "safety_rejected": "Esta arte não passou na verificação de segurança do provedor.",
+        "failed": "Não foi possível gerar esta arte."
+      },
+      "approve": "Aprovar como Gráfico",
+      "delete": "Excluir",
+      "deleteAccessibilityLabel": "Excluir esta arte de IA",
+      "errors": {
+        "loadFailed": "Não foi possível carregar sua biblioteca de artes de IA. Tente novamente."
+      }
+    },
+    "approve": {
+      "modalTitle": "Criar Gráfico Pessoal",
+      "titleLabel": "Título do gráfico",
+      "titleAccessibilityLabel": "Título do gráfico",
+      "defaultTitle": "Meu Gráfico de IA",
+      "placeholder": "Meu Gráfico de IA",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Cancelar",
+      "creating": "Criando gráfico…",
+      "create": "Criar Gráfico",
+      "errors": {
+        "generic": "Não foi possível criar o gráfico pessoal. Tente novamente."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Conta Registrada Necessária",
+      "body": "Os gráficos pessoais pertencem à sua conta para que permaneçam privados e disponíveis em todos os dispositivos.",
+      "signIn": "Entrar ou criar conta",
+      "back": "Voltar"
+    },
+    "header": {
+      "title": "Gráfico de Foto",
+      "subtitle": "Enquadre localmente e aprove a conversão",
+      "backAccessibilityLabel": "Voltar"
+    },
+    "picker": {
+      "chooseTitle": "Escolher uma foto",
+      "helpText": "A foto original em alta resolução permanece neste dispositivo. Nada será convertido até você aprovar o enquadramento.",
+      "choose": "Escolher da biblioteca",
+      "chooseAnother": "Escolher outra",
+      "opening": "Abrindo…",
+      "errors": {
+        "permissionDenied": "É necessário ter acesso à biblioteca de fotos para escolher uma foto local.",
+        "invalidDimensions": "A foto selecionada não apresenta dimensões utilizáveis.",
+        "generic": "Não foi possível abrir a biblioteca de fotos. Tente novamente."
+      }
+    },
+    "framing": {
+      "title": "Enquadramento da Arte",
+      "gestureHint": "Arraste para posicionar · belisque para dar zoom",
+      "aspectLabel": "Proporção do enquadramento"
+    },
+    "profile": {
+      "title": "Perfil de Conversão",
+      "options": {
+        "easy": "Fácil",
+        "standard": "Padrão",
+        "detailed": "Detalhado"
+      },
+      "custom": "Personalizado",
+      "customMeta": "Gratuito · formato bloqueado",
+      "unavailable": "Não cabe neste enquadramento",
+      "customShortEdgeLabel": "Lado menor",
+      "customColorLimitLabel": "Limite de cores DMC",
+      "exceedsLimit": "Estes valores personalizados excedem o limite de tamanho do gráfico de {{max}} células."
+    },
+    "titleCard": {
+      "label": "Título do gráfico",
+      "placeholder": "Meu Gráfico de Foto",
+      "defaultTitle": "Meu Gráfico de Foto",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · até {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "A aprovação envia apenas a imagem enquadrada e reduzida. A foto original permanece local.",
+      "approve": "Aprovar arte e converter"
+    },
+    "processing": {
+      "preparingFrame": "Preparando o enquadramento aprovado neste dispositivo…",
+      "uploading": "Enviando apenas o enquadramento cortado e reduzido…",
+      "waitingForWorker": "Aguardando o processador de conversão…",
+      "buildingGrid": "Montando a grade de pontos e a paleta DMC…",
+      "preparingSession": "Preparando o gráfico pessoal para jogar…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Este perfil não se ajusta mais ao enquadramento final. Escolha Fácil ou reduza os detalhes.",
+        "generic": "Não foi possível converter esta foto. Tente novamente."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Nenhum Gráfico Selecionado",
+      "noPatternBody": "Esta tela deve ser aberta a partir de um gráfico pessoal existente em sua biblioteca.",
+      "accountTitle": "Conta Registrada Necessária",
+      "accountBody": "Os gráficos pessoais pertencem à sua conta para que permaneçam privados e disponíveis em todos os dispositivos.",
+      "signIn": "Entrar ou criar conta",
+      "back": "Voltar"
+    },
+    "loading": "Retomando o rascunho do editor...",
+    "load": {
+      "failedTitle": "Falha ao Carregar o Gráfico",
+      "retry": "Tentar novamente",
+      "back": "Voltar",
+      "errors": {
+        "generic": "Não foi possível carregar este gráfico pessoal. Tente novamente."
+      }
+    },
+    "header": {
+      "title": "Editor de Gráfico",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Voltar"
+    },
+    "toolbar": {
+      "undo": "Desfazer",
+      "redo": "Refazer"
+    },
+    "mode": {
+      "paint": "Pintar",
+      "replaceColor": "Substituir Cor",
+      "replaceStep1": "1. Toque em uma cor no gráfico abaixo para substituir:",
+      "replaceStep2": "2. Selecione uma cor DMC de destino abaixo para realizar a substituição:",
+      "paintSelected": "Selecionado: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Selecione uma cor abaixo e toque nas células para pintar."
+    },
+    "errors": {
+      "pickColorFirst": "Escolha uma cor primeiro",
+      "paletteLimit": "Este gráfico já usa o limite máximo de {{max}} cores de linha."
+    },
+    "picker": {
+      "title": "Cores de Linha DMC",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Salvar Gráfico Editado",
+      "placeholder": "Título do meu gráfico editado",
+      "action": "Salvar como Novo",
+      "offlineTitle": "Salvo offline",
+      "offlineBody": "Seu gráfico editado foi salvo neste dispositivo e será sincronizado com sua conta assim que você estiver online novamente.",
+      "errors": {
+        "generic": "Não foi possível salvar este gráfico pessoal. Tente novamente."
+      }
+    }
+  }
+}
