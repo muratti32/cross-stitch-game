@@ -1,9 +1,11 @@
 /**
  * The locales the app binary bundles translations for (#155: English and
  * Turkish for the first release). Adding a third language means adding a
- * locale folder under `locales/` and this code, and nothing else - it is
- * pure content work.
+ * locale folder under `locales/` and regenerating the bundled JSON. No
+ * application-code registry needs editing.
  */
-export const SUPPORTED_LOCALES = ['en', 'tr'] as const;
+import resources from './resources.generated.json';
 
-export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
+export type SupportedLocale = keyof typeof resources;
+
+export const SUPPORTED_LOCALES = Object.keys(resources) as SupportedLocale[];

@@ -14,24 +14,7 @@
  */
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import enSettings from './locales/en/settings.json';
-import trSettings from './locales/tr/settings.json';
-import enErrors from './locales/en/errors.json';
-import trErrors from './locales/tr/errors.json';
-import enOnboarding from './locales/en/onboarding.json';
-import trOnboarding from './locales/tr/onboarding.json';
-import enCatalog from './locales/en/catalog.json';
-import trCatalog from './locales/tr/catalog.json';
-import enPlay from './locales/en/play.json';
-import trPlay from './locales/tr/play.json';
-import enCommerce from './locales/en/commerce.json';
-import trCommerce from './locales/tr/commerce.json';
-import enProfile from './locales/en/profile.json';
-import trProfile from './locales/tr/profile.json';
-import enShell from './locales/en/shell.json';
-import trShell from './locales/tr/shell.json';
-import enCreate from './locales/en/create.json';
-import trCreate from './locales/tr/create.json';
+import resources from './resources.generated.json';
 import { FALLBACK_LOCALE } from './resolveAppLanguage';
 import { resolveMissingTranslation, reportMissingTranslationKey } from './missingKeyHandler';
 import { SUPPORTED_LOCALES } from './supportedLocales';
@@ -46,17 +29,6 @@ export const DEFAULT_NAMESPACE = 'settings';
 // src/api/serverErrorPresentation.ts. `shell` (#166) is the app-shell chrome
 // itself - the bottom tab bar titles in app/(tabs)/_layout.tsx - which has
 // no single owning feature directory.
-const resources = {
-  en: {
-    settings: enSettings, errors: enErrors, onboarding: enOnboarding, catalog: enCatalog,
-    play: enPlay, commerce: enCommerce, profile: enProfile, shell: enShell, create: enCreate,
-  },
-  tr: {
-    settings: trSettings, errors: trErrors, onboarding: trOnboarding, catalog: trCatalog,
-    play: trPlay, commerce: trCommerce, profile: trProfile, shell: trShell, create: trCreate,
-  },
-};
-
 let initialized = false;
 
 /**

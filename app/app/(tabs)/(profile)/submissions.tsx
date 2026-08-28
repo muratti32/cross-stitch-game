@@ -63,9 +63,7 @@ export default function CatalogSubmissionsScreen() {
             query.error
               ? isServerApiError(query.error)
                 ? localizeServerError(query.error)
-                : query.error instanceof Error
-                  ? query.error.message
-                  : t('submissions.unavailableDefault')
+                : t('submissions.unavailableDefault')
               : t('submissions.unavailableDefault')
           }
           actionLabel={t('common.tryAgain')}

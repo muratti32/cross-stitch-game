@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useMembership, usePremiumDailyClaim } from '@/api/membership';
 import { Theme } from '@/theme/theme';
 import { formatDate } from '@/i18n';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 
 import { Button } from './Button';
 import { Card } from './Card';
@@ -74,14 +75,8 @@ export function PremiumDailyCoinClaimCard({ enabled }: PremiumDailyCoinClaimCard
       ) : membership.isError ? (
         <View style={styles.stateBlock}>
           <Text style={styles.errorText}>
-            {/* A caught MembershipApiError's `message` still surfaces here
-                (unlike elsewhere, which route through localizeServerError):
-                this card's membership/claim queries are mocked directly in
-                PremiumBenefitSurfaces.test.tsx with arbitrary plain Errors
-                and the test asserts their exact text renders, so the
-                passthrough is kept rather than rewritten out from under it. */}
-            {membership.error instanceof Error
-              ? membership.error.message
+            {isServerApiError(membership.error)
+              ? localizeServerError(membership.error)
               : t('premiumDailyCoinClaimCard.unavailableGeneric')}
           </Text>
           <Button title={t('premiumDailyCoinClaimCard.tryAgain')} onPress={() => void membership.refetch()} variant="secondary" />
@@ -117,7 +112,13 @@ export function PremiumDailyCoinClaimCard({ enabled }: PremiumDailyCoinClaimCard
             </Text>
           )}
 
-          {claim.error && <Text style={styles.errorText}>{claim.error.message}</Text>}
+          {claim.error && (
+            <Text style={styles.errorText}>
+              {isServerApiError(claim.error)
+                ? localizeServerError(claim.error)
+                : t('premiumDailyCoinClaimCard.unavailableGeneric')}
+            </Text>
+          )}
 
           {!claimed && !exhausted && result === undefined && (
             <Button

@@ -69,7 +69,7 @@ export default function LikedPatternsScreen() {
             query.error
               ? isServerApiError(query.error)
                 ? localizeServerError(query.error)
-                : query.error.message
+                : t('likedPatterns.unavailableDefault')
               : t('likedPatterns.unavailableDefault')
           }
           actionLabel={t('common.tryAgain')}

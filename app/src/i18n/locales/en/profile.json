@@ -335,6 +335,21 @@
       "safety_removal": "This Pattern was removed for a safety, legal, or policy violation. It left discovery, existing Stitching Sessions became inaccessible, and Offline Pattern Data on your devices was deleted. You may submit one Safety Removal Appeal."
     }
   },
+  "dailyTasksCard": {
+    "title": "Daily Tasks",
+    "offline": "You're offline — Daily Tasks need a connection.",
+    "unavailable": "Couldn't load Daily Tasks.",
+    "empty": "No tasks available today."
+  },
+  "rewardedAdCard": {
+    "offline": "You're offline — Reward Day needs a connection.",
+    "unavailable": "Couldn't load Reward Day status.",
+    "premiumClaimClosedPool": "Your Premium daily claim closed today's shared coin pool.",
+    "allRewardsClaimed": "You've claimed all ad rewards for today. Come back tomorrow!",
+    "remaining_one": "{{count}} ad left today ({{coins}} coins available)",
+    "remaining_other": "{{count}} ads left today ({{coins}} coins available)",
+    "watchForCoins": "Watch Ad for {{count}} Coins"
+  },
   "likedPatterns": {
     "title": "Liked Patterns",
     "signInTitle": "Registered Account Required",

@@ -28,27 +28,28 @@ export function isServerApiError(error: unknown): error is Error & ServerApiErro
 }
 
 /**
- * Reports the raw server message as a low-volume breadcrumb, not an error
- * event - this is an already-handled, expected failure path (same
- * convention as missingKeyHandler.ts's reportMissingTranslationKey), never
- * a crash.
+ * Captures the handled failure as an informational Sentry event. Its event
+ * id becomes the opaque player-visible Support Reference, while the raw
+ * backend prose remains diagnostic context only.
  */
-function reportServerErrorDiagnostics(error: Error & ServerApiErrorLike): void {
+function reportServerErrorDiagnostics(error: Error & ServerApiErrorLike): string {
   // Required lazily, not statically, so call sites that reach this module
   // never pull in the real @sentry/react-native package for suites that
   // have no reason to mock it (see missingKeyHandler.ts for the same
   // convention).
   const Sentry = require('@sentry/react-native') as typeof import('@sentry/react-native');
-  Sentry.addBreadcrumb({
-    category: 'server-error',
-    level: 'info',
-    message: 'Localized a backend error for display',
-    data: {
-      status: error.status,
+  let eventId = '';
+  Sentry.withScope((scope) => {
+    scope.setLevel('info');
+    scope.setTag('server_error_status', String(error.status));
+    scope.setContext('server_error', {
       reason: error.reason,
       rawMessage: error.message,
-    },
+      status: error.status,
+    });
+    eventId = Sentry.captureMessage('Localized backend error presented to player');
   });
+  return `SW-${eventId.toUpperCase()}`;
 }
 
 /**
@@ -74,7 +75,7 @@ export function appendSupportReference(message: string, supportReference: string
  * never part of the returned string (#159's acceptance criteria).
  */
 export function localizeServerError(error: Error & ServerApiErrorLike): string {
-  reportServerErrorDiagnostics(error);
-  const presentation = presentServerError(error.reason, error.status);
+  const supportReference = reportServerErrorDiagnostics(error);
+  const presentation = presentServerError(error.reason, error.status, supportReference);
   return appendSupportReference(i18n.t(presentation.messageKey), presentation.supportReference);
 }

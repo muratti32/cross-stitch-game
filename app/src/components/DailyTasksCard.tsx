@@ -10,36 +10,25 @@ import {
   DAILY_TASK_COIN,
 } from '../api/dailyTasks';
 import { OfflineError } from '../api/networkErrors';
+import { useTranslation } from 'react-i18next';
 
-const TASK_COPY: Record<
+const TASK_ICONS: Record<
   DailyTaskKey,
-  { title: string; body: string; icon: React.ComponentProps<typeof Ionicons>['name'] }
+  React.ComponentProps<typeof Ionicons>['name']
 > = {
-  cells_100: {
-    title: '100 Stitch Actions',
-    body: 'Fill 100 matching cells today',
-    icon: 'grid-outline',
-  },
-  three_colors_10: {
-    title: '3 Colors, 10 Actions Each',
-    body: 'Reach 10 actions in 3 distinct thread colors',
-    icon: 'color-palette-outline',
-  },
-  color_completion: {
-    title: 'Complete a Thread Color',
-    body: 'Finish stitching any one color completely',
-    icon: 'checkmark-done-outline',
-  },
+  cells_100: 'grid-outline',
+  three_colors_10: 'color-palette-outline',
+  color_completion: 'checkmark-done-outline',
 };
 
-function formatTimeRemaining(resetsAt: string): string {
+function formatTimeRemaining(resetsAt: string, t: (key: string, values?: Record<string, number>) => string): string {
   const diffMs = new Date(resetsAt).getTime() - Date.now();
-  if (diffMs <= 0) return 'Resetting…';
+  if (diffMs <= 0) return t('home.dailySection.resetting');
   const totalMinutes = Math.floor(diffMs / 60000);
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
-  if (hours <= 0) return `Resets in ${minutes}m`;
-  return `Resets in ${hours}h ${minutes}m`;
+  if (hours <= 0) return t('home.dailySection.resetsInMinutes', { minutes });
+  return t('home.dailySection.resetsInHoursMinutes', { hours, minutes });
 }
 
 interface DailyTasksCardProps {
@@ -48,6 +37,7 @@ interface DailyTasksCardProps {
 }
 
 export function DailyTasksCard({ enabled }: DailyTasksCardProps) {
+  const { t } = useTranslation('profile');
   const { data, isLoading, isError, error, refetch } = useDailyTaskBoard(enabled);
   const isOffline = error instanceof OfflineError;
 
@@ -71,10 +61,10 @@ export function DailyTasksCard({ enabled }: DailyTasksCardProps) {
         <View style={styles.centerRow}>
           <Ionicons name="cloud-offline-outline" size={20} color={Theme.colors.error} />
           <Text style={styles.errorText}>
-            {isOffline ? "You're offline - Daily Tasks need a connection" : "Couldn't load Daily Tasks"}
+            {isOffline ? t('dailyTasksCard.offline') : t('dailyTasksCard.unavailable')}
           </Text>
           <Pressable onPress={() => refetch()} hitSlop={8}>
-            <Text style={styles.retryText}>Retry</Text>
+            <Text style={styles.retryText}>{t('home.dailySection.retry')}</Text>
           </Pressable>
         </View>
       </Card>
@@ -84,16 +74,16 @@ export function DailyTasksCard({ enabled }: DailyTasksCardProps) {
   return (
     <Card style={styles.card}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Daily Tasks</Text>
+        <Text style={styles.headerTitle}>{t('dailyTasksCard.title')}</Text>
         <View style={styles.balanceBadge}>
           <Ionicons name="disc-outline" size={14} color={Theme.colors.accentHoney} />
           <Text style={styles.balanceText}>{data.balance}</Text>
         </View>
       </View>
-      <Text style={styles.resetText}>{formatTimeRemaining(data.resetsAt)}</Text>
+      <Text style={styles.resetText}>{formatTimeRemaining(data.resetsAt, t)}</Text>
 
       {data.tasks.length === 0 ? (
-        <Text style={styles.emptyText}>No tasks available today.</Text>
+        <Text style={styles.emptyText}>{t('dailyTasksCard.empty')}</Text>
       ) : (
         data.tasks.map((task) => <DailyTaskRow key={task.key} task={task} />)
       )}
@@ -102,21 +92,21 @@ export function DailyTasksCard({ enabled }: DailyTasksCardProps) {
 }
 
 function DailyTaskRow({ task }: { task: DailyTaskStatus }) {
-  const copy = TASK_COPY[task.key];
+  const { t } = useTranslation('profile');
   const pct = task.target > 0 ? Math.min(1, task.progress / task.target) : 0;
 
   return (
     <View style={styles.taskRow}>
       <View style={styles.taskIconWrap}>
         <Ionicons
-          name={task.granted ? 'checkmark-circle' : copy.icon}
+          name={task.granted ? 'checkmark-circle' : TASK_ICONS[task.key]}
           size={22}
           color={task.granted ? Theme.colors.success : Theme.colors.accentTeal}
         />
       </View>
       <View style={styles.taskInfo}>
-        <Text style={styles.taskTitle}>{copy.title}</Text>
-        <Text style={styles.taskBody}>{copy.body}</Text>
+        <Text style={styles.taskTitle}>{t(`home.dailyTasks.${task.key}.title`)}</Text>
+        <Text style={styles.taskBody}>{t(`home.dailyTasks.${task.key}.body`)}</Text>
         <View style={styles.progressTrack}>
           <View style={[styles.progressFill, { width: `${pct * 100}%` }]} />
         </View>

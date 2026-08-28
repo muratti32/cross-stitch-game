@@ -1,6 +1,15 @@
-jest.mock('@sentry/react-native', () => ({
-  addBreadcrumb: jest.fn(),
-}));
+jest.mock('@sentry/react-native', () => {
+  const scope = {
+    setContext: jest.fn(),
+    setLevel: jest.fn(),
+    setTag: jest.fn(),
+  };
+  return {
+    __scope: scope,
+    captureMessage: jest.fn(() => '0123456789abcdef0123456789abcdef'),
+    withScope: jest.fn((callback) => callback(scope)),
+  };
+});
 
 import * as Sentry from '@sentry/react-native';
 import { isServerApiError, localizeServerError } from '../localizeServerError';
@@ -43,14 +52,14 @@ describe('localizeServerError', () => {
     const error = new FakeServerApiError(500, 'Raw backend failure text', 'some_unmapped_code');
     const result = localizeServerError(error);
     expect(result).toContain('Something went wrong. Please try again.');
-    expect(result).toContain('Support Reference: ERR-500-SOME_UNMAPPED_CODE');
+    expect(result).toContain('Support Reference: SW-0123456789ABCDEF0123456789ABCDEF');
   });
 
   it('returns the generic localized failure with a Support Reference for a null reason code', () => {
     const error = new FakeServerApiError(500, 'Raw backend failure text', null);
     const result = localizeServerError(error);
     expect(result).toContain('Something went wrong. Please try again.');
-    expect(result).toContain('Support Reference: ERR-500-UNKNOWN');
+    expect(result).toContain('Support Reference: SW-0123456789ABCDEF0123456789ABCDEF');
   });
 
   it('never includes the server raw message string in the returned text', () => {
@@ -61,15 +70,15 @@ describe('localizeServerError', () => {
   it('reports the raw server message to Sentry as diagnostic context', () => {
     const error = new FakeServerApiError(500, 'a very specific raw backend sentence', 'unknown_code');
     localizeServerError(error);
-    expect(Sentry.addBreadcrumb).toHaveBeenCalledWith(
-      expect.objectContaining({
-        category: 'server-error',
-        data: expect.objectContaining({
-          status: 500,
-          reason: 'unknown_code',
-          rawMessage: 'a very specific raw backend sentence',
-        }),
-      }),
+    expect(Sentry.captureMessage).toHaveBeenCalledWith(
+      'Localized backend error presented to player',
     );
+    expect(Sentry.withScope).toHaveBeenCalled();
+    expect((Sentry as typeof Sentry & { __scope: { setContext: jest.Mock } }).__scope.setContext)
+      .toHaveBeenCalledWith('server_error', {
+        reason: 'unknown_code',
+        rawMessage: 'a very specific raw backend sentence',
+        status: 500,
+      });
   });
 });

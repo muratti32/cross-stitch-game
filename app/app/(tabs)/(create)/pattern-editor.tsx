@@ -231,8 +231,8 @@ export default function PatternEditorScreen() {
       const nextGrid = currentGrid.slice();
       nextGrid[cellIndex] = index;
       applyEdit(nextGrid, nextPalette);
-    } catch (err) {
-      setLimitError(err instanceof Error ? err.message : String(err));
+    } catch {
+      setLimitError(t('patternEditor.errors.paletteLimit', { max: formatNumber(255, locale) }));
     }
   };
 
@@ -258,8 +258,8 @@ export default function PatternEditorScreen() {
         }
         applyEdit(nextGrid, nextPalette);
         setReplaceSourceIndex(null);
-      } catch (err) {
-        setLimitError(err instanceof Error ? err.message : String(err));
+      } catch {
+        setLimitError(t('patternEditor.errors.paletteLimit', { max: formatNumber(255, locale) }));
       }
     } else {
       setSelectedColor(color);

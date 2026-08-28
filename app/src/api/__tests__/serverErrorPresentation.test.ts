@@ -22,21 +22,21 @@ describe('presentServerError', () => {
   });
 
   it('falls back to the generic failure plus a Support Reference for an unknown reason code', () => {
-    const result = presentServerError('some_unmapped_backend_reason', 500);
+    const result = presentServerError('some_unmapped_backend_reason', 500, 'SW-OPAQUE-EVENT');
     expect(result.messageKey).toBe('errors:generic.failure');
-    expect(result.supportReference).toBe('ERR-500-SOME_UNMAPPED_BACKEND_REASON');
+    expect(result.supportReference).toBe('SW-OPAQUE-EVENT');
   });
 
   it('falls back to the generic failure plus a Support Reference for a null reason code', () => {
-    const result = presentServerError(null, 500);
+    const result = presentServerError(null, 500, 'SW-NULL-EVENT');
     expect(result.messageKey).toBe('errors:generic.failure');
-    expect(result.supportReference).toBe('ERR-500-UNKNOWN');
+    expect(result.supportReference).toBe('SW-NULL-EVENT');
   });
 
   it('falls back to the generic failure plus a Support Reference for an absent reason code', () => {
-    const result = presentServerError(undefined, 502);
+    const result = presentServerError(undefined, 502, 'SW-ABSENT-EVENT');
     expect(result.messageKey).toBe('errors:generic.failure');
-    expect(result.supportReference).toBe('ERR-502-UNKNOWN');
+    expect(result.supportReference).toBe('SW-ABSENT-EVENT');
   });
 
   it('never echoes the reason verbatim when it looks like free English prose rather than a code', () => {

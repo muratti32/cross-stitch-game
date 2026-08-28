@@ -125,8 +125,9 @@ function RootLayout() {
             err instanceof Error ? err.message : String(err),
           );
         });
-        // Resolves from device language + stored override.
-        applyResolvedLanguage().catch((err: unknown) => {
+        // Resolve before the splash is hidden so the first rendered frame is
+        // already in the active App Display Language.
+        await applyResolvedLanguage().catch((err: unknown) => {
           console.log(
             'App Display Language resolution deferred:',
             err instanceof Error ? err.message : String(err),

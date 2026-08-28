@@ -398,7 +398,7 @@ export default function SettingsScreen() {
               <Text style={styles.errorText}>{t('serviceStatus.offlineUnreachable')}</Text>
             </View>
             <Text style={styles.errorSubtext}>
-              {error instanceof Error ? error.message : t('serviceStatus.unknownConnectionError')}
+              {t('serviceStatus.unknownConnectionError')}
             </Text>
             <Button
               title={t('serviceStatus.retryConnection')}

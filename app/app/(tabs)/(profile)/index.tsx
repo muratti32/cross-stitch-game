@@ -280,7 +280,7 @@ export default function ProfileScreen() {
         params: { sessionId: ready.id, returnTo: '/(tabs)/(profile)' },
       });
     } catch (error: unknown) {
-      setPatternsError(error instanceof Error ? error.message : String(error));
+      setPatternsError(t('home.myPatterns.actionFailedGeneric'));
     } finally {
       setOpeningPatternId(null);
     }
@@ -297,7 +297,7 @@ export default function ProfileScreen() {
         params: { sessionId: ready.id, returnTo: '/(tabs)/(profile)' },
       });
     } catch (error: unknown) {
-      setPatternsError(error instanceof Error ? error.message : String(error));
+      setPatternsError(t('home.myPatterns.actionFailedGeneric'));
     } finally {
       setOpeningPendingId(null);
     }

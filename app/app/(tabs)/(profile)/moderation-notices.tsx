@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 
 import { useModerationNotices } from '@/api/moderationNotices';
 import { Card, EmptyState, Screen } from '@/components';
@@ -49,7 +50,9 @@ export default function ModerationNoticesScreen() {
         <EmptyState
           icon="cloud-offline-outline"
           title={t('moderationNotices.unavailableTitle')}
-          body={query.error instanceof Error ? query.error.message : t('moderationNotices.unavailableDefault')}
+          body={isServerApiError(query.error)
+            ? localizeServerError(query.error)
+            : t('moderationNotices.unavailableDefault')}
           actionLabel={t('common.tryAgain')}
           onAction={() => void query.refetch()}
           actionVariant="rose"

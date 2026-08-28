@@ -335,6 +335,21 @@
       "safety_removal": "Bu Desen bir güvenlik, yasal veya politika ihlali nedeniyle kaldırıldı. Keşiften çıktı, mevcut Dikiş Oturumları erişilemez hale geldi ve cihazlarınızdaki Çevrimdışı Desen Verisi silindi. Bir Güvenlik Kaldırması İtirazı gönderebilirsiniz."
     }
   },
+  "dailyTasksCard": {
+    "title": "Günlük Görevler",
+    "offline": "Çevrimdışısınız — Günlük Görevler için bağlantı gerekir.",
+    "unavailable": "Günlük Görevler yüklenemedi.",
+    "empty": "Bugün kullanılabilir görev yok."
+  },
+  "rewardedAdCard": {
+    "offline": "Çevrimdışısınız — Ödül Günü için bağlantı gerekir.",
+    "unavailable": "Ödül Günü durumu yüklenemedi.",
+    "premiumClaimClosedPool": "Premium günlük talebiniz bugünün ortak jeton havuzunu kapattı.",
+    "allRewardsClaimed": "Bugünkü tüm reklam ödüllerini aldınız. Yarın tekrar gelin!",
+    "remaining_one": "Bugün {{count}} reklam kaldı ({{coins}} jeton mevcut)",
+    "remaining_other": "Bugün {{count}} reklam kaldı ({{coins}} jeton mevcut)",
+    "watchForCoins": "{{count}} Jeton İçin Reklam İzle"
+  },
   "likedPatterns": {
     "title": "Beğenilen Desenler",
     "signInTitle": "Kayıtlı Hesap Gerekli",

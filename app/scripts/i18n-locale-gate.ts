@@ -15,9 +15,15 @@ import {
   NamespaceResources,
 } from '../src/i18n/localeParity';
 import { FALLBACK_LOCALE } from '../src/i18n/resolveAppLanguage';
-import { SUPPORTED_LOCALES } from '../src/i18n/supportedLocales';
 
 const LOCALES_DIR = path.join(__dirname, '..', 'src', 'i18n', 'locales');
+
+function listLocales(localesDir: string): string[] {
+  return fs.readdirSync(localesDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort();
+}
 
 export interface LocaleGateResult {
   status: 'PASS' | 'FAIL';
@@ -85,7 +91,7 @@ function formatViolation(
 export function runLocaleGate(
   localesDir: string,
   referenceLocale: string = FALLBACK_LOCALE,
-  locales: readonly string[] = SUPPORTED_LOCALES,
+  locales: readonly string[] = listLocales(localesDir),
 ): LocaleGateResult {
   const namespaces = listNamespaces(localesDir, locales);
   const reference = loadLocaleResources(localesDir, referenceLocale, namespaces);

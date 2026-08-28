@@ -114,9 +114,7 @@ export default function PublishedPatternsScreen() {
             query.error
               ? isServerApiError(query.error)
                 ? localizeServerError(query.error)
-                : query.error instanceof Error
-                  ? query.error.message
-                  : t('publishedPatterns.unavailableDefault')
+                : t('publishedPatterns.unavailableDefault')
               : t('publishedPatterns.unavailableDefault')
           }
           actionLabel={t('common.tryAgain')}
