@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Questo accesso appartiene a un account diverso. Il tuo account attuale non è stato modificato.",
+    "providerRejected": "La verifica è stata rifiutata. Controlla l'account o il codice e riprova."
+  },
+  "generic": {
+    "failure": "Si è verificato un errore. Riprova.",
+    "supportReferenceLabel": "Riferimento assistenza: {{reference}}"
+  }
+}

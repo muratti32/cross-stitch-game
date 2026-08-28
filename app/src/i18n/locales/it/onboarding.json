@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "BENVENUTO SU STITCH WISH",
+    "title": "Scegli un colore, tocca i quadrati corrispondenti.",
+    "heroAlt": "Anteprima dello schema iniziale Cozy Heart",
+    "handedness": {
+      "sectionTitle": "Su quale lato posizionare i comandi?",
+      "groupLabel": "Lato dei comandi",
+      "optionRight": "Comandi a destra",
+      "optionLeft": "Comandi a sinistra",
+      "saveErrorText": "Impossibile salvare la scelta.",
+      "retry": "Riprova"
+    },
+    "note": "Puoi modificarlo in seguito nelle Impostazioni.",
+    "start": "Inizia a ricamare",
+    "starting": "Avvio in corso…",
+    "browse": "Sfoglia gli schemi iniziali",
+    "signIn": "Accedi"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Seleziona DMC 321 Rosso Natale.",
+      "stitchAction": "Tocca la cella evidenziata corrispondente.",
+      "mismatchedTap": "Tocca la cella evidenziata diversa. I tocchi errati non costano nulla.",
+      "undoAction": "Annulla quel punto, poi posizionalo di nuovo.",
+      "stitchSweep": "Tieni premuta una cella corrispondente, poi trascina lungo la sequenza evidenziata.",
+      "threadColorCompletion": "Completa il filo bianco evidenziato, poi scegli il colore successivo."
+    },
+    "hints": {
+      "anchoredZoom": "Pizzica per ingrandire mantenendo ferme le celle sotto le dita.",
+      "panVsSweep": "Trascina per spostare la tela. Inizia da una cella corrispondente per ricamare a scorrimento.",
+      "edgeAutoPan": "Continua a scorrere vicino al bordo e la tela seguirà il tuo dito.",
+      "remainingCellLocator": "Usa il localizzatore per trovare la cella rimanente successiva per questo filo."
+    },
+    "skip": "Salta per ora",
+    "skipAccessibilityLabel": "Salta il tutorial per ora",
+    "dismiss": "Capito",
+    "dismissAccessibilityLabel": "Chiudi suggerimento"
+  },
+  "recap": {
+    "title": "Ci sei!",
+    "lines": {
+      "matchNumbers": "Abbina i numeri per posizionare ogni punto.",
+      "dragSweep": "Trascina sulle celle corrispondenti per ricamare a scorrimento.",
+      "pinchZoom": "Pizzica per ingrandire quando hai bisogno di guardare più da vicino.",
+      "undoLocator": "Annulla e il localizzatore sono sempre gratuiti."
+    },
+    "continue": "Continua a ricamare",
+    "browsePatterns": "Sfoglia gli schemi"
+  }
+}

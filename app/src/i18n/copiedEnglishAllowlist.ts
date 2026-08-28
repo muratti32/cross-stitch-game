@@ -59,4 +59,5 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'commerce:onetime.creditsNoun': '"Credits" is a common English loanword in German gaming UI.',
   'profile:home.quickNav.moderationTitle': '"Moderation" is an identical cognate in German.',
   'settings:developer.debug.title': '"Debug" is a common English loanword in German developer UI.',
+  'settings:account.sectionTitle': '"Account" is an identical cognate/loanword in Italian.',
 };

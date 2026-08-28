@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Tavolo da ricamo",
+    "subtitle": "Riprendi da dove avevi interrotto o continua un lavoro recente.",
+    "loading": "Caricamento dei tuoi ricami...",
+    "empty": {
+      "title": "Nessun lavoro attivo",
+      "body": "Il tuo telaio è attualmente vuoto. Sfoglia il catalogo degli schemi per trovare qualcosa di bello da ricamare!",
+      "action": "Sfoglia il catalogo"
+    },
+    "unknownPattern": "Schema sconosciuto",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Schema {{id}}",
+    "deleteSessionAccessibilityLabel": "Elimina sessione",
+    "viewFinishedAccessibilityLabel": "Visualizza lavoro completato",
+    "resumeAccessibilityLabel": "Riprendi a ricamare",
+    "status": {
+      "ready": "Pronto",
+      "done": "Completato",
+      "active": "Attivo",
+      "preparing": "In preparazione",
+      "failed": "Non riuscito"
+    },
+    "deleteConfirm": {
+      "title": "Elimina progressi",
+      "message": "Sei sicuro di voler eliminare i tuoi progressi per \"{{title}}\"? L'azione non può essere annullata.",
+      "cancel": "Annulla",
+      "confirm": "Elimina"
+    },
+    "preparingCard": {
+      "discardTitle": "Scarta sessione",
+      "cancelTitle": "Annulla download",
+      "discardMessage": "Sei sicuro di voler scartare questa sessione non riuscita?",
+      "cancelMessage": "Sei sicuro di voler annullare il download di questo schema?",
+      "keep": "Conserva",
+      "discard": "Scarta",
+      "cancel": "Annulla"
+    }
+  },
+  "loading": {
+    "text": "Apertura della sessione e preparazione della tela..."
+  },
+  "error": {
+    "title": "Caricamento sessione non riuscito",
+    "fallbackMessage": "Impossibile caricare la sessione di ricamo.",
+    "backButton": "Torna indietro",
+    "tableButton": "Vai al tavolo"
+  },
+  "header": {
+    "backButton": "← Indietro",
+    "tableButton": "← Tavolo",
+    "defaultTitle": "Sessione di ricamo",
+    "progress": "{{completed}} / {{total}} caselle ({{percent}}% completato)",
+    "resumeTutorialAccessibilityLabel": "Riprendi tutorial"
+  },
+  "banners": {
+    "patternRemoved": "Questo schema è stato rimosso dalla moderazione e non è più disponibile. Tocca per uscire.",
+    "syncConflict": "Sincronizzato con un altro dispositivo — alcune caselle sono state aggiornate. Tocca per chiudere."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Trova la prossima casella rimanente del colore del filo attivo",
+    "undoAccessibilityLabel": "Annulla l'ultimo punto"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Colore {{number}}: DMC {{dmcCode}}, {{count}} punto rimanente",
+    "chipAccessibilityLabel_other": "Colore {{number}}: DMC {{dmcCode}}, {{count}} punti rimanenti",
+    "done": "Completato",
+    "remaining_one": "{{count}} rimasto",
+    "remaining_other": "{{count}} rimasti"
+  },
+  "celebration": {
+    "title": "Splendido lavoro!",
+    "subtitle": "Hai completato ogni singolo punto su questa tela.",
+    "stitchesLabel_one": "Punto",
+    "stitchesLabel_other": "Punti",
+    "colorsLabel_one": "Colore",
+    "colorsLabel_other": "Colori",
+    "replayButton": "Ricama di nuovo",
+    "catalogButton": "Torna al catalogo"
+  }
+}

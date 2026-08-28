@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Indietro",
+    "cancel": "Annulla",
+    "duplicateTitle": "Hai già uno Schema Personale chiamato “{{title}}”. Scegli un titolo diverso.",
+    "cellsCount_one": "casella",
+    "cellsCount_other": "caselle",
+    "colorsCount_one": "colore",
+    "colorsCount_other": "colori"
+  },
+  "hub": {
+    "title": "Centro Creazioni",
+    "subtitle": "Dai vita ai tuoi design con schemi di punto croce personalizzati.",
+    "opening": "Apertura…",
+    "photoImport": {
+      "title": "Importa Foto",
+      "description": "Carica un'immagine dal tuo rullino fotografico e convertila in uno schema da ricamare.",
+      "action": "Importa foto"
+    },
+    "aiGenerator": {
+      "title": "Generatore IA",
+      "description": "Descrivi un'idea accogliente e lascia che l'intelligenza artificiale generi un disegno pixel personalizzato.",
+      "action": "Genera design"
+    }
+  },
+  "aspects": {
+    "square": "Quadrato",
+    "portrait_4_3": "Verticale 4:3",
+    "landscape_4_3": "Orizzontale 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Conversione dello schema fallita. Riprova.",
+      "timeout": "La conversione dello schema è ancora in corso. Riprova tra poco.",
+      "generic": "Impossibile completare la conversione dello schema. Riprova."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Account registrato richiesto",
+      "body": "Le opere d'arte IA e la relativa raccolta rimangono private sul tuo account.",
+      "signIn": "Accedi"
+    },
+    "header": {
+      "title": "Generatore IA",
+      "backAccessibilityLabel": "Indietro"
+    },
+    "prompt": {
+      "label": "Descrivi la tua opera d'arte",
+      "placeholder": "Il giardino di un cottage accogliente al tramonto…"
+    },
+    "generate": {
+      "working": "Elaborazione in corso…",
+      "action": "Genera — 1 credito IA",
+      "errors": {
+        "promptRejected": "Descrizione non consentita. Prova a descrivere qualcos'altro.",
+        "generic": "Impossibile avviare la generazione IA. Riprova."
+      }
+    },
+    "library": {
+      "title": "La tua raccolta di opere d'arte IA",
+      "status": {
+        "pending": "In attesa",
+        "dispatched": "Inviata",
+        "running": "In corso",
+        "delivered": "Pronta",
+        "safety_rejected": "Rifiutata per motivi di sicurezza",
+        "failed": "Fallita",
+        "deleted": "Eliminata",
+        "unknown": "Non disponibile"
+      },
+      "failure": {
+        "safety_rejected": "Questa opera d'arte non ha superato il controllo di sicurezza del provider.",
+        "failed": "Impossibile generare questa opera d'arte."
+      },
+      "approve": "Converti in schema",
+      "delete": "Elimina",
+      "deleteAccessibilityLabel": "Elimina questa opera d'arte IA",
+      "errors": {
+        "loadFailed": "Impossibile caricare la tua raccolta di opere d'arte IA. Riprova."
+      }
+    },
+    "approve": {
+      "modalTitle": "Crea Schema Personale",
+      "titleLabel": "Titolo dello schema",
+      "titleAccessibilityLabel": "Titolo dello schema",
+      "defaultTitle": "Il mio schema IA",
+      "placeholder": "Il mio schema IA",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Annulla",
+      "creating": "Creazione schema in corso…",
+      "create": "Crea schema",
+      "errors": {
+        "generic": "Impossibile creare lo Schema Personale. Riprova."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Account registrato richiesto",
+      "body": "Gli Schemi Personali appartengono al tuo account, così rimangono privati e disponibili su tutti i dispositivi.",
+      "signIn": "Accedi o crea un account",
+      "back": "Indietro"
+    },
+    "header": {
+      "title": "Schema da Foto",
+      "subtitle": "Inquadra localmente, poi approva la conversione",
+      "backAccessibilityLabel": "Indietro"
+    },
+    "picker": {
+      "chooseTitle": "Scegli una foto",
+      "helpText": "La foto locale a piena risoluzione rimane su questo dispositivo. Niente viene convertito finché non approvi l'inquadratura.",
+      "choose": "Scegli dalla libreria",
+      "chooseAnother": "Scegli un'altra",
+      "opening": "Apertura…",
+      "errors": {
+        "permissionDenied": "L'accesso alla libreria foto è richiesto per scegliere una foto locale.",
+        "invalidDimensions": "La foto selezionata non ha dimensioni utilizzabili.",
+        "generic": "Impossibile aprire la libreria foto. Riprova."
+      }
+    },
+    "framing": {
+      "title": "Inquadratura dell'opera",
+      "gestureHint": "Trascina per posizionare · pizzica per zoomare",
+      "aspectLabel": "Formato inquadratura"
+    },
+    "profile": {
+      "title": "Profilo di conversione",
+      "options": {
+        "easy": "Facile",
+        "standard": "Standard",
+        "detailed": "Dettagliato"
+      },
+      "custom": "Personalizzato",
+      "customMeta": "Libero · forma bloccata",
+      "unavailable": "Non adatto a questa inquadratura",
+      "customShortEdgeLabel": "Lato corto",
+      "customColorLimitLabel": "Limite colori DMC",
+      "exceedsLimit": "Questi valori personalizzati superano il limite di {{max}} caselle dello schema."
+    },
+    "titleCard": {
+      "label": "Titolo dello schema",
+      "placeholder": "Il mio schema da foto",
+      "defaultTitle": "Il mio schema da foto",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · fino a {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "L'approvazione carica solo l'inquadratura ritagliata e ridotta. La foto originale rimane sul dispositivo.",
+      "approve": "Approva opera e converti"
+    },
+    "processing": {
+      "preparingFrame": "Preparazione dell'inquadratura approvata su questo dispositivo…",
+      "uploading": "Caricamento dell'inquadratura ritagliata e ridotta in corso…",
+      "waitingForWorker": "In attesa del processo di conversione…",
+      "buildingGrid": "Creazione della griglia del punto e della tavolozza DMC…",
+      "preparingSession": "Preparazione dello Schema Personale in corso…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Questo profilo non si adatta più all'inquadratura finale. Scegli Facile o riduci i dettagli.",
+        "generic": "Impossibile convertire questa foto. Riprova."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Nessuno schema selezionato",
+      "noPatternBody": "Questa schermata deve essere aperta da uno Schema Personale esistente nella tua raccolta.",
+      "accountTitle": "Account registrato richiesto",
+      "accountBody": "Gli Schemi Personali appartengono al tuo account, così rimangono privati e disponibili su tutti i dispositivi.",
+      "signIn": "Accedi o crea un account",
+      "back": "Indietro"
+    },
+    "loading": "Ripristino della bozza dell'editor in corso...",
+    "load": {
+      "failedTitle": "Impossibile caricare lo schema",
+      "retry": "Riprova",
+      "back": "Indietro",
+      "errors": {
+        "generic": "Impossibile caricare questo Schema Personale. Riprova."
+      }
+    },
+    "header": {
+      "title": "Editor di schemi",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Indietro"
+    },
+    "toolbar": {
+      "undo": "Annulla",
+      "redo": "Ripristina"
+    },
+    "mode": {
+      "paint": "Colora",
+      "replaceColor": "Sostituisci colore",
+      "replaceStep1": "1. Tocca un colore nello schema sottostante per sostituirlo:",
+      "replaceStep2": "2. Seleziona un colore DMC di destinazione qui sotto per eseguire la sostituzione:",
+      "paintSelected": "Selezionato: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Seleziona un colore qui sotto, poi tocca le caselle per colorare."
+    },
+    "errors": {
+      "pickColorFirst": "Seleziona prima un colore",
+      "paletteLimit": "Questo schema utilizza già il numero massimo di {{max}} colori di filo."
+    },
+    "picker": {
+      "title": "Colori dei fili DMC",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Salva schema modificato",
+      "placeholder": "Titolo del mio schema modificato",
+      "action": "Salva come nuovo",
+      "offlineTitle": "Salvato offline",
+      "offlineBody": "Il tuo schema modificato è stato salvato su questo dispositivo e verrà sincronizzato con il tuo account non appena tornerai online.",
+      "errors": {
+        "generic": "Impossibile salvare questo Schema Personale. Riprova."
+      }
+    }
+  }
+}

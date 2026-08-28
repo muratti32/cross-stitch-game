@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Indietro",
+    "searchPlaceholder": "Cerca schemi, creatori, tag…",
+    "offlineBanner": "Offline — il catalogo potrebbe non essere aggiornato",
+    "sectionError": {
+      "title": "Impossibile caricare",
+      "retry": "Riprova"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} colori",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} col.",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Inglese"
+    },
+    "accessibilityLabel": "Scritto in {{language}}"
+  },
+  "index": {
+    "subtitle": "Crea il tuo mondo accogliente, punto dopo punto.",
+    "searchBar": {
+      "accessibilityLabel": "Cerca nel catalogo degli schemi"
+    },
+    "sections": {
+      "starterPatterns": "Schemi per iniziare",
+      "staffPicks": "Scelti dallo staff",
+      "categories": "Categorie",
+      "newPatterns": "Nuovi schemi"
+    },
+    "staffPicks": {
+      "emptyTitle": "Nessuno schema scelto dallo staff",
+      "emptyBody": "La nostra collezione selezionata di schemi accoglienti apparirà qui presto.",
+      "errorBody": "Impossibile raggiungere il catalogo e nessun elemento è ancora memorizzato nella cache."
+    },
+    "categories": {
+      "count": "{{count}} schemi",
+      "errorBody": "Impossibile raggiungere il catalogo e nessun elemento è ancora memorizzato nella cache."
+    },
+    "newPatterns": {
+      "emptyTitle": "Nuovi schemi in lavorazione",
+      "emptyBody": "Nuovi arrivi in arrivo!",
+      "errorBody": "Impossibile raggiungere il catalogo e nessun elemento è ancora memorizzato nella cache.",
+      "showMore": "Mostra altro",
+      "loading": "Caricamento…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Sfoglia",
+    "error": {
+      "body": "Impossibile raggiungere questa pagina del catalogo e nessun elemento è ancora memorizzato nella cache."
+    },
+    "empty": {
+      "title": "Ancora niente qui",
+      "body": "Nessuno schema corrisponde a questa selezione. Nuovi schemi arrivano regolarmente."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Campo di ricerca catalogo",
+    "inactive": {
+      "title": "Cerca nel catalogo",
+      "body": "Digita almeno due caratteri per cercare gli schemi per titolo, creatore o tag."
+    },
+    "error": {
+      "title": "La ricerca richiede una connessione",
+      "body": "La ricerca nel catalogo non è disponibile offline. Le pagine del catalogo memorizzate nella cache rimangono consultabili dalla scheda del catalogo."
+    },
+    "noResults": {
+      "title": "Nessun risultato",
+      "body": "Nessun elemento nel catalogo corrisponde a “{{query}}”."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Stai giocando come ospite",
+    "body": "Le Stitch Coin e i progressi si trovano solo su questo dispositivo come ospite. In caso di perdita dell'installazione, il registro dell'ospite e i progressi potrebbero essere irrecuperabili. Accedere consente di proteggere i progressi."
+  },
+  "detail": {
+    "noDescription": "Nessuna descrizione disponibile.",
+    "specs": {
+      "dimensions": "Dimensioni",
+      "totalStitches": "Punti totali",
+      "colors": "Colori",
+      "category": "Categoria"
+    },
+    "threadsSuffix": "{{count}} filati",
+    "palette": {
+      "title": "Filati richiesti",
+      "loading": "Lettura della tavolozza dei filati...",
+      "loadFailed": "Impossibile caricare la tavolozza: {{error}}",
+      "retry": "Riprova a caricare"
+    },
+    "actions": {
+      "startStitching": "Inizia a ricamare",
+      "starting": "Avvio in corso...",
+      "preparing": "Preparazione in corso…"
+    },
+    "loadFailedGeneric": "Impossibile decodificare il file dello schema.",
+    "sessionCreateFailed": "Impossibile creare una sessione di ricamo. Riprova.",
+    "unavailable": {
+      "title": "Schema non disponibile",
+      "body": "Impossibile caricare questo schema. Potrebbe essere stato rimosso o potresti essere offline.",
+      "goBack": "Torna indietro"
+    },
+    "byCreator": "di {{creatorName}}",
+    "byCreatorWithUsername": "di {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Blocca creatore",
+      "message": "Sei sicuro di voler bloccare {{creatorName}}? Questa è un'azione privata e reversibile che nasconde i suoi schemi dalla ricerca e dalla navigazione. Non segnala il creatore e non interromperà la tua sessione di ricamo attuale.",
+      "cancel": "Annulla",
+      "confirm": "Blocca",
+      "blockedTitle": "Bloccato",
+      "blockedMessage": "{{creatorName}} è stato bloccato.",
+      "errorTitle": "Errore",
+      "failedGeneric": "Impossibile bloccare il creatore."
+    },
+    "likeFailedGeneric": "Impossibile aggiornare lo stato dei Mi piace",
+    "connectToPlay": {
+      "title": "Connettiti per giocare",
+      "body": "L'avvio di uno schema del catalogo richiede una connessione per preparare la sessione. Gli schemi iniziali sono giocabili fin da subito, anche offline."
+    },
+    "insufficientCoins": {
+      "title": "Monete insufficienti",
+      "body": "Questo schema costa {{price}} Stitch Coin, ma hai solo {{balance}} monete.\n\nMonete mancanti: {{shortfall}}.\n\nGuadagna Stitch Coin completando altri schemi! I premi per il primo completamento sono attivi.",
+      "getCoins": "Ottieni Stitch Coin",
+      "findPatterns": "Trova schemi da ricamare",
+      "back": "Indietro"
+    },
+    "unlockFailedGeneric": "Sblocco non riuscito. Controlla la connessione e riprova.",
+    "preparationFailedGeneric": "Impossibile avviare la preparazione. Controlla la connessione e riprova.",
+    "price": {
+      "label": "Prezzo"
+    },
+    "balance": {
+      "label": "Il tuo saldo",
+      "loading": "…"
+    },
+    "unlockButton": "Sblocca per {{price}} Coin",
+    "communityReport": {
+      "button": "Segnala questo schema",
+      "title": "Segnala {{patternTitle}}",
+      "body": "Scegli il motivo che descrive meglio il problema. Le segnalazioni non nascondono né modificano mai uno schema automaticamente.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Contenuto inappropriato o non sicuro",
+        "copyright_or_publication_rights": "Diritto d'autore o diritti di pubblicazione",
+        "duplicate_or_spam": "Duplicato o spam",
+        "misleading_title_or_tags": "Titolo o tag fuorvianti",
+        "other": "Altro"
+      },
+      "explanationLabel": "Prove o spiegazione {{requirement}}",
+      "explanationRequired": "(obbligatorio)",
+      "explanationOptional": "(facoltativo)",
+      "explanationPlaceholder": "Condividi dettagli che aiuteranno un moderatore a esaminare lo schema.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Annulla",
+      "submit": "Invia segnalazione",
+      "submitFailedGeneric": "Impossibile inviare la segnalazione. Controlla la connessione e riprova.",
+      "receivedTitle": "Segnalazione ricevuta",
+      "alreadyReceivedTitle": "Segnalazione già ricevuta",
+      "receivedBody": "Un moderatore può ora esaminare questo schema. La segnalazione non ne modifica automaticamente la disponibilità.",
+      "alreadyReceivedBody": "La tua segnalazione esistente fa già parte della revisione aperta.",
+      "signInRequired": {
+        "title": "Accedi per segnalare",
+        "message": "Le segnalazioni della community richiedono un account registrato. Non è stato inviato nulla.",
+        "cancel": "Annulla",
+        "signIn": "Accedi"
+      },
+      "validation": {
+        "chooseReason": "Scegli un motivo per la segnalazione.",
+        "explainRequired": "Spiega perché stai segnalando questo schema.",
+        "tooLong": "La spiegazione deve contenere al massimo 2.000 caratteri.",
+        "needsContent": "La spiegazione deve includere lettere o numeri."
+      }
+    }
+  }
+}
