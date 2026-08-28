@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { Alert, ActivityIndicator, FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import {
-  type CatalogMetadataRevisionStatus,
-  type CatalogRejectionReason,
   type MyPublishedPattern,
   useAppealCatalogMetadataRevision,
   useMyPublishedPatterns,
@@ -13,21 +12,15 @@ import {
 } from '@/api/catalogMetadataRevisions';
 import { absolutePreviewUrl, absoluteThumbnailUrls } from '@/api/catalog';
 import { useWithdrawCommunityPattern } from '@/api/catalogWithdrawals';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 import { Button, Card, EmptyState, Screen, PatternImage } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
+import { formatDate } from '@/i18n';
 import { Theme } from '@/theme/theme';
 
-const STATUS_LABELS: Record<CatalogMetadataRevisionStatus, string> = {
-  accepted: 'Published', appeal_pending: 'Appeal pending', appeal_upheld: 'Appeal rejected',
-  pending: 'In review', rejected: 'Rejected', withdrawn: 'Withdrawn',
-};
-
-const REASON_LABELS: Record<CatalogRejectionReason, string> = {
-  duplicate_or_spam: 'Duplicate or Spam', publication_rights: 'Publication Rights',
-  quality_standard: 'Quality Standard', safety: 'Safety', technical_invalidity: 'Technical Invalidity',
-};
-
 export default function PublishedPatternsScreen() {
+  const { t, i18n: i18nInstance } = useTranslation('profile');
+  const locale = i18nInstance.language;
   const accountId = useIdentityStore((state) => state.accountId);
   const isAccount = useIdentityStore((state) => state.isAccount);
   const query = useMyPublishedPatterns(accountId, isAccount);
@@ -40,15 +33,19 @@ export default function PublishedPatternsScreen() {
   const [appealNote, setAppealNote] = useState('');
   const [appealError, setAppealError] = useState<string | null>(null);
 
+  const describe = (caught: unknown): string =>
+    isServerApiError(caught)
+      ? localizeServerError(caught)
+      : caught instanceof Error
+        ? caught.message
+        : String(caught);
+
   const submitWithdraw = async (id: string) => {
     setWithdrawingId(id);
     try {
       await withdrawRevision.mutateAsync(id);
     } catch (caught: unknown) {
-      Alert.alert(
-        'Could not withdraw revision',
-        caught instanceof Error ? caught.message : String(caught),
-      );
+      Alert.alert(t('publishedPatterns.withdrawRevisionFailedTitle'), describe(caught));
     } finally {
       setWithdrawingId(null);
     }
@@ -60,14 +57,11 @@ export default function PublishedPatternsScreen() {
     try {
       await withdrawPattern.mutateAsync(id);
       Alert.alert(
-        'Pattern withdrawn',
-        'It is no longer discoverable and cannot start new sessions. Existing Stitching Sessions keep their progress and playable data.',
+        t('publishedPatterns.withdrawPatternSuccessTitle'),
+        t('publishedPatterns.withdrawPatternSuccessBody'),
       );
     } catch (caught: unknown) {
-      Alert.alert(
-        'Could not withdraw pattern',
-        caught instanceof Error ? caught.message : String(caught),
-      );
+      Alert.alert(t('publishedPatterns.withdrawPatternFailedTitle'), describe(caught));
     } finally {
       setWithdrawingPatternId(null);
     }
@@ -76,14 +70,14 @@ export default function PublishedPatternsScreen() {
   const confirmPatternWithdrawal = (item: MyPublishedPattern) => {
     if (withdrawPattern.isPending || item.status !== 'available') return;
     Alert.alert(
-      'Withdraw from Community Catalog?',
-      `“${item.title}” will disappear from discovery and cannot start new sessions. This Pattern identity can never be restored. Existing Stitching Sessions and their progress remain playable.`,
+      t('publishedPatterns.withdrawConfirmTitle'),
+      t('publishedPatterns.withdrawConfirmBody', { title: item.title }),
       [
-        { style: 'cancel', text: 'Cancel' },
+        { style: 'cancel', text: t('publishedPatterns.withdrawConfirmCancel') },
         {
           onPress: () => void submitPatternWithdrawal(item.id),
           style: 'destructive',
-          text: 'Withdraw permanently',
+          text: t('publishedPatterns.withdrawConfirmAction'),
         },
       ],
     );
@@ -96,17 +90,17 @@ export default function PublishedPatternsScreen() {
       setAppealId(null);
       setAppealNote('');
     } catch (caught: unknown) {
-      setAppealError(caught instanceof Error ? caught.message : String(caught));
+      setAppealError(describe(caught));
     }
   };
 
   return (
     <Screen style={styles.screen}>
       <View style={styles.header}>
-        <Pressable accessibilityLabel="Go back" hitSlop={12} onPress={() => router.back()}>
+        <Pressable accessibilityLabel={t('common.goBackAccessibilityLabel')} hitSlop={12} onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={26} color={Theme.colors.textPrimary} />
         </Pressable>
-        <Text style={styles.headerTitle}>Published Patterns</Text>
+        <Text style={styles.headerTitle}>{t('publishedPatterns.title')}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
@@ -115,18 +109,24 @@ export default function PublishedPatternsScreen() {
       ) : query.isError ? (
         <EmptyState
           icon="cloud-offline-outline"
-          title="Patterns Unavailable"
-          body={query.error instanceof Error ? query.error.message : 'Could not load your published patterns.'}
-          actionLabel="Try Again"
+          title={t('publishedPatterns.unavailableTitle')}
+          body={
+            query.error
+              ? isServerApiError(query.error)
+                ? localizeServerError(query.error)
+                : t('publishedPatterns.unavailableDefault')
+              : t('publishedPatterns.unavailableDefault')
+          }
+          actionLabel={t('common.tryAgain')}
           onAction={() => void query.refetch()}
           actionVariant="rose"
         />
       ) : (query.data?.length ?? 0) === 0 ? (
         <EmptyState
           icon="albums-outline"
-          title="No Published Patterns"
-          body="Patterns you publish to the Community Catalog appear here."
-          actionLabel="Back to Profile"
+          title={t('publishedPatterns.emptyTitle')}
+          body={t('publishedPatterns.emptyBody')}
+          actionLabel={t('publishedPatterns.emptyAction')}
           onAction={() => router.back()}
           actionVariant="sage"
         />
@@ -144,6 +144,8 @@ export default function PublishedPatternsScreen() {
               appealNote={appealNote}
               appealSubmitting={appeal.isPending && appealId === item.id}
               item={item}
+              locale={locale}
+              t={t}
               withdrawingRevision={withdrawRevision.isPending && withdrawingId === item.id}
               withdrawingPattern={withdrawPattern.isPending && withdrawingPatternId === item.id}
               onAppealNoteChange={setAppealNote}
@@ -168,15 +170,16 @@ export default function PublishedPatternsScreen() {
 }
 
 function PatternCard({
-  appealError, appealId, appealNote, appealSubmitting, item, onAppealNoteChange, onCancelAppeal,
-  onOpenAppeal, onReviseMetadata, onSubmitAppeal, onWithdraw, onWithdrawPattern,
+  appealError, appealId, appealNote, appealSubmitting, item, locale, onAppealNoteChange, onCancelAppeal,
+  onOpenAppeal, onReviseMetadata, onSubmitAppeal, onWithdraw, onWithdrawPattern, t,
   withdrawingPattern, withdrawingRevision,
 }: {
   appealError: string | null; appealId: string | null; appealNote: string; appealSubmitting: boolean;
-  item: MyPublishedPattern;
+  item: MyPublishedPattern; locale: string;
   onAppealNoteChange: (value: string) => void; onCancelAppeal: () => void; onOpenAppeal: () => void;
   onReviseMetadata: () => void; onSubmitAppeal: () => void; onWithdraw: () => void;
-  onWithdrawPattern: () => void; withdrawingPattern: boolean; withdrawingRevision: boolean;
+  onWithdrawPattern: () => void; t: (key: string, options?: Record<string, unknown>) => string;
+  withdrawingPattern: boolean; withdrawingRevision: boolean;
 }) {
   const revision = item.latestRevision;
   const available = item.status === 'available';
@@ -202,47 +205,47 @@ function PatternCard({
               <View style={styles.badge}>
                 <Text style={styles.badgeText}>
                   {item.status === 'withdrawn'
-                    ? 'Withdrawn from Catalog'
+                    ? t('publishedPatterns.withdrawnFromCatalog')
                     : item.status === 'review_hold'
-                      ? 'Under Review Hold'
-                      : STATUS_LABELS[revision!.status]}
+                      ? t('publishedPatterns.underReviewHold')
+                      : t(`revisionStatus.${revision!.status}`)}
                 </Text>
               </View>
             )}
           </View>
-          <Text style={styles.meta}>{item.categoryCode} · Published {new Date(item.publishedAt).toLocaleDateString()}</Text>
+          <Text style={styles.meta}>
+            {t('publishedPatterns.meta', { category: item.categoryCode, date: formatDate(new Date(item.publishedAt), locale) })}
+          </Text>
         </View>
       </View>
       {revision !== null && revision.rejectionReason !== null && (
         <View style={styles.rejection}>
-          <Text style={styles.rejectionTitle}>{REASON_LABELS[revision.rejectionReason]}</Text>
+          {/* #165: same structured-reason-vs-moderator-note split as
+              submissions.tsx's SubmissionCard. */}
+          <Text style={styles.rejectionTitle}>{t(`rejectionReasons.${revision.rejectionReason}`)}</Text>
           {revision.rejectionNote !== null && <Text style={styles.rejectionNote}>{revision.rejectionNote}</Text>}
         </View>
       )}
       {item.status === 'withdrawn' && (
-        <Text style={styles.help}>
-          This identity is permanently withdrawn. Players with an existing Stitching Session keep their progress and access.
-        </Text>
+        <Text style={styles.help}>{t('publishedPatterns.withdrawnHelp')}</Text>
       )}
       {item.status === 'review_hold' && (
-        <Text style={styles.help}>
-          This Pattern is temporarily outside discovery and cannot start new sessions. Existing Stitching Sessions remain playable. You may still propose a metadata revision.
-        </Text>
+        <Text style={styles.help}>{t('publishedPatterns.reviewHoldHelp')}</Text>
       )}
       <View style={styles.actions}>
         {metadataActionsAvailable && item.canSubmitRevision && (
-          <Button title="Revise Metadata" variant="secondary" onPress={onReviseMetadata} style={styles.action} />
+          <Button title={t('publishedPatterns.reviseAction')} variant="secondary" onPress={onReviseMetadata} style={styles.action} />
         )}
         {canWithdraw && (
-          <Button title="Withdraw Revision" variant="rose" loading={withdrawingRevision} onPress={onWithdraw} style={styles.action} />
+          <Button title={t('publishedPatterns.withdrawRevisionAction')} variant="rose" loading={withdrawingRevision} onPress={onWithdraw} style={styles.action} />
         )}
         {canAppeal && !appealOpen && (
-          <Button title="Appeal Decision" variant="secondary" onPress={onOpenAppeal} style={styles.action} />
+          <Button title={t('publishedPatterns.appealAction')} variant="secondary" onPress={onOpenAppeal} style={styles.action} />
         )}
       </View>
       {available && (
         <Button
-          title="Withdraw from Catalog"
+          title={t('publishedPatterns.withdrawFromCatalogAction')}
           variant="rose"
           loading={withdrawingPattern}
           onPress={onWithdrawPattern}
@@ -250,13 +253,13 @@ function PatternCard({
       )}
       {appealOpen && (
         <View style={styles.appealForm}>
-          <Text style={styles.help}>You can appeal this unchanged snapshot once. Submitting a new revision instead waives this appeal.</Text>
+          <Text style={styles.help}>{t('publishedPatterns.appealHelp')}</Text>
           <TextInput
-            accessibilityLabel="Appeal note"
+            accessibilityLabel={t('publishedPatterns.appealNoteAccessibilityLabel')}
             maxLength={1000}
             multiline
             onChangeText={onAppealNoteChange}
-            placeholder="Optional context for the reviewing moderator"
+            placeholder={t('publishedPatterns.appealNotePlaceholder')}
             placeholderTextColor={Theme.colors.textSecondary}
             style={styles.input}
             textAlignVertical="top"
@@ -264,8 +267,8 @@ function PatternCard({
           />
           {appealError !== null && <Text style={styles.error}>{appealError}</Text>}
           <View style={styles.actions}>
-            <Button title="Cancel" variant="secondary" onPress={onCancelAppeal} style={styles.action} />
-            <Button title="Submit Appeal" variant="rose" loading={appealSubmitting} onPress={onSubmitAppeal} style={styles.action} />
+            <Button title={t('publishedPatterns.cancelAction')} variant="secondary" onPress={onCancelAppeal} style={styles.action} />
+            <Button title={t('publishedPatterns.submitAppealAction')} variant="rose" loading={appealSubmitting} onPress={onSubmitAppeal} style={styles.action} />
           </View>
         </View>
       )}

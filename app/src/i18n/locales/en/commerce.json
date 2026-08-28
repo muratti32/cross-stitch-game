@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Back",
+    "title": "Commerce Store",
+    "subtitle": "Membership and one-time top-ups"
+  },
+  "signInReturn": {
+    "notice": "You’re signed in. {{label}} is still selected. Review it and tap Buy when ready."
+  },
+  "premiumHero": {
+    "eyebrow": "PREMIUM MEMBERSHIP",
+    "title": "Create more. Collect a little reward every day.",
+    "body": "AI Credits each paid period, Premium themes, and a daily Stitch Coin claim.",
+    "benefitAiCredits": "AI Credits",
+    "benefitDailyCoins": "Daily Coins",
+    "benefitThemes": "Themes",
+    "statusNoActiveMembership": "No active membership",
+    "statusBrowseAsGuest": "Browse plans as a Guest Player",
+    "periodEndsLabel": "Current period ends",
+    "periodRenewsLabel": "Renews",
+    "lifecycleActive": "Active"
+  },
+  "membershipActions": {
+    "title": "Active Premium Membership",
+    "body": "Daily rewards are in Profile. Themes are under Settings › Appearance.",
+    "scheduledChangeNotice": "Changes to {{plan}} on {{date}}",
+    "manageSubscription": "Manage Subscription",
+    "manageSubscriptionFailedTitle": "Unable to open subscriptions",
+    "manageSubscriptionFailedBody": "Try again from your device store account."
+  },
+  "pending": {
+    "title": "Purchase Reconciliation Pending",
+    "verifyingTitle": "Verifying purchase",
+    "premiumChangeAccepted": "The store accepted the change to {{label}}. ",
+    "premiumResponseReceived": "The store response for {{label}} is received. ",
+    "premiumDeferredSuffix": "The change is scheduled only after Game Backend verification, and takes effect when your current period ends.",
+    "premiumSuffix": "Premium activates only after Game Backend verification.",
+    "doNotPurchasePlanAgain": " Do not purchase this plan again.",
+    "coinPackBody": "The store response is received. Stitch Coin updates only after the Game Backend exposes the matching Commerce Ledger grant. Do not purchase this pack again.",
+    "aiCreditPackBody": "The store response is received. AI Credit updates only after the Game Backend exposes the matching Commerce Ledger grant. Do not purchase this pack again.",
+    "refreshStatus": "Refresh status",
+    "retryReconciliation": "Retry reconciliation"
+  },
+  "store": {
+    "loadingPrices": "Loading current store prices…",
+    "unavailableTitle": "Store temporarily unavailable",
+    "unavailableBody": "Your wallet and membership information are still available.",
+    "retry": "Retry"
+  },
+  "plans": {
+    "choosePremiumPlan": "Choose a Premium plan",
+    "yourPremiumPlan": "Your Premium plan",
+    "currentPlan": "CURRENT PLAN",
+    "upgrade": "UPGRADE",
+    "planChange": "PLAN CHANGE",
+    "bestValue": "BEST VALUE",
+    "billedEvery": "Billed every {{period}}",
+    "chooseLabel": "Choose {{label}}",
+    "freeTrial": "Free for {{offer}}, then {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "One-time packs",
+    "stitchCoinPacksTitle": "Stitch Coin Packs",
+    "aiCreditPacksTitle": "AI Credit Packs",
+    "coinsNoun": "Coins",
+    "creditsNoun": "Credits",
+    "fromPrice": "From {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Restore purchases",
+    "restoreGuestPremium": "Restore Guest Premium",
+    "requestedTitle": "Restore requested",
+    "requestedBody": "Verified Premium access will appear after the store webhook is reconciled. Stitch Coin and AI Credit packs are never restored."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Current prices from the app store",
+    "closeAccessibilityLabel": "Close product sheet",
+    "closeButtonAccessibilityLabel": "Close",
+    "selectedBeforeSignIn": "Selected before sign-in",
+    "buy": "Buy"
+  },
+  "confirmation": {
+    "cancel": "Cancel",
+    "confirmLabel": "Confirm {{label}}",
+    "confirmPremiumTitle": "Confirm Premium purchase",
+    "introductoryOffer": "Your store reports this introductory offer: {{offer}}.",
+    "premiumAppearsAfterVerification": "Premium appears only after the Game Backend verifies the store transaction.",
+    "confirmPremiumUpgradeTitle": "Confirm Premium upgrade",
+    "confirmPremiumPlanChangeTitle": "Confirm Premium plan change",
+    "currentPlanLabel": "Current Plan: {{label}}",
+    "upgradeToLabel": "Upgrade to {{label}} · {{offer}}",
+    "changeToLabel": "Change to {{label}} · {{offer}}",
+    "upgradeBody": "The App Store controls the final charge and effective date for this upgrade. Premium reflects {{label}} only after the Game Backend verifies it.",
+    "planChangeBody": "The App Store defers this change to the end of your current period: {{currentLabel}} keeps running until then, and {{targetLabel}} is billed from the change date. Cancel the change from Manage Subscription.",
+    "confirmUpgrade": "Confirm upgrade",
+    "confirmPlanChange": "Confirm plan change",
+    "confirmStitchCoinTitle": "Confirm Stitch Coin purchase",
+    "confirmAiCreditTitle": "Confirm AI Credit purchase",
+    "balanceChangesAfterVerificationCoin": "Your balance changes only after the Game Backend verifies the store transaction and records the matching Commerce Ledger grant.",
+    "balanceChangesAfterVerificationAiCredit": "Your balance changes only after the Game Backend verifies the store transaction and records the matching Commerce Ledger grant. Premium Membership is not required."
+  },
+  "disclosure": {
+    "subscriptionTerms": "Payment is charged to your {{store}} account at confirmation. {{label}} Premium renews automatically at {{offer}} unless auto-renew is turned off at least 24 hours before the end of the current period. Any unused portion of a free trial is forfeited when you purchase a subscription. You can cancel at any time from your {{store}} account.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Could not open link: {{url}}"
+  },
+  "supportReference": {
+    "label": "Support Reference: {{reference}}",
+    "copyAccessibilityLabel": "Copy support reference {{reference}}",
+    "copyAccessibilityHint": "Copies the support reference to the clipboard",
+    "copied": "Copied",
+    "copyFailedTitle": "Copy failed",
+    "copyFailedBody": "The support reference could not be copied. Select the text to copy it manually."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Guest Stitch Coin purchases are available on iOS only.",
+    "guestIosOnlyGeneric": "Guest purchases are available on iOS only.",
+    "purchaseFailedTitle": "Purchase failed",
+    "premiumVerificationNotYet": "The Game Backend could not verify this purchase. Retry reconciliation; do not buy it again.",
+    "premiumVerificationFailedRetry": "The Game Backend could not verify this purchase yet. Retry reconciliation; do not buy it again.",
+    "premiumGrantRefreshFailed": "Premium was verified, but membership and AI Credit state could not be refreshed. Retry reconciliation.",
+    "premiumReconciliationUnreachable": "Purchase reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.",
+    "coinPackVerificationMismatch": "The store transaction did not match this Coin Pack. Retry verification or contact support; do not buy it again.",
+    "coinPackGrantUnavailable": "The purchase was verified, but the Stitch Coin grant is unavailable. Retry reconciliation; do not buy it again.",
+    "coinPackBalanceRefreshFailed": "The Coin grant was verified, but the current Stitch Coin balance could not be refreshed. Retry reconciliation.",
+    "coinPackVerificationFailedRetry": "The Game Backend could not verify this Coin Pack yet. Retry reconciliation; do not buy it again.",
+    "coinPackReconciliationUnreachable": "Coin Pack reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.",
+    "aiCreditPackVerificationMismatch": "The store transaction did not match this AI Credit Pack. Retry verification or contact support; do not buy it again.",
+    "aiCreditPackGrantUnavailable": "The purchase was verified, but the AI Credit grant is unavailable. Retry reconciliation; do not buy it again.",
+    "aiCreditPackBalanceRefreshFailed": "The AI Credit grant was verified, but the current balance could not be refreshed. Retry reconciliation.",
+    "aiCreditPackVerificationFailedRetry": "The Game Backend could not verify this AI Credit Pack yet. Retry reconciliation; do not buy it again.",
+    "aiCreditPackReconciliationUnreachable": "AI Credit Pack reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.",
+    "reconciliationStillUnavailable": "The Game Backend is still unavailable. Try reconciliation again later.",
+    "storeTemporarilyUnavailable": "The store is temporarily unavailable. Please try again in a few minutes.",
+    "purchasesNotAllowed": "Purchases are not allowed on this device. Check your store account or parental controls.",
+    "itemNotAvailable": "This item is not available for purchase right now. Please choose another item or try again later.",
+    "alreadyOwned": "You already own this purchase. Use Restore Purchases to refresh your access.",
+    "couldNotConnectToStore": "Could not connect to the store. Check your internet connection and try again.",
+    "paymentPendingApproval": "Your payment is pending approval. Your purchase will appear after the store completes it.",
+    "testPurchaseDeclined": "The test purchase was declined. No payment was made. Choose a different Test Store result in Settings, then try again.",
+    "genericPurchaseFailure": "We could not complete your purchase. No payment was taken. Please try again."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Still verifying",
+    "premiumPending": "Verification is still under way. Premium will activate once the Game Backend confirms it.",
+    "premiumPlanChangePending": "Verification is still under way. Your plan change will be scheduled once the Game Backend confirms it.",
+    "coinPackPending": "Verification is still under way. Your Stitch Coin balance will update once it completes.",
+    "aiCreditPackPending": "Verification is still under way. Your AI Credit balance will update once it completes."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Purchase received",
+    "storeAcceptedPlanChange": "The store accepted the change to {{label}}. Confirming when it takes effect.",
+    "storeAcceptedPurchase": "The store accepted {{label}}. Verifying your purchase now.",
+    "premiumChanges": "Premium changes to {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " on {{date}}",
+    "planChangeScheduledTitle": "Plan change scheduled",
+    "planChangeScheduledBody": "Your Premium Membership keeps its current plan until it changes to {{label}}{{effectiveOn}}. Cancel the change from Manage Subscription.",
+    "premiumIsActiveTitle": "Premium is active",
+    "premiumVerifiedAndActive": "{{label}} Premium is verified and active.",
+    "premiumNowActiveNoBilling": "{{label}} Premium is now active.",
+    "premiumNowActiveBilled": "{{label}} Premium is now active, billed every {{period}}.",
+    "coinPackGrantedTitle": "Stitch Coins granted",
+    "coinPackGrantVerified": "{{label}} grant verified. Stitch Coin balance: {{balance}}.",
+    "coinPackAddedToBalance": "{{quantity}} Stitch Coins have been added to your balance.",
+    "aiCreditPackGrantedTitle": "AI Credits granted",
+    "aiCreditPackGrantVerified": "{{label}} grant verified. AI Credit balance: {{balance}}.",
+    "aiCreditPackAddedToBalance": "{{quantity}} AI Credits have been added to your balance."
+  },
+  "products": {
+    "premiumAnnual": "Annual",
+    "premiumMonthly": "Monthly",
+    "premiumWeekly": "Weekly",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+    "aiCreditPack_one": "{{formattedCount}} AI Credit",
+    "aiCreditPack_other": "{{formattedCount}} AI Credits",
+    "billedEveryOffer": "{{price}} every {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} credits / paid period",
+    "creditAllowancePaidNoun": "{{credits}} credits / paid {{period}}"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Purchase as Guest",
+    "commerceBody": "You can purchase without registration. Premium Membership can be restored from the store, but Stitch Coin, AI Credit, and private Guest content are unrecoverable if this installation is lost. Registering protects them and never interrupts playing as a Guest.",
+    "continueAsGuest": "Continue as Guest",
+    "signInInstead": "Sign in instead",
+    "closeAccessibilityLabel": "Close"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "Got it",
+    "successButton": "Great",
+    "failedButton": "Close",
+    "infoButton": "Got it",
+    "closeAccessibilityLabel": "Close"
+  }
+}

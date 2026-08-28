@@ -11,6 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import {
   AiCreditShortfallError,
@@ -27,21 +28,19 @@ import {
 } from '@/ai-artwork';
 import { captureGameplayEvent } from '@/analytics/gameplayEvents';
 import { Button, Card, Screen } from '@/components';
-import { listPersonalPatterns, waitForConversion } from '@/conversion';
+import { listPersonalPatterns, resolveCreateErrorMessage, waitForConversion } from '@/conversion';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import {
   preparePersonalSession,
   waitUntilSessionReady,
 } from '@/session-preparation';
 import { Theme } from '@/theme/theme';
+import { formatNumber } from '@/i18n';
 
-const aspects: Array<[ArtworkAspect, string]> = [
-  ['square', 'Square'],
-  ['portrait_4_3', 'Portrait 4:3'],
-  ['landscape_4_3', 'Landscape 4:3'],
-];
+const ASPECT_OPTIONS: readonly ArtworkAspect[] = ['square', 'portrait_4_3', 'landscape_4_3'];
 
 export default function AiGenerationScreen() {
+  const { t, i18n } = useTranslation('create');
   const router = useRouter();
   const isAccount = useIdentityStore((state) => state.isAccount);
   const [prompt, setPrompt] = useState('');
@@ -50,7 +49,7 @@ export default function AiGenerationScreen() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [approvalArtwork, setApprovalArtwork] = useState<AiArtwork | null>(null);
-  const [approvalTitle, setApprovalTitle] = useState('My AI Pattern');
+  const [approvalTitle, setApprovalTitle] = useState(() => t('aiGeneration.approve.defaultTitle'));
   const [approvalError, setApprovalError] = useState<string | null>(null);
   const [existingTitles, setExistingTitles] = useState<Set<string> | null>(null);
 
@@ -62,7 +61,7 @@ export default function AiGenerationScreen() {
         artworks.forEach(captureAiArtworkTerminalOutcome);
       })
       .catch((caught: unknown) =>
-        setError(caught instanceof Error ? caught.message : String(caught)),
+        setError(resolveCreateErrorMessage(caught, 'create:aiGeneration.library.errors.loadFailed')),
       );
   }, [isAccount]);
 
@@ -94,22 +93,23 @@ export default function AiGenerationScreen() {
         });
         return;
       }
+      const promptRejected = isPromptSafetyRejection(caught);
       await captureGameplayEvent(
-        isPromptSafetyRejection(caught)
-          ? 'ai_generation_prompt_blocked'
-          : 'ai_generation_failed',
-        isPromptSafetyRejection(caught)
-          ? {}
-          : { failure_stage: 'provider_submission' },
+        promptRejected ? 'ai_generation_prompt_blocked' : 'ai_generation_failed',
+        promptRejected ? {} : { failure_stage: 'provider_submission' },
       );
-      setError(caught instanceof Error ? caught.message : String(caught));
+      setError(
+        promptRejected
+          ? t('aiGeneration.generate.errors.promptRejected')
+          : resolveCreateErrorMessage(caught, 'create:aiGeneration.generate.errors.generic'),
+      );
     } finally {
       setBusy(false);
     }
   };
 
   const openApproval = (item: AiArtwork) => {
-    const initialTitle = 'My AI Pattern';
+    const initialTitle = t('aiGeneration.approve.defaultTitle');
     setApprovalArtwork(item);
     setApprovalTitle(initialTitle);
     setApprovalError(null);
@@ -123,7 +123,7 @@ export default function AiGenerationScreen() {
         setExistingTitles(titles);
         setApprovalTitle((currentTitle) =>
           currentTitle === initialTitle
-            ? suggestAiPatternTitle(patterns.map((pattern) => pattern.title))
+            ? suggestAiPatternTitle(patterns.map((pattern) => pattern.title), initialTitle)
             : currentTitle,
         );
       })
@@ -187,9 +187,7 @@ export default function AiGenerationScreen() {
           failure_stage: 'conversion_engine',
         });
       }
-      setApprovalError(
-        caught instanceof Error ? caught.message : String(caught),
-      );
+      setApprovalError(resolveCreateErrorMessage(caught, 'create:aiGeneration.approve.errors.generic'));
     } finally {
       setBusy(false);
     }
@@ -198,12 +196,12 @@ export default function AiGenerationScreen() {
   if (!isAccount) {
     return (
       <Screen style={styles.center}>
-        <Text style={styles.title}>Registered Account Required</Text>
+        <Text style={styles.title}>{t('aiGeneration.gate.title')}</Text>
         <Text style={styles.body}>
-          AI artwork and its library stay private to your account.
+          {t('aiGeneration.gate.body')}
         </Text>
         <Button
-          title="Sign in"
+          title={t('aiGeneration.gate.signIn')}
           onPress={() => router.push('/(tabs)/(settings)/sign-in')}
         />
       </Screen>
@@ -214,43 +212,47 @@ export default function AiGenerationScreen() {
     <>
       <Screen scrollable contentContainerStyle={styles.container}>
         <View style={styles.header}>
-          <Pressable onPress={() => router.back()}>
+          <Pressable
+            onPress={() => router.back()}
+            accessibilityRole="button"
+            accessibilityLabel={t('aiGeneration.header.backAccessibilityLabel')}
+          >
             <Ionicons
               name="arrow-back"
               size={24}
               color={Theme.colors.accentTeal}
             />
           </Pressable>
-          <Text style={styles.title}>AI Generator</Text>
+          <Text style={styles.title}>{t('aiGeneration.header.title')}</Text>
         </View>
         <Card style={styles.card}>
-          <Text style={styles.label}>Describe your artwork</Text>
+          <Text style={styles.label}>{t('aiGeneration.prompt.label')}</Text>
           <TextInput
             value={prompt}
             onChangeText={setPrompt}
             multiline
             style={styles.input}
-            placeholder="A cozy cottage garden at sunset…"
+            placeholder={t('aiGeneration.prompt.placeholder')}
           />
           <View style={styles.aspects}>
-            {aspects.map(([value, label]) => (
+            {ASPECT_OPTIONS.map((value) => (
               <Pressable
                 key={value}
                 style={[styles.aspect, aspect === value && styles.selected]}
                 onPress={() => setAspect(value)}
               >
-                <Text>{label}</Text>
+                <Text>{t(`aspects.${value}`)}</Text>
               </Pressable>
             ))}
           </View>
           <Button
-            title={busy ? 'Working…' : 'Generate — 1 AI Credit'}
+            title={busy ? t('aiGeneration.generate.working') : t('aiGeneration.generate.action')}
             onPress={generate}
             disabled={busy || !prompt.trim()}
           />
         </Card>
         {error && <Text style={styles.error}>{error}</Text>}
-        <Text style={styles.library}>Your AI Artwork Library</Text>
+        <Text style={styles.library}>{t('aiGeneration.library.title')}</Text>
         {items.map((item) => (
           <Card key={item.id} style={styles.item}>
             {item.imageUrl ? (
@@ -261,24 +263,34 @@ export default function AiGenerationScreen() {
               </View>
             )}
             <View style={styles.itemBody}>
-              <Text style={styles.status}>{item.status.replace('_', ' ')}</Text>
-              {item.failureReason && (
-                <Text style={styles.error}>{item.failureReason}</Text>
+              <Text style={styles.status}>
+                {t(`aiGeneration.library.status.${item.status}`, {
+                  defaultValue: t('aiGeneration.library.status.unknown'),
+                })}
+              </Text>
+              {(item.status === 'failed' || item.status === 'safety_rejected') && (
+                <Text style={styles.error}>
+                  {t(`aiGeneration.library.failure.${item.status}`)}
+                </Text>
               )}
               {item.failureReason && item.supportReference && (
                 <Text selectable style={styles.supportReference}>
-                  Support Reference: {item.supportReference}
+                  {t('errors:generic.supportReferenceLabel', { reference: item.supportReference })}
                 </Text>
               )}
               {item.status === 'delivered' && (
                 <Button
-                  title="Approve into Pattern"
+                  title={t('aiGeneration.library.approve')}
                   onPress={() => openApproval(item)}
                   disabled={busy}
                 />
               )}
-              <Pressable onPress={() => deleteAiArtwork(item.id).then(load)}>
-                <Text style={styles.delete}>Delete</Text>
+              <Pressable
+                onPress={() => deleteAiArtwork(item.id).then(load).catch((caught: unknown) => setError(resolveCreateErrorMessage(caught)))}
+                accessibilityRole="button"
+                accessibilityLabel={t('aiGeneration.library.deleteAccessibilityLabel')}
+              >
+                <Text style={styles.delete}>{t('aiGeneration.library.delete')}</Text>
               </Pressable>
             </View>
           </Card>
@@ -294,33 +306,35 @@ export default function AiGenerationScreen() {
         <View style={styles.modalOverlay}>
           <View accessibilityViewIsModal style={styles.modalContainer}>
             <Card style={styles.modalCard}>
-              <Text style={styles.modalTitle}>Create Personal Pattern</Text>
+              <Text style={styles.modalTitle}>{t('aiGeneration.approve.modalTitle')}</Text>
               {approvalArtwork?.imageUrl && (
                 <Image
                   source={{ uri: approvalArtwork.imageUrl }}
                   style={styles.modalImage}
                 />
               )}
-              <Text style={styles.label}>Pattern title</Text>
+              <Text style={styles.label}>{t('aiGeneration.approve.titleLabel')}</Text>
               <TextInput
-                accessibilityLabel="Pattern title"
+                accessibilityLabel={t('aiGeneration.approve.titleAccessibilityLabel')}
                 editable={!busy}
                 maxLength={120}
                 onChangeText={(value) => {
                   setApprovalTitle(value);
                   setApprovalError(null);
                 }}
-                placeholder="My AI Pattern"
+                placeholder={t('aiGeneration.approve.placeholder')}
                 style={styles.titleInput}
                 value={approvalTitle}
               />
               <Text style={styles.characterCount}>
-                {approvalTitle.length}/120
+                {t('aiGeneration.approve.characterCount', {
+                  count: formatNumber(approvalTitle.length, i18n.language),
+                  max: formatNumber(120, i18n.language),
+                })}
               </Text>
               {duplicateTitle && (
                 <Text style={styles.error}>
-                  You already have a Personal Pattern named “
-                  {approvalTitle.trim()}”. Choose a different title.
+                  {t('common.duplicateTitle', { title: approvalTitle.trim() })}
                 </Text>
               )}
               {approvalError && (
@@ -328,14 +342,14 @@ export default function AiGenerationScreen() {
               )}
               <View style={styles.modalActions}>
                 <Button
-                  title="Cancel"
+                  title={t('aiGeneration.approve.cancel')}
                   onPress={closeApproval}
                   disabled={busy}
                   variant="secondary"
                   style={styles.modalButton}
                 />
                 <Button
-                  title={busy ? 'Creating Pattern…' : 'Create Pattern'}
+                  title={busy ? t('aiGeneration.approve.creating') : t('aiGeneration.approve.create')}
                   onPress={approve}
                   disabled={busy || !canApprove}
                   loading={busy}

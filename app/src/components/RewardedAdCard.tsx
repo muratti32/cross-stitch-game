@@ -8,18 +8,20 @@ import { Button } from './Button';
 import { useRewardDay, useOpenAdAttempt, useClaimAdReward } from '../api/economy';
 import { useRewardedAd } from '../hooks/useRewardedAd';
 import { OfflineError } from '../api/networkErrors';
+import { isServerApiError, localizeServerError } from '../api/localizeServerError';
+import { useTranslation } from 'react-i18next';
 
 /** Hardcoded 10 coin reward per ad attempt, locked by ADR-0011 / ADR-0033. */
 const AD_REWARD_COIN = 10;
 
-function formatTimeRemaining(resetsAt: string): string {
+function formatTimeRemaining(resetsAt: string, t: (key: string, values?: Record<string, number>) => string): string {
   const diffMs = new Date(resetsAt).getTime() - Date.now();
-  if (diffMs <= 0) return 'Resetting…';
+  if (diffMs <= 0) return t('home.dailySection.resetting');
   const totalMinutes = Math.floor(diffMs / 60000);
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
-  if (hours <= 0) return `Resets in ${minutes}m`;
-  return `Resets in ${hours}h ${minutes}m`;
+  if (hours <= 0) return t('home.dailySection.resetsInMinutes', { minutes });
+  return t('home.dailySection.resetsInHoursMinutes', { hours, minutes });
 }
 
 interface RewardedAdCardProps {
@@ -28,6 +30,7 @@ interface RewardedAdCardProps {
 }
 
 export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
+  const { t } = useTranslation('profile');
   const { data, isLoading, isError, error: rewardDayError, refetch } = useRewardDay();
   const isOffline = rewardDayError instanceof OfflineError;
   const { mutateAsync: openAdAttempt } = useOpenAdAttempt();
@@ -60,11 +63,12 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
       } catch (err: unknown) {
         claimingNonceRef.current.delete(nonce);
         console.error('[RewardedAdCard] Failed to claim client ad reward:', err);
-        const msg = err instanceof Error ? err.message : String(err);
-        setLocalError(`Claim failed: ${msg}`);
+        setLocalError(isServerApiError(err)
+          ? localizeServerError(err)
+          : t('home.dailyPool.claimFailedGeneric'));
       }
     },
-    [claimAdReward, queryClient],
+    [claimAdReward, queryClient, t],
   );
 
   const { status, show, error } = useRewardedAd({
@@ -111,7 +115,7 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
 
   useEffect(() => {
     if (attemptPending && status === 'error') {
-      setLocalError(error?.message || 'Failed to load ad');
+      setLocalError(t('home.dailyPool.adLoadFailedDefault'));
       activeNonceRef.current = null;
       setAttempt(null);
       setAttemptPending(false);
@@ -129,7 +133,9 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
     } catch (err) {
       activeNonceRef.current = null;
       setAttemptPending(false);
-      setLocalError(err instanceof Error ? err.message : 'Failed to open ad attempt');
+      setLocalError(isServerApiError(err)
+        ? localizeServerError(err)
+        : t('home.dailyPool.adAttemptFailedDefault'));
     }
   };
 
@@ -153,23 +159,25 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
         <View style={styles.centerRow}>
           <Ionicons name="cloud-offline-outline" size={20} color={Theme.colors.error} />
           <Text style={styles.errorText}>
-            {isOffline ? "You're offline - Reward Day needs a connection" : "Couldn't load Reward Day status"}
+            {isOffline
+              ? t('rewardedAdCard.offline')
+              : t('rewardedAdCard.unavailable')}
           </Text>
           <Pressable onPress={() => refetch()} hitSlop={8}>
-            <Text style={styles.retryText}>Retry</Text>
+            <Text style={styles.retryText}>{t('home.dailySection.retry')}</Text>
           </Pressable>
         </View>
       </Card>
     );
   }
 
-  const resetsIn = formatTimeRemaining(data.resetsAt);
+  const resetsIn = formatTimeRemaining(data.resetsAt, t);
 
   if (data.premiumClaimed || data.adsRemaining <= 0 || data.coinsRemaining < AD_REWARD_COIN) {
     return (
       <Card style={styles.card}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Rewarded Ads</Text>
+          <Text style={styles.headerTitle}>{t('home.dailyPool.rewardedAds')}</Text>
           <View style={styles.balanceBadge}>
             <Ionicons name="disc-outline" size={14} color={Theme.colors.accentHoney} />
             <Text style={styles.balanceText}>{data.balance}</Text>
@@ -178,8 +186,8 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
         <Text style={styles.resetText}>{resetsIn}</Text>
         <Text style={styles.disabledTextContent}>
           {data.premiumClaimed
-            ? 'Your Premium daily claim closed today\'s shared coin pool.'
-            : 'You\'ve claimed all ad rewards for today. Come back tomorrow!'}
+            ? t('rewardedAdCard.premiumClaimClosedPool')
+            : t('rewardedAdCard.allRewardsClaimed')}
         </Text>
       </Card>
     );
@@ -188,7 +196,7 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
   return (
     <Card style={styles.card}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Rewarded Ads</Text>
+        <Text style={styles.headerTitle}>{t('home.dailyPool.rewardedAds')}</Text>
         <View style={styles.balanceBadge}>
           <Ionicons name="disc-outline" size={14} color={Theme.colors.accentHoney} />
           <Text style={styles.balanceText}>{data.balance}</Text>
@@ -199,12 +207,15 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
       <View style={styles.infoRow}>
         <Ionicons name="film-outline" size={20} color={Theme.colors.accentTeal} />
         <Text style={styles.bodyText}>
-          {data.adsRemaining} ad{data.adsRemaining > 1 ? 's' : ''} left today ({data.coinsRemaining} coins available)
+          {t('rewardedAdCard.remaining', {
+            count: data.adsRemaining,
+            coins: data.coinsRemaining,
+          })}
         </Text>
       </View>
 
       <Button
-        title={`Watch Ad for ${AD_REWARD_COIN} Coins`}
+        title={t('rewardedAdCard.watchForCoins', { count: AD_REWARD_COIN })}
         onPress={handleWatchAd}
         disabled={attemptPending}
         loading={attemptPending}
@@ -214,7 +225,7 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
 
       {earned && (
         <Text style={styles.successMessage}>
-          Reward earned! Verifying…
+          {t('home.dailyPool.adRewardEarned')}
         </Text>
       )}
 

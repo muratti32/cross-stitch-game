@@ -1,5 +1,6 @@
 import { Config } from '../config';
 import { isOfflineNetworkError, OfflineError } from './networkErrors';
+import { getActiveLocale } from '../i18n/activeLocale';
 
 export interface AuthSessionProvider {
   getAccessToken: () => string | null;
@@ -19,6 +20,19 @@ let accountDeletionTriggered = false;
 
 export function resetAccountDeletionTrigger(): void {
   accountDeletionTriggered = false;
+}
+
+/**
+ * Attaches the active App Display Language to a request URL as the
+ * existing `locale` query parameter (#160) - centrally, here, so no
+ * individual call site (catalog or otherwise) has to build its own `locale`
+ * param. The Game Backend already reads `?locale=` on catalog endpoints and
+ * ignores unrecognized query params elsewhere, so attaching it uniformly to
+ * every request needs no endpoint-specific branching.
+ */
+function withActiveLocale(url: string): string {
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}locale=${getActiveLocale()}`;
 }
 
 /**
@@ -50,7 +64,7 @@ export async function performAuthenticatedRequest(
   options: RequestInit = {},
   authSession: AuthSessionProvider,
 ): Promise<Response> {
-  const url = path.startsWith('http') ? path : `${Config.apiBaseUrl}${path}`;
+  const url = withActiveLocale(path.startsWith('http') ? path : `${Config.apiBaseUrl}${path}`);
 
   const headers = new Headers(options.headers || {});
   const token = authSession.getAccessToken();

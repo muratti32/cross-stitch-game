@@ -10,23 +10,27 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { useCatalogCategories, useCatalogTags } from '@/api/catalog';
 import { useCreateCatalogSubmission } from '@/api/catalogSubmissions';
 import { useCreatorProfile } from '@/api/creatorProfile';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 import { Button, Card, EmptyState, Screen } from '@/components';
 import { listPersonalPatterns, type PersonalPattern } from '@/conversion';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
 
 export default function SubmitPatternScreen() {
+  const { t } = useTranslation('profile');
+  const { t: tCatalog } = useTranslation('catalog');
   const params = useLocalSearchParams<{ patternId?: string | string[] }>();
   const patternId = Array.isArray(params.patternId) ? params.patternId[0] : params.patternId;
   const accountId = useIdentityStore((state) => state.accountId);
   const isAccount = useIdentityStore((state) => state.isAccount);
   const profileQuery = useCreatorProfile(accountId, isAccount);
   const categoriesQuery = useCatalogCategories();
-  const tagsQuery = useCatalogTags('en');
+  const tagsQuery = useCatalogTags();
   const mutation = useCreateCatalogSubmission(accountId);
   const creatorProfile = profileQuery.data ?? null;
   const [pattern, setPattern] = useState<PersonalPattern | null>(null);
@@ -107,20 +111,26 @@ export default function SubmitPatternScreen() {
       });
       router.replace('/(tabs)/(profile)/submissions');
     } catch (caught: unknown) {
-      setError(caught instanceof Error ? caught.message : String(caught));
+      setError(
+        isServerApiError(caught)
+          ? localizeServerError(caught)
+          : caught instanceof Error
+            ? caught.message
+            : String(caught),
+      );
     }
   };
 
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
-      <Header title="Submit to Community" />
+      <Header title={t('submitPattern.title')} />
 
       {!isAccount ? (
         <EmptyState
           icon="person-circle-outline"
-          title="Registered Account Required"
-          body="Sign in before submitting a Personal Pattern to the Community Catalog."
-          actionLabel="Sign In"
+          title={t('submitPattern.signInTitle')}
+          body={t('submitPattern.signInBody')}
+          actionLabel={t('submitPattern.signInAction')}
           onAction={() => router.push('/(tabs)/(settings)/sign-in')}
           actionVariant="rose"
         />
@@ -129,18 +139,18 @@ export default function SubmitPatternScreen() {
       ) : creatorProfile === null ? (
         <EmptyState
           icon="person-add-outline"
-          title="Create a Public Creator Profile"
-          body="Community Patterns are credited to your public creator identity."
-          actionLabel="Create Profile"
+          title={t('submitPattern.createProfileTitle')}
+          body={t('submitPattern.createProfileBody')}
+          actionLabel={t('submitPattern.createProfileAction')}
           onAction={() => router.push('/(tabs)/(profile)/public-profile')}
           actionVariant="rose"
         />
       ) : pattern === null ? (
         <EmptyState
           icon="alert-circle-outline"
-          title="Personal Pattern Not Found"
-          body="Only synced Personal Patterns can be submitted."
-          actionLabel="Back to Profile"
+          title={t('submitPattern.patternNotFoundTitle')}
+          body={t('submitPattern.patternNotFoundBody')}
+          actionLabel={t('submitPattern.patternNotFoundAction')}
           onAction={() => router.back()}
           actionVariant="sage"
         />
@@ -150,30 +160,32 @@ export default function SubmitPatternScreen() {
             <Image source={{ uri: pattern.previewUrl }} style={styles.preview} />
             <View style={styles.summaryText}>
               <Text style={styles.patternTitle} numberOfLines={2}>{pattern.title}</Text>
-              <Text style={styles.helpText}>{pattern.width}×{pattern.height} · {pattern.paletteSize} colors</Text>
-              <Text style={styles.creatorText}>By @{creatorProfile.username}</Text>
+              <Text style={styles.helpText}>
+                {t('submitPattern.patternMeta', { count: pattern.paletteSize, height: pattern.height, width: pattern.width })}
+              </Text>
+              <Text style={styles.creatorText}>{t('submitPattern.byCreator', { username: creatorProfile.username })}</Text>
             </View>
           </Card>
 
-          <Field label="Catalog title" count={`${normalizedTitle.length}/120`}>
+          <Field label={t('submitPattern.titleFieldLabel')} count={`${normalizedTitle.length}/120`}>
             <TextInput
-              accessibilityLabel="Catalog title"
+              accessibilityLabel={t('submitPattern.titleAccessibilityLabel')}
               maxLength={120}
               onChangeText={setTitle}
-              placeholder="Pattern title"
+              placeholder={t('submitPattern.titlePlaceholder')}
               placeholderTextColor={Theme.colors.textSecondary}
               style={styles.input}
               value={title}
             />
           </Field>
 
-          <Field label="Description" count={`${normalizedDescription.length}/2000`}>
+          <Field label={t('submitPattern.descriptionFieldLabel')} count={`${normalizedDescription.length}/2000`}>
             <TextInput
-              accessibilityLabel="Catalog description"
+              accessibilityLabel={t('submitPattern.descriptionAccessibilityLabel')}
               maxLength={2000}
               multiline
               onChangeText={setDescription}
-              placeholder="Describe the design, subject, and stitching experience."
+              placeholder={t('submitPattern.descriptionPlaceholder')}
               placeholderTextColor={Theme.colors.textSecondary}
               style={[styles.input, styles.textarea]}
               textAlignVertical="top"
@@ -181,14 +193,16 @@ export default function SubmitPatternScreen() {
             />
           </Field>
 
-          <Field label="Source language">
+          {/* #165: locked to English, the only accepted sourceLanguage -
+              see the matching note in revise-pattern-metadata.tsx. */}
+          <Field label={t('submitPattern.sourceLanguageFieldLabel')}>
             <View style={styles.readonlyField}>
-              <Text style={styles.readonlyText}>English</Text>
+              <Text style={styles.readonlyText}>{tCatalog('sourceLanguage.names.en')}</Text>
               <Ionicons name="lock-closed-outline" size={16} color={Theme.colors.textSecondary} />
             </View>
           </Field>
 
-          <Field label="Category">
+          <Field label={t('submitPattern.categoryFieldLabel')}>
             {loadingReferences ? <ActivityIndicator color={Theme.colors.accentRose} /> : (
               <View style={styles.chips}>
                 {categories.map((category) => (
@@ -203,7 +217,7 @@ export default function SubmitPatternScreen() {
             )}
           </Field>
 
-          <Field label="Tags" count={`${tagCodes.length}/5`}>
+          <Field label={t('submitPattern.tagsFieldLabel')} count={`${tagCodes.length}/5`}>
             {loadingReferences ? <ActivityIndicator color={Theme.colors.accentRose} /> : (
               <View style={styles.chips}>
                 {tags.map((tag) => (
@@ -230,17 +244,13 @@ export default function SubmitPatternScreen() {
               size={24}
               color={rightsDeclared ? Theme.colors.accentTeal : Theme.colors.textSecondary}
             />
-            <Text style={styles.declarationText}>
-              I created this work or have the rights required to publish it under Publication Rights Declaration v1.
-            </Text>
+            <Text style={styles.declarationText}>{t('submitPattern.rightsDeclaration')}</Text>
           </Pressable>
 
-          <Text style={styles.notice}>
-            Submission captures an immutable copy. Automated checks provide evidence, but a human moderator makes every decision.
-          </Text>
+          <Text style={styles.notice}>{t('submitPattern.notice')}</Text>
           {error !== null && <Text style={styles.error}>{error}</Text>}
           <Button
-            title="Submit for Review"
+            title={t('submitPattern.submitAction')}
             variant="rose"
             disabled={!canSubmit}
             loading={mutation.isPending}
@@ -253,9 +263,10 @@ export default function SubmitPatternScreen() {
 }
 
 function Header({ title }: { title: string }) {
+  const { t } = useTranslation('profile');
   return (
     <View style={styles.header}>
-      <Pressable accessibilityLabel="Go back" hitSlop={12} onPress={() => router.back()}>
+      <Pressable accessibilityLabel={t('common.goBackAccessibilityLabel')} hitSlop={12} onPress={() => router.back()}>
         <Ionicons name="chevron-back" size={26} color={Theme.colors.textPrimary} />
       </Pressable>
       <Text style={styles.headerTitle}>{title}</Text>

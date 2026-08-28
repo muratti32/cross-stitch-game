@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { BUNDLED_PATTERNS } from '@/bundled-patterns';
 import { Button, Screen } from '@/components';
@@ -16,6 +17,7 @@ const WELCOME_HERO = require('../../assets/onboarding-welcome-hero.png');
 
 export default function WelcomeScreen() {
   const router = useRouter();
+  const { t } = useTranslation('onboarding');
   const { handedness, setHandedness } = useGameplayStore();
   const [starting, setStarting] = useState(false);
   const [handednessError, setHandednessError] = useState<'left' | 'right' | null>(null);
@@ -61,21 +63,26 @@ export default function WelcomeScreen() {
     router.navigate('/(tabs)/(catalog)');
   };
 
+  const HANDEDNESS_LABEL: Record<'right' | 'left', string> = {
+    right: t('welcome.handedness.optionRight'),
+    left: t('welcome.handedness.optionLeft'),
+  };
+
   return (
     <Screen scrollable contentContainerStyle={styles.container} clearsTabBar={false}>
-      <Text style={styles.eyebrow}>WELCOME TO STITCH WISH</Text>
-      <Text style={styles.title}>Pick a color, tap the matching squares.</Text>
+      <Text style={styles.eyebrow}>{t('welcome.eyebrow')}</Text>
+      <Text style={styles.title}>{t('welcome.title')}</Text>
       <Image
         source={WELCOME_HERO}
         accessible
-        accessibilityLabel="Cozy Heart starter pattern preview"
+        accessibilityLabel={t('welcome.heroAlt')}
         style={styles.preview}
         resizeMode="cover"
       />
-      <Text style={styles.sectionTitle}>Which side should the controls use?</Text>
+      <Text style={styles.sectionTitle}>{t('welcome.handedness.sectionTitle')}</Text>
       <View
         accessibilityRole="radiogroup"
-        accessibilityLabel="Control side"
+        accessibilityLabel={t('welcome.handedness.groupLabel')}
         style={styles.segments}
       >
         {(['right', 'left'] as const).map((value) => (
@@ -87,28 +94,28 @@ export default function WelcomeScreen() {
             style={[styles.segment, handedness === value && styles.segmentSelected]}
           >
             <Text style={[styles.segmentText, handedness === value && styles.segmentTextSelected]}>
-              Controls on the {value}
+              {HANDEDNESS_LABEL[value]}
             </Text>
           </Pressable>
         ))}
       </View>
       {handednessError ? (
         <View accessibilityRole="alert" style={styles.preferenceError}>
-          <Text style={styles.preferenceErrorText}>Couldn’t save that choice.</Text>
+          <Text style={styles.preferenceErrorText}>{t('welcome.handedness.saveErrorText')}</Text>
           <Pressable onPress={() => void chooseHandedness(handednessError)} style={styles.retryPreference}>
-            <Text style={styles.retryPreferenceText}>Try again</Text>
+            <Text style={styles.retryPreferenceText}>{t('welcome.handedness.retry')}</Text>
           </Pressable>
         </View>
       ) : null}
-      <Text style={styles.note}>You can change this later in Settings.</Text>
-      <Button title={starting ? 'Starting…' : 'Start stitching'} onPress={() => void start()} loading={starting} />
-      <Button title="Browse starters" variant="secondary" onPress={() => void browse()} />
+      <Text style={styles.note}>{t('welcome.note')}</Text>
+      <Button title={starting ? t('welcome.starting') : t('welcome.start')} onPress={() => void start()} loading={starting} />
+      <Button title={t('welcome.browse')} variant="secondary" onPress={() => void browse()} />
       <Pressable
         accessibilityRole="link"
         onPress={() => { onboardingStartChoice('sign_in'); router.navigate({ pathname: '/(tabs)/(settings)/sign-in', params: { returnTo: '/onboarding/welcome' } }); }}
         style={styles.signIn}
       >
-        <Text style={styles.signInText}>Sign in</Text>
+        <Text style={styles.signInText}>{t('welcome.signIn')}</Text>
       </Pressable>
     </Screen>
   );

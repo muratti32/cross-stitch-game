@@ -1,4 +1,4 @@
-import { listModerationNotices } from '../moderationNotices';
+import { listModerationNotices, ModerationNoticesApiError } from '../moderationNotices';
 
 jest.mock('../apiFetch', () => ({
   apiFetch: jest.fn(),
@@ -37,12 +37,16 @@ describe('Moderation Notices client', () => {
     expect(JSON.stringify(notices)).not.toContain('reporter');
   });
 
-  test('surfaces the backend failure reason', async () => {
+  test('retains backend diagnostics in a reason-bearing error for localized presentation', async () => {
     apiFetch.mockResolvedValue(
-      jsonResponse(403, { message: 'Registered Account required' }),
+      jsonResponse(403, { message: 'Registered Account required', reason: 'account_required' }),
     );
-    await expect(listModerationNotices()).rejects.toThrow(
-      'Registered Account required',
-    );
+    const error = await listModerationNotices().catch((caught: unknown) => caught);
+    expect(error).toBeInstanceOf(ModerationNoticesApiError);
+    expect(error).toMatchObject({
+      message: 'Registered Account required',
+      reason: 'account_required',
+      status: 403,
+    });
   });
 });

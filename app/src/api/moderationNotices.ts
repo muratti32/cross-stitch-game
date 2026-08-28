@@ -17,10 +17,17 @@ export interface ModerationNotice {
   reason: string;
 }
 
+export class ModerationNoticesApiError extends Error {
+  constructor(readonly status: number, message: string, readonly reason: string | null) {
+    super(message);
+    this.name = 'ModerationNoticesApiError';
+  }
+}
+
 export async function listModerationNotices(): Promise<ModerationNotice[]> {
   const response = await apiFetch('/v1/moderation-notices');
   if (!response.ok) {
-    throw new Error(await readMessage(response, 'Could not load Moderation Notices'));
+    throw await readError(response);
   }
   return (await response.json()) as ModerationNotice[];
 }
@@ -33,12 +40,15 @@ export function useModerationNotices(accountId: string | null, enabled: boolean)
   });
 }
 
-async function readMessage(response: Response, fallback: string): Promise<string> {
+async function readError(response: Response): Promise<ModerationNoticesApiError> {
+  let message = `Could not load Moderation Notices (${response.status})`;
+  let reason: string | null = null;
   try {
-    const body = (await response.json()) as { message?: unknown };
-    if (typeof body.message === 'string') return body.message;
+    const body = (await response.json()) as { message?: unknown; reason?: unknown };
+    if (typeof body.message === 'string') message = body.message;
+    if (typeof body.reason === 'string') reason = body.reason;
   } catch {
-    // Preserve the actionable fallback when the server did not return JSON.
+    // Keep the diagnostic fallback.
   }
-  return `${fallback} (${response.status})`;
+  return new ModerationNoticesApiError(response.status, message, reason);
 }

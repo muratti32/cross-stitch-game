@@ -5,6 +5,15 @@ import SettingsScreen from '../../../app/(tabs)/(settings)/index';
 import { AccountDeletionApiError } from '@/api/accountDeletion';
 import { AccountReauthenticationApiError } from '@/api/accountReauthentication';
 
+// #159: a reason-bearing API error now flows through localizeServerError,
+// which reports the raw server message to Sentry as diagnostic context -
+// see src/api/__tests__/localizeServerError.test.ts for that behavior's own
+// coverage. This suite only needs the dependency not to explode.
+jest.mock('@sentry/react-native', () => ({
+  captureMessage: jest.fn(() => 'settings-error-event'),
+  withScope: jest.fn((callback) => callback({ setContext: jest.fn(), setLevel: jest.fn(), setTag: jest.fn() })),
+}));
+
 let mockIsAccount = false;
 let mockDeletionStatus: { status: string; recoveryWindowEndsAt?: string } | undefined;
 let mockDeletionError: Error | null = null;

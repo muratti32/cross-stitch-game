@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "WELCOME TO STITCH WISH",
+    "title": "Pick a color, tap the matching squares.",
+    "heroAlt": "Cozy Heart starter pattern preview",
+    "handedness": {
+      "sectionTitle": "Which side should the controls use?",
+      "groupLabel": "Control side",
+      "optionRight": "Controls on the right",
+      "optionLeft": "Controls on the left",
+      "saveErrorText": "Couldn’t save that choice.",
+      "retry": "Try again"
+    },
+    "note": "You can change this later in Settings.",
+    "start": "Start stitching",
+    "starting": "Starting…",
+    "browse": "Browse starters",
+    "signIn": "Sign in"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Select DMC 321 Christmas Red.",
+      "stitchAction": "Tap the highlighted matching cell.",
+      "mismatchedTap": "Tap the highlighted different cell. Wrong taps cost nothing.",
+      "undoAction": "Undo that stitch, then place it again.",
+      "stitchSweep": "Press a matching cell, then drag across the highlighted run.",
+      "threadColorCompletion": "Finish the highlighted white thread, then choose your next color."
+    },
+    "hints": {
+      "anchoredZoom": "Pinch to zoom while keeping the cells under your fingers in place.",
+      "panVsSweep": "Dragging pans the fabric. Start on a matching cell to stitch a sweep.",
+      "edgeAutoPan": "Keep sweeping near the edge and the fabric follows your finger.",
+      "remainingCellLocator": "Use the locator to find the next remaining cell for this thread."
+    },
+    "skip": "Skip for now",
+    "skipAccessibilityLabel": "Skip tutorial for now",
+    "dismiss": "Got it",
+    "dismissAccessibilityLabel": "Dismiss hint"
+  },
+  "recap": {
+    "title": "You've got it",
+    "lines": {
+      "matchNumbers": "Match the numbers to place each stitch.",
+      "dragSweep": "Drag across matching cells to sweep.",
+      "pinchZoom": "Pinch to zoom when you need a closer look.",
+      "undoLocator": "Undo and the locator are always free."
+    },
+    "continue": "Continue stitching",
+    "browsePatterns": "Browse patterns"
+  }
+}

@@ -12,6 +12,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import {
   communityReportValidationError,
@@ -23,19 +24,26 @@ import { Theme } from '@/theme/theme';
 import { Button } from './Button';
 import { Card } from './Card';
 
-const REASONS: { label: string; value: CommunityReportReason }[] = [
-  {
-    label: 'Inappropriate or Unsafe Content',
-    value: 'inappropriate_or_unsafe_content',
-  },
-  {
-    label: 'Copyright or Publication Rights',
-    value: 'copyright_or_publication_rights',
-  },
-  { label: 'Duplicate or Spam', value: 'duplicate_or_spam' },
-  { label: 'Misleading Title or Tags', value: 'misleading_title_or_tags' },
-  { label: 'Other', value: 'other' },
+const REASON_VALUES: CommunityReportReason[] = [
+  'inappropriate_or_unsafe_content',
+  'copyright_or_publication_rights',
+  'duplicate_or_spam',
+  'misleading_title_or_tags',
+  'other',
 ];
+
+// communityReportValidationError (src/api/communityReports.ts) is a pure
+// function tested directly on its English return values - see
+// communityReports.test.ts - so it is not changed here. This maps its known
+// literal outputs to localized text for display; an unrecognized string
+// (there should never be one) falls back to the raw value rather than
+// crashing.
+const VALIDATION_ERROR_KEYS: Record<string, string> = {
+  'Choose a report reason.': 'detail.communityReport.validation.chooseReason',
+  'Explain why you are reporting this pattern.': 'detail.communityReport.validation.explainRequired',
+  'The explanation must be 2,000 characters or fewer.': 'detail.communityReport.validation.tooLong',
+  'The explanation must include letters or numbers.': 'detail.communityReport.validation.needsContent',
+};
 
 interface CommunityReportActionProps {
   patternId: string;
@@ -46,6 +54,7 @@ export function CommunityReportAction({
   patternId,
   patternTitle,
 }: CommunityReportActionProps) {
+  const { t } = useTranslation('catalog');
   const router = useRouter();
   const isAccount = useIdentityStore((state) => state.isAccount);
   const mutation = useCreateCommunityReport();
@@ -54,16 +63,21 @@ export function CommunityReportAction({
   const [explanation, setExplanation] = useState('');
   const [validationError, setValidationError] = useState<string | null>(null);
 
+  const localizeValidationError = (raw: string): string => {
+    const key = VALIDATION_ERROR_KEYS[raw];
+    return key ? t(key) : raw;
+  };
+
   const open = () => {
     if (!isAccount) {
       Alert.alert(
-        'Sign in to report',
-        'Community Reports require a Registered Account. Nothing has been submitted.',
+        t('detail.communityReport.signInRequired.title'),
+        t('detail.communityReport.signInRequired.message'),
         [
-          { style: 'cancel', text: 'Cancel' },
+          { style: 'cancel', text: t('detail.communityReport.signInRequired.cancel') },
           {
             onPress: () => router.push('/(tabs)/(settings)/sign-in'),
-            text: 'Sign in',
+            text: t('detail.communityReport.signInRequired.signIn'),
           },
         ],
       );
@@ -103,10 +117,12 @@ export function CommunityReportAction({
       });
       resetAndClose();
       Alert.alert(
-        result.created ? 'Report received' : 'Report already received',
         result.created
-          ? 'A moderator can now review this pattern. The report does not automatically change its availability.'
-          : 'Your existing report is already part of the open review.',
+          ? t('detail.communityReport.receivedTitle')
+          : t('detail.communityReport.alreadyReceivedTitle'),
+        result.created
+          ? t('detail.communityReport.receivedBody')
+          : t('detail.communityReport.alreadyReceivedBody'),
       );
     } catch {
       // The mutation error is rendered in the modal so it remains actionable.
@@ -118,7 +134,7 @@ export function CommunityReportAction({
       <Button
         onPress={open}
         style={styles.reportButton}
-        title="Report this pattern"
+        title={t('detail.communityReport.button')}
         variant="secondary"
       />
       <Modal
@@ -139,55 +155,58 @@ export function CommunityReportAction({
                 showsVerticalScrollIndicator={false}
               >
                 <Text accessibilityRole="header" style={styles.title}>
-                  Report {patternTitle}
+                  {t('detail.communityReport.title', { patternTitle })}
                 </Text>
                 <Text style={styles.body}>
-                  Choose the reason that best describes the issue. Reports never hide or
-                  change a pattern automatically.
+                  {t('detail.communityReport.body')}
                 </Text>
 
                 <View accessibilityRole="radiogroup" style={styles.reasonList}>
-                  {REASONS.map((option) => {
-                    const selected = reason === option.value;
+                  {REASON_VALUES.map((value) => {
+                    const selected = reason === value;
                     return (
                       <Pressable
                         accessibilityRole="radio"
                         accessibilityState={{ selected }}
-                        key={option.value}
+                        key={value}
                         onPress={() => {
-                          setReason(option.value);
+                          setReason(value);
                           setValidationError(null);
                         }}
                         style={[styles.reasonRow, selected && styles.reasonRowSelected]}
                       >
                         <View style={[styles.radio, selected && styles.radioSelected]} />
-                        <Text style={styles.reasonLabel}>{option.label}</Text>
+                        <Text style={styles.reasonLabel}>{t(`detail.communityReport.reasons.${value}`)}</Text>
                       </Pressable>
                     );
                   })}
                 </View>
 
                 <Text style={styles.inputLabel}>
-                  Evidence or explanation {reason === 'other' ? '(required)' : '(optional)'}
+                  {t('detail.communityReport.explanationLabel', {
+                    requirement: reason === 'other'
+                      ? t('detail.communityReport.explanationRequired')
+                      : t('detail.communityReport.explanationOptional'),
+                  })}
                 </Text>
                 <TextInput
                   editable={!mutation.isPending}
                   maxLength={2000}
                   multiline
                   onChangeText={setExplanation}
-                  placeholder="Share details that will help a moderator review the pattern."
+                  placeholder={t('detail.communityReport.explanationPlaceholder')}
                   placeholderTextColor={Theme.colors.textSecondary}
                   style={styles.input}
                   textAlignVertical="top"
                   value={explanation}
                 />
-                <Text style={styles.characterCount}>{explanation.length}/2000</Text>
+                <Text style={styles.characterCount}>{t('detail.communityReport.characterCount', { count: explanation.length })}</Text>
 
                 {validationError !== null ? (
-                  <Text style={styles.error}>{validationError}</Text>
+                  <Text style={styles.error}>{localizeValidationError(validationError)}</Text>
                 ) : null}
                 {mutation.error instanceof Error ? (
-                  <Text style={styles.error}>{mutation.error.message}</Text>
+                  <Text style={styles.error}>{t('detail.communityReport.submitFailedGeneric')}</Text>
                 ) : null}
 
                 <View style={styles.actions}>
@@ -195,14 +214,14 @@ export function CommunityReportAction({
                     disabled={mutation.isPending}
                     onPress={close}
                     style={styles.action}
-                    title="Cancel"
+                    title={t('detail.communityReport.cancel')}
                     variant="secondary"
                   />
                   <Button
                     loading={mutation.isPending}
                     onPress={() => void submit()}
                     style={styles.action}
-                    title="Submit report"
+                    title={t('detail.communityReport.submit')}
                     variant="rose"
                   />
                 </View>

@@ -126,7 +126,7 @@ it('shows actionable availability and claim errors', () => {
   };
   const renderer = render(<PremiumDailyCoinClaimCard enabled />);
   expect(allText(renderer.root)).toEqual(expect.arrayContaining([
-    'Membership temporarily unavailable.',
+    "Today's Premium reward is unavailable.",
     'Try again',
   ]));
   act(() => pressByText(renderer.root, 'Try again'));
@@ -142,7 +142,7 @@ it('shows actionable availability and claim errors', () => {
   };
   act(() => renderer.update(<PremiumDailyCoinClaimCard enabled />));
   expect(allText(renderer.root)).toEqual(expect.arrayContaining([
-    'Could not reach the Game Backend.',
+    "Today's Premium reward is unavailable.",
     'Try claim again',
   ]));
   act(() => renderer.unmount());

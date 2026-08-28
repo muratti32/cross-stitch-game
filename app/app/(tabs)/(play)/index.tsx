@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { StyleSheet, View, Text, FlatList, ActivityIndicator, Alert, Pressable, Dimensions } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Screen, EmptyState, Card, PatternImage } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useTabBarSpace } from '@/theme/tabBar';
@@ -20,6 +21,7 @@ const { width: screenWidth } = Dimensions.get('window');
 const cardWidth = (screenWidth - 32 - 12) / 2;
 
 export default function PlayScreen() {
+  const { t } = useTranslation('play');
   const router = useRouter();
   const tabBarSpace = useTabBarSpace();
   const [sessions, setSessions] = useState<(StitchingSession & { progress: number })[]>([]);
@@ -82,12 +84,12 @@ export default function PlayScreen() {
 
   const handleConfirmDeleteSession = (sessionId: string, title: string) => {
     Alert.alert(
-      'Delete Progress',
-      `Are you sure you want to delete your progress for "${title}"? This cannot be undone.`,
+      t('home.deleteConfirm.title'),
+      t('home.deleteConfirm.message', { title }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('home.deleteConfirm.cancel'), style: 'cancel' },
         {
-          text: 'Delete',
+          text: t('home.deleteConfirm.confirm'),
           style: 'destructive',
           onPress: async () => {
             try {
@@ -104,7 +106,7 @@ export default function PlayScreen() {
 
   const renderSessionItem = ({ item }: { item: StitchingSession & { progress: number } }) => {
     const pattern = BUNDLED_PATTERNS.find((p) => p.id === item.patternId);
-    const displayTitle = pattern?.title ?? item.title ?? 'Pattern';
+    const displayTitle = pattern?.title ?? item.title ?? t('home.unknownPattern');
     const displayWidth = pattern?.width ?? item.patternWidth ?? 0;
     const displayHeight = pattern?.height ?? item.patternHeight ?? 0;
 
@@ -116,18 +118,18 @@ export default function PlayScreen() {
           </View>
           <View style={styles.sessionDetailsContainer}>
             <Text style={styles.sessionTitle} numberOfLines={1}>
-              Unknown Pattern
+              {t('home.unknownPattern')}
             </Text>
-            <Text style={styles.sessionMeta}>ID: {item.patternId}</Text>
+            <Text style={styles.sessionMeta}>{t('home.idLabel', { id: item.patternId })}</Text>
           </View>
           <Pressable
-            onPress={() => handleConfirmDeleteSession(item.id, `Pattern ${item.patternId}`)}
+            onPress={() => handleConfirmDeleteSession(item.id, t('home.unknownPatternLabel', { id: item.patternId }))}
             style={({ pressed }) => [
               styles.deleteIconButton,
               pressed && styles.deleteIconButtonPressed,
             ]}
             accessibilityRole="button"
-            accessibilityLabel="Delete session"
+            accessibilityLabel={t('home.deleteSessionAccessibilityLabel')}
           >
             <Ionicons name="trash-outline" size={15} color={Theme.colors.error} />
           </Pressable>
@@ -148,18 +150,18 @@ export default function PlayScreen() {
     // Determine badge and bar styling based on status
     let badgeBg = 'rgba(133, 125, 117, 0.1)';
     let badgeText = Theme.colors.textSecondary;
-    let badgeLabel = 'Ready';
+    let badgeLabel = t('home.status.ready');
     let progressFillColor = Theme.colors.accentSage;
 
     if (item.status === 'completed') {
       badgeBg = 'rgba(122, 154, 130, 0.15)';
       badgeText = Theme.colors.accentSage;
-      badgeLabel = 'Done';
+      badgeLabel = t('home.status.done');
       progressFillColor = Theme.colors.accentSage;
     } else if (item.status === 'active') {
       badgeBg = 'rgba(44, 94, 101, 0.12)';
       badgeText = Theme.colors.accentTeal;
-      badgeLabel = 'Active';
+      badgeLabel = t('home.status.active');
       progressFillColor = Theme.colors.accentTeal;
     }
 
@@ -187,7 +189,7 @@ export default function PlayScreen() {
               pressed && styles.deleteIconButtonPressed,
             ]}
             accessibilityRole="button"
-            accessibilityLabel="Delete session"
+            accessibilityLabel={t('home.deleteSessionAccessibilityLabel')}
           >
             <Ionicons name="trash-outline" size={15} color={Theme.colors.error} />
           </Pressable>
@@ -201,7 +203,7 @@ export default function PlayScreen() {
               pressed && styles.imageActionBtnPressed,
             ]}
             accessibilityRole="button"
-            accessibilityLabel={item.status === 'completed' ? 'View finished craft' : 'Resume stitching'}
+            accessibilityLabel={item.status === 'completed' ? t('home.viewFinishedAccessibilityLabel') : t('home.resumeAccessibilityLabel')}
           >
             <Ionicons
               name={item.status === 'completed' ? 'eye-outline' : 'play'}
@@ -240,8 +242,8 @@ export default function PlayScreen() {
 
   const header = (
     <View style={styles.header}>
-      <Text style={styles.title}>Stitching Table</Text>
-      <Text style={styles.subtitle}>Pick up where you left off or resume a recent craft.</Text>
+      <Text style={styles.title}>{t('home.title')}</Text>
+      <Text style={styles.subtitle}>{t('home.subtitle')}</Text>
     </View>
   );
 
@@ -252,7 +254,7 @@ export default function PlayScreen() {
           {header}
           <View style={styles.loaderContainer}>
             <ActivityIndicator size="large" color={Theme.colors.accentTeal} />
-            <Text style={styles.loadingText}>Loading your stitches...</Text>
+            <Text style={styles.loadingText}>{t('home.loading')}</Text>
           </View>
         </>
       ) : sessions.length === 0 ? (
@@ -261,9 +263,9 @@ export default function PlayScreen() {
           <View style={styles.sectionPadding}>
             <EmptyState
               icon="play-circle-outline"
-              title="No Active Crafts"
-              body="Your stitching frame is currently empty. Browse the pattern catalog to find something beautiful to stitch!"
-              actionLabel="Browse Catalog"
+              title={t('home.empty.title')}
+              body={t('home.empty.body')}
+              actionLabel={t('home.empty.action')}
               onAction={handleStartStitching}
               actionVariant="primary"
             />
@@ -294,6 +296,7 @@ function PreparingSessionCard({
   title: string;
   onChanged: () => void;
 }) {
+  const { t } = useTranslation('play');
   const progress = useDownloadProgressStore(
     (state) => state.progress[session.id] ?? 0,
   );
@@ -302,14 +305,14 @@ function PreparingSessionCard({
 
   const handleCancelOrDelete = () => {
     Alert.alert(
-      failed ? 'Discard Session' : 'Cancel Download',
+      failed ? t('home.preparingCard.discardTitle') : t('home.preparingCard.cancelTitle'),
       failed
-        ? 'Are you sure you want to discard this failed session?'
-        : 'Are you sure you want to cancel downloading this pattern?',
+        ? t('home.preparingCard.discardMessage')
+        : t('home.preparingCard.cancelMessage'),
       [
-        { text: 'Keep', style: 'cancel' },
+        { text: t('home.preparingCard.keep'), style: 'cancel' },
         {
-          text: failed ? 'Discard' : 'Cancel',
+          text: failed ? t('home.preparingCard.discard') : t('home.preparingCard.cancel'),
           style: 'destructive',
           onPress: () => {
             void (async () => {
@@ -398,7 +401,7 @@ function PreparingSessionCard({
           <Text style={styles.sessionMeta}>
             {session.patternWidth && session.patternHeight
               ? `${session.patternWidth}×${session.patternHeight}`
-              : 'Preparing'}
+              : t('home.status.preparing')}
           </Text>
           <View
             style={[
@@ -416,7 +419,7 @@ function PreparingSessionCard({
                 { color: failed ? Theme.colors.error : Theme.colors.accentHoney },
               ]}
             >
-              {failed ? 'Failed' : 'Preparing'}
+              {failed ? t('home.status.failed') : t('home.status.preparing')}
             </Text>
           </View>
         </View>

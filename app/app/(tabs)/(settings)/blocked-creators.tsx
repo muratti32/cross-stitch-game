@@ -2,13 +2,16 @@ import React from 'react';
 import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { useCreatorBlocks, useUnblockCreator } from '@/api/social';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 import { Button, Card, EmptyState, Screen } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
 
 export default function BlockedCreatorsScreen() {
+  const { t } = useTranslation('settings');
   const isAccount = useIdentityStore((state) => state.isAccount);
   const query = useCreatorBlocks();
   const unblockMutation = useUnblockCreator();
@@ -18,17 +21,17 @@ export default function BlockedCreatorsScreen() {
     return (
       <Screen style={styles.screen}>
         <View style={styles.header}>
-          <Pressable accessibilityLabel="Go back" hitSlop={12} onPress={() => router.back()}>
+          <Pressable accessibilityLabel={t('blockedCreators.backAccessibilityLabel')} hitSlop={12} onPress={() => router.back()}>
             <Ionicons name="chevron-back" size={26} color={Theme.colors.textPrimary} />
           </Pressable>
-          <Text style={styles.headerTitle}>Blocked Creators</Text>
+          <Text style={styles.headerTitle}>{t('blockedCreators.title')}</Text>
           <View style={styles.headerSpacer} />
         </View>
         <EmptyState
           icon="person-circle-outline"
-          title="Registered Account Required"
-          body="Sign in before managing your blocked creators list."
-          actionLabel="Sign In"
+          title={t('blockedCreators.signInRequiredTitle')}
+          body={t('blockedCreators.signInRequiredBody')}
+          actionLabel={t('blockedCreators.signInAction')}
           onAction={() => router.push('/(tabs)/(settings)/sign-in')}
           actionVariant="rose"
         />
@@ -38,18 +41,20 @@ export default function BlockedCreatorsScreen() {
 
   const handleUnblock = (id: string, name: string) => {
     Alert.alert(
-      'Unblock Creator',
-      `Are you sure you want to unblock ${name}? Their patterns will reappear in your search and browse results.`,
+      t('blockedCreators.unblockConfirmTitle'),
+      t('blockedCreators.unblockConfirmMessage', { name }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('blockedCreators.cancel'), style: 'cancel' },
         {
-          text: 'Unblock',
+          text: t('blockedCreators.unblock'),
           onPress: () => {
             unblockMutation.mutate(id, {
-              onSuccess: () => Alert.alert('Success', `${name} has been unblocked.`),
+              onSuccess: () => Alert.alert(t('blockedCreators.successTitle'), t('blockedCreators.unblockedMessage', { name })),
               onError: (err: unknown) => {
-                const msg = err instanceof Error ? err.message : 'Unknown error';
-                Alert.alert('Error', `Failed to unblock creator: ${msg}`);
+                // #159: SocialApiError's server-supplied `message` never
+                // reaches the player; its `reason` maps to localized text.
+                const msg = isServerApiError(err) ? localizeServerError(err) : t('blockedCreators.unblockFailedGeneric');
+                Alert.alert(t('blockedCreators.errorTitle'), t('blockedCreators.unblockFailedMessage', { message: msg }));
               },
             });
           },
@@ -61,15 +66,15 @@ export default function BlockedCreatorsScreen() {
   return (
     <Screen style={styles.screen}>
       <View style={styles.header}>
-        <Pressable accessibilityLabel="Go back" hitSlop={12} onPress={() => router.back()}>
+        <Pressable accessibilityLabel={t('blockedCreators.backAccessibilityLabel')} hitSlop={12} onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={26} color={Theme.colors.textPrimary} />
         </Pressable>
-        <Text style={styles.headerTitle}>Blocked Creators</Text>
+        <Text style={styles.headerTitle}>{t('blockedCreators.title')}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
       <Text style={styles.infoText}>
-        Blocking is private and reversible. It hides the creator's community patterns from your catalog views, search, and discovery lists. This is not a report or a content takedown.
+        {t('blockedCreators.infoText')}
       </Text>
 
       {query.isPending ? (
@@ -77,18 +82,24 @@ export default function BlockedCreatorsScreen() {
       ) : query.isError ? (
         <EmptyState
           icon="cloud-offline-outline"
-          title="List Unavailable"
-          body={query.error instanceof Error ? query.error.message : 'Could not load blocked creators.'}
-          actionLabel="Try Again"
+          title={t('blockedCreators.listUnavailableTitle')}
+          body={
+            query.error
+              ? isServerApiError(query.error)
+                ? localizeServerError(query.error)
+                : t('blockedCreators.listUnavailableDefault')
+              : t('blockedCreators.listUnavailableDefault')
+          }
+          actionLabel={t('blockedCreators.tryAgain')}
           onAction={() => void query.refetch()}
           actionVariant="rose"
         />
       ) : (query.data?.length ?? 0) === 0 ? (
         <EmptyState
           icon="shield-checkmark-outline"
-          title="No Blocked Creators"
-          body="You haven't blocked anyone. You can block a creator from any of their pattern detail pages."
-          actionLabel="Back to Settings"
+          title={t('blockedCreators.emptyTitle')}
+          body={t('blockedCreators.emptyBody')}
+          actionLabel={t('blockedCreators.backToSettings')}
           onAction={() => router.back()}
           actionVariant="sage"
         />
@@ -106,7 +117,7 @@ export default function BlockedCreatorsScreen() {
                 <Text style={styles.username}>@{item.username}</Text>
               </View>
               <Button
-                title="Unblock"
+                title={t('blockedCreators.unblock')}
                 variant="secondary"
                 loading={unblockMutation.isPending && unblockMutation.variables === item.id}
                 onPress={() => handleUnblock(item.id, item.displayName)}

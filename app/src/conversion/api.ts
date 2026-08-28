@@ -31,6 +31,42 @@ export interface PendingConversion {
   supportReference: string;
 }
 
+// #168: shaped like EconomyApiError/MembershipApiError (ad287a4) so a caught
+// Pattern Conversion HTTP failure routes through localizeServerError instead
+// of the server's raw English message. The backend does not send a `reason`
+// code for this module's endpoints today, so `reason` is always null -
+// localizeServerError still resolves that to the generic localized failure
+// plus a Support Reference.
+export class ConversionApiError extends Error {
+  constructor(readonly status: number, message: string, readonly reason: string | null) {
+    super(message);
+    this.name = 'ConversionApiError';
+  }
+}
+
+/**
+ * The terminal failure of a Processing Job for Pattern Conversion, read from
+ * a 200 response body rather than an HTTP error - there is no `status`/
+ * `reason` pair to route through localizeServerError. `job.errorMessage` is
+ * backend/worker-authored diagnostic text (ADR-0051: never rendered to
+ * players), so it is deliberately dropped here rather than carried onto
+ * this error; only the opaque Support Reference survives for display.
+ */
+export class ConversionTerminalFailureError extends Error {
+  constructor(readonly supportReference: string | undefined) {
+    super('Pattern Conversion failed');
+    this.name = 'ConversionTerminalFailureError';
+  }
+}
+
+/** Polling for the Processing Job's terminal state exceeded its deadline. */
+export class ConversionTimeoutError extends Error {
+  constructor(readonly supportReference: string | undefined) {
+    super('Pattern Conversion is still processing');
+    this.name = 'ConversionTimeoutError';
+  }
+}
+
 export async function createPhotoConversion(input: {
   maxColors: number;
   profile: ConversionProfile;
@@ -61,8 +97,8 @@ export async function createPhotoConversion(input: {
     method: 'POST',
   });
   if (!response.ok) {
-    const message = await readServerMessage(response);
-    throw new Error(message ?? `Conversion request failed (${response.status})`);
+    const { message, reason } = await readServerError(response);
+    throw new ConversionApiError(response.status, message ?? `Conversion request failed (${response.status})`, reason);
   }
   const result = (await response.json()) as { id?: unknown; supportReference?: unknown };
   if (typeof result.id !== 'string' || typeof result.supportReference !== 'string') {
@@ -81,7 +117,12 @@ export async function waitForConversion(
   while (Date.now() < deadline) {
     const response = await apiFetch(`/v1/conversions/jobs/${jobId}`);
     if (!response.ok) {
-      throw new Error(`Could not read Pattern Conversion (${response.status})`);
+      const { message, reason } = await readServerError(response);
+      throw new ConversionApiError(
+        response.status,
+        message ?? `Could not read Pattern Conversion (${response.status})`,
+        reason,
+      );
     }
     const job = (await response.json()) as ConversionJob;
     onStatus?.(job.status);
@@ -89,21 +130,18 @@ export async function waitForConversion(
       return withAbsolutePreviewUrl(job.pattern);
     }
     if (job.status === 'failed') {
-      throw new Error(withSupportReference(job.errorMessage ?? 'Pattern Conversion failed', supportReference));
+      throw new ConversionTerminalFailureError(supportReference);
     }
     await delay(1200);
   }
-  throw new Error(withSupportReference('Pattern Conversion is still processing. Try again shortly.', supportReference));
-}
-
-function withSupportReference(message: string, supportReference: string | undefined): string {
-  return supportReference === undefined ? message : `${message}\nSupport Reference: ${supportReference}`;
+  throw new ConversionTimeoutError(supportReference);
 }
 
 export async function listPersonalPatterns(): Promise<PersonalPattern[]> {
   const response = await apiFetch('/v1/conversions/patterns');
   if (!response.ok) {
-    throw new Error(`Could not load Personal Patterns (${response.status})`);
+    const { message, reason } = await readServerError(response);
+    throw new ConversionApiError(response.status, message ?? `Could not load Personal Patterns (${response.status})`, reason);
   }
   const body = (await response.json()) as PersonalPattern[];
   return body.map(withAbsolutePreviewUrl);
@@ -119,19 +157,20 @@ function withAbsolutePreviewUrl(pattern: PersonalPattern): PersonalPattern {
   };
 }
 
-async function readServerMessage(response: Response): Promise<string | null> {
+async function readServerError(response: Response): Promise<{ message: string | null; reason: string | null }> {
   try {
-    const body = (await response.json()) as { message?: unknown };
+    const body = (await response.json()) as { message?: unknown; reason?: unknown };
+    let message: string | null = null;
     if (typeof body.message === 'string') {
-      return body.message;
+      message = body.message;
+    } else if (Array.isArray(body.message)) {
+      message = body.message.filter((item): item is string => typeof item === 'string').join(', ');
     }
-    if (Array.isArray(body.message)) {
-      return body.message.filter((item): item is string => typeof item === 'string').join(', ');
-    }
+    return { message, reason: typeof body.reason === 'string' ? body.reason : null };
   } catch {
     // The status fallback remains actionable when the server has no JSON body.
+    return { message: null, reason: null };
   }
-  return null;
 }
 
 function delay(milliseconds: number): Promise<void> {

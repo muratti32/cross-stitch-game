@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { Theme } from '@/theme/theme';
 import { AnimatedTabBar } from '@/components';
 import * as Haptics from 'expo-haptics';
@@ -11,6 +12,7 @@ export const unstable_settings = {
 };
 
 export default function TabsLayout() {
+  const { t } = useTranslation('shell');
   const triggerHaptic = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
   };
@@ -47,7 +49,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="(catalog)"
         options={{
-          title: 'Catalog',
+          title: t('tabs.catalog'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? 'compass' : 'compass-outline'}
@@ -63,7 +65,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="(play)"
         options={{
-          title: 'Stitch',
+          title: t('tabs.stitch'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? 'game-controller' : 'game-controller-outline'}
@@ -79,7 +81,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="(create)"
         options={{
-          title: 'Create',
+          title: t('tabs.create'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? 'add' : 'add-outline'}
@@ -95,7 +97,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="(profile)"
         options={{
-          title: 'Profile',
+          title: t('tabs.profile'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? 'person' : 'person-outline'}
@@ -111,7 +113,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="(settings)"
         options={{
-          title: 'Settings',
+          title: t('tabs.settings'),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? 'settings' : 'settings-outline'}

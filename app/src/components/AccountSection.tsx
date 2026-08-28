@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, ActivityIndicator, Alert } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Card } from './Card';
 import { Button } from './Button';
 import { Theme } from '@/theme/theme';
@@ -14,26 +15,33 @@ import { Ionicons } from '@expo/vector-icons';
  * data (see identity `logout`), so the same account reopens it on next sign-in.
  */
 export function AccountSection() {
+  const { t } = useTranslation('settings');
   const { isAccount, accountEmail, accountProvider, isOfflinePending, requiresSignIn, logout } = useIdentityStore();
   const [isSigningOut, setIsSigningOut] = useState<boolean>(false);
 
+  const providerLabel = (provider: 'apple' | 'email' | 'google' | null): string => {
+    if (provider === 'apple') return t('account.providerAppleAccount');
+    if (provider === 'google') return t('account.providerGoogleAccount');
+    return t('account.providerGenericAccount');
+  };
+
   const handleSignOut = () => {
     Alert.alert(
-      'Sign out?',
-      'Your unsynchronized progress stays on this device and reopens when you sign back in.',
+      t('account.signOutConfirmTitle'),
+      t('account.signOutConfirmMessage'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('actions.cancel'), style: 'cancel' },
         {
-          text: 'Sign out',
+          text: t('account.signOutConfirmAction'),
           style: 'destructive',
           onPress: async () => {
             setIsSigningOut(true);
             try {
               await logout();
-            } catch (e) {
+            } catch {
               Alert.alert(
-                'Sign out failed',
-                e instanceof Error ? e.message : 'Please try again.',
+                t('account.signOutFailedTitle'),
+                t('account.signOutFailedGeneric'),
               );
             } finally {
               setIsSigningOut(false);
@@ -46,18 +54,18 @@ export function AccountSection() {
 
   return (
     <View>
-      <Text style={styles.sectionTitle}>Account</Text>
+      <Text style={styles.sectionTitle}>{t('account.sectionTitle')}</Text>
       <Card style={styles.card}>
         {!isAccount ? (
           <View style={styles.settingRow}>
             <View style={styles.textContainer}>
-              <Text style={styles.settingTitle}>{requiresSignIn ? 'Sign in required' : 'Not signed in'}</Text>
+              <Text style={styles.settingTitle}>{requiresSignIn ? t('account.signInRequiredTitle') : t('account.notSignedInTitle')}</Text>
               <Text style={styles.settingDescription}>
-                Sign in to sync progress across devices.
+                {t('account.notSignedInDescription')}
               </Text>
             </View>
             <Button
-              title="Sign in"
+              title={t('account.signIn')}
               variant="primary"
               onPress={() => router.push('/(tabs)/(settings)/sign-in')}
               style={styles.signInButton}
@@ -82,7 +90,7 @@ export function AccountSection() {
               </Text>
             </View>
             {isOfflinePending && (
-              <Text style={styles.reconnectingText}>Reconnecting…</Text>
+              <Text style={styles.reconnectingText}>{t('account.reconnecting')}</Text>
             )}
             <View style={styles.signOutRow}>
               <Pressable
@@ -100,7 +108,7 @@ export function AccountSection() {
                     style={styles.spinner}
                   />
                 ) : (
-                  <Text style={styles.signOutText}>Sign out</Text>
+                  <Text style={styles.signOutText}>{t('account.signOut')}</Text>
                 )}
               </Pressable>
             </View>
@@ -109,12 +117,6 @@ export function AccountSection() {
       </Card>
     </View>
   );
-}
-
-function providerLabel(provider: 'apple' | 'email' | 'google' | null): string {
-  if (provider === 'apple') return 'Apple account';
-  if (provider === 'google') return 'Google account';
-  return 'Registered account';
 }
 
 const styles = StyleSheet.create({

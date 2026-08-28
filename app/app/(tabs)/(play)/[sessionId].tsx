@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter, useNavigation, useFocusEffect } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { Screen, Button } from '@/components';
 import { Theme } from '@/theme/theme';
+import { formatNumber } from '@/i18n';
 import { createReplaySession } from '@/local-db';
 import { StitchRenderer, type StitchRendererRef, nextRemainingCell } from '@/renderer';
 import { useGameplayStore } from '@/store/gameplayStore';
@@ -33,6 +35,8 @@ export default function SessionReadyScreen() {
   const router = useRouter();
   const navigation = useNavigation();
   const { theme } = useActiveMembershipTheme();
+  const { t, i18n: i18nInstance } = useTranslation('play');
+  const locale = i18nInstance.language;
 
   const handleBack = () => {
     exitSession({ router, stack: navigation, returnTo });
@@ -341,7 +345,7 @@ export default function SessionReadyScreen() {
       <Screen style={styles.loaderContainer}>
         <ActivityIndicator size="large" color={Theme.colors.accentTeal} />
         <Text style={styles.loadingText} allowFontScaling={true}>
-          Opening session & preparing fabric...
+          {t('loading.text')}
         </Text>
       </Screen>
     );
@@ -351,14 +355,14 @@ export default function SessionReadyScreen() {
     return (
       <Screen style={styles.errorContainer}>
         <Text style={styles.errorTitle} allowFontScaling={true}>
-          Session Load Failed
+          {t('error.title')}
         </Text>
         <Text style={styles.errorText} allowFontScaling={true}>
-          {error || 'Unable to load your stitching session.'}
+          {error || t('error.fallbackMessage')}
         </Text>
         <View style={styles.errorActions}>
           <Button
-            title={returnTo ? 'Go Back' : 'Go to Table'}
+            title={returnTo ? t('error.backButton') : t('error.tableButton')}
             onPress={handleBack}
             variant="secondary"
             style={styles.errorBtn}
@@ -375,7 +379,7 @@ export default function SessionReadyScreen() {
   const bPattern = patternData && session
     ? BUNDLED_PATTERNS.find((p) => p.id === session.patternId)
     : null;
-  const patternTitle = bPattern?.title || session.title || 'Stitch Session';
+  const patternTitle = bPattern?.title || session.title || t('header.defaultTitle');
 
   return (
     <Screen style={styles.fullscreenContainer} edges={['top', 'left', 'right', 'bottom']} clearsTabBar={false}>
@@ -383,7 +387,7 @@ export default function SessionReadyScreen() {
       <View style={styles.header}>
         <Button
           variant="secondary"
-          title={returnTo ? '← Back' : '← Table'}
+          title={returnTo ? t('header.backButton') : t('header.tableButton')}
           onPress={handleBack}
           style={styles.backButton}
         />
@@ -392,7 +396,11 @@ export default function SessionReadyScreen() {
             {patternTitle}
           </Text>
           <Text style={styles.headerSubtitle} allowFontScaling={true}>
-            {completedCellsCount} / {totalCellsCount} cells ({percentComplete}% complete)
+            {t('header.progress', {
+              completed: formatNumber(completedCellsCount, locale),
+              total: formatNumber(totalCellsCount, locale),
+              percent: formatNumber(percentComplete, locale),
+            })}
           </Text>
         </View>
         {tutorial.canResume && (
@@ -400,7 +408,7 @@ export default function SessionReadyScreen() {
             onPress={tutorial.resume}
             style={styles.tutorialHelpButton}
             accessibilityRole="button"
-            accessibilityLabel="Resume tutorial"
+            accessibilityLabel={t('header.resumeTutorialAccessibilityLabel')}
           >
             <Ionicons name="help-circle-outline" size={24} color={Theme.colors.accentTeal} />
           </Pressable>
@@ -415,7 +423,7 @@ export default function SessionReadyScreen() {
         >
           <Ionicons name="shield-outline" size={16} color={Theme.colors.textPrimary} />
           <Text style={styles.conflictText}>
-            This Pattern was removed by moderation and is no longer available. Tap to leave.
+            {t('banners.patternRemoved')}
           </Text>
         </Pressable>
       )}
@@ -425,7 +433,7 @@ export default function SessionReadyScreen() {
         <Pressable style={styles.conflictBanner} onPress={dismissSyncConflict}>
           <Ionicons name="sync-outline" size={16} color={Theme.colors.textPrimary} />
           <Text style={styles.conflictText}>
-            Synced with another device — some cells were updated. Tap to dismiss.
+            {t('banners.syncConflict')}
           </Text>
         </Pressable>
       )}
@@ -469,7 +477,7 @@ export default function SessionReadyScreen() {
             onPress={handleLocateNext}
             disabled={selectedColorIndex < 0 || remainingCounts[selectedColorIndex] === 0}
             accessibilityRole="button"
-            accessibilityLabel="Locate next remaining cell of active thread color"
+            accessibilityLabel={t('rail.locateNextAccessibilityLabel')}
           >
             <Ionicons
               name="locate-outline"
@@ -488,7 +496,7 @@ export default function SessionReadyScreen() {
             onPress={handleUndo}
             disabled={!canUndo}
             accessibilityRole="button"
-            accessibilityLabel="Undo last stitch"
+            accessibilityLabel={t('rail.undoAccessibilityLabel')}
           >
             <Ionicons
               name="arrow-undo-outline"
@@ -540,7 +548,11 @@ export default function SessionReadyScreen() {
                     isCompleted && styles.paletteChipCompleted,
                   ]}
                   accessibilityRole="button"
-                  accessibilityLabel={`Color ${index + 1}: DMC ${color.dmcCode}, ${remaining} stitches remaining`}
+                  accessibilityLabel={t('palette.chipAccessibilityLabel', {
+                    count: remaining,
+                    number: index + 1,
+                    dmcCode: color.dmcCode,
+                  })}
                 >
                   <View style={[styles.chipSwatch, { backgroundColor: color.rgbHex }]}>
                     {isCompleted && (
@@ -549,10 +561,12 @@ export default function SessionReadyScreen() {
                   </View>
                   <View style={styles.chipInfo}>
                     <Text style={styles.chipNumber} allowFontScaling={true}>
-                      #{index + 1}
+                      {t('palette.chipNumber', { number: formatNumber(index + 1, locale) })}
                     </Text>
                     <Text style={styles.chipCount} allowFontScaling={true}>
-                      {isCompleted ? 'Done' : `${remaining} left`}
+                      {isCompleted
+                        ? t('palette.done')
+                        : t('palette.remaining', { count: remaining })}
                     </Text>
                   </View>
                 </Pressable>
@@ -576,30 +590,38 @@ export default function SessionReadyScreen() {
               <Ionicons name="sparkles" size={40} color={theme.celebrationAccent} />
             </Animated.View>
             <Text style={styles.celebrationTitle} allowFontScaling={true}>
-              Beautifully Crafted!
+              {t('celebration.title')}
             </Text>
             <Text style={styles.celebrationSubtitle} allowFontScaling={true}>
-              You have completed every single stitch on this fabric.
+              {t('celebration.subtitle')}
             </Text>
             <View style={styles.statsRow}>
               <View style={styles.statBox}>
-                <Text style={[styles.statVal, { color: theme.celebrationAccent }]}>{totalCellsCount}</Text>
-                <Text style={styles.statLbl}>Stitches</Text>
+                <Text style={[styles.statVal, { color: theme.celebrationAccent }]}>
+                  {formatNumber(totalCellsCount, locale)}
+                </Text>
+                <Text style={styles.statLbl}>
+                  {t('celebration.stitchesLabel', { count: totalCellsCount })}
+                </Text>
               </View>
               <View style={styles.statBox}>
-                <Text style={[styles.statVal, { color: theme.celebrationAccent }]}>{patternData.palette.length}</Text>
-                <Text style={styles.statLbl}>Colors</Text>
+                <Text style={[styles.statVal, { color: theme.celebrationAccent }]}>
+                  {formatNumber(patternData.palette.length, locale)}
+                </Text>
+                <Text style={styles.statLbl}>
+                  {t('celebration.colorsLabel', { count: patternData.palette.length })}
+                </Text>
               </View>
             </View>
             <View style={styles.celebrationActions}>
               <Button
-                title="Stitch Again"
+                title={t('celebration.replayButton')}
                 onPress={handleReplay}
                 variant="sage"
                 style={styles.celebrationBtn}
               />
               <Button
-                title="Back to Catalog"
+                title={t('celebration.catalogButton')}
                 onPress={() => router.navigate('/(tabs)/(catalog)')}
                 variant="secondary"
                 style={styles.celebrationBtn}

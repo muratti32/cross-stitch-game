@@ -1,0 +1,2798 @@
+{
+  "en": {
+    "catalog": {
+      "common": {
+        "back": "← Back",
+        "searchPlaceholder": "Search patterns, creators, tags…",
+        "offlineBanner": "Offline — catalog may be out of date",
+        "sectionError": {
+          "title": "Couldn't Load",
+          "retry": "Try Again"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} colors",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} cols",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "English"
+        },
+        "accessibilityLabel": "Written in {{language}}"
+      },
+      "index": {
+        "subtitle": "Craft your cozy world, stitch by stitch.",
+        "searchBar": {
+          "accessibilityLabel": "Search the pattern catalog"
+        },
+        "sections": {
+          "starterPatterns": "Starter Patterns",
+          "staffPicks": "Staff Picks",
+          "categories": "Categories",
+          "newPatterns": "New Patterns"
+        },
+        "staffPicks": {
+          "emptyTitle": "No Staff Picks Yet",
+          "emptyBody": "Our hand-picked collection of cozy designs will appear here soon.",
+          "errorBody": "The catalog could not be reached and nothing is cached yet."
+        },
+        "categories": {
+          "count": "{{count}} patterns",
+          "errorBody": "The catalog could not be reached and nothing is cached yet."
+        },
+        "newPatterns": {
+          "emptyTitle": "New Patterns are Crafting",
+          "emptyBody": "Fresh arrivals are on the way!",
+          "errorBody": "The catalog could not be reached and nothing is cached yet.",
+          "showMore": "Show more",
+          "loading": "Loading…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "Browse",
+        "error": {
+          "body": "This catalog page could not be reached and nothing is cached yet."
+        },
+        "empty": {
+          "title": "Nothing Here Yet",
+          "body": "No patterns match this selection yet. New designs arrive regularly."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "Catalog search input",
+        "inactive": {
+          "title": "Search the Catalog",
+          "body": "Type at least two characters to search patterns by title, creator, or tag."
+        },
+        "error": {
+          "title": "Search Needs a Connection",
+          "body": "Catalog search is unavailable offline. Cached catalog pages stay browsable from the catalog tab."
+        },
+        "noResults": {
+          "title": "No Matches",
+          "body": "Nothing in the catalog matches “{{query}}” yet."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "Playing as Guest",
+        "body": "Stitch Coin and progress live only on this device as a Guest. If the installation is lost, the Guest ledger and progress may be unrecoverable. Signing in protects your progress."
+      },
+      "detail": {
+        "noDescription": "No description available.",
+        "specs": {
+          "dimensions": "Dimensions",
+          "totalStitches": "Total Stitches",
+          "colors": "Colors",
+          "category": "Category"
+        },
+        "threadsSuffix": "{{count}} Threads",
+        "palette": {
+          "title": "Required Threads",
+          "loading": "Reading thread palette...",
+          "loadFailed": "Failed to load palette: {{error}}",
+          "retry": "Retry Loading"
+        },
+        "actions": {
+          "startStitching": "Start Stitching",
+          "starting": "Starting...",
+          "preparing": "Preparing…"
+        },
+        "loadFailedGeneric": "Failed to decode pattern file.",
+        "sessionCreateFailed": "Failed to create a stitching session. Please try again.",
+        "unavailable": {
+          "title": "Pattern Unavailable",
+          "body": "This pattern could not be loaded. It may have been removed, or you may be offline.",
+          "goBack": "Go Back"
+        },
+        "byCreator": "by {{creatorName}}",
+        "byCreatorWithUsername": "by {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "Block Creator",
+          "message": "Are you sure you want to block {{creatorName}}? This is a private, reversible action that hides their patterns from search/browse. It does not report the creator and will not interrupt your current stitching session.",
+          "cancel": "Cancel",
+          "confirm": "Block",
+          "blockedTitle": "Blocked",
+          "blockedMessage": "{{creatorName}} has been blocked.",
+          "errorTitle": "Error",
+          "failedGeneric": "Failed to block creator."
+        },
+        "likeFailedGeneric": "Failed to update like status",
+        "connectToPlay": {
+          "title": "Connect to play",
+          "body": "Starting a catalog pattern needs a connection to prepare your session. Starter Patterns are playable right now, even offline."
+        },
+        "insufficientCoins": {
+          "title": "Insufficient Coins",
+          "body": "This pattern costs {{price}} Stitch Coins, but you only have {{balance}} Coins.\n\nShortfall: {{shortfall}} Coins.\n\nEarn Stitch Coins by completing other patterns! First Completion rewards are live.",
+          "getCoins": "Get Stitch Coins",
+          "findPatterns": "Find patterns to stitch",
+          "back": "Back"
+        },
+        "unlockFailedGeneric": "Unlock failed. Check your connection and try again.",
+        "preparationFailedGeneric": "Could not start preparation. Check your connection and try again.",
+        "price": {
+          "label": "Price"
+        },
+        "balance": {
+          "label": "Your Balance",
+          "loading": "…"
+        },
+        "unlockButton": "Unlock for {{price}} Coin",
+        "communityReport": {
+          "button": "Report this pattern",
+          "title": "Report {{patternTitle}}",
+          "body": "Choose the reason that best describes the issue. Reports never hide or change a pattern automatically.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "Inappropriate or Unsafe Content",
+            "copyright_or_publication_rights": "Copyright or Publication Rights",
+            "duplicate_or_spam": "Duplicate or Spam",
+            "misleading_title_or_tags": "Misleading Title or Tags",
+            "other": "Other"
+          },
+          "explanationLabel": "Evidence or explanation {{requirement}}",
+          "explanationRequired": "(required)",
+          "explanationOptional": "(optional)",
+          "explanationPlaceholder": "Share details that will help a moderator review the pattern.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "Cancel",
+          "submit": "Submit report",
+          "submitFailedGeneric": "Could not submit your report. Check your connection and try again.",
+          "receivedTitle": "Report received",
+          "alreadyReceivedTitle": "Report already received",
+          "receivedBody": "A moderator can now review this pattern. The report does not automatically change its availability.",
+          "alreadyReceivedBody": "Your existing report is already part of the open review.",
+          "signInRequired": {
+            "title": "Sign in to report",
+            "message": "Community Reports require a Registered Account. Nothing has been submitted.",
+            "cancel": "Cancel",
+            "signIn": "Sign in"
+          },
+          "validation": {
+            "chooseReason": "Choose a report reason.",
+            "explainRequired": "Explain why you are reporting this pattern.",
+            "tooLong": "The explanation must be 2,000 characters or fewer.",
+            "needsContent": "The explanation must include letters or numbers."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "Back",
+        "title": "Commerce Store",
+        "subtitle": "Membership and one-time top-ups"
+      },
+      "signInReturn": {
+        "notice": "You’re signed in. {{label}} is still selected. Review it and tap Buy when ready."
+      },
+      "premiumHero": {
+        "eyebrow": "PREMIUM MEMBERSHIP",
+        "title": "Create more. Collect a little reward every day.",
+        "body": "AI Credits each paid period, Premium themes, and a daily Stitch Coin claim.",
+        "benefitAiCredits": "AI Credits",
+        "benefitDailyCoins": "Daily Coins",
+        "benefitThemes": "Themes",
+        "statusNoActiveMembership": "No active membership",
+        "statusBrowseAsGuest": "Browse plans as a Guest Player",
+        "periodEndsLabel": "Current period ends",
+        "periodRenewsLabel": "Renews",
+        "lifecycleActive": "Active"
+      },
+      "membershipActions": {
+        "title": "Active Premium Membership",
+        "body": "Daily rewards are in Profile. Themes are under Settings › Appearance.",
+        "scheduledChangeNotice": "Changes to {{plan}} on {{date}}",
+        "manageSubscription": "Manage Subscription",
+        "manageSubscriptionFailedTitle": "Unable to open subscriptions",
+        "manageSubscriptionFailedBody": "Try again from your device store account."
+      },
+      "pending": {
+        "title": "Purchase Reconciliation Pending",
+        "verifyingTitle": "Verifying purchase",
+        "premiumChangeAccepted": "The store accepted the change to {{label}}. ",
+        "premiumResponseReceived": "The store response for {{label}} is received. ",
+        "premiumDeferredSuffix": "The change is scheduled only after Game Backend verification, and takes effect when your current period ends.",
+        "premiumSuffix": "Premium activates only after Game Backend verification.",
+        "doNotPurchasePlanAgain": " Do not purchase this plan again.",
+        "coinPackBody": "The store response is received. Stitch Coin updates only after the Game Backend exposes the matching Commerce Ledger grant. Do not purchase this pack again.",
+        "aiCreditPackBody": "The store response is received. AI Credit updates only after the Game Backend exposes the matching Commerce Ledger grant. Do not purchase this pack again.",
+        "refreshStatus": "Refresh status",
+        "retryReconciliation": "Retry reconciliation"
+      },
+      "store": {
+        "loadingPrices": "Loading current store prices…",
+        "unavailableTitle": "Store temporarily unavailable",
+        "unavailableBody": "Your wallet and membership information are still available.",
+        "retry": "Retry"
+      },
+      "plans": {
+        "choosePremiumPlan": "Choose a Premium plan",
+        "yourPremiumPlan": "Your Premium plan",
+        "currentPlan": "CURRENT PLAN",
+        "upgrade": "UPGRADE",
+        "planChange": "PLAN CHANGE",
+        "bestValue": "BEST VALUE",
+        "billedEvery": "Billed every {{period}}",
+        "chooseLabel": "Choose {{label}}",
+        "freeTrial": "Free for {{offer}}, then {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "One-time packs",
+        "stitchCoinPacksTitle": "Stitch Coin Packs",
+        "aiCreditPacksTitle": "AI Credit Packs",
+        "coinsNoun": "Coins",
+        "creditsNoun": "Credits",
+        "fromPrice": "From {{price}}"
+      },
+      "restore": {
+        "restorePurchases": "Restore purchases",
+        "restoreGuestPremium": "Restore Guest Premium",
+        "requestedTitle": "Restore requested",
+        "requestedBody": "Verified Premium access will appear after the store webhook is reconciled. Stitch Coin and AI Credit packs are never restored."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "Current prices from the app store",
+        "closeAccessibilityLabel": "Close product sheet",
+        "closeButtonAccessibilityLabel": "Close",
+        "selectedBeforeSignIn": "Selected before sign-in",
+        "buy": "Buy"
+      },
+      "confirmation": {
+        "cancel": "Cancel",
+        "confirmLabel": "Confirm {{label}}",
+        "confirmPremiumTitle": "Confirm Premium purchase",
+        "introductoryOffer": "Your store reports this introductory offer: {{offer}}.",
+        "premiumAppearsAfterVerification": "Premium appears only after the Game Backend verifies the store transaction.",
+        "confirmPremiumUpgradeTitle": "Confirm Premium upgrade",
+        "confirmPremiumPlanChangeTitle": "Confirm Premium plan change",
+        "currentPlanLabel": "Current Plan: {{label}}",
+        "upgradeToLabel": "Upgrade to {{label}} · {{offer}}",
+        "changeToLabel": "Change to {{label}} · {{offer}}",
+        "upgradeBody": "The App Store controls the final charge and effective date for this upgrade. Premium reflects {{label}} only after the Game Backend verifies it.",
+        "planChangeBody": "The App Store defers this change to the end of your current period: {{currentLabel}} keeps running until then, and {{targetLabel}} is billed from the change date. Cancel the change from Manage Subscription.",
+        "confirmUpgrade": "Confirm upgrade",
+        "confirmPlanChange": "Confirm plan change",
+        "confirmStitchCoinTitle": "Confirm Stitch Coin purchase",
+        "confirmAiCreditTitle": "Confirm AI Credit purchase",
+        "balanceChangesAfterVerificationCoin": "Your balance changes only after the Game Backend verifies the store transaction and records the matching Commerce Ledger grant.",
+        "balanceChangesAfterVerificationAiCredit": "Your balance changes only after the Game Backend verifies the store transaction and records the matching Commerce Ledger grant. Premium Membership is not required."
+      },
+      "disclosure": {
+        "subscriptionTerms": "Payment is charged to your {{store}} account at confirmation. {{label}} Premium renews automatically at {{offer}} unless auto-renew is turned off at least 24 hours before the end of the current period. Any unused portion of a free trial is forfeited when you purchase a subscription. You can cancel at any time from your {{store}} account.",
+        "privacyPolicy": "Privacy Policy",
+        "termsOfService": "Terms of Service",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "Could not open link: {{url}}"
+      },
+      "supportReference": {
+        "label": "Support Reference: {{reference}}",
+        "copyAccessibilityLabel": "Copy support reference {{reference}}",
+        "copyAccessibilityHint": "Copies the support reference to the clipboard",
+        "copied": "Copied",
+        "copyFailedTitle": "Copy failed",
+        "copyFailedBody": "The support reference could not be copied. Select the text to copy it manually."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "Guest Stitch Coin purchases are available on iOS only.",
+        "guestIosOnlyGeneric": "Guest purchases are available on iOS only.",
+        "purchaseFailedTitle": "Purchase failed",
+        "premiumVerificationNotYet": "The Game Backend could not verify this purchase. Retry reconciliation; do not buy it again.",
+        "premiumVerificationFailedRetry": "The Game Backend could not verify this purchase yet. Retry reconciliation; do not buy it again.",
+        "premiumGrantRefreshFailed": "Premium was verified, but membership and AI Credit state could not be refreshed. Retry reconciliation.",
+        "premiumReconciliationUnreachable": "Purchase reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.",
+        "coinPackVerificationMismatch": "The store transaction did not match this Coin Pack. Retry verification or contact support; do not buy it again.",
+        "coinPackGrantUnavailable": "The purchase was verified, but the Stitch Coin grant is unavailable. Retry reconciliation; do not buy it again.",
+        "coinPackBalanceRefreshFailed": "The Coin grant was verified, but the current Stitch Coin balance could not be refreshed. Retry reconciliation.",
+        "coinPackVerificationFailedRetry": "The Game Backend could not verify this Coin Pack yet. Retry reconciliation; do not buy it again.",
+        "coinPackReconciliationUnreachable": "Coin Pack reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.",
+        "aiCreditPackVerificationMismatch": "The store transaction did not match this AI Credit Pack. Retry verification or contact support; do not buy it again.",
+        "aiCreditPackGrantUnavailable": "The purchase was verified, but the AI Credit grant is unavailable. Retry reconciliation; do not buy it again.",
+        "aiCreditPackBalanceRefreshFailed": "The AI Credit grant was verified, but the current balance could not be refreshed. Retry reconciliation.",
+        "aiCreditPackVerificationFailedRetry": "The Game Backend could not verify this AI Credit Pack yet. Retry reconciliation; do not buy it again.",
+        "aiCreditPackReconciliationUnreachable": "AI Credit Pack reconciliation could not reach the Game Backend. Retry reconciliation; do not buy it again.",
+        "reconciliationStillUnavailable": "The Game Backend is still unavailable. Try reconciliation again later.",
+        "storeTemporarilyUnavailable": "The store is temporarily unavailable. Please try again in a few minutes.",
+        "purchasesNotAllowed": "Purchases are not allowed on this device. Check your store account or parental controls.",
+        "itemNotAvailable": "This item is not available for purchase right now. Please choose another item or try again later.",
+        "alreadyOwned": "You already own this purchase. Use Restore Purchases to refresh your access.",
+        "couldNotConnectToStore": "Could not connect to the store. Check your internet connection and try again.",
+        "paymentPendingApproval": "Your payment is pending approval. Your purchase will appear after the store completes it.",
+        "testPurchaseDeclined": "The test purchase was declined. No payment was made. Choose a different Test Store result in Settings, then try again.",
+        "genericPurchaseFailure": "We could not complete your purchase. No payment was taken. Please try again."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "Still verifying",
+        "premiumPending": "Verification is still under way. Premium will activate once the Game Backend confirms it.",
+        "premiumPlanChangePending": "Verification is still under way. Your plan change will be scheduled once the Game Backend confirms it.",
+        "coinPackPending": "Verification is still under way. Your Stitch Coin balance will update once it completes.",
+        "aiCreditPackPending": "Verification is still under way. Your AI Credit balance will update once it completes."
+      },
+      "success": {
+        "purchaseReceivedTitle": "Purchase received",
+        "storeAcceptedPlanChange": "The store accepted the change to {{label}}. Confirming when it takes effect.",
+        "storeAcceptedPurchase": "The store accepted {{label}}. Verifying your purchase now.",
+        "premiumChanges": "Premium changes to {{label}}{{effectiveOn}}.",
+        "effectiveOnDate": " on {{date}}",
+        "planChangeScheduledTitle": "Plan change scheduled",
+        "planChangeScheduledBody": "Your Premium Membership keeps its current plan until it changes to {{label}}{{effectiveOn}}. Cancel the change from Manage Subscription.",
+        "premiumIsActiveTitle": "Premium is active",
+        "premiumVerifiedAndActive": "{{label}} Premium is verified and active.",
+        "premiumNowActiveNoBilling": "{{label}} Premium is now active.",
+        "premiumNowActiveBilled": "{{label}} Premium is now active, billed every {{period}}.",
+        "coinPackGrantedTitle": "Stitch Coins granted",
+        "coinPackGrantVerified": "{{label}} grant verified. Stitch Coin balance: {{balance}}.",
+        "coinPackAddedToBalance": "{{quantity}} Stitch Coins have been added to your balance.",
+        "aiCreditPackGrantedTitle": "AI Credits granted",
+        "aiCreditPackGrantVerified": "{{label}} grant verified. AI Credit balance: {{balance}}.",
+        "aiCreditPackAddedToBalance": "{{quantity}} AI Credits have been added to your balance."
+      },
+      "products": {
+        "premiumAnnual": "Annual",
+        "premiumMonthly": "Monthly",
+        "premiumWeekly": "Weekly",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+        "aiCreditPack_one": "{{formattedCount}} AI Credit",
+        "aiCreditPack_other": "{{formattedCount}} AI Credits",
+        "billedEveryOffer": "{{price}} every {{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} credits / paid period",
+        "creditAllowancePaidNoun": "{{credits}} credits / paid {{period}}"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "Purchase as Guest",
+        "commerceBody": "You can purchase without registration. Premium Membership can be restored from the store, but Stitch Coin, AI Credit, and private Guest content are unrecoverable if this installation is lost. Registering protects them and never interrupts playing as a Guest.",
+        "continueAsGuest": "Continue as Guest",
+        "signInInstead": "Sign in instead",
+        "closeAccessibilityLabel": "Close"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "Got it",
+        "successButton": "Great",
+        "failedButton": "Close",
+        "infoButton": "Got it",
+        "closeAccessibilityLabel": "Close"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "Back",
+        "cancel": "Cancel",
+        "duplicateTitle": "You already have a Personal Pattern named “{{title}}”. Choose a different title.",
+        "cellsCount_one": "cell",
+        "cellsCount_other": "cells",
+        "colorsCount_one": "color",
+        "colorsCount_other": "colors"
+      },
+      "hub": {
+        "title": "Creation Hub",
+        "subtitle": "Bring your own designs to life with custom cross-stitch patterns.",
+        "opening": "Opening…",
+        "photoImport": {
+          "title": "Photo Import",
+          "description": "Upload a picture from your camera roll and convert it into a stitchable pattern.",
+          "action": "Import photo"
+        },
+        "aiGenerator": {
+          "title": "AI Generator",
+          "description": "Describe a cozy prompt and let artificial intelligence generate a custom pixel design.",
+          "action": "Generate design"
+        }
+      },
+      "aspects": {
+        "square": "Square",
+        "portrait_4_3": "Portrait 4:3",
+        "landscape_4_3": "Landscape 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "Pattern Conversion failed. Please try again.",
+          "timeout": "Pattern Conversion is still processing. Try again shortly.",
+          "generic": "Could not complete Pattern Conversion. Please try again."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "Registered Account Required",
+          "body": "AI artwork and its library stay private to your account.",
+          "signIn": "Sign in"
+        },
+        "header": {
+          "title": "AI Generator",
+          "backAccessibilityLabel": "Back"
+        },
+        "prompt": {
+          "label": "Describe your artwork",
+          "placeholder": "A cozy cottage garden at sunset…"
+        },
+        "generate": {
+          "working": "Working…",
+          "action": "Generate — 1 AI Credit",
+          "errors": {
+            "promptRejected": "That prompt was not allowed. Try describing something else.",
+            "generic": "Could not start AI generation. Please try again."
+          }
+        },
+        "library": {
+          "title": "Your AI Artwork Library",
+          "status": {
+            "pending": "Pending",
+            "dispatched": "Dispatched",
+            "running": "Running",
+            "delivered": "Delivered",
+            "safety_rejected": "Safety rejected",
+            "failed": "Failed",
+            "deleted": "Deleted",
+            "unknown": "Unavailable"
+          },
+          "failure": {
+            "safety_rejected": "This artwork did not pass the provider's safety check.",
+            "failed": "This artwork could not be generated."
+          },
+          "approve": "Approve into Pattern",
+          "delete": "Delete",
+          "deleteAccessibilityLabel": "Delete this AI Artwork",
+          "errors": {
+            "loadFailed": "Could not load your AI Artwork Library. Please try again."
+          }
+        },
+        "approve": {
+          "modalTitle": "Create Personal Pattern",
+          "titleLabel": "Pattern title",
+          "titleAccessibilityLabel": "Pattern title",
+          "defaultTitle": "My AI Pattern",
+          "placeholder": "My AI Pattern",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "Cancel",
+          "creating": "Creating Pattern…",
+          "create": "Create Pattern",
+          "errors": {
+            "generic": "Could not create the Personal Pattern. Please try again."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "Registered Account Required",
+          "body": "Personal Patterns belong to your account so they stay private and available across devices.",
+          "signIn": "Sign in or create account",
+          "back": "Back"
+        },
+        "header": {
+          "title": "Photo Pattern",
+          "subtitle": "Frame locally, then approve conversion",
+          "backAccessibilityLabel": "Back"
+        },
+        "picker": {
+          "chooseTitle": "Choose a photo",
+          "helpText": "The full-resolution Local Photo Source stays on this device. Nothing converts until you approve the frame.",
+          "choose": "Choose from library",
+          "chooseAnother": "Choose another",
+          "opening": "Opening…",
+          "errors": {
+            "permissionDenied": "Photo library access is required to choose a Local Photo Source.",
+            "invalidDimensions": "The selected photo does not report usable dimensions.",
+            "generic": "Could not open the photo library. Please try again."
+          }
+        },
+        "framing": {
+          "title": "Artwork Framing",
+          "gestureHint": "Drag to position · pinch to zoom",
+          "aspectLabel": "Frame aspect"
+        },
+        "profile": {
+          "title": "Conversion Profile",
+          "options": {
+            "easy": "Easy",
+            "standard": "Standard",
+            "detailed": "Detailed"
+          },
+          "custom": "Custom",
+          "customMeta": "Free · shape locked",
+          "unavailable": "Doesn’t fit this frame",
+          "customShortEdgeLabel": "Short edge",
+          "customColorLimitLabel": "DMC color limit",
+          "exceedsLimit": "These Custom values exceed the {{max}}-cell Pattern Size limit."
+        },
+        "titleCard": {
+          "label": "Pattern title",
+          "placeholder": "My Photo Pattern",
+          "defaultTitle": "My Photo Pattern",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · up to {{maxColors}} DMC {{colorsUnit}}",
+          "privacyNotice": "Approval uploads only the framed, downscaled derivative. The original photo stays local.",
+          "approve": "Approve artwork & convert"
+        },
+        "processing": {
+          "preparingFrame": "Preparing the approved frame on this device…",
+          "uploading": "Uploading only the cropped, downscaled frame…",
+          "waitingForWorker": "Waiting for the conversion worker…",
+          "buildingGrid": "Building the stitch grid and DMC palette…",
+          "preparingSession": "Preparing the Personal Pattern for play…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "This profile no longer fits the final frame. Choose Easy or reduce detail.",
+            "generic": "Could not convert this photo. Please try again."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "No Pattern Selected",
+          "noPatternBody": "This screen must be opened from an existing Personal Pattern in your library.",
+          "accountTitle": "Registered Account Required",
+          "accountBody": "Personal Patterns belong to your account so they stay private and available across devices.",
+          "signIn": "Sign in or create account",
+          "back": "Back"
+        },
+        "loading": "Resuming editor draft...",
+        "load": {
+          "failedTitle": "Failed to Load Pattern",
+          "retry": "Retry",
+          "back": "Back",
+          "errors": {
+            "generic": "Could not load this Personal Pattern. Please try again."
+          }
+        },
+        "header": {
+          "title": "Pattern Editor",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "Back"
+        },
+        "toolbar": {
+          "undo": "Undo",
+          "redo": "Redo"
+        },
+        "mode": {
+          "paint": "Paint",
+          "replaceColor": "Replace Color",
+          "replaceStep1": "1. Tap a color in the pattern below to replace:",
+          "replaceStep2": "2. Select a target DMC color below to execute replacement:",
+          "paintSelected": "Selected: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "Select a color below, then tap cells to paint."
+        },
+        "errors": {
+          "pickColorFirst": "Pick a color first",
+          "paletteLimit": "This pattern already uses the maximum of {{max}} thread colors."
+        },
+        "picker": {
+          "title": "DMC Thread Colors",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "Save Edited Pattern",
+          "placeholder": "My Edited Pattern Title",
+          "action": "Save as New",
+          "offlineTitle": "Saved offline",
+          "offlineBody": "Your edited pattern was saved on this device and will sync to your account once you are back online.",
+          "errors": {
+            "generic": "Could not save this Personal Pattern. Please try again."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "That sign-in belongs to a different account. Your current account was not changed.",
+        "providerRejected": "That verification was rejected. Check the account or code and retry."
+      },
+      "generic": {
+        "failure": "Something went wrong. Please try again.",
+        "supportReferenceLabel": "Support Reference: {{reference}}"
+      }
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "WELCOME TO STITCH WISH",
+        "title": "Pick a color, tap the matching squares.",
+        "heroAlt": "Cozy Heart starter pattern preview",
+        "handedness": {
+          "sectionTitle": "Which side should the controls use?",
+          "groupLabel": "Control side",
+          "optionRight": "Controls on the right",
+          "optionLeft": "Controls on the left",
+          "saveErrorText": "Couldn’t save that choice.",
+          "retry": "Try again"
+        },
+        "note": "You can change this later in Settings.",
+        "start": "Start stitching",
+        "starting": "Starting…",
+        "browse": "Browse starters",
+        "signIn": "Sign in"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "Select DMC 321 Christmas Red.",
+          "stitchAction": "Tap the highlighted matching cell.",
+          "mismatchedTap": "Tap the highlighted different cell. Wrong taps cost nothing.",
+          "undoAction": "Undo that stitch, then place it again.",
+          "stitchSweep": "Press a matching cell, then drag across the highlighted run.",
+          "threadColorCompletion": "Finish the highlighted white thread, then choose your next color."
+        },
+        "hints": {
+          "anchoredZoom": "Pinch to zoom while keeping the cells under your fingers in place.",
+          "panVsSweep": "Dragging pans the fabric. Start on a matching cell to stitch a sweep.",
+          "edgeAutoPan": "Keep sweeping near the edge and the fabric follows your finger.",
+          "remainingCellLocator": "Use the locator to find the next remaining cell for this thread."
+        },
+        "skip": "Skip for now",
+        "skipAccessibilityLabel": "Skip tutorial for now",
+        "dismiss": "Got it",
+        "dismissAccessibilityLabel": "Dismiss hint"
+      },
+      "recap": {
+        "title": "You've got it",
+        "lines": {
+          "matchNumbers": "Match the numbers to place each stitch.",
+          "dragSweep": "Drag across matching cells to sweep.",
+          "pinchZoom": "Pinch to zoom when you need a closer look.",
+          "undoLocator": "Undo and the locator are always free."
+        },
+        "continue": "Continue stitching",
+        "browsePatterns": "Browse patterns"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "Stitching Table",
+        "subtitle": "Pick up where you left off or resume a recent craft.",
+        "loading": "Loading your stitches...",
+        "empty": {
+          "title": "No Active Crafts",
+          "body": "Your stitching frame is currently empty. Browse the pattern catalog to find something beautiful to stitch!",
+          "action": "Browse Catalog"
+        },
+        "unknownPattern": "Unknown Pattern",
+        "idLabel": "ID: {{id}}",
+        "unknownPatternLabel": "Pattern {{id}}",
+        "deleteSessionAccessibilityLabel": "Delete session",
+        "viewFinishedAccessibilityLabel": "View finished craft",
+        "resumeAccessibilityLabel": "Resume stitching",
+        "status": {
+          "ready": "Ready",
+          "done": "Done",
+          "active": "Active",
+          "preparing": "Preparing",
+          "failed": "Failed"
+        },
+        "deleteConfirm": {
+          "title": "Delete Progress",
+          "message": "Are you sure you want to delete your progress for \"{{title}}\"? This cannot be undone.",
+          "cancel": "Cancel",
+          "confirm": "Delete"
+        },
+        "preparingCard": {
+          "discardTitle": "Discard Session",
+          "cancelTitle": "Cancel Download",
+          "discardMessage": "Are you sure you want to discard this failed session?",
+          "cancelMessage": "Are you sure you want to cancel downloading this pattern?",
+          "keep": "Keep",
+          "discard": "Discard",
+          "cancel": "Cancel"
+        }
+      },
+      "loading": {
+        "text": "Opening session & preparing fabric..."
+      },
+      "error": {
+        "title": "Session Load Failed",
+        "fallbackMessage": "Unable to load your stitching session.",
+        "backButton": "Go Back",
+        "tableButton": "Go to Table"
+      },
+      "header": {
+        "backButton": "← Back",
+        "tableButton": "← Table",
+        "defaultTitle": "Stitch Session",
+        "progress": "{{completed}} / {{total}} cells ({{percent}}% complete)",
+        "resumeTutorialAccessibilityLabel": "Resume tutorial"
+      },
+      "banners": {
+        "patternRemoved": "This Pattern was removed by moderation and is no longer available. Tap to leave.",
+        "syncConflict": "Synced with another device — some cells were updated. Tap to dismiss."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "Locate next remaining cell of active thread color",
+        "undoAccessibilityLabel": "Undo last stitch"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "Color {{number}}: DMC {{dmcCode}}, {{count}} stitch remaining",
+        "chipAccessibilityLabel_other": "Color {{number}}: DMC {{dmcCode}}, {{count}} stitches remaining",
+        "done": "Done",
+        "remaining_one": "{{count}} left",
+        "remaining_other": "{{count}} left"
+      },
+      "celebration": {
+        "title": "Beautifully Crafted!",
+        "subtitle": "You have completed every single stitch on this fabric.",
+        "stitchesLabel_one": "Stitch",
+        "stitchesLabel_other": "Stitches",
+        "colorsLabel_one": "Color",
+        "colorsLabel_other": "Colors",
+        "replayButton": "Stitch Again",
+        "catalogButton": "Back to Catalog"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "Go back",
+        "tryAgain": "Try Again"
+      },
+      "rejectionReasons": {
+        "safety": "Safety",
+        "publication_rights": "Publication Rights",
+        "duplicate_or_spam": "Duplicate or Spam",
+        "technical_invalidity": "Technical Invalidity",
+        "quality_standard": "Quality Standard"
+      },
+      "submissionStatus": {
+        "accepted": "Published",
+        "appeal_pending": "Appeal pending",
+        "appeal_upheld": "Appeal rejected",
+        "precheck_failed": "Precheck unavailable",
+        "precheck_pending": "Checking",
+        "quarantined": "Needs review",
+        "rejected": "Rejected",
+        "review_pending": "In review"
+      },
+      "revisionStatus": {
+        "accepted": "Published",
+        "appeal_pending": "Appeal pending",
+        "appeal_upheld": "Appeal rejected",
+        "pending": "In review",
+        "rejected": "Rejected",
+        "withdrawn": "Withdrawn"
+      },
+      "home": {
+        "identity": {
+          "establishing": "Establishing identity...",
+          "pendingTitle": "Identity Pending",
+          "offline": "Offline",
+          "retryConnection": "Retry Connection",
+          "loadingPublicProfile": "Loading public profile...",
+          "unavailableTitle": "Public profile unavailable",
+          "checkConnection": "Check your connection and try again.",
+          "createTitle": "Create your public profile",
+          "createBody": "Choose the permanent username shown with your community patterns. Your account details stay private.",
+          "createAction": "Create Public Profile",
+          "editAction": "Edit Public Profile",
+          "offlinePendingSync": "Offline — pending sync",
+          "guestPlayer": "Guest Player",
+          "playingSince": "Playing since {{date}}",
+          "creatorSince": "Creator since {{date}}"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "Open Commerce Store",
+          "title": "Studio Balances",
+          "commerceStoreLink": "Commerce Store",
+          "stitchCoinsAccessibilityLabel": "Stitch Coins balance: {{balance}}. Tap to get coins.",
+          "packs": "Packs",
+          "stitchCoinsLabel": "Stitch Coins",
+          "stitchCoinsSub": "For pattern unlocks",
+          "aiCreditsAccessibilityLabel": "AI Credits balance: {{balance}}. Tap to get credits.",
+          "aiCreditsSignInAccessibilityLabel": "AI Credits. Sign in to purchase.",
+          "aiCreditsLabel": "AI Credits",
+          "aiCreditsSubOwned": "For AI pattern art",
+          "aiCreditsSubGuest": "Sign in to own",
+          "membershipActiveAccessibilityLabel": "Premium Membership active ({{plan}}). Tap to manage.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Premium. Tap to view plans.",
+          "membershipActiveTitle": "Premium Active · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "Annual",
+          "planMonthly": "Monthly",
+          "planWeekly": "Weekly",
+          "planActive": "Active",
+          "trialBadge": "Trial",
+          "membershipSubActive": "All themes unlocked · Instant daily coin claims",
+          "membershipSubInactive": "Instant 30 daily coins, custom themes & AI credits",
+          "manage": "Manage",
+          "explore": "Explore"
+        },
+        "quickNav": {
+          "sectionEyebrow": "ACCOUNT & COMMUNITY",
+          "submissionsAccessibilityLabel": "Catalog Submissions: Track reviews, decisions, and appeals",
+          "submissionsTitle": "Submissions",
+          "submissionsSub": "Track reviews",
+          "publishedAccessibilityLabel": "Published Patterns: Revise metadata, withdraw, and track appeals",
+          "publishedTitle": "Published",
+          "publishedSub": "Manage patterns",
+          "moderationAccessibilityLabel": "Moderation Notices: Review catalog decisions affecting your patterns",
+          "moderationTitle": "Moderation",
+          "moderationSub": "Policy notices",
+          "likedAccessibilityLabel": "Liked Patterns: Your private collection of liked community patterns",
+          "likedTitle": "Liked Patterns",
+          "likedSavedCount_one": "{{count}} saved",
+          "likedSavedCount_other": "{{count}} saved",
+          "likedSavedDefault": "Saved patterns"
+        },
+        "dailySection": {
+          "title": "Daily Stitching & Rewards",
+          "tasksGroupLabel": "Daily Tasks (+30 Coins max)",
+          "connectToTrack": "Connect to track daily task progress.",
+          "loadingTasks": "Loading tasks…",
+          "loadFailed": "Could not load daily tasks.",
+          "retry": "Retry",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "Resetting…",
+          "resetsInHoursMinutes": "Resets in {{hours}}h {{minutes}}m",
+          "resetsInMinutes": "Resets in {{minutes}}m"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 Stitch Actions",
+            "body": "Fill 100 matching cells today"
+          },
+          "three_colors_10": {
+            "title": "3 Colors, 10 Actions Each",
+            "body": "Reach 10 actions in 3 thread colors"
+          },
+          "color_completion": {
+            "title": "Complete a Thread Color",
+            "body": "Finish stitching any color completely"
+          }
+        },
+        "dailyPool": {
+          "title": "Daily 30-Coin Reward Pool",
+          "premiumInstantClaim": "Premium Instant Claim",
+          "rewardedAds": "Rewarded Ads",
+          "claimedAmount": "{{amount}} Stitch Coins claimed for today!",
+          "poolAlreadyClosed": "Today’s reward pool was already closed.",
+          "claimedForToday": "Claimed for today. Resets at next Reward Day.",
+          "poolExhausted": "Today’s 30-Coin reward pool is exhausted.",
+          "claimButtonRetry": "Try claim again",
+          "claimButtonInstant": "Claim {{count}} Coins (Instant)",
+          "poolClaimedResetsTomorrow": "Today’s coin pool was claimed. Resets tomorrow.",
+          "allAdRewardsCompleted": "All ad rewards completed for today! (30/30 coins)",
+          "watchAdButton": "Watch Ad for +10 Coins ({{count}} left)",
+          "adPerkNote": "Watch up to 3 ads/day · Premium unlocks instant 30-coin claim",
+          "adRewardEarned": "Ad reward earned! Verifying with backend…",
+          "claimFailed": "Claim failed: {{message}}",
+          "claimFailedGeneric": "Something went wrong. Please try again.",
+          "adLoadFailedDefault": "Failed to load ad",
+          "adAttemptFailedDefault": "Failed to open ad attempt"
+        },
+        "tabs": {
+          "myCreations": "My Creations {{count}}",
+          "likedPatterns": "Liked Patterns {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "Sign in for Personal Patterns",
+          "signInBody": "A Registered Account is required to create and privately own converted photo patterns.",
+          "signIn": "Sign in",
+          "patternMeta": "{{width}}×{{height}} · {{count}} colors",
+          "pendingSync": "Pending sync",
+          "play": "Play",
+          "edit": "Edit",
+          "submitAccessibilityLabel": "Submit {{title}} to the Community Catalog",
+          "emptyTitle": "No Personal Creations",
+          "emptyBody": "You haven't converted any photos or generated AI art yet. Head over to Create to start your first masterwork!",
+          "emptyAction": "Start Creating",
+          "actionFailedGeneric": "Something went wrong. Please try again."
+        },
+        "likedTab": {
+          "unavailableTitle": "Liked Patterns Unavailable",
+          "unavailableDefault": "Could not load liked patterns.",
+          "byCreator": "by {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} colors",
+          "emptyTitle": "No Liked Patterns",
+          "emptyBody": "Browse the catalog and tap the heart icon on any design to save it here for later.",
+          "emptyAction": "Discover Patterns"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Premium Daily Coin Claim",
+        "description": "Claim the remainder of today's shared 30-Coin reward pool.",
+        "connectPrompt": "Connect to the Game Backend to check today's reward.",
+        "checkingReward": "Checking today's Premium reward…",
+        "unavailableGeneric": "Today's Premium reward is unavailable.",
+        "tryAgain": "Try again",
+        "resultAdded": "{{amount}} Stitch Coins added by the Game Backend. Balance: {{balance}}.",
+        "poolAlreadyClosed": "Today's shared reward pool was already closed.",
+        "alreadyClaimed": "Already claimed for this Reward Day.",
+        "poolExhausted": "Today's shared reward pool is exhausted. It resets at the next Reward Day.",
+        "availableNow": "{{count}} Stitch Coins available now",
+        "resetsAt": "Resets {{date}}",
+        "claimButtonRetry": "Try claim again",
+        "claimButtonInstant": "Claim {{count}} Coins",
+        "lockedDescription": "Premium Membership, including an eligible Monthly Trial, unlocks this daily claim.",
+        "viewPremiumPlans": "View Premium plans"
+      },
+      "publicProfile": {
+        "editTitle": "Edit Public Profile",
+        "createTitle": "Create Public Profile",
+        "signInTitle": "Sign in required",
+        "signInBody": "A Registered Account is required to create a public creator identity.",
+        "signInAction": "Sign in",
+        "unavailableTitle": "Profile unavailable",
+        "unavailableBody": "Your public profile could not be loaded. Check your connection and try again.",
+        "tryAgain": "Try again",
+        "intro": "This name and photo are visible with your community patterns. Your email and sign-in provider stay private.",
+        "choosePhoto": "Choose photo",
+        "changePhoto": "Change photo",
+        "remove": "Remove",
+        "avatarHelper": "Optional · JPEG, PNG, or WebP · up to 5 MB",
+        "usernameLabel": "Username",
+        "usernameAccessibilityLabel": "Public username",
+        "usernamePlaceholder": "stitcher_name",
+        "usernameHelperLocked": "Your username is permanent.",
+        "usernameHelperEditable": "3–30 lowercase letters, numbers, or underscores. This cannot be changed later.",
+        "displayNameLabel": "Display name",
+        "displayNameAccessibilityLabel": "Public display name",
+        "displayNamePlaceholder": "Your creator name",
+        "displayNameHelper": "You can change this later.",
+        "safetyNotice": "Names and photos are checked before publication. If a change is rejected, your current public profile stays unchanged.",
+        "saveAction": "Save public profile",
+        "publishAction": "Publish public profile",
+        "photoPermissionRequired": "Photo library access is required to choose a profile photo.",
+        "photoTypeInvalid": "Profile photos must be JPEG, PNG, or WebP.",
+        "photoTooLarge": "Profile photos must be 5 MB or smaller.",
+        "saveFailedDefault": "Could not save your public profile"
+      },
+      "submissions": {
+        "title": "Catalog Submissions",
+        "unavailableTitle": "Submissions Unavailable",
+        "unavailableDefault": "Could not load your submissions.",
+        "emptyTitle": "No Catalog Submissions",
+        "emptyBody": "Submit a synced Personal Pattern from My Creations.",
+        "emptyAction": "Back to My Creations",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "Automated checks could not complete. This snapshot was not published.",
+        "publishedToCatalog": "Published to the Community Catalog.",
+        "appealAction": "Appeal Decision",
+        "appealHelp": "You can appeal this unchanged snapshot once.",
+        "appealNoteAccessibilityLabel": "Appeal note",
+        "appealNotePlaceholder": "Optional context for the reviewing moderator",
+        "cancelAction": "Cancel",
+        "submitAppealAction": "Submit Appeal"
+      },
+      "publishedPatterns": {
+        "title": "Published Patterns",
+        "unavailableTitle": "Patterns Unavailable",
+        "unavailableDefault": "Could not load your published patterns.",
+        "emptyTitle": "No Published Patterns",
+        "emptyBody": "Patterns you publish to the Community Catalog appear here.",
+        "emptyAction": "Back to Profile",
+        "withdrawnFromCatalog": "Withdrawn from Catalog",
+        "underReviewHold": "Under Review Hold",
+        "meta": "{{category}} · Published {{date}}",
+        "withdrawnHelp": "This identity is permanently withdrawn. Players with an existing Stitching Session keep their progress and access.",
+        "reviewHoldHelp": "This Pattern is temporarily outside discovery and cannot start new sessions. Existing Stitching Sessions remain playable. You may still propose a metadata revision.",
+        "reviseAction": "Revise Metadata",
+        "withdrawRevisionAction": "Withdraw Revision",
+        "appealAction": "Appeal Decision",
+        "withdrawFromCatalogAction": "Withdraw from Catalog",
+        "appealHelp": "You can appeal this unchanged snapshot once. Submitting a new revision instead waives this appeal.",
+        "appealNoteAccessibilityLabel": "Appeal note",
+        "appealNotePlaceholder": "Optional context for the reviewing moderator",
+        "cancelAction": "Cancel",
+        "submitAppealAction": "Submit Appeal",
+        "withdrawRevisionFailedTitle": "Could not withdraw revision",
+        "withdrawPatternFailedTitle": "Could not withdraw pattern",
+        "withdrawPatternSuccessTitle": "Pattern withdrawn",
+        "withdrawPatternSuccessBody": "It is no longer discoverable and cannot start new sessions. Existing Stitching Sessions keep their progress and playable data.",
+        "withdrawConfirmTitle": "Withdraw from Community Catalog?",
+        "withdrawConfirmBody": "“{{title}}” will disappear from discovery and cannot start new sessions. This Pattern identity can never be restored. Existing Stitching Sessions and their progress remain playable.",
+        "withdrawConfirmCancel": "Cancel",
+        "withdrawConfirmAction": "Withdraw permanently"
+      },
+      "revisePatternMetadata": {
+        "title": "Revise Metadata",
+        "signInTitle": "Registered Account Required",
+        "signInBody": "Sign in before revising a Community Pattern's metadata.",
+        "signInAction": "Sign In",
+        "notFoundTitle": "Community Pattern Not Found",
+        "notFoundBody": "Only your own published Community Patterns can be revised.",
+        "notFoundAction": "Back to Published Patterns",
+        "inProgressTitle": "Revision Already In Progress",
+        "inProgressBody": "This Pattern already has a pending revision or active appeal. Withdraw it before submitting another.",
+        "inProgressAction": "Back to Published Patterns",
+        "currentlyPublished": "Currently published on the Community Catalog",
+        "titleFieldLabel": "Catalog title",
+        "titlePlaceholder": "Pattern title",
+        "titleAccessibilityLabel": "Catalog title",
+        "descriptionFieldLabel": "Description",
+        "descriptionPlaceholder": "Describe the design, subject, and stitching experience.",
+        "descriptionAccessibilityLabel": "Catalog description",
+        "sourceLanguageFieldLabel": "Source language",
+        "categoryFieldLabel": "Category",
+        "tagsFieldLabel": "Tags",
+        "notice": "Revising captures a new immutable snapshot. Your currently published metadata stays visible until a human moderator accepts this revision.",
+        "submitAction": "Submit Revision"
+      },
+      "submitPattern": {
+        "title": "Submit to Community",
+        "signInTitle": "Registered Account Required",
+        "signInBody": "Sign in before submitting a Personal Pattern to the Community Catalog.",
+        "signInAction": "Sign In",
+        "createProfileTitle": "Create a Public Creator Profile",
+        "createProfileBody": "Community Patterns are credited to your public creator identity.",
+        "createProfileAction": "Create Profile",
+        "patternNotFoundTitle": "Personal Pattern Not Found",
+        "patternNotFoundBody": "Only synced Personal Patterns can be submitted.",
+        "patternNotFoundAction": "Back to Profile",
+        "patternMeta": "{{width}}×{{height}} · {{count}} colors",
+        "byCreator": "By @{{username}}",
+        "titleFieldLabel": "Catalog title",
+        "titlePlaceholder": "Pattern title",
+        "titleAccessibilityLabel": "Catalog title",
+        "descriptionFieldLabel": "Description",
+        "descriptionPlaceholder": "Describe the design, subject, and stitching experience.",
+        "descriptionAccessibilityLabel": "Catalog description",
+        "sourceLanguageFieldLabel": "Source language",
+        "categoryFieldLabel": "Category",
+        "tagsFieldLabel": "Tags",
+        "rightsDeclaration": "I created this work or have the rights required to publish it under Publication Rights Declaration v1.",
+        "notice": "Submission captures an immutable copy. Automated checks provide evidence, but a human moderator makes every decision.",
+        "submitAction": "Submit for Review"
+      },
+      "moderationNotices": {
+        "title": "Moderation Notices",
+        "signInTitle": "Sign in to view notices",
+        "signInBody": "Moderation Notices belong to the Registered Account that published the affected Community Pattern.",
+        "signInAction": "Sign In",
+        "unavailableTitle": "Notices Unavailable",
+        "unavailableDefault": "Could not load Moderation Notices.",
+        "emptyTitle": "No Moderation Notices",
+        "emptyBody": "Owner-visible catalog moderation decisions will appear here.",
+        "emptyAction": "Back to Profile",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "Catalog Metadata Remediation",
+          "no_violation": "Review closed — no violation",
+          "review_hold": "Review Hold",
+          "safety_removal": "Safety Removal"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "The title, description, and selected tags were replaced with safe values. Availability, the Pattern Artifact, and preview are unaffected. You can submit a new Catalog Metadata Revision at any time.",
+          "no_violation": "The Post-Publication Review is closed and this Pattern is fully available again in discovery and new Stitching Sessions.",
+          "review_hold": "This Pattern is temporarily unavailable for discovery and new sessions. Existing Stitching Sessions, progress, and Offline Pattern Data remain playable.",
+          "safety_removal": "This Pattern was removed for a safety, legal, or policy violation. It left discovery, existing Stitching Sessions became inaccessible, and Offline Pattern Data on your devices was deleted. You may submit one Safety Removal Appeal."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "Daily Tasks",
+        "offline": "You're offline — Daily Tasks need a connection.",
+        "unavailable": "Couldn't load Daily Tasks.",
+        "empty": "No tasks available today."
+      },
+      "rewardedAdCard": {
+        "offline": "You're offline — Reward Day needs a connection.",
+        "unavailable": "Couldn't load Reward Day status.",
+        "premiumClaimClosedPool": "Your Premium daily claim closed today's shared coin pool.",
+        "allRewardsClaimed": "You've claimed all ad rewards for today. Come back tomorrow!",
+        "remaining_one": "{{count}} ad left today ({{coins}} coins available)",
+        "remaining_other": "{{count}} ads left today ({{coins}} coins available)",
+        "watchForCoins": "Watch Ad for {{count}} Coins"
+      },
+      "likedPatterns": {
+        "title": "Liked Patterns",
+        "signInTitle": "Registered Account Required",
+        "signInBody": "Sign in before viewing your private Liked Patterns collection.",
+        "signInAction": "Sign In",
+        "unavailableTitle": "Liked Patterns Unavailable",
+        "unavailableDefault": "Could not load liked patterns.",
+        "emptyTitle": "No Liked Patterns",
+        "emptyBody": "Browse the pattern catalog and tap the heart icon on any design to save it here.",
+        "emptyAction": "Discover Patterns",
+        "byCreator": "by {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} colors · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "Settings",
+        "subtitleDev": "Configure preferences and inspect backend systems.",
+        "subtitleProd": "Configure your preferences."
+      },
+      "serviceStatus": {
+        "sectionTitle": "Service Status",
+        "apiConnectionTitle": "API connection",
+        "testingConnection": "Testing api connection...",
+        "offlineUnreachable": "Offline / Unreachable",
+        "unknownConnectionError": "Unknown connection error",
+        "retryConnection": "Retry Connection",
+        "healthy": "Healthy",
+        "degraded": "Degraded",
+        "postgresLabel": "PostgreSQL Database",
+        "redisLabel": "Redis Cache"
+      },
+      "session": {
+        "sectionTitle": "Identity & Session",
+        "statusTitle": "Backend Session Status",
+        "statusDescription": "Validates your active guest registration session via the API.",
+        "noActiveSession": "No Active Session",
+        "sessionActive": "Session Active",
+        "idLabel": "ID: {{id}} (v{{version}})",
+        "unknownState": "Unknown state"
+      },
+      "tutorial": {
+        "sectionTitle": "Tutorial",
+        "learnControlsTitle": "Learn the controls",
+        "learnControlsDescription": "Resume the stitching tutorial when you are ready.",
+        "unavailableTitle": "Tutorial unavailable",
+        "unavailableMessage": "Could not resume the tutorial. Please try again."
+      },
+      "developer": {
+        "sectionTitle": "Developer",
+        "debugDiagnostics": "Debug / Diagnostics",
+        "debug": {
+          "backAccessibilityLabel": "Go back",
+          "title": "Debug",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: configured · env: {{environment}}",
+            "dsnNotConfigured": "DSN: not configured",
+            "sendTestEvent": "Send Test Event",
+            "throwError": "Throw Error",
+            "disabledTitle": "Sentry Disabled",
+            "disabledMessage": "Sentry is not configured (no DSN found), so no test event will be sent.",
+            "testEventSent": "Test event sent. Event ID: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "Error",
+            "testEventFailedMessage": "Failed to send test event: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Onboarding",
+            "description": "Clear tutorial progress and start again from Welcome.",
+            "restart": "Restart onboarding",
+            "confirmTitle": "Restart onboarding?",
+            "confirmMessage": "The tutorial state will be cleared and onboarding will start from the Welcome screen.",
+            "cancel": "Cancel",
+            "resetFailedTitle": "Reset failed"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "Account Deletion",
+        "statusTitle": "Account Deletion Status",
+        "checkingStatus": "Checking status...",
+        "pendingTitle": "Account Deletion Pending",
+        "pendingDescription": "Your account deletion is scheduled. Sign in again before the recovery window ends to cancel it.",
+        "recoveryWindowEnds": "Recovery Window Ends: {{date}}",
+        "cancelling": "Cancelling...",
+        "cancelDeletion": "Cancel deletion",
+        "statusError": "Could not check deletion status. Check your connection and retry.",
+        "deleteAccountTitle": "Delete Account",
+        "deleteAccountDescription": "Permanently delete your account, progress, and all unlocks after a 30-day recovery window.",
+        "requestedTitle": "Account Deletion Requested",
+        "requestedMessage": "Your deletion request is pending through {{date}}. Your account has been logged out. Sign in again before then if you wish to cancel this deletion.",
+        "signOutFailedTitle": "Local Sign-out Failed",
+        "signOutFailedMessage": "Your deletion request is still pending. Please sign out again from Settings.",
+        "requestFailedTitle": "Request Failed",
+        "requestFailedMessage": "Your deletion request was not submitted. Check your connection and try again.",
+        "cancelSuccessTitle": "Success",
+        "cancelSuccessMessage": "Your account deletion request has been cancelled.",
+        "reauthRequiredTitle": "Reauthentication Required",
+        "reauthRequiredMessage": "For security, you must sign in again before cancelling account deletion.",
+        "signInAction": "Sign In",
+        "cancelFailedTitle": "Cancel Failed",
+        "cancelFailedGeneric": "Failed to cancel account deletion. Check your connection and try again."
+      },
+      "appearance": {
+        "sectionTitle": "Appearance"
+      },
+      "themeCollectionCard": {
+        "title": "Theme Collection",
+        "description": "Change grid, stitch, and completion cosmetics without affecting gameplay.",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "Requires Premium Membership",
+        "selected": "Selected",
+        "accessActive": "Premium theme access is active, including during an eligible Monthly Trial.",
+        "lockedPreview": "Preview the collection here. Premium Membership or an eligible Monthly Trial unlocks selection.",
+        "viewPremiumPlans": "View Premium plans"
+      },
+      "gameplay": {
+        "sectionTitle": "Gameplay Settings",
+        "showGridLinesTitle": "Show Grid Lines",
+        "showGridLinesDescription": "Display boundaries between sewing canvas cells",
+        "handednessTitle": "Handedness Layout",
+        "handednessDescription": "Align interactive controls for left- or right-handed play",
+        "left": "Left",
+        "right": "Right",
+        "leftHandedLayout": "Left handed layout",
+        "rightHandedLayout": "Right handed layout"
+      },
+      "language": {
+        "sectionTitle": "Language",
+        "description": "Choose the language Stitch Wish displays its interface in.",
+        "followDevice": "Follow device language",
+        "followDeviceDescription": "Clear your override to follow your device's language setting.",
+        "optionEnglish": "English",
+        "optionTurkish": "Türkçe"
+      },
+      "social": {
+        "sectionTitle": "Social & Privacy",
+        "blockedCreators": "Blocked Creators"
+      },
+      "account": {
+        "sectionTitle": "Account",
+        "notSignedInTitle": "Not signed in",
+        "signInRequiredTitle": "Sign in required",
+        "notSignedInDescription": "Sign in to sync progress across devices.",
+        "signIn": "Sign in",
+        "reconnecting": "Reconnecting…",
+        "signOut": "Sign out",
+        "signOutConfirmTitle": "Sign out?",
+        "signOutConfirmMessage": "Your unsynchronized progress stays on this device and reopens when you sign back in.",
+        "signOutConfirmAction": "Sign out",
+        "signOutFailedTitle": "Sign out failed",
+        "signOutFailedGeneric": "Please try again.",
+        "providerAppleAccount": "Apple account",
+        "providerGoogleAccount": "Google account",
+        "providerGenericAccount": "Registered account"
+      },
+      "signIn": {
+        "emailHeading": "Sign in or create account",
+        "emailSubtitle": "Keep your progress available across devices.",
+        "codeHeading": "Enter your code",
+        "codeSubtitle": "Enter the 6-digit code we sent to {{email}}.",
+        "continueWithGoogle": "Continue with Google",
+        "orUseEmail": "or use email",
+        "ssoUnavailable": "Google and Apple sign-in are unavailable in this build.",
+        "emailLabel": "Email address",
+        "emailPlaceholder": "Email address",
+        "sendCode": "Send code",
+        "cancel": "Cancel",
+        "verify": "Verify",
+        "resendCode": "Resend code",
+        "resending": "Resending...",
+        "codeSent": "Code sent",
+        "useDifferentEmail": "Use a different email",
+        "sendCodeFailed": "Couldn't send the code. Check your connection and try again.",
+        "codeIncorrect": "That code is incorrect or has expired.",
+        "verifyFailedGeneric": "Something went wrong. Please try again.",
+        "socialSignInFailed": "Couldn't sign in with {{provider}}. Please try again.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "Go back",
+        "title": "Blocked Creators",
+        "infoText": "Blocking is private and reversible. It hides the creator's community patterns from your catalog views, search, and discovery lists. This is not a report or a content takedown.",
+        "signInRequiredTitle": "Registered Account Required",
+        "signInRequiredBody": "Sign in before managing your blocked creators list.",
+        "signInAction": "Sign In",
+        "listUnavailableTitle": "List Unavailable",
+        "listUnavailableDefault": "Could not load blocked creators.",
+        "tryAgain": "Try Again",
+        "emptyTitle": "No Blocked Creators",
+        "emptyBody": "You haven't blocked anyone. You can block a creator from any of their pattern detail pages.",
+        "backToSettings": "Back to Settings",
+        "unblock": "Unblock",
+        "unblockConfirmTitle": "Unblock Creator",
+        "unblockConfirmMessage": "Are you sure you want to unblock {{name}}? Their patterns will reappear in your search and browse results.",
+        "cancel": "Cancel",
+        "successTitle": "Success",
+        "unblockedMessage": "{{name}} has been unblocked.",
+        "errorTitle": "Error",
+        "unblockFailedMessage": "Failed to unblock creator: {{message}}",
+        "unblockFailedGeneric": "Unknown error"
+      },
+      "data": {
+        "sectionTitle": "Data",
+        "resetGuestTitle": "Reset guest data",
+        "resetGuestDescription": "Irreversibly close the guest identity on the server and wipe all device data.",
+        "resetGuestOffline": "Offline: Active server connection required to reset guest data.",
+        "resetGuestPurchaseLock": "Reset is blocked while a purchase is still being verified. Consumables and private Guest data cannot be recovered afterward.",
+        "removeLocalTitle": "Remove local data",
+        "removeLocalDescription": "Delete your local identity namespace database from this device.",
+        "removeLocalConfirmTitle": "Remove Local Data?",
+        "removeLocalConfirmMessage": "Warning: This will delete your local database files from this device only. Any unsynchronized records will be permanently lost.",
+        "removeLocalConfirmAction": "Remove",
+        "removeLocalSuccessTitle": "Success",
+        "removeLocalSuccessMessage": "Local data has been removed from this device.",
+        "removeLocalFailedTitle": "Removal Failed",
+        "removeLocalFailedMessage": "Failed to remove local data: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "Information & Links",
+        "privacyPolicy": "Privacy Policy",
+        "termsOfService": "Terms of Service",
+        "contactSupport": "Contact Support",
+        "accountDeletion": "Account Deletion",
+        "openFailedMessage": "Could not open link: {{url}}",
+        "openFailedGenericTitle": "Error"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — Cozy Pixel-Art Needlecraft",
+        "version": "Version {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "Package: {{id}}",
+        "schemeLabel": "Scheme: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "Reset Guest Data?",
+        "warning": "This action will irreversibly close your guest identity on the server and permanently delete your:",
+        "bulletProgress": "• local progress",
+        "bulletRewards": "• pending rewards",
+        "bulletLikes": "• likes",
+        "bulletUnlockAccess": "• unlock access",
+        "bulletOfflinePatterns": "• offline pattern data",
+        "confirmPrefix": "Type ",
+        "confirmSuffix": " below to confirm:",
+        "confirmAction": "Reset Data",
+        "resetting": "Resetting guest data...",
+        "successTitle": "Success",
+        "successMessage": "Guest data has been fully reset.",
+        "failedTitle": "Reset Failed",
+        "failedMessage": "Guest data reset failed: {{message}}. Please try again."
+      },
+      "deleteModal": {
+        "title": "Delete Account?",
+        "recoveryPrefix": "Your account enters a ",
+        "recoveryBold": "30-day Deletion Recovery Window",
+        "recoverySuffix": ". Sign in again during this window to cancel the deletion.",
+        "bulletBalances": "• Stitch Coin and AI Credit balances",
+        "bulletUnlocks": "• All Pattern Unlocks",
+        "bulletArtwork": "• AI Artwork and Personal Patterns",
+        "bulletProgress": "• Synchronized progress and Likes",
+        "consequencesPrefix": "At the end of the recovery window, these are erased or forfeited with no refund or transfer. Published Community Patterns are withdrawn from the catalog, attribution becomes ",
+        "consequencesBold": "Deleted Creator",
+        "consequencesSuffix": ", and your username stays permanently reserved.",
+        "membershipWarning": "Your Premium Membership may keep billing after account deletion. Deletion does not cancel it; manage it separately before continuing if you want billing to stop.",
+        "manageAppleSubscription": "Manage Apple Subscription",
+        "continueAction": "Continue",
+        "confirmTitle": "Confirm Deletion",
+        "confirmPrefix": "To confirm that you want to delete your account, type ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": " in the box below:",
+        "submitting": "Submitting deletion request...",
+        "backAction": "Back",
+        "confirmAction": "Confirm"
+      },
+      "reauthModal": {
+        "title": "Verify Your Identity",
+        "description": "For security, verify with a sign-in method already linked to this account. Deletion resumes automatically after verification.",
+        "loading": "Loading sign-in methods...",
+        "codeSentMessage": "Enter the 6-digit code sent to {{email}}.",
+        "verifyAndDelete": "Verify and Delete",
+        "emailButton": "Email {{email}}",
+        "continueWithProvider": "Continue with {{provider}}",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "No linked sign-in method is available. Contact support before retrying deletion.",
+        "loadFailed": "Could not load your linked sign-in methods. Check your connection and retry.",
+        "retryFailed": "Your identity was verified, but deletion was not submitted. Close this dialog and retry deletion.",
+        "emailMissing": "This linked email method has no address. Choose another method.",
+        "genericFailure": "Reauthentication failed. Check your connection and retry."
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "retry": "Retry"
+      },
+      "common": {
+        "unavailable": "Unavailable"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "Catalog",
+        "stitch": "Stitch",
+        "create": "Create",
+        "profile": "Profile",
+        "settings": "Settings"
+      }
+    }
+  },
+  "tr": {
+    "catalog": {
+      "common": {
+        "back": "← Geri",
+        "searchPlaceholder": "Desen, tasarımcı, etiket ara…",
+        "offlineBanner": "Çevrimdışı — katalog güncel olmayabilir",
+        "sectionError": {
+          "title": "Yüklenemedi",
+          "retry": "Tekrar Dene"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} renk",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} renk",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "İngilizce"
+        },
+        "accessibilityLabel": "{{language}} dilinde yazılmış"
+      },
+      "index": {
+        "subtitle": "Rahat dünyanı ilmek ilmek işle.",
+        "searchBar": {
+          "accessibilityLabel": "Desen kataloğunda ara"
+        },
+        "sections": {
+          "starterPatterns": "Başlangıç Desenleri",
+          "staffPicks": "Ekip Seçimi",
+          "categories": "Kategoriler",
+          "newPatterns": "Yeni Desenler"
+        },
+        "staffPicks": {
+          "emptyTitle": "Henüz Ekip Seçimi Yok",
+          "emptyBody": "Özenle seçilmiş rahat tasarım koleksiyonumuz yakında burada olacak.",
+          "errorBody": "Kataloğa ulaşılamadı ve henüz önbellekte bir şey yok."
+        },
+        "categories": {
+          "count": "{{count}} desen",
+          "errorBody": "Kataloğa ulaşılamadı ve henüz önbellekte bir şey yok."
+        },
+        "newPatterns": {
+          "emptyTitle": "Yeni Desenler Hazırlanıyor",
+          "emptyBody": "Yeni gelenler yolda!",
+          "errorBody": "Kataloğa ulaşılamadı ve henüz önbellekte bir şey yok.",
+          "showMore": "Daha fazla göster",
+          "loading": "Yükleniyor…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "Gözat",
+        "error": {
+          "body": "Bu katalog sayfasına ulaşılamadı ve henüz önbellekte bir şey yok."
+        },
+        "empty": {
+          "title": "Henüz Burada Bir Şey Yok",
+          "body": "Bu seçime uyan desen yok. Yeni tasarımlar düzenli olarak ekleniyor."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "Katalog arama girişi",
+        "inactive": {
+          "title": "Kataloğu Ara",
+          "body": "Desenleri başlığa, tasarımcıya veya etikete göre aramak için en az iki karakter yazın."
+        },
+        "error": {
+          "title": "Arama İçin Bağlantı Gerekiyor",
+          "body": "Katalog araması çevrimdışıyken kullanılamıyor. Önbelleğe alınmış katalog sayfaları katalog sekmesinden taranabilir kalır."
+        },
+        "noResults": {
+          "title": "Sonuç Bulunamadı",
+          "body": "Kataloğda “{{query}}” ile eşleşen bir şey yok."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "Misafir Olarak Oynuyorsun",
+        "body": "Stitch Coin ve ilerlemen Misafir olarak yalnızca bu cihazda bulunur. Kurulum kaybedilirse Misafir defteri ve ilerleme kurtarılamayabilir. Oturum açmak ilerlemeni korur."
+      },
+      "detail": {
+        "noDescription": "Açıklama yok.",
+        "specs": {
+          "dimensions": "Boyutlar",
+          "totalStitches": "Toplam Dikiş",
+          "colors": "Renkler",
+          "category": "Kategori"
+        },
+        "threadsSuffix": "{{count}} İplik",
+        "palette": {
+          "title": "Gerekli İplikler",
+          "loading": "İplik paleti okunuyor...",
+          "loadFailed": "Palet yüklenemedi: {{error}}",
+          "retry": "Yeniden Yükle"
+        },
+        "actions": {
+          "startStitching": "Dikişe Başla",
+          "starting": "Başlatılıyor...",
+          "preparing": "Hazırlanıyor…"
+        },
+        "loadFailedGeneric": "Desen dosyası çözümlenemedi.",
+        "sessionCreateFailed": "Dikiş oturumu oluşturulamadı. Lütfen tekrar deneyin.",
+        "unavailable": {
+          "title": "Desen Kullanılamıyor",
+          "body": "Bu desen yüklenemedi. Kaldırılmış olabilir veya çevrimdışı olabilirsin.",
+          "goBack": "Geri Dön"
+        },
+        "byCreator": "{{creatorName}} tarafından",
+        "byCreatorWithUsername": "{{creatorName}} tarafından · @{{username}}",
+        "blockConfirm": {
+          "title": "Tasarımcıyı Engelle",
+          "message": "{{creatorName}} adlı tasarımcıyı engellemek istediğine emin misin? Bu, onların desenlerini arama/gözatmada gizleyen özel ve geri alınabilir bir işlemdir. Tasarımcıyı şikayet etmez ve geçerli dikiş oturumunu kesintiye uğratmaz.",
+          "cancel": "Vazgeç",
+          "confirm": "Engelle",
+          "blockedTitle": "Engellendi",
+          "blockedMessage": "{{creatorName}} engellendi.",
+          "errorTitle": "Hata",
+          "failedGeneric": "Tasarımcı engellenemedi."
+        },
+        "likeFailedGeneric": "Beğeni durumu güncellenemedi",
+        "connectToPlay": {
+          "title": "Oynamak için bağlan",
+          "body": "Katalog deseniyle başlamak için oturumunu hazırlayacak bir bağlantı gerekir. Başlangıç Desenleri çevrimdışı bile şimdi oynanabilir."
+        },
+        "insufficientCoins": {
+          "title": "Yetersiz Coin",
+          "body": "Bu desen {{price}} Stitch Coin tutuyor, ancak sadece {{balance}} Coin var.\n\nAçık: {{shortfall}} Coin.\n\nDiğer desenleri tamamlayarak Stitch Coin kazan! İlk Tamamlama ödülleri aktif.",
+          "getCoins": "Stitch Coin Al",
+          "findPatterns": "Dikilecek desen bul",
+          "back": "Geri"
+        },
+        "unlockFailedGeneric": "Kilit açma başarısız oldu. Bağlantını kontrol edip tekrar dene.",
+        "preparationFailedGeneric": "Hazırlık başlatılamadı. Bağlantını kontrol edip tekrar dene.",
+        "price": {
+          "label": "Fiyat"
+        },
+        "balance": {
+          "label": "Bakiyen",
+          "loading": "…"
+        },
+        "unlockButton": "{{price}} Coin ile Kilidi Aç",
+        "communityReport": {
+          "button": "Bu deseni şikayet et",
+          "title": "{{patternTitle}} Şikayet Et",
+          "body": "Sorunu en iyi tanımlayan nedeni seç. Şikayetler bir deseni otomatik olarak gizlemez veya değiştirmez.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "Uygunsuz veya Güvensiz İçerik",
+            "copyright_or_publication_rights": "Telif Hakkı veya Yayın Hakları",
+            "duplicate_or_spam": "Tekrar veya Spam",
+            "misleading_title_or_tags": "Yanıltıcı Başlık veya Etiketler",
+            "other": "Diğer"
+          },
+          "explanationLabel": "Kanıt veya açıklama {{requirement}}",
+          "explanationRequired": "(gerekli)",
+          "explanationOptional": "(isteğe bağlı)",
+          "explanationPlaceholder": "Bir moderatörün deseni incelemesine yardımcı olacak ayrıntıları paylaş.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "Vazgeç",
+          "submit": "Şikayeti gönder",
+          "submitFailedGeneric": "Şikayetin gönderilemedi. Bağlantını kontrol edip tekrar dene.",
+          "receivedTitle": "Şikayet alındı",
+          "alreadyReceivedTitle": "Şikayet zaten alındı",
+          "receivedBody": "Bir moderatör artık bu deseni inceleyebilir. Şikayet, kullanılabilirliğini otomatik olarak değiştirmez.",
+          "alreadyReceivedBody": "Mevcut şikayetin zaten açık incelemenin bir parçası.",
+          "signInRequired": {
+            "title": "Şikayet etmek için oturum aç",
+            "message": "Topluluk Şikayetleri bir Kayıtlı Hesap gerektirir. Hiçbir şey gönderilmedi.",
+            "cancel": "Vazgeç",
+            "signIn": "Oturum aç"
+          },
+          "validation": {
+            "chooseReason": "Bir şikayet nedeni seç.",
+            "explainRequired": "Bu deseni neden şikayet ettiğini açıkla.",
+            "tooLong": "Açıklama en fazla 2.000 karakter olmalı.",
+            "needsContent": "Açıklama harf veya rakam içermeli."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "Geri",
+        "title": "Mağaza",
+        "subtitle": "Üyelik ve tek seferlik yüklemeler"
+      },
+      "signInReturn": {
+        "notice": "Oturum açtınız. {{label}} hâlâ seçili. Gözden geçirip hazır olduğunuzda Satın Al'a dokunun."
+      },
+      "premiumHero": {
+        "eyebrow": "PREMİUM ÜYELİK",
+        "title": "Daha fazla oluştur. Her gün küçük bir ödül topla.",
+        "body": "Her ödemeli dönemde AI Credit, Premium temalar ve günlük Stitch Coin hakkı.",
+        "benefitAiCredits": "AI Credit",
+        "benefitDailyCoins": "Günlük Coin",
+        "benefitThemes": "Temalar",
+        "statusNoActiveMembership": "Etkin üyelik yok",
+        "statusBrowseAsGuest": "Planları Misafir Oyuncu olarak incele",
+        "periodEndsLabel": "Geçerli dönem sona eriyor",
+        "periodRenewsLabel": "Yenileniyor",
+        "lifecycleActive": "Etkin"
+      },
+      "membershipActions": {
+        "title": "Etkin Premium Üyelik",
+        "body": "Günlük ödüller Profil altında. Temalar Ayarlar › Görünüm altında.",
+        "scheduledChangeNotice": "{{date}} tarihinde {{plan}} planına geçiyor",
+        "manageSubscription": "Üyeliği Yönet",
+        "manageSubscriptionFailedTitle": "Üyelik ayarları açılamadı",
+        "manageSubscriptionFailedBody": "Cihazınızdaki mağaza hesabından tekrar deneyin."
+      },
+      "pending": {
+        "title": "Satın Alma Doğrulaması Bekleniyor",
+        "verifyingTitle": "Satın alma doğrulanıyor",
+        "premiumChangeAccepted": "Mağaza {{label}} planına geçişi kabul etti. ",
+        "premiumResponseReceived": "Mağazadan {{label}} için yanıt alındı. ",
+        "premiumDeferredSuffix": "Değişiklik yalnızca Oyun Sunucusu doğrulamasından sonra planlanır ve geçerli döneminiz bittiğinde etkinleşir.",
+        "premiumSuffix": "Premium yalnızca Oyun Sunucusu doğrulamasından sonra etkinleşir.",
+        "doNotPurchasePlanAgain": " Bu planı tekrar satın almayın.",
+        "coinPackBody": "Mağazadan yanıt alındı. Stitch Coin bakiyesi, Oyun Sunucusu eşleşen Ticaret Defteri hakkını gösterdikten sonra güncellenir. Bu paketi tekrar satın almayın.",
+        "aiCreditPackBody": "Mağazadan yanıt alındı. AI Credit bakiyesi, Oyun Sunucusu eşleşen Ticaret Defteri hakkını gösterdikten sonra güncellenir. Bu paketi tekrar satın almayın.",
+        "refreshStatus": "Durumu yenile",
+        "retryReconciliation": "Doğrulamayı tekrar dene"
+      },
+      "store": {
+        "loadingPrices": "Güncel mağaza fiyatları yükleniyor…",
+        "unavailableTitle": "Mağaza şu anda kullanılamıyor",
+        "unavailableBody": "Cüzdan ve üyelik bilgileriniz hâlâ kullanılabilir.",
+        "retry": "Tekrar dene"
+      },
+      "plans": {
+        "choosePremiumPlan": "Bir Premium plan seçin",
+        "yourPremiumPlan": "Premium planınız",
+        "currentPlan": "GEÇERLİ PLAN",
+        "upgrade": "YÜKSELT",
+        "planChange": "PLAN DEĞİŞİKLİĞİ",
+        "bestValue": "EN İYİ DEĞER",
+        "billedEvery": "Her {{period}} faturalanır",
+        "chooseLabel": "{{label}} Seç",
+        "freeTrial": "{{offer}} ücretsiz, ardından {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "Tek seferlik paketler",
+        "stitchCoinPacksTitle": "Stitch Coin Paketleri",
+        "aiCreditPacksTitle": "AI Credit Paketleri",
+        "coinsNoun": "Coin",
+        "creditsNoun": "Credit",
+        "fromPrice": "{{price}}'den başlayan"
+      },
+      "restore": {
+        "restorePurchases": "Satın alımları geri yükle",
+        "restoreGuestPremium": "Misafir Premium'unu geri yükle",
+        "requestedTitle": "Geri yükleme istendi",
+        "requestedBody": "Doğrulanmış Premium erişimi, mağaza webhook'u eşleştirildikten sonra görünür. Stitch Coin ve AI Credit paketleri hiçbir zaman geri yüklenmez."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "Uygulama mağazasındaki güncel fiyatlar",
+        "closeAccessibilityLabel": "Ürün sayfasını kapat",
+        "closeButtonAccessibilityLabel": "Kapat",
+        "selectedBeforeSignIn": "Oturum açmadan önce seçildi",
+        "buy": "Satın Al"
+      },
+      "confirmation": {
+        "cancel": "Vazgeç",
+        "confirmLabel": "{{label}} Onayla",
+        "confirmPremiumTitle": "Premium satın alımını onayla",
+        "introductoryOffer": "Mağazanız şu tanıtım teklifini bildiriyor: {{offer}}.",
+        "premiumAppearsAfterVerification": "Premium yalnızca Oyun Sunucusu mağaza işlemini doğruladıktan sonra görünür.",
+        "confirmPremiumUpgradeTitle": "Premium yükseltmesini onayla",
+        "confirmPremiumPlanChangeTitle": "Premium plan değişikliğini onayla",
+        "currentPlanLabel": "Geçerli Plan: {{label}}",
+        "upgradeToLabel": "{{label}} · {{offer}} planına yükselt",
+        "changeToLabel": "{{label}} · {{offer}} planına geç",
+        "upgradeBody": "Bu yükseltme için nihai ücret ve geçerlilik tarihini App Store belirler. Premium, yalnızca Oyun Sunucusu doğruladıktan sonra {{label}} olarak yansır.",
+        "planChangeBody": "App Store bu değişikliği geçerli döneminizin sonuna bırakır: {{currentLabel}} o zamana kadar devam eder ve {{targetLabel}}, değişiklik tarihinden itibaren faturalanır. Değişikliği Üyeliği Yönet'ten iptal edebilirsiniz.",
+        "confirmUpgrade": "Yükseltmeyi onayla",
+        "confirmPlanChange": "Plan değişikliğini onayla",
+        "confirmStitchCoinTitle": "Stitch Coin satın alımını onayla",
+        "confirmAiCreditTitle": "AI Credit satın alımını onayla",
+        "balanceChangesAfterVerificationCoin": "Bakiyeniz yalnızca Oyun Sunucusu mağaza işlemini doğruladıktan ve eşleşen Ticaret Defteri hakkını kaydettikten sonra değişir.",
+        "balanceChangesAfterVerificationAiCredit": "Bakiyeniz yalnızca Oyun Sunucusu mağaza işlemini doğruladıktan ve eşleşen Ticaret Defteri hakkını kaydettikten sonra değişir. Premium Üyelik gerekmez."
+      },
+      "disclosure": {
+        "subscriptionTerms": "Ödeme, onay anında {{store}} hesabınızdan tahsil edilir. {{label}} Premium, geçerli dönemin bitiminden en az 24 saat önce otomatik yenileme kapatılmadığı sürece {{offer}} üzerinden otomatik olarak yenilenir. Bir abonelik satın aldığınızda kullanılmamış ücretsiz deneme süresi kaybedilir. {{store}} hesabınızdan istediğiniz zaman iptal edebilirsiniz.",
+        "privacyPolicy": "Gizlilik Politikası",
+        "termsOfService": "Kullanım Şartları",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "Bağlantı açılamadı: {{url}}"
+      },
+      "supportReference": {
+        "label": "Destek Referansı: {{reference}}",
+        "copyAccessibilityLabel": "Destek referansını kopyala {{reference}}",
+        "copyAccessibilityHint": "Destek referansını panoya kopyalar",
+        "copied": "Kopyalandı",
+        "copyFailedTitle": "Kopyalama başarısız",
+        "copyFailedBody": "Destek referansı kopyalanamadı. Elle kopyalamak için metni seçin."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "Misafir Stitch Coin satın alımları yalnızca iOS'ta kullanılabilir.",
+        "guestIosOnlyGeneric": "Misafir satın alımları yalnızca iOS'ta kullanılabilir.",
+        "purchaseFailedTitle": "Satın alma başarısız",
+        "premiumVerificationNotYet": "Oyun Sunucusu bu satın alımı doğrulayamadı. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+        "premiumVerificationFailedRetry": "Oyun Sunucusu bu satın alımı henüz doğrulayamadı. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+        "premiumGrantRefreshFailed": "Premium doğrulandı, ancak üyelik ve AI Credit durumu yenilenemedi. Doğrulamayı tekrar deneyin.",
+        "premiumReconciliationUnreachable": "Satın alma doğrulaması Oyun Sunucusuna erişemedi. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+        "coinPackVerificationMismatch": "Mağaza işlemi bu Coin Paketiyle eşleşmedi. Doğrulamayı tekrar deneyin veya destekle iletişime geçin; tekrar satın almayın.",
+        "coinPackGrantUnavailable": "Satın alım doğrulandı, ancak Stitch Coin hakkı şu anda verilemiyor. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+        "coinPackBalanceRefreshFailed": "Coin hakkı doğrulandı, ancak geçerli Stitch Coin bakiyesi yenilenemedi. Doğrulamayı tekrar deneyin.",
+        "coinPackVerificationFailedRetry": "Oyun Sunucusu bu Coin Paketini henüz doğrulayamadı. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+        "coinPackReconciliationUnreachable": "Coin Paketi doğrulaması Oyun Sunucusuna erişemedi. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+        "aiCreditPackVerificationMismatch": "Mağaza işlemi bu AI Credit Paketiyle eşleşmedi. Doğrulamayı tekrar deneyin veya destekle iletişime geçin; tekrar satın almayın.",
+        "aiCreditPackGrantUnavailable": "Satın alım doğrulandı, ancak AI Credit hakkı şu anda verilemiyor. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+        "aiCreditPackBalanceRefreshFailed": "AI Credit hakkı doğrulandı, ancak geçerli bakiye yenilenemedi. Doğrulamayı tekrar deneyin.",
+        "aiCreditPackVerificationFailedRetry": "Oyun Sunucusu bu AI Credit Paketini henüz doğrulayamadı. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+        "aiCreditPackReconciliationUnreachable": "AI Credit Paketi doğrulaması Oyun Sunucusuna erişemedi. Doğrulamayı tekrar deneyin; tekrar satın almayın.",
+        "reconciliationStillUnavailable": "Oyun Sunucusu hâlâ kullanılamıyor. Doğrulamayı daha sonra tekrar deneyin.",
+        "storeTemporarilyUnavailable": "Mağaza şu anda kullanılamıyor. Lütfen birkaç dakika içinde tekrar deneyin.",
+        "purchasesNotAllowed": "Bu cihazda satın alımlara izin verilmiyor. Mağaza hesabınızı veya ebeveyn kontrollerini kontrol edin.",
+        "itemNotAvailable": "Bu ürün şu anda satın alınamıyor. Lütfen başka bir ürün seçin veya daha sonra tekrar deneyin.",
+        "alreadyOwned": "Bu satın alıma zaten sahipsiniz. Erişiminizi yenilemek için Satın Alımları Geri Yükle'yi kullanın.",
+        "couldNotConnectToStore": "Mağazaya bağlanılamadı. İnternet bağlantınızı kontrol edip tekrar deneyin.",
+        "paymentPendingApproval": "Ödemeniz onay bekliyor. Satın alımınız mağaza tamamlandıktan sonra görünecek.",
+        "testPurchaseDeclined": "Test satın alımı reddedildi. Ödeme yapılmadı. Ayarlar'dan farklı bir Test Mağazası sonucu seçip tekrar deneyin.",
+        "genericPurchaseFailure": "Satın alımınız tamamlanamadı. Ödeme alınmadı. Lütfen tekrar deneyin."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "Hâlâ doğrulanıyor",
+        "premiumPending": "Doğrulama hâlâ sürüyor. Premium, Oyun Sunucusu onayladıktan sonra etkinleşecek.",
+        "premiumPlanChangePending": "Doğrulama hâlâ sürüyor. Plan değişikliğiniz, Oyun Sunucusu onayladıktan sonra planlanacak.",
+        "coinPackPending": "Doğrulama hâlâ sürüyor. Stitch Coin bakiyeniz tamamlandığında güncellenecek.",
+        "aiCreditPackPending": "Doğrulama hâlâ sürüyor. AI Credit bakiyeniz tamamlandığında güncellenecek."
+      },
+      "success": {
+        "purchaseReceivedTitle": "Satın alım alındı",
+        "storeAcceptedPlanChange": "Mağaza {{label}} planına geçişi kabul etti. Etkinleştiğinde onaylanacak.",
+        "storeAcceptedPurchase": "Mağaza {{label}} satın alımını kabul etti. Satın alımınız şu an doğrulanıyor.",
+        "premiumChanges": "Premium {{label}} planına geçiyor{{effectiveOn}}.",
+        "effectiveOnDate": ", {{date}} tarihinde",
+        "planChangeScheduledTitle": "Plan değişikliği planlandı",
+        "planChangeScheduledBody": "Premium Üyeliğiniz, {{label}}{{effectiveOn}} planına geçene kadar geçerli planında kalır. Değişikliği Üyeliği Yönet'ten iptal edebilirsiniz.",
+        "premiumIsActiveTitle": "Premium etkin",
+        "premiumVerifiedAndActive": "{{label}} Premium doğrulandı ve etkin.",
+        "premiumNowActiveNoBilling": "{{label}} Premium şu anda etkin.",
+        "premiumNowActiveBilled": "{{label}} Premium şu anda etkin, her {{period}} faturalanır.",
+        "coinPackGrantedTitle": "Stitch Coin verildi",
+        "coinPackGrantVerified": "{{label}} hakkı doğrulandı. Stitch Coin bakiyesi: {{balance}}.",
+        "coinPackAddedToBalance": "{{quantity}} Stitch Coin bakiyenize eklendi.",
+        "aiCreditPackGrantedTitle": "AI Credit verildi",
+        "aiCreditPackGrantVerified": "{{label}} hakkı doğrulandı. AI Credit bakiyesi: {{balance}}.",
+        "aiCreditPackAddedToBalance": "{{quantity}} AI Credit bakiyenize eklendi."
+      },
+      "products": {
+        "premiumAnnual": "Yıllık",
+        "premiumMonthly": "Aylık",
+        "premiumWeekly": "Haftalık",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coin",
+        "aiCreditPack_one": "{{formattedCount}} AI Credit",
+        "aiCreditPack_other": "{{formattedCount}} AI Credit",
+        "billedEveryOffer": "Her {{period}}, {{price}}",
+        "creditAllowancePaidPeriod": "ödemeli dönem başına {{credits}} credit",
+        "creditAllowancePaidNoun": "ödemeli {{period}} başına {{credits}} credit"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "Misafir Olarak Satın Al",
+        "commerceBody": "Kayıt olmadan satın alabilirsiniz. Premium Üyelik mağazadan geri yüklenebilir, ancak bu kurulum kaybedilirse Stitch Coin, AI Credit ve özel Misafir içeriği kurtarılamaz. Kayıt olmak bunları korur ve Misafir olarak oynamayı hiçbir zaman kesintiye uğratmaz.",
+        "continueAsGuest": "Misafir Olarak Devam Et",
+        "signInInstead": "Bunun yerine oturum aç",
+        "closeAccessibilityLabel": "Kapat"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "Tamam",
+        "successButton": "Harika",
+        "failedButton": "Kapat",
+        "infoButton": "Tamam",
+        "closeAccessibilityLabel": "Kapat"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "Geri",
+        "cancel": "İptal",
+        "duplicateTitle": "“{{title}}” adında bir Kişisel Desenin zaten var. Farklı bir başlık seç.",
+        "cellsCount_one": "hücre",
+        "cellsCount_other": "hücre",
+        "colorsCount_one": "renk",
+        "colorsCount_other": "renk"
+      },
+      "hub": {
+        "title": "Oluşturma Merkezi",
+        "subtitle": "Kendi tasarımlarını özel kanaviçe desenlerine dönüştürerek hayata geçir.",
+        "opening": "Açılıyor…",
+        "photoImport": {
+          "title": "Fotoğraf İçe Aktarma",
+          "description": "Kamera rulonuzdan bir fotoğraf yükleyip dikilebilir bir desene dönüştürün.",
+          "action": "Fotoğraf içe aktar"
+        },
+        "aiGenerator": {
+          "title": "Yapay Zeka Üretici",
+          "description": "Sevimli bir prompt yazın, yapay zeka sizin için özel bir piksel tasarım üretsin.",
+          "action": "Tasarım oluştur"
+        }
+      },
+      "aspects": {
+        "square": "Kare",
+        "portrait_4_3": "Dikey 4:3",
+        "landscape_4_3": "Yatay 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "Desen Dönüştürme başarısız oldu. Lütfen tekrar deneyin.",
+          "timeout": "Desen Dönüştürme hâlâ işleniyor. Kısa süre sonra tekrar deneyin.",
+          "generic": "Desen Dönüştürme tamamlanamadı. Lütfen tekrar deneyin."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "Kayıtlı Hesap Gerekli",
+          "body": "Yapay zeka görselleri ve kitaplığı yalnızca hesabında özel olarak tutulur.",
+          "signIn": "Oturum aç"
+        },
+        "header": {
+          "title": "Yapay Zeka Üretici",
+          "backAccessibilityLabel": "Geri"
+        },
+        "prompt": {
+          "label": "Görselini tarif et",
+          "placeholder": "Gün batımında sıcacık bir kır evi bahçesi…"
+        },
+        "generate": {
+          "working": "İşleniyor…",
+          "action": "Oluştur — 1 Yapay Zeka Kredisi",
+          "errors": {
+            "promptRejected": "Bu prompt'a izin verilmedi. Başka bir şey tarif etmeyi dene.",
+            "generic": "Yapay zeka üretimi başlatılamadı. Lütfen tekrar deneyin."
+          }
+        },
+        "library": {
+          "title": "Yapay Zeka Görsel Kitaplığın",
+          "status": {
+            "pending": "Beklemede",
+            "dispatched": "Gönderildi",
+            "running": "Çalışıyor",
+            "delivered": "Teslim edildi",
+            "safety_rejected": "Güvenlik nedeniyle reddedildi",
+            "failed": "Başarısız",
+            "deleted": "Silindi",
+            "unknown": "Kullanılamıyor"
+          },
+          "failure": {
+            "safety_rejected": "Bu görsel sağlayıcının güvenlik kontrolünden geçemedi.",
+            "failed": "Bu görsel üretilemedi."
+          },
+          "approve": "Desene Dönüştür",
+          "delete": "Sil",
+          "deleteAccessibilityLabel": "Bu Yapay Zeka Görselini sil",
+          "errors": {
+            "loadFailed": "Yapay Zeka Görsel Kitaplığın yüklenemedi. Lütfen tekrar deneyin."
+          }
+        },
+        "approve": {
+          "modalTitle": "Kişisel Desen Oluştur",
+          "titleLabel": "Desen başlığı",
+          "titleAccessibilityLabel": "Desen başlığı",
+          "defaultTitle": "Yapay Zeka Desenim",
+          "placeholder": "Yapay Zeka Desenim",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "İptal",
+          "creating": "Desen Oluşturuluyor…",
+          "create": "Desen Oluştur",
+          "errors": {
+            "generic": "Kişisel Desen oluşturulamadı. Lütfen tekrar deneyin."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "Kayıtlı Hesap Gerekli",
+          "body": "Kişisel Desenler hesabına bağlıdır, böylece özel kalır ve tüm cihazlarında erişilebilir olur.",
+          "signIn": "Oturum aç veya hesap oluştur",
+          "back": "Geri"
+        },
+        "header": {
+          "title": "Fotoğraf Deseni",
+          "subtitle": "Önce yerel olarak çerçevele, sonra dönüştürmeyi onayla",
+          "backAccessibilityLabel": "Geri"
+        },
+        "picker": {
+          "chooseTitle": "Bir fotoğraf seç",
+          "helpText": "Orijinal çözünürlükteki Yerel Fotoğraf Kaynağı bu cihazda kalır. Çerçeveyi onaylamadan hiçbir şey dönüştürülmez.",
+          "choose": "Kitaplıktan seç",
+          "chooseAnother": "Başka bir fotoğraf seç",
+          "opening": "Açılıyor…",
+          "errors": {
+            "permissionDenied": "Yerel Fotoğraf Kaynağı seçmek için fotoğraf kitaplığı erişimi gerekir.",
+            "invalidDimensions": "Seçilen fotoğraf kullanılabilir boyutlar bildirmiyor.",
+            "generic": "Fotoğraf kitaplığı açılamadı. Lütfen tekrar deneyin."
+          }
+        },
+        "framing": {
+          "title": "Görsel Çerçeveleme",
+          "gestureHint": "Konumlandırmak için sürükle · yakınlaştırmak için sıkıştır",
+          "aspectLabel": "Çerçeve oranı"
+        },
+        "profile": {
+          "title": "Dönüştürme Profili",
+          "options": {
+            "easy": "Kolay",
+            "standard": "Standart",
+            "detailed": "Detaylı"
+          },
+          "custom": "Özel",
+          "customMeta": "Ücretsiz · şekil sabit",
+          "unavailable": "Bu çerçeveye sığmıyor",
+          "customShortEdgeLabel": "Kısa kenar",
+          "customColorLimitLabel": "DMC renk sınırı",
+          "exceedsLimit": "Bu Özel değerler {{max}} hücrelik Desen Boyutu sınırını aşıyor."
+        },
+        "titleCard": {
+          "label": "Desen başlığı",
+          "placeholder": "Fotoğraf Desenim",
+          "defaultTitle": "Fotoğraf Desenim",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · en fazla {{maxColors}} DMC {{colorsUnit}}",
+          "privacyNotice": "Onay yalnızca çerçevelenmiş, küçültülmüş türevi yükler. Orijinal fotoğraf yerel olarak kalır.",
+          "approve": "Görseli onayla ve dönüştür"
+        },
+        "processing": {
+          "preparingFrame": "Onaylanan çerçeve bu cihazda hazırlanıyor…",
+          "uploading": "Sadece kırpılmış, küçültülmüş çerçeve yükleniyor…",
+          "waitingForWorker": "Dönüştürme işleyicisi bekleniyor…",
+          "buildingGrid": "Dikiş ızgarası ve DMC paleti oluşturuluyor…",
+          "preparingSession": "Kişisel Desen oynamaya hazırlanıyor…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "Bu profil son çerçeveye artık sığmıyor. Kolay'ı seç veya detayı azalt.",
+            "generic": "Bu fotoğraf dönüştürülemedi. Lütfen tekrar deneyin."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "Desen Seçilmedi",
+          "noPatternBody": "Bu ekran, kitaplığındaki mevcut bir Kişisel Desenden açılmalıdır.",
+          "accountTitle": "Kayıtlı Hesap Gerekli",
+          "accountBody": "Kişisel Desenler hesabına bağlıdır, böylece özel kalır ve tüm cihazlarında erişilebilir olur.",
+          "signIn": "Oturum aç veya hesap oluştur",
+          "back": "Geri"
+        },
+        "loading": "Düzenleyici taslağı sürdürülüyor...",
+        "load": {
+          "failedTitle": "Desen Yüklenemedi",
+          "retry": "Yeniden dene",
+          "back": "Geri",
+          "errors": {
+            "generic": "Bu Kişisel Desen yüklenemedi. Lütfen tekrar deneyin."
+          }
+        },
+        "header": {
+          "title": "Desen Düzenleyici",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "Geri"
+        },
+        "toolbar": {
+          "undo": "Geri al",
+          "redo": "Yinele"
+        },
+        "mode": {
+          "paint": "Boya",
+          "replaceColor": "Renk Değiştir",
+          "replaceStep1": "1. Değiştirmek için aşağıdaki desende bir renge dokun:",
+          "replaceStep2": "2. Değiştirmeyi uygulamak için aşağıdan hedef bir DMC rengi seç:",
+          "paintSelected": "Seçili: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "Aşağıdan bir renk seç, sonra hücrelere dokunarak boya."
+        },
+        "errors": {
+          "pickColorFirst": "Önce bir renk seç",
+          "paletteLimit": "Bu desen zaten en fazla {{max}} iplik rengi kullanıyor."
+        },
+        "picker": {
+          "title": "DMC İplik Renkleri",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "Düzenlenen Deseni Kaydet",
+          "placeholder": "Düzenlenen Desen Başlığım",
+          "action": "Yeni Olarak Kaydet",
+          "offlineTitle": "Çevrimdışı kaydedildi",
+          "offlineBody": "Düzenlenen desenin bu cihaza kaydedildi ve çevrimiçi olduğunda hesabınla senkronize edilecek.",
+          "errors": {
+            "generic": "Bu Kişisel Desen kaydedilemedi. Lütfen tekrar deneyin."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "Bu oturum açma işlemi farklı bir hesaba ait. Mevcut hesabınız değiştirilmedi.",
+        "providerRejected": "Bu doğrulama reddedildi. Hesabı veya kodu kontrol edip yeniden deneyin."
+      },
+      "generic": {
+        "failure": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
+        "supportReferenceLabel": "Destek Referansı: {{reference}}"
+      }
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "STITCH WISH'E HOŞ GELDİN",
+        "title": "Bir renk seç, eşleşen kareye dokun.",
+        "heroAlt": "Cozy Heart başlangıç deseni önizlemesi",
+        "handedness": {
+          "sectionTitle": "Kontroller hangi tarafta olsun?",
+          "groupLabel": "Kontrol tarafı",
+          "optionRight": "Kontroller sağda",
+          "optionLeft": "Kontroller solda",
+          "saveErrorText": "Bu seçim kaydedilemedi.",
+          "retry": "Tekrar dene"
+        },
+        "note": "Bunu daha sonra Ayarlar'dan değiştirebilirsin.",
+        "start": "Dikişe başla",
+        "starting": "Başlıyor…",
+        "browse": "Başlangıç desenlerine göz at",
+        "signIn": "Giriş yap"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "DMC 321 Noel Kırmızısı'nı seç.",
+          "stitchAction": "Vurgulanan eşleşen kareye dokun.",
+          "mismatchedTap": "Vurgulanan farklı kareye dokun. Yanlış dokunuşların bir bedeli yok.",
+          "undoAction": "O dikişi geri al, sonra yeniden yerleştir.",
+          "stitchSweep": "Eşleşen bir kareye bas, sonra vurgulanan çizgi boyunca sürükle.",
+          "threadColorCompletion": "Vurgulanan beyaz ipliği tamamla, sonra bir sonraki rengi seç."
+        },
+        "hints": {
+          "anchoredZoom": "Parmakların altındaki kareleri sabit tutarken yakınlaştırmak için iki parmağını kullan.",
+          "panVsSweep": "Sürüklemek kumaşı kaydırır. Dikiş yapmak için eşleşen bir kareden başla.",
+          "edgeAutoPan": "Kenara yakın sürüklemeyi sürdür, kumaş parmağını takip eder.",
+          "remainingCellLocator": "Bu iplik için kalan bir sonraki kareyi bulmak için konum bulucuyu kullan."
+        },
+        "skip": "Şimdilik atla",
+        "skipAccessibilityLabel": "Öğreticiyi şimdilik atla",
+        "dismiss": "Anladım",
+        "dismissAccessibilityLabel": "İpucunu kapat"
+      },
+      "recap": {
+        "title": "Öğrendin işte",
+        "lines": {
+          "matchNumbers": "Her dikişi yerleştirmek için numaraları eşleştir.",
+          "dragSweep": "Eşleşen kareler boyunca sürükleyerek dikiş yap.",
+          "pinchZoom": "Daha yakından bakmak istediğinde iki parmağınla yakınlaştır.",
+          "undoLocator": "Geri al ve konum bulucu her zaman ücretsizdir."
+        },
+        "continue": "Dikişe devam et",
+        "browsePatterns": "Desenlere göz at"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "Dikiş Masası",
+        "subtitle": "Kaldığın yerden devam et veya son bir çalışmayı sürdür.",
+        "loading": "Dikişlerin yükleniyor...",
+        "empty": {
+          "title": "Aktif Çalışma Yok",
+          "body": "Dikiş çerçeven şu anda boş. Dikilecek güzel bir şey bulmak için desen kataloğuna gözat!",
+          "action": "Kataloğa Gözat"
+        },
+        "unknownPattern": "Bilinmeyen Desen",
+        "idLabel": "Kimlik: {{id}}",
+        "unknownPatternLabel": "Desen {{id}}",
+        "deleteSessionAccessibilityLabel": "Oturumu sil",
+        "viewFinishedAccessibilityLabel": "Tamamlanan çalışmayı görüntüle",
+        "resumeAccessibilityLabel": "Dikişe devam et",
+        "status": {
+          "ready": "Hazır",
+          "done": "Tamamlandı",
+          "active": "Aktif",
+          "preparing": "Hazırlanıyor",
+          "failed": "Başarısız"
+        },
+        "deleteConfirm": {
+          "title": "İlerleme Silinsin mi",
+          "message": "\"{{title}}\" için ilerlemeni silmek istediğine emin misin? Bu işlem geri alınamaz.",
+          "cancel": "Vazgeç",
+          "confirm": "Sil"
+        },
+        "preparingCard": {
+          "discardTitle": "Oturumu At",
+          "cancelTitle": "İndirmeyi İptal Et",
+          "discardMessage": "Bu başarısız oturumu atmak istediğine emin misin?",
+          "cancelMessage": "Bu desenin indirilmesini iptal etmek istediğine emin misin?",
+          "keep": "Tut",
+          "discard": "At",
+          "cancel": "İptal Et"
+        }
+      },
+      "loading": {
+        "text": "Oturum açılıyor ve kumaş hazırlanıyor..."
+      },
+      "error": {
+        "title": "Oturum Yüklenemedi",
+        "fallbackMessage": "Dikiş oturumun yüklenemedi.",
+        "backButton": "Geri Dön",
+        "tableButton": "Masaya Git"
+      },
+      "header": {
+        "backButton": "← Geri",
+        "tableButton": "← Masa",
+        "defaultTitle": "Dikiş Oturumu",
+        "progress": "{{completed}} / {{total}} kare (%{{percent}} tamamlandı)",
+        "resumeTutorialAccessibilityLabel": "Öğreticiye devam et"
+      },
+      "banners": {
+        "patternRemoved": "Bu desen moderasyon tarafından kaldırıldı ve artık kullanılamıyor. Çıkmak için dokun.",
+        "syncConflict": "Başka bir cihazla senkronize edildi — bazı kareler güncellendi. Kapatmak için dokun."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "Etkin iplik renginin kalan bir sonraki karesini bul",
+        "undoAccessibilityLabel": "Son dikişi geri al"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "Renk {{number}}: DMC {{dmcCode}}, {{count}} dikiş kaldı",
+        "chipAccessibilityLabel_other": "Renk {{number}}: DMC {{dmcCode}}, {{count}} dikiş kaldı",
+        "done": "Tamamlandı",
+        "remaining_one": "{{count}} kaldı",
+        "remaining_other": "{{count}} kaldı"
+      },
+      "celebration": {
+        "title": "Güzelce İşlendi!",
+        "subtitle": "Bu kumaştaki her bir dikişi tamamladın.",
+        "stitchesLabel_one": "Dikiş",
+        "stitchesLabel_other": "Dikiş",
+        "colorsLabel_one": "Renk",
+        "colorsLabel_other": "Renk",
+        "replayButton": "Yeniden Dikiş Yap",
+        "catalogButton": "Kataloğa Dön"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "Geri",
+        "tryAgain": "Tekrar Dene"
+      },
+      "rejectionReasons": {
+        "safety": "Güvenlik",
+        "publication_rights": "Yayın Hakları",
+        "duplicate_or_spam": "Kopya veya Spam",
+        "technical_invalidity": "Teknik Geçersizlik",
+        "quality_standard": "Kalite Standardı"
+      },
+      "submissionStatus": {
+        "accepted": "Yayınlandı",
+        "appeal_pending": "İtiraz beklemede",
+        "appeal_upheld": "İtiraz reddedildi",
+        "precheck_failed": "Ön kontrol yapılamadı",
+        "precheck_pending": "Kontrol ediliyor",
+        "quarantined": "İnceleme gerekiyor",
+        "rejected": "Reddedildi",
+        "review_pending": "İncelemede"
+      },
+      "revisionStatus": {
+        "accepted": "Yayınlandı",
+        "appeal_pending": "İtiraz beklemede",
+        "appeal_upheld": "İtiraz reddedildi",
+        "pending": "İncelemede",
+        "rejected": "Reddedildi",
+        "withdrawn": "Geri çekildi"
+      },
+      "home": {
+        "identity": {
+          "establishing": "Kimlik oluşturuluyor...",
+          "pendingTitle": "Kimlik Beklemede",
+          "offline": "Çevrimdışı",
+          "retryConnection": "Bağlantıyı Yeniden Dene",
+          "loadingPublicProfile": "Herkese açık profil yükleniyor...",
+          "unavailableTitle": "Herkese açık profil kullanılamıyor",
+          "checkConnection": "Bağlantınızı kontrol edip tekrar deneyin.",
+          "createTitle": "Herkese açık profilinizi oluşturun",
+          "createBody": "Topluluk desenlerinizle birlikte gösterilecek kalıcı kullanıcı adınızı seçin. Hesap bilgileriniz gizli kalır.",
+          "createAction": "Herkese Açık Profil Oluştur",
+          "editAction": "Herkese Açık Profili Düzenle",
+          "offlinePendingSync": "Çevrimdışı — eşitleme bekliyor",
+          "guestPlayer": "Misafir Oyuncu",
+          "playingSince": "{{date}} tarihinden beri oynuyor",
+          "creatorSince": "{{date}} tarihinden beri tasarımcı"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "Mağazayı Aç",
+          "title": "Stüdyo Bakiyeleri",
+          "commerceStoreLink": "Mağaza",
+          "stitchCoinsAccessibilityLabel": "Dikiş Parası bakiyesi: {{balance}}. Para almak için dokunun.",
+          "packs": "Paketler",
+          "stitchCoinsLabel": "Dikiş Parası",
+          "stitchCoinsSub": "Desen kilitlerini açmak için",
+          "aiCreditsAccessibilityLabel": "Yapay Zeka Kredisi bakiyesi: {{balance}}. Kredi almak için dokunun.",
+          "aiCreditsSignInAccessibilityLabel": "Yapay Zeka Kredisi. Satın almak için giriş yapın.",
+          "aiCreditsLabel": "Yapay Zeka Kredisi",
+          "aiCreditsSubOwned": "Yapay zeka deseni sanatı için",
+          "aiCreditsSubGuest": "Edinmek için giriş yapın",
+          "membershipActiveAccessibilityLabel": "Premium Üyelik etkin ({{plan}}). Yönetmek için dokunun.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Premium. Planları görmek için dokunun.",
+          "membershipActiveTitle": "Premium Etkin · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "Yıllık",
+          "planMonthly": "Aylık",
+          "planWeekly": "Haftalık",
+          "planActive": "Etkin",
+          "trialBadge": "Deneme",
+          "membershipSubActive": "Tüm temalar açık · Anında günlük para talebi",
+          "membershipSubInactive": "Anında 30 günlük para, özel temalar ve yapay zeka kredisi",
+          "manage": "Yönet",
+          "explore": "Keşfet"
+        },
+        "quickNav": {
+          "sectionEyebrow": "HESAP VE TOPLULUK",
+          "submissionsAccessibilityLabel": "Katalog Gönderimleri: İncelemeleri, kararları ve itirazları takip edin",
+          "submissionsTitle": "Gönderimler",
+          "submissionsSub": "İncelemeleri takip et",
+          "publishedAccessibilityLabel": "Yayınlanan Desenler: Meta verileri revize edin, geri çekin ve itirazları takip edin",
+          "publishedTitle": "Yayınlananlar",
+          "publishedSub": "Desenleri yönet",
+          "moderationAccessibilityLabel": "Moderasyon Bildirimleri: Desenlerinizi etkileyen katalog kararlarını inceleyin",
+          "moderationTitle": "Moderasyon",
+          "moderationSub": "Politika bildirimleri",
+          "likedAccessibilityLabel": "Beğenilen Desenler: Beğendiğiniz topluluk desenlerinin özel koleksiyonu",
+          "likedTitle": "Beğenilen Desenler",
+          "likedSavedCount_one": "{{count}} kaydedildi",
+          "likedSavedCount_other": "{{count}} kaydedildi",
+          "likedSavedDefault": "Kaydedilen desenler"
+        },
+        "dailySection": {
+          "title": "Günlük Dikiş ve Ödüller",
+          "tasksGroupLabel": "Günlük Görevler (en fazla +30 Para)",
+          "connectToTrack": "Günlük görev ilerlemenizi takip etmek için bağlanın.",
+          "loadingTasks": "Görevler yükleniyor…",
+          "loadFailed": "Günlük görevler yüklenemedi.",
+          "retry": "Tekrar Dene",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "Sıfırlanıyor…",
+          "resetsInHoursMinutes": "{{hours}} sa {{minutes}} dk sonra sıfırlanır",
+          "resetsInMinutes": "{{minutes}} dk sonra sıfırlanır"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 Dikiş Eylemi",
+            "body": "Bugün 100 eşleşen hücreyi doldurun"
+          },
+          "three_colors_10": {
+            "title": "3 Renk, Her Birinde 10 Eylem",
+            "body": "3 iplik renginde 10 eyleme ulaşın"
+          },
+          "color_completion": {
+            "title": "Bir İplik Rengini Tamamlayın",
+            "body": "Herhangi bir rengi tamamen dikerek bitirin"
+          }
+        },
+        "dailyPool": {
+          "title": "Günlük 30 Para Ödül Havuzu",
+          "premiumInstantClaim": "Premium Anında Talep",
+          "rewardedAds": "Ödüllü Reklamlar",
+          "claimedAmount": "{{amount}} Dikiş Parası bugün için talep edildi!",
+          "poolAlreadyClosed": "Bugünkü ödül havuzu zaten kapatıldı.",
+          "claimedForToday": "Bugün için talep edildi. Sonraki Ödül Günü'nde sıfırlanır.",
+          "poolExhausted": "Bugünkü 30 Para ödül havuzu tükendi.",
+          "claimButtonRetry": "Talebi tekrar dene",
+          "claimButtonInstant": "{{count}} Para Talep Et (Anında)",
+          "poolClaimedResetsTomorrow": "Bugünkü para havuzu talep edildi. Yarın sıfırlanır.",
+          "allAdRewardsCompleted": "Bugün için tüm reklam ödülleri tamamlandı! (30/30 para)",
+          "watchAdButton": "+10 Para İçin Reklam İzle ({{count}} kaldı)",
+          "adPerkNote": "Günde en fazla 3 reklam izleyin · Premium, anında 30 para talebinin kilidini açar",
+          "adRewardEarned": "Reklam ödülü kazanıldı! Sunucuyla doğrulanıyor…",
+          "claimFailed": "Talep başarısız: {{message}}",
+          "claimFailedGeneric": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
+          "adLoadFailedDefault": "Reklam yüklenemedi",
+          "adAttemptFailedDefault": "Reklam denemesi açılamadı"
+        },
+        "tabs": {
+          "myCreations": "Eserlerim {{count}}",
+          "likedPatterns": "Beğenilen Desenler {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "Kişisel Desenler İçin Giriş Yapın",
+          "signInBody": "Dönüştürülen fotoğraf desenlerini oluşturup özel olarak sahiplenmek için Kayıtlı Hesap gerekir.",
+          "signIn": "Giriş yap",
+          "patternMeta": "{{width}}×{{height}} · {{count}} renk",
+          "pendingSync": "Eşitleme bekliyor",
+          "play": "Oyna",
+          "edit": "Düzenle",
+          "submitAccessibilityLabel": "{{title}} desenini Topluluk Kataloğuna gönder",
+          "emptyTitle": "Kişisel Eser Yok",
+          "emptyBody": "Henüz hiçbir fotoğraf dönüştürmediniz veya yapay zeka sanatı oluşturmadınız. İlk eserinizi oluşturmak için Oluştur bölümüne gidin!",
+          "emptyAction": "Oluşturmaya Başla",
+          "actionFailedGeneric": "Bir şeyler ters gitti. Lütfen tekrar deneyin."
+        },
+        "likedTab": {
+          "unavailableTitle": "Beğenilen Desenler Kullanılamıyor",
+          "unavailableDefault": "Beğenilen desenler yüklenemedi.",
+          "byCreator": "{{creatorName}} tarafından",
+          "specs": "{{width}}×{{height}} · {{count}} renk",
+          "emptyTitle": "Beğenilen Desen Yok",
+          "emptyBody": "Kataloğa göz atın ve daha sonra kaydetmek için herhangi bir tasarımdaki kalp simgesine dokunun.",
+          "emptyAction": "Desenleri Keşfet"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Premium Günlük Coin Talebi",
+        "description": "Bugünün paylaşımlı 30-Coin ödül havuzunun kalanını talep et.",
+        "connectPrompt": "Bugünkü ödülü kontrol etmek için Oyun Sunucusuna bağlan.",
+        "checkingReward": "Bugünkü Premium ödülü kontrol ediliyor…",
+        "unavailableGeneric": "Bugünkü Premium ödülü kullanılamıyor.",
+        "tryAgain": "Tekrar dene",
+        "resultAdded": "Oyun Sunucusu tarafından {{amount}} Stitch Coin eklendi. Bakiye: {{balance}}.",
+        "poolAlreadyClosed": "Bugünün paylaşımlı ödül havuzu zaten kapatıldı.",
+        "alreadyClaimed": "Bu Ödül Günü için zaten talep edildi.",
+        "poolExhausted": "Bugünün paylaşımlı ödül havuzu tükendi. Bir sonraki Ödül Günü'nde sıfırlanır.",
+        "availableNow": "{{count}} Stitch Coin şu anda kullanılabilir",
+        "resetsAt": "Sıfırlanma: {{date}}",
+        "claimButtonRetry": "Talebi tekrar dene",
+        "claimButtonInstant": "{{count}} Coin Talep Et",
+        "lockedDescription": "Premium Üyelik, uygun bir Aylık Deneme dahil, bu günlük talebi açar.",
+        "viewPremiumPlans": "Premium planları görüntüle"
+      },
+      "publicProfile": {
+        "editTitle": "Herkese Açık Profili Düzenle",
+        "createTitle": "Herkese Açık Profil Oluştur",
+        "signInTitle": "Giriş gerekiyor",
+        "signInBody": "Herkese açık bir tasarımcı kimliği oluşturmak için Kayıtlı Hesap gerekir.",
+        "signInAction": "Giriş yap",
+        "unavailableTitle": "Profil kullanılamıyor",
+        "unavailableBody": "Herkese açık profiliniz yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+        "tryAgain": "Tekrar dene",
+        "intro": "Bu ad ve fotoğraf topluluk desenlerinizle birlikte görünür. E-postanız ve giriş sağlayıcınız gizli kalır.",
+        "choosePhoto": "Fotoğraf seç",
+        "changePhoto": "Fotoğrafı değiştir",
+        "remove": "Kaldır",
+        "avatarHelper": "İsteğe bağlı · JPEG, PNG veya WebP · en fazla 5 MB",
+        "usernameLabel": "Kullanıcı adı",
+        "usernameAccessibilityLabel": "Herkese açık kullanıcı adı",
+        "usernamePlaceholder": "dikisci_ad",
+        "usernameHelperLocked": "Kullanıcı adınız kalıcıdır.",
+        "usernameHelperEditable": "3–30 küçük harf, sayı veya alt çizgi. Bu daha sonra değiştirilemez.",
+        "displayNameLabel": "Görünen ad",
+        "displayNameAccessibilityLabel": "Herkese açık görünen ad",
+        "displayNamePlaceholder": "Tasarımcı adınız",
+        "displayNameHelper": "Bunu daha sonra değiştirebilirsiniz.",
+        "safetyNotice": "Adlar ve fotoğraflar yayınlanmadan önce kontrol edilir. Bir değişiklik reddedilirse, mevcut herkese açık profiliniz değişmeden kalır.",
+        "saveAction": "Herkese açık profili kaydet",
+        "publishAction": "Herkese açık profili yayınla",
+        "photoPermissionRequired": "Profil fotoğrafı seçmek için fotoğraf kitaplığı erişimi gerekir.",
+        "photoTypeInvalid": "Profil fotoğrafları JPEG, PNG veya WebP olmalıdır.",
+        "photoTooLarge": "Profil fotoğrafları 5 MB veya daha küçük olmalıdır.",
+        "saveFailedDefault": "Herkese açık profiliniz kaydedilemedi"
+      },
+      "submissions": {
+        "title": "Katalog Gönderimleri",
+        "unavailableTitle": "Gönderimler Kullanılamıyor",
+        "unavailableDefault": "Gönderimleriniz yüklenemedi.",
+        "emptyTitle": "Katalog Gönderimi Yok",
+        "emptyBody": "Eserlerim bölümünden eşitlenmiş bir Kişisel Deseni gönderin.",
+        "emptyAction": "Eserlerime Dön",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "Otomatik kontroller tamamlanamadı. Bu anlık görüntü yayınlanmadı.",
+        "publishedToCatalog": "Topluluk Kataloğuna yayınlandı.",
+        "appealAction": "Karara İtiraz Et",
+        "appealHelp": "Bu değişmeyen anlık görüntüye bir kez itiraz edebilirsiniz.",
+        "appealNoteAccessibilityLabel": "İtiraz notu",
+        "appealNotePlaceholder": "İnceleyen moderatör için isteğe bağlı açıklama",
+        "cancelAction": "İptal",
+        "submitAppealAction": "İtirazı Gönder"
+      },
+      "publishedPatterns": {
+        "title": "Yayınlanan Desenler",
+        "unavailableTitle": "Desenler Kullanılamıyor",
+        "unavailableDefault": "Yayınlanan desenleriniz yüklenemedi.",
+        "emptyTitle": "Yayınlanan Desen Yok",
+        "emptyBody": "Topluluk Kataloğuna yayınladığınız desenler burada görünür.",
+        "emptyAction": "Profile Dön",
+        "withdrawnFromCatalog": "Katalogdan Geri Çekildi",
+        "underReviewHold": "İnceleme Beklemesinde",
+        "meta": "{{category}} · {{date}} tarihinde yayınlandı",
+        "withdrawnHelp": "Bu kimlik kalıcı olarak geri çekildi. Mevcut bir Dikiş Oturumu olan oyuncular ilerlemelerini ve erişimlerini korur.",
+        "reviewHoldHelp": "Bu Desen geçici olarak keşiften çıkarılmıştır ve yeni oturum başlatamaz. Mevcut Dikiş Oturumları oynanabilir kalır. Yine de bir meta veri revizyonu önerebilirsiniz.",
+        "reviseAction": "Meta Veriyi Revize Et",
+        "withdrawRevisionAction": "Revizyonu Geri Çek",
+        "appealAction": "Karara İtiraz Et",
+        "withdrawFromCatalogAction": "Katalogdan Geri Çek",
+        "appealHelp": "Bu değişmeyen anlık görüntüye bir kez itiraz edebilirsiniz. Yeni bir revizyon göndermek bu itiraz hakkından feragat eder.",
+        "appealNoteAccessibilityLabel": "İtiraz notu",
+        "appealNotePlaceholder": "İnceleyen moderatör için isteğe bağlı açıklama",
+        "cancelAction": "İptal",
+        "submitAppealAction": "İtirazı Gönder",
+        "withdrawRevisionFailedTitle": "Revizyon geri çekilemedi",
+        "withdrawPatternFailedTitle": "Desen geri çekilemedi",
+        "withdrawPatternSuccessTitle": "Desen geri çekildi",
+        "withdrawPatternSuccessBody": "Artık keşfedilemiyor ve yeni oturum başlatamıyor. Mevcut Dikiş Oturumları ilerlemelerini ve oynanabilir verilerini korur.",
+        "withdrawConfirmTitle": "Topluluk Kataloğundan geri çekilsin mi?",
+        "withdrawConfirmBody": "“{{title}}” keşiften kaybolacak ve yeni oturum başlatamayacak. Bu Desen kimliği asla geri yüklenemez. Mevcut Dikiş Oturumları ve ilerlemeleri oynanabilir kalır.",
+        "withdrawConfirmCancel": "İptal",
+        "withdrawConfirmAction": "Kalıcı olarak geri çek"
+      },
+      "revisePatternMetadata": {
+        "title": "Meta Veriyi Revize Et",
+        "signInTitle": "Kayıtlı Hesap Gerekli",
+        "signInBody": "Bir Topluluk Deseninin meta verisini revize etmeden önce giriş yapın.",
+        "signInAction": "Giriş Yap",
+        "notFoundTitle": "Topluluk Deseni Bulunamadı",
+        "notFoundBody": "Yalnızca kendi yayınladığınız Topluluk Desenleri revize edilebilir.",
+        "notFoundAction": "Yayınlanan Desenlere Dön",
+        "inProgressTitle": "Revizyon Zaten Sürüyor",
+        "inProgressBody": "Bu Desende zaten bekleyen bir revizyon veya etkin bir itiraz var. Başka bir revizyon göndermeden önce bunu geri çekin.",
+        "inProgressAction": "Yayınlanan Desenlere Dön",
+        "currentlyPublished": "Şu anda Topluluk Kataloğunda yayınlanıyor",
+        "titleFieldLabel": "Katalog başlığı",
+        "titlePlaceholder": "Desen başlığı",
+        "titleAccessibilityLabel": "Katalog başlığı",
+        "descriptionFieldLabel": "Açıklama",
+        "descriptionPlaceholder": "Tasarımı, konuyu ve dikiş deneyimini tanımlayın.",
+        "descriptionAccessibilityLabel": "Katalog açıklaması",
+        "sourceLanguageFieldLabel": "Kaynak dil",
+        "categoryFieldLabel": "Kategori",
+        "tagsFieldLabel": "Etiketler",
+        "notice": "Revize etmek yeni, değişmez bir anlık görüntü oluşturur. Şu anda yayınlanan meta veriniz, bir insan moderatör bu revizyonu kabul edene kadar görünür kalır.",
+        "submitAction": "Revizyonu Gönder"
+      },
+      "submitPattern": {
+        "title": "Topluluğa Gönder",
+        "signInTitle": "Kayıtlı Hesap Gerekli",
+        "signInBody": "Bir Kişisel Deseni Topluluk Kataloğuna göndermeden önce giriş yapın.",
+        "signInAction": "Giriş Yap",
+        "createProfileTitle": "Herkese Açık Bir Tasarımcı Profili Oluşturun",
+        "createProfileBody": "Topluluk Desenleri herkese açık tasarımcı kimliğinize atfedilir.",
+        "createProfileAction": "Profil Oluştur",
+        "patternNotFoundTitle": "Kişisel Desen Bulunamadı",
+        "patternNotFoundBody": "Yalnızca eşitlenmiş Kişisel Desenler gönderilebilir.",
+        "patternNotFoundAction": "Profile Dön",
+        "patternMeta": "{{width}}×{{height}} · {{count}} renk",
+        "byCreator": "@{{username}} tarafından",
+        "titleFieldLabel": "Katalog başlığı",
+        "titlePlaceholder": "Desen başlığı",
+        "titleAccessibilityLabel": "Katalog başlığı",
+        "descriptionFieldLabel": "Açıklama",
+        "descriptionPlaceholder": "Tasarımı, konuyu ve dikiş deneyimini tanımlayın.",
+        "descriptionAccessibilityLabel": "Katalog açıklaması",
+        "sourceLanguageFieldLabel": "Kaynak dil",
+        "categoryFieldLabel": "Kategori",
+        "tagsFieldLabel": "Etiketler",
+        "rightsDeclaration": "Bu eseri ben oluşturdum veya Yayın Hakları Beyanı v1 kapsamında yayınlamak için gereken haklara sahibim.",
+        "notice": "Gönderim, değişmez bir kopya oluşturur. Otomatik kontroller kanıt sağlar, ancak her kararı bir insan moderatör verir.",
+        "submitAction": "İncelemeye Gönder"
+      },
+      "moderationNotices": {
+        "title": "Moderasyon Bildirimleri",
+        "signInTitle": "Bildirimleri görmek için giriş yapın",
+        "signInBody": "Moderasyon Bildirimleri, etkilenen Topluluk Desenini yayınlayan Kayıtlı Hesaba aittir.",
+        "signInAction": "Giriş Yap",
+        "unavailableTitle": "Bildirimler Kullanılamıyor",
+        "unavailableDefault": "Moderasyon Bildirimleri yüklenemedi.",
+        "emptyTitle": "Moderasyon Bildirimi Yok",
+        "emptyBody": "Sahibi tarafından görülebilen katalog moderasyon kararları burada görünecek.",
+        "emptyAction": "Profile Dön",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "Katalog Meta Verisi Düzeltmesi",
+          "no_violation": "İnceleme kapatıldı — ihlal yok",
+          "review_hold": "İnceleme Beklemesi",
+          "safety_removal": "Güvenlik Kaldırması"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "Başlık, açıklama ve seçilen etiketler güvenli değerlerle değiştirildi. Kullanılabilirlik, Desen Dosyası ve önizleme etkilenmedi. İstediğiniz zaman yeni bir Katalog Meta Verisi Revizyonu gönderebilirsiniz.",
+          "no_violation": "Yayın Sonrası İnceleme kapatıldı ve bu Desen keşifte ve yeni Dikiş Oturumlarında tamamen yeniden kullanılabilir.",
+          "review_hold": "Bu Desen geçici olarak keşif ve yeni oturumlar için kullanılamıyor. Mevcut Dikiş Oturumları, ilerleme ve Çevrimdışı Desen Verisi oynanabilir kalır.",
+          "safety_removal": "Bu Desen bir güvenlik, yasal veya politika ihlali nedeniyle kaldırıldı. Keşiften çıktı, mevcut Dikiş Oturumları erişilemez hale geldi ve cihazlarınızdaki Çevrimdışı Desen Verisi silindi. Bir Güvenlik Kaldırması İtirazı gönderebilirsiniz."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "Günlük Görevler",
+        "offline": "Çevrimdışısınız — Günlük Görevler için bağlantı gerekir.",
+        "unavailable": "Günlük Görevler yüklenemedi.",
+        "empty": "Bugün kullanılabilir görev yok."
+      },
+      "rewardedAdCard": {
+        "offline": "Çevrimdışısınız — Ödül Günü için bağlantı gerekir.",
+        "unavailable": "Ödül Günü durumu yüklenemedi.",
+        "premiumClaimClosedPool": "Premium günlük talebiniz bugünün ortak jeton havuzunu kapattı.",
+        "allRewardsClaimed": "Bugünkü tüm reklam ödüllerini aldınız. Yarın tekrar gelin!",
+        "remaining_one": "Bugün {{count}} reklam kaldı ({{coins}} jeton mevcut)",
+        "remaining_other": "Bugün {{count}} reklam kaldı ({{coins}} jeton mevcut)",
+        "watchForCoins": "{{count}} Jeton İçin Reklam İzle"
+      },
+      "likedPatterns": {
+        "title": "Beğenilen Desenler",
+        "signInTitle": "Kayıtlı Hesap Gerekli",
+        "signInBody": "Özel Beğenilen Desenler koleksiyonunuzu görüntülemeden önce giriş yapın.",
+        "signInAction": "Giriş Yap",
+        "unavailableTitle": "Beğenilen Desenler Kullanılamıyor",
+        "unavailableDefault": "Beğenilen desenler yüklenemedi.",
+        "emptyTitle": "Beğenilen Desen Yok",
+        "emptyBody": "Desen kataloğuna göz atın ve burada kaydetmek için herhangi bir tasarımdaki kalp simgesine dokunun.",
+        "emptyAction": "Desenleri Keşfet",
+        "byCreator": "{{creatorName}} tarafından",
+        "specs": "{{width}}×{{height}} · {{count}} renk · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "Ayarlar",
+        "subtitleDev": "Tercihleri yapılandırın ve sunucu sistemlerini inceleyin.",
+        "subtitleProd": "Tercihlerinizi yapılandırın."
+      },
+      "serviceStatus": {
+        "sectionTitle": "Servis Durumu",
+        "apiConnectionTitle": "API bağlantısı",
+        "testingConnection": "API bağlantısı test ediliyor...",
+        "offlineUnreachable": "Çevrimdışı / Erişilemiyor",
+        "unknownConnectionError": "Bilinmeyen bağlantı hatası",
+        "retryConnection": "Bağlantıyı Yeniden Dene",
+        "healthy": "Sağlıklı",
+        "degraded": "Sorunlu",
+        "postgresLabel": "PostgreSQL Veritabanı",
+        "redisLabel": "Redis Önbelleği"
+      },
+      "session": {
+        "sectionTitle": "Kimlik ve Oturum",
+        "statusTitle": "Sunucu Oturum Durumu",
+        "statusDescription": "API üzerinden etkin misafir kayıt oturumunuzu doğrular.",
+        "noActiveSession": "Etkin Oturum Yok",
+        "sessionActive": "Oturum Etkin",
+        "idLabel": "Kimlik: {{id}} (v{{version}})",
+        "unknownState": "Bilinmeyen durum"
+      },
+      "tutorial": {
+        "sectionTitle": "Eğitim",
+        "learnControlsTitle": "Kontrolleri öğren",
+        "learnControlsDescription": "Hazır olduğunuzda dikiş eğitimine devam edin.",
+        "unavailableTitle": "Eğitim kullanılamıyor",
+        "unavailableMessage": "Eğitime devam edilemedi. Lütfen tekrar deneyin."
+      },
+      "developer": {
+        "sectionTitle": "Geliştirici",
+        "debugDiagnostics": "Hata Ayıklama / Tanılama",
+        "debug": {
+          "backAccessibilityLabel": "Geri dön",
+          "title": "Hata Ayıklama",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: yapılandırıldı · ortam: {{environment}}",
+            "dsnNotConfigured": "DSN: yapılandırılmadı",
+            "sendTestEvent": "Test Olayı Gönder",
+            "throwError": "Hata Fırlat",
+            "disabledTitle": "Sentry Devre Dışı",
+            "disabledMessage": "Sentry yapılandırılmadı (DSN bulunamadı), bu nedenle test olayı gönderilmeyecek.",
+            "testEventSent": "Test olayı gönderildi. Olay Kimliği: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "Hata",
+            "testEventFailedMessage": "Test olayı gönderilemedi: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Onboarding",
+            "description": "Eğitim ilerlemesini temizleyin ve Hoş Geldiniz ekranından yeniden başlayın.",
+            "restart": "Onboarding'i yeniden başlat",
+            "confirmTitle": "Onboarding yeniden başlatılsın mı?",
+            "confirmMessage": "Eğitim durumu temizlenecek ve onboarding Hoş Geldiniz ekranından başlayacak.",
+            "cancel": "Vazgeç",
+            "resetFailedTitle": "Sıfırlama başarısız"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "Hesap Silme",
+        "statusTitle": "Hesap Silme Durumu",
+        "checkingStatus": "Durum kontrol ediliyor...",
+        "pendingTitle": "Hesap Silme Beklemede",
+        "pendingDescription": "Hesap silme işleminiz planlandı. İptal etmek için kurtarma süresi bitmeden önce tekrar giriş yapın.",
+        "recoveryWindowEnds": "Kurtarma Süresi Bitiş: {{date}}",
+        "cancelling": "İptal ediliyor...",
+        "cancelDeletion": "Silmeyi iptal et",
+        "statusError": "Silme durumu kontrol edilemedi. Bağlantınızı kontrol edip yeniden deneyin.",
+        "deleteAccountTitle": "Hesabı Sil",
+        "deleteAccountDescription": "30 günlük kurtarma süresinin ardından hesabınızı, ilerlemenizi ve tüm kilit açmalarınızı kalıcı olarak silin.",
+        "requestedTitle": "Hesap Silme Talep Edildi",
+        "requestedMessage": "Silme talebiniz {{date}} tarihine kadar beklemede. Hesabınızdan çıkış yapıldı. Bu silme işlemini iptal etmek isterseniz o tarihten önce tekrar giriş yapın.",
+        "signOutFailedTitle": "Yerel Çıkış Başarısız",
+        "signOutFailedMessage": "Silme talebiniz hâlâ beklemede. Lütfen Ayarlar'dan tekrar çıkış yapın.",
+        "requestFailedTitle": "Talep Başarısız",
+        "requestFailedMessage": "Silme talebiniz gönderilemedi. Bağlantınızı kontrol edip yeniden deneyin.",
+        "cancelSuccessTitle": "Başarılı",
+        "cancelSuccessMessage": "Hesap silme talebiniz iptal edildi.",
+        "reauthRequiredTitle": "Yeniden Kimlik Doğrulama Gerekli",
+        "reauthRequiredMessage": "Güvenlik amacıyla, hesap silmeyi iptal etmeden önce tekrar giriş yapmanız gerekir.",
+        "signInAction": "Giriş Yap",
+        "cancelFailedTitle": "İptal Başarısız",
+        "cancelFailedGeneric": "Hesap silme işlemi iptal edilemedi. Bağlantınızı kontrol edip yeniden deneyin."
+      },
+      "appearance": {
+        "sectionTitle": "Görünüm"
+      },
+      "themeCollectionCard": {
+        "title": "Tema Koleksiyonu",
+        "description": "Oynanışı etkilemeden ızgara, dikiş ve tamamlama kozmetiklerini değiştir.",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "Premium Üyelik gerektirir",
+        "selected": "Seçili",
+        "accessActive": "Premium tema erişimi aktif, uygun bir Aylık Deneme sırasında da dahil.",
+        "lockedPreview": "Koleksiyonu burada önizle. Premium Üyelik veya uygun bir Aylık Deneme seçimi açar.",
+        "viewPremiumPlans": "Premium planları görüntüle"
+      },
+      "gameplay": {
+        "sectionTitle": "Oynanış Ayarları",
+        "showGridLinesTitle": "Izgara Çizgilerini Göster",
+        "showGridLinesDescription": "Dikiş tuvali hücreleri arasındaki sınırları göster",
+        "handednessTitle": "El Tercihi Düzeni",
+        "handednessDescription": "Etkileşimli kontrolleri sağ veya sol elini kullananlara göre hizala",
+        "left": "Sol",
+        "right": "Sağ",
+        "leftHandedLayout": "Sol el düzeni",
+        "rightHandedLayout": "Sağ el düzeni"
+      },
+      "language": {
+        "sectionTitle": "Dil",
+        "description": "Stitch Wish'in arayüzünü hangi dilde göstereceğini seçin.",
+        "followDevice": "Cihaz dilini takip et",
+        "followDeviceDescription": "Cihazınızın dil ayarını takip etmek için geçersiz kılmayı temizleyin.",
+        "optionEnglish": "English",
+        "optionTurkish": "Türkçe"
+      },
+      "social": {
+        "sectionTitle": "Sosyal ve Gizlilik",
+        "blockedCreators": "Engellenen Üreticiler"
+      },
+      "account": {
+        "sectionTitle": "Hesap",
+        "notSignedInTitle": "Oturum açılmadı",
+        "signInRequiredTitle": "Oturum açma gerekli",
+        "notSignedInDescription": "İlerlemeni cihazlar arasında eşitlemek için oturum aç.",
+        "signIn": "Oturum aç",
+        "reconnecting": "Yeniden bağlanıyor…",
+        "signOut": "Oturumu kapat",
+        "signOutConfirmTitle": "Oturum kapatılsın mı?",
+        "signOutConfirmMessage": "Eşitlenmemiş ilerlemen bu cihazda kalır ve tekrar oturum açtığında yeniden açılır.",
+        "signOutConfirmAction": "Oturumu kapat",
+        "signOutFailedTitle": "Oturum kapatma başarısız",
+        "signOutFailedGeneric": "Lütfen tekrar deneyin.",
+        "providerAppleAccount": "Apple hesabı",
+        "providerGoogleAccount": "Google hesabı",
+        "providerGenericAccount": "Kayıtlı hesap"
+      },
+      "signIn": {
+        "emailHeading": "Oturum aç veya hesap oluştur",
+        "emailSubtitle": "İlerlemeni cihazlar arasında erişilebilir tut.",
+        "codeHeading": "Kodunu gir",
+        "codeSubtitle": "{{email}} adresine gönderdiğimiz 6 haneli kodu gir.",
+        "continueWithGoogle": "Google ile devam et",
+        "orUseEmail": "veya e-posta kullan",
+        "ssoUnavailable": "Google ve Apple ile oturum açma bu yapıda kullanılamıyor.",
+        "emailLabel": "E-posta adresi",
+        "emailPlaceholder": "E-posta adresi",
+        "sendCode": "Kodu gönder",
+        "cancel": "Vazgeç",
+        "verify": "Doğrula",
+        "resendCode": "Kodu yeniden gönder",
+        "resending": "Yeniden gönderiliyor...",
+        "codeSent": "Kod gönderildi",
+        "useDifferentEmail": "Başka bir e-posta kullan",
+        "sendCodeFailed": "Kod gönderilemedi. Bağlantını kontrol edip tekrar dene.",
+        "codeIncorrect": "Bu kod yanlış veya süresi doldu.",
+        "verifyFailedGeneric": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
+        "socialSignInFailed": "{{provider}} ile oturum açılamadı. Lütfen tekrar deneyin.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "Geri dön",
+        "title": "Engellenen Üreticiler",
+        "infoText": "Engelleme özeldir ve geri alınabilir. Üreticinin topluluk desenlerini katalog görünümlerinden, aramandan ve keşif listelerinden gizler. Bu bir şikayet veya içerik kaldırma değildir.",
+        "signInRequiredTitle": "Kayıtlı Hesap Gerekli",
+        "signInRequiredBody": "Engellenen üreticiler listeni yönetmeden önce oturum aç.",
+        "signInAction": "Oturum Aç",
+        "listUnavailableTitle": "Liste Kullanılamıyor",
+        "listUnavailableDefault": "Engellenen üreticiler yüklenemedi.",
+        "tryAgain": "Tekrar Dene",
+        "emptyTitle": "Engellenen Üretici Yok",
+        "emptyBody": "Henüz kimseyi engellemedin. Bir üreticiyi herhangi bir desen detay sayfasından engelleyebilirsin.",
+        "backToSettings": "Ayarlara Dön",
+        "unblock": "Engeli Kaldır",
+        "unblockConfirmTitle": "Üreticinin Engelini Kaldır",
+        "unblockConfirmMessage": "{{name}} adlı üreticinin engelini kaldırmak istediğine emin misin? Desenleri arama ve gözatma sonuçlarında yeniden görünecek.",
+        "cancel": "Vazgeç",
+        "successTitle": "Başarılı",
+        "unblockedMessage": "{{name}} engeli kaldırıldı.",
+        "errorTitle": "Hata",
+        "unblockFailedMessage": "Üreticinin engeli kaldırılamadı: {{message}}",
+        "unblockFailedGeneric": "Bilinmeyen hata"
+      },
+      "data": {
+        "sectionTitle": "Veri",
+        "resetGuestTitle": "Misafir verilerini sıfırla",
+        "resetGuestDescription": "Sunucudaki misafir kimliğinizi geri alınamaz şekilde kapatır ve tüm cihaz verilerini siler.",
+        "resetGuestOffline": "Çevrimdışı: Misafir verilerini sıfırlamak için etkin bir sunucu bağlantısı gerekir.",
+        "resetGuestPurchaseLock": "Bir satın alma hâlâ doğrulanırken sıfırlama engellenir. Tüketilebilirler ve gizli Misafir verileri daha sonra kurtarılamaz.",
+        "removeLocalTitle": "Yerel verileri kaldır",
+        "removeLocalDescription": "Bu cihazdaki yerel kimlik alan adı veritabanınızı silin.",
+        "removeLocalConfirmTitle": "Yerel Veriler Kaldırılsın mı?",
+        "removeLocalConfirmMessage": "Uyarı: Bu işlem, yalnızca bu cihazdaki yerel veritabanı dosyalarınızı silecektir. Eşitlenmemiş kayıtlar kalıcı olarak kaybolur.",
+        "removeLocalConfirmAction": "Kaldır",
+        "removeLocalSuccessTitle": "Başarılı",
+        "removeLocalSuccessMessage": "Yerel veriler bu cihazdan kaldırıldı.",
+        "removeLocalFailedTitle": "Kaldırma Başarısız",
+        "removeLocalFailedMessage": "Yerel veriler kaldırılamadı: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "Bilgi ve Bağlantılar",
+        "privacyPolicy": "Gizlilik Politikası",
+        "termsOfService": "Kullanım Şartları",
+        "contactSupport": "Destek ile İletişim",
+        "accountDeletion": "Hesap Silme",
+        "openFailedMessage": "Bağlantı açılamadı: {{url}}",
+        "openFailedGenericTitle": "Hata"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — Rahat Piksel Sanatı El İşi",
+        "version": "Sürüm {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "Paket: {{id}}",
+        "schemeLabel": "Şema: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "Misafir Verileri Sıfırlansın mı?",
+        "warning": "Bu işlem, sunucudaki misafir kimliğinizi geri alınamaz şekilde kapatacak ve şunları kalıcı olarak silecektir:",
+        "bulletProgress": "• yerel ilerleme",
+        "bulletRewards": "• bekleyen ödüller",
+        "bulletLikes": "• beğeniler",
+        "bulletUnlockAccess": "• kilit açma erişimi",
+        "bulletOfflinePatterns": "• çevrimdışı desen verileri",
+        "confirmPrefix": "Onaylamak için aşağıya ",
+        "confirmSuffix": " yazın:",
+        "confirmAction": "Verileri Sıfırla",
+        "resetting": "Misafir verileri sıfırlanıyor...",
+        "successTitle": "Başarılı",
+        "successMessage": "Misafir verileri tamamen sıfırlandı.",
+        "failedTitle": "Sıfırlama Başarısız",
+        "failedMessage": "Misafir verileri sıfırlanamadı: {{message}}. Lütfen tekrar deneyin."
+      },
+      "deleteModal": {
+        "title": "Hesap Silinsin mi?",
+        "recoveryPrefix": "Hesabınız ",
+        "recoveryBold": "30 günlük Silme Kurtarma Süresine",
+        "recoverySuffix": " girer. Silme işlemini iptal etmek için bu süre içinde tekrar giriş yapın.",
+        "bulletBalances": "• Stitch Coin ve AI Kredisi bakiyeleri",
+        "bulletUnlocks": "• Tüm Desen Kilit Açmaları",
+        "bulletArtwork": "• AI Eserleri ve Kişisel Desenler",
+        "bulletProgress": "• Eşitlenmiş ilerleme ve Beğeniler",
+        "consequencesPrefix": "Kurtarma süresinin sonunda bunlar iade veya transfer olmadan silinir ya da kaybedilir. Yayınlanmış Topluluk Desenleri katalogdan geri çekilir, atıf ",
+        "consequencesBold": "Silinmiş Üretici",
+        "consequencesSuffix": " olur ve kullanıcı adınız kalıcı olarak ayrılmış kalır.",
+        "membershipWarning": "Premium Üyeliğiniz hesap silindikten sonra da faturalandırılmaya devam edebilir. Silme işlemi bunu iptal etmez; faturalandırmanın durmasını istiyorsanız devam etmeden önce ayrıca yönetin.",
+        "manageAppleSubscription": "Apple Aboneliğini Yönet",
+        "continueAction": "Devam Et",
+        "confirmTitle": "Silmeyi Onayla",
+        "confirmPrefix": "Hesabınızı silmek istediğinizi onaylamak için aşağıdaki kutuya ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": " yazın:",
+        "submitting": "Silme talebi gönderiliyor...",
+        "backAction": "Geri",
+        "confirmAction": "Onayla"
+      },
+      "reauthModal": {
+        "title": "Kimliğinizi Doğrulayın",
+        "description": "Güvenlik amacıyla, bu hesaba bağlı bir giriş yöntemiyle doğrulayın. Doğrulamadan sonra silme işlemi otomatik olarak devam eder.",
+        "loading": "Giriş yöntemleri yükleniyor...",
+        "codeSentMessage": "{{email}} adresine gönderilen 6 haneli kodu girin.",
+        "verifyAndDelete": "Doğrula ve Sil",
+        "emailButton": "E-posta {{email}}",
+        "continueWithProvider": "{{provider}} ile devam et",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "Bağlı bir giriş yöntemi yok. Silme işlemini yeniden denemeden önce destek ile iletişime geçin.",
+        "loadFailed": "Bağlı giriş yöntemleriniz yüklenemedi. Bağlantınızı kontrol edip yeniden deneyin.",
+        "retryFailed": "Kimliğiniz doğrulandı, ancak silme işlemi gönderilemedi. Bu iletişim kutusunu kapatıp silme işlemini yeniden deneyin.",
+        "emailMissing": "Bu bağlı e-posta yönteminin adresi yok. Başka bir yöntem seçin.",
+        "genericFailure": "Yeniden kimlik doğrulama başarısız. Bağlantınızı kontrol edip yeniden deneyin."
+      },
+      "actions": {
+        "cancel": "Vazgeç",
+        "retry": "Yeniden Dene"
+      },
+      "common": {
+        "unavailable": "Kullanılamıyor"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "Katalog",
+        "stitch": "Dikiş",
+        "create": "Oluştur",
+        "profile": "Profil",
+        "settings": "Ayarlar"
+      }
+    }
+  }
+}

@@ -22,3 +22,12 @@ jest.mock('react-native-reanimated', () => {
     runOnJS: (fn) => fn,
   };
 });
+
+// #155/#157: initializes the REAL i18next instance with the REAL English
+// (and Turkish) resources - never a mock of t(). Roughly forty existing
+// test files locate and press elements by their visible English label, and
+// the migration gate keeps the active language pinned to English, so this
+// is a no-op change in what those suites see while giving a key missing
+// from English the power to fail the whole suite, not just CI's locale
+// parity check.
+require('./src/i18n/i18n').initI18n();

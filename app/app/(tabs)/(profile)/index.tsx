@@ -10,10 +10,12 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 import { useAiCreditBalance } from '@/api/commerce';
 import { absolutePreviewUrl, absoluteThumbnailUrls } from '@/api/catalog';
 import { useCreatorProfile } from '@/api/creatorProfile';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 import {
   DAILY_TASK_COIN,
   useDailyTaskBoard,
@@ -33,6 +35,7 @@ import { listPersonalPatterns, type PersonalPattern } from '@/conversion';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { shortenGuestId } from '@/identity/identityLogic';
+import { formatDate, formatNumber } from '@/i18n';
 import { getPendingPersonalPatterns, type PendingPersonalPattern } from '@/local-db';
 import {
   preparePendingPersonalSession,
@@ -41,39 +44,28 @@ import {
 } from '@/session-preparation';
 import { Theme } from '@/theme/theme';
 
-const TASK_META: Record<
-  DailyTaskKey,
-  { title: string; body: string; icon: keyof typeof Ionicons.glyphMap }
-> = {
-  cells_100: {
-    title: '100 Stitch Actions',
-    body: 'Fill 100 matching cells today',
-    icon: 'grid-outline',
-  },
-  three_colors_10: {
-    title: '3 Colors, 10 Actions Each',
-    body: 'Reach 10 actions in 3 thread colors',
-    icon: 'color-palette-outline',
-  },
-  color_completion: {
-    title: 'Complete a Thread Color',
-    body: 'Finish stitching any color completely',
-    icon: 'checkmark-done-outline',
-  },
+const TASK_ICONS: Record<DailyTaskKey, keyof typeof Ionicons.glyphMap> = {
+  cells_100: 'grid-outline',
+  three_colors_10: 'color-palette-outline',
+  color_completion: 'checkmark-done-outline',
 };
 
-function formatTimeRemaining(resetsAt?: string | null): string {
+type TFn = (key: string, options?: Record<string, unknown>) => string;
+
+function formatTimeRemaining(resetsAt: string | null | undefined, t: TFn): string {
   if (!resetsAt) return '';
   const diffMs = new Date(resetsAt).getTime() - Date.now();
-  if (diffMs <= 0) return 'Resetting…';
+  if (diffMs <= 0) return t('home.dailySection.resetting');
   const totalMinutes = Math.floor(diffMs / 60000);
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
-  if (hours <= 0) return `Resets in ${minutes}m`;
-  return `Resets in ${hours}h ${minutes}m`;
+  if (hours <= 0) return t('home.dailySection.resetsInMinutes', { minutes });
+  return t('home.dailySection.resetsInHoursMinutes', { hours, minutes });
 }
 
 export default function ProfileScreen() {
+  const { t, i18n: i18nInstance } = useTranslation('profile');
+  const locale = i18nInstance.language;
   const router = useRouter();
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<'my-patterns' | 'liked'>('my-patterns');
@@ -101,7 +93,7 @@ export default function ProfileScreen() {
 
   // Creator & Social Queries
   const creatorProfileQuery = useCreatorProfile(accountId, isAccount && isAuthenticated && !isPending);
-  const likedPatternsQuery = useLikedPatterns('en');
+  const likedPatternsQuery = useLikedPatterns();
   const creatorProfile = creatorProfileQuery.data ?? null;
 
   // Daily Tasks & Rewarded Ads
@@ -135,11 +127,13 @@ export default function ProfileScreen() {
         ]);
       } catch (err: unknown) {
         claimingNonceRef.current.delete(nonce);
-        const msg = err instanceof Error ? err.message : String(err);
-        setAdLocalError(`Claim failed: ${msg}`);
+        // #159/#166: EconomyApiError's server-supplied `message` never
+        // reaches the player; its `reason` maps to localized text instead.
+        const msg = isServerApiError(err) ? localizeServerError(err) : t('home.dailyPool.claimFailedGeneric');
+        setAdLocalError(t('home.dailyPool.claimFailed', { message: msg }));
       }
     },
-    [claimAdReward, queryClient],
+    [claimAdReward, queryClient, t],
   );
 
   const { status: adStatus, show: showRewardedAd, error: adPluginError } = useRewardedAd({
@@ -184,12 +178,12 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     if (adAttemptPending && adStatus === 'error') {
-      setAdLocalError(adPluginError?.message || 'Failed to load ad');
+      setAdLocalError(adPluginError?.message || t('home.dailyPool.adLoadFailedDefault'));
       activeNonceRef.current = null;
       setAdAttempt(null);
       setAdAttemptPending(false);
     }
-  }, [adStatus, adAttemptPending, adPluginError]);
+  }, [adStatus, adAttemptPending, adPluginError, t]);
 
   const handleWatchAd = async () => {
     try {
@@ -202,7 +196,7 @@ export default function ProfileScreen() {
     } catch (err) {
       activeNonceRef.current = null;
       setAdAttemptPending(false);
-      setAdLocalError(err instanceof Error ? err.message : 'Failed to open ad attempt');
+      setAdLocalError(isServerApiError(err) ? localizeServerError(err) : t('home.dailyPool.adAttemptFailedDefault'));
     }
   };
 
@@ -249,7 +243,7 @@ export default function ProfileScreen() {
         })
         .catch((error: unknown) => {
           if (active) {
-            setPatternsError(error instanceof Error ? error.message : String(error));
+            setPatternsError(isServerApiError(error) ? localizeServerError(error) : t('home.myPatterns.actionFailedGeneric'));
           }
         })
         .finally(() => {
@@ -286,7 +280,7 @@ export default function ProfileScreen() {
         params: { sessionId: ready.id, returnTo: '/(tabs)/(profile)' },
       });
     } catch (error: unknown) {
-      setPatternsError(error instanceof Error ? error.message : String(error));
+      setPatternsError(t('home.myPatterns.actionFailedGeneric'));
     } finally {
       setOpeningPatternId(null);
     }
@@ -303,7 +297,7 @@ export default function ProfileScreen() {
         params: { sessionId: ready.id, returnTo: '/(tabs)/(profile)' },
       });
     } catch (error: unknown) {
-      setPatternsError(error instanceof Error ? error.message : String(error));
+      setPatternsError(t('home.myPatterns.actionFailedGeneric'));
     } finally {
       setOpeningPendingId(null);
     }
@@ -348,7 +342,7 @@ export default function ProfileScreen() {
   const isPremiumPoolExhausted = activeMembership && !isPremiumClaimed && dailyClaim?.coinsAvailable === 0;
 
   const resetsAtTime = dailyTasksQuery.data?.resetsAt || rewardDay?.resetsAt || dailyClaim?.resetsAt;
-  const formattedReset = formatTimeRemaining(resetsAtTime);
+  const formattedReset = formatTimeRemaining(resetsAtTime, t);
 
   const likedCount = likedPatternsQuery.data?.pages.flatMap((page) => page.items).length ?? 0;
   const creationsCount = personalPatterns.length + pendingPatterns.length;
@@ -359,34 +353,34 @@ export default function ProfileScreen() {
       {isPending && !guestId ? (
         <View style={styles.profileCard}>
           <ActivityIndicator size="large" color={Theme.colors.accentRose} />
-          <Text style={[styles.displayName, { marginTop: Theme.spacing.md }]}>Establishing identity...</Text>
+          <Text style={[styles.displayName, { marginTop: Theme.spacing.md }]}>{t('home.identity.establishing')}</Text>
         </View>
       ) : isOfflinePending && !guestId ? (
         <View style={styles.profileCard}>
           <View style={styles.avatarContainer}>
             <Ionicons name="cloud-offline-outline" size={44} color={Theme.colors.error} />
           </View>
-          <Text style={styles.displayName}>Identity Pending</Text>
-          <Text style={[styles.username, { color: Theme.colors.error }]}>Offline</Text>
+          <Text style={styles.displayName}>{t('home.identity.pendingTitle')}</Text>
+          <Text style={[styles.username, { color: Theme.colors.error }]}>{t('home.identity.offline')}</Text>
           <Pressable onPress={() => bootstrap()} style={styles.retryButton}>
-            <Text style={styles.retryButtonText}>Retry Connection</Text>
+            <Text style={styles.retryButtonText}>{t('home.identity.retryConnection')}</Text>
           </Pressable>
         </View>
       ) : isAccount && creatorProfileQuery.isLoading ? (
         <View style={styles.profileCard}>
           <ActivityIndicator size="large" color={Theme.colors.accentRose} />
-          <Text style={styles.profileStatusText}>Loading public profile...</Text>
+          <Text style={styles.profileStatusText}>{t('home.identity.loadingPublicProfile')}</Text>
         </View>
       ) : isAccount && creatorProfileQuery.isError ? (
         <View style={styles.profileCard}>
           <View style={styles.avatarContainer}>
             <Ionicons name="cloud-offline-outline" size={44} color={Theme.colors.error} />
           </View>
-          <Text style={styles.displayName}>Public profile unavailable</Text>
+          <Text style={styles.displayName}>{t('home.identity.unavailableTitle')}</Text>
           <Text style={styles.profileHelpText}>
-            {creatorProfileQuery.error instanceof Error
-              ? creatorProfileQuery.error.message
-              : 'Check your connection and try again.'}
+            {creatorProfileQuery.error && isServerApiError(creatorProfileQuery.error)
+              ? localizeServerError(creatorProfileQuery.error)
+              : t('home.identity.checkConnection')}
           </Text>
           <Pressable
             disabled={creatorProfileQuery.isRefetching || isRetryingProfile}
@@ -399,7 +393,7 @@ export default function ProfileScreen() {
             {creatorProfileQuery.isRefetching || isRetryingProfile ? (
               <ActivityIndicator size="small" color={Theme.colors.error} />
             ) : (
-              <Text style={styles.retryButtonText}>Try Again</Text>
+              <Text style={styles.retryButtonText}>{t('common.tryAgain')}</Text>
             )}
           </Pressable>
         </View>
@@ -408,12 +402,10 @@ export default function ProfileScreen() {
           <View style={styles.avatarContainer}>
             <Ionicons name="person-add-outline" size={40} color={Theme.colors.accentRose} />
           </View>
-          <Text style={styles.displayName}>Create your public profile</Text>
-          <Text style={styles.profileHelpText}>
-            Choose the permanent username shown with your community patterns. Your account details stay private.
-          </Text>
+          <Text style={styles.displayName}>{t('home.identity.createTitle')}</Text>
+          <Text style={styles.profileHelpText}>{t('home.identity.createBody')}</Text>
           <Pressable onPress={handleEditProfile} style={styles.editButton}>
-            <Text style={styles.editButtonText}>Create Public Profile</Text>
+            <Text style={styles.editButtonText}>{t('home.identity.createAction')}</Text>
           </Pressable>
         </View>
       ) : isAccount && creatorProfile !== null ? (
@@ -429,17 +421,17 @@ export default function ProfileScreen() {
           <Text style={styles.displayName}>{creatorProfile.displayName}</Text>
           <Text style={styles.username}>@{creatorProfile.username}</Text>
           <Text style={styles.sinceText}>
-            Creator since {new Date(creatorProfile.createdAt).toLocaleDateString()}
+            {t('home.identity.creatorSince', { date: formatDate(new Date(creatorProfile.createdAt), locale) })}
           </Text>
 
           <Pressable onPress={handleEditProfile} style={styles.editButton}>
-            <Text style={styles.editButtonText}>Edit Public Profile</Text>
+            <Text style={styles.editButtonText}>{t('home.identity.editAction')}</Text>
           </Pressable>
 
           {isOfflinePending && (
             <View style={styles.offlineBadge}>
               <Ionicons name="alert-circle-outline" size={14} color={Theme.colors.error} />
-              <Text style={styles.offlineBadgeText}>Offline — pending sync</Text>
+              <Text style={styles.offlineBadgeText}>{t('home.identity.offlinePendingSync')}</Text>
             </View>
           )}
         </View>
@@ -448,17 +440,17 @@ export default function ProfileScreen() {
           <View style={styles.avatarContainer}>
             <Ionicons name="person" size={44} color={Theme.colors.accentRose} />
           </View>
-          <Text style={styles.displayName}>Guest Player</Text>
+          <Text style={styles.displayName}>{t('home.identity.guestPlayer')}</Text>
           <Text style={styles.username}>@{shortenGuestId(guestId || '')}</Text>
           {guestCreatedAt && (
             <Text style={styles.sinceText}>
-              Playing since {new Date(guestCreatedAt).toLocaleDateString()}
+              {t('home.identity.playingSince', { date: formatDate(new Date(guestCreatedAt), locale) })}
             </Text>
           )}
           {isOfflinePending && (
             <View style={styles.offlineBadge}>
               <Ionicons name="alert-circle-outline" size={14} color={Theme.colors.error} />
-              <Text style={styles.offlineBadgeText}>Offline — pending sync</Text>
+              <Text style={styles.offlineBadgeText}>{t('home.identity.offlinePendingSync')}</Text>
             </View>
           )}
         </View>
@@ -469,16 +461,16 @@ export default function ProfileScreen() {
         <View style={styles.walletHeader}>
           <View style={styles.walletHeaderLeft}>
             <Ionicons name="wallet-outline" size={18} color={Theme.colors.textPrimary} />
-            <Text style={styles.walletTitle}>Studio Balances</Text>
+            <Text style={styles.walletTitle}>{t('home.walletCard.title')}</Text>
           </View>
           <Pressable
-            accessibilityLabel="Open Commerce Store"
+            accessibilityLabel={t('home.walletCard.openCommerceStoreAccessibilityLabel')}
             accessibilityRole="button"
             onPress={() => openCommerce()}
             style={({ pressed }) => [styles.storeLink, pressed && styles.pressed]}
           >
             <Ionicons name="storefront-outline" size={15} color={Theme.colors.accentRose} />
-            <Text style={styles.storeLinkText}>Commerce Store</Text>
+            <Text style={styles.storeLinkText}>{t('home.walletCard.commerceStoreLink')}</Text>
             <Ionicons name="chevron-forward" size={14} color={Theme.colors.accentRose} />
           </Pressable>
         </View>
@@ -487,7 +479,7 @@ export default function ProfileScreen() {
         <View style={styles.balancesRow}>
           {/* Stitch Coins Tile */}
           <Pressable
-            accessibilityLabel={`Stitch Coins balance: ${coinBalance ?? 0}. Tap to get coins.`}
+            accessibilityLabel={t('home.walletCard.stitchCoinsAccessibilityLabel', { balance: formatNumber(coinBalance ?? 0, locale) })}
             accessibilityRole="button"
             onPress={() => openCommerce('stitch_coin')}
             style={({ pressed }) => [styles.balanceTile, pressed && styles.pressed]}
@@ -498,20 +490,20 @@ export default function ProfileScreen() {
               </View>
               <View style={[styles.addPill, { borderColor: Theme.colors.accentHoney }]}>
                 <Ionicons name="add" size={13} color={Theme.colors.accentHoney} />
-                <Text style={[styles.addPillText, { color: Theme.colors.accentHoney }]}>Packs</Text>
+                <Text style={[styles.addPillText, { color: Theme.colors.accentHoney }]}>{t('home.walletCard.packs')}</Text>
               </View>
             </View>
-            <Text style={styles.balanceValue}>{(coinBalance ?? 0).toLocaleString()}</Text>
-            <Text style={styles.balanceLabel}>Stitch Coins</Text>
-            <Text style={styles.balanceSub}>For pattern unlocks</Text>
+            <Text style={styles.balanceValue}>{formatNumber(coinBalance ?? 0, locale)}</Text>
+            <Text style={styles.balanceLabel}>{t('home.walletCard.stitchCoinsLabel')}</Text>
+            <Text style={styles.balanceSub}>{t('home.walletCard.stitchCoinsSub')}</Text>
           </Pressable>
 
           {/* AI Credits Tile */}
           <Pressable
             accessibilityLabel={
               isAccount
-                ? `AI Credits balance: ${aiCreditBalance ?? 0}. Tap to get credits.`
-                : 'AI Credits. Sign in to purchase.'
+                ? t('home.walletCard.aiCreditsAccessibilityLabel', { balance: formatNumber(aiCreditBalance ?? 0, locale) })
+                : t('home.walletCard.aiCreditsSignInAccessibilityLabel')
             }
             accessibilityRole="button"
             onPress={() => openCommerce('ai_credit')}
@@ -523,15 +515,15 @@ export default function ProfileScreen() {
               </View>
               <View style={[styles.addPill, { borderColor: Theme.colors.accentRose }]}>
                 <Ionicons name="add" size={13} color={Theme.colors.accentRose} />
-                <Text style={[styles.addPillText, { color: Theme.colors.accentRose }]}>Packs</Text>
+                <Text style={[styles.addPillText, { color: Theme.colors.accentRose }]}>{t('home.walletCard.packs')}</Text>
               </View>
             </View>
             <Text style={styles.balanceValue}>
-              {isAccount ? (aiCreditBalance ?? 0).toLocaleString() : '—'}
+              {isAccount ? formatNumber(aiCreditBalance ?? 0, locale) : '—'}
             </Text>
-            <Text style={styles.balanceLabel}>AI Credits</Text>
+            <Text style={styles.balanceLabel}>{t('home.walletCard.aiCreditsLabel')}</Text>
             <Text style={styles.balanceSub}>
-              {isAccount ? 'For AI pattern art' : 'Sign in to own'}
+              {isAccount ? t('home.walletCard.aiCreditsSubOwned') : t('home.walletCard.aiCreditsSubGuest')}
             </Text>
           </Pressable>
         </View>
@@ -540,8 +532,8 @@ export default function ProfileScreen() {
         <Pressable
           accessibilityLabel={
             activeMembership
-              ? `Premium Membership active (${membership?.plan ?? 'membership'}). Tap to manage.`
-              : 'Cross-Stitch Premium. Tap to view plans.'
+              ? t('home.walletCard.membershipActiveAccessibilityLabel', { plan: membership?.plan ?? 'membership' })
+              : t('home.walletCard.membershipInactiveAccessibilityLabel')
           }
           accessibilityRole="button"
           onPress={() => openCommerce(activeMembership ? 'premium' : undefined)}
@@ -568,27 +560,28 @@ export default function ProfileScreen() {
             <View style={styles.membershipTitleRow}>
               <Text style={styles.membershipTitle}>
                 {activeMembership
-                  ? `Premium Active · ${
-                      membership?.plan === 'annual'
-                        ? 'Annual'
-                        : membership?.plan === 'monthly'
-                        ? 'Monthly'
-                        : membership?.plan === 'weekly'
-                        ? 'Weekly'
-                        : 'Active'
-                    }`
-                  : 'Cross-Stitch Premium'}
+                  ? t('home.walletCard.membershipActiveTitle', {
+                      plan:
+                        membership?.plan === 'annual'
+                          ? t('home.walletCard.planAnnual')
+                          : membership?.plan === 'monthly'
+                          ? t('home.walletCard.planMonthly')
+                          : membership?.plan === 'weekly'
+                          ? t('home.walletCard.planWeekly')
+                          : t('home.walletCard.planActive'),
+                    })
+                  : t('home.walletCard.membershipInactiveTitle')}
               </Text>
               {activeMembership && membership?.lifecycle === 'trial' && (
                 <View style={styles.trialBadge}>
-                  <Text style={styles.trialBadgeText}>Trial</Text>
+                  <Text style={styles.trialBadgeText}>{t('home.walletCard.trialBadge')}</Text>
                 </View>
               )}
             </View>
             <Text style={styles.membershipSub}>
               {activeMembership
-                ? 'All themes unlocked · Instant daily coin claims'
-                : 'Instant 30 daily coins, custom themes & AI credits'}
+                ? t('home.walletCard.membershipSubActive')
+                : t('home.walletCard.membershipSubInactive')}
             </Text>
           </View>
 
@@ -599,7 +592,7 @@ export default function ProfileScreen() {
                 activeMembership && { color: Theme.colors.accentHoney },
               ]}
             >
-              {activeMembership ? 'Manage' : 'Explore'}
+              {activeMembership ? t('home.walletCard.manage') : t('home.walletCard.explore')}
             </Text>
             <Ionicons
               name="chevron-forward"
@@ -613,11 +606,11 @@ export default function ProfileScreen() {
       {/* 3. Account & Creator Quick Hub (Registered Accounts) */}
       {isAccount && (
         <View style={styles.quickNavSection}>
-          <Text style={styles.sectionEyebrow}>ACCOUNT & COMMUNITY</Text>
+          <Text style={styles.sectionEyebrow}>{t('home.quickNav.sectionEyebrow')}</Text>
           <View style={styles.quickNavGrid}>
             {creatorProfile !== null && (
               <Pressable
-                accessibilityLabel="Catalog Submissions: Track reviews, decisions, and appeals"
+                accessibilityLabel={t('home.quickNav.submissionsAccessibilityLabel')}
                 accessibilityRole="button"
                 onPress={() => router.push('/(tabs)/(profile)/submissions')}
                 style={({ pressed }) => [styles.quickNavTile, pressed && styles.pressed]}
@@ -626,8 +619,8 @@ export default function ProfileScreen() {
                   <Ionicons name="file-tray-full-outline" size={20} color={Theme.colors.accentTeal} />
                 </View>
                 <View style={styles.quickNavText}>
-                  <Text style={styles.quickNavTitle}>Submissions</Text>
-                  <Text style={styles.quickNavSub}>Track reviews</Text>
+                  <Text style={styles.quickNavTitle}>{t('home.quickNav.submissionsTitle')}</Text>
+                  <Text style={styles.quickNavSub}>{t('home.quickNav.submissionsSub')}</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={14} color={Theme.colors.textSecondary} />
               </Pressable>
@@ -635,7 +628,7 @@ export default function ProfileScreen() {
 
             {creatorProfile !== null && (
               <Pressable
-                accessibilityLabel="Published Patterns: Revise metadata, withdraw, and track appeals"
+                accessibilityLabel={t('home.quickNav.publishedAccessibilityLabel')}
                 accessibilityRole="button"
                 onPress={() => router.push('/(tabs)/(profile)/published-patterns')}
                 style={({ pressed }) => [styles.quickNavTile, pressed && styles.pressed]}
@@ -644,15 +637,15 @@ export default function ProfileScreen() {
                   <Ionicons name="albums-outline" size={20} color={Theme.colors.accentTeal} />
                 </View>
                 <View style={styles.quickNavText}>
-                  <Text style={styles.quickNavTitle}>Published</Text>
-                  <Text style={styles.quickNavSub}>Manage patterns</Text>
+                  <Text style={styles.quickNavTitle}>{t('home.quickNav.publishedTitle')}</Text>
+                  <Text style={styles.quickNavSub}>{t('home.quickNav.publishedSub')}</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={14} color={Theme.colors.textSecondary} />
               </Pressable>
             )}
 
             <Pressable
-              accessibilityLabel="Moderation Notices: Review catalog decisions affecting your patterns"
+              accessibilityLabel={t('home.quickNav.moderationAccessibilityLabel')}
               accessibilityRole="button"
               onPress={() => router.push('/(tabs)/(profile)/moderation-notices')}
               style={({ pressed }) => [styles.quickNavTile, pressed && styles.pressed]}
@@ -661,14 +654,14 @@ export default function ProfileScreen() {
                 <Ionicons name="shield-checkmark-outline" size={20} color={Theme.colors.accentTeal} />
               </View>
               <View style={styles.quickNavText}>
-                <Text style={styles.quickNavTitle}>Moderation</Text>
-                <Text style={styles.quickNavSub}>Policy notices</Text>
+                <Text style={styles.quickNavTitle}>{t('home.quickNav.moderationTitle')}</Text>
+                <Text style={styles.quickNavSub}>{t('home.quickNav.moderationSub')}</Text>
               </View>
               <Ionicons name="chevron-forward" size={14} color={Theme.colors.textSecondary} />
             </Pressable>
 
             <Pressable
-              accessibilityLabel="Liked Patterns: Your private collection of liked community patterns"
+              accessibilityLabel={t('home.quickNav.likedAccessibilityLabel')}
               accessibilityRole="button"
               onPress={() => router.push('/(tabs)/(profile)/liked-patterns')}
               style={({ pressed }) => [styles.quickNavTile, pressed && styles.pressed]}
@@ -677,9 +670,11 @@ export default function ProfileScreen() {
                 <Ionicons name="heart-outline" size={20} color={Theme.colors.accentRose} />
               </View>
               <View style={styles.quickNavText}>
-                <Text style={styles.quickNavTitle}>Liked Patterns</Text>
+                <Text style={styles.quickNavTitle}>{t('home.quickNav.likedTitle')}</Text>
                 <Text style={styles.quickNavSub}>
-                  {likedCount > 0 ? `${likedCount} saved` : 'Saved patterns'}
+                  {likedCount > 0
+                    ? t('home.quickNav.likedSavedCount', { count: likedCount })
+                    : t('home.quickNav.likedSavedDefault')}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={14} color={Theme.colors.textSecondary} />
@@ -693,7 +688,7 @@ export default function ProfileScreen() {
         <View style={styles.dailyHeader}>
           <View style={styles.dailyHeaderTitleRow}>
             <Ionicons name="calendar-outline" size={18} color={Theme.colors.accentHoney} />
-            <Text style={styles.dailyHeaderTitle}>Daily Stitching & Rewards</Text>
+            <Text style={styles.dailyHeaderTitle}>{t('home.dailySection.title')}</Text>
           </View>
           {formattedReset ? (
             <View style={styles.resetBadge}>
@@ -705,26 +700,26 @@ export default function ProfileScreen() {
 
         {/* Part A: Daily Tasks */}
         <View style={styles.dailyTasksContainer}>
-          <Text style={styles.dailyGroupLabel}>Daily Tasks (+30 Coins max)</Text>
+          <Text style={styles.dailyGroupLabel}>{t('home.dailySection.tasksGroupLabel')}</Text>
 
           {!isConnected ? (
-            <Text style={styles.mutedText}>Connect to track daily task progress.</Text>
+            <Text style={styles.mutedText}>{t('home.dailySection.connectToTrack')}</Text>
           ) : dailyTasksQuery.isLoading ? (
             <View style={styles.dailyLoadingRow}>
               <ActivityIndicator size="small" color={Theme.colors.accentRose} />
-              <Text style={styles.mutedText}>Loading tasks…</Text>
+              <Text style={styles.mutedText}>{t('home.dailySection.loadingTasks')}</Text>
             </View>
           ) : dailyTasksQuery.isError || !dailyTasksQuery.data ? (
             <View style={styles.dailyErrorRow}>
-              <Text style={styles.errorText}>Could not load daily tasks.</Text>
+              <Text style={styles.errorText}>{t('home.dailySection.loadFailed')}</Text>
               <Pressable onPress={() => void dailyTasksQuery.refetch()} hitSlop={8}>
-                <Text style={styles.retryLinkText}>Retry</Text>
+                <Text style={styles.retryLinkText}>{t('home.dailySection.retry')}</Text>
               </Pressable>
             </View>
           ) : (
             <View style={styles.tasksList}>
               {dailyTasksQuery.data.tasks.map((task: DailyTaskStatus) => {
-                const meta = TASK_META[task.key];
+                const icon = TASK_ICONS[task.key];
                 const pct = task.target > 0 ? Math.min(1, task.progress / task.target) : 0;
                 return (
                   <View key={task.key} style={styles.taskItem}>
@@ -735,24 +730,24 @@ export default function ProfileScreen() {
                       ]}
                     >
                       <Ionicons
-                        name={task.granted ? 'checkmark-circle' : meta.icon}
+                        name={task.granted ? 'checkmark-circle' : icon}
                         size={17}
                         color={task.granted ? Theme.colors.success : Theme.colors.accentTeal}
                       />
                     </View>
                     <View style={styles.taskContent}>
                       <View style={styles.taskRowTop}>
-                        <Text style={styles.taskTitle}>{meta.title}</Text>
+                        <Text style={styles.taskTitle}>{t(`home.dailyTasks.${task.key}.title`)}</Text>
                         <Text
                           style={[
                             styles.taskCoinText,
                             task.granted && { color: Theme.colors.success },
                           ]}
                         >
-                          +{DAILY_TASK_COIN}
+                          {t('home.dailySection.taskCoinReward', { amount: formatNumber(DAILY_TASK_COIN, locale) })}
                         </Text>
                       </View>
-                      <Text style={styles.taskDesc}>{meta.body}</Text>
+                      <Text style={styles.taskDesc}>{t(`home.dailyTasks.${task.key}.body`)}</Text>
                       <View style={styles.taskProgressRow}>
                         <View style={styles.taskProgressBar}>
                           <View
@@ -764,7 +759,10 @@ export default function ProfileScreen() {
                           />
                         </View>
                         <Text style={styles.taskProgressNumbers}>
-                          {task.progress}/{task.target}
+                          {t('home.dailySection.taskProgress', {
+                            progress: formatNumber(task.progress, locale),
+                            target: formatNumber(task.target, locale),
+                          })}
                         </Text>
                       </View>
                     </View>
@@ -780,15 +778,15 @@ export default function ProfileScreen() {
           <View style={styles.poolHeader}>
             <View style={styles.poolTitleWrap}>
               <Ionicons name="sparkles" size={15} color={Theme.colors.accentHoney} />
-              <Text style={styles.poolTitle}>Daily 30-Coin Reward Pool</Text>
+              <Text style={styles.poolTitle}>{t('home.dailyPool.title')}</Text>
             </View>
             {activeMembership ? (
               <View style={styles.poolMembershipTag}>
-                <Text style={styles.poolMembershipTagText}>Premium Instant Claim</Text>
+                <Text style={styles.poolMembershipTagText}>{t('home.dailyPool.premiumInstantClaim')}</Text>
               </View>
             ) : (
               <View style={styles.poolAdsTag}>
-                <Text style={styles.poolAdsTagText}>Rewarded Ads</Text>
+                <Text style={styles.poolAdsTagText}>{t('home.dailyPool.rewardedAds')}</Text>
               </View>
             )}
           </View>
@@ -801,30 +799,30 @@ export default function ProfileScreen() {
                   <Ionicons name="checkmark-circle" size={18} color={Theme.colors.success} />
                   <Text style={styles.claimSuccessText}>
                     {claimResult.amount > 0
-                      ? `${claimResult.amount} Stitch Coins claimed for today!`
-                      : 'Today’s reward pool was already closed.'}
+                      ? t('home.dailyPool.claimedAmount', { amount: formatNumber(claimResult.amount, locale) })
+                      : t('home.dailyPool.poolAlreadyClosed')}
                   </Text>
                 </View>
               ) : isPremiumClaimed ? (
                 <View style={styles.claimStatusMutedBox}>
                   <Ionicons name="checkmark-done" size={16} color={Theme.colors.success} />
                   <Text style={styles.claimStatusMutedText}>
-                    Claimed for today. Resets at next Reward Day.
+                    {t('home.dailyPool.claimedForToday')}
                   </Text>
                 </View>
               ) : isPremiumPoolExhausted ? (
                 <View style={styles.claimStatusMutedBox}>
                   <Ionicons name="information-circle-outline" size={16} color={Theme.colors.textSecondary} />
                   <Text style={styles.claimStatusMutedText}>
-                    Today’s 30-Coin reward pool is exhausted.
+                    {t('home.dailyPool.poolExhausted')}
                   </Text>
                 </View>
               ) : (
                 <Button
                   title={
                     premiumClaimMutation.error
-                      ? 'Try claim again'
-                      : `Claim ${premiumCoinsAvailable} Coins (Instant)`
+                      ? t('home.dailyPool.claimButtonRetry')
+                      : t('home.dailyPool.claimButtonInstant', { count: formatNumber(premiumCoinsAvailable, locale) })
                   }
                   onPress={() => premiumClaimMutation.mutate()}
                   disabled={premiumCoinsAvailable === 0}
@@ -835,7 +833,11 @@ export default function ProfileScreen() {
               )}
 
               {premiumClaimMutation.error && (
-                <Text style={styles.errorText}>{premiumClaimMutation.error.message}</Text>
+                <Text style={styles.errorText}>
+                  {isServerApiError(premiumClaimMutation.error)
+                    ? localizeServerError(premiumClaimMutation.error)
+                    : t('home.dailyPool.claimFailedGeneric')}
+                </Text>
               )}
             </View>
           ) : (
@@ -843,19 +845,19 @@ export default function ProfileScreen() {
             <View style={styles.adRewardBlock}>
               {rewardDay?.premiumClaimed ? (
                 <Text style={styles.poolInfoMuted}>
-                  Today’s coin pool was claimed. Resets tomorrow.
+                  {t('home.dailyPool.poolClaimedResetsTomorrow')}
                 </Text>
               ) : (rewardDay?.adsRemaining ?? 0) <= 0 || (rewardDay?.coinsRemaining ?? 0) < 10 ? (
                 <View style={styles.claimStatusMutedBox}>
                   <Ionicons name="checkmark-done" size={16} color={Theme.colors.success} />
                   <Text style={styles.claimStatusMutedText}>
-                    All ad rewards completed for today! (30/30 coins)
+                    {t('home.dailyPool.allAdRewardsCompleted')}
                   </Text>
                 </View>
               ) : (
                 <>
                   <Button
-                    title={`Watch Ad for +10 Coins (${rewardDay?.adsRemaining ?? 3} left)`}
+                    title={t('home.dailyPool.watchAdButton', { count: formatNumber(rewardDay?.adsRemaining ?? 3, locale) })}
                     onPress={handleWatchAd}
                     disabled={adAttemptPending || adStatus === 'unavailable'}
                     loading={adAttemptPending}
@@ -863,13 +865,13 @@ export default function ProfileScreen() {
                     style={styles.claimButton}
                   />
                   <Text style={styles.adPerkNote}>
-                    Watch up to 3 ads/day · Premium unlocks instant 30-coin claim
+                    {t('home.dailyPool.adPerkNote')}
                   </Text>
                 </>
               )}
 
               {adEarned && (
-                <Text style={styles.adSuccessText}>Ad reward earned! Verifying with backend…</Text>
+                <Text style={styles.adSuccessText}>{t('home.dailyPool.adRewardEarned')}</Text>
               )}
               {adLocalError && (
                 <Text style={styles.errorText}>{adLocalError}</Text>
@@ -888,7 +890,7 @@ export default function ProfileScreen() {
           style={[styles.tabItem, activeTab === 'my-patterns' && styles.activeTabItem]}
         >
           <Text style={[styles.tabLabel, activeTab === 'my-patterns' && styles.activeTabLabel]}>
-            My Creations {creationsCount > 0 ? `(${creationsCount})` : ''}
+            {t('home.tabs.myCreations', { count: creationsCount > 0 ? `(${formatNumber(creationsCount, locale)})` : '' })}
           </Text>
         </Pressable>
 
@@ -899,7 +901,7 @@ export default function ProfileScreen() {
           style={[styles.tabItem, activeTab === 'liked' && styles.activeTabItem]}
         >
           <Text style={[styles.tabLabel, activeTab === 'liked' && styles.activeTabLabel]}>
-            Liked Patterns {likedCount > 0 ? `(${likedCount})` : ''}
+            {t('home.tabs.likedPatterns', { count: likedCount > 0 ? `(${formatNumber(likedCount, locale)})` : '' })}
           </Text>
         </Pressable>
       </View>
@@ -909,9 +911,9 @@ export default function ProfileScreen() {
         {activeTab === 'my-patterns' && !isAccount ? (
           <EmptyState
             icon="person-circle-outline"
-            title="Sign in for Personal Patterns"
-            body="A Registered Account is required to create and privately own converted photo patterns."
-            actionLabel="Sign in"
+            title={t('home.myPatterns.signInTitle')}
+            body={t('home.myPatterns.signInBody')}
+            actionLabel={t('home.myPatterns.signIn')}
             onAction={() => router.push('/(tabs)/(settings)/sign-in')}
             actionVariant="rose"
           />
@@ -931,15 +933,15 @@ export default function ProfileScreen() {
                     {pending.title}
                   </Text>
                   <Text style={styles.patternMeta}>
-                    {pending.width}×{pending.height} · {pending.palette.length} colors
+                    {t('home.myPatterns.patternMeta', { count: pending.palette.length, height: pending.height, width: pending.width })}
                   </Text>
                   <View style={styles.patternPendingBadge}>
                     <Ionicons name="sync-outline" size={12} color={Theme.colors.error} />
-                    <Text style={styles.patternPendingBadgeText}>Pending sync</Text>
+                    <Text style={styles.patternPendingBadgeText}>{t('home.myPatterns.pendingSync')}</Text>
                   </View>
                 </View>
                 <Button
-                  title="Play"
+                  title={t('home.myPatterns.play')}
                   variant="sage"
                   loading={openingPendingId === pending.patternId}
                   disabled={openingPendingId !== null}
@@ -960,11 +962,11 @@ export default function ProfileScreen() {
                     {pattern.title}
                   </Text>
                   <Text style={styles.patternMeta}>
-                    {pattern.width}×{pattern.height} · {pattern.paletteSize} colors
+                    {t('home.myPatterns.patternMeta', { count: pattern.paletteSize, height: pattern.height, width: pattern.width })}
                   </Text>
                 </View>
                 <Button
-                  title="Play"
+                  title={t('home.myPatterns.play')}
                   variant="sage"
                   loading={openingPatternId === pattern.id}
                   disabled={openingPatternId !== null}
@@ -972,14 +974,14 @@ export default function ProfileScreen() {
                   style={styles.playButton}
                 />
                 <Button
-                  title="Edit"
+                  title={t('home.myPatterns.edit')}
                   variant="secondary"
                   onPress={() => router.push(`/(tabs)/(create)/pattern-editor?patternId=${pattern.id}`)}
                   style={styles.patternEditButton}
                 />
                 {creatorProfile !== null && (
                   <Pressable
-                    accessibilityLabel={`Submit ${pattern.title} to the Community Catalog`}
+                    accessibilityLabel={t('home.myPatterns.submitAccessibilityLabel', { title: pattern.title })}
                     accessibilityRole="button"
                     onPress={() => router.push(`/(tabs)/(profile)/submit-pattern?patternId=${pattern.id}`)}
                     style={({ pressed }) => [styles.patternSubmitButton, pressed && styles.pressed]}
@@ -998,13 +1000,13 @@ export default function ProfileScreen() {
         ) : activeTab === 'liked' && likedPatternsQuery.isError ? (
           <EmptyState
             icon="cloud-offline-outline"
-            title="Liked Patterns Unavailable"
+            title={t('home.likedTab.unavailableTitle')}
             body={
-              likedPatternsQuery.error instanceof Error
-                ? likedPatternsQuery.error.message
-                : 'Could not load liked patterns.'
+              likedPatternsQuery.error && isServerApiError(likedPatternsQuery.error)
+                ? localizeServerError(likedPatternsQuery.error)
+                : t('home.likedTab.unavailableDefault')
             }
-            actionLabel="Try Again"
+            actionLabel={t('common.tryAgain')}
             onAction={() => void likedPatternsQuery.refetch()}
             actionVariant="rose"
           />
@@ -1036,9 +1038,9 @@ export default function ProfileScreen() {
                       <Text style={styles.patternTitle} numberOfLines={1}>
                         {pattern.title}
                       </Text>
-                      <Text style={styles.patternMeta}>by {pattern.creatorName}</Text>
+                      <Text style={styles.patternMeta}>{t('home.likedTab.byCreator', { creatorName: pattern.creatorName })}</Text>
                       <Text style={styles.patternMeta}>
-                        {pattern.width}×{pattern.height} · {pattern.paletteSize} colors
+                        {t('home.likedTab.specs', { count: pattern.paletteSize, height: pattern.height, width: pattern.width })}
                       </Text>
                     </View>
                     <Ionicons name="chevron-forward" size={18} color={Theme.colors.textSecondary} />
@@ -1049,18 +1051,18 @@ export default function ProfileScreen() {
         ) : activeTab === 'my-patterns' ? (
           <EmptyState
             icon="color-palette-outline"
-            title="No Personal Creations"
-            body="You haven't converted any photos or generated AI art yet. Head over to Create to start your first masterwork!"
-            actionLabel="Start Creating"
+            title={t('home.myPatterns.emptyTitle')}
+            body={t('home.myPatterns.emptyBody')}
+            actionLabel={t('home.myPatterns.emptyAction')}
             onAction={() => router.push('/(tabs)/(create)/photo-import')}
             actionVariant="rose"
           />
         ) : (
           <EmptyState
             icon="heart-outline"
-            title="No Liked Patterns"
-            body="Browse the catalog and tap the heart icon on any design to save it here for later."
-            actionLabel="Discover Patterns"
+            title={t('home.likedTab.emptyTitle')}
+            body={t('home.likedTab.emptyBody')}
+            actionLabel={t('home.likedTab.emptyAction')}
             onAction={() => router.push('/(tabs)/(catalog)')}
             actionVariant="sage"
           />

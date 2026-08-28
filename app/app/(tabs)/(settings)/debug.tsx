@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, Alert, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Screen, Card, Button } from '@/components';
 import { Theme } from '@/theme/theme';
 import { Config, isSentryConfigured } from '@/config';
@@ -25,23 +26,24 @@ function DebugSection({ title, children }: DebugSectionProps) {
 }
 
 export default function DebugScreen() {
+  const { t } = useTranslation('settings');
   const isConfigured = isSentryConfigured();
 
   const handleSendTestEvent = () => {
     if (!isConfigured) {
       Alert.alert(
-        'Sentry Disabled',
-        'Sentry is not configured (no DSN found), so no test event will be sent.'
+        t('developer.debug.sentry.disabledTitle'),
+        t('developer.debug.sentry.disabledMessage'),
       );
     } else {
       try {
         const eventId = Sentry.captureException(
           new Error('Sentry debug test event from Stitch Wish debug screen')
         );
-        Alert.alert('Sentry', `Test event sent. Event ID: ${eventId}`);
+        Alert.alert(t('developer.debug.sentry.testEventTitle'), t('developer.debug.sentry.testEventSent', { eventId }));
       } catch (err) {
         const errMsg = err instanceof Error ? err.message : String(err);
-        Alert.alert('Error', `Failed to send test event: ${errMsg}`);
+        Alert.alert(t('developer.debug.sentry.testEventFailedTitle'), t('developer.debug.sentry.testEventFailedMessage', { message: errMsg }));
       }
     }
   };
@@ -52,19 +54,19 @@ export default function DebugScreen() {
 
   const handleResetOnboarding = () => {
     Alert.alert(
-      'Restart onboarding?',
-      'The tutorial state will be cleared and onboarding will start from the Welcome screen.',
+      t('developer.debug.onboarding.confirmTitle'),
+      t('developer.debug.onboarding.confirmMessage'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('developer.debug.onboarding.cancel'), style: 'cancel' },
         {
-          text: 'Restart onboarding',
+          text: t('developer.debug.onboarding.restart'),
           style: 'destructive',
           onPress: () => {
             void resetOnboarding().then(() => {
               router.replace('/onboarding/welcome');
             }).catch((error: unknown) => {
               const message = error instanceof Error ? error.message : String(error);
-              Alert.alert('Reset failed', message);
+              Alert.alert(t('developer.debug.onboarding.resetFailedTitle'), message);
             });
           },
         },
@@ -78,39 +80,39 @@ export default function DebugScreen() {
         <Pressable
           onPress={() => router.back()}
           style={styles.backButton}
-          accessibilityLabel="Go back"
+          accessibilityLabel={t('developer.debug.backAccessibilityLabel')}
           accessibilityRole="button"
         >
           <Ionicons name="arrow-back" size={22} color={Theme.colors.textPrimary} />
         </Pressable>
-        <Text style={styles.title}>Debug</Text>
+        <Text style={styles.title}>{t('developer.debug.title')}</Text>
       </View>
 
-      <DebugSection title="Sentry">
+      <DebugSection title={t('developer.debug.sentry.sectionTitle')}>
         <Text style={styles.statusText}>
           {isConfigured
-            ? `DSN: configured · env: ${Config.sentry.environment}`
-            : 'DSN: not configured'}
+            ? t('developer.debug.sentry.dsnConfigured', { environment: Config.sentry.environment })
+            : t('developer.debug.sentry.dsnNotConfigured')}
         </Text>
         <View style={styles.buttonGroup}>
           <Button
-            title="Send Test Event"
+            title={t('developer.debug.sentry.sendTestEvent')}
             onPress={handleSendTestEvent}
             variant="primary"
             style={styles.actionButton}
           />
           <Button
-            title="Throw Error"
+            title={t('developer.debug.sentry.throwError')}
             onPress={handleThrowUncaughtError}
             variant="secondary"
             style={styles.actionButton}
           />
         </View>
       </DebugSection>
-      <DebugSection title="Onboarding">
-        <Text style={styles.statusText}>Clear tutorial progress and start again from Welcome.</Text>
+      <DebugSection title={t('developer.debug.onboarding.sectionTitle')}>
+        <Text style={styles.statusText}>{t('developer.debug.onboarding.description')}</Text>
         <Button
-          title="Restart onboarding"
+          title={t('developer.debug.onboarding.restart')}
           onPress={handleResetOnboarding}
           variant="secondary"
           style={styles.actionButton}

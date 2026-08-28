@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { MEMBERSHIP_THEMES, useActiveMembershipTheme } from '@/membership/themes';
@@ -11,6 +12,7 @@ import { Button } from './Button';
 import { Card } from './Card';
 
 export function ThemeCollectionCard() {
+  const { t } = useTranslation('settings');
   const router = useRouter();
   const isAccount = useIdentityStore((state) => state.isAccount);
   const { theme, themeAccess, selectTheme } = useActiveMembershipTheme(isAccount);
@@ -26,15 +28,15 @@ export function ThemeCollectionCard() {
     <Card style={styles.card}>
       <View style={styles.header}>
         <View style={styles.headerCopy}>
-          <Text style={styles.title}>Theme Collection</Text>
+          <Text style={styles.title}>{t('themeCollectionCard.title')}</Text>
           <Text style={styles.description}>
-            Change grid, stitch, and completion cosmetics without affecting gameplay.
+            {t('themeCollectionCard.description')}
           </Text>
         </View>
         {!themeAccess && (
           <View style={styles.lockBadge}>
             <Ionicons name="lock-closed-outline" size={14} color={Theme.colors.textSecondary} />
-            <Text style={styles.lockBadgeText}>Premium</Text>
+            <Text style={styles.lockBadgeText}>{t('themeCollectionCard.premiumBadge')}</Text>
           </View>
         )}
       </View>
@@ -45,7 +47,7 @@ export function ThemeCollectionCard() {
           const selected = theme.id === candidate.id;
           return (
             <Pressable
-              accessibilityHint={locked ? 'Requires Premium Membership' : undefined}
+              accessibilityHint={locked ? t('themeCollectionCard.lockedAccessibilityHint') : undefined}
               accessibilityRole="button"
               key={candidate.id}
               onPress={locked ? openPremium : () => void selectTheme(candidate.id)}
@@ -64,7 +66,7 @@ export function ThemeCollectionCard() {
                 color={candidate.celebrationAccent}
               />
               <Text style={styles.themeOptionText}>{candidate.name}</Text>
-              {selected && <Text style={styles.selectedText}>Selected</Text>}
+              {selected && <Text style={styles.selectedText}>{t('themeCollectionCard.selected')}</Text>}
             </Pressable>
           );
         })}
@@ -72,14 +74,14 @@ export function ThemeCollectionCard() {
 
       {themeAccess ? (
         <Text style={styles.accessText}>
-          Premium theme access is active, including during an eligible Monthly Trial.
+          {t('themeCollectionCard.accessActive')}
         </Text>
       ) : (
         <View style={styles.lockedGuidance} testID="theme-collection-locked">
           <Text style={styles.description}>
-            Preview the collection here. Premium Membership or an eligible Monthly Trial unlocks selection.
+            {t('themeCollectionCard.lockedPreview')}
           </Text>
-          <Button title="View Premium plans" onPress={openPremium} variant="rose" />
+          <Button title={t('themeCollectionCard.viewPremiumPlans')} onPress={openPremium} variant="rose" />
         </View>
       )}
     </Card>

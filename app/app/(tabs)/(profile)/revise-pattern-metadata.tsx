@@ -2,21 +2,25 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { useCatalogCategories, useCatalogTags } from '@/api/catalog';
 import { useCreateCatalogMetadataRevision, useMyPublishedPatterns } from '@/api/catalogMetadataRevisions';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 import { Button, Card, EmptyState, Screen } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
 
 export default function RevisePatternMetadataScreen() {
+  const { t } = useTranslation('profile');
+  const { t: tCatalog } = useTranslation('catalog');
   const params = useLocalSearchParams<{ patternId?: string | string[] }>();
   const patternId = Array.isArray(params.patternId) ? params.patternId[0] : params.patternId;
   const accountId = useIdentityStore((state) => state.accountId);
   const isAccount = useIdentityStore((state) => state.isAccount);
   const patternsQuery = useMyPublishedPatterns(accountId, isAccount);
   const categoriesQuery = useCatalogCategories();
-  const tagsQuery = useCatalogTags('en');
+  const tagsQuery = useCatalogTags();
   const mutation = useCreateCatalogMetadataRevision(accountId);
   const pattern = patternsQuery.data?.find((item) => item.id === patternId) ?? null;
   const initialized = React.useRef(false);
@@ -77,20 +81,26 @@ export default function RevisePatternMetadataScreen() {
       });
       router.replace('/(tabs)/(profile)/published-patterns');
     } catch (caught: unknown) {
-      setError(caught instanceof Error ? caught.message : String(caught));
+      setError(
+        isServerApiError(caught)
+          ? localizeServerError(caught)
+          : caught instanceof Error
+            ? caught.message
+            : String(caught),
+      );
     }
   };
 
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
-      <Header title="Revise Metadata" />
+      <Header title={t('revisePatternMetadata.title')} />
 
       {!isAccount ? (
         <EmptyState
           icon="person-circle-outline"
-          title="Registered Account Required"
-          body="Sign in before revising a Community Pattern's metadata."
-          actionLabel="Sign In"
+          title={t('revisePatternMetadata.signInTitle')}
+          body={t('revisePatternMetadata.signInBody')}
+          actionLabel={t('revisePatternMetadata.signInAction')}
           onAction={() => router.push('/(tabs)/(settings)/sign-in')}
           actionVariant="rose"
         />
@@ -99,18 +109,18 @@ export default function RevisePatternMetadataScreen() {
       ) : pattern === null ? (
         <EmptyState
           icon="alert-circle-outline"
-          title="Community Pattern Not Found"
-          body="Only your own published Community Patterns can be revised."
-          actionLabel="Back to Published Patterns"
+          title={t('revisePatternMetadata.notFoundTitle')}
+          body={t('revisePatternMetadata.notFoundBody')}
+          actionLabel={t('revisePatternMetadata.notFoundAction')}
           onAction={() => router.back()}
           actionVariant="sage"
         />
       ) : !pattern.canSubmitRevision ? (
         <EmptyState
           icon="hourglass-outline"
-          title="Revision Already In Progress"
-          body="This Pattern already has a pending revision or active appeal. Withdraw it before submitting another."
-          actionLabel="Back to Published Patterns"
+          title={t('revisePatternMetadata.inProgressTitle')}
+          body={t('revisePatternMetadata.inProgressBody')}
+          actionLabel={t('revisePatternMetadata.inProgressAction')}
           onAction={() => router.back()}
           actionVariant="sage"
         />
@@ -119,29 +129,29 @@ export default function RevisePatternMetadataScreen() {
           <Card style={styles.patternSummary}>
             <View style={styles.summaryText}>
               <Text style={styles.patternTitle} numberOfLines={2}>{pattern.title}</Text>
-              <Text style={styles.helpText}>Currently published on the Community Catalog</Text>
+              <Text style={styles.helpText}>{t('revisePatternMetadata.currentlyPublished')}</Text>
             </View>
           </Card>
 
-          <Field label="Catalog title" count={`${normalizedTitle.length}/120`}>
+          <Field label={t('revisePatternMetadata.titleFieldLabel')} count={`${normalizedTitle.length}/120`}>
             <TextInput
-              accessibilityLabel="Catalog title"
+              accessibilityLabel={t('revisePatternMetadata.titleAccessibilityLabel')}
               maxLength={120}
               onChangeText={setTitle}
-              placeholder="Pattern title"
+              placeholder={t('revisePatternMetadata.titlePlaceholder')}
               placeholderTextColor={Theme.colors.textSecondary}
               style={styles.input}
               value={title}
             />
           </Field>
 
-          <Field label="Description" count={`${normalizedDescription.length}/2000`}>
+          <Field label={t('revisePatternMetadata.descriptionFieldLabel')} count={`${normalizedDescription.length}/2000`}>
             <TextInput
-              accessibilityLabel="Catalog description"
+              accessibilityLabel={t('revisePatternMetadata.descriptionAccessibilityLabel')}
               maxLength={2000}
               multiline
               onChangeText={setDescription}
-              placeholder="Describe the design, subject, and stitching experience."
+              placeholder={t('revisePatternMetadata.descriptionPlaceholder')}
               placeholderTextColor={Theme.colors.textSecondary}
               style={[styles.input, styles.textarea]}
               textAlignVertical="top"
@@ -149,14 +159,19 @@ export default function RevisePatternMetadataScreen() {
             />
           </Field>
 
-          <Field label="Source language">
+          {/* #165: the Catalog Source Language selector is app-authored
+              interface text and is translated, but it's independent of
+              the App Display Language - this pattern is locked to
+              English (the only accepted sourceLanguage), so only the
+              field label and the language name are localized. */}
+          <Field label={t('revisePatternMetadata.sourceLanguageFieldLabel')}>
             <View style={styles.readonlyField}>
-              <Text style={styles.readonlyText}>English</Text>
+              <Text style={styles.readonlyText}>{tCatalog('sourceLanguage.names.en')}</Text>
               <Ionicons name="lock-closed-outline" size={16} color={Theme.colors.textSecondary} />
             </View>
           </Field>
 
-          <Field label="Category">
+          <Field label={t('revisePatternMetadata.categoryFieldLabel')}>
             {loadingReferences ? <ActivityIndicator color={Theme.colors.accentRose} /> : (
               <View style={styles.chips}>
                 {categories.map((category) => (
@@ -171,7 +186,7 @@ export default function RevisePatternMetadataScreen() {
             )}
           </Field>
 
-          <Field label="Tags" count={`${tagCodes.length}/5`}>
+          <Field label={t('revisePatternMetadata.tagsFieldLabel')} count={`${tagCodes.length}/5`}>
             {loadingReferences ? <ActivityIndicator color={Theme.colors.accentRose} /> : (
               <View style={styles.chips}>
                 {tags.map((tag) => (
@@ -187,13 +202,10 @@ export default function RevisePatternMetadataScreen() {
             )}
           </Field>
 
-          <Text style={styles.notice}>
-            Revising captures a new immutable snapshot. Your currently published metadata stays visible until a
-            human moderator accepts this revision.
-          </Text>
+          <Text style={styles.notice}>{t('revisePatternMetadata.notice')}</Text>
           {error !== null && <Text style={styles.error}>{error}</Text>}
           <Button
-            title="Submit Revision"
+            title={t('revisePatternMetadata.submitAction')}
             variant="rose"
             disabled={!canSubmit}
             loading={mutation.isPending}
@@ -206,9 +218,10 @@ export default function RevisePatternMetadataScreen() {
 }
 
 function Header({ title }: { title: string }) {
+  const { t } = useTranslation('profile');
   return (
     <View style={styles.header}>
-      <Pressable accessibilityLabel="Go back" hitSlop={12} onPress={() => router.back()}>
+      <Pressable accessibilityLabel={t('common.goBackAccessibilityLabel')} hitSlop={12} onPress={() => router.back()}>
         <Ionicons name="chevron-back" size={26} color={Theme.colors.textPrimary} />
       </Pressable>
       <Text style={styles.headerTitle}>{title}</Text>

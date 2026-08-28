@@ -1,13 +1,15 @@
 import React from 'react';
 import { StyleSheet, View, Text, FlatList, ActivityIndicator } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Screen, Card, Button, EmptyState, PatternImage } from '@/components';
+import { Screen, Card, Button, EmptyState, PatternImage, SourceLanguageBadge } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useTabBarSpace } from '@/theme/tabBar';
 import {
   CatalogPatternItem,
   absolutePreviewUrl,
   absoluteThumbnailUrls,
+  presentCatalogError,
   usePatternsBrowse,
 } from '@/api/catalog';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,6 +17,7 @@ import { useLocalLikes } from '@/api/social';
 import { useIdentityStore } from '@/identity/guestIdentity';
 
 export default function BrowseScreen() {
+  const { t } = useTranslation('catalog');
   const { category, tag, title } = useLocalSearchParams<{
     category?: string;
     tag?: string;
@@ -29,26 +32,30 @@ export default function BrowseScreen() {
   const items: CatalogPatternItem[] =
     browse.data?.pages.flatMap((page) => page.data.items) ?? [];
   const fromCache = browse.data?.pages[0]?.fromCache === true;
+  const genericErrorTitle = t('common.sectionError.title');
+  const browseError = presentCatalogError(browse.error, {
+    genericTitle: genericErrorTitle,
+    title: genericErrorTitle,
+    body: t('browse.error.body'),
+  });
 
   return (
     <Screen clearsTabBar={false}>
       <View style={styles.headerRow}>
         <Button
           variant="secondary"
-          title="← Back"
+          title={t('common.back')}
           onPress={() => router.back()}
           style={styles.backButton}
         />
         <Text style={styles.title} numberOfLines={1}>
-          {title ?? 'Browse'}
+          {title ?? t('browse.defaultTitle')}
         </Text>
       </View>
 
       {fromCache && (
         <View style={styles.offlineBanner}>
-          <Text style={styles.offlineBannerText}>
-            Offline — catalog may be out of date
-          </Text>
+          <Text style={styles.offlineBannerText}>{t('common.offlineBanner')}</Text>
         </View>
       )}
 
@@ -60,9 +67,9 @@ export default function BrowseScreen() {
         <View style={styles.center}>
           <EmptyState
             icon="cloud-offline-outline"
-            title="Couldn't Load"
-            body="This catalog page could not be reached and nothing is cached yet."
-            actionLabel="Try Again"
+            title={browseError.title}
+            body={browseError.body}
+            actionLabel={t('common.sectionError.retry')}
             onAction={() => browse.refetch()}
             actionVariant="secondary"
           />
@@ -71,8 +78,8 @@ export default function BrowseScreen() {
         <View style={styles.center}>
           <EmptyState
             icon="color-palette-outline"
-            title="Nothing Here Yet"
-            body="No patterns match this selection yet. New designs arrive regularly."
+            title={t('browse.empty.title')}
+            body={t('browse.empty.body')}
           />
         </View>
       ) : (
@@ -115,8 +122,16 @@ export default function BrowseScreen() {
                 <Text style={styles.gridTitle} numberOfLines={1}>
                   {item.title}
                 </Text>
+                <SourceLanguageBadge
+                  sourceLanguage={item.sourceLanguage}
+                  style={styles.sourceLanguageBadge}
+                />
                 <Text style={styles.gridMeta}>
-                  {item.width}×{item.height} • {item.paletteSize} cols
+                  {t('common.patternMeta.dimensionsCols', {
+                    width: item.width,
+                    height: item.height,
+                    count: item.paletteSize,
+                  })}
                 </Text>
                 <View style={styles.cardLikesRow}>
                   <Ionicons
@@ -200,6 +215,9 @@ const styles = StyleSheet.create({
     fontWeight: Theme.typography.weights.semibold,
     color: Theme.colors.textPrimary,
     marginTop: Theme.spacing.sm,
+  },
+  sourceLanguageBadge: {
+    marginTop: Theme.spacing.xs,
   },
   gridMeta: {
     fontSize: Theme.typography.sizes.xs,

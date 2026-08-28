@@ -12,8 +12,14 @@ import { useCoinBalance, useUnlockedPatternIds, useUnlockPattern, InsufficientCo
 import { hasSeenGuestDataRiskNotice, markGuestDataRiskNoticeSeen } from '@/local-db';
 import { Ionicons } from '@expo/vector-icons';
 import { useLikeToggle, useLocalLikes, useBlockCreator } from '@/api/social';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
+import { useTranslation } from 'react-i18next';
+import { SourceLanguageBadge } from '@/components/SourceLanguageBadge';
+import { formatNumber } from '@/i18n';
 
 export default function PatternDetailScreen() {
+  const { t, i18n: i18nInstance } = useTranslation('catalog');
+  const locale = i18nInstance.language;
   const { id, returnTo } = useLocalSearchParams<{ id: string; returnTo?: string }>();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -42,7 +48,7 @@ export default function PatternDetailScreen() {
       setPatternData(data);
     } catch (err) {
       console.error('Failed to load pattern artifact:', err);
-      setError(err instanceof Error ? err.message : 'Failed to decode pattern file.');
+      setError(t('detail.loadFailedGeneric'));
     } finally {
       setLoading(false);
     }
@@ -73,7 +79,7 @@ export default function PatternDetailScreen() {
       });
     } catch (err) {
       console.error('Failed to start stitching session:', err);
-      setError('Failed to create a stitching session. Please try again.');
+      setError(t('detail.sessionCreateFailed'));
     } finally {
       setStitching(false);
     }
@@ -85,7 +91,7 @@ export default function PatternDetailScreen() {
       <View style={styles.headerRow}>
         <Button
           variant="secondary"
-          title="← Back"
+          title={t('common.back')}
           onPress={handleBack}
           style={styles.backButton}
         />
@@ -105,42 +111,42 @@ export default function PatternDetailScreen() {
           </View>
         </View>
         <Text style={styles.description}>
-          {manifestPattern.description || 'No description available.'}
+          {manifestPattern.description || t('detail.noDescription')}
         </Text>
       </View>
 
       {/* Technical Specs */}
       <Card style={styles.specsCard}>
         <View style={styles.specItem}>
-          <Text style={styles.specLabel}>Dimensions</Text>
+          <Text style={styles.specLabel}>{t('detail.specs.dimensions')}</Text>
           <Text style={styles.specValue}>
             {manifestPattern.width} × {manifestPattern.height}
           </Text>
         </View>
         <View style={styles.specDivider} />
         <View style={styles.specItem}>
-          <Text style={styles.specLabel}>Total Stitches</Text>
-          <Text style={styles.specValue}>{manifestPattern.cellsCount}</Text>
+          <Text style={styles.specLabel}>{t('detail.specs.totalStitches')}</Text>
+          <Text style={styles.specValue}>{formatNumber(manifestPattern.cellsCount, locale)}</Text>
         </View>
         <View style={styles.specDivider} />
         <View style={styles.specItem}>
-          <Text style={styles.specLabel}>Colors</Text>
-          <Text style={styles.specValue}>{manifestPattern.colorsCount} Threads</Text>
+          <Text style={styles.specLabel}>{t('detail.specs.colors')}</Text>
+          <Text style={styles.specValue}>{t('detail.threadsSuffix', { count: manifestPattern.colorsCount })}</Text>
         </View>
       </Card>
 
       {/* Thread Palette Section */}
       <View style={styles.paletteSection}>
-        <Text style={styles.sectionTitle}>Required Threads</Text>
+        <Text style={styles.sectionTitle}>{t('detail.palette.title')}</Text>
         {loading ? (
           <View style={styles.loaderContainer}>
             <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
-            <Text style={styles.loadingText}>Reading thread palette...</Text>
+            <Text style={styles.loadingText}>{t('detail.palette.loading')}</Text>
           </View>
         ) : error ? (
           <View style={styles.errorBanner}>
-            <Text style={styles.errorBannerText}>Failed to load palette: {error}</Text>
-            <Button title="Retry Loading" onPress={loadData} variant="rose" style={styles.retryButton} />
+            <Text style={styles.errorBannerText}>{t('detail.palette.loadFailed', { error })}</Text>
+            <Button title={t('detail.palette.retry')} onPress={loadData} variant="rose" style={styles.retryButton} />
           </View>
         ) : patternData ? (
           <View style={styles.paletteList}>
@@ -160,7 +166,7 @@ export default function PatternDetailScreen() {
       {/* Actions */}
       <View style={styles.actionContainer}>
         <Button
-          title={stitching ? 'Starting...' : 'Start Stitching'}
+          title={stitching ? t('detail.actions.starting') : t('detail.actions.startStitching')}
           onPress={handleStartStitching}
           variant="primary"
           loading={stitching}
@@ -173,6 +179,8 @@ export default function PatternDetailScreen() {
 }
 
 function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnTo?: string }) {
+  const { t, i18n: i18nInstance } = useTranslation('catalog');
+  const locale = i18nInstance.language;
   const router = useRouter();
   const pattern = useCatalogPattern(id, true);
   const { isAuthenticated, isAccount } = useIdentityStore();
@@ -215,9 +223,9 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
       <Screen style={styles.errorContainer}>
         <EmptyState
           icon="cloud-offline-outline"
-          title="Pattern Unavailable"
-          body="This pattern could not be loaded. It may have been removed, or you may be offline."
-          actionLabel="Go Back"
+          title={t('detail.unavailable.title')}
+          body={t('detail.unavailable.body')}
+          actionLabel={t('detail.unavailable.goBack')}
           onAction={handleBack}
           actionVariant="secondary"
         />
@@ -241,7 +249,11 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
       },
       {
         onError: (err) => {
-          setPrepareError(err instanceof Error ? err.message : 'Failed to update like status');
+          // #159: SocialApiError's server-supplied `message` never reaches
+          // the player; its `reason` maps to localized text instead.
+          setPrepareError(
+            isServerApiError(err) ? localizeServerError(err) : t('detail.likeFailedGeneric'),
+          );
         },
       }
     );
@@ -249,20 +261,20 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
 
   const handleBlockPress = () => {
     Alert.alert(
-      'Block Creator',
-      `Are you sure you want to block ${item.creatorName}? This is a private, reversible action that hides their patterns from search/browse. It does not report the creator and will not interrupt your current stitching session.`,
+      t('detail.blockConfirm.title'),
+      t('detail.blockConfirm.message', { creatorName: item.creatorName }),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('detail.blockConfirm.cancel'), style: 'cancel' },
         {
-          text: 'Block',
+          text: t('detail.blockConfirm.confirm'),
           style: 'destructive',
           onPress: async () => {
             if (item.creatorProfileId) {
               try {
                 await blockMutation.mutateAsync(item.creatorProfileId);
-                Alert.alert('Blocked', `${item.creatorName} has been blocked.`);
+                Alert.alert(t('detail.blockConfirm.blockedTitle'), t('detail.blockConfirm.blockedMessage', { creatorName: item.creatorName }));
               } catch (err) {
-                Alert.alert('Error', err instanceof Error ? err.message : 'Failed to block creator.');
+                Alert.alert(t('detail.blockConfirm.errorTitle'), isServerApiError(err) ? localizeServerError(err) : t('detail.blockConfirm.failedGeneric'));
               }
             }
           },
@@ -295,9 +307,7 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
         setUnlockCTAOverride(true);
       } else {
         setPrepareError(
-          err instanceof Error
-            ? err.message
-            : 'Could not start preparation. Check your connection and try again.',
+          isServerApiError(err) ? localizeServerError(err) : t('detail.preparationFailedGeneric'),
         );
       }
     } finally {
@@ -329,9 +339,7 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
         setInsufficientError({ price: err.price, balance: err.balance });
       } else {
         setPrepareError(
-          err instanceof Error
-            ? err.message
-            : 'Unlock failed. Check your connection and try again.'
+          isServerApiError(err) ? localizeServerError(err) : t('detail.unlockFailedGeneric'),
         );
       }
     } finally {
@@ -357,7 +365,7 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
       <View style={styles.headerRow}>
         <Button
           variant="secondary"
-          title="← Back"
+          title={t('common.back')}
           onPress={handleBack}
           style={styles.backButton}
         />
@@ -404,31 +412,31 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
           )}
         </View>
         <Text style={styles.description}>
-          by {item.creatorName}{item.creatorUsername ? ` · @${item.creatorUsername}` : ''}
+          {item.creatorUsername
+            ? t('detail.byCreatorWithUsername', { creatorName: item.creatorName, username: item.creatorUsername })
+            : t('detail.byCreator', { creatorName: item.creatorName })}
         </Text>
         {item.description ? <Text style={styles.catalogDescription}>{item.description}</Text> : null}
         {item.sourceLanguage ? (
-          <Text style={styles.sourceLanguage}>
-            Source language: {item.sourceLanguage === 'en' ? 'English' : item.sourceLanguage}
-          </Text>
+          <SourceLanguageBadge sourceLanguage={item.sourceLanguage} style={styles.sourceLanguage} />
         ) : null}
       </View>
 
       <Card style={styles.specsCard}>
         <View style={styles.specItem}>
-          <Text style={styles.specLabel}>Dimensions</Text>
+          <Text style={styles.specLabel}>{t('detail.specs.dimensions')}</Text>
           <Text style={styles.specValue}>
             {item.width} × {item.height}
           </Text>
         </View>
         <View style={styles.specDivider} />
         <View style={styles.specItem}>
-          <Text style={styles.specLabel}>Colors</Text>
-          <Text style={styles.specValue}>{item.paletteSize} Threads</Text>
+          <Text style={styles.specLabel}>{t('detail.specs.colors')}</Text>
+          <Text style={styles.specValue}>{t('detail.threadsSuffix', { count: item.paletteSize })}</Text>
         </View>
         <View style={styles.specDivider} />
         <View style={styles.specItem}>
-          <Text style={styles.specLabel}>Category</Text>
+          <Text style={styles.specLabel}>{t('detail.specs.category')}</Text>
           <Text style={styles.specValue}>{item.categoryCode}</Text>
         </View>
       </Card>
@@ -450,7 +458,12 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
       {(prepareError || toggleLike.error) && (
         <View style={styles.errorBanner}>
           <Text style={styles.errorBannerText}>
-            {prepareError || toggleLike.error?.message || 'Failed to update like status'}
+            {prepareError ||
+              (toggleLike.error
+                ? isServerApiError(toggleLike.error)
+                  ? localizeServerError(toggleLike.error)
+                  : t('detail.likeFailedGeneric')
+                : t('detail.likeFailedGeneric'))}
           </Text>
         </View>
       )}
@@ -459,16 +472,16 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
         <View style={styles.actionContainer}>
           {insufficientError ? (
             <Card style={styles.insufficientPanel}>
-              <Text style={styles.insufficientTitle}>Insufficient Coins</Text>
+              <Text style={styles.insufficientTitle}>{t('detail.insufficientCoins.title')}</Text>
               <Text style={styles.insufficientBody}>
-                This pattern costs {insufficientError.price} Stitch Coins, but you only have {insufficientError.balance} Coins.
-                {"\n\n"}
-                Shortfall: {insufficientError.price - insufficientError.balance} Coins.
-                {"\n\n"}
-                Earn Stitch Coins by completing other patterns! First Completion rewards are live.
+                {t('detail.insufficientCoins.body', {
+                  price: formatNumber(insufficientError.price, locale),
+                  balance: formatNumber(insufficientError.balance, locale),
+                  shortfall: formatNumber(insufficientError.price - insufficientError.balance, locale),
+                })}
               </Text>
               <Button
-                title="Get Stitch Coins"
+                title={t('detail.insufficientCoins.getCoins')}
                 onPress={() => router.push({
                   pathname: '/(tabs)/(profile)/commerce',
                   params: {
@@ -480,13 +493,13 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
                 style={styles.actionButton}
               />
               <Button
-                title="Find patterns to stitch"
+                title={t('detail.insufficientCoins.findPatterns')}
                 onPress={() => router.navigate('/(tabs)/(catalog)')}
                 variant="primary"
                 style={styles.actionButton}
               />
               <Button
-                title="Back"
+                title={t('detail.insufficientCoins.back')}
                 onPress={() => setInsufficientError(null)}
                 variant="secondary"
                 style={[styles.actionButton, { marginTop: Theme.spacing.sm }]}
@@ -494,7 +507,7 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
             </Card>
           ) : owned ? (
             <Button
-              title={preparing ? 'Preparing…' : 'Start Stitching'}
+              title={preparing ? t('detail.actions.preparing') : t('detail.actions.startStitching')}
               onPress={handleStartStitching}
               variant="primary"
               loading={preparing || unlocksLoading}
@@ -505,18 +518,18 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
             <Card style={styles.unlockCard}>
               <View style={styles.coinRow}>
                 <View style={styles.priceContainer}>
-                  <Text style={styles.priceLabel}>Price</Text>
-                  <Text style={styles.priceText}>{price} 🪙</Text>
+                  <Text style={styles.priceLabel}>{t('detail.price.label')}</Text>
+                  <Text style={styles.priceText}>{formatNumber(price, locale)} 🪙</Text>
                 </View>
                 <View style={styles.balanceContainer}>
-                  <Text style={styles.balanceLabel}>Your Balance</Text>
+                  <Text style={styles.balanceLabel}>{t('detail.balance.label')}</Text>
                   <Text style={styles.balanceText}>
-                    {balanceLoading ? '...' : `${balance ?? 0} 🪙`}
+                    {balanceLoading ? t('detail.balance.loading') : `${formatNumber(balance ?? 0, locale)} 🪙`}
                   </Text>
                 </View>
               </View>
               <Button
-                title={`Unlock for ${price} Coin`}
+                title={t('detail.unlockButton', { price: formatNumber(price, locale) })}
                 onPress={handleUnlockTap}
                 variant="primary"
                 loading={unlockMutation.isPending || preparing}
@@ -528,10 +541,9 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
         </View>
       ) : (
         <Card style={styles.playSoonCard}>
-          <Text style={styles.playSoonTitle}>Connect to play</Text>
+          <Text style={styles.playSoonTitle}>{t('detail.connectToPlay.title')}</Text>
           <Text style={styles.playSoonBody}>
-            Starting a catalog pattern needs a connection to prepare your
-            session. Starter Patterns are playable right now, even offline.
+            {t('detail.connectToPlay.body')}
           </Text>
         </Card>
       )}

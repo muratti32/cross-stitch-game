@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 import { Screen, EmptyState, Card, Button } from '@/components';
 import { Theme } from '@/theme/theme';
@@ -32,7 +33,8 @@ import {
   ApiError,
   type DmcColor,
 } from '@/pattern-editor/api';
-import { listPersonalPatterns } from '@/conversion';
+import { formatNumber } from '@/i18n';
+import { listPersonalPatterns, resolveCreateErrorMessage } from '@/conversion';
 import { base64ToUint8Array, uint8ArrayToBase64 } from '@/session-preparation';
 
 import { EditorGrid } from '@/pattern-editor/EditorGrid';
@@ -43,6 +45,8 @@ function normalizeTitle(value: string): string {
 }
 
 export default function PatternEditorScreen() {
+  const { t, i18n: i18nInstance } = useTranslation('create');
+  const locale = i18nInstance.language;
   const router = useRouter();
   const tabBarSpace = useTabBarSpace();
   const { patternId } = useLocalSearchParams<{ patternId?: string }>();
@@ -118,7 +122,7 @@ export default function PatternEditorScreen() {
         await saveEditorDraft(patternId, patternData.width, patternData.height, initialHistory);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(resolveCreateErrorMessage(err, 'create:patternEditor.load.errors.generic'));
     } finally {
       setLoading(false);
     }
@@ -207,7 +211,9 @@ export default function PatternEditorScreen() {
       return { index: existing + 1, palette };
     }
     if (palette.length >= 255) {
-      throw new Error('This pattern already uses the maximum of 255 thread colors.');
+      throw new Error(
+        t('patternEditor.errors.paletteLimit', { max: formatNumber(255, locale) }),
+      );
     }
     const nextPalette = [...palette, { dmcCode: color.dmcCode, name: color.name, rgbHex: color.rgbHex }];
     return { index: nextPalette.length, palette: nextPalette };
@@ -216,7 +222,7 @@ export default function PatternEditorScreen() {
   // Handle single-cell tap recolor
   const handleCellTap = (cellIndex: number) => {
     if (!currentGrid || !selectedColor) {
-      setLimitError('Pick a color first');
+      setLimitError(t('patternEditor.errors.pickColorFirst'));
       return;
     }
     setLimitError(null);
@@ -225,8 +231,8 @@ export default function PatternEditorScreen() {
       const nextGrid = currentGrid.slice();
       nextGrid[cellIndex] = index;
       applyEdit(nextGrid, nextPalette);
-    } catch (err) {
-      setLimitError(err instanceof Error ? err.message : String(err));
+    } catch {
+      setLimitError(t('patternEditor.errors.paletteLimit', { max: formatNumber(255, locale) }));
     }
   };
 
@@ -252,8 +258,8 @@ export default function PatternEditorScreen() {
         }
         applyEdit(nextGrid, nextPalette);
         setReplaceSourceIndex(null);
-      } catch (err) {
-        setLimitError(err instanceof Error ? err.message : String(err));
+      } catch {
+        setLimitError(t('patternEditor.errors.paletteLimit', { max: formatNumber(255, locale) }));
       }
     } else {
       setSelectedColor(color);
@@ -281,7 +287,11 @@ export default function PatternEditorScreen() {
       router.back();
     } catch (err: unknown) {
       if (err instanceof ApiError && (err.status === 409 || err.status === 400 || err.status === 403)) {
-        setSaveError(err.message);
+        setSaveError(
+          err.status === 409
+            ? t('common.duplicateTitle', { title: title.trim() })
+            : resolveCreateErrorMessage(err, 'create:patternEditor.save.errors.generic'),
+        );
         setBusy(false);
         return;
       }
@@ -302,8 +312,8 @@ export default function PatternEditorScreen() {
         createdAt: new Date().toISOString(),
       });
       Alert.alert(
-        'Saved offline',
-        'Your edited pattern was saved on this device and will sync to your account once you are back online.',
+        t('patternEditor.save.offlineTitle'),
+        t('patternEditor.save.offlineBody'),
       );
       router.back();
     } finally {
@@ -315,11 +325,11 @@ export default function PatternEditorScreen() {
     return (
       <Screen style={styles.gateScreen}>
         <Ionicons name="alert-circle-outline" size={64} color={Theme.colors.accentRose} />
-        <Text style={styles.gateTitle}>No Pattern Selected</Text>
+        <Text style={styles.gateTitle}>{t('patternEditor.gate.noPatternTitle')}</Text>
         <Text style={styles.gateBody}>
-          This screen must be opened from an existing Personal Pattern in your library.
+          {t('patternEditor.gate.noPatternBody')}
         </Text>
-        <Button title="Back" onPress={() => router.back()} variant="secondary" />
+        <Button title={t('patternEditor.gate.back')} onPress={() => router.back()} variant="secondary" />
       </Screen>
     );
   }
@@ -328,16 +338,16 @@ export default function PatternEditorScreen() {
     return (
       <Screen style={styles.gateScreen}>
         <Ionicons name="person-circle-outline" size={64} color={Theme.colors.accentRose} />
-        <Text style={styles.gateTitle}>Registered Account Required</Text>
+        <Text style={styles.gateTitle}>{t('patternEditor.gate.accountTitle')}</Text>
         <Text style={styles.gateBody}>
-          Personal Patterns belong to your account so they stay private and available across devices.
+          {t('patternEditor.gate.accountBody')}
         </Text>
         <Button
-          title="Sign in or create account"
+          title={t('patternEditor.gate.signIn')}
           onPress={() => router.push('/(tabs)/(settings)/sign-in')}
           variant="rose"
         />
-        <Button title="Back" onPress={() => router.back()} variant="secondary" />
+        <Button title={t('patternEditor.gate.back')} onPress={() => router.back()} variant="secondary" />
       </Screen>
     );
   }
@@ -346,7 +356,7 @@ export default function PatternEditorScreen() {
     return (
       <Screen style={styles.loadingScreen}>
         <ActivityIndicator size="large" color={Theme.colors.accentRose} />
-        <Text style={styles.loadingText}>Resuming editor draft...</Text>
+        <Text style={styles.loadingText}>{t('patternEditor.loading')}</Text>
       </Screen>
     );
   }
@@ -355,10 +365,10 @@ export default function PatternEditorScreen() {
     return (
       <Screen style={styles.gateScreen}>
         <Ionicons name="cloud-offline-outline" size={64} color={Theme.colors.accentRose} />
-        <Text style={styles.gateTitle}>Failed to Load Pattern</Text>
+        <Text style={styles.gateTitle}>{t('patternEditor.load.failedTitle')}</Text>
         <Text style={styles.gateBody}>{error}</Text>
-        <Button title="Retry" onPress={loadPattern} variant="rose" />
-        <Button title="Back" onPress={() => router.back()} variant="secondary" />
+        <Button title={t('patternEditor.load.retry')} onPress={loadPattern} variant="rose" />
+        <Button title={t('patternEditor.load.back')} onPress={() => router.back()} variant="secondary" />
       </Screen>
     );
   }
@@ -366,11 +376,18 @@ export default function PatternEditorScreen() {
   return (
     <Screen style={styles.container}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable
+          onPress={() => router.back()}
+          style={styles.backButton}
+          accessibilityRole="button"
+          accessibilityLabel={t('patternEditor.header.backAccessibilityLabel')}
+        >
           <Ionicons name="arrow-back" size={24} color={Theme.colors.accentTeal} />
         </Pressable>
-        <Text style={styles.title}>Pattern Editor</Text>
-        <Text style={styles.dimensions}>({width}x{height})</Text>
+        <Text style={styles.title}>{t('patternEditor.header.title')}</Text>
+        <Text style={styles.dimensions}>
+          {t('patternEditor.header.dimensions', { width: formatNumber(width, locale), height: formatNumber(height, locale) })}
+        </Text>
       </View>
 
       <ScrollView
@@ -393,14 +410,14 @@ export default function PatternEditorScreen() {
         {/* Undo / Redo Toolbar */}
         <View style={styles.toolbar}>
           <Button
-            title="Undo"
+            title={t('patternEditor.toolbar.undo')}
             variant="secondary"
             disabled={!history || history.cursor === 0}
             onPress={handleUndo}
             style={styles.toolbarButton}
           />
           <Button
-            title="Redo"
+            title={t('patternEditor.toolbar.redo')}
             variant="secondary"
             disabled={!history || history.cursor === history.snapshots.length - 1}
             onPress={handleRedo}
@@ -428,7 +445,7 @@ export default function PatternEditorScreen() {
                   !isReplaceMode && styles.modeToggleLabelActive,
                 ]}
               >
-                Paint
+                {t('patternEditor.mode.paint')}
               </Text>
             </Pressable>
             <Pressable
@@ -448,7 +465,7 @@ export default function PatternEditorScreen() {
                   isReplaceMode && styles.modeToggleLabelActive,
                 ]}
               >
-                Replace Color
+                {t('patternEditor.mode.replaceColor')}
               </Text>
             </Pressable>
           </View>
@@ -456,7 +473,7 @@ export default function PatternEditorScreen() {
           {isReplaceMode ? (
             <View style={styles.replaceContainer}>
               <Text style={styles.hintText}>
-                1. Tap a color in the pattern below to replace:
+                {t('patternEditor.mode.replaceStep1')}
               </Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.distinctScroll}>
                 <View style={styles.distinctRow}>
@@ -483,7 +500,7 @@ export default function PatternEditorScreen() {
               </ScrollView>
               {replaceSourceIndex !== null && (
                 <Text style={styles.hintText}>
-                  2. Select a target DMC color below to execute replacement:
+                  {t('patternEditor.mode.replaceStep2')}
                 </Text>
               )}
             </View>
@@ -491,8 +508,8 @@ export default function PatternEditorScreen() {
             <View style={styles.paintContainer}>
               <Text style={styles.hintText}>
                 {selectedColor
-                  ? `Selected: DMC ${selectedColor.dmcCode} (${selectedColor.name})`
-                  : 'Select a color below, then tap cells to paint.'}
+                  ? t('patternEditor.mode.paintSelected', { dmcCode: selectedColor.dmcCode, name: selectedColor.name })
+                  : t('patternEditor.mode.paintUnselected')}
               </Text>
             </View>
           )}
@@ -502,7 +519,7 @@ export default function PatternEditorScreen() {
 
         {/* Master DMC Catalog Picker */}
         <View style={styles.pickerSection}>
-          <Text style={styles.sectionTitle}>DMC Thread Colors</Text>
+          <Text style={styles.sectionTitle}>{t('patternEditor.picker.title')}</Text>
           <DmcColorPicker
             colors={dmcColors}
             selectedDmcCode={selectedColor?.dmcCode ?? null}
@@ -512,7 +529,7 @@ export default function PatternEditorScreen() {
 
         {/* Save as New Section */}
         <Card style={styles.saveCard}>
-          <Text style={styles.saveLabel}>Save Edited Pattern</Text>
+          <Text style={styles.saveLabel}>{t('patternEditor.save.label')}</Text>
           <TextInput
             value={title}
             onChangeText={(val) => {
@@ -522,17 +539,17 @@ export default function PatternEditorScreen() {
             maxLength={255}
             editable={!busy}
             style={styles.titleInput}
-            placeholder="My Edited Pattern Title"
+            placeholder={t('patternEditor.save.placeholder')}
             placeholderTextColor={Theme.colors.textSecondary}
           />
           {duplicateTitle && (
             <Text style={styles.errorText}>
-              You already have a Personal Pattern named “{title.trim()}”. Choose a different title.
+              {t('common.duplicateTitle', { title: title.trim() })}
             </Text>
           )}
           {saveError && <Text style={styles.errorText}>{saveError}</Text>}
           <Button
-            title="Save as New"
+            title={t('patternEditor.save.action')}
             onPress={handleSaveAsNew}
             disabled={busy || title.trim().length === 0 || duplicateTitle}
             loading={busy}

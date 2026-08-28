@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "STITCH WISH'E HOŞ GELDİN",
+    "title": "Bir renk seç, eşleşen kareye dokun.",
+    "heroAlt": "Cozy Heart başlangıç deseni önizlemesi",
+    "handedness": {
+      "sectionTitle": "Kontroller hangi tarafta olsun?",
+      "groupLabel": "Kontrol tarafı",
+      "optionRight": "Kontroller sağda",
+      "optionLeft": "Kontroller solda",
+      "saveErrorText": "Bu seçim kaydedilemedi.",
+      "retry": "Tekrar dene"
+    },
+    "note": "Bunu daha sonra Ayarlar'dan değiştirebilirsin.",
+    "start": "Dikişe başla",
+    "starting": "Başlıyor…",
+    "browse": "Başlangıç desenlerine göz at",
+    "signIn": "Giriş yap"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "DMC 321 Noel Kırmızısı'nı seç.",
+      "stitchAction": "Vurgulanan eşleşen kareye dokun.",
+      "mismatchedTap": "Vurgulanan farklı kareye dokun. Yanlış dokunuşların bir bedeli yok.",
+      "undoAction": "O dikişi geri al, sonra yeniden yerleştir.",
+      "stitchSweep": "Eşleşen bir kareye bas, sonra vurgulanan çizgi boyunca sürükle.",
+      "threadColorCompletion": "Vurgulanan beyaz ipliği tamamla, sonra bir sonraki rengi seç."
+    },
+    "hints": {
+      "anchoredZoom": "Parmakların altındaki kareleri sabit tutarken yakınlaştırmak için iki parmağını kullan.",
+      "panVsSweep": "Sürüklemek kumaşı kaydırır. Dikiş yapmak için eşleşen bir kareden başla.",
+      "edgeAutoPan": "Kenara yakın sürüklemeyi sürdür, kumaş parmağını takip eder.",
+      "remainingCellLocator": "Bu iplik için kalan bir sonraki kareyi bulmak için konum bulucuyu kullan."
+    },
+    "skip": "Şimdilik atla",
+    "skipAccessibilityLabel": "Öğreticiyi şimdilik atla",
+    "dismiss": "Anladım",
+    "dismissAccessibilityLabel": "İpucunu kapat"
+  },
+  "recap": {
+    "title": "Öğrendin işte",
+    "lines": {
+      "matchNumbers": "Her dikişi yerleştirmek için numaraları eşleştir.",
+      "dragSweep": "Eşleşen kareler boyunca sürükleyerek dikiş yap.",
+      "pinchZoom": "Daha yakından bakmak istediğinde iki parmağınla yakınlaştır.",
+      "undoLocator": "Geri al ve konum bulucu her zaman ücretsizdir."
+    },
+    "continue": "Dikişe devam et",
+    "browsePatterns": "Desenlere göz at"
+  }
+}

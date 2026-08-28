@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../components/Button';
 import { Theme } from '../theme/theme';
 
@@ -10,18 +11,19 @@ interface Props {
 }
 
 export function TutorialRecapSheet({ visible, onContinue, onBrowsePatterns }: Props) {
+  const { t } = useTranslation('onboarding');
   return (
     <Modal transparent animationType="slide" visible={visible} onRequestClose={onContinue}>
       <View style={styles.backdrop}>
-        <Pressable style={styles.dismissArea} onPress={onContinue} accessibilityLabel="Continue stitching" />
+        <Pressable style={styles.dismissArea} onPress={onContinue} accessibilityLabel={t('recap.continue')} />
         <View style={styles.sheet} accessibilityRole="summary">
-          <Text style={styles.title} allowFontScaling>You've got it</Text>
-          <Text style={styles.line} allowFontScaling>Match the numbers to place each stitch.</Text>
-          <Text style={styles.line} allowFontScaling>Drag across matching cells to sweep.</Text>
-          <Text style={styles.line} allowFontScaling>Pinch to zoom when you need a closer look.</Text>
-          <Text style={styles.line} allowFontScaling>Undo and the locator are always free.</Text>
-          <Button title="Continue stitching" onPress={onContinue} variant="primary" style={styles.action} />
-          <Button title="Browse patterns" onPress={onBrowsePatterns} variant="secondary" style={styles.action} />
+          <Text style={styles.title} allowFontScaling>{t('recap.title')}</Text>
+          <Text style={styles.line} allowFontScaling>{t('recap.lines.matchNumbers')}</Text>
+          <Text style={styles.line} allowFontScaling>{t('recap.lines.dragSweep')}</Text>
+          <Text style={styles.line} allowFontScaling>{t('recap.lines.pinchZoom')}</Text>
+          <Text style={styles.line} allowFontScaling>{t('recap.lines.undoLocator')}</Text>
+          <Button title={t('recap.continue')} onPress={onContinue} variant="primary" style={styles.action} />
+          <Button title={t('recap.browsePatterns')} onPress={onBrowsePatterns} variant="secondary" style={styles.action} />
         </View>
       </View>
     </Modal>

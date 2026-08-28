@@ -78,6 +78,7 @@
       ],
       "expo-sqlite",
       "expo-apple-authentication",
+      "expo-localization",
       [
         "@sentry/react-native/expo",
         {

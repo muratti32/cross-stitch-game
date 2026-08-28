@@ -786,6 +786,12 @@ export async function setDeviceConfigValue(key: string, value: string): Promise<
   });
 }
 
+export async function deleteDeviceConfigValue(key: string): Promise<void> {
+  await withDatabase(async (db) => {
+    await db.runAsync('DELETE FROM device_config WHERE key = ?', key);
+  });
+}
+
 export async function setDeviceConfigValues(
   entries: readonly (readonly [key: string, value: string])[],
 ): Promise<void> {

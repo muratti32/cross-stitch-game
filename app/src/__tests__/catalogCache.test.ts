@@ -1,4 +1,4 @@
-import { getSurfaceKey, isCacheStale } from '../catalog-cache-logic';
+import { getSurfaceKey, isCacheStale, getCacheKey, localeCacheLookupOrder } from '../catalog-cache-logic';
 
 describe('Offline Catalog Cache logic', () => {
   describe('getSurfaceKey', () => {
@@ -29,6 +29,39 @@ describe('Offline Catalog Cache logic', () => {
           limit: 10,
         }),
       ).toBe('/v1/catalog/patterns?limit=10');
+    });
+  });
+
+  // #160: the persisted cache key incorporates the locale so a language
+  // change can never surface the previous locale's labels as the current
+  // ones, while still letting an offline player fall back to whatever
+  // locale's payload is already cached (CONTEXT.md's Connectivity State).
+  describe('getCacheKey', () => {
+    test('two locales for the same surface do not collide', () => {
+      const surfaceKey = getSurfaceKey('/v1/catalog/tags', {});
+      expect(getCacheKey(surfaceKey, 'en')).not.toBe(getCacheKey(surfaceKey, 'tr'));
+    });
+
+    test('the same surface and locale always derive the same key', () => {
+      const surfaceKey = getSurfaceKey('/v1/catalog/categories', {});
+      expect(getCacheKey(surfaceKey, 'tr')).toBe(getCacheKey(surfaceKey, 'tr'));
+    });
+
+    test('a language change does not resolve to the previous locale key', () => {
+      const surfaceKey = getSurfaceKey('/v1/catalog/categories', {});
+      const previousKey = getCacheKey(surfaceKey, 'en');
+      const currentKey = getCacheKey(surfaceKey, 'tr');
+      expect(currentKey).not.toBe(previousKey);
+    });
+  });
+
+  describe('localeCacheLookupOrder', () => {
+    test('tries the active locale first', () => {
+      expect(localeCacheLookupOrder('tr', ['en', 'tr'])).toEqual(['tr', 'en']);
+    });
+
+    test('still includes every supported locale when the active one leads', () => {
+      expect(localeCacheLookupOrder('en', ['en', 'tr'])).toEqual(['en', 'tr']);
     });
   });
 

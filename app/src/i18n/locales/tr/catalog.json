@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Geri",
+    "searchPlaceholder": "Desen, tasarımcı, etiket ara…",
+    "offlineBanner": "Çevrimdışı — katalog güncel olmayabilir",
+    "sectionError": {
+      "title": "Yüklenemedi",
+      "retry": "Tekrar Dene"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} renk",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} renk",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "İngilizce"
+    },
+    "accessibilityLabel": "{{language}} dilinde yazılmış"
+  },
+  "index": {
+    "subtitle": "Rahat dünyanı ilmek ilmek işle.",
+    "searchBar": {
+      "accessibilityLabel": "Desen kataloğunda ara"
+    },
+    "sections": {
+      "starterPatterns": "Başlangıç Desenleri",
+      "staffPicks": "Ekip Seçimi",
+      "categories": "Kategoriler",
+      "newPatterns": "Yeni Desenler"
+    },
+    "staffPicks": {
+      "emptyTitle": "Henüz Ekip Seçimi Yok",
+      "emptyBody": "Özenle seçilmiş rahat tasarım koleksiyonumuz yakında burada olacak.",
+      "errorBody": "Kataloğa ulaşılamadı ve henüz önbellekte bir şey yok."
+    },
+    "categories": {
+      "count": "{{count}} desen",
+      "errorBody": "Kataloğa ulaşılamadı ve henüz önbellekte bir şey yok."
+    },
+    "newPatterns": {
+      "emptyTitle": "Yeni Desenler Hazırlanıyor",
+      "emptyBody": "Yeni gelenler yolda!",
+      "errorBody": "Kataloğa ulaşılamadı ve henüz önbellekte bir şey yok.",
+      "showMore": "Daha fazla göster",
+      "loading": "Yükleniyor…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Gözat",
+    "error": {
+      "body": "Bu katalog sayfasına ulaşılamadı ve henüz önbellekte bir şey yok."
+    },
+    "empty": {
+      "title": "Henüz Burada Bir Şey Yok",
+      "body": "Bu seçime uyan desen yok. Yeni tasarımlar düzenli olarak ekleniyor."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Katalog arama girişi",
+    "inactive": {
+      "title": "Kataloğu Ara",
+      "body": "Desenleri başlığa, tasarımcıya veya etikete göre aramak için en az iki karakter yazın."
+    },
+    "error": {
+      "title": "Arama İçin Bağlantı Gerekiyor",
+      "body": "Katalog araması çevrimdışıyken kullanılamıyor. Önbelleğe alınmış katalog sayfaları katalog sekmesinden taranabilir kalır."
+    },
+    "noResults": {
+      "title": "Sonuç Bulunamadı",
+      "body": "Kataloğda “{{query}}” ile eşleşen bir şey yok."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Misafir Olarak Oynuyorsun",
+    "body": "Stitch Coin ve ilerlemen Misafir olarak yalnızca bu cihazda bulunur. Kurulum kaybedilirse Misafir defteri ve ilerleme kurtarılamayabilir. Oturum açmak ilerlemeni korur."
+  },
+  "detail": {
+    "noDescription": "Açıklama yok.",
+    "specs": {
+      "dimensions": "Boyutlar",
+      "totalStitches": "Toplam Dikiş",
+      "colors": "Renkler",
+      "category": "Kategori"
+    },
+    "threadsSuffix": "{{count}} İplik",
+    "palette": {
+      "title": "Gerekli İplikler",
+      "loading": "İplik paleti okunuyor...",
+      "loadFailed": "Palet yüklenemedi: {{error}}",
+      "retry": "Yeniden Yükle"
+    },
+    "actions": {
+      "startStitching": "Dikişe Başla",
+      "starting": "Başlatılıyor...",
+      "preparing": "Hazırlanıyor…"
+    },
+    "loadFailedGeneric": "Desen dosyası çözümlenemedi.",
+    "sessionCreateFailed": "Dikiş oturumu oluşturulamadı. Lütfen tekrar deneyin.",
+    "unavailable": {
+      "title": "Desen Kullanılamıyor",
+      "body": "Bu desen yüklenemedi. Kaldırılmış olabilir veya çevrimdışı olabilirsin.",
+      "goBack": "Geri Dön"
+    },
+    "byCreator": "{{creatorName}} tarafından",
+    "byCreatorWithUsername": "{{creatorName}} tarafından · @{{username}}",
+    "blockConfirm": {
+      "title": "Tasarımcıyı Engelle",
+      "message": "{{creatorName}} adlı tasarımcıyı engellemek istediğine emin misin? Bu, onların desenlerini arama/gözatmada gizleyen özel ve geri alınabilir bir işlemdir. Tasarımcıyı şikayet etmez ve geçerli dikiş oturumunu kesintiye uğratmaz.",
+      "cancel": "Vazgeç",
+      "confirm": "Engelle",
+      "blockedTitle": "Engellendi",
+      "blockedMessage": "{{creatorName}} engellendi.",
+      "errorTitle": "Hata",
+      "failedGeneric": "Tasarımcı engellenemedi."
+    },
+    "likeFailedGeneric": "Beğeni durumu güncellenemedi",
+    "connectToPlay": {
+      "title": "Oynamak için bağlan",
+      "body": "Katalog deseniyle başlamak için oturumunu hazırlayacak bir bağlantı gerekir. Başlangıç Desenleri çevrimdışı bile şimdi oynanabilir."
+    },
+    "insufficientCoins": {
+      "title": "Yetersiz Coin",
+      "body": "Bu desen {{price}} Stitch Coin tutuyor, ancak sadece {{balance}} Coin var.\n\nAçık: {{shortfall}} Coin.\n\nDiğer desenleri tamamlayarak Stitch Coin kazan! İlk Tamamlama ödülleri aktif.",
+      "getCoins": "Stitch Coin Al",
+      "findPatterns": "Dikilecek desen bul",
+      "back": "Geri"
+    },
+    "unlockFailedGeneric": "Kilit açma başarısız oldu. Bağlantını kontrol edip tekrar dene.",
+    "preparationFailedGeneric": "Hazırlık başlatılamadı. Bağlantını kontrol edip tekrar dene.",
+    "price": {
+      "label": "Fiyat"
+    },
+    "balance": {
+      "label": "Bakiyen",
+      "loading": "…"
+    },
+    "unlockButton": "{{price}} Coin ile Kilidi Aç",
+    "communityReport": {
+      "button": "Bu deseni şikayet et",
+      "title": "{{patternTitle}} Şikayet Et",
+      "body": "Sorunu en iyi tanımlayan nedeni seç. Şikayetler bir deseni otomatik olarak gizlemez veya değiştirmez.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Uygunsuz veya Güvensiz İçerik",
+        "copyright_or_publication_rights": "Telif Hakkı veya Yayın Hakları",
+        "duplicate_or_spam": "Tekrar veya Spam",
+        "misleading_title_or_tags": "Yanıltıcı Başlık veya Etiketler",
+        "other": "Diğer"
+      },
+      "explanationLabel": "Kanıt veya açıklama {{requirement}}",
+      "explanationRequired": "(gerekli)",
+      "explanationOptional": "(isteğe bağlı)",
+      "explanationPlaceholder": "Bir moderatörün deseni incelemesine yardımcı olacak ayrıntıları paylaş.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Vazgeç",
+      "submit": "Şikayeti gönder",
+      "submitFailedGeneric": "Şikayetin gönderilemedi. Bağlantını kontrol edip tekrar dene.",
+      "receivedTitle": "Şikayet alındı",
+      "alreadyReceivedTitle": "Şikayet zaten alındı",
+      "receivedBody": "Bir moderatör artık bu deseni inceleyebilir. Şikayet, kullanılabilirliğini otomatik olarak değiştirmez.",
+      "alreadyReceivedBody": "Mevcut şikayetin zaten açık incelemenin bir parçası.",
+      "signInRequired": {
+        "title": "Şikayet etmek için oturum aç",
+        "message": "Topluluk Şikayetleri bir Kayıtlı Hesap gerektirir. Hiçbir şey gönderilmedi.",
+        "cancel": "Vazgeç",
+        "signIn": "Oturum aç"
+      },
+      "validation": {
+        "chooseReason": "Bir şikayet nedeni seç.",
+        "explainRequired": "Bu deseni neden şikayet ettiğini açıkla.",
+        "tooLong": "Açıklama en fazla 2.000 karakter olmalı.",
+        "needsContent": "Açıklama harf veya rakam içermeli."
+      }
+    }
+  }
+}

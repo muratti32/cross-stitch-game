@@ -11,12 +11,14 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import {
   CreatorProfileApiError,
   useCreatorProfile,
   useSaveCreatorProfile,
 } from '@/api/creatorProfile';
+import { localizeServerError } from '@/api/localizeServerError';
 import { Button, Card, EmptyState, Screen } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
@@ -26,6 +28,7 @@ const ACCEPTED_AVATAR_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
 
 export default function PublicProfileScreen() {
+  const { t } = useTranslation('profile');
   const isAccount = useIdentityStore((state) => state.isAccount);
   const accountId = useIdentityStore((state) => state.accountId);
   const profileQuery = useCreatorProfile(accountId, isAccount);
@@ -69,7 +72,7 @@ export default function PublicProfileScreen() {
         ImagePicker.requestMediaLibraryPermissionsAsync(),
       );
       if (!permission.granted) {
-        setError('Photo library access is required to choose a profile photo.');
+        setError(t('publicProfile.photoPermissionRequired'));
         return;
       }
       const result = await withProtectedRoundTrip('photo-picker', () =>
@@ -84,11 +87,11 @@ export default function PublicProfileScreen() {
       if (result.canceled) return;
       const selected = result.assets[0];
       if (selected.mimeType !== undefined && !ACCEPTED_AVATAR_TYPES.has(selected.mimeType)) {
-        setError('Profile photos must be JPEG, PNG, or WebP.');
+        setError(t('publicProfile.photoTypeInvalid'));
         return;
       }
       if (selected.fileSize !== undefined && selected.fileSize > MAX_AVATAR_BYTES) {
-        setError('Profile photos must be 5 MB or smaller.');
+        setError(t('publicProfile.photoTooLarge'));
         return;
       }
       setAvatar(selected);
@@ -126,10 +129,13 @@ export default function PublicProfileScreen() {
       );
       router.back();
     } catch (caught: unknown) {
+      // #159: neither the server's raw `message` nor its machine-readable
+      // `reason` code (which the backend has been observed sending as a
+      // full English sentence on this endpoint) is shown verbatim.
       if (caught instanceof CreatorProfileApiError) {
-        setError(caught.reason ?? caught.message);
+        setError(localizeServerError(caught));
       } else {
-        setError(caught instanceof Error ? caught.message : 'Could not save your public profile');
+        setError(caught instanceof Error ? caught.message : t('publicProfile.saveFailedDefault'));
       }
     }
   };
@@ -140,25 +146,25 @@ export default function PublicProfileScreen() {
     <Screen scrollable contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <Pressable
-          accessibilityLabel="Go back"
+          accessibilityLabel={t('common.goBackAccessibilityLabel')}
           accessibilityRole="button"
           onPress={() => router.back()}
           style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
         >
           <Ionicons name="chevron-back" size={24} color={Theme.colors.textPrimary} />
         </Pressable>
-        <Text style={styles.title}>{isEditing ? 'Edit Public Profile' : 'Create Public Profile'}</Text>
+        <Text style={styles.title}>{isEditing ? t('publicProfile.editTitle') : t('publicProfile.createTitle')}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
       {!isAccount ? (
         <EmptyState
-          actionLabel="Sign in"
+          actionLabel={t('publicProfile.signInAction')}
           actionVariant="rose"
-          body="A Registered Account is required to create a public creator identity."
+          body={t('publicProfile.signInBody')}
           icon="person-circle-outline"
           onAction={() => router.replace('/(tabs)/(settings)/sign-in')}
-          title="Sign in required"
+          title={t('publicProfile.signInTitle')}
         />
       ) : profileQuery.isLoading ? (
         <View style={styles.loadingState}>
@@ -166,18 +172,16 @@ export default function PublicProfileScreen() {
         </View>
       ) : profileQuery.isError ? (
         <EmptyState
-          actionLabel="Try again"
+          actionLabel={t('publicProfile.tryAgain')}
           actionVariant="rose"
-          body="Your public profile could not be loaded. Check your connection and try again."
+          body={t('publicProfile.unavailableBody')}
           icon="cloud-offline-outline"
           onAction={() => void profileQuery.refetch()}
-          title="Profile unavailable"
+          title={t('publicProfile.unavailableTitle')}
         />
       ) : (
         <Card style={styles.card}>
-          <Text style={styles.intro}>
-            This name and photo are visible with your community patterns. Your email and sign-in provider stay private.
-          </Text>
+          <Text style={styles.intro}>{t('publicProfile.intro')}</Text>
 
           <View style={styles.avatarSection}>
             <View style={styles.avatarFrame}>
@@ -193,7 +197,7 @@ export default function PublicProfileScreen() {
                 loading={pickingAvatar}
                 onPress={() => void pickAvatar()}
                 style={styles.avatarButton}
-                title={previewUri === null ? 'Choose photo' : 'Change photo'}
+                title={previewUri === null ? t('publicProfile.choosePhoto') : t('publicProfile.changePhoto')}
                 variant="secondary"
               />
               {previewUri !== null && (
@@ -203,24 +207,24 @@ export default function PublicProfileScreen() {
                   onPress={clearAvatar}
                   style={({ pressed }) => [styles.removeButton, pressed && styles.pressed]}
                 >
-                  <Text style={styles.removeButtonText}>Remove</Text>
+                  <Text style={styles.removeButtonText}>{t('publicProfile.remove')}</Text>
                 </Pressable>
               )}
             </View>
-            <Text style={styles.helper}>Optional · JPEG, PNG, or WebP · up to 5 MB</Text>
+            <Text style={styles.helper}>{t('publicProfile.avatarHelper')}</Text>
           </View>
 
-          <Text style={styles.label}>Username</Text>
+          <Text style={styles.label}>{t('publicProfile.usernameLabel')}</Text>
           <View style={[styles.usernameInputRow, isEditing && styles.lockedInput]}>
             <Text style={styles.atSign}>@</Text>
             <TextInput
-              accessibilityLabel="Public username"
+              accessibilityLabel={t('publicProfile.usernameAccessibilityLabel')}
               autoCapitalize="none"
               autoCorrect={false}
               editable={!isEditing && !saveProfile.isPending}
               maxLength={30}
               onChangeText={(value) => setUsername(value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-              placeholder="stitcher_name"
+              placeholder={t('publicProfile.usernamePlaceholder')}
               placeholderTextColor={Theme.colors.textSecondary}
               style={styles.usernameInput}
               value={username}
@@ -229,29 +233,27 @@ export default function PublicProfileScreen() {
           </View>
           <Text style={styles.helper}>
             {isEditing
-              ? 'Your username is permanent.'
-              : '3–30 lowercase letters, numbers, or underscores. This cannot be changed later.'}
+              ? t('publicProfile.usernameHelperLocked')
+              : t('publicProfile.usernameHelperEditable')}
           </Text>
 
-          <Text style={styles.label}>Display name</Text>
+          <Text style={styles.label}>{t('publicProfile.displayNameLabel')}</Text>
           <TextInput
-            accessibilityLabel="Public display name"
+            accessibilityLabel={t('publicProfile.displayNameAccessibilityLabel')}
             autoCapitalize="words"
             editable={!saveProfile.isPending}
             maxLength={50}
             onChangeText={setDisplayName}
-            placeholder="Your creator name"
+            placeholder={t('publicProfile.displayNamePlaceholder')}
             placeholderTextColor={Theme.colors.textSecondary}
             style={styles.textInput}
             value={displayName}
           />
-          <Text style={styles.helper}>You can change this later.</Text>
+          <Text style={styles.helper}>{t('publicProfile.displayNameHelper')}</Text>
 
           <View style={styles.safetyNotice}>
             <Ionicons name="shield-checkmark-outline" size={18} color={Theme.colors.accentTeal} />
-            <Text style={styles.safetyText}>
-              Names and photos are checked before publication. If a change is rejected, your current public profile stays unchanged.
-            </Text>
+            <Text style={styles.safetyText}>{t('publicProfile.safetyNotice')}</Text>
           </View>
 
           {error !== null && (
@@ -265,7 +267,7 @@ export default function PublicProfileScreen() {
             disabled={!canSubmit}
             loading={saveProfile.isPending}
             onPress={() => void submit()}
-            title={isEditing ? 'Save public profile' : 'Publish public profile'}
+            title={isEditing ? t('publicProfile.saveAction') : t('publicProfile.publishAction')}
             variant="rose"
           />
         </Card>

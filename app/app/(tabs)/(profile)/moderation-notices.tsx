@@ -9,32 +9,18 @@ import {
   Text,
   View,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 
-import type { ModerationNoticeType } from '@/api/moderationNotices';
 import { useModerationNotices } from '@/api/moderationNotices';
 import { Card, EmptyState, Screen } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
+import { formatDate } from '@/i18n';
 import { Theme } from '@/theme/theme';
 
-const NOTICE_LABELS: Record<ModerationNoticeType, string> = {
-  metadata_remediation: 'Catalog Metadata Remediation',
-  no_violation: 'Review closed — no violation',
-  review_hold: 'Review Hold',
-  safety_removal: 'Safety Removal',
-};
-
-const NOTICE_HELP: Record<ModerationNoticeType, string> = {
-  metadata_remediation:
-    'The title, description, and selected tags were replaced with safe values. Availability, the Pattern Artifact, and preview are unaffected. You can submit a new Catalog Metadata Revision at any time.',
-  no_violation:
-    'The Post-Publication Review is closed and this Pattern is fully available again in discovery and new Stitching Sessions.',
-  review_hold:
-    'This Pattern is temporarily unavailable for discovery and new sessions. Existing Stitching Sessions, progress, and Offline Pattern Data remain playable.',
-  safety_removal:
-    'This Pattern was removed for a safety, legal, or policy violation. It left discovery, existing Stitching Sessions became inaccessible, and Offline Pattern Data on your devices was deleted. You may submit one Safety Removal Appeal.',
-};
-
 export default function ModerationNoticesScreen() {
+  const { t, i18n: i18nInstance } = useTranslation('profile');
+  const locale = i18nInstance.language;
   const accountId = useIdentityStore((state) => state.accountId);
   const isAccount = useIdentityStore((state) => state.isAccount);
   const query = useModerationNotices(accountId, isAccount);
@@ -42,19 +28,19 @@ export default function ModerationNoticesScreen() {
   return (
     <Screen style={styles.screen}>
       <View style={styles.header}>
-        <Pressable accessibilityLabel="Go back" hitSlop={12} onPress={() => router.back()}>
+        <Pressable accessibilityLabel={t('common.goBackAccessibilityLabel')} hitSlop={12} onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={26} color={Theme.colors.textPrimary} />
         </Pressable>
-        <Text style={styles.headerTitle}>Moderation Notices</Text>
+        <Text style={styles.headerTitle}>{t('moderationNotices.title')}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
       {!isAccount ? (
         <EmptyState
           icon="person-circle-outline"
-          title="Sign in to view notices"
-          body="Moderation Notices belong to the Registered Account that published the affected Community Pattern."
-          actionLabel="Sign In"
+          title={t('moderationNotices.signInTitle')}
+          body={t('moderationNotices.signInBody')}
+          actionLabel={t('moderationNotices.signInAction')}
           onAction={() => router.push('/(tabs)/(settings)/sign-in')}
           actionVariant="rose"
         />
@@ -63,18 +49,20 @@ export default function ModerationNoticesScreen() {
       ) : query.isError ? (
         <EmptyState
           icon="cloud-offline-outline"
-          title="Notices Unavailable"
-          body={query.error instanceof Error ? query.error.message : 'Could not load Moderation Notices.'}
-          actionLabel="Try Again"
+          title={t('moderationNotices.unavailableTitle')}
+          body={isServerApiError(query.error)
+            ? localizeServerError(query.error)
+            : t('moderationNotices.unavailableDefault')}
+          actionLabel={t('common.tryAgain')}
           onAction={() => void query.refetch()}
           actionVariant="rose"
         />
       ) : (query.data?.length ?? 0) === 0 ? (
         <EmptyState
           icon="shield-checkmark-outline"
-          title="No Moderation Notices"
-          body="Owner-visible catalog moderation decisions will appear here."
-          actionLabel="Back to Profile"
+          title={t('moderationNotices.emptyTitle')}
+          body={t('moderationNotices.emptyBody')}
+          actionLabel={t('moderationNotices.emptyAction')}
           onAction={() => router.back()}
           actionVariant="sage"
         />
@@ -92,12 +80,20 @@ export default function ModerationNoticesScreen() {
                 <View style={styles.titleCopy}>
                   <Text style={styles.title}>{item.patternTitle}</Text>
                   <Text style={styles.meta}>
-                    {NOTICE_LABELS[item.noticeType]} · {new Date(item.createdAt).toLocaleString()}
+                    {t('moderationNotices.meta', {
+                      date: formatDate(new Date(item.createdAt), locale),
+                      noticeType: t(`moderationNotices.noticeTypes.${item.noticeType}`),
+                    })}
                   </Text>
                 </View>
               </View>
+              {/* #165: `reason` is backend-authored moderation prose, the
+                  same verbatim-inside-localized-framing pattern ADR-0051
+                  uses for a Catalog Rejection Reason's moderator note -
+                  the app cannot map arbitrary moderator/backend sentences
+                  to translation keys. */}
               <Text style={styles.reason}>{item.reason}</Text>
-              <Text style={styles.help}>{NOTICE_HELP[item.noticeType]}</Text>
+              <Text style={styles.help}>{t(`moderationNotices.noticeHelp.${item.noticeType}`)}</Text>
             </Card>
           )}
         />
