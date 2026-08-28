@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Geri",
+    "cancel": "İptal",
+    "duplicateTitle": "“{{title}}” adında bir Kişisel Desenin zaten var. Farklı bir başlık seç.",
+    "cellsCount_one": "hücre",
+    "cellsCount_other": "hücre",
+    "colorsCount_one": "renk",
+    "colorsCount_other": "renk"
+  },
+  "hub": {
+    "title": "Oluşturma Merkezi",
+    "subtitle": "Kendi tasarımlarını özel kanaviçe desenlerine dönüştürerek hayata geçir.",
+    "opening": "Açılıyor…",
+    "photoImport": {
+      "title": "Fotoğraf İçe Aktarma",
+      "description": "Kamera rulonuzdan bir fotoğraf yükleyip dikilebilir bir desene dönüştürün.",
+      "action": "Fotoğraf içe aktar"
+    },
+    "aiGenerator": {
+      "title": "Yapay Zeka Üretici",
+      "description": "Sevimli bir prompt yazın, yapay zeka sizin için özel bir piksel tasarım üretsin.",
+      "action": "Tasarım oluştur"
+    }
+  },
+  "aspects": {
+    "square": "Kare",
+    "portrait_4_3": "Dikey 4:3",
+    "landscape_4_3": "Yatay 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Desen Dönüştürme başarısız oldu. Lütfen tekrar deneyin.",
+      "timeout": "Desen Dönüştürme hâlâ işleniyor. Kısa süre sonra tekrar deneyin.",
+      "generic": "Desen Dönüştürme tamamlanamadı. Lütfen tekrar deneyin."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Kayıtlı Hesap Gerekli",
+      "body": "Yapay zeka görselleri ve kitaplığı yalnızca hesabında özel olarak tutulur.",
+      "signIn": "Oturum aç"
+    },
+    "header": {
+      "title": "Yapay Zeka Üretici",
+      "backAccessibilityLabel": "Geri"
+    },
+    "prompt": {
+      "label": "Görselini tarif et",
+      "placeholder": "Gün batımında sıcacık bir kır evi bahçesi…"
+    },
+    "generate": {
+      "working": "İşleniyor…",
+      "action": "Oluştur — 1 Yapay Zeka Kredisi",
+      "errors": {
+        "promptRejected": "Bu prompt'a izin verilmedi. Başka bir şey tarif etmeyi dene.",
+        "generic": "Yapay zeka üretimi başlatılamadı. Lütfen tekrar deneyin."
+      }
+    },
+    "library": {
+      "title": "Yapay Zeka Görsel Kitaplığın",
+      "status": {
+        "pending": "Beklemede",
+        "dispatched": "Gönderildi",
+        "running": "Çalışıyor",
+        "delivered": "Teslim edildi",
+        "safety_rejected": "Güvenlik nedeniyle reddedildi",
+        "failed": "Başarısız",
+        "deleted": "Silindi",
+        "unknown": "Kullanılamıyor"
+      },
+      "failure": {
+        "safety_rejected": "Bu görsel sağlayıcının güvenlik kontrolünden geçemedi.",
+        "failed": "Bu görsel üretilemedi."
+      },
+      "approve": "Desene Dönüştür",
+      "delete": "Sil",
+      "deleteAccessibilityLabel": "Bu Yapay Zeka Görselini sil",
+      "errors": {
+        "loadFailed": "Yapay Zeka Görsel Kitaplığın yüklenemedi. Lütfen tekrar deneyin."
+      }
+    },
+    "approve": {
+      "modalTitle": "Kişisel Desen Oluştur",
+      "titleLabel": "Desen başlığı",
+      "titleAccessibilityLabel": "Desen başlığı",
+      "defaultTitle": "Yapay Zeka Desenim",
+      "placeholder": "Yapay Zeka Desenim",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "İptal",
+      "creating": "Desen Oluşturuluyor…",
+      "create": "Desen Oluştur",
+      "errors": {
+        "generic": "Kişisel Desen oluşturulamadı. Lütfen tekrar deneyin."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Kayıtlı Hesap Gerekli",
+      "body": "Kişisel Desenler hesabına bağlıdır, böylece özel kalır ve tüm cihazlarında erişilebilir olur.",
+      "signIn": "Oturum aç veya hesap oluştur",
+      "back": "Geri"
+    },
+    "header": {
+      "title": "Fotoğraf Deseni",
+      "subtitle": "Önce yerel olarak çerçevele, sonra dönüştürmeyi onayla",
+      "backAccessibilityLabel": "Geri"
+    },
+    "picker": {
+      "chooseTitle": "Bir fotoğraf seç",
+      "helpText": "Orijinal çözünürlükteki Yerel Fotoğraf Kaynağı bu cihazda kalır. Çerçeveyi onaylamadan hiçbir şey dönüştürülmez.",
+      "choose": "Kitaplıktan seç",
+      "chooseAnother": "Başka bir fotoğraf seç",
+      "opening": "Açılıyor…",
+      "errors": {
+        "permissionDenied": "Yerel Fotoğraf Kaynağı seçmek için fotoğraf kitaplığı erişimi gerekir.",
+        "invalidDimensions": "Seçilen fotoğraf kullanılabilir boyutlar bildirmiyor.",
+        "generic": "Fotoğraf kitaplığı açılamadı. Lütfen tekrar deneyin."
+      }
+    },
+    "framing": {
+      "title": "Görsel Çerçeveleme",
+      "gestureHint": "Konumlandırmak için sürükle · yakınlaştırmak için sıkıştır",
+      "aspectLabel": "Çerçeve oranı"
+    },
+    "profile": {
+      "title": "Dönüştürme Profili",
+      "options": {
+        "easy": "Kolay",
+        "standard": "Standart",
+        "detailed": "Detaylı"
+      },
+      "custom": "Özel",
+      "customMeta": "Ücretsiz · şekil sabit",
+      "unavailable": "Bu çerçeveye sığmıyor",
+      "customShortEdgeLabel": "Kısa kenar",
+      "customColorLimitLabel": "DMC renk sınırı",
+      "exceedsLimit": "Bu Özel değerler {{max}} hücrelik Desen Boyutu sınırını aşıyor."
+    },
+    "titleCard": {
+      "label": "Desen başlığı",
+      "placeholder": "Fotoğraf Desenim",
+      "defaultTitle": "Fotoğraf Desenim",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · en fazla {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "Onay yalnızca çerçevelenmiş, küçültülmüş türevi yükler. Orijinal fotoğraf yerel olarak kalır.",
+      "approve": "Görseli onayla ve dönüştür"
+    },
+    "processing": {
+      "preparingFrame": "Onaylanan çerçeve bu cihazda hazırlanıyor…",
+      "uploading": "Sadece kırpılmış, küçültülmüş çerçeve yükleniyor…",
+      "waitingForWorker": "Dönüştürme işleyicisi bekleniyor…",
+      "buildingGrid": "Dikiş ızgarası ve DMC paleti oluşturuluyor…",
+      "preparingSession": "Kişisel Desen oynamaya hazırlanıyor…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Bu profil son çerçeveye artık sığmıyor. Kolay'ı seç veya detayı azalt.",
+        "generic": "Bu fotoğraf dönüştürülemedi. Lütfen tekrar deneyin."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Desen Seçilmedi",
+      "noPatternBody": "Bu ekran, kitaplığındaki mevcut bir Kişisel Desenden açılmalıdır.",
+      "accountTitle": "Kayıtlı Hesap Gerekli",
+      "accountBody": "Kişisel Desenler hesabına bağlıdır, böylece özel kalır ve tüm cihazlarında erişilebilir olur.",
+      "signIn": "Oturum aç veya hesap oluştur",
+      "back": "Geri"
+    },
+    "loading": "Düzenleyici taslağı sürdürülüyor...",
+    "load": {
+      "failedTitle": "Desen Yüklenemedi",
+      "retry": "Yeniden dene",
+      "back": "Geri",
+      "errors": {
+        "generic": "Bu Kişisel Desen yüklenemedi. Lütfen tekrar deneyin."
+      }
+    },
+    "header": {
+      "title": "Desen Düzenleyici",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Geri"
+    },
+    "toolbar": {
+      "undo": "Geri al",
+      "redo": "Yinele"
+    },
+    "mode": {
+      "paint": "Boya",
+      "replaceColor": "Renk Değiştir",
+      "replaceStep1": "1. Değiştirmek için aşağıdaki desende bir renge dokun:",
+      "replaceStep2": "2. Değiştirmeyi uygulamak için aşağıdan hedef bir DMC rengi seç:",
+      "paintSelected": "Seçili: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Aşağıdan bir renk seç, sonra hücrelere dokunarak boya."
+    },
+    "errors": {
+      "pickColorFirst": "Önce bir renk seç",
+      "paletteLimit": "Bu desen zaten en fazla {{max}} iplik rengi kullanıyor."
+    },
+    "picker": {
+      "title": "DMC İplik Renkleri",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Düzenlenen Deseni Kaydet",
+      "placeholder": "Düzenlenen Desen Başlığım",
+      "action": "Yeni Olarak Kaydet",
+      "offlineTitle": "Çevrimdışı kaydedildi",
+      "offlineBody": "Düzenlenen desenin bu cihaza kaydedildi ve çevrimiçi olduğunda hesabınla senkronize edilecek.",
+      "errors": {
+        "generic": "Bu Kişisel Desen kaydedilemedi. Lütfen tekrar deneyin."
+      }
+    }
+  }
+}

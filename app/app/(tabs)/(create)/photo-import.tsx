@@ -20,6 +20,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from 'react-native-reanimated';
+import { useTranslation } from 'react-i18next';
 
 import { Button, Card, Screen } from '@/components';
 import { useTabBarSpace } from '@/theme/tabBar';
@@ -29,11 +30,13 @@ import {
   downscaledDimensions,
   listPersonalPatterns,
   PROFILE_OPTIONS,
+  resolveCreateErrorMessage,
   resolveSettings,
   type ConversionProfile,
   waitForConversion,
 } from '@/conversion';
 import { useIdentityStore } from '@/identity/guestIdentity';
+import { formatNumber } from '@/i18n';
 import {
   preparePersonalSession,
   waitUntilSessionReady,
@@ -43,11 +46,22 @@ import { captureGameplayEvent } from '@/analytics/gameplayEvents';
 import type { ConversionFailureStage } from '@/analytics/schema';
 import { withProtectedRoundTrip } from '@/navigation/foregroundEntryNavigation';
 
+const PROFILE_LABEL_KEYS: Record<Exclude<ConversionProfile, 'custom'>, string> = {
+  easy: 'photoImport.profile.options.easy',
+  standard: 'photoImport.profile.options.standard',
+  detailed: 'photoImport.profile.options.detailed',
+};
+
 const MAX_FRAME_HEIGHT = 300;
 const MAX_ZOOM = 8;
 const LOG_ASPECT_LIMIT = Math.log2(6);
 
+/** The exact final frame no longer fits the selected Conversion Profile - a local, translated failure, not a server error. */
+class ProfileMisfitError extends Error {}
+
 export default function PhotoImportScreen() {
+  const { t, i18n: i18nInstance } = useTranslation('create');
+  const locale = i18nInstance.language;
   const router = useRouter();
   const tabBarSpace = useTabBarSpace();
   const { width: windowWidth } = useWindowDimensions();
@@ -57,7 +71,7 @@ export default function PhotoImportScreen() {
   const [profile, setProfile] = useState<ConversionProfile>('easy');
   const [customShortEdge, setCustomShortEdge] = useState(80);
   const [customColors, setCustomColors] = useState(20);
-  const [title, setTitle] = useState('My Photo Pattern');
+  const [title, setTitle] = useState(() => t('photoImport.titleCard.defaultTitle'));
   const [busy, setBusy] = useState(false);
   const [pickingPhoto, setPickingPhoto] = useState(false);
   const [processingStatus, setProcessingStatus] = useState<string | null>(null);
@@ -184,7 +198,7 @@ export default function PhotoImportScreen() {
         ImagePicker.requestMediaLibraryPermissionsAsync(),
       );
       if (!permission.granted) {
-        setError('Photo library access is required to choose a Local Photo Source.');
+        setError(t('photoImport.picker.errors.permissionDenied'));
         return;
       }
 
@@ -199,13 +213,13 @@ export default function PhotoImportScreen() {
       if (!result.canceled) {
         const selected = result.assets[0];
         if (selected.width < 1 || selected.height < 1) {
-          setError('The selected photo does not report usable dimensions.');
+          setError(t('photoImport.picker.errors.invalidDimensions'));
           return;
         }
         setAsset(selected);
       }
     } catch (caught: unknown) {
-      setError(caught instanceof Error ? caught.message : String(caught));
+      setError(resolveCreateErrorMessage(caught, 'create:photoImport.picker.errors.generic'));
     } finally {
       pickerLockRef.current = false;
       setPickingPhoto(false);
@@ -225,7 +239,7 @@ export default function PhotoImportScreen() {
     }
     setBusy(true);
     setError(null);
-    setProcessingStatus('Preparing the approved frame on this device…');
+    setProcessingStatus(t('photoImport.processing.preparingFrame'));
     let uploadUri: string | null = null;
     let failureStage: ConversionFailureStage = 'upload';
     let conversionStarted = false;
@@ -261,10 +275,10 @@ export default function PhotoImportScreen() {
         sourceWidth: derivative.width,
       });
       if (exactSettings === null) {
-        throw new Error('This profile no longer fits the final frame. Choose Easy or reduce detail.');
+        throw new ProfileMisfitError();
       }
 
-      setProcessingStatus('Uploading only the cropped, downscaled frame…');
+      setProcessingStatus(t('photoImport.processing.uploading'));
       conversionStarted = true;
       await captureGameplayEvent('pattern_conversion_started', {
         source_artwork_kind: 'photo_artwork',
@@ -284,8 +298,8 @@ export default function PhotoImportScreen() {
       const pattern = await waitForConversion(pendingConversion.id, (status) => {
         setProcessingStatus(
           status === 'pending' || status === 'dispatched'
-            ? 'Waiting for the conversion worker…'
-            : 'Building the stitch grid and DMC palette…',
+            ? t('photoImport.processing.waitingForWorker')
+            : t('photoImport.processing.buildingGrid'),
         );
       }, pendingConversion.supportReference);
       await captureGameplayEvent('pattern_conversion_completed', {
@@ -293,7 +307,7 @@ export default function PhotoImportScreen() {
       });
       conversionCompleted = true;
       failureStage = 'delivery';
-      setProcessingStatus('Preparing the Personal Pattern for play…');
+      setProcessingStatus(t('photoImport.processing.preparingSession'));
       const session = await preparePersonalSession(pattern.id, {
         height: pattern.height,
         previewUrl: pattern.previewUrl,
@@ -314,7 +328,7 @@ export default function PhotoImportScreen() {
       });
       setProcessingStatus(null);
       setAsset(null);
-      setTitle('My Photo Pattern');
+      setTitle(t('photoImport.titleCard.defaultTitle'));
       setProfile('easy');
       setCustomShortEdge(80);
       setCustomColors(20);
@@ -331,7 +345,11 @@ export default function PhotoImportScreen() {
           failure_stage: failureStage,
         });
       }
-      setError(caught instanceof Error ? caught.message : String(caught));
+      setError(
+        caught instanceof ProfileMisfitError
+          ? t('photoImport.convert.errors.profileMisfit')
+          : resolveCreateErrorMessage(caught, 'create:photoImport.convert.errors.generic'),
+      );
       setProcessingStatus(null);
     } finally {
       if (uploadUri !== null) {
@@ -345,16 +363,16 @@ export default function PhotoImportScreen() {
     return (
       <Screen style={styles.gateScreen}>
         <Ionicons name="person-circle-outline" size={64} color={Theme.colors.accentRose} />
-        <Text style={styles.gateTitle}>Registered Account Required</Text>
+        <Text style={styles.gateTitle}>{t('photoImport.gate.title')}</Text>
         <Text style={styles.gateBody}>
-          Personal Patterns belong to your account so they stay private and available across devices.
+          {t('photoImport.gate.body')}
         </Text>
         <Button
-          title="Sign in or create account"
+          title={t('photoImport.gate.signIn')}
           onPress={() => router.push('/(tabs)/(settings)/sign-in')}
           variant="rose"
         />
-        <Button title="Back" onPress={() => router.back()} variant="secondary" />
+        <Button title={t('photoImport.gate.back')} onPress={() => router.back()} variant="secondary" />
       </Screen>
     );
   }
@@ -362,12 +380,18 @@ export default function PhotoImportScreen() {
   return (
     <Screen style={styles.screen} clearsTabBar={false}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton} disabled={interactionLocked}>
+        <Pressable
+          onPress={() => router.back()}
+          style={styles.backButton}
+          disabled={interactionLocked}
+          accessibilityRole="button"
+          accessibilityLabel={t('photoImport.header.backAccessibilityLabel')}
+        >
           <Ionicons name="arrow-back" size={24} color={Theme.colors.accentTeal} />
         </Pressable>
         <View>
-          <Text style={styles.title}>Photo Pattern</Text>
-          <Text style={styles.subtitle}>Frame locally, then approve conversion</Text>
+          <Text style={styles.title}>{t('photoImport.header.title')}</Text>
+          <Text style={styles.subtitle}>{t('photoImport.header.subtitle')}</Text>
         </View>
       </View>
 
@@ -375,12 +399,12 @@ export default function PhotoImportScreen() {
         {asset === null ? (
           <Card style={styles.pickerCard}>
             <Ionicons name="images-outline" size={52} color={Theme.colors.accentRose} />
-            <Text style={styles.sectionTitle}>Choose a photo</Text>
+            <Text style={styles.sectionTitle}>{t('photoImport.picker.chooseTitle')}</Text>
             <Text style={styles.helpText}>
-              The full-resolution Local Photo Source stays on this device. Nothing converts until you approve the frame.
+              {t('photoImport.picker.helpText')}
             </Text>
             <Button
-              title="Choose from library"
+              title={t('photoImport.picker.choose')}
               onPress={pickPhoto}
               disabled={busy}
               loading={pickingPhoto}
@@ -390,7 +414,7 @@ export default function PhotoImportScreen() {
         ) : (
           <>
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>Artwork Framing</Text>
+              <Text style={styles.sectionTitle}>{t('photoImport.framing.title')}</Text>
               <Pressable
                 onPress={pickPhoto}
                 disabled={interactionLocked}
@@ -400,7 +424,7 @@ export default function PhotoImportScreen() {
                   <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
                 )}
                 <Text style={styles.linkText}>
-                  {pickingPhoto ? 'Opening…' : 'Choose another'}
+                  {pickingPhoto ? t('photoImport.picker.opening') : t('photoImport.picker.chooseAnother')}
                 </Text>
               </Pressable>
             </View>
@@ -429,12 +453,12 @@ export default function PhotoImportScreen() {
                 </View>
               </GestureDetector>
             </View>
-            <Text style={styles.gestureHint}>Drag to position · pinch to zoom</Text>
+            <Text style={styles.gestureHint}>{t('photoImport.framing.gestureHint')}</Text>
 
             <Card style={styles.controlCard}>
               <View style={styles.labelRow}>
-                <Text style={styles.controlLabel}>Frame aspect</Text>
-                <Text style={styles.controlValue}>{formatAspect(aspect)}</Text>
+                <Text style={styles.controlLabel}>{t('photoImport.framing.aspectLabel')}</Text>
+                <Text style={styles.controlValue}>{formatAspect(aspect, locale)}</Text>
               </View>
               <Slider
                 minimumValue={-LOG_ASPECT_LIMIT}
@@ -453,7 +477,7 @@ export default function PhotoImportScreen() {
               </View>
             </Card>
 
-            <Text style={styles.sectionTitle}>Conversion Profile</Text>
+            <Text style={styles.sectionTitle}>{t('photoImport.profile.title')}</Text>
             <View style={styles.profileGrid}>
               {PROFILE_OPTIONS.map((option) => {
                 const available = resolveSettings({
@@ -474,11 +498,11 @@ export default function PhotoImportScreen() {
                       !available && styles.profileCardDisabled,
                     ]}
                   >
-                    <Text style={styles.profileTitle}>{option.label}</Text>
+                    <Text style={styles.profileTitle}>{t(PROFILE_LABEL_KEYS[option.id])}</Text>
                     <Text style={styles.profileMeta}>
-                      {option.shortEdgeCells} cells · ≤{option.maxColors} colors
+                      {formatNumber(option.shortEdgeCells, locale)} {t('common.cellsCount', { count: option.shortEdgeCells })} · ≤{formatNumber(option.maxColors, locale)} {t('common.colorsCount', { count: option.maxColors })}
                     </Text>
-                    {!available && <Text style={styles.unavailableText}>Doesn’t fit this frame</Text>}
+                    {!available && <Text style={styles.unavailableText}>{t('photoImport.profile.unavailable')}</Text>}
                   </Pressable>
                 );
               })}
@@ -491,16 +515,18 @@ export default function PhotoImportScreen() {
                   profile === 'custom' && settings === null && styles.profileCardDisabled,
                 ]}
               >
-                <Text style={styles.profileTitle}>Custom</Text>
-                <Text style={styles.profileMeta}>Free · shape locked</Text>
+                <Text style={styles.profileTitle}>{t('photoImport.profile.custom')}</Text>
+                <Text style={styles.profileMeta}>{t('photoImport.profile.customMeta')}</Text>
               </Pressable>
             </View>
 
             {profile === 'custom' && (
               <Card style={styles.controlCard}>
                 <View style={styles.labelRow}>
-                  <Text style={styles.controlLabel}>Short edge</Text>
-                  <Text style={styles.controlValue}>{customShortEdge} cells</Text>
+                  <Text style={styles.controlLabel}>{t('photoImport.profile.customShortEdgeLabel')}</Text>
+                  <Text style={styles.controlValue}>
+                    {formatNumber(customShortEdge, locale)} {t('common.cellsCount', { count: customShortEdge })}
+                  </Text>
                 </View>
                 <Slider
                   minimumValue={20}
@@ -513,8 +539,8 @@ export default function PhotoImportScreen() {
                   disabled={interactionLocked}
                 />
                 <View style={styles.labelRow}>
-                  <Text style={styles.controlLabel}>DMC color limit</Text>
-                  <Text style={styles.controlValue}>{customColors}</Text>
+                  <Text style={styles.controlLabel}>{t('photoImport.profile.customColorLimitLabel')}</Text>
+                  <Text style={styles.controlValue}>{formatNumber(customColors, locale)}</Text>
                 </View>
                 <Slider
                   minimumValue={5}
@@ -530,36 +556,44 @@ export default function PhotoImportScreen() {
             )}
 
             <Card style={styles.approvalCard}>
-              <Text style={styles.controlLabel}>Pattern title</Text>
+              <Text style={styles.controlLabel}>{t('photoImport.titleCard.label')}</Text>
               <TextInput
                 value={title}
                 onChangeText={setTitle}
                 maxLength={255}
                 editable={!interactionLocked}
                 style={styles.titleInput}
-                placeholder="My Photo Pattern"
+                placeholder={t('photoImport.titleCard.placeholder')}
                 placeholderTextColor={Theme.colors.textSecondary}
               />
               {duplicateTitle && (
                 <Text style={styles.errorText}>
-                  You already have a Personal Pattern named “{title.trim()}”. Choose a different title.
+                  {t('common.duplicateTitle', { title: title.trim() })}
                 </Text>
               )}
               {settings ? (
                 <Text style={styles.summaryText}>
-                  {settings.width}×{settings.height} cells · up to {settings.maxColors} DMC colors
+                  {t('photoImport.titleCard.summary', {
+                    width: formatNumber(settings.width, locale),
+                    height: formatNumber(settings.height, locale),
+                    maxColors: formatNumber(settings.maxColors, locale),
+                    cellsUnit: t('common.cellsCount', { count: settings.height }),
+                    colorsUnit: t('common.colorsCount', { count: settings.maxColors }),
+                  })}
                 </Text>
               ) : (
-                <Text style={styles.errorText}>These Custom values exceed the 300-cell Pattern Size limit.</Text>
+                <Text style={styles.errorText}>
+                  {t('photoImport.profile.exceedsLimit', { max: formatNumber(300, locale) })}
+                </Text>
               )}
               <View style={styles.privacyRow}>
                 <Ionicons name="shield-checkmark-outline" size={18} color={Theme.colors.accentSage} />
                 <Text style={styles.privacyText}>
-                  Approval uploads only the framed, downscaled derivative. The original photo stays local.
+                  {t('photoImport.titleCard.privacyNotice')}
                 </Text>
               </View>
               <Button
-                title="Approve artwork & convert"
+                title={t('photoImport.titleCard.approve')}
                 onPress={approveArtwork}
                 disabled={interactionLocked || settings === null || title.trim().length === 0 || duplicateTitle}
                 loading={busy}
@@ -581,8 +615,11 @@ export default function PhotoImportScreen() {
   );
 }
 
-function formatAspect(aspect: number): string {
-  return aspect >= 1 ? `${aspect.toFixed(2)}:1` : `1:${(1 / aspect).toFixed(2)}`;
+function formatAspect(aspect: number, locale: string): string {
+  const options: Intl.NumberFormatOptions = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+  return aspect >= 1
+    ? `${formatNumber(aspect, locale, options)}:1`
+    : `1:${formatNumber(1 / aspect, locale, options)}`;
 }
 
 function normalizeTitle(value: string): string {

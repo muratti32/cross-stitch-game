@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "duplicateTitle": "You already have a Personal Pattern named “{{title}}”. Choose a different title.",
+    "cellsCount_one": "cell",
+    "cellsCount_other": "cells",
+    "colorsCount_one": "color",
+    "colorsCount_other": "colors"
+  },
+  "hub": {
+    "title": "Creation Hub",
+    "subtitle": "Bring your own designs to life with custom cross-stitch patterns.",
+    "opening": "Opening…",
+    "photoImport": {
+      "title": "Photo Import",
+      "description": "Upload a picture from your camera roll and convert it into a stitchable pattern.",
+      "action": "Import photo"
+    },
+    "aiGenerator": {
+      "title": "AI Generator",
+      "description": "Describe a cozy prompt and let artificial intelligence generate a custom pixel design.",
+      "action": "Generate design"
+    }
+  },
+  "aspects": {
+    "square": "Square",
+    "portrait_4_3": "Portrait 4:3",
+    "landscape_4_3": "Landscape 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Pattern Conversion failed. Please try again.",
+      "timeout": "Pattern Conversion is still processing. Try again shortly.",
+      "generic": "Could not complete Pattern Conversion. Please try again."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Registered Account Required",
+      "body": "AI artwork and its library stay private to your account.",
+      "signIn": "Sign in"
+    },
+    "header": {
+      "title": "AI Generator",
+      "backAccessibilityLabel": "Back"
+    },
+    "prompt": {
+      "label": "Describe your artwork",
+      "placeholder": "A cozy cottage garden at sunset…"
+    },
+    "generate": {
+      "working": "Working…",
+      "action": "Generate — 1 AI Credit",
+      "errors": {
+        "promptRejected": "That prompt was not allowed. Try describing something else.",
+        "generic": "Could not start AI generation. Please try again."
+      }
+    },
+    "library": {
+      "title": "Your AI Artwork Library",
+      "status": {
+        "pending": "Pending",
+        "dispatched": "Dispatched",
+        "running": "Running",
+        "delivered": "Delivered",
+        "safety_rejected": "Safety rejected",
+        "failed": "Failed",
+        "deleted": "Deleted",
+        "unknown": "Unavailable"
+      },
+      "failure": {
+        "safety_rejected": "This artwork did not pass the provider's safety check.",
+        "failed": "This artwork could not be generated."
+      },
+      "approve": "Approve into Pattern",
+      "delete": "Delete",
+      "deleteAccessibilityLabel": "Delete this AI Artwork",
+      "errors": {
+        "loadFailed": "Could not load your AI Artwork Library. Please try again."
+      }
+    },
+    "approve": {
+      "modalTitle": "Create Personal Pattern",
+      "titleLabel": "Pattern title",
+      "titleAccessibilityLabel": "Pattern title",
+      "defaultTitle": "My AI Pattern",
+      "placeholder": "My AI Pattern",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Cancel",
+      "creating": "Creating Pattern…",
+      "create": "Create Pattern",
+      "errors": {
+        "generic": "Could not create the Personal Pattern. Please try again."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Registered Account Required",
+      "body": "Personal Patterns belong to your account so they stay private and available across devices.",
+      "signIn": "Sign in or create account",
+      "back": "Back"
+    },
+    "header": {
+      "title": "Photo Pattern",
+      "subtitle": "Frame locally, then approve conversion",
+      "backAccessibilityLabel": "Back"
+    },
+    "picker": {
+      "chooseTitle": "Choose a photo",
+      "helpText": "The full-resolution Local Photo Source stays on this device. Nothing converts until you approve the frame.",
+      "choose": "Choose from library",
+      "chooseAnother": "Choose another",
+      "opening": "Opening…",
+      "errors": {
+        "permissionDenied": "Photo library access is required to choose a Local Photo Source.",
+        "invalidDimensions": "The selected photo does not report usable dimensions.",
+        "generic": "Could not open the photo library. Please try again."
+      }
+    },
+    "framing": {
+      "title": "Artwork Framing",
+      "gestureHint": "Drag to position · pinch to zoom",
+      "aspectLabel": "Frame aspect"
+    },
+    "profile": {
+      "title": "Conversion Profile",
+      "options": {
+        "easy": "Easy",
+        "standard": "Standard",
+        "detailed": "Detailed"
+      },
+      "custom": "Custom",
+      "customMeta": "Free · shape locked",
+      "unavailable": "Doesn’t fit this frame",
+      "customShortEdgeLabel": "Short edge",
+      "customColorLimitLabel": "DMC color limit",
+      "exceedsLimit": "These Custom values exceed the {{max}}-cell Pattern Size limit."
+    },
+    "titleCard": {
+      "label": "Pattern title",
+      "placeholder": "My Photo Pattern",
+      "defaultTitle": "My Photo Pattern",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · up to {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "Approval uploads only the framed, downscaled derivative. The original photo stays local.",
+      "approve": "Approve artwork & convert"
+    },
+    "processing": {
+      "preparingFrame": "Preparing the approved frame on this device…",
+      "uploading": "Uploading only the cropped, downscaled frame…",
+      "waitingForWorker": "Waiting for the conversion worker…",
+      "buildingGrid": "Building the stitch grid and DMC palette…",
+      "preparingSession": "Preparing the Personal Pattern for play…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "This profile no longer fits the final frame. Choose Easy or reduce detail.",
+        "generic": "Could not convert this photo. Please try again."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "No Pattern Selected",
+      "noPatternBody": "This screen must be opened from an existing Personal Pattern in your library.",
+      "accountTitle": "Registered Account Required",
+      "accountBody": "Personal Patterns belong to your account so they stay private and available across devices.",
+      "signIn": "Sign in or create account",
+      "back": "Back"
+    },
+    "loading": "Resuming editor draft...",
+    "load": {
+      "failedTitle": "Failed to Load Pattern",
+      "retry": "Retry",
+      "back": "Back",
+      "errors": {
+        "generic": "Could not load this Personal Pattern. Please try again."
+      }
+    },
+    "header": {
+      "title": "Pattern Editor",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Back"
+    },
+    "toolbar": {
+      "undo": "Undo",
+      "redo": "Redo"
+    },
+    "mode": {
+      "paint": "Paint",
+      "replaceColor": "Replace Color",
+      "replaceStep1": "1. Tap a color in the pattern below to replace:",
+      "replaceStep2": "2. Select a target DMC color below to execute replacement:",
+      "paintSelected": "Selected: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Select a color below, then tap cells to paint."
+    },
+    "errors": {
+      "pickColorFirst": "Pick a color first",
+      "paletteLimit": "This pattern already uses the maximum of {{max}} thread colors."
+    },
+    "picker": {
+      "title": "DMC Thread Colors",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Save Edited Pattern",
+      "placeholder": "My Edited Pattern Title",
+      "action": "Save as New",
+      "offlineTitle": "Saved offline",
+      "offlineBody": "Your edited pattern was saved on this device and will sync to your account once you are back online.",
+      "errors": {
+        "generic": "Could not save this Personal Pattern. Please try again."
+      }
+    }
+  }
+}

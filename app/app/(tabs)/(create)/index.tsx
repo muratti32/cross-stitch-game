@@ -1,5 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View, Text } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Screen, Card } from '@/components';
 import { Theme } from '@/theme/theme';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +11,7 @@ type CreatePath =
   | '/(tabs)/(create)/ai-generation';
 
 export default function CreateScreen() {
+  const { t } = useTranslation('create');
   const router = useRouter();
   const navigationLockRef = useRef(false);
   const [pendingPath, setPendingPath] = useState<CreatePath | null>(null);
@@ -42,8 +44,8 @@ export default function CreateScreen() {
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Creation Hub</Text>
-        <Text style={styles.subtitle}>Bring your own designs to life with custom cross-stitch patterns.</Text>
+        <Text style={styles.title}>{t('hub.title')}</Text>
+        <Text style={styles.subtitle}>{t('hub.subtitle')}</Text>
       </View>
 
       <View style={styles.cardsContainer}>
@@ -57,19 +59,19 @@ export default function CreateScreen() {
             <Ionicons name="image" size={32} color={Theme.colors.accentRose} />
           </View>
           <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>Photo Import</Text>
+            <Text style={styles.cardTitle}>{t('hub.photoImport.title')}</Text>
             <Text style={styles.cardDescription}>
-              Upload a picture from your camera roll and convert it into a stitchable pattern.
+              {t('hub.photoImport.description')}
             </Text>
             <View style={styles.actionRow}>
               {pendingPath === '/(tabs)/(create)/photo-import' ? (
                 <>
                   <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
-                  <Text style={styles.actionText}>Opening…</Text>
+                  <Text style={styles.actionText}>{t('hub.opening')}</Text>
                 </>
               ) : (
                 <>
-                  <Text style={styles.actionText}>Import photo</Text>
+                  <Text style={styles.actionText}>{t('hub.photoImport.action')}</Text>
                   <Ionicons name="chevron-forward" size={16} color={Theme.colors.accentTeal} />
                 </>
               )}
@@ -87,19 +89,19 @@ export default function CreateScreen() {
             <Ionicons name="sparkles" size={30} color={Theme.colors.accentSage} />
           </View>
           <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>AI Generator</Text>
+            <Text style={styles.cardTitle}>{t('hub.aiGenerator.title')}</Text>
             <Text style={styles.cardDescription}>
-              Describe a cozy prompt and let artificial intelligence generate a custom pixel design.
+              {t('hub.aiGenerator.description')}
             </Text>
             <View style={styles.actionRow}>
               {pendingPath === '/(tabs)/(create)/ai-generation' ? (
                 <>
                   <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
-                  <Text style={styles.actionText}>Opening…</Text>
+                  <Text style={styles.actionText}>{t('hub.opening')}</Text>
                 </>
               ) : (
                 <>
-                  <Text style={styles.actionText}>Generate design</Text>
+                  <Text style={styles.actionText}>{t('hub.aiGenerator.action')}</Text>
                   <Ionicons name="chevron-forward" size={16} color={Theme.colors.accentTeal} />
                 </>
               )}

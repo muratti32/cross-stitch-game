@@ -52,6 +52,23 @@ function reportServerErrorDiagnostics(error: Error & ServerApiErrorLike): void {
 }
 
 /**
+ * Appends a localized Support Reference line to a message, for any failure
+ * (server-reasoned or purely client-side, such as a Processing Job's
+ * terminal state) that carries one. Shared by localizeServerError below and
+ * by presentation helpers for failures that never reach the server as an
+ * HTTP error response, e.g. conversion/errorPresentation.ts.
+ */
+export function appendSupportReference(message: string, supportReference: string | undefined): string {
+  if (supportReference === undefined) {
+    return message;
+  }
+  const reference = i18n.t('errors:generic.supportReferenceLabel', {
+    reference: supportReference,
+  });
+  return `${message}\n${reference}`;
+}
+
+/**
  * Resolves a caught backend API error to localized player-facing text. The
  * server's raw `message` is reported to Sentry as diagnostic context but is
  * never part of the returned string (#159's acceptance criteria).
@@ -59,12 +76,5 @@ function reportServerErrorDiagnostics(error: Error & ServerApiErrorLike): void {
 export function localizeServerError(error: Error & ServerApiErrorLike): string {
   reportServerErrorDiagnostics(error);
   const presentation = presentServerError(error.reason, error.status);
-  const message = i18n.t(presentation.messageKey);
-  if (presentation.supportReference === undefined) {
-    return message;
-  }
-  const reference = i18n.t('errors:generic.supportReferenceLabel', {
-    reference: presentation.supportReference,
-  });
-  return `${message}\n${reference}`;
+  return appendSupportReference(i18n.t(presentation.messageKey), presentation.supportReference);
 }

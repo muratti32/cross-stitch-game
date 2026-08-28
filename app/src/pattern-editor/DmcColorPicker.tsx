@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, View, Pressable, StyleSheet } from 'react-native';
 import { Theme } from '@/theme/theme';
+import { useTranslation } from 'react-i18next';
 
 export interface DmcColor {
   dmcCode: string;
@@ -15,6 +16,7 @@ export interface DmcColorPickerProps {
 }
 
 export function DmcColorPicker({ colors, selectedDmcCode, onSelect }: DmcColorPickerProps) {
+  const { t } = useTranslation('create');
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.container}>
       <View style={styles.grid}>
@@ -24,6 +26,11 @@ export function DmcColorPicker({ colors, selectedDmcCode, onSelect }: DmcColorPi
             <Pressable
               key={color.dmcCode}
               onPress={() => onSelect(color)}
+              accessibilityRole="button"
+              accessibilityLabel={t('patternEditor.picker.colorAccessibilityLabel', {
+                code: color.dmcCode,
+                name: color.name,
+              })}
               style={[
                 styles.swatchWrapper,
                 isSelected && styles.swatchWrapperSelected,

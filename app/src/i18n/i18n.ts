@@ -30,6 +30,8 @@ import enProfile from './locales/en/profile.json';
 import trProfile from './locales/tr/profile.json';
 import enShell from './locales/en/shell.json';
 import trShell from './locales/tr/shell.json';
+import enCreate from './locales/en/create.json';
+import trCreate from './locales/tr/create.json';
 import { FALLBACK_LOCALE } from './resolveAppLanguage';
 import { resolveMissingTranslation, reportMissingTranslationKey } from './missingKeyHandler';
 import { SUPPORTED_LOCALES } from './supportedLocales';
@@ -47,11 +49,11 @@ export const DEFAULT_NAMESPACE = 'settings';
 const resources = {
   en: {
     settings: enSettings, errors: enErrors, onboarding: enOnboarding, catalog: enCatalog,
-    play: enPlay, commerce: enCommerce, profile: enProfile, shell: enShell,
+    play: enPlay, commerce: enCommerce, profile: enProfile, shell: enShell, create: enCreate,
   },
   tr: {
     settings: trSettings, errors: trErrors, onboarding: trOnboarding, catalog: trCatalog,
-    play: trPlay, commerce: trCommerce, profile: trProfile, shell: trShell,
+    play: trPlay, commerce: trCommerce, profile: trProfile, shell: trShell, create: trCreate,
   },
 };
 
