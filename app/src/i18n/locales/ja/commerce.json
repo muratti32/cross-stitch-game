@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "戻る",
+    "title": "ストア",
+    "subtitle": "メンバーシップと1回限りのチャージ"
+  },
+  "signInReturn": {
+    "notice": "サインインしました。{{label}}が選択されたままです。内容を確認し、よろしければ「購入」をタップしてください。"
+  },
+  "premiumHero": {
+    "eyebrow": "プレミアムメンバーシップ",
+    "title": "もっと創作しよう。毎日ちょっとした報酬を受け取ろう。",
+    "body": "お支払い期間ごとのAI Credits、プレミアムテーマ、そして毎日のStitch Coinの受け取り。",
+    "benefitAiCredits": "AI Credits",
+    "benefitDailyCoins": "デイリーコイン",
+    "benefitThemes": "テーマ",
+    "statusNoActiveMembership": "有効なメンバーシップはありません",
+    "statusBrowseAsGuest": "ゲストプレイヤーとしてプランを見る",
+    "periodEndsLabel": "現在の期間の終了日",
+    "periodRenewsLabel": "更新日",
+    "lifecycleActive": "有効"
+  },
+  "membershipActions": {
+    "title": "有効なPremiumメンバーシップ",
+    "body": "デイリー報酬はプロフィールにあります。テーマは 設定 › 外観 から変更できます。",
+    "scheduledChangeNotice": "{{date}}に{{plan}}へ変更予定",
+    "manageSubscription": "サブスクリプションの管理",
+    "manageSubscriptionFailedTitle": "サブスクリプションを開けません",
+    "manageSubscriptionFailedBody": "デバイスのストアアカウントから再度お試しください。"
+  },
+  "pending": {
+    "title": "購入の照合待ち",
+    "verifyingTitle": "購入を確認中",
+    "premiumChangeAccepted": "ストアで{{label}}への変更が承認されました。",
+    "premiumResponseReceived": "{{label}}のストアの応答を受信しました。",
+    "premiumDeferredSuffix": "変更はGame Backendでの検証後にスケジュールされ、現在の期間が終了した時点で有効になります。",
+    "premiumSuffix": "PremiumはGame Backendでの検証後に有効化されます。",
+    "doNotPurchasePlanAgain": " このプランを再度購入しないでください。",
+    "coinPackBody": "ストアの応答を受信しました。Stitch Coinは、Game Backendが対応するCommerce Ledgerの付与を公開した後に更新されます。このパックを再度購入しないでください。",
+    "aiCreditPackBody": "ストアの応答を受信しました。AI Creditは、Game Backendが対応するCommerce Ledgerの付与を公開した後に更新されます。このパックを再度購入しないでください。",
+    "refreshStatus": "ステータスを更新",
+    "retryReconciliation": "照合を再試行"
+  },
+  "store": {
+    "loadingPrices": "現在のストア価格を読み込み中…",
+    "unavailableTitle": "ストアは一時的に利用できません",
+    "unavailableBody": "ウォレットとメンバーシップの情報は引き続きご利用いただけます。",
+    "retry": "再試行"
+  },
+  "plans": {
+    "choosePremiumPlan": "Premiumプランを選択",
+    "yourPremiumPlan": "ご利用中のPremiumプラン",
+    "currentPlan": "現在のプラン",
+    "upgrade": "アップグレード",
+    "planChange": "プラン変更",
+    "bestValue": "最もお得",
+    "billedEvery": "{{period}}ごとに請求",
+    "chooseLabel": "{{label}}を選択",
+    "freeTrial": "{{offer}}は無料、その後{{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "1回限りのパック",
+    "stitchCoinPacksTitle": "Stitch Coinパック",
+    "aiCreditPacksTitle": "AI Creditパック",
+    "coinsNoun": "コイン",
+    "creditsNoun": "クレジット",
+    "fromPrice": "{{price}}から"
+  },
+  "restore": {
+    "restorePurchases": "購入情報の復元",
+    "restoreGuestPremium": "ゲストのPremiumを復元",
+    "requestedTitle": "復元をリクエストしました",
+    "requestedBody": "確認済みのPremiumアクセスは、ストアのウェブフックが照合された後に表示されます。Stitch CoinおよびAI Creditパックは復元されません。"
+  },
+  "sheet": {
+    "currentPricesSubtitle": "アプリストアの現在の価格",
+    "closeAccessibilityLabel": "商品シートを閉じる",
+    "closeButtonAccessibilityLabel": "閉じる",
+    "selectedBeforeSignIn": "サインイン前に選択",
+    "buy": "購入"
+  },
+  "confirmation": {
+    "cancel": "キャンセル",
+    "confirmLabel": "{{label}}を確認",
+    "confirmPremiumTitle": "Premiumの購入を確認",
+    "introductoryOffer": "ストアから提供されているお試しオファー：{{offer}}。",
+    "premiumAppearsAfterVerification": "Premiumは、Game Backendがストアのトランザクションを検証した後にのみ反映されます。",
+    "confirmPremiumUpgradeTitle": "Premiumへのアップグレードを確認",
+    "confirmPremiumPlanChangeTitle": "Premiumプランの変更を確認",
+    "currentPlanLabel": "現在のプラン: {{label}}",
+    "upgradeToLabel": "{{label}}にアップグレード · {{offer}}",
+    "changeToLabel": "{{label}}に変更 · {{offer}}",
+    "upgradeBody": "このアップグレードの最終請求額と適用日はApp Storeが管理します。Game Backendが検証を完了した後に、Premiumに{{label}}が反映されます。",
+    "planChangeBody": "App Storeはこの変更を現在の期間 of 終了時まで保留します。それまでは{{currentLabel}}が引き続き有効で、変更日から{{targetLabel}}の請求が開始されます。変更をキャンセルする場合は、「サブスクリプションの管理」から行ってください。",
+    "confirmUpgrade": "アップグレードを確認",
+    "confirmPlanChange": "プラン変更を確認",
+    "confirmStitchCoinTitle": "Stitch Coinの購入を確認",
+    "confirmAiCreditTitle": "AI Creditの購入を確認",
+    "balanceChangesAfterVerificationCoin": "残高は、Game Backendがストアのトランザクションを検証し、対応するCommerce Ledgerの付与を記録した後にのみ変更されます。",
+    "balanceChangesAfterVerificationAiCredit": "残高は、Game Backendがストアのトランザクションを検証し、対応するCommerce Ledgerの付与を記録した後にのみ変更されます。プレミアムメンバーシップは必須ではありません。"
+  },
+  "disclosure": {
+    "subscriptionTerms": "お支払いは購入確認時にお使いの{{store}}アカウントに請求されます。現在の期間が終了する少なくとも24時間前までに自動更新をオフにしない限り、{{label}} Premiumは{{offer}}で自動更新されます。サブスクリプションを購入すると、無料トライアルの未使用分は無効になります。解約は{{store}}アカウントからいつでも行えます。",
+    "privacyPolicy": "プライバシーポリシー",
+    "termsOfService": "利用規約",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "リンクを開けませんでした: {{url}}"
+  },
+  "supportReference": {
+    "label": "サポート用参照番号: {{reference}}",
+    "copyAccessibilityLabel": "サポート用参照番号{{reference}}をコピー",
+    "copyAccessibilityHint": "サポート用参照番号をクリップボードにコピーします",
+    "copied": "コピーしました",
+    "copyFailedTitle": "コピーに失敗しました",
+    "copyFailedBody": "サポート用参照番号をコピーできませんでした。テキストを選択して手動でコピーしてください。"
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "ゲストプレイヤーによるStitch Coinの購入はiOSでのみご利用いただけます。",
+    "guestIosOnlyGeneric": "ゲストプレイヤーによる購入はiOSでのみご利用いただけます。",
+    "purchaseFailedTitle": "購入に失敗しました",
+    "premiumVerificationNotYet": "Game Backendで購入を検証できませんでした。照合を再試行してください。再度購入手続きを行わないでください。",
+    "premiumVerificationFailedRetry": "Game Backendでまだ購入を検証できていません。照合を再試行してください。再度購入手続きを行わないでください。",
+    "premiumGrantRefreshFailed": "Premiumは検証されましたが、メンバーシップとAI Creditの状態を更新できませんでした。照合を再試行してください。",
+    "premiumReconciliationUnreachable": "購入の照合中にGame Backendに接続できませんでした。照合を再試行してください。再度購入手続きを行わないでください。",
+    "coinPackVerificationMismatch": "ストアのトランザクションがこのCoinパックと一致しませんでした。検証を再試行するか、サポートにお問い合わせください。再度購入手続きを行わないでください。",
+    "coinPackGrantUnavailable": "購入は検証されましたが、Stitch Coinの付与が利用できません。照合を再試行してください。再度購入手続きを行わないでください。",
+    "coinPackBalanceRefreshFailed": "コインの付与は検証されましたが、現在のStitch Coin残高を更新できませんでした。照合を再試行してください。",
+    "coinPackVerificationFailedRetry": "Game BackendでまだこのCoinパックを検証できていません。照合を再試行してください。再度購入手続きを行わないでください。",
+    "coinPackReconciliationUnreachable": "Coinパックの照合中にGame Backendに接続できませんでした。照合を再試行してください。再度購入手続きを行わないでください。",
+    "aiCreditPackVerificationMismatch": "ストアのトランザクションがこのAI Creditパックと一致しませんでした。検証を再試行するか、サポートにお問い合わせください。再度購入手続きを行わないでください。",
+    "aiCreditPackGrantUnavailable": "購入は検証されましたが、AI Creditの付与が利用できません。照合を再試行してください。再度購入手続きを行わないでください。",
+    "aiCreditPackBalanceRefreshFailed": "AI Creditの付与は検証されましたが、現在の残高を更新できませんでした。照合を再試行してください。",
+    "aiCreditPackVerificationFailedRetry": "Game BackendでまだこのAI Creditパックを検証できていません。照合を再試行してください。再度購入手続きを行わないでください。",
+    "aiCreditPackReconciliationUnreachable": "AI Creditパックの照合中にGame Backendに接続できませんでした。照合を再試行してください。再度購入手続きを行わないでください。",
+    "reconciliationStillUnavailable": "Game Backendは依然として利用できません。後ほど照合を再度お試しください。",
+    "storeTemporarilyUnavailable": "ストアは一時的に利用できません。数分後に再度お試しください。",
+    "purchasesNotAllowed": "このデバイスでの購入は許可されていません。ストアアカウントまたはペアレンタルコントロールを確認してください。",
+    "itemNotAvailable": "このアイテムは現在購入できません。別のアイテムを選択するか、後ほど再度お試しください。",
+    "alreadyOwned": "このアイテムは既に所有しています。「購入情報の復元」を使用してアクセスを更新してください。",
+    "couldNotConnectToStore": "ストアに接続できませんでした。インターネット接続を確認して再度お試しください。",
+    "paymentPendingApproval": "お支払いは承認待ちです。ストアでの手続きが完了すると、購入が反映されます。",
+    "testPurchaseDeclined": "テスト購入が拒否されました。支払いは行われていません。設定で別のテストストア結果を選択し、再度お試しください。",
+    "genericPurchaseFailure": "購入を完了できませんでした。支払いは発生していません。もう一度お試しください。"
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "検証中",
+    "premiumPending": "現在検証を行っています。Game Backendが確認し次第、Premiumが有効になります。",
+    "premiumPlanChangePending": "現在検証を行っています。Game Backendが確認し次第、プラン変更がスケジュールされます。",
+    "coinPackPending": "現在検証を行っています。完了し次第、Stitch Coin残高が更新されます。",
+    "aiCreditPackPending": "現在検証を行っています。完了し次第、AI Credit残高が更新されます。"
+  },
+  "success": {
+    "purchaseReceivedTitle": "購入を受け付けました",
+    "storeAcceptedPlanChange": "ストアで{{label}}への変更が承認されました。有効になり次第確定します。",
+    "storeAcceptedPurchase": "ストアで{{label}}が承認されました。現在購入を検証しています。",
+    "premiumChanges": "Premiumは{{effectiveOn}}に{{label}}に変更されます。",
+    "effectiveOnDate": "（{{date}}）",
+    "planChangeScheduledTitle": "プラン変更スケジュール完了",
+    "planChangeScheduledBody": "プレミアムメンバーシップは、{{label}}{{effectiveOn}}に変更されるまで現在のプランのままとなります。変更をキャンセルする場合は、「サブスクリプションの管理」から行ってください。",
+    "premiumIsActiveTitle": "Premiumが有効です",
+    "premiumVerifiedAndActive": "{{label}} Premiumが検証され、有効になりました。",
+    "premiumNowActiveNoBilling": "{{label}} Premiumが有効になりました。",
+    "premiumNowActiveBilled": "{{label}} Premiumが有効になりました（請求周期: {{period}}ごと）。",
+    "coinPackGrantedTitle": "Stitch Coin付与完了",
+    "coinPackGrantVerified": "{{label}}の付与が検証されました。Stitch Coin残高: {{balance}}。",
+    "coinPackAddedToBalance": "{{quantity}} Stitch Coinが残高に追加されました。",
+    "aiCreditPackGrantedTitle": "AI Credit付与完了",
+    "aiCreditPackGrantVerified": "{{label}}の付与が検証されました。AI Credit残高: {{balance}}。",
+    "aiCreditPackAddedToBalance": "{{quantity}} AI Creditが残高に追加されました。"
+  },
+  "products": {
+    "premiumAnnual": "年",
+    "premiumMonthly": "月",
+    "premiumWeekly": "週",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coin",
+    "aiCreditPack_one": "{{formattedCount}} AI Credit",
+    "aiCreditPack_other": "{{formattedCount}} AI Credit",
+    "billedEveryOffer": "{{price}}／{{period}}",
+    "creditAllowancePaidPeriod": "{{credits}}クレジット／有料期間",
+    "creditAllowancePaidNoun": "{{credits}}クレジット／有料{{period}}"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "ゲストとして購入",
+    "commerceBody": "登録なしで購入できます。Premiumメンバーシップはストアから復元可能ですが、このインストール情報が失われた場合、Stitch Coin、AI Credit、および非公開のゲストコンテンツは復元できなくなります。登録を行うことでこれらを保護でき、ゲストとしてのプレイが中断されることもありません。",
+    "continueAsGuest": "ゲストとして続行",
+    "signInInstead": "サインインする",
+    "closeAccessibilityLabel": "閉じる"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "了解",
+    "successButton": "OK",
+    "failedButton": "閉じる",
+    "infoButton": "了解",
+    "closeAccessibilityLabel": "閉じる"
+  }
+}

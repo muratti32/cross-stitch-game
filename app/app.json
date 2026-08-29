@@ -129,7 +129,8 @@
       "pt-BR": "./src/i18n/locales/pt-BR/native.json",
       "de": "./src/i18n/locales/de/native.json",
       "it": "./src/i18n/locales/it/native.json",
-      "ar": "./src/i18n/locales/ar/native.json"
+      "ar": "./src/i18n/locales/ar/native.json",
+      "ja": "./src/i18n/locales/ja/native.json"
     },
     "experiments": {
       "typedRoutes": true,

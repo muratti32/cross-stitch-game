@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "そのサインインは別のアカウントのものです。現在のアカウントは変更されませんでした。",
+    "providerRejected": "認証が拒否されました。アカウントまたはコードを確認して再試行してください。"
+  },
+  "generic": {
+    "failure": "エラーが発生しました。もう一度お試しください。",
+    "supportReferenceLabel": "サポート参照コード: {{reference}}"
+  }
+}

@@ -6,5 +6,6 @@
   "fr": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
   "pt-BR": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
   "it": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
-  "ar": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false }
+  "ar": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
+  "ja": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false }
 }

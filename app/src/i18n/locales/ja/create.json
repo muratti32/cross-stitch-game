@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "戻る",
+    "cancel": "キャンセル",
+    "duplicateTitle": "「{{title}}」という名前の個人用パターンは既に存在します。別のタイトルを入力してください。",
+    "cellsCount_one": "マス",
+    "cellsCount_other": "マス",
+    "colorsCount_one": "色",
+    "colorsCount_other": "色"
+  },
+  "hub": {
+    "title": "クリエイションハブ",
+    "subtitle": "オリジナルのデザインをカスタムクロスステッチパターンにして、命を吹き込みましょう。",
+    "opening": "開いています…",
+    "photoImport": {
+      "title": "写真のインポート",
+      "description": "カメラロールから写真をアップロードして、ステッチ可能なパターンに変換します。",
+      "action": "写真をインポート"
+    },
+    "aiGenerator": {
+      "title": "AIジェネレーター",
+      "description": "作りたいイメージのプロンプトを入力して、人工知能にカスタムのピクセルデザインを生成させましょう。",
+      "action": "デザインを生成"
+    }
+  },
+  "aspects": {
+    "square": "スクエア",
+    "portrait_4_3": "縦長 4:3",
+    "landscape_4_3": "横長 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "パターンの変換に失敗しました。もう一度お試しください。",
+      "timeout": "パターンの変換処理が続いています。しばらくしてからもう一度お試しください。",
+      "generic": "パターンの変換を完了できませんでした。もう一度お試しください。"
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "登録アカウントが必要です",
+      "body": "AIアートワークとそのライブラリは、アカウント内で非公開に保たれます。",
+      "signIn": "サインイン"
+    },
+    "header": {
+      "title": "AIジェネレーター",
+      "backAccessibilityLabel": "戻る"
+    },
+    "prompt": {
+      "label": "アートワークの説明を入力",
+      "placeholder": "夕暮れ時の居心地の良いコテージの庭…"
+    },
+    "generate": {
+      "working": "生成中…",
+      "action": "生成する — 1 AI Credit",
+      "errors": {
+        "promptRejected": "そのプロンプトは許可されませんでした。他の説明をお試しください。",
+        "generic": "AI生成を開始できませんでした。もう一度お試しください。"
+      }
+    },
+    "library": {
+      "title": "AIアートワークライブラリ",
+      "status": {
+        "pending": "保留中",
+        "dispatched": "送信済み",
+        "running": "実行中",
+        "delivered": "生成完了",
+        "safety_rejected": "セーフティ非承認",
+        "failed": "失敗",
+        "deleted": "削除済み",
+        "unknown": "利用不可"
+      },
+      "failure": {
+        "safety_rejected": "このアートワークはプロバイダーの安全チェックを通過しませんでした。",
+        "failed": "このアートワークを生成できませんでした。"
+      },
+      "approve": "パターンとして承認",
+      "delete": "削除",
+      "deleteAccessibilityLabel": "このAIアートワークを削除する",
+      "errors": {
+        "loadFailed": "AIアートワークライブラリを読み込めませんでした。もう一度お試しください。"
+      }
+    },
+    "approve": {
+      "modalTitle": "個人用パターンの作成",
+      "titleLabel": "パターン名",
+      "titleAccessibilityLabel": "パターン名",
+      "defaultTitle": "マイAIパターン",
+      "placeholder": "マイAIパターン",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "キャンセル",
+      "creating": "パターンを作成中…",
+      "create": "パターンを作成",
+      "errors": {
+        "generic": "個人用パターンを作成できませんでした。もう一度お試しください。"
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "登録アカウントが必要です",
+      "body": "個人用パターンはアカウントに紐付けられ、非公開で保存され、複数のデバイスで利用できます。",
+      "signIn": "サインインまたはアカウント作成",
+      "back": "戻る"
+    },
+    "header": {
+      "title": "写真パターン",
+      "subtitle": "デバイス上でフレームを調整し、変換を承認してください",
+      "backAccessibilityLabel": "戻る"
+    },
+    "picker": {
+      "chooseTitle": "写真を選択",
+      "helpText": "解像度の高い元の写真はデバイス内に留まります。フレームを承認するまで、変換は開始されません。",
+      "choose": "ライブラリから選択",
+      "chooseAnother": "別の写真を選択",
+      "opening": "開いています…",
+      "errors": {
+        "permissionDenied": "写真を選択するには、写真ライブラリへのアクセス権限が必要です。",
+        "invalidDimensions": "選択された写真のサイズが有効ではありません。",
+        "generic": "写真ライブラリを開けませんでした。もう一度お試しください。"
+      }
+    },
+    "framing": {
+      "title": "アートワークのフレーム調整",
+      "gestureHint": "ドラッグで位置調整 · ピンチでズーム",
+      "aspectLabel": "フレームのアスペクト比"
+    },
+    "profile": {
+      "title": "変換プロファイル",
+      "options": {
+        "easy": "かんたん",
+        "standard": "標準",
+        "detailed": "詳細"
+      },
+      "custom": "カスタム",
+      "customMeta": "無料 · 形状固定",
+      "unavailable": "このフレームには適合しません",
+      "customShortEdgeLabel": "短辺",
+      "customColorLimitLabel": "DMCの色数制限",
+      "exceedsLimit": "カスタム値が{{max}}マスのパターンサイズ制限を超えています。"
+    },
+    "titleCard": {
+      "label": "パターン名",
+      "placeholder": "マイ写真パターン",
+      "defaultTitle": "マイ写真パターン",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · 最大 {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "承認すると、切り抜いて縮小された画像のみがアップロードされます。元の写真はローカルに保存されたままになります。",
+      "approve": "アートワークを承認して変換"
+    },
+    "processing": {
+      "preparingFrame": "このデバイスで承認されたフレームを準備中…",
+      "uploading": "切り抜いて縮小されたフレームのみをアップロード中…",
+      "waitingForWorker": "変換ワーカーを待機中…",
+      "buildingGrid": "ステッチグリッドと DMC パレットを作成中…",
+      "preparingSession": "プレイ用に個人用パターンを準備中…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "このプロファイルは最終的なフレームに適さなくなりました。かんたんを選択するか、詳細度を下げてください。",
+        "generic": "この写真を変換できませんでした。もう一度お試しください。"
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "パターンが選択されていません",
+      "noPatternBody": "この画面はライブラリ内の既存の個人用パターンから開く必要があります。",
+      "accountTitle": "登録アカウントが必要です",
+      "accountBody": "個人用パターンはアカウントに紐付けられ、非公開で保存され、複数のデバイスで利用できます。",
+      "signIn": "サインインまたはアカウント作成",
+      "back": "戻る"
+    },
+    "loading": "エディタの下書きを再開中...",
+    "load": {
+      "failedTitle": "パターンの読み込みに失敗しました",
+      "retry": "再試行",
+      "back": "戻る",
+      "errors": {
+        "generic": "この個人用パターンを読み込めませんでした。もう一度お試しください。"
+      }
+    },
+    "header": {
+      "title": "パターンエディタ",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "戻る"
+    },
+    "toolbar": {
+      "undo": "元に戻す",
+      "redo": "やり直す"
+    },
+    "mode": {
+      "paint": "ペイント",
+      "replaceColor": "色を置換",
+      "replaceStep1": "1. 置換したいパターンの色をタップします:",
+      "replaceStep2": "2. 置換先の DMC の色を選択して実行します:",
+      "paintSelected": "選択中: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "色を選択し、マスをタップしてペイントします。"
+    },
+    "errors": {
+      "pickColorFirst": "先に色を選択してください",
+      "paletteLimit": "このパターンはすでに最大{{max}}色のスレッドカラーを使用しています。"
+    },
+    "picker": {
+      "title": "DMC刺繍糸カラー",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "編集したパターンを保存",
+      "placeholder": "編集済みのパターン名",
+      "action": "新規保存",
+      "offlineTitle": "オフラインで保存されました",
+      "offlineBody": "編集されたパターンはこのデバイスに保存されました。オンラインに戻るとアカウントに同期されます。",
+      "errors": {
+        "generic": "この個人用パターンを保存できませんでした。もう一度お試しください。"
+      }
+    }
+  }
+}

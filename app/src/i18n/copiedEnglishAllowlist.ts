@@ -80,4 +80,8 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'it:settings:developer.debug.title': '"Debug" is a common English loanword in Italian developer UI.',
   'it:settings:session.idLabel': '"ID" is used identically in Italian tech/UI copy.',
   'it:settings:tutorial.sectionTitle': '"Tutorial" is an identical Italian cognate.',
+  'ja:play:home.idLabel': '"ID" is used identically in Japanese tech/UI copy.',
+  'ja:settings:session.idLabel': '"ID" is used identically in Japanese tech/UI copy.',
+  'ja:commerce:premiumHero.benefitAiCredits': 'AI Credit is the branded in-game currency, kept English per the Japanese pack convention.',
+  'ja:profile:home.walletCard.aiCreditsLabel': 'AI Credit is the branded in-game currency, kept English per the Japanese pack convention.',
 };

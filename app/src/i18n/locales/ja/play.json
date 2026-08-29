@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "ステッチテーブル",
+    "subtitle": "前回の続きから始めるか、最近のクラフトを再開しましょう。",
+    "loading": "ステッチを読み込んでいます...",
+    "empty": {
+      "title": "進行中のクラフトはありません",
+      "body": "刺繍フレームは現在空です。パターンカタログからステッチする素敵なデザインを見つけましょう！",
+      "action": "カタログを見る"
+    },
+    "unknownPattern": "不明なパターン",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "パターン {{id}}",
+    "deleteSessionAccessibilityLabel": "セッションを削除",
+    "viewFinishedAccessibilityLabel": "完成したクラフトを表示",
+    "resumeAccessibilityLabel": "ステッチを再開",
+    "status": {
+      "ready": "準備完了",
+      "done": "完了",
+      "active": "進行中",
+      "preparing": "準備中",
+      "failed": "失敗"
+    },
+    "deleteConfirm": {
+      "title": "進捗の削除",
+      "message": "「{{title}}」の進捗を削除してもよろしいですか？この操作は取り消せません。",
+      "cancel": "キャンセル",
+      "confirm": "削除"
+    },
+    "preparingCard": {
+      "discardTitle": "セッションを破棄",
+      "cancelTitle": "ダウンロードをキャンセル",
+      "discardMessage": "この失敗したセッションを破棄してもよろしいですか？",
+      "cancelMessage": "このパターンのダウンロードをキャンセルしてもよろしいですか？",
+      "keep": "残す",
+      "discard": "破棄する",
+      "cancel": "キャンセル"
+    }
+  },
+  "loading": {
+    "text": "セッションを開き、布を準備しています..."
+  },
+  "error": {
+    "title": "セッションの読み込みに失敗しました",
+    "fallbackMessage": "ステッチセッションを読み込めません。",
+    "backButton": "戻る",
+    "tableButton": "テーブルに移動"
+  },
+  "header": {
+    "backButton": "← 戻る",
+    "tableButton": "← テーブル",
+    "defaultTitle": "ステッチセッション",
+    "progress": "{{completed}} / {{total}} マス ({{percent}}% 完了)",
+    "resumeTutorialAccessibilityLabel": "チュートリアルを再開"
+  },
+  "banners": {
+    "patternRemoved": "このパターンはモデレーションにより削除されたため、利用できなくなりました。タップして退出してください。",
+    "syncConflict": "別のデバイスと同期されました。一部のマスが更新されました。タップして閉じてください。"
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "選択中の糸の色で、次に残っているマスを見つける",
+    "undoAccessibilityLabel": "最後のステッチを元に戻す"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "色 {{number}}: DMC {{dmcCode}}、残り {{count}} ステッチ",
+    "chipAccessibilityLabel_other": "色 {{number}}: DMC {{dmcCode}}、残り {{count}} ステッチ",
+    "done": "完了",
+    "remaining_one": "残り {{count}}",
+    "remaining_other": "残り {{count}}"
+  },
+  "celebration": {
+    "title": "美しく完成しました！",
+    "subtitle": "この布のすべてのステッチが完成しました。",
+    "stitchesLabel_one": "ステッチ",
+    "stitchesLabel_other": "ステッチ",
+    "colorsLabel_one": "色",
+    "colorsLabel_other": "色",
+    "replayButton": "もう一度ステッチする",
+    "catalogButton": "カタログに戻る"
+  }
+}
