@@ -1,4 +1,1410 @@
 {
+  "ar": {
+    "catalog": {
+      "common": {
+        "back": "← رجوع",
+        "searchPlaceholder": "ابحث عن الأنماط، المبدعين، الوسوم...",
+        "offlineBanner": "غير متصل — قد يكون الكتالوج قديماً",
+        "sectionError": {
+          "title": "تعذر التحميل",
+          "retry": "أعد المحاولة"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} لوناً",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} أعمدة",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "الإنجليزية"
+        },
+        "accessibilityLabel": "مكتوب بـ {{language}}"
+      },
+      "index": {
+        "subtitle": "اصنع عالمك المريح، غرزة بغرزة.",
+        "searchBar": {
+          "accessibilityLabel": "ابحث في كتالوج الأنماط"
+        },
+        "sections": {
+          "starterPatterns": "أنماط البداية",
+          "staffPicks": "اختيارات الموظفين",
+          "categories": "الفئات",
+          "newPatterns": "أنماط جديدة"
+        },
+        "staffPicks": {
+          "emptyTitle": "لا توجد اختيارات للموظفين بعد",
+          "emptyBody": "مجموعتنا المختارة بعناية من التصاميم المريحة ستظهر هنا قريباً.",
+          "errorBody": "تعذر الوصول إلى الكتالوج ولا يوجد شيء مخزن مؤقتاً بعد."
+        },
+        "categories": {
+          "count": "{{count}} نمطاً",
+          "errorBody": "تعذر الوصول إلى الكتالوج ولا يوجد شيء مخزن مؤقتاً بعد."
+        },
+        "newPatterns": {
+          "emptyTitle": "أنماط جديدة قيد الصنع",
+          "emptyBody": "وصول تصاميم جديدة قريباً!",
+          "errorBody": "تعذر الوصول إلى الكتالوج ولا يوجد شيء مخزن مؤقتاً بعد.",
+          "showMore": "عرض المزيد",
+          "loading": "جاري التحميل…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "تصفح",
+        "error": {
+          "body": "تعذر الوصول إلى صفحة الكتالوج هذه ولا يوجد شيء مخزن مؤقتاً بعد."
+        },
+        "empty": {
+          "title": "لا يوجد شيء هنا بعد",
+          "body": "لا توجد أنماط تطابق هذا الاختيار بعد. تتوفر تصاميم جديدة بانتظام."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "حقل إدخال البحث في الكتالوج",
+        "inactive": {
+          "title": "ابحث في الكتالوج",
+          "body": "اكتب حرفين على الأقل للبحث عن الأنماط حسب العنوان أو المبدع أو الوسم."
+        },
+        "error": {
+          "title": "البحث يتطلب اتصالاً بالإنترنت",
+          "body": "البحث في الكتالوج غير متاح دون اتصال بالإنترنت. تظل صفحات الكتالوج المخزنة مؤقتاً قابلة للتصفح من علامة تبويب الكتالوج."
+        },
+        "noResults": {
+          "title": "لا توجد نتائج مطابقة",
+          "body": "لا شيء في الكتالوج يطابق “{{query}}” بعد."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "اللعب كضيف",
+        "body": "Stitch Coin والتقدم يعيشان فقط على هذا الجهاز كلاعب ضيف. في حال فقدان التطبيق، قد لا يمكن استرداد سجل الضيف والتقدم المحرز. تسجيل الدخول يحمي تقدمك."
+      },
+      "detail": {
+        "noDescription": "لا يوجد وصف متاح.",
+        "specs": {
+          "dimensions": "الأبعاد",
+          "totalStitches": "إجمالي الغرز",
+          "colors": "الألوان",
+          "category": "الفئة"
+        },
+        "threadsSuffix": "{{count}} خيوط",
+        "palette": {
+          "title": "الخيوط المطلوبة",
+          "loading": "جاري قراءة لوحة الخيوط...",
+          "loadFailed": "فشل تحميل لوحة الألوان: {{error}}",
+          "retry": "إعادة محاولة التحميل"
+        },
+        "actions": {
+          "startStitching": "ابدأ التطريز",
+          "starting": "جاري البدء...",
+          "preparing": "جاري التحضير…"
+        },
+        "loadFailedGeneric": "فشل فك تشفير ملف النمط.",
+        "sessionCreateFailed": "فشل إنشاء جلسة التطريز. يرجى المحاولة مرة أخرى.",
+        "unavailable": {
+          "title": "النمط غير متاح",
+          "body": "تعذر تحميل هذا النمط. قد يكون قد تمت إزالته، أو قد تكون غير متصل بالإنترنت.",
+          "goBack": "رجوع"
+        },
+        "byCreator": "بواسطة {{creatorName}}",
+        "byCreatorWithUsername": "بواسطة {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "حظر المبدع",
+          "message": "هل أنت متأكد أنك تريد حظر {{creatorName}}؟ هذا إجراء خاص وقابل للتراجع يخفي أنماطهم من البحث والتصفح. لا يبلغ هذا عن المبدع ولن يقاطع جلسة التطريز الحالية.",
+          "cancel": "إلغاء",
+          "confirm": "حظر",
+          "blockedTitle": "تم الحظر",
+          "blockedMessage": "تم حظر {{creatorName}}.",
+          "errorTitle": "خطأ",
+          "failedGeneric": "فشل حظر المبدع."
+        },
+        "likeFailedGeneric": "فشل تحديث حالة الإعجاب",
+        "connectToPlay": {
+          "title": "اتصل بالإنترنت للعب",
+          "body": "يتطلب بدء نمط من الكتالوج اتصالاً بالإنترنت لتحضير جلستك. أنماط البداية قابلة للعب الآن، حتى دون اتصال بالإنترنت."
+        },
+        "insufficientCoins": {
+          "title": "رصيد عملات غير كافٍ",
+          "body": "يكلف هذا النمط {{price}} Stitch Coins، ولكن لديك {{balance}} عملات فقط.\n\nالنقص: {{shortfall}} عملات.\n\nاكسب Stitch Coins من خلال إكمال أنماط أخرى! مكافآت الإكمال الأول متاحة الآن.",
+          "getCoins": "الحصول على Stitch Coins",
+          "findPatterns": "البحث عن أنماط لتطريزها",
+          "back": "رجوع"
+        },
+        "unlockFailedGeneric": "فشل إلغاء القفل. تحقق من اتصالك بالإنترنت وأعد المحاولة.",
+        "preparationFailedGeneric": "تعذر بدء التحضير. تحقق من اتصالك وأعد المحاولة.",
+        "price": {
+          "label": "السعر"
+        },
+        "balance": {
+          "label": "رصيدك",
+          "loading": "…"
+        },
+        "unlockButton": "إلغاء القفل مقابل {{price}} عملة",
+        "communityReport": {
+          "button": "الإبلاغ عن هذا النمط",
+          "title": "الإبلاغ عن {{patternTitle}}",
+          "body": "اختر السبب الذي يصف المشكلة على أفضل وجه. البلاغات لا تخفي النمط أو تغيره تلقائياً.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "محتوى غير لائق أو غير آمن",
+            "copyright_or_publication_rights": "حقوق النشر أو حقوق النشر والتوزيع",
+            "duplicate_or_spam": "مكرر أو غير مرغوب فيه",
+            "misleading_title_or_tags": "عنوان أو وسوم مضللة",
+            "other": "أخرى"
+          },
+          "explanationLabel": "دليل أو شرح {{requirement}}",
+          "explanationRequired": "(مطلوب)",
+          "explanationOptional": "(اختياري)",
+          "explanationPlaceholder": "شارك تفاصيل تساعد المشرف في مراجعة النمط.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "إلغاء",
+          "submit": "تقديم البلاغ",
+          "submitFailedGeneric": "تعذر تقديم بلاغك. تحقق من اتصالك وأعد المحاولة.",
+          "receivedTitle": "تم استلام البلاغ",
+          "alreadyReceivedTitle": "تم استلام البلاغ بالفعل",
+          "receivedBody": "يمكن للمشرف الآن مراجعة هذا النمط. لا يغير البلاغ مدى توفره تلقائياً.",
+          "alreadyReceivedBody": "بلاغك الحالي هو جزء بالفعل من المراجعة المفتوحة.",
+          "signInRequired": {
+            "title": "سجل الدخول للإبلاغ",
+            "message": "تتطلب بلاغات المجتمع حساباً مسجلاً. لم يتم تقديم أي شيء.",
+            "cancel": "إلغاء",
+            "signIn": "تسجيل الدخول"
+          },
+          "validation": {
+            "chooseReason": "اختر سبباً للإبلاغ.",
+            "explainRequired": "اشرح سبب إبلاغك عن هذا النمط.",
+            "tooLong": "يجب أن يكون الشرح 2000 حرف أو أقل.",
+            "needsContent": "يجب أن يحتوي الشرح على أحرف أو أرقام."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "رجوع",
+        "title": "متجر التجارة",
+        "subtitle": "العضوية وعمليات الشحن لمرة واحدة"
+      },
+      "signInReturn": {
+        "notice": "لقد سجلت الدخول. لا يزال {{label}} محدداً. راجعه واضغط على شراء عندما تكون مستعداً."
+      },
+      "premiumHero": {
+        "eyebrow": "العضوية المميزة",
+        "title": "أنشئ المزيد. احصل على مكافأة صغيرة كل يوم.",
+        "body": "رصيد AI Credits في كل فترة مدفوعة، ومظاهر مميزة، ومطالبة يومية بـ Stitch Coin.",
+        "benefitAiCredits": "رصيد الذكاء الاصطناعي",
+        "benefitDailyCoins": "عملات يومية",
+        "benefitThemes": "مظاهر",
+        "statusNoActiveMembership": "لا توجد عضوية نشطة",
+        "statusBrowseAsGuest": "تصفح الخطط كلاعب ضيف",
+        "periodEndsLabel": "تنتهي الفترة الحالية",
+        "periodRenewsLabel": "تتجدد",
+        "lifecycleActive": "نشط"
+      },
+      "membershipActions": {
+        "title": "عضوية مميزة نشطة",
+        "body": "المكافآت اليومية في الملف الشخصي. المظاهر تحت الإعدادات › المظهر.",
+        "scheduledChangeNotice": "تغييرات على {{plan}} في {{date}}",
+        "manageSubscription": "إدارة الاشتراك",
+        "manageSubscriptionFailedTitle": "تعذر فتح الاشتراكات",
+        "manageSubscriptionFailedBody": "حاول مجدداً من حساب متجر جهازك."
+      },
+      "pending": {
+        "title": "تسوية المشتريات معلقة",
+        "verifyingTitle": "جاري التحقق من عملية الشراء",
+        "premiumChangeAccepted": "قبل المتجر التغيير إلى {{label}}. ",
+        "premiumResponseReceived": "تم استلام رد المتجر لـ {{label}}. ",
+        "premiumDeferredSuffix": "تم جدولة التغيير فقط بعد التحقق من خلفية اللعبة البرمجية (Game Backend)، ويسري مفعوله عند انتهاء فترتك الحالية.",
+        "premiumSuffix": "تتفعل العضوية المميزة فقط بعد التحقق من خلفية اللعبة البرمجية (Game Backend).",
+        "doNotPurchasePlanAgain": " لا تشتري هذه الخطة مرة أخرى.",
+        "coinPackBody": "تم استلام رد المتجر. يتحدث رصيد Stitch Coin فقط بعد أن تعرض خلفية اللعبة البرمجية (Game Backend) منحة دفتر الأستاذ التجاري المطابقة. لا تشتري هذه الباقة مرة أخرى.",
+        "aiCreditPackBody": "تم استلام رد المتجر. يتحدث رصيد AI Credit فقط بعد أن تعرض خلفية اللعبة البرمجية (Game Backend) منحة دفتر الأستاذ التجاري المطابقة. لا تشتري هذه الباقة مرة أخرى.",
+        "refreshStatus": "تحديث الحالة",
+        "retryReconciliation": "إعادة محاولة التسوية"
+      },
+      "store": {
+        "loadingPrices": "جاري تحميل أسعار المتجر الحالية…",
+        "unavailableTitle": "المتجر غير متاح مؤقتاً",
+        "unavailableBody": "محفظتك ومعلومات عضويتك لا تزال متاحة.",
+        "retry": "إعادة المحاولة"
+      },
+      "plans": {
+        "choosePremiumPlan": "اختر خطة مميزة",
+        "yourPremiumPlan": "خطتك المميزة",
+        "currentPlan": "الخطة الحالية",
+        "upgrade": "ترقية",
+        "planChange": "تغيير الخطة",
+        "bestValue": "أفضل قيمة",
+        "billedEvery": "تتم الفوترة كل {{period}}",
+        "chooseLabel": "اختر {{label}}",
+        "freeTrial": "مجاني لمدة {{offer}}، ثم {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "باقات لمرة واحدة",
+        "stitchCoinPacksTitle": "باقات Stitch Coin",
+        "aiCreditPacksTitle": "باقات AI Credit",
+        "coinsNoun": "Coins",
+        "creditsNoun": "رصيد",
+        "fromPrice": "من {{price}}"
+      },
+      "restore": {
+        "restorePurchases": "استعادة المشتريات",
+        "restoreGuestPremium": "استعادة العضوية المميزة للضيف",
+        "requestedTitle": "تم طلب الاستعادة",
+        "requestedBody": "سيظهر الوصول المميز المؤكد بعد تسوية الويب هوك الخاص بالمتجر. لا يتم استعادة باقات Stitch Coin وAI Credit أبداً."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "الأسعار الحالية من متجر التطبيقات",
+        "closeAccessibilityLabel": "إغلاق صفحة المنتج",
+        "closeButtonAccessibilityLabel": "إغلاق",
+        "selectedBeforeSignIn": "محدد قبل تسجيل الدخول",
+        "buy": "شراء"
+      },
+      "confirmation": {
+        "cancel": "إلغاء",
+        "confirmLabel": "تأكيد {{label}}",
+        "confirmPremiumTitle": "تأكيد شراء العضوية المميزة",
+        "introductoryOffer": "يشير متجرك إلى هذا العرض التمهيدي: {{offer}}.",
+        "premiumAppearsAfterVerification": "تظهر العضوية المميزة فقط بعد تحقق خلفية اللعبة البرمجية من معاملة المتجر.",
+        "confirmPremiumUpgradeTitle": "تأكيد ترقية العضوية المميزة",
+        "confirmPremiumPlanChangeTitle": "تأكيد تغيير خطة العضوية المميزة",
+        "currentPlanLabel": "الخطة الحالية: {{label}}",
+        "upgradeToLabel": "ترقية إلى {{label}} · {{offer}}",
+        "changeToLabel": "تغيير إلى {{label}} · {{offer}}",
+        "upgradeBody": "يتحكم App Store في الرسوم النهائية وتاريخ السريان لهذه الترقية. تنعكس العضوية المميزة لـ {{label}} فقط بعد تحقق خلفية اللعبة البرمجية منها.",
+        "planChangeBody": "يؤجل App Store هذا التغيير إلى نهاية فترتك الحالية: يستمر تشغيل {{currentLabel}} حتى ذلك الحين، وتتم فوترة {{targetLabel}} من تاريخ التغيير. يمكنك إلغاء التغيير من إدارة الاشتراك.",
+        "confirmUpgrade": "تأكيد الترقية",
+        "confirmPlanChange": "تأكيد تغيير الخطة",
+        "confirmStitchCoinTitle": "تأكيد شراء Stitch Coin",
+        "confirmAiCreditTitle": "تأكيد شراء AI Credit",
+        "balanceChangesAfterVerificationCoin": "يتغير رصيدك فقط بعد أن تتحقق خلفية اللعبة البرمجية من معاملة المتجر وتسجل منحة دفتر الأستاذ التجاري المطابقة.",
+        "balanceChangesAfterVerificationAiCredit": "يتغير رصيدك فقط بعد أن تتحقق خلفية اللعبة البرمجية من معاملة المتجر وتسجل منحة دفتر الأستاذ التجاري المطابقة. لا يلزم وجود عضوية مميزة."
+      },
+      "disclosure": {
+        "subscriptionTerms": "يتم خصم الدفع من حساب {{store}} الخاص بك عند التأكيد. يتجدد اشتراك {{label}} المميز تلقائياً بسعر {{offer}} ما لم يتم إيقاف التجديد التلقائي قبل 24 ساعة على الأقل من نهاية الفترة الحالية. يتم التنازل عن أي جزء غير مستخدم من الفترة التجريبية المجانية عند شراء اشتراك. يمكنك الإلغاء في أي وقت من حساب {{store}} الخاص بك.",
+        "privacyPolicy": "سياسة الخصوصية",
+        "termsOfService": "شروط الخدمة",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "تعذر فتح الرابط: {{url}}"
+      },
+      "supportReference": {
+        "label": "مرجع الدعم: {{reference}}",
+        "copyAccessibilityLabel": "نسخ مرجع الدعم {{reference}}",
+        "copyAccessibilityHint": "نسخ مرجع الدعم إلى الحافظة",
+        "copied": "تم النسخ",
+        "copyFailedTitle": "فشل النسخ",
+        "copyFailedBody": "تعذر نسخ مرجع الدعم. حدد النص لنسخه يدوياً."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "مشتريات Stitch Coin للضيوف متاحة على نظام iOS فقط.",
+        "guestIosOnlyGeneric": "مشتريات الضيوف متاحة على نظام iOS فقط.",
+        "purchaseFailedTitle": "فشلت عملية الشراء",
+        "premiumVerificationNotYet": "تعذر على خلفية اللعبة البرمجية التحقق من عملية الشراء هذه. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+        "premiumVerificationFailedRetry": "تعذر على خلفية اللعبة البرمجية التحقق من عملية الشراء هذه بعد. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+        "premiumGrantRefreshFailed": "تم التحقق من العضوية المميزة، ولكن تعذر تحديث حالة العضوية وAI Credit. أعد محاولة التسوية.",
+        "premiumReconciliationUnreachable": "تعذر على تسوية المشتريات الوصول إلى خلفية اللعبة البرمجية. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+        "coinPackVerificationMismatch": "لم تطابق معاملة المتجر باقة العملات هذه. أعد محاولة التحقق أو اتصل بالدعم؛ لا تشتريها مرة أخرى.",
+        "coinPackGrantUnavailable": "تم التحقق من عملية الشراء، ولكن منحة Stitch Coin غير متاحة. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+        "coinPackBalanceRefreshFailed": "تم التحقق من منحة العملات، ولكن تعذر تحديث رصيد Stitch Coin الحالي. أعد محاولة التسوية.",
+        "coinPackVerificationFailedRetry": "تعذر على خلفية اللعبة البرمجية التحقق من باقة العملات هذه بعد. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+        "coinPackReconciliationUnreachable": "تعذر على تسوية باقة العملات الوصول إلى خلفية اللعبة البرمجية. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+        "aiCreditPackVerificationMismatch": "لم تطابق معاملة المتجر باقة AI Credit هذه. أعد محاولة التحقق أو اتصل بالدعم؛ لا تشتريها مرة أخرى.",
+        "aiCreditPackGrantUnavailable": "تم التحقق من عملية الشراء، ولكن منحة AI Credit غير متاحة. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+        "aiCreditPackBalanceRefreshFailed": "تم التحقق من منحة AI Credit، ولكن تعذر تحديث الرصيد الحالي. أعد محاولة التسوية.",
+        "aiCreditPackVerificationFailedRetry": "تعذر على خلفية اللعبة البرمجية التحقق من باقة AI Credit هذه بعد. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+        "aiCreditPackReconciliationUnreachable": "تعذر على تسوية باقة AI Credit الوصول إلى خلفية اللعبة البرمجية. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+        "reconciliationStillUnavailable": "لا تزال خلفية اللعبة البرمجية غير متاحة. أعد محاولة التسوية لاحقاً.",
+        "storeTemporarilyUnavailable": "المتجر غير متاح مؤقتاً. يرجى المحاولة مرة أخرى بعد بضع دقائق.",
+        "purchasesNotAllowed": "المشتريات غير مسموح بها على هذا الجهاز. تحقق من حساب المتجر الخاص بك أو أدوات الرقابة الأبوية.",
+        "itemNotAvailable": "هذا العنصر غير متاح للشراء حالياً. يرجى اختيار عنصر آخر أو المحاولة مرة أخرى لاحقاً.",
+        "alreadyOwned": "أنت تملك عملية الشراء هذه بالفعل. استخدم استعادة المشتريات لتحديث وصولك.",
+        "couldNotConnectToStore": "تعذر الاتصال بالمتجر. تحقق من اتصالك بالإنترنت وأعد المحاولة.",
+        "paymentPendingApproval": "دفعك قيد موافقة المسؤول. ستظهر عملية الشراء الخاصة بك بعد أن يكملها المتجر.",
+        "testPurchaseDeclined": "تم رفض عملية الشراء التجريبية. لم يتم سداد أي دفع. اختر نتيجة متجر تجريبي مختلفة في الإعدادات، ثم حاول مرة أخرى.",
+        "genericPurchaseFailure": "لم نتمكن من إكمال عملية الشراء الخاصة بك. لم يتم سداد أي دفع. يرجى المحاولة مرة أخرى."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "لا يزال جاري التحقق",
+        "premiumPending": "لا يزال التحقق جارياً. ستتحدد العضوية المميزة بمجرد تأكيد خلفية اللعبة البرمجية لها.",
+        "premiumPlanChangePending": "لا يزال التحقق جارياً. سيتم جدولة تغيير خطتك بمجرد تأكيد خلفية اللعبة البرمجية له.",
+        "coinPackPending": "لا يزال التحقق جارياً. سيتحدث رصيد Stitch Coin الخاص بك بمجرد اكتماله.",
+        "aiCreditPackPending": "لا يزال التحقق جارياً. سيتحدث رصيد AI Credit الخاص بك بمجرد اكتماله."
+      },
+      "success": {
+        "purchaseReceivedTitle": "تم استلام الشراء",
+        "storeAcceptedPlanChange": "قبل المتجر التغيير إلى {{label}}. جاري التأكيد عندما يدخل حيز التنفيذ.",
+        "storeAcceptedPurchase": "قبل المتجر {{label}}. جاري التحقق من عملية الشراء الآن.",
+        "premiumChanges": "تتغير العضوية المميزة إلى {{label}}{{effectiveOn}}.",
+        "effectiveOnDate": " في {{date}}",
+        "planChangeScheduledTitle": "تم جدولة تغيير الخطة",
+        "planChangeScheduledBody": "تحتفظ عضويتك المميزة بخطتها الحالية حتى تتغير إلى {{label}}{{effectiveOn}}. يمكنك إلغاء التغيير من إدارة الاشتراك.",
+        "premiumIsActiveTitle": "العضوية المميزة نشطة",
+        "premiumVerifiedAndActive": "العضوية المميزة لـ {{label}} مؤكدة ونشطة.",
+        "premiumNowActiveNoBilling": "العضوية المميزة لـ {{label}} نشطة الآن.",
+        "premiumNowActiveBilled": "العضوية المميزة لـ {{label}} نشطة الآن، وتتم فوترتها كل {{period}}.",
+        "coinPackGrantedTitle": "تم منح Stitch Coins",
+        "coinPackGrantVerified": "تم التحقق من منحة {{label}}. رصيد Stitch Coin هو: {{balance}}.",
+        "coinPackAddedToBalance": "تمت إضافة {{quantity}} Stitch Coins إلى رصيدك.",
+        "aiCreditPackGrantedTitle": "تم منح AI Credits",
+        "aiCreditPackGrantVerified": "تم التحقق من منحة {{label}}. رصيد AI Credit هو: {{balance}}.",
+        "aiCreditPackAddedToBalance": "تمت إضافة {{quantity}} AI Credits إلى رصيدك."
+      },
+      "products": {
+        "premiumAnnual": "سنوي",
+        "premiumMonthly": "شهري",
+        "premiumWeekly": "أسبوعي",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+        "aiCreditPack_one": "{{formattedCount}} AI Credit",
+        "aiCreditPack_other": "{{formattedCount}} AI Credits",
+        "billedEveryOffer": "{{price}} كل {{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} credits / فترة مدفوعة",
+        "creditAllowancePaidNoun": "{{credits}} credits / مدفوعة {{period}}"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "الشراء كضيف",
+        "commerceBody": "يمكنك الشراء دون تسجيل. يمكن استعادة العضوية المميزة من المتجر، ولكن لا يمكن استرداد Stitch Coin وAI Credit ومحتوى الضيف الخاص في حال فقدان هذا التثبيت. التسجيل يحميهم ولا يقاطع اللعب كضيف أبداً.",
+        "continueAsGuest": "متابعة كضيف",
+        "signInInstead": "تسجيل الدخول بدلاً من ذلك",
+        "closeAccessibilityLabel": "إغلاق"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "حسناً",
+        "successButton": "رائع",
+        "failedButton": "إلغاء",
+        "infoButton": "حسناً",
+        "closeAccessibilityLabel": "إغلاق"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "رجوع",
+        "cancel": "إلغاء",
+        "duplicateTitle": "لديك بالفعل نمط شخصي باسم “{{title}}”. اختر عنواناً آخر.",
+        "cellsCount_one": "خلية",
+        "cellsCount_other": "خلايا",
+        "colorsCount_one": "لون",
+        "colorsCount_other": "ألوان"
+      },
+      "hub": {
+        "title": "مركز الإنشاء",
+        "subtitle": "اضف الحياة إلى تصاميمك الخاصة مع أنماط التطريز المخصصة.",
+        "opening": "جاري الفتح…",
+        "photoImport": {
+          "title": "استيراد الصور",
+          "description": "حمل صورة من ألبوم الكاميرا وحولها إلى نمط قابل للتطريز.",
+          "action": "استيراد صورة"
+        },
+        "aiGenerator": {
+          "title": "مولد الذكاء الاصطناعي",
+          "description": "صف فكرة مريحة ودع الذكاء الاصطناعي يولد تصميماً مخصصاً من البكسل.",
+          "action": "توليد تصميم"
+        }
+      },
+      "aspects": {
+        "square": "مربع",
+        "portrait_4_3": "عمودي 4:3",
+        "landscape_4_3": "أفقي 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "فشل تحويل النمط. يرجى المحاولة مرة أخرى.",
+          "timeout": "لا يزال تحويل النمط قيد المعالجة. حاول مرة أخرى بعد قليل.",
+          "generic": "تعذر إكمال تحويل النمط. يرجى المحاولة مرة أخرى."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "يتطلب حساباً مسجلاً",
+          "body": "تظل أعمال الذكاء الاصطناعي ومكتبتها خاصة بحسابك.",
+          "signIn": "تسجيل الدخول"
+        },
+        "header": {
+          "title": "مولد الذكاء الاصطناعي",
+          "backAccessibilityLabel": "رجوع"
+        },
+        "prompt": {
+          "label": "صف عملك الفني",
+          "placeholder": "حديقة كوخ مريحة عند غروب الشمس..."
+        },
+        "generate": {
+          "working": "جاري العمل…",
+          "action": "توليد — 1 AI Credit",
+          "errors": {
+            "promptRejected": "هذا الوصف غير مسموح به. حاول وصف شيء آخر.",
+            "generic": "تعذر بدء توليد الذكاء الاصطناعي. يرجى المحاولة مرة أخرى."
+          }
+        },
+        "library": {
+          "title": "مكتبة أعمالك الفنية بالذكاء الاصطناعي",
+          "status": {
+            "pending": "معلق",
+            "dispatched": "تم الإرسال",
+            "running": "قيد التشغيل",
+            "delivered": "تم التسليم",
+            "safety_rejected": "تم الرفض لدواعي السلامة",
+            "failed": "فشل",
+            "deleted": "محذوف",
+            "unknown": "غير متاح"
+          },
+          "failure": {
+            "safety_rejected": "لم يجتز هذا العمل الفني فحص السلامة الخاص بمزود الخدمة.",
+            "failed": "تعذر توليد هذا العمل الفني."
+          },
+          "approve": "الموافقة والتحويل إلى نمط",
+          "delete": "حذف",
+          "deleteAccessibilityLabel": "حذف هذا العمل الفني المولّد بالذكاء الاصطناعي",
+          "errors": {
+            "loadFailed": "تعذر تحميل مكتبة أعمالك الفنية بالذكاء الاصطناعي. يرجى المحاولة مرة أخرى."
+          }
+        },
+        "approve": {
+          "modalTitle": "إنشاء نمط شخصي",
+          "titleLabel": "عنوان النمط",
+          "titleAccessibilityLabel": "عنوان النمط",
+          "defaultTitle": "نمطي بالذكاء الاصطناعي",
+          "placeholder": "نمطي بالذكاء الاصطناعي",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "إلغاء",
+          "creating": "جاري إنشاء النمط...",
+          "create": "إنشاء النمط",
+          "errors": {
+            "generic": "تعذر إنشاء النمط الشخصي. يرجى المحاولة مرة أخرى."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "يتطلب حساباً مسجلاً",
+          "body": "تنتمي الأنماط الشخصية إلى حسابك لتبقى خاصة ومتاحة عبر الأجهزة.",
+          "signIn": "تسجيل الدخول أو إنشاء حساب",
+          "back": "رجوع"
+        },
+        "header": {
+          "title": "نمط الصورة",
+          "subtitle": "تأطير محلي، ثم الموافقة على التحويل",
+          "backAccessibilityLabel": "رجوع"
+        },
+        "picker": {
+          "chooseTitle": "اختر صورة",
+          "helpText": "يظل مصدر الصورة المحلي بكامل دقته على هذا الجهاز. لا يتم تحويل أي شيء حتى توافق على الإطار.",
+          "choose": "اختر من المكتبة",
+          "chooseAnother": "اختر صورة أخرى",
+          "opening": "جاري الفتح…",
+          "errors": {
+            "permissionDenied": "مطلوب الإذن بالوصول إلى مكتبة الصور لاختيار مصدر صورة محلي.",
+            "invalidDimensions": "لا تحتوي الصورة المحددة على أبعاد صالحة للاستخدام.",
+            "generic": "تعذر فتح مكتبة الصور. يرجى المحاولة مرة أخرى."
+          }
+        },
+        "framing": {
+          "title": "تأطير العمل الفني",
+          "gestureHint": "اسحب لتحديد الموضع · قرّب للتكبير",
+          "aspectLabel": "نسبة عرض الإطار لارتفاعه"
+        },
+        "profile": {
+          "title": "ملف التحويل التعريفي",
+          "options": {
+            "easy": "سهل",
+            "standard": "قياسي",
+            "detailed": "تفصيلي"
+          },
+          "custom": "مخصص",
+          "customMeta": "مجاني · الشكل مقفل",
+          "unavailable": "لا يناسب هذا الإطار",
+          "customShortEdgeLabel": "الحافة القصيرة",
+          "customColorLimitLabel": "حد ألوان DMC",
+          "exceedsLimit": "تتجاوز هذه القيم المخصصة الحد الأقصى لحجم النمط البالغ {{max}} خلية."
+        },
+        "titleCard": {
+          "label": "عنوان النمط",
+          "placeholder": "نمط صورتي",
+          "defaultTitle": "نمط صورتي",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · حتى {{maxColors}} DMC {{colorsUnit}}",
+          "privacyNotice": "الموافقة تقوم فقط بتحميل النسخة المؤطرة والمصغرة. تظل الصورة الأصلية محلية.",
+          "approve": "الموافقة على العمل الفني والتحويل"
+        },
+        "processing": {
+          "preparingFrame": "جاري تحضير الإطار المعتمد على هذا الجهاز…",
+          "uploading": "جاري رفع الإطار المقصوص والمصغر فقط…",
+          "waitingForWorker": "بانتظار عامل التحويل...",
+          "buildingGrid": "جاري بناء شبكة الغرز ولوحة ألوان DMC...",
+          "preparingSession": "جاري تحضير النمط الشخصي للعب..."
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "لم يعد هذا الملف التعريفي يناسب الإطار النهائي. اختر سهل أو قلل التفاصيل.",
+            "generic": "تعذر تحويل هذه الصورة. يرجى المحاولة مرة أخرى."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "لم يتم تحديد نمط",
+          "noPatternBody": "يجب فتح هذه الشاشة من نمط شخصي موجود في مكتبتك.",
+          "accountTitle": "يتطلب حساباً مسجلاً",
+          "accountBody": "تنتمي الأنماط الشخصية إلى حسابك لتبقى خاصة ومتاحة عبر الأجهزة.",
+          "signIn": "تسجيل الدخول أو إنشاء حساب",
+          "back": "رجوع"
+        },
+        "loading": "جاري استئناف مسودة المحرر...",
+        "load": {
+          "failedTitle": "فشل تحميل النمط",
+          "retry": "إعادة المحاولة",
+          "back": "رجوع",
+          "errors": {
+            "generic": "تعذر تحميل هذا النمط الشخصي. يرجى المحاولة مرة أخرى."
+          }
+        },
+        "header": {
+          "title": "محرر الأنماط",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "رجوع"
+        },
+        "toolbar": {
+          "undo": "تراجع",
+          "redo": "إعادة"
+        },
+        "mode": {
+          "paint": "رسم",
+          "replaceColor": "استبدال اللون",
+          "replaceStep1": "1. اضغط على لون في النمط أدناه لاستبداله:",
+          "replaceStep2": "2. اختر لون DMC المستهدف أدناه لتنفيذ الاستبدال:",
+          "paintSelected": "المحدد: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "اختر لوناً أدناه، ثم اضغط على الخلايا للتلوين."
+        },
+        "errors": {
+          "pickColorFirst": "اختر لوناً أولاً",
+          "paletteLimit": "يستخدم هذا النمط بالفعل الحد الأقصى المسموح به من خيوط الألوان وهو {{max}}."
+        },
+        "picker": {
+          "title": "ألوان خيوط DMC",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "حفظ النمط المعدل",
+          "placeholder": "عنوان نمطي المعدل",
+          "action": "حفظ كجديد",
+          "offlineTitle": "تم الحفظ دون اتصال بالإنترنت",
+          "offlineBody": "تم حفظ النمط المعدل على هذا الجهاز وستتم مزامنته مع حسابك بمجرد عودتك للاتصال بالإنترنت.",
+          "errors": {
+            "generic": "تعذر حفظ هذا النمط الشخصي. يرجى المحاولة مرة أخرى."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "تسجيل الدخول هذا ينتمي إلى حساب آخر. لم يتم تغيير حسابك الحالي.",
+        "providerRejected": "تم رفض هذا التحقق. تحقق من الحساب أو الرمز وأعد المحاولة."
+      },
+      "generic": {
+        "failure": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+        "supportReferenceLabel": "مرجع الدعم: {{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "يستخدم Stitch Wish الصور المحددة لإنشاء أنماط شخصية أو لاختيار صورة ملف تعريف عام للمبدع."
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "أهلاً بك في STITCH WISH",
+        "title": "اختر لوناً، ثم اضغط على المربعات المتطابقة.",
+        "heroAlt": "معاينة نمط البداية Cozy Heart",
+        "handedness": {
+          "sectionTitle": "في أي جانب يجب أن تظهر عناصر التحكم؟",
+          "groupLabel": "جانب التحكم",
+          "optionRight": "عناصر التحكم على اليمين",
+          "optionLeft": "عناصر التحكم على اليسار",
+          "saveErrorText": "تعذر حفظ هذا الاختيار.",
+          "retry": "أعد المحاولة"
+        },
+        "note": "يمكنك تغيير هذا لاحقاً من الإعدادات.",
+        "start": "ابدأ التطريز",
+        "starting": "جاري البدء…",
+        "browse": "تصفح أنماط البداية",
+        "signIn": "تسجيل الدخول"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "اختر DMC 321 الأحمر الميلادي.",
+          "stitchAction": "اضغط على الخلية المتطابقة المحددة.",
+          "mismatchedTap": "اضغط على الخلية المختلفة المحددة. الضغطات الخاطئة لا تكلف شيئاً.",
+          "undoAction": "تراجع عن تلك الغرزة، ثم ضعها مرة أخرى.",
+          "stitchSweep": "اضغط على خلية متطابقة، ثم اسحب عبر المسار المحدد.",
+          "threadColorCompletion": "أنهِ الخيط الأبيض المحدد، ثم اختر لونك التالي."
+        },
+        "hints": {
+          "anchoredZoom": "قرّب بأصابعك للتكبير مع إبقاء الخلايا تحت أصابعك في مكانها.",
+          "panVsSweep": "السحب يحرك القماش. ابدأ من خلية متطابقة لتطريز مسار مسحوب.",
+          "edgeAutoPan": "استمر في السحب بالقرب من الحافة وسيتبع القماش إصبعك.",
+          "remainingCellLocator": "استخدم محدد المواقع للعثور على الخلية المتبقية التالية لهذا الخيط."
+        },
+        "skip": "تخطي الآن",
+        "skipAccessibilityLabel": "تخطي الدليل التعليمي الآن",
+        "dismiss": "فهمت",
+        "dismissAccessibilityLabel": "إغلاق التلميح"
+      },
+      "recap": {
+        "title": "لقد فهمت الأمر",
+        "lines": {
+          "matchNumbers": "طابق الأرقام لوضع كل غرزة.",
+          "dragSweep": "اسحب عبر الخلايا المتطابقة لتطريز مسار مسحوب.",
+          "pinchZoom": "قرّب بأصابعك للتكبير عندما تحتاج إلى نظرة أقرب.",
+          "undoLocator": "التراجع ومحدد المواقع مجانيان دائماً."
+        },
+        "continue": "متابعة التطريز",
+        "browsePatterns": "تصفح الأنماط"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "طاولة التطريز",
+        "subtitle": "واصل من حيث توقفت أو استأنف عملاً فنياً حديثاً.",
+        "loading": "جاري تحميل غرزك...",
+        "empty": {
+          "title": "لا توجد أعمال تطريز نشطة",
+          "body": "إطار التطريز الخاص بك فارغ حالياً. تصفح كتالوج الأنماط للعثور على شيء جميل لتطريزه!",
+          "action": "تصفح الكتالوج"
+        },
+        "unknownPattern": "نمط غير معروف",
+        "idLabel": "معرف: {{id}}",
+        "unknownPatternLabel": "نمط {{id}}",
+        "deleteSessionAccessibilityLabel": "حذف الجلسة",
+        "viewFinishedAccessibilityLabel": "عرض العمل المكتمل",
+        "resumeAccessibilityLabel": "استئناف التطريز",
+        "status": {
+          "ready": "جاهز",
+          "done": "مكتمل",
+          "active": "نشط",
+          "preparing": "جاري التحضير",
+          "failed": "فشل"
+        },
+        "deleteConfirm": {
+          "title": "حذف التقدم",
+          "message": "هل أنت متأكد أنك تريد حذف تقدمك في \"{{title}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+          "cancel": "إلغاء",
+          "confirm": "حذف"
+        },
+        "preparingCard": {
+          "discardTitle": "تجاهل الجلسة",
+          "cancelTitle": "إلغاء التنزيل",
+          "discardMessage": "هل أنت متأكد أنك تريد تجاهل هذه الجلسة الفاشلة؟",
+          "cancelMessage": "هل أنت متأكد أنك تريد إلغاء تنزيل هذا النمط؟",
+          "keep": "احتفاظ",
+          "discard": "تجاهل",
+          "cancel": "إلغاء"
+        }
+      },
+      "loading": {
+        "text": "جاري فتح الجلسة وتحضير القماش..."
+      },
+      "error": {
+        "title": "فشل تحميل الجلسة",
+        "fallbackMessage": "تعذر تحميل جلسة التطريز الخاصة بك.",
+        "backButton": "رجوع",
+        "tableButton": "ذهاب إلى الطاولة"
+      },
+      "header": {
+        "backButton": "← رجوع",
+        "tableButton": "← الطاولة",
+        "defaultTitle": "جلسة التطريز",
+        "progress": "{{completed}} / {{total}} خلية (تم إكمال {{percent}}%)",
+        "resumeTutorialAccessibilityLabel": "استئناف الدليل التعليمي"
+      },
+      "banners": {
+        "patternRemoved": "تمت إزالة هذا النمط بواسطة الإشراف ولم يعد متاحاً. اضغط للمغادرة.",
+        "syncConflict": "تمت المزامنة مع جهاز آخر — تم تحديث بعض الخلايا. اضغط للتجاهل."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "تحديد موقع الخلية المتبقية التالية للون الخيط النشط",
+        "undoAccessibilityLabel": "التراجع عن آخر غرزة"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "اللون {{number}}: DMC {{dmcCode}}، غرزة {{count}} متبقية",
+        "chipAccessibilityLabel_other": "اللون {{number}}: DMC {{dmcCode}}، {{count}} غرزة متبقية",
+        "done": "مكتمل",
+        "remaining_one": "متبقي {{count}}",
+        "remaining_other": "متبقي {{count}}"
+      },
+      "celebration": {
+        "title": "صُنعت بجمال!",
+        "subtitle": "لقد أكملت كل غرزة على هذا القماش.",
+        "stitchesLabel_one": "غرزة",
+        "stitchesLabel_other": "غرز",
+        "colorsLabel_one": "لون",
+        "colorsLabel_other": "ألوان",
+        "replayButton": "تطريز مرة أخرى",
+        "catalogButton": "العودة إلى الكتالوج"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "رجوع",
+        "tryAgain": "أعد المحاولة"
+      },
+      "rejectionReasons": {
+        "safety": "السلامة",
+        "publication_rights": "حقوق النشر والتوزيع",
+        "duplicate_or_spam": "مكرر أو غير مرغوب فيه",
+        "technical_invalidity": "عدم الصلاحية الفنية",
+        "quality_standard": "معيار الجودة"
+      },
+      "submissionStatus": {
+        "accepted": "منشور",
+        "appeal_pending": "الالتماس معلق",
+        "appeal_upheld": "تم رفض الالتماس",
+        "precheck_failed": "الفحص المسبق غير متاح",
+        "precheck_pending": "جاري الفحص",
+        "quarantined": "بحاجة لمراجعة",
+        "rejected": "مرفوض",
+        "review_pending": "قيد المراجعة"
+      },
+      "revisionStatus": {
+        "accepted": "منشور",
+        "appeal_pending": "الالتماس معلق",
+        "appeal_upheld": "تم رفض الالتماس",
+        "pending": "قيد المراجعة",
+        "rejected": "مرفوض",
+        "withdrawn": "مسترجع"
+      },
+      "home": {
+        "identity": {
+          "establishing": "جاري إثبات الهوية...",
+          "pendingTitle": "الهوية معلقة",
+          "offline": "غير متصل",
+          "retryConnection": "إعادة محاولة الاتصال",
+          "loadingPublicProfile": "جاري تحميل الملف الشخصي العام...",
+          "unavailableTitle": "الملف الشخصي العام غير متاح",
+          "checkConnection": "تحقق من اتصالك بالإنترنت وأعد المحاولة.",
+          "createTitle": "إنشاء ملفك الشخصي العام",
+          "createBody": "اختر اسم المستخدم الدائم الذي سيظهر مع أنماطك المجتمعية. تظل تفاصيل حسابك خاصة.",
+          "createAction": "إنشاء ملف شخصي عام",
+          "editAction": "تعديل الملف الشخصي العام",
+          "offlinePendingSync": "غير متصل — في انتظار المزامنة",
+          "guestPlayer": "لاعب ضيف",
+          "playingSince": "يلعب منذ {{date}}",
+          "creatorSince": "مبدع منذ {{date}}"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "فتح متجر التجارة",
+          "title": "أرصدة الاستوديو",
+          "commerceStoreLink": "متجر التجارة",
+          "stitchCoinsAccessibilityLabel": "رصيد Stitch Coins: {{balance}}. اضغط للحصول على عملات.",
+          "packs": "باقات",
+          "stitchCoinsLabel": "Stitch Coins",
+          "stitchCoinsSub": "لإلغاء قفل الأنماط",
+          "aiCreditsAccessibilityLabel": "رصيد AI Credits: {{balance}}. اضغط للحصول على رصيد.",
+          "aiCreditsSignInAccessibilityLabel": "رصيد AI Credits. سجل الدخول للشراء.",
+          "aiCreditsLabel": "رصيد الذكاء الاصطناعي",
+          "aiCreditsSubOwned": "لفنون أنماط الذكاء الاصطناعي",
+          "aiCreditsSubGuest": "سجل الدخول للامتلاك",
+          "membershipActiveAccessibilityLabel": "العضوية المميزة نشطة ({{plan}}). اضغط للإدارة.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Premium. اضغط لعرض الخطط.",
+          "membershipActiveTitle": "العضوية المميزة نشطة · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "سنوي",
+          "planMonthly": "شهري",
+          "planWeekly": "أسبوعي",
+          "planActive": "نشط",
+          "trialBadge": "تجريبي",
+          "membershipSubActive": "فتح جميع المظاهر · مطالبات فورية بالعملات اليومية",
+          "membershipSubInactive": "30 عملة يومية فورية، ومظاهر مخصصة، ورصيد AI Credits",
+          "manage": "إدارة",
+          "explore": "استكشاف"
+        },
+        "quickNav": {
+          "sectionEyebrow": "الحساب والمجتمع",
+          "submissionsAccessibilityLabel": "طلبات تقديم الكتالوج: تتبع المراجعات والقرارات والالتماسات",
+          "submissionsTitle": "طلبات التقديم",
+          "submissionsSub": "تتبع المراجعات",
+          "publishedAccessibilityLabel": "الأنماط المنشورة: مراجعة البيانات الوصفية، السحب، وتتبع الالتماسات",
+          "publishedTitle": "المنشورة",
+          "publishedSub": "إدارة الأنماط",
+          "moderationAccessibilityLabel": "إشعارات الإشراف: مراجعة قرارات الكتالوج التي تؤثر على أنماطك",
+          "moderationTitle": "الإشراف",
+          "moderationSub": "إشعارات السياسة",
+          "likedAccessibilityLabel": "الأنماط المفضلة: مجموعتك الخاصة من أنماط المجتمع المفضلة",
+          "likedTitle": "الأنماط المفضلة",
+          "likedSavedCount_one": "تم حفظ {{count}}",
+          "likedSavedCount_other": "تم حفظ {{count}}",
+          "likedSavedDefault": "الأنماط المحفوظة"
+        },
+        "dailySection": {
+          "title": "التطريز اليومي والمكافآت",
+          "tasksGroupLabel": "المهام اليومية (+30 عملة كحد أقصى)",
+          "connectToTrack": "اتصل بالإنترنت لتتبع تقدم المهام اليومية.",
+          "loadingTasks": "جاري تحميل المهام…",
+          "loadFailed": "تعذر تحميل المهام اليومية.",
+          "retry": "إعادة المحاولة",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "جاري إعادة التعيين…",
+          "resetsInHoursMinutes": "إعادة التعيين خلال {{hours}} ساعة و{{minutes}} دقيقة",
+          "resetsInMinutes": "إعادة التعيين خلال {{minutes}} دقيقة"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 عملية تطريز",
+            "body": "املأ 100 خلية متطابقة اليوم"
+          },
+          "three_colors_10": {
+            "title": "3 ألوان، 10 عمليات لكل منها",
+            "body": "صل إلى 10 عمليات في 3 ألوان مختلفة من الخيوط"
+          },
+          "color_completion": {
+            "title": "إكمال لون خيط واحد",
+            "body": "أنهِ تطريز أي لون بالكامل"
+          }
+        },
+        "dailyPool": {
+          "title": "مجمع مكافآت 30 عملة اليومي",
+          "premiumInstantClaim": "مطالبة فورية مميزة",
+          "rewardedAds": "إعلانات بمكافأة",
+          "claimedAmount": "تمت المطالبة بـ {{amount}} Stitch Coins لهذا اليوم!",
+          "poolAlreadyClosed": "مجمع مكافآت اليوم مغلق بالفعل.",
+          "claimedForToday": "تمت المطالبة لليوم. يعاد التعيين في يوم المكافأة التالي.",
+          "poolExhausted": "نفد مجمع مكافآت 30 عملة لليوم.",
+          "claimButtonRetry": "حاول المطالبة مجدداً",
+          "claimButtonInstant": "طالب بـ {{count}} عملة (فوري)",
+          "poolClaimedResetsTomorrow": "تمت المطالبة بمجمع عملات اليوم. يعاد التعيين غداً.",
+          "allAdRewardsCompleted": "اكتملت جميع مكافآت الإعلانات لليوم! (30/30 عملة)",
+          "watchAdButton": "شاهد إعلاناً للحصول على +10 عملات (متبقي {{count}})",
+          "adPerkNote": "شاهد ما يصل إلى 3 إعلانات يومياً · تفتح العضوية المميزة مطالبة فورية بـ 30 عملة",
+          "adRewardEarned": "تم كسب مكافأة الإعلان! جاري التحقق مع الخلفية البرمجية...",
+          "claimFailed": "فشلت المطالبة: {{message}}",
+          "claimFailedGeneric": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+          "adLoadFailedDefault": "فشل تحميل الإعلان",
+          "adAttemptFailedDefault": "فشل فتح محاولة الإعلان"
+        },
+        "tabs": {
+          "myCreations": "إبداعاتي {{count}}",
+          "likedPatterns": "الأنماط المفضلة {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "سجل الدخول للأنماط الشخصية",
+          "signInBody": "يتطلب إنشاء وامتلاك أنماط الصور المحولة بشكل خاص حساباً مسجلاً.",
+          "signIn": "تسجيل الدخول",
+          "patternMeta": "{{width}}×{{height}} · {{count}} ألوان",
+          "pendingSync": "في انتظار المزامنة",
+          "play": "لعب",
+          "edit": "تعديل",
+          "submitAccessibilityLabel": "تقديم {{title}} إلى كتالوج المجتمع",
+          "emptyTitle": "لا توجد إبداعات شخصية",
+          "emptyBody": "لم تقم بتحويل أي صور أو توليد فن بالذكاء الاصطناعي بعد. توجه إلى 'إنشاء' لتبدأ عملك الفني الأول!",
+          "emptyAction": "ابدأ الإنشاء",
+          "actionFailedGeneric": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+        },
+        "likedTab": {
+          "unavailableTitle": "الأنماط المفضلة غير متاحة",
+          "unavailableDefault": "تعذر تحميل الأنماط المفضلة.",
+          "byCreator": "بواسطة {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} ألوان",
+          "emptyTitle": "لا توجد أنماط مفضلة",
+          "emptyBody": "تصفح الكتالوج واضغط على أيقونة القلب في أي تصميم لحفظه هنا لاحقاً.",
+          "emptyAction": "اكتشف الأنماط"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "مطالبة Stitch Coins اليومية للمميزين",
+        "description": "طالب بالمتبقي من مجمع مكافآت 30 عملة المشترك لليوم.",
+        "connectPrompt": "اتصل بالخلفية البرمجية للعبة للتحقق من مكافأة اليوم.",
+        "checkingReward": "جاري التحقق من مكافأة العضوية المميزة لليوم...",
+        "unavailableGeneric": "مكافأة العضوية المميزة لليوم غير متاحة.",
+        "tryAgain": "أعد المحاولة",
+        "resultAdded": "تمت إضافة {{amount}} Stitch Coins بواسطة الخلفية البرمجية للعبة. الرصيد: {{balance}}.",
+        "poolAlreadyClosed": "مجمع المكافآت المشترك لليوم مغلق بالفعل.",
+        "alreadyClaimed": "تمت المطالبة بالفعل ليوم المكافأة هذا.",
+        "poolExhausted": "نفد مجمع المكافآت المشترك لليوم. سيعاد التعيين في يوم المكافأة التالي.",
+        "availableNow": "{{count}} Stitch Coins متاحة الآن",
+        "resetsAt": "يعاد التعيين {{date}}",
+        "claimButtonRetry": "حاول المطالبة مجدداً",
+        "claimButtonInstant": "طالب بـ {{count}} عملة",
+        "lockedDescription": "تفتح العضوية المميزة، بما في ذلك الفترة التجريبية الشهرية المؤهلة، هذه المطالبة اليومية.",
+        "viewPremiumPlans": "عرض الخطط المميزة"
+      },
+      "publicProfile": {
+        "editTitle": "تعديل الملف الشخصي العام",
+        "createTitle": "إنشاء ملف شخصي عام",
+        "signInTitle": "يتطلب تسجيل الدخول",
+        "signInBody": "يتطلب إنشاء هوية مبدع عامة حساباً مسجلاً.",
+        "signInAction": "تسجيل الدخول",
+        "unavailableTitle": "الملف الشخصي غير متاح",
+        "unavailableBody": "تعذر تحميل ملفك الشخصي العام. تحقق من اتصالك بالإنترنت وأعد المحاولة.",
+        "tryAgain": "أعد المحاولة",
+        "intro": "هذا الاسم والصورة مرئيان مع أنماطك المجتمعية. يظل بريدك الإلكتروني ومزود تسجيل الدخول خاصين.",
+        "choosePhoto": "اختر صورة",
+        "changePhoto": "تغيير الصورة",
+        "remove": "إزالة",
+        "avatarHelper": "اختياري · JPEG أو PNG أو WebP · حتى 5 ميغابايت",
+        "usernameLabel": "اسم المستخدم",
+        "usernameAccessibilityLabel": "اسم المستخدم العام",
+        "usernamePlaceholder": "اسم_المطرز",
+        "usernameHelperLocked": "اسم المستخدم الخاص بك دائم.",
+        "usernameHelperEditable": "من 3 إلى 30 حرفاً صغيراً أو أرقاماً أو خطوطاً سفلية. لا يمكن تغيير هذا لاحقاً.",
+        "displayNameLabel": "اسم العرض",
+        "displayNameAccessibilityLabel": "اسم العرض العام",
+        "displayNamePlaceholder": "اسم المبدع الخاص بك",
+        "displayNameHelper": "يمكنك تغيير هذا لاحقاً.",
+        "safetyNotice": "يتم فحص الأسماء والصور قبل النشر. إذا تم رفض التغيير، يظل ملفك الشخصي العام الحالي دون تغيير.",
+        "saveAction": "حفظ الملف الشخصي العام",
+        "publishAction": "نشر الملف الشخصي العام",
+        "photoPermissionRequired": "مطلوب الإذن بالوصول إلى مكتبة الصور لاختيار صورة الملف الشخصي.",
+        "photoTypeInvalid": "يجب أن تكون صور الملف الشخصي بصيغة JPEG أو PNG أو WebP.",
+        "photoTooLarge": "يجب أن تكون صور الملف الشخصي بحجم 5 ميغابايت أو أقل.",
+        "saveFailedDefault": "تعذر حفظ ملفك الشخصي العام"
+      },
+      "submissions": {
+        "title": "طلبات تقديم الكتالوج",
+        "unavailableTitle": "طلبات التقديم غير متاحة",
+        "unavailableDefault": "تعذر تحميل طلبات التقديم الخاصة بك.",
+        "emptyTitle": "لا توجد طلبات تقديم للكتالوج",
+        "emptyBody": "قدم نمطاً شخصياً متزامناً من 'إبداعاتي'.",
+        "emptyAction": "العودة إلى إبداعاتي",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "تعذر إكمال الفحوصات التلقائية. لم يتم نشر هذه اللقطة.",
+        "publishedToCatalog": "نُشر في كتالوج المجتمع.",
+        "appealAction": "استئناف القرار",
+        "appealHelp": "يمكنك استئناف هذه اللقطة غير المعدلة مرة واحدة.",
+        "appealNoteAccessibilityLabel": "ملاحظة الاستئناف",
+        "appealNotePlaceholder": "سياق اختياري للمشرف المراجع",
+        "cancelAction": "إلغاء",
+        "submitAppealAction": "تقديم الاستئناف"
+      },
+      "publishedPatterns": {
+        "title": "الأنماط المنشورة",
+        "unavailableTitle": "الأنماط غير متاحة",
+        "unavailableDefault": "تعذر تحميل أنماطك المنشورة.",
+        "emptyTitle": "لا توجد أنماط منشورة",
+        "emptyBody": "تظهر الأنماط التي تنشرها في كتالوج المجتمع هنا.",
+        "emptyAction": "العودة إلى الملف الشخصي",
+        "withdrawnFromCatalog": "مسحوب من الكتالوج",
+        "underReviewHold": "موقوف قيد المراجعة",
+        "meta": "{{category}} · نُشر في {{date}}",
+        "withdrawnHelp": "تم سحب هذه الهوية نهائياً. يحتفظ اللاعبون الذين لديهم جلسة تطريز حالية بتقدمهم ووصولهم.",
+        "reviewHoldHelp": "هذا النمط خارج نطاق الاكتشاف مؤقتاً ولا يمكن بدء جلسات جديدة له. تظل جلسات التطريز الحالية قابلة للعب. لا يزال بإمكانك اقتراح مراجعة البيانات الوصفية.",
+        "reviseAction": "مراجعة البيانات الوصفية",
+        "withdrawRevisionAction": "سحب المراجعة",
+        "appealAction": "استئناف القرار",
+        "withdrawFromCatalogAction": "السحب من الكتالوج",
+        "appealHelp": "يمكنك استئناف هذه اللقطة غير المعدلة مرة واحدة. تقديم مراجعة جديدة بدلاً من ذلك يعد تنازلاً عن هذا الاستئناف.",
+        "appealNoteAccessibilityLabel": "ملاحظة الاستئناف",
+        "appealNotePlaceholder": "سياق اختياري للمشرف المراجع",
+        "cancelAction": "إلغاء",
+        "submitAppealAction": "تقديم الاستئناف",
+        "withdrawRevisionFailedTitle": "تعذر سحب المراجعة",
+        "withdrawPatternFailedTitle": "تعذر سحب النمط",
+        "withdrawPatternSuccessTitle": "تم سحب النمط",
+        "withdrawPatternSuccessBody": "لم يعد قابلاً للاكتشاف ولا يمكن بدء جلسات جديدة له. تحتفظ جلسات التطريز الحالية بتقدمها وبياناتها القابلة للعب.",
+        "withdrawConfirmTitle": "سحب من كتالوج المجتمع؟",
+        "withdrawConfirmBody": "“{{title}}” سيختفي من الاكتشاف ولا يمكن بدء جلسات جديدة له. لا يمكن استعادة هوية هذا النمط أبداً. تظل جلسات التطريز الحالية وتقدمها قابلة للعب.",
+        "withdrawConfirmCancel": "إلغاء",
+        "withdrawConfirmAction": "سحب نهائي"
+      },
+      "revisePatternMetadata": {
+        "title": "مراجعة البيانات الوصفية",
+        "signInTitle": "يتطلب حساباً مسجلاً",
+        "signInBody": "سجل الدخول قبل مراجعة البيانات الوصفية لنمط مجتمعي.",
+        "signInAction": "تسجيل الدخول",
+        "notFoundTitle": "النمط المجتمعي غير موجود",
+        "notFoundBody": "يمكن فقط مراجعة الأنماط المجتمعية التي نشرتها بنفسك.",
+        "notFoundAction": "العودة إلى الأنماط المنشورة",
+        "inProgressTitle": "المراجعة قيد التنفيذ بالفعل",
+        "inProgressBody": "يحتوي هذا النمط بالفعل على مراجعة معلقة أو استئناف نشط. اسحبه قبل تقديم مراجعة أخرى.",
+        "inProgressAction": "العودة إلى الأنماط المنشورة",
+        "currentlyPublished": "منشور حالياً في كتالوج المجتمع",
+        "titleFieldLabel": "عنوان الكتالوج",
+        "titlePlaceholder": "عنوان النمط",
+        "titleAccessibilityLabel": "عنوان الكتالوج",
+        "descriptionFieldLabel": "الوصف",
+        "descriptionPlaceholder": "صف التصميم والموضوع وتجربة التطريز.",
+        "descriptionAccessibilityLabel": "وصف الكتالوج",
+        "sourceLanguageFieldLabel": "اللغة الأصلية",
+        "categoryFieldLabel": "الفئة",
+        "tagsFieldLabel": "الوسوم",
+        "notice": "تؤدي المراجعة إلى التقاط نسخة جديدة غير قابلة للتعديل. تظل بياناتك الوصفية المنشورة حالياً مرئية حتى يقبل المشرف هذه المراجعة.",
+        "submitAction": "تقديم المراجعة"
+      },
+      "submitPattern": {
+        "title": "تقديم للمجتمع",
+        "signInTitle": "يتطلب حساباً مسجلاً",
+        "signInBody": "سجل الدخول قبل تقديم نمط شخصي إلى كتالوج المجتمع.",
+        "signInAction": "تسجيل الدخول",
+        "createProfileTitle": "إنشاء ملف شخصي عام للمبدع",
+        "createProfileBody": "تُنسب أنماط المجتمع إلى هويتك كمبدع عام.",
+        "createProfileAction": "إنشاء ملف شخصي",
+        "patternNotFoundTitle": "النمط الشخصي غير موجود",
+        "patternNotFoundBody": "يمكن تقديم الأنماط الشخصية المتزامنة فقط.",
+        "patternNotFoundAction": "العودة إلى الملف الشخصي",
+        "patternMeta": "{{width}}×{{height}} · {{count}} ألوان",
+        "byCreator": "بواسطة @{{username}}",
+        "titleFieldLabel": "عنوان الكتالوج",
+        "titlePlaceholder": "عنوان النمط",
+        "titleAccessibilityLabel": "عنوان الكتالوج",
+        "descriptionFieldLabel": "الوصف",
+        "descriptionPlaceholder": "صف التصميم والموضوع وتجربة التطريز.",
+        "descriptionAccessibilityLabel": "وصف الكتالوج",
+        "sourceLanguageFieldLabel": "اللغة الأصلية",
+        "categoryFieldLabel": "الفئة",
+        "tagsFieldLabel": "الوسوم",
+        "rightsDeclaration": "لقد أنشأت هذا العمل أو لدي الحقوق المطلوبة لنشره بموجب إعلان حقوق النشر v1.",
+        "notice": "التقديم يلتقط نسخة غير قابلة للتعديل. توفر عمليات الفحص التلقائي الأدلة، ولكن المشرف يتخذ كل قرار.",
+        "submitAction": "تقديم للمراجعة"
+      },
+      "moderationNotices": {
+        "title": "إشعارات الإشراف",
+        "signInTitle": "سجل الدخول لعرض الإشعارات",
+        "signInBody": "تنتمي إشعارات الإشراف إلى الحساب المسجل الذي نشر النمط المجتمعي المتأثر.",
+        "signInAction": "تسجيل الدخول",
+        "unavailableTitle": "الإشعارات غير متاحة",
+        "unavailableDefault": "تعذر تحميل إشعارات الإشراف.",
+        "emptyTitle": "لا توجد إشعارات إشراف",
+        "emptyBody": "ستظهر قرارات إشراف الكتالوج المرئية للمالك هنا.",
+        "emptyAction": "العودة إلى الملف الشخصي",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "إصلاح البيانات الوصفية للكتالوج",
+          "no_violation": "أغلقت المراجعة — لا توجد مخالفة",
+          "review_hold": "موقوف قيد المراجعة",
+          "safety_removal": "إزالة لدواعي السلامة"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "تم استبدال العنوان والوصف والوسوم المحددة بقيم آمنة. لم يتأثر التوفر أو عنصر النمط أو المعاينة. يمكنك تقديم مراجعة جديدة للبيانات الوصفية للكتالوج في أي وقت.",
+          "no_violation": "تم إغلاق مراجعة ما بعد النشر وأصبح هذا النمط متاحاً بالكامل مرة أخرى للاكتشاف وجلسات التطريز الجديدة.",
+          "review_hold": "هذا النمط غير متاح مؤقتاً للاكتشاف والجلسات الجديدة. تظل جلسات التطريز الحالية والتقدم وبيانات الأنماط دون اتصال بالإنترنت قابلة للعب.",
+          "safety_removal": "تمت إزالة هذا النمط لمخالفة أمنية أو قانونية أو سياسية. لقد خرج من الاكتشاف، وأصبحت جلسات التطريز الحالية غير قابلة للوصول، وتم حذف بيانات الأنماط دون اتصال بالإنترنت على أجهزتك. يمكنك تقديم التماس واحد لإزالة السلامة."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "المهام اليومية",
+        "offline": "أنت غير متصل بالإنترنت — تتطلب المهام اليومية اتصالاً.",
+        "unavailable": "تعذر تحميل المهام اليومية.",
+        "empty": "لا توجد مهام متاحة اليوم."
+      },
+      "rewardedAdCard": {
+        "offline": "أنت غير متصل بالإنترنت — يتطلب يوم المكافأة اتصالاً.",
+        "unavailable": "تعذر تحميل حالة يوم المكافأة.",
+        "premiumClaimClosedPool": "أغلقت مطالبتك اليومية المميزة مجمع العملات المشترك لليوم.",
+        "allRewardsClaimed": "لقد طالبت بجميع مكافآت الإعلانات لليوم. عد غداً!",
+        "remaining_one": "متبقي إعلان {{count}} اليوم (تتوفر {{coins}} عملة)",
+        "remaining_other": "متبقي {{count}} إعلانات اليوم (تتوفر {{coins}} عملة)",
+        "watchForCoins": "شاهد إعلاناً للحصول على {{count}} عملة"
+      },
+      "likedPatterns": {
+        "title": "الأنماط المفضلة",
+        "signInTitle": "يتطلب حساباً مسجلاً",
+        "signInBody": "سجل الدخول قبل عرض مجموعتك الخاصة من الأنماط المفضلة.",
+        "signInAction": "تسجيل الدخول",
+        "unavailableTitle": "الأنماط المفضلة غير متاحة",
+        "unavailableDefault": "تعذر تحميل الأنماط المفضلة.",
+        "emptyTitle": "لا توجد أنماط مفضلة",
+        "emptyBody": "تصفح كتالوج الأنماط واضغط على أيقونة القلب في أي تصميم لحفظه هنا.",
+        "emptyAction": "اكتشف الأنماط",
+        "byCreator": "بواسطة {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} ألوان · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "الإعدادات",
+        "subtitleDev": "تكوين التفضيلات وفحص أنظمة الخلفية البرمجية.",
+        "subtitleProd": "تكوين تفضيلاتك."
+      },
+      "serviceStatus": {
+        "sectionTitle": "حالة الخدمة",
+        "apiConnectionTitle": "اتصال واجهة برمجة التطبيقات (API)",
+        "testingConnection": "جاري اختبار اتصال واجهة برمجة التطبيقات...",
+        "offlineUnreachable": "غير متصل / غير قابل للوصول",
+        "unknownConnectionError": "خطأ اتصال غير معروف",
+        "retryConnection": "إعادة محاولة الاتصال",
+        "healthy": "سليم",
+        "degraded": "متدهور",
+        "postgresLabel": "قاعدة بيانات PostgreSQL",
+        "redisLabel": "ذاكرة Redis التخزينية المؤقتة"
+      },
+      "session": {
+        "sectionTitle": "الهوية والجلسة",
+        "statusTitle": "حالة جلسة الخلفية البرمجية",
+        "statusDescription": "يتحقق من جلسة تسجيل الضيف النشطة عبر واجهة برمجة التطبيقات.",
+        "noActiveSession": "لا توجد جلسة نشطة",
+        "sessionActive": "الجلسة نشطة",
+        "idLabel": "معرف: {{id}} (إصدار {{version}})",
+        "unknownState": "حالة غير معروفة"
+      },
+      "tutorial": {
+        "sectionTitle": "الدليل التعليمي",
+        "learnControlsTitle": "تعلم عناصر التحكم",
+        "learnControlsDescription": "استأنف الدليل التعليمي للتطريز عندما تكون مستعداً.",
+        "unavailableTitle": "الدليل التعليمي غير متاح",
+        "unavailableMessage": "تعذر استئناف الدليل التعليمي. يرجى المحاولة مرة أخرى."
+      },
+      "developer": {
+        "sectionTitle": "المطور",
+        "debugDiagnostics": "تصحيح الأخطاء / التشخيص",
+        "debug": {
+          "backAccessibilityLabel": "رجوع",
+          "title": "تصحيح الأخطاء",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: مهيأ · البيئة: {{environment}}",
+            "dsnNotConfigured": "DSN: غير مهيأ",
+            "sendTestEvent": "إرسال حدث اختبار",
+            "throwError": "رمي خطأ",
+            "disabledTitle": "تم تعطيل Sentry",
+            "disabledMessage": "Sentry غير مهيأ (لم يتم العثور على DSN)، لذا لن يتم إرسال أي حدث اختبار.",
+            "testEventSent": "تم إرسال حدث الاختبار. معرف الحدث: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "خطأ",
+            "testEventFailedMessage": "فشل إرسال حدث الاختبار: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Onboarding",
+            "description": "مسح تقدم الدليل التعليمي والبدء مجدداً من شاشة الترحيب.",
+            "restart": "إعادة بدء الترحيب والتهيئة",
+            "confirmTitle": "إعادة بدء الترحيب والتهيئة؟",
+            "confirmMessage": "سيتم مسح حالة الدليل التعليمي وتبدأ التهيئة والترحيب من شاشة الترحيب.",
+            "cancel": "إلغاء",
+            "resetFailedTitle": "فشل إعادة التعيين"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "حذف الحساب",
+        "statusTitle": "حالة حذف الحساب",
+        "checkingStatus": "جاري التحقق من الحالة...",
+        "pendingTitle": "حذف الحساب معلق",
+        "pendingDescription": "تم جدولة حذف حسابك. سجل الدخول مرة أخرى قبل انتهاء فترة الاسترداد لإلغائه.",
+        "recoveryWindowEnds": "تنتهي فترة الاسترداد في: {{date}}",
+        "cancelling": "جاري الإلغاء...",
+        "cancelDeletion": "إلغاء الحذف",
+        "statusError": "تعذر التحقق من حالة الحذف. تحقق من اتصالك وأعد المحاولة.",
+        "deleteAccountTitle": "حذف الحساب",
+        "deleteAccountDescription": "حذف حسابك وتقدمك وجميع المشتريات نهائياً بعد فترة استرداد مدتها 30 يوماً.",
+        "requestedTitle": "تم طلب حذف الحساب",
+        "requestedMessage": "طلب الحذف الخاص بك معلق حتى {{date}}. تم تسجيل خروج حسابك. سجل الدخول مرة أخرى قبل ذلك الحين إذا كنت ترغب في إلغاء هذا الحذف.",
+        "signOutFailedTitle": "فشل تسجيل الخروج المحلي",
+        "signOutFailedMessage": "لا يزال طلب الحذف الخاص بك معلقاً. يرجى تسجيل الخروج مرة أخرى من الإعدادات.",
+        "requestFailedTitle": "فشل الطلب",
+        "requestFailedMessage": "لم يتم تقديم طلب الحذف الخاص بك. تحقق من اتصالك وأعد المحاولة.",
+        "cancelSuccessTitle": "نجاح",
+        "cancelSuccessMessage": "تم إلغاء طلب حذف حسابك.",
+        "reauthRequiredTitle": "يتطلب إعادة التحقق",
+        "reauthRequiredMessage": "لدواعي الأمن، يجب عليك تسجيل الدخول مرة أخرى قبل إلغاء حذف الحساب.",
+        "signInAction": "تسجيل الدخول",
+        "cancelFailedTitle": "فشل الإلغاء",
+        "cancelFailedGeneric": "فشل إلغاء حذف الحساب. تحقق من اتصالك وأعد المحاولة."
+      },
+      "appearance": {
+        "sectionTitle": "المظهر"
+      },
+      "themeCollectionCard": {
+        "title": "مجموعة المظاهر",
+        "description": "تغيير شكل الشبكة والغرز ومؤشرات الإكمال دون التأثير على اللعب.",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "يتطلب عضوية مميزة",
+        "selected": "محدد",
+        "accessActive": "الوصول إلى المظاهر المميزة نشط، بما في ذلك خلال الفترة التجريبية الشهرية المؤهلة.",
+        "lockedPreview": "عاين المجموعة هنا. تفتح العضوية المميزة أو الفترة التجريبية الشهرية المؤهلة إمكانية الاختيار.",
+        "viewPremiumPlans": "عرض الخطط المميزة"
+      },
+      "gameplay": {
+        "sectionTitle": "إعدادات اللعب",
+        "showGridLinesTitle": "عرض خطوط الشبكة",
+        "showGridLinesDescription": "عرض الحدود بين خلايا قماش الخياطة",
+        "handednessTitle": "تخطيط اتجاه اليد",
+        "handednessDescription": "محاذاة عناصر التحكم التفاعلية للعب باليد اليسرى أو اليمنى",
+        "left": "اليسار",
+        "right": "اليمين",
+        "leftHandedLayout": "تخطيط اليد اليسرى",
+        "rightHandedLayout": "تخطيط اليد اليمنى"
+      },
+      "language": {
+        "sectionTitle": "اللغة",
+        "description": "اختر اللغة التي يعرض بها Stitch Wish واجهته.",
+        "followDevice": "اتباع لغة الجهاز",
+        "followDeviceDescription": "مسح لغة التخصيص لاتباع إعدادات لغة جهازك.",
+        "optionEnglish": "English",
+        "optionTurkish": "Türkçe",
+        "modalTitle": "اختر اللغة",
+        "modalSubtitle": "اختر لغتك المفضلة للواجهة.",
+        "systemDefault": "لغة النظام",
+        "systemDefaultWithDetected": "لغة النظام ({{language}})",
+        "systemDefaultDescription": "يطابق إعدادات جهازك تلقائياً."
+      },
+      "social": {
+        "sectionTitle": "الخصوصية والمجتمع",
+        "blockedCreators": "المبدعون المحظورون"
+      },
+      "account": {
+        "sectionTitle": "الحساب",
+        "notSignedInTitle": "لم يتم تسجيل الدخول",
+        "signInRequiredTitle": "يتطلب تسجيل الدخول",
+        "notSignedInDescription": "سجل الدخول لمزامنة تقدمك عبر الأجهزة.",
+        "signIn": "تسجيل الدخول",
+        "reconnecting": "جاري إعادة الاتصال…",
+        "signOut": "تسجيل الخروج",
+        "signOutConfirmTitle": "تسجيل الخروج؟",
+        "signOutConfirmMessage": "يظل تقدمك غير المتزامن على هذا الجهاز ويفتح مرة أخرى عند تسجيل الدخول مجدداً.",
+        "signOutConfirmAction": "تسجيل الخروج",
+        "signOutFailedTitle": "فشل تسجيل الخروج",
+        "signOutFailedGeneric": "يرجى المحاولة مرة أخرى.",
+        "providerAppleAccount": "حساب Apple",
+        "providerGoogleAccount": "حساب Google",
+        "providerGenericAccount": "حساب مسجل"
+      },
+      "signIn": {
+        "emailHeading": "تسجيل الدخول أو إنشاء حساب",
+        "emailSubtitle": "حافظ على توفر تقدمك عبر الأجهزة.",
+        "codeHeading": "أدخل الرمز الخاص بك",
+        "codeSubtitle": "أدخل الرمز المكون من 6 أرقام الذي أرسلناه إلى {{email}}.",
+        "continueWithGoogle": "متابعة باستخدام Google",
+        "orUseEmail": "أو استخدم البريد الإلكتروني",
+        "ssoUnavailable": "تسجيل الدخول باستخدام Google وApple غير متاح في هذا الإصدار.",
+        "emailLabel": "عنوان البريد الإلكتروني",
+        "emailPlaceholder": "عنوان البريد الإلكتروني",
+        "sendCode": "إرسال الرمز",
+        "cancel": "إلغاء",
+        "verify": "تحقق",
+        "resendCode": "إعادة إرسال الرمز",
+        "resending": "جاري إعادة الإرسال...",
+        "codeSent": "تم إرسال الرمز",
+        "useDifferentEmail": "استخدام بريد إلكتروني آخر",
+        "sendCodeFailed": "تعذر إرسال الرمز. تحقق من اتصالك وأعد المحاولة.",
+        "codeIncorrect": "هذا الرمز غير صحيح أو انتهت صلاحيته.",
+        "verifyFailedGeneric": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+        "socialSignInFailed": "تعذر تسجيل الدخول باستخدام {{provider}}. يرجى المحاولة مرة أخرى.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "رجوع",
+        "title": "المبدعون المحظورون",
+        "infoText": "الحظر إجراء خاص وقابل للتراجع. يخفي أنماط المبدع المجتمعية من عرض الكتالوج والبحث وقوائم الاكتشاف لديك. هذا ليس بلاغاً أو إزالة محتوى.",
+        "signInRequiredTitle": "يتطلب حساباً مسجلاً",
+        "signInRequiredBody": "سجل الدخول قبل إدارة قائمة المبدعين المحظورين لديك.",
+        "signInAction": "تسجيل الدخول",
+        "listUnavailableTitle": "القائمة غير متاحة",
+        "listUnavailableDefault": "تعذر تحميل المبدعين المحظورين.",
+        "tryAgain": "أعد المحاولة",
+        "emptyTitle": "لا يوجد مبدعون محظورون",
+        "emptyBody": "لم تحظر أحداً. يمكنك حظر مبدع من أي من صفحات تفاصيل أنماطه.",
+        "backToSettings": "العودة إلى الإعدادات",
+        "unblock": "إلغاء الحظر",
+        "unblockConfirmTitle": "إلغاء حظر المبدع",
+        "unblockConfirmMessage": "هل أنت متأكد أنك تريد إلغاء حظر {{name}}؟ ستظهر أنماطه مجدداً في نتائج البحث والتصفح لديك.",
+        "cancel": "إلغاء",
+        "successTitle": "نجاح",
+        "unblockedMessage": "تم إلغاء حظر {{name}}.",
+        "errorTitle": "خطأ",
+        "unblockFailedMessage": "فشل إلغاء حظر المبدع: {{message}}",
+        "unblockFailedGeneric": "خطأ غير معروف"
+      },
+      "data": {
+        "sectionTitle": "البيانات",
+        "resetGuestTitle": "إعادة تعيين بيانات الضيف",
+        "resetGuestDescription": "إغلاق هوية الضيف نهائياً على الخادم ومسح جميع بيانات الجهاز.",
+        "resetGuestOffline": "غير متصل: مطلوب اتصال نشط بالخادم لإعادة تعيين بيانات الضيف.",
+        "resetGuestPurchaseLock": "تم حظر إعادة التعيين أثناء التحقق من عملية شراء. لا يمكن استرداد المواد الاستهلاكية وبيانات الضيف الخاصة بعد ذلك.",
+        "removeLocalTitle": "إزالة البيانات المحلية",
+        "removeLocalDescription": "احذف قاعدة بيانات الهوية المحلية من هذا الجهاز.",
+        "removeLocalConfirmTitle": "إزالة البيانات المحلية؟",
+        "removeLocalConfirmMessage": "تحذير: سيؤدي هذا إلى حذف ملفات قاعدة البيانات المحلية من هذا الجهاز فقط. ستفقد أي سجلات غير متزامنة نهائياً.",
+        "removeLocalConfirmAction": "إزالة",
+        "removeLocalSuccessTitle": "نجاح",
+        "removeLocalSuccessMessage": "تمت إزالة البيانات المحلية من هذا الجهاز.",
+        "removeLocalFailedTitle": "فشلت الإزالة",
+        "removeLocalFailedMessage": "فشلت إزالة البيانات المحلية: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "المعلومات والروابط",
+        "privacyPolicy": "سياسة الخصوصية",
+        "termsOfService": "شروط الخدمة",
+        "contactSupport": "اتصل بالدعم",
+        "accountDeletion": "حذف الحساب",
+        "openFailedMessage": "تعذر فتح الرابط: {{url}}",
+        "openFailedGenericTitle": "خطأ"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — تطريز بكسل فني مريح",
+        "version": "الإصدار {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "الحزمة: {{id}}",
+        "schemeLabel": "المخطط: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "إعادة تعيين بيانات الضيف؟",
+        "warning": "سيؤدي هذا الإجراء إلى إغلاق هوية الضيف نهائياً على الخادم وحذف ما يلي بشكل دائم:",
+        "bulletProgress": "• تقدمك المحلي",
+        "bulletRewards": "• المكافآات المعلقة",
+        "bulletLikes": "• الإعجابات",
+        "bulletUnlockAccess": "• الوصول غير المقفل",
+        "bulletOfflinePatterns": "• بيانات الأنماط دون اتصال بالإنترنت",
+        "confirmPrefix": "اكتب ",
+        "confirmSuffix": " أدناه للتأكيد:",
+        "confirmAction": "إعادة تعيين البيانات",
+        "resetting": "جاري إعادة تعيين بيانات الضيف...",
+        "successTitle": "نجاح",
+        "successMessage": "تم إعادة تعيين بيانات الضيف بالكامل.",
+        "failedTitle": "فشلت إعادة التعيين",
+        "failedMessage": "فشلت إعادة تعيين بيانات الضيف: {{message}}. يرجى المحاولة مرة أخرى."
+      },
+      "deleteModal": {
+        "title": "حذف الحساب؟",
+        "recoveryPrefix": "يدخل حسابك في ",
+        "recoveryBold": "فترة استرداد لحذف الحساب مدتها 30 يوماً",
+        "recoverySuffix": ". سجل الدخول مرة أخرى خلال هذه الفترة لإلغاء الحذف.",
+        "bulletBalances": "• أرصدة Stitch Coin و AI Credit",
+        "bulletUnlocks": "• جميع الأنماط المفتوحة",
+        "bulletArtwork": "• أعمال الذكاء الاصطناعي والأنماط الشخصية",
+        "bulletProgress": "• التقدم المتزامن والإعجابات",
+        "consequencesPrefix": "في نهاية فترة الاسترداد، سيتم مسح هذه البيانات أو مصادرتها دون استرداد أو نقل. يتم سحب أنماط المجتمع المنشورة من الكتالوج، وتصبح السمة ",
+        "consequencesBold": "مبدع محذوف",
+        "consequencesSuffix": "، ويظل اسم المستخدم الخاص بك محجوزاً بشكل دائم.",
+        "membershipWarning": "قد تستمر فوترة عضويتك المميزة بعد حذف الحساب. الحذف لا يلغيها؛ أدرها بشكل منفصل قبل المتابعة إذا كنت تريد إيقاف الفوترة.",
+        "manageAppleSubscription": "إدارة اشتراك Apple",
+        "continueAction": "متابعة",
+        "confirmTitle": "تأكيد الحذف",
+        "confirmPrefix": "لتأكيد رغبتك في حذف حسابك، اكتب ",
+        "confirmBold": "حذف",
+        "confirmSuffix": " في المربع أدناه:",
+        "submitting": "جاري تقديم طلب الحذف...",
+        "backAction": "رجوع",
+        "confirmAction": "تأكيد"
+      },
+      "reauthModal": {
+        "title": "التحقق من هويتك",
+        "description": "لدواعي الأمن، تحقق باستخدام طريقة تسجيل دخول مرتبطة بالفعل بهذا الحساب. يستأنف الحذف تلقائياً بعد التحقق.",
+        "loading": "جاري تحميل طرق تسجيل الدخول...",
+        "codeSentMessage": "أدخل الرمز المكون من 6 أرقام المرسل إلى {{email}}.",
+        "verifyAndDelete": "تحقق واحذف",
+        "emailButton": "بريد إلكتروني {{email}}",
+        "continueWithProvider": "متابعة باستخدام {{provider}}",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "لا تتوفر طريقة تسجيل دخول مرتبطة. اتصل بالدعم قبل إعادة محاولة الحذف.",
+        "loadFailed": "تعذر تحميل طرق تسجيل الدخول المرتبطة بك. تحقق من اتصالك وأعد المحاولة.",
+        "retryFailed": "تم التحقق من هويتك، ولكن لم يتم تقديم طلب الحذف. أغلق هذا الحوار وأعد محاولة الحذف.",
+        "emailMissing": "لا تحتوي طريقة البريد الإلكتروني المرتبطة هذه على عنوان. اختر طريقة أخرى.",
+        "genericFailure": "فشل إعادة التحقق. تحقق من اتصالك وأعد المحاولة."
+      },
+      "actions": {
+        "cancel": "إلغاء",
+        "retry": "إعادة المحاولة"
+      },
+      "common": {
+        "unavailable": "غير متاح"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "الكتالوج",
+        "stitch": "تطريز",
+        "create": "إنشاء",
+        "profile": "الملف الشخصي",
+        "settings": "الإعدادات"
+      }
+    }
+  },
   "de": {
     "catalog": {
       "common": {

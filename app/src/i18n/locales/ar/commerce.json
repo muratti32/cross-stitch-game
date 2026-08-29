@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "رجوع",
+    "title": "متجر التجارة",
+    "subtitle": "العضوية وعمليات الشحن لمرة واحدة"
+  },
+  "signInReturn": {
+    "notice": "لقد سجلت الدخول. لا يزال {{label}} محدداً. راجعه واضغط على شراء عندما تكون مستعداً."
+  },
+  "premiumHero": {
+    "eyebrow": "العضوية المميزة",
+    "title": "أنشئ المزيد. احصل على مكافأة صغيرة كل يوم.",
+    "body": "رصيد AI Credits في كل فترة مدفوعة، ومظاهر مميزة، ومطالبة يومية بـ Stitch Coin.",
+    "benefitAiCredits": "رصيد الذكاء الاصطناعي",
+    "benefitDailyCoins": "عملات يومية",
+    "benefitThemes": "مظاهر",
+    "statusNoActiveMembership": "لا توجد عضوية نشطة",
+    "statusBrowseAsGuest": "تصفح الخطط كلاعب ضيف",
+    "periodEndsLabel": "تنتهي الفترة الحالية",
+    "periodRenewsLabel": "تتجدد",
+    "lifecycleActive": "نشط"
+  },
+  "membershipActions": {
+    "title": "عضوية مميزة نشطة",
+    "body": "المكافآت اليومية في الملف الشخصي. المظاهر تحت الإعدادات › المظهر.",
+    "scheduledChangeNotice": "تغييرات على {{plan}} في {{date}}",
+    "manageSubscription": "إدارة الاشتراك",
+    "manageSubscriptionFailedTitle": "تعذر فتح الاشتراكات",
+    "manageSubscriptionFailedBody": "حاول مجدداً من حساب متجر جهازك."
+  },
+  "pending": {
+    "title": "تسوية المشتريات معلقة",
+    "verifyingTitle": "جاري التحقق من عملية الشراء",
+    "premiumChangeAccepted": "قبل المتجر التغيير إلى {{label}}. ",
+    "premiumResponseReceived": "تم استلام رد المتجر لـ {{label}}. ",
+    "premiumDeferredSuffix": "تم جدولة التغيير فقط بعد التحقق من خلفية اللعبة البرمجية (Game Backend)، ويسري مفعوله عند انتهاء فترتك الحالية.",
+    "premiumSuffix": "تتفعل العضوية المميزة فقط بعد التحقق من خلفية اللعبة البرمجية (Game Backend).",
+    "doNotPurchasePlanAgain": " لا تشتري هذه الخطة مرة أخرى.",
+    "coinPackBody": "تم استلام رد المتجر. يتحدث رصيد Stitch Coin فقط بعد أن تعرض خلفية اللعبة البرمجية (Game Backend) منحة دفتر الأستاذ التجاري المطابقة. لا تشتري هذه الباقة مرة أخرى.",
+    "aiCreditPackBody": "تم استلام رد المتجر. يتحدث رصيد AI Credit فقط بعد أن تعرض خلفية اللعبة البرمجية (Game Backend) منحة دفتر الأستاذ التجاري المطابقة. لا تشتري هذه الباقة مرة أخرى.",
+    "refreshStatus": "تحديث الحالة",
+    "retryReconciliation": "إعادة محاولة التسوية"
+  },
+  "store": {
+    "loadingPrices": "جاري تحميل أسعار المتجر الحالية…",
+    "unavailableTitle": "المتجر غير متاح مؤقتاً",
+    "unavailableBody": "محفظتك ومعلومات عضويتك لا تزال متاحة.",
+    "retry": "إعادة المحاولة"
+  },
+  "plans": {
+    "choosePremiumPlan": "اختر خطة مميزة",
+    "yourPremiumPlan": "خطتك المميزة",
+    "currentPlan": "الخطة الحالية",
+    "upgrade": "ترقية",
+    "planChange": "تغيير الخطة",
+    "bestValue": "أفضل قيمة",
+    "billedEvery": "تتم الفوترة كل {{period}}",
+    "chooseLabel": "اختر {{label}}",
+    "freeTrial": "مجاني لمدة {{offer}}، ثم {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "باقات لمرة واحدة",
+    "stitchCoinPacksTitle": "باقات Stitch Coin",
+    "aiCreditPacksTitle": "باقات AI Credit",
+    "coinsNoun": "Coins",
+    "creditsNoun": "رصيد",
+    "fromPrice": "من {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "استعادة المشتريات",
+    "restoreGuestPremium": "استعادة العضوية المميزة للضيف",
+    "requestedTitle": "تم طلب الاستعادة",
+    "requestedBody": "سيظهر الوصول المميز المؤكد بعد تسوية الويب هوك الخاص بالمتجر. لا يتم استعادة باقات Stitch Coin وAI Credit أبداً."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "الأسعار الحالية من متجر التطبيقات",
+    "closeAccessibilityLabel": "إغلاق صفحة المنتج",
+    "closeButtonAccessibilityLabel": "إغلاق",
+    "selectedBeforeSignIn": "محدد قبل تسجيل الدخول",
+    "buy": "شراء"
+  },
+  "confirmation": {
+    "cancel": "إلغاء",
+    "confirmLabel": "تأكيد {{label}}",
+    "confirmPremiumTitle": "تأكيد شراء العضوية المميزة",
+    "introductoryOffer": "يشير متجرك إلى هذا العرض التمهيدي: {{offer}}.",
+    "premiumAppearsAfterVerification": "تظهر العضوية المميزة فقط بعد تحقق خلفية اللعبة البرمجية من معاملة المتجر.",
+    "confirmPremiumUpgradeTitle": "تأكيد ترقية العضوية المميزة",
+    "confirmPremiumPlanChangeTitle": "تأكيد تغيير خطة العضوية المميزة",
+    "currentPlanLabel": "الخطة الحالية: {{label}}",
+    "upgradeToLabel": "ترقية إلى {{label}} · {{offer}}",
+    "changeToLabel": "تغيير إلى {{label}} · {{offer}}",
+    "upgradeBody": "يتحكم App Store في الرسوم النهائية وتاريخ السريان لهذه الترقية. تنعكس العضوية المميزة لـ {{label}} فقط بعد تحقق خلفية اللعبة البرمجية منها.",
+    "planChangeBody": "يؤجل App Store هذا التغيير إلى نهاية فترتك الحالية: يستمر تشغيل {{currentLabel}} حتى ذلك الحين، وتتم فوترة {{targetLabel}} من تاريخ التغيير. يمكنك إلغاء التغيير من إدارة الاشتراك.",
+    "confirmUpgrade": "تأكيد الترقية",
+    "confirmPlanChange": "تأكيد تغيير الخطة",
+    "confirmStitchCoinTitle": "تأكيد شراء Stitch Coin",
+    "confirmAiCreditTitle": "تأكيد شراء AI Credit",
+    "balanceChangesAfterVerificationCoin": "يتغير رصيدك فقط بعد أن تتحقق خلفية اللعبة البرمجية من معاملة المتجر وتسجل منحة دفتر الأستاذ التجاري المطابقة.",
+    "balanceChangesAfterVerificationAiCredit": "يتغير رصيدك فقط بعد أن تتحقق خلفية اللعبة البرمجية من معاملة المتجر وتسجل منحة دفتر الأستاذ التجاري المطابقة. لا يلزم وجود عضوية مميزة."
+  },
+  "disclosure": {
+    "subscriptionTerms": "يتم خصم الدفع من حساب {{store}} الخاص بك عند التأكيد. يتجدد اشتراك {{label}} المميز تلقائياً بسعر {{offer}} ما لم يتم إيقاف التجديد التلقائي قبل 24 ساعة على الأقل من نهاية الفترة الحالية. يتم التنازل عن أي جزء غير مستخدم من الفترة التجريبية المجانية عند شراء اشتراك. يمكنك الإلغاء في أي وقت من حساب {{store}} الخاص بك.",
+    "privacyPolicy": "سياسة الخصوصية",
+    "termsOfService": "شروط الخدمة",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "تعذر فتح الرابط: {{url}}"
+  },
+  "supportReference": {
+    "label": "مرجع الدعم: {{reference}}",
+    "copyAccessibilityLabel": "نسخ مرجع الدعم {{reference}}",
+    "copyAccessibilityHint": "نسخ مرجع الدعم إلى الحافظة",
+    "copied": "تم النسخ",
+    "copyFailedTitle": "فشل النسخ",
+    "copyFailedBody": "تعذر نسخ مرجع الدعم. حدد النص لنسخه يدوياً."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "مشتريات Stitch Coin للضيوف متاحة على نظام iOS فقط.",
+    "guestIosOnlyGeneric": "مشتريات الضيوف متاحة على نظام iOS فقط.",
+    "purchaseFailedTitle": "فشلت عملية الشراء",
+    "premiumVerificationNotYet": "تعذر على خلفية اللعبة البرمجية التحقق من عملية الشراء هذه. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+    "premiumVerificationFailedRetry": "تعذر على خلفية اللعبة البرمجية التحقق من عملية الشراء هذه بعد. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+    "premiumGrantRefreshFailed": "تم التحقق من العضوية المميزة، ولكن تعذر تحديث حالة العضوية وAI Credit. أعد محاولة التسوية.",
+    "premiumReconciliationUnreachable": "تعذر على تسوية المشتريات الوصول إلى خلفية اللعبة البرمجية. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+    "coinPackVerificationMismatch": "لم تطابق معاملة المتجر باقة العملات هذه. أعد محاولة التحقق أو اتصل بالدعم؛ لا تشتريها مرة أخرى.",
+    "coinPackGrantUnavailable": "تم التحقق من عملية الشراء، ولكن منحة Stitch Coin غير متاحة. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+    "coinPackBalanceRefreshFailed": "تم التحقق من منحة العملات، ولكن تعذر تحديث رصيد Stitch Coin الحالي. أعد محاولة التسوية.",
+    "coinPackVerificationFailedRetry": "تعذر على خلفية اللعبة البرمجية التحقق من باقة العملات هذه بعد. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+    "coinPackReconciliationUnreachable": "تعذر على تسوية باقة العملات الوصول إلى خلفية اللعبة البرمجية. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+    "aiCreditPackVerificationMismatch": "لم تطابق معاملة المتجر باقة AI Credit هذه. أعد محاولة التحقق أو اتصل بالدعم؛ لا تشتريها مرة أخرى.",
+    "aiCreditPackGrantUnavailable": "تم التحقق من عملية الشراء، ولكن منحة AI Credit غير متاحة. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+    "aiCreditPackBalanceRefreshFailed": "تم التحقق من منحة AI Credit، ولكن تعذر تحديث الرصيد الحالي. أعد محاولة التسوية.",
+    "aiCreditPackVerificationFailedRetry": "تعذر على خلفية اللعبة البرمجية التحقق من باقة AI Credit هذه بعد. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+    "aiCreditPackReconciliationUnreachable": "تعذر على تسوية باقة AI Credit الوصول إلى خلفية اللعبة البرمجية. أعد محاولة التسوية؛ لا تشتريها مرة أخرى.",
+    "reconciliationStillUnavailable": "لا تزال خلفية اللعبة البرمجية غير متاحة. أعد محاولة التسوية لاحقاً.",
+    "storeTemporarilyUnavailable": "المتجر غير متاح مؤقتاً. يرجى المحاولة مرة أخرى بعد بضع دقائق.",
+    "purchasesNotAllowed": "المشتريات غير مسموح بها على هذا الجهاز. تحقق من حساب المتجر الخاص بك أو أدوات الرقابة الأبوية.",
+    "itemNotAvailable": "هذا العنصر غير متاح للشراء حالياً. يرجى اختيار عنصر آخر أو المحاولة مرة أخرى لاحقاً.",
+    "alreadyOwned": "أنت تملك عملية الشراء هذه بالفعل. استخدم استعادة المشتريات لتحديث وصولك.",
+    "couldNotConnectToStore": "تعذر الاتصال بالمتجر. تحقق من اتصالك بالإنترنت وأعد المحاولة.",
+    "paymentPendingApproval": "دفعك قيد موافقة المسؤول. ستظهر عملية الشراء الخاصة بك بعد أن يكملها المتجر.",
+    "testPurchaseDeclined": "تم رفض عملية الشراء التجريبية. لم يتم سداد أي دفع. اختر نتيجة متجر تجريبي مختلفة في الإعدادات، ثم حاول مرة أخرى.",
+    "genericPurchaseFailure": "لم نتمكن من إكمال عملية الشراء الخاصة بك. لم يتم سداد أي دفع. يرجى المحاولة مرة أخرى."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "لا يزال جاري التحقق",
+    "premiumPending": "لا يزال التحقق جارياً. ستتحدد العضوية المميزة بمجرد تأكيد خلفية اللعبة البرمجية لها.",
+    "premiumPlanChangePending": "لا يزال التحقق جارياً. سيتم جدولة تغيير خطتك بمجرد تأكيد خلفية اللعبة البرمجية له.",
+    "coinPackPending": "لا يزال التحقق جارياً. سيتحدث رصيد Stitch Coin الخاص بك بمجرد اكتماله.",
+    "aiCreditPackPending": "لا يزال التحقق جارياً. سيتحدث رصيد AI Credit الخاص بك بمجرد اكتماله."
+  },
+  "success": {
+    "purchaseReceivedTitle": "تم استلام الشراء",
+    "storeAcceptedPlanChange": "قبل المتجر التغيير إلى {{label}}. جاري التأكيد عندما يدخل حيز التنفيذ.",
+    "storeAcceptedPurchase": "قبل المتجر {{label}}. جاري التحقق من عملية الشراء الآن.",
+    "premiumChanges": "تتغير العضوية المميزة إلى {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " في {{date}}",
+    "planChangeScheduledTitle": "تم جدولة تغيير الخطة",
+    "planChangeScheduledBody": "تحتفظ عضويتك المميزة بخطتها الحالية حتى تتغير إلى {{label}}{{effectiveOn}}. يمكنك إلغاء التغيير من إدارة الاشتراك.",
+    "premiumIsActiveTitle": "العضوية المميزة نشطة",
+    "premiumVerifiedAndActive": "العضوية المميزة لـ {{label}} مؤكدة ونشطة.",
+    "premiumNowActiveNoBilling": "العضوية المميزة لـ {{label}} نشطة الآن.",
+    "premiumNowActiveBilled": "العضوية المميزة لـ {{label}} نشطة الآن، وتتم فوترتها كل {{period}}.",
+    "coinPackGrantedTitle": "تم منح Stitch Coins",
+    "coinPackGrantVerified": "تم التحقق من منحة {{label}}. رصيد Stitch Coin هو: {{balance}}.",
+    "coinPackAddedToBalance": "تمت إضافة {{quantity}} Stitch Coins إلى رصيدك.",
+    "aiCreditPackGrantedTitle": "تم منح AI Credits",
+    "aiCreditPackGrantVerified": "تم التحقق من منحة {{label}}. رصيد AI Credit هو: {{balance}}.",
+    "aiCreditPackAddedToBalance": "تمت إضافة {{quantity}} AI Credits إلى رصيدك."
+  },
+  "products": {
+    "premiumAnnual": "سنوي",
+    "premiumMonthly": "شهري",
+    "premiumWeekly": "أسبوعي",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+    "aiCreditPack_one": "{{formattedCount}} AI Credit",
+    "aiCreditPack_other": "{{formattedCount}} AI Credits",
+    "billedEveryOffer": "{{price}} كل {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} credits / فترة مدفوعة",
+    "creditAllowancePaidNoun": "{{credits}} credits / مدفوعة {{period}}"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "الشراء كضيف",
+    "commerceBody": "يمكنك الشراء دون تسجيل. يمكن استعادة العضوية المميزة من المتجر، ولكن لا يمكن استرداد Stitch Coin وAI Credit ومحتوى الضيف الخاص في حال فقدان هذا التثبيت. التسجيل يحميهم ولا يقاطع اللعب كضيف أبداً.",
+    "continueAsGuest": "متابعة كضيف",
+    "signInInstead": "تسجيل الدخول بدلاً من ذلك",
+    "closeAccessibilityLabel": "إغلاق"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "حسناً",
+    "successButton": "رائع",
+    "failedButton": "إلغاء",
+    "infoButton": "حسناً",
+    "closeAccessibilityLabel": "إغلاق"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "تسجيل الدخول هذا ينتمي إلى حساب آخر. لم يتم تغيير حسابك الحالي.",
+    "providerRejected": "تم رفض هذا التحقق. تحقق من الحساب أو الرمز وأعد المحاولة."
+  },
+  "generic": {
+    "failure": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+    "supportReferenceLabel": "مرجع الدعم: {{reference}}"
+  }
+}
