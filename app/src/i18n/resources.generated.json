@@ -9841,6 +9841,1412 @@
       }
     }
   },
+  "ko": {
+    "catalog": {
+      "common": {
+        "back": "← 뒤로",
+        "searchPlaceholder": "도안, 크리에이터, 태그 검색…",
+        "offlineBanner": "오프라인 — 카탈로그가 최신 상태가 아닐 수 있습니다",
+        "sectionError": {
+          "title": "불러올 수 없습니다",
+          "retry": "재시도"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}}색",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}}열",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "영어"
+        },
+        "accessibilityLabel": "{{language}} 언어로 제작"
+      },
+      "index": {
+        "subtitle": "한 땀 한 땀 스티치를 채워 나만의 아늑한 세계를 만들어 보세요.",
+        "searchBar": {
+          "accessibilityLabel": "도안 카탈로그 검색"
+        },
+        "sections": {
+          "starterPatterns": "스타터 도안",
+          "staffPicks": "스태프 추천",
+          "categories": "카테고리",
+          "newPatterns": "신규 도안"
+        },
+        "staffPicks": {
+          "emptyTitle": "스태프 추천 도안이 아직 없습니다",
+          "emptyBody": "엄선된 아늑한 디자인 컬렉션이 곧 여기에 표시됩니다.",
+          "errorBody": "카탈로그에 연결할 수 없으며 캐시도 존재하지 않습니다."
+        },
+        "categories": {
+          "count": "{{count}}개의 도안",
+          "errorBody": "카탈로그에 연결할 수 없으며 캐시도 존재하지 않습니다."
+        },
+        "newPatterns": {
+          "emptyTitle": "새로운 도안 준비 중",
+          "emptyBody": "신작이 곧 출시됩니다!",
+          "errorBody": "카탈로그에 연결할 수 없으며 캐시도 존재하지 않습니다.",
+          "showMore": "더 보기",
+          "loading": "불러오는 중…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "둘러보기",
+        "error": {
+          "body": "이 카탈로그 페이지에 연결할 수 없으며 캐시도 존재하지 않습니다."
+        },
+        "empty": {
+          "title": "아직 아무것도 없습니다",
+          "body": "선택한 조건과 일치하는 도안이 아직 없습니다. 새로운 디자인이 정기적으로 추가됩니다."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "카탈로그 검색 입력",
+        "inactive": {
+          "title": "카탈로그 검색",
+          "body": "제목, 크리에이터 또는 태그로 도안을 검색하려면 2글자 이상 입력해 주세요."
+        },
+        "error": {
+          "title": "검색하려면 연결이 필요합니다",
+          "body": "오프라인에서는 카탈로그 검색을 이용할 수 없습니다. 캐시된 카탈로그 페이지는 카탈로그 탭에서 계속 둘러볼 수 있습니다."
+        },
+        "noResults": {
+          "title": "일치하는 결과가 없습니다",
+          "body": "카탈로그에 \"{{query}}\"와(과) 일치하는 항목이 아직 없습니다."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "게스트로 플레이 중",
+        "body": "게스트로 플레이하는 경우, Stitch Coin 및 진행 상황은 이 기기에만 저장됩니다. 앱이 삭제되면 게스트 데이터와 진행 상황을 복구하지 못할 수 있습니다. 로그인하여 진행 상황을 안전하게 보호하세요."
+      },
+      "detail": {
+        "noDescription": "설명이 없습니다.",
+        "specs": {
+          "dimensions": "크기",
+          "totalStitches": "총 스티치 수",
+          "colors": "색상 수",
+          "category": "카테고리"
+        },
+        "threadsSuffix": "{{count}}개의 실",
+        "palette": {
+          "title": "필요한 실",
+          "loading": "실 팔레트 불러오는 중...",
+          "loadFailed": "팔레트를 불러오지 못했습니다: {{error}}",
+          "retry": "재시도"
+        },
+        "actions": {
+          "startStitching": "스티치 시작하기",
+          "starting": "시작하는 중...",
+          "preparing": "준비 중…"
+        },
+        "loadFailedGeneric": "도안 파일 분석에 실패했습니다.",
+        "sessionCreateFailed": "스티치 세션을 생성하지 못했습니다. 다시 시도해 주세요.",
+        "unavailable": {
+          "title": "도안을 이용할 수 없음",
+          "body": "이 도안을 불러올 수 없습니다. 삭제되었거나 오프라인 상태일 수 있습니다.",
+          "goBack": "뒤로"
+        },
+        "byCreator": "크리에이터: {{creatorName}}",
+        "byCreatorWithUsername": "크리에이터: {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "크리에이터 차단",
+          "message": "정말로 {{creatorName}} 님을 차단하시겠습니까? 이 작업은 비공개로 진행되며 언제든지 차단을 해제할 수 있습니다. 차단하면 검색 및 둘러보기에서 해당 크리에이터의 도안이 더 이상 표시되지 않습니다. 이는 크리에이터를 신고하는 것이 아니며, 진행 중인 스티치 세션이 중단되지도 않습니다.",
+          "cancel": "취소",
+          "confirm": "차단",
+          "blockedTitle": "차단 완료",
+          "blockedMessage": "{{creatorName}} 님을 차단했습니다.",
+          "errorTitle": "오류",
+          "failedGeneric": "크리에이터 차단에 실패했습니다."
+        },
+        "likeFailedGeneric": "좋아요 상태를 업데이트하지 못했습니다.",
+        "connectToPlay": {
+          "title": "연결하여 플레이",
+          "body": "카탈로그의 도안을 시작하려면 세션을 준비하기 위해 네트워크 연결이 필요합니다. 스타터 도안은 오프라인에서도 지금 바로 플레이할 수 있습니다."
+        },
+        "insufficientCoins": {
+          "title": "Coins가 부족합니다",
+          "body": "이 도안은 {{price}} Stitch Coins가 필요하지만, 현재 {{balance}} Coins만 보유하고 있습니다.\n\n부족한 금액: {{shortfall}} Coins.\n\n다른 도안을 완성하고 Stitch Coins를 획득해 보세요! 첫 완성 보상 이벤트가 진행 중입니다.",
+          "getCoins": "Stitch Coins 획득하기",
+          "findPatterns": "스티치할 도안 찾기",
+          "back": "뒤로"
+        },
+        "unlockFailedGeneric": "잠금 해제에 실패했습니다. 연결을 확인하고 다시 시도해 주세요.",
+        "preparationFailedGeneric": "준비를 시작하지 못했습니다. 연결을 확인하고 다시 시도해 주세요.",
+        "price": {
+          "label": "가격"
+        },
+        "balance": {
+          "label": "잔액",
+          "loading": "…"
+        },
+        "unlockButton": "{{price}} Coin으로 잠금 해제",
+        "communityReport": {
+          "button": "이 도안 신고하기",
+          "title": "{{patternTitle}} 신고",
+          "body": "문제와 가장 가까운 이유를 선택해 주세요. 신고한다고 해서 도안이 자동으로 숨겨지거나 변경되지는 않습니다.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "부적절하거나 안전하지 않은 콘텐츠",
+            "copyright_or_publication_rights": "저작권 또는 출판권",
+            "duplicate_or_spam": "중복 또는 스팸",
+            "misleading_title_or_tags": "오해의 소지가 있는 제목 또는 태그",
+            "other": "기타"
+          },
+          "explanationLabel": "증거 또는 설명 {{requirement}}",
+          "explanationRequired": "(필수)",
+          "explanationOptional": "(선택)",
+          "explanationPlaceholder": "모더레이터가 도안을 검토하는 데 도움이 될 세부 정보를 공유해 주세요.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "취소",
+          "submit": "신고 제출",
+          "submitFailedGeneric": "신고를 제출하지 못했습니다. 연결을 확인하고 다시 시도해 주세요.",
+          "receivedTitle": "신고가 접수되었습니다",
+          "alreadyReceivedTitle": "이미 접수된 신고입니다",
+          "receivedBody": "모더레이터가 이 도안을 검토할 수 있게 되었습니다. 신고로 인해 도안의 이용 가능 여부가 자동으로 변경되지는 않습니다.",
+          "alreadyReceivedBody": "이전에 제출하신 신고가 이미 현재 진행 중인 검토에 포함되어 있습니다.",
+          "signInRequired": {
+            "title": "신고하려면 로그인하세요",
+            "message": "커뮤니티 신고를 하려면 가입된 계정이 필요합니다. 아직 아무것도 전송되지 않았습니다.",
+            "cancel": "취소",
+            "signIn": "로그인"
+          },
+          "validation": {
+            "chooseReason": "신고 이유를 선택해 주세요.",
+            "explainRequired": "이 도안을 신고하는 이유를 설명해 주세요.",
+            "tooLong": "설명은 2,000자 이내로 입력해 주세요.",
+            "needsContent": "설명에 문자나 숫자가 포함되어야 합니다."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "뒤로",
+        "title": "스토어",
+        "subtitle": "멤버십 및 1회성 충전"
+      },
+      "signInReturn": {
+        "notice": "로그인되었습니다. {{label}} 상품이 선택된 상태입니다. 세부 정보를 확인하고 준비가 되면 '구매'를 탭해 주세요."
+      },
+      "premiumHero": {
+        "eyebrow": "프리미엄 멤버십",
+        "title": "더 많은 작품을 제작하고 매일 소소한 보상을 받아보세요.",
+        "body": "결제 기간마다 제공되는 AI Credits, 프리미엄 테마, 그리고 매일 받는 Stitch Coin.",
+        "benefitAiCredits": "AI Credits",
+        "benefitDailyCoins": "데일리 코인",
+        "benefitThemes": "테마",
+        "statusNoActiveMembership": "활성화된 멤버십이 없습니다",
+        "statusBrowseAsGuest": "게스트 플레이어로 요금제 보기",
+        "periodEndsLabel": "현재 기간 종료일",
+        "periodRenewsLabel": "갱신일",
+        "lifecycleActive": "활성"
+      },
+      "membershipActions": {
+        "title": "활성화된 Premium 멤버십",
+        "body": "데일리 보상은 프로필에서 확인할 수 있습니다. 테마는 설정 › 외관 에서 변경할 수 있습니다.",
+        "scheduledChangeNotice": "{{date}}에 {{plan}} 요금제로 변경 예정",
+        "manageSubscription": "구독 관리",
+        "manageSubscriptionFailedTitle": "구독을 열 수 없습니다",
+        "manageSubscriptionFailedBody": "기기의 스토어 계정에서 다시 시도해 주세요."
+      },
+      "pending": {
+        "title": "구매 확인 대기 중",
+        "verifyingTitle": "구매 확인 중",
+        "premiumChangeAccepted": "스토어에서 {{label}} 요금제 변경이 승인되었습니다.",
+        "premiumResponseReceived": "{{label}}에 대한 스토어 응답을 수신했습니다.",
+        "premiumDeferredSuffix": "변경 사항은 Game Backend의 검증을 거친 후 예약되며, 현재 구독 기간이 끝나면 적용됩니다.",
+        "premiumSuffix": "Premium은 Game Backend의 검증을 거친 후 활성화됩니다.",
+        "doNotPurchasePlanAgain": " 이 요금제를 다시 구매하지 마세요.",
+        "coinPackBody": "스토어 응답을 수신했습니다. Stitch Coin은 Game Backend가 해당 Commerce Ledger 지급 내역을 발행한 후에 업데이트됩니다. 이 팩을 다시 구매하지 마세요.",
+        "aiCreditPackBody": "스토어 응답을 수신했습니다. AI Credit은 Game Backend가 해당 Commerce Ledger 지급 내역을 발행한 후에 업데이트됩니다. 이 팩을 다시 구매하지 마세요.",
+        "refreshStatus": "상태 업데이트",
+        "retryReconciliation": "확인 재시도"
+      },
+      "store": {
+        "loadingPrices": "현재 스토어 가격을 불러오는 중…",
+        "unavailableTitle": "스토어를 일시적으로 이용할 수 없습니다",
+        "unavailableBody": "지갑 및 멤버십 정보는 계속 사용할 수 있습니다.",
+        "retry": "재시도"
+      },
+      "plans": {
+        "choosePremiumPlan": "Premium 요금제 선택",
+        "yourPremiumPlan": "이용 중인 Premium 요금제",
+        "currentPlan": "현재 요금제",
+        "upgrade": "업그레이드",
+        "planChange": "요금제 변경",
+        "bestValue": "가장 경제적",
+        "billedEvery": "{{period}}마다 청구",
+        "chooseLabel": "{{label}} 선택",
+        "freeTrial": "{{offer}} 동안 무료 체험, 이후 {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "1회성 팩",
+        "stitchCoinPacksTitle": "Stitch Coin 팩",
+        "aiCreditPacksTitle": "AI Credit 팩",
+        "coinsNoun": "코인",
+        "creditsNoun": "크레딧",
+        "fromPrice": "{{price}}부터"
+      },
+      "restore": {
+        "restorePurchases": "구매 내역 복원",
+        "restoreGuestPremium": "게스트 Premium 복원",
+        "requestedTitle": "복원을 요청했습니다",
+        "requestedBody": "확인된 Premium 액세스 권한은 스토어 웹훅 대조가 완료된 후 반영됩니다. Stitch Coin 및 AI Credit 팩은 복원되지 않습니다."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "앱 스토어의 현재 가격",
+        "closeAccessibilityLabel": "상품 시트 닫기",
+        "closeButtonAccessibilityLabel": "닫기",
+        "selectedBeforeSignIn": "로그인 전 선택됨",
+        "buy": "구매"
+      },
+      "confirmation": {
+        "cancel": "취소",
+        "confirmLabel": "{{label}} 확인",
+        "confirmPremiumTitle": "Premium 구매 확인",
+        "introductoryOffer": "스토어에서 제공하는 체험 혜택: {{offer}}.",
+        "premiumAppearsAfterVerification": "Premium은 Game Backend가 스토어 트랜잭션을 검증한 후에만 반영됩니다.",
+        "confirmPremiumUpgradeTitle": "Premium 업그레이드 확인",
+        "confirmPremiumPlanChangeTitle": "Premium 요금제 변경 확인",
+        "currentPlanLabel": "현재 요금제: {{label}}",
+        "upgradeToLabel": "{{label}}(으)로 업그레이드 · {{offer}}",
+        "changeToLabel": "{{label}}(으)로 변경 · {{offer}}",
+        "upgradeBody": "이 업그레이드의 최종 청구 금액 및 적용 날짜는 App Store에서 관리합니다. Game Backend의 검증이 완료된 후에 Premium에 {{label}} 요금제가 반영됩니다.",
+        "planChangeBody": "App Store는 현재 기간이 끝날 때까지 이 변경 사항을 보류합니다. 그전까지는 {{currentLabel}} 요금제가 계속 유지되며, 변경된 날짜부터 {{targetLabel}} 요금제의 청구가 시작됩니다. 변경을 취소하려면 '구독 관리'에서 진행할 수 있습니다.",
+        "confirmUpgrade": "업그레이드 확인",
+        "confirmPlanChange": "요금제 변경 확인",
+        "confirmStitchCoinTitle": "Stitch Coin 구매 확인",
+        "confirmAiCreditTitle": "AI Credit 구매 확인",
+        "balanceChangesAfterVerificationCoin": "잔액은 Game Backend가 스토어 트랜잭션을 검증하고 해당하는 Commerce Ledger 지급을 기록한 후에만 변경됩니다.",
+        "balanceChangesAfterVerificationAiCredit": "잔액은 Game Backend가 스토어 트랜잭션을 검증하고 해당하는 Commerce Ledger 지급을 기록한 후에만 변경됩니다. 프리미엄 멤버십은 필수가 아닙니다."
+      },
+      "disclosure": {
+        "subscriptionTerms": "결제 금액은 구매 확인 시 사용자의 {{store}} 계정으로 청구됩니다. 현재 기간이 종료되기 최소 24시간 전에 자동 갱신을 해제하지 않으면 {{label}} Premium이 {{offer}}의 가격으로 자동 갱신됩니다. 구독을 구매하면 무료 체험 중 사용하지 않은 기간은 소멸됩니다. 해지는 언제든지 {{store}} 계정에서 진행할 수 있습니다.",
+        "privacyPolicy": "개인정보 처리방침",
+        "termsOfService": "이용약관",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "링크를 열 수 없습니다: {{url}}"
+      },
+      "supportReference": {
+        "label": "지원 참조 번호: {{reference}}",
+        "copyAccessibilityLabel": "지원 참조 번호 {{reference}} 복사",
+        "copyAccessibilityHint": "지원 참조 번호를 클립보드에 복사합니다",
+        "copied": "복사되었습니다",
+        "copyFailedTitle": "복사 실패",
+        "copyFailedBody": "지원 참조 번호를 복사하지 못했습니다. 텍스트를 선택하여 수동으로 복사해 주세요."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "게스트 플레이어의 Stitch Coin 구매는 iOS에서만 가능합니다.",
+        "guestIosOnlyGeneric": "게스트 플레이어의 구매는 iOS에서만 가능합니다.",
+        "purchaseFailedTitle": "구매 실패",
+        "premiumVerificationNotYet": "Game Backend에서 구매를 검증하지 못했습니다. 확인을 재시도해 주세요. 중복 구매 결제를 시도하지 마세요.",
+        "premiumVerificationFailedRetry": "Game Backend에서 아직 구매가 검증되지 않았습니다. 확인을 재시도해 주세요. 중복 구매 결제를 시도하지 마세요.",
+        "premiumGrantRefreshFailed": "Premium은 검증되었으나 멤버십 및 AI Credit 상태를 업데이트하지 못했습니다. 확인을 재시도해 주세요.",
+        "premiumReconciliationUnreachable": "구매 확인 중 Game Backend에 연결할 수 없었습니다. 확인을 재시도해 주세요. 중복 구매 결제를 시도하지 마세요.",
+        "coinPackVerificationMismatch": "스토어 트랜잭션이 이 Coin 팩과 일치하지 않습니다. 검증을 재시도하거나 지원팀에 문의해 주세요. 중복 구매 결제를 시도하지 마세요.",
+        "coinPackGrantUnavailable": "구매가 검증되었으나 Stitch Coin 지급을 처리할 수 없습니다. 확인을 재시도해 주세요. 중복 구매 결제를 시도하지 마세요.",
+        "coinPackBalanceRefreshFailed": "코인 지급은 검증되었으나 현재 Stitch Coin 잔액을 업데이트하지 못했습니다. 확인을 재시도해 주세요.",
+        "coinPackVerificationFailedRetry": "Game Backend에서 아직 이 Coin 팩을 검증하지 못했습니다. 확인을 재시도해 주세요. 중복 구매 결제를 시도하지 마세요.",
+        "coinPackReconciliationUnreachable": "Coin 팩 확인 중 Game Backend에 연결할 수 없었습니다. 확인을 재시도해 주세요. 중복 구매 결제를 시도하지 마세요.",
+        "aiCreditPackVerificationMismatch": "스토어 트랜잭션이 이 AI Credit 팩과 일치하지 않습니다. 검증을 재시도하거나 지원팀에 문의해 주세요. 중복 구매 결제를 시도하지 마세요.",
+        "aiCreditPackGrantUnavailable": "구매가 검증되었으나 AI Credit 지급을 처리할 수 없습니다. 확인을 재시도해 주세요. 중복 구매 결제를 시도하지 마세요.",
+        "aiCreditPackBalanceRefreshFailed": "AI Credit 지급은 검증되었으나 현재 잔액을 업데이트하지 못했습니다. 확인을 재시도해 주세요.",
+        "aiCreditPackVerificationFailedRetry": "Game Backend에서 아직 이 AI Credit 팩을 검증하지 못했습니다. 확인을 재시도해 주세요. 중복 구매 결제를 시도하지 마세요.",
+        "aiCreditPackReconciliationUnreachable": "AI Credit 팩 확인 중 Game Backend에 연결할 수 없었습니다. 확인을 재시도해 주세요. 중복 구매 결제를 시도하지 마세요.",
+        "reconciliationStillUnavailable": "Game Backend를 일시적으로 이용할 수 없습니다. 나중에 확인을 다시 시도해 주세요.",
+        "storeTemporarilyUnavailable": "스토어를 일시적으로 이용할 수 없습니다. 몇 분 후에 다시 시도해 주세요.",
+        "purchasesNotAllowed": "이 기기에서는 구매가 허용되지 않습니다. 스토어 계정이나 자녀 보호 제한 설정을 확인해 주세요.",
+        "itemNotAvailable": "이 상품은 현재 구매할 수 없습니다. 다른 상품을 선택하거나 나중에 다시 시도해 주세요.",
+        "alreadyOwned": "이미 소유하고 있는 상품입니다. '구매 내역 복원'을 사용해 액세스 권한을 업데이트해 주세요.",
+        "couldNotConnectToStore": "스토어에 연결할 수 없습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.",
+        "paymentPendingApproval": "결제 승인 대기 중입니다. 스토어에서 처리가 완료되면 구매 내용이 반영됩니다.",
+        "testPurchaseDeclined": "테스트 구매가 거절되었습니다. 결제는 청구되지 않았습니다. 설정에서 다른 테스트 스토어 결과를 선택하고 다시 시도해 주세요.",
+        "genericPurchaseFailure": "구매를 완료할 수 없습니다. 결제는 청구되지 않았습니다. 다시 시도해 주세요."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "검증 중",
+        "premiumPending": "현재 검증이 진행 중입니다. Game Backend의 확인이 완료되는 대로 Premium이 활성화됩니다.",
+        "premiumPlanChangePending": "현재 검증이 진행 중입니다. Game Backend의 확인이 완료되는 대로 요금제 변경이 예약됩니다.",
+        "coinPackPending": "현재 검증이 진행 중입니다. 완료되는 대로 Stitch Coin 잔액이 업데이트됩니다.",
+        "aiCreditPackPending": "현재 검증이 진행 중입니다. 완료되는 대로 AI Credit 잔액이 업데이트됩니다."
+      },
+      "success": {
+        "purchaseReceivedTitle": "구매 접수 완료",
+        "storeAcceptedPlanChange": "스토어에서 {{label}} 요금제 변경이 승인되었습니다. 변경 사항이 활성화되면 확정됩니다.",
+        "storeAcceptedPurchase": "스토어에서 {{label}} 구매가 승인되었습니다. 현재 구매 내용을 검증하고 있습니다.",
+        "premiumChanges": "Premium 요금제가 {{effectiveOn}}에 {{label}}(으)로 변경됩니다.",
+        "effectiveOnDate": "({{date}})",
+        "planChangeScheduledTitle": "요금제 변경 예약 완료",
+        "planChangeScheduledBody": "Premium 멤버십은 {{label}} 요금제로 변경되는 {{effectiveOn}}까지 현재 요금제로 유지됩니다. 변경을 취소하려면 '구독 관리'에서 진행해 주세요.",
+        "premiumIsActiveTitle": "Premium 활성화됨",
+        "premiumVerifiedAndActive": "{{label}} Premium 검증 및 활성화가 완료되었습니다.",
+        "premiumNowActiveNoBilling": "{{label}} Premium이 이제 활성화되었습니다.",
+        "premiumNowActiveBilled": "{{label}} Premium이 이제 활성화되었습니다(청구 주기: {{period}}마다).",
+        "coinPackGrantedTitle": "Stitch Coin 지급 완료",
+        "coinPackGrantVerified": "{{label}} 지급이 검증되었습니다. Stitch Coin 잔액: {{balance}}.",
+        "coinPackAddedToBalance": "{{quantity}} Stitch Coin이 잔액에 추가되었습니다.",
+        "aiCreditPackGrantedTitle": "AI Credit 지급 완료",
+        "aiCreditPackGrantVerified": "{{label}} 지급이 검증되었습니다. AI Credit 잔액: {{balance}}.",
+        "aiCreditPackAddedToBalance": "{{quantity}} AI Credit이 잔액에 추가되었습니다."
+      },
+      "products": {
+        "premiumAnnual": "연",
+        "premiumMonthly": "월",
+        "premiumWeekly": "주",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coin",
+        "aiCreditPack_one": "{{formattedCount}} AI Credit",
+        "aiCreditPack_other": "{{formattedCount}} AI Credit",
+        "billedEveryOffer": "{{price}}/{{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} 크레딧/유료 기간",
+        "creditAllowancePaidNoun": "{{credits}} 크레딧/유료 {{period}}"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "게스트로 구매",
+        "commerceBody": "가입 없이 구매할 수 있습니다. Premium 멤버십은 스토어에서 복원할 수 있지만, 앱을 지우면 기존에 구매한 Stitch Coin, AI Credit 및 비공개 게스트 콘텐츠를 복구할 수 없게 됩니다. 가입을 통해 이러한 정보를 안전하게 보호하세요. 게스트 플레이는 끊김 없이 유지됩니다.",
+        "continueAsGuest": "게스트로 계속하기",
+        "signInInstead": "로그인하기",
+        "closeAccessibilityLabel": "닫기"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "확인",
+        "successButton": "확인",
+        "failedButton": "닫기",
+        "infoButton": "확인",
+        "closeAccessibilityLabel": "닫기"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "뒤로",
+        "cancel": "취소",
+        "duplicateTitle": "\"{{title}}\"이라는 이름의 개인 도안이 이미 존재합니다. 다른 이름을 입력해 주세요.",
+        "cellsCount_one": "칸",
+        "cellsCount_other": "칸",
+        "colorsCount_one": "색",
+        "colorsCount_other": "색"
+      },
+      "hub": {
+        "title": "제작 허브",
+        "subtitle": "나만의 디자인을 커스텀 십자수 도안으로 만들어 생동감을 불어넣어 보세요.",
+        "opening": "열고 있는 중...",
+        "photoImport": {
+          "title": "사진 가져오기",
+          "description": "카메라 롤에서 사진을 업로드하여 스티치가 가능한 도안으로 변환합니다.",
+          "action": "사진 가져오기"
+        },
+        "aiGenerator": {
+          "title": "AI 생성기",
+          "description": "만들고 싶은 이미지의 프롬프트를 입력하여 인공지능이 커스텀 픽셀 디자인을 생성하도록 해보세요.",
+          "action": "디자인 생성"
+        }
+      },
+      "aspects": {
+        "square": "정사각형",
+        "portrait_4_3": "세로 4:3",
+        "landscape_4_3": "가로 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "도안 변환에 실패했습니다. 다시 시도해 주세요.",
+          "timeout": "도안 변환 처리가 계속되고 있습니다. 잠시 후 다시 시도해 주세요.",
+          "generic": "도안 변환을 완료할 수 없습니다. 다시 시도해 주세요."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "등록된 계정이 필요합니다",
+          "body": "AI 아트워크 및 라이브러리는 계정 내에서 비공개로 안전하게 유지됩니다.",
+          "signIn": "로그인"
+        },
+        "header": {
+          "title": "AI 생성기",
+          "backAccessibilityLabel": "뒤로"
+        },
+        "prompt": {
+          "label": "아트워크 설명 입력",
+          "placeholder": "해질녘의 아늑한 별장 정원..."
+        },
+        "generate": {
+          "working": "생성 중...",
+          "action": "생성하기 — 1 AI Credit",
+          "errors": {
+            "promptRejected": "해당 프롬프트는 허용되지 않았습니다. 다른 설명을 시도해 보세요.",
+            "generic": "AI 생성을 시작할 수 없습니다. 다시 시도해 주세요."
+          }
+        },
+        "library": {
+          "title": "AI 아트워크 라이브러리",
+          "status": {
+            "pending": "대기 중",
+            "dispatched": "전송됨",
+            "running": "실행 중",
+            "delivered": "생성 완료",
+            "safety_rejected": "안전 기준 미승인",
+            "failed": "실패",
+            "deleted": "삭제됨",
+            "unknown": "이용 불가"
+          },
+          "failure": {
+            "safety_rejected": "이 아트워크는 제공업체의 안전성 검사를 통과하지 못했습니다.",
+            "failed": "이 아트워크를 생성할 수 없습니다."
+          },
+          "approve": "도안으로 승인",
+          "delete": "삭제",
+          "deleteAccessibilityLabel": "이 AI 아트워크 삭제",
+          "errors": {
+            "loadFailed": "AI 아트워크 라이브러리를 불러오지 못했습니다. 다시 시도해 주세요."
+          }
+        },
+        "approve": {
+          "modalTitle": "개인 도안 생성",
+          "titleLabel": "도안 이름",
+          "titleAccessibilityLabel": "도안 이름",
+          "defaultTitle": "내 AI 도안",
+          "placeholder": "내 AI 도안",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "취소",
+          "creating": "도안 생성 중...",
+          "create": "도안 생성",
+          "errors": {
+            "generic": "개인 도안을 생성하지 못했습니다. 다시 시도해 주세요."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "등록된 계정이 필요합니다",
+          "body": "개인 도안은 계정에 연결되어 비공개로 저장되며, 여러 기기에서 사용할 수 있습니다.",
+          "signIn": "로그인 또는 계정 생성",
+          "back": "뒤로"
+        },
+        "header": {
+          "title": "사진 도안",
+          "subtitle": "기기에서 프레임을 조정하고 변환을 승인해 주세요",
+          "backAccessibilityLabel": "뒤로"
+        },
+        "picker": {
+          "chooseTitle": "사진 선택",
+          "helpText": "고해상도 원본 사진은 기기에 유지됩니다. 프레임을 승인하기 전까지는 변환이 시작되지 않습니다.",
+          "choose": "라이브러리에서 선택",
+          "chooseAnother": "다른 사진 선택",
+          "opening": "열고 있는 중...",
+          "errors": {
+            "permissionDenied": "사진을 선택하려면 사진 라이브러리 접근 권한이 필요합니다.",
+            "invalidDimensions": "선택한 사진의 크기가 유효하지 않습니다.",
+            "generic": "사진 라이브러리를 열지 못했습니다. 다시 시도해 주세요."
+          }
+        },
+        "framing": {
+          "title": "아트워크 프레임 조정",
+          "gestureHint": "드래그하여 위치 조정 · 핀치하여 줌",
+          "aspectLabel": "프레임 화면 비율"
+        },
+        "profile": {
+          "title": "변환 프로필",
+          "options": {
+            "easy": "쉬움",
+            "standard": "보통",
+            "detailed": "상세"
+          },
+          "custom": "커스텀",
+          "customMeta": "무료 · 형태 고정",
+          "unavailable": "이 프레임에는 적합하지 않습니다",
+          "customShortEdgeLabel": "단변",
+          "customColorLimitLabel": "DMC 색상 수 제한",
+          "exceedsLimit": "커스텀 값이 {{max}}칸의 도안 크기 제한을 초과했습니다."
+        },
+        "titleCard": {
+          "label": "도안 이름",
+          "placeholder": "내 사진 도안",
+          "defaultTitle": "내 사진 도안",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · 최대 {{maxColors}} DMC {{colorsUnit}}",
+          "privacyNotice": "승인하면 자르고 크기를 조정한 이미지만 업로드됩니다. 원본 사진은 로컬 기기에 저장된 상태로 유지됩니다.",
+          "approve": "아트워크 승인 및 변환"
+        },
+        "processing": {
+          "preparingFrame": "이 기기에서 승인된 프레임 준비 중...",
+          "uploading": "자르고 크기를 조정한 프레임만 업로드 중...",
+          "waitingForWorker": "변환 워커 대기 중...",
+          "buildingGrid": "스티치 그리드 및 DMC 팔레트 생성 중...",
+          "preparingSession": "플레이를 위한 개인 도안 준비 중..."
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "이 프로필은 최종 프레임에 적합하지 않습니다. '쉬움'을 선택하거나 상세도를 낮춰 주세요.",
+            "generic": "이 사진을 변환하지 못했습니다. 다시 시도해 주세요."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "도안이 선택되지 않았습니다",
+          "noPatternBody": "이 화면은 라이브러리에 있는 기존 개인 도안에서 열어야 합니다.",
+          "accountTitle": "등록된 계정이 필요합니다",
+          "accountBody": "개인 도안은 계정에 연결되어 비공개로 저장되며, 여러 기기에서 사용할 수 있습니다.",
+          "signIn": "로그인 또는 계정 생성",
+          "back": "뒤로"
+        },
+        "loading": "에디터 임시 저장본을 불러오는 중...",
+        "load": {
+          "failedTitle": "도안 불러오기 실패",
+          "retry": "재시도",
+          "back": "뒤로",
+          "errors": {
+            "generic": "이 개인 도안을 불러오지 못했습니다. 다시 시도해 주세요."
+          }
+        },
+        "header": {
+          "title": "도안 에디터",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "뒤로"
+        },
+        "toolbar": {
+          "undo": "실행 취소",
+          "redo": "다시 실행"
+        },
+        "mode": {
+          "paint": "페인트",
+          "replaceColor": "색상 교체",
+          "replaceStep1": "1. 교체하려는 도안의 색상을 탭하세요:",
+          "replaceStep2": "2. 교체할 DMC 색상을 선택하여 적용하세요:",
+          "paintSelected": "선택됨: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "색상을 선택한 후 칸을 탭하여 페인트하세요."
+        },
+        "errors": {
+          "pickColorFirst": "색상을 먼저 선택해 주세요",
+          "paletteLimit": "이 도안은 이미 최대 {{max}}가지 실 색상을 사용하고 있습니다."
+        },
+        "picker": {
+          "title": "DMC 자수실 색상",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "편집된 도안 저장",
+          "placeholder": "편집된 도안 이름",
+          "action": "새로 저장",
+          "offlineTitle": "오프라인 상태로 저장됨",
+          "offlineBody": "편집된 도안이 이 기기에 저장되었습니다. 온라인 상태가 되면 계정에 동기화됩니다.",
+          "errors": {
+            "generic": "이 개인 도안을 저장하지 못했습니다. 다시 시도해 주세요."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "로그인한 계정은 다른 계정입니다. 현재 계정은 변경되지 않았습니다.",
+        "providerRejected": "인증이 거부되었습니다. 계정 또는 코드를 확인하고 다시 시도해 주세요."
+      },
+      "generic": {
+        "failure": "오류가 발생했습니다. 다시 시도해 주세요.",
+        "supportReferenceLabel": "지원 참조 코드: {{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Stitch Wish는 선택한 사진을 사용하여 나만의 도안을 제작하거나 공개 크리에이터의 프로필 사진을 선택합니다."
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "STITCH WISH에 오신 것을 환영합니다",
+        "title": "색상을 선택하고 같은 색상의 칸을 탭해 보세요.",
+        "heroAlt": "스타터 도안 '코지 하트' 미리보기",
+        "handedness": {
+          "sectionTitle": "조작 버튼을 어느 쪽에 배치하시겠습니까?",
+          "groupLabel": "조작 버튼 위치",
+          "optionRight": "오른쪽에 배치",
+          "optionLeft": "왼쪽에 배치",
+          "saveErrorText": "설정을 저장하지 못했습니다.",
+          "retry": "다시 시도"
+        },
+        "note": "이 설정은 나중에 '설정'에서 변경할 수 있습니다.",
+        "start": "스티치 시작하기",
+        "starting": "시작하는 중…",
+        "browse": "스타터 도안 보기",
+        "signIn": "로그인"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "DMC 321 크리스마스 레드를 선택해 주세요.",
+          "stitchAction": "하이라이트된 같은 색상의 칸을 탭해 주세요.",
+          "mismatchedTap": "하이라이트된 다른 칸을 탭해 보세요. 실수해도 불이익은 없습니다.",
+          "undoAction": "방금 스티치한 내용을 취소하고 다시 배치해 보세요.",
+          "stitchSweep": "같은 색상의 칸을 누른 상태에서 하이라이트된 범위를 드래그해 보세요.",
+          "threadColorCompletion": "하이라이트된 흰색 실을 모두 스티치한 후 다음 색상을 선택해 주세요."
+        },
+        "hints": {
+          "anchoredZoom": "손가락 아래 칸이 고정된 상태로 핀치 제스처를 사용하여 줌합니다.",
+          "panVsSweep": "드래그하면 원단을 스크롤할 수 있습니다. 같은 색상의 칸에서 드래그를 시작하면 연속 스티치(스윕)를 할 수 있습니다.",
+          "edgeAutoPan": "가장자리 근처에서 계속 스윕하면 손가락 움직임에 맞춰 원단이 스크롤됩니다.",
+          "remainingCellLocator": "로케이터를 사용하여 이 실의 남은 다음 칸을 찾아보세요."
+        },
+        "skip": "지금 건너뛰기",
+        "skipAccessibilityLabel": "튜토리얼 지금 건너뛰기",
+        "dismiss": "확인",
+        "dismissAccessibilityLabel": "힌트 닫기"
+      },
+      "recap": {
+        "title": "완벽합니다",
+        "lines": {
+          "matchNumbers": "숫자를 맞춰서 스티치를 배치합니다.",
+          "dragSweep": "같은 색상의 칸을 드래그하여 연속 스티치(스윕)를 합니다.",
+          "pinchZoom": "자세히 보고 싶을 때는 핀치 제스처로 줌합니다.",
+          "undoLocator": "실행 취소와 로케이터는 언제나 무료로 사용할 수 있습니다."
+        },
+        "continue": "스티치 계속하기",
+        "browsePatterns": "도안 찾기"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "스티치 테이블",
+        "subtitle": "이전에 하던 작업을 계속하거나 최근 진행하던 제작을 재개해 보세요.",
+        "loading": "스티치를 불러오는 중...",
+        "empty": {
+          "title": "진행 중인 제작이 없습니다",
+          "body": "자수 틀이 현재 비어 있습니다. 도안 카탈로그에서 스티치할 멋진 디자인을 찾아보세요!",
+          "action": "카탈로그 보기"
+        },
+        "unknownPattern": "알 수 없는 도안",
+        "idLabel": "ID: {{id}}",
+        "unknownPatternLabel": "도안 {{id}}",
+        "deleteSessionAccessibilityLabel": "세션 삭제",
+        "viewFinishedAccessibilityLabel": "완성된 작품 보기",
+        "resumeAccessibilityLabel": "스티치 재개",
+        "status": {
+          "ready": "준비 완료",
+          "done": "완료",
+          "active": "진행 중",
+          "preparing": "준비 중",
+          "failed": "실패"
+        },
+        "deleteConfirm": {
+          "title": "진행 상황 삭제",
+          "message": "\"{{title}}\"의 진행 상황을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.",
+          "cancel": "취소",
+          "confirm": "삭제"
+        },
+        "preparingCard": {
+          "discardTitle": "세션 폐기",
+          "cancelTitle": "다운로드 취소",
+          "discardMessage": "실패한 세션을 폐기하시겠습니까?",
+          "cancelMessage": "이 도안의 다운로드를 취소하시겠습니까?",
+          "keep": "유지",
+          "discard": "폐기",
+          "cancel": "취소"
+        }
+      },
+      "loading": {
+        "text": "세션을 열고 원단을 준비하고 있습니다..."
+      },
+      "error": {
+        "title": "세션을 불러오지 못했습니다",
+        "fallbackMessage": "스티치 세션을 불러올 수 없습니다.",
+        "backButton": "뒤로",
+        "tableButton": "테이블로 이동"
+      },
+      "header": {
+        "backButton": "← 뒤로",
+        "tableButton": "← 테이블",
+        "defaultTitle": "스티치 세션",
+        "progress": "{{completed}} / {{total}} 칸 ({{percent}}% 완료)",
+        "resumeTutorialAccessibilityLabel": "튜토리얼 재개"
+      },
+      "banners": {
+        "patternRemoved": "이 도안은 관리자에 의해 삭제되어 더 이상 이용할 수 없습니다. 탭하여 나가기 해주세요.",
+        "syncConflict": "다른 기기와 동기화되었습니다. 일부 칸이 업데이트되었습니다. 탭하여 닫아 주세요."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "선택한 실 색상 중 남은 다음 칸 찾기",
+        "undoAccessibilityLabel": "마지막 스티치 실행 취소"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "색상 {{number}}: DMC {{dmcCode}}, 남은 스티치 {{count}}개",
+        "chipAccessibilityLabel_other": "색상 {{number}}: DMC {{dmcCode}}, 남은 스티치 {{count}}개",
+        "done": "완료",
+        "remaining_one": "{{count}}개 남음",
+        "remaining_other": "{{count}}개 남음"
+      },
+      "celebration": {
+        "title": "아름답게 완성되었습니다!",
+        "subtitle": "이 원단의 모든 스티치가 완료되었습니다.",
+        "stitchesLabel_one": "스티치",
+        "stitchesLabel_other": "스티치",
+        "colorsLabel_one": "색상",
+        "colorsLabel_other": "색상",
+        "replayButton": "다시 스티치하기",
+        "catalogButton": "카탈로그로 돌아가기"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "뒤로",
+        "tryAgain": "다시 시도"
+      },
+      "rejectionReasons": {
+        "safety": "안전성",
+        "publication_rights": "게시권",
+        "duplicate_or_spam": "중복 또는 스팸",
+        "technical_invalidity": "기술적 결함",
+        "quality_standard": "품질 기준"
+      },
+      "submissionStatus": {
+        "accepted": "공개됨",
+        "appeal_pending": "이의 신청 중",
+        "appeal_upheld": "이의 신청 기각",
+        "precheck_failed": "사전 확인 불가",
+        "precheck_pending": "확인 중",
+        "quarantined": "검토 필요",
+        "rejected": "반려됨",
+        "review_pending": "심사 중"
+      },
+      "revisionStatus": {
+        "accepted": "공개됨",
+        "appeal_pending": "이의 신청 중",
+        "appeal_upheld": "이의 신청 기각",
+        "pending": "심사 중",
+        "rejected": "반려됨",
+        "withdrawn": "철회됨"
+      },
+      "home": {
+        "identity": {
+          "establishing": "ID 확인 중...",
+          "pendingTitle": "프로필 보류 중",
+          "offline": "오프라인",
+          "retryConnection": "연결 재시도",
+          "loadingPublicProfile": "공개 프로필 불러오는 중...",
+          "unavailableTitle": "공개 프로필을 사용할 수 없음",
+          "checkConnection": "연결 상태를 확인하고 다시 시도해 주세요.",
+          "createTitle": "공개 프로필 생성",
+          "createBody": "커뮤니티 도안에 표시될 고유한 사용자 이름을 선택해 주세요. 계정 세부 정보는 비공개로 유지됩니다.",
+          "createAction": "공개 프로필 생성",
+          "editAction": "공개 프로필 편집",
+          "offlinePendingSync": "오프라인 — 동기화 대기 중",
+          "guestPlayer": "게스트 플레이어",
+          "playingSince": "{{date}}부터 플레이 중",
+          "creatorSince": "{{date}}부터 크리에이터로 활동 중"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "커머스 스토어 열기",
+          "title": "스튜디오 잔액",
+          "commerceStoreLink": "커머스 스토어",
+          "stitchCoinsAccessibilityLabel": "Stitch Coins 잔액: {{balance}}. 탭하여 코인 획득.",
+          "packs": "팩",
+          "stitchCoinsLabel": "Stitch Coins",
+          "stitchCoinsSub": "도안 잠금 해제용",
+          "aiCreditsAccessibilityLabel": "AI Credits 잔액: {{balance}}. 탭하여 크레딧 획득.",
+          "aiCreditsSignInAccessibilityLabel": "AI Credits. 구매하려면 로그인하세요.",
+          "aiCreditsLabel": "AI Credits",
+          "aiCreditsSubOwned": "AI 도안 아트용",
+          "aiCreditsSubGuest": "로그인하여 보유",
+          "membershipActiveAccessibilityLabel": "Premium 멤버십 활성화 중 ({{plan}}). 탭하여 관리.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Premium. 탭하여 요금제 보기.",
+          "membershipActiveTitle": "Premium 활성화 중 · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "연간",
+          "planMonthly": "월간",
+          "planWeekly": "주간",
+          "planActive": "활성",
+          "trialBadge": "체험판",
+          "membershipSubActive": "모든 테마 잠금 해제 완료 · 매일 코인 즉시 획득",
+          "membershipSubInactive": "매일 30코인 즉시 획득, 커스텀 테마 및 AI Credits",
+          "manage": "관리",
+          "explore": "탐색"
+        },
+        "quickNav": {
+          "sectionEyebrow": "계정 및 커뮤니티",
+          "submissionsAccessibilityLabel": "카탈로그 신청: 심사, 결정, 이의 신청 추적",
+          "submissionsTitle": "신청",
+          "submissionsSub": "심사 추적",
+          "publishedAccessibilityLabel": "공개된 도안: 메타데이터 수정, 철회, 이의 신청 추적",
+          "publishedTitle": "공개됨",
+          "publishedSub": "도안 관리",
+          "moderationAccessibilityLabel": "모데레이션 알림: 회원님의 도안에 대한 카탈로그 결정 사항 확인",
+          "moderationTitle": "모데레이션",
+          "moderationSub": "정책 알림",
+          "likedAccessibilityLabel": "보관함: 내가 좋아요를 표시한 커뮤니티 도안의 개인 컬렉션",
+          "likedTitle": "좋아요 표시한 도안",
+          "likedSavedCount_one": "저장됨: {{count}}개",
+          "likedSavedCount_other": "저장됨: {{count}}개",
+          "likedSavedDefault": "저장된 도안"
+        },
+        "dailySection": {
+          "title": "데일리 스티치 및 보상",
+          "tasksGroupLabel": "데일리 미션 (최대 +30코인)",
+          "connectToTrack": "연결하여 데일리 미션 진행 상황을 추적합니다.",
+          "loadingTasks": "미션 불러오는 중...",
+          "loadFailed": "데일리 미션을 불러오지 못했습니다.",
+          "retry": "재시도",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "리셋 중...",
+          "resetsInHoursMinutes": "리셋까지 {{hours}}시간 {{minutes}}분",
+          "resetsInMinutes": "리셋까지 {{minutes}}분"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 스티치 액션",
+            "body": "오늘 일치하는 칸 100개 채우기"
+          },
+          "three_colors_10": {
+            "title": "3가지 색상 각각 10액션",
+            "body": "3가지 실 색상으로 각각 10액션 달성하기"
+          },
+          "color_completion": {
+            "title": "실 색상 완성하기",
+            "body": "아무 색상 하나를 완전히 스티치하여 완료하기"
+          }
+        },
+        "dailyPool": {
+          "title": "데일리 30코인 보상 풀",
+          "premiumInstantClaim": "Premium 즉시 획득",
+          "rewardedAds": "보상형 광고",
+          "claimedAmount": "오늘의 {{amount}} Stitch Coins를 획득했습니다!",
+          "poolAlreadyClosed": "오늘의 보상 풀이 이미 마감되었습니다.",
+          "claimedForToday": "오늘 자 보상을 이미 획득했습니다. 다음 보상일에 리셋됩니다.",
+          "poolExhausted": "오늘의 30코인 보상 풀이 모두 소진되었습니다.",
+          "claimButtonRetry": "보상 획득 다시 시도",
+          "claimButtonInstant": "{{count}}코인 받기 (즉시)",
+          "poolClaimedResetsTomorrow": "오늘 자 코인 풀을 획득했습니다. 내일 리셋됩니다.",
+          "allAdRewardsCompleted": "오늘의 모든 광고 보상을 완료했습니다! (30/30코인)",
+          "watchAdButton": "광고를 시청하고 +10코인 획득 (남은 횟수: {{count}}회)",
+          "adPerkNote": "하루 최대 3회 광고 시청 가능 · Premium 회원은 30코인 즉시 획득 가능",
+          "adRewardEarned": "광고 보상을 획득했습니다! 서버에서 확인 중...",
+          "claimFailed": "획득 실패: {{message}}",
+          "claimFailedGeneric": "문제가 발생했습니다. 다시 시도해 주세요.",
+          "adLoadFailedDefault": "광고를 불러오지 못했습니다",
+          "adAttemptFailedDefault": "광고를 실행하지 못했습니다"
+        },
+        "tabs": {
+          "myCreations": "내 제작 {{count}}",
+          "likedPatterns": "좋아요 표시한 도안 {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "내 도안 보관을 위해 로그인",
+          "signInBody": "변환된 사진 도안을 생성하고 비공개로 보유하려면 등록된 계정이 필요합니다.",
+          "signIn": "로그인",
+          "patternMeta": "{{width}}×{{height}} · {{count}}색",
+          "pendingSync": "동기화 대기 중",
+          "play": "플레이",
+          "edit": "편집",
+          "submitAccessibilityLabel": "\"{{title}}\" 도안을 커뮤니티 카탈로그에 신청하기",
+          "emptyTitle": "내 제작 도안이 없습니다",
+          "emptyBody": "아직 사진을 변환하거나 AI 아트를 생성하지 않았습니다. '제작' 탭으로 이동하여 첫 번째 작품을 만들어 보세요!",
+          "emptyAction": "제작 시작하기",
+          "actionFailedGeneric": "문제가 발생했습니다. 다시 시도해 주세요."
+        },
+        "likedTab": {
+          "unavailableTitle": "좋아요 표시한 도안을 사용할 수 없음",
+          "unavailableDefault": "좋아요 표시한 도안을 불러오지 못했습니다.",
+          "byCreator": "크리에이터: {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}}색",
+          "emptyTitle": "좋아요 표시한 도안이 없습니다",
+          "emptyBody": "카탈로그를 둘러보며 도안의 하트 아이콘을 탭해 여기에 저장해 보세요.",
+          "emptyAction": "도안 찾기"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Premium 데일리 코인 받기",
+        "description": "오늘 공유된 30코인 보상 풀의 잔액을 획득합니다.",
+        "connectPrompt": "게임 백엔드에 연결하여 오늘의 보상을 확인해 주세요.",
+        "checkingReward": "오늘의 Premium 보상 확인 중...",
+        "unavailableGeneric": "오늘의 Premium 보상을 이용할 수 없습니다.",
+        "tryAgain": "다시 시도",
+        "resultAdded": "게임 백엔드에 의해 {{amount}} Stitch Coins가 추가되었습니다. 잔액: {{balance}}.",
+        "poolAlreadyClosed": "오늘의 공유 보상 풀이 이미 종료되었습니다.",
+        "alreadyClaimed": "이 보상일에 대한 보상을 이미 획득했습니다.",
+        "poolExhausted": "오늘의 공유 보상 풀이 모두 소진되었습니다. 다음 보상일에 리셋됩니다.",
+        "availableNow": "현재 {{count}} Stitch Coins 획득 가능",
+        "resetsAt": "{{date}}에 리셋",
+        "claimButtonRetry": "보상 획득 다시 시도",
+        "claimButtonInstant": "{{count}}코인 받기",
+        "lockedDescription": "해당 월간 체험판이 포함된 Premium 멤버십을 통해 이 데일리 획득을 잠금 해제할 수 있습니다.",
+        "viewPremiumPlans": "Premium 요금제 보기"
+      },
+      "publicProfile": {
+        "editTitle": "공개 프로필 편집",
+        "createTitle": "공개 프로필 생성",
+        "signInTitle": "로그인이 필요합니다",
+        "signInBody": "공개 크리에이터 ID를 생성하려면 등록된 계정이 필요합니다.",
+        "signInAction": "로그인",
+        "unavailableTitle": "프로필을 사용할 수 없음",
+        "unavailableBody": "공개 프로필을 불러오지 못했습니다. 연결을 확인하고 다시 시도해 주세요.",
+        "tryAgain": "다시 시도",
+        "intro": "이 이름과 사진은 회원님의 커뮤니티 도안과 함께 표시됩니다. 이메일 주소 및 로그인 제공업체 정보는 비공개로 유지됩니다.",
+        "choosePhoto": "사진 선택",
+        "changePhoto": "사진 변경",
+        "remove": "삭제",
+        "avatarHelper": "선택 사항 · JPEG, PNG 또는 WebP · 최대 5MB",
+        "usernameLabel": "사용자 이름",
+        "usernameAccessibilityLabel": "공개 사용자 이름",
+        "usernamePlaceholder": "shishu_name",
+        "usernameHelperLocked": "사용자 이름은 변경할 수 없습니다.",
+        "usernameHelperEditable": "3~30자의 소문자, 숫자 또는 언더바(_). 이 설정은 나중에 변경할 수 없습니다.",
+        "displayNameLabel": "표시 이름",
+        "displayNameAccessibilityLabel": "공개 표시 이름",
+        "displayNamePlaceholder": "크리에이터 이름",
+        "displayNameHelper": "이 설정은 나중에 변경할 수 있습니다.",
+        "safetyNotice": "이름과 사진은 공개 전에 검토됩니다. 변경 사항이 반려될 경우, 현재의 공개 프로필은 유지됩니다.",
+        "saveAction": "공개 프로필 저장",
+        "publishAction": "공개 프로필 게시",
+        "photoPermissionRequired": "프로필 사진을 선택하려면 사진 라이브러리 접근 권한이 필요합니다.",
+        "photoTypeInvalid": "프로필 사진은 JPEG, PNG 또는 WebP 형식이어야 합니다.",
+        "photoTooLarge": "프로필 사진은 5MB 이하여야 합니다.",
+        "saveFailedDefault": "공개 프로필을 저장하지 못했습니다."
+      },
+      "submissions": {
+        "title": "카탈로그 신청",
+        "unavailableTitle": "신청 내역을 사용할 수 없음",
+        "unavailableDefault": "신청 내역을 불러오지 못했습니다.",
+        "emptyTitle": "카탈로그 신청 내역이 없습니다",
+        "emptyBody": "'내 제작' 탭에서 동기화된 내 도안을 신청해 주세요.",
+        "emptyAction": "내 제작으로 돌아가기",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "자동 검사를 완료하지 못했습니다. 이 스냅샷은 게시되지 않았습니다.",
+        "publishedToCatalog": "커뮤니티 카탈로그에 공개되었습니다.",
+        "appealAction": "결정에 대한 이의 신청",
+        "appealHelp": "수정되지 않은 스냅샷에 대해 한 번만 이의를 신청할 수 있습니다.",
+        "appealNoteAccessibilityLabel": "이의 신청 메모",
+        "appealNotePlaceholder": "검토할 모더레이터에게 보내는 추가 설명 (선택 사항)",
+        "cancelAction": "취소",
+        "submitAppealAction": "이의 신청 제출"
+      },
+      "publishedPatterns": {
+        "title": "공개된 도안",
+        "unavailableTitle": "도안을 사용할 수 없음",
+        "unavailableDefault": "공개된 도안을 불러오지 못했습니다.",
+        "emptyTitle": "공개된 도안이 없습니다",
+        "emptyBody": "커뮤니티 카탈로그에 공개한 도안이 여기에 표시됩니다.",
+        "emptyAction": "프로필로 돌아가기",
+        "withdrawnFromCatalog": "카탈로그에서 철회됨",
+        "underReviewHold": "심사를 위한 보류 중",
+        "meta": "{{category}} · 공개일: {{date}}",
+        "withdrawnHelp": "이 도안은 영구적으로 철회되었습니다. 기존에 스티치 세션을 이용하고 있던 플레이어는 진행 상황 및 액세스 권한을 유지할 수 있습니다.",
+        "reviewHoldHelp": "이 도안은 일시적으로 검색 대상에서 제외되며 새 세션을 시작할 수 없습니다. 기존 스티치 세션은 계속 플레이할 수 있습니다. 메타데이터 수정을 제안하는 것은 가능합니다.",
+        "reviseAction": "메타데이터 수정",
+        "withdrawRevisionAction": "수정 철회",
+        "appealAction": "결정에 대한 이의 신청",
+        "withdrawFromCatalogAction": "카탈로그에서 철회",
+        "appealHelp": "수정되지 않은 스냅샷에 대해 한 번만 이의를 신청할 수 있습니다. 대신 새로운 수정을 제출하면 이 이의 신청은 취소됩니다.",
+        "appealNoteAccessibilityLabel": "이의 신청 메모",
+        "appealNotePlaceholder": "검토할 모더레이터에게 보내는 추가 설명 (선택 사항)",
+        "cancelAction": "취소",
+        "submitAppealAction": "이의 신청 제출",
+        "withdrawRevisionFailedTitle": "수정을 철회하지 못했습니다",
+        "withdrawPatternFailedTitle": "도안을 철회하지 못했습니다",
+        "withdrawPatternSuccessTitle": "도안 철회 완료",
+        "withdrawPatternSuccessBody": "검색이 불가능해지며 새 세션을 시작할 수 없습니다. 기존 스티치 세션의 진행 상황과 플레이 데이터는 유지됩니다.",
+        "withdrawConfirmTitle": "커뮤니티 카탈로그에서 철회하시겠습니까?",
+        "withdrawConfirmBody": "\"{{title}}\" 도안은 검색에서 제외되며 더 이상 새로운 세션을 시작할 수 없습니다. 이 도안의 ID는 복구할 수 없습니다. 기존 스티치 세션 및 진행 상황은 계속 플레이할 수 있습니다.",
+        "withdrawConfirmCancel": "취소",
+        "withdrawConfirmAction": "영구 철회"
+      },
+      "revisePatternMetadata": {
+        "title": "메타데이터 수정",
+        "signInTitle": "등록된 계정이 필요합니다",
+        "signInBody": "커뮤니티 도안의 메타데이터를 수정하기 전에 로그인해 주세요.",
+        "signInAction": "로그인",
+        "notFoundTitle": "커뮤니티 도안을 찾을 수 없습니다",
+        "notFoundBody": "회원님이 직접 게시한 커뮤니티 도안만 수정할 수 있습니다.",
+        "notFoundAction": "공개된 도안으로 돌아가기",
+        "inProgressTitle": "수정이 이미 진행 중입니다",
+        "inProgressBody": "이 도안에는 이미 대기 중인 수정 사항이나 활성화된 이의 신청이 존재합니다. 다른 요청을 제출하기 전에 철회해 주세요.",
+        "inProgressAction": "공개된 도안으로 돌아가기",
+        "currentlyPublished": "현재 커뮤니티 카탈로그에 게시 중",
+        "titleFieldLabel": "카탈로그 제목",
+        "titlePlaceholder": "도안 제목",
+        "titleAccessibilityLabel": "카탈로그 제목",
+        "descriptionFieldLabel": "설명",
+        "descriptionPlaceholder": "디자인, 테마, 스티치 경험에 대해 설명해 주세요.",
+        "descriptionAccessibilityLabel": "카탈로그 설명",
+        "sourceLanguageFieldLabel": "원본 언어",
+        "categoryFieldLabel": "카테고리",
+        "tagsFieldLabel": "태그",
+        "notice": "수정을 진행하면 변경할 수 없는 새 스냅샷이 저장됩니다. 관리자가 이 수정을 승인하기 전까지는 현재 게시 중인 메타데이터가 계속 표시됩니다.",
+        "submitAction": "수정 제출"
+      },
+      "submitPattern": {
+        "title": "커뮤니티에 신청",
+        "signInTitle": "등록된 계정이 필요합니다",
+        "signInBody": "내 도안을 커뮤니티 카탈로그에 신청하기 전에 로그인해 주세요.",
+        "signInAction": "로그인",
+        "createProfileTitle": "공개 크리에이터 프로필 생성",
+        "createProfileBody": "커뮤니티 도안은 회원님의 공개 크리에이터 프로필에 연결됩니다.",
+        "createProfileAction": "프로필 생성",
+        "patternNotFoundTitle": "내 도안을 찾을 수 없습니다",
+        "patternNotFoundBody": "동기화된 내 도안만 신청할 수 있습니다.",
+        "patternNotFoundAction": "프로필로 돌아가기",
+        "patternMeta": "{{width}}×{{height}} · {{count}}색",
+        "byCreator": "크리에이터: @{{username}}",
+        "titleFieldLabel": "카탈로그 제목",
+        "titlePlaceholder": "도안 제목",
+        "titleAccessibilityLabel": "카탈로그 제목",
+        "descriptionFieldLabel": "설명",
+        "descriptionPlaceholder": "디자인, 테마, 스티치 경험에 대해 설명해 주세요.",
+        "descriptionAccessibilityLabel": "카탈로그 설명",
+        "sourceLanguageFieldLabel": "원본 언어",
+        "categoryFieldLabel": "카테고리",
+        "tagsFieldLabel": "태그",
+        "rightsDeclaration": "본인은 이 작품을 직접 제작했거나, 또는 'Publication Rights Declaration v1'에 따라 이를 게시하는 데 필요한 모든 권리를 소유하고 있음을 확인합니다.",
+        "notice": "신청을 완료하면 변경할 수 없는 복사본이 저장됩니다. 자동 검사를 통한 데이터가 제공되지만, 최종 결정은 관리자가 내리게 됩니다.",
+        "submitAction": "심사 신청"
+      },
+      "moderationNotices": {
+        "title": "모데레이션 알림",
+        "signInTitle": "로그인하여 알림 보기",
+        "signInBody": "모데레이션 알림은 해당되는 커뮤니티 도안을 게시한 등록된 계정으로 전송됩니다.",
+        "signInAction": "로그인",
+        "unavailableTitle": "알림을 사용할 수 없음",
+        "unavailableDefault": "모데레이션 알림을 불러오지 못했습니다.",
+        "emptyTitle": "모데레이션 알림이 없습니다",
+        "emptyBody": "소유자에게만 표시되는 카탈로그 모데레이션 결정 사항이 여기에 표시됩니다.",
+        "emptyAction": "프로필로 돌아가기",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "카탈로그 메타데이터 수정",
+          "no_violation": "심사 종료 — 위반 사항 없음",
+          "review_hold": "심사를 위한 보류 중",
+          "safety_removal": "안전 정책에 따른 삭제"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "제목, 설명 및 선택된 태그가 안전한 값으로 대체되었습니다. 이용 가능 여부, 도안 파일 및 미리보기에는 영향이 없습니다. 카탈로그 메타데이터 수정은 언제든지 새로 신청할 수 있습니다.",
+          "no_violation": "게시 후 검토가 완료되어 이 도안은 검색 및 신규 스티치 세션에서 다시 정상적으로 이용할 수 있게 되었습니다.",
+          "review_hold": "이 도안은 일시적으로 검색 및 새 세션 시작 대상에서 제외됩니다. 기존 스티치 세션, 진행 상황 및 오프라인 도안 데이터는 계속 플레이할 수 있습니다.",
+          "safety_removal": "이 도안은 안전, 법적 규제 또는 정책 위반으로 인해 삭제되었습니다. 검색 결과에서 제외되었으며, 기존 스티치 세션은 접근할 수 없게 되고 기기에 저장된 오프라인 도안 데이터는 삭제되었습니다. 안전 조치로 인한 삭제에 대해서는 1회에 한해 이의를 신청할 수 있습니다."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "데일리 미션",
+        "offline": "오프라인 상태입니다. 데일리 미션을 수행하려면 네트워크 연결이 필요합니다.",
+        "unavailable": "데일리 미션을 불러오지 못했습니다.",
+        "empty": "오늘 수행할 수 있는 미션이 없습니다."
+      },
+      "rewardedAdCard": {
+        "offline": "오프라인 상태입니다. 보상을 받으려면 네트워크 연결이 필요합니다.",
+        "unavailable": "보상 상태를 불러오지 못했습니다.",
+        "premiumClaimClosedPool": "Premium 데일리 획득 완료로 인해 오늘의 공유 코인 풀이 마감되었습니다.",
+        "allRewardsClaimed": "오늘의 모든 광고 보상을 획득했습니다. 내일 다시 확인해 주세요!",
+        "remaining_one": "오늘 남은 광고: {{count}}회 ({{coins}} 코인 획득 가능)",
+        "remaining_other": "오늘 남은 광고: {{count}}회 ({{coins}} 코인 획득 가능)",
+        "watchForCoins": "광고 시청하고 {{count}} 코인 획득"
+      },
+      "likedPatterns": {
+        "title": "좋아요 표시한 도안",
+        "signInTitle": "등록된 계정이 필요합니다",
+        "signInBody": "좋아요 표시한 도안 개인 컬렉션을 보려면 로그인해 주세요.",
+        "signInAction": "로그인",
+        "unavailableTitle": "좋아요 표시한 도안을 사용할 수 없음",
+        "unavailableDefault": "좋아요 표시한 도안을 불러오지 못했습니다.",
+        "emptyTitle": "좋아요 표시한 도안이 없습니다",
+        "emptyBody": "도안 카탈로그를 둘러보고 도안의 하트 아이콘을 탭해 여기에 저장해 보세요.",
+        "emptyAction": "도안 찾기",
+        "byCreator": "크리에이터: {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}}색 · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "설정",
+        "subtitleDev": "환경 설정을 구성하고 백엔드 시스템을 점검합니다.",
+        "subtitleProd": "환경 설정을 구성합니다."
+      },
+      "serviceStatus": {
+        "sectionTitle": "서비스 상태",
+        "apiConnectionTitle": "API 연결",
+        "testingConnection": "API 연결 테스트 중...",
+        "offlineUnreachable": "오프라인 / 연결 불가",
+        "unknownConnectionError": "알 수 없는 연결 오류",
+        "retryConnection": "연결 재시도",
+        "healthy": "정상",
+        "degraded": "저하됨",
+        "postgresLabel": "PostgreSQL 데이터베이스",
+        "redisLabel": "Redis 캐시"
+      },
+      "session": {
+        "sectionTitle": "ID 및 세션",
+        "statusTitle": "백엔드 세션 상태",
+        "statusDescription": "API를 통해 활성 게스트 등록 세션을 확인합니다.",
+        "noActiveSession": "활성 세션이 없습니다",
+        "sessionActive": "세션 활성화됨",
+        "idLabel": "ID: {{id}} (v{{version}})",
+        "unknownState": "알 수 없는 상태"
+      },
+      "tutorial": {
+        "sectionTitle": "튜토리얼",
+        "learnControlsTitle": "조작법 배우기",
+        "learnControlsDescription": "준비되면 스티치 튜토리얼을 다시 시작합니다.",
+        "unavailableTitle": "튜토리얼을 사용할 수 없음",
+        "unavailableMessage": "튜토리얼을 다시 시작하지 못했습니다. 다시 시도해 주세요."
+      },
+      "developer": {
+        "sectionTitle": "개발자",
+        "debugDiagnostics": "디버그 / 진단",
+        "debug": {
+          "backAccessibilityLabel": "뒤로",
+          "title": "디버그",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: 설정됨 · env: {{environment}}",
+            "dsnNotConfigured": "DSN: 미설정",
+            "sendTestEvent": "테스트 이벤트 보내기",
+            "throwError": "오류 발생시키기",
+            "disabledTitle": "Sentry 비활성화됨",
+            "disabledMessage": "Sentry가 설정되지 않아(DSN을 찾을 수 없음) 테스트 이벤트가 전송되지 않습니다.",
+            "testEventSent": "테스트 이벤트가 전송되었습니다. 이벤트 ID: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "오류",
+            "testEventFailedMessage": "테스트 이벤트 전송에 실패했습니다: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "온보딩",
+            "description": "튜토리얼 진행 상황을 지우고 웰컴 화면부터 다시 시작합니다.",
+            "restart": "온보딩 재시작",
+            "confirmTitle": "온보딩을 재시작하시겠습니까?",
+            "confirmMessage": "튜토리얼 상태가 지워지고 온보딩이 웰컴 화면부터 시작됩니다.",
+            "cancel": "취소",
+            "resetFailedTitle": "재설정 실패"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "계정 삭제",
+        "statusTitle": "계정 삭제 상태",
+        "checkingStatus": "상태 확인 중...",
+        "pendingTitle": "계정 삭제 보류 중",
+        "pendingDescription": "계정 삭제가 예약되어 있습니다. 삭제를 취소하려면 복구 기간이 끝나기 전에 다시 로그인해 주세요.",
+        "recoveryWindowEnds": "복구 기간 종료: {{date}}",
+        "cancelling": "취소 중...",
+        "cancelDeletion": "삭제 취소",
+        "statusError": "삭제 상태를 확인하지 못했습니다. 연결을 확인하고 다시 시도해 주세요.",
+        "deleteAccountTitle": "계정 삭제",
+        "deleteAccountDescription": "30일간의 복구 기간 후, 계정, 진행 상황 및 모든 잠금 해제 항목이 영구적으로 삭제됩니다.",
+        "requestedTitle": "계정 삭제가 요청되었습니다",
+        "requestedMessage": "삭제 요청은 {{date}}까지 보류 상태입니다. 계정이 로그아웃되었습니다. 삭제를 취소하려면 그 전에 다시 로그인해 주세요.",
+        "signOutFailedTitle": "로컬 로그아웃 실패",
+        "signOutFailedMessage": "삭제 요청은 아직 보류 중입니다. 설정에서 다시 로그아웃해 주세요.",
+        "requestFailedTitle": "요청 실패",
+        "requestFailedMessage": "삭제 요청이 전송되지 않았습니다. 연결을 확인하고 다시 시도해 주세요.",
+        "cancelSuccessTitle": "성공",
+        "cancelSuccessMessage": "계정 삭제 요청이 취소되었습니다.",
+        "reauthRequiredTitle": "재인증이 필요합니다",
+        "reauthRequiredMessage": "보안을 위해 계정 삭제를 취소하기 전에 다시 로그인해야 합니다.",
+        "signInAction": "로그인",
+        "cancelFailedTitle": "취소 실패",
+        "cancelFailedGeneric": "계정 삭제 취소에 실패했습니다. 연결을 확인하고 다시 시도해 주세요."
+      },
+      "appearance": {
+        "sectionTitle": "외관"
+      },
+      "themeCollectionCard": {
+        "title": "테마 컬렉션",
+        "description": "게임플레이에 영향을 주지 않고 그리드, 스티치, 완성 시의 외관을 변경합니다.",
+        "premiumBadge": "프리미엄",
+        "lockedAccessibilityHint": "Premium Membership이 필요합니다",
+        "selected": "선택됨",
+        "accessActive": "Premium 테마 이용 권한이 활성화되어 있습니다(해당 Monthly Trial 기간 포함).",
+        "lockedPreview": "여기에서 컬렉션을 미리 볼 수 있습니다. 선택하려면 Premium Membership 또는 해당 Monthly Trial 잠금 해제가 필요합니다.",
+        "viewPremiumPlans": "Premium 요금제 보기"
+      },
+      "gameplay": {
+        "sectionTitle": "게임플레이 설정",
+        "showGridLinesTitle": "그리드 선 표시",
+        "showGridLinesDescription": "바느질 캔버스의 셀 사이 경계선을 표시합니다",
+        "handednessTitle": "손잡이 레이아웃",
+        "handednessDescription": "왼손잡이 또는 오른손잡이 플레이에 맞게 조작 컨트롤을 배치합니다",
+        "left": "왼쪽",
+        "right": "오른쪽",
+        "leftHandedLayout": "왼손잡이 레이아웃",
+        "rightHandedLayout": "오른손잡이 레이아웃"
+      },
+      "language": {
+        "sectionTitle": "언어",
+        "description": "Stitch Wish 인터페이스를 표시할 언어를 선택하세요.",
+        "followDevice": "기기 언어 따르기",
+        "followDeviceDescription": "설정을 지우고 기기의 언어 설정을 따릅니다.",
+        "optionEnglish": "영어",
+        "optionTurkish": "터키어",
+        "modalTitle": "언어 선택",
+        "modalSubtitle": "인터페이스에서 사용할 언어를 선택하세요.",
+        "systemDefault": "시스템 언어",
+        "systemDefaultWithDetected": "시스템 언어 ({{language}})",
+        "systemDefaultDescription": "기기 설정에 자동으로 맞춥니다."
+      },
+      "social": {
+        "sectionTitle": "소셜 및 개인정보",
+        "blockedCreators": "차단한 크리에이터"
+      },
+      "account": {
+        "sectionTitle": "계정",
+        "notSignedInTitle": "로그인되어 있지 않음",
+        "signInRequiredTitle": "로그인이 필요합니다",
+        "notSignedInDescription": "로그인하여 여러 기기 간 진행 상황을 동기화하세요.",
+        "signIn": "로그인",
+        "reconnecting": "재연결 중…",
+        "signOut": "로그아웃",
+        "signOutConfirmTitle": "로그아웃하시겠습니까?",
+        "signOutConfirmMessage": "동기화되지 않은 진행 상황은 이 기기에 남아 있으며, 다시 로그인하면 재개됩니다.",
+        "signOutConfirmAction": "로그아웃",
+        "signOutFailedTitle": "로그아웃 실패",
+        "signOutFailedGeneric": "다시 시도해 주세요.",
+        "providerAppleAccount": "Apple 계정",
+        "providerGoogleAccount": "Google 계정",
+        "providerGenericAccount": "등록된 계정"
+      },
+      "signIn": {
+        "emailHeading": "로그인 또는 계정 생성",
+        "emailSubtitle": "여러 기기에서 진행 상황을 이용할 수 있도록 합니다.",
+        "codeHeading": "코드 입력",
+        "codeSubtitle": "{{email}}로 전송된 6자리 코드를 입력해 주세요.",
+        "continueWithGoogle": "Google로 계속하기",
+        "orUseEmail": "또는 이메일 주소 사용",
+        "ssoUnavailable": "이 빌드에서는 Google 및 Apple 로그인을 사용할 수 없습니다.",
+        "emailLabel": "이메일 주소",
+        "emailPlaceholder": "이메일 주소",
+        "sendCode": "코드 전송",
+        "cancel": "취소",
+        "verify": "확인",
+        "resendCode": "코드 재전송",
+        "resending": "재전송 중...",
+        "codeSent": "코드가 전송되었습니다",
+        "useDifferentEmail": "다른 이메일 주소 사용",
+        "sendCodeFailed": "코드를 전송하지 못했습니다. 연결을 확인하고 다시 시도해 주세요.",
+        "codeIncorrect": "코드가 올바르지 않거나 만료되었습니다.",
+        "verifyFailedGeneric": "문제가 발생했습니다. 다시 시도해 주세요.",
+        "socialSignInFailed": "{{provider}}로 로그인하지 못했습니다. 다시 시도해 주세요.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "뒤로",
+        "title": "차단한 크리에이터",
+        "infoText": "차단은 비공개이며 언제든지 해제할 수 있습니다. 차단하면 해당 크리에이터의 커뮤니티 도안이 카탈로그 화면, 검색, 둘러보기 목록에 표시되지 않습니다. 이는 신고나 콘텐츠 삭제 요청이 아닙니다.",
+        "signInRequiredTitle": "등록된 계정이 필요합니다",
+        "signInRequiredBody": "차단한 크리에이터 목록을 관리하기 전에 로그인해 주세요.",
+        "signInAction": "로그인",
+        "listUnavailableTitle": "목록을 표시할 수 없습니다",
+        "listUnavailableDefault": "차단한 크리에이터를 불러오지 못했습니다.",
+        "tryAgain": "다시 시도해 주세요",
+        "emptyTitle": "차단한 크리에이터가 없습니다",
+        "emptyBody": "아무도 차단하지 않았습니다. 크리에이터는 해당 크리에이터 도안의 상세 페이지에서 차단할 수 있습니다.",
+        "backToSettings": "설정으로 돌아가기",
+        "unblock": "차단 해제",
+        "unblockConfirmTitle": "크리에이터 차단 해제",
+        "unblockConfirmMessage": "정말로 {{name}} 님의 차단을 해제하시겠습니까? 해당 크리에이터의 도안이 검색 및 둘러보기 결과에 다시 표시됩니다.",
+        "cancel": "취소",
+        "successTitle": "성공",
+        "unblockedMessage": "{{name}} 님의 차단을 해제했습니다.",
+        "errorTitle": "오류",
+        "unblockFailedMessage": "크리에이터 차단 해제에 실패했습니다: {{message}}",
+        "unblockFailedGeneric": "알 수 없는 오류"
+      },
+      "data": {
+        "sectionTitle": "데이터",
+        "resetGuestTitle": "게스트 데이터 재설정",
+        "resetGuestDescription": "서버의 게스트 ID를 복구할 수 없는 방식으로 삭제하고 모든 기기 데이터를 지웁니다.",
+        "resetGuestOffline": "오프라인: 게스트 데이터를 재설정하려면 활성 서버 연결이 필요합니다.",
+        "resetGuestPurchaseLock": "구매 확인 중에는 재설정이 차단됩니다. 재설정 후에는 소모성 아이템 및 비공개 게스트 데이터를 복구할 수 없습니다.",
+        "removeLocalTitle": "로컬 데이터 삭제",
+        "removeLocalDescription": "이 기기에서 로컬 ID 네임스페이스 데이터베이스를 삭제합니다.",
+        "removeLocalConfirmTitle": "로컬 데이터를 삭제하시겠습니까?",
+        "removeLocalConfirmMessage": "경고: 이 작업은 이 기기에서만 로컬 데이터베이스 파일을 삭제합니다. 동기화되지 않은 데이터는 영구적으로 손실됩니다.",
+        "removeLocalConfirmAction": "삭제",
+        "removeLocalSuccessTitle": "성공",
+        "removeLocalSuccessMessage": "이 기기에서 로컬 데이터가 삭제되었습니다.",
+        "removeLocalFailedTitle": "삭제 실패",
+        "removeLocalFailedMessage": "로컬 데이터 삭제에 실패했습니다: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "정보 및 링크",
+        "privacyPolicy": "개인정보 처리방침",
+        "termsOfService": "이용약관",
+        "contactSupport": "지원팀에 문의",
+        "accountDeletion": "계정 삭제",
+        "openFailedMessage": "링크를 열지 못했습니다: {{url}}",
+        "openFailedGenericTitle": "오류"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — 아늑한 픽셀 아트 자수",
+        "version": "버전 {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "패키지: {{id}}",
+        "schemeLabel": "스킴: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "게스트 데이터를 재설정하시겠습니까?",
+        "warning": "이 작업을 수행하면 서버의 게스트 ID가 복구할 수 없는 방식으로 삭제되며 다음이 영구적으로 삭제됩니다.",
+        "bulletProgress": "• 로컬 진행 상황",
+        "bulletRewards": "• 받지 않은 보상",
+        "bulletLikes": "• 좋아요",
+        "bulletUnlockAccess": "• 잠금 해제 이용 권한",
+        "bulletOfflinePatterns": "• 오프라인 도안 데이터",
+        "confirmPrefix": "확인을 위해 아래에 \"",
+        "confirmSuffix": "\"을(를) 입력해 주세요.",
+        "confirmAction": "데이터 재설정",
+        "resetting": "게스트 데이터 재설정 중...",
+        "successTitle": "성공",
+        "successMessage": "게스트 데이터가 완전히 재설정되었습니다.",
+        "failedTitle": "재설정 실패",
+        "failedMessage": "게스트 데이터 재설정에 실패했습니다: {{message}}. 다시 시도해 주세요."
+      },
+      "deleteModal": {
+        "title": "계정을 삭제하시겠습니까?",
+        "recoveryPrefix": "계정은 ",
+        "recoveryBold": "30일간의 삭제 복구 기간",
+        "recoverySuffix": "에 들어갑니다. 이 기간 내에 다시 로그인하면 삭제를 취소할 수 있습니다.",
+        "bulletBalances": "• Stitch Coin 및 AI Credit 잔액",
+        "bulletUnlocks": "• 모든 도안 잠금 해제",
+        "bulletArtwork": "• AI 아트워크 및 개인 도안",
+        "bulletProgress": "• 동기화된 진행 상황 및 좋아요",
+        "consequencesPrefix": "복구 기간이 끝나면 이러한 항목은 환불이나 이전 없이 지워지거나 몰수됩니다. 공개된 커뮤니티 도안은 카탈로그에서 삭제되며 작성자 표시는 ",
+        "consequencesBold": "삭제된 크리에이터",
+        "consequencesSuffix": "로 표시되고, 사용자 이름은 영구적으로 예약된 상태로 유지됩니다.",
+        "membershipWarning": "계정을 삭제해도 Premium Membership 결제가 계속될 수 있습니다. 계정을 삭제한다고 해서 멤버십이 해지되지는 않습니다. 결제를 중단하려면 계속 진행하기 전에 별도로 관리해 주세요.",
+        "manageAppleSubscription": "Apple 구독 관리",
+        "continueAction": "계속",
+        "confirmTitle": "삭제 확인",
+        "confirmPrefix": "계정 삭제를 확인하려면 아래 상자에 \"",
+        "confirmBold": "삭제",
+        "confirmSuffix": "\"를 입력해 주세요:",
+        "submitting": "삭제 요청 전송 중...",
+        "backAction": "뒤로",
+        "confirmAction": "확인"
+      },
+      "reauthModal": {
+        "title": "본인 확인",
+        "description": "보안을 위해 이 계정에 이미 연결된 로그인 방법으로 인증해 주세요. 인증 후 삭제 절차가 자동으로 재개됩니다.",
+        "loading": "로그인 방법 불러오는 중...",
+        "codeSentMessage": "{{email}}로 전송된 6자리 코드를 입력해 주세요.",
+        "verifyAndDelete": "인증하고 삭제",
+        "emailButton": "이메일 {{email}}",
+        "continueWithProvider": "{{provider}}로 계속하기",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "연결된 로그인 방법이 없습니다. 삭제를 다시 시도하기 전에 지원팀에 문의해 주세요.",
+        "loadFailed": "연결된 로그인 방법을 불러오지 못했습니다. 연결을 확인하고 다시 시도해 주세요.",
+        "retryFailed": "본인 확인은 완료되었지만 삭제 요청이 전송되지 않았습니다. 이 대화상자를 닫고 삭제를 다시 시도해 주세요.",
+        "emailMissing": "이 연결된 이메일 방법에는 주소가 설정되어 있지 않습니다. 다른 방법을 선택해 주세요.",
+        "genericFailure": "재인증에 실패했습니다. 연결을 확인하고 다시 시도해 주세요."
+      },
+      "actions": {
+        "cancel": "취소",
+        "retry": "재시도"
+      },
+      "common": {
+        "unavailable": "이용 불가"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "카탈로그",
+        "stitch": "스티치",
+        "create": "제작",
+        "profile": "프로필",
+        "settings": "설정"
+      }
+    }
+  },
   "pt-BR": {
     "catalog": {
       "common": {

@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "로그인한 계정은 다른 계정입니다. 현재 계정은 변경되지 않았습니다.",
+    "providerRejected": "인증이 거부되었습니다. 계정 또는 코드를 확인하고 다시 시도해 주세요."
+  },
+  "generic": {
+    "failure": "오류가 발생했습니다. 다시 시도해 주세요.",
+    "supportReferenceLabel": "지원 참조 코드: {{reference}}"
+  }
+}

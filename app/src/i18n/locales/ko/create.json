@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "뒤로",
+    "cancel": "취소",
+    "duplicateTitle": "\"{{title}}\"이라는 이름의 개인 도안이 이미 존재합니다. 다른 이름을 입력해 주세요.",
+    "cellsCount_one": "칸",
+    "cellsCount_other": "칸",
+    "colorsCount_one": "색",
+    "colorsCount_other": "색"
+  },
+  "hub": {
+    "title": "제작 허브",
+    "subtitle": "나만의 디자인을 커스텀 십자수 도안으로 만들어 생동감을 불어넣어 보세요.",
+    "opening": "열고 있는 중...",
+    "photoImport": {
+      "title": "사진 가져오기",
+      "description": "카메라 롤에서 사진을 업로드하여 스티치가 가능한 도안으로 변환합니다.",
+      "action": "사진 가져오기"
+    },
+    "aiGenerator": {
+      "title": "AI 생성기",
+      "description": "만들고 싶은 이미지의 프롬프트를 입력하여 인공지능이 커스텀 픽셀 디자인을 생성하도록 해보세요.",
+      "action": "디자인 생성"
+    }
+  },
+  "aspects": {
+    "square": "정사각형",
+    "portrait_4_3": "세로 4:3",
+    "landscape_4_3": "가로 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "도안 변환에 실패했습니다. 다시 시도해 주세요.",
+      "timeout": "도안 변환 처리가 계속되고 있습니다. 잠시 후 다시 시도해 주세요.",
+      "generic": "도안 변환을 완료할 수 없습니다. 다시 시도해 주세요."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "등록된 계정이 필요합니다",
+      "body": "AI 아트워크 및 라이브러리는 계정 내에서 비공개로 안전하게 유지됩니다.",
+      "signIn": "로그인"
+    },
+    "header": {
+      "title": "AI 생성기",
+      "backAccessibilityLabel": "뒤로"
+    },
+    "prompt": {
+      "label": "아트워크 설명 입력",
+      "placeholder": "해질녘의 아늑한 별장 정원..."
+    },
+    "generate": {
+      "working": "생성 중...",
+      "action": "생성하기 — 1 AI Credit",
+      "errors": {
+        "promptRejected": "해당 프롬프트는 허용되지 않았습니다. 다른 설명을 시도해 보세요.",
+        "generic": "AI 생성을 시작할 수 없습니다. 다시 시도해 주세요."
+      }
+    },
+    "library": {
+      "title": "AI 아트워크 라이브러리",
+      "status": {
+        "pending": "대기 중",
+        "dispatched": "전송됨",
+        "running": "실행 중",
+        "delivered": "생성 완료",
+        "safety_rejected": "안전 기준 미승인",
+        "failed": "실패",
+        "deleted": "삭제됨",
+        "unknown": "이용 불가"
+      },
+      "failure": {
+        "safety_rejected": "이 아트워크는 제공업체의 안전성 검사를 통과하지 못했습니다.",
+        "failed": "이 아트워크를 생성할 수 없습니다."
+      },
+      "approve": "도안으로 승인",
+      "delete": "삭제",
+      "deleteAccessibilityLabel": "이 AI 아트워크 삭제",
+      "errors": {
+        "loadFailed": "AI 아트워크 라이브러리를 불러오지 못했습니다. 다시 시도해 주세요."
+      }
+    },
+    "approve": {
+      "modalTitle": "개인 도안 생성",
+      "titleLabel": "도안 이름",
+      "titleAccessibilityLabel": "도안 이름",
+      "defaultTitle": "내 AI 도안",
+      "placeholder": "내 AI 도안",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "취소",
+      "creating": "도안 생성 중...",
+      "create": "도안 생성",
+      "errors": {
+        "generic": "개인 도안을 생성하지 못했습니다. 다시 시도해 주세요."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "등록된 계정이 필요합니다",
+      "body": "개인 도안은 계정에 연결되어 비공개로 저장되며, 여러 기기에서 사용할 수 있습니다.",
+      "signIn": "로그인 또는 계정 생성",
+      "back": "뒤로"
+    },
+    "header": {
+      "title": "사진 도안",
+      "subtitle": "기기에서 프레임을 조정하고 변환을 승인해 주세요",
+      "backAccessibilityLabel": "뒤로"
+    },
+    "picker": {
+      "chooseTitle": "사진 선택",
+      "helpText": "고해상도 원본 사진은 기기에 유지됩니다. 프레임을 승인하기 전까지는 변환이 시작되지 않습니다.",
+      "choose": "라이브러리에서 선택",
+      "chooseAnother": "다른 사진 선택",
+      "opening": "열고 있는 중...",
+      "errors": {
+        "permissionDenied": "사진을 선택하려면 사진 라이브러리 접근 권한이 필요합니다.",
+        "invalidDimensions": "선택한 사진의 크기가 유효하지 않습니다.",
+        "generic": "사진 라이브러리를 열지 못했습니다. 다시 시도해 주세요."
+      }
+    },
+    "framing": {
+      "title": "아트워크 프레임 조정",
+      "gestureHint": "드래그하여 위치 조정 · 핀치하여 줌",
+      "aspectLabel": "프레임 화면 비율"
+    },
+    "profile": {
+      "title": "변환 프로필",
+      "options": {
+        "easy": "쉬움",
+        "standard": "보통",
+        "detailed": "상세"
+      },
+      "custom": "커스텀",
+      "customMeta": "무료 · 형태 고정",
+      "unavailable": "이 프레임에는 적합하지 않습니다",
+      "customShortEdgeLabel": "단변",
+      "customColorLimitLabel": "DMC 색상 수 제한",
+      "exceedsLimit": "커스텀 값이 {{max}}칸의 도안 크기 제한을 초과했습니다."
+    },
+    "titleCard": {
+      "label": "도안 이름",
+      "placeholder": "내 사진 도안",
+      "defaultTitle": "내 사진 도안",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · 최대 {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "승인하면 자르고 크기를 조정한 이미지만 업로드됩니다. 원본 사진은 로컬 기기에 저장된 상태로 유지됩니다.",
+      "approve": "아트워크 승인 및 변환"
+    },
+    "processing": {
+      "preparingFrame": "이 기기에서 승인된 프레임 준비 중...",
+      "uploading": "자르고 크기를 조정한 프레임만 업로드 중...",
+      "waitingForWorker": "변환 워커 대기 중...",
+      "buildingGrid": "스티치 그리드 및 DMC 팔레트 생성 중...",
+      "preparingSession": "플레이를 위한 개인 도안 준비 중..."
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "이 프로필은 최종 프레임에 적합하지 않습니다. '쉬움'을 선택하거나 상세도를 낮춰 주세요.",
+        "generic": "이 사진을 변환하지 못했습니다. 다시 시도해 주세요."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "도안이 선택되지 않았습니다",
+      "noPatternBody": "이 화면은 라이브러리에 있는 기존 개인 도안에서 열어야 합니다.",
+      "accountTitle": "등록된 계정이 필요합니다",
+      "accountBody": "개인 도안은 계정에 연결되어 비공개로 저장되며, 여러 기기에서 사용할 수 있습니다.",
+      "signIn": "로그인 또는 계정 생성",
+      "back": "뒤로"
+    },
+    "loading": "에디터 임시 저장본을 불러오는 중...",
+    "load": {
+      "failedTitle": "도안 불러오기 실패",
+      "retry": "재시도",
+      "back": "뒤로",
+      "errors": {
+        "generic": "이 개인 도안을 불러오지 못했습니다. 다시 시도해 주세요."
+      }
+    },
+    "header": {
+      "title": "도안 에디터",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "뒤로"
+    },
+    "toolbar": {
+      "undo": "실행 취소",
+      "redo": "다시 실행"
+    },
+    "mode": {
+      "paint": "페인트",
+      "replaceColor": "색상 교체",
+      "replaceStep1": "1. 교체하려는 도안의 색상을 탭하세요:",
+      "replaceStep2": "2. 교체할 DMC 색상을 선택하여 적용하세요:",
+      "paintSelected": "선택됨: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "색상을 선택한 후 칸을 탭하여 페인트하세요."
+    },
+    "errors": {
+      "pickColorFirst": "색상을 먼저 선택해 주세요",
+      "paletteLimit": "이 도안은 이미 최대 {{max}}가지 실 색상을 사용하고 있습니다."
+    },
+    "picker": {
+      "title": "DMC 자수실 색상",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "편집된 도안 저장",
+      "placeholder": "편집된 도안 이름",
+      "action": "새로 저장",
+      "offlineTitle": "오프라인 상태로 저장됨",
+      "offlineBody": "편집된 도안이 이 기기에 저장되었습니다. 온라인 상태가 되면 계정에 동기화됩니다.",
+      "errors": {
+        "generic": "이 개인 도안을 저장하지 못했습니다. 다시 시도해 주세요."
+      }
+    }
+  }
+}

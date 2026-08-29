@@ -84,4 +84,8 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'ja:settings:session.idLabel': '"ID" is used identically in Japanese tech/UI copy.',
   'ja:commerce:premiumHero.benefitAiCredits': 'AI Credit is the branded in-game currency, kept English per the Japanese pack convention.',
   'ja:profile:home.walletCard.aiCreditsLabel': 'AI Credit is the branded in-game currency, kept English per the Japanese pack convention.',
+  'ko:play:home.idLabel': '"ID" is used identically in Korean tech/UI copy.',
+  'ko:settings:session.idLabel': '"ID" is used identically in Korean tech/UI copy.',
+  'ko:commerce:premiumHero.benefitAiCredits': 'AI Credit is the branded in-game currency, kept English per the Korean pack convention.',
+  'ko:profile:home.walletCard.aiCreditsLabel': 'AI Credit is the branded in-game currency, kept English per the Korean pack convention.',
 };
