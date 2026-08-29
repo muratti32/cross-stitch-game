@@ -46,7 +46,7 @@ describe('active App Display Language resolution', () => {
 
   it('applies English for an unsupported device language', async () => {
     mockGetLanguageOverride.mockResolvedValue(null);
-    mockGetDeviceLanguages.mockReturnValue(['fr-FR']);
+    mockGetDeviceLanguages.mockReturnValue(['ja-JP']);
 
     await applyResolvedLanguage();
 

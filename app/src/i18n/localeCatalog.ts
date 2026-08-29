@@ -1,16 +1,24 @@
 /** Canonical staged App Display Language catalog. */
 export const APP_LOCALE_CATALOG = [
-  { identifier: 'en', selfName: 'English' },
-  { identifier: 'tr', selfName: 'Türkçe' },
-  { identifier: 'es', selfName: 'Español' },
-  { identifier: 'de', selfName: 'Deutsch' },
-  { identifier: 'fr', selfName: 'Français' },
-  { identifier: 'pt-BR', selfName: 'Português (Brasil)' },
-  { identifier: 'it', selfName: 'Italiano' },
+  { identifier: 'en', selfName: 'English', englishName: 'English', flag: '🇺🇸' },
+  { identifier: 'tr', selfName: 'Türkçe', englishName: 'Turkish', flag: '🇹🇷' },
+  { identifier: 'es', selfName: 'Español', englishName: 'Spanish', flag: '🇪🇸' },
+  { identifier: 'de', selfName: 'Deutsch', englishName: 'German', flag: '🇩🇪' },
+  { identifier: 'fr', selfName: 'Français', englishName: 'French', flag: '🇫🇷' },
+  { identifier: 'pt-BR', selfName: 'Português (Brasil)', englishName: 'Portuguese (Brazil)', flag: '🇧🇷' },
+  { identifier: 'it', selfName: 'Italiano', englishName: 'Italian', flag: '🇮🇹' },
 ] as const;
 
 export type AppLocale = (typeof APP_LOCALE_CATALOG)[number]['identifier'];
 
-export function getLocaleSelfName(identifier: AppLocale): string {
+export function getLocaleSelfName(identifier: AppLocale | string): string {
   return APP_LOCALE_CATALOG.find((locale) => locale.identifier === identifier)?.selfName ?? identifier;
+}
+
+export function getLocaleEnglishName(identifier: AppLocale | string): string {
+  return APP_LOCALE_CATALOG.find((locale) => locale.identifier === identifier)?.englishName ?? identifier;
+}
+
+export function getLocaleFlag(identifier: AppLocale | string): string {
+  return APP_LOCALE_CATALOG.find((locale) => locale.identifier === identifier)?.flag ?? '🌐';
 }

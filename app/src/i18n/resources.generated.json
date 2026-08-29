@@ -1224,7 +1224,12 @@
         "followDevice": "Systemsprache verwenden",
         "followDeviceDescription": "Hebe deine manuelle Auswahl auf, um der Spracheinstellung deines Geräts zu folgen.",
         "optionEnglish": "English",
-        "optionTurkish": "Türkçe"
+        "optionTurkish": "Türkçe",
+        "modalTitle": "Sprache auswählen",
+        "modalSubtitle": "Wähle deine bevorzugte Sprache für die Benutzeroberfläche.",
+        "systemDefault": "Systemsprache",
+        "systemDefaultWithDetected": "Systemsprache ({{language}})",
+        "systemDefaultDescription": "Folgt automatisch den Spracheinstellungen deines Geräts."
       },
       "social": {
         "sectionTitle": "Soziales & Privatsphäre",
@@ -2625,7 +2630,12 @@
         "followDevice": "Follow device language",
         "followDeviceDescription": "Clear your override to follow your device's language setting.",
         "optionEnglish": "English",
-        "optionTurkish": "Türkçe"
+        "optionTurkish": "Türkçe",
+        "modalTitle": "Select Language",
+        "modalSubtitle": "Choose your preferred language for the interface.",
+        "systemDefault": "System Language",
+        "systemDefaultWithDetected": "System Language ({{language}})",
+        "systemDefaultDescription": "Automatically matches your device settings."
       },
       "social": {
         "sectionTitle": "Social & Privacy",
@@ -4026,7 +4036,12 @@
         "followDevice": "Usar el idioma del dispositivo",
         "followDeviceDescription": "Borra tu selección personalizada para seguir la configuración de idioma de tu dispositivo.",
         "optionEnglish": "English",
-        "optionTurkish": "Türkçe"
+        "optionTurkish": "Türkçe",
+        "modalTitle": "Seleccionar idioma",
+        "modalSubtitle": "Elige tu idioma preferido para la interfaz.",
+        "systemDefault": "Idioma del sistema",
+        "systemDefaultWithDetected": "Idioma del sistema ({{language}})",
+        "systemDefaultDescription": "Sigue automáticamente los ajustes de tu dispositivo."
       },
       "social": {
         "sectionTitle": "Social y privacidad",
@@ -5427,7 +5442,12 @@
         "followDevice": "Utiliser la langue de l'appareil",
         "followDeviceDescription": "Effacez vos réglages personnalisés pour suivre la langue de votre appareil.",
         "optionEnglish": "English",
-        "optionTurkish": "Türkçe"
+        "optionTurkish": "Türkçe",
+        "modalTitle": "Sélectionner la langue",
+        "modalSubtitle": "Choisissez votre langue préférée pour l'interface.",
+        "systemDefault": "Langue du système",
+        "systemDefaultWithDetected": "Langue du système ({{language}})",
+        "systemDefaultDescription": "Suit automatiquement les paramètres de votre appareil."
       },
       "social": {
         "sectionTitle": "Réseau et confidentialité",
@@ -6828,7 +6848,12 @@
         "followDevice": "Usa la lingua del dispositivo",
         "followDeviceDescription": "Rimuovi la personalizzazione per utilizzare le impostazioni della lingua del dispositivo.",
         "optionEnglish": "English",
-        "optionTurkish": "Türkçe"
+        "optionTurkish": "Türkçe",
+        "modalTitle": "Seleziona la lingua",
+        "modalSubtitle": "Scegli la tua lingua preferita per l'interfaccia.",
+        "systemDefault": "Lingua di sistema",
+        "systemDefaultWithDetected": "Lingua di sistema ({{language}})",
+        "systemDefaultDescription": "Segue automaticamente le impostazioni del tuo dispositivo."
       },
       "social": {
         "sectionTitle": "Social e privacy",
@@ -8229,7 +8254,12 @@
         "followDevice": "Seguir idioma do dispositivo",
         "followDeviceDescription": "Remova sua personalização para seguir a configuração de idioma do seu dispositivo.",
         "optionEnglish": "English",
-        "optionTurkish": "Türkçe"
+        "optionTurkish": "Türkçe",
+        "modalTitle": "Selecionar idioma",
+        "modalSubtitle": "Escolha o seu idioma preferido para a interface.",
+        "systemDefault": "Idioma do sistema",
+        "systemDefaultWithDetected": "Idioma do sistema ({{language}})",
+        "systemDefaultDescription": "Segue automaticamente as configurações do seu dispositivo."
       },
       "social": {
         "sectionTitle": "Social e Privacidade",
@@ -9630,7 +9660,12 @@
         "followDevice": "Cihaz dilini takip et",
         "followDeviceDescription": "Cihazınızın dil ayarını takip etmek için geçersiz kılmayı temizleyin.",
         "optionEnglish": "English",
-        "optionTurkish": "Türkçe"
+        "optionTurkish": "Türkçe",
+        "modalTitle": "Dil Seçin",
+        "modalSubtitle": "Arayüz için tercih ettiğiniz dili seçin.",
+        "systemDefault": "Sistem Dili",
+        "systemDefaultWithDetected": "Sistem Dili ({{language}})",
+        "systemDefaultDescription": "Cihazınızın dil ayarlarını otomatik takip eder."
       },
       "social": {
         "sectionTitle": "Sosyal ve Gizlilik",

@@ -118,7 +118,12 @@
     "followDevice": "Follow device language",
     "followDeviceDescription": "Clear your override to follow your device's language setting.",
     "optionEnglish": "English",
-    "optionTurkish": "Türkçe"
+    "optionTurkish": "Türkçe",
+    "modalTitle": "Select Language",
+    "modalSubtitle": "Choose your preferred language for the interface.",
+    "systemDefault": "System Language",
+    "systemDefaultWithDetected": "System Language ({{language}})",
+    "systemDefaultDescription": "Automatically matches your device settings."
   },
   "social": {
     "sectionTitle": "Social & Privacy",

@@ -118,7 +118,12 @@
     "followDevice": "Seguir idioma do dispositivo",
     "followDeviceDescription": "Remova sua personalização para seguir a configuração de idioma do seu dispositivo.",
     "optionEnglish": "English",
-    "optionTurkish": "Türkçe"
+    "optionTurkish": "Türkçe",
+    "modalTitle": "Selecionar idioma",
+    "modalSubtitle": "Escolha o seu idioma preferido para a interface.",
+    "systemDefault": "Idioma do sistema",
+    "systemDefaultWithDetected": "Idioma do sistema ({{language}})",
+    "systemDefaultDescription": "Segue automaticamente as configurações do seu dispositivo."
   },
   "social": {
     "sectionTitle": "Social e Privacidade",

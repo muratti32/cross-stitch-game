@@ -7,7 +7,7 @@ const SUPPORTED = ['en', 'tr'] as const;
 describe('resolveAppLanguage', () => {
   it('keeps the staged catalog separate from the released resource set', () => {
     expect(APP_LOCALE_CATALOG.map(({ identifier }) => identifier)).toEqual(['en', 'tr', 'es', 'de', 'fr', 'pt-BR', 'it']);
-    expect(SUPPORTED_LOCALES).toEqual(['en', 'tr']);
+    expect(SUPPORTED_LOCALES).toEqual(['de', 'en', 'es', 'fr', 'it', 'pt-BR', 'tr']);
   });
 
   it('resolves a supported device language to itself', () => {

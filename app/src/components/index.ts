@@ -15,5 +15,6 @@ export { RewardedAdCard } from './RewardedAdCard';
 export { CommunityReportAction } from './CommunityReportAction';
 export { PremiumDailyCoinClaimCard } from './PremiumDailyCoinClaimCard';
 export { ThemeCollectionCard } from './ThemeCollectionCard';
+export { LanguageSettingsCard } from './LanguageSettingsCard';
 export { PurchaseResultModal } from './PurchaseResultModal';
 export type { PurchaseResultVariant } from './PurchaseResultModal';

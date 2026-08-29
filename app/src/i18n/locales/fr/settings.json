@@ -118,7 +118,12 @@
     "followDevice": "Utiliser la langue de l'appareil",
     "followDeviceDescription": "Effacez vos réglages personnalisés pour suivre la langue de votre appareil.",
     "optionEnglish": "English",
-    "optionTurkish": "Türkçe"
+    "optionTurkish": "Türkçe",
+    "modalTitle": "Sélectionner la langue",
+    "modalSubtitle": "Choisissez votre langue préférée pour l'interface.",
+    "systemDefault": "Langue du système",
+    "systemDefaultWithDetected": "Langue du système ({{language}})",
+    "systemDefaultDescription": "Suit automatiquement les paramètres de votre appareil."
   },
   "social": {
     "sectionTitle": "Réseau et confidentialité",

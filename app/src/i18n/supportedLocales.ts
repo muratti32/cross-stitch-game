@@ -13,7 +13,7 @@ import resources from './resources.generated.json';
 import { APP_LOCALE_CATALOG, type AppLocale } from './localeCatalog';
 
 /** Explicitly released locales. Adding a locale here is the activation step (#184). */
-export const RELEASED_APP_DISPLAY_LOCALES = ['en', 'tr'] as const;
+export const RELEASED_APP_DISPLAY_LOCALES = ['en', 'tr', 'es', 'de', 'fr', 'pt-BR', 'it'] as const;
 type ReleasedAppDisplayLocale = (typeof RELEASED_APP_DISPLAY_LOCALES)[number];
 
 export type SupportedLocale = Extract<keyof typeof resources, AppLocale> & ReleasedAppDisplayLocale;

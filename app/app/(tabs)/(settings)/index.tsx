@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, Switch, ActivityIndicator, Pressable, Alert, Linking, Modal, TextInput, Platform } from 'react-native';
-import { Screen, Card, Button, AccountSection, ThemeCollectionCard } from '@/components';
+import { Screen, Card, Button, AccountSection, ThemeCollectionCard, LanguageSettingsCard } from '@/components';
 import { router } from 'expo-router';
 import { Theme } from '@/theme/theme';
 import { useGameplayStore } from '@/store';
@@ -26,14 +26,7 @@ import { isServerApiError, localizeServerError } from '@/api/localizeServerError
 import { acquireAppleProviderIdToken, acquireGoogleProviderIdToken } from '@/identity/firebaseSso';
 import { loadOnboardingState, resumeTutorial, saveOnboardingPosition } from '@/onboarding/state';
 import { useTranslation } from 'react-i18next';
-import {
-  SUPPORTED_LOCALE_CATALOG,
-  getLanguageOverride,
-  setActiveLanguageOverride,
-  clearActiveLanguageOverride,
-  formatDate,
-  type SupportedLocale,
-} from '@/i18n';
+import { formatDate } from '@/i18n';
 
 // App identity is read from the Expo config so the settings footer can never
 // drift away from app.json / app.config.ts.
@@ -85,11 +78,6 @@ export default function SettingsScreen() {
   const [reauthCode, setReauthCode] = React.useState('');
   const [reauthCodeSent, setReauthCodeSent] = React.useState(false);
   const [reauthError, setReauthError] = React.useState<string | null>(null);
-
-  const [languageOverride, setLanguageOverrideState] = React.useState<string | null>(null);
-  React.useEffect(() => {
-    getLanguageOverride().then(setLanguageOverrideState).catch(() => setLanguageOverrideState(null));
-  }, []);
 
   const isOffline = !isLoading && (!!error || !health || health.status !== 'ok');
 
@@ -155,24 +143,6 @@ export default function SettingsScreen() {
       await setHandednessDb(value);
     } catch (err) {
       console.error('Failed to save handedness preference to database:', err);
-    }
-  };
-
-  const handleSelectLanguage = async (locale: SupportedLocale) => {
-    setLanguageOverrideState(locale);
-    try {
-      await setActiveLanguageOverride(locale);
-    } catch (err) {
-      console.error('Failed to save language override:', err);
-    }
-  };
-
-  const handleFollowDeviceLanguage = async () => {
-    setLanguageOverrideState(null);
-    try {
-      await clearActiveLanguageOverride();
-    } catch (err) {
-      console.error('Failed to clear language override:', err);
     }
   };
 
@@ -584,45 +554,7 @@ export default function SettingsScreen() {
       <Text style={styles.sectionTitle}>{t('appearance.sectionTitle')}</Text>
       <ThemeCollectionCard />
 
-      <Text style={styles.sectionTitle}>{t('language.sectionTitle')}</Text>
-      <Card style={styles.card}>
-        <View style={styles.languageDescriptionRow}>
-          <Text style={styles.settingDescription}>{t('language.description')}</Text>
-        </View>
-        <View style={styles.rowDivider} />
-        {SUPPORTED_LOCALE_CATALOG.map(({ identifier, selfName }) => (
-          <React.Fragment key={identifier}>
-            <Pressable
-              onPress={() => void handleSelectLanguage(identifier)}
-              style={({ pressed }) => [styles.languageRow, pressed && styles.linkPressed]}
-              accessibilityRole="button"
-              accessibilityState={{ selected: languageOverride === identifier }}
-            >
-              <Text style={styles.languageOptionText}>
-                {selfName}
-              </Text>
-              {languageOverride === identifier && (
-                <Ionicons name="checkmark-circle" size={20} color={Theme.colors.accentTeal} />
-              )}
-            </Pressable>
-            <View style={styles.rowDivider} />
-          </React.Fragment>
-        ))}
-        <Pressable
-          onPress={() => void handleFollowDeviceLanguage()}
-          style={({ pressed }) => [styles.languageRow, pressed && styles.linkPressed]}
-          accessibilityRole="button"
-          accessibilityState={{ selected: languageOverride === null }}
-        >
-          <View style={styles.languageFollowTextContainer}>
-            <Text style={styles.languageOptionText}>{t('language.followDevice')}</Text>
-            <Text style={styles.settingDescription}>{t('language.followDeviceDescription')}</Text>
-          </View>
-          {languageOverride === null && (
-            <Ionicons name="checkmark-circle" size={20} color={Theme.colors.accentTeal} />
-          )}
-        </Pressable>
-      </Card>
+      <LanguageSettingsCard />
 
       {/* Gameplay Preferences */}
       <Text style={styles.sectionTitle}>{t('gameplay.sectionTitle')}</Text>
@@ -1510,28 +1442,5 @@ const styles = StyleSheet.create({
   manageSubscriptionButtonText: {
     fontSize: Theme.typography.sizes.sm,
     color: Theme.colors.textPrimary,
-  },
-  languageDescriptionRow: {
-    paddingHorizontal: Theme.spacing.lg,
-    paddingTop: Theme.spacing.lg,
-    paddingBottom: Theme.spacing.sm,
-  },
-  languageRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: Theme.spacing.lg,
-    paddingStart: Theme.spacing.lg,
-    paddingEnd: Theme.spacing.lg,
-  },
-  languageOptionText: {
-    fontSize: Theme.typography.sizes.md,
-    fontWeight: Theme.typography.weights.medium,
-    color: Theme.colors.textPrimary,
-  },
-  languageFollowTextContainer: {
-    flex: 1,
-    marginEnd: Theme.spacing.md,
-    gap: Theme.spacing.xs,
   },
 });

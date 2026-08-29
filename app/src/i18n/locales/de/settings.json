@@ -118,7 +118,12 @@
     "followDevice": "Systemsprache verwenden",
     "followDeviceDescription": "Hebe deine manuelle Auswahl auf, um der Spracheinstellung deines Geräts zu folgen.",
     "optionEnglish": "English",
-    "optionTurkish": "Türkçe"
+    "optionTurkish": "Türkçe",
+    "modalTitle": "Sprache auswählen",
+    "modalSubtitle": "Wähle deine bevorzugte Sprache für die Benutzeroberfläche.",
+    "systemDefault": "Systemsprache",
+    "systemDefaultWithDetected": "Systemsprache ({{language}})",
+    "systemDefaultDescription": "Folgt automatisch den Spracheinstellungen deines Geräts."
   },
   "social": {
     "sectionTitle": "Soziales & Privatsphäre",

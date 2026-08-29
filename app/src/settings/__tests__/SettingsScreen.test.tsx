@@ -41,12 +41,14 @@ jest.mock('@expo/vector-icons', () => {
 jest.mock('@/components', () => {
   const React = require('react');
   const { Text, View } = require('react-native');
+  const actual = jest.requireActual('@/components/LanguageSettingsCard');
   return {
     AccountSection: () => React.createElement(Text, null, 'AccountSection'),
     Button: ({ title, onPress, disabled }: { title: string; onPress?: () => void; disabled?: boolean }) => React.createElement(Text, { onPress: disabled ? undefined : onPress }, title),
     Card: ({ children }: { children: React.ReactNode }) => React.createElement(View, null, children),
     Screen: ({ children }: { children: React.ReactNode }) => React.createElement(View, null, children),
     ThemeCollectionCard: () => React.createElement(Text, null, 'ThemeCollectionCard'),
+    LanguageSettingsCard: actual.LanguageSettingsCard,
   };
 });
 jest.mock('@/store', () => ({ useGameplayStore: () => ({ handedness: 'right', setHandedness: jest.fn(), showGridLines: true, toggleGridLines: jest.fn() }) }));
@@ -108,11 +110,18 @@ async function renderScreen(): Promise<TestRenderer.ReactTestRenderer> {
   return renderer;
 }
 async function press(renderer: TestRenderer.ReactTestRenderer, title: string): Promise<void> {
-  const textNode = renderer.root.findAllByType(Text).find((item) => textValue(item.props.children).join('') === title);
-  let node: ReactTestInstance | null = textNode ?? null;
-  while (node !== null && typeof node.props.onPress !== 'function') node = node.parent;
-  expect(node).not.toBeNull();
-  await act(async () => { await node?.props.onPress(); });
+  const textNodes = renderer.root.findAllByType(Text).filter((item) => textValue(item.props.children).join('') === title);
+  let foundPressable: ReactTestInstance | null = null;
+  for (const textNode of textNodes) {
+    let node: ReactTestInstance | null = textNode;
+    while (node !== null && typeof node.props.onPress !== 'function') node = node.parent;
+    if (node !== null) {
+      foundPressable = node;
+      break;
+    }
+  }
+  expect(foundPressable).not.toBeNull();
+  await act(async () => { await foundPressable?.props.onPress(); });
 }
 async function submitTypedDeletion(renderer: TestRenderer.ReactTestRenderer): Promise<void> {
   await press(renderer, 'Delete Account');
@@ -230,9 +239,12 @@ describe('SettingsScreen App Display Language', () => {
   });
 
   it('offers only released locales and uses catalog self-names', async () => {
-    const text = allText((await renderScreen()).root);
+    const renderer = await renderScreen();
+    await press(renderer, 'Language');
+    const text = allText(renderer.root);
 
-    expect(text).toEqual(expect.arrayContaining(['English', 'Türkçe']));
-    expect(text).not.toEqual(expect.arrayContaining(['Español', 'Deutsch', 'Français', 'Português (Brasil)', 'Italiano']));
+    expect(text).toEqual(
+      expect.arrayContaining(['English', 'Türkçe', 'Español', 'Deutsch', 'Français', 'Português (Brasil)', 'Italiano']),
+    );
   });
 });

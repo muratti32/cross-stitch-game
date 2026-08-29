@@ -118,7 +118,12 @@
     "followDevice": "Cihaz dilini takip et",
     "followDeviceDescription": "Cihazınızın dil ayarını takip etmek için geçersiz kılmayı temizleyin.",
     "optionEnglish": "English",
-    "optionTurkish": "Türkçe"
+    "optionTurkish": "Türkçe",
+    "modalTitle": "Dil Seçin",
+    "modalSubtitle": "Arayüz için tercih ettiğiniz dili seçin.",
+    "systemDefault": "Sistem Dili",
+    "systemDefaultWithDetected": "Sistem Dili ({{language}})",
+    "systemDefaultDescription": "Cihazınızın dil ayarlarını otomatik takip eder."
   },
   "social": {
     "sectionTitle": "Sosyal ve Gizlilik",
