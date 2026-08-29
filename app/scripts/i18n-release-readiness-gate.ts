@@ -11,6 +11,7 @@ import { compareNativeLocaleDeclarations } from '../src/i18n/nativeLocaleDeclara
 import { compareLocaleCohorts } from '../src/i18n/localeCohortParity';
 import { checkGeneratedResources } from './generate-i18n-resources';
 import { CANDIDATE_APP_DISPLAY_LOCALES } from '../../backend/src/catalog/candidate-locales.constant';
+import { CANDIDATE_TAXONOMY_COVERAGE } from '../../backend/src/catalog/candidate-taxonomy-labels';
 import reviewManifest from '../src/i18n/localeReviewManifest.json';
 
 const ROOT = path.join(__dirname, '..');
@@ -58,6 +59,7 @@ export interface GateOptions {
   reviewManifest?: Partial<Record<string, { nativeSpeakerReviewed: boolean; sensitiveCopyReviewed: boolean }>>;
   declaredNativeLocales?: readonly string[];
   backendLocales?: readonly string[];
+  backendTaxonomyCoverage?: Readonly<Record<string, { categories: number; tags: number }>>;
   copiedEnglishAllowlist?: CopiedEnglishAllowlist;
 }
 
@@ -86,7 +88,7 @@ export function runReleaseReadinessGate(options: GateOptions = {}): ReleaseReadi
       parity.missingFromReference.forEach((v) => failures.push(`[${locale}][namespace/key parity] extra ${v.namespace}:${v.keyPath}`));
       comparePlaceholderIdentity(reference, candidate).forEach((v) => failures.push(`[${locale}][placeholder] ${v.namespace}:${v.keyPath} differs (${v.reference.join(',') || 'none'} vs ${v.candidate.join(',') || 'none'})`));
       comparePluralFamilyCompatibility(reference, candidate).forEach((v) => failures.push(`[${locale}][plural] ${v.namespace}:${v.baseKeyPath} missing ${v.missingForms.join(', ')}`));
-      findCopiedEnglish(reference, candidate, options.copiedEnglishAllowlist ?? COPIED_ENGLISH_ALLOWLIST).forEach((v) => failures.push(`[${locale}][copied English] ${v.namespace}:${v.keyPath}`));
+      findCopiedEnglish(reference, candidate, options.copiedEnglishAllowlist ?? COPIED_ENGLISH_ALLOWLIST, locale).forEach((v) => failures.push(`[${locale}][copied English] ${v.namespace}:${v.keyPath}`));
     }
     validateLocaleReviewManifest([locale], options.reviewManifest ?? reviewManifest).forEach((v) => failures.push(`[${locale}][review] ${v.reason}`));
   }
@@ -95,6 +97,16 @@ export function runReleaseReadinessGate(options: GateOptions = {}): ReleaseReadi
     .forEach((v) => failures.push(`[native declarations] ${v.locale}: ${v.reason}`));
   compareLocaleCohorts(CANDIDATES, options.backendLocales ?? CANDIDATE_APP_DISPLAY_LOCALES)
     .forEach((locale) => failures.push(`[backend cohort] ${locale} differs from app candidate cohort`));
+  const taxonomyCoverage = options.backendTaxonomyCoverage ?? CANDIDATE_TAXONOMY_COVERAGE;
+  const expectedCategories = taxonomyCoverage.en?.categories ?? 0;
+  const expectedTags = taxonomyCoverage.en?.tags ?? 0;
+  for (const locale of CANDIDATES) {
+    const coverage = taxonomyCoverage[locale];
+    if (!coverage || coverage.categories === 0) failures.push(`[backend taxonomy] ${locale}: no candidate category labels`);
+    else if (coverage.categories !== expectedCategories) failures.push(`[backend taxonomy] ${locale}: category label coverage ${coverage.categories}/${expectedCategories}`);
+    if (!coverage || coverage.tags === 0) failures.push(`[backend taxonomy] ${locale}: no candidate tag labels`);
+    else if (coverage.tags !== expectedTags) failures.push(`[backend taxonomy] ${locale}: tag label coverage ${coverage.tags}/${expectedTags}`);
+  }
   return { status: failures.length ? 'FAIL' : 'PASS', failures };
 }
 

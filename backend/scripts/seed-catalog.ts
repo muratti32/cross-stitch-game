@@ -8,6 +8,7 @@ import { CatalogService } from '../src/catalog/catalog.service';
 import { encodePatternArtifactV1 } from '../src/catalog/pattern-artifact-encoder';
 import { LocalObjectStorage } from '../src/catalog/storage/local-object-storage';
 import { StaffPickEntity } from '../src/catalog/entities/staff-pick.entity';
+import { CANDIDATE_TAG_LABELS } from '../src/catalog/candidate-taxonomy-labels';
 
 
 interface SeedPattern {
@@ -202,38 +203,6 @@ const SEED_PATTERNS: SeedPattern[] = [
   },
 ];
 
-const TAG_LABELS: Record<string, string> = {
-  retro: 'Retro',
-  dinosaur: 'Dinosaur',
-  kid: 'Kids',
-  flower: 'Flower',
-  spring: 'Spring',
-  cute: 'Cute',
-  cat: 'Cat',
-  funny: 'Funny',
-  coffee: 'Coffee',
-  warm: 'Warm',
-  cozy: 'Cozy',
-  love: 'Love',
-  heart: 'Heart',
-  autumn: 'Autumn',
-  leaf: 'Leaf',
-  orange: 'Orange',
-  star: 'Star',
-  magic: 'Magic',
-  purple: 'Purple',
-  pattern: 'Pattern',
-  peace: 'Peace',
-  symbol: 'Symbol',
-  desert: 'Desert',
-  plant: 'Plant',
-  food: 'Food',
-  pizza: 'Pizza',
-  yummy: 'Yummy',
-  castle: 'Castle',
-  stone: 'Stone',
-};
-
 const STAFF_PICKS = [
   { title: 'Tiny Red Heart', creator: 'Stitch Wish Team', position: 1 },
   { title: 'Dinosaur Motif', creator: 'Stitch Wish Team', position: 2 },
@@ -332,8 +301,11 @@ async function run() {
 
   try {
     console.log('Seeding tags and tag labels...');
-    for (const [tagCode, label] of Object.entries(TAG_LABELS)) {
-      await catalogService.upsertTagLabels(tagCode, [{ locale: 'en', label }]);
+    for (const [tagCode, labels] of Object.entries(CANDIDATE_TAG_LABELS)) {
+      await catalogService.upsertTagLabels(
+        tagCode,
+        Object.entries(labels).map(([locale, label]) => ({ locale, label })),
+      );
     }
 
     console.log('Seeding patterns...');

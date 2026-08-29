@@ -254,7 +254,7 @@
     "continueAction": "Continuar",
     "confirmTitle": "Confirmar eliminación",
     "confirmPrefix": "Para confirmar que quieres eliminar tu cuenta, escribe ",
-    "confirmBold": "DELETE",
+    "confirmBold": "ELIMINAR",
     "confirmSuffix": " en la casilla de abajo:",
     "submitting": "Enviando solicitud de eliminación...",
     "backAction": "Atrás",

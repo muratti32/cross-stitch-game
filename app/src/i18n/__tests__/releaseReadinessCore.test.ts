@@ -28,6 +28,16 @@ describe('release readiness pure seams', () => {
     ]);
   });
 
+  it('scopes language-specific copied-English exemptions to one locale', () => {
+    const reference = { catalog: { dimensions: 'Dimensions' } };
+    const candidate = { catalog: { dimensions: 'Dimensions' } };
+
+    expect(findCopiedEnglish(reference, candidate, { 'fr:catalog:dimensions': 'French cognate' }, 'fr')).toEqual([]);
+    expect(findCopiedEnglish(reference, candidate, { 'fr:catalog:dimensions': 'French cognate' }, 'de')).toEqual([
+      { namespace: 'catalog', keyPath: 'dimensions', value: 'Dimensions' },
+    ]);
+  });
+
   it('requires both review flags for every cohort locale', () => {
     expect(validateLocaleReviewManifest(['en', 'tr'], { en: { nativeSpeakerReviewed: true, sensitiveCopyReviewed: true }, tr: { nativeSpeakerReviewed: false, sensitiveCopyReviewed: true } })).toEqual([
       { locale: 'tr', reason: 'native-speaker review incomplete' },

@@ -6,6 +6,7 @@ import { runReleaseReadinessGate } from '../i18n-release-readiness-gate';
 
 const locales = ['en', 'tr', 'es', 'de', 'fr', 'pt-BR', 'it'];
 const manifest = Object.fromEntries(locales.map((locale) => [locale, { nativeSpeakerReviewed: true, sensitiveCopyReviewed: true }]));
+const completeTaxonomyCoverage = Object.fromEntries(locales.map((locale) => [locale, { categories: 1, tags: 1 }]));
 
 function fixture(): { root: string; generated: string; cleanup: () => void } {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'i18n-release-gate-'));
@@ -19,7 +20,7 @@ function fixture(): { root: string; generated: string; cleanup: () => void } {
 }
 
 function run(root: string, generated: string, extra: Partial<Parameters<typeof runReleaseReadinessGate>[0]> = {}) {
-  return runReleaseReadinessGate({ localesDir: path.join(root, 'locales'), generatedPath: generated, reviewManifest: manifest, declaredNativeLocales: locales, backendLocales: locales, ...extra });
+  return runReleaseReadinessGate({ localesDir: path.join(root, 'locales'), generatedPath: generated, reviewManifest: manifest, declaredNativeLocales: locales, backendLocales: locales, backendTaxonomyCoverage: completeTaxonomyCoverage, ...extra });
 }
 
 describe('i18n release readiness gate', () => {
@@ -53,6 +54,14 @@ describe('i18n release readiness gate', () => {
       fs.writeFileSync(path.join(f.root, 'locales', 'tr', 'common.json'), JSON.stringify({ greeting: 'Welcome', item_one: 'one', item_other: 'items' }));
       const result = run(f.root, f.generated, { copiedEnglishAllowlist: { 'common:greeting': 'fixture brand name' } });
       expect(result.failures.some((failure) => failure.includes('[tr][copied English] common:greeting'))).toBe(false);
+    } finally { f.cleanup(); }
+  });
+
+  it('fails when backend taxonomy coverage is missing for a candidate locale', () => {
+    const f = fixture(); try {
+      const coverage = { ...completeTaxonomyCoverage, it: { categories: 1, tags: 0 } };
+      const result = run(f.root, f.generated, { backendTaxonomyCoverage: coverage });
+      expect(result.failures).toContain('[backend taxonomy] it: no candidate tag labels');
     } finally { f.cleanup(); }
   });
 });

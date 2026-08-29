@@ -436,4 +436,13 @@ describe('CatalogService taxonomy fallback alerts', () => {
       { taxonomyType: 'tag', code: 'animals', requestedLocale: 'tr' },
     );
   });
+
+  it('reports code fallback when an active taxonomy item has no labels', async () => {
+    await categoryService([]).getCategories('tr');
+
+    expect(captureAlert).toHaveBeenCalledWith(
+      'Unexpected catalog taxonomy locale fallback', 'warning', 'catalog-taxonomy-fallback',
+      { taxonomyType: 'category', code: 'animals', requestedLocale: 'tr' },
+    );
+  });
 });

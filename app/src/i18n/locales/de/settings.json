@@ -254,7 +254,7 @@
     "continueAction": "Weiter",
     "confirmTitle": "Löschung bestätigen",
     "confirmPrefix": "Um zu bestätigen, dass du dein Konto löschen möchtest, gib ",
-    "confirmBold": "DELETE",
+    "confirmBold": "LÖSCHEN",
     "confirmSuffix": " in das Feld unten ein:",
     "submitting": "Löschungsantrag wird übermittelt...",
     "backAction": "Zurück",

@@ -414,7 +414,6 @@ export class CatalogService {
     resolvedLocale: string | undefined,
   ): void {
     if (
-      resolvedLocale !== undefined &&
       resolvedLocale !== requestedLocale &&
       RELEASED_APP_DISPLAY_LOCALES.includes(requestedLocale as typeof RELEASED_APP_DISPLAY_LOCALES[number])
     ) {

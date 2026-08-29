@@ -254,7 +254,7 @@
     "continueAction": "Continuar",
     "confirmTitle": "Confirmar Exclusão",
     "confirmPrefix": "Para confirmar que deseja excluir sua conta, digite ",
-    "confirmBold": "DELETE",
+    "confirmBold": "EXCLUIR",
     "confirmSuffix": " no campo abaixo:",
     "submitting": "Enviando pedido de exclusão...",
     "backAction": "Voltar",

@@ -254,7 +254,7 @@
     "continueAction": "Devam Et",
     "confirmTitle": "Silmeyi Onayla",
     "confirmPrefix": "Hesabınızı silmek istediğinizi onaylamak için aşağıdaki kutuya ",
-    "confirmBold": "DELETE",
+    "confirmBold": "SİL",
     "confirmSuffix": " yazın:",
     "submitting": "Silme talebi gönderiliyor...",
     "backAction": "Geri",

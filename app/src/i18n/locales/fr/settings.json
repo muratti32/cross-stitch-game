@@ -254,7 +254,7 @@
     "continueAction": "Continuer",
     "confirmTitle": "Confirmer la suppression",
     "confirmPrefix": "Pour confirmer que vous souhaitez supprimer votre compte, saisissez ",
-    "confirmBold": "DELETE",
+    "confirmBold": "SUPPRIMER",
     "confirmSuffix": " dans la case ci-dessous :",
     "submitting": "Soumission de la demande de suppression...",
     "backAction": "Retour",
