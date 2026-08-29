@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Terug",
+    "searchPlaceholder": "Zoek patronen, makers, tags…",
+    "offlineBanner": "Offline — de catalogus is mogelijk niet actueel",
+    "sectionError": {
+      "title": "Kan niet worden geladen",
+      "retry": "Opnieuw proberen"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} kleuren",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} kolommen",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Engels"
+    },
+    "accessibilityLabel": "Gemaakt in het {{language}}"
+  },
+  "index": {
+    "subtitle": "Stitch voor stitch je eigen gezellige wereld creëren.",
+    "searchBar": {
+      "accessibilityLabel": "Zoek in de patronencatalogus"
+    },
+    "sections": {
+      "starterPatterns": "Startpatronen",
+      "staffPicks": "Keuze van het team",
+      "categories": "Categorieën",
+      "newPatterns": "Nieuwe patronen"
+    },
+    "staffPicks": {
+      "emptyTitle": "Nog geen keuzes van het team",
+      "emptyBody": "Binnenkort verschijnt hier een selectie van gezellige ontwerpen.",
+      "errorBody": "De catalogus kan niet worden bereikt en er is geen cache beschikbaar."
+    },
+    "categories": {
+      "count": "{{count}} patronen",
+      "errorBody": "De catalogus kan niet worden bereikt en er is geen cache beschikbaar."
+    },
+    "newPatterns": {
+      "emptyTitle": "Nieuwe patronen in aantocht",
+      "emptyBody": "Er komt binnenkort nieuw werk aan!",
+      "errorBody": "De catalogus kan niet worden bereikt en er is geen cache beschikbaar.",
+      "showMore": "Meer weergeven",
+      "loading": "Laden…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Bladeren",
+    "error": {
+      "body": "Deze cataloguspagina kan niet worden bereikt en er is geen cache beschikbaar."
+    },
+    "empty": {
+      "title": "Nog niets hier",
+      "body": "Er zijn nog geen patronen die aan je selectie voldoen. Er worden regelmatig nieuwe ontwerpen toegevoegd."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Zoekveld voor catalogus",
+    "inactive": {
+      "title": "Catalogus doorzoeken",
+      "body": "Typ 2 of meer tekens om patronen te zoeken op titel, maker of tag."
+    },
+    "error": {
+      "title": "Verbinding vereist om te zoeken",
+      "body": "Zoeken in de catalogus is niet beschikbaar terwijl je offline bent. Je kunt gecachte cataloguspagina's blijven bekijken op het tabblad Catalogus."
+    },
+    "noResults": {
+      "title": "Geen overeenkomsten gevonden",
+      "body": "Er is nog niets in de catalogus dat overeenkomt met \"{{query}}\"."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Je speelt als gast",
+    "body": "Als je als gast speelt, worden je Stitch Coins en voortgang alleen op dit apparaat opgeslagen. Als de app wordt verwijderd, kunnen je gastgegevens en voortgang mogelijk niet worden hersteld. Meld je aan om je voortgang veilig te stellen."
+  },
+  "detail": {
+    "noDescription": "Geen beschrijving beschikbaar.",
+    "specs": {
+      "dimensions": "Afmetingen",
+      "totalStitches": "Totaal aantal stitches",
+      "colors": "Aantal kleuren",
+      "category": "Categorie"
+    },
+    "threadsSuffix": "{{count}} garens",
+    "palette": {
+      "title": "Benodigde garens",
+      "loading": "Garenpalet laden...",
+      "loadFailed": "Kan het palet niet laden: {{error}}",
+      "retry": "Opnieuw proberen"
+    },
+    "actions": {
+      "startStitching": "Begin met stitchen",
+      "starting": "Bezig met starten...",
+      "preparing": "Voorbereiden…"
+    },
+    "loadFailedGeneric": "Het patroonbestand kon niet worden geanalyseerd.",
+    "sessionCreateFailed": "De stitchsessie kon niet worden gemaakt. Probeer het opnieuw.",
+    "unavailable": {
+      "title": "Patroon niet beschikbaar",
+      "body": "Dit patroon kan niet worden geladen. Het is mogelijk verwijderd of je bent offline.",
+      "goBack": "Terug"
+    },
+    "byCreator": "Door {{creatorName}}",
+    "byCreatorWithUsername": "Door {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Maker blokkeren",
+      "message": "Weet je zeker dat je {{creatorName}} wilt blokkeren? Dit is privé en kan op elk moment ongedaan worden gemaakt. Als je blokkeert, worden de patronen van deze maker niet meer weergegeven in zoekresultaten en bladeroverzichten. Dit is geen melding van de maker en onderbreekt geen lopende stitchsessies.",
+      "cancel": "Annuleren",
+      "confirm": "Blokkeren",
+      "blockedTitle": "Geblokkeerd",
+      "blockedMessage": "Je hebt {{creatorName}} geblokkeerd.",
+      "errorTitle": "Fout",
+      "failedGeneric": "Het blokkeren van de maker is mislukt."
+    },
+    "likeFailedGeneric": "De like-status kon niet worden bijgewerkt.",
+    "connectToPlay": {
+      "title": "Verbind om te spelen",
+      "body": "Om een patroon uit de catalogus te starten, is een netwerkverbinding nodig om de sessie voor te bereiden. Startpatronen kun je nu al offline spelen."
+    },
+    "insufficientCoins": {
+      "title": "Onvoldoende coins",
+      "body": "Dit patroon kost {{price}} Stitch Coins, maar je hebt momenteel slechts {{balance}} coins.\n\nJe komt {{shortfall}} coins tekort.\n\nMaak andere patronen af om Stitch Coins te verdienen! Er loopt momenteel een beloning voor de eerste voltooiing.",
+      "getCoins": "Stitch Coins verdienen",
+      "findPatterns": "Patronen vinden om te stitchen",
+      "back": "Terug"
+    },
+    "unlockFailedGeneric": "Het ontgrendelen is mislukt. Controleer je verbinding en probeer het opnieuw.",
+    "preparationFailedGeneric": "De voorbereiding kon niet worden gestart. Controleer je verbinding en probeer het opnieuw.",
+    "price": {
+      "label": "Prijs"
+    },
+    "balance": {
+      "label": "Saldo",
+      "loading": "…"
+    },
+    "unlockButton": "Ontgrendelen voor {{price}} coins",
+    "communityReport": {
+      "button": "Dit patroon melden",
+      "title": "{{patternTitle}} melden",
+      "body": "Kies de reden die het beste bij het probleem past. Een melding verbergt of wijzigt het patroon niet automatisch.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Ongepaste of onveilige inhoud",
+        "copyright_or_publication_rights": "Auteursrecht of publicatierechten",
+        "duplicate_or_spam": "Duplicaat of spam",
+        "misleading_title_or_tags": "Misleidende titel of tags",
+        "other": "Anders"
+      },
+      "explanationLabel": "Bewijs of toelichting {{requirement}}",
+      "explanationRequired": "(verplicht)",
+      "explanationOptional": "(optioneel)",
+      "explanationPlaceholder": "Deel details die de moderator kunnen helpen bij het beoordelen van dit patroon.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Annuleren",
+      "submit": "Melding versturen",
+      "submitFailedGeneric": "De melding kon niet worden verzonden. Controleer je verbinding en probeer het opnieuw.",
+      "receivedTitle": "Melding ontvangen",
+      "alreadyReceivedTitle": "Melding al ontvangen",
+      "receivedBody": "De moderatoren kunnen dit patroon nu beoordelen. Een melding wijzigt de beschikbaarheid van het patroon niet automatisch.",
+      "alreadyReceivedBody": "Je eerdere melding is al opgenomen in een lopende beoordeling.",
+      "signInRequired": {
+        "title": "Meld je aan om te melden",
+        "message": "Voor een community-melding is een geregistreerd account vereist. Er is nog niets verzonden.",
+        "cancel": "Annuleren",
+        "signIn": "Aanmelden"
+      },
+      "validation": {
+        "chooseReason": "Kies een reden voor de melding.",
+        "explainRequired": "Leg uit waarom je dit patroon meldt.",
+        "tooLong": "De toelichting mag maximaal 2.000 tekens bevatten.",
+        "needsContent": "De toelichting moet letters of cijfers bevatten."
+      }
+    }
+  }
+}

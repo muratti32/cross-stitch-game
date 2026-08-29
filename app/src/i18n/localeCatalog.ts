@@ -10,6 +10,7 @@ export const APP_LOCALE_CATALOG = [
   { identifier: 'ar', selfName: 'العربية', englishName: 'Arabic', flag: '🇸🇦' },
   { identifier: 'ja', selfName: '日本語', englishName: 'Japanese', flag: '🇯🇵' },
   { identifier: 'ko', selfName: '한국어', englishName: 'Korean', flag: '🇰🇷' },
+  { identifier: 'nl', selfName: 'Nederlands', englishName: 'Dutch', flag: '🇳🇱' },
 ] as const;
 
 export type AppLocale = (typeof APP_LOCALE_CATALOG)[number]['identifier'];

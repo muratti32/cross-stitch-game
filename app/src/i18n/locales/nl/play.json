@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Stitchtafel",
+    "subtitle": "Ga verder waar je gebleven was of hervat je recente werk.",
+    "loading": "Stitches laden...",
+    "empty": {
+      "title": "Geen lopend werk",
+      "body": "Je borduurraam is nu leeg. Vind een prachtig ontwerp om te stitchen in de patronencatalogus!",
+      "action": "Catalogus bekijken"
+    },
+    "unknownPattern": "Onbekend patroon",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Patroon {{id}}",
+    "deleteSessionAccessibilityLabel": "Sessie verwijderen",
+    "viewFinishedAccessibilityLabel": "Voltooid werk bekijken",
+    "resumeAccessibilityLabel": "Stitchen hervatten",
+    "status": {
+      "ready": "Klaar",
+      "done": "Voltooid",
+      "active": "Actief",
+      "preparing": "Voorbereiden",
+      "failed": "Mislukt"
+    },
+    "deleteConfirm": {
+      "title": "Voortgang verwijderen",
+      "message": "Weet je zeker dat je de voortgang van \"{{title}}\" wilt verwijderen? Dit kan niet ongedaan worden gemaakt.",
+      "cancel": "Annuleren",
+      "confirm": "Verwijderen"
+    },
+    "preparingCard": {
+      "discardTitle": "Sessie verwijderen",
+      "cancelTitle": "Download annuleren",
+      "discardMessage": "Wil je deze mislukte sessie verwijderen?",
+      "cancelMessage": "Wil je de download van dit patroon annuleren?",
+      "keep": "Behouden",
+      "discard": "Verwijderen",
+      "cancel": "Annuleren"
+    }
+  },
+  "loading": {
+    "text": "Sessie wordt geopend en stof wordt voorbereid..."
+  },
+  "error": {
+    "title": "Kan sessie niet laden",
+    "fallbackMessage": "De stitchsessie kan niet worden geladen.",
+    "backButton": "Terug",
+    "tableButton": "Naar tafel"
+  },
+  "header": {
+    "backButton": "← Terug",
+    "tableButton": "← Tafel",
+    "defaultTitle": "Stitchsessie",
+    "progress": "{{completed}} / {{total}} vakjes ({{percent}}% voltooid)",
+    "resumeTutorialAccessibilityLabel": "Zelfstudie hervatten"
+  },
+  "banners": {
+    "patternRemoved": "Dit patroon is verwijderd door een beheerder en is niet langer beschikbaar. Tik om te verlaten.",
+    "syncConflict": "Gesynchroniseerd met een ander apparaat. Sommige vakjes zijn bijgewerkt. Tik om te sluiten."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Volgende resterende vakje van geselecteerde garenkleur zoeken",
+    "undoAccessibilityLabel": "Laatste stitch ongedaan maken"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Kleur {{number}}: DMC {{dmcCode}}, {{count}} stitch resterend",
+    "chipAccessibilityLabel_other": "Kleur {{number}}: DMC {{dmcCode}}, {{count}} stitches resterend",
+    "done": "Voltooid",
+    "remaining_one": "{{count}} resterend",
+    "remaining_other": "{{count}} resterend"
+  },
+  "celebration": {
+    "title": "Prachtig afgewerkt!",
+    "subtitle": "Elke stitch op deze stof is voltooid.",
+    "stitchesLabel_one": "stitch",
+    "stitchesLabel_other": "stitches",
+    "colorsLabel_one": "kleur",
+    "colorsLabel_other": "kleuren",
+    "replayButton": "Opnieuw stitchen",
+    "catalogButton": "Terug naar catalogus"
+  }
+}

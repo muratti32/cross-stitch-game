@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Je bent aangemeld bij een ander account. Je huidige account is niet gewijzigd.",
+    "providerRejected": "Verificatie is geweigerd. Controleer je account of code en probeer het opnieuw."
+  },
+  "generic": {
+    "failure": "Er is iets misgegaan. Probeer het opnieuw.",
+    "supportReferenceLabel": "Ondersteuningsreferentie: {{reference}}"
+  }
+}
