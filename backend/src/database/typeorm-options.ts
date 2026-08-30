@@ -196,6 +196,7 @@ import { AddCroatianCatalogCategoryLabels1791417600000 } from './migrations/1791
 import { AddHungarianCatalogCategoryLabels1791504000000 } from './migrations/1791504000000-AddHungarianCatalogCategoryLabels';
 import { AddIndonesianCatalogCategoryLabels1791590400000 } from './migrations/1791590400000-AddIndonesianCatalogCategoryLabels';
 import { AddMalayCatalogCategoryLabels1791676800000 } from './migrations/1791676800000-AddMalayCatalogCategoryLabels';
+import { AddNorwegianBokmalCatalogCategoryLabels1791763200000 } from './migrations/1791763200000-AddNorwegianBokmalCatalogCategoryLabels';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -377,6 +378,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddHungarianCatalogCategoryLabels1791504000000,
       AddIndonesianCatalogCategoryLabels1791590400000,
       AddMalayCatalogCategoryLabels1791676800000,
+      AddNorwegianBokmalCatalogCategoryLabels1791763200000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

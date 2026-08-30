@@ -182,4 +182,9 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'ms:settings:session.idLabel': '"ID" is used identically in Malay tech/UI copy.',
   'ms:settings:data.sectionTitle': '"Data" is an identical Malay cognate.',
   'ms:create:photoImport.profile.options.standard': '"Standard" is used identically in Malay.',
+  'nb:play:home.idLabel': '"ID" is used identically in Norwegian Bokmål tech/UI copy.',
+  'nb:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
+  'nb:settings:session.idLabel': '"ID" is used identically in Norwegian Bokmål tech/UI copy.',
+  'nb:settings:data.sectionTitle': '"Data" is an identical Norwegian Bokmål cognate.',
+  'nb:create:photoImport.profile.options.standard': '"Standard" is used identically in Norwegian Bokmål.',
 };
