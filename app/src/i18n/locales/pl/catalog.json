@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Wstecz",
+    "searchPlaceholder": "Szukaj wzorów, twórców, tagów…",
+    "offlineBanner": "Offline — katalog może nie być aktualny",
+    "sectionError": {
+      "title": "Nie można załadować",
+      "retry": "Spróbuj ponownie"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} kolorów",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} kolumn",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Angielski"
+    },
+    "accessibilityLabel": "Stworzono w języku {{language}}"
+  },
+  "index": {
+    "subtitle": "Ściegowi za ściegiem twórz swój własny przytulny świat.",
+    "searchBar": {
+      "accessibilityLabel": "Szukaj w katalogu wzorów"
+    },
+    "sections": {
+      "starterPatterns": "Wzory początkowe",
+      "staffPicks": "Wybór zespołu",
+      "categories": "Kategorie",
+      "newPatterns": "Nowe wzory"
+    },
+    "staffPicks": {
+      "emptyTitle": "Jeszcze brak wyboru zespołu",
+      "emptyBody": "Wkrótce pojawi się tu wybór przytulnych projektów.",
+      "errorBody": "Nie można połączyć się z katalogiem, a pamięć podręczna jest niedostępna."
+    },
+    "categories": {
+      "count": "{{count}} wzorów",
+      "errorBody": "Nie można połączyć się z katalogiem, a pamięć podręczna jest niedostępna."
+    },
+    "newPatterns": {
+      "emptyTitle": "Nowe wzory już wkrótce",
+      "emptyBody": "Nowa praca pojawi się już niedługo!",
+      "errorBody": "Nie można połączyć się z katalogiem, a pamięć podręczna jest niedostępna.",
+      "showMore": "Pokaż więcej",
+      "loading": "Ładowanie…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Przeglądaj",
+    "error": {
+      "body": "Nie można połączyć się z tą stroną katalogu, a pamięć podręczna jest niedostępna."
+    },
+    "empty": {
+      "title": "Jeszcze nic tu nie ma",
+      "body": "Nie ma jeszcze wzorów pasujących do Twojego wyboru. Nowe projekty są dodawane regularnie."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Pole wyszukiwania katalogu",
+    "inactive": {
+      "title": "Przeszukaj katalog",
+      "body": "Wpisz co najmniej 2 znaki, aby wyszukać wzory według tytułu, twórcy lub tagu."
+    },
+    "error": {
+      "title": "Wyszukiwanie wymaga połączenia",
+      "body": "Wyszukiwanie w katalogu jest niedostępne w trybie offline. Możesz nadal przeglądać zapisane w pamięci podręcznej strony katalogu w zakładce Katalog."
+    },
+    "noResults": {
+      "title": "Nie znaleziono wyników",
+      "body": "W katalogu nie ma jeszcze niczego pasującego do \"{{query}}\"."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Grasz jako gość",
+    "body": "Grając jako gość, Twoje Stitch Coins i postępy są zapisywane tylko na tym urządzeniu. Jeśli usuniesz aplikację, dane i postępy gościa mogą nie zostać odzyskane. Zaloguj się, aby zabezpieczyć swoje postępy."
+  },
+  "detail": {
+    "noDescription": "Brak dostępnego opisu.",
+    "specs": {
+      "dimensions": "Wymiary",
+      "totalStitches": "Łączna liczba ściegów",
+      "colors": "Liczba kolorów",
+      "category": "Kategoria"
+    },
+    "threadsSuffix": "{{count}} nici",
+    "palette": {
+      "title": "Potrzebne nici",
+      "loading": "Ładowanie palety nici...",
+      "loadFailed": "Nie można załadować palety: {{error}}",
+      "retry": "Spróbuj ponownie"
+    },
+    "actions": {
+      "startStitching": "Zacznij haftować",
+      "starting": "Rozpoczynanie...",
+      "preparing": "Przygotowywanie…"
+    },
+    "loadFailedGeneric": "Nie udało się przeanalizować pliku wzoru.",
+    "sessionCreateFailed": "Nie udało się utworzyć sesji haftowania. Spróbuj ponownie.",
+    "unavailable": {
+      "title": "Wzór niedostępny",
+      "body": "Nie można załadować tego wzoru. Mógł zostać usunięty lub jesteś offline.",
+      "goBack": "Wstecz"
+    },
+    "byCreator": "Autor: {{creatorName}}",
+    "byCreatorWithUsername": "Autor: {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Zablokuj twórcę",
+      "message": "Czy na pewno chcesz zablokować użytkownika {{creatorName}}? Jest to prywatne i można to cofnąć w dowolnym momencie. Blokada spowoduje, że wzory tego twórcy nie będą wyświetlane w wynikach wyszukiwania ani w przeglądaniu. Nie jest to zgłoszenie do twórcy i nie przerywa trwających sesji haftowania.",
+      "cancel": "Anuluj",
+      "confirm": "Zablokuj",
+      "blockedTitle": "Zablokowano",
+      "blockedMessage": "Zablokowano użytkownika {{creatorName}}.",
+      "errorTitle": "Błąd",
+      "failedGeneric": "Nie udało się zablokować twórcy."
+    },
+    "likeFailedGeneric": "Nie udało się zaktualizować statusu polubienia.",
+    "connectToPlay": {
+      "title": "Połącz się, aby grać",
+      "body": "Rozpoczęcie wzoru z katalogu wymaga połączenia sieciowego, aby przygotować sesję. Wzory początkowe możesz już teraz grać offline."
+    },
+    "insufficientCoins": {
+      "title": "Za mało monet",
+      "body": "Ten wzór kosztuje {{price}} Stitch Coins, ale masz obecnie tylko {{balance}} monet.\n\nBrakuje Ci {{shortfall}} monet.\n\nUkończ inne wzory, aby zdobyć Stitch Coins! Obecnie trwa nagroda za pierwsze ukończenie.",
+      "getCoins": "Zdobądź Stitch Coins",
+      "findPatterns": "Znajdź wzory do haftowania",
+      "back": "Wstecz"
+    },
+    "unlockFailedGeneric": "Odblokowanie nie powiodło się. Sprawdź połączenie i spróbuj ponownie.",
+    "preparationFailedGeneric": "Nie udało się rozpocząć przygotowania. Sprawdź połączenie i spróbuj ponownie.",
+    "price": {
+      "label": "Cena"
+    },
+    "balance": {
+      "label": "Saldo",
+      "loading": "…"
+    },
+    "unlockButton": "Odblokuj za {{price}} monet",
+    "communityReport": {
+      "button": "Zgłoś ten wzór",
+      "title": "Zgłoś {{patternTitle}}",
+      "body": "Wybierz powód, który najlepiej pasuje do problemu. Zgłoszenie nie ukrywa ani nie zmienia automatycznie wzoru.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Nieodpowiednia lub niebezpieczna treść",
+        "copyright_or_publication_rights": "Prawa autorskie lub prawa do publikacji",
+        "duplicate_or_spam": "Duplikat lub spam",
+        "misleading_title_or_tags": "Wprowadzający w błąd tytuł lub tagi",
+        "other": "Inne"
+      },
+      "explanationLabel": "Dowód lub wyjaśnienie {{requirement}}",
+      "explanationRequired": "(wymagane)",
+      "explanationOptional": "(opcjonalne)",
+      "explanationPlaceholder": "Podziel się szczegółami, które pomogą moderatorowi ocenić ten wzór.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Anuluj",
+      "submit": "Wyślij zgłoszenie",
+      "submitFailedGeneric": "Nie udało się wysłać zgłoszenia. Sprawdź połączenie i spróbuj ponownie.",
+      "receivedTitle": "Zgłoszenie otrzymane",
+      "alreadyReceivedTitle": "Zgłoszenie już otrzymane",
+      "receivedBody": "Moderatorzy mogą teraz ocenić ten wzór. Zgłoszenie nie zmienia automatycznie dostępności wzoru.",
+      "alreadyReceivedBody": "Twoje wcześniejsze zgłoszenie jest już uwzględnione w trwającej ocenie.",
+      "signInRequired": {
+        "title": "Zaloguj się, aby zgłosić",
+        "message": "Zgłoszenie do społeczności wymaga zarejestrowanego konta. Nic nie zostało jeszcze wysłane.",
+        "cancel": "Anuluj",
+        "signIn": "Zaloguj się"
+      },
+      "validation": {
+        "chooseReason": "Wybierz powód zgłoszenia.",
+        "explainRequired": "Wyjaśnij, dlaczego zgłaszasz ten wzór.",
+        "tooLong": "Wyjaśnienie może zawierać maksymalnie 2000 znaków.",
+        "needsContent": "Wyjaśnienie musi zawierać litery lub cyfry."
+      }
+    }
+  }
+}

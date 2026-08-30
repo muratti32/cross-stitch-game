@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Stół do haftowania",
+    "subtitle": "Wróć tam, gdzie skończyłeś, lub wznów swoją ostatnią pracę.",
+    "loading": "Ładowanie ściegów...",
+    "empty": {
+      "title": "Brak trwających prac",
+      "body": "Twoje krosno jest teraz puste. Znajdź piękny projekt do wyhaftowania w katalogu wzorów!",
+      "action": "Przeglądaj katalog"
+    },
+    "unknownPattern": "Nieznany wzór",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Wzór {{id}}",
+    "deleteSessionAccessibilityLabel": "Usuń sesję",
+    "viewFinishedAccessibilityLabel": "Zobacz ukończoną pracę",
+    "resumeAccessibilityLabel": "Wznów haftowanie",
+    "status": {
+      "ready": "Gotowe",
+      "done": "Ukończone",
+      "active": "Aktywne",
+      "preparing": "Przygotowywanie",
+      "failed": "Nie powiodło się"
+    },
+    "deleteConfirm": {
+      "title": "Usuń postęp",
+      "message": "Czy na pewno chcesz usunąć postęp \"{{title}}\"? Tej operacji nie można cofnąć.",
+      "cancel": "Anuluj",
+      "confirm": "Usuń"
+    },
+    "preparingCard": {
+      "discardTitle": "Usuń sesję",
+      "cancelTitle": "Anuluj pobieranie",
+      "discardMessage": "Czy chcesz usunąć tę nieudaną sesję?",
+      "cancelMessage": "Czy chcesz anulować pobieranie tego wzoru?",
+      "keep": "Zachowaj",
+      "discard": "Usuń",
+      "cancel": "Anuluj"
+    }
+  },
+  "loading": {
+    "text": "Otwieranie sesji i przygotowywanie tkaniny..."
+  },
+  "error": {
+    "title": "Nie można załadować sesji",
+    "fallbackMessage": "Nie można załadować sesji haftowania.",
+    "backButton": "Wstecz",
+    "tableButton": "Do stołu"
+  },
+  "header": {
+    "backButton": "← Wstecz",
+    "tableButton": "← Stół",
+    "defaultTitle": "Sesja haftowania",
+    "progress": "{{completed}} / {{total}} pól ({{percent}}% ukończone)",
+    "resumeTutorialAccessibilityLabel": "Wznów samouczek"
+  },
+  "banners": {
+    "patternRemoved": "Ten wzór został usunięty przez administratora i nie jest już dostępny. Dotknij, aby wyjść.",
+    "syncConflict": "Zsynchronizowano z innym urządzeniem. Niektóre pola zostały zaktualizowane. Dotknij, aby zamknąć."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Znajdź następne pozostałe pole wybranego koloru nici",
+    "undoAccessibilityLabel": "Cofnij ostatni ścieg"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Kolor {{number}}: DMC {{dmcCode}}, pozostał {{count}} ścieg",
+    "chipAccessibilityLabel_other": "Kolor {{number}}: DMC {{dmcCode}}, pozostało {{count}} ściegów",
+    "done": "Ukończone",
+    "remaining_one": "Pozostał {{count}}",
+    "remaining_other": "Pozostało {{count}}"
+  },
+  "celebration": {
+    "title": "Pięknie wykończone!",
+    "subtitle": "Każdy ścieg na tej tkaninie został ukończony.",
+    "stitchesLabel_one": "ścieg",
+    "stitchesLabel_other": "ściegów",
+    "colorsLabel_one": "kolor",
+    "colorsLabel_other": "kolorów",
+    "replayButton": "Haftuj ponownie",
+    "catalogButton": "Powrót do katalogu"
+  }
+}

@@ -99,4 +99,10 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'nl:settings:developer.debug.title': '"Debug" is a common English loanword in Dutch developer UI.',
   'nl:settings:session.idLabel': '"ID" is used identically in Dutch tech/UI copy.',
   'nl:shell:tabs.stitch': '"Stitch" is the branded core-activity name, kept English per the Dutch pack convention.',
+  'pl:commerce:premiumHero.benefitAiCredits': 'AI Credit is the branded in-game currency, kept English per the Polish pack convention.',
+  'pl:play:home.idLabel': '"ID" is used identically in Polish tech/UI copy.',
+  'pl:profile:home.identity.offline': '"Offline" is used identically in Polish tech/UI copy.',
+  'pl:profile:home.walletCard.aiCreditsLabel': 'AI Credit is the branded in-game currency, kept English per the Polish pack convention.',
+  'pl:settings:developer.debug.title': '"Debug" is a common English loanword in Polish developer UI.',
+  'pl:shell:tabs.stitch': '"Stitch" is the branded core-activity name, kept English per the Polish pack convention.',
 };

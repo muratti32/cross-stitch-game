@@ -132,7 +132,8 @@
       "ar": "./src/i18n/locales/ar/native.json",
       "ja": "./src/i18n/locales/ja/native.json",
       "ko": "./src/i18n/locales/ko/native.json",
-      "nl": "./src/i18n/locales/nl/native.json"
+      "nl": "./src/i18n/locales/nl/native.json",
+      "pl": "./src/i18n/locales/pl/native.json"
     },
     "experiments": {
       "typedRoutes": true,

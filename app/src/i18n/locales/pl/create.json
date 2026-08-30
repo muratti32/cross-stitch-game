@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Wstecz",
+    "cancel": "Anuluj",
+    "duplicateTitle": "Osobisty wzór o nazwie \"{{title}}\" już istnieje. Wybierz inną nazwę.",
+    "cellsCount_one": "pole",
+    "cellsCount_other": "pól",
+    "colorsCount_one": "kolor",
+    "colorsCount_other": "kolorów"
+  },
+  "hub": {
+    "title": "Centrum tworzenia",
+    "subtitle": "Ożyw swoje własne projekty jako niestandardowe wzory haftu krzyżykowego.",
+    "opening": "Otwieranie...",
+    "photoImport": {
+      "title": "Importuj zdjęcie",
+      "description": "Prześlij zdjęcie z galerii, aby przekształcić je w wzór do haftowania.",
+      "action": "Importuj zdjęcie"
+    },
+    "aiGenerator": {
+      "title": "Generator AI",
+      "description": "Opisz obraz, który chcesz stworzyć, i pozwól AI wygenerować niestandardowy projekt pikselowy.",
+      "action": "Wygeneruj projekt"
+    }
+  },
+  "aspects": {
+    "square": "Kwadrat",
+    "portrait_4_3": "Pionowy 4:3",
+    "landscape_4_3": "Poziomy 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Konwersja wzoru nie powiodła się. Spróbuj ponownie.",
+      "timeout": "Konwersja wzoru trwa dłużej niż zwykle. Spróbuj ponownie za chwilę.",
+      "generic": "Nie udało się ukończyć konwersji wzoru. Spróbuj ponownie."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Wymagane zarejestrowane konto",
+      "body": "Twoje prace AI i biblioteka pozostają prywatne i bezpieczne na Twoim koncie.",
+      "signIn": "Zaloguj się"
+    },
+    "header": {
+      "title": "Generator AI",
+      "backAccessibilityLabel": "Wstecz"
+    },
+    "prompt": {
+      "label": "Opisz swoje dzieło",
+      "placeholder": "Przytulny ogród wiejski o zachodzie słońca..."
+    },
+    "generate": {
+      "working": "Generowanie w toku...",
+      "action": "Generuj — 1 AI Credit",
+      "errors": {
+        "promptRejected": "Ten opis jest niedozwolony. Spróbuj innego opisu.",
+        "generic": "Nie można rozpocząć generowania AI. Spróbuj ponownie."
+      }
+    },
+    "library": {
+      "title": "Biblioteka prac AI",
+      "status": {
+        "pending": "Oczekuje",
+        "dispatched": "Wysłano",
+        "running": "W toku",
+        "delivered": "Gotowe",
+        "safety_rejected": "Odrzucono ze względów bezpieczeństwa",
+        "failed": "Nie powiodło się",
+        "deleted": "Usunięto",
+        "unknown": "Niedostępne"
+      },
+      "failure": {
+        "safety_rejected": "To dzieło nie spełniło kontroli bezpieczeństwa dostawcy.",
+        "failed": "Nie udało się wygenerować tego dzieła."
+      },
+      "approve": "Zatwierdź jako wzór",
+      "delete": "Usuń",
+      "deleteAccessibilityLabel": "Usuń to dzieło AI",
+      "errors": {
+        "loadFailed": "Nie można załadować biblioteki prac AI. Spróbuj ponownie."
+      }
+    },
+    "approve": {
+      "modalTitle": "Utwórz osobisty wzór",
+      "titleLabel": "Nazwa wzoru",
+      "titleAccessibilityLabel": "Nazwa wzoru",
+      "defaultTitle": "Mój wzór AI",
+      "placeholder": "Mój wzór AI",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Anuluj",
+      "creating": "Tworzenie wzoru...",
+      "create": "Utwórz wzór",
+      "errors": {
+        "generic": "Nie można utworzyć osobistego wzoru. Spróbuj ponownie."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Wymagane zarejestrowane konto",
+      "body": "Osobiste wzory są powiązane z Twoim kontem, przechowywane prywatnie i dostępne na wielu urządzeniach.",
+      "signIn": "Zaloguj się lub utwórz konto",
+      "back": "Wstecz"
+    },
+    "header": {
+      "title": "Wzór ze zdjęcia",
+      "subtitle": "Dostosuj kadr na swoim urządzeniu i zatwierdź konwersję",
+      "backAccessibilityLabel": "Wstecz"
+    },
+    "picker": {
+      "chooseTitle": "Wybierz zdjęcie",
+      "helpText": "Oryginalne zdjęcie w wysokiej rozdzielczości pozostaje na Twoim urządzeniu. Konwersja rozpocznie się dopiero po zatwierdzeniu kadru.",
+      "choose": "Wybierz z biblioteki",
+      "chooseAnother": "Wybierz inne zdjęcie",
+      "opening": "Otwieranie...",
+      "errors": {
+        "permissionDenied": "Dostęp do galerii zdjęć jest wymagany, aby wybrać zdjęcie.",
+        "invalidDimensions": "Wybrane zdjęcie ma nieprawidłowe wymiary.",
+        "generic": "Nie można otworzyć galerii zdjęć. Spróbuj ponownie."
+      }
+    },
+    "framing": {
+      "title": "Kadrowanie dzieła",
+      "gestureHint": "Przeciągnij, aby przesunąć · Uszczypnij, aby powiększyć",
+      "aspectLabel": "Proporcje kadru"
+    },
+    "profile": {
+      "title": "Profil konwersji",
+      "options": {
+        "easy": "Łatwy",
+        "standard": "Standardowy",
+        "detailed": "Szczegółowy"
+      },
+      "custom": "Niestandardowy",
+      "customMeta": "Bezpłatny · stały kształt",
+      "unavailable": "Niedostępne dla tego kadru",
+      "customShortEdgeLabel": "Krótki bok",
+      "customColorLimitLabel": "Limit kolorów DMC",
+      "exceedsLimit": "Niestandardowe wartości przekraczają limit rozmiaru wzoru wynoszący {{max}} pól."
+    },
+    "titleCard": {
+      "label": "Nazwa wzoru",
+      "placeholder": "Mój wzór ze zdjęcia",
+      "defaultTitle": "Mój wzór ze zdjęcia",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · maks. {{maxColors}} {{colorsUnit}} DMC",
+      "privacyNotice": "Po zatwierdzeniu zostanie przesłany tylko przycięty i pomniejszony obraz. Oryginalne zdjęcie pozostaje lokalnie na Twoim urządzeniu.",
+      "approve": "Zatwierdź i przekonwertuj dzieło"
+    },
+    "processing": {
+      "preparingFrame": "Zatwierdzony kadr jest przygotowywany na tym urządzeniu...",
+      "uploading": "Przesyłany jest tylko przycięty i pomniejszony kadr...",
+      "waitingForWorker": "Oczekiwanie na proces konwersji...",
+      "buildingGrid": "Generowanie siatki haftu i palety DMC...",
+      "preparingSession": "Przygotowywanie osobistego wzoru do gry..."
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Ten profil nie pasuje do ostatecznego kadru. Wybierz 'Łatwy' lub obniż poziom szczegółowości.",
+        "generic": "Nie udało się przekonwertować tego zdjęcia. Spróbuj ponownie."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Nie wybrano wzoru",
+      "noPatternBody": "Ten ekran musi zostać otwarty z istniejącego osobistego wzoru w Twojej bibliotece.",
+      "accountTitle": "Wymagane zarejestrowane konto",
+      "accountBody": "Osobiste wzory są powiązane z Twoim kontem, przechowywane prywatnie i dostępne na wielu urządzeniach.",
+      "signIn": "Zaloguj się lub utwórz konto",
+      "back": "Wstecz"
+    },
+    "loading": "Ładowanie wersji roboczej edytora...",
+    "load": {
+      "failedTitle": "Ładowanie wzoru nie powiodło się",
+      "retry": "Spróbuj ponownie",
+      "back": "Wstecz",
+      "errors": {
+        "generic": "Nie można załadować tego osobistego wzoru. Spróbuj ponownie."
+      }
+    },
+    "header": {
+      "title": "Edytor wzoru",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Wstecz"
+    },
+    "toolbar": {
+      "undo": "Cofnij",
+      "redo": "Ponów"
+    },
+    "mode": {
+      "paint": "Maluj",
+      "replaceColor": "Zamień kolor",
+      "replaceStep1": "1. Dotknij koloru we wzorze, który chcesz zamienić:",
+      "replaceStep2": "2. Wybierz kolor DMC do zastosowania:",
+      "paintSelected": "Wybrano: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Wybierz kolor, a następnie dotknij pola, aby je pomalować."
+    },
+    "errors": {
+      "pickColorFirst": "Najpierw wybierz kolor",
+      "paletteLimit": "Ten wzór wykorzystuje już maksymalną liczbę {{max}} kolorów nici."
+    },
+    "picker": {
+      "title": "Kolory nici DMC",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Zapisz edytowany wzór",
+      "placeholder": "Nazwa edytowanego wzoru",
+      "action": "Zapisz jako nowy",
+      "offlineTitle": "Zapisano offline",
+      "offlineBody": "Twój edytowany wzór został zapisany na tym urządzeniu. Zostanie zsynchronizowany z Twoim kontem, gdy wrócisz do trybu online.",
+      "errors": {
+        "generic": "Nie można zapisać tego osobistego wzoru. Spróbuj ponownie."
+      }
+    }
+  }
+}
