@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Vissza",
+    "cancel": "Mégse",
+    "duplicateTitle": "Már van egy saját mintád „{{title}}” néven. Válassz másik nevet.",
+    "cellsCount_one": "cella",
+    "cellsCount_other": "cella",
+    "colorsCount_one": "szín",
+    "colorsCount_other": "szín"
+  },
+  "hub": {
+    "title": "Alkotóközpont",
+    "subtitle": "Keltsd életre saját designjaidat egyedi hímzésmintákkal.",
+    "opening": "Megnyitás…",
+    "photoImport": {
+      "title": "Fotó importálása",
+      "description": "Tölts fel egy képet a galériából, és alakítsd hímzésmintává.",
+      "action": "Fotó importálása"
+    },
+    "aiGenerator": {
+      "title": "AI generátor",
+      "description": "Írj le egy hangulatos promptot, és hagyd, hogy a mesterséges intelligencia egyedi pixel designt generáljon.",
+      "action": "Design generálása"
+    }
+  },
+  "aspects": {
+    "square": "Négyzet",
+    "portrait_4_3": "Álló 4:3",
+    "landscape_4_3": "Fekvő 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "A minta átalakítása sikertelen. Próbáld újra.",
+      "timeout": "A minta átalakítása még feldolgozás alatt áll. Próbáld újra hamarosan.",
+      "generic": "A minta átalakítása nem fejeződött be. Próbáld újra."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Regisztrált fiók szükséges",
+      "body": "Az AI alkotások és a hozzájuk tartozó könyvtár privátak maradnak a fiókodhoz.",
+      "signIn": "Bejelentkezés"
+    },
+    "header": {
+      "title": "AI generátor",
+      "backAccessibilityLabel": "Vissza"
+    },
+    "prompt": {
+      "label": "Írd le az alkotásodat",
+      "placeholder": "Egy hangulatos kerti ház alkonyatkor…"
+    },
+    "generate": {
+      "working": "Feldolgozás…",
+      "action": "Generálás — 1 AI kredit",
+      "errors": {
+        "promptRejected": "Ez a prompt nem engedélyezett. Próbálj meg valami mást leírni.",
+        "generic": "Az AI generálás indítása sikertelen. Próbáld újra."
+      }
+    },
+    "library": {
+      "title": "AI alkotásaid könyvtára",
+      "status": {
+        "pending": "Függőben",
+        "dispatched": "Elküldve",
+        "running": "Folyamatban",
+        "delivered": "Kézbesítve",
+        "safety_rejected": "Biztonsági okból elutasítva",
+        "failed": "Sikertelen",
+        "deleted": "Törölve",
+        "unknown": "Nem elérhető"
+      },
+      "failure": {
+        "safety_rejected": "Ez az alkotás nem felelt meg a szolgáltató biztonsági ellenőrzésének.",
+        "failed": "Ezt az alkotást nem sikerült legenerálni."
+      },
+      "approve": "Jóváhagyás mintaként",
+      "delete": "Törlés",
+      "deleteAccessibilityLabel": "Ezen AI alkotás törlése",
+      "errors": {
+        "loadFailed": "Az AI alkotások könyvtárának betöltése sikertelen. Próbáld újra."
+      }
+    },
+    "approve": {
+      "modalTitle": "Saját minta létrehozása",
+      "titleLabel": "Minta neve",
+      "titleAccessibilityLabel": "Minta neve",
+      "defaultTitle": "AI mintám",
+      "placeholder": "AI mintám",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Mégse",
+      "creating": "Minta létrehozása…",
+      "create": "Minta létrehozása",
+      "errors": {
+        "generic": "A saját minta létrehozása sikertelen. Próbáld újra."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Regisztrált fiók szükséges",
+      "body": "A saját minták a fiókodhoz tartoznak, így privátak maradnak, és minden eszközön elérhetők.",
+      "signIn": "Jelentkezz be vagy hozz létre fiókot",
+      "back": "Vissza"
+    },
+    "header": {
+      "title": "Fotóminta",
+      "subtitle": "Keretezd le helyben, majd hagyd jóvá az átalakítást",
+      "backAccessibilityLabel": "Vissza"
+    },
+    "picker": {
+      "chooseTitle": "Fotó kiválasztása",
+      "helpText": "A teljes felbontású fotó ezen az eszközön marad. Semmi nem alakul át, amíg jóvá nem hagyod a keretezést.",
+      "choose": "Kiválasztás a könyvtárból",
+      "chooseAnother": "Másik kiválasztása",
+      "opening": "Megnyitás…",
+      "errors": {
+        "permissionDenied": "A helyi fotóforrás kiválasztásához galériahozzáférés szükséges.",
+        "invalidDimensions": "A kiválasztott fotónak nincsenek használható méretei.",
+        "generic": "A fotógaléria megnyitása sikertelen. Próbáld újra."
+      }
+    },
+    "framing": {
+      "title": "Alkotás keretezése",
+      "gestureHint": "Húzd a mozgatáshoz · csippentsd a nagyításhoz",
+      "aspectLabel": "Keretarány"
+    },
+    "profile": {
+      "title": "Átalakítási profil",
+      "options": {
+        "easy": "Egyszerű",
+        "standard": "Standard",
+        "detailed": "Részletes"
+      },
+      "custom": "Egyéni",
+      "customMeta": "Szabad · alak zárolva",
+      "unavailable": "Nem illeszkedik ehhez a kerethez",
+      "customShortEdgeLabel": "Rövidebb oldal",
+      "customColorLimitLabel": "DMC színkorlát",
+      "exceedsLimit": "Ezek az egyéni értékek meghaladják a minta {{max}} cellás méretkorlátját."
+    },
+    "titleCard": {
+      "label": "Minta neve",
+      "placeholder": "Fotómintám",
+      "defaultTitle": "Fotómintám",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · legfeljebb {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "A jóváhagyás csak a keretezett, kicsinyített verziót küldi el. Az eredeti fotó helyben marad.",
+      "approve": "Alkotás jóváhagyása és átalakítás"
+    },
+    "processing": {
+      "preparingFrame": "A jóváhagyott keret előkészítése ezen az eszközön…",
+      "uploading": "Csak a kivágott, kicsinyített keret küldése…",
+      "waitingForWorker": "Várakozás az átalakítás feldolgozására…",
+      "buildingGrid": "Öltésrács és DMC paletta létrehozása…",
+      "preparingSession": "A saját minta előkészítése a játékhoz…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Ez a profil már nem illeszkedik a végleges kerethez. Válaszd az Egyszerű beállítást, vagy csökkentsd a részletességet.",
+        "generic": "Ennek a fotónak az átalakítása sikertelen. Próbáld újra."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Nincs kiválasztott minta",
+      "noPatternBody": "Ezt a képernyőt egy meglévő saját mintából kell megnyitni a könyvtáradból.",
+      "accountTitle": "Regisztrált fiók szükséges",
+      "accountBody": "A saját minták a fiókodhoz tartoznak, így privátak maradnak, és minden eszközön elérhetők.",
+      "signIn": "Jelentkezz be vagy hozz létre fiókot",
+      "back": "Vissza"
+    },
+    "loading": "Vázlat folytatása a szerkesztőben...",
+    "load": {
+      "failedTitle": "A minta betöltése sikertelen",
+      "retry": "Próbáld újra",
+      "back": "Vissza",
+      "errors": {
+        "generic": "Ennek a saját mintának a betöltése sikertelen. Próbáld újra."
+      }
+    },
+    "header": {
+      "title": "Mintaszerkesztő",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Vissza"
+    },
+    "toolbar": {
+      "undo": "Visszavonás",
+      "redo": "Mégis"
+    },
+    "mode": {
+      "paint": "Festés",
+      "replaceColor": "Szín cseréje",
+      "replaceStep1": "1. Érintsd meg a lecserélendő színt a lenti mintában:",
+      "replaceStep2": "2. Válaszd ki a célzott DMC színt lent a csere végrehajtásához:",
+      "paintSelected": "Kiválasztva: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Válassz színt lent, majd érintsd meg a cellákat a festéshez."
+    },
+    "errors": {
+      "pickColorFirst": "Először válassz színt",
+      "paletteLimit": "Ez a minta már a maximálisan engedélyezett {{max}} fonalszínt használja."
+    },
+    "picker": {
+      "title": "DMC fonalszínek",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Szerkesztett minta mentése",
+      "placeholder": "Szerkesztett mintám neve",
+      "action": "Mentés újként",
+      "offlineTitle": "Offline mentve",
+      "offlineBody": "A szerkesztett mintád ezen az eszközön lett elmentve, és szinkronizálódik a fiókoddal, amint újra kapcsolódsz.",
+      "errors": {
+        "generic": "Ennek a saját mintának a mentése sikertelen. Próbáld újra."
+      }
+    }
+  }
+}

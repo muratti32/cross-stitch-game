@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "ÜDVÖZLÜNK A STITCH WISHBEN",
+    "title": "Válassz színt, érintsd meg a hozzá tartozó négyzeteket.",
+    "heroAlt": "A Cozy Heart kezdő minta előnézete",
+    "handedness": {
+      "sectionTitle": "Melyik oldalon legyenek a vezérlők?",
+      "groupLabel": "Vezérlők oldala",
+      "optionRight": "Vezérlők jobbra",
+      "optionLeft": "Vezérlők balra",
+      "saveErrorText": "Ennek a választásnak a mentése sikertelen.",
+      "retry": "Próbáld újra"
+    },
+    "note": "Ezt később a Beállításokban módosíthatod.",
+    "start": "Hímzés indítása",
+    "starting": "Indítás…",
+    "browse": "Kezdő minták böngészése",
+    "signIn": "Bejelentkezés"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Válaszd a DMC 321 Christmas Red színt.",
+      "stitchAction": "Érintsd meg a kiemelt megfelelő cellát.",
+      "mismatchedTap": "Érintsd meg a kiemelt eltérő cellát. A hibás érintések semmibe nem kerülnek.",
+      "undoAction": "Vond vissza azt az öltést, majd helyezd el újra.",
+      "stitchSweep": "Nyomd meg a megfelelő cellát, majd húzd végig a kiemelt soron.",
+      "threadColorCompletion": "Fejezd be a kiemelt fehér fonalat, majd válaszd ki a következő színt."
+    },
+    "hints": {
+      "anchoredZoom": "Csippentsd a nagyításhoz, miközben a cellák az ujjaid alatt maradnak.",
+      "panVsSweep": "A húzás mozgatja a vásznat. Kezdd a megfelelő cellán a sor hímzéséhez.",
+      "edgeAutoPan": "Folytasd a húzást a szélhez közel, és a vászon követi az ujjadat.",
+      "remainingCellLocator": "Használd a keresőt a következő hátralévő cella megtalálásához ehhez a fonalhoz."
+    },
+    "skip": "Kihagyás most",
+    "skipAccessibilityLabel": "Útmutató kihagyása most",
+    "dismiss": "Értem",
+    "dismissAccessibilityLabel": "Tipp elvetése"
+  },
+  "recap": {
+    "title": "Sikerült",
+    "lines": {
+      "matchNumbers": "Párosítsd a számokat minden öltés elhelyezéséhez.",
+      "dragSweep": "Húzd végig a megfelelő cellákon a sor hímzéséhez.",
+      "pinchZoom": "Csippentsd a nagyításhoz, ha jobb rálátásra van szükséged.",
+      "undoLocator": "A visszavonás és a kereső mindig ingyenes."
+    },
+    "continue": "Hímzés folytatása",
+    "browsePatterns": "Minták böngészése"
+  }
+}

@@ -16871,6 +16871,1412 @@
       }
     }
   },
+  "hu": {
+    "catalog": {
+      "common": {
+        "back": "← Vissza",
+        "searchPlaceholder": "Minták, alkotók, címkék keresése…",
+        "offlineBanner": "Nincs kapcsolat — előfordulhat, hogy a katalógus nem naprakész",
+        "sectionError": {
+          "title": "Betöltés sikertelen",
+          "retry": "Próbáld újra"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} szín",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} oszlop",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "Angol"
+        },
+        "accessibilityLabel": "{{language}} nyelven íródott"
+      },
+      "index": {
+        "subtitle": "Alkosd meg saját hangulatos világodat, öltésről öltésre.",
+        "searchBar": {
+          "accessibilityLabel": "Mintakatalógus keresése"
+        },
+        "sections": {
+          "starterPatterns": "Kezdő minták",
+          "staffPicks": "Szerkesztői válogatás",
+          "categories": "Kategóriák",
+          "newPatterns": "Új minták"
+        },
+        "staffPicks": {
+          "emptyTitle": "Még nincs szerkesztői válogatás",
+          "emptyBody": "Kézzel válogatott, hangulatos design-gyűjteményünk hamarosan itt jelenik meg.",
+          "errorBody": "A katalógus nem elérhető, és még semmi sincs a gyorsítótárban."
+        },
+        "categories": {
+          "count": "{{count}} minta",
+          "errorBody": "A katalógus nem elérhető, és még semmi sincs a gyorsítótárban."
+        },
+        "newPatterns": {
+          "emptyTitle": "Új minták készülnek",
+          "emptyBody": "Hamarosan érkeznek a friss újdonságok!",
+          "errorBody": "A katalógus nem elérhető, és még semmi sincs a gyorsítótárban.",
+          "showMore": "Több megjelenítése",
+          "loading": "Betöltés…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "Böngészés",
+        "error": {
+          "body": "Ez a katalógusoldal nem elérhető, és még semmi sincs a gyorsítótárban."
+        },
+        "empty": {
+          "title": "Itt még nincs semmi",
+          "body": "Egyetlen minta sem felel meg ennek a válogatásnak. Rendszeresen érkeznek új designok."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "Katalóguskereső mező",
+        "inactive": {
+          "title": "Katalógus keresése",
+          "body": "Írj be legalább két karaktert a minták cím, alkotó vagy címke szerinti kereséséhez."
+        },
+        "error": {
+          "title": "A kereséshez kapcsolat szükséges",
+          "body": "A katalóguskeresés offline nem elérhető. A mentett katalógusoldalak továbbra is böngészhetők a Katalógus fülön."
+        },
+        "noResults": {
+          "title": "Nincs találat",
+          "body": "Semmi sem felel meg még a(z) „{{query}}” kifejezésnek a katalógusban."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "Vendégként játszol",
+        "body": "A Stitch Coin és a haladásod csak ezen az eszközön létezik, amíg vendégként játszol. Ha a telepítés elvész, a vendégegyenleg és a haladás visszavonhatatlanul elveszhet. A bejelentkezés megvédi a haladásodat."
+      },
+      "detail": {
+        "noDescription": "Nincs elérhető leírás.",
+        "specs": {
+          "dimensions": "Méretek",
+          "totalStitches": "Öltések száma összesen",
+          "colors": "Színek",
+          "category": "Kategória"
+        },
+        "threadsSuffix": "{{count}} fonal",
+        "palette": {
+          "title": "Szükséges fonalak",
+          "loading": "Fonalpaletta betöltése...",
+          "loadFailed": "A paletta betöltése sikertelen: {{error}}",
+          "retry": "Újratöltés"
+        },
+        "actions": {
+          "startStitching": "Hímzés indítása",
+          "starting": "Indítás...",
+          "preparing": "Előkészítés…"
+        },
+        "loadFailedGeneric": "A mintafájl dekódolása sikertelen.",
+        "sessionCreateFailed": "A hímzési munkamenet létrehozása sikertelen. Próbáld újra.",
+        "unavailable": {
+          "title": "A minta nem érhető el",
+          "body": "Ezt a mintát nem sikerült betölteni. Lehet, hogy eltávolították, vagy nincs internetkapcsolatod.",
+          "goBack": "Vissza"
+        },
+        "byCreator": "készítette: {{creatorName}}",
+        "byCreatorWithUsername": "készítette: {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "Alkotó letiltása",
+          "message": "Biztosan letiltod {{creatorName}} felhasználót? Ez privát, visszavonható művelet, amely elrejti a mintáit a keresésből/böngészésből. Nem jelenti be az alkotót, és nem szakítja meg az aktuális hímzési munkamenetedet.",
+          "cancel": "Mégse",
+          "confirm": "Letiltás",
+          "blockedTitle": "Letiltva",
+          "blockedMessage": "{{creatorName}} felhasználó le lett tiltva.",
+          "errorTitle": "Hiba",
+          "failedGeneric": "Az alkotó letiltása sikertelen."
+        },
+        "likeFailedGeneric": "A kedvelés állapotának frissítése sikertelen",
+        "connectToPlay": {
+          "title": "Kapcsolódj a játékhoz",
+          "body": "A minta katalógusból történő indításához kapcsolat szükséges a munkamenet előkészítéséhez. A kezdő minták azonnal játszhatók, még internetkapcsolat nélkül is."
+        },
+        "insufficientCoins": {
+          "title": "Nincs elég érme",
+          "body": "Ez a minta {{price}} Stitch Coinba kerül, neked pedig csak {{balance}} érméd van.\n\nHiányzik: {{shortfall}} érme.\n\nSzerezz Stitch Coint más minták befejezésével! Az első befejezésért járó jutalmak aktívak.",
+          "getCoins": "Szerezz Stitch Coint",
+          "findPatterns": "Keress hímzésre váró mintákat",
+          "back": "Vissza"
+        },
+        "unlockFailedGeneric": "A feloldás sikertelen. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "preparationFailedGeneric": "Az előkészítés indítása sikertelen. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "price": {
+          "label": "Ár"
+        },
+        "balance": {
+          "label": "Egyenleged",
+          "loading": "…"
+        },
+        "unlockButton": "Feloldás {{price}} érméért",
+        "communityReport": {
+          "button": "Minta bejelentése",
+          "title": "{{patternTitle}} bejelentése",
+          "body": "Válaszd ki a problémát legjobban leíró okot. A bejelentések soha nem rejtik el vagy módosítják automatikusan a mintát.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "Nem megfelelő vagy nem biztonságos tartalom",
+            "copyright_or_publication_rights": "Szerzői jog vagy közzétételi jogok",
+            "duplicate_or_spam": "Duplikátum vagy spam",
+            "misleading_title_or_tags": "Félrevezető cím vagy címkék",
+            "other": "Egyéb"
+          },
+          "explanationLabel": "Bizonyíték vagy magyarázat {{requirement}}",
+          "explanationRequired": "(kötelező)",
+          "explanationOptional": "(nem kötelező)",
+          "explanationPlaceholder": "Oszd meg a részleteket, amelyek segítik a moderátort a minta áttekintésében.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "Mégse",
+          "submit": "Bejelentés küldése",
+          "submitFailedGeneric": "A bejelentés küldése sikertelen. Ellenőrizd a kapcsolatot, és próbáld újra.",
+          "receivedTitle": "Bejelentés fogadva",
+          "alreadyReceivedTitle": "A bejelentés már megérkezett",
+          "receivedBody": "A moderátor most már áttekintheti ezt a mintát. A bejelentés automatikusan nem változtatja meg az elérhetőségét.",
+          "alreadyReceivedBody": "A meglévő bejelentésed már része a nyitott felülvizsgálatnak.",
+          "signInRequired": {
+            "title": "Jelentkezz be a bejelentés küldéséhez",
+            "message": "A közösségi bejelentésekhez regisztrált fiók szükséges. Semmi nem lett elküldve.",
+            "cancel": "Mégse",
+            "signIn": "Bejelentkezés"
+          },
+          "validation": {
+            "chooseReason": "Válaszd ki a bejelentés okát.",
+            "explainRequired": "Magyarázd el, miért jelented be ezt a mintát.",
+            "tooLong": "A magyarázat legfeljebb 2000 karakter lehet.",
+            "needsContent": "A magyarázatnak betűket vagy számokat kell tartalmaznia."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "Vissza",
+        "title": "Áruház",
+        "subtitle": "Tagság és egyszeri feltöltések"
+      },
+      "signInReturn": {
+        "notice": "Bejelentkeztél. A(z) {{label}} továbbra is kiválasztva marad. Ellenőrizd, majd nyomd meg a Vásárlás gombot, ha készen állsz."
+      },
+      "premiumHero": {
+        "eyebrow": "PRÉMIUM TAGSÁG",
+        "title": "Alkoss többet. Minden nap gyűjts egy kis jutalmat.",
+        "body": "AI kredit minden fizetett időszakban, prémium témák és napi Stitch Coin igénylés.",
+        "benefitAiCredits": "AI kredit",
+        "benefitDailyCoins": "Napi érmék",
+        "benefitThemes": "Témák",
+        "statusNoActiveMembership": "Nincs aktív tagság",
+        "statusBrowseAsGuest": "Csomagok böngészése vendégként",
+        "periodEndsLabel": "Az aktuális időszak vége",
+        "periodRenewsLabel": "Megújul",
+        "lifecycleActive": "Aktív"
+      },
+      "membershipActions": {
+        "title": "Aktív prémium tagság",
+        "body": "A napi jutalmak a Profilban találhatók. A témák a Beállítások › Megjelenés menüben vannak.",
+        "scheduledChangeNotice": "Váltás erre: {{plan}} — {{date}}",
+        "manageSubscription": "Előfizetés kezelése",
+        "manageSubscriptionFailedTitle": "Az előfizetések megnyitása sikertelen",
+        "manageSubscriptionFailedBody": "Próbáld újra az eszközöd áruházi fiókján keresztül."
+      },
+      "pending": {
+        "title": "Vásárlás egyeztetése folyamatban",
+        "verifyingTitle": "Vásárlás ellenőrzése",
+        "premiumChangeAccepted": "Az áruház elfogadta a váltást erre: {{label}}. ",
+        "premiumResponseReceived": "Megérkezett az áruház válasza erre: {{label}}. ",
+        "premiumDeferredSuffix": "A váltás csak a Game Backend ellenőrzése után kerül ütemezésre, és az aktuális időszakod végén lép életbe.",
+        "premiumSuffix": "A Prémium csak a Game Backend ellenőrzése után aktiválódik.",
+        "doNotPurchasePlanAgain": " Ne vásárold meg újra ezt a csomagot.",
+        "coinPackBody": "Megérkezett az áruház válasza. A Stitch Coin csak akkor frissül, amikor a Game Backend megerősíti a megfelelő jóváírást a Kereskedelmi naplóban. Ne vásárold meg újra ezt a csomagot.",
+        "aiCreditPackBody": "Megérkezett az áruház válasza. Az AI kredit csak akkor frissül, amikor a Game Backend megerősíti a megfelelő jóváírást a Kereskedelmi naplóban. Ne vásárold meg újra ezt a csomagot.",
+        "refreshStatus": "Állapot frissítése",
+        "retryReconciliation": "Egyeztetés újrapróbálása"
+      },
+      "store": {
+        "loadingPrices": "Aktuális áruházi árak betöltése…",
+        "unavailableTitle": "Az áruház átmenetileg nem elérhető",
+        "unavailableBody": "A pénztárca- és tagsági adatok továbbra is elérhetők.",
+        "retry": "Próbáld újra"
+      },
+      "plans": {
+        "choosePremiumPlan": "Prémium csomag kiválasztása",
+        "yourPremiumPlan": "A prémium csomagod",
+        "currentPlan": "AKTUÁLIS CSOMAG",
+        "upgrade": "FRISSÍTÉS",
+        "planChange": "CSOMAGVÁLTÁS",
+        "bestValue": "LEGJOBB AJÁNLAT",
+        "billedEvery": "Számlázás {{period}} időközönként",
+        "chooseLabel": "{{label}} kiválasztása",
+        "freeTrial": "Ingyenes {{offer}}, majd {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "Egyszeri csomagok",
+        "stitchCoinPacksTitle": "Stitch Coin csomagok",
+        "aiCreditPacksTitle": "AI kredit csomagok",
+        "coinsNoun": "Érmék",
+        "creditsNoun": "Kreditek",
+        "fromPrice": "Ettől: {{price}}"
+      },
+      "restore": {
+        "restorePurchases": "Vásárlások visszaállítása",
+        "restoreGuestPremium": "Vendég prémium visszaállítása",
+        "requestedTitle": "Visszaállítás kérve",
+        "requestedBody": "A megerősített prémium hozzáférés az áruházi webhook egyeztetése után jelenik meg. A Stitch Coin és az AI kredit soha nem állítható vissza."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "Aktuális árak az áruházból",
+        "closeAccessibilityLabel": "Termékkártya bezárása",
+        "closeButtonAccessibilityLabel": "Bezárás",
+        "selectedBeforeSignIn": "Bejelentkezés előtt kiválasztva",
+        "buy": "Vásárlás"
+      },
+      "confirmation": {
+        "cancel": "Mégse",
+        "confirmLabel": "{{label}} megerősítése",
+        "confirmPremiumTitle": "Prémium vásárlás megerősítése",
+        "introductoryOffer": "Az áruházad ezt a bevezető ajánlatot jelenti: {{offer}}.",
+        "premiumAppearsAfterVerification": "A Prémium csak akkor jelenik meg, amikor a Game Backend ellenőrzi az áruházi tranzakciót.",
+        "confirmPremiumUpgradeTitle": "Prémium frissítés megerősítése",
+        "confirmPremiumPlanChangeTitle": "Prémium csomagváltás megerősítése",
+        "currentPlanLabel": "Aktuális csomag: {{label}}",
+        "upgradeToLabel": "Frissítés erre: {{label}} · {{offer}}",
+        "changeToLabel": "Váltás erre: {{label}} · {{offer}}",
+        "upgradeBody": "Az App Store irányítja e frissítés végleges díjszabását és hatálybalépési dátumát. A Prémium csak akkor tükrözi a(z) {{label}} csomagot, amikor a Game Backend megerősíti.",
+        "planChangeBody": "Az App Store az aktuális időszak végéig elhalasztja ezt a váltást: {{currentLabel}} addig érvényben marad, {{targetLabel}} pedig a váltás dátumától kezdve kerül számlázásra. A váltást az Előfizetés kezelése menüben mondhatod le.",
+        "confirmUpgrade": "Frissítés megerősítése",
+        "confirmPlanChange": "Csomagváltás megerősítése",
+        "confirmStitchCoinTitle": "Stitch Coin vásárlás megerősítése",
+        "confirmAiCreditTitle": "AI kredit vásárlás megerősítése",
+        "balanceChangesAfterVerificationCoin": "Az egyenleged csak akkor változik, amikor a Game Backend ellenőrzi az áruházi tranzakciót, és rögzíti a megfelelő jóváírást a Kereskedelmi naplóban.",
+        "balanceChangesAfterVerificationAiCredit": "Az egyenleged csak akkor változik, amikor a Game Backend ellenőrzi az áruházi tranzakciót, és rögzíti a megfelelő jóváírást a Kereskedelmi naplóban. Prémium tagság nem szükséges."
+      },
+      "disclosure": {
+        "subscriptionTerms": "A fizetés megerősítéskor kerül terhelésre a(z) {{store}} fiókodra. A(z) {{label}} Prémium automatikusan megújul {{offer}} áron, hacsak nem kapcsolod ki az automatikus megújítást legalább 24 órával az aktuális időszak vége előtt. Az ingyenes próbaidőszak fel nem használt része elvész az előfizetés megvásárlásakor. Az előfizetést bármikor lemondhatod a(z) {{store}} fiókodon keresztül.",
+        "privacyPolicy": "Adatvédelmi szabályzat",
+        "termsOfService": "Felhasználási feltételek",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "A hivatkozás megnyitása sikertelen: {{url}}"
+      },
+      "supportReference": {
+        "label": "Támogatási hivatkozás: {{reference}}",
+        "copyAccessibilityLabel": "Támogatási hivatkozás másolása: {{reference}}",
+        "copyAccessibilityHint": "Vágólapra másolja a támogatási hivatkozást",
+        "copied": "Másolva",
+        "copyFailedTitle": "A másolás sikertelen",
+        "copyFailedBody": "A támogatási hivatkozást nem sikerült másolni. Válaszd ki a szöveget a kézi másoláshoz."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "A vendég Stitch Coin vásárlások csak iOS-en érhetők el.",
+        "guestIosOnlyGeneric": "A vendégvásárlások csak iOS-en érhetők el.",
+        "purchaseFailedTitle": "A vásárlás sikertelen",
+        "premiumVerificationNotYet": "A Game Backend még nem tudta ellenőrizni ezt a vásárlást. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+        "premiumVerificationFailedRetry": "A Game Backend még nem tudta ellenőrizni ezt a vásárlást. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+        "premiumGrantRefreshFailed": "A Prémium megerősítve, de a tagsági és AI kredit állapot frissítése sikertelen. Próbáld újra az egyeztetést.",
+        "premiumReconciliationUnreachable": "A vásárlás egyeztetése nem érte el a Game Backendet. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+        "coinPackVerificationMismatch": "Az áruházi tranzakció nem felelt meg ennek az érmecsomagnak. Próbáld újra az ellenőrzést, vagy lépj kapcsolatba a támogatással; ne vásárold meg újra.",
+        "coinPackGrantUnavailable": "A vásárlás megerősítve, de a Stitch Coin jóváírása nem elérhető. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+        "coinPackBalanceRefreshFailed": "Az érme jóváírása megerősítve, de az aktuális Stitch Coin egyenleg frissítése sikertelen. Próbáld újra az egyeztetést.",
+        "coinPackVerificationFailedRetry": "A Game Backend még nem tudta ellenőrizni ezt az érmecsomagot. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+        "coinPackReconciliationUnreachable": "Az érmecsomag egyeztetése nem érte el a Game Backendet. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+        "aiCreditPackVerificationMismatch": "Az áruházi tranzakció nem felelt meg ennek az AI kredit csomagnak. Próbáld újra az ellenőrzést, vagy lépj kapcsolatba a támogatással; ne vásárold meg újra.",
+        "aiCreditPackGrantUnavailable": "A vásárlás megerősítve, de az AI kredit jóváírása nem elérhető. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+        "aiCreditPackBalanceRefreshFailed": "Az AI kredit jóváírása megerősítve, de az aktuális egyenleg frissítése sikertelen. Próbáld újra az egyeztetést.",
+        "aiCreditPackVerificationFailedRetry": "A Game Backend még nem tudta ellenőrizni ezt az AI kredit csomagot. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+        "aiCreditPackReconciliationUnreachable": "Az AI kredit csomag egyeztetése nem érte el a Game Backendet. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+        "reconciliationStillUnavailable": "A Game Backend továbbra sem elérhető. Próbáld újra az egyeztetést később.",
+        "storeTemporarilyUnavailable": "Az áruház átmenetileg nem elérhető. Próbáld újra néhány perc múlva.",
+        "purchasesNotAllowed": "A vásárlások nem engedélyezettek ezen az eszközön. Ellenőrizd az áruházi fiókodat vagy a szülői felügyeletet.",
+        "itemNotAvailable": "Ez a termék jelenleg nem vásárolható meg. Válassz másik terméket, vagy próbáld újra később.",
+        "alreadyOwned": "Ez a vásárlás már a tiéd. A hozzáférés frissítéséhez használd a Vásárlások visszaállítása lehetőséget.",
+        "couldNotConnectToStore": "Az áruházhoz való kapcsolódás sikertelen. Ellenőrizd az internetkapcsolatot, és próbáld újra.",
+        "paymentPendingApproval": "A fizetésed jóváhagyásra vár. A vásárlás akkor jelenik meg, amikor az áruház befejezi a folyamatot.",
+        "testPurchaseDeclined": "A tesztvásárlás elutasítva. Fizetés nem történt. Válassz másik teszteredményt a Beállításokban, majd próbáld újra.",
+        "genericPurchaseFailure": "Nem sikerült teljesíteni a vásárlásodat. Fizetés nem történt. Próbáld újra."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "Ellenőrzés folyamatban",
+        "premiumPending": "Az ellenőrzés még folyamatban van. A Prémium aktiválódik, amint a Game Backend megerősíti.",
+        "premiumPlanChangePending": "Az ellenőrzés még folyamatban van. A csomagváltás ütemezésre kerül, amint a Game Backend megerősíti.",
+        "coinPackPending": "Az ellenőrzés még folyamatban van. A Stitch Coin egyenleged frissül, amint befejeződik.",
+        "aiCreditPackPending": "Az ellenőrzés még folyamatban van. Az AI kredit egyenleged frissül, amint befejeződik."
+      },
+      "success": {
+        "purchaseReceivedTitle": "Vásárlás megérkezett",
+        "storeAcceptedPlanChange": "Az áruház elfogadta a váltást erre: {{label}}. Megerősítés a hatálybalépéskor.",
+        "storeAcceptedPurchase": "Az áruház elfogadta ezt: {{label}}. A vásárlásod ellenőrzése folyamatban.",
+        "premiumChanges": "A Prémium erre vált: {{label}}{{effectiveOn}}.",
+        "effectiveOnDate": " {{date}}",
+        "planChangeScheduledTitle": "Csomagváltás ütemezve",
+        "planChangeScheduledBody": "A prémium tagságod megtartja az aktuális csomagot, amíg át nem vált erre: {{label}}{{effectiveOn}}. A váltást az Előfizetés kezelése menüben mondhatod le.",
+        "premiumIsActiveTitle": "A Prémium aktív",
+        "premiumVerifiedAndActive": "A(z) {{label}} Prémium megerősítve és aktív.",
+        "premiumNowActiveNoBilling": "A(z) {{label}} Prémium most aktív.",
+        "premiumNowActiveBilled": "A(z) {{label}} Prémium most aktív, számlázás {{period}} időközönként.",
+        "coinPackGrantedTitle": "Stitch Coin jóváírva",
+        "coinPackGrantVerified": "A(z) {{label}} jóváírása megerősítve. Stitch Coin egyenleg: {{balance}}.",
+        "coinPackAddedToBalance": "{{quantity}} Stitch Coin került az egyenlegedhez.",
+        "aiCreditPackGrantedTitle": "AI kredit jóváírva",
+        "aiCreditPackGrantVerified": "A(z) {{label}} jóváírása megerősítve. AI kredit egyenleg: {{balance}}.",
+        "aiCreditPackAddedToBalance": "{{quantity}} AI kredit került az egyenlegedhez."
+      },
+      "products": {
+        "premiumAnnual": "Éves",
+        "premiumMonthly": "Havi",
+        "premiumWeekly": "Heti",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coin",
+        "aiCreditPack_one": "{{formattedCount}} AI kredit",
+        "aiCreditPack_other": "{{formattedCount}} AI kredit",
+        "billedEveryOffer": "{{price}} / {{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} kredit / fizetett időszak",
+        "creditAllowancePaidNoun": "{{credits}} kredit / fizetett {{period}}"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "Vásárlás vendégként",
+        "commerceBody": "Regisztráció nélkül is vásárolhatsz. A prémium tagság visszaállítható az áruházból, de a Stitch Coin, az AI kredit és a privát vendégtartalom visszavonhatatlanul elveszhet, ha a telepítés elvész. A regisztráció megvédi ezeket, és soha nem szakítja meg a vendégjátékot.",
+        "continueAsGuest": "Folytatás vendégként",
+        "signInInstead": "Inkább bejelentkezem",
+        "closeAccessibilityLabel": "Bezárás"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "Rendben",
+        "successButton": "Remek",
+        "failedButton": "Bezárás",
+        "infoButton": "Rendben",
+        "closeAccessibilityLabel": "Bezárás"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "Vissza",
+        "cancel": "Mégse",
+        "duplicateTitle": "Már van egy saját mintád „{{title}}” néven. Válassz másik nevet.",
+        "cellsCount_one": "cella",
+        "cellsCount_other": "cella",
+        "colorsCount_one": "szín",
+        "colorsCount_other": "szín"
+      },
+      "hub": {
+        "title": "Alkotóközpont",
+        "subtitle": "Keltsd életre saját designjaidat egyedi hímzésmintákkal.",
+        "opening": "Megnyitás…",
+        "photoImport": {
+          "title": "Fotó importálása",
+          "description": "Tölts fel egy képet a galériából, és alakítsd hímzésmintává.",
+          "action": "Fotó importálása"
+        },
+        "aiGenerator": {
+          "title": "AI generátor",
+          "description": "Írj le egy hangulatos promptot, és hagyd, hogy a mesterséges intelligencia egyedi pixel designt generáljon.",
+          "action": "Design generálása"
+        }
+      },
+      "aspects": {
+        "square": "Négyzet",
+        "portrait_4_3": "Álló 4:3",
+        "landscape_4_3": "Fekvő 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "A minta átalakítása sikertelen. Próbáld újra.",
+          "timeout": "A minta átalakítása még feldolgozás alatt áll. Próbáld újra hamarosan.",
+          "generic": "A minta átalakítása nem fejeződött be. Próbáld újra."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "Regisztrált fiók szükséges",
+          "body": "Az AI alkotások és a hozzájuk tartozó könyvtár privátak maradnak a fiókodhoz.",
+          "signIn": "Bejelentkezés"
+        },
+        "header": {
+          "title": "AI generátor",
+          "backAccessibilityLabel": "Vissza"
+        },
+        "prompt": {
+          "label": "Írd le az alkotásodat",
+          "placeholder": "Egy hangulatos kerti ház alkonyatkor…"
+        },
+        "generate": {
+          "working": "Feldolgozás…",
+          "action": "Generálás — 1 AI kredit",
+          "errors": {
+            "promptRejected": "Ez a prompt nem engedélyezett. Próbálj meg valami mást leírni.",
+            "generic": "Az AI generálás indítása sikertelen. Próbáld újra."
+          }
+        },
+        "library": {
+          "title": "AI alkotásaid könyvtára",
+          "status": {
+            "pending": "Függőben",
+            "dispatched": "Elküldve",
+            "running": "Folyamatban",
+            "delivered": "Kézbesítve",
+            "safety_rejected": "Biztonsági okból elutasítva",
+            "failed": "Sikertelen",
+            "deleted": "Törölve",
+            "unknown": "Nem elérhető"
+          },
+          "failure": {
+            "safety_rejected": "Ez az alkotás nem felelt meg a szolgáltató biztonsági ellenőrzésének.",
+            "failed": "Ezt az alkotást nem sikerült legenerálni."
+          },
+          "approve": "Jóváhagyás mintaként",
+          "delete": "Törlés",
+          "deleteAccessibilityLabel": "Ezen AI alkotás törlése",
+          "errors": {
+            "loadFailed": "Az AI alkotások könyvtárának betöltése sikertelen. Próbáld újra."
+          }
+        },
+        "approve": {
+          "modalTitle": "Saját minta létrehozása",
+          "titleLabel": "Minta neve",
+          "titleAccessibilityLabel": "Minta neve",
+          "defaultTitle": "AI mintám",
+          "placeholder": "AI mintám",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "Mégse",
+          "creating": "Minta létrehozása…",
+          "create": "Minta létrehozása",
+          "errors": {
+            "generic": "A saját minta létrehozása sikertelen. Próbáld újra."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "Regisztrált fiók szükséges",
+          "body": "A saját minták a fiókodhoz tartoznak, így privátak maradnak, és minden eszközön elérhetők.",
+          "signIn": "Jelentkezz be vagy hozz létre fiókot",
+          "back": "Vissza"
+        },
+        "header": {
+          "title": "Fotóminta",
+          "subtitle": "Keretezd le helyben, majd hagyd jóvá az átalakítást",
+          "backAccessibilityLabel": "Vissza"
+        },
+        "picker": {
+          "chooseTitle": "Fotó kiválasztása",
+          "helpText": "A teljes felbontású fotó ezen az eszközön marad. Semmi nem alakul át, amíg jóvá nem hagyod a keretezést.",
+          "choose": "Kiválasztás a könyvtárból",
+          "chooseAnother": "Másik kiválasztása",
+          "opening": "Megnyitás…",
+          "errors": {
+            "permissionDenied": "A helyi fotóforrás kiválasztásához galériahozzáférés szükséges.",
+            "invalidDimensions": "A kiválasztott fotónak nincsenek használható méretei.",
+            "generic": "A fotógaléria megnyitása sikertelen. Próbáld újra."
+          }
+        },
+        "framing": {
+          "title": "Alkotás keretezése",
+          "gestureHint": "Húzd a mozgatáshoz · csippentsd a nagyításhoz",
+          "aspectLabel": "Keretarány"
+        },
+        "profile": {
+          "title": "Átalakítási profil",
+          "options": {
+            "easy": "Egyszerű",
+            "standard": "Standard",
+            "detailed": "Részletes"
+          },
+          "custom": "Egyéni",
+          "customMeta": "Szabad · alak zárolva",
+          "unavailable": "Nem illeszkedik ehhez a kerethez",
+          "customShortEdgeLabel": "Rövidebb oldal",
+          "customColorLimitLabel": "DMC színkorlát",
+          "exceedsLimit": "Ezek az egyéni értékek meghaladják a minta {{max}} cellás méretkorlátját."
+        },
+        "titleCard": {
+          "label": "Minta neve",
+          "placeholder": "Fotómintám",
+          "defaultTitle": "Fotómintám",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · legfeljebb {{maxColors}} DMC {{colorsUnit}}",
+          "privacyNotice": "A jóváhagyás csak a keretezett, kicsinyített verziót küldi el. Az eredeti fotó helyben marad.",
+          "approve": "Alkotás jóváhagyása és átalakítás"
+        },
+        "processing": {
+          "preparingFrame": "A jóváhagyott keret előkészítése ezen az eszközön…",
+          "uploading": "Csak a kivágott, kicsinyített keret küldése…",
+          "waitingForWorker": "Várakozás az átalakítás feldolgozására…",
+          "buildingGrid": "Öltésrács és DMC paletta létrehozása…",
+          "preparingSession": "A saját minta előkészítése a játékhoz…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "Ez a profil már nem illeszkedik a végleges kerethez. Válaszd az Egyszerű beállítást, vagy csökkentsd a részletességet.",
+            "generic": "Ennek a fotónak az átalakítása sikertelen. Próbáld újra."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "Nincs kiválasztott minta",
+          "noPatternBody": "Ezt a képernyőt egy meglévő saját mintából kell megnyitni a könyvtáradból.",
+          "accountTitle": "Regisztrált fiók szükséges",
+          "accountBody": "A saját minták a fiókodhoz tartoznak, így privátak maradnak, és minden eszközön elérhetők.",
+          "signIn": "Jelentkezz be vagy hozz létre fiókot",
+          "back": "Vissza"
+        },
+        "loading": "Vázlat folytatása a szerkesztőben...",
+        "load": {
+          "failedTitle": "A minta betöltése sikertelen",
+          "retry": "Próbáld újra",
+          "back": "Vissza",
+          "errors": {
+            "generic": "Ennek a saját mintának a betöltése sikertelen. Próbáld újra."
+          }
+        },
+        "header": {
+          "title": "Mintaszerkesztő",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "Vissza"
+        },
+        "toolbar": {
+          "undo": "Visszavonás",
+          "redo": "Mégis"
+        },
+        "mode": {
+          "paint": "Festés",
+          "replaceColor": "Szín cseréje",
+          "replaceStep1": "1. Érintsd meg a lecserélendő színt a lenti mintában:",
+          "replaceStep2": "2. Válaszd ki a célzott DMC színt lent a csere végrehajtásához:",
+          "paintSelected": "Kiválasztva: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "Válassz színt lent, majd érintsd meg a cellákat a festéshez."
+        },
+        "errors": {
+          "pickColorFirst": "Először válassz színt",
+          "paletteLimit": "Ez a minta már a maximálisan engedélyezett {{max}} fonalszínt használja."
+        },
+        "picker": {
+          "title": "DMC fonalszínek",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "Szerkesztett minta mentése",
+          "placeholder": "Szerkesztett mintám neve",
+          "action": "Mentés újként",
+          "offlineTitle": "Offline mentve",
+          "offlineBody": "A szerkesztett mintád ezen az eszközön lett elmentve, és szinkronizálódik a fiókoddal, amint újra kapcsolódsz.",
+          "errors": {
+            "generic": "Ennek a saját mintának a mentése sikertelen. Próbáld újra."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "Ez a bejelentkezés egy másik fiókhoz tartozik. Az aktuális fiókod nem változott.",
+        "providerRejected": "Ez az ellenőrzés elutasítva. Ellenőrizd a fiókot vagy a kódot, és próbáld újra."
+      },
+      "generic": {
+        "failure": "Valami elromlott. Próbáld újra.",
+        "supportReferenceLabel": "Támogatási hivatkozás: {{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "A Stitch Wish a kiválasztott fotókat saját minták készítéséhez vagy nyilvános alkotói profilkép választásához használja."
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "ÜDVÖZLÜNK A STITCH WISHBEN",
+        "title": "Válassz színt, érintsd meg a hozzá tartozó négyzeteket.",
+        "heroAlt": "A Cozy Heart kezdő minta előnézete",
+        "handedness": {
+          "sectionTitle": "Melyik oldalon legyenek a vezérlők?",
+          "groupLabel": "Vezérlők oldala",
+          "optionRight": "Vezérlők jobbra",
+          "optionLeft": "Vezérlők balra",
+          "saveErrorText": "Ennek a választásnak a mentése sikertelen.",
+          "retry": "Próbáld újra"
+        },
+        "note": "Ezt később a Beállításokban módosíthatod.",
+        "start": "Hímzés indítása",
+        "starting": "Indítás…",
+        "browse": "Kezdő minták böngészése",
+        "signIn": "Bejelentkezés"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "Válaszd a DMC 321 Christmas Red színt.",
+          "stitchAction": "Érintsd meg a kiemelt megfelelő cellát.",
+          "mismatchedTap": "Érintsd meg a kiemelt eltérő cellát. A hibás érintések semmibe nem kerülnek.",
+          "undoAction": "Vond vissza azt az öltést, majd helyezd el újra.",
+          "stitchSweep": "Nyomd meg a megfelelő cellát, majd húzd végig a kiemelt soron.",
+          "threadColorCompletion": "Fejezd be a kiemelt fehér fonalat, majd válaszd ki a következő színt."
+        },
+        "hints": {
+          "anchoredZoom": "Csippentsd a nagyításhoz, miközben a cellák az ujjaid alatt maradnak.",
+          "panVsSweep": "A húzás mozgatja a vásznat. Kezdd a megfelelő cellán a sor hímzéséhez.",
+          "edgeAutoPan": "Folytasd a húzást a szélhez közel, és a vászon követi az ujjadat.",
+          "remainingCellLocator": "Használd a keresőt a következő hátralévő cella megtalálásához ehhez a fonalhoz."
+        },
+        "skip": "Kihagyás most",
+        "skipAccessibilityLabel": "Útmutató kihagyása most",
+        "dismiss": "Értem",
+        "dismissAccessibilityLabel": "Tipp elvetése"
+      },
+      "recap": {
+        "title": "Sikerült",
+        "lines": {
+          "matchNumbers": "Párosítsd a számokat minden öltés elhelyezéséhez.",
+          "dragSweep": "Húzd végig a megfelelő cellákon a sor hímzéséhez.",
+          "pinchZoom": "Csippentsd a nagyításhoz, ha jobb rálátásra van szükséged.",
+          "undoLocator": "A visszavonás és a kereső mindig ingyenes."
+        },
+        "continue": "Hímzés folytatása",
+        "browsePatterns": "Minták böngészése"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "Hímzőasztal",
+        "subtitle": "Folytasd, ahol abbahagytad, vagy térj vissza egy korábbi munkádhoz.",
+        "loading": "Öltéseid betöltése...",
+        "empty": {
+          "title": "Nincs aktív munka",
+          "body": "A hímzőkereted jelenleg üres. Böngéssz a mintakatalógusban, hogy találj valami szépet hímzésre!",
+          "action": "Katalógus böngészése"
+        },
+        "unknownPattern": "Ismeretlen minta",
+        "idLabel": "ID: {{id}}",
+        "unknownPatternLabel": "{{id}} minta",
+        "deleteSessionAccessibilityLabel": "Munkamenet törlése",
+        "viewFinishedAccessibilityLabel": "Befejezett munka megtekintése",
+        "resumeAccessibilityLabel": "Hímzés folytatása",
+        "status": {
+          "ready": "Kész",
+          "done": "Befejezve",
+          "active": "Aktív",
+          "preparing": "Előkészítés",
+          "failed": "Sikertelen"
+        },
+        "deleteConfirm": {
+          "title": "Haladás törlése",
+          "message": "Biztosan törlöd a haladásodat itt: „{{title}}”? Ez nem vonható vissza.",
+          "cancel": "Mégse",
+          "confirm": "Törlés"
+        },
+        "preparingCard": {
+          "discardTitle": "Munkamenet elvetése",
+          "cancelTitle": "Letöltés megszakítása",
+          "discardMessage": "Biztosan elveted ezt a sikertelen munkamenetet?",
+          "cancelMessage": "Biztosan megszakítod ennek a mintának a letöltését?",
+          "keep": "Megtartás",
+          "discard": "Elvetés",
+          "cancel": "Mégse"
+        }
+      },
+      "loading": {
+        "text": "Munkamenet megnyitása és a vászon előkészítése..."
+      },
+      "error": {
+        "title": "A munkamenet betöltése sikertelen",
+        "fallbackMessage": "A hímzési munkameneted betöltése sikertelen.",
+        "backButton": "Vissza",
+        "tableButton": "Ugrás az asztalhoz"
+      },
+      "header": {
+        "backButton": "← Vissza",
+        "tableButton": "← Asztal",
+        "defaultTitle": "Hímzési munkamenet",
+        "progress": "{{completed}} / {{total}} cella ({{percent}}% kész)",
+        "resumeTutorialAccessibilityLabel": "Útmutató folytatása"
+      },
+      "banners": {
+        "patternRemoved": "Ezt a mintát moderálás miatt eltávolították, és már nem elérhető. Érintsd meg a kilépéshez.",
+        "syncConflict": "Szinkronizálva egy másik eszközzel — néhány cella frissült. Érintsd meg az elvetéshez."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "Az aktív fonalszín következő hátralévő cellájának megkeresése",
+        "undoAccessibilityLabel": "Utolsó öltés visszavonása"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "{{number}}. szín: DMC {{dmcCode}}, {{count}} öltés hátra",
+        "chipAccessibilityLabel_other": "{{number}}. szín: DMC {{dmcCode}}, {{count}} öltés hátra",
+        "done": "Kész",
+        "remaining_one": "még {{count}}",
+        "remaining_other": "még {{count}}"
+      },
+      "celebration": {
+        "title": "Gyönyörűen kihímezve!",
+        "subtitle": "Befejezted a vászon minden egyes öltését.",
+        "stitchesLabel_one": "Öltés",
+        "stitchesLabel_other": "Öltés",
+        "colorsLabel_one": "Szín",
+        "colorsLabel_other": "Szín",
+        "replayButton": "Hímzés újra",
+        "catalogButton": "Vissza a katalógushoz"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "Vissza",
+        "tryAgain": "Próbáld újra"
+      },
+      "rejectionReasons": {
+        "safety": "Biztonság",
+        "publication_rights": "Közzétételi jogok",
+        "duplicate_or_spam": "Duplikátum vagy spam",
+        "technical_invalidity": "Technikai érvénytelenség",
+        "quality_standard": "Minőségi szabvány"
+      },
+      "submissionStatus": {
+        "accepted": "Közzétéve",
+        "appeal_pending": "Fellebbezés függőben",
+        "appeal_upheld": "Fellebbezés elutasítva",
+        "precheck_failed": "Az előzetes ellenőrzés nem elérhető",
+        "precheck_pending": "Ellenőrzés folyamatban",
+        "quarantined": "Áttekintés szükséges",
+        "rejected": "Elutasítva",
+        "review_pending": "Elbírálás alatt"
+      },
+      "revisionStatus": {
+        "accepted": "Közzétéve",
+        "appeal_pending": "Fellebbezés függőben",
+        "appeal_upheld": "Fellebbezés elutasítva",
+        "pending": "Elbírálás alatt",
+        "rejected": "Elutasítva",
+        "withdrawn": "Visszavonva"
+      },
+      "home": {
+        "identity": {
+          "establishing": "Azonosító létrehozása...",
+          "pendingTitle": "Azonosító függőben",
+          "offline": "Offline",
+          "retryConnection": "Kapcsolódás újrapróbálása",
+          "loadingPublicProfile": "Nyilvános profil betöltése...",
+          "unavailableTitle": "A nyilvános profil nem elérhető",
+          "checkConnection": "Ellenőrizd a kapcsolatot, és próbáld újra.",
+          "createTitle": "Hozd létre nyilvános profilod",
+          "createBody": "Válassz állandó felhasználónevet, amely a mintáid mellett jelenik meg a közösségben. A fiókadataid privátak maradnak.",
+          "createAction": "Nyilvános profil létrehozása",
+          "editAction": "Nyilvános profil szerkesztése",
+          "offlinePendingSync": "Offline — szinkronizálásra vár",
+          "guestPlayer": "Vendégjátékos",
+          "playingSince": "Játékos ideje: {{date}}",
+          "creatorSince": "Alkotó ideje: {{date}}"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "Áruház megnyitása",
+          "title": "Stúdió egyenlegek",
+          "commerceStoreLink": "Áruház",
+          "stitchCoinsAccessibilityLabel": "Stitch Coin egyenleg: {{balance}}. Érintsd meg érmék szerzéséhez.",
+          "packs": "Csomagok",
+          "stitchCoinsLabel": "Stitch Coin",
+          "stitchCoinsSub": "Minták feloldásához",
+          "aiCreditsAccessibilityLabel": "AI kredit egyenleg: {{balance}}. Érintsd meg kreditek szerzéséhez.",
+          "aiCreditsSignInAccessibilityLabel": "AI kredit. Jelentkezz be a vásárláshoz.",
+          "aiCreditsLabel": "AI kredit",
+          "aiCreditsSubOwned": "Minta AI alkotásokhoz",
+          "aiCreditsSubGuest": "Jelentkezz be a tulajdonláshoz",
+          "membershipActiveAccessibilityLabel": "Prémium tagság aktív ({{plan}}). Érintsd meg a kezeléshez.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Prémium. Érintsd meg a csomagok megtekintéséhez.",
+          "membershipActiveTitle": "Prémium aktív · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Prémium",
+          "planAnnual": "Éves",
+          "planMonthly": "Havi",
+          "planWeekly": "Heti",
+          "planActive": "Aktív",
+          "trialBadge": "Próba",
+          "membershipSubActive": "Minden téma feloldva · Napi érmék jelenlegi igénylése",
+          "membershipSubInactive": "30 napi érme, egyéni témák és AI kredit jelenleg",
+          "manage": "Kezelés",
+          "explore": "Felfedezés"
+        },
+        "quickNav": {
+          "sectionEyebrow": "FIÓK ÉS KÖZÖSSÉG",
+          "submissionsAccessibilityLabel": "Katalógusbeküldések: Elbírálások, döntések és fellebbezések nyomon követése",
+          "submissionsTitle": "Beküldések",
+          "submissionsSub": "Elbírálások nyomon követése",
+          "publishedAccessibilityLabel": "Közzétett minták: Metaadatok szerkesztése, visszavonás és fellebbezések nyomon követése",
+          "publishedTitle": "Közzétéve",
+          "publishedSub": "Minták kezelése",
+          "moderationAccessibilityLabel": "Moderációs értesítések: A mintáidat érintő katalógusdöntések áttekintése",
+          "moderationTitle": "Moderáció",
+          "moderationSub": "Szabályzati értesítések",
+          "likedAccessibilityLabel": "Kedvelt minták: A közösség mintáiból álló privát kedvencgyűjteményed",
+          "likedTitle": "Kedvelt minták",
+          "likedSavedCount_one": "{{count}} mentve",
+          "likedSavedCount_other": "{{count}} mentve",
+          "likedSavedDefault": "Mentett minták"
+        },
+        "dailySection": {
+          "title": "Napi hímzés és jutalmak",
+          "tasksGroupLabel": "Napi feladatok (legfeljebb +30 érme)",
+          "connectToTrack": "Kapcsolódj a napi feladatok haladásának nyomon követéséhez.",
+          "loadingTasks": "Feladatok betöltése…",
+          "loadFailed": "A napi feladatok betöltése sikertelen.",
+          "retry": "Próbáld újra",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "Visszaállítás…",
+          "resetsInHoursMinutes": "Visszaállítás {{hours}}ó {{minutes}}p múlva",
+          "resetsInMinutes": "Visszaállítás {{minutes}}p múlva"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 hímzési művelet",
+            "body": "Töltsd ki ma 100 megfelelő cellát"
+          },
+          "three_colors_10": {
+            "title": "3 szín, egyenként 10 művelet",
+            "body": "Érj el 10 műveletet 3 fonalszínnel"
+          },
+          "color_completion": {
+            "title": "Fonalszín befejezése",
+            "body": "Fejezz be teljesen bármelyik hímzési színt"
+          }
+        },
+        "dailyPool": {
+          "title": "30 érmés napi jutalomkeret",
+          "premiumInstantClaim": "Azonnali igénylés Prémiumnak",
+          "rewardedAds": "Jutalmazott hirdetések",
+          "claimedAmount": "{{amount}} Stitch Coin igényelve ma!",
+          "poolAlreadyClosed": "A mai jutalomkeret már lezárult.",
+          "claimedForToday": "Mára igényelve. Visszaáll a következő jutalomnapon.",
+          "poolExhausted": "A mai 30 érmés jutalomkeret kimerült.",
+          "claimButtonRetry": "Igénylés újrapróbálása",
+          "claimButtonInstant": "{{count}} érme igénylése (azonnal)",
+          "poolClaimedResetsTomorrow": "A mai érmekeret igényelve. Visszaáll holnap.",
+          "allAdRewardsCompleted": "Ma minden hirdetésjutalmat igényeltél! (30/30 érme)",
+          "watchAdButton": "Nézz meg egy hirdetést +10 érméért ({{count}} maradt)",
+          "adPerkNote": "Naponta legfeljebb 3 hirdetés · A Prémium feloldja a 30 érme azonnali igénylését",
+          "adRewardEarned": "Hirdetésjutalom megszerezve! Ellenőrzés a backenddel…",
+          "claimFailed": "Az igénylés sikertelen: {{message}}",
+          "claimFailedGeneric": "Valami elromlott. Próbáld újra.",
+          "adLoadFailedDefault": "A hirdetés betöltése sikertelen",
+          "adAttemptFailedDefault": "A hirdetéspróbálkozás megnyitása sikertelen"
+        },
+        "tabs": {
+          "myCreations": "Munkáim {{count}}",
+          "likedPatterns": "Kedvelt minták {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "Jelentkezz be a saját mintákhoz",
+          "signInBody": "Az átalakított fotóminták létrehozásához és privát tulajdonlásához regisztrált fiók szükséges.",
+          "signIn": "Bejelentkezés",
+          "patternMeta": "{{width}}×{{height}} · {{count}} szín",
+          "pendingSync": "Szinkronizálásra vár",
+          "play": "Játék",
+          "edit": "Szerkesztés",
+          "submitAccessibilityLabel": "{{title}} beküldése a közösségi katalógusba",
+          "emptyTitle": "Nincs saját munka",
+          "emptyBody": "Még nem alakítottál át fotót, és nem generáltál AI alkotást. Kattints az Alkotásra, hogy elkezdd az első remekműved!",
+          "emptyAction": "Alkotás megkezdése",
+          "actionFailedGeneric": "Valami elromlott. Próbáld újra."
+        },
+        "likedTab": {
+          "unavailableTitle": "A kedvelt minták nem elérhetők",
+          "unavailableDefault": "A kedvelt minták betöltése sikertelen.",
+          "byCreator": "készítette: {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} szín",
+          "emptyTitle": "Nincs kedvelt minta",
+          "emptyBody": "Böngéssz a katalógusban, és érintsd meg a szívikont bármelyik designnál, hogy ide mentsd később.",
+          "emptyAction": "Minták felfedezése"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Prémium napi érmeigénylés",
+        "description": "Igényeld a mai 30 érmés közös jutalomkeret hátralévő részét.",
+        "connectPrompt": "Kapcsolódj a Game Backendhez a mai jutalom ellenőrzéséhez.",
+        "checkingReward": "A mai prémium jutalom ellenőrzése…",
+        "unavailableGeneric": "A mai prémium jutalom nem elérhető.",
+        "tryAgain": "Próbáld újra",
+        "resultAdded": "{{amount}} Stitch Coin hozzáadva a Game Backend által. Egyenleg: {{balance}}.",
+        "poolAlreadyClosed": "A mai közös jutalomkeret már lezárult.",
+        "alreadyClaimed": "Erre a jutalomnapra már igényelve.",
+        "poolExhausted": "A mai közös jutalomkeret kimerült. Visszaáll a következő jutalomnapon.",
+        "availableNow": "{{count}} Stitch Coin elérhető most",
+        "resetsAt": "Visszaáll: {{date}}",
+        "claimButtonRetry": "Igénylés újrapróbálása",
+        "claimButtonInstant": "{{count}} érme igénylése",
+        "lockedDescription": "A prémium tagság, beleértve a jogosult havi próbaidőszakot is, feloldja ezt a napi igénylést.",
+        "viewPremiumPlans": "Prémium csomagok megtekintése"
+      },
+      "publicProfile": {
+        "editTitle": "Nyilvános profil szerkesztése",
+        "createTitle": "Nyilvános profil létrehozása",
+        "signInTitle": "Bejelentkezés szükséges",
+        "signInBody": "Nyilvános alkotói azonosító létrehozásához regisztrált fiók szükséges.",
+        "signInAction": "Bejelentkezés",
+        "unavailableTitle": "A profil nem elérhető",
+        "unavailableBody": "A nyilvános profilod betöltése sikertelen. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "tryAgain": "Próbáld újra",
+        "intro": "Ez a név és fotó a mintáid mellett látható a közösségben. Az e-mail-címed és a bejelentkezési szolgáltatód privát marad.",
+        "choosePhoto": "Fotó kiválasztása",
+        "changePhoto": "Fotó módosítása",
+        "remove": "Eltávolítás",
+        "avatarHelper": "Nem kötelező · JPEG, PNG vagy WebP · legfeljebb 5 MB",
+        "usernameLabel": "Felhasználónév",
+        "usernameAccessibilityLabel": "Nyilvános felhasználónév",
+        "usernamePlaceholder": "himzo_nev",
+        "usernameHelperLocked": "A felhasználóneved végleges.",
+        "usernameHelperEditable": "3–30 kisbetű, szám vagy aláhúzásjel. Ezt később nem lehet módosítani.",
+        "displayNameLabel": "Megjelenített név",
+        "displayNameAccessibilityLabel": "Nyilvános megjelenített név",
+        "displayNamePlaceholder": "Alkotói neved",
+        "displayNameHelper": "Ezt később módosíthatod.",
+        "safetyNotice": "A neveket és fotókat közzététel előtt ellenőrizzük. Ha a módosítás elutasításra kerül, az aktuális nyilvános profilod változatlan marad.",
+        "saveAction": "Nyilvános profil mentése",
+        "publishAction": "Nyilvános profil közzététele",
+        "photoPermissionRequired": "Profilkép kiválasztásához galériahozzáférés szükséges.",
+        "photoTypeInvalid": "A profilképeknek JPEG, PNG vagy WebP formátumúnak kell lenniük.",
+        "photoTooLarge": "A profilképek legfeljebb 5 MB méretűek lehetnek.",
+        "saveFailedDefault": "A nyilvános profilod mentése sikertelen"
+      },
+      "submissions": {
+        "title": "Katalógusbeküldések",
+        "unavailableTitle": "A beküldések nem elérhetők",
+        "unavailableDefault": "A beküldéseid betöltése sikertelen.",
+        "emptyTitle": "Nincs katalógusbeküldés",
+        "emptyBody": "Küldj be egy szinkronizált saját mintát a Munkáim menüből.",
+        "emptyAction": "Vissza a Munkáimhoz",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "Az automatikus ellenőrzéseket nem sikerült befejezni. Ez a pillanatkép nem került közzétételre.",
+        "publishedToCatalog": "Közzétéve a közösségi katalógusban.",
+        "appealAction": "Fellebbezés benyújtása",
+        "appealHelp": "Erre a változatlan pillanatképre egyszer nyújthatsz be fellebbezést.",
+        "appealNoteAccessibilityLabel": "Fellebbezési megjegyzés",
+        "appealNotePlaceholder": "Nem kötelező kontextus az elbíráló moderátornak",
+        "cancelAction": "Mégse",
+        "submitAppealAction": "Fellebbezés küldése"
+      },
+      "publishedPatterns": {
+        "title": "Közzétett minták",
+        "unavailableTitle": "A minták nem elérhetők",
+        "unavailableDefault": "A közzétett mintáid betöltése sikertelen.",
+        "emptyTitle": "Nincs közzétett minta",
+        "emptyBody": "A közösségi katalógusban közzétett mintáid itt jelennek meg.",
+        "emptyAction": "Vissza a profilhoz",
+        "withdrawnFromCatalog": "Visszavonva a katalógusból",
+        "underReviewHold": "Elbírálás alatt",
+        "meta": "{{category}} · Közzétéve: {{date}}",
+        "withdrawnHelp": "Ez az azonosító véglegesen vissza lett vonva. A meglévő hímzési munkamenettel rendelkező játékosok megtartják a haladásukat és hozzáférésüket.",
+        "reviewHoldHelp": "Ez a minta átmenetileg nem fedezhető fel, és nem indíthat új munkameneteket. A meglévő hímzési munkamenetek továbbra is játszhatók. Metaadat-módosítást is javasolhatsz.",
+        "reviseAction": "Metaadatok módosítása",
+        "withdrawRevisionAction": "Módosítás visszavonása",
+        "appealAction": "Fellebbezés benyújtása",
+        "withdrawFromCatalogAction": "Visszavonás a katalógusból",
+        "appealHelp": "Erre a változatlan pillanatképre egyszer nyújthatsz be fellebbezést. Ha helyette új változatot küldesz, lemondasz erről a fellebbezésről.",
+        "appealNoteAccessibilityLabel": "Fellebbezési megjegyzés",
+        "appealNotePlaceholder": "Nem kötelező kontextus az elbíráló moderátornak",
+        "cancelAction": "Mégse",
+        "submitAppealAction": "Fellebbezés küldése",
+        "withdrawRevisionFailedTitle": "A módosítás visszavonása sikertelen",
+        "withdrawPatternFailedTitle": "A minta visszavonása sikertelen",
+        "withdrawPatternSuccessTitle": "Minta visszavonva",
+        "withdrawPatternSuccessBody": "Már nem fedezhető fel, és nem indíthatók új munkamenetek. A meglévő hímzési munkamenetek megtartják haladásukat és játékadataikat.",
+        "withdrawConfirmTitle": "Visszavonod a közösségi katalógusból?",
+        "withdrawConfirmBody": "A(z) „{{title}}” eltűnik a felfedezésből, és nem indíthat új munkameneteket. Ez a mintaazonosító soha nem állítható vissza. A meglévő hímzési munkamenetek és haladásuk továbbra is játszhatók.",
+        "withdrawConfirmCancel": "Mégse",
+        "withdrawConfirmAction": "Végleges visszavonás"
+      },
+      "revisePatternMetadata": {
+        "title": "Metaadatok módosítása",
+        "signInTitle": "Regisztrált fiók szükséges",
+        "signInBody": "Jelentkezz be, mielőtt módosítanád egy közösségi minta metaadatait.",
+        "signInAction": "Bejelentkezés",
+        "notFoundTitle": "A közösségi minta nem található",
+        "notFoundBody": "Csak a saját közzétett közösségi mintáidat módosíthatod.",
+        "notFoundAction": "Vissza a Közzétett mintákhoz",
+        "inProgressTitle": "Már van folyamatban lévő módosítás",
+        "inProgressBody": "Ennek a mintának már van függőben lévő módosítása vagy aktív fellebbezése. Vond vissza, mielőtt egy másikat küldenél.",
+        "inProgressAction": "Vissza a Közzétett mintákhoz",
+        "currentlyPublished": "Jelenleg közzétéve a közösségi katalógusban",
+        "titleFieldLabel": "Katalóguscím",
+        "titlePlaceholder": "Minta neve",
+        "titleAccessibilityLabel": "Katalóguscím",
+        "descriptionFieldLabel": "Leírás",
+        "descriptionPlaceholder": "Írd le a designt, a témát és a hímzési élményt.",
+        "descriptionAccessibilityLabel": "Katalógusleírás",
+        "sourceLanguageFieldLabel": "Forrásnyelv",
+        "categoryFieldLabel": "Kategória",
+        "tagsFieldLabel": "Címkék",
+        "notice": "A módosítás új, megváltoztathatatlan pillanatképet rögzít. Az aktuálisan közzétett metaadataid láthatók maradnak, amíg egy emberi moderátor el nem fogadja ezt a módosítást.",
+        "submitAction": "Módosítás küldése"
+      },
+      "submitPattern": {
+        "title": "Beküldés a közösségnek",
+        "signInTitle": "Regisztrált fiók szükséges",
+        "signInBody": "Jelentkezz be, mielőtt saját mintát küldenél be a közösségi katalógusba.",
+        "signInAction": "Bejelentkezés",
+        "createProfileTitle": "Nyilvános alkotói profil létrehozása",
+        "createProfileBody": "A közösségi minták a nyilvános alkotói azonosítódhoz vannak rendelve.",
+        "createProfileAction": "Profil létrehozása",
+        "patternNotFoundTitle": "A saját minta nem található",
+        "patternNotFoundBody": "Csak szinkronizált saját minták küldhetők be.",
+        "patternNotFoundAction": "Vissza a profilhoz",
+        "patternMeta": "{{width}}×{{height}} · {{count}} szín",
+        "byCreator": "készítette: @{{username}}",
+        "titleFieldLabel": "Katalóguscím",
+        "titlePlaceholder": "Minta neve",
+        "titleAccessibilityLabel": "Katalóguscím",
+        "descriptionFieldLabel": "Leírás",
+        "descriptionPlaceholder": "Írd le a designt, a témát és a hímzési élményt.",
+        "descriptionAccessibilityLabel": "Katalógusleírás",
+        "sourceLanguageFieldLabel": "Forrásnyelv",
+        "categoryFieldLabel": "Kategória",
+        "tagsFieldLabel": "Címkék",
+        "rightsDeclaration": "Ezt a munkát én alkottam, vagy rendelkezem a közzétételéhez szükséges jogokkal az 1. verziójú Közzétételi jogi nyilatkozat szerint.",
+        "notice": "A beküldés megváltoztathatatlan másolatot rögzít. Az automatikus ellenőrzések bizonyítékot szolgáltatnak, de minden döntést emberi moderátor hoz.",
+        "submitAction": "Elbírálásra küldés"
+      },
+      "moderationNotices": {
+        "title": "Moderációs értesítések",
+        "signInTitle": "Jelentkezz be az értesítések megtekintéséhez",
+        "signInBody": "A moderációs értesítések ahhoz a regisztrált fiókhoz tartoznak, amely az adott közösségi mintát közzétette.",
+        "signInAction": "Bejelentkezés",
+        "unavailableTitle": "Az értesítések nem elérhetők",
+        "unavailableDefault": "A moderációs értesítések betöltése sikertelen.",
+        "emptyTitle": "Nincs moderációs értesítés",
+        "emptyBody": "A tulajdonos számára látható katalógusmoderációs döntések itt jelennek meg.",
+        "emptyAction": "Vissza a profilhoz",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "Katalógus-metaadatok javítása",
+          "no_violation": "Elbírálás lezárva — nincs szabályszegés",
+          "review_hold": "Elbírálási tartás",
+          "safety_removal": "Biztonsági eltávolítás"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "A cím, a leírás és a kiválasztott címkék biztonságos értékekre lettek cserélve. Az elérhetőséget, a mintafájlt és az elbírálást ez nem érinti. Új katalógus-metaadat módosítást bármikor beküldhetsz.",
+          "no_violation": "A közzététel utáni elbírálás lezárult, és ez a minta ismét teljesen elérhető a felfedezésben és az új hímzési munkamenetekben.",
+          "review_hold": "Ez a minta átmenetileg nem elérhető a felfedezésben és az új munkamenetekben. A meglévő hímzési munkamenetek, a haladás és az offline mintaadatok továbbra is játszhatók.",
+          "safety_removal": "Ezt a mintát biztonsági, jogi vagy szabályzati szegés miatt eltávolították. Eltűnt a felfedezésből, a meglévő hímzési munkamenetek elérhetetlenné váltak, és az eszközeiden lévő offline mintaadatok törlésre kerültek. Egy fellebbezést nyújthatsz be a biztonsági eltávolítás ellen."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "Napi feladatok",
+        "offline": "Nincs kapcsolat — a napi feladatokhoz kapcsolat szükséges.",
+        "unavailable": "A napi feladatok betöltése sikertelen.",
+        "empty": "Ma nincs elérhető feladat."
+      },
+      "rewardedAdCard": {
+        "offline": "Nincs kapcsolat — a jutalomnaphoz kapcsolat szükséges.",
+        "unavailable": "A jutalomnap állapotának betöltése sikertelen.",
+        "premiumClaimClosedPool": "A prémium napi igénylésed lezárta a mai közös érmekeretet.",
+        "allRewardsClaimed": "Ma minden hirdetésjutalmat igényeltél. Gyere vissza holnap!",
+        "remaining_one": "{{count}} hirdetés maradt ma ({{coins}} érme elérhető)",
+        "remaining_other": "{{count}} hirdetés maradt ma ({{coins}} érme elérhető)",
+        "watchForCoins": "Nézz meg egy hirdetést {{count}} érméért"
+      },
+      "likedPatterns": {
+        "title": "Kedvelt minták",
+        "signInTitle": "Regisztrált fiók szükséges",
+        "signInBody": "Jelentkezz be, mielőtt megtekintenéd a privát kedvenc mintagyűjteményedet.",
+        "signInAction": "Bejelentkezés",
+        "unavailableTitle": "A kedvelt minták nem elérhetők",
+        "unavailableDefault": "A kedvelt minták betöltése sikertelen.",
+        "emptyTitle": "Nincs kedvelt minta",
+        "emptyBody": "Böngéssz a mintakatalógusban, és érintsd meg a szívikont bármelyik designnál, hogy ide mentsd.",
+        "emptyAction": "Minták felfedezése",
+        "byCreator": "készítette: {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} szín · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "Beállítások",
+        "subtitleDev": "Konfiguráld a beállításokat, és ellenőrizd a backend rendszereket.",
+        "subtitleProd": "Konfiguráld a beállításaidat."
+      },
+      "serviceStatus": {
+        "sectionTitle": "Szolgáltatás állapota",
+        "apiConnectionTitle": "API kapcsolat",
+        "testingConnection": "API kapcsolat tesztelése...",
+        "offlineUnreachable": "Offline / Nem elérhető",
+        "unknownConnectionError": "Ismeretlen kapcsolathiba",
+        "retryConnection": "Kapcsolódás újrapróbálása",
+        "healthy": "Egészséges",
+        "degraded": "Korlátozott",
+        "postgresLabel": "PostgreSQL adatbázis",
+        "redisLabel": "Redis gyorsítótár"
+      },
+      "session": {
+        "sectionTitle": "Azonosító és munkamenet",
+        "statusTitle": "Backend munkamenet állapota",
+        "statusDescription": "Ellenőrzi az aktív vendégregisztrációs munkamenetedet az API-n keresztül.",
+        "noActiveSession": "Nincs aktív munkamenet",
+        "sessionActive": "Munkamenet aktív",
+        "idLabel": "ID: {{id}} (v{{version}})",
+        "unknownState": "Ismeretlen állapot"
+      },
+      "tutorial": {
+        "sectionTitle": "Útmutató",
+        "learnControlsTitle": "Ismerd meg a vezérlőket",
+        "learnControlsDescription": "Folytasd a hímzési útmutatót, amikor készen állsz.",
+        "unavailableTitle": "Az útmutató nem elérhető",
+        "unavailableMessage": "Az útmutató folytatása sikertelen. Próbáld újra."
+      },
+      "developer": {
+        "sectionTitle": "Fejlesztő",
+        "debugDiagnostics": "Hibakeresés / diagnosztika",
+        "debug": {
+          "backAccessibilityLabel": "Vissza",
+          "title": "Hibakeresés",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: konfigurálva · környezet: {{environment}}",
+            "dsnNotConfigured": "DSN: nincs konfigurálva",
+            "sendTestEvent": "Tesztesemény küldése",
+            "throwError": "Hiba kiváltása",
+            "disabledTitle": "Sentry letiltva",
+            "disabledMessage": "A Sentry nincs konfigurálva (DSN nem található), így nem lesz elküldve tesztesemény.",
+            "testEventSent": "Tesztesemény elküldve. Esemény ID: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "Hiba",
+            "testEventFailedMessage": "A tesztesemény küldése sikertelen: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Bevezető útmutató",
+            "description": "Töröld az útmutató haladását, és kezdd újra az Üdvözléstől.",
+            "restart": "Útmutató újraindítása",
+            "confirmTitle": "Újraindítod az útmutatót?",
+            "confirmMessage": "Az útmutató állapota törlődik, és a bevezető útmutató az Üdvözlés képernyőn kezdődik újra.",
+            "cancel": "Mégse",
+            "resetFailedTitle": "A visszaállítás sikertelen"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "Fiók törlése",
+        "statusTitle": "Fiók törlésének állapota",
+        "checkingStatus": "Állapot ellenőrzése...",
+        "pendingTitle": "Fiók törlése függőben",
+        "pendingDescription": "A fiókod törlése ütemezve van. Jelentkezz be újra a helyreállítási időszak lejárta előtt, hogy lemondd.",
+        "recoveryWindowEnds": "A helyreállítási időszak vége: {{date}}",
+        "cancelling": "Lemondás...",
+        "cancelDeletion": "Törlés lemondása",
+        "statusError": "A törlési állapot ellenőrzése sikertelen. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "deleteAccountTitle": "Fiók törlése",
+        "deleteAccountDescription": "Véglegesen töröld a fiókodat, a haladásodat és minden feloldottat egy 30 napos helyreállítási időszak után.",
+        "requestedTitle": "Fiók törlése kérve",
+        "requestedMessage": "A törlési kérelmed eddig vár: {{date}}. Kijelentkeztél a fiókodból. Jelentkezz be újra ez előtt, ha le szeretnéd mondani a törlést.",
+        "signOutFailedTitle": "A helyi kijelentkezés sikertelen",
+        "signOutFailedMessage": "A törlési kérelmed továbbra is függőben van. Jelentkezz ki újra a Beállításokból.",
+        "requestFailedTitle": "A kérelem sikertelen",
+        "requestFailedMessage": "A törlési kérelmed nem lett elküldve. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "cancelSuccessTitle": "Siker",
+        "cancelSuccessMessage": "A fióktörlési kérelmed le lett mondva.",
+        "reauthRequiredTitle": "Ismételt ellenőrzés szükséges",
+        "reauthRequiredMessage": "Biztonsági okból újra be kell jelentkezned, mielőtt lemondanád a fiók törlését.",
+        "signInAction": "Bejelentkezés",
+        "cancelFailedTitle": "A lemondás sikertelen",
+        "cancelFailedGeneric": "A fiók törlésének lemondása sikertelen. Ellenőrizd a kapcsolatot, és próbáld újra."
+      },
+      "appearance": {
+        "sectionTitle": "Megjelenés"
+      },
+      "themeCollectionCard": {
+        "title": "Témagyűjtemény",
+        "description": "Módosítsd a rács, az öltés és a befejezés megjelenését anélkül, hogy ez a játékmenetet befolyásolná.",
+        "premiumBadge": "Prémium",
+        "lockedAccessibilityHint": "Prémium tagságot igényel",
+        "selected": "Kiválasztva",
+        "accessActive": "A prémium témák elérhetők, beleértve a jogosult havi próbaidőszakot is.",
+        "lockedPreview": "Itt tekintheted meg a gyűjteményt. A prémium tagság vagy egy jogosult havi próbaidőszak feloldja a kiválasztást.",
+        "viewPremiumPlans": "Prémium csomagok megtekintése"
+      },
+      "gameplay": {
+        "sectionTitle": "Játékbeállítások",
+        "showGridLinesTitle": "Rácsvonalak megjelenítése",
+        "showGridLinesDescription": "A hímzővászon celláinak határainak megjelenítése",
+        "handednessTitle": "Kéz szerinti elrendezés",
+        "handednessDescription": "Igazítsd az interaktív vezérlőket bal- vagy jobbkezes játékhoz",
+        "left": "Bal",
+        "right": "Jobb",
+        "leftHandedLayout": "Balkezes elrendezés",
+        "rightHandedLayout": "Jobbkezes elrendezés"
+      },
+      "language": {
+        "sectionTitle": "Nyelv",
+        "description": "Válaszd ki a nyelvet, amelyen a Stitch Wish megjeleníti a felületét.",
+        "followDevice": "Eszköz nyelvének követése",
+        "followDeviceDescription": "Távolítsd el a felülbírálásodat, hogy kövesd az eszközöd nyelvi beállítását.",
+        "optionEnglish": "Angol",
+        "optionTurkish": "Török",
+        "modalTitle": "Nyelv kiválasztása",
+        "modalSubtitle": "Válaszd ki a felület preferált nyelvét.",
+        "systemDefault": "Rendszer nyelve",
+        "systemDefaultWithDetected": "Rendszer nyelve ({{language}})",
+        "systemDefaultDescription": "Automatikusan igazodik az eszközöd beállításaihoz."
+      },
+      "social": {
+        "sectionTitle": "Közösség és adatvédelem",
+        "blockedCreators": "Letiltott alkotók"
+      },
+      "account": {
+        "sectionTitle": "Fiók",
+        "notSignedInTitle": "Nem vagy bejelentkezve",
+        "signInRequiredTitle": "Bejelentkezés szükséges",
+        "notSignedInDescription": "Jelentkezz be a haladásod szinkronizálásához minden eszközön.",
+        "signIn": "Bejelentkezés",
+        "reconnecting": "Újracsatlakozás…",
+        "signOut": "Kijelentkezés",
+        "signOutConfirmTitle": "Kijelentkezel?",
+        "signOutConfirmMessage": "A nem szinkronizált haladásod ezen az eszközön marad, és újra megnyílik, amikor bejelentkezel.",
+        "signOutConfirmAction": "Kijelentkezés",
+        "signOutFailedTitle": "A kijelentkezés sikertelen",
+        "signOutFailedGeneric": "Próbáld újra.",
+        "providerAppleAccount": "Apple-fiók",
+        "providerGoogleAccount": "Google-fiók",
+        "providerGenericAccount": "Regisztrált fiók"
+      },
+      "signIn": {
+        "emailHeading": "Jelentkezz be vagy hozz létre fiókot",
+        "emailSubtitle": "Tartsd elérhetővé a haladásodat minden eszközön.",
+        "codeHeading": "Add meg a kódodat",
+        "codeSubtitle": "Add meg a hatjegyű kódot, amelyet a(z) {{email}} címre küldtünk.",
+        "continueWithGoogle": "Folytatás Google-lel",
+        "orUseEmail": "vagy használj e-mailt",
+        "ssoUnavailable": "A Google és Apple bejelentkezés ebben a verzióban nem elérhető.",
+        "emailLabel": "E-mail-cím",
+        "emailPlaceholder": "E-mail-cím",
+        "sendCode": "Kód küldése",
+        "cancel": "Mégse",
+        "verify": "Ellenőrzés",
+        "resendCode": "Kód újraküldése",
+        "resending": "Újraküldés...",
+        "codeSent": "Kód elküldve",
+        "useDifferentEmail": "Másik e-mail-cím használata",
+        "sendCodeFailed": "A kód küldése sikertelen. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "codeIncorrect": "Ez a kód helytelen vagy lejárt.",
+        "verifyFailedGeneric": "Valami elromlott. Próbáld újra.",
+        "socialSignInFailed": "A bejelentkezés a(z) {{provider}} szolgáltatóval sikertelen. Próbáld újra.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "Vissza",
+        "title": "Letiltott alkotók",
+        "infoText": "A letiltás privát és visszavonható. Elrejti az alkotó mintáit a katalógusodból, keresésedből és felfedezési listáidból. Ez nem bejelentés vagy tartalomeltávolítás.",
+        "signInRequiredTitle": "Regisztrált fiók szükséges",
+        "signInRequiredBody": "Jelentkezz be, mielőtt kezelnéd a letiltott alkotók listáját.",
+        "signInAction": "Bejelentkezés",
+        "listUnavailableTitle": "A lista nem elérhető",
+        "listUnavailableDefault": "A letiltott alkotók betöltése sikertelen.",
+        "tryAgain": "Próbáld újra",
+        "emptyTitle": "Nincs letiltott alkotó",
+        "emptyBody": "Senkit sem tiltottál le. Bármelyik alkotó letiltható a mintáinak részletes oldaláról.",
+        "backToSettings": "Vissza a Beállításokhoz",
+        "unblock": "Feloldás",
+        "unblockConfirmTitle": "Alkotó letiltásának feloldása",
+        "unblockConfirmMessage": "Biztosan feloldod {{name}} letiltását? A mintái ismét megjelennek a keresésedben és böngészésedben.",
+        "cancel": "Mégse",
+        "successTitle": "Siker",
+        "unblockedMessage": "{{name}} letiltása feloldva.",
+        "errorTitle": "Hiba",
+        "unblockFailedMessage": "Az alkotó letiltásának feloldása sikertelen: {{message}}",
+        "unblockFailedGeneric": "Ismeretlen hiba"
+      },
+      "data": {
+        "sectionTitle": "Adatok",
+        "resetGuestTitle": "Vendégadatok visszaállítása",
+        "resetGuestDescription": "Véglegesen zárd le a vendégazonosítódat a szerveren, és töröld az összes eszközadatot.",
+        "resetGuestOffline": "Offline: aktív szerverkapcsolat szükséges a vendégadatok visszaállításához.",
+        "resetGuestPurchaseLock": "A visszaállítás blokkolva van, amíg egy vásárlás ellenőrzése folyamatban van. A felhasználható tartalom és a privát vendégadatok ezután nem állíthatók vissza.",
+        "removeLocalTitle": "Helyi adatok eltávolítása",
+        "removeLocalDescription": "Töröld a helyi azonosítód adatbázisát erről az eszközről.",
+        "removeLocalConfirmTitle": "Eltávolítod a helyi adatokat?",
+        "removeLocalConfirmMessage": "Figyelmeztetés: Ez törli a helyi adatbázisfájljaidat csak erről az eszközről. Minden nem szinkronizált adat véglegesen elveszik.",
+        "removeLocalConfirmAction": "Eltávolítás",
+        "removeLocalSuccessTitle": "Siker",
+        "removeLocalSuccessMessage": "A helyi adatok eltávolítva erről az eszközről.",
+        "removeLocalFailedTitle": "Az eltávolítás sikertelen",
+        "removeLocalFailedMessage": "A helyi adatok eltávolítása sikertelen: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "Információ és hivatkozások",
+        "privacyPolicy": "Adatvédelmi szabályzat",
+        "termsOfService": "Felhasználási feltételek",
+        "contactSupport": "Kapcsolatfelvétel a támogatással",
+        "accountDeletion": "Fiók törlése",
+        "openFailedMessage": "A hivatkozás megnyitása sikertelen: {{url}}",
+        "openFailedGenericTitle": "Hiba"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — Hangulatos pixel-art hímzésminták",
+        "version": "Verzió: {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "Csomag: {{id}}",
+        "schemeLabel": "Séma: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "Visszaállítod a vendégadatokat?",
+        "warning": "Ez a művelet véglegesen lezárja a vendégazonosítódat a szerveren, és véglegesen törli a következőket:",
+        "bulletProgress": "• helyi haladás",
+        "bulletRewards": "• függőben lévő jutalmak",
+        "bulletLikes": "• kedvelések",
+        "bulletUnlockAccess": "• feloldási hozzáférés",
+        "bulletOfflinePatterns": "• offline mintaadatok",
+        "confirmPrefix": "Írd be: ",
+        "confirmSuffix": " a megerősítéshez lent:",
+        "confirmAction": "Adatok visszaállítása",
+        "resetting": "Vendégadatok visszaállítása...",
+        "successTitle": "Siker",
+        "successMessage": "A vendégadatok teljesen visszaállítva.",
+        "failedTitle": "A visszaállítás sikertelen",
+        "failedMessage": "A vendégadatok visszaállítása sikertelen: {{message}}. Próbáld újra."
+      },
+      "deleteModal": {
+        "title": "Törlöd a fiókot?",
+        "recoveryPrefix": "A fiókod belép egy ",
+        "recoveryBold": "30 napos törlési helyreállítási időszakba",
+        "recoverySuffix": ". Jelentkezz be újra ezen időszak alatt a törlés lemondásához.",
+        "bulletBalances": "• Stitch Coin és AI kredit egyenlegek",
+        "bulletUnlocks": "• minden feloldott minta",
+        "bulletArtwork": "• AI alkotások és saját minták",
+        "bulletProgress": "• szinkronizált haladás és kedvelések",
+        "consequencesPrefix": "A helyreállítási időszak végén ez törlődik vagy elvész visszatérítés vagy átvitel nélkül. A közzétett közösségi minták visszavonásra kerülnek a katalógusból, az attribúció ",
+        "consequencesBold": "Törölt alkotóra",
+        "consequencesSuffix": " változik, a felhasználóneved pedig véglegesen foglalt marad.",
+        "membershipWarning": "A prémium tagságod a fiók törlése után is számlázásra kerülhet. A törlés nem mondja le automatikusan; kezeld külön a folytatás előtt, ha le szeretnéd állítani a számlázást.",
+        "manageAppleSubscription": "Apple-előfizetés kezelése",
+        "continueAction": "Folytatás",
+        "confirmTitle": "Törlés megerősítése",
+        "confirmPrefix": "A fiókod törlésének megerősítéséhez írd be ezt: ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": " az alábbi mezőbe:",
+        "submitting": "Törlési kérelem küldése...",
+        "backAction": "Vissza",
+        "confirmAction": "Megerősítés"
+      },
+      "reauthModal": {
+        "title": "Ellenőrizd az azonosságodat",
+        "description": "Biztonsági okból ellenőrizd magad egy már a fiókhoz kapcsolt bejelentkezési móddal. A törlés az ellenőrzés után automatikusan folytatódik.",
+        "loading": "Bejelentkezési módok betöltése...",
+        "codeSentMessage": "Add meg a(z) {{email}} címre küldött hatjegyű kódot.",
+        "verifyAndDelete": "Ellenőrzés és törlés",
+        "emailButton": "E-mail: {{email}}",
+        "continueWithProvider": "Folytatás ezzel: {{provider}}",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "Nincs elérhető kapcsolt bejelentkezési mód. Lépj kapcsolatba a támogatással, mielőtt újra megpróbálnád a törlést.",
+        "loadFailed": "A kapcsolt bejelentkezési módjaid betöltése sikertelen. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "retryFailed": "Az azonosságod ellenőrizve, de a törlés nem lett elküldve. Zárd be ezt a párbeszédablakot, és próbáld újra a törlést.",
+        "emailMissing": "Ehhez a kapcsolt e-mail módhoz nincs cím. Válassz másik módot.",
+        "genericFailure": "Az ismételt ellenőrzés sikertelen. Ellenőrizd a kapcsolatot, és próbáld újra."
+      },
+      "actions": {
+        "cancel": "Mégse",
+        "retry": "Próbáld újra"
+      },
+      "common": {
+        "unavailable": "Nem elérhető"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "Katalógus",
+        "stitch": "Hímzés",
+        "create": "Alkotás",
+        "profile": "Profil",
+        "settings": "Beállítások"
+      }
+    }
+  },
   "it": {
     "catalog": {
       "common": {

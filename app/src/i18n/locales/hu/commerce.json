@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Vissza",
+    "title": "Áruház",
+    "subtitle": "Tagság és egyszeri feltöltések"
+  },
+  "signInReturn": {
+    "notice": "Bejelentkeztél. A(z) {{label}} továbbra is kiválasztva marad. Ellenőrizd, majd nyomd meg a Vásárlás gombot, ha készen állsz."
+  },
+  "premiumHero": {
+    "eyebrow": "PRÉMIUM TAGSÁG",
+    "title": "Alkoss többet. Minden nap gyűjts egy kis jutalmat.",
+    "body": "AI kredit minden fizetett időszakban, prémium témák és napi Stitch Coin igénylés.",
+    "benefitAiCredits": "AI kredit",
+    "benefitDailyCoins": "Napi érmék",
+    "benefitThemes": "Témák",
+    "statusNoActiveMembership": "Nincs aktív tagság",
+    "statusBrowseAsGuest": "Csomagok böngészése vendégként",
+    "periodEndsLabel": "Az aktuális időszak vége",
+    "periodRenewsLabel": "Megújul",
+    "lifecycleActive": "Aktív"
+  },
+  "membershipActions": {
+    "title": "Aktív prémium tagság",
+    "body": "A napi jutalmak a Profilban találhatók. A témák a Beállítások › Megjelenés menüben vannak.",
+    "scheduledChangeNotice": "Váltás erre: {{plan}} — {{date}}",
+    "manageSubscription": "Előfizetés kezelése",
+    "manageSubscriptionFailedTitle": "Az előfizetések megnyitása sikertelen",
+    "manageSubscriptionFailedBody": "Próbáld újra az eszközöd áruházi fiókján keresztül."
+  },
+  "pending": {
+    "title": "Vásárlás egyeztetése folyamatban",
+    "verifyingTitle": "Vásárlás ellenőrzése",
+    "premiumChangeAccepted": "Az áruház elfogadta a váltást erre: {{label}}. ",
+    "premiumResponseReceived": "Megérkezett az áruház válasza erre: {{label}}. ",
+    "premiumDeferredSuffix": "A váltás csak a Game Backend ellenőrzése után kerül ütemezésre, és az aktuális időszakod végén lép életbe.",
+    "premiumSuffix": "A Prémium csak a Game Backend ellenőrzése után aktiválódik.",
+    "doNotPurchasePlanAgain": " Ne vásárold meg újra ezt a csomagot.",
+    "coinPackBody": "Megérkezett az áruház válasza. A Stitch Coin csak akkor frissül, amikor a Game Backend megerősíti a megfelelő jóváírást a Kereskedelmi naplóban. Ne vásárold meg újra ezt a csomagot.",
+    "aiCreditPackBody": "Megérkezett az áruház válasza. Az AI kredit csak akkor frissül, amikor a Game Backend megerősíti a megfelelő jóváírást a Kereskedelmi naplóban. Ne vásárold meg újra ezt a csomagot.",
+    "refreshStatus": "Állapot frissítése",
+    "retryReconciliation": "Egyeztetés újrapróbálása"
+  },
+  "store": {
+    "loadingPrices": "Aktuális áruházi árak betöltése…",
+    "unavailableTitle": "Az áruház átmenetileg nem elérhető",
+    "unavailableBody": "A pénztárca- és tagsági adatok továbbra is elérhetők.",
+    "retry": "Próbáld újra"
+  },
+  "plans": {
+    "choosePremiumPlan": "Prémium csomag kiválasztása",
+    "yourPremiumPlan": "A prémium csomagod",
+    "currentPlan": "AKTUÁLIS CSOMAG",
+    "upgrade": "FRISSÍTÉS",
+    "planChange": "CSOMAGVÁLTÁS",
+    "bestValue": "LEGJOBB AJÁNLAT",
+    "billedEvery": "Számlázás {{period}} időközönként",
+    "chooseLabel": "{{label}} kiválasztása",
+    "freeTrial": "Ingyenes {{offer}}, majd {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Egyszeri csomagok",
+    "stitchCoinPacksTitle": "Stitch Coin csomagok",
+    "aiCreditPacksTitle": "AI kredit csomagok",
+    "coinsNoun": "Érmék",
+    "creditsNoun": "Kreditek",
+    "fromPrice": "Ettől: {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Vásárlások visszaállítása",
+    "restoreGuestPremium": "Vendég prémium visszaállítása",
+    "requestedTitle": "Visszaállítás kérve",
+    "requestedBody": "A megerősített prémium hozzáférés az áruházi webhook egyeztetése után jelenik meg. A Stitch Coin és az AI kredit soha nem állítható vissza."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Aktuális árak az áruházból",
+    "closeAccessibilityLabel": "Termékkártya bezárása",
+    "closeButtonAccessibilityLabel": "Bezárás",
+    "selectedBeforeSignIn": "Bejelentkezés előtt kiválasztva",
+    "buy": "Vásárlás"
+  },
+  "confirmation": {
+    "cancel": "Mégse",
+    "confirmLabel": "{{label}} megerősítése",
+    "confirmPremiumTitle": "Prémium vásárlás megerősítése",
+    "introductoryOffer": "Az áruházad ezt a bevezető ajánlatot jelenti: {{offer}}.",
+    "premiumAppearsAfterVerification": "A Prémium csak akkor jelenik meg, amikor a Game Backend ellenőrzi az áruházi tranzakciót.",
+    "confirmPremiumUpgradeTitle": "Prémium frissítés megerősítése",
+    "confirmPremiumPlanChangeTitle": "Prémium csomagváltás megerősítése",
+    "currentPlanLabel": "Aktuális csomag: {{label}}",
+    "upgradeToLabel": "Frissítés erre: {{label}} · {{offer}}",
+    "changeToLabel": "Váltás erre: {{label}} · {{offer}}",
+    "upgradeBody": "Az App Store irányítja e frissítés végleges díjszabását és hatálybalépési dátumát. A Prémium csak akkor tükrözi a(z) {{label}} csomagot, amikor a Game Backend megerősíti.",
+    "planChangeBody": "Az App Store az aktuális időszak végéig elhalasztja ezt a váltást: {{currentLabel}} addig érvényben marad, {{targetLabel}} pedig a váltás dátumától kezdve kerül számlázásra. A váltást az Előfizetés kezelése menüben mondhatod le.",
+    "confirmUpgrade": "Frissítés megerősítése",
+    "confirmPlanChange": "Csomagváltás megerősítése",
+    "confirmStitchCoinTitle": "Stitch Coin vásárlás megerősítése",
+    "confirmAiCreditTitle": "AI kredit vásárlás megerősítése",
+    "balanceChangesAfterVerificationCoin": "Az egyenleged csak akkor változik, amikor a Game Backend ellenőrzi az áruházi tranzakciót, és rögzíti a megfelelő jóváírást a Kereskedelmi naplóban.",
+    "balanceChangesAfterVerificationAiCredit": "Az egyenleged csak akkor változik, amikor a Game Backend ellenőrzi az áruházi tranzakciót, és rögzíti a megfelelő jóváírást a Kereskedelmi naplóban. Prémium tagság nem szükséges."
+  },
+  "disclosure": {
+    "subscriptionTerms": "A fizetés megerősítéskor kerül terhelésre a(z) {{store}} fiókodra. A(z) {{label}} Prémium automatikusan megújul {{offer}} áron, hacsak nem kapcsolod ki az automatikus megújítást legalább 24 órával az aktuális időszak vége előtt. Az ingyenes próbaidőszak fel nem használt része elvész az előfizetés megvásárlásakor. Az előfizetést bármikor lemondhatod a(z) {{store}} fiókodon keresztül.",
+    "privacyPolicy": "Adatvédelmi szabályzat",
+    "termsOfService": "Felhasználási feltételek",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "A hivatkozás megnyitása sikertelen: {{url}}"
+  },
+  "supportReference": {
+    "label": "Támogatási hivatkozás: {{reference}}",
+    "copyAccessibilityLabel": "Támogatási hivatkozás másolása: {{reference}}",
+    "copyAccessibilityHint": "Vágólapra másolja a támogatási hivatkozást",
+    "copied": "Másolva",
+    "copyFailedTitle": "A másolás sikertelen",
+    "copyFailedBody": "A támogatási hivatkozást nem sikerült másolni. Válaszd ki a szöveget a kézi másoláshoz."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "A vendég Stitch Coin vásárlások csak iOS-en érhetők el.",
+    "guestIosOnlyGeneric": "A vendégvásárlások csak iOS-en érhetők el.",
+    "purchaseFailedTitle": "A vásárlás sikertelen",
+    "premiumVerificationNotYet": "A Game Backend még nem tudta ellenőrizni ezt a vásárlást. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+    "premiumVerificationFailedRetry": "A Game Backend még nem tudta ellenőrizni ezt a vásárlást. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+    "premiumGrantRefreshFailed": "A Prémium megerősítve, de a tagsági és AI kredit állapot frissítése sikertelen. Próbáld újra az egyeztetést.",
+    "premiumReconciliationUnreachable": "A vásárlás egyeztetése nem érte el a Game Backendet. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+    "coinPackVerificationMismatch": "Az áruházi tranzakció nem felelt meg ennek az érmecsomagnak. Próbáld újra az ellenőrzést, vagy lépj kapcsolatba a támogatással; ne vásárold meg újra.",
+    "coinPackGrantUnavailable": "A vásárlás megerősítve, de a Stitch Coin jóváírása nem elérhető. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+    "coinPackBalanceRefreshFailed": "Az érme jóváírása megerősítve, de az aktuális Stitch Coin egyenleg frissítése sikertelen. Próbáld újra az egyeztetést.",
+    "coinPackVerificationFailedRetry": "A Game Backend még nem tudta ellenőrizni ezt az érmecsomagot. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+    "coinPackReconciliationUnreachable": "Az érmecsomag egyeztetése nem érte el a Game Backendet. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+    "aiCreditPackVerificationMismatch": "Az áruházi tranzakció nem felelt meg ennek az AI kredit csomagnak. Próbáld újra az ellenőrzést, vagy lépj kapcsolatba a támogatással; ne vásárold meg újra.",
+    "aiCreditPackGrantUnavailable": "A vásárlás megerősítve, de az AI kredit jóváírása nem elérhető. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+    "aiCreditPackBalanceRefreshFailed": "Az AI kredit jóváírása megerősítve, de az aktuális egyenleg frissítése sikertelen. Próbáld újra az egyeztetést.",
+    "aiCreditPackVerificationFailedRetry": "A Game Backend még nem tudta ellenőrizni ezt az AI kredit csomagot. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+    "aiCreditPackReconciliationUnreachable": "Az AI kredit csomag egyeztetése nem érte el a Game Backendet. Próbáld újra az egyeztetést; ne vásárold meg újra.",
+    "reconciliationStillUnavailable": "A Game Backend továbbra sem elérhető. Próbáld újra az egyeztetést később.",
+    "storeTemporarilyUnavailable": "Az áruház átmenetileg nem elérhető. Próbáld újra néhány perc múlva.",
+    "purchasesNotAllowed": "A vásárlások nem engedélyezettek ezen az eszközön. Ellenőrizd az áruházi fiókodat vagy a szülői felügyeletet.",
+    "itemNotAvailable": "Ez a termék jelenleg nem vásárolható meg. Válassz másik terméket, vagy próbáld újra később.",
+    "alreadyOwned": "Ez a vásárlás már a tiéd. A hozzáférés frissítéséhez használd a Vásárlások visszaállítása lehetőséget.",
+    "couldNotConnectToStore": "Az áruházhoz való kapcsolódás sikertelen. Ellenőrizd az internetkapcsolatot, és próbáld újra.",
+    "paymentPendingApproval": "A fizetésed jóváhagyásra vár. A vásárlás akkor jelenik meg, amikor az áruház befejezi a folyamatot.",
+    "testPurchaseDeclined": "A tesztvásárlás elutasítva. Fizetés nem történt. Válassz másik teszteredményt a Beállításokban, majd próbáld újra.",
+    "genericPurchaseFailure": "Nem sikerült teljesíteni a vásárlásodat. Fizetés nem történt. Próbáld újra."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Ellenőrzés folyamatban",
+    "premiumPending": "Az ellenőrzés még folyamatban van. A Prémium aktiválódik, amint a Game Backend megerősíti.",
+    "premiumPlanChangePending": "Az ellenőrzés még folyamatban van. A csomagváltás ütemezésre kerül, amint a Game Backend megerősíti.",
+    "coinPackPending": "Az ellenőrzés még folyamatban van. A Stitch Coin egyenleged frissül, amint befejeződik.",
+    "aiCreditPackPending": "Az ellenőrzés még folyamatban van. Az AI kredit egyenleged frissül, amint befejeződik."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Vásárlás megérkezett",
+    "storeAcceptedPlanChange": "Az áruház elfogadta a váltást erre: {{label}}. Megerősítés a hatálybalépéskor.",
+    "storeAcceptedPurchase": "Az áruház elfogadta ezt: {{label}}. A vásárlásod ellenőrzése folyamatban.",
+    "premiumChanges": "A Prémium erre vált: {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " {{date}}",
+    "planChangeScheduledTitle": "Csomagváltás ütemezve",
+    "planChangeScheduledBody": "A prémium tagságod megtartja az aktuális csomagot, amíg át nem vált erre: {{label}}{{effectiveOn}}. A váltást az Előfizetés kezelése menüben mondhatod le.",
+    "premiumIsActiveTitle": "A Prémium aktív",
+    "premiumVerifiedAndActive": "A(z) {{label}} Prémium megerősítve és aktív.",
+    "premiumNowActiveNoBilling": "A(z) {{label}} Prémium most aktív.",
+    "premiumNowActiveBilled": "A(z) {{label}} Prémium most aktív, számlázás {{period}} időközönként.",
+    "coinPackGrantedTitle": "Stitch Coin jóváírva",
+    "coinPackGrantVerified": "A(z) {{label}} jóváírása megerősítve. Stitch Coin egyenleg: {{balance}}.",
+    "coinPackAddedToBalance": "{{quantity}} Stitch Coin került az egyenlegedhez.",
+    "aiCreditPackGrantedTitle": "AI kredit jóváírva",
+    "aiCreditPackGrantVerified": "A(z) {{label}} jóváírása megerősítve. AI kredit egyenleg: {{balance}}.",
+    "aiCreditPackAddedToBalance": "{{quantity}} AI kredit került az egyenlegedhez."
+  },
+  "products": {
+    "premiumAnnual": "Éves",
+    "premiumMonthly": "Havi",
+    "premiumWeekly": "Heti",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coin",
+    "aiCreditPack_one": "{{formattedCount}} AI kredit",
+    "aiCreditPack_other": "{{formattedCount}} AI kredit",
+    "billedEveryOffer": "{{price}} / {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} kredit / fizetett időszak",
+    "creditAllowancePaidNoun": "{{credits}} kredit / fizetett {{period}}"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Vásárlás vendégként",
+    "commerceBody": "Regisztráció nélkül is vásárolhatsz. A prémium tagság visszaállítható az áruházból, de a Stitch Coin, az AI kredit és a privát vendégtartalom visszavonhatatlanul elveszhet, ha a telepítés elvész. A regisztráció megvédi ezeket, és soha nem szakítja meg a vendégjátékot.",
+    "continueAsGuest": "Folytatás vendégként",
+    "signInInstead": "Inkább bejelentkezem",
+    "closeAccessibilityLabel": "Bezárás"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "Rendben",
+    "successButton": "Remek",
+    "failedButton": "Bezárás",
+    "infoButton": "Rendben",
+    "closeAccessibilityLabel": "Bezárás"
+  }
+}

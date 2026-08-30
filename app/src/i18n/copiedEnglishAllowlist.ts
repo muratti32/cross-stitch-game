@@ -166,4 +166,9 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'hr:profile:home.identity.offline': '"Offline" is used identically in Croatian tech/UI copy.',
   'hr:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
   'hr:settings:session.idLabel': '"ID" is used identically in Croatian tech/UI copy.',
+  'hu:play:home.idLabel': '"ID" is used identically in Hungarian tech/UI copy.',
+  'hu:profile:home.identity.offline': '"Offline" is used identically in Hungarian tech/UI copy.',
+  'hu:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
+  'hu:settings:session.idLabel': '"ID" is used identically in Hungarian tech/UI copy.',
+  'hu:create:photoImport.profile.options.standard': '"Standard" is used identically in Hungarian.',
 };
