@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "VELKOMMEN TIL STITCH WISH",
+    "title": "Vælg en farve, tryk på de matchende felter.",
+    "heroAlt": "Forhåndsvisning af startmønsteret Cozy Heart",
+    "handedness": {
+      "sectionTitle": "Hvilken side skal betjeningen bruge?",
+      "groupLabel": "Betjeningsside",
+      "optionRight": "Betjening til højre",
+      "optionLeft": "Betjening til venstre",
+      "saveErrorText": "Kunne ikke gemme det valg.",
+      "retry": "Prøv igen"
+    },
+    "note": "Du kan ændre dette senere i Indstillinger.",
+    "start": "Begynd at sy",
+    "starting": "Starter…",
+    "browse": "Gennemse startmønstre",
+    "signIn": "Log ind"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Vælg DMC 321 Christmas Red.",
+      "stitchAction": "Tryk på den fremhævede matchende celle.",
+      "mismatchedTap": "Tryk på den fremhævede anderledes celle. Forkerte tryk koster intet.",
+      "undoAction": "Fortryd det sting, og placer det derefter igen.",
+      "stitchSweep": "Tryk på en matchende celle, og træk derefter hen over det fremhævede forløb.",
+      "threadColorCompletion": "Færdiggør den fremhævede hvide tråd, og vælg derefter din næste farve."
+    },
+    "hints": {
+      "anchoredZoom": "Knib for at zoome, mens cellerne under dine fingre holdes på plads.",
+      "panVsSweep": "Træk panorerer stoffet. Start på en matchende celle for at sy et forløb.",
+      "edgeAutoPan": "Bliv ved med at trække nær kanten, så følger stoffet din finger.",
+      "remainingCellLocator": "Brug lokaliseringen til at finde den næste resterende celle for denne trådfarve."
+    },
+    "skip": "Spring over for nu",
+    "skipAccessibilityLabel": "Spring vejledningen over for nu",
+    "dismiss": "Forstået",
+    "dismissAccessibilityLabel": "Afvis hint"
+  },
+  "recap": {
+    "title": "Du har fanget det",
+    "lines": {
+      "matchNumbers": "Match tallene for at placere hvert sting.",
+      "dragSweep": "Træk hen over matchende celler for at sy et forløb.",
+      "pinchZoom": "Knib for at zoome, når du har brug for et nærmere kig.",
+      "undoLocator": "Fortryd og lokaliseringen er altid gratis."
+    },
+    "continue": "Fortsæt med at sy",
+    "browsePatterns": "Gennemse mønstre"
+  }
+}

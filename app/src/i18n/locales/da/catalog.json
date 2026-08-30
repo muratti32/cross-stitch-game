@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Tilbage",
+    "searchPlaceholder": "Søg mønstre, skabere, tags…",
+    "offlineBanner": "Offline — kataloget kan være forældet",
+    "sectionError": {
+      "title": "Kunne ikke indlæse",
+      "retry": "Prøv igen"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} farver",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} kol.",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Engelsk"
+    },
+    "accessibilityLabel": "Skrevet på {{language}}"
+  },
+  "index": {
+    "subtitle": "Skab din hyggelige verden, sting for sting.",
+    "searchBar": {
+      "accessibilityLabel": "Søg i mønsterkataloget"
+    },
+    "sections": {
+      "starterPatterns": "Startmønstre",
+      "staffPicks": "Redaktionens udvalgte",
+      "categories": "Kategorier",
+      "newPatterns": "Nye mønstre"
+    },
+    "staffPicks": {
+      "emptyTitle": "Ingen udvalgte endnu",
+      "emptyBody": "Vores håndplukkede samling af hyggelige designs vises her snart.",
+      "errorBody": "Kataloget kunne ikke nås, og intet er cachet endnu."
+    },
+    "categories": {
+      "count": "{{count}} mønstre",
+      "errorBody": "Kataloget kunne ikke nås, og intet er cachet endnu."
+    },
+    "newPatterns": {
+      "emptyTitle": "Nye mønstre er på vej",
+      "emptyBody": "Friske nyheder er på vej!",
+      "errorBody": "Kataloget kunne ikke nås, og intet er cachet endnu.",
+      "showMore": "Vis mere",
+      "loading": "Indlæser…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Gennemse",
+    "error": {
+      "body": "Denne katalogside kunne ikke nås, og intet er cachet endnu."
+    },
+    "empty": {
+      "title": "Intet her endnu",
+      "body": "Ingen mønstre matcher dette valg endnu. Nye designs kommer jævnligt."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Katalogsøgefelt",
+    "inactive": {
+      "title": "Søg i kataloget",
+      "body": "Skriv mindst to bogstaver for at søge mønstre efter titel, skaber eller tag."
+    },
+    "error": {
+      "title": "Søgning kræver forbindelse",
+      "body": "Katalogsøgning er ikke tilgængelig offline. Cachede katalogsider forbliver tilgængelige fra katalogfanen."
+    },
+    "noResults": {
+      "title": "Ingen resultater",
+      "body": "Intet i kataloget matcher “{{query}}” endnu."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Spiller som gæst",
+    "body": "Stitch Coin og fremskridt findes kun på denne enhed som gæst. Hvis installationen mistes, kan gæste-registreringen og fremskridtet ikke gendannes. Log ind for at beskytte dine fremskridt."
+  },
+  "detail": {
+    "noDescription": "Ingen beskrivelse tilgængelig.",
+    "specs": {
+      "dimensions": "Dimensioner",
+      "totalStitches": "Antal sting i alt",
+      "colors": "Farver",
+      "category": "Kategori"
+    },
+    "threadsSuffix": "{{count}} tråde",
+    "palette": {
+      "title": "Nødvendige tråde",
+      "loading": "Læser trådpalette...",
+      "loadFailed": "Kunne ikke indlæse palette: {{error}}",
+      "retry": "Prøv indlæsning igen"
+    },
+    "actions": {
+      "startStitching": "Begynd at sy",
+      "starting": "Starter...",
+      "preparing": "Forbereder…"
+    },
+    "loadFailedGeneric": "Kunne ikke afkode mønsterfilen.",
+    "sessionCreateFailed": "Kunne ikke oprette en sy-session. Prøv igen.",
+    "unavailable": {
+      "title": "Mønster utilgængeligt",
+      "body": "Dette mønster kunne ikke indlæses. Det kan være fjernet, eller du er muligvis offline.",
+      "goBack": "Gå tilbage"
+    },
+    "byCreator": "af {{creatorName}}",
+    "byCreatorWithUsername": "af {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Bloker skaber",
+      "message": "Er du sikker på, at du vil blokere {{creatorName}}? Dette er en privat, reversibel handling, der skjuler deres mønstre fra søgning/gennemsyn. Det anmelder ikke skaberen og afbryder ikke din nuværende sy-session.",
+      "cancel": "Annuller",
+      "confirm": "Bloker",
+      "blockedTitle": "Blokeret",
+      "blockedMessage": "{{creatorName}} er blevet blokeret.",
+      "errorTitle": "Fejl",
+      "failedGeneric": "Kunne ikke blokere skaber."
+    },
+    "likeFailedGeneric": "Kunne ikke opdatere synes godt om-status",
+    "connectToPlay": {
+      "title": "Opret forbindelse for at spille",
+      "body": "At starte et katalogmønster kræver en forbindelse for at forberede din session. Startmønstre kan spilles lige nu, selv offline."
+    },
+    "insufficientCoins": {
+      "title": "Utilstrækkelige mønter",
+      "body": "Dette mønster koster {{price}} Stitch Coins, men du har kun {{balance}} mønter.\n\nManglende beløb: {{shortfall}} mønter.\n\nTjen Stitch Coins ved at gennemføre andre mønstre! Belønninger for første gennemførelse er aktive.",
+      "getCoins": "Få Stitch Coins",
+      "findPatterns": "Find mønstre at sy",
+      "back": "Tilbage"
+    },
+    "unlockFailedGeneric": "Oplåsning mislykkedes. Tjek din forbindelse, og prøv igen.",
+    "preparationFailedGeneric": "Kunne ikke starte forberedelse. Tjek din forbindelse, og prøv igen.",
+    "price": {
+      "label": "Pris"
+    },
+    "balance": {
+      "label": "Din saldo",
+      "loading": "…"
+    },
+    "unlockButton": "Lås op for {{price}} mønt",
+    "communityReport": {
+      "button": "Anmeld dette mønster",
+      "title": "Anmeld {{patternTitle}}",
+      "body": "Vælg den årsag, der bedst beskriver problemet. Anmeldelser skjuler eller ændrer aldrig automatisk et mønster.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Upassende eller usikkert indhold",
+        "copyright_or_publication_rights": "Ophavsret eller udgivelsesrettigheder",
+        "duplicate_or_spam": "Duplikat eller spam",
+        "misleading_title_or_tags": "Vildledende titel eller tags",
+        "other": "Andet"
+      },
+      "explanationLabel": "Bevis eller forklaring {{requirement}}",
+      "explanationRequired": "(påkrævet)",
+      "explanationOptional": "(valgfrit)",
+      "explanationPlaceholder": "Del detaljer, der kan hjælpe en moderator med at gennemgå mønsteret.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Annuller",
+      "submit": "Indsend anmeldelse",
+      "submitFailedGeneric": "Kunne ikke indsende din anmeldelse. Tjek din forbindelse, og prøv igen.",
+      "receivedTitle": "Anmeldelse modtaget",
+      "alreadyReceivedTitle": "Anmeldelse allerede modtaget",
+      "receivedBody": "En moderator kan nu gennemgå dette mønster. Anmeldelsen ændrer ikke automatisk dets tilgængelighed.",
+      "alreadyReceivedBody": "Din eksisterende anmeldelse er allerede en del af den åbne gennemgang.",
+      "signInRequired": {
+        "title": "Log ind for at anmelde",
+        "message": "Fællesskabsanmeldelser kræver en registreret konto. Intet er blevet indsendt.",
+        "cancel": "Annuller",
+        "signIn": "Log ind"
+      },
+      "validation": {
+        "chooseReason": "Vælg en anmeldelsesårsag.",
+        "explainRequired": "Forklar, hvorfor du anmelder dette mønster.",
+        "tooLong": "Forklaringen skal være 2.000 tegn eller mindre.",
+        "needsContent": "Forklaringen skal indeholde bogstaver eller tal."
+      }
+    }
+  }
+}

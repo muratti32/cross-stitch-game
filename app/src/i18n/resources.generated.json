@@ -4217,6 +4217,1412 @@
       }
     }
   },
+  "da": {
+    "catalog": {
+      "common": {
+        "back": "← Tilbage",
+        "searchPlaceholder": "Søg mønstre, skabere, tags…",
+        "offlineBanner": "Offline — kataloget kan være forældet",
+        "sectionError": {
+          "title": "Kunne ikke indlæse",
+          "retry": "Prøv igen"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} farver",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} kol.",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "Engelsk"
+        },
+        "accessibilityLabel": "Skrevet på {{language}}"
+      },
+      "index": {
+        "subtitle": "Skab din hyggelige verden, sting for sting.",
+        "searchBar": {
+          "accessibilityLabel": "Søg i mønsterkataloget"
+        },
+        "sections": {
+          "starterPatterns": "Startmønstre",
+          "staffPicks": "Redaktionens udvalgte",
+          "categories": "Kategorier",
+          "newPatterns": "Nye mønstre"
+        },
+        "staffPicks": {
+          "emptyTitle": "Ingen udvalgte endnu",
+          "emptyBody": "Vores håndplukkede samling af hyggelige designs vises her snart.",
+          "errorBody": "Kataloget kunne ikke nås, og intet er cachet endnu."
+        },
+        "categories": {
+          "count": "{{count}} mønstre",
+          "errorBody": "Kataloget kunne ikke nås, og intet er cachet endnu."
+        },
+        "newPatterns": {
+          "emptyTitle": "Nye mønstre er på vej",
+          "emptyBody": "Friske nyheder er på vej!",
+          "errorBody": "Kataloget kunne ikke nås, og intet er cachet endnu.",
+          "showMore": "Vis mere",
+          "loading": "Indlæser…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "Gennemse",
+        "error": {
+          "body": "Denne katalogside kunne ikke nås, og intet er cachet endnu."
+        },
+        "empty": {
+          "title": "Intet her endnu",
+          "body": "Ingen mønstre matcher dette valg endnu. Nye designs kommer jævnligt."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "Katalogsøgefelt",
+        "inactive": {
+          "title": "Søg i kataloget",
+          "body": "Skriv mindst to bogstaver for at søge mønstre efter titel, skaber eller tag."
+        },
+        "error": {
+          "title": "Søgning kræver forbindelse",
+          "body": "Katalogsøgning er ikke tilgængelig offline. Cachede katalogsider forbliver tilgængelige fra katalogfanen."
+        },
+        "noResults": {
+          "title": "Ingen resultater",
+          "body": "Intet i kataloget matcher “{{query}}” endnu."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "Spiller som gæst",
+        "body": "Stitch Coin og fremskridt findes kun på denne enhed som gæst. Hvis installationen mistes, kan gæste-registreringen og fremskridtet ikke gendannes. Log ind for at beskytte dine fremskridt."
+      },
+      "detail": {
+        "noDescription": "Ingen beskrivelse tilgængelig.",
+        "specs": {
+          "dimensions": "Dimensioner",
+          "totalStitches": "Antal sting i alt",
+          "colors": "Farver",
+          "category": "Kategori"
+        },
+        "threadsSuffix": "{{count}} tråde",
+        "palette": {
+          "title": "Nødvendige tråde",
+          "loading": "Læser trådpalette...",
+          "loadFailed": "Kunne ikke indlæse palette: {{error}}",
+          "retry": "Prøv indlæsning igen"
+        },
+        "actions": {
+          "startStitching": "Begynd at sy",
+          "starting": "Starter...",
+          "preparing": "Forbereder…"
+        },
+        "loadFailedGeneric": "Kunne ikke afkode mønsterfilen.",
+        "sessionCreateFailed": "Kunne ikke oprette en sy-session. Prøv igen.",
+        "unavailable": {
+          "title": "Mønster utilgængeligt",
+          "body": "Dette mønster kunne ikke indlæses. Det kan være fjernet, eller du er muligvis offline.",
+          "goBack": "Gå tilbage"
+        },
+        "byCreator": "af {{creatorName}}",
+        "byCreatorWithUsername": "af {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "Bloker skaber",
+          "message": "Er du sikker på, at du vil blokere {{creatorName}}? Dette er en privat, reversibel handling, der skjuler deres mønstre fra søgning/gennemsyn. Det anmelder ikke skaberen og afbryder ikke din nuværende sy-session.",
+          "cancel": "Annuller",
+          "confirm": "Bloker",
+          "blockedTitle": "Blokeret",
+          "blockedMessage": "{{creatorName}} er blevet blokeret.",
+          "errorTitle": "Fejl",
+          "failedGeneric": "Kunne ikke blokere skaber."
+        },
+        "likeFailedGeneric": "Kunne ikke opdatere synes godt om-status",
+        "connectToPlay": {
+          "title": "Opret forbindelse for at spille",
+          "body": "At starte et katalogmønster kræver en forbindelse for at forberede din session. Startmønstre kan spilles lige nu, selv offline."
+        },
+        "insufficientCoins": {
+          "title": "Utilstrækkelige mønter",
+          "body": "Dette mønster koster {{price}} Stitch Coins, men du har kun {{balance}} mønter.\n\nManglende beløb: {{shortfall}} mønter.\n\nTjen Stitch Coins ved at gennemføre andre mønstre! Belønninger for første gennemførelse er aktive.",
+          "getCoins": "Få Stitch Coins",
+          "findPatterns": "Find mønstre at sy",
+          "back": "Tilbage"
+        },
+        "unlockFailedGeneric": "Oplåsning mislykkedes. Tjek din forbindelse, og prøv igen.",
+        "preparationFailedGeneric": "Kunne ikke starte forberedelse. Tjek din forbindelse, og prøv igen.",
+        "price": {
+          "label": "Pris"
+        },
+        "balance": {
+          "label": "Din saldo",
+          "loading": "…"
+        },
+        "unlockButton": "Lås op for {{price}} mønt",
+        "communityReport": {
+          "button": "Anmeld dette mønster",
+          "title": "Anmeld {{patternTitle}}",
+          "body": "Vælg den årsag, der bedst beskriver problemet. Anmeldelser skjuler eller ændrer aldrig automatisk et mønster.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "Upassende eller usikkert indhold",
+            "copyright_or_publication_rights": "Ophavsret eller udgivelsesrettigheder",
+            "duplicate_or_spam": "Duplikat eller spam",
+            "misleading_title_or_tags": "Vildledende titel eller tags",
+            "other": "Andet"
+          },
+          "explanationLabel": "Bevis eller forklaring {{requirement}}",
+          "explanationRequired": "(påkrævet)",
+          "explanationOptional": "(valgfrit)",
+          "explanationPlaceholder": "Del detaljer, der kan hjælpe en moderator med at gennemgå mønsteret.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "Annuller",
+          "submit": "Indsend anmeldelse",
+          "submitFailedGeneric": "Kunne ikke indsende din anmeldelse. Tjek din forbindelse, og prøv igen.",
+          "receivedTitle": "Anmeldelse modtaget",
+          "alreadyReceivedTitle": "Anmeldelse allerede modtaget",
+          "receivedBody": "En moderator kan nu gennemgå dette mønster. Anmeldelsen ændrer ikke automatisk dets tilgængelighed.",
+          "alreadyReceivedBody": "Din eksisterende anmeldelse er allerede en del af den åbne gennemgang.",
+          "signInRequired": {
+            "title": "Log ind for at anmelde",
+            "message": "Fællesskabsanmeldelser kræver en registreret konto. Intet er blevet indsendt.",
+            "cancel": "Annuller",
+            "signIn": "Log ind"
+          },
+          "validation": {
+            "chooseReason": "Vælg en anmeldelsesårsag.",
+            "explainRequired": "Forklar, hvorfor du anmelder dette mønster.",
+            "tooLong": "Forklaringen skal være 2.000 tegn eller mindre.",
+            "needsContent": "Forklaringen skal indeholde bogstaver eller tal."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "Tilbage",
+        "title": "Butik",
+        "subtitle": "Medlemskab og engangsopfyldninger"
+      },
+      "signInReturn": {
+        "notice": "Du er logget ind. {{label}} er stadig valgt. Gennemgå det, og tryk på Køb, når du er klar."
+      },
+      "premiumHero": {
+        "eyebrow": "PREMIUM MEDLEMSKAB",
+        "title": "Skab mere. Saml en lille belønning hver dag.",
+        "body": "AI-kreditter hver betalt periode, Premium-temaer og et dagligt Stitch Coin-krav.",
+        "benefitAiCredits": "AI-kreditter",
+        "benefitDailyCoins": "Daglige mønter",
+        "benefitThemes": "Temaer",
+        "statusNoActiveMembership": "Intet aktivt medlemskab",
+        "statusBrowseAsGuest": "Gennemse planer som gæstespiller",
+        "periodEndsLabel": "Nuværende periode slutter",
+        "periodRenewsLabel": "Fornyes",
+        "lifecycleActive": "Aktiv"
+      },
+      "membershipActions": {
+        "title": "Aktivt Premium-medlemskab",
+        "body": "Daglige belønninger findes under Profil. Temaer findes under Indstillinger › Udseende.",
+        "scheduledChangeNotice": "Ændringer til {{plan}} den {{date}}",
+        "manageSubscription": "Administrer abonnement",
+        "manageSubscriptionFailedTitle": "Kan ikke åbne abonnementer",
+        "manageSubscriptionFailedBody": "Prøv igen fra din enheds butikskonto."
+      },
+      "pending": {
+        "title": "Køb afventer afstemning",
+        "verifyingTitle": "Verificerer køb",
+        "premiumChangeAccepted": "Butikken har accepteret ændringen til {{label}}. ",
+        "premiumResponseReceived": "Butikkens svar for {{label}} er modtaget. ",
+        "premiumDeferredSuffix": "Ændringen planlægges først efter verificering fra Game Backend, og træder i kraft, når din nuværende periode slutter.",
+        "premiumSuffix": "Premium aktiveres først efter verificering fra Game Backend.",
+        "doNotPurchasePlanAgain": " Køb ikke denne plan igen.",
+        "coinPackBody": "Butikkens svar er modtaget. Stitch Coin opdateres først, når Game Backend eksponerer den tilsvarende Commerce Ledger-tildeling. Køb ikke denne pakke igen.",
+        "aiCreditPackBody": "Butikkens svar er modtaget. AI-kredit opdateres først, når Game Backend eksponerer den tilsvarende Commerce Ledger-tildeling. Køb ikke denne pakke igen.",
+        "refreshStatus": "Opdater status",
+        "retryReconciliation": "Prøv afstemning igen"
+      },
+      "store": {
+        "loadingPrices": "Indlæser aktuelle butikspriser…",
+        "unavailableTitle": "Butik midlertidigt utilgængelig",
+        "unavailableBody": "Din tegnebog og medlemskabsoplysninger er stadig tilgængelige.",
+        "retry": "Prøv igen"
+      },
+      "plans": {
+        "choosePremiumPlan": "Vælg en Premium-plan",
+        "yourPremiumPlan": "Din Premium-plan",
+        "currentPlan": "NUVÆRENDE PLAN",
+        "upgrade": "OPGRADER",
+        "planChange": "PLANÆNDRING",
+        "bestValue": "BEDSTE VÆRDI",
+        "billedEvery": "Faktureres hver {{period}}",
+        "chooseLabel": "Vælg {{label}}",
+        "freeTrial": "Gratis i {{offer}}, derefter {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "Engangspakker",
+        "stitchCoinPacksTitle": "Stitch Coin-pakker",
+        "aiCreditPacksTitle": "AI-kreditpakker",
+        "coinsNoun": "Mønter",
+        "creditsNoun": "Kreditter",
+        "fromPrice": "Fra {{price}}"
+      },
+      "restore": {
+        "restorePurchases": "Gendan køb",
+        "restoreGuestPremium": "Gendan gæste-Premium",
+        "requestedTitle": "Gendannelse anmodet",
+        "requestedBody": "Verificeret Premium-adgang vises, når butikkens webhook er afstemt. Stitch Coin- og AI-kreditpakker gendannes aldrig."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "Aktuelle priser fra app-butikken",
+        "closeAccessibilityLabel": "Luk produktark",
+        "closeButtonAccessibilityLabel": "Luk",
+        "selectedBeforeSignIn": "Valgt før login",
+        "buy": "Køb"
+      },
+      "confirmation": {
+        "cancel": "Annuller",
+        "confirmLabel": "Bekræft {{label}}",
+        "confirmPremiumTitle": "Bekræft Premium-køb",
+        "introductoryOffer": "Din butik rapporterer dette introduktionstilbud: {{offer}}.",
+        "premiumAppearsAfterVerification": "Premium vises først, når Game Backend verificerer butikstransaktionen.",
+        "confirmPremiumUpgradeTitle": "Bekræft Premium-opgradering",
+        "confirmPremiumPlanChangeTitle": "Bekræft Premium-planændring",
+        "currentPlanLabel": "Nuværende plan: {{label}}",
+        "upgradeToLabel": "Opgrader til {{label}} · {{offer}}",
+        "changeToLabel": "Skift til {{label}} · {{offer}}",
+        "upgradeBody": "App Store styrer den endelige opkrævning og ikrafttrædelsesdato for denne opgradering. Premium afspejler {{label}} først, når Game Backend har verificeret det.",
+        "planChangeBody": "App Store udskyder denne ændring til slutningen af din nuværende periode: {{currentLabel}} fortsætter indtil da, og {{targetLabel}} faktureres fra ændringsdatoen. Annuller ændringen fra Administrer abonnement.",
+        "confirmUpgrade": "Bekræft opgradering",
+        "confirmPlanChange": "Bekræft planændring",
+        "confirmStitchCoinTitle": "Bekræft Stitch Coin-køb",
+        "confirmAiCreditTitle": "Bekræft AI-kreditkøb",
+        "balanceChangesAfterVerificationCoin": "Din saldo ændres først, når Game Backend verificerer butikstransaktionen og registrerer den tilsvarende Commerce Ledger-tildeling.",
+        "balanceChangesAfterVerificationAiCredit": "Din saldo ændres først, når Game Backend verificerer butikstransaktionen og registrerer den tilsvarende Commerce Ledger-tildeling. Premium-medlemskab er ikke påkrævet."
+      },
+      "disclosure": {
+        "subscriptionTerms": "Betaling opkræves på din {{store}}-konto ved bekræftelse. {{label}} Premium fornyes automatisk til {{offer}}, medmindre automatisk fornyelse slås fra mindst 24 timer før udgangen af den nuværende periode. Ubrugt del af en gratis prøveperiode bortfalder, når du køber et abonnement. Du kan opsige når som helst fra din {{store}}-konto.",
+        "privacyPolicy": "Privatlivspolitik",
+        "termsOfService": "Servicevilkår",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "Kunne ikke åbne link: {{url}}"
+      },
+      "supportReference": {
+        "label": "Supportreference: {{reference}}",
+        "copyAccessibilityLabel": "Kopier supportreference {{reference}}",
+        "copyAccessibilityHint": "Kopierer supportreferencen til udklipsholderen",
+        "copied": "Kopieret",
+        "copyFailedTitle": "Kopiering mislykkedes",
+        "copyFailedBody": "Supportreferencen kunne ikke kopieres. Marker teksten for at kopiere den manuelt."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "Gæste-Stitch Coin-køb er kun tilgængelige på iOS.",
+        "guestIosOnlyGeneric": "Gæstekøb er kun tilgængelige på iOS.",
+        "purchaseFailedTitle": "Køb mislykkedes",
+        "premiumVerificationNotYet": "Game Backend kunne ikke verificere dette køb. Prøv afstemning igen; køb det ikke igen.",
+        "premiumVerificationFailedRetry": "Game Backend kunne endnu ikke verificere dette køb. Prøv afstemning igen; køb det ikke igen.",
+        "premiumGrantRefreshFailed": "Premium blev verificeret, men medlemskabs- og AI-kredittilstand kunne ikke opdateres. Prøv afstemning igen.",
+        "premiumReconciliationUnreachable": "Købsafstemning kunne ikke nå Game Backend. Prøv afstemning igen; køb det ikke igen.",
+        "coinPackVerificationMismatch": "Butikstransaktionen matchede ikke denne mønt-pakke. Prøv verificering igen, eller kontakt support; køb den ikke igen.",
+        "coinPackGrantUnavailable": "Købet blev verificeret, men Stitch Coin-tildelingen er utilgængelig. Prøv afstemning igen; køb den ikke igen.",
+        "coinPackBalanceRefreshFailed": "Mønt-tildelingen blev verificeret, men den nuværende Stitch Coin-saldo kunne ikke opdateres. Prøv afstemning igen.",
+        "coinPackVerificationFailedRetry": "Game Backend kunne endnu ikke verificere denne mønt-pakke. Prøv afstemning igen; køb den ikke igen.",
+        "coinPackReconciliationUnreachable": "Afstemning af mønt-pakke kunne ikke nå Game Backend. Prøv afstemning igen; køb den ikke igen.",
+        "aiCreditPackVerificationMismatch": "Butikstransaktionen matchede ikke denne AI-kreditpakke. Prøv verificering igen, eller kontakt support; køb den ikke igen.",
+        "aiCreditPackGrantUnavailable": "Købet blev verificeret, men AI-kredittildelingen er utilgængelig. Prøv afstemning igen; køb den ikke igen.",
+        "aiCreditPackBalanceRefreshFailed": "AI-kredittildelingen blev verificeret, men den nuværende saldo kunne ikke opdateres. Prøv afstemning igen.",
+        "aiCreditPackVerificationFailedRetry": "Game Backend kunne endnu ikke verificere denne AI-kreditpakke. Prøv afstemning igen; køb den ikke igen.",
+        "aiCreditPackReconciliationUnreachable": "Afstemning af AI-kreditpakke kunne ikke nå Game Backend. Prøv afstemning igen; køb den ikke igen.",
+        "reconciliationStillUnavailable": "Game Backend er stadig utilgængelig. Prøv afstemning igen senere.",
+        "storeTemporarilyUnavailable": "Butikken er midlertidigt utilgængelig. Prøv igen om nogle få minutter.",
+        "purchasesNotAllowed": "Køb er ikke tilladt på denne enhed. Tjek din butikskonto eller forældrekontrol.",
+        "itemNotAvailable": "Dette produkt er ikke tilgængeligt for køb lige nu. Vælg venligst et andet produkt, eller prøv igen senere.",
+        "alreadyOwned": "Du ejer allerede dette køb. Brug Gendan køb for at opdatere din adgang.",
+        "couldNotConnectToStore": "Kunne ikke oprette forbindelse til butikken. Tjek din internetforbindelse, og prøv igen.",
+        "paymentPendingApproval": "Din betaling afventer godkendelse. Dit køb vises, når butikken har gennemført det.",
+        "testPurchaseDeclined": "Testkøbet blev afvist. Der er ikke foretaget nogen betaling. Vælg et andet testbutiksresultat i Indstillinger, og prøv igen.",
+        "genericPurchaseFailure": "Vi kunne ikke gennemføre dit køb. Der blev ikke opkrævet betaling. Prøv igen."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "Verificerer stadig",
+        "premiumPending": "Verificering er stadig i gang. Premium aktiveres, når Game Backend bekræfter det.",
+        "premiumPlanChangePending": "Verificering er stadig i gang. Din planændring planlægges, når Game Backend bekræfter det.",
+        "coinPackPending": "Verificering er stadig i gang. Din Stitch Coin-saldo opdateres, når det er gennemført.",
+        "aiCreditPackPending": "Verificering er stadig i gang. Din AI-kreditsaldo opdateres, når det er gennemført."
+      },
+      "success": {
+        "purchaseReceivedTitle": "Køb modtaget",
+        "storeAcceptedPlanChange": "Butikken har accepteret ændringen til {{label}}. Bekræfter, hvornår det træder i kraft.",
+        "storeAcceptedPurchase": "Butikken har accepteret {{label}}. Verificerer dit køb nu.",
+        "premiumChanges": "Premium skifter til {{label}}{{effectiveOn}}.",
+        "effectiveOnDate": " den {{date}}",
+        "planChangeScheduledTitle": "Planændring planlagt",
+        "planChangeScheduledBody": "Dit Premium-medlemskab beholder sin nuværende plan, indtil den ændres til {{label}}{{effectiveOn}}. Annuller ændringen fra Administrer abonnement.",
+        "premiumIsActiveTitle": "Premium er aktivt",
+        "premiumVerifiedAndActive": "{{label}} Premium er verificeret og aktivt.",
+        "premiumNowActiveNoBilling": "{{label}} Premium er nu aktivt.",
+        "premiumNowActiveBilled": "{{label}} Premium er nu aktivt, faktureres hver {{period}}.",
+        "coinPackGrantedTitle": "Stitch Coins tildelt",
+        "coinPackGrantVerified": "{{label}}-tildeling verificeret. Stitch Coin-saldo: {{balance}}.",
+        "coinPackAddedToBalance": "{{quantity}} Stitch Coins er blevet tilføjet til din saldo.",
+        "aiCreditPackGrantedTitle": "AI-kreditter tildelt",
+        "aiCreditPackGrantVerified": "{{label}}-tildeling verificeret. AI-kreditsaldo: {{balance}}.",
+        "aiCreditPackAddedToBalance": "{{quantity}} AI-kreditter er blevet tilføjet til din saldo."
+      },
+      "products": {
+        "premiumAnnual": "Årligt",
+        "premiumMonthly": "Månedligt",
+        "premiumWeekly": "Ugentligt",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+        "aiCreditPack_one": "{{formattedCount}} AI-kredit",
+        "aiCreditPack_other": "{{formattedCount}} AI-kreditter",
+        "billedEveryOffer": "{{price}} hver {{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} kreditter / betalt periode",
+        "creditAllowancePaidNoun": "{{credits}} kreditter / betalt {{period}}"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "Køb som gæst",
+        "commerceBody": "Du kan købe uden registrering. Premium-medlemskab kan gendannes fra butikken, men Stitch Coin, AI-kredit og privat gæsteindhold kan ikke gendannes, hvis installationen mistes. Registrering beskytter dem og afbryder aldrig spillet som gæst.",
+        "continueAsGuest": "Fortsæt som gæst",
+        "signInInstead": "Log ind i stedet",
+        "closeAccessibilityLabel": "Luk"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "Forstået",
+        "successButton": "Fantastisk",
+        "failedButton": "Luk",
+        "infoButton": "Forstået",
+        "closeAccessibilityLabel": "Luk"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "Tilbage",
+        "cancel": "Annuller",
+        "duplicateTitle": "Du har allerede et personligt mønster ved navn “{{title}}”. Vælg en anden titel.",
+        "cellsCount_one": "celle",
+        "cellsCount_other": "celler",
+        "colorsCount_one": "farve",
+        "colorsCount_other": "farver"
+      },
+      "hub": {
+        "title": "Kreativt hub",
+        "subtitle": "Skab dine egne designs som brugerdefinerede korssting-mønstre.",
+        "opening": "Åbner…",
+        "photoImport": {
+          "title": "Fotoimport",
+          "description": "Upload et billede fra dit kamerarulle, og konverter det til et sy-klart mønster.",
+          "action": "Importer foto"
+        },
+        "aiGenerator": {
+          "title": "AI-generator",
+          "description": "Beskriv en hyggelig prompt, og lad kunstig intelligens generere et brugerdefineret pixeldesign.",
+          "action": "Generer design"
+        }
+      },
+      "aspects": {
+        "square": "Kvadrat",
+        "portrait_4_3": "Portræt 4:3",
+        "landscape_4_3": "Landskab 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "Mønsterkonvertering mislykkedes. Prøv igen.",
+          "timeout": "Mønsterkonvertering behandles stadig. Prøv igen om lidt.",
+          "generic": "Kunne ikke fuldføre mønsterkonvertering. Prøv igen."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "Registreret konto påkrævet",
+          "body": "AI-kunst og dit bibliotek forbliver private for din konto.",
+          "signIn": "Log ind"
+        },
+        "header": {
+          "title": "AI-generator",
+          "backAccessibilityLabel": "Tilbage"
+        },
+        "prompt": {
+          "label": "Beskriv dit kunstværk",
+          "placeholder": "Et hyggeligt landsbyhus i solnedgang…"
+        },
+        "generate": {
+          "working": "Arbejder…",
+          "action": "Generer — 1 AI-kredit",
+          "errors": {
+            "promptRejected": "Den prompt var ikke tilladt. Prøv at beskrive noget andet.",
+            "generic": "Kunne ikke starte AI-generering. Prøv igen."
+          }
+        },
+        "library": {
+          "title": "Dit AI-kunstbibliotek",
+          "status": {
+            "pending": "Afventer",
+            "dispatched": "Afsendt",
+            "running": "Kører",
+            "delivered": "Leveret",
+            "safety_rejected": "Afvist af sikkerhed",
+            "failed": "Mislykkedes",
+            "deleted": "Slettet",
+            "unknown": "Utilgængeligt"
+          },
+          "failure": {
+            "safety_rejected": "Dette kunstværk bestod ikke udbyderens sikkerhedstjek.",
+            "failed": "Dette kunstværk kunne ikke genereres."
+          },
+          "approve": "Godkend til mønster",
+          "delete": "Slet",
+          "deleteAccessibilityLabel": "Slet dette AI-kunstværk",
+          "errors": {
+            "loadFailed": "Kunne ikke indlæse dit AI-kunstbibliotek. Prøv igen."
+          }
+        },
+        "approve": {
+          "modalTitle": "Opret personligt mønster",
+          "titleLabel": "Mønstertitel",
+          "titleAccessibilityLabel": "Mønstertitel",
+          "defaultTitle": "Mit AI-mønster",
+          "placeholder": "Mit AI-mønster",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "Annuller",
+          "creating": "Opretter mønster…",
+          "create": "Opret mønster",
+          "errors": {
+            "generic": "Kunne ikke oprette det personlige mønster. Prøv igen."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "Registreret konto påkrævet",
+          "body": "Personlige mønstre tilhører din konto, så de forbliver private og tilgængelige på tværs af enheder.",
+          "signIn": "Log ind eller opret konto",
+          "back": "Tilbage"
+        },
+        "header": {
+          "title": "Fotomønster",
+          "subtitle": "Beskær lokalt, godkend derefter konvertering",
+          "backAccessibilityLabel": "Tilbage"
+        },
+        "picker": {
+          "chooseTitle": "Vælg et foto",
+          "helpText": "Fuldopløsningskilden til det lokale foto forbliver på denne enhed. Intet konverteres, før du godkender beskæringen.",
+          "choose": "Vælg fra bibliotek",
+          "chooseAnother": "Vælg et andet",
+          "opening": "Åbner…",
+          "errors": {
+            "permissionDenied": "Adgang til fotobibliotek er påkrævet for at vælge en lokal fotokilde.",
+            "invalidDimensions": "Det valgte foto rapporterer ikke brugbare dimensioner.",
+            "generic": "Kunne ikke åbne fotobiblioteket. Prøv igen."
+          }
+        },
+        "framing": {
+          "title": "Beskæring af kunstværk",
+          "gestureHint": "Træk for at placere · knib for at zoome",
+          "aspectLabel": "Beskæringsformat"
+        },
+        "profile": {
+          "title": "Konverteringsprofil",
+          "options": {
+            "easy": "Let",
+            "standard": "Standard",
+            "detailed": "Detaljeret"
+          },
+          "custom": "Brugerdefineret",
+          "customMeta": "Fri · form låst",
+          "unavailable": "Passer ikke til denne beskæring",
+          "customShortEdgeLabel": "Kort kant",
+          "customColorLimitLabel": "DMC-farvegrænse",
+          "exceedsLimit": "Disse brugerdefinerede værdier overskrider grænsen på {{max}} celler for mønsterstørrelse."
+        },
+        "titleCard": {
+          "label": "Mønstertitel",
+          "placeholder": "Mit fotomønster",
+          "defaultTitle": "Mit fotomønster",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · op til {{maxColors}} DMC {{colorsUnit}}",
+          "privacyNotice": "Godkendelse uploader kun det beskårne, nedskalerede derivat. Det originale foto forbliver lokalt.",
+          "approve": "Godkend kunstværk og konverter"
+        },
+        "processing": {
+          "preparingFrame": "Forbereder den godkendte beskæring på denne enhed…",
+          "uploading": "Uploader kun det beskårne, nedskalerede billede…",
+          "waitingForWorker": "Venter på konverteringsprocessen…",
+          "buildingGrid": "Opbygger stingnettet og DMC-paletten…",
+          "preparingSession": "Forbereder det personlige mønster til spil…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "Denne profil passer ikke længere til den endelige beskæring. Vælg Let, eller reducer detaljer.",
+            "generic": "Kunne ikke konvertere dette foto. Prøv igen."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "Intet mønster valgt",
+          "noPatternBody": "Denne skærm skal åbnes fra et eksisterende personligt mønster i dit bibliotek.",
+          "accountTitle": "Registreret konto påkrævet",
+          "accountBody": "Personlige mønstre tilhører din konto, så de forbliver private og tilgængelige på tværs af enheder.",
+          "signIn": "Log ind eller opret konto",
+          "back": "Tilbage"
+        },
+        "loading": "Genoptager redigeringsudkast...",
+        "load": {
+          "failedTitle": "Kunne ikke indlæse mønster",
+          "retry": "Prøv igen",
+          "back": "Tilbage",
+          "errors": {
+            "generic": "Kunne ikke indlæse dette personlige mønster. Prøv igen."
+          }
+        },
+        "header": {
+          "title": "Mønsterredigering",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "Tilbage"
+        },
+        "toolbar": {
+          "undo": "Fortryd",
+          "redo": "Gentag"
+        },
+        "mode": {
+          "paint": "Mal",
+          "replaceColor": "Udskift farve",
+          "replaceStep1": "1. Tryk på en farve i mønsteret nedenfor for at udskifte:",
+          "replaceStep2": "2. Vælg en mål-DMC-farve nedenfor for at udføre udskiftningen:",
+          "paintSelected": "Valgt: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "Vælg en farve nedenfor, og tryk derefter på celler for at male."
+        },
+        "errors": {
+          "pickColorFirst": "Vælg en farve først",
+          "paletteLimit": "Dette mønster bruger allerede det maksimale antal på {{max}} trådfarver."
+        },
+        "picker": {
+          "title": "DMC-trådfarver",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "Gem redigeret mønster",
+          "placeholder": "Min redigerede mønstertitel",
+          "action": "Gem som nyt",
+          "offlineTitle": "Gemt offline",
+          "offlineBody": "Dit redigerede mønster blev gemt på denne enhed og synkroniseres til din konto, når du er tilbage online.",
+          "errors": {
+            "generic": "Kunne ikke gemme dette personlige mønster. Prøv igen."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "Den login tilhører en anden konto. Din nuværende konto er ikke blevet ændret.",
+        "providerRejected": "Den verificering blev afvist. Tjek kontoen eller koden, og prøv igen."
+      },
+      "generic": {
+        "failure": "Noget gik galt. Prøv igen.",
+        "supportReferenceLabel": "Supportreference: {{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Stitch Wish bruger valgte fotos til at oprette personlige mønstre eller vælge et offentligt skaberprofilbillede."
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "VELKOMMEN TIL STITCH WISH",
+        "title": "Vælg en farve, tryk på de matchende felter.",
+        "heroAlt": "Forhåndsvisning af startmønsteret Cozy Heart",
+        "handedness": {
+          "sectionTitle": "Hvilken side skal betjeningen bruge?",
+          "groupLabel": "Betjeningsside",
+          "optionRight": "Betjening til højre",
+          "optionLeft": "Betjening til venstre",
+          "saveErrorText": "Kunne ikke gemme det valg.",
+          "retry": "Prøv igen"
+        },
+        "note": "Du kan ændre dette senere i Indstillinger.",
+        "start": "Begynd at sy",
+        "starting": "Starter…",
+        "browse": "Gennemse startmønstre",
+        "signIn": "Log ind"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "Vælg DMC 321 Christmas Red.",
+          "stitchAction": "Tryk på den fremhævede matchende celle.",
+          "mismatchedTap": "Tryk på den fremhævede anderledes celle. Forkerte tryk koster intet.",
+          "undoAction": "Fortryd det sting, og placer det derefter igen.",
+          "stitchSweep": "Tryk på en matchende celle, og træk derefter hen over det fremhævede forløb.",
+          "threadColorCompletion": "Færdiggør den fremhævede hvide tråd, og vælg derefter din næste farve."
+        },
+        "hints": {
+          "anchoredZoom": "Knib for at zoome, mens cellerne under dine fingre holdes på plads.",
+          "panVsSweep": "Træk panorerer stoffet. Start på en matchende celle for at sy et forløb.",
+          "edgeAutoPan": "Bliv ved med at trække nær kanten, så følger stoffet din finger.",
+          "remainingCellLocator": "Brug lokaliseringen til at finde den næste resterende celle for denne trådfarve."
+        },
+        "skip": "Spring over for nu",
+        "skipAccessibilityLabel": "Spring vejledningen over for nu",
+        "dismiss": "Forstået",
+        "dismissAccessibilityLabel": "Afvis hint"
+      },
+      "recap": {
+        "title": "Du har fanget det",
+        "lines": {
+          "matchNumbers": "Match tallene for at placere hvert sting.",
+          "dragSweep": "Træk hen over matchende celler for at sy et forløb.",
+          "pinchZoom": "Knib for at zoome, når du har brug for et nærmere kig.",
+          "undoLocator": "Fortryd og lokaliseringen er altid gratis."
+        },
+        "continue": "Fortsæt med at sy",
+        "browsePatterns": "Gennemse mønstre"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "Sybord",
+        "subtitle": "Fortsæt hvor du slap, eller genoptag et nyligt arbejde.",
+        "loading": "Indlæser dine sting...",
+        "empty": {
+          "title": "Ingen aktive arbejder",
+          "body": "Din syramme er i øjeblikket tom. Gennemse mønsterkataloget for at finde noget smukt at sy!",
+          "action": "Gennemse katalog"
+        },
+        "unknownPattern": "Ukendt mønster",
+        "idLabel": "ID: {{id}}",
+        "unknownPatternLabel": "Mønster {{id}}",
+        "deleteSessionAccessibilityLabel": "Slet session",
+        "viewFinishedAccessibilityLabel": "Se færdigt arbejde",
+        "resumeAccessibilityLabel": "Genoptag syning",
+        "status": {
+          "ready": "Klar",
+          "done": "Færdig",
+          "active": "Aktiv",
+          "preparing": "Forbereder",
+          "failed": "Mislykkedes"
+        },
+        "deleteConfirm": {
+          "title": "Slet fremskridt",
+          "message": "Er du sikker på, at du vil slette dine fremskridt for \"{{title}}\"? Dette kan ikke fortrydes.",
+          "cancel": "Annuller",
+          "confirm": "Slet"
+        },
+        "preparingCard": {
+          "discardTitle": "Kassér session",
+          "cancelTitle": "Annuller download",
+          "discardMessage": "Er du sikker på, at du vil kassere denne mislykkede session?",
+          "cancelMessage": "Er du sikker på, at du vil annullere download af dette mønster?",
+          "keep": "Behold",
+          "discard": "Kassér",
+          "cancel": "Annuller"
+        }
+      },
+      "loading": {
+        "text": "Åbner session og forbereder stof..."
+      },
+      "error": {
+        "title": "Indlæsning af session mislykkedes",
+        "fallbackMessage": "Kunne ikke indlæse din sy-session.",
+        "backButton": "Gå tilbage",
+        "tableButton": "Gå til bord"
+      },
+      "header": {
+        "backButton": "← Tilbage",
+        "tableButton": "← Bord",
+        "defaultTitle": "Sy-session",
+        "progress": "{{completed}} / {{total}} celler ({{percent}}% fuldført)",
+        "resumeTutorialAccessibilityLabel": "Genoptag vejledning"
+      },
+      "banners": {
+        "patternRemoved": "Dette mønster blev fjernet af moderation og er ikke længere tilgængeligt. Tryk for at forlade.",
+        "syncConflict": "Synkroniseret med en anden enhed — nogle celler blev opdateret. Tryk for at afvise."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "Find den næste resterende celle for den aktive trådfarve",
+        "undoAccessibilityLabel": "Fortryd sidste sting"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "Farve {{number}}: DMC {{dmcCode}}, {{count}} sting tilbage",
+        "chipAccessibilityLabel_other": "Farve {{number}}: DMC {{dmcCode}}, {{count}} sting tilbage",
+        "done": "Færdig",
+        "remaining_one": "{{count}} tilbage",
+        "remaining_other": "{{count}} tilbage"
+      },
+      "celebration": {
+        "title": "Smukt skabt!",
+        "subtitle": "Du har fuldført hvert eneste sting på dette stof.",
+        "stitchesLabel_one": "Sting",
+        "stitchesLabel_other": "Sting",
+        "colorsLabel_one": "Farve",
+        "colorsLabel_other": "Farver",
+        "replayButton": "Sy igen",
+        "catalogButton": "Tilbage til katalog"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "Gå tilbage",
+        "tryAgain": "Prøv igen"
+      },
+      "rejectionReasons": {
+        "safety": "Sikkerhed",
+        "publication_rights": "Udgivelsesrettigheder",
+        "duplicate_or_spam": "Duplikat eller spam",
+        "technical_invalidity": "Teknisk ugyldighed",
+        "quality_standard": "Kvalitetsstandard"
+      },
+      "submissionStatus": {
+        "accepted": "Udgivet",
+        "appeal_pending": "Anke afventer",
+        "appeal_upheld": "Anke afvist",
+        "precheck_failed": "Forhåndstjek utilgængeligt",
+        "precheck_pending": "Kontrollerer",
+        "quarantined": "Kræver gennemgang",
+        "rejected": "Afvist",
+        "review_pending": "Under gennemgang"
+      },
+      "revisionStatus": {
+        "accepted": "Udgivet",
+        "appeal_pending": "Anke afventer",
+        "appeal_upheld": "Anke afvist",
+        "pending": "Under gennemgang",
+        "rejected": "Afvist",
+        "withdrawn": "Trukket tilbage"
+      },
+      "home": {
+        "identity": {
+          "establishing": "Etablerer identitet...",
+          "pendingTitle": "Identitet afventer",
+          "offline": "Offline",
+          "retryConnection": "Prøv forbindelse igen",
+          "loadingPublicProfile": "Indlæser offentlig profil...",
+          "unavailableTitle": "Offentlig profil utilgængelig",
+          "checkConnection": "Tjek din forbindelse, og prøv igen.",
+          "createTitle": "Opret din offentlige profil",
+          "createBody": "Vælg det permanente brugernavn, der vises med dine fællesskabsmønstre. Dine kontooplysninger forbliver private.",
+          "createAction": "Opret offentlig profil",
+          "editAction": "Rediger offentlig profil",
+          "offlinePendingSync": "Offline — synkronisering afventer",
+          "guestPlayer": "Gæstespiller",
+          "playingSince": "Spillet siden {{date}}",
+          "creatorSince": "Skaber siden {{date}}"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "Åbn Commerce Store",
+          "title": "Studie-saldi",
+          "commerceStoreLink": "Butik",
+          "stitchCoinsAccessibilityLabel": "Stitch Coin-saldo: {{balance}}. Tryk for at få mønter.",
+          "packs": "Pakker",
+          "stitchCoinsLabel": "Stitch Coins",
+          "stitchCoinsSub": "Til oplåsning af mønstre",
+          "aiCreditsAccessibilityLabel": "AI-kreditsaldo: {{balance}}. Tryk for at få kreditter.",
+          "aiCreditsSignInAccessibilityLabel": "AI-kreditter. Log ind for at købe.",
+          "aiCreditsLabel": "AI-kreditter",
+          "aiCreditsSubOwned": "Til AI-mønsterkunst",
+          "aiCreditsSubGuest": "Log ind for at eje",
+          "membershipActiveAccessibilityLabel": "Premium-medlemskab aktivt ({{plan}}). Tryk for at administrere.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Premium. Tryk for at se planer.",
+          "membershipActiveTitle": "Premium aktivt · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "Årligt",
+          "planMonthly": "Månedligt",
+          "planWeekly": "Ugentligt",
+          "planActive": "Aktiv",
+          "trialBadge": "Prøveperiode",
+          "membershipSubActive": "Alle temaer låst op · Øjeblikkelige daglige møntkrav",
+          "membershipSubInactive": "Øjeblikkelige 30 daglige mønter, brugerdefinerede temaer og AI-kreditter",
+          "manage": "Administrer",
+          "explore": "Udforsk"
+        },
+        "quickNav": {
+          "sectionEyebrow": "KONTO & FÆLLESSKAB",
+          "submissionsAccessibilityLabel": "Katalogindsendelser: Følg gennemgange, afgørelser og anker",
+          "submissionsTitle": "Indsendelser",
+          "submissionsSub": "Følg gennemgange",
+          "publishedAccessibilityLabel": "Udgivne mønstre: Rediger metadata, træk tilbage, og følg anker",
+          "publishedTitle": "Udgivet",
+          "publishedSub": "Administrer mønstre",
+          "moderationAccessibilityLabel": "Moderationsmeddelelser: Gennemgå katalogafgørelser, der påvirker dine mønstre",
+          "moderationTitle": "Moderation",
+          "moderationSub": "Politikmeddelelser",
+          "likedAccessibilityLabel": "Synes godt om-mønstre: Din private samling af fællesskabsmønstre, du synes godt om",
+          "likedTitle": "Synes godt om-mønstre",
+          "likedSavedCount_one": "{{count}} gemt",
+          "likedSavedCount_other": "{{count}} gemt",
+          "likedSavedDefault": "Gemte mønstre"
+        },
+        "dailySection": {
+          "title": "Daglig syning og belønninger",
+          "tasksGroupLabel": "Daglige opgaver (+30 mønter maks.)",
+          "connectToTrack": "Opret forbindelse for at følge fremskridt for daglige opgaver.",
+          "loadingTasks": "Indlæser opgaver…",
+          "loadFailed": "Kunne ikke indlæse daglige opgaver.",
+          "retry": "Prøv igen",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "Nulstiller…",
+          "resetsInHoursMinutes": "Nulstilles om {{hours}}t {{minutes}}m",
+          "resetsInMinutes": "Nulstilles om {{minutes}}m"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 stinghandlinger",
+            "body": "Fyld 100 matchende celler i dag"
+          },
+          "three_colors_10": {
+            "title": "3 farver, 10 handlinger hver",
+            "body": "Nå 10 handlinger i 3 trådfarver"
+          },
+          "color_completion": {
+            "title": "Fuldfør en trådfarve",
+            "body": "Færdiggør syningen af en farve helt"
+          }
+        },
+        "dailyPool": {
+          "title": "Daglig 30-mønters belønningspulje",
+          "premiumInstantClaim": "Premium øjeblikkeligt krav",
+          "rewardedAds": "Belønnede annoncer",
+          "claimedAmount": "{{amount}} Stitch Coins krævet for i dag!",
+          "poolAlreadyClosed": "Dagens belønningspulje var allerede lukket.",
+          "claimedForToday": "Krævet for i dag. Nulstilles på næste belønningsdag.",
+          "poolExhausted": "Dagens 30-mønters belønningspulje er opbrugt.",
+          "claimButtonRetry": "Prøv krav igen",
+          "claimButtonInstant": "Kræv {{count}} mønter (øjeblikkeligt)",
+          "poolClaimedResetsTomorrow": "Dagens møntpulje blev krævet. Nulstilles i morgen.",
+          "allAdRewardsCompleted": "Alle annoncebelønninger fuldført for i dag! (30/30 mønter)",
+          "watchAdButton": "Se annonce for +10 mønter ({{count}} tilbage)",
+          "adPerkNote": "Se op til 3 annoncer/dag · Premium låser op for øjeblikkeligt 30-mønters krav",
+          "adRewardEarned": "Annoncebelønning optjent! Verificerer med backend…",
+          "claimFailed": "Krav mislykkedes: {{message}}",
+          "claimFailedGeneric": "Noget gik galt. Prøv igen.",
+          "adLoadFailedDefault": "Kunne ikke indlæse annonce",
+          "adAttemptFailedDefault": "Kunne ikke åbne annonceforsøg"
+        },
+        "tabs": {
+          "myCreations": "Mine kreationer {{count}}",
+          "likedPatterns": "Synes godt om-mønstre {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "Log ind for personlige mønstre",
+          "signInBody": "En registreret konto er påkrævet for at oprette og privat eje konverterede fotomønstre.",
+          "signIn": "Log ind",
+          "patternMeta": "{{width}}×{{height}} · {{count}} farver",
+          "pendingSync": "Synkronisering afventer",
+          "play": "Spil",
+          "edit": "Rediger",
+          "submitAccessibilityLabel": "Indsend {{title}} til fællesskabskataloget",
+          "emptyTitle": "Ingen personlige kreationer",
+          "emptyBody": "Du har ikke konverteret nogen fotos eller genereret AI-kunst endnu. Gå til Skab for at starte dit første mesterværk!",
+          "emptyAction": "Begynd at skabe",
+          "actionFailedGeneric": "Noget gik galt. Prøv igen."
+        },
+        "likedTab": {
+          "unavailableTitle": "Synes godt om-mønstre utilgængelige",
+          "unavailableDefault": "Kunne ikke indlæse synes godt om-mønstre.",
+          "byCreator": "af {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} farver",
+          "emptyTitle": "Ingen synes godt om-mønstre",
+          "emptyBody": "Gennemse kataloget, og tryk på hjerteikonet på et hvilket som helst design for at gemme det her til senere.",
+          "emptyAction": "Opdag mønstre"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Premium dagligt møntkrav",
+        "description": "Kræv resten af dagens fælles 30-mønters belønningspulje.",
+        "connectPrompt": "Opret forbindelse til Game Backend for at tjekke dagens belønning.",
+        "checkingReward": "Tjekker dagens Premium-belønning…",
+        "unavailableGeneric": "Dagens Premium-belønning er utilgængelig.",
+        "tryAgain": "Prøv igen",
+        "resultAdded": "{{amount}} Stitch Coins tilføjet af Game Backend. Saldo: {{balance}}.",
+        "poolAlreadyClosed": "Dagens fælles belønningspulje var allerede lukket.",
+        "alreadyClaimed": "Allerede krævet for denne belønningsdag.",
+        "poolExhausted": "Dagens fælles belønningspulje er opbrugt. Den nulstilles på næste belønningsdag.",
+        "availableNow": "{{count}} Stitch Coins tilgængelige nu",
+        "resetsAt": "Nulstilles {{date}}",
+        "claimButtonRetry": "Prøv krav igen",
+        "claimButtonInstant": "Kræv {{count}} mønter",
+        "lockedDescription": "Premium-medlemskab, herunder en kvalificeret månedlig prøveperiode, låser op for dette daglige krav.",
+        "viewPremiumPlans": "Se Premium-planer"
+      },
+      "publicProfile": {
+        "editTitle": "Rediger offentlig profil",
+        "createTitle": "Opret offentlig profil",
+        "signInTitle": "Login påkrævet",
+        "signInBody": "En registreret konto er påkrævet for at oprette en offentlig skaberidentitet.",
+        "signInAction": "Log ind",
+        "unavailableTitle": "Profil utilgængelig",
+        "unavailableBody": "Din offentlige profil kunne ikke indlæses. Tjek din forbindelse, og prøv igen.",
+        "tryAgain": "Prøv igen",
+        "intro": "Dette navn og billede er synlige med dine fællesskabsmønstre. Din e-mail og login-udbyder forbliver private.",
+        "choosePhoto": "Vælg billede",
+        "changePhoto": "Skift billede",
+        "remove": "Fjern",
+        "avatarHelper": "Valgfrit · JPEG, PNG eller WebP · op til 5 MB",
+        "usernameLabel": "Brugernavn",
+        "usernameAccessibilityLabel": "Offentligt brugernavn",
+        "usernamePlaceholder": "syer_navn",
+        "usernameHelperLocked": "Dit brugernavn er permanent.",
+        "usernameHelperEditable": "3-30 små bogstaver, tal eller underscores. Dette kan ikke ændres senere.",
+        "displayNameLabel": "Visningsnavn",
+        "displayNameAccessibilityLabel": "Offentligt visningsnavn",
+        "displayNamePlaceholder": "Dit skabernavn",
+        "displayNameHelper": "Du kan ændre dette senere.",
+        "safetyNotice": "Navne og billeder tjekkes før udgivelse. Hvis en ændring afvises, forbliver din nuværende offentlige profil uændret.",
+        "saveAction": "Gem offentlig profil",
+        "publishAction": "Udgiv offentlig profil",
+        "photoPermissionRequired": "Adgang til fotobibliotek er påkrævet for at vælge et profilbillede.",
+        "photoTypeInvalid": "Profilbilleder skal være JPEG, PNG eller WebP.",
+        "photoTooLarge": "Profilbilleder skal være 5 MB eller mindre.",
+        "saveFailedDefault": "Kunne ikke gemme din offentlige profil"
+      },
+      "submissions": {
+        "title": "Katalogindsendelser",
+        "unavailableTitle": "Indsendelser utilgængelige",
+        "unavailableDefault": "Kunne ikke indlæse dine indsendelser.",
+        "emptyTitle": "Ingen katalogindsendelser",
+        "emptyBody": "Indsend et synkroniseret personligt mønster fra Mine kreationer.",
+        "emptyAction": "Tilbage til Mine kreationer",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "Automatiske tjek kunne ikke gennemføres. Dette øjebliksbillede blev ikke udgivet.",
+        "publishedToCatalog": "Udgivet i fællesskabskataloget.",
+        "appealAction": "Anke afgørelse",
+        "appealHelp": "Du kan anke dette uændrede øjebliksbillede én gang.",
+        "appealNoteAccessibilityLabel": "Ankenote",
+        "appealNotePlaceholder": "Valgfri kontekst til den gennemgående moderator",
+        "cancelAction": "Annuller",
+        "submitAppealAction": "Indsend anke"
+      },
+      "publishedPatterns": {
+        "title": "Udgivne mønstre",
+        "unavailableTitle": "Mønstre utilgængelige",
+        "unavailableDefault": "Kunne ikke indlæse dine udgivne mønstre.",
+        "emptyTitle": "Ingen udgivne mønstre",
+        "emptyBody": "Mønstre, du udgiver i fællesskabskataloget, vises her.",
+        "emptyAction": "Tilbage til profil",
+        "withdrawnFromCatalog": "Trukket tilbage fra katalog",
+        "underReviewHold": "Under gennemgangsstop",
+        "meta": "{{category}} · Udgivet {{date}}",
+        "withdrawnHelp": "Denne identitet er permanent trukket tilbage. Spillere med en eksisterende sy-session beholder deres fremskridt og adgang.",
+        "reviewHoldHelp": "Dette mønster er midlertidigt uden for opdagelse og kan ikke starte nye sessioner. Eksisterende sy-sessioner forbliver spilbare. Du kan stadig foreslå en metadatarevision.",
+        "reviseAction": "Rediger metadata",
+        "withdrawRevisionAction": "Træk revision tilbage",
+        "appealAction": "Anke afgørelse",
+        "withdrawFromCatalogAction": "Træk tilbage fra katalog",
+        "appealHelp": "Du kan anke dette uændrede øjebliksbillede én gang. Indsendelse af en ny revision fraskriver denne anke i stedet.",
+        "appealNoteAccessibilityLabel": "Ankenote",
+        "appealNotePlaceholder": "Valgfri kontekst til den gennemgående moderator",
+        "cancelAction": "Annuller",
+        "submitAppealAction": "Indsend anke",
+        "withdrawRevisionFailedTitle": "Kunne ikke trække revision tilbage",
+        "withdrawPatternFailedTitle": "Kunne ikke trække mønster tilbage",
+        "withdrawPatternSuccessTitle": "Mønster trukket tilbage",
+        "withdrawPatternSuccessBody": "Det kan ikke længere opdages og kan ikke starte nye sessioner. Eksisterende sy-sessioner beholder deres fremskridt og spilbare data.",
+        "withdrawConfirmTitle": "Træk tilbage fra fællesskabskatalog?",
+        "withdrawConfirmBody": "“{{title}}” forsvinder fra opdagelse og kan ikke starte nye sessioner. Denne mønsteridentitet kan aldrig gendannes. Eksisterende sy-sessioner og deres fremskridt forbliver spilbare.",
+        "withdrawConfirmCancel": "Annuller",
+        "withdrawConfirmAction": "Træk permanent tilbage"
+      },
+      "revisePatternMetadata": {
+        "title": "Rediger metadata",
+        "signInTitle": "Registreret konto påkrævet",
+        "signInBody": "Log ind, før du reviderer et fællesskabsmønsters metadata.",
+        "signInAction": "Log ind",
+        "notFoundTitle": "Fællesskabsmønster ikke fundet",
+        "notFoundBody": "Kun dine egne udgivne fællesskabsmønstre kan revideres.",
+        "notFoundAction": "Tilbage til udgivne mønstre",
+        "inProgressTitle": "Revision allerede i gang",
+        "inProgressBody": "Dette mønster har allerede en afventende revision eller aktiv anke. Træk den tilbage, før du indsender en anden.",
+        "inProgressAction": "Tilbage til udgivne mønstre",
+        "currentlyPublished": "Aktuelt udgivet i fællesskabskataloget",
+        "titleFieldLabel": "Katalogtitel",
+        "titlePlaceholder": "Mønstertitel",
+        "titleAccessibilityLabel": "Katalogtitel",
+        "descriptionFieldLabel": "Beskrivelse",
+        "descriptionPlaceholder": "Beskriv designet, emnet og syoplevelsen.",
+        "descriptionAccessibilityLabel": "Katalogbeskrivelse",
+        "sourceLanguageFieldLabel": "Kildesprog",
+        "categoryFieldLabel": "Kategori",
+        "tagsFieldLabel": "Tags",
+        "notice": "Revidering fanger et nyt uforanderligt øjebliksbillede. Dine aktuelt udgivne metadata forbliver synlige, indtil en menneskelig moderator accepterer denne revision.",
+        "submitAction": "Indsend revision"
+      },
+      "submitPattern": {
+        "title": "Indsend til fællesskabet",
+        "signInTitle": "Registreret konto påkrævet",
+        "signInBody": "Log ind, før du indsender et personligt mønster til fællesskabskataloget.",
+        "signInAction": "Log ind",
+        "createProfileTitle": "Opret en offentlig skaberprofil",
+        "createProfileBody": "Fællesskabsmønstre krediteres din offentlige skaberidentitet.",
+        "createProfileAction": "Opret profil",
+        "patternNotFoundTitle": "Personligt mønster ikke fundet",
+        "patternNotFoundBody": "Kun synkroniserede personlige mønstre kan indsendes.",
+        "patternNotFoundAction": "Tilbage til profil",
+        "patternMeta": "{{width}}×{{height}} · {{count}} farver",
+        "byCreator": "Af @{{username}}",
+        "titleFieldLabel": "Katalogtitel",
+        "titlePlaceholder": "Mønstertitel",
+        "titleAccessibilityLabel": "Katalogtitel",
+        "descriptionFieldLabel": "Beskrivelse",
+        "descriptionPlaceholder": "Beskriv designet, emnet og syoplevelsen.",
+        "descriptionAccessibilityLabel": "Katalogbeskrivelse",
+        "sourceLanguageFieldLabel": "Kildesprog",
+        "categoryFieldLabel": "Kategori",
+        "tagsFieldLabel": "Tags",
+        "rightsDeclaration": "Jeg har skabt dette værk eller har de rettigheder, der kræves for at udgive det under Erklæring om udgivelsesrettigheder v1.",
+        "notice": "Indsendelse fanger en uforanderlig kopi. Automatiske tjek giver bevis, men en menneskelig moderator træffer enhver afgørelse.",
+        "submitAction": "Indsend til gennemgang"
+      },
+      "moderationNotices": {
+        "title": "Moderationsmeddelelser",
+        "signInTitle": "Log ind for at se meddelelser",
+        "signInBody": "Moderationsmeddelelser tilhører den registrerede konto, der udgav det berørte fællesskabsmønster.",
+        "signInAction": "Log ind",
+        "unavailableTitle": "Meddelelser utilgængelige",
+        "unavailableDefault": "Kunne ikke indlæse moderationsmeddelelser.",
+        "emptyTitle": "Ingen moderationsmeddelelser",
+        "emptyBody": "Katalogmoderationsafgørelser, der er synlige for ejeren, vises her.",
+        "emptyAction": "Tilbage til profil",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "Katalogmetadata-udbedring",
+          "no_violation": "Gennemgang lukket — ingen overtrædelse",
+          "review_hold": "Gennemgangsstop",
+          "safety_removal": "Sikkerhedsfjernelse"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "Titlen, beskrivelsen og de valgte tags blev erstattet med sikre værdier. Tilgængelighed, mønsterartefakten og forhåndsvisning er upåvirket. Du kan indsende en ny katalogmetadatarevision når som helst.",
+          "no_violation": "Efterpublicering-gennemgangen er lukket, og dette mønster er igen fuldt tilgængeligt i opdagelse og nye sy-sessioner.",
+          "review_hold": "Dette mønster er midlertidigt utilgængeligt for opdagelse og nye sessioner. Eksisterende sy-sessioner, fremskridt og offline mønsterdata forbliver spilbare.",
+          "safety_removal": "Dette mønster blev fjernet på grund af en sikkerheds-, juridisk- eller politikovertrædelse. Det forsvandt fra opdagelse, eksisterende sy-sessioner blev utilgængelige, og offline mønsterdata på dine enheder blev slettet. Du kan indsende én anke om sikkerhedsfjernelse."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "Daglige opgaver",
+        "offline": "Du er offline — Daglige opgaver kræver en forbindelse.",
+        "unavailable": "Kunne ikke indlæse daglige opgaver.",
+        "empty": "Ingen opgaver tilgængelige i dag."
+      },
+      "rewardedAdCard": {
+        "offline": "Du er offline — Belønningsdag kræver en forbindelse.",
+        "unavailable": "Kunne ikke indlæse status for belønningsdag.",
+        "premiumClaimClosedPool": "Dit daglige Premium-krav lukkede dagens fælles møntpulje.",
+        "allRewardsClaimed": "Du har krævet alle annoncebelønninger for i dag. Kom tilbage i morgen!",
+        "remaining_one": "{{count}} annonce tilbage i dag ({{coins}} mønter tilgængelige)",
+        "remaining_other": "{{count}} annoncer tilbage i dag ({{coins}} mønter tilgængelige)",
+        "watchForCoins": "Se annonce for {{count}} mønter"
+      },
+      "likedPatterns": {
+        "title": "Synes godt om-mønstre",
+        "signInTitle": "Registreret konto påkrævet",
+        "signInBody": "Log ind, før du ser din private samling af synes godt om-mønstre.",
+        "signInAction": "Log ind",
+        "unavailableTitle": "Synes godt om-mønstre utilgængelige",
+        "unavailableDefault": "Kunne ikke indlæse synes godt om-mønstre.",
+        "emptyTitle": "Ingen synes godt om-mønstre",
+        "emptyBody": "Gennemse mønsterkataloget, og tryk på hjerteikonet på et hvilket som helst design for at gemme det her.",
+        "emptyAction": "Opdag mønstre",
+        "byCreator": "af {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} farver · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "Indstillinger",
+        "subtitleDev": "Konfigurer præferencer, og inspicer backend-systemer.",
+        "subtitleProd": "Konfigurer dine præferencer."
+      },
+      "serviceStatus": {
+        "sectionTitle": "Tjenestestatus",
+        "apiConnectionTitle": "API-forbindelse",
+        "testingConnection": "Tester API-forbindelse...",
+        "offlineUnreachable": "Offline / Utilgængelig",
+        "unknownConnectionError": "Ukendt forbindelsesfejl",
+        "retryConnection": "Prøv forbindelse igen",
+        "healthy": "Sund",
+        "degraded": "Nedsat",
+        "postgresLabel": "PostgreSQL-database",
+        "redisLabel": "Redis-cache"
+      },
+      "session": {
+        "sectionTitle": "Identitet & session",
+        "statusTitle": "Backend-sessionsstatus",
+        "statusDescription": "Validerer din aktive gæsteregistreringssession via API'et.",
+        "noActiveSession": "Ingen aktiv session",
+        "sessionActive": "Session aktiv",
+        "idLabel": "ID: {{id}} (v{{version}})",
+        "unknownState": "Ukendt tilstand"
+      },
+      "tutorial": {
+        "sectionTitle": "Vejledning",
+        "learnControlsTitle": "Lær betjeningen",
+        "learnControlsDescription": "Genoptag sy-vejledningen, når du er klar.",
+        "unavailableTitle": "Vejledning utilgængelig",
+        "unavailableMessage": "Kunne ikke genoptage vejledningen. Prøv igen."
+      },
+      "developer": {
+        "sectionTitle": "Udvikler",
+        "debugDiagnostics": "Fejlfinding / diagnostik",
+        "debug": {
+          "backAccessibilityLabel": "Gå tilbage",
+          "title": "Fejlfinding",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: konfigureret · miljø: {{environment}}",
+            "dsnNotConfigured": "DSN: ikke konfigureret",
+            "sendTestEvent": "Send testhændelse",
+            "throwError": "Udløs fejl",
+            "disabledTitle": "Sentry deaktiveret",
+            "disabledMessage": "Sentry er ikke konfigureret (ingen DSN fundet), så ingen testhændelse sendes.",
+            "testEventSent": "Testhændelse sendt. Hændelses-ID: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "Fejl",
+            "testEventFailedMessage": "Kunne ikke sende testhændelse: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Onboarding",
+            "description": "Ryd vejledningsfremskridt, og start forfra fra Velkommen.",
+            "restart": "Genstart onboarding",
+            "confirmTitle": "Genstart onboarding?",
+            "confirmMessage": "Vejledningens tilstand ryddes, og onboarding starter fra velkomstskærmen.",
+            "cancel": "Annuller",
+            "resetFailedTitle": "Nulstilling mislykkedes"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "Kontosletning",
+        "statusTitle": "Status for kontosletning",
+        "checkingStatus": "Tjekker status...",
+        "pendingTitle": "Kontosletning afventer",
+        "pendingDescription": "Din kontosletning er planlagt. Log ind igen, før genoprettelsesvinduet slutter, for at annullere den.",
+        "recoveryWindowEnds": "Genoprettelsesvindue slutter: {{date}}",
+        "cancelling": "Annullerer...",
+        "cancelDeletion": "Annuller sletning",
+        "statusError": "Kunne ikke tjekke sletningsstatus. Tjek din forbindelse, og prøv igen.",
+        "deleteAccountTitle": "Slet konto",
+        "deleteAccountDescription": "Slet permanent din konto, fremskridt og alle oplåsninger efter et 30-dages genoprettelsesvindue.",
+        "requestedTitle": "Kontosletning anmodet",
+        "requestedMessage": "Din sletningsanmodning afventer indtil {{date}}. Din konto er blevet logget ud. Log ind igen inden da, hvis du ønsker at annullere denne sletning.",
+        "signOutFailedTitle": "Lokal log-ud mislykkedes",
+        "signOutFailedMessage": "Din sletningsanmodning afventer stadig. Log venligst ud igen fra Indstillinger.",
+        "requestFailedTitle": "Anmodning mislykkedes",
+        "requestFailedMessage": "Din sletningsanmodning blev ikke indsendt. Tjek din forbindelse, og prøv igen.",
+        "cancelSuccessTitle": "Succes",
+        "cancelSuccessMessage": "Din kontosletningsanmodning er blevet annulleret.",
+        "reauthRequiredTitle": "Genautentificering påkrævet",
+        "reauthRequiredMessage": "Af sikkerhedsmæssige årsager skal du logge ind igen, før du annullerer kontosletning.",
+        "signInAction": "Log ind",
+        "cancelFailedTitle": "Annullering mislykkedes",
+        "cancelFailedGeneric": "Kunne ikke annullere kontosletning. Tjek din forbindelse, og prøv igen."
+      },
+      "appearance": {
+        "sectionTitle": "Udseende"
+      },
+      "themeCollectionCard": {
+        "title": "Temasamling",
+        "description": "Skift stof-, sting- og fuldførelseskosmetik uden at påvirke spillet.",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "Kræver Premium-medlemskab",
+        "selected": "Valgt",
+        "accessActive": "Premium-temaadgang er aktiv, også under en kvalificeret månedlig prøveperiode.",
+        "lockedPreview": "Se forhåndsvisning af samlingen her. Premium-medlemskab eller en kvalificeret månedlig prøveperiode låser op for valg.",
+        "viewPremiumPlans": "Se Premium-planer"
+      },
+      "gameplay": {
+        "sectionTitle": "Spilindstillinger",
+        "showGridLinesTitle": "Vis gitterlinjer",
+        "showGridLinesDescription": "Vis grænser mellem sy-lærredets celler",
+        "handednessTitle": "Håndethedslayout",
+        "handednessDescription": "Justér interaktive kontroller til venstre- eller højrehåndet spil",
+        "left": "Venstre",
+        "right": "Højre",
+        "leftHandedLayout": "Venstrehåndet layout",
+        "rightHandedLayout": "Højrehåndet layout"
+      },
+      "language": {
+        "sectionTitle": "Sprog",
+        "description": "Vælg det sprog, Stitch Wish viser sin grænseflade på.",
+        "followDevice": "Følg enhedens sprog",
+        "followDeviceDescription": "Ryd din tilsidesættelse for at følge din enheds sprogindstilling.",
+        "optionEnglish": "Engelsk",
+        "optionTurkish": "Türkçe",
+        "modalTitle": "Vælg sprog",
+        "modalSubtitle": "Vælg dit foretrukne sprog til grænsefladen.",
+        "systemDefault": "Systemsprog",
+        "systemDefaultWithDetected": "Systemsprog ({{language}})",
+        "systemDefaultDescription": "Matcher automatisk dine enhedsindstillinger."
+      },
+      "social": {
+        "sectionTitle": "Socialt & privatliv",
+        "blockedCreators": "Blokerede skabere"
+      },
+      "account": {
+        "sectionTitle": "Konto",
+        "notSignedInTitle": "Ikke logget ind",
+        "signInRequiredTitle": "Login påkrævet",
+        "notSignedInDescription": "Log ind for at synkronisere fremskridt på tværs af enheder.",
+        "signIn": "Log ind",
+        "reconnecting": "Genopretter forbindelse…",
+        "signOut": "Log ud",
+        "signOutConfirmTitle": "Log ud?",
+        "signOutConfirmMessage": "Dine usynkroniserede fremskridt forbliver på denne enhed og genåbnes, når du logger ind igen.",
+        "signOutConfirmAction": "Log ud",
+        "signOutFailedTitle": "Log ud mislykkedes",
+        "signOutFailedGeneric": "Prøv igen.",
+        "providerAppleAccount": "Apple-konto",
+        "providerGoogleAccount": "Google-konto",
+        "providerGenericAccount": "Registreret konto"
+      },
+      "signIn": {
+        "emailHeading": "Log ind eller opret konto",
+        "emailSubtitle": "Hold dine fremskridt tilgængelige på tværs af enheder.",
+        "codeHeading": "Indtast din kode",
+        "codeSubtitle": "Indtast den 6-cifrede kode, vi sendte til {{email}}.",
+        "continueWithGoogle": "Fortsæt med Google",
+        "orUseEmail": "eller brug e-mail",
+        "ssoUnavailable": "Google- og Apple-login er ikke tilgængelige i denne build.",
+        "emailLabel": "E-mailadresse",
+        "emailPlaceholder": "E-mailadresse",
+        "sendCode": "Send kode",
+        "cancel": "Annuller",
+        "verify": "Bekræft",
+        "resendCode": "Send kode igen",
+        "resending": "Sender igen...",
+        "codeSent": "Kode sendt",
+        "useDifferentEmail": "Brug en anden e-mail",
+        "sendCodeFailed": "Kunne ikke sende koden. Tjek din forbindelse, og prøv igen.",
+        "codeIncorrect": "Den kode er forkert eller er udløbet.",
+        "verifyFailedGeneric": "Noget gik galt. Prøv igen.",
+        "socialSignInFailed": "Kunne ikke logge ind med {{provider}}. Prøv igen.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "Gå tilbage",
+        "title": "Blokerede skabere",
+        "infoText": "Blokering er privat og reversibel. Det skjuler skaberens fællesskabsmønstre fra dine katalogvisninger, søgning og opdagelseslister. Dette er ikke en anmeldelse eller en fjernelse af indhold.",
+        "signInRequiredTitle": "Registreret konto påkrævet",
+        "signInRequiredBody": "Log ind, før du administrerer din liste over blokerede skabere.",
+        "signInAction": "Log ind",
+        "listUnavailableTitle": "Liste utilgængelig",
+        "listUnavailableDefault": "Kunne ikke indlæse blokerede skabere.",
+        "tryAgain": "Prøv igen",
+        "emptyTitle": "Ingen blokerede skabere",
+        "emptyBody": "Du har ikke blokeret nogen. Du kan blokere en skaber fra en hvilken som helst af deres mønsterdetaljesider.",
+        "backToSettings": "Tilbage til Indstillinger",
+        "unblock": "Fjern blokering",
+        "unblockConfirmTitle": "Fjern blokering af skaber",
+        "unblockConfirmMessage": "Er du sikker på, at du vil fjerne blokeringen af {{name}}? Deres mønstre vises igen i dine søge- og gennemsynsresultater.",
+        "cancel": "Annuller",
+        "successTitle": "Succes",
+        "unblockedMessage": "Blokeringen af {{name}} er blevet fjernet.",
+        "errorTitle": "Fejl",
+        "unblockFailedMessage": "Kunne ikke fjerne blokering af skaber: {{message}}",
+        "unblockFailedGeneric": "Ukendt fejl"
+      },
+      "data": {
+        "sectionTitle": "Data",
+        "resetGuestTitle": "Nulstil gæstedata",
+        "resetGuestDescription": "Luk uigenkaldeligt gæsteidentiteten på serveren, og slet alle enhedsdata.",
+        "resetGuestOffline": "Offline: Aktiv serverforbindelse er påkrævet for at nulstille gæstedata.",
+        "resetGuestPurchaseLock": "Nulstilling er blokeret, mens et køb stadig verificeres. Forbrugsgoder og private gæstedata kan ikke gendannes bagefter.",
+        "removeLocalTitle": "Fjern lokale data",
+        "removeLocalDescription": "Slet din lokale identitetsnavnedatabase fra denne enhed.",
+        "removeLocalConfirmTitle": "Fjern lokale data?",
+        "removeLocalConfirmMessage": "Advarsel: Dette sletter dine lokale databasefiler fra kun denne enhed. Eventuelle usynkroniserede optegnelser går permanent tabt.",
+        "removeLocalConfirmAction": "Fjern",
+        "removeLocalSuccessTitle": "Succes",
+        "removeLocalSuccessMessage": "Lokale data er blevet fjernet fra denne enhed.",
+        "removeLocalFailedTitle": "Fjernelse mislykkedes",
+        "removeLocalFailedMessage": "Kunne ikke fjerne lokale data: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "Information & links",
+        "privacyPolicy": "Privatlivspolitik",
+        "termsOfService": "Servicevilkår",
+        "contactSupport": "Kontakt support",
+        "accountDeletion": "Kontosletning",
+        "openFailedMessage": "Kunne ikke åbne link: {{url}}",
+        "openFailedGenericTitle": "Fejl"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — Hyggeligt pixelkunst-håndarbejde",
+        "version": "Version {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "Pakke: {{id}}",
+        "schemeLabel": "Skema: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "Nulstil gæstedata?",
+        "warning": "Denne handling lukker uigenkaldeligt din gæsteidentitet på serveren og sletter permanent dine:",
+        "bulletProgress": "• lokale fremskridt",
+        "bulletRewards": "• afventende belønninger",
+        "bulletLikes": "• synes godt om-markeringer",
+        "bulletUnlockAccess": "• oplåsningsadgang",
+        "bulletOfflinePatterns": "• offline mønsterdata",
+        "confirmPrefix": "Skriv ",
+        "confirmSuffix": " nedenfor for at bekræfte:",
+        "confirmAction": "Nulstil data",
+        "resetting": "Nulstiller gæstedata...",
+        "successTitle": "Succes",
+        "successMessage": "Gæstedata er blevet fuldt nulstillet.",
+        "failedTitle": "Nulstilling mislykkedes",
+        "failedMessage": "Nulstilling af gæstedata mislykkedes: {{message}}. Prøv igen."
+      },
+      "deleteModal": {
+        "title": "Slet konto?",
+        "recoveryPrefix": "Din konto går ind i et ",
+        "recoveryBold": "30-dages genoprettelsesvindue for sletning",
+        "recoverySuffix": ". Log ind igen inden for dette vindue for at annullere sletningen.",
+        "bulletBalances": "• Stitch Coin- og AI-kreditsaldi",
+        "bulletUnlocks": "• Alle mønsteroplåsninger",
+        "bulletArtwork": "• AI-kunstværker og personlige mønstre",
+        "bulletProgress": "• Synkroniserede fremskridt og synes godt om-markeringer",
+        "consequencesPrefix": "Ved slutningen af genoprettelsesvinduet slettes eller mistes disse uden refusion eller overførsel. Udgivne fællesskabsmønstre trækkes tilbage fra kataloget, tilskrivning bliver ",
+        "consequencesBold": "Slettet skaber",
+        "consequencesSuffix": ", og dit brugernavn forbliver permanent reserveret.",
+        "membershipWarning": "Dit Premium-medlemskab kan fortsætte med at blive faktureret efter kontosletning. Sletning annullerer det ikke; administrer det separat, før du fortsætter, hvis du vil stoppe faktureringen.",
+        "manageAppleSubscription": "Administrer Apple-abonnement",
+        "continueAction": "Fortsæt",
+        "confirmTitle": "Bekræft sletning",
+        "confirmPrefix": "For at bekræfte, at du vil slette din konto, skal du skrive ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": " i feltet nedenfor:",
+        "submitting": "Indsender sletningsanmodning...",
+        "backAction": "Tilbage",
+        "confirmAction": "Bekræft"
+      },
+      "reauthModal": {
+        "title": "Bekræft din identitet",
+        "description": "Af sikkerhedsmæssige årsager skal du verificere med en login-metode, der allerede er knyttet til denne konto. Sletning fortsætter automatisk efter verificering.",
+        "loading": "Indlæser login-metoder...",
+        "codeSentMessage": "Indtast den 6-cifrede kode sendt til {{email}}.",
+        "verifyAndDelete": "Bekræft og slet",
+        "emailButton": "E-mail {{email}}",
+        "continueWithProvider": "Fortsæt med {{provider}}",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "Ingen tilknyttet login-metode er tilgængelig. Kontakt support, før du prøver sletning igen.",
+        "loadFailed": "Kunne ikke indlæse dine tilknyttede login-metoder. Tjek din forbindelse, og prøv igen.",
+        "retryFailed": "Din identitet blev verificeret, men sletning blev ikke indsendt. Luk denne dialog, og prøv sletning igen.",
+        "emailMissing": "Denne tilknyttede e-mailmetode har ingen adresse. Vælg en anden metode.",
+        "genericFailure": "Genautentificering mislykkedes. Tjek din forbindelse, og prøv igen."
+      },
+      "actions": {
+        "cancel": "Annuller",
+        "retry": "Prøv igen"
+      },
+      "common": {
+        "unavailable": "Utilgængelig"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "Katalog",
+        "stitch": "Sy",
+        "create": "Skab",
+        "profile": "Profil",
+        "settings": "Indstillinger"
+      }
+    }
+  },
   "de": {
     "catalog": {
       "common": {

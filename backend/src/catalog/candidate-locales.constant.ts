@@ -1,2 +1,2 @@
-export const CANDIDATE_APP_DISPLAY_LOCALES = ['en', 'tr', 'es', 'de', 'fr', 'pt-BR', 'it', 'ar', 'ja', 'ko', 'nl', 'pl', 'ru', 'zh-Hans', 'zh-Hant', 'ca', 'cs'] as const;
+export const CANDIDATE_APP_DISPLAY_LOCALES = ['en', 'tr', 'es', 'de', 'fr', 'pt-BR', 'it', 'ar', 'ja', 'ko', 'nl', 'pl', 'ru', 'zh-Hans', 'zh-Hant', 'ca', 'cs', 'da'] as const;
 export type CandidateAppDisplayLocale = (typeof CANDIDATE_APP_DISPLAY_LOCALES)[number];

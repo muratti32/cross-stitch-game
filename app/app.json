@@ -138,7 +138,8 @@
       "zh-Hans": "./src/i18n/locales/zh-Hans/native.json",
       "zh-Hant": "./src/i18n/locales/zh-Hant/native.json",
       "ca": "./src/i18n/locales/ca/native.json",
-      "cs": "./src/i18n/locales/cs/native.json"
+      "cs": "./src/i18n/locales/cs/native.json",
+      "da": "./src/i18n/locales/da/native.json"
     },
     "experiments": {
       "typedRoutes": true,
