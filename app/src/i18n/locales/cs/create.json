@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Zpět",
+    "cancel": "Zrušit",
+    "duplicateTitle": "Vlastní vzor s názvem „{{title}}“ již existuje. Zvolte prosím jiný název.",
+    "cellsCount_one": "políčko",
+    "cellsCount_other": "políček",
+    "colorsCount_one": "barva",
+    "colorsCount_other": "barev"
+  },
+  "hub": {
+    "title": "Tvůrčí dílna",
+    "subtitle": "Přeneste své vlastní nápady do života s vlastními předlohami pro křížkový steh.",
+    "opening": "Otevírání…",
+    "photoImport": {
+      "title": "Import fotky",
+      "description": "Nahrajte obrázek z galerie a převeďte jej na vyšívací předlohu.",
+      "action": "Importovat fotku"
+    },
+    "aiGenerator": {
+      "title": "AI generátor",
+      "description": "Popište svůj nápad a nechte umělou inteligenci vytvořit jedinečný pixelový vzor.",
+      "action": "Generovat vzor"
+    }
+  },
+  "aspects": {
+    "square": "Čtverec",
+    "portrait_4_3": "Na výšku 4:3",
+    "landscape_4_3": "Na šířku 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Převod vzoru se nezdařil. Zkuste to prosím znovu.",
+      "timeout": "Převod vzoru se stále zpracovává. Zkuste to za chvíli znovu.",
+      "generic": "Převod vzoru se nepodařilo dokončit. Zkuste to prosím znovu."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Vyžadován registrovaný účet",
+      "body": "AI díla a jejich knihovna zůstávají soukromé pro váš účet.",
+      "signIn": "Přihlásit se"
+    },
+    "header": {
+      "title": "AI generátor",
+      "backAccessibilityLabel": "Zpět"
+    },
+    "prompt": {
+      "label": "Popište svůj obrázek",
+      "placeholder": "Útulná venkovská zahrádka při západu slunce…"
+    },
+    "generate": {
+      "working": "Zpracování…",
+      "action": "Generovat — 1 AI kredit",
+      "errors": {
+        "promptRejected": "Tento textový popis nebyl povolen. Zkuste popsat něco jiného.",
+        "generic": "Nepodařilo se spustit AI generování. Zkuste to prosím znovu."
+      }
+    },
+    "library": {
+      "title": "Vaše knihovna AI děl",
+      "status": {
+        "pending": "Čeká na vyřízení",
+        "dispatched": "Odesláno",
+        "running": "Zpracovává se",
+        "delivered": "Doručeno",
+        "safety_rejected": "Zamítnuto z bezpečnostních důvodů",
+        "failed": "Nezdařilo se",
+        "deleted": "Smazáno",
+        "unknown": "Nedostupné"
+      },
+      "failure": {
+        "safety_rejected": "Tento obrázek neprošel bezpečnostní kontrolou poskytovatele.",
+        "failed": "Tento obrázek se nepodařilo vygenerovat."
+      },
+      "approve": "Schválit do vzoru",
+      "delete": "Smazat",
+      "deleteAccessibilityLabel": "Smazat toto AI dílo",
+      "errors": {
+        "loadFailed": "Nepodařilo se načíst knihovnu AI děl. Zkuste to prosím znovu."
+      }
+    },
+    "approve": {
+      "modalTitle": "Vytvořit vlastní vzor",
+      "titleLabel": "Název vzoru",
+      "titleAccessibilityLabel": "Název vzoru",
+      "defaultTitle": "Můj AI vzor",
+      "placeholder": "Můj AI vzor",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Zrušit",
+      "creating": "Vytváření vzoru…",
+      "create": "Vytvořit vzor",
+      "errors": {
+        "generic": "Nepodařilo se vytvořit vlastní vzor. Zkuste to prosím znovu."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Vyžadován registrovaný účet",
+      "body": "Vlastní vzory patří k vašemu účtu, takže zůstávají soukromé a dostupné na všech zařízeních.",
+      "signIn": "Přihlásit se nebo vytvořit účet",
+      "back": "Zpět"
+    },
+    "header": {
+      "title": "Vzor z fotky",
+      "subtitle": "Ořízněte na zařízení a potvrďte převod",
+      "backAccessibilityLabel": "Zpět"
+    },
+    "picker": {
+      "chooseTitle": "Vyberte fotku",
+      "helpText": "Zdrojová fotografie v plném rozlišení zůstává na tomto zařízení. Nic se nepřevádí, dokud nepotvrdíte ořez.",
+      "choose": "Vybrat z galerie",
+      "chooseAnother": "Vybrat jinou",
+      "opening": "Otevírání…",
+      "errors": {
+        "permissionDenied": "K výběru místní fotografie je vyžadován přístup ke knihovně fotek.",
+        "invalidDimensions": "Vybraná fotka nemá použitelné rozměry.",
+        "generic": "Nepodařilo se otevřít knihovnu fotek. Zkuste to prosím znovu."
+      }
+    },
+    "framing": {
+      "title": "Ořez obrázku",
+      "gestureHint": "Tažením posuňte · sevřením prstů přibližte",
+      "aspectLabel": "Poměr stran rámečku"
+    },
+    "profile": {
+      "title": "Profil převodu",
+      "options": {
+        "easy": "Snadný",
+        "standard": "Standardní",
+        "detailed": "Detailní"
+      },
+      "custom": "Vlastní",
+      "customMeta": "Zdarma · zamčený tvar",
+      "unavailable": "Nevejde se do tohoto rámečku",
+      "customShortEdgeLabel": "Kratší strana",
+      "customColorLimitLabel": "Limit DMC barev",
+      "exceedsLimit": "Tyto vlastní hodnoty překračují limit velikosti vzoru {{max}} políček."
+    },
+    "titleCard": {
+      "label": "Název vzoru",
+      "placeholder": "Můj vzor z fotky",
+      "defaultTitle": "Můj vzor z fotky",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · až {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "Schválením se nahraje pouze oříznutá zmenšenina. Původní fotka zůstává ve vašem zařízení.",
+      "approve": "Schválit obrázek a převést"
+    },
+    "processing": {
+      "preparingFrame": "Příprava schváleného rámečku na tomto zařízení…",
+      "uploading": "Nahrávání oříznutého a zmenšeného snímku…",
+      "waitingForWorker": "Čekání na proces převodu…",
+      "buildingGrid": "Vytváření vyšívací mřížky a DMC palety…",
+      "preparingSession": "Příprava vlastního vzoru ke hraní…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Tento profil již neodpovídá výslednému ořezu. Zvolte Snadný nebo snižte detail.",
+        "generic": "Tuto fotku se nepodařilo převést. Zkuste to prosím znovu."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Není vybrán žádný vzor",
+      "noPatternBody": "Tuto obrazovku je nutné otevřít z existujícího vlastního vzoru ve vaší knihovně.",
+      "accountTitle": "Vyžadován registrovaný účet",
+      "accountBody": "Vlastní vzory patří k vašemu účtu, takže zůstávají soukromé a dostupné na všech zařízeních.",
+      "signIn": "Přihlásit se nebo vytvořit účet",
+      "back": "Zpět"
+    },
+    "loading": "Obnovování konceptu editoru...",
+    "load": {
+      "failedTitle": "Vzor se nepodařilo načíst",
+      "retry": "Zkusit znovu",
+      "back": "Zpět",
+      "errors": {
+        "generic": "Tento vlastní vzor se nepodařilo načíst. Zkuste to prosím znovu."
+      }
+    },
+    "header": {
+      "title": "Editor vzoru",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Zpět"
+    },
+    "toolbar": {
+      "undo": "Zpět",
+      "redo": "Znovu"
+    },
+    "mode": {
+      "paint": "Kreslit",
+      "replaceColor": "Nahradit barvu",
+      "replaceStep1": "1. Klepněte na barvu ve vzoru níže, kterou chcete nahradit:",
+      "replaceStep2": "2. Vyberte cílovou DMC barvu níže pro provedení náhrady:",
+      "paintSelected": "Vybráno: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Vyberte barvu níže a klepnutím na políčka vybarvujte."
+    },
+    "errors": {
+      "pickColorFirst": "Nejprve vyberte barvu",
+      "paletteLimit": "Tento vzor již využívá maximální počet {{max}} barev bavlnek."
+    },
+    "picker": {
+      "title": "Barvy bavlnek DMC",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Uložit upravený vzor",
+      "placeholder": "Název upraveného vzoru",
+      "action": "Uložit jako nový",
+      "offlineTitle": "Uloženo offline",
+      "offlineBody": "Upravený vzor byl uložen do tohoto zařízení a synchronizuje se s vaším účtem, jakmile budete online.",
+      "errors": {
+        "generic": "Tento vlastní vzor se nepodařilo uložit. Zkuste to prosím znovu."
+      }
+    }
+  }
+}

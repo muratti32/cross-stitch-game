@@ -137,7 +137,8 @@
       "ru": "./src/i18n/locales/ru/native.json",
       "zh-Hans": "./src/i18n/locales/zh-Hans/native.json",
       "zh-Hant": "./src/i18n/locales/zh-Hant/native.json",
-      "ca": "./src/i18n/locales/ca/native.json"
+      "ca": "./src/i18n/locales/ca/native.json",
+      "cs": "./src/i18n/locales/cs/native.json"
     },
     "experiments": {
       "typedRoutes": true,

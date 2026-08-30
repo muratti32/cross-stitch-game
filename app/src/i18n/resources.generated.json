@@ -2811,6 +2811,1412 @@
       }
     }
   },
+  "cs": {
+    "catalog": {
+      "common": {
+        "back": "← Zpět",
+        "searchPlaceholder": "Hledat vzory, tvůrce, štítky…",
+        "offlineBanner": "Offline — katalog nemusí být aktuální",
+        "sectionError": {
+          "title": "Nepodařilo se načíst",
+          "retry": "Zkusit znovu"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} barev",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} bar.",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "Angličtina"
+        },
+        "accessibilityLabel": "Napsáno v jazyce {{language}}"
+      },
+      "index": {
+        "subtitle": "Vytvořte si svůj útulný svět, steh za stehem.",
+        "searchBar": {
+          "accessibilityLabel": "Hledat v katalogu vzorů"
+        },
+        "sections": {
+          "starterPatterns": "Úvodní vzory",
+          "staffPicks": "Výběr redakce",
+          "categories": "Kategorie",
+          "newPatterns": "Nové vzory"
+        },
+        "staffPicks": {
+          "emptyTitle": "Zatím žádný výběr redakce",
+          "emptyBody": "Naše vybraná kolekce útulných vzorů se zde brzy objeví.",
+          "errorBody": "Ke katalogu se nelze připojit a zatím není nic uloženo v mezipaměti."
+        },
+        "categories": {
+          "count": "{{count}} vzorů",
+          "errorBody": "Ke katalogu se nelze připojit a zatím není nic uloženo v mezipaměti."
+        },
+        "newPatterns": {
+          "emptyTitle": "Nové vzory se připravují",
+          "emptyBody": "Čerstvé novinky jsou na cestě!",
+          "errorBody": "Ke katalogu se nelze připojit a zatím není nic uloženo v mezipaměti.",
+          "showMore": "Zobrazit více",
+          "loading": "Načítání…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "Procházet",
+        "error": {
+          "body": "Tuto stránku katalogu se nepodařilo načíst a v mezipaměti zatím nic není."
+        },
+        "empty": {
+          "title": "Zatím zde nic není",
+          "body": "Tomuto výběru zatím neodpovídají žádné vzory. Nové vzory přibývají pravidelně."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "Pole pro vyhledávání v katalogu",
+        "inactive": {
+          "title": "Hledat v katalogu",
+          "body": "Zadejte alespoň dva znaky pro vyhledání vzorů podle názvu, tvůrce nebo štítku."
+        },
+        "error": {
+          "title": "Vyhledávání vyžaduje připojení",
+          "body": "Vyhledávání v katalogu není v offline režimu dostupné. Uložené stránky katalogu si můžete prohlížet na kartě katalogu."
+        },
+        "noResults": {
+          "title": "Žádné výsledky",
+          "body": "Dotazu „{{query}}“ v katalogu nic neodpovídá."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "Hrajete jako host",
+        "body": "V režimu hosta se Stitch Coiny a postup ukládají pouze do tohoto zařízení. Při ztrátě instalace mohou být zůstatek a postup neobnovitelné. Přihlášením svůj postup ochráníte."
+      },
+      "detail": {
+        "noDescription": "Popis není k dispozici.",
+        "specs": {
+          "dimensions": "Rozměry",
+          "totalStitches": "Celkem stehů",
+          "colors": "Barvy",
+          "category": "Kategorie"
+        },
+        "threadsSuffix": "{{count}} bavlnek",
+        "palette": {
+          "title": "Potřebné bavlnky",
+          "loading": "Načítání palety bavlnek...",
+          "loadFailed": "Nepodařilo se načíst paletu: {{error}}",
+          "retry": "Zkusit načíst znovu"
+        },
+        "actions": {
+          "startStitching": "Začít vyšívat",
+          "starting": "Spouštění...",
+          "preparing": "Příprava…"
+        },
+        "loadFailedGeneric": "Nepodařilo se dekódovat soubor vzoru.",
+        "sessionCreateFailed": "Nepodařilo se vytvořit relaci vyšívání. Zkuste to prosím znovu.",
+        "unavailable": {
+          "title": "Vzor není dostupný",
+          "body": "Tento vzor se nepodařilo načíst. Možná byl odstraněn, nebo jste offline.",
+          "goBack": "Přejít zpět"
+        },
+        "byCreator": "od {{creatorName}}",
+        "byCreatorWithUsername": "od {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "Zablokovat tvůrce",
+          "message": "Opravdu chcete zablokovat tvůrce {{creatorName}}? Jde o soukromou a vratnou akci, která skryje jeho vzory z vyhledávání a procházení. Tvůrce tím nenahlásíte a nepřerušíte svou aktuální relaci vyšívání.",
+          "cancel": "Zrušit",
+          "confirm": "Zablokovat",
+          "blockedTitle": "Zablokováno",
+          "blockedMessage": "Tvůrce {{creatorName}} byl zablokován.",
+          "errorTitle": "Chyba",
+          "failedGeneric": "Nepodařilo se zablokovat tvůrce."
+        },
+        "likeFailedGeneric": "Nepodařilo se aktualizovat oblíbenost",
+        "connectToPlay": {
+          "title": "Připojte se a hrajte",
+          "body": "Ke spuštění vzoru z katalogu je potřeba připojení pro přípravu relace. Úvodní vzory můžete hrát hned i offline."
+        },
+        "insufficientCoins": {
+          "title": "Nedostatek coinů",
+          "body": "Tento vzor stojí {{price}} Stitch Coinů, ale máte jen {{balance}} coinů.\n\nChybí: {{shortfall}} coinů.\n\nZískejte Stitch Coiny dokončováním dalších vzorů! Odměny za první dokončení jsou aktivní.",
+          "getCoins": "Získat Stitch Coiny",
+          "findPatterns": "Najít vzory k vyšívání",
+          "back": "Zpět"
+        },
+        "unlockFailedGeneric": "Odemknutí se nezdařilo. Zkontrolujte připojení a zkuste to znovu.",
+        "preparationFailedGeneric": "Přípravu se nepodařilo zahájit. Zkontrolujte připojení a zkuste to znovu.",
+        "price": {
+          "label": "Cena"
+        },
+        "balance": {
+          "label": "Váš zůstatek",
+          "loading": "…"
+        },
+        "unlockButton": "Odemknout za {{price}} coinů",
+        "communityReport": {
+          "button": "Nahlásit tento vzor",
+          "title": "Nahlásit {{patternTitle}}",
+          "body": "Vyberte důvod, který nejlépe vystihuje problém. Nahlášení nikdy vzor automaticky neskryje ani nezmění.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "Nevhodný nebo nebezpečný obsah",
+            "copyright_or_publication_rights": "Autorská nebo publikační práva",
+            "duplicate_or_spam": "Duplikát nebo spam",
+            "misleading_title_or_tags": "Zavádějící název nebo štítky",
+            "other": "Jiné"
+          },
+          "explanationLabel": "Důkaz nebo vysvětlení {{requirement}}",
+          "explanationRequired": "(povinné)",
+          "explanationOptional": "(volitelné)",
+          "explanationPlaceholder": "Uveďte podrobnosti, které moderátorovi pomohou vzor posoudit.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "Zrušit",
+          "submit": "Odeslat nahlášení",
+          "submitFailedGeneric": "Nahlášení se nepodařilo odeslat. Zkontrolujte připojení a zkuste to znovu.",
+          "receivedTitle": "Nahlášení přijato",
+          "alreadyReceivedTitle": "Nahlášení již bylo přijato",
+          "receivedBody": "Moderátor nyní může tento vzor zkontrolovat. Nahlášení automaticky nemění jeho dostupnost.",
+          "alreadyReceivedBody": "Vaše stávající nahlášení je již součástí probíhající kontroly.",
+          "signInRequired": {
+            "title": "Pro nahlášení se přihlaste",
+            "message": "Komunitní nahlášení vyžadují registrovaný účet. Nic nebylo odesláno.",
+            "cancel": "Zrušit",
+            "signIn": "Přihlásit se"
+          },
+          "validation": {
+            "chooseReason": "Vyberte důvod nahlášení.",
+            "explainRequired": "Vysvětlete, proč tento vzor nahlašujete.",
+            "tooLong": "Vysvětlení může mít maximálně 2 000 znaků.",
+            "needsContent": "Vysvětlení musí obsahovat písmena nebo číslice."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "Zpět",
+        "title": "Obchod",
+        "subtitle": "Členství a jednorázová dobití"
+      },
+      "signInReturn": {
+        "notice": "Jste přihlášeni. Položka {{label}} je stále vybrána. Zkontrolujte ji a klepněte na Koupit, až budete připraveni."
+      },
+      "premiumHero": {
+        "eyebrow": "PRÉMIOVÉ ČLENSTVÍ",
+        "title": "Tvořte více. Získejte malou odměnu každý den.",
+        "body": "AI kredity v každém placeném období, prémiové motivy a denní vyzvednutí Stitch Coinů.",
+        "benefitAiCredits": "AI kredity",
+        "benefitDailyCoins": "Denní coiny",
+        "benefitThemes": "Motivy",
+        "statusNoActiveMembership": "Žádné aktivní členství",
+        "statusBrowseAsGuest": "Prohlížet plány jako host",
+        "periodEndsLabel": "Současné období končí",
+        "periodRenewsLabel": "Obnovuje se",
+        "lifecycleActive": "Aktivní"
+      },
+      "membershipActions": {
+        "title": "Aktivní prémiové členství",
+        "body": "Denní odměny najdete v Profilu. Motivy jsou v Nastavení › Vzhled.",
+        "scheduledChangeNotice": "Změna na {{plan}} dne {{date}}",
+        "manageSubscription": "Spravovat předplatné",
+        "manageSubscriptionFailedTitle": "Předplatná nelze otevřít",
+        "manageSubscriptionFailedBody": "Zkuste to znovu z účtu obchodu vašeho zařízení."
+      },
+      "pending": {
+        "title": "Čeká se na ověření nákupu",
+        "verifyingTitle": "Ověřování nákupu",
+        "premiumChangeAccepted": "Obchod přijal změnu na {{label}}. ",
+        "premiumResponseReceived": "Odpověď obchodu pro {{label}} byla přijata. ",
+        "premiumDeferredSuffix": "Změna je naplánována až po ověření herním backendem a projeví se po skončení aktuálního období.",
+        "premiumSuffix": "Premium se aktivuje až po ověření herním backendem.",
+        "doNotPurchasePlanAgain": " Nekupujte tento plán znovu.",
+        "coinPackBody": "Odpověď obchodu byla přijata. Stitch Coiny se aktualizují, jakmile herní backend potvrdí odpovídající připsání v obchodním registru. Nekupujte tento balíček znovu.",
+        "aiCreditPackBody": "Odpověď obchodu byla přijata. AI kredity se aktualizují, jakmile herní backend potvrdí odpovídající připsání v obchodním registru. Nekupujte tento balíček znovu.",
+        "refreshStatus": "Obnovit stav",
+        "retryReconciliation": "Zkusit ověření znovu"
+      },
+      "store": {
+        "loadingPrices": "Načítání aktuálních cen z obchodu…",
+        "unavailableTitle": "Obchod je dočasně nedostupný",
+        "unavailableBody": "Vaše peněženka a informace o členství jsou stále dostupné.",
+        "retry": "Zkusit znovu"
+      },
+      "plans": {
+        "choosePremiumPlan": "Vyberte prémiový plán",
+        "yourPremiumPlan": "Váš prémiový plán",
+        "currentPlan": "AKTUÁLNÍ PLÁN",
+        "upgrade": "VYLEPŠIT",
+        "planChange": "ZMĚNA PLÁNU",
+        "bestValue": "NEJVÝHODNĚJŠÍ",
+        "billedEvery": "Účtováno každých {{period}}",
+        "chooseLabel": "Vybrat {{label}}",
+        "freeTrial": "Zdarma na {{offer}}, poté {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "Jednorázové balíčky",
+        "stitchCoinPacksTitle": "Balíčky Stitch Coinů",
+        "aiCreditPacksTitle": "Balíčky AI kreditů",
+        "coinsNoun": "Coiny",
+        "creditsNoun": "Kredity",
+        "fromPrice": "Od {{price}}"
+      },
+      "restore": {
+        "restorePurchases": "Obnovit nákupy",
+        "restoreGuestPremium": "Obnovit Guest Premium",
+        "requestedTitle": "Obnovení vyžádáno",
+        "requestedBody": "Ověřený prémiový přístup se zobrazí po zpracování webhooku obchodu. Balíčky Stitch Coinů a AI kreditů se nikdy neobnovují."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "Aktuální ceny z obchodu s aplikacemi",
+        "closeAccessibilityLabel": "Zavřít nabídku produktů",
+        "closeButtonAccessibilityLabel": "Zavřít",
+        "selectedBeforeSignIn": "Vybráno před přihlášením",
+        "buy": "Koupit"
+      },
+      "confirmation": {
+        "cancel": "Zrušit",
+        "confirmLabel": "Potvrdit {{label}}",
+        "confirmPremiumTitle": "Potvrdit nákup Premium",
+        "introductoryOffer": "Váš obchod nabízí tuto zaváděcí nabídku: {{offer}}.",
+        "premiumAppearsAfterVerification": "Premium se zobrazí až poté, co herní backend ověří transakci z obchodu.",
+        "confirmPremiumUpgradeTitle": "Potvrdit upgrade Premium",
+        "confirmPremiumPlanChangeTitle": "Potvrdit změnu plánu Premium",
+        "currentPlanLabel": "Aktuální plán: {{label}}",
+        "upgradeToLabel": "Upgradovat na {{label}} · {{offer}}",
+        "changeToLabel": "Změnit na {{label}} · {{offer}}",
+        "upgradeBody": "App Store řídí konečnou částku a datum účinnosti tohoto upgradu. Změna na {{label}} se v Premium projeví až po ověření herním backendem.",
+        "planChangeBody": "App Store odkládá tuto změnu na konec vašeho aktuálního období: {{currentLabel}} zůstává aktivní až do té doby a {{targetLabel}} se začne účtovat od data změny. Změnu můžete zrušit ve Správě předplatného.",
+        "confirmUpgrade": "Potvrdit upgrade",
+        "confirmPlanChange": "Potvrdit změnu plánu",
+        "confirmStitchCoinTitle": "Potvrdit nákup Stitch Coinů",
+        "confirmAiCreditTitle": "Potvrdit nákup AI kreditů",
+        "balanceChangesAfterVerificationCoin": "Váš zůstatek se změní až poté, co herní backend ověří transakci z obchodu a zaznamená připsání do obchodního registru.",
+        "balanceChangesAfterVerificationAiCredit": "Váš zůstatek se změní až poté, co herní backend ověří transakci z obchodu a zaznamená připsání do obchodního registru. Prémiové členství není vyžadováno."
+      },
+      "disclosure": {
+        "subscriptionTerms": "Platba je stržena z vašeho účtu {{store}} při potvrzení nákupu. Předplatné {{label}} Premium se automaticky obnovuje za {{offer}}, pokud není automatické obnovení vypnuto alespoň 24 hodin před koncem aktuálního období. Jakákoli nevyužitá část bezplatného zkušebního období propadá při zakoupení předplatného. Předplatné můžete kdykoli zrušit ve svém účtu {{store}}.",
+        "privacyPolicy": "Zásady ochrany soukromí",
+        "termsOfService": "Podmínky služby",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "Odkaz se nepodařilo otevřít: {{url}}"
+      },
+      "supportReference": {
+        "label": "Referenční kód podpory: {{reference}}",
+        "copyAccessibilityLabel": "Zkopírovat referenční kód podpory {{reference}}",
+        "copyAccessibilityHint": "Zkopíruje referenční kód podpory do schránky",
+        "copied": "Zkopírováno",
+        "copyFailedTitle": "Kopírování selhalo",
+        "copyFailedBody": "Referenční kód podpory se nepodařilo zkopírovat. Označte text a zkopírujte jej ručně."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "Nákupy Stitch Coinů pro hosty jsou dostupné pouze na iOS.",
+        "guestIosOnlyGeneric": "Nákupy pro hosty jsou dostupné pouze na iOS.",
+        "purchaseFailedTitle": "Nákup se nezdařil",
+        "premiumVerificationNotYet": "Herní backend nemohl tento nákup ověřit. Zkuste ověření znovu; nekupujte položku znovu.",
+        "premiumVerificationFailedRetry": "Herní backend zatím nemohl tento nákup ověřit. Zkuste ověření znovu; nekupujte položku znovu.",
+        "premiumGrantRefreshFailed": "Členství Premium bylo ověřeno, ale stav členství a AI kreditů se nepodařilo obnovit. Zkuste ověření znovu.",
+        "premiumReconciliationUnreachable": "Při ověřování nákupu se nepodařilo kontaktovat herní backend. Zkuste ověření znovu; nekupujte položku znovu.",
+        "coinPackVerificationMismatch": "Transakce z obchodu neodpovídá tomuto balíčku coinů. Zkuste ověření znovu nebo kontaktujte podporu; nekupujte položku znovu.",
+        "coinPackGrantUnavailable": "Nákup byl ověřen, ale připsání Stitch Coinů není k dispozici. Zkuste ověření znovu; nekupujte položku znovu.",
+        "coinPackBalanceRefreshFailed": "Připsání coinů bylo ověřeno, ale aktuální zůstatek Stitch Coinů se nepodařilo obnovit. Zkuste ověření znovu.",
+        "coinPackVerificationFailedRetry": "Herní backend zatím nemohl tento balíček coinů ověřit. Zkuste ověření znovu; nekupujte položku znovu.",
+        "coinPackReconciliationUnreachable": "Při ověřování balíčku coinů se nepodařilo kontaktovat herní backend. Zkuste ověření znovu; nekupujte položku znovu.",
+        "aiCreditPackVerificationMismatch": "Transakce z obchodu neodpovídá tomuto balíčku AI kreditů. Zkuste ověření znovu nebo kontaktujte podporu; nekupujte položku znovu.",
+        "aiCreditPackGrantUnavailable": "Nákup byl ověřen, ale připsání AI kreditů není k dispozici. Zkuste ověření znovu; nekupujte položku znovu.",
+        "aiCreditPackBalanceRefreshFailed": "Připsání AI kreditů bylo ověřeno, ale aktuální zůstatek se nepodařilo obnovit. Zkuste ověření znovu.",
+        "aiCreditPackVerificationFailedRetry": "Herní backend zatím nemohl tento balíček AI kreditů ověřit. Zkuste ověření znovu; nekupujte položku znovu.",
+        "aiCreditPackReconciliationUnreachable": "Při ověřování balíčku AI kreditů se nepodařilo kontaktovat herní backend. Zkuste ověření znovu; nekupujte položku znovu.",
+        "reconciliationStillUnavailable": "Herní backend je stále nedostupný. Zkuste ověření znovu později.",
+        "storeTemporarilyUnavailable": "Obchod je dočasně nedostupný. Zkuste to prosím znovu za několik minut.",
+        "purchasesNotAllowed": "Nákupy nejsou na tomto zařízení povoleny. Zkontrolujte svůj účet v obchodě nebo rodičovskou kontrolu.",
+        "itemNotAvailable": "Tato položka není v tuto chvíli k zakoupení. Vyberte jinou položku nebo to zkuste později.",
+        "alreadyOwned": "Tuto položku již vlastníte. Pro obnovení přístupu použijte Obnovit nákupy.",
+        "couldNotConnectToStore": "Nepodařilo se připojit k obchodu. Zkontrolujte připojení k internetu a zkuste to znovu.",
+        "paymentPendingApproval": "Vaše platba čeká na schválení. Nákup se zobrazí po dokončení v obchodě.",
+        "testPurchaseDeclined": "Testovací nákup byl odmítnut. Platba neproběhla. Vyberte v Nastavení jiný výsledek testovacího obchodu a zkuste to znovu.",
+        "genericPurchaseFailure": "Nákup se nepodařilo dokončit. Žádná platba nebyla stržena. Zkuste to prosím znovu."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "Stále se ověřuje",
+        "premiumPending": "Ověřování stále probíhá. Premium se aktivuje, jakmile jej herní backend potvrdí.",
+        "premiumPlanChangePending": "Ověřování stále probíhá. Vaše změna plánu bude naplánována, jakmile ji herní backend potvrdí.",
+        "coinPackPending": "Ověřování stále probíhá. Váš zůstatek Stitch Coinů se po dokončení aktualizuje.",
+        "aiCreditPackPending": "Ověřování stále probíhá. Váš zůstatek AI kreditů se po dokončení aktualizuje."
+      },
+      "success": {
+        "purchaseReceivedTitle": "Nákup přijat",
+        "storeAcceptedPlanChange": "Obchod přijal změnu na {{label}}. Potvrzuje se, kdy vstoupí v platnost.",
+        "storeAcceptedPurchase": "Obchod přijal {{label}}. Váš nákup se nyní ověřuje.",
+        "premiumChanges": "Premium se změní na {{label}}{{effectiveOn}}.",
+        "effectiveOnDate": " dne {{date}}",
+        "planChangeScheduledTitle": "Změna plánu naplánována",
+        "planChangeScheduledBody": "Vaše prémiové členství si zachová stávající plán, dokud se nezmění na {{label}}{{effectiveOn}}. Změnu můžete zrušit ve Správě předplatného.",
+        "premiumIsActiveTitle": "Premium je aktivní",
+        "premiumVerifiedAndActive": "Předplatné {{label}} Premium je ověřeno a aktivní.",
+        "premiumNowActiveNoBilling": "Předplatné {{label}} Premium je nyní aktivní.",
+        "premiumNowActiveBilled": "Předplatné {{label}} Premium je nyní aktivní, účtováno každých {{period}}.",
+        "coinPackGrantedTitle": "Stitch Coiny připsány",
+        "coinPackGrantVerified": "Připsání {{label}} ověřeno. Zůstatek Stitch Coinů: {{balance}}.",
+        "coinPackAddedToBalance": "K vašemu zůstatku bylo přidáno {{quantity}} Stitch Coinů.",
+        "aiCreditPackGrantedTitle": "AI kredity připsány",
+        "aiCreditPackGrantVerified": "Připsání {{label}} ověřeno. Zůstatek AI kreditů: {{balance}}.",
+        "aiCreditPackAddedToBalance": "K vašemu zůstatku bylo přidáno {{quantity}} AI kreditů."
+      },
+      "products": {
+        "premiumAnnual": "Roční",
+        "premiumMonthly": "Měsíční",
+        "premiumWeekly": "Týdenní",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coinů",
+        "aiCreditPack_one": "{{formattedCount}} AI kredit",
+        "aiCreditPack_other": "{{formattedCount}} AI kreditů",
+        "billedEveryOffer": "{{price}} každých {{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} kreditů / placené období",
+        "creditAllowancePaidNoun": "{{credits}} kreditů / placené {{period}}"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "Nákup v režimu hosta",
+        "commerceBody": "Můžete nakupovat i bez registrace. Prémiové členství lze z obchodu obnovit, ale Stitch Coiny, AI kredity a soukromý obsah hosta jsou při ztrátě instalace neobnovitelné. Registrace je ochrání a hraní jako host nijak nepřeruší.",
+        "continueAsGuest": "Pokračovat jako host",
+        "signInInstead": "Raději se přihlásit",
+        "closeAccessibilityLabel": "Zavřít"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "Rozumím",
+        "successButton": "Skvělé",
+        "failedButton": "Zavřít",
+        "infoButton": "Rozumím",
+        "closeAccessibilityLabel": "Zavřít"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "Zpět",
+        "cancel": "Zrušit",
+        "duplicateTitle": "Vlastní vzor s názvem „{{title}}“ již existuje. Zvolte prosím jiný název.",
+        "cellsCount_one": "políčko",
+        "cellsCount_other": "políček",
+        "colorsCount_one": "barva",
+        "colorsCount_other": "barev"
+      },
+      "hub": {
+        "title": "Tvůrčí dílna",
+        "subtitle": "Přeneste své vlastní nápady do života s vlastními předlohami pro křížkový steh.",
+        "opening": "Otevírání…",
+        "photoImport": {
+          "title": "Import fotky",
+          "description": "Nahrajte obrázek z galerie a převeďte jej na vyšívací předlohu.",
+          "action": "Importovat fotku"
+        },
+        "aiGenerator": {
+          "title": "AI generátor",
+          "description": "Popište svůj nápad a nechte umělou inteligenci vytvořit jedinečný pixelový vzor.",
+          "action": "Generovat vzor"
+        }
+      },
+      "aspects": {
+        "square": "Čtverec",
+        "portrait_4_3": "Na výšku 4:3",
+        "landscape_4_3": "Na šířku 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "Převod vzoru se nezdařil. Zkuste to prosím znovu.",
+          "timeout": "Převod vzoru se stále zpracovává. Zkuste to za chvíli znovu.",
+          "generic": "Převod vzoru se nepodařilo dokončit. Zkuste to prosím znovu."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "Vyžadován registrovaný účet",
+          "body": "AI díla a jejich knihovna zůstávají soukromé pro váš účet.",
+          "signIn": "Přihlásit se"
+        },
+        "header": {
+          "title": "AI generátor",
+          "backAccessibilityLabel": "Zpět"
+        },
+        "prompt": {
+          "label": "Popište svůj obrázek",
+          "placeholder": "Útulná venkovská zahrádka při západu slunce…"
+        },
+        "generate": {
+          "working": "Zpracování…",
+          "action": "Generovat — 1 AI kredit",
+          "errors": {
+            "promptRejected": "Tento textový popis nebyl povolen. Zkuste popsat něco jiného.",
+            "generic": "Nepodařilo se spustit AI generování. Zkuste to prosím znovu."
+          }
+        },
+        "library": {
+          "title": "Vaše knihovna AI děl",
+          "status": {
+            "pending": "Čeká na vyřízení",
+            "dispatched": "Odesláno",
+            "running": "Zpracovává se",
+            "delivered": "Doručeno",
+            "safety_rejected": "Zamítnuto z bezpečnostních důvodů",
+            "failed": "Nezdařilo se",
+            "deleted": "Smazáno",
+            "unknown": "Nedostupné"
+          },
+          "failure": {
+            "safety_rejected": "Tento obrázek neprošel bezpečnostní kontrolou poskytovatele.",
+            "failed": "Tento obrázek se nepodařilo vygenerovat."
+          },
+          "approve": "Schválit do vzoru",
+          "delete": "Smazat",
+          "deleteAccessibilityLabel": "Smazat toto AI dílo",
+          "errors": {
+            "loadFailed": "Nepodařilo se načíst knihovnu AI děl. Zkuste to prosím znovu."
+          }
+        },
+        "approve": {
+          "modalTitle": "Vytvořit vlastní vzor",
+          "titleLabel": "Název vzoru",
+          "titleAccessibilityLabel": "Název vzoru",
+          "defaultTitle": "Můj AI vzor",
+          "placeholder": "Můj AI vzor",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "Zrušit",
+          "creating": "Vytváření vzoru…",
+          "create": "Vytvořit vzor",
+          "errors": {
+            "generic": "Nepodařilo se vytvořit vlastní vzor. Zkuste to prosím znovu."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "Vyžadován registrovaný účet",
+          "body": "Vlastní vzory patří k vašemu účtu, takže zůstávají soukromé a dostupné na všech zařízeních.",
+          "signIn": "Přihlásit se nebo vytvořit účet",
+          "back": "Zpět"
+        },
+        "header": {
+          "title": "Vzor z fotky",
+          "subtitle": "Ořízněte na zařízení a potvrďte převod",
+          "backAccessibilityLabel": "Zpět"
+        },
+        "picker": {
+          "chooseTitle": "Vyberte fotku",
+          "helpText": "Zdrojová fotografie v plném rozlišení zůstává na tomto zařízení. Nic se nepřevádí, dokud nepotvrdíte ořez.",
+          "choose": "Vybrat z galerie",
+          "chooseAnother": "Vybrat jinou",
+          "opening": "Otevírání…",
+          "errors": {
+            "permissionDenied": "K výběru místní fotografie je vyžadován přístup ke knihovně fotek.",
+            "invalidDimensions": "Vybraná fotka nemá použitelné rozměry.",
+            "generic": "Nepodařilo se otevřít knihovnu fotek. Zkuste to prosím znovu."
+          }
+        },
+        "framing": {
+          "title": "Ořez obrázku",
+          "gestureHint": "Tažením posuňte · sevřením prstů přibližte",
+          "aspectLabel": "Poměr stran rámečku"
+        },
+        "profile": {
+          "title": "Profil převodu",
+          "options": {
+            "easy": "Snadný",
+            "standard": "Standardní",
+            "detailed": "Detailní"
+          },
+          "custom": "Vlastní",
+          "customMeta": "Zdarma · zamčený tvar",
+          "unavailable": "Nevejde se do tohoto rámečku",
+          "customShortEdgeLabel": "Kratší strana",
+          "customColorLimitLabel": "Limit DMC barev",
+          "exceedsLimit": "Tyto vlastní hodnoty překračují limit velikosti vzoru {{max}} políček."
+        },
+        "titleCard": {
+          "label": "Název vzoru",
+          "placeholder": "Můj vzor z fotky",
+          "defaultTitle": "Můj vzor z fotky",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · až {{maxColors}} DMC {{colorsUnit}}",
+          "privacyNotice": "Schválením se nahraje pouze oříznutá zmenšenina. Původní fotka zůstává ve vašem zařízení.",
+          "approve": "Schválit obrázek a převést"
+        },
+        "processing": {
+          "preparingFrame": "Příprava schváleného rámečku na tomto zařízení…",
+          "uploading": "Nahrávání oříznutého a zmenšeného snímku…",
+          "waitingForWorker": "Čekání na proces převodu…",
+          "buildingGrid": "Vytváření vyšívací mřížky a DMC palety…",
+          "preparingSession": "Příprava vlastního vzoru ke hraní…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "Tento profil již neodpovídá výslednému ořezu. Zvolte Snadný nebo snižte detail.",
+            "generic": "Tuto fotku se nepodařilo převést. Zkuste to prosím znovu."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "Není vybrán žádný vzor",
+          "noPatternBody": "Tuto obrazovku je nutné otevřít z existujícího vlastního vzoru ve vaší knihovně.",
+          "accountTitle": "Vyžadován registrovaný účet",
+          "accountBody": "Vlastní vzory patří k vašemu účtu, takže zůstávají soukromé a dostupné na všech zařízeních.",
+          "signIn": "Přihlásit se nebo vytvořit účet",
+          "back": "Zpět"
+        },
+        "loading": "Obnovování konceptu editoru...",
+        "load": {
+          "failedTitle": "Vzor se nepodařilo načíst",
+          "retry": "Zkusit znovu",
+          "back": "Zpět",
+          "errors": {
+            "generic": "Tento vlastní vzor se nepodařilo načíst. Zkuste to prosím znovu."
+          }
+        },
+        "header": {
+          "title": "Editor vzoru",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "Zpět"
+        },
+        "toolbar": {
+          "undo": "Zpět",
+          "redo": "Znovu"
+        },
+        "mode": {
+          "paint": "Kreslit",
+          "replaceColor": "Nahradit barvu",
+          "replaceStep1": "1. Klepněte na barvu ve vzoru níže, kterou chcete nahradit:",
+          "replaceStep2": "2. Vyberte cílovou DMC barvu níže pro provedení náhrady:",
+          "paintSelected": "Vybráno: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "Vyberte barvu níže a klepnutím na políčka vybarvujte."
+        },
+        "errors": {
+          "pickColorFirst": "Nejprve vyberte barvu",
+          "paletteLimit": "Tento vzor již využívá maximální počet {{max}} barev bavlnek."
+        },
+        "picker": {
+          "title": "Barvy bavlnek DMC",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "Uložit upravený vzor",
+          "placeholder": "Název upraveného vzoru",
+          "action": "Uložit jako nový",
+          "offlineTitle": "Uloženo offline",
+          "offlineBody": "Upravený vzor byl uložen do tohoto zařízení a synchronizuje se s vaším účtem, jakmile budete online.",
+          "errors": {
+            "generic": "Tento vlastní vzor se nepodařilo uložit. Zkuste to prosím znovu."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "Toto přihlášení patří k jinému účtu. Váš stávající účet nebyl změněn.",
+        "providerRejected": "Ověření bylo zamítnuto. Zkontrolujte účet nebo kód a zkuste to znovu."
+      },
+      "generic": {
+        "failure": "Něco se pokazilo. Zkuste to prosím znovu.",
+        "supportReferenceLabel": "Referenční kód podpory: {{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Aplikace Stitch Wish používá vybrané fotografie k vytváření vlastních vzorů nebo k nastavení veřejné profilové fotky tvůrce."
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "VÍTEJTE V APLIKACI STITCH WISH",
+        "title": "Vyberte barvu a klepejte na odpovídající čtverečky.",
+        "heroAlt": "Náhled úvodního vzoru Útulné srdce",
+        "handedness": {
+          "sectionTitle": "Na které straně chcete mít ovládací prvky?",
+          "groupLabel": "Strana ovládání",
+          "optionRight": "Ovládání vpravo",
+          "optionLeft": "Ovládání vlevo",
+          "saveErrorText": "Tuto volbu se nepodařilo uložit.",
+          "retry": "Zkusit znovu"
+        },
+        "note": "Toto nastavení můžete kdykoli změnit v Nastavení.",
+        "start": "Začít vyšívat",
+        "starting": "Spouštění…",
+        "browse": "Prohlížet úvodní vzory",
+        "signIn": "Přihlásit se"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "Vyberte bavlnku DMC 321 Vánoční červená.",
+          "stitchAction": "Klepněte na zvýrazněné odpovídající políčko.",
+          "mismatchedTap": "Klepněte na zvýrazněné odlišné políčko. Špatné klepnutí nic nestojí.",
+          "undoAction": "Vraťte tento steh zpět a poté jej umístěte znovu.",
+          "stitchSweep": "Stiskněte odpovídající políčko a táhněte přes zvýrazněnou řadu.",
+          "threadColorCompletion": "Dokončete zvýrazněnou bílou bavlnku a pak vyberte další barvu."
+        },
+        "hints": {
+          "anchoredZoom": "Sevřením nebo roztažením prstů přibližujte a oddalujte zobrazení.",
+          "panVsSweep": "Tažením posouváte plátno. Začněte na odpovídajícím políčku pro souvislé vyšívání tahem.",
+          "edgeAutoPan": "Vyšívejte tahem u okraje a plátno bude sledovat váš prst.",
+          "remainingCellLocator": "Pomocí lokátoru najděte další zbývající políčko této bavlnky."
+        },
+        "skip": "Zatím přeskočit",
+        "skipAccessibilityLabel": "Zatím přeskočit průvodce",
+        "dismiss": "Rozumím",
+        "dismissAccessibilityLabel": "Zavřít nápovědu"
+      },
+      "recap": {
+        "title": "Už to máte v ruce",
+        "lines": {
+          "matchNumbers": "Podle čísel umisťujte jednotlivé stehy.",
+          "dragSweep": "Táhněte přes shodná políčka pro rychlé vyšívání.",
+          "pinchZoom": "Když potřebujete detailnější pohled, plátno přibližte prsty.",
+          "undoLocator": "Zpětný krok i lokátor políček jsou vždy zdarma."
+        },
+        "continue": "Pokračovat ve vyšívání",
+        "browsePatterns": "Prohlížet vzory"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "Vyšívací stůl",
+        "subtitle": "Pokračujte tam, kde jste skončili, nebo se vraťte k nedávnému tvoření.",
+        "loading": "Načítání vašich stehů...",
+        "empty": {
+          "title": "Žádné rozpracované vzory",
+          "body": "Váš vyšívací rám je momentálně prázdný. Prohlédněte si katalog vzorů a najděte si něco krásného k vyšití!",
+          "action": "Procházet katalog"
+        },
+        "unknownPattern": "Neznámý vzor",
+        "idLabel": "ID: {{id}}",
+        "unknownPatternLabel": "Vzor {{id}}",
+        "deleteSessionAccessibilityLabel": "Smazat relaci",
+        "viewFinishedAccessibilityLabel": "Zobrazit dokončené dílo",
+        "resumeAccessibilityLabel": "Pokračovat ve vyšívání",
+        "status": {
+          "ready": "Připraveno",
+          "done": "Hotovo",
+          "active": "Aktivní",
+          "preparing": "Příprava",
+          "failed": "Nezdařilo se"
+        },
+        "deleteConfirm": {
+          "title": "Smazat postup",
+          "message": "Opravdu chcete smazat svůj postup u vzoru „{{title}}“? Tuto akci nelze vzít zpět.",
+          "cancel": "Zrušit",
+          "confirm": "Smazat"
+        },
+        "preparingCard": {
+          "discardTitle": "Zahodit relaci",
+          "cancelTitle": "Zrušit stahování",
+          "discardMessage": "Opravdu chcete zahodit tuto neúspěšnou relaci?",
+          "cancelMessage": "Opravdu chcete zrušit stahování tohoto vzoru?",
+          "keep": "Ponechat",
+          "discard": "Zahodit",
+          "cancel": "Zrušit"
+        }
+      },
+      "loading": {
+        "text": "Otevírání relace a příprava plátna..."
+      },
+      "error": {
+        "title": "Načtení relace se nezdařilo",
+        "fallbackMessage": "Vaši vyšívací relaci se nepodařilo načíst.",
+        "backButton": "Přejít zpět",
+        "tableButton": "Přejít ke stolu"
+      },
+      "header": {
+        "backButton": "← Zpět",
+        "tableButton": "← Stůl",
+        "defaultTitle": "Relace vyšívání",
+        "progress": "{{completed}} / {{total}} políček ({{percent}} % hotovo)",
+        "resumeTutorialAccessibilityLabel": "Pokračovat v průvodci"
+      },
+      "banners": {
+        "patternRemoved": "Tento vzor byl odstraněn moderátory a již není dostupný. Klepnutím odejdete.",
+        "syncConflict": "Synchronizováno s jiným zařízením — některá políčka byla aktualizována. Klepnutím zavřete."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "Najít další zbývající políčko aktivní barvy bavlnky",
+        "undoAccessibilityLabel": "Vrátit poslední steh"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "Barva {{number}}: DMC {{dmcCode}}, zbývá {{count}} steh",
+        "chipAccessibilityLabel_other": "Barva {{number}}: DMC {{dmcCode}}, zbývá {{count}} stehů",
+        "done": "Hotovo",
+        "remaining_one": "zbývá {{count}}",
+        "remaining_other": "zbývá {{count}}"
+      },
+      "celebration": {
+        "title": "Překrásně vyšito!",
+        "subtitle": "Dokončili jste každičký steh na tomto plátně.",
+        "stitchesLabel_one": "Steh",
+        "stitchesLabel_other": "Stehů",
+        "colorsLabel_one": "Barva",
+        "colorsLabel_other": "Barev",
+        "replayButton": "Vyšít znovu",
+        "catalogButton": "Zpět do katalogu"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "Přejít zpět",
+        "tryAgain": "Zkusit znovu"
+      },
+      "rejectionReasons": {
+        "safety": "Bezpečnost",
+        "publication_rights": "Publikační práva",
+        "duplicate_or_spam": "Duplikát nebo spam",
+        "technical_invalidity": "Technická neplatnost",
+        "quality_standard": "Standard kvality"
+      },
+      "submissionStatus": {
+        "accepted": "Publikováno",
+        "appeal_pending": "Čeká na odvolání",
+        "appeal_upheld": "Odvolání zamítnuto",
+        "precheck_failed": "Předběžná kontrola nedostupná",
+        "precheck_pending": "Kontroluje se",
+        "quarantined": "Vyžaduje kontrolu",
+        "rejected": "Zamítnuto",
+        "review_pending": "V recenzním řízení"
+      },
+      "revisionStatus": {
+        "accepted": "Publikováno",
+        "appeal_pending": "Čeká na odvolání",
+        "appeal_upheld": "Odvolání zamítnuto",
+        "pending": "V recenzním řízení",
+        "rejected": "Zamítnuto",
+        "withdrawn": "Staženo"
+      },
+      "home": {
+        "identity": {
+          "establishing": "Ověřování identity...",
+          "pendingTitle": "Čeká se na identitu",
+          "offline": "Bez připojení",
+          "retryConnection": "Zkusit připojení znovu",
+          "loadingPublicProfile": "Načítání veřejného profilu...",
+          "unavailableTitle": "Veřejný profil není dostupný",
+          "checkConnection": "Zkontrolujte připojení a zkuste to znovu.",
+          "createTitle": "Vytvořte si veřejný profil",
+          "createBody": "Zvolte si trvalé uživatelské jméno, které se zobrazí u vašich komunitních vzorů. Údaje o vašem účtu zůstanou soukromé.",
+          "createAction": "Vytvořit veřejný profil",
+          "editAction": "Upravit veřejný profil",
+          "offlinePendingSync": "Offline — čeká na synchronizaci",
+          "guestPlayer": "Hráč jako host",
+          "playingSince": "Hraje od {{date}}",
+          "creatorSince": "Tvůrce od {{date}}"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "Otevřít obchod",
+          "title": "Zůstatky studia",
+          "commerceStoreLink": "Obchod",
+          "stitchCoinsAccessibilityLabel": "Zůstatek Stitch Coinů: {{balance}}. Klepnutím získáte coiny.",
+          "packs": "Balíčky",
+          "stitchCoinsLabel": "Stitch Coiny",
+          "stitchCoinsSub": "K odemykání vzorů",
+          "aiCreditsAccessibilityLabel": "Zůstatek AI kreditů: {{balance}}. Klepnutím získáte kredity.",
+          "aiCreditsSignInAccessibilityLabel": "AI kredity. Pro nákup se přihlaste.",
+          "aiCreditsLabel": "AI kredity",
+          "aiCreditsSubOwned": "Pro tvorbu AI vzorů",
+          "aiCreditsSubGuest": "Přihlaste se pro získání",
+          "membershipActiveAccessibilityLabel": "Prémiové členství je aktivní ({{plan}}). Klepnutím spravujete.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Premium. Klepnutím zobrazíte plány.",
+          "membershipActiveTitle": "Aktivní Premium · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "Roční",
+          "planMonthly": "Měsíční",
+          "planWeekly": "Týdenní",
+          "planActive": "Aktivní",
+          "trialBadge": "Zkušební",
+          "membershipSubActive": "Všechny motivy odemčeny · Okamžité denní coiny",
+          "membershipSubInactive": "Okamžitých 30 denních coinů, vlastní motivy a AI kredity",
+          "manage": "Spravovat",
+          "explore": "Prozkoumat"
+        },
+        "quickNav": {
+          "sectionEyebrow": "ÚČET A KOMUNITA",
+          "submissionsAccessibilityLabel": "Návrhy do katalogu: Sledujte recenze, rozhodnutí a odvolání",
+          "submissionsTitle": "Návrhy",
+          "submissionsSub": "Sledovat recenze",
+          "publishedAccessibilityLabel": "Publikované vzory: Upravujte metadata, stahujte a sledujte odvolání",
+          "publishedTitle": "Publikováno",
+          "publishedSub": "Správa vzorů",
+          "moderationAccessibilityLabel": "Oznámení moderace: Prohlížejte rozhodnutí katalogu týkající se vašich vzorů",
+          "moderationTitle": "Moderace",
+          "moderationSub": "Oznámení o pravidlech",
+          "likedAccessibilityLabel": "Oblíbené vzory: Vaše soukromá sbírka oblíbených komunitních vzorů",
+          "likedTitle": "Oblíbené vzory",
+          "likedSavedCount_one": "{{count}} uložen",
+          "likedSavedCount_other": "{{count}} uloženo",
+          "likedSavedDefault": "Uložené vzory"
+        },
+        "dailySection": {
+          "title": "Denní vyšívání a odměny",
+          "tasksGroupLabel": "Denní úkoly (max. +30 coinů)",
+          "connectToTrack": "Připojte se pro sledování postupu v denních úkolech.",
+          "loadingTasks": "Načítání úkolů…",
+          "loadFailed": "Denní úkoly se nepodařilo načíst.",
+          "retry": "Zkusit znovu",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "Resetování…",
+          "resetsInHoursMinutes": "Reset za {{hours}} h {{minutes}} min",
+          "resetsInMinutes": "Reset za {{minutes}} min"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 vyšití stehu",
+            "body": "Vyplňte dnes 100 odpovídajících políček"
+          },
+          "three_colors_10": {
+            "title": "3 barvy, každá 10 akcí",
+            "body": "Proveďte 10 akcí se 3 barvami bavlnek"
+          },
+          "color_completion": {
+            "title": "Dokončete barvu bavlnky",
+            "body": "Zcela došijte jakoukoli barvu"
+          }
+        },
+        "dailyPool": {
+          "title": "Denní fond odměn 30 coinů",
+          "premiumInstantClaim": "Okamžité vyzvednutí pro Premium",
+          "rewardedAds": "Reklamy za odměnu",
+          "claimedAmount": "Dnes vyzvednuto {{amount}} Stitch Coinů!",
+          "poolAlreadyClosed": "Dnešní fond odměn již byl uzavřen.",
+          "claimedForToday": "Pro dnešek vybráno. Resetuje se v další den odměn.",
+          "poolExhausted": "Dnešní fond odměn 30 coinů je vyčerpán.",
+          "claimButtonRetry": "Zkusit vyzvednout znovu",
+          "claimButtonInstant": "Vyzvednout {{count}} coinů (okamžitě)",
+          "poolClaimedResetsTomorrow": "Dnešní fond coinů byl vybrán. Obnoví se zítra.",
+          "allAdRewardsCompleted": "Všechny odměny za reklamy pro dnešek dokončeny! (30/30 coinů)",
+          "watchAdButton": "Zhlédnout reklamu za +10 coinů (zbývá {{count}})",
+          "adPerkNote": "Sledujte až 3 reklamy denně · Premium odemyká okamžité vyzvednutí 30 coinů",
+          "adRewardEarned": "Odměna za reklamu získána! Ověřuje se na backendu…",
+          "claimFailed": "Vyzvednutí selhalo: {{message}}",
+          "claimFailedGeneric": "Něco se pokazilo. Zkuste to prosím znovu.",
+          "adLoadFailedDefault": "Reklamu se nepodařilo načíst",
+          "adAttemptFailedDefault": "Nepodařilo se spustit přehrání reklamy"
+        },
+        "tabs": {
+          "myCreations": "Má tvorba {{count}}",
+          "likedPatterns": "Oblíbené vzory {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "Přihlaste se pro vlastní vzory",
+          "signInBody": "K vytváření a soukromému vlastnictví vzorů převedených z fotografií je vyžadován registrovaný účet.",
+          "signIn": "Přihlásit se",
+          "patternMeta": "{{width}}×{{height}} · {{count}} barev",
+          "pendingSync": "Čeká na synchronizaci",
+          "play": "Hrát",
+          "edit": "Upravit",
+          "submitAccessibilityLabel": "Odeslat {{title}} do komunitního katalogu",
+          "emptyTitle": "Žádná vlastní tvorba",
+          "emptyBody": "Zatím jste nepřevedli žádné fotografie ani nevygenerovali AI obrázek. Přejděte do Tvůrčí dílny a začněte tvořit své první dílo!",
+          "emptyAction": "Začít tvořit",
+          "actionFailedGeneric": "Něco se pokazilo. Zkuste to prosím znovu."
+        },
+        "likedTab": {
+          "unavailableTitle": "Oblíbené vzory nejsou dostupné",
+          "unavailableDefault": "Oblíbené vzory se nepodařilo načíst.",
+          "byCreator": "od {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} barev",
+          "emptyTitle": "Žádné oblíbené vzory",
+          "emptyBody": "Procházejte katalog a klepnutím na ikonu srdce u jakéhokoli vzoru si jej sem uložte na později.",
+          "emptyAction": "Objevovat vzory"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Denní vyzvednutí coinů pro Premium",
+        "description": "Vyzvedněte si zbytek dnešního sdíleného fondu odměn 30 coinů.",
+        "connectPrompt": "Připojte se k hernímu backendu pro kontrolu dnešní odměny.",
+        "checkingReward": "Kontrola dnešní prémiové odměny…",
+        "unavailableGeneric": "Dnešní prémiová odměna není dostupná.",
+        "tryAgain": "Zkusit znovu",
+        "resultAdded": "Herní backend připsal {{amount}} Stitch Coinů. Zůstatek: {{balance}}.",
+        "poolAlreadyClosed": "Dnešní sdílený fond odměn již byl uzavřen.",
+        "alreadyClaimed": "Pro tento den odměn již bylo vybráno.",
+        "poolExhausted": "Dnešní sdílený fond odměn je vyčerpán. Obnoví se v další den odměn.",
+        "availableNow": "Nyní je k dispozici {{count}} Stitch Coinů",
+        "resetsAt": "Reset {{date}}",
+        "claimButtonRetry": "Zkusit vyzvednout znovu",
+        "claimButtonInstant": "Vyzvednout {{count}} coinů",
+        "lockedDescription": "Prémiové členství, včetně oprávněného měsíčního zkušebního období, odemyká toto denní vyzvednutí.",
+        "viewPremiumPlans": "Zobrazit prémiové plány"
+      },
+      "publicProfile": {
+        "editTitle": "Upravit veřejný profil",
+        "createTitle": "Vytvořit veřejný profil",
+        "signInTitle": "Vyžadováno přihlášení",
+        "signInBody": "K vytvoření veřejné identity tvůrce je vyžadován registrovaný účet.",
+        "signInAction": "Přihlásit se",
+        "unavailableTitle": "Profil není dostupný",
+        "unavailableBody": "Váš veřejný profil se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.",
+        "tryAgain": "Zkusit znovu",
+        "intro": "Toto jméno a fotka budou viditelné u vašich komunitních vzorů. Váš e-mail a způsob přihlášení zůstanou soukromé.",
+        "choosePhoto": "Vybrat fotku",
+        "changePhoto": "Změnit fotku",
+        "remove": "Odstranit",
+        "avatarHelper": "Volitelné · JPEG, PNG nebo WebP · do 5 MB",
+        "usernameLabel": "Uživatelské jméno",
+        "usernameAccessibilityLabel": "Veřejné uživatelské jméno",
+        "usernamePlaceholder": "jmeno_tvurce",
+        "usernameHelperLocked": "Vaše uživatelské jméno je trvalé.",
+        "usernameHelperEditable": "3–30 malých písmen, číslic nebo podtržítek. Později ho již nelze změnit.",
+        "displayNameLabel": "Zobrazované jméno",
+        "displayNameAccessibilityLabel": "Veřejné zobrazované jméno",
+        "displayNamePlaceholder": "Vaše tvůrčí jméno",
+        "displayNameHelper": "Toto můžete kdykoli změnit.",
+        "safetyNotice": "Jména a fotografie jsou před zveřejněním kontrolovány. Pokud je změna zamítnuta, váš stávající veřejný profil zůstane beze změny.",
+        "saveAction": "Uložit veřejný profil",
+        "publishAction": "Publikovat veřejný profil",
+        "photoPermissionRequired": "K výběru profilové fotky je vyžadován přístup ke knihovně fotografií.",
+        "photoTypeInvalid": "Profilová fotografie musí být ve formátu JPEG, PNG nebo WebP.",
+        "photoTooLarge": "Profilová fotografie musí mít velikost 5 MB nebo méně.",
+        "saveFailedDefault": "Veřejný profil se nepodařilo uložit"
+      },
+      "submissions": {
+        "title": "Návrhy do katalogu",
+        "unavailableTitle": "Návrhy nejsou dostupné",
+        "unavailableDefault": "Vaše návrhy se nepodařilo načíst.",
+        "emptyTitle": "Žádné návrhy do katalogu",
+        "emptyBody": "Odešlete synchronizovaný vlastní vzor ze sekce Má tvorba.",
+        "emptyAction": "Zpět do Mé tvorby",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "Automatické kontroly se nepodařilo dokončit. Tato verze nebyla publikována.",
+        "publishedToCatalog": "Publikováno v komunitním katalogu.",
+        "appealAction": "Odvolat se proti rozhodnutí",
+        "appealHelp": "Proti této nezměněné verzi se můžete odvolat jednou.",
+        "appealNoteAccessibilityLabel": "Poznámka k odvolání",
+        "appealNotePlaceholder": "Volitelný kontext pro posuzujícího moderátora",
+        "cancelAction": "Zrušit",
+        "submitAppealAction": "Odeslat odvolání"
+      },
+      "publishedPatterns": {
+        "title": "Publikované vzory",
+        "unavailableTitle": "Vzory nejsou dostupné",
+        "unavailableDefault": "Publikované vzory se nepodařilo načíst.",
+        "emptyTitle": "Žádné publikované vzory",
+        "emptyBody": "Vzory, které publikujete v komunitním katalogu, se zobrazí zde.",
+        "emptyAction": "Zpět na Profil",
+        "withdrawnFromCatalog": "Staženo z katalogu",
+        "underReviewHold": "Pozastaveno z důvodu kontroly",
+        "meta": "{{category}} · Publikováno {{date}}",
+        "withdrawnHelp": "Tato identita vzoru je trvale stažena. Hráči s existující relací vyšívání si zachovávají svůj postup i přístup.",
+        "reviewHoldHelp": "Tento vzor je dočasně mimo vyhledávání a nelze v něm zahájit nové relace. Stávající relace vyšívání zůstávají hratelné. Stále můžete navrhnout úpravu metadat.",
+        "reviseAction": "Upravit metadata",
+        "withdrawRevisionAction": "Stáhnout úpravu",
+        "appealAction": "Odvolat se proti rozhodnutí",
+        "withdrawFromCatalogAction": "Stáhnout z katalogu",
+        "appealHelp": "Proti této nezměněné verzi se můžete odvolat jednou. Odesláním nové verze se tohoto odvolání vzdáváte.",
+        "appealNoteAccessibilityLabel": "Poznámka k odvolání",
+        "appealNotePlaceholder": "Volitelný kontext pro posuzujícího moderátora",
+        "cancelAction": "Zrušit",
+        "submitAppealAction": "Odeslat odvolání",
+        "withdrawRevisionFailedTitle": "Úpravu se nepodařilo stáhnout",
+        "withdrawPatternFailedTitle": "Vzor se nepodařilo stáhnout",
+        "withdrawPatternSuccessTitle": "Vzor stažen",
+        "withdrawPatternSuccessBody": "Vzor již nelze vyhledat a nelze u něj zahájit nové relace. Stávající relace vyšívání si zachovávají postup a hratelná data.",
+        "withdrawConfirmTitle": "Stáhnout z komunitního katalogu?",
+        "withdrawConfirmBody": "Vzor „{{title}}“ zmizí z vyhledávání a nebude možné u něj zahájit nové relace. Tuto identitu vzoru již nelze nikdy obnovit. Stávající vyšívací relace a jejich postup zůstanou hratelné.",
+        "withdrawConfirmCancel": "Zrušit",
+        "withdrawConfirmAction": "Trvale stáhnout"
+      },
+      "revisePatternMetadata": {
+        "title": "Upravit metadata",
+        "signInTitle": "Vyžadován registrovaný účet",
+        "signInBody": "Před úpravou metadat komunitního vzoru se přihlaste.",
+        "signInAction": "Přihlásit se",
+        "notFoundTitle": "Komunitní vzor nenalezen",
+        "notFoundBody": "Upravovat lze pouze vaše vlastní publikované komunitní vzory.",
+        "notFoundAction": "Zpět na Publikované vzory",
+        "inProgressTitle": "Úprava již probíhá",
+        "inProgressBody": "Tento vzor již má čekající úpravu nebo aktivní odvolání. Před odesláním další ji stáhněte.",
+        "inProgressAction": "Zpět na Publikované vzory",
+        "currentlyPublished": "Aktuálně publikováno v komunitním katalogu",
+        "titleFieldLabel": "Název v katalogu",
+        "titlePlaceholder": "Název vzoru",
+        "titleAccessibilityLabel": "Název v katalogu",
+        "descriptionFieldLabel": "Popis",
+        "descriptionPlaceholder": "Popište vzor, motiv a zážitek z vyšívání.",
+        "descriptionAccessibilityLabel": "Popis v katalogu",
+        "sourceLanguageFieldLabel": "Výchozí jazyk",
+        "categoryFieldLabel": "Kategorie",
+        "tagsFieldLabel": "Štítky",
+        "notice": "Úpravou se vytvoří nový neměnný snímek. Vaše aktuálně publikovaná metadata zůstanou viditelná, dokud tuto úpravu neschválí lidský moderátor.",
+        "submitAction": "Odeslat úpravu"
+      },
+      "submitPattern": {
+        "title": "Odeslat do komunity",
+        "signInTitle": "Vyžadován registrovaný účet",
+        "signInBody": "Před odesláním vlastního vzoru do komunitního katalogu se přihlaste.",
+        "signInAction": "Přihlásit se",
+        "createProfileTitle": "Vytvořte si veřejný profil tvůrce",
+        "createProfileBody": "Komunitní vzory jsou připisovány vaší veřejné identitě tvůrce.",
+        "createProfileAction": "Vytvořit profil",
+        "patternNotFoundTitle": "Vlastní vzor nenalezen",
+        "patternNotFoundBody": "Odeslat lze pouze synchronizované vlastní vzory.",
+        "patternNotFoundAction": "Zpět na Profil",
+        "patternMeta": "{{width}}×{{height}} · {{count}} barev",
+        "byCreator": "Od @{{username}}",
+        "titleFieldLabel": "Název v katalogu",
+        "titlePlaceholder": "Název vzoru",
+        "titleAccessibilityLabel": "Název v katalogu",
+        "descriptionFieldLabel": "Popis",
+        "descriptionPlaceholder": "Popište vzor, motiv a zážitek z vyšívání.",
+        "descriptionAccessibilityLabel": "Popis v katalogu",
+        "sourceLanguageFieldLabel": "Výchozí jazyk",
+        "categoryFieldLabel": "Kategorie",
+        "tagsFieldLabel": "Štítky",
+        "rightsDeclaration": "Toto dílo jsem vytvořil(a) já nebo mám potřebná práva k jeho publikaci podle Prohlášení o publikačních právech v1.",
+        "notice": "Odesláním se vytvoří neměnná kopie. Automatické kontroly slouží jako podklad, ale každé rozhodnutí provádí lidský moderátor.",
+        "submitAction": "Odeslat ke kontrole"
+      },
+      "moderationNotices": {
+        "title": "Oznámení moderace",
+        "signInTitle": "Pro zobrazení oznámení se přihlaste",
+        "signInBody": "Oznámení moderace patří k registrovanému účtu, který publikoval dotčený komunitní vzor.",
+        "signInAction": "Přihlásit se",
+        "unavailableTitle": "Oznámení nejsou dostupná",
+        "unavailableDefault": "Oznámení moderace se nepodařilo načíst.",
+        "emptyTitle": "Žádná oznámení moderace",
+        "emptyBody": "Zde se zobrazí rozhodnutí moderace katalogu viditelná pro vlastníka.",
+        "emptyAction": "Zpět na Profil",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "Náprava metadat v katalogu",
+          "no_violation": "Kontrola uzavřena — bez porušení pravidel",
+          "review_hold": "Pozastaveno z důvodu kontroly",
+          "safety_removal": "Odstranění z bezpečnostních důvodů"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "Název, popis a vybrané štítky byly nahrazeny bezpečnými hodnotami. Dostupnost, artefakt vzoru i náhled zůstávají nedotčeny. Kdykoli můžete odeslat novou úpravu metadat v katalogu.",
+          "no_violation": "Kontrola po publikaci byla uzavřena a tento vzor je opět plně dostupný ve vyhledávání i pro nové vyšívací relace.",
+          "review_hold": "Tento vzor je dočasně nedostupný ve vyhledávání a pro nové relace. Stávající vyšívací relace, postup i offline data vzoru zůstávají hratelné.",
+          "safety_removal": "Tento vzor byl odstraněn kvůli porušení bezpečnostních, právních nebo provozních pravidel. Byl odebrán z vyhledávání, stávající relace vyšívání byly znepřístupněny a offline data vzoru na vašich zařízeních byla smazána. Můžete podat jedno odvolání proti bezpečnostnímu odstranění."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "Denní úkoly",
+        "offline": "Jste offline — denní úkoly vyžadují připojení.",
+        "unavailable": "Denní úkoly se nepodařilo načíst.",
+        "empty": "Dnes nejsou k dispozici žádné úkoly."
+      },
+      "rewardedAdCard": {
+        "offline": "Jste offline — den odměn vyžaduje připojení.",
+        "unavailable": "Stav dne odměn se nepodařilo načíst.",
+        "premiumClaimClosedPool": "Vaše prémiové denní vyzvednutí uzavřelo dnešní sdílený fond coinů.",
+        "allRewardsClaimed": "Dnes jste vyzvedli všechny odměny za reklamy. Vraťte se zase zítra!",
+        "remaining_one": "dnes zbývá {{count}} reklama (dostupných {{coins}} coinů)",
+        "remaining_other": "dnes zbývá {{count}} reklam (dostupných {{coins}} coinů)",
+        "watchForCoins": "Zhlédnout reklamu za {{count}} coinů"
+      },
+      "likedPatterns": {
+        "title": "Oblíbené vzory",
+        "signInTitle": "Vyžadován registrovaný účet",
+        "signInBody": "Před zobrazením své soukromé sbírky oblíbených vzorů se přihlaste.",
+        "signInAction": "Přihlásit se",
+        "unavailableTitle": "Oblíbené vzory nejsou dostupné",
+        "unavailableDefault": "Oblíbené vzory se nepodařilo načíst.",
+        "emptyTitle": "Žádné oblíbené vzory",
+        "emptyBody": "Procházejte katalog vzorů a klepnutím na ikonu srdce u jakéhokoli vzoru si jej sem uložte.",
+        "emptyAction": "Objevovat vzory",
+        "byCreator": "od {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} barev · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "Nastavení",
+        "subtitleDev": "Nastavení předvoleb a kontrola backendových systémů.",
+        "subtitleProd": "Přizpůsobte si své nastavení."
+      },
+      "serviceStatus": {
+        "sectionTitle": "Stav služby",
+        "apiConnectionTitle": "Připojení k API",
+        "testingConnection": "Testování připojení k API...",
+        "offlineUnreachable": "Offline / Nedostupné",
+        "unknownConnectionError": "Neznámá chyba připojení",
+        "retryConnection": "Zkusit připojení znovu",
+        "healthy": "V pořádku",
+        "degraded": "Omezený provoz",
+        "postgresLabel": "Databáze PostgreSQL",
+        "redisLabel": "Mezipaměť Redis"
+      },
+      "session": {
+        "sectionTitle": "Identita a relace",
+        "statusTitle": "Stav relace backendu",
+        "statusDescription": "Ověřuje vaši aktivní relaci registrace hosta prostřednictvím API.",
+        "noActiveSession": "Žádná aktivní relace",
+        "sessionActive": "Relace je aktivní",
+        "idLabel": "ID: {{id}} (v{{version}})",
+        "unknownState": "Neznámý stav"
+      },
+      "tutorial": {
+        "sectionTitle": "Průvodce",
+        "learnControlsTitle": "Naučit se ovládání",
+        "learnControlsDescription": "Až budete připraveni, pokračujte v průvodci vyšíváním.",
+        "unavailableTitle": "Průvodce není dostupný",
+        "unavailableMessage": "Průvodce se nepodařilo obnovit. Zkuste to prosím znovu."
+      },
+      "developer": {
+        "sectionTitle": "Vývojář",
+        "debugDiagnostics": "Ladění / Diagnostika",
+        "debug": {
+          "backAccessibilityLabel": "Přejít zpět",
+          "title": "Ladění",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: nakonfigurováno · prostř.: {{environment}}",
+            "dsnNotConfigured": "DSN: nenakonfigurováno",
+            "sendTestEvent": "Odeslat testovací událost",
+            "throwError": "Vyvolat chybu",
+            "disabledTitle": "Sentry vypnuto",
+            "disabledMessage": "Sentry není nakonfigurováno (DSN nenalezeno), testovací událost nebude odeslána.",
+            "testEventSent": "Testovací událost odeslána. ID události: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "Chyba",
+            "testEventFailedMessage": "Odeslání testovací události se nezdařilo: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Úvodní průvodce",
+            "description": "Vymazat postup průvodcem a začít znovu od uvítání.",
+            "restart": "Restartovat úvodního průvodce",
+            "confirmTitle": "Restartovat úvodního průvodce?",
+            "confirmMessage": "Stav průvodce bude vymazán a úvodní proces začne od uvítací obrazovky.",
+            "cancel": "Zrušit",
+            "resetFailedTitle": "Resetování selhalo"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "Smazání účtu",
+        "statusTitle": "Stav smazání účtu",
+        "checkingStatus": "Kontrola stavu...",
+        "pendingTitle": "Čeká se na smazání účtu",
+        "pendingDescription": "Smazání vašeho účtu je naplánováno. Přihlaste se znovu před vypršením lhůty pro obnovení, pokud jej chcete zrušit.",
+        "recoveryWindowEnds": "Lhůta pro obnovení končí: {{date}}",
+        "cancelling": "Rušení...",
+        "cancelDeletion": "Zrušit smazání",
+        "statusError": "Stav smazání se nepodařilo zkontrolovat. Zkontrolujte připojení a zkuste to znovu.",
+        "deleteAccountTitle": "Smazat účet",
+        "deleteAccountDescription": "Trvale smaže váš účet, postup a všechna odemknutí po 30denní ochranné lhůtě pro obnovení.",
+        "requestedTitle": "Smazání účtu vyžádáno",
+        "requestedMessage": "Vaše žádost o smazání čeká do {{date}}. Váš účet byl odhlášen. Pokud si přejete smazání zrušit, přihlaste se před tímto datem znovu.",
+        "signOutFailedTitle": "Místní odhlášení selhalo",
+        "signOutFailedMessage": "Vaše žádost o smazání stále čeká. Odhlaste se prosím znovu z Nastavení.",
+        "requestFailedTitle": "Žádost selhala",
+        "requestFailedMessage": "Vaši žádost o smazání se nepodařilo odeslat. Zkontrolujte připojení a zkuste to znovu.",
+        "cancelSuccessTitle": "Úspěch",
+        "cancelSuccessMessage": "Vaše žádost o smazání účtu byla zrušena.",
+        "reauthRequiredTitle": "Vyžadováno opětovné ověření",
+        "reauthRequiredMessage": "Z bezpečnostních důvodů se před zrušením smazání účtu musíte znovu přihlásit.",
+        "signInAction": "Přihlásit se",
+        "cancelFailedTitle": "Zrušení selhalo",
+        "cancelFailedGeneric": "Smazání účtu se nepodařilo zrušit. Zkontrolujte připojení a zkuste to znovu."
+      },
+      "appearance": {
+        "sectionTitle": "Vzhled"
+      },
+      "themeCollectionCard": {
+        "title": "Kolekce motivů",
+        "description": "Změňte vzhled mřížky, stehů a efektů dokončení bez vlivu na hratelnost.",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "Vyžaduje prémiové členství",
+        "selected": "Vybráno",
+        "accessActive": "Přístup k prémiovým motivům je aktivní, a to i během oprávněného měsíčního zkušebního období.",
+        "lockedPreview": "Zde si můžete prohlédnout kolekci. Prémiové členství nebo oprávněné měsíční zkušební období odemyká jejich výběr.",
+        "viewPremiumPlans": "Zobrazit prémiové plány"
+      },
+      "gameplay": {
+        "sectionTitle": "Nastavení hry",
+        "showGridLinesTitle": "Zobrazit čáry mřížky",
+        "showGridLinesDescription": "Zobrazit ohraničení mezi políčky vyšívacího plátna",
+        "handednessTitle": "Rozvržení pro ruku",
+        "handednessDescription": "Přizpůsobit ovládací prvky pro hraní levou nebo pravou rukou",
+        "left": "Vlevo",
+        "right": "Vpravo",
+        "leftHandedLayout": "Rozvržení pro leváky",
+        "rightHandedLayout": "Rozvržení pro praváky"
+      },
+      "language": {
+        "sectionTitle": "Jazyk",
+        "description": "Vyberte jazyk, ve kterém aplikace Stitch Wish zobrazuje své rozhraní.",
+        "followDevice": "Podle jazyka zařízení",
+        "followDeviceDescription": "Zruší vlastní volbu a přizpůsobí se nastavení jazyka vašeho zařízení.",
+        "optionEnglish": "Angličtina",
+        "optionTurkish": "Turečtina",
+        "modalTitle": "Vybrat jazyk",
+        "modalSubtitle": "Vyberte preferovaný jazyk rozhraní.",
+        "systemDefault": "Jazyk systému",
+        "systemDefaultWithDetected": "Jazyk systému ({{language}})",
+        "systemDefaultDescription": "Automaticky odpovídá nastavení vašeho zařízení."
+      },
+      "social": {
+        "sectionTitle": "Komunita a soukromí",
+        "blockedCreators": "Zablokovaní tvůrci"
+      },
+      "account": {
+        "sectionTitle": "Účet",
+        "notSignedInTitle": "Nepřihlášen(a)",
+        "signInRequiredTitle": "Vyžadováno přihlášení",
+        "notSignedInDescription": "Přihlaste se pro synchronizaci postupu mezi zařízeními.",
+        "signIn": "Přihlásit se",
+        "reconnecting": "Opětovné připojování…",
+        "signOut": "Odhlásit se",
+        "signOutConfirmTitle": "Odhlásit se?",
+        "signOutConfirmMessage": "Váš nesynchronizovaný postup zůstane na tomto zařízení a načte se znovu po opětovném přihlášení.",
+        "signOutConfirmAction": "Odhlásit se",
+        "signOutFailedTitle": "Odhlášení selhalo",
+        "signOutFailedGeneric": "Zkuste to prosím znovu.",
+        "providerAppleAccount": "Účet Apple",
+        "providerGoogleAccount": "Účet Google",
+        "providerGenericAccount": "Registrovaný účet"
+      },
+      "signIn": {
+        "emailHeading": "Přihlaste se nebo vytvořte účet",
+        "emailSubtitle": "Mějte svůj postup dostupný na všech zařízeních.",
+        "codeHeading": "Zadejte svůj kód",
+        "codeSubtitle": "Zadejte 6místný kód, který jsme vám poslali na {{email}}.",
+        "continueWithGoogle": "Pokračovat přes Google",
+        "orUseEmail": "nebo použít e-mail",
+        "ssoUnavailable": "Přihlášení přes Google a Apple není v tomto sestavení dostupné.",
+        "emailLabel": "E-mailová adresa",
+        "emailPlaceholder": "E-mailová adresa",
+        "sendCode": "Odeslat kód",
+        "cancel": "Zrušit",
+        "verify": "Ověřit",
+        "resendCode": "Znovu odeslat kód",
+        "resending": "Znovu se odesílá...",
+        "codeSent": "Kód odeslán",
+        "useDifferentEmail": "Použít jiný e-mail",
+        "sendCodeFailed": "Kód se nepodařilo odeslat. Zkontrolujte připojení a zkuste to znovu.",
+        "codeIncorrect": "Tento kód je nesprávný nebo vypršela jeho platnost.",
+        "verifyFailedGeneric": "Něco se pokazilo. Zkuste to prosím znovu.",
+        "socialSignInFailed": "Přihlášení přes {{provider}} se nezdařilo. Zkuste to prosím znovu.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "Přejít zpět",
+        "title": "Zablokovaní tvůrci",
+        "infoText": "Blokování je soukromé a vratné. Skryje komunitní vzory tvůrce z vašich zobrazení katalogu, vyhledávání i seznamů objevování. Nejedná se o nahlášení ani odstranění obsahu.",
+        "signInRequiredTitle": "Vyžadován registrovaný účet",
+        "signInRequiredBody": "Před správou seznamu zablokovaných tvůrců se přihlaste.",
+        "signInAction": "Přihlásit se",
+        "listUnavailableTitle": "Seznam není dostupný",
+        "listUnavailableDefault": "Zablokované tvůrce se nepodařilo načíst.",
+        "tryAgain": "Zkusit znovu",
+        "emptyTitle": "Žádní zablokovaní tvůrci",
+        "emptyBody": "Nikoho jste nezablokovali. Tvůrce můžete zablokovat na detailu kterékoli z jeho předloh.",
+        "backToSettings": "Zpět do Nastavení",
+        "unblock": "Odblokovat",
+        "unblockConfirmTitle": "Odblokovat tvůrce",
+        "unblockConfirmMessage": "Opravdu chcete odblokovat uživatele {{name}}? Jeho vzory se znovu objeví ve vašich výsledcích vyhledávání a procházení.",
+        "cancel": "Zrušit",
+        "successTitle": "Úspěch",
+        "unblockedMessage": "Uživatel {{name}} byl odblokován.",
+        "errorTitle": "Chyba",
+        "unblockFailedMessage": "Odblokování tvůrce selhalo: {{message}}",
+        "unblockFailedGeneric": "Neznámá chyba"
+      },
+      "data": {
+        "sectionTitle": "Údaje",
+        "resetGuestTitle": "Resetovat data hosta",
+        "resetGuestDescription": "Nevratně uzavřít identitu hosta na serveru a smazat všechna data ze zařízení.",
+        "resetGuestOffline": "Offline: K resetování dat hosta je vyžadováno aktivní připojení k serveru.",
+        "resetGuestPurchaseLock": "Resetování je blokováno, dokud probíhá ověřování nákupu. Spotřební položky a soukromá data hosta poté nelze obnovit.",
+        "removeLocalTitle": "Odstranit místní data",
+        "removeLocalDescription": "Smazat databázi jmenného prostoru vaší místní identity z tohoto zařízení.",
+        "removeLocalConfirmTitle": "Odstranit místní data?",
+        "removeLocalConfirmMessage": "Varování: Tato akce smaže soubory místní databáze pouze z tohoto zařízení. Všechny nesynchronizované záznamy budou trvale ztraceny.",
+        "removeLocalConfirmAction": "Odstranit",
+        "removeLocalSuccessTitle": "Úspěch",
+        "removeLocalSuccessMessage": "Místní data byla z tohoto zařízení odstraněna.",
+        "removeLocalFailedTitle": "Odstranění selhalo",
+        "removeLocalFailedMessage": "Odstranění místních dat selhalo: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "Informace a odkazy",
+        "privacyPolicy": "Zásady ochrany soukromí",
+        "termsOfService": "Podmínky služby",
+        "contactSupport": "Kontaktovat podporu",
+        "accountDeletion": "Smazání účtu",
+        "openFailedMessage": "Odkaz se nepodařilo otevřít: {{url}}",
+        "openFailedGenericTitle": "Chyba"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — Útulné pixelové vyšívání",
+        "version": "Verze {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "Balíček: {{id}}",
+        "schemeLabel": "Schéma: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "Resetovat data hosta?",
+        "warning": "Tato akce nevratně uzavře vaši identitu hosta na serveru a trvale smaže vaše:",
+        "bulletProgress": "• místní postup",
+        "bulletRewards": "• čekající odměny",
+        "bulletLikes": "• oblíbené",
+        "bulletUnlockAccess": "• odemknutý přístup",
+        "bulletOfflinePatterns": "• offline data vzorů",
+        "confirmPrefix": "Pro potvrzení napište níže ",
+        "confirmSuffix": ":",
+        "confirmAction": "Resetovat data",
+        "resetting": "Resetování dat hosta...",
+        "successTitle": "Úspěch",
+        "successMessage": "Data hosta byla zcela resetována.",
+        "failedTitle": "Resetování selhalo",
+        "failedMessage": "Resetování dat hosta selhalo: {{message}}. Zkuste to prosím znovu."
+      },
+      "deleteModal": {
+        "title": "Smazat účet?",
+        "recoveryPrefix": "Váš účet vstoupí do ",
+        "recoveryBold": "30denní lhůty pro obnovení po smazání",
+        "recoverySuffix": ". Přihlaste se během této lhůty znovu pro zrušení smazání.",
+        "bulletBalances": "• Zůstatky Stitch Coinů a AI kreditů",
+        "bulletUnlocks": "• Všechna odemknutí vzorů",
+        "bulletArtwork": "• AI díla a vlastní vzory",
+        "bulletProgress": "• Synchronizovaný postup a oblíbené položky",
+        "consequencesPrefix": "Na konci lhůty pro obnovení budou tyto položky smazány nebo propadnou bez nároku na vrácení či převod. Publikované komunitní vzory budou staženy z katalogu, autorství se změní na ",
+        "consequencesBold": "Smazaný tvůrce",
+        "consequencesSuffix": " a vaše uživatelské jméno zůstane trvale rezervováno.",
+        "membershipWarning": "Vaše prémiové členství může po smazání účtu nadále účtovat platby. Smazání jej nezruší; pokud si přejete platby zastavit, spravujte jej před pokračováním samostatně.",
+        "manageAppleSubscription": "Spravovat předplatné Apple",
+        "continueAction": "Pokračovat",
+        "confirmTitle": "Potvrdit smazání",
+        "confirmPrefix": "Chcete-li potvrdit smazání svého účtu, zadejte do pole níže ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": " :",
+        "submitting": "Odesílání žádosti o smazání...",
+        "backAction": "Zpět",
+        "confirmAction": "Potvrdit"
+      },
+      "reauthModal": {
+        "title": "Ověřte svou totožnost",
+        "description": "Z bezpečnostních důvodů se ověřte pomocí metody přihlášení, která je již propojena s tímto účtem. Smazání bude po ověření automaticky pokračovat.",
+        "loading": "Načítání metod přihlášení...",
+        "codeSentMessage": "Zadejte 6místný kód odeslaný na {{email}}.",
+        "verifyAndDelete": "Ověřit a smazat",
+        "emailButton": "E-mail {{email}}",
+        "continueWithProvider": "Pokračovat přes {{provider}}",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "Není k dispozici žádná propojená metoda přihlášení. Před dalším pokusem o smazání kontaktujte podporu.",
+        "loadFailed": "Nepodařilo se načíst vaše propojené metody přihlášení. Zkontrolujte připojení a zkuste to znovu.",
+        "retryFailed": "Vaše totožnost byla ověřena, ale žádost o smazání nebyla odeslána. Zavřete toto dialogové okno a zkuste smazání znovu.",
+        "emailMissing": "Tato propojená metoda e-mailu nemá žádnou adresu. Vyberte jinou metodu.",
+        "genericFailure": "Opětovné ověření selhalo. Zkontrolujte připojení a zkuste to znovu."
+      },
+      "actions": {
+        "cancel": "Zrušit",
+        "retry": "Zkusit znovu"
+      },
+      "common": {
+        "unavailable": "Nedostupné"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "Katalog",
+        "stitch": "Vyšívání",
+        "create": "Tvořit",
+        "profile": "Profil",
+        "settings": "Nastavení"
+      }
+    }
+  },
   "de": {
     "catalog": {
       "common": {

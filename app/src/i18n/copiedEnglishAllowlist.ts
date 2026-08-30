@@ -138,4 +138,7 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'ca:settings:links.openFailedGenericTitle': '"Error" is spelled identically in Catalan.',
   'ca:settings:session.idLabel': '"ID" is used identically in Catalan tech/UI copy.',
   'ca:settings:tutorial.sectionTitle': '"Tutorial" is spelled identically in Catalan.',
+  'cs:play:home.idLabel': '"ID" is used identically in Czech tech/UI copy.',
+  'cs:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
+  'cs:settings:session.idLabel': '"ID" is used identically in Czech tech/UI copy.',
 };

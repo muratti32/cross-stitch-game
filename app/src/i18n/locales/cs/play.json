@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Vyšívací stůl",
+    "subtitle": "Pokračujte tam, kde jste skončili, nebo se vraťte k nedávnému tvoření.",
+    "loading": "Načítání vašich stehů...",
+    "empty": {
+      "title": "Žádné rozpracované vzory",
+      "body": "Váš vyšívací rám je momentálně prázdný. Prohlédněte si katalog vzorů a najděte si něco krásného k vyšití!",
+      "action": "Procházet katalog"
+    },
+    "unknownPattern": "Neznámý vzor",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Vzor {{id}}",
+    "deleteSessionAccessibilityLabel": "Smazat relaci",
+    "viewFinishedAccessibilityLabel": "Zobrazit dokončené dílo",
+    "resumeAccessibilityLabel": "Pokračovat ve vyšívání",
+    "status": {
+      "ready": "Připraveno",
+      "done": "Hotovo",
+      "active": "Aktivní",
+      "preparing": "Příprava",
+      "failed": "Nezdařilo se"
+    },
+    "deleteConfirm": {
+      "title": "Smazat postup",
+      "message": "Opravdu chcete smazat svůj postup u vzoru „{{title}}“? Tuto akci nelze vzít zpět.",
+      "cancel": "Zrušit",
+      "confirm": "Smazat"
+    },
+    "preparingCard": {
+      "discardTitle": "Zahodit relaci",
+      "cancelTitle": "Zrušit stahování",
+      "discardMessage": "Opravdu chcete zahodit tuto neúspěšnou relaci?",
+      "cancelMessage": "Opravdu chcete zrušit stahování tohoto vzoru?",
+      "keep": "Ponechat",
+      "discard": "Zahodit",
+      "cancel": "Zrušit"
+    }
+  },
+  "loading": {
+    "text": "Otevírání relace a příprava plátna..."
+  },
+  "error": {
+    "title": "Načtení relace se nezdařilo",
+    "fallbackMessage": "Vaši vyšívací relaci se nepodařilo načíst.",
+    "backButton": "Přejít zpět",
+    "tableButton": "Přejít ke stolu"
+  },
+  "header": {
+    "backButton": "← Zpět",
+    "tableButton": "← Stůl",
+    "defaultTitle": "Relace vyšívání",
+    "progress": "{{completed}} / {{total}} políček ({{percent}} % hotovo)",
+    "resumeTutorialAccessibilityLabel": "Pokračovat v průvodci"
+  },
+  "banners": {
+    "patternRemoved": "Tento vzor byl odstraněn moderátory a již není dostupný. Klepnutím odejdete.",
+    "syncConflict": "Synchronizováno s jiným zařízením — některá políčka byla aktualizována. Klepnutím zavřete."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Najít další zbývající políčko aktivní barvy bavlnky",
+    "undoAccessibilityLabel": "Vrátit poslední steh"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Barva {{number}}: DMC {{dmcCode}}, zbývá {{count}} steh",
+    "chipAccessibilityLabel_other": "Barva {{number}}: DMC {{dmcCode}}, zbývá {{count}} stehů",
+    "done": "Hotovo",
+    "remaining_one": "zbývá {{count}}",
+    "remaining_other": "zbývá {{count}}"
+  },
+  "celebration": {
+    "title": "Překrásně vyšito!",
+    "subtitle": "Dokončili jste každičký steh na tomto plátně.",
+    "stitchesLabel_one": "Steh",
+    "stitchesLabel_other": "Stehů",
+    "colorsLabel_one": "Barva",
+    "colorsLabel_other": "Barev",
+    "replayButton": "Vyšít znovu",
+    "catalogButton": "Zpět do katalogu"
+  }
+}
