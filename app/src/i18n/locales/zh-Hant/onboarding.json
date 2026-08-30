@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "歡迎來到 STITCH WISH",
+    "title": "選擇顏色，點選對應的格子。",
+    "heroAlt": "溫馨愛心新手圖案預覽",
+    "handedness": {
+      "sectionTitle": "控制項要放在哪一側？",
+      "groupLabel": "控制側",
+      "optionRight": "控制項在右側",
+      "optionLeft": "控制項在左側",
+      "saveErrorText": "無法儲存此選項。",
+      "retry": "重試"
+    },
+    "note": "之後可在「設定」中變更此選項。",
+    "start": "開始刺繡",
+    "starting": "啟動中…",
+    "browse": "瀏覽新手圖案",
+    "signIn": "登入"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "選擇 DMC 321 聖誕紅。",
+      "stitchAction": "點選標示出的對應格子。",
+      "mismatchedTap": "點選標示出的不同格子，點錯不會有任何損失。",
+      "undoAction": "復原該針，然後重新繡上去。",
+      "stitchSweep": "先按住一個對應的格子，再拖曳過標示出的一整排。",
+      "threadColorCompletion": "完成標示出的白色繡線後，再選擇下一個顏色。"
+    },
+    "hints": {
+      "anchoredZoom": "以雙指捏合縮放，手指下方的格子會保持在原位。",
+      "panVsSweep": "拖曳可平移布料；從對應的格子開始拖曳則會連續刺繡。",
+      "edgeAutoPan": "持續在邊緣附近拖曳，布料會跟著你的手指移動。",
+      "remainingCellLocator": "使用定位功能，找出此繡線顏色剩下的下一個格子。"
+    },
+    "skip": "暫時跳過",
+    "skipAccessibilityLabel": "暫時跳過教學",
+    "dismiss": "知道了",
+    "dismissAccessibilityLabel": "關閉提示"
+  },
+  "recap": {
+    "title": "你已經學會了",
+    "lines": {
+      "matchNumbers": "配對數字以放置每一針。",
+      "dragSweep": "拖曳過對應的格子即可連續刺繡。",
+      "pinchZoom": "需要看得更清楚時，捏合即可縮放。",
+      "undoLocator": "復原與定位功能永遠免費。"
+    },
+    "continue": "繼續刺繡",
+    "browsePatterns": "瀏覽圖案"
+  }
+}

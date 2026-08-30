@@ -115,4 +115,6 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'zh-Hans:profile:home.walletCard.aiCreditsLabel': 'AI Credit is the branded in-game currency, kept English per the Simplified Chinese pack convention.',
   'zh-Hans:settings:session.idLabel': '"ID" is used identically in Simplified Chinese tech/UI copy.',
   'zh-Hans:shell:tabs.stitch': '"Stitch" is the branded core-activity name, kept English per the Simplified Chinese pack convention.',
+  'zh-Hant:profile:publicProfile.usernamePlaceholder': 'Username placeholder is an illustrative English handle example, kept as-is per the Traditional Chinese pack convention.',
+  'zh-Hant:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
 };

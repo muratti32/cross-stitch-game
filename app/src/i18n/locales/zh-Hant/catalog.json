@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← 返回",
+    "searchPlaceholder": "搜尋圖案、創作者、標籤…",
+    "offlineBanner": "離線中 — 目錄可能不是最新的",
+    "sectionError": {
+      "title": "載入失敗",
+      "retry": "重試"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} 種顏色",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} 欄",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "英文"
+    },
+    "accessibilityLabel": "以 {{language}} 撰寫"
+  },
+  "index": {
+    "subtitle": "一針一線，織出屬於你的溫馨世界。",
+    "searchBar": {
+      "accessibilityLabel": "搜尋圖案目錄"
+    },
+    "sections": {
+      "starterPatterns": "新手圖案",
+      "staffPicks": "編輯精選",
+      "categories": "分類",
+      "newPatterns": "最新圖案"
+    },
+    "staffPicks": {
+      "emptyTitle": "目前尚無編輯精選",
+      "emptyBody": "我們精選的溫馨設計即將在這裡呈現。",
+      "errorBody": "無法連線至目錄，目前也沒有快取資料。"
+    },
+    "categories": {
+      "count": "{{count}} 個圖案",
+      "errorBody": "無法連線至目錄，目前也沒有快取資料。"
+    },
+    "newPatterns": {
+      "emptyTitle": "新圖案製作中",
+      "emptyBody": "新成員即將登場！",
+      "errorBody": "無法連線至目錄，目前也沒有快取資料。",
+      "showMore": "顯示更多",
+      "loading": "載入中…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "瀏覽",
+    "error": {
+      "body": "無法連線至此目錄頁面，目前也沒有快取資料。"
+    },
+    "empty": {
+      "title": "這裡還沒有內容",
+      "body": "目前沒有符合此篩選條件的圖案。新設計會定期上架，稍後再回來看看吧。"
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "目錄搜尋輸入框",
+    "inactive": {
+      "title": "搜尋目錄",
+      "body": "輸入至少兩個字元，即可依標題、創作者或標籤搜尋圖案。"
+    },
+    "error": {
+      "title": "搜尋需要網路連線",
+      "body": "離線時無法搜尋目錄，不過仍可在「目錄」分頁瀏覽已快取的頁面。"
+    },
+    "noResults": {
+      "title": "沒有符合的結果",
+      "body": "目錄中目前沒有符合「{{query}}」的內容。"
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "以訪客身分遊玩中",
+    "body": "以訪客身分遊玩時，Stitch Coin 與進度僅儲存在此裝置上。若應用程式被移除，訪客帳本與進度可能無法復原。登入帳號可保護你的進度。"
+  },
+  "detail": {
+    "noDescription": "尚無描述。",
+    "specs": {
+      "dimensions": "尺寸",
+      "totalStitches": "總針數",
+      "colors": "顏色",
+      "category": "分類"
+    },
+    "threadsSuffix": "{{count}} 種繡線",
+    "palette": {
+      "title": "所需繡線",
+      "loading": "正在讀取繡線配色…",
+      "loadFailed": "配色載入失敗：{{error}}",
+      "retry": "重新載入"
+    },
+    "actions": {
+      "startStitching": "開始刺繡",
+      "starting": "啟動中…",
+      "preparing": "準備中…"
+    },
+    "loadFailedGeneric": "圖案檔案解析失敗。",
+    "sessionCreateFailed": "建立刺繡工作階段失敗，請再試一次。",
+    "unavailable": {
+      "title": "圖案無法使用",
+      "body": "此圖案載入失敗，可能已被移除，或你目前處於離線狀態。",
+      "goBack": "返回"
+    },
+    "byCreator": "來自 {{creatorName}}",
+    "byCreatorWithUsername": "來自 {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "封鎖創作者",
+      "message": "確定要封鎖 {{creatorName}} 嗎？此為私人且可復原的操作，會將其圖案自搜尋與瀏覽中隱藏。這不會檢舉該創作者，也不會中斷你目前的刺繡工作階段。",
+      "cancel": "取消",
+      "confirm": "封鎖",
+      "blockedTitle": "已封鎖",
+      "blockedMessage": "已封鎖 {{creatorName}}。",
+      "errorTitle": "錯誤",
+      "failedGeneric": "封鎖創作者失敗。"
+    },
+    "likeFailedGeneric": "更新按讚狀態失敗",
+    "connectToPlay": {
+      "title": "連線後開始遊玩",
+      "body": "開始製作目錄圖案需要網路連線以準備你的工作階段。新手圖案即使離線也能立即遊玩。"
+    },
+    "insufficientCoins": {
+      "title": "Stitch Coin 不足",
+      "body": "此圖案需要 {{price}} 枚 Stitch Coin，但你只有 {{balance}} 枚。\n\n還差：{{shortfall}} 枚 Stitch Coin。\n\n完成其他圖案即可賺取 Stitch Coin！「首次完成」獎勵已開放領取。",
+      "getCoins": "取得 Stitch Coin",
+      "findPatterns": "尋找可繡的圖案",
+      "back": "返回"
+    },
+    "unlockFailedGeneric": "解鎖失敗，請檢查網路連線後再試一次。",
+    "preparationFailedGeneric": "無法開始準備作業，請檢查網路連線後再試一次。",
+    "price": {
+      "label": "價格"
+    },
+    "balance": {
+      "label": "你的餘額",
+      "loading": "…"
+    },
+    "unlockButton": "使用 {{price}} 枚 Coin 解鎖",
+    "communityReport": {
+      "button": "檢舉此圖案",
+      "title": "檢舉 {{patternTitle}}",
+      "body": "請選擇最符合此問題的檢舉原因。檢舉不會自動隱藏或變更圖案。",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "不當或不安全內容",
+        "copyright_or_publication_rights": "版權或發表權問題",
+        "duplicate_or_spam": "重複或垃圾內容",
+        "misleading_title_or_tags": "誤導性標題或標籤",
+        "other": "其他"
+      },
+      "explanationLabel": "證據或說明 {{requirement}}",
+      "explanationRequired": "（必填）",
+      "explanationOptional": "（選填）",
+      "explanationPlaceholder": "分享詳細資訊，協助審核人員評估此圖案。",
+      "characterCount": "{{count}}/2000",
+      "cancel": "取消",
+      "submit": "送出檢舉",
+      "submitFailedGeneric": "無法送出你的檢舉，請檢查網路連線後再試一次。",
+      "receivedTitle": "已收到檢舉",
+      "alreadyReceivedTitle": "已收到過此檢舉",
+      "receivedBody": "審核人員現在可以審查此圖案。檢舉不會自動變更其可用狀態。",
+      "alreadyReceivedBody": "你先前提交的檢舉已在審核流程中。",
+      "signInRequired": {
+        "title": "登入後即可檢舉",
+        "message": "社群檢舉功能需要註冊帳號。目前尚未送出任何內容。",
+        "cancel": "取消",
+        "signIn": "登入"
+      },
+      "validation": {
+        "chooseReason": "請選擇一個檢舉原因。",
+        "explainRequired": "請說明你為何檢舉此圖案。",
+        "tooLong": "說明文字不得超過 2,000 個字元。",
+        "needsContent": "說明文字必須包含字母或數字。"
+      }
+    }
+  }
+}

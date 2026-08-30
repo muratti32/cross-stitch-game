@@ -2309,6 +2309,9 @@ describe('Stitch Wish backend integration', () => {
       const categoriesZhHans = await request(httpServer)
         .get(`/v1/catalog/categories?locale=zh-Hans`)
         .expect(200);
+      const categoriesZhHant = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=zh-Hant`)
+        .expect(200);
       const tagsTr = await request(httpServer)
         .get(`/v1/catalog/tags?locale=tr`)
         .expect(200);
@@ -2338,6 +2341,8 @@ describe('Stitch Wish backend integration', () => {
         .toBe('Животные');
       expect((categoriesZhHans.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
         .toBe('动物');
+      expect((categoriesZhHant.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('動物');
       expect((tagsTr.body as { code: string; label: string }[]).find((item) => item.code === tagCode)?.label)
         .toBe(`Tag Türkçe ${suffix}`);
     });

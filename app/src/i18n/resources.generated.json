@@ -19682,5 +19682,1411 @@
         "settings": "设置"
       }
     }
+  },
+  "zh-Hant": {
+    "catalog": {
+      "common": {
+        "back": "← 返回",
+        "searchPlaceholder": "搜尋圖案、創作者、標籤…",
+        "offlineBanner": "離線中 — 目錄可能不是最新的",
+        "sectionError": {
+          "title": "載入失敗",
+          "retry": "重試"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} 種顏色",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} 欄",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "英文"
+        },
+        "accessibilityLabel": "以 {{language}} 撰寫"
+      },
+      "index": {
+        "subtitle": "一針一線，織出屬於你的溫馨世界。",
+        "searchBar": {
+          "accessibilityLabel": "搜尋圖案目錄"
+        },
+        "sections": {
+          "starterPatterns": "新手圖案",
+          "staffPicks": "編輯精選",
+          "categories": "分類",
+          "newPatterns": "最新圖案"
+        },
+        "staffPicks": {
+          "emptyTitle": "目前尚無編輯精選",
+          "emptyBody": "我們精選的溫馨設計即將在這裡呈現。",
+          "errorBody": "無法連線至目錄，目前也沒有快取資料。"
+        },
+        "categories": {
+          "count": "{{count}} 個圖案",
+          "errorBody": "無法連線至目錄，目前也沒有快取資料。"
+        },
+        "newPatterns": {
+          "emptyTitle": "新圖案製作中",
+          "emptyBody": "新成員即將登場！",
+          "errorBody": "無法連線至目錄，目前也沒有快取資料。",
+          "showMore": "顯示更多",
+          "loading": "載入中…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "瀏覽",
+        "error": {
+          "body": "無法連線至此目錄頁面，目前也沒有快取資料。"
+        },
+        "empty": {
+          "title": "這裡還沒有內容",
+          "body": "目前沒有符合此篩選條件的圖案。新設計會定期上架，稍後再回來看看吧。"
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "目錄搜尋輸入框",
+        "inactive": {
+          "title": "搜尋目錄",
+          "body": "輸入至少兩個字元，即可依標題、創作者或標籤搜尋圖案。"
+        },
+        "error": {
+          "title": "搜尋需要網路連線",
+          "body": "離線時無法搜尋目錄，不過仍可在「目錄」分頁瀏覽已快取的頁面。"
+        },
+        "noResults": {
+          "title": "沒有符合的結果",
+          "body": "目錄中目前沒有符合「{{query}}」的內容。"
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "以訪客身分遊玩中",
+        "body": "以訪客身分遊玩時，Stitch Coin 與進度僅儲存在此裝置上。若應用程式被移除，訪客帳本與進度可能無法復原。登入帳號可保護你的進度。"
+      },
+      "detail": {
+        "noDescription": "尚無描述。",
+        "specs": {
+          "dimensions": "尺寸",
+          "totalStitches": "總針數",
+          "colors": "顏色",
+          "category": "分類"
+        },
+        "threadsSuffix": "{{count}} 種繡線",
+        "palette": {
+          "title": "所需繡線",
+          "loading": "正在讀取繡線配色…",
+          "loadFailed": "配色載入失敗：{{error}}",
+          "retry": "重新載入"
+        },
+        "actions": {
+          "startStitching": "開始刺繡",
+          "starting": "啟動中…",
+          "preparing": "準備中…"
+        },
+        "loadFailedGeneric": "圖案檔案解析失敗。",
+        "sessionCreateFailed": "建立刺繡工作階段失敗，請再試一次。",
+        "unavailable": {
+          "title": "圖案無法使用",
+          "body": "此圖案載入失敗，可能已被移除，或你目前處於離線狀態。",
+          "goBack": "返回"
+        },
+        "byCreator": "來自 {{creatorName}}",
+        "byCreatorWithUsername": "來自 {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "封鎖創作者",
+          "message": "確定要封鎖 {{creatorName}} 嗎？此為私人且可復原的操作，會將其圖案自搜尋與瀏覽中隱藏。這不會檢舉該創作者，也不會中斷你目前的刺繡工作階段。",
+          "cancel": "取消",
+          "confirm": "封鎖",
+          "blockedTitle": "已封鎖",
+          "blockedMessage": "已封鎖 {{creatorName}}。",
+          "errorTitle": "錯誤",
+          "failedGeneric": "封鎖創作者失敗。"
+        },
+        "likeFailedGeneric": "更新按讚狀態失敗",
+        "connectToPlay": {
+          "title": "連線後開始遊玩",
+          "body": "開始製作目錄圖案需要網路連線以準備你的工作階段。新手圖案即使離線也能立即遊玩。"
+        },
+        "insufficientCoins": {
+          "title": "Stitch Coin 不足",
+          "body": "此圖案需要 {{price}} 枚 Stitch Coin，但你只有 {{balance}} 枚。\n\n還差：{{shortfall}} 枚 Stitch Coin。\n\n完成其他圖案即可賺取 Stitch Coin！「首次完成」獎勵已開放領取。",
+          "getCoins": "取得 Stitch Coin",
+          "findPatterns": "尋找可繡的圖案",
+          "back": "返回"
+        },
+        "unlockFailedGeneric": "解鎖失敗，請檢查網路連線後再試一次。",
+        "preparationFailedGeneric": "無法開始準備作業，請檢查網路連線後再試一次。",
+        "price": {
+          "label": "價格"
+        },
+        "balance": {
+          "label": "你的餘額",
+          "loading": "…"
+        },
+        "unlockButton": "使用 {{price}} 枚 Coin 解鎖",
+        "communityReport": {
+          "button": "檢舉此圖案",
+          "title": "檢舉 {{patternTitle}}",
+          "body": "請選擇最符合此問題的檢舉原因。檢舉不會自動隱藏或變更圖案。",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "不當或不安全內容",
+            "copyright_or_publication_rights": "版權或發表權問題",
+            "duplicate_or_spam": "重複或垃圾內容",
+            "misleading_title_or_tags": "誤導性標題或標籤",
+            "other": "其他"
+          },
+          "explanationLabel": "證據或說明 {{requirement}}",
+          "explanationRequired": "（必填）",
+          "explanationOptional": "（選填）",
+          "explanationPlaceholder": "分享詳細資訊，協助審核人員評估此圖案。",
+          "characterCount": "{{count}}/2000",
+          "cancel": "取消",
+          "submit": "送出檢舉",
+          "submitFailedGeneric": "無法送出你的檢舉，請檢查網路連線後再試一次。",
+          "receivedTitle": "已收到檢舉",
+          "alreadyReceivedTitle": "已收到過此檢舉",
+          "receivedBody": "審核人員現在可以審查此圖案。檢舉不會自動變更其可用狀態。",
+          "alreadyReceivedBody": "你先前提交的檢舉已在審核流程中。",
+          "signInRequired": {
+            "title": "登入後即可檢舉",
+            "message": "社群檢舉功能需要註冊帳號。目前尚未送出任何內容。",
+            "cancel": "取消",
+            "signIn": "登入"
+          },
+          "validation": {
+            "chooseReason": "請選擇一個檢舉原因。",
+            "explainRequired": "請說明你為何檢舉此圖案。",
+            "tooLong": "說明文字不得超過 2,000 個字元。",
+            "needsContent": "說明文字必須包含字母或數字。"
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "返回",
+        "title": "商城",
+        "subtitle": "會員與單次儲值"
+      },
+      "signInReturn": {
+        "notice": "你已登入。{{label}} 仍在選取中，確認後點選「購買」即可完成。"
+      },
+      "premiumHero": {
+        "eyebrow": "PREMIUM 會員",
+        "title": "創作更多，每天領一點小獎勵。",
+        "body": "每個付費週期提供 AI 額度、Premium 主題，以及每日 Stitch Coin 領取。",
+        "benefitAiCredits": "AI 額度",
+        "benefitDailyCoins": "每日金幣",
+        "benefitThemes": "主題",
+        "statusNoActiveMembership": "目前無有效會員資格",
+        "statusBrowseAsGuest": "以訪客玩家瀏覽方案",
+        "periodEndsLabel": "本期結束時間",
+        "periodRenewsLabel": "續訂時間",
+        "lifecycleActive": "使用中"
+      },
+      "membershipActions": {
+        "title": "有效的 Premium 會員資格",
+        "body": "每日獎勵請至個人檔案查看，主題請至設定 › 外觀查看。",
+        "scheduledChangeNotice": "將於 {{date}} 變更為 {{plan}}",
+        "manageSubscription": "管理訂閱",
+        "manageSubscriptionFailedTitle": "無法開啟訂閱管理",
+        "manageSubscriptionFailedBody": "請從你的裝置商店帳號重試。"
+      },
+      "pending": {
+        "title": "購買核對中",
+        "verifyingTitle": "正在驗證購買",
+        "premiumChangeAccepted": "商店已接受變更為 {{label}} 的請求。",
+        "premiumResponseReceived": "已收到 {{label}} 的商店回應。",
+        "premiumDeferredSuffix": "此變更需經遊戲後端驗證後才會排定，並於本期結束時生效。",
+        "premiumSuffix": "Premium 需經遊戲後端驗證後才會啟用。",
+        "doNotPurchasePlanAgain": "請勿重複購買此方案。",
+        "coinPackBody": "已收到商店回應。Stitch Coin 需等遊戲後端發放對應的商城帳本核發後才會更新。請勿重複購買此組合包。",
+        "aiCreditPackBody": "已收到商店回應。AI 額度需等遊戲後端發放對應的商城帳本核發後才會更新。請勿重複購買此組合包。",
+        "refreshStatus": "重新整理狀態",
+        "retryReconciliation": "重試核對"
+      },
+      "store": {
+        "loadingPrices": "正在載入目前商店價格…",
+        "unavailableTitle": "商店暫時無法使用",
+        "unavailableBody": "你的錢包與會員資訊仍然可以查看。",
+        "retry": "重試"
+      },
+      "plans": {
+        "choosePremiumPlan": "選擇 Premium 方案",
+        "yourPremiumPlan": "你的 Premium 方案",
+        "currentPlan": "目前方案",
+        "upgrade": "升級",
+        "planChange": "方案變更",
+        "bestValue": "最超值",
+        "billedEvery": "每 {{period}} 收費一次",
+        "chooseLabel": "選擇 {{label}}",
+        "freeTrial": "前 {{offer}} 免費，之後 {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "單次組合包",
+        "stitchCoinPacksTitle": "Stitch Coin 組合包",
+        "aiCreditPacksTitle": "AI 額度組合包",
+        "coinsNoun": "枚金幣",
+        "creditsNoun": "點額度",
+        "fromPrice": "最低 {{price}} 起"
+      },
+      "restore": {
+        "restorePurchases": "還原購買項目",
+        "restoreGuestPremium": "還原訪客 Premium",
+        "requestedTitle": "已送出還原請求",
+        "requestedBody": "商店的 Webhook 核對完成後，已驗證的 Premium 權限就會顯示。Stitch Coin 與 AI 額度組合包一律無法還原。"
+      },
+      "sheet": {
+        "currentPricesSubtitle": "來自應用程式商店的目前價格",
+        "closeAccessibilityLabel": "關閉商品面板",
+        "closeButtonAccessibilityLabel": "關閉",
+        "selectedBeforeSignIn": "登入前已選取",
+        "buy": "購買"
+      },
+      "confirmation": {
+        "cancel": "取消",
+        "confirmLabel": "確認 {{label}}",
+        "confirmPremiumTitle": "確認購買 Premium",
+        "introductoryOffer": "你的商店回報此優惠：{{offer}}。",
+        "premiumAppearsAfterVerification": "Premium 需經遊戲後端驗證商店交易後才會顯示。",
+        "confirmPremiumUpgradeTitle": "確認升級 Premium",
+        "confirmPremiumPlanChangeTitle": "確認變更 Premium 方案",
+        "currentPlanLabel": "目前方案：{{label}}",
+        "upgradeToLabel": "升級為 {{label}} · {{offer}}",
+        "changeToLabel": "變更為 {{label}} · {{offer}}",
+        "upgradeBody": "此次升級的實際扣款金額與生效日期由 App Store 決定。Premium 需經遊戲後端驗證後才會反映為 {{label}}。",
+        "planChangeBody": "App Store 會將此變更延後至本期結束後生效：在此之前 {{currentLabel}} 會持續運作，{{targetLabel}} 則自變更日起開始計費。你可從「管理訂閱」取消此變更。",
+        "confirmUpgrade": "確認升級",
+        "confirmPlanChange": "確認方案變更",
+        "confirmStitchCoinTitle": "確認購買 Stitch Coin",
+        "confirmAiCreditTitle": "確認購買 AI 額度",
+        "balanceChangesAfterVerificationCoin": "你的餘額需經遊戲後端驗證商店交易並記錄對應的商城帳本核發後才會變更。",
+        "balanceChangesAfterVerificationAiCredit": "你的餘額需經遊戲後端驗證商店交易並記錄對應的商城帳本核發後才會變更。不需擁有 Premium 會員資格。"
+      },
+      "disclosure": {
+        "subscriptionTerms": "款項將在確認時向你的 {{store}} 帳號收取。{{label}} Premium 會以 {{offer}} 自動續訂，除非在本期結束前至少 24 小時關閉自動續訂。購買訂閱時，免費試用中未使用的部分將自動失效。你可隨時從 {{store}} 帳號取消訂閱。",
+        "privacyPolicy": "隱私權政策",
+        "termsOfService": "服務條款",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "無法開啟連結：{{url}}"
+      },
+      "supportReference": {
+        "label": "支援參考碼：{{reference}}",
+        "copyAccessibilityLabel": "複製支援參考碼 {{reference}}",
+        "copyAccessibilityHint": "將支援參考碼複製到剪貼簿",
+        "copied": "已複製",
+        "copyFailedTitle": "複製失敗",
+        "copyFailedBody": "無法複製支援參考碼，請手動選取文字複製。"
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "訪客購買 Stitch Coin 僅限 iOS 使用。",
+        "guestIosOnlyGeneric": "訪客購買功能僅限 iOS 使用。",
+        "purchaseFailedTitle": "購買失敗",
+        "premiumVerificationNotYet": "遊戲後端目前無法驗證此次購買。請重試核對，切勿重複購買。",
+        "premiumVerificationFailedRetry": "遊戲後端目前尚無法驗證此次購買。請重試核對，切勿重複購買。",
+        "premiumGrantRefreshFailed": "Premium 已驗證，但無法重新整理會員與 AI 額度狀態，請重試核對。",
+        "premiumReconciliationUnreachable": "購買核對時無法連線至遊戲後端。請重試核對，切勿重複購買。",
+        "coinPackVerificationMismatch": "商店交易與此金幣組合包不符。請重試驗證或聯絡支援，切勿重複購買。",
+        "coinPackGrantUnavailable": "此次購買已驗證，但 Stitch Coin 核發目前無法使用。請重試核對，切勿重複購買。",
+        "coinPackBalanceRefreshFailed": "金幣核發已驗證，但目前的 Stitch Coin 餘額無法重新整理，請重試核對。",
+        "coinPackVerificationFailedRetry": "遊戲後端目前尚無法驗證此金幣組合包。請重試核對，切勿重複購買。",
+        "coinPackReconciliationUnreachable": "金幣組合包核對時無法連線至遊戲後端。請重試核對，切勿重複購買。",
+        "aiCreditPackVerificationMismatch": "商店交易與此 AI 額度組合包不符。請重試驗證或聯絡支援，切勿重複購買。",
+        "aiCreditPackGrantUnavailable": "此次購買已驗證，但 AI 額度核發目前無法使用。請重試核對，切勿重複購買。",
+        "aiCreditPackBalanceRefreshFailed": "AI 額度核發已驗證，但目前的餘額無法重新整理，請重試核對。",
+        "aiCreditPackVerificationFailedRetry": "遊戲後端目前尚無法驗證此 AI 額度組合包。請重試核對，切勿重複購買。",
+        "aiCreditPackReconciliationUnreachable": "AI 額度組合包核對時無法連線至遊戲後端。請重試核對，切勿重複購買。",
+        "reconciliationStillUnavailable": "遊戲後端仍無法使用，請稍後再重試核對。",
+        "storeTemporarilyUnavailable": "商店暫時無法使用，請幾分鐘後再試。",
+        "purchasesNotAllowed": "此裝置不允許購買，請檢查你的商店帳號或家長監護設定。",
+        "itemNotAvailable": "此項目目前無法購買，請選擇其他項目或稍後再試。",
+        "alreadyOwned": "你已擁有此購買項目，請使用「還原購買項目」重新整理你的權限。",
+        "couldNotConnectToStore": "無法連線至商店，請檢查你的網路連線後再試一次。",
+        "paymentPendingApproval": "你的付款正在等待核准，交易完成後將會顯示購買結果。",
+        "testPurchaseDeclined": "測試購買已遭拒絕，未扣取任何款項。請至設定選擇其他測試商店結果後再試一次。",
+        "genericPurchaseFailure": "無法完成你的購買，未扣取任何款項，請再試一次。"
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "仍在驗證中",
+        "premiumPending": "驗證仍在進行中，遊戲後端確認後 Premium 即會啟用。",
+        "premiumPlanChangePending": "驗證仍在進行中，遊戲後端確認後即會排定你的方案變更。",
+        "coinPackPending": "驗證仍在進行中，完成後即會更新你的 Stitch Coin 餘額。",
+        "aiCreditPackPending": "驗證仍在進行中，完成後即會更新你的 AI 額度餘額。"
+      },
+      "success": {
+        "purchaseReceivedTitle": "已收到購買請求",
+        "storeAcceptedPlanChange": "商店已接受變更為 {{label}} 的請求，正在確認生效時間。",
+        "storeAcceptedPurchase": "商店已接受 {{label}}，正在驗證你的購買。",
+        "premiumChanges": "Premium 將變更為 {{label}}{{effectiveOn}}。",
+        "effectiveOnDate": "於 {{date}}",
+        "planChangeScheduledTitle": "已排定方案變更",
+        "planChangeScheduledBody": "你的 Premium 會員資格會維持目前方案，直到變更為 {{label}}{{effectiveOn}}。你可從「管理訂閱」取消此變更。",
+        "premiumIsActiveTitle": "Premium 已啟用",
+        "premiumVerifiedAndActive": "{{label}} Premium 已驗證並啟用。",
+        "premiumNowActiveNoBilling": "{{label}} Premium 現已啟用。",
+        "premiumNowActiveBilled": "{{label}} Premium 現已啟用，每 {{period}} 收費一次。",
+        "coinPackGrantedTitle": "Stitch Coin 已核發",
+        "coinPackGrantVerified": "{{label}} 核發已驗證，Stitch Coin 餘額：{{balance}}。",
+        "coinPackAddedToBalance": "已將 {{quantity}} 枚 Stitch Coin 加入你的餘額。",
+        "aiCreditPackGrantedTitle": "AI 額度已核發",
+        "aiCreditPackGrantVerified": "{{label}} 核發已驗證，AI 額度餘額：{{balance}}。",
+        "aiCreditPackAddedToBalance": "已將 {{quantity}} 點 AI 額度加入你的餘額。"
+      },
+      "products": {
+        "premiumAnnual": "年繳",
+        "premiumMonthly": "月繳",
+        "premiumWeekly": "週繳",
+        "stitchCoinPack_one": "{{formattedCount}} 枚 Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} 枚 Stitch Coin",
+        "aiCreditPack_one": "{{formattedCount}} 點 AI 額度",
+        "aiCreditPack_other": "{{formattedCount}} 點 AI 額度",
+        "billedEveryOffer": "每 {{period}} 收費 {{price}}",
+        "creditAllowancePaidPeriod": "每個付費週期 {{credits}} 點額度",
+        "creditAllowancePaidNoun": "每 {{period}} {{credits}} 點額度"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "以訪客身分購買",
+        "commerceBody": "你可以不必註冊即可購買。Premium 會員資格可從商店還原，但若此安裝遺失，Stitch Coin、AI 額度與私人訪客內容將無法復原。註冊帳號可保護這些資料，且不會中斷你以訪客身分遊玩。",
+        "continueAsGuest": "以訪客身分繼續",
+        "signInInstead": "改為登入",
+        "closeAccessibilityLabel": "關閉"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "知道了",
+        "successButton": "太好了",
+        "failedButton": "關閉",
+        "infoButton": "知道了",
+        "closeAccessibilityLabel": "關閉"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "返回",
+        "cancel": "取消",
+        "duplicateTitle": "你已有一個名為「{{title}}」的個人圖案，請選擇其他標題。",
+        "cellsCount_one": "格",
+        "cellsCount_other": "格",
+        "colorsCount_one": "種顏色",
+        "colorsCount_other": "種顏色"
+      },
+      "hub": {
+        "title": "創作中心",
+        "subtitle": "將你的靈感化為自訂十字繡圖案。",
+        "opening": "開啟中…",
+        "photoImport": {
+          "title": "相片匯入",
+          "description": "從相簿上傳一張照片，將它轉換成可刺繡的圖案。",
+          "action": "匯入照片"
+        },
+        "aiGenerator": {
+          "title": "AI 生成器",
+          "description": "描述一個溫馨的主題，讓人工智慧為你生成自訂像素設計。",
+          "action": "生成設計"
+        }
+      },
+      "aspects": {
+        "square": "正方形",
+        "portrait_4_3": "直式 4:3",
+        "landscape_4_3": "橫式 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "圖案轉換失敗，請再試一次。",
+          "timeout": "圖案轉換仍在處理中，請稍後再試。",
+          "generic": "無法完成圖案轉換，請再試一次。"
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "需要註冊帳號",
+          "body": "AI 作品及其圖庫僅保存於你的帳號中，屬於私人內容。",
+          "signIn": "登入"
+        },
+        "header": {
+          "title": "AI 生成器",
+          "backAccessibilityLabel": "返回"
+        },
+        "prompt": {
+          "label": "描述你的作品",
+          "placeholder": "夕陽下溫馨的鄉村小屋花園…"
+        },
+        "generate": {
+          "working": "處理中…",
+          "action": "生成 — 消耗 1 點 AI 額度",
+          "errors": {
+            "promptRejected": "此描述未通過審核，請嘗試描述其他內容。",
+            "generic": "無法啟動 AI 生成，請再試一次。"
+          }
+        },
+        "library": {
+          "title": "你的 AI 作品圖庫",
+          "status": {
+            "pending": "等待中",
+            "dispatched": "已派送",
+            "running": "處理中",
+            "delivered": "已完成",
+            "safety_rejected": "安全審核未通過",
+            "failed": "生成失敗",
+            "deleted": "已刪除",
+            "unknown": "無法取得"
+          },
+          "failure": {
+            "safety_rejected": "此作品未通過供應商的安全檢查。",
+            "failed": "此作品無法生成。"
+          },
+          "approve": "核准並轉為圖案",
+          "delete": "刪除",
+          "deleteAccessibilityLabel": "刪除此 AI 作品",
+          "errors": {
+            "loadFailed": "無法載入你的 AI 作品圖庫，請再試一次。"
+          }
+        },
+        "approve": {
+          "modalTitle": "建立個人圖案",
+          "titleLabel": "圖案標題",
+          "titleAccessibilityLabel": "圖案標題",
+          "defaultTitle": "我的 AI 圖案",
+          "placeholder": "我的 AI 圖案",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "取消",
+          "creating": "正在建立圖案…",
+          "create": "建立圖案",
+          "errors": {
+            "generic": "無法建立個人圖案，請再試一次。"
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "需要註冊帳號",
+          "body": "個人圖案歸屬於你的帳號，因此可保持私人並跨裝置使用。",
+          "signIn": "登入或建立帳號",
+          "back": "返回"
+        },
+        "header": {
+          "title": "照片圖案",
+          "subtitle": "先在本機取景，核准後再進行轉換",
+          "backAccessibilityLabel": "返回"
+        },
+        "picker": {
+          "chooseTitle": "選擇照片",
+          "helpText": "完整解析度的本機照片來源會保留在此裝置上，未核准取景前不會進行任何轉換。",
+          "choose": "從相簿選擇",
+          "chooseAnother": "選擇其他照片",
+          "opening": "開啟中…",
+          "errors": {
+            "permissionDenied": "選擇本機照片來源需要相簿存取權限。",
+            "invalidDimensions": "所選照片未回報可用的尺寸資訊。",
+            "generic": "無法開啟相簿，請再試一次。"
+          }
+        },
+        "framing": {
+          "title": "作品取景",
+          "gestureHint": "拖曳以調整位置 · 捏合以縮放",
+          "aspectLabel": "取景比例"
+        },
+        "profile": {
+          "title": "轉換設定檔",
+          "options": {
+            "easy": "簡易",
+            "standard": "標準",
+            "detailed": "精細"
+          },
+          "custom": "自訂",
+          "customMeta": "免費 · 形狀鎖定",
+          "unavailable": "與此取景不相符",
+          "customShortEdgeLabel": "短邊長度",
+          "customColorLimitLabel": "DMC 顏色數量上限",
+          "exceedsLimit": "此自訂數值超過 {{max}} 格的圖案尺寸上限。"
+        },
+        "titleCard": {
+          "label": "圖案標題",
+          "placeholder": "我的照片圖案",
+          "defaultTitle": "我的照片圖案",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · 最多 {{maxColors}} 種 DMC {{colorsUnit}}",
+          "privacyNotice": "核准後僅會上傳取景並縮小後的衍生版本，原始照片仍保留在本機。",
+          "approve": "核准作品並轉換"
+        },
+        "processing": {
+          "preparingFrame": "正在於此裝置準備已核准的取景…",
+          "uploading": "正在僅上傳裁切並縮小後的取景…",
+          "waitingForWorker": "正在等待轉換工作程序…",
+          "buildingGrid": "正在建立刺繡格與 DMC 配色…",
+          "preparingSession": "正在準備個人圖案以供遊玩…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "此設定檔與最終取景已不相符，請選擇「簡易」或降低細節程度。",
+            "generic": "無法轉換此照片，請再試一次。"
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "尚未選取圖案",
+          "noPatternBody": "此畫面必須從你圖庫中既有的個人圖案開啟。",
+          "accountTitle": "需要註冊帳號",
+          "accountBody": "個人圖案歸屬於你的帳號，因此可保持私人並跨裝置使用。",
+          "signIn": "登入或建立帳號",
+          "back": "返回"
+        },
+        "loading": "正在還原編輯草稿…",
+        "load": {
+          "failedTitle": "圖案載入失敗",
+          "retry": "重試",
+          "back": "返回",
+          "errors": {
+            "generic": "無法載入此個人圖案，請再試一次。"
+          }
+        },
+        "header": {
+          "title": "圖案編輯器",
+          "dimensions": "（{{width}}x{{height}}）",
+          "backAccessibilityLabel": "返回"
+        },
+        "toolbar": {
+          "undo": "復原",
+          "redo": "重做"
+        },
+        "mode": {
+          "paint": "上色",
+          "replaceColor": "取代顏色",
+          "replaceStep1": "1. 點選下方圖案中要取代的顏色：",
+          "replaceStep2": "2. 於下方選擇要取代成的目標 DMC 顏色：",
+          "paintSelected": "已選取：DMC {{dmcCode}}（{{name}}）",
+          "paintUnselected": "請先在下方選擇顏色，再點選格子上色。"
+        },
+        "errors": {
+          "pickColorFirst": "請先選擇顏色",
+          "paletteLimit": "此圖案已使用達 {{max}} 種繡線顏色上限。"
+        },
+        "picker": {
+          "title": "DMC 繡線顏色",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "儲存已編輯的圖案",
+          "placeholder": "我編輯的圖案標題",
+          "action": "另存為新圖案",
+          "offlineTitle": "已離線儲存",
+          "offlineBody": "你編輯的圖案已儲存於此裝置，恢復連線後將同步至你的帳號。",
+          "errors": {
+            "generic": "無法儲存此個人圖案，請再試一次。"
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "該登入資訊屬於另一個帳號，你目前的帳號並未變更。",
+        "providerRejected": "該驗證遭到拒絕，請檢查帳號或驗證碼後再試一次。"
+      },
+      "generic": {
+        "failure": "發生錯誤，請再試一次。",
+        "supportReferenceLabel": "支援參考碼：{{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Stitch Wish 會使用你選取的照片來建立個人圖案，或設定公開的創作者個人頭像。"
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "歡迎來到 STITCH WISH",
+        "title": "選擇顏色，點選對應的格子。",
+        "heroAlt": "溫馨愛心新手圖案預覽",
+        "handedness": {
+          "sectionTitle": "控制項要放在哪一側？",
+          "groupLabel": "控制側",
+          "optionRight": "控制項在右側",
+          "optionLeft": "控制項在左側",
+          "saveErrorText": "無法儲存此選項。",
+          "retry": "重試"
+        },
+        "note": "之後可在「設定」中變更此選項。",
+        "start": "開始刺繡",
+        "starting": "啟動中…",
+        "browse": "瀏覽新手圖案",
+        "signIn": "登入"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "選擇 DMC 321 聖誕紅。",
+          "stitchAction": "點選標示出的對應格子。",
+          "mismatchedTap": "點選標示出的不同格子，點錯不會有任何損失。",
+          "undoAction": "復原該針，然後重新繡上去。",
+          "stitchSweep": "先按住一個對應的格子，再拖曳過標示出的一整排。",
+          "threadColorCompletion": "完成標示出的白色繡線後，再選擇下一個顏色。"
+        },
+        "hints": {
+          "anchoredZoom": "以雙指捏合縮放，手指下方的格子會保持在原位。",
+          "panVsSweep": "拖曳可平移布料；從對應的格子開始拖曳則會連續刺繡。",
+          "edgeAutoPan": "持續在邊緣附近拖曳，布料會跟著你的手指移動。",
+          "remainingCellLocator": "使用定位功能，找出此繡線顏色剩下的下一個格子。"
+        },
+        "skip": "暫時跳過",
+        "skipAccessibilityLabel": "暫時跳過教學",
+        "dismiss": "知道了",
+        "dismissAccessibilityLabel": "關閉提示"
+      },
+      "recap": {
+        "title": "你已經學會了",
+        "lines": {
+          "matchNumbers": "配對數字以放置每一針。",
+          "dragSweep": "拖曳過對應的格子即可連續刺繡。",
+          "pinchZoom": "需要看得更清楚時，捏合即可縮放。",
+          "undoLocator": "復原與定位功能永遠免費。"
+        },
+        "continue": "繼續刺繡",
+        "browsePatterns": "瀏覽圖案"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "刺繡工作檯",
+        "subtitle": "從上次進度繼續，或恢復最近的作品。",
+        "loading": "正在載入你的刺繡進度…",
+        "empty": {
+          "title": "目前沒有進行中的作品",
+          "body": "你的刺繡框目前是空的，瀏覽圖案目錄，找一款漂亮的圖案來繡吧！",
+          "action": "瀏覽目錄"
+        },
+        "unknownPattern": "未知圖案",
+        "idLabel": "ID：{{id}}",
+        "unknownPatternLabel": "圖案 {{id}}",
+        "deleteSessionAccessibilityLabel": "刪除工作階段",
+        "viewFinishedAccessibilityLabel": "查看已完成作品",
+        "resumeAccessibilityLabel": "繼續刺繡",
+        "status": {
+          "ready": "就緒",
+          "done": "已完成",
+          "active": "進行中",
+          "preparing": "準備中",
+          "failed": "失敗"
+        },
+        "deleteConfirm": {
+          "title": "刪除進度",
+          "message": "確定要刪除「{{title}}」的進度嗎？此操作無法復原。",
+          "cancel": "取消",
+          "confirm": "刪除"
+        },
+        "preparingCard": {
+          "discardTitle": "捨棄工作階段",
+          "cancelTitle": "取消下載",
+          "discardMessage": "確定要捨棄此失敗的工作階段嗎？",
+          "cancelMessage": "確定要取消下載此圖案嗎？",
+          "keep": "保留",
+          "discard": "捨棄",
+          "cancel": "取消"
+        }
+      },
+      "loading": {
+        "text": "正在開啟工作階段並準備布料…"
+      },
+      "error": {
+        "title": "工作階段載入失敗",
+        "fallbackMessage": "無法載入你的刺繡工作階段。",
+        "backButton": "返回",
+        "tableButton": "前往工作檯"
+      },
+      "header": {
+        "backButton": "← 返回",
+        "tableButton": "← 工作檯",
+        "defaultTitle": "刺繡工作階段",
+        "progress": "{{completed}} / {{total}} 格（完成 {{percent}}%）",
+        "resumeTutorialAccessibilityLabel": "繼續教學"
+      },
+      "banners": {
+        "patternRemoved": "此圖案已因審核而移除，現已無法使用，點選以離開。",
+        "syncConflict": "已與其他裝置同步 — 部分格子已更新，點選以關閉。"
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "定位目前繡線顏色的下一個剩餘格子",
+        "undoAccessibilityLabel": "復原上一針"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "顏色 {{number}}：DMC {{dmcCode}}，剩餘 {{count}} 針",
+        "chipAccessibilityLabel_other": "顏色 {{number}}：DMC {{dmcCode}}，剩餘 {{count}} 針",
+        "done": "完成",
+        "remaining_one": "剩餘 {{count}}",
+        "remaining_other": "剩餘 {{count}}"
+      },
+      "celebration": {
+        "title": "完成得真漂亮！",
+        "subtitle": "你已完成這塊布料上的每一針。",
+        "stitchesLabel_one": "針",
+        "stitchesLabel_other": "針",
+        "colorsLabel_one": "種顏色",
+        "colorsLabel_other": "種顏色",
+        "replayButton": "再繡一次",
+        "catalogButton": "回到目錄"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "返回",
+        "tryAgain": "重試"
+      },
+      "rejectionReasons": {
+        "safety": "安全性",
+        "publication_rights": "發表權",
+        "duplicate_or_spam": "重複或垃圾內容",
+        "technical_invalidity": "技術性錯誤",
+        "quality_standard": "品質標準"
+      },
+      "submissionStatus": {
+        "accepted": "已發布",
+        "appeal_pending": "申訴審核中",
+        "appeal_upheld": "申訴遭駁回",
+        "precheck_failed": "無法進行預先檢查",
+        "precheck_pending": "檢查中",
+        "quarantined": "需要審核",
+        "rejected": "已拒絕",
+        "review_pending": "審核中"
+      },
+      "revisionStatus": {
+        "accepted": "已發布",
+        "appeal_pending": "申訴審核中",
+        "appeal_upheld": "申訴遭駁回",
+        "pending": "審核中",
+        "rejected": "已拒絕",
+        "withdrawn": "已撤回"
+      },
+      "home": {
+        "identity": {
+          "establishing": "正在建立身分…",
+          "pendingTitle": "身分待確認",
+          "offline": "離線中",
+          "retryConnection": "重試連線",
+          "loadingPublicProfile": "正在載入公開個人檔案…",
+          "unavailableTitle": "公開個人檔案無法使用",
+          "checkConnection": "請檢查你的網路連線後再試一次。",
+          "createTitle": "建立你的公開個人檔案",
+          "createBody": "選擇一個永久顯示於你社群圖案上的使用者名稱。你的帳號資訊將保持私密。",
+          "createAction": "建立公開個人檔案",
+          "editAction": "編輯公開個人檔案",
+          "offlinePendingSync": "離線 — 等待同步",
+          "guestPlayer": "訪客玩家",
+          "playingSince": "自 {{date}} 起遊玩",
+          "creatorSince": "自 {{date}} 起成為創作者"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "開啟商城",
+          "title": "工作室餘額",
+          "commerceStoreLink": "商城",
+          "stitchCoinsAccessibilityLabel": "Stitch Coin 餘額：{{balance}}，點選取得金幣。",
+          "packs": "組合包",
+          "stitchCoinsLabel": "Stitch Coin",
+          "stitchCoinsSub": "用於解鎖圖案",
+          "aiCreditsAccessibilityLabel": "AI 額度餘額：{{balance}}，點選取得額度。",
+          "aiCreditsSignInAccessibilityLabel": "AI 額度，登入後即可購買。",
+          "aiCreditsLabel": "AI 額度",
+          "aiCreditsSubOwned": "用於 AI 圖案作品",
+          "aiCreditsSubGuest": "登入後即可擁有",
+          "membershipActiveAccessibilityLabel": "Premium 會員資格已啟用（{{plan}}），點選以管理。",
+          "membershipInactiveAccessibilityLabel": "十字繡 Premium，點選查看方案。",
+          "membershipActiveTitle": "Premium 已啟用 · {{plan}}",
+          "membershipInactiveTitle": "十字繡 Premium",
+          "planAnnual": "年繳",
+          "planMonthly": "月繳",
+          "planWeekly": "週繳",
+          "planActive": "使用中",
+          "trialBadge": "試用",
+          "membershipSubActive": "解鎖所有主題 · 立即領取每日金幣",
+          "membershipSubInactive": "立即領取每日 30 枚金幣、自訂主題與 AI 額度",
+          "manage": "管理",
+          "explore": "探索"
+        },
+        "quickNav": {
+          "sectionEyebrow": "帳號與社群",
+          "submissionsAccessibilityLabel": "目錄投稿：追蹤審核、決議與申訴",
+          "submissionsTitle": "投稿",
+          "submissionsSub": "追蹤審核",
+          "publishedAccessibilityLabel": "已發布圖案：修訂中繼資料、撤回並追蹤申訴",
+          "publishedTitle": "已發布",
+          "publishedSub": "管理圖案",
+          "moderationAccessibilityLabel": "審核通知：查看影響你圖案的目錄決議",
+          "moderationTitle": "審核",
+          "moderationSub": "政策通知",
+          "likedAccessibilityLabel": "喜歡的圖案：你私人收藏的喜歡社群圖案",
+          "likedTitle": "喜歡的圖案",
+          "likedSavedCount_one": "已收藏 {{count}} 個",
+          "likedSavedCount_other": "已收藏 {{count}} 個",
+          "likedSavedDefault": "已儲存的圖案"
+        },
+        "dailySection": {
+          "title": "每日刺繡與獎勵",
+          "tasksGroupLabel": "每日任務（最多 +30 枚金幣）",
+          "connectToTrack": "連線後即可追蹤每日任務進度。",
+          "loadingTasks": "正在載入任務…",
+          "loadFailed": "無法載入每日任務。",
+          "retry": "重試",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "重置中…",
+          "resetsInHoursMinutes": "將於 {{hours}} 小時 {{minutes}} 分鐘後重置",
+          "resetsInMinutes": "將於 {{minutes}} 分鐘後重置"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 次刺繡動作",
+            "body": "今日完成 100 個對應格子"
+          },
+          "three_colors_10": {
+            "title": "3 種顏色，各 10 次動作",
+            "body": "在 3 種繡線顏色中各達成 10 次動作"
+          },
+          "color_completion": {
+            "title": "完成一種繡線顏色",
+            "body": "完整繡完任一種顏色"
+          }
+        },
+        "dailyPool": {
+          "title": "每日 30 枚金幣獎勵池",
+          "premiumInstantClaim": "Premium 即時領取",
+          "rewardedAds": "獎勵廣告",
+          "claimedAmount": "今日已領取 {{amount}} 枚 Stitch Coin！",
+          "poolAlreadyClosed": "今日的獎勵池已關閉。",
+          "claimedForToday": "今日已領取，將於下個獎勵日重置。",
+          "poolExhausted": "今日的 30 枚金幣獎勵池已用盡。",
+          "claimButtonRetry": "重新嘗試領取",
+          "claimButtonInstant": "領取 {{count}} 枚金幣（即時）",
+          "poolClaimedResetsTomorrow": "今日的金幣獎勵池已被領取，明日重置。",
+          "allAdRewardsCompleted": "今日的廣告獎勵已全部完成！（30/30 枚金幣）",
+          "watchAdButton": "觀看廣告賺取 +10 枚金幣（剩餘 {{count}} 次）",
+          "adPerkNote": "每日最多可觀看 3 則廣告 · Premium 解鎖即時領取 30 枚金幣",
+          "adRewardEarned": "已獲得廣告獎勵！正在向後端驗證…",
+          "claimFailed": "領取失敗：{{message}}",
+          "claimFailedGeneric": "發生錯誤，請再試一次。",
+          "adLoadFailedDefault": "廣告載入失敗",
+          "adAttemptFailedDefault": "開啟廣告嘗試失敗"
+        },
+        "tabs": {
+          "myCreations": "我的創作 {{count}}",
+          "likedPatterns": "喜歡的圖案 {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "登入以使用個人圖案",
+          "signInBody": "建立並私人擁有已轉換的照片圖案，需要註冊帳號。",
+          "signIn": "登入",
+          "patternMeta": "{{width}}×{{height}} · {{count}} 種顏色",
+          "pendingSync": "同步待處理",
+          "play": "遊玩",
+          "edit": "編輯",
+          "submitAccessibilityLabel": "將 {{title}} 投稿至社群目錄",
+          "emptyTitle": "尚無個人創作",
+          "emptyBody": "你尚未轉換任何照片或生成任何 AI 作品。前往「創作」開始你的第一件作品吧！",
+          "emptyAction": "開始創作",
+          "actionFailedGeneric": "發生錯誤，請再試一次。"
+        },
+        "likedTab": {
+          "unavailableTitle": "喜歡的圖案無法使用",
+          "unavailableDefault": "無法載入喜歡的圖案。",
+          "byCreator": "來自 {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} 種顏色",
+          "emptyTitle": "尚無喜歡的圖案",
+          "emptyBody": "瀏覽目錄，點選任何設計上的愛心圖示，即可將它收藏在這裡。",
+          "emptyAction": "探索圖案"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Premium 每日金幣領取",
+        "description": "領取今日共享 30 枚金幣獎勵池的剩餘部分。",
+        "connectPrompt": "連線至遊戲後端以查看今日獎勵。",
+        "checkingReward": "正在查詢今日 Premium 獎勵…",
+        "unavailableGeneric": "今日的 Premium 獎勵目前無法使用。",
+        "tryAgain": "重試",
+        "resultAdded": "遊戲後端已加入 {{amount}} 枚 Stitch Coin，餘額：{{balance}}。",
+        "poolAlreadyClosed": "今日共享獎勵池已關閉。",
+        "alreadyClaimed": "本獎勵日已領取過。",
+        "poolExhausted": "今日共享獎勵池已用盡，將於下個獎勵日重置。",
+        "availableNow": "目前可領取 {{count}} 枚 Stitch Coin",
+        "resetsAt": "將於 {{date}} 重置",
+        "claimButtonRetry": "重新嘗試領取",
+        "claimButtonInstant": "領取 {{count}} 枚金幣",
+        "lockedDescription": "Premium 會員資格（包含符合資格的月度試用）可解鎖此每日領取。",
+        "viewPremiumPlans": "查看 Premium 方案"
+      },
+      "publicProfile": {
+        "editTitle": "編輯公開個人檔案",
+        "createTitle": "建立公開個人檔案",
+        "signInTitle": "需要登入",
+        "signInBody": "建立公開創作者身分需要註冊帳號。",
+        "signInAction": "登入",
+        "unavailableTitle": "個人檔案無法使用",
+        "unavailableBody": "無法載入你的公開個人檔案，請檢查網路連線後再試一次。",
+        "tryAgain": "重試",
+        "intro": "此名稱與照片將顯示於你的社群圖案上，你的電子郵件與登入方式將保持私密。",
+        "choosePhoto": "選擇照片",
+        "changePhoto": "更換照片",
+        "remove": "移除",
+        "avatarHelper": "選填 · JPEG、PNG 或 WebP 格式 · 最大 5 MB",
+        "usernameLabel": "使用者名稱",
+        "usernameAccessibilityLabel": "公開使用者名稱",
+        "usernamePlaceholder": "stitcher_name",
+        "usernameHelperLocked": "你的使用者名稱為永久設定。",
+        "usernameHelperEditable": "3 至 30 個小寫字母、數字或底線。設定後無法更改。",
+        "displayNameLabel": "顯示名稱",
+        "displayNameAccessibilityLabel": "公開顯示名稱",
+        "displayNamePlaceholder": "你的創作者名稱",
+        "displayNameHelper": "之後可以更改此設定。",
+        "safetyNotice": "名稱與照片將於發布前進行審核。若變更遭拒，你目前的公開個人檔案將維持不變。",
+        "saveAction": "儲存公開個人檔案",
+        "publishAction": "發布公開個人檔案",
+        "photoPermissionRequired": "選擇個人檔案照片需要相簿存取權限。",
+        "photoTypeInvalid": "個人檔案照片必須為 JPEG、PNG 或 WebP 格式。",
+        "photoTooLarge": "個人檔案照片大小須為 5 MB 以下。",
+        "saveFailedDefault": "無法儲存你的公開個人檔案"
+      },
+      "submissions": {
+        "title": "目錄投稿",
+        "unavailableTitle": "投稿無法使用",
+        "unavailableDefault": "無法載入你的投稿。",
+        "emptyTitle": "尚無目錄投稿",
+        "emptyBody": "從「我的創作」投稿一個已同步的個人圖案。",
+        "emptyAction": "回到我的創作",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "自動檢查未能完成，此快照並未發布。",
+        "publishedToCatalog": "已發布至社群目錄。",
+        "appealAction": "申訴決議",
+        "appealHelp": "你可對此未變更的快照提出一次申訴。",
+        "appealNoteAccessibilityLabel": "申訴備註",
+        "appealNotePlaceholder": "提供給審核人員的補充說明（選填）",
+        "cancelAction": "取消",
+        "submitAppealAction": "送出申訴"
+      },
+      "publishedPatterns": {
+        "title": "已發布圖案",
+        "unavailableTitle": "圖案無法使用",
+        "unavailableDefault": "無法載入你已發布的圖案。",
+        "emptyTitle": "尚無已發布圖案",
+        "emptyBody": "你發布至社群目錄的圖案將顯示於此。",
+        "emptyAction": "回到個人檔案",
+        "withdrawnFromCatalog": "已自目錄撤回",
+        "underReviewHold": "審核暫停中",
+        "meta": "{{category}} · 發布於 {{date}}",
+        "withdrawnHelp": "此圖案身分已永久撤回。已有刺繡工作階段的玩家仍保有其進度與存取權限。",
+        "reviewHoldHelp": "此圖案暫時不會出現在探索頁面中，也無法開始新的工作階段。既有的刺繡工作階段仍可繼續遊玩。你仍可提出中繼資料修訂。",
+        "reviseAction": "修訂中繼資料",
+        "withdrawRevisionAction": "撤回修訂",
+        "appealAction": "申訴決議",
+        "withdrawFromCatalogAction": "自目錄撤回",
+        "appealHelp": "你可對此未變更的快照提出一次申訴。提交新修訂將放棄此次申訴權利。",
+        "appealNoteAccessibilityLabel": "申訴備註",
+        "appealNotePlaceholder": "提供給審核人員的補充說明（選填）",
+        "cancelAction": "取消",
+        "submitAppealAction": "送出申訴",
+        "withdrawRevisionFailedTitle": "無法撤回修訂",
+        "withdrawPatternFailedTitle": "無法撤回圖案",
+        "withdrawPatternSuccessTitle": "圖案已撤回",
+        "withdrawPatternSuccessBody": "此圖案已無法在探索頁面中找到，也無法開始新的工作階段。既有的刺繡工作階段將保留其進度與可遊玩資料。",
+        "withdrawConfirmTitle": "確定要自社群目錄撤回嗎？",
+        "withdrawConfirmBody": "「{{title}}」將自探索頁面中消失，也無法開始新的工作階段。此圖案身分將永久無法復原。既有的刺繡工作階段與其進度仍可繼續遊玩。",
+        "withdrawConfirmCancel": "取消",
+        "withdrawConfirmAction": "永久撤回"
+      },
+      "revisePatternMetadata": {
+        "title": "修訂中繼資料",
+        "signInTitle": "需要註冊帳號",
+        "signInBody": "修訂社群圖案的中繼資料前，請先登入。",
+        "signInAction": "登入",
+        "notFoundTitle": "找不到此社群圖案",
+        "notFoundBody": "僅能修訂你自己已發布的社群圖案。",
+        "notFoundAction": "回到已發布圖案",
+        "inProgressTitle": "已有進行中的修訂",
+        "inProgressBody": "此圖案已有待審核的修訂或進行中的申訴，請先撤回後再提交新的修訂。",
+        "inProgressAction": "回到已發布圖案",
+        "currentlyPublished": "目前已發布於社群目錄",
+        "titleFieldLabel": "目錄標題",
+        "titlePlaceholder": "圖案標題",
+        "titleAccessibilityLabel": "目錄標題",
+        "descriptionFieldLabel": "描述",
+        "descriptionPlaceholder": "描述此設計、主題與刺繡體驗。",
+        "descriptionAccessibilityLabel": "目錄描述",
+        "sourceLanguageFieldLabel": "來源語言",
+        "categoryFieldLabel": "分類",
+        "tagsFieldLabel": "標籤",
+        "notice": "修訂會建立一份新的不可變更快照。你目前已發布的中繼資料將持續顯示，直到人工審核人員接受此次修訂。",
+        "submitAction": "送出修訂"
+      },
+      "submitPattern": {
+        "title": "投稿至社群",
+        "signInTitle": "需要註冊帳號",
+        "signInBody": "將個人圖案投稿至社群目錄前，請先登入。",
+        "signInAction": "登入",
+        "createProfileTitle": "建立公開創作者個人檔案",
+        "createProfileBody": "社群圖案將標示為你的公開創作者身分。",
+        "createProfileAction": "建立個人檔案",
+        "patternNotFoundTitle": "找不到此個人圖案",
+        "patternNotFoundBody": "僅能投稿已同步的個人圖案。",
+        "patternNotFoundAction": "回到個人檔案",
+        "patternMeta": "{{width}}×{{height}} · {{count}} 種顏色",
+        "byCreator": "來自 @{{username}}",
+        "titleFieldLabel": "目錄標題",
+        "titlePlaceholder": "圖案標題",
+        "titleAccessibilityLabel": "目錄標題",
+        "descriptionFieldLabel": "描述",
+        "descriptionPlaceholder": "描述此設計、主題與刺繡體驗。",
+        "descriptionAccessibilityLabel": "目錄描述",
+        "sourceLanguageFieldLabel": "來源語言",
+        "categoryFieldLabel": "分類",
+        "tagsFieldLabel": "標籤",
+        "rightsDeclaration": "我創作了此作品，或依據發表權聲明第 1 版擁有發布此作品所需的權利。",
+        "notice": "投稿將建立一份不可變更的副本。自動檢查僅提供參考依據，最終決議一律由人工審核人員做出。",
+        "submitAction": "提交審核"
+      },
+      "moderationNotices": {
+        "title": "審核通知",
+        "signInTitle": "登入以查看通知",
+        "signInBody": "審核通知歸屬於發布相關社群圖案的註冊帳號。",
+        "signInAction": "登入",
+        "unavailableTitle": "通知無法使用",
+        "unavailableDefault": "無法載入審核通知。",
+        "emptyTitle": "尚無審核通知",
+        "emptyBody": "擁有者可見的目錄審核決議將顯示於此。",
+        "emptyAction": "回到個人檔案",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "目錄中繼資料修正",
+          "no_violation": "審核結案 — 未違規",
+          "review_hold": "審核暫停",
+          "safety_removal": "安全性移除"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "標題、描述與所選標籤已被替換為安全內容。可用性、圖案檔案與預覽皆不受影響。你可隨時提交新的目錄中繼資料修訂。",
+          "no_violation": "發布後審核已結案，此圖案已在探索頁面與新刺繡工作階段中恢復完整可用。",
+          "review_hold": "此圖案暫時無法出現在探索頁面中，也無法開始新的工作階段。既有的刺繡工作階段、進度與離線圖案資料仍可繼續使用。",
+          "safety_removal": "此圖案因安全性、法律或政策違規而遭移除。它已自探索頁面下架，既有的刺繡工作階段已無法存取，且你裝置上的離線圖案資料已被刪除。你可提交一次安全性移除申訴。"
+        }
+      },
+      "dailyTasksCard": {
+        "title": "每日任務",
+        "offline": "你目前處於離線狀態 — 每日任務需要網路連線。",
+        "unavailable": "無法載入每日任務。",
+        "empty": "今天沒有可用的任務。"
+      },
+      "rewardedAdCard": {
+        "offline": "你目前處於離線狀態 — 獎勵日需要網路連線。",
+        "unavailable": "無法載入獎勵日狀態。",
+        "premiumClaimClosedPool": "你的 Premium 每日領取已關閉今日的共享金幣池。",
+        "allRewardsClaimed": "你已領取今日所有廣告獎勵，明天再來吧！",
+        "remaining_one": "今日剩餘 {{count}} 則廣告（可獲得 {{coins}} 枚金幣）",
+        "remaining_other": "今日剩餘 {{count}} 則廣告（可獲得 {{coins}} 枚金幣）",
+        "watchForCoins": "觀看廣告賺取 {{count}} 枚金幣"
+      },
+      "likedPatterns": {
+        "title": "喜歡的圖案",
+        "signInTitle": "需要註冊帳號",
+        "signInBody": "查看你私人的喜歡圖案收藏前，請先登入。",
+        "signInAction": "登入",
+        "unavailableTitle": "喜歡的圖案無法使用",
+        "unavailableDefault": "無法載入喜歡的圖案。",
+        "emptyTitle": "尚無喜歡的圖案",
+        "emptyBody": "瀏覽圖案目錄，點選任何設計上的愛心圖示，即可將它收藏在這裡。",
+        "emptyAction": "探索圖案",
+        "byCreator": "來自 {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} 種顏色 · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "設定",
+        "subtitleDev": "設定偏好選項並檢視後端系統。",
+        "subtitleProd": "設定你的偏好選項。"
+      },
+      "serviceStatus": {
+        "sectionTitle": "服務狀態",
+        "apiConnectionTitle": "API 連線",
+        "testingConnection": "正在測試 API 連線…",
+        "offlineUnreachable": "離線／無法連線",
+        "unknownConnectionError": "未知的連線錯誤",
+        "retryConnection": "重試連線",
+        "healthy": "正常",
+        "degraded": "效能降低",
+        "postgresLabel": "PostgreSQL 資料庫",
+        "redisLabel": "Redis 快取"
+      },
+      "session": {
+        "sectionTitle": "身分與工作階段",
+        "statusTitle": "後端工作階段狀態",
+        "statusDescription": "透過 API 驗證你目前有效的訪客註冊工作階段。",
+        "noActiveSession": "無進行中的工作階段",
+        "sessionActive": "工作階段進行中",
+        "idLabel": "ID：{{id}}（v{{version}}）",
+        "unknownState": "未知狀態"
+      },
+      "tutorial": {
+        "sectionTitle": "教學",
+        "learnControlsTitle": "學習操作方式",
+        "learnControlsDescription": "準備好後可繼續進行刺繡教學。",
+        "unavailableTitle": "教學無法使用",
+        "unavailableMessage": "無法繼續進行教學，請再試一次。"
+      },
+      "developer": {
+        "sectionTitle": "開發者",
+        "debugDiagnostics": "除錯／診斷",
+        "debug": {
+          "backAccessibilityLabel": "返回",
+          "title": "除錯",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN：已設定 · 環境：{{environment}}",
+            "dsnNotConfigured": "DSN：尚未設定",
+            "sendTestEvent": "傳送測試事件",
+            "throwError": "觸發錯誤",
+            "disabledTitle": "Sentry 已停用",
+            "disabledMessage": "Sentry 尚未設定（未找到 DSN），因此不會傳送測試事件。",
+            "testEventSent": "已傳送測試事件，事件 ID：{{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "錯誤",
+            "testEventFailedMessage": "傳送測試事件失敗：{{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "新手引導",
+            "description": "清除教學進度並從歡迎畫面重新開始。",
+            "restart": "重新開始新手引導",
+            "confirmTitle": "重新開始新手引導？",
+            "confirmMessage": "教學狀態將被清除，新手引導將自歡迎畫面重新開始。",
+            "cancel": "取消",
+            "resetFailedTitle": "重置失敗"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "刪除帳號",
+        "statusTitle": "帳號刪除狀態",
+        "checkingStatus": "正在查詢狀態…",
+        "pendingTitle": "帳號刪除待處理",
+        "pendingDescription": "你的帳號已排定刪除。若要取消，請在復原期結束前重新登入。",
+        "recoveryWindowEnds": "復原期結束時間：{{date}}",
+        "cancelling": "取消中…",
+        "cancelDeletion": "取消刪除",
+        "statusError": "無法查詢刪除狀態，請檢查網路連線後重試。",
+        "deleteAccountTitle": "刪除帳號",
+        "deleteAccountDescription": "在 30 天的復原期結束後，將永久刪除你的帳號、進度與所有解鎖項目。",
+        "requestedTitle": "已提出帳號刪除請求",
+        "requestedMessage": "你的刪除請求將於 {{date}} 前保持待處理狀態，你的帳號已被登出。若想取消此次刪除，請在此之前重新登入。",
+        "signOutFailedTitle": "本機登出失敗",
+        "signOutFailedMessage": "你的刪除請求仍在待處理中，請於「設定」中再次登出。",
+        "requestFailedTitle": "請求失敗",
+        "requestFailedMessage": "你的刪除請求尚未送出，請檢查網路連線後再試一次。",
+        "cancelSuccessTitle": "成功",
+        "cancelSuccessMessage": "你的帳號刪除請求已取消。",
+        "reauthRequiredTitle": "需要重新驗證身分",
+        "reauthRequiredMessage": "基於安全考量，取消帳號刪除前必須重新登入。",
+        "signInAction": "登入",
+        "cancelFailedTitle": "取消失敗",
+        "cancelFailedGeneric": "取消帳號刪除失敗，請檢查網路連線後再試一次。"
+      },
+      "appearance": {
+        "sectionTitle": "外觀"
+      },
+      "themeCollectionCard": {
+        "title": "主題收藏",
+        "description": "在不影響遊戲進行的情況下，變更格線、刺繡與完成時的視覺樣式。",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "需要 Premium 會員資格",
+        "selected": "已選取",
+        "accessActive": "Premium 主題使用權已啟用，符合資格的月度試用期間亦適用。",
+        "lockedPreview": "在此預覽收藏內容，Premium 會員資格或符合資格的月度試用可解鎖選取功能。",
+        "viewPremiumPlans": "查看 Premium 方案"
+      },
+      "gameplay": {
+        "sectionTitle": "遊玩設定",
+        "showGridLinesTitle": "顯示格線",
+        "showGridLinesDescription": "顯示刺繡畫布格子之間的邊界",
+        "handednessTitle": "慣用手配置",
+        "handednessDescription": "為左撇子或右撇子玩家調整互動控制項的位置",
+        "left": "左",
+        "right": "右",
+        "leftHandedLayout": "左手配置",
+        "rightHandedLayout": "右手配置"
+      },
+      "language": {
+        "sectionTitle": "語言",
+        "description": "選擇 Stitch Wish 介面顯示所使用的語言。",
+        "followDevice": "跟隨裝置語言",
+        "followDeviceDescription": "清除你的自訂設定，改為跟隨裝置的語言設定。",
+        "optionEnglish": "English",
+        "optionTurkish": "Türkçe",
+        "modalTitle": "選擇語言",
+        "modalSubtitle": "選擇你偏好的介面語言。",
+        "systemDefault": "系統語言",
+        "systemDefaultWithDetected": "系統語言（{{language}}）",
+        "systemDefaultDescription": "自動與你的裝置設定相符。"
+      },
+      "social": {
+        "sectionTitle": "社群與隱私",
+        "blockedCreators": "已封鎖的創作者"
+      },
+      "account": {
+        "sectionTitle": "帳號",
+        "notSignedInTitle": "尚未登入",
+        "signInRequiredTitle": "需要登入",
+        "notSignedInDescription": "登入後即可跨裝置同步進度。",
+        "signIn": "登入",
+        "reconnecting": "重新連線中…",
+        "signOut": "登出",
+        "signOutConfirmTitle": "確定要登出嗎？",
+        "signOutConfirmMessage": "尚未同步的進度會保留在此裝置上，並於你重新登入後恢復。",
+        "signOutConfirmAction": "登出",
+        "signOutFailedTitle": "登出失敗",
+        "signOutFailedGeneric": "請再試一次。",
+        "providerAppleAccount": "Apple 帳號",
+        "providerGoogleAccount": "Google 帳號",
+        "providerGenericAccount": "已註冊帳號"
+      },
+      "signIn": {
+        "emailHeading": "登入或建立帳號",
+        "emailSubtitle": "讓你的進度可跨裝置使用。",
+        "codeHeading": "輸入你的驗證碼",
+        "codeSubtitle": "輸入我們傳送至 {{email}} 的 6 位數驗證碼。",
+        "continueWithGoogle": "使用 Google 繼續",
+        "orUseEmail": "或使用電子郵件",
+        "ssoUnavailable": "此版本目前無法使用 Google 與 Apple 登入。",
+        "emailLabel": "電子郵件地址",
+        "emailPlaceholder": "電子郵件地址",
+        "sendCode": "傳送驗證碼",
+        "cancel": "取消",
+        "verify": "驗證",
+        "resendCode": "重新傳送驗證碼",
+        "resending": "重新傳送中…",
+        "codeSent": "驗證碼已傳送",
+        "useDifferentEmail": "使用其他電子郵件",
+        "sendCodeFailed": "無法傳送驗證碼，請檢查網路連線後再試一次。",
+        "codeIncorrect": "驗證碼錯誤或已過期。",
+        "verifyFailedGeneric": "發生錯誤，請再試一次。",
+        "socialSignInFailed": "無法使用 {{provider}} 登入，請再試一次。",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "返回",
+        "title": "已封鎖的創作者",
+        "infoText": "封鎖為私人且可復原的操作，會將該創作者的社群圖案自你的目錄檢視、搜尋與探索列表中隱藏，這並非檢舉或內容下架。",
+        "signInRequiredTitle": "需要註冊帳號",
+        "signInRequiredBody": "管理你的已封鎖創作者清單前，請先登入。",
+        "signInAction": "登入",
+        "listUnavailableTitle": "清單無法使用",
+        "listUnavailableDefault": "無法載入已封鎖的創作者。",
+        "tryAgain": "重試",
+        "emptyTitle": "尚無已封鎖的創作者",
+        "emptyBody": "你尚未封鎖任何人。你可以在任何圖案詳細頁面封鎖該創作者。",
+        "backToSettings": "回到設定",
+        "unblock": "解除封鎖",
+        "unblockConfirmTitle": "解除封鎖創作者",
+        "unblockConfirmMessage": "確定要解除封鎖 {{name}} 嗎？他們的圖案將重新出現在你的搜尋與瀏覽結果中。",
+        "cancel": "取消",
+        "successTitle": "成功",
+        "unblockedMessage": "已解除封鎖 {{name}}。",
+        "errorTitle": "錯誤",
+        "unblockFailedMessage": "解除封鎖創作者失敗：{{message}}",
+        "unblockFailedGeneric": "未知錯誤"
+      },
+      "data": {
+        "sectionTitle": "資料",
+        "resetGuestTitle": "重置訪客資料",
+        "resetGuestDescription": "不可復原地關閉伺服器上的訪客身分，並清除所有裝置資料。",
+        "resetGuestOffline": "離線中：重置訪客資料需要有效的伺服器連線。",
+        "resetGuestPurchaseLock": "有購買項目正在驗證中，暫時無法重置。之後將無法復原消耗品與私人訪客資料。",
+        "removeLocalTitle": "移除本機資料",
+        "removeLocalDescription": "刪除此裝置上的本機身分命名空間資料庫。",
+        "removeLocalConfirmTitle": "移除本機資料？",
+        "removeLocalConfirmMessage": "警告：此操作將僅刪除此裝置上的本機資料庫檔案，任何尚未同步的紀錄將永久遺失。",
+        "removeLocalConfirmAction": "移除",
+        "removeLocalSuccessTitle": "成功",
+        "removeLocalSuccessMessage": "已自此裝置移除本機資料。",
+        "removeLocalFailedTitle": "移除失敗",
+        "removeLocalFailedMessage": "移除本機資料失敗：{{message}}"
+      },
+      "links": {
+        "sectionTitle": "資訊與連結",
+        "privacyPolicy": "隱私權政策",
+        "termsOfService": "服務條款",
+        "contactSupport": "聯絡支援",
+        "accountDeletion": "刪除帳號",
+        "openFailedMessage": "無法開啟連結：{{url}}",
+        "openFailedGenericTitle": "錯誤"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — 溫馨像素風十字繡",
+        "version": "版本 {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "套件：{{id}}",
+        "schemeLabel": "Scheme：{{scheme}}://"
+      },
+      "resetModal": {
+        "title": "重置訪客資料？",
+        "warning": "此操作將不可復原地關閉你在伺服器上的訪客身分，並永久刪除：",
+        "bulletProgress": "• 本機進度",
+        "bulletRewards": "• 待領取獎勵",
+        "bulletLikes": "• 按讚紀錄",
+        "bulletUnlockAccess": "• 解鎖存取權",
+        "bulletOfflinePatterns": "• 離線圖案資料",
+        "confirmPrefix": "請於下方輸入 ",
+        "confirmSuffix": " 以確認：",
+        "confirmAction": "重置資料",
+        "resetting": "正在重置訪客資料…",
+        "successTitle": "成功",
+        "successMessage": "訪客資料已完全重置。",
+        "failedTitle": "重置失敗",
+        "failedMessage": "訪客資料重置失敗：{{message}}，請再試一次。"
+      },
+      "deleteModal": {
+        "title": "刪除帳號？",
+        "recoveryPrefix": "你的帳號將進入 ",
+        "recoveryBold": "30 天刪除復原期",
+        "recoverySuffix": "。若要取消刪除，請在此期間內重新登入。",
+        "bulletBalances": "• Stitch Coin 與 AI 額度餘額",
+        "bulletUnlocks": "• 所有圖案解鎖項目",
+        "bulletArtwork": "• AI 作品與個人圖案",
+        "bulletProgress": "• 已同步的進度與按讚紀錄",
+        "consequencesPrefix": "復原期結束後，上述項目將被清除或失效，且不予退款或轉移。已發布的社群圖案將自目錄撤回，署名將變更為「",
+        "consequencesBold": "已刪除的創作者",
+        "consequencesSuffix": "」，你的使用者名稱將永久保留。",
+        "membershipWarning": "刪除帳號後，你的 Premium 會員資格可能仍會持續計費。刪除帳號並不會取消訂閱；若想停止計費，請在繼續前另行管理訂閱。",
+        "manageAppleSubscription": "管理 Apple 訂閱",
+        "continueAction": "繼續",
+        "confirmTitle": "確認刪除",
+        "confirmPrefix": "請於下方輸入 ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": " 以確認你要刪除帳號：",
+        "submitting": "正在送出刪除請求…",
+        "backAction": "返回",
+        "confirmAction": "確認"
+      },
+      "reauthModal": {
+        "title": "驗證你的身分",
+        "description": "基於安全考量，請使用此帳號已連結的登入方式進行驗證。驗證完成後將自動繼續進行刪除作業。",
+        "loading": "正在載入登入方式…",
+        "codeSentMessage": "請輸入傳送至 {{email}} 的 6 位數驗證碼。",
+        "verifyAndDelete": "驗證並刪除",
+        "emailButton": "電子郵件 {{email}}",
+        "continueWithProvider": "使用 {{provider}} 繼續",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "沒有可用的已連結登入方式，請聯絡支援後再重試刪除。",
+        "loadFailed": "無法載入你已連結的登入方式，請檢查網路連線後重試。",
+        "retryFailed": "身分已驗證，但刪除請求尚未送出，請關閉此對話方塊後重試刪除。",
+        "emailMissing": "此已連結的電子郵件方式沒有地址，請選擇其他方式。",
+        "genericFailure": "重新驗證失敗，請檢查網路連線後重試。"
+      },
+      "actions": {
+        "cancel": "取消",
+        "retry": "重試"
+      },
+      "common": {
+        "unavailable": "無法使用"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "目錄",
+        "stitch": "刺繡",
+        "create": "創作",
+        "profile": "個人檔案",
+        "settings": "設定"
+      }
+    }
   }
 }
