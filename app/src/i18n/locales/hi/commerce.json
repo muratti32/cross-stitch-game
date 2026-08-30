@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "वापस",
+    "title": "कॉमर्स स्टोर",
+    "subtitle": "सदस्यता और एक-बार के टॉप-अप"
+  },
+  "signInReturn": {
+    "notice": "आप साइन इन हैं। {{label}} अभी भी चुना हुआ है। इसकी समीक्षा करें और तैयार होने पर खरीदें पर टैप करें।"
+  },
+  "premiumHero": {
+    "eyebrow": "प्रीमियम सदस्यता",
+    "title": "अधिक बनाएं। हर दिन एक छोटा इनाम पाएं।",
+    "body": "प्रत्येक भुगतान अवधि में एआई क्रेडिट्स, प्रीमियम थीम और दैनिक स्टिच कॉइन का दावा।",
+    "benefitAiCredits": "एआई क्रेडिट्स",
+    "benefitDailyCoins": "दैनिक कॉइन्स",
+    "benefitThemes": "थीम",
+    "statusNoActiveMembership": "कोई सक्रिय सदस्यता नहीं",
+    "statusBrowseAsGuest": "गेस्ट प्लेयर के रूप में प्लान देखें",
+    "periodEndsLabel": "वर्तमान अवधि समाप्त",
+    "periodRenewsLabel": "नवीनीकरण",
+    "lifecycleActive": "सक्रिय"
+  },
+  "membershipActions": {
+    "title": "सक्रिय प्रीमियम सदस्यता",
+    "body": "दैनिक इनाम प्रोफ़ाइल में हैं। थीम सेटिंग्स › रूप-रंग के अंतर्गत हैं।",
+    "scheduledChangeNotice": "{{date}} को {{plan}} में बदलाव",
+    "manageSubscription": "सदस्यता प्रबंधित करें",
+    "manageSubscriptionFailedTitle": "सदस्यता खोलने में असमर्थ",
+    "manageSubscriptionFailedBody": "अपने डिवाइस स्टोर खाते से दोबारा प्रयास करें।"
+  },
+  "pending": {
+    "title": "खरीद मिलान लंबित",
+    "verifyingTitle": "खरीद सत्यापित की जा रही है",
+    "premiumChangeAccepted": "स्टोर ने {{label}} में बदलाव स्वीकार कर लिया है। ",
+    "premiumResponseReceived": "{{label}} के लिए स्टोर की प्रतिक्रिया प्राप्त हो गई है। ",
+    "premiumDeferredSuffix": "यह बदलाव गेम बैकएंड सत्यापन के बाद ही निर्धारित किया जाएगा, और आपकी वर्तमान अवधि समाप्त होने पर प्रभावी होगा।",
+    "premiumSuffix": "प्रीमियम गेम बैकएंड सत्यापन के बाद ही सक्रिय होता है।",
+    "doNotPurchasePlanAgain": " इस प्लान को दोबारा न खरीदें।",
+    "coinPackBody": "स्टोर की प्रतिक्रिया प्राप्त हो गई है। गेम बैकएंड द्वारा संबंधित कॉमर्स लेज़र ग्रांट प्रदान करने के बाद ही स्टिच कॉइन अपडेट होंगे। इस पैक को दोबारा न खरीदें।",
+    "aiCreditPackBody": "स्टोर की प्रतिक्रिया प्राप्त हो गई है। गेम बैकएंड द्वारा संबंधित कॉमर्स लेज़र ग्रांट प्रदान करने के बाद ही एआई क्रेडिट अपडेट होंगे। इस पैक को दोबारा न खरीदें।",
+    "refreshStatus": "स्थिति रीफ़्रेश करें",
+    "retryReconciliation": "मिलान का पुन: प्रयास करें"
+  },
+  "store": {
+    "loadingPrices": "स्टोर की वर्तमान कीमतें लोड की जा रही हैं…",
+    "unavailableTitle": "स्टोर अस्थायी रूप से अनुपलब्ध है",
+    "unavailableBody": "आपका वॉलेट और सदस्यता की जानकारी अभी भी उपलब्ध है।",
+    "retry": "पुन: प्रयास करें"
+  },
+  "plans": {
+    "choosePremiumPlan": "प्रीमियम प्लान चुनें",
+    "yourPremiumPlan": "आपका प्रीमियम प्लान",
+    "currentPlan": "वर्तमान प्लान",
+    "upgrade": "अपग्रेड करें",
+    "planChange": "प्लान में बदलाव",
+    "bestValue": "सर्वोत्तम मूल्य",
+    "billedEvery": "हर {{period}} को बिल किया जाएगा",
+    "chooseLabel": "{{label}} चुनें",
+    "freeTrial": "{{offer}} के लिए निःशुल्क, फिर {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "एक-बार के पैक",
+    "stitchCoinPacksTitle": "स्टिच कॉइन पैक",
+    "aiCreditPacksTitle": "एआई क्रेडिट पैक",
+    "coinsNoun": "कॉइन्स",
+    "creditsNoun": "क्रेडिट्स",
+    "fromPrice": "{{price}} से शुरू"
+  },
+  "restore": {
+    "restorePurchases": "खरीदारियां पुनर्स्थापित करें",
+    "restoreGuestPremium": "गेस्ट प्रीमियम पुनर्स्थापित करें",
+    "requestedTitle": "पुनर्स्थापना का अनुरोध किया गया",
+    "requestedBody": "स्टोर वेबहुक का मिलान होने के बाद सत्यापित प्रीमियम पहुंच दिखाई देगी। स्टिच कॉइन और एआई क्रेडिट पैक कभी भी पुनर्स्थापित नहीं किए जाते हैं।"
+  },
+  "sheet": {
+    "currentPricesSubtitle": "ऐप स्टोर से वर्तमान कीमतें",
+    "closeAccessibilityLabel": "उत्पाद शीट बंद करें",
+    "closeButtonAccessibilityLabel": "बंद करें",
+    "selectedBeforeSignIn": "साइन-इन करने से पहले चुना गया",
+    "buy": "खरीदें"
+  },
+  "confirmation": {
+    "cancel": "रद्द करें",
+    "confirmLabel": "{{label}} की पुष्टि करें",
+    "confirmPremiumTitle": "प्रीमियम खरीदारी की पुष्टि करें",
+    "introductoryOffer": "आपका स्टोर इस शुरुआती ऑफ़र की रिपोर्ट करता है: {{offer}}।",
+    "premiumAppearsAfterVerification": "गेम बैकएंड द्वारा स्टोर लेनदेन को सत्यापित करने के बाद ही प्रीमियम दिखाई देता है।",
+    "confirmPremiumUpgradeTitle": "प्रीमियम अपग्रेड की पुष्टि करें",
+    "confirmPremiumPlanChangeTitle": "प्रीमियम प्लान में बदलाव की पुष्टि करें",
+    "currentPlanLabel": "वर्तमान प्लान: {{label}}",
+    "upgradeToLabel": "{{label}} पर अपग्रेड करें · {{offer}}",
+    "changeToLabel": "{{label}} में बदलें · {{offer}}",
+    "upgradeBody": "ऐप स्टोर इस अपग्रेड के लिए अंतिम शुल्क और प्रभावी तिथि को नियंत्रित करता है। गेम बैकएंड द्वारा सत्यापित किए जाने के बाद ही प्रीमियम {{label}} को दर्शाएगा।",
+    "planChangeBody": "ऐप स्टोर इस बदलाव को आपकी वर्तमान अवधि के अंत तक टाल देता है: तब तक {{currentLabel}} चलता रहेगा, और बदलाव की तारीख से {{targetLabel}} के लिए बिल किया जाएगा। सदस्यता प्रबंधित करें से बदलाव रद्द करें।",
+    "confirmUpgrade": "अपग्रेड की पुष्टि करें",
+    "confirmPlanChange": "प्लान में बदलाव की पुष्टि करें",
+    "confirmStitchCoinTitle": "स्टिच कॉइन खरीदारी की पुष्टि करें",
+    "confirmAiCreditTitle": "एआई क्रेडिट खरीदारी की पुष्टि करें",
+    "balanceChangesAfterVerificationCoin": "आपका बैलेंस गेम बैकएंड द्वारा स्टोर लेनदेन को सत्यापित करने और संबंधित कॉमर्स लेज़र ग्रांट को रिकॉर्ड करने के बाद ही बदलेगा।",
+    "balanceChangesAfterVerificationAiCredit": "आपका बैलेंस गेम बैकएंड द्वारा स्टोर लेनदेन को सत्यापित करने और संबंधित कॉमर्स लेज़र ग्रांट को रिकॉर्ड करने के बाद ही बदलेगा। प्रीमियम सदस्यता आवश्यक नहीं है।"
+  },
+  "disclosure": {
+    "subscriptionTerms": "पुष्टि करने पर भुगतान आपके {{store}} खाते से लिया जाएगा। {{label}} प्रीमियम स्वतः नवीनीकृत हो जाता है {{offer}} पर, जब तक कि वर्तमान अवधि के समाप्त होने से कम से कम 24 घंटे पहले स्वतः-नवीनीकरण बंद न कर दिया जाए। जब आप कोई सदस्यता खरीदते हैं, तो निःशुल्क परीक्षण का कोई भी अप्रयुक्त हिस्सा जब्त कर लिया जाता है। आप अपने {{store}} खाते से किसी भी समय रद्द कर सकते हैं।",
+    "privacyPolicy": "गोपनीयता नीति",
+    "termsOfService": "सेवा की शर्तें",
+    "appStore": "ऐप स्टोर",
+    "googlePlay": "गूगल प्ले",
+    "linkOpenFailedBody": "लिंक नहीं खोला जा सका: {{url}}"
+  },
+  "supportReference": {
+    "label": "सहायता संदर्भ: {{reference}}",
+    "copyAccessibilityLabel": "सहायता संदर्भ {{reference}} कॉपी करें",
+    "copyAccessibilityHint": "सहायता संदर्भ को क्लिपबोर्ड पर कॉपी करता है",
+    "copied": "कॉपी किया गया",
+    "copyFailedTitle": "कॉपी विफल",
+    "copyFailedBody": "सहायता संदर्भ कॉपी नहीं किया जा सका। इसे मैन्युअल रूप से कॉपी करने के लिए टेक्स्ट का चयन करें।"
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "गेस्ट स्टिच कॉइन खरीदारी केवल iOS पर उपलब्ध है।",
+    "guestIosOnlyGeneric": "गेस्ट खरीदारी केवल iOS पर उपलब्ध है।",
+    "purchaseFailedTitle": "खरीदारी विफल",
+    "premiumVerificationNotYet": "गेम बैकएंड इस खरीदारी को सत्यापित नहीं कर सका। मिलान का पुन: प्रयास करें; इसे दोबारा न खरीदें।",
+    "premiumVerificationFailedRetry": "गेम बैकएंड अभी तक इस खरीदारी को सत्यापित नहीं कर सका है। मिलान का पुन: प्रयास करें; इसे दोबारा न खरीदें।",
+    "premiumGrantRefreshFailed": "प्रीमियम सत्यापित हो गया था, लेकिन सदस्यता और एआई क्रेडिट स्थिति को रीफ़्रेश नहीं किया जा सका। मिलान का पुन: प्रयास करें।",
+    "premiumReconciliationUnreachable": "खरीद मिलान गेम बैकएंड तक नहीं पहुंच सका। मिलान का पुन: प्रयास करें; इसे दोबारा न खरीदें।",
+    "coinPackVerificationMismatch": "स्टोर लेनदेन इस कॉइन पैक से मेल नहीं खाता था। सत्यापन का पुन: प्रयास करें या सहायता से संपर्क करें; इसे दोबारा न खरीदें।",
+    "coinPackGrantUnavailable": "खरीदारी सत्यापित हो गई थी, लेकिन स्टिच कॉइन ग्रांट अनुपलब्ध है। मिलान का पुन: प्रयास करें; इसे दोबारा न खरीदें।",
+    "coinPackBalanceRefreshFailed": "कॉइन ग्रांट सत्यापित हो गया था, लेकिन वर्तमान स्टिच कॉइन बैलेंस को रीफ़्रेश नहीं किया जा सका। मिलान का पुन: प्रयास करें।",
+    "coinPackVerificationFailedRetry": "गेम बैकएंड अभी तक इस कॉइन पैक को सत्यापित नहीं कर सका है। मिलान का पुन: प्रयास करें; इसे दोबारा न खरीदें।",
+    "coinPackReconciliationUnreachable": "कॉइन पैक मिलान गेम बैकएंड तक नहीं पहुंच सका। मिलान का पुन: प्रयास करें; इसे दोबारा न खरीदें।",
+    "aiCreditPackVerificationMismatch": "स्टोर लेनदेन इस एआई क्रेडिट पैक से मेल नहीं खाता था। सत्यापन का पुन: प्रयास करें या सहायता से संपर्क करें; इसे दोबारा न खरीदें।",
+    "aiCreditPackGrantUnavailable": "खरीदारी सत्यापित हो गई थी, लेकिन एआई क्रेडिट ग्रांट अनुपलब्ध है। मिलान का पुन: प्रयास करें; इसे दोबारा न खरीदें।",
+    "aiCreditPackBalanceRefreshFailed": "एआई क्रेडिट ग्रांट सत्यापित हो गया था, लेकिन वर्तमान बैलेंस को रीफ़्रेश नहीं किया जा सका। मिलान का पुन: प्रयास करें।",
+    "aiCreditPackVerificationFailedRetry": "गेम बैकएंड अभी तक इस एआई क्रेडिट पैक को सत्यापित नहीं कर सका है। मिलान का पुन: प्रयास करें; इसे दोबारा न खरीदें।",
+    "aiCreditPackReconciliationUnreachable": "एआई क्रेडिट पैक मिलान गेम बैकएंड तक नहीं पहुंच सका। मिलान का पुन: प्रयास करें; इसे दोबारा न खरीदें।",
+    "reconciliationStillUnavailable": "गेम बैकएंड अभी भी अनुपलब्ध है। बाद में पुन: मिलान का प्रयास करें।",
+    "storeTemporarilyUnavailable": "स्टोर अस्थायी रूप से अनुपलब्ध है। कृपया कुछ मिनटों में पुन: प्रयास करें।",
+    "purchasesNotAllowed": "इस डिवाइस पर खरीदारी की अनुमति नहीं है। अपने स्टोर खाते या पैरेंटल कंट्रोल की जांच करें।",
+    "itemNotAvailable": "यह आइटम अभी खरीदने के लिए उपलब्ध नहीं है। कृपया कोई अन्य आइटम चुनें या बाद में दोबारा प्रयास करें।",
+    "alreadyOwned": "आपके पास पहले से ही यह खरीदारी मौजूद है। अपनी पहुंच रीफ़्रेश करने के लिए खरीदारियां पुनर्स्थापित करें का उपयोग करें।",
+    "couldNotConnectToStore": "स्टोर से कनेक्ट नहीं किया जा सका। अपने इंटरनेट कनेक्शन की जांच करें और दोबारा प्रयास करें।",
+    "paymentPendingApproval": "आपका भुगतान स्वीकृति के लिए लंबित है। स्टोर द्वारा इसे पूरा करने के बाद आपकी खरीदारी दिखाई देगी।",
+    "testPurchaseDeclined": "परीक्षण खरीदारी अस्वीकार कर दी गई थी। कोई भुगतान नहीं किया गया। सेटिंग्स में एक अलग टेस्ट स्टोर परिणाम चुनें, फिर दोबारा प्रयास करें।",
+    "genericPurchaseFailure": "हम आपकी खरीदारी पूरी नहीं कर सके। कोई भुगतान नहीं लिया गया। कृपया दोबारा प्रयास करें।"
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "अभी भी सत्यापित किया जा रहा है",
+    "premiumPending": "सत्यापन अभी भी जारी है। गेम बैकएंड द्वारा पुष्टि करने के बाद प्रीमियम सक्रिय हो जाएगा।",
+    "premiumPlanChangePending": "सत्यापन अभी भी जारी है। गेम बैकएंड द्वारा पुष्टि करने के बाद आपके प्लान में बदलाव निर्धारित किया जाएगा।",
+    "coinPackPending": "सत्यापन अभी भी जारी है। इसके पूरा होने के बाद आपका स्टिच कॉइन बैलेंस अपडेट हो जाएगा।",
+    "aiCreditPackPending": "सत्यापन अभी भी जारी है। इसके पूरा होने के बाद आपका एआई क्रेडिट बैलेंस अपडेट हो जाएगा।"
+  },
+  "success": {
+    "purchaseReceivedTitle": "खरीदारी प्राप्त हुई",
+    "storeAcceptedPlanChange": "स्टोर ने {{label}} में बदलाव स्वीकार कर लिया है। इसके प्रभावी होने पर पुष्टि की जा रही है।",
+    "storeAcceptedPurchase": "स्टोर ने {{label}} को स्वीकार कर लिया है। आपकी खरीदारी को अभी सत्यापित किया जा रहा है।",
+    "premiumChanges": "प्रीमियम {{label}}{{effectiveOn}} में बदल जाएगा।",
+    "effectiveOnDate": " {{date}} को",
+    "planChangeScheduledTitle": "प्लान बदलाव निर्धारित",
+    "planChangeScheduledBody": "आपकी प्रीमियम सदस्यता अपने वर्तमान प्लान पर तब तक बनी रहेगी जब तक कि यह {{label}}{{effectiveOn}} में नहीं बदल जाती। सदस्यता प्रबंधित करें से बदलाव रद्द करें।",
+    "premiumIsActiveTitle": "प्रीमियम सक्रिय है",
+    "premiumVerifiedAndActive": "{{label}} प्रीमियम सत्यापित और सक्रिय है।",
+    "premiumNowActiveNoBilling": "{{label}} प्रीमियम अब सक्रिय है।",
+    "premiumNowActiveBilled": "{{label}} प्रीमियम अब सक्रिय है, हर {{period}} को बिल किया जाएगा।",
+    "coinPackGrantedTitle": "स्टिच कॉइन्स प्रदान किए गए",
+    "coinPackGrantVerified": "{{label}} ग्रांट सत्यापित। स्टिच कॉइन बैलेंस: {{balance}}।",
+    "coinPackAddedToBalance": "{{quantity}} स्टिच कॉइन्स आपके बैलेंस में जोड़ दिए गए हैं।",
+    "aiCreditPackGrantedTitle": "एआई क्रेडिट्स प्रदान किए गए",
+    "aiCreditPackGrantVerified": "{{label}} ग्रांट सत्यापित। एआई क्रेडिट बैलेंस: {{balance}}।",
+    "aiCreditPackAddedToBalance": "{{quantity}} एआई क्रेडिट्स आपके बैलेंस में जोड़ दिए गए हैं।"
+  },
+  "products": {
+    "premiumAnnual": "वार्षिक",
+    "premiumMonthly": "मासिक",
+    "premiumWeekly": "साप्ताहिक",
+    "stitchCoinPack_one": "{{formattedCount}} स्टिच कॉइन",
+    "stitchCoinPack_other": "{{formattedCount}} स्टिच कॉइन्स",
+    "aiCreditPack_one": "{{formattedCount}} एआई क्रेडिट",
+    "aiCreditPack_other": "{{formattedCount}} एआई क्रेडिट्स",
+    "billedEveryOffer": "हर {{period}} में {{price}}",
+    "creditAllowancePaidPeriod": "{{credits}} क्रेडिट्स / भुगतान की गई अवधि",
+    "creditAllowancePaidNoun": "{{credits}} क्रेडिट्स / भुगतान की गई {{period}}"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "अतिथि के रूप में खरीदारी करें",
+    "commerceBody": "आप बिना पंजीकरण के खरीदारी कर सकते हैं। प्रीमियम सदस्यता को स्टोर से पुनर्स्थापित किया जा सकता है, लेकिन यदि यह इंस्टॉलेशन खो जाता है, तो स्टिच कॉइन, एआई क्रेडिट और निजी अतिथि सामग्री को पुनर्प्राप्त नहीं किया जा सकता है। पंजीकरण करने से वे सुरक्षित रहते हैं और अतिथि के रूप में खेलने में कभी बाधा नहीं आती है।",
+    "continueAsGuest": "अतिथि के रूप में जारी रखें",
+    "signInInstead": "इसके बजाय साइन इन करें",
+    "closeAccessibilityLabel": "बंद करें"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "समझ गया",
+    "successButton": "बहुत बढ़िया",
+    "failedButton": "बंद करें",
+    "infoButton": "समझ गया",
+    "closeAccessibilityLabel": "बंद करें"
+  }
+}
