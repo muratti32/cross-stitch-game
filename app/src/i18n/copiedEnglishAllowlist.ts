@@ -187,4 +187,7 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'nb:settings:session.idLabel': '"ID" is used identically in Norwegian Bokmål tech/UI copy.',
   'nb:settings:data.sectionTitle': '"Data" is an identical Norwegian Bokmål cognate.',
   'nb:create:photoImport.profile.options.standard': '"Standard" is used identically in Norwegian Bokmål.',
+  'pt:play:home.idLabel': '"ID" is used identically in Portuguese tech/UI copy.',
+  'pt:settings:session.idLabel': '"ID" is used identically in Portuguese tech/UI copy.',
+  'pt:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
 };

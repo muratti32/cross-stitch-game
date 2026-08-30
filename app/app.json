@@ -147,7 +147,8 @@
       "id": "./src/i18n/locales/id/native.json",
       "hu": "./src/i18n/locales/hu/native.json",
       "ms": "./src/i18n/locales/ms/native.json",
-      "nb": "./src/i18n/locales/nb/native.json"
+      "nb": "./src/i18n/locales/nb/native.json",
+      "pt": "./src/i18n/locales/pt/native.json"
     },
     "experiments": {
       "typedRoutes": true,

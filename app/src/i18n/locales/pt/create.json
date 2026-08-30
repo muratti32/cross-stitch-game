@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Voltar",
+    "cancel": "Cancelar",
+    "duplicateTitle": "Já tens um Padrão Pessoal chamado “{{title}}”. Escolhe um título diferente.",
+    "cellsCount_one": "célula",
+    "cellsCount_other": "células",
+    "colorsCount_one": "cor",
+    "colorsCount_other": "cores"
+  },
+  "hub": {
+    "title": "Centro de Criação",
+    "subtitle": "Dá vida às tuas próprias ideias com padrões de ponto de cruz personalizados.",
+    "opening": "A abrir…",
+    "photoImport": {
+      "title": "Importar Foto",
+      "description": "Carrega uma imagem do teu rolo de câmara e converte-a num padrão bordável.",
+      "action": "Importar foto"
+    },
+    "aiGenerator": {
+      "title": "Gerador de IA",
+      "description": "Descreve uma ideia acolhedora e deixa a inteligência artificial gerar um desenho pixelizado personalizado.",
+      "action": "Gerar desenho"
+    }
+  },
+  "aspects": {
+    "square": "Quadrado",
+    "portrait_4_3": "Retrato 4:3",
+    "landscape_4_3": "Paisagem 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "A Conversão do Padrão falhou. Por favor, tenta novamente.",
+      "timeout": "A Conversão do Padrão ainda está a processar. Tenta novamente daqui a pouco.",
+      "generic": "Não foi possível concluir a Conversão do Padrão. Por favor, tenta novamente."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Conta Registada Necessária",
+      "body": "As criações de IA e a respetiva biblioteca mantêm-se privadas da tua conta.",
+      "signIn": "Iniciar sessão"
+    },
+    "header": {
+      "title": "Gerador de IA",
+      "backAccessibilityLabel": "Voltar"
+    },
+    "prompt": {
+      "label": "Descreve a tua criação",
+      "placeholder": "Uma casa de campo acolhedora ao pôr do sol…"
+    },
+    "generate": {
+      "working": "A trabalhar…",
+      "action": "Gerar — 1 Crédito de IA",
+      "errors": {
+        "promptRejected": "Essa descrição não foi permitida. Tenta descrever outra coisa.",
+        "generic": "Não foi possível iniciar a geração por IA. Por favor, tenta novamente."
+      }
+    },
+    "library": {
+      "title": "A Tua Biblioteca de Criações de IA",
+      "status": {
+        "pending": "Pendente",
+        "dispatched": "Enviado",
+        "running": "Em curso",
+        "delivered": "Entregue",
+        "safety_rejected": "Rejeitado por segurança",
+        "failed": "Falhado",
+        "deleted": "Eliminado",
+        "unknown": "Indisponível"
+      },
+      "failure": {
+        "safety_rejected": "Esta criação não passou na verificação de segurança do fornecedor.",
+        "failed": "Não foi possível gerar esta criação."
+      },
+      "approve": "Aprovar como Padrão",
+      "delete": "Eliminar",
+      "deleteAccessibilityLabel": "Eliminar esta Criação de IA",
+      "errors": {
+        "loadFailed": "Não foi possível carregar a tua Biblioteca de Criações de IA. Por favor, tenta novamente."
+      }
+    },
+    "approve": {
+      "modalTitle": "Criar Padrão Pessoal",
+      "titleLabel": "Título do padrão",
+      "titleAccessibilityLabel": "Título do padrão",
+      "defaultTitle": "O Meu Padrão de IA",
+      "placeholder": "O Meu Padrão de IA",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Cancelar",
+      "creating": "A criar Padrão…",
+      "create": "Criar Padrão",
+      "errors": {
+        "generic": "Não foi possível criar o Padrão Pessoal. Por favor, tenta novamente."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Conta Registada Necessária",
+      "body": "Os Padrões Pessoais pertencem à tua conta para se manterem privados e disponíveis em todos os dispositivos.",
+      "signIn": "Iniciar sessão ou criar conta",
+      "back": "Voltar"
+    },
+    "header": {
+      "title": "Padrão de Foto",
+      "subtitle": "Enquadra localmente, depois aprova a conversão",
+      "backAccessibilityLabel": "Voltar"
+    },
+    "picker": {
+      "chooseTitle": "Escolhe uma foto",
+      "helpText": "A Fonte de Foto Local em resolução total mantém-se neste dispositivo. Nada é convertido até aprovares o enquadramento.",
+      "choose": "Escolher da biblioteca",
+      "chooseAnother": "Escolher outra",
+      "opening": "A abrir…",
+      "errors": {
+        "permissionDenied": "É necessário acesso à biblioteca de fotos para escolher uma Fonte de Foto Local.",
+        "invalidDimensions": "A foto selecionada não reporta dimensões utilizáveis.",
+        "generic": "Não foi possível abrir a biblioteca de fotos. Por favor, tenta novamente."
+      }
+    },
+    "framing": {
+      "title": "Enquadramento da Criação",
+      "gestureHint": "Arrasta para posicionar · belisca para ampliar",
+      "aspectLabel": "Proporção do enquadramento"
+    },
+    "profile": {
+      "title": "Perfil de Conversão",
+      "options": {
+        "easy": "Fácil",
+        "standard": "Padrão",
+        "detailed": "Detalhado"
+      },
+      "custom": "Personalizado",
+      "customMeta": "Livre · forma fixa",
+      "unavailable": "Não cabe neste enquadramento",
+      "customShortEdgeLabel": "Lado mais curto",
+      "customColorLimitLabel": "Limite de cores DMC",
+      "exceedsLimit": "Estes valores Personalizados excedem o limite de {{max}} células do Tamanho do Padrão."
+    },
+    "titleCard": {
+      "label": "Título do padrão",
+      "placeholder": "O Meu Padrão de Foto",
+      "defaultTitle": "O Meu Padrão de Foto",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · até {{maxColors}} {{colorsUnit}} DMC",
+      "privacyNotice": "A aprovação carrega apenas o derivado enquadrado e reduzido. A foto original mantém-se local.",
+      "approve": "Aprovar criação e converter"
+    },
+    "processing": {
+      "preparingFrame": "A preparar o enquadramento aprovado neste dispositivo…",
+      "uploading": "A carregar apenas o enquadramento recortado e reduzido…",
+      "waitingForWorker": "À espera do processo de conversão…",
+      "buildingGrid": "A construir a grelha de pontos e a paleta DMC…",
+      "preparingSession": "A preparar o Padrão Pessoal para jogar…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Este perfil já não cabe no enquadramento final. Escolhe Fácil ou reduz o detalhe.",
+        "generic": "Não foi possível converter esta foto. Por favor, tenta novamente."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Nenhum Padrão Selecionado",
+      "noPatternBody": "Este ecrã tem de ser aberto a partir de um Padrão Pessoal existente na tua biblioteca.",
+      "accountTitle": "Conta Registada Necessária",
+      "accountBody": "Os Padrões Pessoais pertencem à tua conta para se manterem privados e disponíveis em todos os dispositivos.",
+      "signIn": "Iniciar sessão ou criar conta",
+      "back": "Voltar"
+    },
+    "loading": "A retomar o rascunho do editor...",
+    "load": {
+      "failedTitle": "Falha ao Carregar o Padrão",
+      "retry": "Tentar Novamente",
+      "back": "Voltar",
+      "errors": {
+        "generic": "Não foi possível carregar este Padrão Pessoal. Por favor, tenta novamente."
+      }
+    },
+    "header": {
+      "title": "Editor de Padrões",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Voltar"
+    },
+    "toolbar": {
+      "undo": "Anular",
+      "redo": "Refazer"
+    },
+    "mode": {
+      "paint": "Pintar",
+      "replaceColor": "Substituir Cor",
+      "replaceStep1": "1. Toca numa cor no padrão abaixo para substituir:",
+      "replaceStep2": "2. Seleciona uma cor DMC de destino abaixo para executar a substituição:",
+      "paintSelected": "Selecionado: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Seleciona uma cor abaixo, depois toca nas células para pintar."
+    },
+    "errors": {
+      "pickColorFirst": "Escolhe primeiro uma cor",
+      "paletteLimit": "Este padrão já usa o máximo de {{max}} cores de fio."
+    },
+    "picker": {
+      "title": "Cores de Fio DMC",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Guardar Padrão Editado",
+      "placeholder": "Título do Meu Padrão Editado",
+      "action": "Guardar como Novo",
+      "offlineTitle": "Guardado offline",
+      "offlineBody": "O teu padrão editado foi guardado neste dispositivo e sincronizará com a tua conta assim que estiveres online novamente.",
+      "errors": {
+        "generic": "Não foi possível guardar este Padrão Pessoal. Por favor, tenta novamente."
+      }
+    }
+  }
+}
