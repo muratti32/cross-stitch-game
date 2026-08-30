@@ -1405,6 +1405,1412 @@
       }
     }
   },
+  "ca": {
+    "catalog": {
+      "common": {
+        "back": "← Enrere",
+        "searchPlaceholder": "Cerca patrons, creadors, etiquetes…",
+        "offlineBanner": "Sense connexió — el catàleg pot estar desactualitzat",
+        "sectionError": {
+          "title": "No s'ha pogut carregar",
+          "retry": "Torna-ho a provar"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} colors",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} cols",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "Anglès"
+        },
+        "accessibilityLabel": "Escrit en {{language}}"
+      },
+      "index": {
+        "subtitle": "Crea el teu món acollidor, puntada a puntada.",
+        "searchBar": {
+          "accessibilityLabel": "Cerca al catàleg de patrons"
+        },
+        "sections": {
+          "starterPatterns": "Patrons Inicials",
+          "staffPicks": "Seleccions de l'Equip",
+          "categories": "Categories",
+          "newPatterns": "Patrons Nous"
+        },
+        "staffPicks": {
+          "emptyTitle": "Encara Sense Seleccions",
+          "emptyBody": "La nostra col·lecció de dissenys acollidors triats a mà apareixerà aquí aviat.",
+          "errorBody": "No s'ha pogut accedir al catàleg i encara no hi ha res desat en memòria cau."
+        },
+        "categories": {
+          "count": "{{count}} patrons",
+          "errorBody": "No s'ha pogut accedir al catàleg i encara no hi ha res desat en memòria cau."
+        },
+        "newPatterns": {
+          "emptyTitle": "S'estan Creant Patrons Nous",
+          "emptyBody": "Aviat arribaran novetats!",
+          "errorBody": "No s'ha pogut accedir al catàleg i encara no hi ha res desat en memòria cau.",
+          "showMore": "Mostra'n més",
+          "loading": "Carregant…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "Explora",
+        "error": {
+          "body": "No s'ha pogut accedir a aquesta pàgina del catàleg i encara no hi ha res desat en memòria cau."
+        },
+        "empty": {
+          "title": "Encara No Hi Ha Res",
+          "body": "Cap patró coincideix amb aquesta selecció encara. Arriben dissenys nous regularment."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "Camp de cerca del catàleg",
+        "inactive": {
+          "title": "Cerca al Catàleg",
+          "body": "Escriu almenys dos caràcters per cercar patrons per títol, creador o etiqueta."
+        },
+        "error": {
+          "title": "La Cerca Necessita Connexió",
+          "body": "La cerca al catàleg no està disponible sense connexió. Les pàgines del catàleg desades en memòria cau continuen sent visibles des de la pestanya de catàleg."
+        },
+        "noResults": {
+          "title": "Cap Coincidència",
+          "body": "Res al catàleg coincideix amb «{{query}}» encara."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "Jugant com a Convidat",
+        "body": "El Stitch Coin i el progrés només es guarden en aquest dispositiu com a Convidat. Si es perd la instal·lació, el registre i el progrés del Convidat poden ser irrecuperables. Iniciar sessió protegeix el teu progrés."
+      },
+      "detail": {
+        "noDescription": "No hi ha cap descripció disponible.",
+        "specs": {
+          "dimensions": "Dimensions",
+          "totalStitches": "Puntades Totals",
+          "colors": "Colors",
+          "category": "Categoria"
+        },
+        "threadsSuffix": "{{count}} Fils",
+        "palette": {
+          "title": "Fils Necessaris",
+          "loading": "Llegint la paleta de fils...",
+          "loadFailed": "No s'ha pogut carregar la paleta: {{error}}",
+          "retry": "Torna a Carregar"
+        },
+        "actions": {
+          "startStitching": "Comença a Puntar",
+          "starting": "Iniciant...",
+          "preparing": "Preparant…"
+        },
+        "loadFailedGeneric": "No s'ha pogut descodificar el fitxer del patró.",
+        "sessionCreateFailed": "No s'ha pogut crear una sessió de puntada. Torna-ho a provar.",
+        "unavailable": {
+          "title": "Patró No Disponible",
+          "body": "Aquest patró no s'ha pogut carregar. És possible que s'hagi eliminat o que no tinguis connexió.",
+          "goBack": "Torna Enrere"
+        },
+        "byCreator": "per {{creatorName}}",
+        "byCreatorWithUsername": "per {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "Bloqueja el Creador",
+          "message": "Segur que vols bloquejar {{creatorName}}? Aquesta és una acció privada i reversible que amaga els seus patrons de la cerca/exploració. No denuncia el creador i no interromprà la teva sessió de puntada actual.",
+          "cancel": "Cancel·la",
+          "confirm": "Bloqueja",
+          "blockedTitle": "Bloquejat",
+          "blockedMessage": "{{creatorName}} ha estat bloquejat.",
+          "errorTitle": "Error",
+          "failedGeneric": "No s'ha pogut bloquejar el creador."
+        },
+        "likeFailedGeneric": "No s'ha pogut actualitzar l'estat de m'agrada",
+        "connectToPlay": {
+          "title": "Connecta't per jugar",
+          "body": "Iniciar un patró del catàleg necessita connexió per preparar la teva sessió. Els Patrons Inicials es poden jugar ara mateix, fins i tot sense connexió."
+        },
+        "insufficientCoins": {
+          "title": "Monedes Insuficients",
+          "body": "Aquest patró costa {{price}} Stitch Coins, però només tens {{balance}} monedes.\n\nManquen: {{shortfall}} monedes.\n\nGuanya Stitch Coins completant altres patrons! Les recompenses de Primera Finalització ja estan actives.",
+          "getCoins": "Aconsegueix Stitch Coins",
+          "findPatterns": "Troba patrons per punxar",
+          "back": "Enrere"
+        },
+        "unlockFailedGeneric": "No s'ha pogut desbloquejar. Comprova la connexió i torna-ho a provar.",
+        "preparationFailedGeneric": "No s'ha pogut iniciar la preparació. Comprova la connexió i torna-ho a provar.",
+        "price": {
+          "label": "Preu"
+        },
+        "balance": {
+          "label": "El Teu Saldo",
+          "loading": "…"
+        },
+        "unlockButton": "Desbloqueja per {{price}} moneda",
+        "communityReport": {
+          "button": "Denuncia aquest patró",
+          "title": "Denuncia {{patternTitle}}",
+          "body": "Tria el motiu que millor descrigui el problema. Les denúncies mai amaguen ni canvien un patró automàticament.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "Contingut Inapropiat o Insegur",
+            "copyright_or_publication_rights": "Drets d'Autor o de Publicació",
+            "duplicate_or_spam": "Duplicat o Correu Brossa",
+            "misleading_title_or_tags": "Títol o Etiquetes Enganyoses",
+            "other": "Altres"
+          },
+          "explanationLabel": "Evidència o explicació {{requirement}}",
+          "explanationRequired": "(obligatori)",
+          "explanationOptional": "(opcional)",
+          "explanationPlaceholder": "Comparteix detalls que ajudin un moderador a revisar el patró.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "Cancel·la",
+          "submit": "Envia la denúncia",
+          "submitFailedGeneric": "No s'ha pogut enviar la teva denúncia. Comprova la connexió i torna-ho a provar.",
+          "receivedTitle": "Denúncia rebuda",
+          "alreadyReceivedTitle": "Denúncia ja rebuda",
+          "receivedBody": "Un moderador ja pot revisar aquest patró. La denúncia no canvia automàticament la seva disponibilitat.",
+          "alreadyReceivedBody": "La teva denúncia existent ja forma part de la revisió oberta.",
+          "signInRequired": {
+            "title": "Inicia sessió per denunciar",
+            "message": "Les Denúncies Comunitàries requereixen un Compte Registrat. No s'ha enviat res.",
+            "cancel": "Cancel·la",
+            "signIn": "Inicia sessió"
+          },
+          "validation": {
+            "chooseReason": "Tria un motiu de denúncia.",
+            "explainRequired": "Explica per què estàs denunciant aquest patró.",
+            "tooLong": "L'explicació ha de tenir 2.000 caràcters o menys.",
+            "needsContent": "L'explicació ha d'incloure lletres o números."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "Enrere",
+        "title": "Botiga Comercial",
+        "subtitle": "Subscripció i recàrregues úniques"
+      },
+      "signInReturn": {
+        "notice": "Has iniciat sessió. {{label}} encara està seleccionat. Revisa'l i toca Comprar quan estiguis a punt."
+      },
+      "premiumHero": {
+        "eyebrow": "SUBSCRIPCIÓ PREMIUM",
+        "title": "Crea més. Reclama una petita recompensa cada dia.",
+        "body": "Crèdits d'IA cada període de pagament, temes Premium i una reclamació diària de Stitch Coin.",
+        "benefitAiCredits": "Crèdits d'IA",
+        "benefitDailyCoins": "Monedes Diàries",
+        "benefitThemes": "Temes",
+        "statusNoActiveMembership": "Cap subscripció activa",
+        "statusBrowseAsGuest": "Explora els plans com a Jugador Convidat",
+        "periodEndsLabel": "El període actual acaba",
+        "periodRenewsLabel": "Es renova",
+        "lifecycleActive": "Activa"
+      },
+      "membershipActions": {
+        "title": "Subscripció Premium Activa",
+        "body": "Les recompenses diàries són al Perfil. Els temes són a Configuració › Aparença.",
+        "scheduledChangeNotice": "Canvis a {{plan}} el {{date}}",
+        "manageSubscription": "Gestiona la Subscripció",
+        "manageSubscriptionFailedTitle": "No s'ha pogut obrir les subscripcions",
+        "manageSubscriptionFailedBody": "Torna-ho a provar des del compte de la botiga del teu dispositiu."
+      },
+      "pending": {
+        "title": "Reconciliació de Compra Pendent",
+        "verifyingTitle": "Verificant la compra",
+        "premiumChangeAccepted": "La botiga ha acceptat el canvi a {{label}}. ",
+        "premiumResponseReceived": "S'ha rebut la resposta de la botiga per a {{label}}. ",
+        "premiumDeferredSuffix": "El canvi només es programa després de la verificació del Servidor del Joc, i s'aplica quan acaba el teu període actual.",
+        "premiumSuffix": "El Premium només s'activa després de la verificació del Servidor del Joc.",
+        "doNotPurchasePlanAgain": " No tornis a comprar aquest pla.",
+        "coinPackBody": "S'ha rebut la resposta de la botiga. Les Stitch Coin només s'actualitzen quan el Servidor del Joc exposa la concessió del Registre Comercial corresponent. No tornis a comprar aquest paquet.",
+        "aiCreditPackBody": "S'ha rebut la resposta de la botiga. Els Crèdits d'IA només s'actualitzen quan el Servidor del Joc exposa la concessió del Registre Comercial corresponent. No tornis a comprar aquest paquet.",
+        "refreshStatus": "Actualitza l'estat",
+        "retryReconciliation": "Torna a intentar la reconciliació"
+      },
+      "store": {
+        "loadingPrices": "Carregant els preus actuals de la botiga…",
+        "unavailableTitle": "Botiga temporalment no disponible",
+        "unavailableBody": "La informació del teu saldo i la teva subscripció encara està disponible.",
+        "retry": "Torna-ho a provar"
+      },
+      "plans": {
+        "choosePremiumPlan": "Tria un pla Premium",
+        "yourPremiumPlan": "El teu pla Premium",
+        "currentPlan": "PLA ACTUAL",
+        "upgrade": "MILLORA",
+        "planChange": "CANVI DE PLA",
+        "bestValue": "MILLOR VALOR",
+        "billedEvery": "Facturat cada {{period}}",
+        "chooseLabel": "Tria {{label}}",
+        "freeTrial": "Gratuït durant {{offer}}, després {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "Paquets únics",
+        "stitchCoinPacksTitle": "Paquets de Stitch Coin",
+        "aiCreditPacksTitle": "Paquets de Crèdits d'IA",
+        "coinsNoun": "Monedes",
+        "creditsNoun": "Crèdits",
+        "fromPrice": "Des de {{price}}"
+      },
+      "restore": {
+        "restorePurchases": "Restaura compres",
+        "restoreGuestPremium": "Restaura Premium de Convidat",
+        "requestedTitle": "Restauració sol·licitada",
+        "requestedBody": "L'accés Premium verificat apareixerà quan es reconciliï el webhook de la botiga. Els paquets de Stitch Coin i Crèdits d'IA mai es restauren."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "Preus actuals de la botiga d'aplicacions",
+        "closeAccessibilityLabel": "Tanca el full del producte",
+        "closeButtonAccessibilityLabel": "Tanca",
+        "selectedBeforeSignIn": "Seleccionat abans d'iniciar sessió",
+        "buy": "Compra"
+      },
+      "confirmation": {
+        "cancel": "Cancel·la",
+        "confirmLabel": "Confirma {{label}}",
+        "confirmPremiumTitle": "Confirma la compra Premium",
+        "introductoryOffer": "La teva botiga informa d'aquesta oferta introductòria: {{offer}}.",
+        "premiumAppearsAfterVerification": "El Premium apareix només després que el Servidor del Joc verifiqui la transacció de la botiga.",
+        "confirmPremiumUpgradeTitle": "Confirma la millora Premium",
+        "confirmPremiumPlanChangeTitle": "Confirma el canvi de pla Premium",
+        "currentPlanLabel": "Pla Actual: {{label}}",
+        "upgradeToLabel": "Millora a {{label}} · {{offer}}",
+        "changeToLabel": "Canvia a {{label}} · {{offer}}",
+        "upgradeBody": "L'App Store controla el càrrec final i la data d'efecte d'aquesta millora. El Premium reflecteix {{label}} només després que el Servidor del Joc ho verifiqui.",
+        "planChangeBody": "L'App Store ajorna aquest canvi fins al final del teu període actual: {{currentLabel}} continua fins llavors, i {{targetLabel}} es factura des de la data del canvi. Cancel·la el canvi des de Gestiona la Subscripció.",
+        "confirmUpgrade": "Confirma la millora",
+        "confirmPlanChange": "Confirma el canvi de pla",
+        "confirmStitchCoinTitle": "Confirma la compra de Stitch Coin",
+        "confirmAiCreditTitle": "Confirma la compra de Crèdits d'IA",
+        "balanceChangesAfterVerificationCoin": "El teu saldo canvia només després que el Servidor del Joc verifiqui la transacció de la botiga i registri la concessió del Registre Comercial corresponent.",
+        "balanceChangesAfterVerificationAiCredit": "El teu saldo canvia només després que el Servidor del Joc verifiqui la transacció de la botiga i registri la concessió del Registre Comercial corresponent. No cal Subscripció Premium."
+      },
+      "disclosure": {
+        "subscriptionTerms": "El pagament es carrega al teu compte de {{store}} en confirmar-se. El Premium {{label}} es renova automàticament a {{offer}} tret que es desactivi la renovació automàtica almenys 24 hores abans que acabi el període actual. Qualsevol part no utilitzada d'una prova gratuïta es perd en comprar una subscripció. Pots cancel·lar en qualsevol moment des del teu compte de {{store}}.",
+        "privacyPolicy": "Política de Privacitat",
+        "termsOfService": "Termes del Servei",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "No s'ha pogut obrir l'enllaç: {{url}}"
+      },
+      "supportReference": {
+        "label": "Referència de suport: {{reference}}",
+        "copyAccessibilityLabel": "Copia la referència de suport {{reference}}",
+        "copyAccessibilityHint": "Copia la referència de suport al porta-retalls",
+        "copied": "Copiat",
+        "copyFailedTitle": "Còpia fallida",
+        "copyFailedBody": "No s'ha pogut copiar la referència de suport. Selecciona el text per copiar-lo manualment."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "Les compres de Stitch Coin per a Convidats només estan disponibles a iOS.",
+        "guestIosOnlyGeneric": "Les compres de Convidat només estan disponibles a iOS.",
+        "purchaseFailedTitle": "La compra ha fallat",
+        "premiumVerificationNotYet": "El Servidor del Joc no ha pogut verificar aquesta compra. Torna a intentar la reconciliació; no la tornis a comprar.",
+        "premiumVerificationFailedRetry": "El Servidor del Joc encara no ha pogut verificar aquesta compra. Torna a intentar la reconciliació; no la tornis a comprar.",
+        "premiumGrantRefreshFailed": "El Premium s'ha verificat, però l'estat de la subscripció i dels Crèdits d'IA no s'ha pogut actualitzar. Torna a intentar la reconciliació.",
+        "premiumReconciliationUnreachable": "La reconciliació de la compra no ha pogut arribar al Servidor del Joc. Torna a intentar la reconciliació; no la tornis a comprar.",
+        "coinPackVerificationMismatch": "La transacció de la botiga no coincideix amb aquest Paquet de Monedes. Torna a intentar la verificació o contacta amb suport; no el tornis a comprar.",
+        "coinPackGrantUnavailable": "La compra s'ha verificat, però la concessió de Stitch Coin no està disponible. Torna a intentar la reconciliació; no la tornis a comprar.",
+        "coinPackBalanceRefreshFailed": "La concessió de Monedes s'ha verificat, però el saldo actual de Stitch Coin no s'ha pogut actualitzar. Torna a intentar la reconciliació.",
+        "coinPackVerificationFailedRetry": "El Servidor del Joc encara no ha pogut verificar aquest Paquet de Monedes. Torna a intentar la reconciliació; no el tornis a comprar.",
+        "coinPackReconciliationUnreachable": "La reconciliació del Paquet de Monedes no ha pogut arribar al Servidor del Joc. Torna a intentar la reconciliació; no el tornis a comprar.",
+        "aiCreditPackVerificationMismatch": "La transacció de la botiga no coincideix amb aquest Paquet de Crèdits d'IA. Torna a intentar la verificació o contacta amb suport; no el tornis a comprar.",
+        "aiCreditPackGrantUnavailable": "La compra s'ha verificat, però la concessió de Crèdits d'IA no està disponible. Torna a intentar la reconciliació; no el tornis a comprar.",
+        "aiCreditPackBalanceRefreshFailed": "La concessió de Crèdits d'IA s'ha verificat, però el saldo actual no s'ha pogut actualitzar. Torna a intentar la reconciliació.",
+        "aiCreditPackVerificationFailedRetry": "El Servidor del Joc encara no ha pogut verificar aquest Paquet de Crèdits d'IA. Torna a intentar la reconciliació; no el tornis a comprar.",
+        "aiCreditPackReconciliationUnreachable": "La reconciliació del Paquet de Crèdits d'IA no ha pogut arribar al Servidor del Joc. Torna a intentar la reconciliació; no el tornis a comprar.",
+        "reconciliationStillUnavailable": "El Servidor del Joc encara no està disponible. Torna a intentar la reconciliació més tard.",
+        "storeTemporarilyUnavailable": "La botiga no està disponible temporalment. Torna-ho a provar d'aquí a uns minuts.",
+        "purchasesNotAllowed": "Les compres no estan permeses en aquest dispositiu. Comprova el teu compte de la botiga o els controls parentals.",
+        "itemNotAvailable": "Aquest article no està disponible per comprar ara mateix. Tria un altre article o torna-ho a provar més tard.",
+        "alreadyOwned": "Ja tens aquesta compra. Utilitza Restaura Compres per actualitzar el teu accés.",
+        "couldNotConnectToStore": "No s'ha pogut connectar amb la botiga. Comprova la teva connexió a internet i torna-ho a provar.",
+        "paymentPendingApproval": "El teu pagament està pendent d'aprovació. La teva compra apareixerà quan la botiga la completi.",
+        "testPurchaseDeclined": "La compra de prova ha estat rebutjada. No s'ha realitzat cap pagament. Tria un resultat diferent de Botiga de Prova a Configuració i torna-ho a provar.",
+        "genericPurchaseFailure": "No hem pogut completar la teva compra. No s'ha realitzat cap pagament. Torna-ho a provar."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "Encara verificant",
+        "premiumPending": "La verificació encara està en curs. El Premium s'activarà quan el Servidor del Joc ho confirmi.",
+        "premiumPlanChangePending": "La verificació encara està en curs. El teu canvi de pla es programarà quan el Servidor del Joc ho confirmi.",
+        "coinPackPending": "La verificació encara està en curs. El teu saldo de Stitch Coin s'actualitzarà quan es completi.",
+        "aiCreditPackPending": "La verificació encara està en curs. El teu saldo de Crèdits d'IA s'actualitzarà quan es completi."
+      },
+      "success": {
+        "purchaseReceivedTitle": "Compra rebuda",
+        "storeAcceptedPlanChange": "La botiga ha acceptat el canvi a {{label}}. Confirmant quan entri en vigor.",
+        "storeAcceptedPurchase": "La botiga ha acceptat {{label}}. Verificant la teva compra ara.",
+        "premiumChanges": "El Premium canvia a {{label}}{{effectiveOn}}.",
+        "effectiveOnDate": " el {{date}}",
+        "planChangeScheduledTitle": "Canvi de pla programat",
+        "planChangeScheduledBody": "La teva Subscripció Premium manté el seu pla actual fins que canviï a {{label}}{{effectiveOn}}. Cancel·la el canvi des de Gestiona la Subscripció.",
+        "premiumIsActiveTitle": "El Premium està actiu",
+        "premiumVerifiedAndActive": "El Premium {{label}} està verificat i actiu.",
+        "premiumNowActiveNoBilling": "El Premium {{label}} ja està actiu.",
+        "premiumNowActiveBilled": "El Premium {{label}} ja està actiu, facturat cada {{period}}.",
+        "coinPackGrantedTitle": "Stitch Coins concedides",
+        "coinPackGrantVerified": "Concessió de {{label}} verificada. Saldo de Stitch Coin: {{balance}}.",
+        "coinPackAddedToBalance": "S'han afegit {{quantity}} Stitch Coins al teu saldo.",
+        "aiCreditPackGrantedTitle": "Crèdits d'IA concedits",
+        "aiCreditPackGrantVerified": "Concessió de {{label}} verificada. Saldo de Crèdits d'IA: {{balance}}.",
+        "aiCreditPackAddedToBalance": "S'han afegit {{quantity}} Crèdits d'IA al teu saldo."
+      },
+      "products": {
+        "premiumAnnual": "Anual",
+        "premiumMonthly": "Mensual",
+        "premiumWeekly": "Setmanal",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+        "aiCreditPack_one": "{{formattedCount}} Crèdit d'IA",
+        "aiCreditPack_other": "{{formattedCount}} Crèdits d'IA",
+        "billedEveryOffer": "{{price}} cada {{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} crèdits / període de pagament",
+        "creditAllowancePaidNoun": "{{credits}} crèdits / {{period}} de pagament"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "Compra com a Convidat",
+        "commerceBody": "Pots comprar sense registrar-te. La Subscripció Premium es pot restaurar des de la botiga, però les Stitch Coin, els Crèdits d'IA i el contingut privat de Convidat són irrecuperables si es perd aquesta instal·lació. Registrar-te els protegeix i mai interromp jugar com a Convidat.",
+        "continueAsGuest": "Continua com a Convidat",
+        "signInInstead": "Inicia sessió en lloc d'això",
+        "closeAccessibilityLabel": "Tanca"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "Entesos",
+        "successButton": "Genial",
+        "failedButton": "Tanca",
+        "infoButton": "Entesos",
+        "closeAccessibilityLabel": "Tanca"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "Enrere",
+        "cancel": "Cancel·la",
+        "duplicateTitle": "Ja tens un Patró Personal anomenat «{{title}}». Tria un títol diferent.",
+        "cellsCount_one": "casella",
+        "cellsCount_other": "caselles",
+        "colorsCount_one": "color",
+        "colorsCount_other": "colors"
+      },
+      "hub": {
+        "title": "Centre de Creació",
+        "subtitle": "Dona vida als teus propis dissenys amb patrons de creueta personalitzats.",
+        "opening": "Obrint…",
+        "photoImport": {
+          "title": "Importa Foto",
+          "description": "Puja una imatge del teu carret i converteix-la en un patró punxable.",
+          "action": "Importa una foto"
+        },
+        "aiGenerator": {
+          "title": "Generador d'IA",
+          "description": "Descriu una idea acollidora i deixa que la intel·ligència artificial generi un disseny de píxels personalitzat.",
+          "action": "Genera el disseny"
+        }
+      },
+      "aspects": {
+        "square": "Quadrat",
+        "portrait_4_3": "Vertical 4:3",
+        "landscape_4_3": "Horitzontal 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "La Conversió del Patró ha fallat. Torna-ho a provar.",
+          "timeout": "La Conversió del Patró encara s'està processant. Torna-ho a provar d'aquí a poc.",
+          "generic": "No s'ha pogut completar la Conversió del Patró. Torna-ho a provar."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "Cal un Compte Registrat",
+          "body": "L'art generat per IA i la seva biblioteca es mantenen privats al teu compte.",
+          "signIn": "Inicia sessió"
+        },
+        "header": {
+          "title": "Generador d'IA",
+          "backAccessibilityLabel": "Enrere"
+        },
+        "prompt": {
+          "label": "Descriu la teva obra",
+          "placeholder": "Un jardí de cabana acollidor a la posta de sol…"
+        },
+        "generate": {
+          "working": "Treballant…",
+          "action": "Genera — 1 Crèdit d'IA",
+          "errors": {
+            "promptRejected": "Aquesta descripció no ha estat permesa. Prova de descriure una altra cosa.",
+            "generic": "No s'ha pogut iniciar la generació amb IA. Torna-ho a provar."
+          }
+        },
+        "library": {
+          "title": "La Teva Biblioteca d'Art d'IA",
+          "status": {
+            "pending": "Pendent",
+            "dispatched": "Enviat",
+            "running": "En procés",
+            "delivered": "Lliurat",
+            "safety_rejected": "Rebutjat per seguretat",
+            "failed": "Fallit",
+            "deleted": "Eliminat",
+            "unknown": "No disponible"
+          },
+          "failure": {
+            "safety_rejected": "Aquesta obra no ha superat la comprovació de seguretat del proveïdor.",
+            "failed": "Aquesta obra no s'ha pogut generar."
+          },
+          "approve": "Aprova com a Patró",
+          "delete": "Elimina",
+          "deleteAccessibilityLabel": "Elimina aquesta Obra d'IA",
+          "errors": {
+            "loadFailed": "No s'ha pogut carregar la teva Biblioteca d'Art d'IA. Torna-ho a provar."
+          }
+        },
+        "approve": {
+          "modalTitle": "Crea un Patró Personal",
+          "titleLabel": "Títol del patró",
+          "titleAccessibilityLabel": "Títol del patró",
+          "defaultTitle": "El Meu Patró d'IA",
+          "placeholder": "El Meu Patró d'IA",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "Cancel·la",
+          "creating": "Creant Patró…",
+          "create": "Crea el Patró",
+          "errors": {
+            "generic": "No s'ha pogut crear el Patró Personal. Torna-ho a provar."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "Cal un Compte Registrat",
+          "body": "Els Patrons Personals pertanyen al teu compte perquè es mantinguin privats i disponibles a tots els dispositius.",
+          "signIn": "Inicia sessió o crea un compte",
+          "back": "Enrere"
+        },
+        "header": {
+          "title": "Patró de Foto",
+          "subtitle": "Enquadra localment i després aprova la conversió",
+          "backAccessibilityLabel": "Enrere"
+        },
+        "picker": {
+          "chooseTitle": "Tria una foto",
+          "helpText": "La Font de Foto Local en resolució completa es queda en aquest dispositiu. Res es converteix fins que no aproves l'enquadrament.",
+          "choose": "Tria de la biblioteca",
+          "chooseAnother": "Tria'n una altra",
+          "opening": "Obrint…",
+          "errors": {
+            "permissionDenied": "Cal accés a la biblioteca de fotos per triar una Font de Foto Local.",
+            "invalidDimensions": "La foto seleccionada no indica dimensions utilitzables.",
+            "generic": "No s'ha pogut obrir la biblioteca de fotos. Torna-ho a provar."
+          }
+        },
+        "framing": {
+          "title": "Enquadrament de l'Obra",
+          "gestureHint": "Arrossega per posicionar · pessiga per fer zoom",
+          "aspectLabel": "Proporció de l'enquadrament"
+        },
+        "profile": {
+          "title": "Perfil de Conversió",
+          "options": {
+            "easy": "Fàcil",
+            "standard": "Estàndard",
+            "detailed": "Detallat"
+          },
+          "custom": "Personalitzat",
+          "customMeta": "Lliure · forma fixada",
+          "unavailable": "No s'ajusta a aquest enquadrament",
+          "customShortEdgeLabel": "Costat curt",
+          "customColorLimitLabel": "Límit de colors DMC",
+          "exceedsLimit": "Aquests valors personalitzats superen el límit de {{max}} caselles del Patró."
+        },
+        "titleCard": {
+          "label": "Títol del patró",
+          "placeholder": "El Meu Patró de Foto",
+          "defaultTitle": "El Meu Patró de Foto",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · fins a {{maxColors}} {{colorsUnit}} DMC",
+          "privacyNotice": "L'aprovació només puja la derivada enquadrada i reduïda. La foto original es queda al dispositiu.",
+          "approve": "Aprova l'obra i converteix"
+        },
+        "processing": {
+          "preparingFrame": "Preparant l'enquadrament aprovat en aquest dispositiu…",
+          "uploading": "Pujant només l'enquadrament retallat i reduït…",
+          "waitingForWorker": "Esperant el treballador de conversió…",
+          "buildingGrid": "Construint la quadrícula de puntades i la paleta DMC…",
+          "preparingSession": "Preparant el Patró Personal per jugar…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "Aquest perfil ja no s'ajusta a l'enquadrament final. Tria Fàcil o redueix el detall.",
+            "generic": "No s'ha pogut convertir aquesta foto. Torna-ho a provar."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "Cap Patró Seleccionat",
+          "noPatternBody": "Aquesta pantalla s'ha d'obrir des d'un Patró Personal existent a la teva biblioteca.",
+          "accountTitle": "Cal un Compte Registrat",
+          "accountBody": "Els Patrons Personals pertanyen al teu compte perquè es mantinguin privats i disponibles a tots els dispositius.",
+          "signIn": "Inicia sessió o crea un compte",
+          "back": "Enrere"
+        },
+        "loading": "Reprenent l'esborrany de l'editor...",
+        "load": {
+          "failedTitle": "Error en Carregar el Patró",
+          "retry": "Torna-ho a provar",
+          "back": "Enrere",
+          "errors": {
+            "generic": "No s'ha pogut carregar aquest Patró Personal. Torna-ho a provar."
+          }
+        },
+        "header": {
+          "title": "Editor de Patrons",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "Enrere"
+        },
+        "toolbar": {
+          "undo": "Desfés",
+          "redo": "Refés"
+        },
+        "mode": {
+          "paint": "Pinta",
+          "replaceColor": "Substitueix el Color",
+          "replaceStep1": "1. Toca un color del patró de sota per substituir:",
+          "replaceStep2": "2. Selecciona un color DMC de destí a sota per executar la substitució:",
+          "paintSelected": "Seleccionat: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "Selecciona un color a sota i després toca les caselles per pintar."
+        },
+        "errors": {
+          "pickColorFirst": "Tria primer un color",
+          "paletteLimit": "Aquest patró ja fa servir el màxim de {{max}} colors de fil."
+        },
+        "picker": {
+          "title": "Colors de Fil DMC",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "Desa el Patró Editat",
+          "placeholder": "Títol del Meu Patró Editat",
+          "action": "Desa com a Nou",
+          "offlineTitle": "Desat sense connexió",
+          "offlineBody": "El teu patró editat s'ha desat en aquest dispositiu i se sincronitzarà amb el teu compte quan tornis a tenir connexió.",
+          "errors": {
+            "generic": "No s'ha pogut desar aquest Patró Personal. Torna-ho a provar."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "Aquest inici de sessió pertany a un altre compte. El teu compte actual no s'ha canviat.",
+        "providerRejected": "Aquesta verificació ha estat rebutjada. Comprova el compte o el codi i torna-ho a provar."
+      },
+      "generic": {
+        "failure": "S'ha produït un error. Torna-ho a provar.",
+        "supportReferenceLabel": "Referència de suport: {{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Stitch Wish utilitza les fotos seleccionades per crear Patrons Personals o triar una foto de perfil de creador públic."
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "BENVINGUT/DA A STITCH WISH",
+        "title": "Tria un color, toca les caselles que hi coincideixin.",
+        "heroAlt": "Vista prèvia del patró inicial Cor Acollidor",
+        "handedness": {
+          "sectionTitle": "A quin costat han d'anar els controls?",
+          "groupLabel": "Costat dels controls",
+          "optionRight": "Controls a la dreta",
+          "optionLeft": "Controls a l'esquerra",
+          "saveErrorText": "No s'ha pogut desar aquesta elecció.",
+          "retry": "Torna-ho a provar"
+        },
+        "note": "Pots canviar-ho més endavant a Configuració.",
+        "start": "Comença a puntar",
+        "starting": "Iniciant…",
+        "browse": "Explora els inicials",
+        "signIn": "Inicia sessió"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "Selecciona el fil DMC 321 Vermell Nadal.",
+          "stitchAction": "Toca la casella ressaltada que hi coincideix.",
+          "mismatchedTap": "Toca la casella ressaltada diferent. Els tocs erronis no costen res.",
+          "undoAction": "Desfés aquesta puntada i torna-la a col·locar.",
+          "stitchSweep": "Prem una casella coincident i arrossega per la sèrie ressaltada.",
+          "threadColorCompletion": "Acaba el fil blanc ressaltat i tria el color següent."
+        },
+        "hints": {
+          "anchoredZoom": "Pessiga per fer zoom mantenint les caselles sota els dits al mateix lloc.",
+          "panVsSweep": "Arrossegar desplaça la tela. Comença en una casella coincident per fer una passada seguida.",
+          "edgeAutoPan": "Continua la passada a prop de la vora i la tela seguirà el dit.",
+          "remainingCellLocator": "Utilitza el localitzador per trobar la següent casella pendent d'aquest fil."
+        },
+        "skip": "Omet per ara",
+        "skipAccessibilityLabel": "Omet el tutorial per ara",
+        "dismiss": "Entesos",
+        "dismissAccessibilityLabel": "Tanca el consell"
+      },
+      "recap": {
+        "title": "Ja ho tens",
+        "lines": {
+          "matchNumbers": "Fes coincidir els números per col·locar cada puntada.",
+          "dragSweep": "Arrossega per les caselles coincidents per fer una passada seguida.",
+          "pinchZoom": "Pessiga per fer zoom quan necessitis veure-ho més de prop.",
+          "undoLocator": "Desfer i el localitzador sempre són gratuïts."
+        },
+        "continue": "Continua puntant",
+        "browsePatterns": "Explora patrons"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "Taula de Puntada",
+        "subtitle": "Continua on ho vas deixar o reprèn una creació recent.",
+        "loading": "Carregant les teves puntades...",
+        "empty": {
+          "title": "Cap Creació Activa",
+          "body": "El teu bastidor de puntada està buit ara mateix. Explora el catàleg de patrons per trobar alguna cosa bonica per punxar!",
+          "action": "Explora el catàleg"
+        },
+        "unknownPattern": "Patró Desconegut",
+        "idLabel": "ID: {{id}}",
+        "unknownPatternLabel": "Patró {{id}}",
+        "deleteSessionAccessibilityLabel": "Elimina la sessió",
+        "viewFinishedAccessibilityLabel": "Veure la creació acabada",
+        "resumeAccessibilityLabel": "Reprèn la puntada",
+        "status": {
+          "ready": "A punt",
+          "done": "Fet",
+          "active": "Activa",
+          "preparing": "Preparant",
+          "failed": "Fallida"
+        },
+        "deleteConfirm": {
+          "title": "Elimina el Progrés",
+          "message": "Estàs segur que vols eliminar el teu progrés de \"{{title}}\"? Aquesta acció no es pot desfer.",
+          "cancel": "Cancel·la",
+          "confirm": "Elimina"
+        },
+        "preparingCard": {
+          "discardTitle": "Descarta la Sessió",
+          "cancelTitle": "Cancel·la la Descàrrega",
+          "discardMessage": "Estàs segur que vols descartar aquesta sessió fallida?",
+          "cancelMessage": "Estàs segur que vols cancel·lar la descàrrega d'aquest patró?",
+          "keep": "Mantén",
+          "discard": "Descarta",
+          "cancel": "Cancel·la"
+        }
+      },
+      "loading": {
+        "text": "Obrint la sessió i preparant la tela..."
+      },
+      "error": {
+        "title": "Error en Carregar la Sessió",
+        "fallbackMessage": "No s'ha pogut carregar la teva sessió de puntada.",
+        "backButton": "Torna Enrere",
+        "tableButton": "Ves a la Taula"
+      },
+      "header": {
+        "backButton": "← Enrere",
+        "tableButton": "← Taula",
+        "defaultTitle": "Sessió de Puntada",
+        "progress": "{{completed}} / {{total}} caselles ({{percent}}% completat)",
+        "resumeTutorialAccessibilityLabel": "Reprèn el tutorial"
+      },
+      "banners": {
+        "patternRemoved": "Aquest Patró ha estat eliminat per moderació i ja no està disponible. Toca per sortir.",
+        "syncConflict": "Sincronitzat amb un altre dispositiu — s'han actualitzat algunes caselles. Toca per descartar."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "Localitza la següent casella pendent del color de fil actiu",
+        "undoAccessibilityLabel": "Desfés l'última puntada"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "Color {{number}}: DMC {{dmcCode}}, {{count}} puntada restant",
+        "chipAccessibilityLabel_other": "Color {{number}}: DMC {{dmcCode}}, {{count}} puntades restants",
+        "done": "Fet",
+        "remaining_one": "{{count}} restant",
+        "remaining_other": "{{count}} restants"
+      },
+      "celebration": {
+        "title": "Bellament Confeccionat!",
+        "subtitle": "Has completat totes les puntades d'aquesta tela.",
+        "stitchesLabel_one": "Puntada",
+        "stitchesLabel_other": "Puntades",
+        "colorsLabel_one": "Color",
+        "colorsLabel_other": "Colors",
+        "replayButton": "Torna a Punxar",
+        "catalogButton": "Torna al Catàleg"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "Torna enrere",
+        "tryAgain": "Torna a Provar"
+      },
+      "rejectionReasons": {
+        "safety": "Seguretat",
+        "publication_rights": "Drets de Publicació",
+        "duplicate_or_spam": "Duplicat o Correu Brossa",
+        "technical_invalidity": "Invalidesa Tècnica",
+        "quality_standard": "Estàndard de Qualitat"
+      },
+      "submissionStatus": {
+        "accepted": "Publicat",
+        "appeal_pending": "Apel·lació pendent",
+        "appeal_upheld": "Apel·lació rebutjada",
+        "precheck_failed": "Comprovació prèvia no disponible",
+        "precheck_pending": "Comprovant",
+        "quarantined": "Necessita revisió",
+        "rejected": "Rebutjat",
+        "review_pending": "En revisió"
+      },
+      "revisionStatus": {
+        "accepted": "Publicat",
+        "appeal_pending": "Apel·lació pendent",
+        "appeal_upheld": "Apel·lació rebutjada",
+        "pending": "En revisió",
+        "rejected": "Rebutjat",
+        "withdrawn": "Retirat"
+      },
+      "home": {
+        "identity": {
+          "establishing": "Establint la identitat...",
+          "pendingTitle": "Identitat Pendent",
+          "offline": "Sense connexió",
+          "retryConnection": "Torna a Intentar la Connexió",
+          "loadingPublicProfile": "Carregant el perfil públic...",
+          "unavailableTitle": "Perfil públic no disponible",
+          "checkConnection": "Comprova la teva connexió i torna-ho a provar.",
+          "createTitle": "Crea el teu perfil públic",
+          "createBody": "Tria el nom d'usuari permanent que es mostra amb els teus patrons comunitaris. Les dades del teu compte es mantenen privades.",
+          "createAction": "Crea el Perfil Públic",
+          "editAction": "Edita el Perfil Públic",
+          "offlinePendingSync": "Sense connexió — sincronització pendent",
+          "guestPlayer": "Jugador Convidat",
+          "playingSince": "Jugant des de {{date}}",
+          "creatorSince": "Creador des de {{date}}"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "Obre la Botiga Comercial",
+          "title": "Saldos de l'Estudi",
+          "commerceStoreLink": "Botiga Comercial",
+          "stitchCoinsAccessibilityLabel": "Saldo de Stitch Coins: {{balance}}. Toca per aconseguir monedes.",
+          "packs": "Paquets",
+          "stitchCoinsLabel": "Stitch Coins",
+          "stitchCoinsSub": "Per desbloquejar patrons",
+          "aiCreditsAccessibilityLabel": "Saldo de Crèdits d'IA: {{balance}}. Toca per aconseguir crèdits.",
+          "aiCreditsSignInAccessibilityLabel": "Crèdits d'IA. Inicia sessió per comprar.",
+          "aiCreditsLabel": "Crèdits d'IA",
+          "aiCreditsSubOwned": "Per a art de patrons amb IA",
+          "aiCreditsSubGuest": "Inicia sessió per tenir-ne",
+          "membershipActiveAccessibilityLabel": "Subscripció Premium activa ({{plan}}). Toca per gestionar.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Premium. Toca per veure els plans.",
+          "membershipActiveTitle": "Premium Actiu · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "Anual",
+          "planMonthly": "Mensual",
+          "planWeekly": "Setmanal",
+          "planActive": "Actiu",
+          "trialBadge": "Prova",
+          "membershipSubActive": "Tots els temes desbloquejats · Reclamacions diàries de monedes instantànies",
+          "membershipSubInactive": "30 monedes diàries instantànies, temes personalitzats i crèdits d'IA",
+          "manage": "Gestiona",
+          "explore": "Explora"
+        },
+        "quickNav": {
+          "sectionEyebrow": "COMPTE I COMUNITAT",
+          "submissionsAccessibilityLabel": "Trameses al Catàleg: Fes seguiment de revisions, decisions i apel·lacions",
+          "submissionsTitle": "Trameses",
+          "submissionsSub": "Fes seguiment de revisions",
+          "publishedAccessibilityLabel": "Patrons Publicats: Revisa metadades, retira i fes seguiment d'apel·lacions",
+          "publishedTitle": "Publicats",
+          "publishedSub": "Gestiona patrons",
+          "moderationAccessibilityLabel": "Avisos de Moderació: Revisa les decisions del catàleg que afecten els teus patrons",
+          "moderationTitle": "Moderació",
+          "moderationSub": "Avisos de política",
+          "likedAccessibilityLabel": "Patrons Que M'Agraden: La teva col·lecció privada de patrons comunitaris que t'agraden",
+          "likedTitle": "Patrons Preferits",
+          "likedSavedCount_one": "{{count}} desat",
+          "likedSavedCount_other": "{{count}} desats",
+          "likedSavedDefault": "Patrons desats"
+        },
+        "dailySection": {
+          "title": "Puntada i Recompenses Diàries",
+          "tasksGroupLabel": "Tasques Diàries (+30 Monedes màx.)",
+          "connectToTrack": "Connecta't per fer seguiment del progrés de les tasques diàries.",
+          "loadingTasks": "Carregant tasques…",
+          "loadFailed": "No s'han pogut carregar les tasques diàries.",
+          "retry": "Torna a Provar",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "Reiniciant…",
+          "resetsInHoursMinutes": "Es reinicia en {{hours}}h {{minutes}}m",
+          "resetsInMinutes": "Es reinicia en {{minutes}}m"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 Accions de Puntada",
+            "body": "Omple 100 caselles coincidents avui"
+          },
+          "three_colors_10": {
+            "title": "3 Colors, 10 Accions Cadascun",
+            "body": "Arriba a 10 accions en 3 colors de fil"
+          },
+          "color_completion": {
+            "title": "Completa un Color de Fil",
+            "body": "Acaba de punxar qualsevol color completament"
+          }
+        },
+        "dailyPool": {
+          "title": "Recompensa Diària de 30 Monedes",
+          "premiumInstantClaim": "Reclamació Instantània Premium",
+          "rewardedAds": "Anuncis amb Recompensa",
+          "claimedAmount": "S'han reclamat {{amount}} Stitch Coins per avui!",
+          "poolAlreadyClosed": "El fons de recompenses d'avui ja s'ha tancat.",
+          "claimedForToday": "Reclamat per avui. Es reinicia al proper Dia de Recompensa.",
+          "poolExhausted": "El fons de recompensa de 30 Monedes d'avui s'ha esgotat.",
+          "claimButtonRetry": "Torna a intentar la reclamació",
+          "claimButtonInstant": "Reclama {{count}} Monedes (Instantani)",
+          "poolClaimedResetsTomorrow": "El fons de monedes d'avui ha estat reclamat. Es reinicia demà.",
+          "allAdRewardsCompleted": "Totes les recompenses d'anuncis completades per avui! (30/30 monedes)",
+          "watchAdButton": "Mira un Anunci per +10 Monedes ({{count}} restants)",
+          "adPerkNote": "Mira fins a 3 anuncis/dia · Premium desbloqueja la reclamació instantània de 30 monedes",
+          "adRewardEarned": "Recompensa d'anunci guanyada! Verificant amb el servidor…",
+          "claimFailed": "La reclamació ha fallat: {{message}}",
+          "claimFailedGeneric": "S'ha produït un error. Torna-ho a provar.",
+          "adLoadFailedDefault": "No s'ha pogut carregar l'anunci",
+          "adAttemptFailedDefault": "No s'ha pogut obrir l'intent d'anunci"
+        },
+        "tabs": {
+          "myCreations": "Les Meves Creacions {{count}}",
+          "likedPatterns": "Patrons Preferits {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "Inicia sessió per a Patrons Personals",
+          "signInBody": "Cal un Compte Registrat per crear i posseir de manera privada patrons de foto convertits.",
+          "signIn": "Inicia sessió",
+          "patternMeta": "{{width}}×{{height}} · {{count}} colors",
+          "pendingSync": "Sincronització pendent",
+          "play": "Juga",
+          "edit": "Edita",
+          "submitAccessibilityLabel": "Tramet {{title}} al Catàleg Comunitari",
+          "emptyTitle": "Cap Creació Personal",
+          "emptyBody": "Encara no has convertit cap foto ni has generat art amb IA. Ves a Crear per començar la teva primera obra mestra!",
+          "emptyAction": "Comença a Crear",
+          "actionFailedGeneric": "S'ha produït un error. Torna-ho a provar."
+        },
+        "likedTab": {
+          "unavailableTitle": "Patrons Preferits No Disponibles",
+          "unavailableDefault": "No s'han pogut carregar els patrons preferits.",
+          "byCreator": "per {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} colors",
+          "emptyTitle": "Cap Patró Preferit",
+          "emptyBody": "Explora el catàleg i toca la icona de cor de qualsevol disseny per desar-lo aquí per a més tard.",
+          "emptyAction": "Descobreix Patrons"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Reclamació Diària de Monedes Premium",
+        "description": "Reclama la resta del fons compartit de recompensa de 30 Monedes d'avui.",
+        "connectPrompt": "Connecta't amb el Servidor del Joc per comprovar la recompensa d'avui.",
+        "checkingReward": "Comprovant la recompensa Premium d'avui…",
+        "unavailableGeneric": "La recompensa Premium d'avui no està disponible.",
+        "tryAgain": "Torna-ho a provar",
+        "resultAdded": "El Servidor del Joc ha afegit {{amount}} Stitch Coins. Saldo: {{balance}}.",
+        "poolAlreadyClosed": "El fons de recompensa compartit d'avui ja s'ha tancat.",
+        "alreadyClaimed": "Ja reclamat per a aquest Dia de Recompensa.",
+        "poolExhausted": "El fons de recompensa compartit d'avui s'ha esgotat. Es reinicia al proper Dia de Recompensa.",
+        "availableNow": "{{count}} Stitch Coins disponibles ara",
+        "resetsAt": "Es reinicia {{date}}",
+        "claimButtonRetry": "Torna a intentar la reclamació",
+        "claimButtonInstant": "Reclama {{count}} Monedes",
+        "lockedDescription": "La Subscripció Premium, incloent-hi una Prova Mensual elegible, desbloqueja aquesta reclamació diària.",
+        "viewPremiumPlans": "Veure els plans Premium"
+      },
+      "publicProfile": {
+        "editTitle": "Edita el Perfil Públic",
+        "createTitle": "Crea el Perfil Públic",
+        "signInTitle": "Cal iniciar sessió",
+        "signInBody": "Cal un Compte Registrat per crear una identitat pública de creador.",
+        "signInAction": "Inicia sessió",
+        "unavailableTitle": "Perfil no disponible",
+        "unavailableBody": "No s'ha pogut carregar el teu perfil públic. Comprova la teva connexió i torna-ho a provar.",
+        "tryAgain": "Torna-ho a provar",
+        "intro": "Aquest nom i foto són visibles amb els teus patrons comunitaris. El teu correu electrònic i proveïdor d'inici de sessió es mantenen privats.",
+        "choosePhoto": "Tria una foto",
+        "changePhoto": "Canvia la foto",
+        "remove": "Elimina",
+        "avatarHelper": "Opcional · JPEG, PNG o WebP · fins a 5 MB",
+        "usernameLabel": "Nom d'usuari",
+        "usernameAccessibilityLabel": "Nom d'usuari públic",
+        "usernamePlaceholder": "nom_puntaire",
+        "usernameHelperLocked": "El teu nom d'usuari és permanent.",
+        "usernameHelperEditable": "3–30 lletres minúscules, números o guions baixos. No es pot canviar més endavant.",
+        "displayNameLabel": "Nom visible",
+        "displayNameAccessibilityLabel": "Nom visible públic",
+        "displayNamePlaceholder": "El teu nom de creador",
+        "displayNameHelper": "Pots canviar-ho més endavant.",
+        "safetyNotice": "Els noms i les fotos es comproven abans de la publicació. Si es rebutja un canvi, el teu perfil públic actual es queda igual.",
+        "saveAction": "Desa el perfil públic",
+        "publishAction": "Publica el perfil públic",
+        "photoPermissionRequired": "Cal accés a la biblioteca de fotos per triar una foto de perfil.",
+        "photoTypeInvalid": "Les fotos de perfil han de ser JPEG, PNG o WebP.",
+        "photoTooLarge": "Les fotos de perfil han de tenir 5 MB o menys.",
+        "saveFailedDefault": "No s'ha pogut desar el teu perfil públic"
+      },
+      "submissions": {
+        "title": "Trameses al Catàleg",
+        "unavailableTitle": "Trameses No Disponibles",
+        "unavailableDefault": "No s'han pogut carregar les teves trameses.",
+        "emptyTitle": "Cap Tramesa al Catàleg",
+        "emptyBody": "Tramet un Patró Personal sincronitzat des de Les Meves Creacions.",
+        "emptyAction": "Torna a Les Meves Creacions",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "Les comprovacions automàtiques no s'han pogut completar. Aquesta instantània no s'ha publicat.",
+        "publishedToCatalog": "Publicat al Catàleg Comunitari.",
+        "appealAction": "Apel·la la Decisió",
+        "appealHelp": "Pots apel·lar aquesta instantània sense canvis una vegada.",
+        "appealNoteAccessibilityLabel": "Nota d'apel·lació",
+        "appealNotePlaceholder": "Context opcional per al moderador que farà la revisió",
+        "cancelAction": "Cancel·la",
+        "submitAppealAction": "Envia l'Apel·lació"
+      },
+      "publishedPatterns": {
+        "title": "Patrons Publicats",
+        "unavailableTitle": "Patrons No Disponibles",
+        "unavailableDefault": "No s'han pogut carregar els teus patrons publicats.",
+        "emptyTitle": "Cap Patró Publicat",
+        "emptyBody": "Els patrons que publiques al Catàleg Comunitari apareixen aquí.",
+        "emptyAction": "Torna al Perfil",
+        "withdrawnFromCatalog": "Retirat del Catàleg",
+        "underReviewHold": "En Retenció de Revisió",
+        "meta": "{{category}} · Publicat {{date}}",
+        "withdrawnHelp": "Aquesta identitat s'ha retirat permanentment. Els jugadors amb una Sessió de Puntada existent mantenen el seu progrés i accés.",
+        "reviewHoldHelp": "Aquest Patró està temporalment fora de la descoberta i no pot iniciar noves sessions. Les Sessions de Puntada existents es mantenen jugables. Encara pots proposar una revisió de metadades.",
+        "reviseAction": "Revisa les Metadades",
+        "withdrawRevisionAction": "Retira la Revisió",
+        "appealAction": "Apel·la la Decisió",
+        "withdrawFromCatalogAction": "Retira del Catàleg",
+        "appealHelp": "Pots apel·lar aquesta instantània sense canvis una vegada. Enviar una revisió nova en el seu lloc renuncia a aquesta apel·lació.",
+        "appealNoteAccessibilityLabel": "Nota d'apel·lació",
+        "appealNotePlaceholder": "Context opcional per al moderador que farà la revisió",
+        "cancelAction": "Cancel·la",
+        "submitAppealAction": "Envia l'Apel·lació",
+        "withdrawRevisionFailedTitle": "No s'ha pogut retirar la revisió",
+        "withdrawPatternFailedTitle": "No s'ha pogut retirar el patró",
+        "withdrawPatternSuccessTitle": "Patró retirat",
+        "withdrawPatternSuccessBody": "Ja no es pot descobrir i no pot iniciar noves sessions. Les Sessions de Puntada existents mantenen el seu progrés i dades jugables.",
+        "withdrawConfirmTitle": "Retirar del Catàleg Comunitari?",
+        "withdrawConfirmBody": "«{{title}}» desapareixerà de la descoberta i no podrà iniciar noves sessions. Aquesta identitat de Patró no es pot restaurar mai. Les Sessions de Puntada existents i el seu progrés continuen sent jugables.",
+        "withdrawConfirmCancel": "Cancel·la",
+        "withdrawConfirmAction": "Retira permanentment"
+      },
+      "revisePatternMetadata": {
+        "title": "Revisa les Metadades",
+        "signInTitle": "Cal un Compte Registrat",
+        "signInBody": "Inicia sessió abans de revisar les metadades d'un Patró Comunitari.",
+        "signInAction": "Inicia Sessió",
+        "notFoundTitle": "Patró Comunitari No Trobat",
+        "notFoundBody": "Només es poden revisar els teus propis Patrons Comunitaris publicats.",
+        "notFoundAction": "Torna a Patrons Publicats",
+        "inProgressTitle": "Revisió Ja En Curs",
+        "inProgressBody": "Aquest Patró ja té una revisió pendent o una apel·lació activa. Retira-la abans d'enviar-ne una altra.",
+        "inProgressAction": "Torna a Patrons Publicats",
+        "currentlyPublished": "Actualment publicat al Catàleg Comunitari",
+        "titleFieldLabel": "Títol del catàleg",
+        "titlePlaceholder": "Títol del patró",
+        "titleAccessibilityLabel": "Títol del catàleg",
+        "descriptionFieldLabel": "Descripció",
+        "descriptionPlaceholder": "Descriu el disseny, el tema i l'experiència de puntada.",
+        "descriptionAccessibilityLabel": "Descripció del catàleg",
+        "sourceLanguageFieldLabel": "Idioma d'origen",
+        "categoryFieldLabel": "Categoria",
+        "tagsFieldLabel": "Etiquetes",
+        "notice": "Revisar captura una nova instantània immutable. Les teves metadades publicades actualment es mantenen visibles fins que un moderador humà accepti aquesta revisió.",
+        "submitAction": "Envia la Revisió"
+      },
+      "submitPattern": {
+        "title": "Tramet a la Comunitat",
+        "signInTitle": "Cal un Compte Registrat",
+        "signInBody": "Inicia sessió abans de trametre un Patró Personal al Catàleg Comunitari.",
+        "signInAction": "Inicia Sessió",
+        "createProfileTitle": "Crea un Perfil Públic de Creador",
+        "createProfileBody": "Els Patrons Comunitaris s'atribueixen a la teva identitat pública de creador.",
+        "createProfileAction": "Crea el Perfil",
+        "patternNotFoundTitle": "Patró Personal No Trobat",
+        "patternNotFoundBody": "Només es poden trametre Patrons Personals sincronitzats.",
+        "patternNotFoundAction": "Torna al Perfil",
+        "patternMeta": "{{width}}×{{height}} · {{count}} colors",
+        "byCreator": "Per @{{username}}",
+        "titleFieldLabel": "Títol del catàleg",
+        "titlePlaceholder": "Títol del patró",
+        "titleAccessibilityLabel": "Títol del catàleg",
+        "descriptionFieldLabel": "Descripció",
+        "descriptionPlaceholder": "Descriu el disseny, el tema i l'experiència de puntada.",
+        "descriptionAccessibilityLabel": "Descripció del catàleg",
+        "sourceLanguageFieldLabel": "Idioma d'origen",
+        "categoryFieldLabel": "Categoria",
+        "tagsFieldLabel": "Etiquetes",
+        "rightsDeclaration": "He creat aquesta obra o tinc els drets necessaris per publicar-la sota la Declaració de Drets de Publicació v1.",
+        "notice": "La tramesa captura una còpia immutable. Les comprovacions automàtiques proporcionen proves, però un moderador humà pren totes les decisions.",
+        "submitAction": "Envia per a Revisió"
+      },
+      "moderationNotices": {
+        "title": "Avisos de Moderació",
+        "signInTitle": "Inicia sessió per veure els avisos",
+        "signInBody": "Els Avisos de Moderació pertanyen al Compte Registrat que va publicar el Patró Comunitari afectat.",
+        "signInAction": "Inicia Sessió",
+        "unavailableTitle": "Avisos No Disponibles",
+        "unavailableDefault": "No s'han pogut carregar els Avisos de Moderació.",
+        "emptyTitle": "Cap Avís de Moderació",
+        "emptyBody": "Les decisions de moderació del catàleg visibles pel propietari apareixeran aquí.",
+        "emptyAction": "Torna al Perfil",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "Correcció de Metadades del Catàleg",
+          "no_violation": "Revisió tancada — sense infracció",
+          "review_hold": "Retenció de Revisió",
+          "safety_removal": "Retirada per Seguretat"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "El títol, la descripció i les etiquetes seleccionades s'han substituït per valors segurs. La disponibilitat, l'Artefacte del Patró i la vista prèvia no es veuen afectats. Pots enviar una nova Revisió de Metadades del Catàleg en qualsevol moment.",
+          "no_violation": "La Revisió Posterior a la Publicació està tancada i aquest Patró torna a estar completament disponible en la descoberta i en noves Sessions de Puntada.",
+          "review_hold": "Aquest Patró no està disponible temporalment per a la descoberta i noves sessions. Les Sessions de Puntada existents, el progrés i les Dades de Patró Sense Connexió continuen sent jugables.",
+          "safety_removal": "Aquest Patró s'ha eliminat per una infracció de seguretat, legal o de política. Ha sortit de la descoberta, les Sessions de Puntada existents han quedat inaccessibles, i les Dades de Patró Sense Connexió dels teus dispositius s'han eliminat. Pots enviar una Apel·lació de Retirada per Seguretat."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "Tasques Diàries",
+        "offline": "Estàs sense connexió — Les Tasques Diàries necessiten connexió.",
+        "unavailable": "No s'han pogut carregar les Tasques Diàries.",
+        "empty": "No hi ha tasques disponibles avui."
+      },
+      "rewardedAdCard": {
+        "offline": "Estàs sense connexió — El Dia de Recompensa necessita connexió.",
+        "unavailable": "No s'ha pogut carregar l'estat del Dia de Recompensa.",
+        "premiumClaimClosedPool": "La teva reclamació diària Premium ha tancat el fons de monedes compartit d'avui.",
+        "allRewardsClaimed": "Has reclamat totes les recompenses d'anuncis d'avui. Torna demà!",
+        "remaining_one": "{{count}} anunci restant avui ({{coins}} monedes disponibles)",
+        "remaining_other": "{{count}} anuncis restants avui ({{coins}} monedes disponibles)",
+        "watchForCoins": "Mira un Anunci per {{count}} Monedes"
+      },
+      "likedPatterns": {
+        "title": "Patrons Preferits",
+        "signInTitle": "Cal un Compte Registrat",
+        "signInBody": "Inicia sessió abans de veure la teva col·lecció privada de Patrons Preferits.",
+        "signInAction": "Inicia Sessió",
+        "unavailableTitle": "Patrons Preferits No Disponibles",
+        "unavailableDefault": "No s'han pogut carregar els patrons preferits.",
+        "emptyTitle": "Cap Patró Preferit",
+        "emptyBody": "Explora el catàleg de patrons i toca la icona de cor de qualsevol disseny per desar-lo aquí.",
+        "emptyAction": "Descobreix Patrons",
+        "byCreator": "per {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} colors · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "Configuració",
+        "subtitleDev": "Configura les preferències i inspecciona els sistemes del servidor.",
+        "subtitleProd": "Configura les teves preferències."
+      },
+      "serviceStatus": {
+        "sectionTitle": "Estat del Servei",
+        "apiConnectionTitle": "Connexió API",
+        "testingConnection": "Provant la connexió API...",
+        "offlineUnreachable": "Sense connexió / Inaccessible",
+        "unknownConnectionError": "Error de connexió desconegut",
+        "retryConnection": "Torna a Intentar la Connexió",
+        "healthy": "Saludable",
+        "degraded": "Degradat",
+        "postgresLabel": "Base de Dades PostgreSQL",
+        "redisLabel": "Memòria Cau Redis"
+      },
+      "session": {
+        "sectionTitle": "Identitat i Sessió",
+        "statusTitle": "Estat de la Sessió del Servidor",
+        "statusDescription": "Valida la teva sessió de registre de convidat activa mitjançant l'API.",
+        "noActiveSession": "Cap Sessió Activa",
+        "sessionActive": "Sessió Activa",
+        "idLabel": "ID: {{id}} (v{{version}})",
+        "unknownState": "Estat desconegut"
+      },
+      "tutorial": {
+        "sectionTitle": "Tutorial",
+        "learnControlsTitle": "Aprèn els controls",
+        "learnControlsDescription": "Reprèn el tutorial de puntada quan estiguis a punt.",
+        "unavailableTitle": "Tutorial no disponible",
+        "unavailableMessage": "No s'ha pogut reprendre el tutorial. Torna-ho a provar."
+      },
+      "developer": {
+        "sectionTitle": "Desenvolupador",
+        "debugDiagnostics": "Depuració / Diagnòstics",
+        "debug": {
+          "backAccessibilityLabel": "Torna enrere",
+          "title": "Depuració",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: configurat · entorn: {{environment}}",
+            "dsnNotConfigured": "DSN: no configurat",
+            "sendTestEvent": "Envia un Esdeveniment de Prova",
+            "throwError": "Llança un Error",
+            "disabledTitle": "Sentry Desactivat",
+            "disabledMessage": "Sentry no està configurat (no s'ha trobat cap DSN), així que no s'enviarà cap esdeveniment de prova.",
+            "testEventSent": "Esdeveniment de prova enviat. ID de l'esdeveniment: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "Error",
+            "testEventFailedMessage": "No s'ha pogut enviar l'esdeveniment de prova: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Onboarding",
+            "description": "Esborra el progrés del tutorial i torna a començar des de Benvinguda.",
+            "restart": "Reinicia l'onboarding",
+            "confirmTitle": "Reiniciar l'onboarding?",
+            "confirmMessage": "L'estat del tutorial s'esborrarà i l'onboarding començarà des de la pantalla de Benvinguda.",
+            "cancel": "Cancel·la",
+            "resetFailedTitle": "El reinici ha fallat"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "Eliminació del Compte",
+        "statusTitle": "Estat de l'Eliminació del Compte",
+        "checkingStatus": "Comprovant l'estat...",
+        "pendingTitle": "Eliminació del Compte Pendent",
+        "pendingDescription": "L'eliminació del teu compte està programada. Inicia sessió de nou abans que acabi la finestra de recuperació per cancel·lar-la.",
+        "recoveryWindowEnds": "La Finestra de Recuperació Acaba: {{date}}",
+        "cancelling": "Cancel·lant...",
+        "cancelDeletion": "Cancel·la l'eliminació",
+        "statusError": "No s'ha pogut comprovar l'estat de l'eliminació. Comprova la teva connexió i torna-ho a intentar.",
+        "deleteAccountTitle": "Elimina el Compte",
+        "deleteAccountDescription": "Elimina permanentment el teu compte, progrés i tots els desbloquejos després d'una finestra de recuperació de 30 dies.",
+        "requestedTitle": "Eliminació del Compte Sol·licitada",
+        "requestedMessage": "La teva sol·licitud d'eliminació està pendent fins al {{date}}. El teu compte ha tancat la sessió. Torna a iniciar sessió abans d'aquesta data si vols cancel·lar aquesta eliminació.",
+        "signOutFailedTitle": "Ha Fallat el Tancament de Sessió Local",
+        "signOutFailedMessage": "La teva sol·licitud d'eliminació encara està pendent. Torna a tancar la sessió des de Configuració.",
+        "requestFailedTitle": "La Sol·licitud ha Fallat",
+        "requestFailedMessage": "La teva sol·licitud d'eliminació no s'ha enviat. Comprova la teva connexió i torna-ho a provar.",
+        "cancelSuccessTitle": "Èxit",
+        "cancelSuccessMessage": "La teva sol·licitud d'eliminació del compte ha estat cancel·lada.",
+        "reauthRequiredTitle": "Cal Tornar a Autenticar-se",
+        "reauthRequiredMessage": "Per seguretat, has d'iniciar sessió de nou abans de cancel·lar l'eliminació del compte.",
+        "signInAction": "Inicia Sessió",
+        "cancelFailedTitle": "La Cancel·lació ha Fallat",
+        "cancelFailedGeneric": "No s'ha pogut cancel·lar l'eliminació del compte. Comprova la teva connexió i torna-ho a provar."
+      },
+      "appearance": {
+        "sectionTitle": "Aparença"
+      },
+      "themeCollectionCard": {
+        "title": "Col·lecció de Temes",
+        "description": "Canvia l'estètica de la quadrícula, la puntada i la finalització sense afectar la jugabilitat.",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "Requereix Subscripció Premium",
+        "selected": "Seleccionat",
+        "accessActive": "L'accés als temes Premium està actiu, fins i tot durant una Prova Mensual elegible.",
+        "lockedPreview": "Previsualitza la col·lecció aquí. La Subscripció Premium o una Prova Mensual elegible desbloqueja la selecció.",
+        "viewPremiumPlans": "Veure els plans Premium"
+      },
+      "gameplay": {
+        "sectionTitle": "Configuració de Jugabilitat",
+        "showGridLinesTitle": "Mostra les Línies de la Quadrícula",
+        "showGridLinesDescription": "Mostra els límits entre les caselles del llenç de costura",
+        "handednessTitle": "Disposició per Lateralitat",
+        "handednessDescription": "Alinea els controls interactius per a joc amb la mà esquerra o dreta",
+        "left": "Esquerra",
+        "right": "Dreta",
+        "leftHandedLayout": "Disposició per esquerrans",
+        "rightHandedLayout": "Disposició per dretans"
+      },
+      "language": {
+        "sectionTitle": "Idioma",
+        "description": "Tria l'idioma en què Stitch Wish mostra la seva interfície.",
+        "followDevice": "Segueix l'idioma del dispositiu",
+        "followDeviceDescription": "Esborra la teva substitució per seguir la configuració d'idioma del teu dispositiu.",
+        "optionEnglish": "English",
+        "optionTurkish": "Türkçe",
+        "modalTitle": "Selecciona l'Idioma",
+        "modalSubtitle": "Tria el teu idioma preferit per a la interfície.",
+        "systemDefault": "Idioma del Sistema",
+        "systemDefaultWithDetected": "Idioma del Sistema ({{language}})",
+        "systemDefaultDescription": "Coincideix automàticament amb la configuració del teu dispositiu."
+      },
+      "social": {
+        "sectionTitle": "Social i Privadesa",
+        "blockedCreators": "Creadors Bloquejats"
+      },
+      "account": {
+        "sectionTitle": "Compte",
+        "notSignedInTitle": "Sessió no iniciada",
+        "signInRequiredTitle": "Cal iniciar sessió",
+        "notSignedInDescription": "Inicia sessió per sincronitzar el progrés entre dispositius.",
+        "signIn": "Inicia sessió",
+        "reconnecting": "Reconnectant…",
+        "signOut": "Tanca la sessió",
+        "signOutConfirmTitle": "Tancar la sessió?",
+        "signOutConfirmMessage": "El teu progrés no sincronitzat es queda en aquest dispositiu i es reobre quan tornis a iniciar sessió.",
+        "signOutConfirmAction": "Tanca la sessió",
+        "signOutFailedTitle": "El tancament de sessió ha fallat",
+        "signOutFailedGeneric": "Torna-ho a provar.",
+        "providerAppleAccount": "Compte d'Apple",
+        "providerGoogleAccount": "Compte de Google",
+        "providerGenericAccount": "Compte registrat"
+      },
+      "signIn": {
+        "emailHeading": "Inicia sessió o crea un compte",
+        "emailSubtitle": "Mantén el teu progrés disponible a tots els dispositius.",
+        "codeHeading": "Introdueix el teu codi",
+        "codeSubtitle": "Introdueix el codi de 6 dígits que hem enviat a {{email}}.",
+        "continueWithGoogle": "Continua amb Google",
+        "orUseEmail": "o utilitza el correu electrònic",
+        "ssoUnavailable": "L'inici de sessió amb Google i Apple no està disponible en aquesta versió.",
+        "emailLabel": "Adreça electrònica",
+        "emailPlaceholder": "Adreça electrònica",
+        "sendCode": "Envia el codi",
+        "cancel": "Cancel·la",
+        "verify": "Verifica",
+        "resendCode": "Torna a enviar el codi",
+        "resending": "Reenviant...",
+        "codeSent": "Codi enviat",
+        "useDifferentEmail": "Utilitza un altre correu electrònic",
+        "sendCodeFailed": "No s'ha pogut enviar el codi. Comprova la teva connexió i torna-ho a provar.",
+        "codeIncorrect": "Aquest codi és incorrecte o ha caducat.",
+        "verifyFailedGeneric": "S'ha produït un error. Torna-ho a provar.",
+        "socialSignInFailed": "No s'ha pogut iniciar sessió amb {{provider}}. Torna-ho a provar.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "Torna enrere",
+        "title": "Creadors Bloquejats",
+        "infoText": "Bloquejar és privat i reversible. Amaga els patrons comunitaris del creador de les teves vistes de catàleg, cerca i llistes de descoberta. No és una denúncia ni una retirada de contingut.",
+        "signInRequiredTitle": "Cal un Compte Registrat",
+        "signInRequiredBody": "Inicia sessió abans de gestionar la teva llista de creadors bloquejats.",
+        "signInAction": "Inicia Sessió",
+        "listUnavailableTitle": "Llista No Disponible",
+        "listUnavailableDefault": "No s'han pogut carregar els creadors bloquejats.",
+        "tryAgain": "Torna a Provar",
+        "emptyTitle": "Cap Creador Bloquejat",
+        "emptyBody": "No has bloquejat ningú. Pots bloquejar un creador des de qualsevol de les pàgines de detall dels seus patrons.",
+        "backToSettings": "Torna a Configuració",
+        "unblock": "Desbloqueja",
+        "unblockConfirmTitle": "Desbloqueja el Creador",
+        "unblockConfirmMessage": "Segur que vols desbloquejar {{name}}? Els seus patrons tornaran a aparèixer als teus resultats de cerca i exploració.",
+        "cancel": "Cancel·la",
+        "successTitle": "Èxit",
+        "unblockedMessage": "{{name}} ha estat desbloquejat.",
+        "errorTitle": "Error",
+        "unblockFailedMessage": "No s'ha pogut desbloquejar el creador: {{message}}",
+        "unblockFailedGeneric": "Error desconegut"
+      },
+      "data": {
+        "sectionTitle": "Dades",
+        "resetGuestTitle": "Reinicia les dades de convidat",
+        "resetGuestDescription": "Tanca de manera irreversible la identitat de convidat al servidor i esborra totes les dades del dispositiu.",
+        "resetGuestOffline": "Sense connexió: Cal una connexió activa al servidor per reiniciar les dades de convidat.",
+        "resetGuestPurchaseLock": "El reinici està bloquejat mentre encara es verifica una compra. Els consumibles i les dades privades de Convidat no es podran recuperar després.",
+        "removeLocalTitle": "Elimina les dades locals",
+        "removeLocalDescription": "Elimina la teva base de dades local d'espai de noms d'identitat d'aquest dispositiu.",
+        "removeLocalConfirmTitle": "Eliminar les Dades Locals?",
+        "removeLocalConfirmMessage": "Avís: Això eliminarà els fitxers de la teva base de dades local d'aquest dispositiu únicament. Qualsevol registre no sincronitzat es perdrà permanentment.",
+        "removeLocalConfirmAction": "Elimina",
+        "removeLocalSuccessTitle": "Èxit",
+        "removeLocalSuccessMessage": "Les dades locals s'han eliminat d'aquest dispositiu.",
+        "removeLocalFailedTitle": "L'Eliminació ha Fallat",
+        "removeLocalFailedMessage": "No s'han pogut eliminar les dades locals: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "Informació i Enllaços",
+        "privacyPolicy": "Política de Privacitat",
+        "termsOfService": "Termes del Servei",
+        "contactSupport": "Contacta amb Suport",
+        "accountDeletion": "Eliminació del Compte",
+        "openFailedMessage": "No s'ha pogut obrir l'enllaç: {{url}}",
+        "openFailedGenericTitle": "Error"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — Puntacreu de Píxels Acollidor",
+        "version": "Versió {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "Paquet: {{id}}",
+        "schemeLabel": "Esquema: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "Reiniciar les Dades de Convidat?",
+        "warning": "Aquesta acció tancarà de manera irreversible la teva identitat de convidat al servidor i eliminarà permanentment:",
+        "bulletProgress": "• el progrés local",
+        "bulletRewards": "• les recompenses pendents",
+        "bulletLikes": "• els m'agrada",
+        "bulletUnlockAccess": "• l'accés als desbloquejos",
+        "bulletOfflinePatterns": "• les dades de patrons sense connexió",
+        "confirmPrefix": "Escriu ",
+        "confirmSuffix": " a sota per confirmar:",
+        "confirmAction": "Reinicia les Dades",
+        "resetting": "Reiniciant les dades de convidat...",
+        "successTitle": "Èxit",
+        "successMessage": "Les dades de convidat s'han reiniciat completament.",
+        "failedTitle": "El Reinici ha Fallat",
+        "failedMessage": "El reinici de les dades de convidat ha fallat: {{message}}. Torna-ho a provar."
+      },
+      "deleteModal": {
+        "title": "Eliminar el Compte?",
+        "recoveryPrefix": "El teu compte entra en una ",
+        "recoveryBold": "Finestra de Recuperació de 30 dies",
+        "recoverySuffix": ". Torna a iniciar sessió durant aquesta finestra per cancel·lar l'eliminació.",
+        "bulletBalances": "• els saldos de Stitch Coin i Crèdits d'IA",
+        "bulletUnlocks": "• tots els Desbloquejos de Patrons",
+        "bulletArtwork": "• l'Art d'IA i els Patrons Personals",
+        "bulletProgress": "• el progrés sincronitzat i els M'agrada",
+        "consequencesPrefix": "En acabar la finestra de recuperació, aquests es perden o s'esborren sense reemborsament ni transferència. Els Patrons Comunitaris publicats es retiren del catàleg, l'atribució passa a ser ",
+        "consequencesBold": "Creador Eliminat",
+        "consequencesSuffix": ", i el teu nom d'usuari es queda reservat permanentment.",
+        "membershipWarning": "La teva Subscripció Premium pot continuar facturant-se després de l'eliminació del compte. L'eliminació no la cancel·la; gestiona-la per separat abans de continuar si vols que la facturació s'aturi.",
+        "manageAppleSubscription": "Gestiona la Subscripció d'Apple",
+        "continueAction": "Continua",
+        "confirmTitle": "Confirma l'Eliminació",
+        "confirmPrefix": "Per confirmar que vols eliminar el teu compte, escriu ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": " al camp de sota:",
+        "submitting": "Enviant la sol·licitud d'eliminació...",
+        "backAction": "Enrere",
+        "confirmAction": "Confirma"
+      },
+      "reauthModal": {
+        "title": "Verifica la Teva Identitat",
+        "description": "Per seguretat, verifica amb un mètode d'inici de sessió ja vinculat a aquest compte. L'eliminació es reprèn automàticament després de la verificació.",
+        "loading": "Carregant els mètodes d'inici de sessió...",
+        "codeSentMessage": "Introdueix el codi de 6 dígits enviat a {{email}}.",
+        "verifyAndDelete": "Verifica i Elimina",
+        "emailButton": "Correu {{email}}",
+        "continueWithProvider": "Continua amb {{provider}}",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "No hi ha cap mètode d'inici de sessió vinculat disponible. Contacta amb suport abans de tornar a intentar l'eliminació.",
+        "loadFailed": "No s'han pogut carregar els teus mètodes d'inici de sessió vinculats. Comprova la teva connexió i torna-ho a intentar.",
+        "retryFailed": "La teva identitat s'ha verificat, però l'eliminació no s'ha enviat. Tanca aquest diàleg i torna a intentar l'eliminació.",
+        "emailMissing": "Aquest mètode de correu vinculat no té cap adreça. Tria un altre mètode.",
+        "genericFailure": "La reautenticació ha fallat. Comprova la teva connexió i torna-ho a intentar."
+      },
+      "actions": {
+        "cancel": "Cancel·la",
+        "retry": "Torna a Provar"
+      },
+      "common": {
+        "unavailable": "No disponible"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "Catàleg",
+        "stitch": "Puntada",
+        "create": "Crear",
+        "profile": "Perfil",
+        "settings": "Configuració"
+      }
+    }
+  },
   "de": {
     "catalog": {
       "common": {

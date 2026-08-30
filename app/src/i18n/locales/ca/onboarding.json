@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "BENVINGUT/DA A STITCH WISH",
+    "title": "Tria un color, toca les caselles que hi coincideixin.",
+    "heroAlt": "Vista prèvia del patró inicial Cor Acollidor",
+    "handedness": {
+      "sectionTitle": "A quin costat han d'anar els controls?",
+      "groupLabel": "Costat dels controls",
+      "optionRight": "Controls a la dreta",
+      "optionLeft": "Controls a l'esquerra",
+      "saveErrorText": "No s'ha pogut desar aquesta elecció.",
+      "retry": "Torna-ho a provar"
+    },
+    "note": "Pots canviar-ho més endavant a Configuració.",
+    "start": "Comença a puntar",
+    "starting": "Iniciant…",
+    "browse": "Explora els inicials",
+    "signIn": "Inicia sessió"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Selecciona el fil DMC 321 Vermell Nadal.",
+      "stitchAction": "Toca la casella ressaltada que hi coincideix.",
+      "mismatchedTap": "Toca la casella ressaltada diferent. Els tocs erronis no costen res.",
+      "undoAction": "Desfés aquesta puntada i torna-la a col·locar.",
+      "stitchSweep": "Prem una casella coincident i arrossega per la sèrie ressaltada.",
+      "threadColorCompletion": "Acaba el fil blanc ressaltat i tria el color següent."
+    },
+    "hints": {
+      "anchoredZoom": "Pessiga per fer zoom mantenint les caselles sota els dits al mateix lloc.",
+      "panVsSweep": "Arrossegar desplaça la tela. Comença en una casella coincident per fer una passada seguida.",
+      "edgeAutoPan": "Continua la passada a prop de la vora i la tela seguirà el dit.",
+      "remainingCellLocator": "Utilitza el localitzador per trobar la següent casella pendent d'aquest fil."
+    },
+    "skip": "Omet per ara",
+    "skipAccessibilityLabel": "Omet el tutorial per ara",
+    "dismiss": "Entesos",
+    "dismissAccessibilityLabel": "Tanca el consell"
+  },
+  "recap": {
+    "title": "Ja ho tens",
+    "lines": {
+      "matchNumbers": "Fes coincidir els números per col·locar cada puntada.",
+      "dragSweep": "Arrossega per les caselles coincidents per fer una passada seguida.",
+      "pinchZoom": "Pessiga per fer zoom quan necessitis veure-ho més de prop.",
+      "undoLocator": "Desfer i el localitzador sempre són gratuïts."
+    },
+    "continue": "Continua puntant",
+    "browsePatterns": "Explora patrons"
+  }
+}

@@ -13,5 +13,6 @@
   "pl": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
   "ru": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
   "zh-Hans": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
-  "zh-Hant": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false }
+  "zh-Hant": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
+  "ca": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false }
 }

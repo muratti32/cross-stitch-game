@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Aquest inici de sessió pertany a un altre compte. El teu compte actual no s'ha canviat.",
+    "providerRejected": "Aquesta verificació ha estat rebutjada. Comprova el compte o el codi i torna-ho a provar."
+  },
+  "generic": {
+    "failure": "S'ha produït un error. Torna-ho a provar.",
+    "supportReferenceLabel": "Referència de suport: {{reference}}"
+  }
+}

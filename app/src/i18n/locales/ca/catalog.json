@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Enrere",
+    "searchPlaceholder": "Cerca patrons, creadors, etiquetes…",
+    "offlineBanner": "Sense connexió — el catàleg pot estar desactualitzat",
+    "sectionError": {
+      "title": "No s'ha pogut carregar",
+      "retry": "Torna-ho a provar"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} colors",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} cols",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Anglès"
+    },
+    "accessibilityLabel": "Escrit en {{language}}"
+  },
+  "index": {
+    "subtitle": "Crea el teu món acollidor, puntada a puntada.",
+    "searchBar": {
+      "accessibilityLabel": "Cerca al catàleg de patrons"
+    },
+    "sections": {
+      "starterPatterns": "Patrons Inicials",
+      "staffPicks": "Seleccions de l'Equip",
+      "categories": "Categories",
+      "newPatterns": "Patrons Nous"
+    },
+    "staffPicks": {
+      "emptyTitle": "Encara Sense Seleccions",
+      "emptyBody": "La nostra col·lecció de dissenys acollidors triats a mà apareixerà aquí aviat.",
+      "errorBody": "No s'ha pogut accedir al catàleg i encara no hi ha res desat en memòria cau."
+    },
+    "categories": {
+      "count": "{{count}} patrons",
+      "errorBody": "No s'ha pogut accedir al catàleg i encara no hi ha res desat en memòria cau."
+    },
+    "newPatterns": {
+      "emptyTitle": "S'estan Creant Patrons Nous",
+      "emptyBody": "Aviat arribaran novetats!",
+      "errorBody": "No s'ha pogut accedir al catàleg i encara no hi ha res desat en memòria cau.",
+      "showMore": "Mostra'n més",
+      "loading": "Carregant…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Explora",
+    "error": {
+      "body": "No s'ha pogut accedir a aquesta pàgina del catàleg i encara no hi ha res desat en memòria cau."
+    },
+    "empty": {
+      "title": "Encara No Hi Ha Res",
+      "body": "Cap patró coincideix amb aquesta selecció encara. Arriben dissenys nous regularment."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Camp de cerca del catàleg",
+    "inactive": {
+      "title": "Cerca al Catàleg",
+      "body": "Escriu almenys dos caràcters per cercar patrons per títol, creador o etiqueta."
+    },
+    "error": {
+      "title": "La Cerca Necessita Connexió",
+      "body": "La cerca al catàleg no està disponible sense connexió. Les pàgines del catàleg desades en memòria cau continuen sent visibles des de la pestanya de catàleg."
+    },
+    "noResults": {
+      "title": "Cap Coincidència",
+      "body": "Res al catàleg coincideix amb «{{query}}» encara."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Jugant com a Convidat",
+    "body": "El Stitch Coin i el progrés només es guarden en aquest dispositiu com a Convidat. Si es perd la instal·lació, el registre i el progrés del Convidat poden ser irrecuperables. Iniciar sessió protegeix el teu progrés."
+  },
+  "detail": {
+    "noDescription": "No hi ha cap descripció disponible.",
+    "specs": {
+      "dimensions": "Dimensions",
+      "totalStitches": "Puntades Totals",
+      "colors": "Colors",
+      "category": "Categoria"
+    },
+    "threadsSuffix": "{{count}} Fils",
+    "palette": {
+      "title": "Fils Necessaris",
+      "loading": "Llegint la paleta de fils...",
+      "loadFailed": "No s'ha pogut carregar la paleta: {{error}}",
+      "retry": "Torna a Carregar"
+    },
+    "actions": {
+      "startStitching": "Comença a Puntar",
+      "starting": "Iniciant...",
+      "preparing": "Preparant…"
+    },
+    "loadFailedGeneric": "No s'ha pogut descodificar el fitxer del patró.",
+    "sessionCreateFailed": "No s'ha pogut crear una sessió de puntada. Torna-ho a provar.",
+    "unavailable": {
+      "title": "Patró No Disponible",
+      "body": "Aquest patró no s'ha pogut carregar. És possible que s'hagi eliminat o que no tinguis connexió.",
+      "goBack": "Torna Enrere"
+    },
+    "byCreator": "per {{creatorName}}",
+    "byCreatorWithUsername": "per {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Bloqueja el Creador",
+      "message": "Segur que vols bloquejar {{creatorName}}? Aquesta és una acció privada i reversible que amaga els seus patrons de la cerca/exploració. No denuncia el creador i no interromprà la teva sessió de puntada actual.",
+      "cancel": "Cancel·la",
+      "confirm": "Bloqueja",
+      "blockedTitle": "Bloquejat",
+      "blockedMessage": "{{creatorName}} ha estat bloquejat.",
+      "errorTitle": "Error",
+      "failedGeneric": "No s'ha pogut bloquejar el creador."
+    },
+    "likeFailedGeneric": "No s'ha pogut actualitzar l'estat de m'agrada",
+    "connectToPlay": {
+      "title": "Connecta't per jugar",
+      "body": "Iniciar un patró del catàleg necessita connexió per preparar la teva sessió. Els Patrons Inicials es poden jugar ara mateix, fins i tot sense connexió."
+    },
+    "insufficientCoins": {
+      "title": "Monedes Insuficients",
+      "body": "Aquest patró costa {{price}} Stitch Coins, però només tens {{balance}} monedes.\n\nManquen: {{shortfall}} monedes.\n\nGuanya Stitch Coins completant altres patrons! Les recompenses de Primera Finalització ja estan actives.",
+      "getCoins": "Aconsegueix Stitch Coins",
+      "findPatterns": "Troba patrons per punxar",
+      "back": "Enrere"
+    },
+    "unlockFailedGeneric": "No s'ha pogut desbloquejar. Comprova la connexió i torna-ho a provar.",
+    "preparationFailedGeneric": "No s'ha pogut iniciar la preparació. Comprova la connexió i torna-ho a provar.",
+    "price": {
+      "label": "Preu"
+    },
+    "balance": {
+      "label": "El Teu Saldo",
+      "loading": "…"
+    },
+    "unlockButton": "Desbloqueja per {{price}} moneda",
+    "communityReport": {
+      "button": "Denuncia aquest patró",
+      "title": "Denuncia {{patternTitle}}",
+      "body": "Tria el motiu que millor descrigui el problema. Les denúncies mai amaguen ni canvien un patró automàticament.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Contingut Inapropiat o Insegur",
+        "copyright_or_publication_rights": "Drets d'Autor o de Publicació",
+        "duplicate_or_spam": "Duplicat o Correu Brossa",
+        "misleading_title_or_tags": "Títol o Etiquetes Enganyoses",
+        "other": "Altres"
+      },
+      "explanationLabel": "Evidència o explicació {{requirement}}",
+      "explanationRequired": "(obligatori)",
+      "explanationOptional": "(opcional)",
+      "explanationPlaceholder": "Comparteix detalls que ajudin un moderador a revisar el patró.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Cancel·la",
+      "submit": "Envia la denúncia",
+      "submitFailedGeneric": "No s'ha pogut enviar la teva denúncia. Comprova la connexió i torna-ho a provar.",
+      "receivedTitle": "Denúncia rebuda",
+      "alreadyReceivedTitle": "Denúncia ja rebuda",
+      "receivedBody": "Un moderador ja pot revisar aquest patró. La denúncia no canvia automàticament la seva disponibilitat.",
+      "alreadyReceivedBody": "La teva denúncia existent ja forma part de la revisió oberta.",
+      "signInRequired": {
+        "title": "Inicia sessió per denunciar",
+        "message": "Les Denúncies Comunitàries requereixen un Compte Registrat. No s'ha enviat res.",
+        "cancel": "Cancel·la",
+        "signIn": "Inicia sessió"
+      },
+      "validation": {
+        "chooseReason": "Tria un motiu de denúncia.",
+        "explainRequired": "Explica per què estàs denunciant aquest patró.",
+        "tooLong": "L'explicació ha de tenir 2.000 caràcters o menys.",
+        "needsContent": "L'explicació ha d'incloure lletres o números."
+      }
+    }
+  }
+}

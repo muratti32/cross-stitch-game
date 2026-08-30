@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Taula de Puntada",
+    "subtitle": "Continua on ho vas deixar o reprèn una creació recent.",
+    "loading": "Carregant les teves puntades...",
+    "empty": {
+      "title": "Cap Creació Activa",
+      "body": "El teu bastidor de puntada està buit ara mateix. Explora el catàleg de patrons per trobar alguna cosa bonica per punxar!",
+      "action": "Explora el catàleg"
+    },
+    "unknownPattern": "Patró Desconegut",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Patró {{id}}",
+    "deleteSessionAccessibilityLabel": "Elimina la sessió",
+    "viewFinishedAccessibilityLabel": "Veure la creació acabada",
+    "resumeAccessibilityLabel": "Reprèn la puntada",
+    "status": {
+      "ready": "A punt",
+      "done": "Fet",
+      "active": "Activa",
+      "preparing": "Preparant",
+      "failed": "Fallida"
+    },
+    "deleteConfirm": {
+      "title": "Elimina el Progrés",
+      "message": "Estàs segur que vols eliminar el teu progrés de \"{{title}}\"? Aquesta acció no es pot desfer.",
+      "cancel": "Cancel·la",
+      "confirm": "Elimina"
+    },
+    "preparingCard": {
+      "discardTitle": "Descarta la Sessió",
+      "cancelTitle": "Cancel·la la Descàrrega",
+      "discardMessage": "Estàs segur que vols descartar aquesta sessió fallida?",
+      "cancelMessage": "Estàs segur que vols cancel·lar la descàrrega d'aquest patró?",
+      "keep": "Mantén",
+      "discard": "Descarta",
+      "cancel": "Cancel·la"
+    }
+  },
+  "loading": {
+    "text": "Obrint la sessió i preparant la tela..."
+  },
+  "error": {
+    "title": "Error en Carregar la Sessió",
+    "fallbackMessage": "No s'ha pogut carregar la teva sessió de puntada.",
+    "backButton": "Torna Enrere",
+    "tableButton": "Ves a la Taula"
+  },
+  "header": {
+    "backButton": "← Enrere",
+    "tableButton": "← Taula",
+    "defaultTitle": "Sessió de Puntada",
+    "progress": "{{completed}} / {{total}} caselles ({{percent}}% completat)",
+    "resumeTutorialAccessibilityLabel": "Reprèn el tutorial"
+  },
+  "banners": {
+    "patternRemoved": "Aquest Patró ha estat eliminat per moderació i ja no està disponible. Toca per sortir.",
+    "syncConflict": "Sincronitzat amb un altre dispositiu — s'han actualitzat algunes caselles. Toca per descartar."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Localitza la següent casella pendent del color de fil actiu",
+    "undoAccessibilityLabel": "Desfés l'última puntada"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Color {{number}}: DMC {{dmcCode}}, {{count}} puntada restant",
+    "chipAccessibilityLabel_other": "Color {{number}}: DMC {{dmcCode}}, {{count}} puntades restants",
+    "done": "Fet",
+    "remaining_one": "{{count}} restant",
+    "remaining_other": "{{count}} restants"
+  },
+  "celebration": {
+    "title": "Bellament Confeccionat!",
+    "subtitle": "Has completat totes les puntades d'aquesta tela.",
+    "stitchesLabel_one": "Puntada",
+    "stitchesLabel_other": "Puntades",
+    "colorsLabel_one": "Color",
+    "colorsLabel_other": "Colors",
+    "replayButton": "Torna a Punxar",
+    "catalogButton": "Torna al Catàleg"
+  }
+}
