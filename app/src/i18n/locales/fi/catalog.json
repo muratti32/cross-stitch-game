@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Takaisin",
+    "searchPlaceholder": "Hae malleja, tekijöitä, tunnisteita…",
+    "offlineBanner": "Yhteydetön tila — valikoima voi olla vanhentunut",
+    "sectionError": {
+      "title": "Ei voitu ladata",
+      "retry": "Yritä uudelleen"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} väriä",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} saraketta",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Englanti"
+    },
+    "accessibilityLabel": "Kirjoitettu kielellä {{language}}"
+  },
+  "index": {
+    "subtitle": "Rakenna oma kotoisa maailmasi, pisto pistolla.",
+    "searchBar": {
+      "accessibilityLabel": "Hae mallivalikoimasta"
+    },
+    "sections": {
+      "starterPatterns": "Aloittelijan mallit",
+      "staffPicks": "Henkilökunnan valinnat",
+      "categories": "Kategoriat",
+      "newPatterns": "Uudet mallit"
+    },
+    "staffPicks": {
+      "emptyTitle": "Ei henkilökunnan valintoja vielä",
+      "emptyBody": "Käsin poimitut kotoisat mallimme ilmestyvät tänne pian.",
+      "errorBody": "Valikoimaan ei saatu yhteyttä, eikä mitään ole vielä välimuistissa."
+    },
+    "categories": {
+      "count": "{{count}} mallia",
+      "errorBody": "Valikoimaan ei saatu yhteyttä, eikä mitään ole vielä välimuistissa."
+    },
+    "newPatterns": {
+      "emptyTitle": "Uusia malleja luodaan",
+      "emptyBody": "Uutuuksia on tulossa!",
+      "errorBody": "Valikoimaan ei saatu yhteyttä, eikä mitään ole vielä välimuistissa.",
+      "showMore": "Näytä lisää",
+      "loading": "Ladataan…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Selaa",
+    "error": {
+      "body": "Tähän valikoimasivuun ei saatu yhteyttä, eikä mitään ole vielä välimuistissa."
+    },
+    "empty": {
+      "title": "Ei vielä mitään täällä",
+      "body": "Yksikään malli ei vastaa tätä valintaa vielä. Uusia malleja saapuu säännöllisesti."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Valikoiman hakukenttä",
+    "inactive": {
+      "title": "Hae valikoimasta",
+      "body": "Kirjoita vähintään kaksi merkkiä etsiäksesi malleja otsikon, tekijän tai tunnisteen perusteella."
+    },
+    "error": {
+      "title": "Haku tarvitsee yhteyden",
+      "body": "Valikoiman haku ei ole käytettävissä offline-tilassa. Välimuistissa olevia valikoimasivuja voi edelleen selata valikoimavälilehdeltä."
+    },
+    "noResults": {
+      "title": "Ei osumia",
+      "body": "Mikään valikoimassa ei vastaa hakua ”{{query}}” vielä."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Pelaat Vieraana",
+    "body": "Ompelukolikot ja edistyminen säilyvät vain tällä laitteella vieraana pelatessa. Jos asennus katoaa, vierastili ja edistyminen saattavat kadota pysyvästi. Kirjautuminen suojaa edistymistäsi."
+  },
+  "detail": {
+    "noDescription": "Kuvausta ei ole saatavilla.",
+    "specs": {
+      "dimensions": "Mitat",
+      "totalStitches": "Pistoja yhteensä",
+      "colors": "Värit",
+      "category": "Kategoria"
+    },
+    "threadsSuffix": "{{count}} lankaa",
+    "palette": {
+      "title": "Tarvittavat langat",
+      "loading": "Luetaan lankapalettia...",
+      "loadFailed": "Paletin lataaminen epäonnistui: {{error}}",
+      "retry": "Yritä uudelleen"
+    },
+    "actions": {
+      "startStitching": "Aloita ompelu",
+      "starting": "Aloitetaan...",
+      "preparing": "Valmistellaan…"
+    },
+    "loadFailedGeneric": "Mallitiedoston purkaminen epäonnistui.",
+    "sessionCreateFailed": "Ompelusession luominen epäonnistui. Yritä uudelleen.",
+    "unavailable": {
+      "title": "Malli ei ole saatavilla",
+      "body": "Tätä mallia ei voitu ladata. Se on saatettu poistaa, tai olet offline-tilassa.",
+      "goBack": "Palaa takaisin"
+    },
+    "byCreator": "tekijältä {{creatorName}}",
+    "byCreatorWithUsername": "tekijältä {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Estä tekijä",
+      "message": "Oletko varma, että haluat estää käyttäjän {{creatorName}}? Tämä on yksityinen, peruutettavissa oleva toiminto, joka piilottaa hänen mallinsa hausta/selauksesta. Se ei tee ilmiantoa tekijästä eikä keskeytä nykyistä ompelusessiotasi.",
+      "cancel": "Peruuta",
+      "confirm": "Estä",
+      "blockedTitle": "Estetty",
+      "blockedMessage": "{{creatorName}} on estetty.",
+      "errorTitle": "Virhe",
+      "failedGeneric": "Tekijän estäminen epäonnistui."
+    },
+    "likeFailedGeneric": "Tykkäyksen tilan päivitys epäonnistui",
+    "connectToPlay": {
+      "title": "Yhdistä pelataksesi",
+      "body": "Valikoiman mallin aloittaminen vaatii yhteyden session valmistelemiseksi. Aloittelijan mallit ovat pelattavissa heti, jopa offline-tilassa."
+    },
+    "insufficientCoins": {
+      "title": "Ei tarpeeksi kolikoita",
+      "body": "Tämä malli maksaa {{price}} Ompelukolikkoa, mutta sinulla on vain {{balance}} kolikkoa.\n\nPuuttuu: {{shortfall}} kolikkoa.\n\nAnsaitse Ompelukolikoita suorittamalla muita malleja! Palkinnot ensimmäisestä suorituksesta ovat käytössä.",
+      "getCoins": "Hanki Ompelukolikoita",
+      "findPatterns": "Etsi ommeltavia malleja",
+      "back": "Takaisin"
+    },
+    "unlockFailedGeneric": "Avaaminen epäonnistui. Tarkista yhteytesi ja yritä uudelleen.",
+    "preparationFailedGeneric": "Valmistelua ei voitu aloittaa. Tarkista yhteytesi ja yritä uudelleen.",
+    "price": {
+      "label": "Hinta"
+    },
+    "balance": {
+      "label": "Saldosi",
+      "loading": "…"
+    },
+    "unlockButton": "Avaa hintaan {{price}} kolikkoa",
+    "communityReport": {
+      "button": "Ilmianna tämä malli",
+      "title": "Ilmianna {{patternTitle}}",
+      "body": "Valitse syy, joka kuvaa parhaiten ongelmaa. Ilmiannot eivät koskaan piilota tai muuta mallia automaattisesti.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Sopimaton tai turvaton sisältö",
+        "copyright_or_publication_rights": "Tekijänoikeus- tai julkaisuoikeudet",
+        "duplicate_or_spam": "Kaksoiskappale tai roskaposti",
+        "misleading_title_or_tags": "Harhaanjohtava otsikko tai tunnisteet",
+        "other": "Muu"
+      },
+      "explanationLabel": "Todisteet tai selitys {{requirement}}",
+      "explanationRequired": "(pakollinen)",
+      "explanationOptional": "(valinnainen)",
+      "explanationPlaceholder": "Jaa yksityiskohtia, jotka auttavat valvojaa tarkistamaan mallin.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Peruuta",
+      "submit": "Lähetä ilmianto",
+      "submitFailedGeneric": "Ilmiantoa ei voitu lähettää. Tarkista yhteytesi ja yritä uudelleen.",
+      "receivedTitle": "Ilmianto vastaanotettu",
+      "alreadyReceivedTitle": "Ilmianto on jo vastaanotettu",
+      "receivedBody": "Valvoja voi nyt tarkistaa tämän mallin. Ilmianto ei automaattisesti muuta sen saatavuutta.",
+      "alreadyReceivedBody": "Aiempi ilmiantosi on jo osa avointa tarkistusta.",
+      "signInRequired": {
+        "title": "Kirjaudu sisään ilmiantaaksesi",
+        "message": "Yhteisön ilmiannot vaativat rekisteröidyn tilin. Mitään ei ole lähetetty.",
+        "cancel": "Peruuta",
+        "signIn": "Kirjaudu sisään"
+      },
+      "validation": {
+        "chooseReason": "Valitse ilmiannon syy.",
+        "explainRequired": "Selitä, miksi ilmianto on tehty.",
+        "tooLong": "Selitys saa olla enintään 2 000 merkkiä.",
+        "needsContent": "Selityksessä on oltava kirjaimia tai numeroita."
+      }
+    }
+  }
+}

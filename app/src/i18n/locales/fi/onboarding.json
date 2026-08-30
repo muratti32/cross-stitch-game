@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "TERVETULOA STITCH WISHIIN",
+    "title": "Valitse väri ja napauta vastaavia ruutuja.",
+    "heroAlt": "Esikatselu Cozy Heart -aloitusmallista",
+    "handedness": {
+      "sectionTitle": "Kumpaa puolta ohjainten tulisi käyttää?",
+      "groupLabel": "Ohjainten puoli",
+      "optionRight": "Ohjaimet oikealla",
+      "optionLeft": "Ohjaimet vasemmalla",
+      "saveErrorText": "Valinnan tallentaminen ei onnistunut.",
+      "retry": "Yritä uudelleen"
+    },
+    "note": "Voit muuttaa tätä myöhemmin Asetuksista.",
+    "start": "Aloita pistely",
+    "starting": "Aloitetaan…",
+    "browse": "Selaa aloitusmalleja",
+    "signIn": "Kirjaudu sisään"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Valitse joulunpunainen DMC 321.",
+      "stitchAction": "Napauta korostettua vastaavaa ruutua.",
+      "mismatchedTap": "Napauta korostettua eri ruutua. Väärät napautukset eivät maksa mitään.",
+      "undoAction": "Kumoa pisto ja aseta se sitten uudelleen.",
+      "stitchSweep": "Paina vastaavaa ruutua ja vedä sitten korostetun alueen yli.",
+      "threadColorCompletion": "Viimeistele korostettu valkoinen lanka ja valitse sitten seuraava väri."
+    },
+    "hints": {
+      "anchoredZoom": "Zoomaa nipistämällä pitäen sormiesi alla olevat ruudut paikoillaan.",
+      "panVsSweep": "Vetäminen siirtää kangasta. Aloita vastaavasta ruudusta tehdäksesi pyyhkäisypiston.",
+      "edgeAutoPan": "Jatka pyyhkäisyä reunan lähellä, niin kangas seuraa sormeasi.",
+      "remainingCellLocator": "Käytä paikanninta löytääksesi tämän langan seuraavan jäljellä olevan ruudun."
+    },
+    "skip": "Ohita toistaiseksi",
+    "skipAccessibilityLabel": "Ohita opetusohjelma toistaiseksi",
+    "dismiss": "Selvä",
+    "dismissAccessibilityLabel": "Piilota vinkki"
+  },
+  "recap": {
+    "title": "Hienosti menee!",
+    "lines": {
+      "matchNumbers": "Yhdistä numerot asettaaksesi jokaisen piston.",
+      "dragSweep": "Pyyhkäise vetämällä vastaavien ruutujen yli.",
+      "pinchZoom": "Nipistä zoomataksesi, kun haluat katsoa tarkemmin.",
+      "undoLocator": "Kumoaminen ja paikannin ovat aina ilmaisia."
+    },
+    "continue": "Jatka pistelyä",
+    "browsePatterns": "Selaa malleja"
+  }
+}

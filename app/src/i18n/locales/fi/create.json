@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Takaisin",
+    "cancel": "Peruuta",
+    "duplicateTitle": "Sinulla on jo henkilökohtainen malli nimellä ”{{title}}”. Valitse toinen nimi.",
+    "cellsCount_one": "ruutu",
+    "cellsCount_other": "ruutua",
+    "colorsCount_one": "väri",
+    "colorsCount_other": "väriä"
+  },
+  "hub": {
+    "title": "Luomiskeskus",
+    "subtitle": "Herätä omat mallisi eloon räätälöidyillä ristipistomalleilla.",
+    "opening": "Avataan…",
+    "photoImport": {
+      "title": "Kuvantuonti",
+      "description": "Lataa kuva kameran rullasta ja muunna se pisteltäväksi malliksi.",
+      "action": "Tuo kuva"
+    },
+    "aiGenerator": {
+      "title": "Tekoälygeneraattori",
+      "description": "Kuvaile kodikas aihe ja anna tekoälyn luoda mukautettu pikselimalli.",
+      "action": "Luo malli"
+    }
+  },
+  "aspects": {
+    "square": "Neliö",
+    "portrait_4_3": "Pysty 4:3",
+    "landscape_4_3": "Vaaka 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Mallin muuntaminen epäonnistui. Yritä uudelleen.",
+      "timeout": "Mallin muuntaminen on edelleen käynnissä. Yritä hetken kuluttua uudelleen.",
+      "generic": "Mallin muuntamista ei voitu suorittaa loppuun. Yritä uudelleen."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Rekisteröity tili vaaditaan",
+      "body": "Tekoälytaide ja sen kirjasto pysyvät yksityisinä tililläsi.",
+      "signIn": "Kirjaudu sisään"
+    },
+    "header": {
+      "title": "Tekoälygeneraattori",
+      "backAccessibilityLabel": "Takaisin"
+    },
+    "prompt": {
+      "label": "Kuvaile taideteostasi",
+      "placeholder": "Kodikas mökkipuutarha auringonlaskun aikaan…"
+    },
+    "generate": {
+      "working": "Työskennellään…",
+      "action": "Luo — 1 tekoälykrediitti",
+      "errors": {
+        "promptRejected": "Tätä kehotetta ei sallittu. Kokeile kuvailla jotain muuta.",
+        "generic": "Tekoälyn luontia ei voitu aloittaa. Yritä uudelleen."
+      }
+    },
+    "library": {
+      "title": "Tekoälytaidekirjastosi",
+      "status": {
+        "pending": "Odottaa",
+        "dispatched": "Lähetetty",
+        "running": "Käynnissä",
+        "delivered": "Toimitettu",
+        "safety_rejected": "Hylätty turvallisuussyistä",
+        "failed": "Epäonnistui",
+        "deleted": "Poistettu",
+        "unknown": "Ei saatavilla"
+      },
+      "failure": {
+        "safety_rejected": "Tämä taideteos ei läpäissyt tarjoajan turvallisuustarkistusta.",
+        "failed": "Tätä taideteosta ei voitu luoda."
+      },
+      "approve": "Hyväksy malliksi",
+      "delete": "Poista",
+      "deleteAccessibilityLabel": "Poista tämä tekoälytaideteos",
+      "errors": {
+        "loadFailed": "Tekoälytaidekirjastoa ei voitu ladata. Yritä uudelleen."
+      }
+    },
+    "approve": {
+      "modalTitle": "Luo henkilökohtainen malli",
+      "titleLabel": "Mallin nimi",
+      "titleAccessibilityLabel": "Mallin nimi",
+      "defaultTitle": "Oma tekoälymalli",
+      "placeholder": "Oma tekoälymalli",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Peruuta",
+      "creating": "Luodaan mallia…",
+      "create": "Luo malli",
+      "errors": {
+        "generic": "Henkilökohtaista mallia ei voitu luoda. Yritä uudelleen."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Rekisteröity tili vaaditaan",
+      "body": "Henkilökohtaiset mallit kuuluvat tilillesi, joten ne pysyvät yksityisinä ja saatavilla eri laitteilla.",
+      "signIn": "Kirjaudu sisään tai luo tili",
+      "back": "Takaisin"
+    },
+    "header": {
+      "title": "Kuvamalli",
+      "subtitle": "Rajaa paikallisesti ja hyväksy muunnos",
+      "backAccessibilityLabel": "Takaisin"
+    },
+    "picker": {
+      "chooseTitle": "Valitse kuva",
+      "helpText": "Täyden resoluution paikallinen kuvalähde pysyy tällä laitteella. Mitään ei muunneta ennen kuin hyväksyt rajauksen.",
+      "choose": "Valitse kirjastosta",
+      "chooseAnother": "Valitse toinen",
+      "opening": "Avataan…",
+      "errors": {
+        "permissionDenied": "Kuvakirjaston käyttöoikeus vaaditaan paikallisen kuvalähteen valitsemiseksi.",
+        "invalidDimensions": "Valitulla kuvalla ei ole käyttökelpoisia mittoja.",
+        "generic": "Kuvakirjastoa ei voitu avata. Yritä uudelleen."
+      }
+    },
+    "framing": {
+      "title": "Taideteoksen rajaus",
+      "gestureHint": "Vedä sijoittaaksesi · nipistä zoomataksesi",
+      "aspectLabel": "Rajauksen kuvasuhde"
+    },
+    "profile": {
+      "title": "Muunnosprofiili",
+      "options": {
+        "easy": "Helppo",
+        "standard": "Vakio",
+        "detailed": "Yksityiskohtainen"
+      },
+      "custom": "Mukautettu",
+      "customMeta": "Vapaa · muoto lukittu",
+      "unavailable": "Ei sovi tähän rajaukseen",
+      "customShortEdgeLabel": "Lyhyt reuna",
+      "customColorLimitLabel": "DMC-värirajoitus",
+      "exceedsLimit": "Nämä mukautetut arvot ylittävät {{max}} ruudun mallikokorajoituksen."
+    },
+    "titleCard": {
+      "label": "Mallin nimi",
+      "placeholder": "Oma kuvamalli",
+      "defaultTitle": "Oma kuvamalli",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · jopa {{maxColors}} DMC-{{colorsUnit}}",
+      "privacyNotice": "Hyväksyminen lataa vain rajatun, pienennetyn johdannaisen. Alkuperäinen kuva pysyy paikallisena.",
+      "approve": "Hyväksy taideteos ja muunna"
+    },
+    "processing": {
+      "preparingFrame": "Valmistellaan hyväksyttyä rajausta tällä laitteella…",
+      "uploading": "Ladataan vain rajattu, pienennetty kuva…",
+      "waitingForWorker": "Odotetaan muuntotyöntekijää…",
+      "buildingGrid": "Rakennetaan pistoruudukkoa ja DMC-palettia…",
+      "preparingSession": "Valmistellaan henkilökohtaista mallia peliä varten…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Tämä profiili ei enää sovi lopulliseen rajaukseen. Valitse Helppo tai vähennä yksityiskohtia.",
+        "generic": "Tätä kuvaa ei voitu muuntaa. Yritä uudelleen."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Mallia ei ole valittu",
+      "noPatternBody": "Tämä näyttö on avattava kirjastossasi olevasta henkilökohtaisesta mallista.",
+      "accountTitle": "Rekisteröity tili vaaditaan",
+      "accountBody": "Henkilökohtaiset mallit kuuluvat tilillesi, joten ne pysyvät yksityisinä ja saatavilla eri laitteilla.",
+      "signIn": "Kirjaudu sisään tai luo tili",
+      "back": "Takaisin"
+    },
+    "loading": "Jatketaan luonnoksen muokkausta...",
+    "load": {
+      "failedTitle": "Mallin lataaminen epäonnistui",
+      "retry": "Yritä uudelleen",
+      "back": "Takaisin",
+      "errors": {
+        "generic": "Tätä henkilökohtaista mallia ei voitu ladata. Yritä uudelleen."
+      }
+    },
+    "header": {
+      "title": "Mallieditori",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Takaisin"
+    },
+    "toolbar": {
+      "undo": "Kumoa",
+      "redo": "Tee uudelleen"
+    },
+    "mode": {
+      "paint": "Maalaa",
+      "replaceColor": "Korvaa väri",
+      "replaceStep1": "1. Napauta korvattavaa väriä alla olevasta mallista:",
+      "replaceStep2": "2. Valitse uusi DMC-väri alta suorittaaksesi korvauksen:",
+      "paintSelected": "Valittu: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Valitse väri alta ja napauta sitten ruutuja maalataksesi."
+    },
+    "errors": {
+      "pickColorFirst": "Valitse väri ensin",
+      "paletteLimit": "Tämä malli käyttää jo sallitun enimmäismäärän, {{max}} lankaväriä."
+    },
+    "picker": {
+      "title": "DMC-lankavärit",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Tallenna muokattu malli",
+      "placeholder": "Muokatun mallini nimi",
+      "action": "Tallenna uutena",
+      "offlineTitle": "Tallennettu offline-tilaan",
+      "offlineBody": "Muokattu mallisi on tallennettu tälle laitteelle ja se synkronoidaan tilillesi, kun olet taas verkossa.",
+      "errors": {
+        "generic": "Tätä henkilökohtaista mallia ei voitu tallentaa. Yritä uudelleen."
+      }
+    }
+  }
+}

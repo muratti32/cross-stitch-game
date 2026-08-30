@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Tämä kirjautuminen kuuluu toiselle tilille. Nykyistä tiliäsi ei muutettu.",
+    "providerRejected": "Tämä vahvistus hylättiin. Tarkista tili tai koodi ja yritä uudelleen."
+  },
+  "generic": {
+    "failure": "Jotain meni pieleen. Yritäthän uudelleen.",
+    "supportReferenceLabel": "Tukiviite: {{reference}}"
+  }
+}

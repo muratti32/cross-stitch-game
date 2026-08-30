@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Takaisin",
+    "title": "Kauppa",
+    "subtitle": "Jäsenyys ja kertaostokset"
+  },
+  "signInReturn": {
+    "notice": "Olet kirjautunut sisään. {{label}} on yhä valittuna. Tarkista se ja paina Osta, kun olet valmis."
+  },
+  "premiumHero": {
+    "eyebrow": "PREMIUM-JÄSENYYS",
+    "title": "Luo enemmän. Kerää pieni palkinto joka päivä.",
+    "body": "Tekoälykrediittejä joka maksujakso, Premium-teemoja sekä päivittäinen Ompelukolikoiden lunastus.",
+    "benefitAiCredits": "Tekoälykrediitit",
+    "benefitDailyCoins": "Päivittäiset kolikot",
+    "benefitThemes": "Teemat",
+    "statusNoActiveMembership": "Ei aktiivista jäsenyyttä",
+    "statusBrowseAsGuest": "Selaa tilauksia Vieraana",
+    "periodEndsLabel": "Nykyinen jakso päättyy",
+    "periodRenewsLabel": "Uusiutuu",
+    "lifecycleActive": "Aktiivinen"
+  },
+  "membershipActions": {
+    "title": "Aktiivinen Premium-jäsenyys",
+    "body": "Päivittäiset palkinnot ovat Profiilissa. Teemat löytyvät kohdasta Asetukset › Ulkoasu.",
+    "scheduledChangeNotice": "Muutos tilaukseen {{plan}} {{date}}",
+    "manageSubscription": "Hallitse tilausta",
+    "manageSubscriptionFailedTitle": "Tilauksia ei voitu avata",
+    "manageSubscriptionFailedBody": "Yritä uudelleen laitteesi kauppatilin kautta."
+  },
+  "pending": {
+    "title": "Oston vahvistus on kesken",
+    "verifyingTitle": "Vahvistetaan ostoa",
+    "premiumChangeAccepted": "Kauppa hyväksyi muutoksen tilaan {{label}}. ",
+    "premiumResponseReceived": "Kaupan vastaus tuotteesta {{label}} on vastaanotettu. ",
+    "premiumDeferredSuffix": "Muutos ajoitetaan vasta pelin taustajärjestelmän vahvistuksen jälkeen, ja se astuu voimaan nykyisen jakson päättyessä.",
+    "premiumSuffix": "Premium aktivoituu vasta pelin taustajärjestelmän vahvistuksen jälkeen.",
+    "doNotPurchasePlanAgain": " Älä osta tätä tilausta uudelleen.",
+    "coinPackBody": "Kaupan vastaus on vastaanotettu. Ompelukolikot päivittyvät vasta, kun pelin taustajärjestelmä tuo näkyviin vastaavan kaupan kirjaustiedon. Älä osta tätä pakettia uudelleen.",
+    "aiCreditPackBody": "Kaupan vastaus on vastaanotettu. Tekoälykrediitit päivittyvät vasta, kun pelin taustajärjestelmä tuo näkyviin vastaavan kaupan kirjaustiedon. Älä osta tätä pakettia uudelleen.",
+    "refreshStatus": "Päivitä tila",
+    "retryReconciliation": "Yritä vahvistusta uudelleen"
+  },
+  "store": {
+    "loadingPrices": "Ladataan kaupan nykyisiä hintoja…",
+    "unavailableTitle": "Kauppa tilapäisesti poissa käytöstä",
+    "unavailableBody": "Lompakkosi ja jäsenyystietosi ovat silti saatavilla.",
+    "retry": "Yritä uudelleen"
+  },
+  "plans": {
+    "choosePremiumPlan": "Valitse Premium-tilaus",
+    "yourPremiumPlan": "Sinun Premium-tilauksesi",
+    "currentPlan": "NYKYINEN TILAUS",
+    "upgrade": "PÄIVITÄ",
+    "planChange": "TILAUSMUUTOS",
+    "bestValue": "PARAS ARVO",
+    "billedEvery": "Veloitetaan joka {{period}}",
+    "chooseLabel": "Valitse {{label}}",
+    "freeTrial": "Ilmainen {{offer}} ajan, sitten {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Kertapaketit",
+    "stitchCoinPacksTitle": "Ompelukolikkopaketit",
+    "aiCreditPacksTitle": "Tekoälykrediittipaketit",
+    "coinsNoun": "Kolikot",
+    "creditsNoun": "Krediitit",
+    "fromPrice": "Alkaen {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Palauta ostokset",
+    "restoreGuestPremium": "Palauta vieraan Premium",
+    "requestedTitle": "Palautusta pyydetty",
+    "requestedBody": "Vahvistettu Premium-pääsy ilmestyy näkyviin, kun kaupan webhook on täsmäytetty. Ompelukolikko- ja tekoälykrediittipaketteja ei koskaan palauteta."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Nykyiset hinnat sovelluskaupasta",
+    "closeAccessibilityLabel": "Sulje tuotenäkymä",
+    "closeButtonAccessibilityLabel": "Sulje",
+    "selectedBeforeSignIn": "Valittu ennen sisäänkirjautumista",
+    "buy": "Osta"
+  },
+  "confirmation": {
+    "cancel": "Peruuta",
+    "confirmLabel": "Vahvista {{label}}",
+    "confirmPremiumTitle": "Vahvista Premium-osto",
+    "introductoryOffer": "Kauppasi tarjoaa tämän tutustumistarjouksen: {{offer}}.",
+    "premiumAppearsAfterVerification": "Premium ilmestyy vasta, kun pelin taustajärjestelmä on vahvistanut kaupan tapahtuman.",
+    "confirmPremiumUpgradeTitle": "Vahvista Premium-päivitys",
+    "confirmPremiumPlanChangeTitle": "Vahvista Premium-tilauksen muutos",
+    "currentPlanLabel": "Nykyinen tilaus: {{label}}",
+    "upgradeToLabel": "Päivitä tilaukseen {{label}} · {{offer}}",
+    "changeToLabel": "Vaihda tilaukseen {{label}} · {{offer}}",
+    "upgradeBody": "Sovelluskauppa hallitsee tämän päivityksen lopullista veloitusta ja voimaantulopäivää. Premium heijastaa {{label}} vasta, kun pelin taustajärjestelmä on vahvistanut sen.",
+    "planChangeBody": "Sovelluskauppa siirtää tämän muutoksen nykyisen jaksosi loppuun: {{currentLabel}} pysyy voimassa siihen asti, ja {{targetLabel}} veloitetaan muutospäivästä lähtien. Peruuta muutos kohdasta Hallitse tilausta.",
+    "confirmUpgrade": "Vahvista päivitys",
+    "confirmPlanChange": "Vahvista tilauksen muutos",
+    "confirmStitchCoinTitle": "Vahvista Ompelukolikkojen osto",
+    "confirmAiCreditTitle": "Vahvista Tekoälykrediittien osto",
+    "balanceChangesAfterVerificationCoin": "Saldosi muuttuu vasta, kun pelin taustajärjestelmä vahvistaa kaupan tapahtuman ja kirjaa vastaavan ostotiedon.",
+    "balanceChangesAfterVerificationAiCredit": "Saldosi muuttuu vasta, kun pelin taustajärjestelmä vahvistaa kaupan tapahtuman ja kirjaa vastaavan ostotiedon. Premium-jäsenyyttä ei tarvita."
+  },
+  "disclosure": {
+    "subscriptionTerms": "Maksu veloitetaan {{store}}-tililtäsi vahvistuksen yhteydessä. {{label}} Premium uusiutuu automaattisesti hintaan {{offer}}, ellei automaattista uusiutumista ole kytketty pois päältä vähintään 24 tuntia ennen nykyisen jakson päättymistä. Ilmaisen kokeilujakson käyttämättä jäänyt osa menetetään, kun ostat tilauksen. Voit peruuttaa tilauksen milloin tahansa {{store}}-tililtäsi.",
+    "privacyPolicy": "Tietosuojakäytäntö",
+    "termsOfService": "Käyttöehdot",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Linkkiä ei voitu avata: {{url}}"
+  },
+  "supportReference": {
+    "label": "Tukiviite: {{reference}}",
+    "copyAccessibilityLabel": "Kopioi tukiviite {{reference}}",
+    "copyAccessibilityHint": "Kopioi tukiviitteen leikepöydälle",
+    "copied": "Kopioitu",
+    "copyFailedTitle": "Kopiointi epäonnistui",
+    "copyFailedBody": "Tukiviitettä ei voitu kopioida. Valitse teksti kopioidaksesi sen manuaalisesti."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Vieraana tehtävät Ompelukolikkojen ostot ovat saatavilla vain iOS:lla.",
+    "guestIosOnlyGeneric": "Vieraana tehtävät ostot ovat saatavilla vain iOS:lla.",
+    "purchaseFailedTitle": "Osto epäonnistui",
+    "premiumVerificationNotYet": "Pelin taustajärjestelmä ei pystynyt vahvistamaan tätä ostoa. Yritä vahvistusta uudelleen; älä osta sitä uudelleen.",
+    "premiumVerificationFailedRetry": "Pelin taustajärjestelmä ei pystynyt vielä vahvistamaan tätä ostoa. Yritä vahvistusta uudelleen; älä osta sitä uudelleen.",
+    "premiumGrantRefreshFailed": "Premium vahvistettiin, mutta jäsenyyttä ja Tekoälykrediittien tilaa ei voitu päivittää. Yritä vahvistusta uudelleen.",
+    "premiumReconciliationUnreachable": "Oston vahvistus ei saanut yhteyttä pelin taustajärjestelmään. Yritä vahvistusta uudelleen; älä osta sitä uudelleen.",
+    "coinPackVerificationMismatch": "Kaupan tapahtuma ei vastannut tätä Ompelukolikkopakettia. Yritä vahvistusta uudelleen tai ota yhteyttä tukeen; älä osta sitä uudelleen.",
+    "coinPackGrantUnavailable": "Osto vahvistettiin, mutta Ompelukolikkojen lisäys ei ole saatavilla. Yritä vahvistusta uudelleen; älä osta sitä uudelleen.",
+    "coinPackBalanceRefreshFailed": "Kolikkolisäys vahvistettiin, mutta nykyistä Ompelukolikkosaldoa ei voitu päivittää. Yritä vahvistusta uudelleen.",
+    "coinPackVerificationFailedRetry": "Pelin taustajärjestelmä ei pystynyt vielä vahvistamaan tätä Ompelukolikkopakettia. Yritä vahvistusta uudelleen; älä osta sitä uudelleen.",
+    "coinPackReconciliationUnreachable": "Ompelukolikkopaketin vahvistus ei saanut yhteyttä pelin taustajärjestelmään. Yritä vahvistusta uudelleen; älä osta sitä uudelleen.",
+    "aiCreditPackVerificationMismatch": "Kaupan tapahtuma ei vastannut tätä Tekoälykrediittipakettia. Yritä vahvistusta uudelleen tai ota yhteyttä tukeen; älä osta sitä uudelleen.",
+    "aiCreditPackGrantUnavailable": "Osto vahvistettiin, mutta Tekoälykrediittien lisäys ei ole saatavilla. Yritä vahvistusta uudelleen; älä osta sitä uudelleen.",
+    "aiCreditPackBalanceRefreshFailed": "Tekoälykrediittien lisäys vahvistettiin, mutta nykyistä saldoa ei voitu päivittää. Yritä vahvistusta uudelleen.",
+    "aiCreditPackVerificationFailedRetry": "Pelin taustajärjestelmä ei pystynyt vielä vahvistamaan tätä Tekoälykrediittipakettia. Yritä vahvistusta uudelleen; älä osta sitä uudelleen.",
+    "aiCreditPackReconciliationUnreachable": "Tekoälykrediittipaketin vahvistus ei saanut yhteyttä pelin taustajärjestelmään. Yritä vahvistusta uudelleen; älä osta sitä uudelleen.",
+    "reconciliationStillUnavailable": "Pelin taustajärjestelmä on edelleen poissa käytöstä. Yritä vahvistusta myöhemmin uudelleen.",
+    "storeTemporarilyUnavailable": "Kauppa on tilapäisesti poissa käytöstä. Yritä hetken kuluttua uudelleen.",
+    "purchasesNotAllowed": "Ostot eivät ole sallittuja tällä laitteella. Tarkista kauppatilisi tai lapsilukkoasetukset.",
+    "itemNotAvailable": "Tämä tuote ei ole juuri nyt ostettavissa. Valitse toinen tuote tai yritä myöhemmin uudelleen.",
+    "alreadyOwned": "Omistat jo tämän tuotteen. Käytä Palauta ostokset -toimintoa päivittääksesi käyttöoikeutesi.",
+    "couldNotConnectToStore": "Ei voitu yhdistää kauppaan. Tarkista internetyhteytesi ja yritä uudelleen.",
+    "paymentPendingApproval": "Maksusi odottaa hyväksyntää. Ostosi tulee näkyviin, kun kauppa on suorittanut sen loppuun.",
+    "testPurchaseDeclined": "Testiosto hylättiin. Maksua ei veloitettu. Valitse Asetuksista toinen testikaupan tulos ja yritä sitten uudelleen.",
+    "genericPurchaseFailure": "Emme voineet suorittaa ostoasi loppuun. Maksua ei veloitettu. Yritä uudelleen."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Vahvistetaan yhä",
+    "premiumPending": "Vahvistus on yhä käynnissä. Premium aktivoituu, kun pelin taustajärjestelmä vahvistaa sen.",
+    "premiumPlanChangePending": "Vahvistus on yhä käynnissä. Tilausmuutoksesi ajoitetaan, kun pelin taustajärjestelmä vahvistaa sen.",
+    "coinPackPending": "Vahvistus on yhä käynnissä. Ompelukolikkosaldosi päivittyy, kun se on valmis.",
+    "aiCreditPackPending": "Vahvistus on yhä käynnissä. Tekoälykrediittisaldosi päivittyy, kun se on valmis."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Osto vastaanotettu",
+    "storeAcceptedPlanChange": "Kauppa hyväksyi muutoksen tilaan {{label}}. Vahvistetaan sen voimaantuloa.",
+    "storeAcceptedPurchase": "Kauppa hyväksyi tuotteen {{label}}. Ostoasi vahvistetaan nyt.",
+    "premiumChanges": "Premium muuttuu tilaan {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " {{date}}",
+    "planChangeScheduledTitle": "Tilauksen muutos ajoitettu",
+    "planChangeScheduledBody": "Premium-jäsenyytesi pitää nykyisen tilauksensa, kunnes se muuttuu tilaan {{label}}{{effectiveOn}}. Peruuta muutos kohdasta Hallitse tilausta.",
+    "premiumIsActiveTitle": "Premium on aktiivinen",
+    "premiumVerifiedAndActive": "{{label}} Premium on vahvistettu ja aktiivinen.",
+    "premiumNowActiveNoBilling": "{{label}} Premium on nyt aktiivinen.",
+    "premiumNowActiveBilled": "{{label}} Premium on nyt aktiivinen, veloitetaan joka {{period}}.",
+    "coinPackGrantedTitle": "Ompelukolikot lisätty",
+    "coinPackGrantVerified": "{{label}} -lisäys vahvistettu. Ompelukolikkosaldo: {{balance}}.",
+    "coinPackAddedToBalance": "{{quantity}} Ompelukolikkoa on lisätty saldoosi.",
+    "aiCreditPackGrantedTitle": "Tekoälykrediitit lisätty",
+    "aiCreditPackGrantVerified": "{{label}} -lisäys vahvistettu. Tekoälykrediittien saldo: {{balance}}.",
+    "aiCreditPackAddedToBalance": "{{quantity}} Tekoälykrediittiä on lisätty saldoosi."
+  },
+  "products": {
+    "premiumAnnual": "Vuosittainen",
+    "premiumMonthly": "Kuukausittainen",
+    "premiumWeekly": "Viikoittainen",
+    "stitchCoinPack_one": "{{formattedCount}} Ompelukolikko",
+    "stitchCoinPack_other": "{{formattedCount}} Ompelukolikkoa",
+    "aiCreditPack_one": "{{formattedCount}} Tekoälykrediitti",
+    "aiCreditPack_other": "{{formattedCount}} Tekoälykrediittiä",
+    "billedEveryOffer": "{{price}} joka {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} krediittiä / maksujakso",
+    "creditAllowancePaidNoun": "{{credits}} krediittiä / maksettu {{period}}"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Osta vieraana",
+    "commerceBody": "Voit tehdä ostoksia ilman rekisteröitymistä. Premium-jäsenyys voidaan palauttaa kaupasta, mutta Ompelukolikot, Tekoälykrediitit ja yksityinen vierassisältö ovat peruuttamattomasti menetetty, jos asennus poistuu. Rekisteröityminen suojaa niitä eikä koskaan keskeytä pelaamista Vieraana.",
+    "continueAsGuest": "Jatka Vieraana",
+    "signInInstead": "Kirjaudu sen sijaan sisään",
+    "closeAccessibilityLabel": "Sulje"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "Selvä",
+    "successButton": "Mahtavaa",
+    "failedButton": "Sulje",
+    "infoButton": "Selvä",
+    "closeAccessibilityLabel": "Sulje"
+  }
+}

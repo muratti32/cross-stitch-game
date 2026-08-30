@@ -154,4 +154,8 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'el:play:home.idLabel': '"ID" is used identically in Greek tech/UI copy.',
   'el:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
   'el:settings:session.idLabel': '"ID" is used identically in Greek tech/UI copy.',
+  'fi:play:home.idLabel': '"ID" is used identically in Finnish tech/UI copy.',
+  'fi:profile:home.identity.offline': '"Offline" is used identically in Finnish tech/UI copy.',
+  'fi:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
+  'fi:settings:session.idLabel': '"ID" is used identically in Finnish tech/UI copy.',
 };

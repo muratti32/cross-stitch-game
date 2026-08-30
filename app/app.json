@@ -140,7 +140,8 @@
       "ca": "./src/i18n/locales/ca/native.json",
       "cs": "./src/i18n/locales/cs/native.json",
       "da": "./src/i18n/locales/da/native.json",
-      "el": "./src/i18n/locales/el/native.json"
+      "el": "./src/i18n/locales/el/native.json",
+      "fi": "./src/i18n/locales/fi/native.json"
     },
     "experiments": {
       "typedRoutes": true,
