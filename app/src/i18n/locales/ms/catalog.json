@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Kembali",
+    "searchPlaceholder": "Cari pola, pencipta, tag…",
+    "offlineBanner": "Tiada sambungan — katalog mungkin tidak terkini",
+    "sectionError": {
+      "title": "Gagal dimuatkan",
+      "retry": "Cuba lagi"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} warna",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} lajur",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Inggeris"
+    },
+    "accessibilityLabel": "Ditulis dalam bahasa {{language}}"
+  },
+  "index": {
+    "subtitle": "Cipta dunia hangat anda sendiri, jahitan demi jahitan.",
+    "searchBar": {
+      "accessibilityLabel": "Cari katalog pola"
+    },
+    "sections": {
+      "starterPatterns": "Pola pemula",
+      "staffPicks": "Pilihan editor",
+      "categories": "Kategori",
+      "newPatterns": "Pola baharu"
+    },
+    "staffPicks": {
+      "emptyTitle": "Belum ada pilihan editor",
+      "emptyBody": "Koleksi reka bentuk hangat pilihan kami akan hadir di sini tidak lama lagi.",
+      "errorBody": "Katalog tidak tersedia, dan belum ada apa-apa dalam cache."
+    },
+    "categories": {
+      "count": "{{count}} pola",
+      "errorBody": "Katalog tidak tersedia, dan belum ada apa-apa dalam cache."
+    },
+    "newPatterns": {
+      "emptyTitle": "Pola baharu sedang disediakan",
+      "emptyBody": "Perkara segar akan hadir tidak lama lagi!",
+      "errorBody": "Katalog tidak tersedia, dan belum ada apa-apa dalam cache.",
+      "showMore": "Tunjukkan lebih banyak",
+      "loading": "Memuatkan…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Terokai",
+    "error": {
+      "body": "Halaman katalog ini tidak tersedia, dan belum ada apa-apa dalam cache."
+    },
+    "empty": {
+      "title": "Belum ada apa-apa di sini",
+      "body": "Tiada pola yang sepadan dengan koleksi ini. Reka bentuk baharu ditambah secara berkala."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Medan carian katalog",
+    "inactive": {
+      "title": "Cari katalog",
+      "body": "Taip sekurang-kurangnya dua aksara untuk mencari pola mengikut tajuk, pencipta, atau tag."
+    },
+    "error": {
+      "title": "Carian memerlukan sambungan",
+      "body": "Carian katalog tidak tersedia secara luar talian. Halaman katalog yang disimpan masih boleh diterokai di tab Katalog."
+    },
+    "noResults": {
+      "title": "Tiada hasil",
+      "body": "Belum ada yang sepadan dengan „{{query}}” dalam katalog."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Anda bermain sebagai tetamu",
+    "body": "Stitch Coin dan kemajuan anda hanya wujud pada peranti ini selagi anda bermain sebagai tetamu. Jika pemasangan hilang, baki tetamu dan kemajuan anda boleh hilang secara kekal. Log masuk akan melindungi kemajuan anda."
+  },
+  "detail": {
+    "noDescription": "Tiada penerangan tersedia.",
+    "specs": {
+      "dimensions": "Dimensi",
+      "totalStitches": "Jumlah jahitan",
+      "colors": "Warna",
+      "category": "Kategori"
+    },
+    "threadsSuffix": "{{count}} benang",
+    "palette": {
+      "title": "Benang yang diperlukan",
+      "loading": "Memuatkan palet benang...",
+      "loadFailed": "Gagal memuatkan palet: {{error}}",
+      "retry": "Muat semula"
+    },
+    "actions": {
+      "startStitching": "Mula menjahit",
+      "starting": "Memulakan...",
+      "preparing": "Menyediakan…"
+    },
+    "loadFailedGeneric": "Gagal menyahkod fail pola.",
+    "sessionCreateFailed": "Gagal membuat sesi menjahit. Cuba lagi.",
+    "unavailable": {
+      "title": "Pola tidak tersedia",
+      "body": "Pola ini gagal dimuatkan. Mungkin telah dipadam, atau anda tiada sambungan internet.",
+      "goBack": "Kembali"
+    },
+    "byCreator": "oleh {{creatorName}}",
+    "byCreatorWithUsername": "oleh {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Sekat pencipta",
+      "message": "Adakah anda pasti mahu menyekat {{creatorName}}? Ini adalah tindakan peribadi dan boleh dibatalkan yang menyembunyikan pola mereka daripada carian/penerokaan. Tindakan ini tidak melaporkan pencipta dan tidak mengganggu sesi menjahit yang sedang berlangsung.",
+      "cancel": "Batal",
+      "confirm": "Sekat",
+      "blockedTitle": "Disekat",
+      "blockedMessage": "{{creatorName}} telah disekat.",
+      "errorTitle": "Ralat",
+      "failedGeneric": "Gagal menyekat pencipta."
+    },
+    "likeFailedGeneric": "Gagal mengemas kini status suka",
+    "connectToPlay": {
+      "title": "Sambung untuk bermain",
+      "body": "Memulakan pola dari katalog memerlukan sambungan untuk menyediakan sesi. Pola pemula boleh terus dimainkan, walaupun tanpa sambungan internet."
+    },
+    "insufficientCoins": {
+      "title": "Koin tidak mencukupi",
+      "body": "Pola ini berharga {{price}} Stitch Coin, tetapi anda hanya mempunyai {{balance}} koin.\n\nKurang: {{shortfall}} koin.\n\nDapatkan Stitch Coin dengan menyelesaikan pola lain! Hadiah penyelesaian pertama sedang aktif.",
+      "getCoins": "Dapatkan Stitch Coin",
+      "findPatterns": "Cari pola untuk dijahit",
+      "back": "Kembali"
+    },
+    "unlockFailedGeneric": "Gagal membuka. Semak sambungan anda dan cuba lagi.",
+    "preparationFailedGeneric": "Gagal memulakan persediaan. Semak sambungan anda dan cuba lagi.",
+    "price": {
+      "label": "Harga"
+    },
+    "balance": {
+      "label": "Baki anda",
+      "loading": "…"
+    },
+    "unlockButton": "Buka dengan {{price}} koin",
+    "communityReport": {
+      "button": "Laporkan pola",
+      "title": "Laporkan {{patternTitle}}",
+      "body": "Pilih sebab yang paling menggambarkan masalahnya. Laporan tidak pernah secara automatik menyembunyikan atau mengubah pola.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Kandungan tidak sesuai atau tidak selamat",
+        "copyright_or_publication_rights": "Hak cipta atau hak penerbitan",
+        "duplicate_or_spam": "Pendua atau spam",
+        "misleading_title_or_tags": "Tajuk atau tag yang mengelirukan",
+        "other": "Lain-lain"
+      },
+      "explanationLabel": "Bukti atau penjelasan {{requirement}}",
+      "explanationRequired": "(wajib)",
+      "explanationOptional": "(pilihan)",
+      "explanationPlaceholder": "Kongsi butiran yang boleh membantu moderator meninjau pola ini.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Batal",
+      "submit": "Hantar laporan",
+      "submitFailedGeneric": "Gagal menghantar laporan. Semak sambungan anda dan cuba lagi.",
+      "receivedTitle": "Laporan diterima",
+      "alreadyReceivedTitle": "Laporan sudah diterima",
+      "receivedBody": "Moderator kini boleh meninjau pola ini. Laporan tidak secara automatik mengubah ketersediaannya.",
+      "alreadyReceivedBody": "Laporan sedia ada anda sudah menjadi sebahagian daripada tinjauan yang terbuka.",
+      "signInRequired": {
+        "title": "Log masuk untuk menghantar laporan",
+        "message": "Laporan komuniti memerlukan akaun berdaftar. Tiada apa-apa yang dihantar.",
+        "cancel": "Batal",
+        "signIn": "Log masuk"
+      },
+      "validation": {
+        "chooseReason": "Pilih sebab pelaporan.",
+        "explainRequired": "Jelaskan sebab anda melaporkan pola ini.",
+        "tooLong": "Penjelasan maksimum 2000 aksara.",
+        "needsContent": "Penjelasan mesti mengandungi huruf atau nombor."
+      }
+    }
+  }
+}

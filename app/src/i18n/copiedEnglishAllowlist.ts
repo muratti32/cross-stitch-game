@@ -177,4 +177,9 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'id:settings:session.idLabel': '"ID" is used identically in Indonesian tech/UI copy.',
   'id:settings:data.sectionTitle': '"Data" is an identical Indonesian cognate.',
   'id:settings:developer.debug.title': '"Debug" is a common English loanword in Indonesian developer/tech copy.',
+  'ms:play:home.idLabel': '"ID" is used identically in Malay tech/UI copy.',
+  'ms:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
+  'ms:settings:session.idLabel': '"ID" is used identically in Malay tech/UI copy.',
+  'ms:settings:data.sectionTitle': '"Data" is an identical Malay cognate.',
+  'ms:create:photoImport.profile.options.standard': '"Standard" is used identically in Malay.',
 };

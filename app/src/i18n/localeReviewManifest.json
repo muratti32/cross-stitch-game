@@ -22,5 +22,6 @@
   "hi": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
   "hr": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
   "hu": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
-  "id": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false }
+  "id": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
+  "ms": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false }
 }
