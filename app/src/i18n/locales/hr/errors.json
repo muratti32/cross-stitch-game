@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Ta prijava pripada drugom računu. Tvoj trenutni račun nije promijenjen.",
+    "providerRejected": "Ta provjera je odbijena. Provjeri račun ili kod i pokušaj ponovno."
+  },
+  "generic": {
+    "failure": "Nešto je pošlo po zlu. Pokušaj ponovno.",
+    "supportReferenceLabel": "Referenca podrške: {{reference}}"
+  }
+}

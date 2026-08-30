@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "DOBRODOŠAO U STITCH WISH",
+    "title": "Odaberi boju, dodirni odgovarajuće kvadratiće.",
+    "heroAlt": "Pregled početnog uzorka Cozy Heart",
+    "handedness": {
+      "sectionTitle": "Koju stranu treba koristiti za kontrole?",
+      "groupLabel": "Strana kontrola",
+      "optionRight": "Kontrole desno",
+      "optionLeft": "Kontrole lijevo",
+      "saveErrorText": "Spremanje tog odabira nije uspjelo.",
+      "retry": "Pokušaj ponovno"
+    },
+    "note": "Ovo možeš promijeniti kasnije u Postavkama.",
+    "start": "Počni vesti",
+    "starting": "Pokretanje…",
+    "browse": "Pregledaj početne uzorke",
+    "signIn": "Prijava"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Odaberi DMC 321 Christmas Red.",
+      "stitchAction": "Dodirni istaknutu odgovarajuću ćeliju.",
+      "mismatchedTap": "Dodirni istaknutu drugačiju ćeliju. Pogrešni dodiri ništa ne koštaju.",
+      "undoAction": "Poništi taj bod, zatim ga ponovno postavi.",
+      "stitchSweep": "Pritisni odgovarajuću ćeliju, zatim povuci preko istaknutog niza.",
+      "threadColorCompletion": "Dovrši istaknutu bijelu nit, zatim odaberi sljedeću boju."
+    },
+    "hints": {
+      "anchoredZoom": "Uštipni za zumiranje dok ćelije ostaju na mjestu ispod tvojih prstiju.",
+      "panVsSweep": "Povlačenje pomiče tkaninu. Počni na odgovarajućoj ćeliji za vezenje niza.",
+      "edgeAutoPan": "Nastavi povlačiti blizu ruba i tkanina prati tvoj prst.",
+      "remainingCellLocator": "Koristi lokator za pronalaženje sljedeće preostale ćelije za ovu nit."
+    },
+    "skip": "Preskoči za sada",
+    "skipAccessibilityLabel": "Preskoči vodič za sada",
+    "dismiss": "Razumijem",
+    "dismissAccessibilityLabel": "Odbaci savjet"
+  },
+  "recap": {
+    "title": "Uspio si",
+    "lines": {
+      "matchNumbers": "Poveži brojeve za postavljanje svakog boda.",
+      "dragSweep": "Povuci preko odgovarajućih ćelija za vezenje niza.",
+      "pinchZoom": "Uštipni za zumiranje kad trebaš bolji pogled.",
+      "undoLocator": "Poništavanje i lokator uvijek su besplatni."
+    },
+    "continue": "Nastavi vesti",
+    "browsePatterns": "Pregledaj uzorke"
+  }
+}

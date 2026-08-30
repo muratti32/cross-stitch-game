@@ -142,7 +142,8 @@
       "da": "./src/i18n/locales/da/native.json",
       "el": "./src/i18n/locales/el/native.json",
       "fi": "./src/i18n/locales/fi/native.json",
-      "hi": "./src/i18n/locales/hi/native.json"
+      "hi": "./src/i18n/locales/hi/native.json",
+      "hr": "./src/i18n/locales/hr/native.json"
     },
     "experiments": {
       "typedRoutes": true,

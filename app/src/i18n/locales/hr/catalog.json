@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Natrag",
+    "searchPlaceholder": "Pretraži uzorke, autore, oznake…",
+    "offlineBanner": "Nema veze — katalog možda nije ažuran",
+    "sectionError": {
+      "title": "Učitavanje nije uspjelo",
+      "retry": "Pokušaj ponovno"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} boja",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} stupaca",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Engleski"
+    },
+    "accessibilityLabel": "Napisano na jeziku {{language}}"
+  },
+  "index": {
+    "subtitle": "Stvori svoj ugodni svijet, bod po bod.",
+    "searchBar": {
+      "accessibilityLabel": "Pretraži katalog uzoraka"
+    },
+    "sections": {
+      "starterPatterns": "Početni uzorci",
+      "staffPicks": "Izbor uredništva",
+      "categories": "Kategorije",
+      "newPatterns": "Novi uzorci"
+    },
+    "staffPicks": {
+      "emptyTitle": "Još nema izbora uredništva",
+      "emptyBody": "Naša ručno odabrana zbirka ugodnih dizajna uskoro će se pojaviti ovdje.",
+      "errorBody": "Katalog nije dostupan i još ništa nije spremljeno u predmemoriju."
+    },
+    "categories": {
+      "count": "{{count}} uzoraka",
+      "errorBody": "Katalog nije dostupan i još ništa nije spremljeno u predmemoriju."
+    },
+    "newPatterns": {
+      "emptyTitle": "Novi uzorci se izrađuju",
+      "emptyBody": "Nove novosti stižu uskoro!",
+      "errorBody": "Katalog nije dostupan i još ništa nije spremljeno u predmemoriju.",
+      "showMore": "Prikaži više",
+      "loading": "Učitavanje…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Pregledaj",
+    "error": {
+      "body": "Ova stranica kataloga nije dostupna i još ništa nije spremljeno u predmemoriju."
+    },
+    "empty": {
+      "title": "Ovdje još ničega nema",
+      "body": "Nijedan uzorak ne odgovara ovom odabiru. Novi dizajni stižu redovito."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Polje za pretragu kataloga",
+    "inactive": {
+      "title": "Pretraži katalog",
+      "body": "Upiši barem dva znaka za pretragu uzoraka po naslovu, autoru ili oznaci."
+    },
+    "error": {
+      "title": "Pretraga zahtijeva vezu",
+      "body": "Pretraga kataloga nije dostupna izvan mreže. Spremljene stranice kataloga i dalje se mogu pregledavati u kartici Katalog."
+    },
+    "noResults": {
+      "title": "Nema podudaranja",
+      "body": "Ništa u katalogu još ne odgovara pojmu „{{query}}”."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Igraš kao gost",
+    "body": "Stitch Coin i napredak postoje samo na ovom uređaju dok igraš kao gost. Ako se instalacija izgubi, gostinjski saldo i napredak mogu postati nepovratni. Prijava štiti tvoj napredak."
+  },
+  "detail": {
+    "noDescription": "Opis nije dostupan.",
+    "specs": {
+      "dimensions": "Dimenzije",
+      "totalStitches": "Ukupno bodova",
+      "colors": "Boje",
+      "category": "Kategorija"
+    },
+    "threadsSuffix": "{{count}} niti",
+    "palette": {
+      "title": "Potrebne niti",
+      "loading": "Učitavanje palete niti...",
+      "loadFailed": "Neuspješno učitavanje palete: {{error}}",
+      "retry": "Pokušaj ponovno učitati"
+    },
+    "actions": {
+      "startStitching": "Počni vesti",
+      "starting": "Pokretanje...",
+      "preparing": "Pripremanje…"
+    },
+    "loadFailedGeneric": "Dekodiranje datoteke uzorka nije uspjelo.",
+    "sessionCreateFailed": "Stvaranje sesije vezenja nije uspjelo. Pokušaj ponovno.",
+    "unavailable": {
+      "title": "Uzorak nedostupan",
+      "body": "Ovaj uzorak nije bilo moguće učitati. Možda je uklonjen ili nisi povezan s mrežom.",
+      "goBack": "Natrag"
+    },
+    "byCreator": "autor {{creatorName}}",
+    "byCreatorWithUsername": "autor {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Blokiraj autora",
+      "message": "Jesi li siguran da želiš blokirati korisnika {{creatorName}}? Ovo je privatna, poništiva radnja koja skriva njegove uzorke iz pretrage/pregleda. Ne prijavljuje autora i neće prekinuti tvoju trenutnu sesiju vezenja.",
+      "cancel": "Odustani",
+      "confirm": "Blokiraj",
+      "blockedTitle": "Blokirano",
+      "blockedMessage": "Korisnik {{creatorName}} je blokiran.",
+      "errorTitle": "Greška",
+      "failedGeneric": "Blokiranje autora nije uspjelo."
+    },
+    "likeFailedGeneric": "Ažuriranje statusa sviđanja nije uspjelo",
+    "connectToPlay": {
+      "title": "Poveži se za igru",
+      "body": "Pokretanje uzorka iz kataloga zahtijeva vezu za pripremu sesije. Početni uzorci mogu se igrati odmah, čak i izvan mreže."
+    },
+    "insufficientCoins": {
+      "title": "Nedovoljno novčića",
+      "body": "Ovaj uzorak košta {{price}} Stitch Coina, a ti imaš samo {{balance}} novčića.\n\nNedostaje: {{shortfall}} novčića.\n\nZaradi Stitch Coin dovršavanjem drugih uzoraka! Nagrade za prvo dovršavanje su aktivne.",
+      "getCoins": "Nabavi Stitch Coin",
+      "findPatterns": "Pronađi uzorke za vezenje",
+      "back": "Natrag"
+    },
+    "unlockFailedGeneric": "Otključavanje nije uspjelo. Provjeri vezu i pokušaj ponovno.",
+    "preparationFailedGeneric": "Pokretanje pripreme nije uspjelo. Provjeri vezu i pokušaj ponovno.",
+    "price": {
+      "label": "Cijena"
+    },
+    "balance": {
+      "label": "Tvoj saldo",
+      "loading": "…"
+    },
+    "unlockButton": "Otključaj za {{price}} novčića",
+    "communityReport": {
+      "button": "Prijavi ovaj uzorak",
+      "title": "Prijavi {{patternTitle}}",
+      "body": "Odaberi razlog koji najbolje opisuje problem. Prijave nikad automatski ne skrivaju niti mijenjaju uzorak.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Neprimjeren ili nesiguran sadržaj",
+        "copyright_or_publication_rights": "Autorska prava ili prava objave",
+        "duplicate_or_spam": "Duplikat ili neželjeni sadržaj",
+        "misleading_title_or_tags": "Zavaravajući naslov ili oznake",
+        "other": "Ostalo"
+      },
+      "explanationLabel": "Dokaz ili objašnjenje {{requirement}}",
+      "explanationRequired": "(obavezno)",
+      "explanationOptional": "(neobavezno)",
+      "explanationPlaceholder": "Podijeli detalje koji će pomoći moderatoru pri pregledu uzorka.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Odustani",
+      "submit": "Pošalji prijavu",
+      "submitFailedGeneric": "Slanje prijave nije uspjelo. Provjeri vezu i pokušaj ponovno.",
+      "receivedTitle": "Prijava zaprimljena",
+      "alreadyReceivedTitle": "Prijava je već zaprimljena",
+      "receivedBody": "Moderator sada može pregledati ovaj uzorak. Prijava automatski ne mijenja njegovu dostupnost.",
+      "alreadyReceivedBody": "Tvoja postojeća prijava već je dio otvorenog pregleda.",
+      "signInRequired": {
+        "title": "Prijavi se za slanje prijave",
+        "message": "Prijave zajednice zahtijevaju registrirani račun. Ništa nije poslano.",
+        "cancel": "Odustani",
+        "signIn": "Prijava"
+      },
+      "validation": {
+        "chooseReason": "Odaberi razlog prijave.",
+        "explainRequired": "Objasni zašto prijavljuješ ovaj uzorak.",
+        "tooLong": "Objašnjenje mora imati najviše 2000 znakova.",
+        "needsContent": "Objašnjenje mora sadržavati slova ili brojeve."
+      }
+    }
+  }
+}

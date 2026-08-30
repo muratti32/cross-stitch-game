@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Natrag",
+    "title": "Trgovina",
+    "subtitle": "Članstvo i jednokratne dopune"
+  },
+  "signInReturn": {
+    "notice": "Prijavljen si. {{label}} je i dalje odabrano. Provjeri i pritisni Kupi kad budeš spreman."
+  },
+  "premiumHero": {
+    "eyebrow": "PREMIUM ČLANSTVO",
+    "title": "Stvaraj više. Svaki dan pokupi malu nagradu.",
+    "body": "AI krediti svako plaćeno razdoblje, Premium teme i dnevno preuzimanje Stitch Coina.",
+    "benefitAiCredits": "AI krediti",
+    "benefitDailyCoins": "Dnevni novčići",
+    "benefitThemes": "Teme",
+    "statusNoActiveMembership": "Nema aktivnog članstva",
+    "statusBrowseAsGuest": "Pregledaj planove kao gost",
+    "periodEndsLabel": "Trenutno razdoblje završava",
+    "periodRenewsLabel": "Obnavlja se",
+    "lifecycleActive": "Aktivno"
+  },
+  "membershipActions": {
+    "title": "Aktivno Premium članstvo",
+    "body": "Dnevne nagrade nalaze se u Profilu. Teme su u Postavkama › Izgled.",
+    "scheduledChangeNotice": "Promjena na {{plan}} {{date}}",
+    "manageSubscription": "Upravljaj pretplatom",
+    "manageSubscriptionFailedTitle": "Otvaranje pretplata nije uspjelo",
+    "manageSubscriptionFailedBody": "Pokušaj ponovno preko računa trgovine na svom uređaju."
+  },
+  "pending": {
+    "title": "Usklađivanje kupnje u tijeku",
+    "verifyingTitle": "Provjera kupnje",
+    "premiumChangeAccepted": "Trgovina je prihvatila promjenu na {{label}}. ",
+    "premiumResponseReceived": "Odgovor trgovine za {{label}} je primljen. ",
+    "premiumDeferredSuffix": "Promjena je zakazana tek nakon provjere u Game Backendu i stupa na snagu kad završi tvoje trenutno razdoblje.",
+    "premiumSuffix": "Premium se aktivira tek nakon provjere u Game Backendu.",
+    "doNotPurchasePlanAgain": " Ne kupuj ponovno ovaj plan.",
+    "coinPackBody": "Odgovor trgovine je primljen. Stitch Coin se ažurira tek kad Game Backend potvrdi odgovarajuću dodjelu u Trgovačkom dnevniku. Ne kupuj ponovno ovaj paket.",
+    "aiCreditPackBody": "Odgovor trgovine je primljen. AI krediti se ažuriraju tek kad Game Backend potvrdi odgovarajuću dodjelu u Trgovačkom dnevniku. Ne kupuj ponovno ovaj paket.",
+    "refreshStatus": "Osvježi status",
+    "retryReconciliation": "Ponovi usklađivanje"
+  },
+  "store": {
+    "loadingPrices": "Učitavanje trenutnih cijena trgovine…",
+    "unavailableTitle": "Trgovina privremeno nedostupna",
+    "unavailableBody": "Podaci o novčaniku i članstvu i dalje su dostupni.",
+    "retry": "Pokušaj ponovno"
+  },
+  "plans": {
+    "choosePremiumPlan": "Odaberi Premium plan",
+    "yourPremiumPlan": "Tvoj Premium plan",
+    "currentPlan": "TRENUTNI PLAN",
+    "upgrade": "NADOGRADI",
+    "planChange": "PROMJENA PLANA",
+    "bestValue": "NAJBOLJA VRIJEDNOST",
+    "billedEvery": "Naplaćuje se svakih {{period}}",
+    "chooseLabel": "Odaberi {{label}}",
+    "freeTrial": "Besplatno {{offer}}, zatim {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Jednokratni paketi",
+    "stitchCoinPacksTitle": "Paketi Stitch Coina",
+    "aiCreditPacksTitle": "Paketi AI kredita",
+    "coinsNoun": "Novčići",
+    "creditsNoun": "Krediti",
+    "fromPrice": "Od {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Vrati kupnje",
+    "restoreGuestPremium": "Vrati gostinjski Premium",
+    "requestedTitle": "Vraćanje zatraženo",
+    "requestedBody": "Potvrđeni Premium pristup pojavit će se nakon što webhook trgovine bude usklađen. Stitch Coin i AI krediti nikad se ne vraćaju."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Trenutne cijene iz trgovine aplikacija",
+    "closeAccessibilityLabel": "Zatvori list proizvoda",
+    "closeButtonAccessibilityLabel": "Zatvori",
+    "selectedBeforeSignIn": "Odabrano prije prijave",
+    "buy": "Kupi"
+  },
+  "confirmation": {
+    "cancel": "Odustani",
+    "confirmLabel": "Potvrdi {{label}}",
+    "confirmPremiumTitle": "Potvrdi Premium kupnju",
+    "introductoryOffer": "Tvoja trgovina prijavljuje ovu uvodnu ponudu: {{offer}}.",
+    "premiumAppearsAfterVerification": "Premium se pojavljuje tek nakon što Game Backend provjeri transakciju trgovine.",
+    "confirmPremiumUpgradeTitle": "Potvrdi Premium nadogradnju",
+    "confirmPremiumPlanChangeTitle": "Potvrdi promjenu Premium plana",
+    "currentPlanLabel": "Trenutni plan: {{label}}",
+    "upgradeToLabel": "Nadogradi na {{label}} · {{offer}}",
+    "changeToLabel": "Promijeni na {{label}} · {{offer}}",
+    "upgradeBody": "App Store kontrolira konačnu naplatu i datum stupanja na snagu ove nadogradnje. Premium odražava {{label}} tek kad ga Game Backend potvrdi.",
+    "planChangeBody": "App Store odgađa ovu promjenu do kraja tvojeg trenutnog razdoblja: {{currentLabel}} nastavlja vrijediti do tada, a {{targetLabel}} se naplaćuje od datuma promjene. Otkaži promjenu putem Upravljanja pretplatom.",
+    "confirmUpgrade": "Potvrdi nadogradnju",
+    "confirmPlanChange": "Potvrdi promjenu plana",
+    "confirmStitchCoinTitle": "Potvrdi kupnju Stitch Coina",
+    "confirmAiCreditTitle": "Potvrdi kupnju AI kredita",
+    "balanceChangesAfterVerificationCoin": "Tvoj saldo se mijenja tek nakon što Game Backend provjeri transakciju trgovine i zabilježi odgovarajuću dodjelu u Trgovačkom dnevniku.",
+    "balanceChangesAfterVerificationAiCredit": "Tvoj saldo se mijenja tek nakon što Game Backend provjeri transakciju trgovine i zabilježi odgovarajuću dodjelu u Trgovačkom dnevniku. Premium članstvo nije potrebno."
+  },
+  "disclosure": {
+    "subscriptionTerms": "Plaćanje se naplaćuje na tvoj {{store}} račun pri potvrdi. {{label}} Premium automatski se obnavlja po cijeni {{offer}} osim ako se automatsko obnavljanje ne isključi najmanje 24 sata prije kraja trenutnog razdoblja. Neiskorišteni dio besplatnog probnog razdoblja gubi se kupnjom pretplate. Pretplatu možeš otkazati u bilo kojem trenutku preko svog {{store}} računa.",
+    "privacyPolicy": "Pravila privatnosti",
+    "termsOfService": "Uvjeti korištenja",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Otvaranje poveznice nije uspjelo: {{url}}"
+  },
+  "supportReference": {
+    "label": "Referenca podrške: {{reference}}",
+    "copyAccessibilityLabel": "Kopiraj referencu podrške {{reference}}",
+    "copyAccessibilityHint": "Kopira referencu podrške u međuspremnik",
+    "copied": "Kopirano",
+    "copyFailedTitle": "Kopiranje nije uspjelo",
+    "copyFailedBody": "Referencu podrške nije bilo moguće kopirati. Odaberi tekst da ga kopiraš ručno."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Gostinjske kupnje Stitch Coina dostupne su samo na iOS-u.",
+    "guestIosOnlyGeneric": "Gostinjske kupnje dostupne su samo na iOS-u.",
+    "purchaseFailedTitle": "Kupnja nije uspjela",
+    "premiumVerificationNotYet": "Game Backend nije uspio provjeriti ovu kupnju. Ponovi usklađivanje; ne kupuj je ponovno.",
+    "premiumVerificationFailedRetry": "Game Backend još nije uspio provjeriti ovu kupnju. Ponovi usklađivanje; ne kupuj je ponovno.",
+    "premiumGrantRefreshFailed": "Premium je potvrđen, ali stanje članstva i AI kredita nije bilo moguće osvježiti. Ponovi usklađivanje.",
+    "premiumReconciliationUnreachable": "Usklađivanje kupnje nije moglo dosegnuti Game Backend. Ponovi usklađivanje; ne kupuj ponovno.",
+    "coinPackVerificationMismatch": "Transakcija trgovine nije odgovarala ovom paketu novčića. Ponovi provjeru ili kontaktiraj podršku; ne kupuj ponovno.",
+    "coinPackGrantUnavailable": "Kupnja je potvrđena, ali dodjela Stitch Coina nije dostupna. Ponovi usklađivanje; ne kupuj ponovno.",
+    "coinPackBalanceRefreshFailed": "Dodjela novčića je potvrđena, ali trenutni saldo Stitch Coina nije bilo moguće osvježiti. Ponovi usklađivanje.",
+    "coinPackVerificationFailedRetry": "Game Backend još nije uspio provjeriti ovaj paket novčića. Ponovi usklađivanje; ne kupuj ponovno.",
+    "coinPackReconciliationUnreachable": "Usklađivanje paketa novčića nije moglo dosegnuti Game Backend. Ponovi usklađivanje; ne kupuj ponovno.",
+    "aiCreditPackVerificationMismatch": "Transakcija trgovine nije odgovarala ovom paketu AI kredita. Ponovi provjeru ili kontaktiraj podršku; ne kupuj ponovno.",
+    "aiCreditPackGrantUnavailable": "Kupnja je potvrđena, ali dodjela AI kredita nije dostupna. Ponovi usklađivanje; ne kupuj ponovno.",
+    "aiCreditPackBalanceRefreshFailed": "Dodjela AI kredita je potvrđena, ali trenutni saldo nije bilo moguće osvježiti. Ponovi usklađivanje.",
+    "aiCreditPackVerificationFailedRetry": "Game Backend još nije uspio provjeriti ovaj paket AI kredita. Ponovi usklađivanje; ne kupuj ponovno.",
+    "aiCreditPackReconciliationUnreachable": "Usklađivanje paketa AI kredita nije moglo dosegnuti Game Backend. Ponovi usklađivanje; ne kupuj ponovno.",
+    "reconciliationStillUnavailable": "Game Backend je i dalje nedostupan. Pokušaj usklađivanje ponovno kasnije.",
+    "storeTemporarilyUnavailable": "Trgovina je privremeno nedostupna. Pokušaj ponovno za nekoliko minuta.",
+    "purchasesNotAllowed": "Kupnje nisu dopuštene na ovom uređaju. Provjeri svoj račun trgovine ili roditeljski nadzor.",
+    "itemNotAvailable": "Ovaj artikl trenutno nije dostupan za kupnju. Odaberi drugi artikl ili pokušaj kasnije.",
+    "alreadyOwned": "Već posjeduješ ovu kupnju. Koristi Vrati kupnje za osvježavanje pristupa.",
+    "couldNotConnectToStore": "Povezivanje s trgovinom nije uspjelo. Provjeri internetsku vezu i pokušaj ponovno.",
+    "paymentPendingApproval": "Tvoje plaćanje čeka odobrenje. Kupnja će se pojaviti nakon što trgovina dovrši postupak.",
+    "testPurchaseDeclined": "Testna kupnja je odbijena. Plaćanje nije izvršeno. Odaberi drugi rezultat testne trgovine u Postavkama, zatim pokušaj ponovno.",
+    "genericPurchaseFailure": "Nismo uspjeli dovršiti tvoju kupnju. Plaćanje nije naplaćeno. Pokušaj ponovno."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Provjera u tijeku",
+    "premiumPending": "Provjera je još u tijeku. Premium će se aktivirati čim Game Backend potvrdi.",
+    "premiumPlanChangePending": "Provjera je još u tijeku. Promjena plana bit će zakazana čim Game Backend potvrdi.",
+    "coinPackPending": "Provjera je još u tijeku. Tvoj saldo Stitch Coina ažurirat će se čim završi.",
+    "aiCreditPackPending": "Provjera je još u tijeku. Tvoj saldo AI kredita ažurirat će se čim završi."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Kupnja zaprimljena",
+    "storeAcceptedPlanChange": "Trgovina je prihvatila promjenu na {{label}}. Potvrđivanje kad stupi na snagu.",
+    "storeAcceptedPurchase": "Trgovina je prihvatila {{label}}. Provjera tvoje kupnje u tijeku.",
+    "premiumChanges": "Premium se mijenja na {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " {{date}}",
+    "planChangeScheduledTitle": "Promjena plana zakazana",
+    "planChangeScheduledBody": "Tvoje Premium članstvo zadržava trenutni plan dok se ne promijeni na {{label}}{{effectiveOn}}. Otkaži promjenu putem Upravljanja pretplatom.",
+    "premiumIsActiveTitle": "Premium je aktivan",
+    "premiumVerifiedAndActive": "{{label}} Premium je potvrđen i aktivan.",
+    "premiumNowActiveNoBilling": "{{label}} Premium je sada aktivan.",
+    "premiumNowActiveBilled": "{{label}} Premium je sada aktivan, naplaćuje se svakih {{period}}.",
+    "coinPackGrantedTitle": "Stitch Coin dodijeljen",
+    "coinPackGrantVerified": "Dodjela {{label}} je potvrđena. Saldo Stitch Coina: {{balance}}.",
+    "coinPackAddedToBalance": "{{quantity}} Stitch Coina dodano je na tvoj saldo.",
+    "aiCreditPackGrantedTitle": "AI krediti dodijeljeni",
+    "aiCreditPackGrantVerified": "Dodjela {{label}} je potvrđena. Saldo AI kredita: {{balance}}.",
+    "aiCreditPackAddedToBalance": "{{quantity}} AI kredita dodano je na tvoj saldo."
+  },
+  "products": {
+    "premiumAnnual": "Godišnje",
+    "premiumMonthly": "Mjesečno",
+    "premiumWeekly": "Tjedno",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coina",
+    "aiCreditPack_one": "{{formattedCount}} AI kredit",
+    "aiCreditPack_other": "{{formattedCount}} AI kredita",
+    "billedEveryOffer": "{{price}} svakih {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} kredita / plaćeno razdoblje",
+    "creditAllowancePaidNoun": "{{credits}} kredita / plaćeno {{period}}"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Kupnja kao gost",
+    "commerceBody": "Možeš kupovati bez registracije. Premium članstvo može se vratiti iz trgovine, ali Stitch Coin, AI krediti i privatni gostinjski sadržaj postaju nepovratni ako se instalacija izgubi. Registracija ih štiti i nikad ne prekida igranje kao gost.",
+    "continueAsGuest": "Nastavi kao gost",
+    "signInInstead": "Prijavi se umjesto toga",
+    "closeAccessibilityLabel": "Zatvori"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "U redu",
+    "successButton": "Odlično",
+    "failedButton": "Zatvori",
+    "infoButton": "U redu",
+    "closeAccessibilityLabel": "Zatvori"
+  }
+}

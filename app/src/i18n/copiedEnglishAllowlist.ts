@@ -162,4 +162,8 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'hi:profile:home.identity.offline': '"Offline" is used identically in Hindi tech/UI copy.',
   'hi:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
   'hi:settings:session.idLabel': '"ID" is used identically in Hindi tech/UI copy.',
+  'hr:play:home.idLabel': '"ID" is used identically in Croatian tech/UI copy.',
+  'hr:profile:home.identity.offline': '"Offline" is used identically in Croatian tech/UI copy.',
+  'hr:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
+  'hr:settings:session.idLabel': '"ID" is used identically in Croatian tech/UI copy.',
 };

@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Stol za vezenje",
+    "subtitle": "Nastavi gdje si stao ili se vrati nedavnom radu.",
+    "loading": "Učitavanje tvojih bodova...",
+    "empty": {
+      "title": "Nema aktivnih radova",
+      "body": "Tvoj okvir za vezenje trenutno je prazan. Pregledaj katalog uzoraka da pronađeš nešto lijepo za vesti!",
+      "action": "Pregledaj katalog"
+    },
+    "unknownPattern": "Nepoznat uzorak",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Uzorak {{id}}",
+    "deleteSessionAccessibilityLabel": "Izbriši sesiju",
+    "viewFinishedAccessibilityLabel": "Pogledaj dovršen rad",
+    "resumeAccessibilityLabel": "Nastavi vesti",
+    "status": {
+      "ready": "Spremno",
+      "done": "Gotovo",
+      "active": "Aktivno",
+      "preparing": "Priprema",
+      "failed": "Neuspjelo"
+    },
+    "deleteConfirm": {
+      "title": "Izbriši napredak",
+      "message": "Jesi li siguran da želiš izbrisati svoj napredak za „{{title}}”? Ovo se ne može poništiti.",
+      "cancel": "Odustani",
+      "confirm": "Izbriši"
+    },
+    "preparingCard": {
+      "discardTitle": "Odbaci sesiju",
+      "cancelTitle": "Otkaži preuzimanje",
+      "discardMessage": "Jesi li siguran da želiš odbaciti ovu neuspjelu sesiju?",
+      "cancelMessage": "Jesi li siguran da želiš otkazati preuzimanje ovog uzorka?",
+      "keep": "Zadrži",
+      "discard": "Odbaci",
+      "cancel": "Odustani"
+    }
+  },
+  "loading": {
+    "text": "Otvaranje sesije i priprema tkanine..."
+  },
+  "error": {
+    "title": "Učitavanje sesije nije uspjelo",
+    "fallbackMessage": "Učitavanje tvoje sesije vezenja nije uspjelo.",
+    "backButton": "Natrag",
+    "tableButton": "Idi na stol"
+  },
+  "header": {
+    "backButton": "← Natrag",
+    "tableButton": "← Stol",
+    "defaultTitle": "Sesija vezenja",
+    "progress": "{{completed}} / {{total}} ćelija ({{percent}}% dovršeno)",
+    "resumeTutorialAccessibilityLabel": "Nastavi vodič"
+  },
+  "banners": {
+    "patternRemoved": "Ovaj uzorak uklonjen je moderiranjem i više nije dostupan. Dodirni za izlaz.",
+    "syncConflict": "Sinkronizirano s drugim uređajem — neke ćelije su ažurirane. Dodirni za odbacivanje."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Pronađi sljedeću preostalu ćeliju aktivne boje niti",
+    "undoAccessibilityLabel": "Poništi zadnji bod"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Boja {{number}}: DMC {{dmcCode}}, {{count}} bod preostao",
+    "chipAccessibilityLabel_other": "Boja {{number}}: DMC {{dmcCode}}, {{count}} bodova preostalo",
+    "done": "Gotovo",
+    "remaining_one": "još {{count}}",
+    "remaining_other": "još {{count}}"
+  },
+  "celebration": {
+    "title": "Prekrasno izvezeno!",
+    "subtitle": "Dovršio si svaki pojedini bod na ovoj tkanini.",
+    "stitchesLabel_one": "Bod",
+    "stitchesLabel_other": "Bodova",
+    "colorsLabel_one": "Boja",
+    "colorsLabel_other": "Boja",
+    "replayButton": "Vezi ponovno",
+    "catalogButton": "Natrag na katalog"
+  }
+}
