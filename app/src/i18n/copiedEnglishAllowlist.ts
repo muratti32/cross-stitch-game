@@ -171,4 +171,10 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'hu:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
   'hu:settings:session.idLabel': '"ID" is used identically in Hungarian tech/UI copy.',
   'hu:create:photoImport.profile.options.standard': '"Standard" is used identically in Hungarian.',
+  'id:play:home.idLabel': '"ID" is used identically in Indonesian tech/UI copy.',
+  'id:profile:home.identity.offline': '"Offline" is used identically in Indonesian tech/UI copy.',
+  'id:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
+  'id:settings:session.idLabel': '"ID" is used identically in Indonesian tech/UI copy.',
+  'id:settings:data.sectionTitle': '"Data" is an identical Indonesian cognate.',
+  'id:settings:developer.debug.title': '"Debug" is a common English loanword in Indonesian developer/tech copy.',
 };

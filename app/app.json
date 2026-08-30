@@ -144,6 +144,7 @@
       "fi": "./src/i18n/locales/fi/native.json",
       "hi": "./src/i18n/locales/hi/native.json",
       "hr": "./src/i18n/locales/hr/native.json",
+      "id": "./src/i18n/locales/id/native.json",
       "hu": "./src/i18n/locales/hu/native.json"
     },
     "experiments": {

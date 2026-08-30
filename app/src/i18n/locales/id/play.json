@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Meja sulam",
+    "subtitle": "Lanjutkan dari titik terakhir, atau kembali ke pekerjaan sebelumnya.",
+    "loading": "Memuat jahitanmu...",
+    "empty": {
+      "title": "Tidak ada pekerjaan aktif",
+      "body": "Bingkai sulammu saat ini kosong. Jelajahi katalog pola untuk menemukan sesuatu yang indah untuk disulam!",
+      "action": "Jelajahi katalog"
+    },
+    "unknownPattern": "Pola tidak dikenal",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Pola {{id}}",
+    "deleteSessionAccessibilityLabel": "Hapus sesi",
+    "viewFinishedAccessibilityLabel": "Lihat pekerjaan yang selesai",
+    "resumeAccessibilityLabel": "Lanjutkan menyulam",
+    "status": {
+      "ready": "Siap",
+      "done": "Selesai",
+      "active": "Aktif",
+      "preparing": "Menyiapkan",
+      "failed": "Gagal"
+    },
+    "deleteConfirm": {
+      "title": "Hapus progres",
+      "message": "Yakin ingin menghapus progresmu di „{{title}}”? Tindakan ini tidak dapat dibatalkan.",
+      "cancel": "Batal",
+      "confirm": "Hapus"
+    },
+    "preparingCard": {
+      "discardTitle": "Buang sesi",
+      "cancelTitle": "Batalkan unduhan",
+      "discardMessage": "Yakin ingin membuang sesi yang gagal ini?",
+      "cancelMessage": "Yakin ingin membatalkan unduhan pola ini?",
+      "keep": "Simpan",
+      "discard": "Buang",
+      "cancel": "Batal"
+    }
+  },
+  "loading": {
+    "text": "Membuka sesi dan menyiapkan kanvas..."
+  },
+  "error": {
+    "title": "Gagal memuat sesi",
+    "fallbackMessage": "Gagal memuat sesi menyulammu.",
+    "backButton": "Kembali",
+    "tableButton": "Ke meja"
+  },
+  "header": {
+    "backButton": "← Kembali",
+    "tableButton": "← Meja",
+    "defaultTitle": "Sesi menyulam",
+    "progress": "{{completed}} / {{total}} sel ({{percent}}% selesai)",
+    "resumeTutorialAccessibilityLabel": "Lanjutkan panduan"
+  },
+  "banners": {
+    "patternRemoved": "Pola ini telah dihapus karena moderasi, dan tidak lagi tersedia. Sentuh untuk keluar.",
+    "syncConflict": "Disinkronkan dengan perangkat lain — beberapa sel diperbarui. Sentuh untuk menutup."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Temukan sel tersisa berikutnya untuk warna benang aktif",
+    "undoAccessibilityLabel": "Urungkan jahitan terakhir"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Warna {{number}}: DMC {{dmcCode}}, {{count}} jahitan tersisa",
+    "chipAccessibilityLabel_other": "Warna {{number}}: DMC {{dmcCode}}, {{count}} jahitan tersisa",
+    "done": "Selesai",
+    "remaining_one": "{{count}} tersisa",
+    "remaining_other": "{{count}} tersisa"
+  },
+  "celebration": {
+    "title": "Tersulam dengan indah!",
+    "subtitle": "Kamu telah menyelesaikan setiap jahitan pada kanvas.",
+    "stitchesLabel_one": "Jahitan",
+    "stitchesLabel_other": "Jahitan",
+    "colorsLabel_one": "Warna",
+    "colorsLabel_other": "Warna",
+    "replayButton": "Sulam lagi",
+    "catalogButton": "Kembali ke katalog"
+  }
+}

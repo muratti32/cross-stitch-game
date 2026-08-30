@@ -18277,6 +18277,1412 @@
       }
     }
   },
+  "id": {
+    "catalog": {
+      "common": {
+        "back": "← Kembali",
+        "searchPlaceholder": "Cari pola, kreator, tag…",
+        "offlineBanner": "Tidak ada koneksi — katalog mungkin tidak terbaru",
+        "sectionError": {
+          "title": "Gagal dimuat",
+          "retry": "Coba lagi"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} warna",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} kolom",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "Inggris"
+        },
+        "accessibilityLabel": "Ditulis dalam bahasa {{language}}"
+      },
+      "index": {
+        "subtitle": "Ciptakan dunia hangatmu sendiri, jahitan demi jahitan.",
+        "searchBar": {
+          "accessibilityLabel": "Cari katalog pola"
+        },
+        "sections": {
+          "starterPatterns": "Pola pemula",
+          "staffPicks": "Pilihan editor",
+          "categories": "Kategori",
+          "newPatterns": "Pola baru"
+        },
+        "staffPicks": {
+          "emptyTitle": "Belum ada pilihan editor",
+          "emptyBody": "Koleksi desain hangat pilihan kami akan segera hadir di sini.",
+          "errorBody": "Katalog tidak tersedia, dan belum ada apa pun di cache."
+        },
+        "categories": {
+          "count": "{{count}} pola",
+          "errorBody": "Katalog tidak tersedia, dan belum ada apa pun di cache."
+        },
+        "newPatterns": {
+          "emptyTitle": "Pola baru sedang disiapkan",
+          "emptyBody": "Hal-hal segar akan segera datang!",
+          "errorBody": "Katalog tidak tersedia, dan belum ada apa pun di cache.",
+          "showMore": "Tampilkan lebih banyak",
+          "loading": "Memuat…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "Jelajahi",
+        "error": {
+          "body": "Halaman katalog ini tidak tersedia, dan belum ada apa pun di cache."
+        },
+        "empty": {
+          "title": "Belum ada apa pun di sini",
+          "body": "Tidak ada pola yang cocok dengan koleksi ini. Desain baru ditambahkan secara berkala."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "Kolom pencarian katalog",
+        "inactive": {
+          "title": "Cari katalog",
+          "body": "Ketik minimal dua karakter untuk mencari pola berdasarkan judul, kreator, atau tag."
+        },
+        "error": {
+          "title": "Pencarian memerlukan koneksi",
+          "body": "Pencarian katalog tidak tersedia secara offline. Halaman katalog yang tersimpan tetap dapat dijelajahi di tab Katalog."
+        },
+        "noResults": {
+          "title": "Tidak ada hasil",
+          "body": "Belum ada yang cocok dengan „{{query}}” di katalog."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "Kamu bermain sebagai tamu",
+        "body": "Stitch Coin dan progresmu hanya ada di perangkat ini selama kamu bermain sebagai tamu. Jika instalasi hilang, saldo tamu dan progresmu bisa hilang secara permanen. Masuk akan melindungi progresmu."
+      },
+      "detail": {
+        "noDescription": "Tidak ada deskripsi tersedia.",
+        "specs": {
+          "dimensions": "Dimensi",
+          "totalStitches": "Total jahitan",
+          "colors": "Warna",
+          "category": "Kategori"
+        },
+        "threadsSuffix": "{{count}} benang",
+        "palette": {
+          "title": "Benang yang dibutuhkan",
+          "loading": "Memuat palet benang...",
+          "loadFailed": "Gagal memuat palet: {{error}}",
+          "retry": "Muat ulang"
+        },
+        "actions": {
+          "startStitching": "Mulai menyulam",
+          "starting": "Memulai...",
+          "preparing": "Menyiapkan…"
+        },
+        "loadFailedGeneric": "Gagal mendekode file pola.",
+        "sessionCreateFailed": "Gagal membuat sesi menyulam. Coba lagi.",
+        "unavailable": {
+          "title": "Pola tidak tersedia",
+          "body": "Pola ini gagal dimuat. Mungkin sudah dihapus, atau kamu tidak memiliki koneksi internet.",
+          "goBack": "Kembali"
+        },
+        "byCreator": "oleh {{creatorName}}",
+        "byCreatorWithUsername": "oleh {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "Blokir kreator",
+          "message": "Yakin ingin memblokir {{creatorName}}? Ini adalah tindakan privat dan dapat dibatalkan yang menyembunyikan pola mereka dari pencarian/jelajah. Tindakan ini tidak melaporkan kreator dan tidak mengganggu sesi menyulam yang sedang berlangsung.",
+          "cancel": "Batal",
+          "confirm": "Blokir",
+          "blockedTitle": "Diblokir",
+          "blockedMessage": "{{creatorName}} telah diblokir.",
+          "errorTitle": "Kesalahan",
+          "failedGeneric": "Gagal memblokir kreator."
+        },
+        "likeFailedGeneric": "Gagal memperbarui status suka",
+        "connectToPlay": {
+          "title": "Hubungkan untuk bermain",
+          "body": "Memulai pola dari katalog memerlukan koneksi untuk menyiapkan sesi. Pola pemula dapat langsung dimainkan, bahkan tanpa koneksi internet."
+        },
+        "insufficientCoins": {
+          "title": "Koin tidak cukup",
+          "body": "Pola ini berharga {{price}} Stitch Coin, tetapi kamu hanya memiliki {{balance}} koin.\n\nKurang: {{shortfall}} koin.\n\nDapatkan Stitch Coin dengan menyelesaikan pola lain! Hadiah penyelesaian pertama sedang aktif.",
+          "getCoins": "Dapatkan Stitch Coin",
+          "findPatterns": "Cari pola untuk disulam",
+          "back": "Kembali"
+        },
+        "unlockFailedGeneric": "Gagal membuka. Periksa koneksimu dan coba lagi.",
+        "preparationFailedGeneric": "Gagal memulai persiapan. Periksa koneksimu dan coba lagi.",
+        "price": {
+          "label": "Harga"
+        },
+        "balance": {
+          "label": "Saldomu",
+          "loading": "…"
+        },
+        "unlockButton": "Buka dengan {{price}} koin",
+        "communityReport": {
+          "button": "Laporkan pola",
+          "title": "Laporkan {{patternTitle}}",
+          "body": "Pilih alasan yang paling menggambarkan masalahnya. Laporan tidak pernah secara otomatis menyembunyikan atau mengubah pola.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "Konten tidak pantas atau tidak aman",
+            "copyright_or_publication_rights": "Hak cipta atau hak publikasi",
+            "duplicate_or_spam": "Duplikat atau spam",
+            "misleading_title_or_tags": "Judul atau tag yang menyesatkan",
+            "other": "Lainnya"
+          },
+          "explanationLabel": "Bukti atau penjelasan {{requirement}}",
+          "explanationRequired": "(wajib)",
+          "explanationOptional": "(opsional)",
+          "explanationPlaceholder": "Bagikan detail yang dapat membantu moderator meninjau pola ini.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "Batal",
+          "submit": "Kirim laporan",
+          "submitFailedGeneric": "Gagal mengirim laporan. Periksa koneksimu dan coba lagi.",
+          "receivedTitle": "Laporan diterima",
+          "alreadyReceivedTitle": "Laporan sudah diterima",
+          "receivedBody": "Moderator kini dapat meninjau pola ini. Laporan tidak secara otomatis mengubah ketersediaannya.",
+          "alreadyReceivedBody": "Laporanmu yang sudah ada sudah menjadi bagian dari peninjauan yang terbuka.",
+          "signInRequired": {
+            "title": "Masuk untuk mengirim laporan",
+            "message": "Laporan komunitas memerlukan akun terdaftar. Tidak ada yang telah dikirim.",
+            "cancel": "Batal",
+            "signIn": "Masuk"
+          },
+          "validation": {
+            "chooseReason": "Pilih alasan pelaporan.",
+            "explainRequired": "Jelaskan mengapa kamu melaporkan pola ini.",
+            "tooLong": "Penjelasan maksimal 2000 karakter.",
+            "needsContent": "Penjelasan harus berisi huruf atau angka."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "Kembali",
+        "title": "Toko",
+        "subtitle": "Keanggotaan dan isi ulang sekali beli"
+      },
+      "signInReturn": {
+        "notice": "Kamu telah masuk. {{label}} tetap terpilih. Tinjau lalu tekan Beli saat siap."
+      },
+      "premiumHero": {
+        "eyebrow": "KEANGGOTAAN PREMIUM",
+        "title": "Ciptakan lebih banyak. Kumpulkan hadiah kecil setiap hari.",
+        "body": "Kredit AI setiap periode berbayar, tema premium, dan klaim Stitch Coin harian.",
+        "benefitAiCredits": "Kredit AI",
+        "benefitDailyCoins": "Koin harian",
+        "benefitThemes": "Tema",
+        "statusNoActiveMembership": "Tidak ada keanggotaan aktif",
+        "statusBrowseAsGuest": "Jelajahi paket sebagai tamu",
+        "periodEndsLabel": "Akhir periode saat ini",
+        "periodRenewsLabel": "Diperbarui",
+        "lifecycleActive": "Aktif"
+      },
+      "membershipActions": {
+        "title": "Keanggotaan premium aktif",
+        "body": "Hadiah harian ada di Profil. Tema ada di Pengaturan › Tampilan.",
+        "scheduledChangeNotice": "Beralih ke {{plan}} — {{date}}",
+        "manageSubscription": "Kelola langganan",
+        "manageSubscriptionFailedTitle": "Gagal membuka langganan",
+        "manageSubscriptionFailedBody": "Coba lagi melalui akun toko di perangkatmu."
+      },
+      "pending": {
+        "title": "Rekonsiliasi pembelian sedang berlangsung",
+        "verifyingTitle": "Memverifikasi pembelian",
+        "premiumChangeAccepted": "Toko menerima perubahan ke {{label}}. ",
+        "premiumResponseReceived": "Respons dari toko untuk {{label}} telah diterima. ",
+        "premiumDeferredSuffix": "Perubahan hanya akan dijadwalkan setelah verifikasi Game Backend, dan mulai berlaku di akhir periode saat ini.",
+        "premiumSuffix": "Premium hanya diaktifkan setelah verifikasi Game Backend.",
+        "doNotPurchasePlanAgain": " Jangan membeli paket ini lagi.",
+        "coinPackBody": "Respons dari toko telah diterima. Stitch Coin hanya akan diperbarui setelah Game Backend mengonfirmasi kredit yang sesuai di Log Komersial. Jangan membeli paket ini lagi.",
+        "aiCreditPackBody": "Respons dari toko telah diterima. Kredit AI hanya akan diperbarui setelah Game Backend mengonfirmasi kredit yang sesuai di Log Komersial. Jangan membeli paket ini lagi.",
+        "refreshStatus": "Segarkan status",
+        "retryReconciliation": "Coba lagi rekonsiliasi"
+      },
+      "store": {
+        "loadingPrices": "Memuat harga toko saat ini…",
+        "unavailableTitle": "Toko sementara tidak tersedia",
+        "unavailableBody": "Data dompet dan keanggotaan tetap tersedia.",
+        "retry": "Coba lagi"
+      },
+      "plans": {
+        "choosePremiumPlan": "Pilih paket premium",
+        "yourPremiumPlan": "Paket premiummu",
+        "currentPlan": "PAKET SAAT INI",
+        "upgrade": "TINGKATKAN",
+        "planChange": "GANTI PAKET",
+        "bestValue": "NILAI TERBAIK",
+        "billedEvery": "Ditagih setiap {{period}}",
+        "chooseLabel": "Pilih {{label}}",
+        "freeTrial": "Gratis {{offer}}, lalu {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "Paket sekali beli",
+        "stitchCoinPacksTitle": "Paket Stitch Coin",
+        "aiCreditPacksTitle": "Paket kredit AI",
+        "coinsNoun": "Koin",
+        "creditsNoun": "Kredit",
+        "fromPrice": "Mulai dari: {{price}}"
+      },
+      "restore": {
+        "restorePurchases": "Pulihkan pembelian",
+        "restoreGuestPremium": "Pulihkan premium tamu",
+        "requestedTitle": "Pemulihan diminta",
+        "requestedBody": "Akses premium yang telah dikonfirmasi akan muncul setelah rekonsiliasi webhook toko selesai. Stitch Coin dan kredit AI tidak pernah dapat dipulihkan."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "Harga saat ini dari toko",
+        "closeAccessibilityLabel": "Tutup kartu produk",
+        "closeButtonAccessibilityLabel": "Tutup",
+        "selectedBeforeSignIn": "Dipilih sebelum masuk",
+        "buy": "Beli"
+      },
+      "confirmation": {
+        "cancel": "Batal",
+        "confirmLabel": "Konfirmasi {{label}}",
+        "confirmPremiumTitle": "Konfirmasi pembelian Premium",
+        "introductoryOffer": "Tokomu menyatakan penawaran pengantar ini: {{offer}}.",
+        "premiumAppearsAfterVerification": "Premium hanya akan muncul setelah Game Backend memverifikasi transaksi toko.",
+        "confirmPremiumUpgradeTitle": "Konfirmasi peningkatan Premium",
+        "confirmPremiumPlanChangeTitle": "Konfirmasi perubahan paket Premium",
+        "currentPlanLabel": "Paket saat ini: {{label}}",
+        "upgradeToLabel": "Tingkatkan ke {{label}} · {{offer}}",
+        "changeToLabel": "Ganti ke {{label}} · {{offer}}",
+        "upgradeBody": "App Store mengatur harga akhir dan tanggal berlaku dari peningkatan ini. Premium hanya akan mencerminkan paket {{label}} setelah dikonfirmasi oleh Game Backend.",
+        "planChangeBody": "App Store menunda perubahan ini hingga akhir periode saat ini: {{currentLabel}} tetap berlaku hingga saat itu, dan {{targetLabel}} akan ditagih mulai tanggal perubahan. Kamu dapat membatalkan perubahan ini di Kelola Langganan.",
+        "confirmUpgrade": "Konfirmasi peningkatan",
+        "confirmPlanChange": "Konfirmasi perubahan paket",
+        "confirmStitchCoinTitle": "Konfirmasi pembelian Stitch Coin",
+        "confirmAiCreditTitle": "Konfirmasi pembelian kredit AI",
+        "balanceChangesAfterVerificationCoin": "Saldomu hanya akan berubah setelah Game Backend memverifikasi transaksi toko dan mencatat kredit yang sesuai di Log Komersial.",
+        "balanceChangesAfterVerificationAiCredit": "Saldomu hanya akan berubah setelah Game Backend memverifikasi transaksi toko dan mencatat kredit yang sesuai di Log Komersial. Keanggotaan Premium tidak diperlukan."
+      },
+      "disclosure": {
+        "subscriptionTerms": "Pembayaran akan ditagih ke akun {{store}}-mu saat konfirmasi. {{label}} Premium akan diperpanjang otomatis dengan harga {{offer}} kecuali kamu menonaktifkan perpanjangan otomatis setidaknya 24 jam sebelum akhir periode saat ini. Sisa masa uji coba gratis yang belum digunakan akan hangus saat pembelian langganan. Kamu dapat membatalkan langganan kapan saja melalui akun {{store}}-mu.",
+        "privacyPolicy": "Kebijakan privasi",
+        "termsOfService": "Ketentuan layanan",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "Gagal membuka tautan: {{url}}"
+      },
+      "supportReference": {
+        "label": "Referensi dukungan: {{reference}}",
+        "copyAccessibilityLabel": "Salin referensi dukungan {{reference}}",
+        "copyAccessibilityHint": "Menyalin referensi dukungan ke papan klip",
+        "copied": "Disalin",
+        "copyFailedTitle": "Gagal menyalin",
+        "copyFailedBody": "Gagal menyalin referensi dukungan. Pilih teks untuk menyalin secara manual."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "Pembelian Stitch Coin tamu hanya tersedia di iOS.",
+        "guestIosOnlyGeneric": "Pembelian tamu hanya tersedia di iOS.",
+        "purchaseFailedTitle": "Pembelian gagal",
+        "premiumVerificationNotYet": "Game Backend belum dapat memverifikasi pembelian ini. Coba lagi rekonsiliasi; jangan membeli lagi.",
+        "premiumVerificationFailedRetry": "Game Backend belum dapat memverifikasi pembelian ini. Coba lagi rekonsiliasi; jangan membeli lagi.",
+        "premiumGrantRefreshFailed": "Premium dikonfirmasi, tetapi gagal memperbarui status keanggotaan dan kredit AI. Coba lagi rekonsiliasi.",
+        "premiumReconciliationUnreachable": "Rekonsiliasi pembelian tidak dapat menjangkau Game Backend. Coba lagi rekonsiliasi; jangan membeli lagi.",
+        "coinPackVerificationMismatch": "Transaksi toko tidak cocok dengan paket koin ini. Coba lagi verifikasi, atau hubungi dukungan; jangan membeli lagi.",
+        "coinPackGrantUnavailable": "Pembelian dikonfirmasi, tetapi kredit Stitch Coin tidak tersedia. Coba lagi rekonsiliasi; jangan membeli lagi.",
+        "coinPackBalanceRefreshFailed": "Kredit koin dikonfirmasi, tetapi gagal memperbarui saldo Stitch Coin saat ini. Coba lagi rekonsiliasi.",
+        "coinPackVerificationFailedRetry": "Game Backend belum dapat memverifikasi paket koin ini. Coba lagi rekonsiliasi; jangan membeli lagi.",
+        "coinPackReconciliationUnreachable": "Rekonsiliasi paket koin tidak dapat menjangkau Game Backend. Coba lagi rekonsiliasi; jangan membeli lagi.",
+        "aiCreditPackVerificationMismatch": "Transaksi toko tidak cocok dengan paket kredit AI ini. Coba lagi verifikasi, atau hubungi dukungan; jangan membeli lagi.",
+        "aiCreditPackGrantUnavailable": "Pembelian dikonfirmasi, tetapi kredit AI tidak tersedia. Coba lagi rekonsiliasi; jangan membeli lagi.",
+        "aiCreditPackBalanceRefreshFailed": "Kredit AI dikonfirmasi, tetapi gagal memperbarui saldo saat ini. Coba lagi rekonsiliasi.",
+        "aiCreditPackVerificationFailedRetry": "Game Backend belum dapat memverifikasi paket kredit AI ini. Coba lagi rekonsiliasi; jangan membeli lagi.",
+        "aiCreditPackReconciliationUnreachable": "Rekonsiliasi paket kredit AI tidak dapat menjangkau Game Backend. Coba lagi rekonsiliasi; jangan membeli lagi.",
+        "reconciliationStillUnavailable": "Game Backend masih tidak tersedia. Coba lagi rekonsiliasi nanti.",
+        "storeTemporarilyUnavailable": "Toko sementara tidak tersedia. Coba lagi dalam beberapa menit.",
+        "purchasesNotAllowed": "Pembelian tidak diizinkan di perangkat ini. Periksa akun tokomu atau kontrol orang tua.",
+        "itemNotAvailable": "Produk ini saat ini tidak dapat dibeli. Pilih produk lain, atau coba lagi nanti.",
+        "alreadyOwned": "Pembelian ini sudah menjadi milikmu. Gunakan Pulihkan Pembelian untuk menyegarkan akses.",
+        "couldNotConnectToStore": "Gagal terhubung ke toko. Periksa koneksi internetmu dan coba lagi.",
+        "paymentPendingApproval": "Pembayaranmu menunggu persetujuan. Pembelian akan muncul setelah toko menyelesaikan prosesnya.",
+        "testPurchaseDeclined": "Pembelian uji ditolak. Tidak ada pembayaran yang terjadi. Pilih hasil uji lain di Pengaturan, lalu coba lagi.",
+        "genericPurchaseFailure": "Gagal menyelesaikan pembelianmu. Tidak ada pembayaran yang terjadi. Coba lagi."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "Verifikasi sedang berlangsung",
+        "premiumPending": "Verifikasi masih berlangsung. Premium akan diaktifkan setelah Game Backend mengonfirmasi.",
+        "premiumPlanChangePending": "Verifikasi masih berlangsung. Perubahan paket akan dijadwalkan setelah Game Backend mengonfirmasi.",
+        "coinPackPending": "Verifikasi masih berlangsung. Saldo Stitch Coin-mu akan diperbarui setelah selesai.",
+        "aiCreditPackPending": "Verifikasi masih berlangsung. Saldo kredit AI-mu akan diperbarui setelah selesai."
+      },
+      "success": {
+        "purchaseReceivedTitle": "Pembelian diterima",
+        "storeAcceptedPlanChange": "Toko menerima perubahan ke {{label}}. Konfirmasi saat berlaku.",
+        "storeAcceptedPurchase": "Toko menerima {{label}}. Verifikasi pembelianmu sedang berlangsung.",
+        "premiumChanges": "Premium akan berubah ke {{label}}{{effectiveOn}}.",
+        "effectiveOnDate": " {{date}}",
+        "planChangeScheduledTitle": "Perubahan paket dijadwalkan",
+        "planChangeScheduledBody": "Keanggotaan premiummu akan mempertahankan paket saat ini hingga beralih ke {{label}}{{effectiveOn}}. Kamu dapat membatalkan perubahan ini di Kelola Langganan.",
+        "premiumIsActiveTitle": "Premium aktif",
+        "premiumVerifiedAndActive": "{{label}} Premium telah dikonfirmasi dan aktif.",
+        "premiumNowActiveNoBilling": "{{label}} Premium kini aktif.",
+        "premiumNowActiveBilled": "{{label}} Premium kini aktif, ditagih setiap {{period}}.",
+        "coinPackGrantedTitle": "Stitch Coin dikreditkan",
+        "coinPackGrantVerified": "Kredit {{label}} telah dikonfirmasi. Saldo Stitch Coin: {{balance}}.",
+        "coinPackAddedToBalance": "{{quantity}} Stitch Coin ditambahkan ke saldomu.",
+        "aiCreditPackGrantedTitle": "Kredit AI dikreditkan",
+        "aiCreditPackGrantVerified": "Kredit {{label}} telah dikonfirmasi. Saldo kredit AI: {{balance}}.",
+        "aiCreditPackAddedToBalance": "{{quantity}} kredit AI ditambahkan ke saldomu."
+      },
+      "products": {
+        "premiumAnnual": "Tahunan",
+        "premiumMonthly": "Bulanan",
+        "premiumWeekly": "Mingguan",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coin",
+        "aiCreditPack_one": "{{formattedCount}} kredit AI",
+        "aiCreditPack_other": "{{formattedCount}} kredit AI",
+        "billedEveryOffer": "{{price}} / {{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} kredit / periode berbayar",
+        "creditAllowancePaidNoun": "{{credits}} kredit / {{period}} berbayar"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "Beli sebagai tamu",
+        "commerceBody": "Kamu dapat membeli tanpa mendaftar. Keanggotaan premium dapat dipulihkan dari toko, tetapi Stitch Coin, kredit AI, dan konten tamu privat dapat hilang secara permanen jika instalasi hilang. Mendaftar melindungi hal ini dan tidak pernah mengganggu permainan tamu.",
+        "continueAsGuest": "Lanjutkan sebagai tamu",
+        "signInInstead": "Masuk sebagai gantinya",
+        "closeAccessibilityLabel": "Tutup"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "Oke",
+        "successButton": "Bagus",
+        "failedButton": "Tutup",
+        "infoButton": "Oke",
+        "closeAccessibilityLabel": "Tutup"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "Kembali",
+        "cancel": "Batal",
+        "duplicateTitle": "Kamu sudah memiliki pola dengan nama „{{title}}”. Pilih nama lain.",
+        "cellsCount_one": "sel",
+        "cellsCount_other": "sel",
+        "colorsCount_one": "warna",
+        "colorsCount_other": "warna"
+      },
+      "hub": {
+        "title": "Pusat kreasi",
+        "subtitle": "Hidupkan desainmu sendiri dengan pola sulaman unik.",
+        "opening": "Membuka…",
+        "photoImport": {
+          "title": "Impor foto",
+          "description": "Unggah gambar dari galeri, dan ubah menjadi pola sulaman.",
+          "action": "Impor foto"
+        },
+        "aiGenerator": {
+          "title": "Generator AI",
+          "description": "Tulis prompt yang hangat, dan biarkan AI menghasilkan desain piksel unik.",
+          "action": "Buat desain"
+        }
+      },
+      "aspects": {
+        "square": "Persegi",
+        "portrait_4_3": "Potret 4:3",
+        "landscape_4_3": "Lanskap 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "Gagal mengonversi pola. Coba lagi.",
+          "timeout": "Konversi pola masih diproses. Coba lagi sebentar lagi.",
+          "generic": "Konversi pola tidak selesai. Coba lagi."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "Diperlukan akun terdaftar",
+          "body": "Kreasi AI dan pustakanya tetap privat untuk akunmu.",
+          "signIn": "Masuk"
+        },
+        "header": {
+          "title": "Generator AI",
+          "backAccessibilityLabel": "Kembali"
+        },
+        "prompt": {
+          "label": "Jelaskan kreasimu",
+          "placeholder": "Sebuah rumah taman hangat saat senja…"
+        },
+        "generate": {
+          "working": "Memproses…",
+          "action": "Buat — 1 kredit AI",
+          "errors": {
+            "promptRejected": "Prompt ini tidak diizinkan. Coba jelaskan sesuatu yang lain.",
+            "generic": "Gagal memulai pembuatan AI. Coba lagi."
+          }
+        },
+        "library": {
+          "title": "Pustaka kreasi AI-mu",
+          "status": {
+            "pending": "Menunggu",
+            "dispatched": "Dikirim",
+            "running": "Sedang berjalan",
+            "delivered": "Terkirim",
+            "safety_rejected": "Ditolak karena alasan keamanan",
+            "failed": "Gagal",
+            "deleted": "Dihapus",
+            "unknown": "Tidak tersedia"
+          },
+          "failure": {
+            "safety_rejected": "Kreasi ini tidak lolos pemeriksaan keamanan penyedia.",
+            "failed": "Kreasi ini gagal dibuat."
+          },
+          "approve": "Setujui sebagai pola",
+          "delete": "Hapus",
+          "deleteAccessibilityLabel": "Hapus kreasi AI ini",
+          "errors": {
+            "loadFailed": "Gagal memuat pustaka kreasi AI. Coba lagi."
+          }
+        },
+        "approve": {
+          "modalTitle": "Buat pola sendiri",
+          "titleLabel": "Nama pola",
+          "titleAccessibilityLabel": "Nama pola",
+          "defaultTitle": "Pola AI-ku",
+          "placeholder": "Pola AI-ku",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "Batal",
+          "creating": "Membuat pola…",
+          "create": "Buat pola",
+          "errors": {
+            "generic": "Gagal membuat pola sendiri. Coba lagi."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "Diperlukan akun terdaftar",
+          "body": "Pola sendiri terkait dengan akunmu, sehingga tetap privat dan tersedia di semua perangkat.",
+          "signIn": "Masuk atau buat akun",
+          "back": "Kembali"
+        },
+        "header": {
+          "title": "Pola foto",
+          "subtitle": "Bingkai secara lokal, lalu setujui konversinya",
+          "backAccessibilityLabel": "Kembali"
+        },
+        "picker": {
+          "chooseTitle": "Pilih foto",
+          "helpText": "Foto resolusi penuh tetap ada di perangkat ini. Tidak ada yang dikonversi sampai kamu menyetujui pembingkaian.",
+          "choose": "Pilih dari pustaka",
+          "chooseAnother": "Pilih yang lain",
+          "opening": "Membuka…",
+          "errors": {
+            "permissionDenied": "Akses galeri diperlukan untuk memilih sumber foto lokal.",
+            "invalidDimensions": "Foto yang dipilih tidak memiliki dimensi yang dapat digunakan.",
+            "generic": "Gagal membuka galeri foto. Coba lagi."
+          }
+        },
+        "framing": {
+          "title": "Bingkai kreasimu",
+          "gestureHint": "Seret untuk memindahkan · cubit untuk memperbesar",
+          "aspectLabel": "Rasio bingkai"
+        },
+        "profile": {
+          "title": "Profil konversi",
+          "options": {
+            "easy": "Mudah",
+            "standard": "Standar",
+            "detailed": "Detail"
+          },
+          "custom": "Khusus",
+          "customMeta": "Bebas · bentuk terkunci",
+          "unavailable": "Tidak cocok dengan bingkai ini",
+          "customShortEdgeLabel": "Sisi lebih pendek",
+          "customColorLimitLabel": "Batas warna DMC",
+          "exceedsLimit": "Nilai khusus ini melebihi batas ukuran {{max}} sel pola."
+        },
+        "titleCard": {
+          "label": "Nama pola",
+          "placeholder": "Pola fotoku",
+          "defaultTitle": "Pola fotoku",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · hingga {{maxColors}} {{colorsUnit}} DMC",
+          "privacyNotice": "Persetujuan hanya mengirim versi yang telah dibingkai dan diperkecil. Foto asli tetap ada di perangkat ini.",
+          "approve": "Setujui kreasi dan konversi"
+        },
+        "processing": {
+          "preparingFrame": "Menyiapkan bingkai yang disetujui di perangkat ini…",
+          "uploading": "Hanya mengirim bingkai yang dipotong dan diperkecil…",
+          "waitingForWorker": "Menunggu proses konversi…",
+          "buildingGrid": "Membangun kisi jahitan dan palet DMC…",
+          "preparingSession": "Menyiapkan pola sendiri untuk permainan…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "Profil ini tidak lagi cocok dengan bingkai akhir. Pilih Mudah, atau kurangi detailnya.",
+            "generic": "Gagal mengonversi foto ini. Coba lagi."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "Tidak ada pola dipilih",
+          "noPatternBody": "Layar ini harus dibuka dari pola sendiri yang sudah ada di pustakamu.",
+          "accountTitle": "Diperlukan akun terdaftar",
+          "accountBody": "Pola sendiri terkait dengan akunmu, sehingga tetap privat dan tersedia di semua perangkat.",
+          "signIn": "Masuk atau buat akun",
+          "back": "Kembali"
+        },
+        "loading": "Melanjutkan draf di editor...",
+        "load": {
+          "failedTitle": "Gagal memuat pola",
+          "retry": "Coba lagi",
+          "back": "Kembali",
+          "errors": {
+            "generic": "Gagal memuat pola sendiri ini. Coba lagi."
+          }
+        },
+        "header": {
+          "title": "Editor pola",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "Kembali"
+        },
+        "toolbar": {
+          "undo": "Urungkan",
+          "redo": "Ulangi"
+        },
+        "mode": {
+          "paint": "Lukis",
+          "replaceColor": "Ganti warna",
+          "replaceStep1": "1. Sentuh warna yang ingin diganti di pola di bawah:",
+          "replaceStep2": "2. Pilih warna DMC target di bawah untuk melakukan penggantian:",
+          "paintSelected": "Terpilih: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "Pilih warna di bawah, lalu sentuh sel untuk melukis."
+        },
+        "errors": {
+          "pickColorFirst": "Pilih warna terlebih dahulu",
+          "paletteLimit": "Pola ini sudah menggunakan {{max}} warna benang maksimum yang diizinkan."
+        },
+        "picker": {
+          "title": "Warna benang DMC",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "Simpan pola yang diedit",
+          "placeholder": "Nama pola yang diedit",
+          "action": "Simpan sebagai baru",
+          "offlineTitle": "Disimpan secara offline",
+          "offlineBody": "Pola yang diedit disimpan di perangkat ini, dan akan disinkronkan ke akunmu saat kamu terhubung kembali.",
+          "errors": {
+            "generic": "Gagal menyimpan pola sendiri ini. Coba lagi."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "Login ini terkait dengan akun lain. Akunmu saat ini tidak berubah.",
+        "providerRejected": "Verifikasi ini ditolak. Periksa akun atau kode, dan coba lagi."
+      },
+      "generic": {
+        "failure": "Ada yang salah. Coba lagi.",
+        "supportReferenceLabel": "Referensi dukungan: {{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Stitch Wish menggunakan foto yang kamu pilih untuk membuat pola sendiri atau memilih foto profil kreator publik."
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "SELAMAT DATANG DI STITCH WISH",
+        "title": "Pilih warna, sentuh kotak yang sesuai.",
+        "heroAlt": "Pratinjau pola pemula Cozy Heart",
+        "handedness": {
+          "sectionTitle": "Di sisi mana kontrol harus berada?",
+          "groupLabel": "Sisi kontrol",
+          "optionRight": "Kontrol di kanan",
+          "optionLeft": "Kontrol di kiri",
+          "saveErrorText": "Gagal menyimpan pilihan ini.",
+          "retry": "Coba lagi"
+        },
+        "note": "Kamu dapat mengubah ini nanti di Pengaturan.",
+        "start": "Mulai menyulam",
+        "starting": "Memulai…",
+        "browse": "Jelajahi pola pemula",
+        "signIn": "Masuk"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "Pilih warna DMC 321 Christmas Red.",
+          "stitchAction": "Sentuh sel yang cocok dan disorot.",
+          "mismatchedTap": "Sentuh sel yang berbeda dan disorot. Sentuhan yang salah tidak berbiaya apa pun.",
+          "undoAction": "Urungkan jahitan itu, lalu letakkan lagi.",
+          "stitchSweep": "Tekan sel yang cocok, lalu seret di sepanjang baris yang disorot.",
+          "threadColorCompletion": "Selesaikan benang putih yang disorot, lalu pilih warna berikutnya."
+        },
+        "hints": {
+          "anchoredZoom": "Cubit untuk memperbesar sambil menjaga sel tetap di bawah jarimu.",
+          "panVsSweep": "Seret untuk menggeser kanvas. Mulai dari sel yang cocok untuk menyulam baris.",
+          "edgeAutoPan": "Lanjutkan menyeret di dekat tepi, dan kanvas akan mengikuti jarimu.",
+          "remainingCellLocator": "Gunakan pencari untuk menemukan sel tersisa berikutnya untuk benang ini."
+        },
+        "skip": "Lewati sekarang",
+        "skipAccessibilityLabel": "Lewati panduan sekarang",
+        "dismiss": "Mengerti",
+        "dismissAccessibilityLabel": "Tutup tip"
+      },
+      "recap": {
+        "title": "Berhasil",
+        "lines": {
+          "matchNumbers": "Cocokkan angka untuk menempatkan setiap jahitan.",
+          "dragSweep": "Seret di sepanjang sel yang cocok untuk menyulam baris.",
+          "pinchZoom": "Cubit untuk memperbesar jika kamu butuh tampilan yang lebih baik.",
+          "undoLocator": "Urungkan dan pencari selalu gratis."
+        },
+        "continue": "Lanjutkan menyulam",
+        "browsePatterns": "Jelajahi pola"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "Meja sulam",
+        "subtitle": "Lanjutkan dari titik terakhir, atau kembali ke pekerjaan sebelumnya.",
+        "loading": "Memuat jahitanmu...",
+        "empty": {
+          "title": "Tidak ada pekerjaan aktif",
+          "body": "Bingkai sulammu saat ini kosong. Jelajahi katalog pola untuk menemukan sesuatu yang indah untuk disulam!",
+          "action": "Jelajahi katalog"
+        },
+        "unknownPattern": "Pola tidak dikenal",
+        "idLabel": "ID: {{id}}",
+        "unknownPatternLabel": "Pola {{id}}",
+        "deleteSessionAccessibilityLabel": "Hapus sesi",
+        "viewFinishedAccessibilityLabel": "Lihat pekerjaan yang selesai",
+        "resumeAccessibilityLabel": "Lanjutkan menyulam",
+        "status": {
+          "ready": "Siap",
+          "done": "Selesai",
+          "active": "Aktif",
+          "preparing": "Menyiapkan",
+          "failed": "Gagal"
+        },
+        "deleteConfirm": {
+          "title": "Hapus progres",
+          "message": "Yakin ingin menghapus progresmu di „{{title}}”? Tindakan ini tidak dapat dibatalkan.",
+          "cancel": "Batal",
+          "confirm": "Hapus"
+        },
+        "preparingCard": {
+          "discardTitle": "Buang sesi",
+          "cancelTitle": "Batalkan unduhan",
+          "discardMessage": "Yakin ingin membuang sesi yang gagal ini?",
+          "cancelMessage": "Yakin ingin membatalkan unduhan pola ini?",
+          "keep": "Simpan",
+          "discard": "Buang",
+          "cancel": "Batal"
+        }
+      },
+      "loading": {
+        "text": "Membuka sesi dan menyiapkan kanvas..."
+      },
+      "error": {
+        "title": "Gagal memuat sesi",
+        "fallbackMessage": "Gagal memuat sesi menyulammu.",
+        "backButton": "Kembali",
+        "tableButton": "Ke meja"
+      },
+      "header": {
+        "backButton": "← Kembali",
+        "tableButton": "← Meja",
+        "defaultTitle": "Sesi menyulam",
+        "progress": "{{completed}} / {{total}} sel ({{percent}}% selesai)",
+        "resumeTutorialAccessibilityLabel": "Lanjutkan panduan"
+      },
+      "banners": {
+        "patternRemoved": "Pola ini telah dihapus karena moderasi, dan tidak lagi tersedia. Sentuh untuk keluar.",
+        "syncConflict": "Disinkronkan dengan perangkat lain — beberapa sel diperbarui. Sentuh untuk menutup."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "Temukan sel tersisa berikutnya untuk warna benang aktif",
+        "undoAccessibilityLabel": "Urungkan jahitan terakhir"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "Warna {{number}}: DMC {{dmcCode}}, {{count}} jahitan tersisa",
+        "chipAccessibilityLabel_other": "Warna {{number}}: DMC {{dmcCode}}, {{count}} jahitan tersisa",
+        "done": "Selesai",
+        "remaining_one": "{{count}} tersisa",
+        "remaining_other": "{{count}} tersisa"
+      },
+      "celebration": {
+        "title": "Tersulam dengan indah!",
+        "subtitle": "Kamu telah menyelesaikan setiap jahitan pada kanvas.",
+        "stitchesLabel_one": "Jahitan",
+        "stitchesLabel_other": "Jahitan",
+        "colorsLabel_one": "Warna",
+        "colorsLabel_other": "Warna",
+        "replayButton": "Sulam lagi",
+        "catalogButton": "Kembali ke katalog"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "Kembali",
+        "tryAgain": "Coba lagi"
+      },
+      "rejectionReasons": {
+        "safety": "Keamanan",
+        "publication_rights": "Hak publikasi",
+        "duplicate_or_spam": "Duplikat atau spam",
+        "technical_invalidity": "Ketidakvalidan teknis",
+        "quality_standard": "Standar kualitas"
+      },
+      "submissionStatus": {
+        "accepted": "Dipublikasikan",
+        "appeal_pending": "Banding menunggu",
+        "appeal_upheld": "Banding ditolak",
+        "precheck_failed": "Pemeriksaan awal tidak tersedia",
+        "precheck_pending": "Pemeriksaan sedang berlangsung",
+        "quarantined": "Perlu ditinjau",
+        "rejected": "Ditolak",
+        "review_pending": "Sedang ditinjau"
+      },
+      "revisionStatus": {
+        "accepted": "Dipublikasikan",
+        "appeal_pending": "Banding menunggu",
+        "appeal_upheld": "Banding ditolak",
+        "pending": "Sedang ditinjau",
+        "rejected": "Ditolak",
+        "withdrawn": "Ditarik"
+      },
+      "home": {
+        "identity": {
+          "establishing": "Membuat identitas...",
+          "pendingTitle": "Identitas menunggu",
+          "offline": "Offline",
+          "retryConnection": "Coba sambungkan lagi",
+          "loadingPublicProfile": "Memuat profil publik...",
+          "unavailableTitle": "Profil publik tidak tersedia",
+          "checkConnection": "Periksa koneksimu, dan coba lagi.",
+          "createTitle": "Buat profil publikmu",
+          "createBody": "Pilih nama pengguna permanen yang akan muncul di samping polamu di komunitas. Data akunmu tetap privat.",
+          "createAction": "Buat profil publik",
+          "editAction": "Edit profil publik",
+          "offlinePendingSync": "Offline — menunggu sinkronisasi",
+          "guestPlayer": "Pemain tamu",
+          "playingSince": "Bermain sejak: {{date}}",
+          "creatorSince": "Kreator sejak: {{date}}"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "Buka toko",
+          "title": "Saldo studio",
+          "commerceStoreLink": "Toko",
+          "stitchCoinsAccessibilityLabel": "Saldo Stitch Coin: {{balance}}. Sentuh untuk mendapatkan koin.",
+          "packs": "Paket",
+          "stitchCoinsLabel": "Stitch Coin",
+          "stitchCoinsSub": "Untuk membuka pola",
+          "aiCreditsAccessibilityLabel": "Saldo kredit AI: {{balance}}. Sentuh untuk mendapatkan kredit.",
+          "aiCreditsSignInAccessibilityLabel": "Kredit AI. Masuk untuk membeli.",
+          "aiCreditsLabel": "Kredit AI",
+          "aiCreditsSubOwned": "Pola untuk kreasi AI",
+          "aiCreditsSubGuest": "Masuk untuk memiliki",
+          "membershipActiveAccessibilityLabel": "Keanggotaan Premium aktif ({{plan}}). Sentuh untuk mengelola.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Premium. Sentuh untuk melihat paket.",
+          "membershipActiveTitle": "Premium aktif · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "Tahunan",
+          "planMonthly": "Bulanan",
+          "planWeekly": "Mingguan",
+          "planActive": "Aktif",
+          "trialBadge": "Uji coba",
+          "membershipSubActive": "Semua tema dibuka · Klaim koin harian saat ini",
+          "membershipSubInactive": "Koin harian 30, tema eksklusif, dan kredit AI saat ini",
+          "manage": "Kelola",
+          "explore": "Jelajahi"
+        },
+        "quickNav": {
+          "sectionEyebrow": "AKUN DAN KOMUNITAS",
+          "submissionsAccessibilityLabel": "Pengajuan katalog: Lacak peninjauan, keputusan, dan banding",
+          "submissionsTitle": "Pengajuan",
+          "submissionsSub": "Lacak peninjauan",
+          "publishedAccessibilityLabel": "Pola yang dipublikasikan: Edit metadata, tarik, dan lacak banding",
+          "publishedTitle": "Dipublikasikan",
+          "publishedSub": "Kelola pola",
+          "moderationAccessibilityLabel": "Notifikasi moderasi: Tinjau keputusan katalog yang memengaruhi polamu",
+          "moderationTitle": "Moderasi",
+          "moderationSub": "Notifikasi kebijakan",
+          "likedAccessibilityLabel": "Pola yang disukai: Koleksi favorit privatmu dari pola komunitas",
+          "likedTitle": "Pola yang disukai",
+          "likedSavedCount_one": "{{count}} disimpan",
+          "likedSavedCount_other": "{{count}} disimpan",
+          "likedSavedDefault": "Pola tersimpan"
+        },
+        "dailySection": {
+          "title": "Sulaman dan hadiah harian",
+          "tasksGroupLabel": "Tugas harian (hingga +30 koin)",
+          "connectToTrack": "Hubungkan untuk melacak progres tugas harianmu.",
+          "loadingTasks": "Memuat tugas…",
+          "loadFailed": "Gagal memuat tugas harian.",
+          "retry": "Coba lagi",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "Mereset…",
+          "resetsInHoursMinutes": "Reset dalam {{hours}}j {{minutes}}m",
+          "resetsInMinutes": "Reset dalam {{minutes}}m"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 aksi menyulam",
+            "body": "Isi 100 sel yang cocok hari ini"
+          },
+          "three_colors_10": {
+            "title": "3 warna, masing-masing 10 aksi",
+            "body": "Capai 10 aksi dengan 3 warna benang"
+          },
+          "color_completion": {
+            "title": "Selesaikan warna benang",
+            "body": "Selesaikan sepenuhnya warna sulam apa pun"
+          }
+        },
+        "dailyPool": {
+          "title": "Kumpulan hadiah harian 30 koin",
+          "premiumInstantClaim": "Klaim instan untuk Premium",
+          "rewardedAds": "Iklan berhadiah",
+          "claimedAmount": "{{amount}} Stitch Coin diklaim hari ini!",
+          "poolAlreadyClosed": "Kumpulan hadiah hari ini sudah ditutup.",
+          "claimedForToday": "Diklaim untuk hari ini. Direset pada hari hadiah berikutnya.",
+          "poolExhausted": "Kumpulan hadiah 30 koin hari ini telah habis.",
+          "claimButtonRetry": "Coba lagi klaim",
+          "claimButtonInstant": "Klaim {{count}} koin (instan)",
+          "poolClaimedResetsTomorrow": "Kumpulan koin hari ini diklaim. Direset besok.",
+          "allAdRewardsCompleted": "Kamu telah mengklaim semua hadiah iklan hari ini! (30/30 koin)",
+          "watchAdButton": "Tonton iklan untuk +10 koin ({{count}} tersisa)",
+          "adPerkNote": "Hingga 3 iklan per hari · Premium membuka klaim instan 30 koin",
+          "adRewardEarned": "Hadiah iklan diperoleh! Memverifikasi dengan backend…",
+          "claimFailed": "Klaim gagal: {{message}}",
+          "claimFailedGeneric": "Ada yang salah. Coba lagi.",
+          "adLoadFailedDefault": "Gagal memuat iklan",
+          "adAttemptFailedDefault": "Gagal membuka percobaan iklan"
+        },
+        "tabs": {
+          "myCreations": "Karyaku {{count}}",
+          "likedPatterns": "Pola disukai {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "Masuk untuk pola sendiri",
+          "signInBody": "Diperlukan akun terdaftar untuk membuat dan memiliki pola foto yang dikonversi secara privat.",
+          "signIn": "Masuk",
+          "patternMeta": "{{width}}×{{height}} · {{count}} warna",
+          "pendingSync": "Menunggu sinkronisasi",
+          "play": "Main",
+          "edit": "Ubah",
+          "submitAccessibilityLabel": "Ajukan {{title}} ke katalog komunitas",
+          "emptyTitle": "Tidak ada karya sendiri",
+          "emptyBody": "Kamu belum mengonversi foto atau membuat kreasi AI. Ketuk Buat untuk memulai karya pertamamu!",
+          "emptyAction": "Mulai berkarya",
+          "actionFailedGeneric": "Ada yang salah. Coba lagi."
+        },
+        "likedTab": {
+          "unavailableTitle": "Pola yang disukai tidak tersedia",
+          "unavailableDefault": "Gagal memuat pola yang disukai.",
+          "byCreator": "oleh {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} warna",
+          "emptyTitle": "Tidak ada pola yang disukai",
+          "emptyBody": "Jelajahi katalog, dan sentuh ikon hati pada desain apa pun untuk menyimpannya di sini nanti.",
+          "emptyAction": "Jelajahi pola"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Klaim koin harian Premium",
+        "description": "Klaim sisa kumpulan hadiah bersama 30 koin hari ini.",
+        "connectPrompt": "Hubungkan ke Game Backend untuk memeriksa hadiah hari ini.",
+        "checkingReward": "Memeriksa hadiah premium hari ini…",
+        "unavailableGeneric": "Hadiah premium hari ini tidak tersedia.",
+        "tryAgain": "Coba lagi",
+        "resultAdded": "{{amount}} Stitch Coin ditambahkan oleh Game Backend. Saldo: {{balance}}.",
+        "poolAlreadyClosed": "Kumpulan hadiah bersama hari ini sudah ditutup.",
+        "alreadyClaimed": "Sudah diklaim untuk hari hadiah ini.",
+        "poolExhausted": "Kumpulan hadiah bersama hari ini telah habis. Direset pada hari hadiah berikutnya.",
+        "availableNow": "{{count}} Stitch Coin tersedia sekarang",
+        "resetsAt": "Direset: {{date}}",
+        "claimButtonRetry": "Coba lagi klaim",
+        "claimButtonInstant": "Klaim {{count}} koin",
+        "lockedDescription": "Keanggotaan Premium, termasuk masa uji coba bulanan yang memenuhi syarat, membuka klaim harian ini.",
+        "viewPremiumPlans": "Lihat paket Premium"
+      },
+      "publicProfile": {
+        "editTitle": "Edit profil publik",
+        "createTitle": "Buat profil publik",
+        "signInTitle": "Diperlukan masuk",
+        "signInBody": "Diperlukan akun terdaftar untuk membuat identitas kreator publik.",
+        "signInAction": "Masuk",
+        "unavailableTitle": "Profil tidak tersedia",
+        "unavailableBody": "Gagal memuat profil publikmu. Periksa koneksimu, dan coba lagi.",
+        "tryAgain": "Coba lagi",
+        "intro": "Nama dan foto ini akan terlihat di samping polamu di komunitas. Alamat email dan penyedia loginmu tetap privat.",
+        "choosePhoto": "Pilih foto",
+        "changePhoto": "Ubah foto",
+        "remove": "Hapus",
+        "avatarHelper": "Opsional · JPEG, PNG, atau WebP · hingga 5 MB",
+        "usernameLabel": "Nama pengguna",
+        "usernameAccessibilityLabel": "Nama pengguna publik",
+        "usernamePlaceholder": "nama_penjahit",
+        "usernameHelperLocked": "Nama penggunamu bersifat permanen.",
+        "usernameHelperEditable": "3–30 huruf kecil, angka, atau garis bawah. Ini tidak dapat diubah nanti.",
+        "displayNameLabel": "Nama tampilan",
+        "displayNameAccessibilityLabel": "Nama tampilan publik",
+        "displayNamePlaceholder": "Nama kreatormu",
+        "displayNameHelper": "Kamu dapat mengubah ini nanti.",
+        "safetyNotice": "Nama dan foto ditinjau sebelum dipublikasikan. Jika perubahan ditolak, profil publikmu saat ini tetap tidak berubah.",
+        "saveAction": "Simpan profil publik",
+        "publishAction": "Publikasikan profil publik",
+        "photoPermissionRequired": "Akses galeri diperlukan untuk memilih foto profil.",
+        "photoTypeInvalid": "Foto profil harus berformat JPEG, PNG, atau WebP.",
+        "photoTooLarge": "Foto profil maksimal berukuran 5 MB.",
+        "saveFailedDefault": "Gagal menyimpan profil publikmu"
+      },
+      "submissions": {
+        "title": "Pengajuan katalog",
+        "unavailableTitle": "Pengajuan tidak tersedia",
+        "unavailableDefault": "Gagal memuat pengajuanmu.",
+        "emptyTitle": "Tidak ada pengajuan katalog",
+        "emptyBody": "Ajukan pola sendiri yang telah disinkronkan dari Karyaku.",
+        "emptyAction": "Kembali ke Karyaku",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "Pemeriksaan otomatis gagal diselesaikan. Snapshot ini tidak dipublikasikan.",
+        "publishedToCatalog": "Dipublikasikan ke katalog komunitas.",
+        "appealAction": "Ajukan banding",
+        "appealHelp": "Kamu dapat mengajukan banding satu kali untuk snapshot tidak berubah ini.",
+        "appealNoteAccessibilityLabel": "Catatan banding",
+        "appealNotePlaceholder": "Konteks opsional untuk moderator peninjau",
+        "cancelAction": "Batal",
+        "submitAppealAction": "Kirim banding"
+      },
+      "publishedPatterns": {
+        "title": "Pola yang dipublikasikan",
+        "unavailableTitle": "Pola tidak tersedia",
+        "unavailableDefault": "Gagal memuat pola yang dipublikasikan.",
+        "emptyTitle": "Tidak ada pola yang dipublikasikan",
+        "emptyBody": "Pola yang kamu publikasikan ke katalog komunitas akan muncul di sini.",
+        "emptyAction": "Kembali ke profil",
+        "withdrawnFromCatalog": "Ditarik dari katalog",
+        "underReviewHold": "Sedang ditinjau",
+        "meta": "{{category}} · Dipublikasikan {{date}}",
+        "withdrawnHelp": "ID ini telah ditarik secara permanen. Pemain dengan sesi menyulam yang ada tetap mempertahankan progres dan aksesnya.",
+        "reviewHoldHelp": "Pola ini sementara tidak dapat ditemukan dan tidak dapat memulai sesi baru. Sesi menyulam yang ada tetap dapat dimainkan. Kamu juga dapat mengajukan revisi metadata.",
+        "reviseAction": "Revisi metadata",
+        "withdrawRevisionAction": "Tarik revisi",
+        "appealAction": "Ajukan banding",
+        "withdrawFromCatalogAction": "Tarik dari katalog",
+        "appealHelp": "Kamu dapat mengajukan banding satu kali untuk snapshot tidak berubah ini. Mengirim versi baru sebagai gantinya akan membatalkan banding ini.",
+        "appealNoteAccessibilityLabel": "Catatan banding",
+        "appealNotePlaceholder": "Konteks opsional untuk moderator peninjau",
+        "cancelAction": "Batal",
+        "submitAppealAction": "Kirim banding",
+        "withdrawRevisionFailedTitle": "Gagal menarik revisi",
+        "withdrawPatternFailedTitle": "Gagal menarik pola",
+        "withdrawPatternSuccessTitle": "Pola ditarik",
+        "withdrawPatternSuccessBody": "Tidak lagi dapat ditemukan dan tidak dapat memulai sesi baru. Sesi menyulam yang ada mempertahankan progres dan data permainannya.",
+        "withdrawConfirmTitle": "Tarik dari katalog komunitas?",
+        "withdrawConfirmBody": "„{{title}}” akan menghilang dari penemuan, dan tidak dapat memulai sesi baru. ID pola ini tidak akan pernah dapat dipulihkan. Sesi menyulam yang ada dan progresnya tetap dapat dimainkan.",
+        "withdrawConfirmCancel": "Batal",
+        "withdrawConfirmAction": "Tarik secara permanen"
+      },
+      "revisePatternMetadata": {
+        "title": "Revisi metadata",
+        "signInTitle": "Diperlukan akun terdaftar",
+        "signInBody": "Masuk sebelum merevisi metadata pola komunitas.",
+        "signInAction": "Masuk",
+        "notFoundTitle": "Pola komunitas tidak ditemukan",
+        "notFoundBody": "Kamu hanya dapat merevisi pola komunitas milikmu sendiri yang telah dipublikasikan.",
+        "notFoundAction": "Kembali ke Pola yang dipublikasikan",
+        "inProgressTitle": "Sudah ada revisi berjalan",
+        "inProgressBody": "Pola ini sudah memiliki revisi yang menunggu atau banding aktif. Tarik dahulu sebelum mengirim yang lain.",
+        "inProgressAction": "Kembali ke Pola yang dipublikasikan",
+        "currentlyPublished": "Saat ini dipublikasikan ke katalog komunitas",
+        "titleFieldLabel": "Judul katalog",
+        "titlePlaceholder": "Nama pola",
+        "titleAccessibilityLabel": "Judul katalog",
+        "descriptionFieldLabel": "Deskripsi",
+        "descriptionPlaceholder": "Jelaskan desain, tema, dan pengalaman menyulamnya.",
+        "descriptionAccessibilityLabel": "Deskripsi katalog",
+        "sourceLanguageFieldLabel": "Bahasa sumber",
+        "categoryFieldLabel": "Kategori",
+        "tagsFieldLabel": "Tag",
+        "notice": "Revisi mencatat snapshot baru yang tidak dapat diubah. Metadata yang dipublikasikan saat ini akan tetap terlihat sampai revisi ini disetujui oleh moderator manusia.",
+        "submitAction": "Kirim revisi"
+      },
+      "submitPattern": {
+        "title": "Ajukan ke komunitas",
+        "signInTitle": "Diperlukan akun terdaftar",
+        "signInBody": "Masuk sebelum mengajukan pola sendiri ke katalog komunitas.",
+        "signInAction": "Masuk",
+        "createProfileTitle": "Buat profil kreator publik",
+        "createProfileBody": "Pola komunitas dikaitkan dengan identitas kreator publikmu.",
+        "createProfileAction": "Buat profil",
+        "patternNotFoundTitle": "Pola sendiri tidak ditemukan",
+        "patternNotFoundBody": "Hanya pola sendiri yang telah disinkronkan yang dapat diajukan.",
+        "patternNotFoundAction": "Kembali ke profil",
+        "patternMeta": "{{width}}×{{height}} · {{count}} warna",
+        "byCreator": "oleh @{{username}}",
+        "titleFieldLabel": "Judul katalog",
+        "titlePlaceholder": "Nama pola",
+        "titleAccessibilityLabel": "Judul katalog",
+        "descriptionFieldLabel": "Deskripsi",
+        "descriptionPlaceholder": "Jelaskan desain, tema, dan pengalaman menyulamnya.",
+        "descriptionAccessibilityLabel": "Deskripsi katalog",
+        "sourceLanguageFieldLabel": "Bahasa sumber",
+        "categoryFieldLabel": "Kategori",
+        "tagsFieldLabel": "Tag",
+        "rightsDeclaration": "Saya menciptakan karya ini, atau memiliki hak yang diperlukan untuk mempublikasikannya sesuai Pernyataan Hak Publikasi versi 1.",
+        "notice": "Pengajuan mencatat salinan yang tidak dapat diubah. Pemeriksaan otomatis memberikan bukti, tetapi semua keputusan dibuat oleh moderator manusia.",
+        "submitAction": "Kirim untuk ditinjau"
+      },
+      "moderationNotices": {
+        "title": "Notifikasi moderasi",
+        "signInTitle": "Masuk untuk melihat notifikasi",
+        "signInBody": "Notifikasi moderasi terkait dengan akun terdaftar yang mempublikasikan pola komunitas tersebut.",
+        "signInAction": "Masuk",
+        "unavailableTitle": "Notifikasi tidak tersedia",
+        "unavailableDefault": "Gagal memuat notifikasi moderasi.",
+        "emptyTitle": "Tidak ada notifikasi moderasi",
+        "emptyBody": "Keputusan moderasi katalog yang terlihat oleh pemilik akan muncul di sini.",
+        "emptyAction": "Kembali ke profil",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "Perbaikan metadata katalog",
+          "no_violation": "Peninjauan ditutup — tidak ada pelanggaran",
+          "review_hold": "Penahanan peninjauan",
+          "safety_removal": "Penghapusan keamanan"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "Judul, deskripsi, dan tag yang dipilih telah diganti dengan nilai yang aman. Ketersediaan, file pola, dan penilaian tidak terpengaruh. Kamu dapat mengajukan revisi metadata katalog baru kapan saja.",
+          "no_violation": "Peninjauan pasca-publikasi telah selesai, dan pola ini kembali sepenuhnya tersedia dalam penemuan dan sesi menyulam baru.",
+          "review_hold": "Pola ini sementara tidak tersedia dalam penemuan dan sesi baru. Sesi menyulam yang ada, progres, dan data pola offline tetap dapat dimainkan.",
+          "safety_removal": "Pola ini dihapus karena pelanggaran keamanan, hukum, atau kebijakan. Pola ini menghilang dari penemuan, sesi menyulam yang ada menjadi tidak dapat diakses, dan data pola offline di perangkatmu telah dihapus. Kamu dapat mengajukan satu banding terhadap penghapusan keamanan ini."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "Tugas harian",
+        "offline": "Tidak ada koneksi — tugas harian memerlukan koneksi.",
+        "unavailable": "Gagal memuat tugas harian.",
+        "empty": "Tidak ada tugas tersedia hari ini."
+      },
+      "rewardedAdCard": {
+        "offline": "Tidak ada koneksi — hari hadiah memerlukan koneksi.",
+        "unavailable": "Gagal memuat status hari hadiah.",
+        "premiumClaimClosedPool": "Klaim harian premiummu menutup kumpulan koin bersama hari ini.",
+        "allRewardsClaimed": "Kamu telah mengklaim semua hadiah iklan hari ini. Kembali lagi besok!",
+        "remaining_one": "{{count}} iklan tersisa hari ini ({{coins}} koin tersedia)",
+        "remaining_other": "{{count}} iklan tersisa hari ini ({{coins}} koin tersedia)",
+        "watchForCoins": "Tonton iklan untuk {{count}} koin"
+      },
+      "likedPatterns": {
+        "title": "Pola yang disukai",
+        "signInTitle": "Diperlukan akun terdaftar",
+        "signInBody": "Masuk sebelum melihat koleksi pola favorit privatmu.",
+        "signInAction": "Masuk",
+        "unavailableTitle": "Pola yang disukai tidak tersedia",
+        "unavailableDefault": "Gagal memuat pola yang disukai.",
+        "emptyTitle": "Tidak ada pola yang disukai",
+        "emptyBody": "Jelajahi katalog pola, dan sentuh ikon hati pada desain apa pun untuk menyimpannya di sini.",
+        "emptyAction": "Jelajahi pola",
+        "byCreator": "oleh {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} warna · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "Pengaturan",
+        "subtitleDev": "Konfigurasikan pengaturan, dan periksa sistem backend.",
+        "subtitleProd": "Konfigurasikan pengaturanmu."
+      },
+      "serviceStatus": {
+        "sectionTitle": "Status layanan",
+        "apiConnectionTitle": "Koneksi API",
+        "testingConnection": "Menguji koneksi API...",
+        "offlineUnreachable": "Offline / Tidak dapat dijangkau",
+        "unknownConnectionError": "Kesalahan koneksi tidak dikenal",
+        "retryConnection": "Coba sambungkan lagi",
+        "healthy": "Sehat",
+        "degraded": "Terbatas",
+        "postgresLabel": "Basis data PostgreSQL",
+        "redisLabel": "Cache Redis"
+      },
+      "session": {
+        "sectionTitle": "Identitas dan sesi",
+        "statusTitle": "Status sesi backend",
+        "statusDescription": "Memeriksa sesi registrasi tamu aktifmu melalui API.",
+        "noActiveSession": "Tidak ada sesi aktif",
+        "sessionActive": "Sesi aktif",
+        "idLabel": "ID: {{id}} (v{{version}})",
+        "unknownState": "Status tidak dikenal"
+      },
+      "tutorial": {
+        "sectionTitle": "Panduan",
+        "learnControlsTitle": "Pelajari kontrol",
+        "learnControlsDescription": "Lanjutkan panduan menyulam saat kamu siap.",
+        "unavailableTitle": "Panduan tidak tersedia",
+        "unavailableMessage": "Gagal melanjutkan panduan. Coba lagi."
+      },
+      "developer": {
+        "sectionTitle": "Pengembang",
+        "debugDiagnostics": "Debug / diagnostik",
+        "debug": {
+          "backAccessibilityLabel": "Kembali",
+          "title": "Debug",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: dikonfigurasi · lingkungan: {{environment}}",
+            "dsnNotConfigured": "DSN: tidak dikonfigurasi",
+            "sendTestEvent": "Kirim event uji",
+            "throwError": "Picu kesalahan",
+            "disabledTitle": "Sentry dinonaktifkan",
+            "disabledMessage": "Sentry tidak dikonfigurasi (DSN tidak ditemukan), jadi tidak ada event uji yang akan dikirim.",
+            "testEventSent": "Event uji terkirim. ID event: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "Kesalahan",
+            "testEventFailedMessage": "Gagal mengirim event uji: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Panduan orientasi",
+            "description": "Hapus progres panduan, dan mulai lagi dari Selamat Datang.",
+            "restart": "Mulai ulang panduan",
+            "confirmTitle": "Mulai ulang panduan?",
+            "confirmMessage": "Status panduan akan dihapus, dan panduan orientasi akan dimulai lagi dari layar Selamat Datang.",
+            "cancel": "Batal",
+            "resetFailedTitle": "Gagal mereset"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "Hapus akun",
+        "statusTitle": "Status penghapusan akun",
+        "checkingStatus": "Memeriksa status...",
+        "pendingTitle": "Penghapusan akun menunggu",
+        "pendingDescription": "Akunmu dijadwalkan untuk dihapus. Masuk lagi sebelum periode pemulihan berakhir untuk membatalkan.",
+        "recoveryWindowEnds": "Periode pemulihan berakhir: {{date}}",
+        "cancelling": "Membatalkan...",
+        "cancelDeletion": "Batalkan penghapusan",
+        "statusError": "Gagal memeriksa status penghapusan. Periksa koneksimu, dan coba lagi.",
+        "deleteAccountTitle": "Hapus akun",
+        "deleteAccountDescription": "Hapus permanen akunmu, progresmu, dan semua yang telah dibuka setelah masa pemulihan 30 hari.",
+        "requestedTitle": "Penghapusan akun diminta",
+        "requestedMessage": "Permintaan penghapusanmu berlaku hingga: {{date}}. Kamu telah keluar dari akunmu. Masuk lagi sebelum tanggal ini jika ingin membatalkan penghapusan.",
+        "signOutFailedTitle": "Gagal keluar secara lokal",
+        "signOutFailedMessage": "Permintaan penghapusanmu tetap menunggu. Keluar lagi dari Pengaturan.",
+        "requestFailedTitle": "Permintaan gagal",
+        "requestFailedMessage": "Permintaan penghapusanmu tidak terkirim. Periksa koneksimu, dan coba lagi.",
+        "cancelSuccessTitle": "Berhasil",
+        "cancelSuccessMessage": "Permintaan penghapusan akunmu telah dibatalkan.",
+        "reauthRequiredTitle": "Verifikasi ulang diperlukan",
+        "reauthRequiredMessage": "Untuk alasan keamanan, kamu perlu masuk lagi sebelum membatalkan penghapusan akun.",
+        "signInAction": "Masuk",
+        "cancelFailedTitle": "Gagal membatalkan",
+        "cancelFailedGeneric": "Gagal membatalkan penghapusan akun. Periksa koneksimu, dan coba lagi."
+      },
+      "appearance": {
+        "sectionTitle": "Tampilan"
+      },
+      "themeCollectionCard": {
+        "title": "Koleksi tema",
+        "description": "Ubah tampilan kisi, jahitan, dan penyelesaian tanpa memengaruhi permainan.",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "Memerlukan keanggotaan Premium",
+        "selected": "Terpilih",
+        "accessActive": "Tema premium tersedia, termasuk masa uji coba bulanan yang memenuhi syarat.",
+        "lockedPreview": "Kamu dapat melihat koleksi di sini. Keanggotaan Premium atau masa uji coba bulanan yang memenuhi syarat membuka pemilihan.",
+        "viewPremiumPlans": "Lihat paket Premium"
+      },
+      "gameplay": {
+        "sectionTitle": "Pengaturan permainan",
+        "showGridLinesTitle": "Tampilkan garis kisi",
+        "showGridLinesDescription": "Tampilkan batas sel pada kanvas sulam",
+        "handednessTitle": "Tata letak tangan",
+        "handednessDescription": "Sesuaikan kontrol interaktif untuk permainan tangan kiri atau kanan",
+        "left": "Kiri",
+        "right": "Kanan",
+        "leftHandedLayout": "Tata letak tangan kiri",
+        "rightHandedLayout": "Tata letak tangan kanan"
+      },
+      "language": {
+        "sectionTitle": "Bahasa",
+        "description": "Pilih bahasa yang digunakan Stitch Wish untuk menampilkan antarmukanya.",
+        "followDevice": "Ikuti bahasa perangkat",
+        "followDeviceDescription": "Hapus penggantianmu untuk mengikuti pengaturan bahasa perangkatmu.",
+        "optionEnglish": "Inggris",
+        "optionTurkish": "Turki",
+        "modalTitle": "Pilih bahasa",
+        "modalSubtitle": "Pilih bahasa antarmuka pilihanmu.",
+        "systemDefault": "Bahasa sistem",
+        "systemDefaultWithDetected": "Bahasa sistem ({{language}})",
+        "systemDefaultDescription": "Secara otomatis mengikuti pengaturan perangkatmu."
+      },
+      "social": {
+        "sectionTitle": "Komunitas dan privasi",
+        "blockedCreators": "Kreator yang diblokir"
+      },
+      "account": {
+        "sectionTitle": "Akun",
+        "notSignedInTitle": "Kamu belum masuk",
+        "signInRequiredTitle": "Diperlukan masuk",
+        "notSignedInDescription": "Masuk untuk menyinkronkan progresmu di semua perangkat.",
+        "signIn": "Masuk",
+        "reconnecting": "Menyambung ulang…",
+        "signOut": "Keluar",
+        "signOutConfirmTitle": "Keluar?",
+        "signOutConfirmMessage": "Progres yang belum disinkronkan akan tetap ada di perangkat ini, dan akan terbuka lagi saat kamu masuk.",
+        "signOutConfirmAction": "Keluar",
+        "signOutFailedTitle": "Gagal keluar",
+        "signOutFailedGeneric": "Coba lagi.",
+        "providerAppleAccount": "Akun Apple",
+        "providerGoogleAccount": "Akun Google",
+        "providerGenericAccount": "Akun terdaftar"
+      },
+      "signIn": {
+        "emailHeading": "Masuk atau buat akun",
+        "emailSubtitle": "Jaga progresmu tetap tersedia di semua perangkat.",
+        "codeHeading": "Masukkan kodemu",
+        "codeSubtitle": "Masukkan kode enam digit yang kami kirim ke {{email}}.",
+        "continueWithGoogle": "Lanjutkan dengan Google",
+        "orUseEmail": "atau gunakan email",
+        "ssoUnavailable": "Masuk dengan Google dan Apple tidak tersedia di versi ini.",
+        "emailLabel": "Alamat email",
+        "emailPlaceholder": "Alamat email",
+        "sendCode": "Kirim kode",
+        "cancel": "Batal",
+        "verify": "Verifikasi",
+        "resendCode": "Kirim ulang kode",
+        "resending": "Mengirim ulang...",
+        "codeSent": "Kode terkirim",
+        "useDifferentEmail": "Gunakan email lain",
+        "sendCodeFailed": "Gagal mengirim kode. Periksa koneksimu, dan coba lagi.",
+        "codeIncorrect": "Kode ini salah atau sudah kedaluwarsa.",
+        "verifyFailedGeneric": "Ada yang salah. Coba lagi.",
+        "socialSignInFailed": "Gagal masuk dengan {{provider}}. Coba lagi.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "Kembali",
+        "title": "Kreator yang diblokir",
+        "infoText": "Pemblokiran bersifat privat dan dapat dibatalkan. Ini menyembunyikan pola kreator dari katalog, pencarian, dan daftar penemuanmu. Ini bukan laporan atau penghapusan konten.",
+        "signInRequiredTitle": "Diperlukan akun terdaftar",
+        "signInRequiredBody": "Masuk sebelum mengelola daftar kreator yang diblokir.",
+        "signInAction": "Masuk",
+        "listUnavailableTitle": "Daftar tidak tersedia",
+        "listUnavailableDefault": "Gagal memuat kreator yang diblokir.",
+        "tryAgain": "Coba lagi",
+        "emptyTitle": "Tidak ada kreator yang diblokir",
+        "emptyBody": "Kamu belum memblokir siapa pun. Kreator apa pun dapat diblokir dari halaman detail polanya.",
+        "backToSettings": "Kembali ke Pengaturan",
+        "unblock": "Buka blokir",
+        "unblockConfirmTitle": "Buka blokir kreator",
+        "unblockConfirmMessage": "Yakin ingin membuka blokir {{name}}? Pola mereka akan muncul lagi di pencarian dan jelajahmu.",
+        "cancel": "Batal",
+        "successTitle": "Berhasil",
+        "unblockedMessage": "Blokir {{name}} telah dibuka.",
+        "errorTitle": "Kesalahan",
+        "unblockFailedMessage": "Gagal membuka blokir kreator: {{message}}",
+        "unblockFailedGeneric": "Kesalahan tidak dikenal"
+      },
+      "data": {
+        "sectionTitle": "Data",
+        "resetGuestTitle": "Reset data tamu",
+        "resetGuestDescription": "Tutup permanen identitas tamumu di server, dan hapus semua data perangkat.",
+        "resetGuestOffline": "Offline: koneksi server aktif diperlukan untuk mereset data tamu.",
+        "resetGuestPurchaseLock": "Reset diblokir selama verifikasi pembelian sedang berlangsung. Konten yang dapat digunakan dan data tamu privat tidak dapat dipulihkan setelah ini.",
+        "removeLocalTitle": "Hapus data lokal",
+        "removeLocalDescription": "Hapus basis data identitas lokalmu dari perangkat ini.",
+        "removeLocalConfirmTitle": "Hapus data lokal?",
+        "removeLocalConfirmMessage": "Peringatan: Ini akan menghapus file basis data lokalmu hanya dari perangkat ini. Semua data yang belum disinkronkan akan hilang secara permanen.",
+        "removeLocalConfirmAction": "Hapus",
+        "removeLocalSuccessTitle": "Berhasil",
+        "removeLocalSuccessMessage": "Data lokal telah dihapus dari perangkat ini.",
+        "removeLocalFailedTitle": "Gagal menghapus",
+        "removeLocalFailedMessage": "Gagal menghapus data lokal: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "Informasi dan tautan",
+        "privacyPolicy": "Kebijakan privasi",
+        "termsOfService": "Ketentuan layanan",
+        "contactSupport": "Hubungi dukungan",
+        "accountDeletion": "Hapus akun",
+        "openFailedMessage": "Gagal membuka tautan: {{url}}",
+        "openFailedGenericTitle": "Kesalahan"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — Pola sulam piksel yang hangat",
+        "version": "Versi: {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "Paket: {{id}}",
+        "schemeLabel": "Skema: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "Reset data tamu?",
+        "warning": "Tindakan ini akan menutup permanen identitas tamumu di server, dan menghapus permanen hal-hal berikut:",
+        "bulletProgress": "• progres lokal",
+        "bulletRewards": "• hadiah yang menunggu",
+        "bulletLikes": "• suka",
+        "bulletUnlockAccess": "• akses pembukaan",
+        "bulletOfflinePatterns": "• data pola offline",
+        "confirmPrefix": "Ketik: ",
+        "confirmSuffix": " untuk konfirmasi di bawah:",
+        "confirmAction": "Reset data",
+        "resetting": "Mereset data tamu...",
+        "successTitle": "Berhasil",
+        "successMessage": "Data tamu telah sepenuhnya direset.",
+        "failedTitle": "Gagal mereset",
+        "failedMessage": "Gagal mereset data tamu: {{message}}. Coba lagi."
+      },
+      "deleteModal": {
+        "title": "Hapus akun?",
+        "recoveryPrefix": "Akunmu akan memasuki ",
+        "recoveryBold": "masa pemulihan penghapusan selama 30 hari",
+        "recoverySuffix": ". Masuk lagi selama periode ini untuk membatalkan penghapusan.",
+        "bulletBalances": "• saldo Stitch Coin dan kredit AI",
+        "bulletUnlocks": "• semua pola yang dibuka",
+        "bulletArtwork": "• kreasi AI dan pola sendiri",
+        "bulletProgress": "• progres yang disinkronkan dan suka",
+        "consequencesPrefix": "Di akhir masa pemulihan, ini akan dihapus atau hilang tanpa pengembalian dana atau transfer. Pola komunitas yang dipublikasikan akan ditarik dari katalog, atribusi akan berubah menjadi ",
+        "consequencesBold": "Kreator yang Dihapus",
+        "consequencesSuffix": ", dan nama penggunamu akan tetap dicadangkan secara permanen.",
+        "membershipWarning": "Keanggotaan Premiummu mungkin tetap ditagih setelah akun dihapus. Penghapusan tidak membatalkannya secara otomatis; kelola secara terpisah sebelum melanjutkan jika kamu ingin menghentikan penagihan.",
+        "manageAppleSubscription": "Kelola langganan Apple",
+        "continueAction": "Lanjutkan",
+        "confirmTitle": "Konfirmasi penghapusan",
+        "confirmPrefix": "Untuk mengonfirmasi penghapusan akunmu, ketik: ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": " di kolom di bawah ini:",
+        "submitting": "Mengirim permintaan penghapusan...",
+        "backAction": "Kembali",
+        "confirmAction": "Konfirmasi"
+      },
+      "reauthModal": {
+        "title": "Verifikasi identitasmu",
+        "description": "Untuk alasan keamanan, verifikasi dirimu dengan metode masuk yang sudah terhubung ke akunmu. Penghapusan akan otomatis dilanjutkan setelah verifikasi.",
+        "loading": "Memuat metode masuk...",
+        "codeSentMessage": "Masukkan kode enam digit yang dikirim ke {{email}}.",
+        "verifyAndDelete": "Verifikasi dan hapus",
+        "emailButton": "Email: {{email}}",
+        "continueWithProvider": "Lanjutkan dengan {{provider}}",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "Tidak ada metode masuk yang terhubung tersedia. Hubungi dukungan sebelum mencoba penghapusan lagi.",
+        "loadFailed": "Gagal memuat metode masukmu yang terhubung. Periksa koneksimu, dan coba lagi.",
+        "retryFailed": "Identitasmu terverifikasi, tetapi penghapusan tidak terkirim. Tutup dialog ini, dan coba lagi penghapusannya.",
+        "emailMissing": "Metode email yang terhubung ini tidak memiliki alamat. Pilih metode lain.",
+        "genericFailure": "Verifikasi ulang gagal. Periksa koneksimu, dan coba lagi."
+      },
+      "actions": {
+        "cancel": "Batal",
+        "retry": "Coba lagi"
+      },
+      "common": {
+        "unavailable": "Tidak tersedia"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "Katalog",
+        "stitch": "Sulam",
+        "create": "Buat",
+        "profile": "Profil",
+        "settings": "Pengaturan"
+      }
+    }
+  },
   "it": {
     "catalog": {
       "common": {
