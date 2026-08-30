@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "VITAJ V STITCH WISH",
+    "title": "Vyber farbu, klepni na správne políčka.",
+    "heroAlt": "Ukážka úvodného vzoru Cozy Heart",
+    "handedness": {
+      "sectionTitle": "Na ktorej strane majú byť ovládacie prvky?",
+      "groupLabel": "Strana ovládacích prvkov",
+      "optionRight": "Ovládanie vpravo",
+      "optionLeft": "Ovládanie vľavo",
+      "saveErrorText": "Voľbu sa nepodarilo uložiť.",
+      "retry": "Skúsiť znova"
+    },
+    "note": "Toto môžeš neskôr zmeniť v Nastaveniach.",
+    "start": "Začať vyšívať",
+    "starting": "Spúšťa sa…",
+    "browse": "Prehliadať úvodné vzory",
+    "signIn": "Prihlásenie"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Vyber DMC 321 Christmas Red.",
+      "stitchAction": "Klepni na zvýraznenú zodpovedajúcu bunku.",
+      "mismatchedTap": "Klepni na zvýraznenú odlišnú bunku. Nesprávne klepnutia nič nestoja.",
+      "undoAction": "Vráť späť tento steh a umiestni ho znova.",
+      "stitchSweep": "Stlač zodpovedajúcu bunku a potom ťahaj pozdĺž zvýraznenej reťaze.",
+      "threadColorCompletion": "Dokonči zvýraznené biele vlákno a potom vyber ďalšiu farbu."
+    },
+    "hints": {
+      "anchoredZoom": "Štipnutím priblíž a bunky pod prstami zostanú na mieste.",
+      "panVsSweep": "Ťahanie posúva materiál. Začni na zodpovedajúcej bunke a vyšívaj v reťazi.",
+      "edgeAutoPan": "Pokračuj v ťahaní pri okraji a materiál sleduje prst.",
+      "remainingCellLocator": "Použi lokátor na nájdenie ďalšej zostávajúcej bunky pre toto vlákno."
+    },
+    "skip": "Zatiaľ preskočiť",
+    "skipAccessibilityLabel": "Zatiaľ preskočiť tutoriál",
+    "dismiss": "Rozumiem",
+    "dismissAccessibilityLabel": "Zavrieť pokyn"
+  },
+  "recap": {
+    "title": "Podarilo sa ti to",
+    "lines": {
+      "matchNumbers": "Priraď čísla, aby si umiestnil každý steh.",
+      "dragSweep": "Ťahaj cez zodpovedajúce bunky a vyšívaj v reťazi.",
+      "pinchZoom": "Štipnutím priblíž, keď potrebuješ bližší pohľad.",
+      "undoLocator": "Vrátenie späť a lokátor sú vždy zadarmo."
+    },
+    "continue": "Pokračovať vo vyšívaní",
+    "browsePatterns": "Prehliadať vzory"
+  }
+}

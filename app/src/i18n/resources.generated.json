@@ -35149,6 +35149,1412 @@
       }
     }
   },
+  "sk": {
+    "catalog": {
+      "common": {
+        "back": "← Späť",
+        "searchPlaceholder": "Hľadať vzory, tvorcov, štítky…",
+        "offlineBanner": "Offline — katalóg môže byť neaktuálny",
+        "sectionError": {
+          "title": "Nepodarilo sa načítať",
+          "retry": "Skúsiť znova"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} farieb",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} stĺpcov",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "Angličtina"
+        },
+        "accessibilityLabel": "Napísané v jazyku {{language}}"
+      },
+      "index": {
+        "subtitle": "Vytvor si vlastný útulný svet, steh za stehom.",
+        "searchBar": {
+          "accessibilityLabel": "Hľadať v katalógu vzorov"
+        },
+        "sections": {
+          "starterPatterns": "Úvodné vzory",
+          "staffPicks": "Výber redakcie",
+          "categories": "Kategórie",
+          "newPatterns": "Nové vzory"
+        },
+        "staffPicks": {
+          "emptyTitle": "Zatiaľ žiadne výbery",
+          "emptyBody": "Naša ručne vybraná zbierka útulných vzorov sa tu čoskoro objaví.",
+          "errorBody": "Katalóg sa nepodarilo načítať a zatiaľ nie je nič uložené lokálne."
+        },
+        "categories": {
+          "count": "{{count}} vzorov",
+          "errorBody": "Katalóg sa nepodarilo načítať a zatiaľ nie je nič uložené lokálne."
+        },
+        "newPatterns": {
+          "emptyTitle": "Nové vzory sú na ceste",
+          "emptyBody": "Čerstvé prírastky sú na ceste!",
+          "errorBody": "Katalóg sa nepodarilo načítať a zatiaľ nie je nič uložené lokálne.",
+          "showMore": "Zobraziť viac",
+          "loading": "Načítava sa…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "Prehliadať",
+        "error": {
+          "body": "Túto stránku katalógu sa nepodarilo načítať a zatiaľ nie je nič uložené lokálne."
+        },
+        "empty": {
+          "title": "Zatiaľ tu nič nie je",
+          "body": "Tomuto výberu zatiaľ nezodpovedá žiadny vzor. Nové vzory pribúdajú často."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "Vyhľadávacie pole katalógu",
+        "inactive": {
+          "title": "Hľadať v katalógu",
+          "body": "Zadaj aspoň dva znaky na vyhľadávanie vzorov podľa názvu, tvorcu alebo štítku."
+        },
+        "error": {
+          "title": "Vyhľadávanie vyžaduje pripojenie",
+          "body": "Vyhľadávanie v katalógu nie je k dispozícii offline. Lokálne uložené stránky katalógu zostávajú dostupné na karte katalógu."
+        },
+        "noResults": {
+          "title": "Žiadne výsledky",
+          "body": "V katalógu zatiaľ nič nezodpovedá výrazu „{{query}}“."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "Hráš ako hosť",
+        "body": "Stitch Coins a postup existujú len na tomto zariadení ako hosť. Ak sa inštalácia stratí, register a postup hosťa môžu byť nenávratne stratené. Prihlásenie chráni tvoj postup."
+      },
+      "detail": {
+        "noDescription": "Nie je k dispozícii žiadny popis.",
+        "specs": {
+          "dimensions": "Rozmery",
+          "totalStitches": "Celkový počet stehov",
+          "colors": "Farby",
+          "category": "Kategória"
+        },
+        "threadsSuffix": "{{count}} vlákien",
+        "palette": {
+          "title": "Potrebné vlákna",
+          "loading": "Načítava sa paleta vlákien...",
+          "loadFailed": "Načítanie palety zlyhalo: {{error}}",
+          "retry": "Skúsiť znova"
+        },
+        "actions": {
+          "startStitching": "Začať vyšívať",
+          "starting": "Spúšťa sa...",
+          "preparing": "Pripravuje sa…"
+        },
+        "loadFailedGeneric": "Dekódovanie súboru vzoru zlyhalo.",
+        "sessionCreateFailed": "Vytvorenie relácie vyšívania zlyhalo. Skús to prosím znova.",
+        "unavailable": {
+          "title": "Vzor nedostupný",
+          "body": "Tento vzor sa nepodarilo načítať. Možno bol odstránený alebo si offline.",
+          "goBack": "Späť"
+        },
+        "byCreator": "od {{creatorName}}",
+        "byCreatorWithUsername": "od {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "Zablokovať tvorcu",
+          "message": "Naozaj chceš zablokovať používateľa {{creatorName}}? Ide o súkromnú, vratnú akciu, ktorá skryje jeho vzory z vyhľadávania a prehliadania. Neoznamuje tvorcu a nepreruší tvoju aktuálnu reláciu vyšívania.",
+          "cancel": "Zrušiť",
+          "confirm": "Zablokovať",
+          "blockedTitle": "Zablokovaný",
+          "blockedMessage": "{{creatorName}} bol zablokovaný.",
+          "errorTitle": "Chyba",
+          "failedGeneric": "Blokovanie tvorcu zlyhalo."
+        },
+        "likeFailedGeneric": "Aktualizácia stavu obľúbenosti zlyhala",
+        "connectToPlay": {
+          "title": "Pripoj sa a hraj",
+          "body": "Spustenie vzoru z katalógu vyžaduje pripojenie na prípravu relácie. Úvodné vzory sú hrateľné hneď teraz, aj offline."
+        },
+        "insufficientCoins": {
+          "title": "Nedostatok mincí",
+          "body": "Tento vzor stojí {{price}} Stitch Coins, ale máš len {{balance}} mincí.\n\nRozdiel: {{shortfall}} mincí.\n\nZískaj Stitch Coins dokončením ďalších vzorov! Odmeny za prvé dokončenie sú aktívne.",
+          "getCoins": "Získať Stitch Coins",
+          "findPatterns": "Nájsť vzory na vyšívanie",
+          "back": "Späť"
+        },
+        "unlockFailedGeneric": "Odomknutie zlyhalo. Skontroluj pripojenie a skús to znova.",
+        "preparationFailedGeneric": "Prípravu sa nepodarilo spustiť. Skontroluj pripojenie a skús to znova.",
+        "price": {
+          "label": "Cena"
+        },
+        "balance": {
+          "label": "Tvoj zostatok",
+          "loading": "…"
+        },
+        "unlockButton": "Odomknúť za {{price}} mincí",
+        "communityReport": {
+          "button": "Nahlásiť tento vzor",
+          "title": "Nahlásiť {{patternTitle}}",
+          "body": "Vyber dôvod, ktorý najlepšie vystihuje problém. Nahlásenia nikdy automaticky neskryjú ani nezmenia vzor.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "Nevhodný alebo nebezpečný obsah",
+            "copyright_or_publication_rights": "Autorské práva alebo práva na publikovanie",
+            "duplicate_or_spam": "Duplicita alebo spam",
+            "misleading_title_or_tags": "Zavádzajúci názov alebo štítky",
+            "other": "Iné"
+          },
+          "explanationLabel": "Dôkazy alebo vysvetlenie {{requirement}}",
+          "explanationRequired": "(povinné)",
+          "explanationOptional": "(voliteľné)",
+          "explanationPlaceholder": "Uveď podrobnosti, ktoré pomôžu moderátorovi vzor posúdiť.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "Zrušiť",
+          "submit": "Odoslať nahlásenie",
+          "submitFailedGeneric": "Nahlásenie sa nepodarilo odoslať. Skontroluj pripojenie a skús to znova.",
+          "receivedTitle": "Nahlásenie prijaté",
+          "alreadyReceivedTitle": "Nahlásenie už bolo prijaté",
+          "receivedBody": "Moderátor teraz môže tento vzor posúdiť. Nahlásenie automaticky nemení jeho dostupnosť.",
+          "alreadyReceivedBody": "Tvoje existujúce nahlásenie je už súčasťou otvoreného posúdenia.",
+          "signInRequired": {
+            "title": "Prihlás sa a nahlás",
+            "message": "Nahlásenia komunity vyžadujú registrovaný účet. Nič nebolo odoslané.",
+            "cancel": "Zrušiť",
+            "signIn": "Prihlásenie"
+          },
+          "validation": {
+            "chooseReason": "Vyber dôvod nahlásenia.",
+            "explainRequired": "Vysvetli, prečo tento vzor nahlasuješ.",
+            "tooLong": "Vysvetlenie môže mať najviac 2 000 znakov.",
+            "needsContent": "Vysvetlenie musí obsahovať písmená alebo číslice."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "Späť",
+        "title": "Obchod",
+        "subtitle": "Predplatné a jednorazové dobitia"
+      },
+      "signInReturn": {
+        "notice": "Si prihlásený. {{label}} je stále vybraté. Skontroluj to a klepni na Kúpiť, keď budeš pripravený."
+      },
+      "premiumHero": {
+        "eyebrow": "PREMIUM PREDPLATNÉ",
+        "title": "Tvor viac. Získavaj malú odmenu každý deň.",
+        "body": "AI kredity každé platené obdobie, Premium témy a denná odmena v Stitch Coins.",
+        "benefitAiCredits": "AI kredity",
+        "benefitDailyCoins": "Denné mince",
+        "benefitThemes": "Témy",
+        "statusNoActiveMembership": "Žiadne aktívne predplatné",
+        "statusBrowseAsGuest": "Prehliadaj plány ako hosť",
+        "periodEndsLabel": "Aktuálne obdobie končí",
+        "periodRenewsLabel": "Obnoví sa",
+        "lifecycleActive": "Aktívne"
+      },
+      "membershipActions": {
+        "title": "Premium predplatné aktívne",
+        "body": "Denné odmeny nájdeš v Profile. Témy nájdeš v Nastavenia › Vzhľad.",
+        "scheduledChangeNotice": "Zmena na {{plan}} dňa {{date}}",
+        "manageSubscription": "Spravovať predplatné",
+        "manageSubscriptionFailedTitle": "Predplatné sa nepodarilo otvoriť",
+        "manageSubscriptionFailedBody": "Skús to znova z účtu obchodu tvojho zariadenia."
+      },
+      "pending": {
+        "title": "Prebieha zosúladenie nákupu",
+        "verifyingTitle": "Overuje sa nákup",
+        "premiumChangeAccepted": "Obchod prijal zmenu na {{label}}. ",
+        "premiumResponseReceived": "Odpoveď obchodu pre {{label}} bola prijatá. ",
+        "premiumDeferredSuffix": "Zmena je naplánovaná až po overení serverom hry a nadobudne účinnosť na konci tvojho aktuálneho obdobia.",
+        "premiumSuffix": "Premium sa aktivuje až po overení serverom hry.",
+        "doNotPurchasePlanAgain": " Nekupuj tento plán znova.",
+        "coinPackBody": "Odpoveď obchodu bola prijatá. Stitch Coins sa aktualizujú až potom, čo server hry zverejní zodpovedajúci záznam v obchodnom registri. Nekupuj tento balík znova.",
+        "aiCreditPackBody": "Odpoveď obchodu bola prijatá. AI kredity sa aktualizujú až potom, čo server hry zverejní zodpovedajúci záznam v obchodnom registri. Nekupuj tento balík znova.",
+        "refreshStatus": "Aktualizovať stav",
+        "retryReconciliation": "Skúsiť zosúladenie znova"
+      },
+      "store": {
+        "loadingPrices": "Načítavajú sa aktuálne ceny z obchodu…",
+        "unavailableTitle": "Obchod dočasne nedostupný",
+        "unavailableBody": "Informácie o peňaženke a predplatnom sú stále dostupné.",
+        "retry": "Skúsiť znova"
+      },
+      "plans": {
+        "choosePremiumPlan": "Vyber si Premium plán",
+        "yourPremiumPlan": "Tvoj Premium plán",
+        "currentPlan": "AKTUÁLNY PLÁN",
+        "upgrade": "UPGRADOVAŤ",
+        "planChange": "ZMENA PLÁNU",
+        "bestValue": "NAJLEPŠIA HODNOTA",
+        "billedEvery": "Fakturované každých {{period}}",
+        "chooseLabel": "Vybrať {{label}}",
+        "freeTrial": "Zadarmo na {{offer}}, potom {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "Jednorazové balíky",
+        "stitchCoinPacksTitle": "Balíky Stitch Coin",
+        "aiCreditPacksTitle": "Balíky AI kreditov",
+        "coinsNoun": "Mince",
+        "creditsNoun": "Kredity",
+        "fromPrice": "Od {{price}}"
+      },
+      "restore": {
+        "restorePurchases": "Obnoviť nákupy",
+        "restoreGuestPremium": "Obnoviť Premium pre hosťa",
+        "requestedTitle": "Obnovenie vyžiadané",
+        "requestedBody": "Overený Premium prístup sa zobrazí po zosúladení webhooku obchodu. Balíky Stitch Coin a AI kreditov sa nikdy neobnovujú."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "Aktuálne ceny z obchodu aplikácie",
+        "closeAccessibilityLabel": "Zavrieť kartu produktu",
+        "closeButtonAccessibilityLabel": "Zavrieť",
+        "selectedBeforeSignIn": "Vybraté pred prihlásením",
+        "buy": "Kúpiť"
+      },
+      "confirmation": {
+        "cancel": "Zrušiť",
+        "confirmLabel": "Potvrdiť {{label}}",
+        "confirmPremiumTitle": "Potvrdiť nákup Premium",
+        "introductoryOffer": "Tvoj obchod hlási túto úvodnú ponuku: {{offer}}.",
+        "premiumAppearsAfterVerification": "Premium sa zobrazí až po tom, čo server hry overí transakciu z obchodu.",
+        "confirmPremiumUpgradeTitle": "Potvrdiť upgrade Premium",
+        "confirmPremiumPlanChangeTitle": "Potvrdiť zmenu Premium plánu",
+        "currentPlanLabel": "Aktuálny plán: {{label}}",
+        "upgradeToLabel": "Upgradovať na {{label}} · {{offer}}",
+        "changeToLabel": "Zmeniť na {{label}} · {{offer}}",
+        "upgradeBody": "App Store riadi konečný poplatok a dátum účinnosti tohto upgradu. Premium odzrkadľuje {{label}} až po overení serverom hry.",
+        "planChangeBody": "App Store odloží túto zmenu do konca tvojho aktuálneho obdobia: {{currentLabel}} funguje dovtedy naďalej a {{targetLabel}} sa fakturuje od dátumu zmeny. Zmenu zruš v časti Spravovať predplatné.",
+        "confirmUpgrade": "Potvrdiť upgrade",
+        "confirmPlanChange": "Potvrdiť zmenu plánu",
+        "confirmStitchCoinTitle": "Potvrdiť nákup Stitch Coin",
+        "confirmAiCreditTitle": "Potvrdiť nákup AI kreditov",
+        "balanceChangesAfterVerificationCoin": "Tvoj zostatok sa zmení až po tom, čo server hry overí transakciu z obchodu a zaznamená zodpovedajúce pripísanie v obchodnom registri.",
+        "balanceChangesAfterVerificationAiCredit": "Tvoj zostatok sa zmení až po tom, čo server hry overí transakciu z obchodu a zaznamená zodpovedajúce pripísanie v obchodnom registri. Premium predplatné nie je potrebné."
+      },
+      "disclosure": {
+        "subscriptionTerms": "Platba sa účtuje na tvoj účet {{store}} pri potvrdení. {{label}} Premium sa automaticky obnovuje za {{offer}}, pokiaľ automatické obnovenie nevypneš najmenej 24 hodín pred koncom aktuálneho obdobia. Akákoľvek nevyužitá časť bezplatnej skúšobnej doby prepadne pri kúpe predplatného. Kedykoľvek môžeš zrušiť predplatné z účtu {{store}}.",
+        "privacyPolicy": "Zásady ochrany osobných údajov",
+        "termsOfService": "Podmienky používania",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "Odkaz sa nepodarilo otvoriť: {{url}}"
+      },
+      "supportReference": {
+        "label": "Referencia podpory: {{reference}}",
+        "copyAccessibilityLabel": "Kopírovať referenciu podpory {{reference}}",
+        "copyAccessibilityHint": "Kopírovať referenciu podpory do schránky",
+        "copied": "Skopírované",
+        "copyFailedTitle": "Kopírovanie zlyhalo",
+        "copyFailedBody": "Referenciu podpory sa nepodarilo skopírovať. Vyber text a skopíruj ho ručne."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "Nákupy Stitch Coin pre hostí sú dostupné len na iOS.",
+        "guestIosOnlyGeneric": "Nákupy pre hostí sú dostupné len na iOS.",
+        "purchaseFailedTitle": "Nákup zlyhal",
+        "premiumVerificationNotYet": "Server hry nemohol tento nákup overiť. Skús zosúladenie znova; nekupuj ho znova.",
+        "premiumVerificationFailedRetry": "Server hry ešte nemohol tento nákup overiť. Skús zosúladenie znova; nekupuj ho znova.",
+        "premiumGrantRefreshFailed": "Premium bolo overené, ale stav predplatného a AI kreditov sa nepodarilo aktualizovať. Skús zosúladenie znova.",
+        "premiumReconciliationUnreachable": "Zosúladenie nákupu sa nemohlo spojiť so serverom hry. Skús zosúladenie znova; nekupuj ho znova.",
+        "coinPackVerificationMismatch": "Transakcia z obchodu nezodpovedala tomuto balíku mincí. Skús overenie znova alebo kontaktuj podporu; nekupuj ho znova.",
+        "coinPackGrantUnavailable": "Nákup bol overený, ale pripísanie Stitch Coins nie je k dispozícii. Skús zosúladenie znova; nekupuj ho znova.",
+        "coinPackBalanceRefreshFailed": "Pripísanie mincí bolo overené, ale aktuálny zostatok Stitch Coins sa nepodarilo aktualizovať. Skús zosúladenie znova.",
+        "coinPackVerificationFailedRetry": "Server hry ešte nemohol overiť tento balík mincí. Skús zosúladenie znova; nekupuj ho znova.",
+        "coinPackReconciliationUnreachable": "Zosúladenie balíka mincí sa nemohlo spojiť so serverom hry. Skús zosúladenie znova; nekupuj ho znova.",
+        "aiCreditPackVerificationMismatch": "Transakcia z obchodu nezodpovedala tomuto balíku AI kreditov. Skús overenie znova alebo kontaktuj podporu; nekupuj ho znova.",
+        "aiCreditPackGrantUnavailable": "Nákup bol overený, ale pripísanie AI kreditov nie je k dispozícii. Skús zosúladenie znova; nekupuj ho znova.",
+        "aiCreditPackBalanceRefreshFailed": "Pripísanie AI kreditov bolo overené, ale aktuálny zostatok sa nepodarilo aktualizovať. Skús zosúladenie znova.",
+        "aiCreditPackVerificationFailedRetry": "Server hry ešte nemohol overiť tento balík AI kreditov. Skús zosúladenie znova; nekupuj ho znova.",
+        "aiCreditPackReconciliationUnreachable": "Zosúladenie balíka AI kreditov sa nemohlo spojiť so serverom hry. Skús zosúladenie znova; nekupuj ho znova.",
+        "reconciliationStillUnavailable": "Server hry je stále nedostupný. Skús zosúladenie znova neskôr.",
+        "storeTemporarilyUnavailable": "Obchod je dočasne nedostupný. Skús to prosím znova o niekoľko minút.",
+        "purchasesNotAllowed": "Nákupy nie sú na tomto zariadení povolené. Skontroluj svoj účet obchodu alebo rodičovskú kontrolu.",
+        "itemNotAvailable": "Táto položka momentálne nie je dostupná na nákup. Vyber inú položku alebo skús to znova neskôr.",
+        "alreadyOwned": "Tento nákup už vlastníš. Použi Obnoviť nákupy na aktualizáciu prístupu.",
+        "couldNotConnectToStore": "Nepodarilo sa pripojiť k obchodu. Skontroluj internetové pripojenie a skús to znova.",
+        "paymentPendingApproval": "Tvoja platba čaká na schválenie. Nákup sa zobrazí po dokončení obchodom.",
+        "testPurchaseDeclined": "Testovací nákup bol zamietnutý. Žiadna platba nebola vykonaná. Vyber iný výsledok testovacieho obchodu v Nastaveniach a skús to znova.",
+        "genericPurchaseFailure": "Tvoj nákup sa nepodarilo dokončiť. Žiadna platba nebola vykonaná. Skús to prosím znova."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "Stále sa overuje",
+        "premiumPending": "Overenie stále prebieha. Premium sa aktivuje po potvrdení serverom hry.",
+        "premiumPlanChangePending": "Overenie stále prebieha. Zmena tvojho plánu bude naplánovaná po potvrdení serverom hry.",
+        "coinPackPending": "Overenie stále prebieha. Tvoj zostatok Stitch Coins sa aktualizuje po dokončení.",
+        "aiCreditPackPending": "Overenie stále prebieha. Tvoj zostatok AI kreditov sa aktualizuje po dokončení."
+      },
+      "success": {
+        "purchaseReceivedTitle": "Nákup prijatý",
+        "storeAcceptedPlanChange": "Obchod prijal zmenu na {{label}}. Potvrdzuje sa, kedy nadobudne účinnosť.",
+        "storeAcceptedPurchase": "Obchod prijal {{label}}. Tvoj nákup sa teraz overuje.",
+        "premiumChanges": "Premium sa mení na {{label}}{{effectiveOn}}.",
+        "effectiveOnDate": " dňa {{date}}",
+        "planChangeScheduledTitle": "Zmena plánu naplánovaná",
+        "planChangeScheduledBody": "Tvoje Premium predplatné si zachová aktuálny plán, kým sa nezmení na {{label}}{{effectiveOn}}. Zmenu zruš v časti Spravovať predplatné.",
+        "premiumIsActiveTitle": "Premium je aktívne",
+        "premiumVerifiedAndActive": "{{label}} Premium je overené a aktívne.",
+        "premiumNowActiveNoBilling": "{{label}} Premium je teraz aktívne.",
+        "premiumNowActiveBilled": "{{label}} Premium je teraz aktívne, fakturované každých {{period}}.",
+        "coinPackGrantedTitle": "Stitch Coins pripísané",
+        "coinPackGrantVerified": "Pripísanie {{label}} bolo overené. Zostatok Stitch Coins: {{balance}}.",
+        "coinPackAddedToBalance": "K tvojmu zostatku bolo pridaných {{quantity}} Stitch Coins.",
+        "aiCreditPackGrantedTitle": "AI kredity pripísané",
+        "aiCreditPackGrantVerified": "Pripísanie {{label}} bolo overené. Zostatok AI kreditov: {{balance}}.",
+        "aiCreditPackAddedToBalance": "K tvojmu zostatku bolo pridaných {{quantity}} AI kreditov."
+      },
+      "products": {
+        "premiumAnnual": "Ročne",
+        "premiumMonthly": "Mesačne",
+        "premiumWeekly": "Týždenne",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+        "aiCreditPack_one": "{{formattedCount}} AI kredit",
+        "aiCreditPack_other": "{{formattedCount}} AI kreditov",
+        "billedEveryOffer": "{{price}} každých {{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} kreditov / platené obdobie",
+        "creditAllowancePaidNoun": "{{credits}} kreditov / platené {{period}}"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "Nakupuj ako hosť",
+        "commerceBody": "Môžeš nakupovať bez registrácie. Premium predplatné je možné obnoviť z obchodu, ale Stitch Coins, AI kredity a súkromný obsah hosťa sú nenávratne stratené, ak sa táto inštalácia stratí. Registrácia ich chráni a nikdy neprerušuje hru ako hosť.",
+        "continueAsGuest": "Pokračovať ako hosť",
+        "signInInstead": "Radšej sa prihlásiť",
+        "closeAccessibilityLabel": "Zavrieť"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "Rozumiem",
+        "successButton": "Výborne",
+        "failedButton": "Zavrieť",
+        "infoButton": "Rozumiem",
+        "closeAccessibilityLabel": "Zavrieť"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "Späť",
+        "cancel": "Zrušiť",
+        "duplicateTitle": "Už máš osobný vzor s názvom „{{title}}“. Vyber iný názov.",
+        "cellsCount_one": "bunka",
+        "cellsCount_other": "buniek",
+        "colorsCount_one": "farba",
+        "colorsCount_other": "farieb"
+      },
+      "hub": {
+        "title": "Tvorivé centrum",
+        "subtitle": "Vdýchni život vlastným vzorom na vyšívanie s vlastným dizajnom.",
+        "opening": "Otvára sa…",
+        "photoImport": {
+          "title": "Import fotky",
+          "description": "Nahraj fotku z galérie a premeň ju na vzor na vyšívanie.",
+          "action": "Importovať fotku"
+        },
+        "aiGenerator": {
+          "title": "AI generátor",
+          "description": "Popíš útulný nápad a nechaj umelú inteligenciu vygenerovať vlastný pixelový dizajn.",
+          "action": "Vygenerovať dizajn"
+        }
+      },
+      "aspects": {
+        "square": "Štvorec",
+        "portrait_4_3": "Na výšku 4:3",
+        "landscape_4_3": "Na šírku 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "Konverzia vzoru zlyhala. Skús to prosím znova.",
+          "timeout": "Konverzia vzoru sa ešte spracúva. Skús to znova o chvíľu.",
+          "generic": "Konverziu vzoru sa nepodarilo dokončiť. Skús to prosím znova."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "Vyžaduje sa registrovaný účet",
+          "body": "AI ilustrácie a ich knižnica zostávajú súkromné pre tvoj účet.",
+          "signIn": "Prihlásenie"
+        },
+        "header": {
+          "title": "AI generátor",
+          "backAccessibilityLabel": "Späť"
+        },
+        "prompt": {
+          "label": "Popíš svoju ilustráciu",
+          "placeholder": "Útulná záhrada pri chalupe pri západe slnka…"
+        },
+        "generate": {
+          "working": "Spracúva sa…",
+          "action": "Vygenerovať — 1 AI kredit",
+          "errors": {
+            "promptRejected": "Tento pokyn nebol povolený. Skús opísať niečo iné.",
+            "generic": "AI generovanie sa nepodarilo spustiť. Skús to prosím znova."
+          }
+        },
+        "library": {
+          "title": "Tvoja knižnica AI ilustrácií",
+          "status": {
+            "pending": "Čaká",
+            "dispatched": "Odoslané",
+            "running": "Prebieha",
+            "delivered": "Doručené",
+            "safety_rejected": "Zamietnuté z bezpečnostných dôvodov",
+            "failed": "Zlyhalo",
+            "deleted": "Zmazané",
+            "unknown": "Nedostupné"
+          },
+          "failure": {
+            "safety_rejected": "Táto ilustrácia neprešla bezpečnostnou kontrolou poskytovateľa.",
+            "failed": "Túto ilustráciu sa nepodarilo vygenerovať."
+          },
+          "approve": "Schváliť ako vzor",
+          "delete": "Zmazať",
+          "deleteAccessibilityLabel": "Zmazať túto AI ilustráciu",
+          "errors": {
+            "loadFailed": "Tvoju knižnicu AI ilustrácií sa nepodarilo načítať. Skús to prosím znova."
+          }
+        },
+        "approve": {
+          "modalTitle": "Vytvoriť osobný vzor",
+          "titleLabel": "Názov vzoru",
+          "titleAccessibilityLabel": "Názov vzoru",
+          "defaultTitle": "Môj AI vzor",
+          "placeholder": "Môj AI vzor",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "Zrušiť",
+          "creating": "Vytvára sa vzor…",
+          "create": "Vytvoriť vzor",
+          "errors": {
+            "generic": "Osobný vzor sa nepodarilo vytvoriť. Skús to prosím znova."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "Vyžaduje sa registrovaný účet",
+          "body": "Osobné vzory patria k tvojmu účtu, takže zostávajú súkromné a dostupné na všetkých zariadeniach.",
+          "signIn": "Prihlás sa alebo si vytvor účet",
+          "back": "Späť"
+        },
+        "header": {
+          "title": "Vzor z fotky",
+          "subtitle": "Orámuj lokálne, potom schváľ konverziu",
+          "backAccessibilityLabel": "Späť"
+        },
+        "picker": {
+          "chooseTitle": "Vyber fotku",
+          "helpText": "Lokálny zdroj fotky v plnom rozlíšení zostáva na tomto zariadení. Nič sa neskonvertuje, kým neschváliš orámovanie.",
+          "choose": "Vybrať z knižnice",
+          "chooseAnother": "Vybrať inú",
+          "opening": "Otvára sa…",
+          "errors": {
+            "permissionDenied": "Na výber lokálneho zdroja fotky je potrebný prístup ku galérii fotiek.",
+            "invalidDimensions": "Vybraná fotka neuvádza použiteľné rozmery.",
+            "generic": "Galériu fotiek sa nepodarilo otvoriť. Skús to prosím znova."
+          }
+        },
+        "framing": {
+          "title": "Orámovanie ilustrácie",
+          "gestureHint": "Ťahaním umiestni · štipnutím priblíž",
+          "aspectLabel": "Pomer strán rámu"
+        },
+        "profile": {
+          "title": "Profil konverzie",
+          "options": {
+            "easy": "Jednoduchý",
+            "standard": "Štandardný",
+            "detailed": "Detailný"
+          },
+          "custom": "Vlastný",
+          "customMeta": "Voľný · pevný tvar",
+          "unavailable": "Nehodí sa k tomuto rámu",
+          "customShortEdgeLabel": "Krátka strana",
+          "customColorLimitLabel": "Limit farieb DMC",
+          "exceedsLimit": "Tieto vlastné hodnoty prekračujú limit {{max}} buniek pre veľkosť vzoru."
+        },
+        "titleCard": {
+          "label": "Názov vzoru",
+          "placeholder": "Môj fotovzor",
+          "defaultTitle": "Môj fotovzor",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · až {{maxColors}} {{colorsUnit}} DMC",
+          "privacyNotice": "Schválenie nahrá len orámovanú a zmenšenú verziu. Pôvodná fotka zostáva lokálne.",
+          "approve": "Schváliť ilustráciu a konvertovať"
+        },
+        "processing": {
+          "preparingFrame": "Pripravuje sa schválený rám na tomto zariadení…",
+          "uploading": "Nahráva sa len orezaný a zmenšený rám…",
+          "waitingForWorker": "Čaká sa na proces konverzie…",
+          "buildingGrid": "Zostavuje sa mriežka na vyšívanie a paleta DMC…",
+          "preparingSession": "Pripravuje sa osobný vzor na hranie…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "Tento profil sa už nehodí ku konečnému rámu. Vyber Jednoduchý alebo zníž detail.",
+            "generic": "Túto fotku sa nepodarilo skonvertovať. Skús to prosím znova."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "Nie je vybraný žiadny vzor",
+          "noPatternBody": "Táto obrazovka sa musí otvoriť z existujúceho osobného vzoru v tvojej knižnici.",
+          "accountTitle": "Vyžaduje sa registrovaný účet",
+          "accountBody": "Osobné vzory patria k tvojmu účtu, takže zostávajú súkromné a dostupné na všetkých zariadeniach.",
+          "signIn": "Prihlás sa alebo si vytvor účet",
+          "back": "Späť"
+        },
+        "loading": "Obnovuje sa koncept editora...",
+        "load": {
+          "failedTitle": "Načítanie vzoru zlyhalo",
+          "retry": "Skúsiť znova",
+          "back": "Späť",
+          "errors": {
+            "generic": "Tento osobný vzor sa nepodarilo načítať. Skús to prosím znova."
+          }
+        },
+        "header": {
+          "title": "Editor vzorov",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "Späť"
+        },
+        "toolbar": {
+          "undo": "Späť",
+          "redo": "Znova"
+        },
+        "mode": {
+          "paint": "Maľovať",
+          "replaceColor": "Nahradiť farbu",
+          "replaceStep1": "1. Klepni na farbu vo vzore nižšie, ktorú chceš nahradiť:",
+          "replaceStep2": "2. Nižšie vyber cieľovú farbu DMC na vykonanie náhrady:",
+          "paintSelected": "Vybrané: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "Vyber farbu nižšie a potom klepaním na bunky ich vyfarbi."
+        },
+        "errors": {
+          "pickColorFirst": "Najprv vyber farbu",
+          "paletteLimit": "Tento vzor už používa maximum {{max}} farieb vlákna."
+        },
+        "picker": {
+          "title": "Farby vlákna DMC",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "Uložiť upravený vzor",
+          "placeholder": "Názov môjho upraveného vzoru",
+          "action": "Uložiť ako nový",
+          "offlineTitle": "Uložené offline",
+          "offlineBody": "Tvoj upravený vzor bol uložený na tomto zariadení a synchronizuje sa s tvojím účtom hneď, ako budeš znova online.",
+          "errors": {
+            "generic": "Tento osobný vzor sa nepodarilo uložiť. Skús to prosím znova."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "Toto prihlásenie patrí inému účtu. Tvoj aktuálny účet nebol zmenený.",
+        "providerRejected": "Overenie bolo zamietnuté. Skontroluj účet alebo kód a skús to znova."
+      },
+      "generic": {
+        "failure": "Niečo sa pokazilo. Skús to prosím znova.",
+        "supportReferenceLabel": "Referencia podpory: {{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Stitch Wish používa vybrané fotky na vytváranie osobných vzorov alebo na výber profilovej fotky verejného tvorcu."
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "VITAJ V STITCH WISH",
+        "title": "Vyber farbu, klepni na správne políčka.",
+        "heroAlt": "Ukážka úvodného vzoru Cozy Heart",
+        "handedness": {
+          "sectionTitle": "Na ktorej strane majú byť ovládacie prvky?",
+          "groupLabel": "Strana ovládacích prvkov",
+          "optionRight": "Ovládanie vpravo",
+          "optionLeft": "Ovládanie vľavo",
+          "saveErrorText": "Voľbu sa nepodarilo uložiť.",
+          "retry": "Skúsiť znova"
+        },
+        "note": "Toto môžeš neskôr zmeniť v Nastaveniach.",
+        "start": "Začať vyšívať",
+        "starting": "Spúšťa sa…",
+        "browse": "Prehliadať úvodné vzory",
+        "signIn": "Prihlásenie"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "Vyber DMC 321 Christmas Red.",
+          "stitchAction": "Klepni na zvýraznenú zodpovedajúcu bunku.",
+          "mismatchedTap": "Klepni na zvýraznenú odlišnú bunku. Nesprávne klepnutia nič nestoja.",
+          "undoAction": "Vráť späť tento steh a umiestni ho znova.",
+          "stitchSweep": "Stlač zodpovedajúcu bunku a potom ťahaj pozdĺž zvýraznenej reťaze.",
+          "threadColorCompletion": "Dokonči zvýraznené biele vlákno a potom vyber ďalšiu farbu."
+        },
+        "hints": {
+          "anchoredZoom": "Štipnutím priblíž a bunky pod prstami zostanú na mieste.",
+          "panVsSweep": "Ťahanie posúva materiál. Začni na zodpovedajúcej bunke a vyšívaj v reťazi.",
+          "edgeAutoPan": "Pokračuj v ťahaní pri okraji a materiál sleduje prst.",
+          "remainingCellLocator": "Použi lokátor na nájdenie ďalšej zostávajúcej bunky pre toto vlákno."
+        },
+        "skip": "Zatiaľ preskočiť",
+        "skipAccessibilityLabel": "Zatiaľ preskočiť tutoriál",
+        "dismiss": "Rozumiem",
+        "dismissAccessibilityLabel": "Zavrieť pokyn"
+      },
+      "recap": {
+        "title": "Podarilo sa ti to",
+        "lines": {
+          "matchNumbers": "Priraď čísla, aby si umiestnil každý steh.",
+          "dragSweep": "Ťahaj cez zodpovedajúce bunky a vyšívaj v reťazi.",
+          "pinchZoom": "Štipnutím priblíž, keď potrebuješ bližší pohľad.",
+          "undoLocator": "Vrátenie späť a lokátor sú vždy zadarmo."
+        },
+        "continue": "Pokračovať vo vyšívaní",
+        "browsePatterns": "Prehliadať vzory"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "Vyšívací stôl",
+        "subtitle": "Pokračuj tam, kde si skončil, alebo obnov nedávny projekt.",
+        "loading": "Načítavajú sa tvoje výšivky...",
+        "empty": {
+          "title": "Žiadny aktívny projekt",
+          "body": "Tvoj vyšívací rám je momentálne prázdny. Prehliadni katalóg vzorov a nájdi niečo pekné na vyšívanie!",
+          "action": "Prehliadať katalóg"
+        },
+        "unknownPattern": "Neznámy vzor",
+        "idLabel": "ID: {{id}}",
+        "unknownPatternLabel": "Vzor {{id}}",
+        "deleteSessionAccessibilityLabel": "Zmazať reláciu",
+        "viewFinishedAccessibilityLabel": "Zobraziť dokončený projekt",
+        "resumeAccessibilityLabel": "Pokračovať vo vyšívaní",
+        "status": {
+          "ready": "Pripravené",
+          "done": "Dokončené",
+          "active": "Aktívne",
+          "preparing": "Pripravuje sa",
+          "failed": "Zlyhalo"
+        },
+        "deleteConfirm": {
+          "title": "Zmazať postup",
+          "message": "Naozaj chceš zmazať postup pre „{{title}}“? Túto akciu nemožno vrátiť späť.",
+          "cancel": "Zrušiť",
+          "confirm": "Zmazať"
+        },
+        "preparingCard": {
+          "discardTitle": "Zahodiť reláciu",
+          "cancelTitle": "Zrušiť sťahovanie",
+          "discardMessage": "Naozaj chceš zahodiť túto neúspešnú reláciu?",
+          "cancelMessage": "Naozaj chceš zrušiť sťahovanie tohto vzoru?",
+          "keep": "Ponechať",
+          "discard": "Zahodiť",
+          "cancel": "Zrušiť"
+        }
+      },
+      "loading": {
+        "text": "Otvára sa relácia a pripravuje sa materiál..."
+      },
+      "error": {
+        "title": "Načítanie relácie zlyhalo",
+        "fallbackMessage": "Reláciu vyšívania sa nepodarilo načítať.",
+        "backButton": "Späť",
+        "tableButton": "Prejsť na stôl"
+      },
+      "header": {
+        "backButton": "← Späť",
+        "tableButton": "← Stôl",
+        "defaultTitle": "Relácia vyšívania",
+        "progress": "{{completed}} / {{total}} buniek ({{percent}} % dokončené)",
+        "resumeTutorialAccessibilityLabel": "Pokračovať v tutoriáli"
+      },
+      "banners": {
+        "patternRemoved": "Tento vzor bol odstránený moderáciou a už nie je dostupný. Klepnutím ukončíš.",
+        "syncConflict": "Synchronizované s iným zariadením — niektoré bunky boli aktualizované. Klepnutím zavrieš."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "Nájsť ďalšiu zostávajúcu bunku aktívnej farby vlákna",
+        "undoAccessibilityLabel": "Vrátiť späť posledný steh"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "Farba {{number}}: DMC {{dmcCode}}, zostáva {{count}} steh",
+        "chipAccessibilityLabel_other": "Farba {{number}}: DMC {{dmcCode}}, zostáva {{count}} stehov",
+        "done": "Dokončené",
+        "remaining_one": "Zostáva {{count}}",
+        "remaining_other": "Zostáva {{count}}"
+      },
+      "celebration": {
+        "title": "Majstrovsky vyšité!",
+        "subtitle": "Dokončil si každý steh na tomto materiáli.",
+        "stitchesLabel_one": "Steh",
+        "stitchesLabel_other": "Stehy",
+        "colorsLabel_one": "Farba",
+        "colorsLabel_other": "Farby",
+        "replayButton": "Vyšiť znova",
+        "catalogButton": "Späť do katalógu"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "Späť",
+        "tryAgain": "Skúsiť znova"
+      },
+      "rejectionReasons": {
+        "safety": "Bezpečnosť",
+        "publication_rights": "Práva na publikovanie",
+        "duplicate_or_spam": "Duplicita alebo spam",
+        "technical_invalidity": "Technická neplatnosť",
+        "quality_standard": "Štandard kvality"
+      },
+      "submissionStatus": {
+        "accepted": "Zverejnené",
+        "appeal_pending": "Odvolanie čaká",
+        "appeal_upheld": "Odvolanie zamietnuté",
+        "precheck_failed": "Predbežná kontrola nedostupná",
+        "precheck_pending": "Overuje sa",
+        "quarantined": "Vyžaduje posúdenie",
+        "rejected": "Zamietnuté",
+        "review_pending": "V posudzovaní"
+      },
+      "revisionStatus": {
+        "accepted": "Zverejnené",
+        "appeal_pending": "Odvolanie čaká",
+        "appeal_upheld": "Odvolanie zamietnuté",
+        "pending": "V posudzovaní",
+        "rejected": "Zamietnuté",
+        "withdrawn": "Stiahnuté"
+      },
+      "home": {
+        "identity": {
+          "establishing": "Nadväzuje sa identita...",
+          "pendingTitle": "Identita čaká",
+          "offline": "Offline",
+          "retryConnection": "Skúsiť pripojenie znova",
+          "loadingPublicProfile": "Načítava sa verejný profil...",
+          "unavailableTitle": "Verejný profil nedostupný",
+          "checkConnection": "Skontroluj pripojenie a skús to znova.",
+          "createTitle": "Vytvor si verejný profil",
+          "createBody": "Vyber trvalé používateľské meno zobrazené pri tvojich komunitných vzoroch. Údaje tvojho účtu zostávajú súkromné.",
+          "createAction": "Vytvoriť verejný profil",
+          "editAction": "Upraviť verejný profil",
+          "offlinePendingSync": "Offline — synchronizácia čaká",
+          "guestPlayer": "Hosťujúci hráč",
+          "playingSince": "Hrá od {{date}}",
+          "creatorSince": "Tvorca od {{date}}"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "Otvoriť obchod",
+          "title": "Zostatky štúdia",
+          "commerceStoreLink": "Obchod",
+          "stitchCoinsAccessibilityLabel": "Zostatok Stitch Coins: {{balance}}. Klepni na získanie mincí.",
+          "packs": "Balíky",
+          "stitchCoinsLabel": "Stitch Coins",
+          "stitchCoinsSub": "Na odomykanie vzorov",
+          "aiCreditsAccessibilityLabel": "Zostatok AI kreditov: {{balance}}. Klepni na získanie kreditov.",
+          "aiCreditsSignInAccessibilityLabel": "AI kredity. Prihlás sa na nákup.",
+          "aiCreditsLabel": "AI kredity",
+          "aiCreditsSubOwned": "Na AI ilustrácie vzorov",
+          "aiCreditsSubGuest": "Prihlás sa a vlastni ich",
+          "membershipActiveAccessibilityLabel": "Premium predplatné aktívne ({{plan}}). Klepni na správu.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Premium. Klepni na zobrazenie plánov.",
+          "membershipActiveTitle": "Premium aktívne · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "Ročne",
+          "planMonthly": "Mesačne",
+          "planWeekly": "Týždenne",
+          "planActive": "Aktívne",
+          "trialBadge": "Skúšobná verzia",
+          "membershipSubActive": "Všetky témy odomknuté · Okamžité denné odmeny",
+          "membershipSubInactive": "30 denných mincí okamžite, vlastné témy a AI kredity",
+          "manage": "Spravovať",
+          "explore": "Preskúmať"
+        },
+        "quickNav": {
+          "sectionEyebrow": "ÚČET A KOMUNITA",
+          "submissionsAccessibilityLabel": "Príspevky do katalógu: sleduj kontroly, rozhodnutia a odvolania",
+          "submissionsTitle": "Príspevky",
+          "submissionsSub": "Sleduj kontroly",
+          "publishedAccessibilityLabel": "Zverejnené vzory: prezri metadáta, stiahni a sleduj odvolania",
+          "publishedTitle": "Zverejnené",
+          "publishedSub": "Spravuj vzory",
+          "moderationAccessibilityLabel": "Upozornenia moderácie: prezri rozhodnutia o katalógu, ktoré ovplyvňujú tvoje vzory",
+          "moderationTitle": "Moderácia",
+          "moderationSub": "Upozornenia na pravidlá",
+          "likedAccessibilityLabel": "Obľúbené vzory: tvoja súkromná zbierka obľúbených komunitných vzorov",
+          "likedTitle": "Obľúbené vzory",
+          "likedSavedCount_one": "{{count}} uložený",
+          "likedSavedCount_other": "{{count}} uložených",
+          "likedSavedDefault": "Uložené vzory"
+        },
+        "dailySection": {
+          "title": "Denné vyšívanie a odmeny",
+          "tasksGroupLabel": "Denné úlohy (+30 mincí max)",
+          "connectToTrack": "Pripoj sa a sleduj postup denných úloh.",
+          "loadingTasks": "Načítavajú sa úlohy…",
+          "loadFailed": "Denné úlohy sa nepodarilo načítať.",
+          "retry": "Skúsiť znova",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "Resetuje sa…",
+          "resetsInHoursMinutes": "Resetuje sa o {{hours}} h {{minutes}} min",
+          "resetsInMinutes": "Resetuje sa o {{minutes}} min"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 vyšívacích akcií",
+            "body": "Dnes dokonči 100 zodpovedajúcich buniek"
+          },
+          "three_colors_10": {
+            "title": "3 farby, 10 akcií každá",
+            "body": "Dosiahni 10 akcií v 3 farbách vlákna"
+          },
+          "color_completion": {
+            "title": "Dokonči jednu farbu vlákna",
+            "body": "Dokonči vyšívanie ľubovoľnej farby úplne"
+          }
+        },
+        "dailyPool": {
+          "title": "Denný fond odmien 30 mincí",
+          "premiumInstantClaim": "Okamžité Premium vyzdvihnutie",
+          "rewardedAds": "Reklamy s odmenou",
+          "claimedAmount": "{{amount}} Stitch Coins vyzdvihnutých na dnes!",
+          "poolAlreadyClosed": "Dnešný fond odmien už bol uzavretý.",
+          "claimedForToday": "Vyzdvihnuté na dnes. Resetuje sa v ďalší Deň odmeny.",
+          "poolExhausted": "Dnešný fond 30 mincí je vyčerpaný.",
+          "claimButtonRetry": "Skúsiť vyzdvihnutie znova",
+          "claimButtonInstant": "Vyzdvihnúť {{count}} mincí (okamžite)",
+          "poolClaimedResetsTomorrow": "Dnešný fond mincí bol vyzdvihnutý. Resetuje sa zajtra.",
+          "allAdRewardsCompleted": "Všetky odmeny z reklám boli dnes dokončené! (30/30 mincí)",
+          "watchAdButton": "Pozri si reklamu za +10 mincí (zostáva {{count}})",
+          "adPerkNote": "Pozri si až 3 reklamy/deň · Premium odomyká okamžité vyzdvihnutie 30 mincí",
+          "adRewardEarned": "Odmena z reklamy získaná! Overuje sa na serveri…",
+          "claimFailed": "Vyzdvihnutie zlyhalo: {{message}}",
+          "claimFailedGeneric": "Niečo sa pokazilo. Skús to prosím znova.",
+          "adLoadFailedDefault": "Načítanie reklamy zlyhalo",
+          "adAttemptFailedDefault": "Otvorenie pokusu o reklamu zlyhalo"
+        },
+        "tabs": {
+          "myCreations": "Moje výtvory {{count}}",
+          "likedPatterns": "Obľúbené vzory {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "Prihlás sa pre osobné vzory",
+          "signInBody": "Na vytváranie a súkromné vlastníctvo vzorov konvertovaných z fotiek je potrebný registrovaný účet.",
+          "signIn": "Prihlásenie",
+          "patternMeta": "{{width}}×{{height}} · {{count}} farieb",
+          "pendingSync": "Synchronizácia čaká",
+          "play": "Hrať",
+          "edit": "Upraviť",
+          "submitAccessibilityLabel": "Odoslať {{title}} do komunitného katalógu",
+          "emptyTitle": "Žiadny osobný výtvor",
+          "emptyBody": "Zatiaľ si nekonvertoval žiadnu fotku ani nevygeneroval žiadnu AI ilustráciu. Choď do Tvorby a začni svoje prvé majstrovské dielo!",
+          "emptyAction": "Začať tvoriť",
+          "actionFailedGeneric": "Niečo sa pokazilo. Skús to prosím znova."
+        },
+        "likedTab": {
+          "unavailableTitle": "Obľúbené vzory nedostupné",
+          "unavailableDefault": "Obľúbené vzory sa nepodarilo načítať.",
+          "byCreator": "od {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} farieb",
+          "emptyTitle": "Žiadny obľúbený vzor",
+          "emptyBody": "Prehliadni katalóg a klepni na ikonu srdca pri ľubovoľnom dizajne, aby si ho tu uložil na neskôr.",
+          "emptyAction": "Objaviť vzory"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Denné vyzdvihnutie Premium mincí",
+        "description": "Vyzdvihni zvyšok dnešného spoločného fondu odmien 30 mincí.",
+        "connectPrompt": "Pripoj sa k serveru hry a over dnešnú odmenu.",
+        "checkingReward": "Overuje sa dnešná Premium odmena…",
+        "unavailableGeneric": "Dnešná Premium odmena je nedostupná.",
+        "tryAgain": "Skúsiť znova",
+        "resultAdded": "Server hry pridal {{amount}} Stitch Coins. Zostatok: {{balance}}.",
+        "poolAlreadyClosed": "Dnešný spoločný fond odmien už bol uzavretý.",
+        "alreadyClaimed": "Už vyzdvihnuté pre tento Deň odmeny.",
+        "poolExhausted": "Dnešný spoločný fond odmien je vyčerpaný. Resetuje sa v ďalší Deň odmeny.",
+        "availableNow": "{{count}} Stitch Coins dostupných teraz",
+        "resetsAt": "Resetuje sa {{date}}",
+        "claimButtonRetry": "Skúsiť vyzdvihnutie znova",
+        "claimButtonInstant": "Vyzdvihnúť {{count}} mincí",
+        "lockedDescription": "Premium predplatné, vrátane oprávnenej mesačnej skúšobnej doby, odomyká toto denné vyzdvihnutie.",
+        "viewPremiumPlans": "Zobraziť Premium plány"
+      },
+      "publicProfile": {
+        "editTitle": "Upraviť verejný profil",
+        "createTitle": "Vytvoriť verejný profil",
+        "signInTitle": "Vyžaduje sa prihlásenie",
+        "signInBody": "Na vytvorenie verejnej identity tvorcu je potrebný registrovaný účet.",
+        "signInAction": "Prihlásenie",
+        "unavailableTitle": "Profil nedostupný",
+        "unavailableBody": "Tvoj verejný profil sa nepodarilo načítať. Skontroluj pripojenie a skús to znova.",
+        "tryAgain": "Skúsiť znova",
+        "intro": "Toto meno a fotka sú viditeľné pri tvojich komunitných vzoroch. Tvoj e-mail a poskytovateľ prihlásenia zostávajú súkromné.",
+        "choosePhoto": "Vybrať fotku",
+        "changePhoto": "Zmeniť fotku",
+        "remove": "Odstrániť",
+        "avatarHelper": "Voliteľné · JPEG, PNG alebo WebP · do 5 MB",
+        "usernameLabel": "Používateľské meno",
+        "usernameAccessibilityLabel": "Verejné používateľské meno",
+        "usernamePlaceholder": "meno_vysivacky",
+        "usernameHelperLocked": "Tvoje používateľské meno je trvalé.",
+        "usernameHelperEditable": "3 – 30 malých písmen, číslic alebo podčiarkovníkov. Toto sa neskôr nedá zmeniť.",
+        "displayNameLabel": "Zobrazované meno",
+        "displayNameAccessibilityLabel": "Verejné zobrazované meno",
+        "displayNamePlaceholder": "Tvoje meno tvorcu",
+        "displayNameHelper": "Toto môžeš neskôr zmeniť.",
+        "safetyNotice": "Mená a fotky sa pred zverejnením kontrolujú. Ak je zmena zamietnutá, tvoj aktuálny verejný profil zostáva nezmenený.",
+        "saveAction": "Uložiť verejný profil",
+        "publishAction": "Zverejniť verejný profil",
+        "photoPermissionRequired": "Na výber profilovej fotky je potrebný prístup ku galérii fotiek.",
+        "photoTypeInvalid": "Profilové fotky musia byť vo formáte JPEG, PNG alebo WebP.",
+        "photoTooLarge": "Profilové fotky môžu mať najviac 5 MB.",
+        "saveFailedDefault": "Tvoj verejný profil sa nepodarilo uložiť"
+      },
+      "submissions": {
+        "title": "Príspevky do katalógu",
+        "unavailableTitle": "Príspevky nedostupné",
+        "unavailableDefault": "Tvoje príspevky sa nepodarilo načítať.",
+        "emptyTitle": "Žiadny príspevok do katalógu",
+        "emptyBody": "Odošli synchronizovaný osobný vzor z Mojich výtvorov.",
+        "emptyAction": "Späť na Moje výtvory",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "Automatické kontroly sa nepodarilo dokončiť. Táto verzia nebola zverejnená.",
+        "publishedToCatalog": "Zverejnené v komunitnom katalógu.",
+        "appealAction": "Napadnúť rozhodnutie",
+        "appealHelp": "Túto nezmenenú verziu môžeš napadnúť len raz.",
+        "appealNoteAccessibilityLabel": "Poznámka k odvolaniu",
+        "appealNotePlaceholder": "Voliteľný kontext pre moderátora, ktorý to posudzuje",
+        "cancelAction": "Zrušiť",
+        "submitAppealAction": "Odoslať odvolanie"
+      },
+      "publishedPatterns": {
+        "title": "Zverejnené vzory",
+        "unavailableTitle": "Vzory nedostupné",
+        "unavailableDefault": "Tvoje zverejnené vzory sa nepodarilo načítať.",
+        "emptyTitle": "Žiadny zverejnený vzor",
+        "emptyBody": "Vzory, ktoré zverejníš v komunitnom katalógu, sa zobrazia tu.",
+        "emptyAction": "Späť na profil",
+        "withdrawnFromCatalog": "Stiahnuté z katalógu",
+        "underReviewHold": "Pozastavené na posúdenie",
+        "meta": "{{category}} · Zverejnené {{date}}",
+        "withdrawnHelp": "Táto identita je natrvalo stiahnutá. Hráči s existujúcou reláciou vyšívania si zachovávajú svoj postup a prístup.",
+        "reviewHoldHelp": "Tento vzor je dočasne mimo objavovania a nemôže spúšťať nové relácie. Existujúce relácie vyšívania zostávajú hrateľné. Stále môžeš navrhnúť revíziu metadát.",
+        "reviseAction": "Revidovať metadáta",
+        "withdrawRevisionAction": "Stiahnuť revíziu",
+        "appealAction": "Napadnúť rozhodnutie",
+        "withdrawFromCatalogAction": "Stiahnuť z katalógu",
+        "appealHelp": "Túto nezmenenú verziu môžeš napadnúť len raz. Odoslanie novej revízie sa vzdáva tohto odvolania.",
+        "appealNoteAccessibilityLabel": "Poznámka k odvolaniu",
+        "appealNotePlaceholder": "Voliteľný kontext pre moderátora, ktorý to posudzuje",
+        "cancelAction": "Zrušiť",
+        "submitAppealAction": "Odoslať odvolanie",
+        "withdrawRevisionFailedTitle": "Stiahnutie revízie zlyhalo",
+        "withdrawPatternFailedTitle": "Stiahnutie vzoru zlyhalo",
+        "withdrawPatternSuccessTitle": "Vzor stiahnutý",
+        "withdrawPatternSuccessBody": "Už ho nemožno objaviť a nemôže spúšťať nové relácie. Existujúce relácie vyšívania si zachovávajú postup a herné dáta.",
+        "withdrawConfirmTitle": "Stiahnuť z komunitného katalógu?",
+        "withdrawConfirmBody": "„{{title}}“ zmizne z objavovania a už nebude môcť spúšťať nové relácie. Túto identitu vzoru nemožno nikdy obnoviť. Existujúce relácie vyšívania a ich postup zostávajú hrateľné.",
+        "withdrawConfirmCancel": "Zrušiť",
+        "withdrawConfirmAction": "Natrvalo stiahnuť"
+      },
+      "revisePatternMetadata": {
+        "title": "Revidovať metadáta",
+        "signInTitle": "Vyžaduje sa registrovaný účet",
+        "signInBody": "Prihlás sa pred revíziou metadát komunitného vzoru.",
+        "signInAction": "Prihlásenie",
+        "notFoundTitle": "Komunitný vzor nebol nájdený",
+        "notFoundBody": "Revidovať možno len tvoje vlastné zverejnené komunitné vzory.",
+        "notFoundAction": "Späť na zverejnené vzory",
+        "inProgressTitle": "Revízia už prebieha",
+        "inProgressBody": "Tento vzor má už čakajúcu revíziu alebo aktívne odvolanie. Stiahni ho pred odoslaním ďalšej.",
+        "inProgressAction": "Späť na zverejnené vzory",
+        "currentlyPublished": "Momentálne zverejnené v komunitnom katalógu",
+        "titleFieldLabel": "Názov v katalógu",
+        "titlePlaceholder": "Názov vzoru",
+        "titleAccessibilityLabel": "Názov v katalógu",
+        "descriptionFieldLabel": "Popis",
+        "descriptionPlaceholder": "Popíš dizajn, tému a zážitok z vyšívania.",
+        "descriptionAccessibilityLabel": "Popis katalógu",
+        "sourceLanguageFieldLabel": "Zdrojový jazyk",
+        "categoryFieldLabel": "Kategória",
+        "tagsFieldLabel": "Štítky",
+        "notice": "Revízia vytvorí novú nemennú verziu. Tvoje aktuálne zverejnené metadáta zostávajú viditeľné, kým ľudský moderátor túto revíziu neprijme.",
+        "submitAction": "Odoslať revíziu"
+      },
+      "submitPattern": {
+        "title": "Odoslať do komunity",
+        "signInTitle": "Vyžaduje sa registrovaný účet",
+        "signInBody": "Prihlás sa pred odoslaním osobného vzoru do komunitného katalógu.",
+        "signInAction": "Prihlásenie",
+        "createProfileTitle": "Vytvor si verejný profil tvorcu",
+        "createProfileBody": "Komunitné vzory sú priradené k tvojej verejnej identite tvorcu.",
+        "createProfileAction": "Vytvoriť profil",
+        "patternNotFoundTitle": "Osobný vzor nebol nájdený",
+        "patternNotFoundBody": "Odoslať možno len synchronizované osobné vzory.",
+        "patternNotFoundAction": "Späť na profil",
+        "patternMeta": "{{width}}×{{height}} · {{count}} farieb",
+        "byCreator": "Od @{{username}}",
+        "titleFieldLabel": "Názov v katalógu",
+        "titlePlaceholder": "Názov vzoru",
+        "titleAccessibilityLabel": "Názov v katalógu",
+        "descriptionFieldLabel": "Popis",
+        "descriptionPlaceholder": "Popíš dizajn, tému a zážitok z vyšívania.",
+        "descriptionAccessibilityLabel": "Popis katalógu",
+        "sourceLanguageFieldLabel": "Zdrojový jazyk",
+        "categoryFieldLabel": "Kategória",
+        "tagsFieldLabel": "Štítky",
+        "rightsDeclaration": "Vytvoril som toto dielo alebo vlastním práva potrebné na jeho zverejnenie podľa Vyhlásenia o právach na publikovanie v1.",
+        "notice": "Odoslanie vytvorí nemennú kópiu. Automatické kontroly poskytujú dôkazy, ale každé rozhodnutie robí ľudský moderátor.",
+        "submitAction": "Odoslať na posúdenie"
+      },
+      "moderationNotices": {
+        "title": "Upozornenia moderácie",
+        "signInTitle": "Prihlás sa a zobraz upozornenia",
+        "signInBody": "Upozornenia moderácie patria k registrovanému účtu, ktorý zverejnil dotknutý komunitný vzor.",
+        "signInAction": "Prihlásenie",
+        "unavailableTitle": "Upozornenia nedostupné",
+        "unavailableDefault": "Upozornenia moderácie sa nepodarilo načítať.",
+        "emptyTitle": "Žiadne upozornenie moderácie",
+        "emptyBody": "Rozhodnutia moderácie katalógu viditeľné vlastníkovi sa zobrazia tu.",
+        "emptyAction": "Späť na profil",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "Náprava metadát katalógu",
+          "no_violation": "Posúdenie uzavreté — žiadne porušenie",
+          "review_hold": "Pozastavenie na posúdenie",
+          "safety_removal": "Odstránenie z bezpečnostných dôvodov"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "Vybraný názov, popis a štítky boli nahradené bezpečnými hodnotami. Dostupnosť, súbor vzoru a náhľad nie sú ovplyvnené. Kedykoľvek môžeš odoslať novú revíziu metadát katalógu.",
+          "no_violation": "Kontrola po zverejnení je uzavretá a tento vzor je opäť plne dostupný na objavovanie a nové relácie vyšívania.",
+          "review_hold": "Tento vzor je dočasne nedostupný na objavovanie a nové relácie. Existujúce relácie vyšívania, postup a offline dáta vzoru zostávajú hrateľné.",
+          "safety_removal": "Tento vzor bol odstránený pre porušenie bezpečnosti, zákona alebo pravidiel. Zmizol z objavovania, existujúce relácie vyšívania sa stali nedostupnými a offline dáta vzoru na tvojich zariadeniach boli zmazané. Môžeš podať jedno odvolanie proti odstráneniu z bezpečnostných dôvodov."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "Denné úlohy",
+        "offline": "Si offline — Denné úlohy vyžadujú pripojenie.",
+        "unavailable": "Denné úlohy sa nepodarilo načítať.",
+        "empty": "Dnes nie je k dispozícii žiadna úloha."
+      },
+      "rewardedAdCard": {
+        "offline": "Si offline — Deň odmeny vyžaduje pripojenie.",
+        "unavailable": "Stav Dňa odmeny sa nepodarilo načítať.",
+        "premiumClaimClosedPool": "Tvoje denné Premium vyzdvihnutie uzavrelo dnešný spoločný fond mincí.",
+        "allRewardsClaimed": "Dnes si vyzdvihol všetky odmeny z reklám. Vráť sa zajtra!",
+        "remaining_one": "Dnes zostáva {{count}} reklama ({{coins}} mincí k dispozícii)",
+        "remaining_other": "Dnes zostáva {{count}} reklám ({{coins}} mincí k dispozícii)",
+        "watchForCoins": "Pozri si reklamu za {{count}} mincí"
+      },
+      "likedPatterns": {
+        "title": "Obľúbené vzory",
+        "signInTitle": "Vyžaduje sa registrovaný účet",
+        "signInBody": "Prihlás sa pred zobrazením svojej súkromnej zbierky obľúbených vzorov.",
+        "signInAction": "Prihlásenie",
+        "unavailableTitle": "Obľúbené vzory nedostupné",
+        "unavailableDefault": "Obľúbené vzory sa nepodarilo načítať.",
+        "emptyTitle": "Žiadny obľúbený vzor",
+        "emptyBody": "Prehliadni katalóg vzorov a klepni na ikonu srdca pri ľubovoľnom dizajne, aby si ho tu uložil.",
+        "emptyAction": "Objaviť vzory",
+        "byCreator": "od {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} farieb · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "Nastavenia",
+        "subtitleDev": "Nastav si preferencie a skontroluj backendové systémy.",
+        "subtitleProd": "Nastav si svoje preferencie."
+      },
+      "serviceStatus": {
+        "sectionTitle": "Stav služby",
+        "apiConnectionTitle": "Pripojenie API",
+        "testingConnection": "Testuje sa pripojenie API...",
+        "offlineUnreachable": "Offline / Nedostupné",
+        "unknownConnectionError": "Neznáma chyba pripojenia",
+        "retryConnection": "Skúsiť pripojenie znova",
+        "healthy": "Funkčné",
+        "degraded": "Obmedzené",
+        "postgresLabel": "Databáza PostgreSQL",
+        "redisLabel": "Cache Redis"
+      },
+      "session": {
+        "sectionTitle": "Identita a relácia",
+        "statusTitle": "Stav backendovej relácie",
+        "statusDescription": "Overí tvoju aktívnu registrovanú hosťovskú reláciu cez API.",
+        "noActiveSession": "Žiadna aktívna relácia",
+        "sessionActive": "Relácia aktívna",
+        "idLabel": "ID: {{id}} (v{{version}})",
+        "unknownState": "Neznámy stav"
+      },
+      "tutorial": {
+        "sectionTitle": "Tutoriál",
+        "learnControlsTitle": "Nauč sa ovládanie",
+        "learnControlsDescription": "Zopakuj si tutoriál vyšívania, keď budeš pripravený.",
+        "unavailableTitle": "Tutoriál nedostupný",
+        "unavailableMessage": "Tutoriál sa nepodarilo obnoviť. Skús to prosím znova."
+      },
+      "developer": {
+        "sectionTitle": "Vývojár",
+        "debugDiagnostics": "Ladenie / Diagnostika",
+        "debug": {
+          "backAccessibilityLabel": "Späť",
+          "title": "Ladenie",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: nastavené · prostredie: {{environment}}",
+            "dsnNotConfigured": "DSN: nenastavené",
+            "sendTestEvent": "Odoslať testovaciu udalosť",
+            "throwError": "Vyvolať chybu",
+            "disabledTitle": "Sentry vypnuté",
+            "disabledMessage": "Sentry nie je nastavené (nenašiel sa žiadny DSN), takže žiadna testovacia udalosť nebude odoslaná.",
+            "testEventSent": "Testovacia udalosť odoslaná. ID udalosti: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "Chyba",
+            "testEventFailedMessage": "Odoslanie testovacej udalosti zlyhalo: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Onboarding",
+            "description": "Vymaže postup tutoriálu a začne znova od Vitaj.",
+            "restart": "Reštartovať onboarding",
+            "confirmTitle": "Reštartovať onboarding?",
+            "confirmMessage": "Stav tutoriálu bude vymazaný a onboarding začne od obrazovky Vitaj.",
+            "cancel": "Zrušiť",
+            "resetFailedTitle": "Resetovanie zlyhalo"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "Zmazanie účtu",
+        "statusTitle": "Stav zmazania účtu",
+        "checkingStatus": "Kontroluje sa stav...",
+        "pendingTitle": "Zmazanie účtu prebieha",
+        "pendingDescription": "Zmazanie tvojho účtu je naplánované. Prihlás sa znova pred koncom obnovovacieho obdobia, aby si ho zrušil.",
+        "recoveryWindowEnds": "Obnovovacie obdobie končí: {{date}}",
+        "cancelling": "Ruší sa...",
+        "cancelDeletion": "Zrušiť zmazanie",
+        "statusError": "Stav zmazania sa nepodarilo overiť. Skontroluj pripojenie a skús to znova.",
+        "deleteAccountTitle": "Zmazať účet",
+        "deleteAccountDescription": "Natrvalo zmaže tvoj účet, postup a všetky odomknutia po 30-dňovom obnovovacom období.",
+        "requestedTitle": "Zmazanie účtu vyžiadané",
+        "requestedMessage": "Tvoja žiadosť o zmazanie čaká do {{date}}. Tvoj účet bol odhlásený. Prihlás sa znova pred týmto dátumom, ak chceš zmazanie zrušiť.",
+        "signOutFailedTitle": "Lokálne odhlásenie zlyhalo",
+        "signOutFailedMessage": "Tvoja žiadosť o zmazanie stále čaká. Odhlás sa prosím znova v Nastaveniach.",
+        "requestFailedTitle": "Žiadosť zlyhala",
+        "requestFailedMessage": "Tvoja žiadosť o zmazanie nebola odoslaná. Skontroluj pripojenie a skús to znova.",
+        "cancelSuccessTitle": "Úspech",
+        "cancelSuccessMessage": "Tvoja žiadosť o zmazanie účtu bola zrušená.",
+        "reauthRequiredTitle": "Vyžaduje sa opätovné prihlásenie",
+        "reauthRequiredMessage": "Z bezpečnostných dôvodov sa musíš znova prihlásiť pred zrušením zmazania účtu.",
+        "signInAction": "Prihlásenie",
+        "cancelFailedTitle": "Zrušenie zlyhalo",
+        "cancelFailedGeneric": "Zrušenie zmazania účtu zlyhalo. Skontroluj pripojenie a skús to znova."
+      },
+      "appearance": {
+        "sectionTitle": "Vzhľad"
+      },
+      "themeCollectionCard": {
+        "title": "Zbierka tém",
+        "description": "Zmeň vzhľad mriežky, vyšívania a dokončenia bez vplyvu na hrateľnosť.",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "Vyžaduje Premium predplatné",
+        "selected": "Vybraté",
+        "accessActive": "Prístup k Premium témam je aktívny, vrátane počas oprávnenej mesačnej skúšobnej doby.",
+        "lockedPreview": "Zbierku si tu môžeš pozrieť. Premium predplatné alebo oprávnená mesačná skúšobná doba odomkne výber.",
+        "viewPremiumPlans": "Zobraziť Premium plány"
+      },
+      "gameplay": {
+        "sectionTitle": "Nastavenia hry",
+        "showGridLinesTitle": "Zobraziť čiary mriežky",
+        "showGridLinesDescription": "Zobrazí hranice medzi bunkami vyšívacieho materiálu",
+        "handednessTitle": "Rozloženie ovládania",
+        "handednessDescription": "Zarovná interaktívne herné ovládanie pre ľavú alebo pravú ruku",
+        "left": "Vľavo",
+        "right": "Vpravo",
+        "leftHandedLayout": "Rozloženie pre ľavákov",
+        "rightHandedLayout": "Rozloženie pre pravákov"
+      },
+      "language": {
+        "sectionTitle": "Jazyk",
+        "description": "Vyber jazyk, v ktorom Stitch Wish zobrazuje rozhranie.",
+        "followDevice": "Nasledovať jazyk zariadenia",
+        "followDeviceDescription": "Vymaže tvoje prepísanie a bude nasledovať nastavenie jazyka zariadenia.",
+        "optionEnglish": "English",
+        "optionTurkish": "Türkçe",
+        "modalTitle": "Vyber jazyk",
+        "modalSubtitle": "Vyber preferovaný jazyk rozhrania.",
+        "systemDefault": "Jazyk systému",
+        "systemDefaultWithDetected": "Jazyk systému ({{language}})",
+        "systemDefaultDescription": "Automaticky sa zhoduje s nastaveniami tvojho zariadenia."
+      },
+      "social": {
+        "sectionTitle": "Sociálne a súkromie",
+        "blockedCreators": "Zablokovaní tvorcovia"
+      },
+      "account": {
+        "sectionTitle": "Účet",
+        "notSignedInTitle": "Neprihlásený",
+        "signInRequiredTitle": "Vyžaduje sa prihlásenie",
+        "notSignedInDescription": "Prihlás sa a synchronizuj postup na všetkých zariadeniach.",
+        "signIn": "Prihlásenie",
+        "reconnecting": "Znova sa pripája…",
+        "signOut": "Odhlásiť sa",
+        "signOutConfirmTitle": "Odhlásiť sa?",
+        "signOutConfirmMessage": "Tvoj nesynchronizovaný postup zostáva na tomto zariadení a znova sa otvorí po opätovnom prihlásení.",
+        "signOutConfirmAction": "Odhlásiť sa",
+        "signOutFailedTitle": "Odhlásenie zlyhalo",
+        "signOutFailedGeneric": "Skús to prosím znova.",
+        "providerAppleAccount": "Účet Apple",
+        "providerGoogleAccount": "Účet Google",
+        "providerGenericAccount": "Registrovaný účet"
+      },
+      "signIn": {
+        "emailHeading": "Prihlás sa alebo si vytvor účet",
+        "emailSubtitle": "Udrž si postup dostupný na všetkých zariadeniach.",
+        "codeHeading": "Zadaj svoj kód",
+        "codeSubtitle": "Zadaj 6-miestny kód odoslaný na {{email}}.",
+        "continueWithGoogle": "Pokračovať s Google",
+        "orUseEmail": "alebo použi e-mail",
+        "ssoUnavailable": "Prihlásenie cez Google a Apple nie je v tejto verzii dostupné.",
+        "emailLabel": "E-mailová adresa",
+        "emailPlaceholder": "E-mailová adresa",
+        "sendCode": "Odoslať kód",
+        "cancel": "Zrušiť",
+        "verify": "Overiť",
+        "resendCode": "Odoslať kód znova",
+        "resending": "Odosiela sa znova...",
+        "codeSent": "Kód odoslaný",
+        "useDifferentEmail": "Použiť iný e-mail",
+        "sendCodeFailed": "Kód sa nepodarilo odoslať. Skontroluj pripojenie a skús to znova.",
+        "codeIncorrect": "Tento kód je nesprávny alebo vypršal.",
+        "verifyFailedGeneric": "Niečo sa pokazilo. Skús to prosím znova.",
+        "socialSignInFailed": "Prihlásenie cez {{provider}} zlyhalo. Skús to prosím znova.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "Späť",
+        "title": "Zablokovaní tvorcovia",
+        "infoText": "Blokovanie je súkromné a vratné. Skryje komunitné vzory tvorcu v tvojich zobrazeniach katalógu, vyhľadávania a objavovania. Nejde o nahlásenie ani odstránenie obsahu.",
+        "signInRequiredTitle": "Vyžaduje sa registrovaný účet",
+        "signInRequiredBody": "Prihlás sa pred správou zoznamu zablokovaných tvorcov.",
+        "signInAction": "Prihlásenie",
+        "listUnavailableTitle": "Zoznam nedostupný",
+        "listUnavailableDefault": "Zablokovaných tvorcov sa nepodarilo načítať.",
+        "tryAgain": "Skúsiť znova",
+        "emptyTitle": "Žiadny zablokovaný tvorca",
+        "emptyBody": "Nikoho si nezablokoval. Tvorcu môžeš zablokovať z ktorejkoľvek stránky s podrobnosťami jeho vzorov.",
+        "backToSettings": "Späť do Nastavení",
+        "unblock": "Odblokovať",
+        "unblockConfirmTitle": "Odblokovať tvorcu",
+        "unblockConfirmMessage": "Naozaj chceš odblokovať používateľa {{name}}? Jeho vzory sa opäť objavia vo výsledkoch vyhľadávania a prehliadania.",
+        "cancel": "Zrušiť",
+        "successTitle": "Úspech",
+        "unblockedMessage": "{{name}} bol odblokovaný.",
+        "errorTitle": "Chyba",
+        "unblockFailedMessage": "Odblokovanie tvorcu zlyhalo: {{message}}",
+        "unblockFailedGeneric": "Neznáma chyba"
+      },
+      "data": {
+        "sectionTitle": "Údaje",
+        "resetGuestTitle": "Resetovať hosťovské údaje",
+        "resetGuestDescription": "Nenávratne uzavrie hosťovskú identitu na serveri a zmaže všetky údaje zo zariadenia.",
+        "resetGuestOffline": "Offline: na resetovanie hosťovských údajov je potrebné aktívne pripojenie k serveru.",
+        "resetGuestPurchaseLock": "Resetovanie je zablokované, kým sa ešte overuje nákup. Spotrebný obsah a súkromné hosťovské údaje potom nemožno obnoviť.",
+        "removeLocalTitle": "Odstrániť lokálne údaje",
+        "removeLocalDescription": "Zmaže lokálnu databázu identitového priestoru na tomto zariadení.",
+        "removeLocalConfirmTitle": "Odstrániť lokálne údaje?",
+        "removeLocalConfirmMessage": "Upozornenie: Toto zmaže súbory lokálnej databázy len na tomto zariadení. Akýkoľvek nesynchronizovaný záznam sa natrvalo stratí.",
+        "removeLocalConfirmAction": "Odstrániť",
+        "removeLocalSuccessTitle": "Úspech",
+        "removeLocalSuccessMessage": "Lokálne údaje boli odstránené z tohto zariadenia.",
+        "removeLocalFailedTitle": "Odstránenie zlyhalo",
+        "removeLocalFailedMessage": "Odstránenie lokálnych údajov zlyhalo: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "Informácie a odkazy",
+        "privacyPolicy": "Zásady ochrany osobných údajov",
+        "termsOfService": "Podmienky používania",
+        "contactSupport": "Kontaktovať podporu",
+        "accountDeletion": "Zmazanie účtu",
+        "openFailedMessage": "Odkaz sa nepodarilo otvoriť: {{url}}",
+        "openFailedGenericTitle": "Chyba"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — Útulné pixel-art vyšívanie",
+        "version": "Verzia {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "Balík: {{id}}",
+        "schemeLabel": "Schéma: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "Resetovať hosťovské údaje?",
+        "warning": "Táto akcia nenávratne uzavrie tvoju hosťovskú identitu na serveri a natrvalo zmaže:",
+        "bulletProgress": "• lokálny postup",
+        "bulletRewards": "• čakajúce odmeny",
+        "bulletLikes": "• obľúbené položky",
+        "bulletUnlockAccess": "• prístup k odomknutiam",
+        "bulletOfflinePatterns": "• offline dáta vzorov",
+        "confirmPrefix": "Napíš ",
+        "confirmSuffix": " nižšie na potvrdenie:",
+        "confirmAction": "Resetovať údaje",
+        "resetting": "Resetujú sa hosťovské údaje...",
+        "successTitle": "Úspech",
+        "successMessage": "Hosťovské údaje boli úplne resetované.",
+        "failedTitle": "Resetovanie zlyhalo",
+        "failedMessage": "Resetovanie hosťovských údajov zlyhalo: {{message}}. Skús to prosím znova."
+      },
+      "deleteModal": {
+        "title": "Zmazať účet?",
+        "recoveryPrefix": "Tvoj účet vstúpi do ",
+        "recoveryBold": "30-dňového obnovovacieho obdobia",
+        "recoverySuffix": ". Prihlás sa znova počas tohto obdobia, aby si zmazanie zrušil.",
+        "bulletBalances": "• zostatky Stitch Coin a AI kreditov",
+        "bulletUnlocks": "• všetky odomknutia vzorov",
+        "bulletArtwork": "• AI ilustrácie a osobné vzory",
+        "bulletProgress": "• synchronizovaný postup a obľúbené položky",
+        "consequencesPrefix": "Na konci obnovovacieho obdobia sa toto natrvalo zmaže alebo stratí, bez vrátenia peňazí alebo prevodu. Zverejnené komunitné vzory sa stiahnu z katalógu, priradenie sa zmení na ",
+        "consequencesBold": "Zmazaný tvorca",
+        "consequencesSuffix": " a tvoje používateľské meno zostane natrvalo rezervované.",
+        "membershipWarning": "Tvoje Premium predplatné môže byť po zmazaní účtu naďalej fakturované. Zmazanie ho nezruší; ak chceš, aby sa fakturácia zastavila, spravuj ho pred pokračovaním samostatne.",
+        "manageAppleSubscription": "Spravovať predplatné Apple",
+        "continueAction": "Pokračovať",
+        "confirmTitle": "Potvrdiť zmazanie",
+        "confirmPrefix": "Na potvrdenie, že chceš zmazať svoj účet, napíš ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": " do poľa nižšie:",
+        "submitting": "Odosiela sa žiadosť o zmazanie...",
+        "backAction": "Späť",
+        "confirmAction": "Potvrdiť"
+      },
+      "reauthModal": {
+        "title": "Over svoju identitu",
+        "description": "Z bezpečnostných dôvodov sa over metódou prihlásenia už spojenou s týmto účtom. Zmazanie pokračuje automaticky po overení.",
+        "loading": "Načítavajú sa metódy prihlásenia...",
+        "codeSentMessage": "Zadaj 6-miestny kód odoslaný na {{email}}.",
+        "verifyAndDelete": "Overiť a zmazať",
+        "emailButton": "E-mail {{email}}",
+        "continueWithProvider": "Pokračovať s {{provider}}",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "Nie je k dispozícii žiadna spojená metóda prihlásenia. Kontaktuj podporu pred opätovným pokusom o zmazanie.",
+        "loadFailed": "Tvoje spojené metódy prihlásenia sa nepodarilo načítať. Skontroluj pripojenie a skús to znova.",
+        "retryFailed": "Tvoja identita bola overená, ale zmazanie nebolo odoslané. Zavri toto okno a skús zmazanie znova.",
+        "emailMissing": "Táto spojená e-mailová metóda nemá adresu. Vyber inú metódu.",
+        "genericFailure": "Opätovné prihlásenie zlyhalo. Skontroluj pripojenie a skús to znova."
+      },
+      "actions": {
+        "cancel": "Zrušiť",
+        "retry": "Skúsiť znova"
+      },
+      "common": {
+        "unavailable": "Nedostupné"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "Katalóg",
+        "stitch": "Vyšívanie",
+        "create": "Tvoriť",
+        "profile": "Profil",
+        "settings": "Nastavenia"
+      }
+    }
+  },
   "tr": {
     "catalog": {
       "common": {
