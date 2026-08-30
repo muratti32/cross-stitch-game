@@ -151,4 +151,7 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'da:profile:submitPattern.tagsFieldLabel': '"Tags" is a common Danish tech/UI loanword.',
   'da:settings:appDetails.version': '"Version" is an identical Danish cognate.',
   'da:settings:data.sectionTitle': '"Data" is an identical Danish cognate.',
+  'el:play:home.idLabel': '"ID" is used identically in Greek tech/UI copy.',
+  'el:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
+  'el:settings:session.idLabel': '"ID" is used identically in Greek tech/UI copy.',
 };

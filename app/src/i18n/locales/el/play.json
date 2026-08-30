@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Τραπέζι Κεντήματος",
+    "subtitle": "Συνεχίστε από εκεί που σταματήσατε ή ανοίξτε πρόσφατη δημιουργία.",
+    "loading": "Φόρτωση των βελονιών σας...",
+    "empty": {
+      "title": "Καμία Ενεργή Δημιουργία",
+      "body": "Το πλαίσιο κεντήματός σας είναι αυτή τη στιγμή κενό. Περιηγηθείτε στον κατάλογο μοτίβων για να βρείτε κάτι όμορφο για κέντημα!",
+      "action": "Περιήγηση Καταλόγου"
+    },
+    "unknownPattern": "Άγνωστο Μοτίβο",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Μοτίβο {{id}}",
+    "deleteSessionAccessibilityLabel": "Διαγραφή συνεδρίας",
+    "viewFinishedAccessibilityLabel": "Προβολή ολοκληρωμένης δημιουργίας",
+    "resumeAccessibilityLabel": "Συνέχιση κεντήματος",
+    "status": {
+      "ready": "Έτοιμο",
+      "done": "Ολοκληρώθηκε",
+      "active": "Ενεργό",
+      "preparing": "Προετοιμασία",
+      "failed": "Απέτυχε"
+    },
+    "deleteConfirm": {
+      "title": "Διαγραφή Προόδου",
+      "message": "Είστε βέβαιοι ότι θέλετε να διαγράψετε την πρόοδό σας για το «{{title}}»; Αυτό δεν μπορεί να αναιρεθεί.",
+      "cancel": "Ακύρωση",
+      "confirm": "Διαγραφή"
+    },
+    "preparingCard": {
+      "discardTitle": "Απόρριψη Συνεδρίας",
+      "cancelTitle": "Ακύρωση Λήψης",
+      "discardMessage": "Είστε βέβαιοι ότι θέλετε να απορρίψετε αυτή την αποτυχημένη συνεδρία;",
+      "cancelMessage": "Είστε βέβαιοι ότι θέλετε να ακυρώσετε τη λήψη αυτού του μοτίβου;",
+      "keep": "Διατήρηση",
+      "discard": "Απόρριψη",
+      "cancel": "Ακύρωση"
+    }
+  },
+  "loading": {
+    "text": "Άνοιγμα συνεδρίας & προετοιμασία υφάσματος..."
+  },
+  "error": {
+    "title": "Αποτυχία Φόρτωσης Συνεδρίας",
+    "fallbackMessage": "Δεν είναι δυνατή η φόρτωση της συνεδρίας κεντήματός σας.",
+    "backButton": "Επιστροφή",
+    "tableButton": "Μετάβαση στο Τραπέζι"
+  },
+  "header": {
+    "backButton": "← Πίσω",
+    "tableButton": "← Τραπέζι",
+    "defaultTitle": "Συνεδρία Κεντήματος",
+    "progress": "{{completed}} / {{total}} κελιά ({{percent}}% ολοκληρώθηκε)",
+    "resumeTutorialAccessibilityLabel": "Συνέχιση οδηγού"
+  },
+  "banners": {
+    "patternRemoved": "Αυτό το Μοτίβο αφαιρέθηκε από τη συντόνιση και δεν είναι πλέον διαθέσιμο. Πατήστε για έξοδο.",
+    "syncConflict": "Συγχρονίστηκε με άλλη συσκευή — μερικά κελιά ενημερώθηκαν. Πατήστε για απόρριψη."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Εντοπισμός επόμενου εναπομείναντος κελιού του ενεργού χρώματος κλωστής",
+    "undoAccessibilityLabel": "Αναίρεση τελευταίας βελονιάς"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Χρώμα {{number}}: DMC {{dmcCode}}, {{count}} βελονιά εναπομένει",
+    "chipAccessibilityLabel_other": "Χρώμα {{number}}: DMC {{dmcCode}}, {{count}} βελονιές εναπομένουν",
+    "done": "Ολοκληρώθηκε",
+    "remaining_one": "{{count}} απομένει",
+    "remaining_other": "{{count}} απομένουν"
+  },
+  "celebration": {
+    "title": "Υπέροχα Δημιουργημένο!",
+    "subtitle": "Ολοκληρώσατε κάθε βελονιά σε αυτό το ύφασμα.",
+    "stitchesLabel_one": "Βελονιά",
+    "stitchesLabel_other": "Βελονιές",
+    "colorsLabel_one": "Χρώμα",
+    "colorsLabel_other": "Χρώματα",
+    "replayButton": "Κέντημα Ξανά",
+    "catalogButton": "Επιστροφή στον Κατάλογο"
+  }
+}
