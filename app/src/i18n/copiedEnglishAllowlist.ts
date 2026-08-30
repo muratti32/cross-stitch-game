@@ -110,4 +110,9 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'ru:profile:home.walletCard.aiCreditsLabel': 'AI Credit is the branded in-game currency, kept English per the Russian pack convention.',
   'ru:settings:session.idLabel': '"ID" is used identically in Russian tech/UI copy.',
   'ru:shell:tabs.stitch': '"Stitch" is the branded core-activity name, kept English per the Russian pack convention.',
+  'zh-Hans:commerce:premiumHero.benefitAiCredits': 'AI Credit is the branded in-game currency, kept English per the Simplified Chinese pack convention.',
+  'zh-Hans:play:home.idLabel': '"ID" is used identically in Simplified Chinese tech/UI copy.',
+  'zh-Hans:profile:home.walletCard.aiCreditsLabel': 'AI Credit is the branded in-game currency, kept English per the Simplified Chinese pack convention.',
+  'zh-Hans:settings:session.idLabel': '"ID" is used identically in Simplified Chinese tech/UI copy.',
+  'zh-Hans:shell:tabs.stitch': '"Stitch" is the branded core-activity name, kept English per the Simplified Chinese pack convention.',
 };

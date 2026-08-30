@@ -134,7 +134,8 @@
       "ko": "./src/i18n/locales/ko/native.json",
       "nl": "./src/i18n/locales/nl/native.json",
       "pl": "./src/i18n/locales/pl/native.json",
-      "ru": "./src/i18n/locales/ru/native.json"
+      "ru": "./src/i18n/locales/ru/native.json",
+      "zh-Hans": "./src/i18n/locales/zh-Hans/native.json"
     },
     "experiments": {
       "typedRoutes": true,

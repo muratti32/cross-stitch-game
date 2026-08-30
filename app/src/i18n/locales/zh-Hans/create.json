@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "返回",
+    "cancel": "取消",
+    "duplicateTitle": "你已经有一个叫“{{title}}”的个人图纸啦。换个名字吧。",
+    "cellsCount_one": "格",
+    "cellsCount_other": "格",
+    "colorsCount_one": "色",
+    "colorsCount_other": "色"
+  },
+  "hub": {
+    "title": "创意工坊",
+    "subtitle": "把你的设计变成独一无二的十字绣图纸。",
+    "opening": "正在打开…",
+    "photoImport": {
+      "title": "导入照片",
+      "description": "从相册上传照片，一键转换成可以绣的图纸。",
+      "action": "导入照片"
+    },
+    "aiGenerator": {
+      "title": "AI 生成器",
+      "description": "写下温馨的画面描述，让 AI 为你定制专属的像素风设计。",
+      "action": "生成设计"
+    }
+  },
+  "aspects": {
+    "square": "正方形",
+    "portrait_4_3": "竖版 4:3",
+    "landscape_4_3": "横版 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "图纸转换失败了，请再试一次吧。",
+      "timeout": "图纸转换还在处理中，稍等一下再试哦。",
+      "generic": "无法完成图纸转换，请重试。"
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "需要注册账号哦",
+      "body": "AI 作品和你的素材库会安全保存在你的账号里，只有你看得到。",
+      "signIn": "去登录"
+    },
+    "header": {
+      "title": "AI 生成器",
+      "backAccessibilityLabel": "返回"
+    },
+    "prompt": {
+      "label": "描述你的作品",
+      "placeholder": "夕阳下温馨的林间小屋花园…"
+    },
+    "generate": {
+      "working": "正在生成中…",
+      "action": "开始生成 — 1 AI Credit",
+      "errors": {
+        "promptRejected": "这个描述词不太合适哦，换个词试试吧。",
+        "generic": "无法开始 AI 生成，请再试一次。"
+      }
+    },
+    "library": {
+      "title": "你的 AI 作品库",
+      "status": {
+        "pending": "等待中",
+        "dispatched": "已发送",
+        "running": "生成中",
+        "delivered": "已生成",
+        "safety_rejected": "内容审核未通过",
+        "failed": "生成失败",
+        "deleted": "已删除",
+        "unknown": "不可用"
+      },
+      "failure": {
+        "safety_rejected": "该作品未通过内容安全审核。",
+        "failed": "这件作品没能成功生成。"
+      },
+      "approve": "转换成图纸",
+      "delete": "删除",
+      "deleteAccessibilityLabel": "删除这个 AI 作品",
+      "errors": {
+        "loadFailed": "加载你的 AI 作品库失败了，请重试。"
+      }
+    },
+    "approve": {
+      "modalTitle": "创建个人图纸",
+      "titleLabel": "图纸名称",
+      "titleAccessibilityLabel": "图纸名称",
+      "defaultTitle": "我的 AI 图纸",
+      "placeholder": "我的 AI 图纸",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "取消",
+      "creating": "正在创建图纸…",
+      "create": "创建图纸",
+      "errors": {
+        "generic": "无法创建个人图纸，请重试。"
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "需要注册账号哦",
+      "body": "个人图纸保存在你的账号中，既能保证私密性，又能在不同设备上随时查看。",
+      "signIn": "登录或创建账号",
+      "back": "返回"
+    },
+    "header": {
+      "title": "照片图纸",
+      "subtitle": "先在本地裁剪，再确认转换",
+      "backAccessibilityLabel": "返回"
+    },
+    "picker": {
+      "chooseTitle": "选择照片",
+      "helpText": "高分辨率的原图仅保留在当前设备上，在你确认裁剪区域前不会进行任何转换。",
+      "choose": "从相册选择",
+      "chooseAnother": "换一张",
+      "opening": "正在打开…",
+      "errors": {
+        "permissionDenied": "需要相册访问权限才能选择照片哦。",
+        "invalidDimensions": "所选照片的尺寸似乎无法识别。",
+        "generic": "打不开相册，请再试一次。"
+      }
+    },
+    "framing": {
+      "title": "裁剪画面",
+      "gestureHint": "拖动可调整位置 · 双指捏合可缩放",
+      "aspectLabel": "画面比例"
+    },
+    "profile": {
+      "title": "转换方案",
+      "options": {
+        "easy": "简单",
+        "standard": "标准",
+        "detailed": "精细"
+      },
+      "custom": "自定义",
+      "customMeta": "免费 · 比例已锁定",
+      "unavailable": "不适合当前裁剪区域",
+      "customShortEdgeLabel": "短边长度",
+      "customColorLimitLabel": "DMC 线号数量限制",
+      "exceedsLimit": "自定义数值超出了最大 {{max}} 格的图纸尺寸限制。"
+    },
+    "titleCard": {
+      "label": "图纸名称",
+      "placeholder": "我的照片图纸",
+      "defaultTitle": "我的照片图纸",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · 最多 {{maxColors}} 种 DMC {{colorsUnit}}",
+      "privacyNotice": "确认后仅会上传裁剪压缩后的预览图，照片原图仍保留在本地。",
+      "approve": "确认画面并转换"
+    },
+    "processing": {
+      "preparingFrame": "正在设备上准备裁剪后的画面…",
+      "uploading": "正在上传裁剪压缩后的画面…",
+      "waitingForWorker": "正在等待转换服务器响应…",
+      "buildingGrid": "正在构建绣格 and DMC 色板…",
+      "preparingSession": "正在为你准备个人图纸…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "此方案不适用于最终的裁剪区域。请选择“简单”方案或降低细节要求。",
+        "generic": "无法转换这张照片，请重试。"
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "未选择图纸",
+      "noPatternBody": "需要从你的作品库中选择一个已有的个人图纸才能进入该页面。",
+      "accountTitle": "需要注册账号哦",
+      "accountBody": "个人图纸保存在你的账号中，既能保证私密性，又能在不同设备上随时查看。",
+      "signIn": "登录或创建账号",
+      "back": "返回"
+    },
+    "loading": "正在恢复编辑器草稿...",
+    "load": {
+      "failedTitle": "无法加载图纸",
+      "retry": "重试",
+      "back": "返回",
+      "errors": {
+        "generic": "加载个人图纸失败，请重试。"
+      }
+    },
+    "header": {
+      "title": "图纸编辑器",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "返回"
+    },
+    "toolbar": {
+      "undo": "撤销",
+      "redo": "重做"
+    },
+    "mode": {
+      "paint": "绘制",
+      "replaceColor": "替换颜色",
+      "replaceStep1": "1. 在下方图纸中点击想要替换的颜色：",
+      "replaceStep2": "2. 在下方选择目标 DMC 颜色来完成替换：",
+      "paintSelected": "已选：DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "在下方选择一种颜色，然后点击网格开始绘制吧。"
+    },
+    "errors": {
+      "pickColorFirst": "请先选择一种颜色",
+      "paletteLimit": "这幅图纸已经达到了 {{max}} 种绣花线颜色的上限啦。"
+    },
+    "picker": {
+      "title": "DMC 绣花线颜色",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "保存已编辑的图纸",
+      "placeholder": "我的已编辑图纸",
+      "action": "另存为新图纸",
+      "offlineTitle": "已离线保存",
+      "offlineBody": "你编辑 of 图纸已保存在此设备上，恢复网络连接后将自动同步到你的账号。",
+      "errors": {
+        "generic": "无法保存个人图纸，请重试。"
+      }
+    }
+  }
+}

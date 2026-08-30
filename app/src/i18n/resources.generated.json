@@ -18276,5 +18276,1411 @@
         "settings": "Ayarlar"
       }
     }
+  },
+  "zh-Hans": {
+    "catalog": {
+      "common": {
+        "back": "← 返回",
+        "searchPlaceholder": "搜索图案、创作者、标签…",
+        "offlineBanner": "离线状态 — 目录可能不是最新的哦",
+        "sectionError": {
+          "title": "加载失败啦",
+          "retry": "再试一次"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} 种颜色",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} 列",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "英语"
+        },
+        "accessibilityLabel": "以 {{language}} 编写"
+      },
+      "index": {
+        "subtitle": "一针一线，织就你的温馨世界。",
+        "searchBar": {
+          "accessibilityLabel": "搜索图案目录"
+        },
+        "sections": {
+          "starterPatterns": "新手图案",
+          "staffPicks": "官方精选",
+          "categories": "分类",
+          "newPatterns": "最新图案"
+        },
+        "staffPicks": {
+          "emptyTitle": "这里还没有官方精选哦",
+          "emptyBody": "我们精心挑选的温馨设计很快就会在这里呈现啦。",
+          "errorBody": "暂时无法连接到目录，而且目前还没有缓存哦。"
+        },
+        "categories": {
+          "count": "{{count}} 个图案",
+          "errorBody": "暂时无法连接到目录，而且目前还没有缓存哦。"
+        },
+        "newPatterns": {
+          "emptyTitle": "新图案正在制作中",
+          "emptyBody": "新成员正在路上，很快就到！",
+          "errorBody": "暂时无法连接到目录，而且目前还没有缓存哦。",
+          "showMore": "查看更多",
+          "loading": "加载中…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "浏览",
+        "error": {
+          "body": "暂时无法连接到此目录页面，而且目前还没有缓存哦。"
+        },
+        "empty": {
+          "title": "这里空空如也",
+          "body": "还没有符合该筛选条件的图案。新设计会定期更新，过阵子再来看看吧！"
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "目录搜索输入框",
+        "inactive": {
+          "title": "搜索目录",
+          "body": "输入至少两个字符，即可按标题、创作者或标签搜索图案。"
+        },
+        "error": {
+          "title": "搜索需要联网哦",
+          "body": "离线状态下无法搜索目录。不过你依然可以从“目录”标签页浏览已缓存的页面。"
+        },
+        "noResults": {
+          "title": "没有找到匹配项",
+          "body": "目录中还没有与“{{query}}”匹配的内容。"
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "正在以游客身份体验",
+        "body": "游客身份下的 Stitch Coin 和进度只保存在这台设备上。如果卸载或丢失应用，你的游客账本和进度可能就找不回来啦。登录账号可以保护你的进度哦。"
+      },
+      "detail": {
+        "noDescription": "暂无描述。",
+        "specs": {
+          "dimensions": "尺寸",
+          "totalStitches": "总针数",
+          "colors": "颜色",
+          "category": "分类"
+        },
+        "threadsSuffix": "{{count}} 种绣线",
+        "palette": {
+          "title": "所需绣线",
+          "loading": "正在读取绣线配色...",
+          "loadFailed": "配色加载失败：{{error}}",
+          "retry": "重新加载"
+        },
+        "actions": {
+          "startStitching": "开始刺绣",
+          "starting": "正在开始...",
+          "preparing": "正在准备…"
+        },
+        "loadFailedGeneric": "图案文件解析失败。",
+        "sessionCreateFailed": "创建刺绣会话失败，请再试一次。",
+        "unavailable": {
+          "title": "图案不可用",
+          "body": "该图案加载失败。可能已被删除，或者你现在处于离线状态。",
+          "goBack": "返回"
+        },
+        "byCreator": "来自 {{creatorName}}",
+        "byCreatorWithUsername": "来自 {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "屏蔽创作者",
+          "message": "你确定要屏蔽 {{creatorName}} 吗？这是一个私密且可撤销的操作，会从搜索和浏览中隐藏其图案。这不会举报该创作者，也不会中断你当前的刺绣进度。",
+          "cancel": "取消",
+          "confirm": "屏蔽",
+          "blockedTitle": "已屏蔽",
+          "blockedMessage": "已屏蔽 {{creatorName}}。",
+          "errorTitle": "错误",
+          "failedGeneric": "屏蔽创作者失败。"
+        },
+        "likeFailedGeneric": "更新点赞状态失败",
+        "connectToPlay": {
+          "title": "联网以开始刺绣",
+          "body": "开始制作目录图案需要联网以准备你的会话。不过，即使离线，你现在也可以直接体验新手图案哦。"
+        },
+        "insufficientCoins": {
+          "title": "Stitch Coin 不足",
+          "body": "此图案需要 {{price}} 个 Stitch Coin，但你只有 {{balance}} 个 Stitch Coin。\n\n还差：{{shortfall}} 个 Stitch Coin。\n\n完成其他图案就能赚取 Stitch Coin 啦！“首次完成”奖励已开启，快来试试吧。",
+          "getCoins": "获取 Stitch Coin",
+          "findPatterns": "去找些图案来绣吧",
+          "back": "返回"
+        },
+        "unlockFailedGeneric": "解锁失败。请检查网络连接并重试。",
+        "preparationFailedGeneric": "无法开始准备工作。请检查网络连接并重试。",
+        "price": {
+          "label": "价格"
+        },
+        "balance": {
+          "label": "你的余额",
+          "loading": "…"
+        },
+        "unlockButton": "使用 {{price}} 个 Stitch Coin 解锁",
+        "communityReport": {
+          "button": "举报此图案",
+          "title": "举报 {{patternTitle}}",
+          "body": "请选择最符合该问题的举报原因。举报不会自动隐藏或更改图案。",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "不当或不安全内容",
+            "copyright_or_publication_rights": "版权或发表权问题",
+            "duplicate_or_spam": "重复或垃圾内容",
+            "misleading_title_or_tags": "误导性标题或标签",
+            "other": "其他"
+          },
+          "explanationLabel": "证据或说明 {{requirement}}",
+          "explanationRequired": "(必填)",
+          "explanationOptional": "(选填)",
+          "explanationPlaceholder": "分享详细信息，以帮助审核人员评估该图案。",
+          "characterCount": "{{count}}/2000",
+          "cancel": "取消",
+          "submit": "提交举报",
+          "submitFailedGeneric": "无法提交你的举报。请检查网络连接并重试。",
+          "receivedTitle": "已收到举报",
+          "alreadyReceivedTitle": "已收到过该举报",
+          "receivedBody": "审核人员稍后会评估该图案。举报不会自动更改其可用状态。",
+          "alreadyReceivedBody": "你之前提交的举报已处于审核流程中。",
+          "signInRequired": {
+            "title": "登录以提交举报",
+            "message": "社区举报需要注册账号。当前未提交任何内容。",
+            "cancel": "取消",
+            "signIn": "登录"
+          },
+          "validation": {
+            "chooseReason": "请选择一个举报原因。",
+            "explainRequired": "请说明你为什么要举报此图案。",
+            "tooLong": "说明字数不能超过 2000 个字符。",
+            "needsContent": "说明中必须包含字母或数字。"
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "返回",
+        "title": "商城",
+        "subtitle": "会员与单次充值"
+      },
+      "signInReturn": {
+        "notice": "你已登录。已为你保留已选的 {{label}}。请确认，准备好后点击购买即可。"
+      },
+      "premiumHero": {
+        "eyebrow": "PREMIUM 会员",
+        "title": "创作更多。每天领点小奖励。",
+        "body": "每个付费周期的 AI Credits、Premium 主题，以及每日领取 Stitch Coin 的福利。",
+        "benefitAiCredits": "AI Credits",
+        "benefitDailyCoins": "每日 Stitch Coin",
+        "benefitThemes": "专属主题",
+        "statusNoActiveMembership": "暂无生效中的会员",
+        "statusBrowseAsGuest": "以游客身份浏览方案",
+        "periodEndsLabel": "当前周期结束时间",
+        "periodRenewsLabel": "自动续期",
+        "lifecycleActive": "生效中"
+      },
+      "membershipActions": {
+        "title": "已启用 Premium 会员",
+        "body": "每日奖励可在“个人资料”中领取。主题设置请前往“设置 › 外观”。",
+        "scheduledChangeNotice": "将于 {{date}} 变更为 {{plan}}",
+        "manageSubscription": "管理订阅",
+        "manageSubscriptionFailedTitle": "无法打开订阅管理",
+        "manageSubscriptionFailedBody": "请尝试在你的设备应用商店账户中重新操作。"
+      },
+      "pending": {
+        "title": "购买确认处理中",
+        "verifyingTitle": "正在验证购买...",
+        "premiumChangeAccepted": "商店已接受向 {{label}} 的变更。",
+        "premiumResponseReceived": "已收到商店关于 {{label}} 的响应。",
+        "premiumDeferredSuffix": "该变更将在游戏后台验证后生效，并于你当前的周期结束后起效。",
+        "premiumSuffix": "Premium 会员将在游戏后台验证后激活。",
+        "doNotPurchasePlanAgain": "请勿重复购买此方案。",
+        "coinPackBody": "已收到商店响应。Stitch Coin 余额将在游戏后台确认匹配的账单发放后更新。请勿重复购买此礼包。",
+        "aiCreditPackBody": "已收到商店响应。AI Credit 余额将在游戏后台确认匹配的账单发放后更新。请勿重复购买此礼包。",
+        "refreshStatus": "刷新状态",
+        "retryReconciliation": "重试对账"
+      },
+      "store": {
+        "loadingPrices": "正在加载商店价格...",
+        "unavailableTitle": "商店暂时不可用",
+        "unavailableBody": "你的钱包和会员信息依然可用。",
+        "retry": "重试"
+      },
+      "plans": {
+        "choosePremiumPlan": "选择 Premium 方案",
+        "yourPremiumPlan": "你的 Premium 方案",
+        "currentPlan": "当前方案",
+        "upgrade": "升级",
+        "planChange": "变更方案",
+        "bestValue": "最划算",
+        "billedEvery": "每 {{period}} 计费一次",
+        "chooseLabel": "选择 {{label}}",
+        "freeTrial": "前 {{offer}} 免费，随后为 {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "单次购买礼包",
+        "stitchCoinPacksTitle": "Stitch Coin 礼包",
+        "aiCreditPacksTitle": "AI Credit 礼包",
+        "coinsNoun": "Stitch Coins",
+        "creditsNoun": "AI Credits",
+        "fromPrice": "{{price}} 起"
+      },
+      "restore": {
+        "restorePurchases": "恢复购买",
+        "restoreGuestPremium": "恢复游客 Premium",
+        "requestedTitle": "已提交恢复申请",
+        "requestedBody": "验证通过的 Premium 权益将在商店回调对账后生效。Stitch Coin 和 AI Credit 礼包无法恢复。"
+      },
+      "sheet": {
+        "currentPricesSubtitle": "应用商店当前价格",
+        "closeAccessibilityLabel": "关闭商品面板",
+        "closeButtonAccessibilityLabel": "关闭",
+        "selectedBeforeSignIn": "登录前已选择",
+        "buy": "购买"
+      },
+      "confirmation": {
+        "cancel": "取消",
+        "confirmLabel": "确认 {{label}}",
+        "confirmPremiumTitle": "确认购买 Premium 会员",
+        "introductoryOffer": "应用商店显示你的首发优惠为：{{offer}}。",
+        "premiumAppearsAfterVerification": "Premium 会员将在游戏后台验证商店交易后生效。",
+        "confirmPremiumUpgradeTitle": "确认升级 Premium 会员",
+        "confirmPremiumPlanChangeTitle": "确认变更 Premium 会员方案",
+        "currentPlanLabel": "当前方案：{{label}}",
+        "upgradeToLabel": "升级为 {{label}} · {{offer}}",
+        "changeToLabel": "变更为 {{label}} · {{offer}}",
+        "upgradeBody": "App Store 控制本次升级的最终扣费和生效日期。游戏后台验证后，Premium 会员才会更新为 {{label}}。",
+        "planChangeBody": "App Store 会将此变更延迟至你当前周期结束：在此之前 {{currentLabel}} 将继续生效，自变更之日起开始对 {{targetLabel}} 计费。你可以通过“管理订阅”取消此变更。",
+        "confirmUpgrade": "确认升级",
+        "confirmPlanChange": "确认变更",
+        "confirmStitchCoinTitle": "确认购买 Stitch Coin",
+        "confirmAiCreditTitle": "确认购买 AI Credit",
+        "balanceChangesAfterVerificationCoin": "你的余额将在游戏后台验证商店交易并记录相应的账单发放后更新。",
+        "balanceChangesAfterVerificationAiCredit": "你的余额将在游戏后台验证商店交易并记录相应的账单发放后更新。无需购买 Premium 会员。"
+      },
+      "disclosure": {
+        "subscriptionTerms": "确认购买后，款项将从你的 {{store}} 账户扣除。除非在当前订阅期结束前至少 24 小时关闭自动续订，否则 {{label}} Premium 会以 {{offer}} 自动续费。如果你购买了订阅，免费试用期内任何未使用的额度都将失效。你可以随时在 {{store}} 账户中取消订阅。",
+        "privacyPolicy": "隐私政策",
+        "termsOfService": "服务条款",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "无法打开链接：{{url}}"
+      },
+      "supportReference": {
+        "label": "支持参考号：{{reference}}",
+        "copyAccessibilityLabel": "复制支持参考号 {{reference}}",
+        "copyAccessibilityHint": "将支持参考号复制到剪贴板",
+        "copied": "已复制",
+        "copyFailedTitle": "复制失败",
+        "copyFailedBody": "无法复制支持参考号。请选择文本进行手动复制。"
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "游客身份购买 Stitch Coin 仅在 iOS 设备上可用。",
+        "guestIosOnlyGeneric": "游客身份购买仅在 iOS 设备上可用。",
+        "purchaseFailedTitle": "购买失败",
+        "premiumVerificationNotYet": "游戏后台无法验证此购买. 请重试对账，请勿重复购买。",
+        "premiumVerificationFailedRetry": "游戏后台暂时无法验证此购买. 请重试对账，请勿重复购买。",
+        "premiumGrantRefreshFailed": "Premium 会员已通过验证，但会员及 AI Credit 状态刷新失败。请重试对账。",
+        "premiumReconciliationUnreachable": "对账程序无法连接到游戏后台。请重试对账，请勿重复购买。",
+        "coinPackVerificationMismatch": "商店交易与此 Stitch Coin 礼包不匹配。请重试验证或联系客服，请勿重复购买。",
+        "coinPackGrantUnavailable": "购买已通过验证，但无法发放 Stitch Coin。请重试对账，请勿重复购买。",
+        "coinPackBalanceRefreshFailed": "Stitch Coin 发放已通过验证，但无法刷新当前的 Stitch Coin 余额。请重试对账。",
+        "coinPackVerificationFailedRetry": "游戏后台暂时无法验证此 Stitch Coin 礼包。请重试对账，请勿重复购买。",
+        "coinPackReconciliationUnreachable": "Stitch Coin 礼包对账无法连接到游戏后台。请重试对账，请勿重复购买。",
+        "aiCreditPackVerificationMismatch": "商店交易与此 AI Credit 礼包不匹配。请重试验证或联系客服，请勿重复购买。",
+        "aiCreditPackGrantUnavailable": "购买已通过验证，但无法发放 AI Credit。请重试对账，请勿重复购买。",
+        "aiCreditPackBalanceRefreshFailed": "AI Credit 发放已通过验证，但无法刷新当前余额。请重试对账。",
+        "aiCreditPackVerificationFailedRetry": "游戏后台暂时无法验证此 AI Credit 礼包。请重试对账，请勿重复购买。",
+        "aiCreditPackReconciliationUnreachable": "AI Credit 礼包对账无法连接到游戏后台。请重试对账，请勿重复购买。",
+        "reconciliationStillUnavailable": "游戏后台依然不可用。请稍后重试对账。",
+        "storeTemporarilyUnavailable": "商店暂时不可用。请在几分钟后重试。",
+        "purchasesNotAllowed": "此设备上禁止购买。请检查你的商店账户或家长控制设置。",
+        "itemNotAvailable": "此商品目前无法购买。请选择其他商品或稍后重试。",
+        "alreadyOwned": "你已拥有此购买项目。请使用“恢复购买”来刷新你的访问权限。",
+        "couldNotConnectToStore": "无法连接到商店。请检查你的网络连接并重试。",
+        "paymentPendingApproval": "你的付款正在等待批准。购买将在商店处理完成后生效。",
+        "testPurchaseDeclined": "测试购买已被拒绝，未产生扣费。请在“设置”中选择不同的测试商店结果，然后重试。",
+        "genericPurchaseFailure": "我们无法完成你的购买，未产生扣费。请重试。"
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "正在验证",
+        "premiumPending": "验证仍在进行中。游戏后台确认后即可激活 Premium 会员。",
+        "premiumPlanChangePending": "验证仍在进行中。游戏后台确认后将安排你的方案变更。",
+        "coinPackPending": "验证仍在进行中。完成后将更新你的 Stitch Coin 余额。",
+        "aiCreditPackPending": "验证仍在进行中。完成后将更新你的 AI Credit 余额。"
+      },
+      "success": {
+        "purchaseReceivedTitle": "已收到购买项目",
+        "storeAcceptedPlanChange": "商店已接受向 {{label}} 的变更。将在生效时进行确认。",
+        "storeAcceptedPurchase": "商店已接受 {{label}}。正在验证你的购买。",
+        "premiumChanges": "Premium 会员变更为 {{label}}{{effectiveOn}}。",
+        "effectiveOnDate": "，于 {{date}} 生效",
+        "planChangeScheduledTitle": "已安排方案变更",
+        "planChangeScheduledBody": "你的 Premium 会员将保留当前方案，直到变更为 {{label}}{{effectiveOn}}。你可以通过“管理订阅”取消此变更。",
+        "premiumIsActiveTitle": "Premium 会员已激活",
+        "premiumVerifiedAndActive": "{{label}} Premium 会员已验证并激活。",
+        "premiumNowActiveNoBilling": "{{label}} Premium 会员现已激活。",
+        "premiumNowActiveBilled": "{{label}} Premium 会员现已激活，每 {{period}} 计费一次。",
+        "coinPackGrantedTitle": "已发放 Stitch Coin",
+        "coinPackGrantVerified": "{{label}} 发放已验证。Stitch Coin 余额：{{balance}}。",
+        "coinPackAddedToBalance": "已将 {{quantity}} Stitch Coins 添加到你的余额中。",
+        "aiCreditPackGrantedTitle": "已发放 AI Credit",
+        "aiCreditPackGrantVerified": "{{label}} 发放已验证。AI Credit 余额：{{balance}}。",
+        "aiCreditPackAddedToBalance": "已将 {{quantity}} AI Credits 添加到你的余额中。"
+      },
+      "products": {
+        "premiumAnnual": "年付",
+        "premiumMonthly": "月付",
+        "premiumWeekly": "周付",
+        "stitchCoinPack_one": "{{formattedCount}} 个 Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} 个 Stitch Coins",
+        "aiCreditPack_one": "{{formattedCount}} 个 AI Credit",
+        "aiCreditPack_other": "{{formattedCount}} 个 AI Credits",
+        "billedEveryOffer": "每 {{period}} {{price}}",
+        "creditAllowancePaidPeriod": "每个付费周期 {{credits}} AI Credits",
+        "creditAllowancePaidNoun": "每付费 {{period}} {{credits}} AI Credits"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "以游客身份购买",
+        "commerceBody": "你可以在未注册的情况下进行购买。Premium 会员可以从商店恢复，但如果此安装丢失，Stitch Coin、AI Credit 以及私人的游客内容将无法找回。进行注册可以保护这些内容，且绝不会中断你的游客游戏体验。",
+        "continueAsGuest": "继续以游客身份",
+        "signInInstead": "改为登录",
+        "closeAccessibilityLabel": "关闭"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "我知道了",
+        "successButton": "太棒了",
+        "failedButton": "关闭",
+        "infoButton": "我知道了",
+        "closeAccessibilityLabel": "关闭"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "返回",
+        "cancel": "取消",
+        "duplicateTitle": "你已经有一个叫“{{title}}”的个人图纸啦。换个名字吧。",
+        "cellsCount_one": "格",
+        "cellsCount_other": "格",
+        "colorsCount_one": "色",
+        "colorsCount_other": "色"
+      },
+      "hub": {
+        "title": "创意工坊",
+        "subtitle": "把你的设计变成独一无二的十字绣图纸。",
+        "opening": "正在打开…",
+        "photoImport": {
+          "title": "导入照片",
+          "description": "从相册上传照片，一键转换成可以绣的图纸。",
+          "action": "导入照片"
+        },
+        "aiGenerator": {
+          "title": "AI 生成器",
+          "description": "写下温馨的画面描述，让 AI 为你定制专属的像素风设计。",
+          "action": "生成设计"
+        }
+      },
+      "aspects": {
+        "square": "正方形",
+        "portrait_4_3": "竖版 4:3",
+        "landscape_4_3": "横版 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "图纸转换失败了，请再试一次吧。",
+          "timeout": "图纸转换还在处理中，稍等一下再试哦。",
+          "generic": "无法完成图纸转换，请重试。"
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "需要注册账号哦",
+          "body": "AI 作品和你的素材库会安全保存在你的账号里，只有你看得到。",
+          "signIn": "去登录"
+        },
+        "header": {
+          "title": "AI 生成器",
+          "backAccessibilityLabel": "返回"
+        },
+        "prompt": {
+          "label": "描述你的作品",
+          "placeholder": "夕阳下温馨的林间小屋花园…"
+        },
+        "generate": {
+          "working": "正在生成中…",
+          "action": "开始生成 — 1 AI Credit",
+          "errors": {
+            "promptRejected": "这个描述词不太合适哦，换个词试试吧。",
+            "generic": "无法开始 AI 生成，请再试一次。"
+          }
+        },
+        "library": {
+          "title": "你的 AI 作品库",
+          "status": {
+            "pending": "等待中",
+            "dispatched": "已发送",
+            "running": "生成中",
+            "delivered": "已生成",
+            "safety_rejected": "内容审核未通过",
+            "failed": "生成失败",
+            "deleted": "已删除",
+            "unknown": "不可用"
+          },
+          "failure": {
+            "safety_rejected": "该作品未通过内容安全审核。",
+            "failed": "这件作品没能成功生成。"
+          },
+          "approve": "转换成图纸",
+          "delete": "删除",
+          "deleteAccessibilityLabel": "删除这个 AI 作品",
+          "errors": {
+            "loadFailed": "加载你的 AI 作品库失败了，请重试。"
+          }
+        },
+        "approve": {
+          "modalTitle": "创建个人图纸",
+          "titleLabel": "图纸名称",
+          "titleAccessibilityLabel": "图纸名称",
+          "defaultTitle": "我的 AI 图纸",
+          "placeholder": "我的 AI 图纸",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "取消",
+          "creating": "正在创建图纸…",
+          "create": "创建图纸",
+          "errors": {
+            "generic": "无法创建个人图纸，请重试。"
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "需要注册账号哦",
+          "body": "个人图纸保存在你的账号中，既能保证私密性，又能在不同设备上随时查看。",
+          "signIn": "登录或创建账号",
+          "back": "返回"
+        },
+        "header": {
+          "title": "照片图纸",
+          "subtitle": "先在本地裁剪，再确认转换",
+          "backAccessibilityLabel": "返回"
+        },
+        "picker": {
+          "chooseTitle": "选择照片",
+          "helpText": "高分辨率的原图仅保留在当前设备上，在你确认裁剪区域前不会进行任何转换。",
+          "choose": "从相册选择",
+          "chooseAnother": "换一张",
+          "opening": "正在打开…",
+          "errors": {
+            "permissionDenied": "需要相册访问权限才能选择照片哦。",
+            "invalidDimensions": "所选照片的尺寸似乎无法识别。",
+            "generic": "打不开相册，请再试一次。"
+          }
+        },
+        "framing": {
+          "title": "裁剪画面",
+          "gestureHint": "拖动可调整位置 · 双指捏合可缩放",
+          "aspectLabel": "画面比例"
+        },
+        "profile": {
+          "title": "转换方案",
+          "options": {
+            "easy": "简单",
+            "standard": "标准",
+            "detailed": "精细"
+          },
+          "custom": "自定义",
+          "customMeta": "免费 · 比例已锁定",
+          "unavailable": "不适合当前裁剪区域",
+          "customShortEdgeLabel": "短边长度",
+          "customColorLimitLabel": "DMC 线号数量限制",
+          "exceedsLimit": "自定义数值超出了最大 {{max}} 格的图纸尺寸限制。"
+        },
+        "titleCard": {
+          "label": "图纸名称",
+          "placeholder": "我的照片图纸",
+          "defaultTitle": "我的照片图纸",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · 最多 {{maxColors}} 种 DMC {{colorsUnit}}",
+          "privacyNotice": "确认后仅会上传裁剪压缩后的预览图，照片原图仍保留在本地。",
+          "approve": "确认画面并转换"
+        },
+        "processing": {
+          "preparingFrame": "正在设备上准备裁剪后的画面…",
+          "uploading": "正在上传裁剪压缩后的画面…",
+          "waitingForWorker": "正在等待转换服务器响应…",
+          "buildingGrid": "正在构建绣格 and DMC 色板…",
+          "preparingSession": "正在为你准备个人图纸…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "此方案不适用于最终的裁剪区域。请选择“简单”方案或降低细节要求。",
+            "generic": "无法转换这张照片，请重试。"
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "未选择图纸",
+          "noPatternBody": "需要从你的作品库中选择一个已有的个人图纸才能进入该页面。",
+          "accountTitle": "需要注册账号哦",
+          "accountBody": "个人图纸保存在你的账号中，既能保证私密性，又能在不同设备上随时查看。",
+          "signIn": "登录或创建账号",
+          "back": "返回"
+        },
+        "loading": "正在恢复编辑器草稿...",
+        "load": {
+          "failedTitle": "无法加载图纸",
+          "retry": "重试",
+          "back": "返回",
+          "errors": {
+            "generic": "加载个人图纸失败，请重试。"
+          }
+        },
+        "header": {
+          "title": "图纸编辑器",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "返回"
+        },
+        "toolbar": {
+          "undo": "撤销",
+          "redo": "重做"
+        },
+        "mode": {
+          "paint": "绘制",
+          "replaceColor": "替换颜色",
+          "replaceStep1": "1. 在下方图纸中点击想要替换的颜色：",
+          "replaceStep2": "2. 在下方选择目标 DMC 颜色来完成替换：",
+          "paintSelected": "已选：DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "在下方选择一种颜色，然后点击网格开始绘制吧。"
+        },
+        "errors": {
+          "pickColorFirst": "请先选择一种颜色",
+          "paletteLimit": "这幅图纸已经达到了 {{max}} 种绣花线颜色的上限啦。"
+        },
+        "picker": {
+          "title": "DMC 绣花线颜色",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "保存已编辑的图纸",
+          "placeholder": "我的已编辑图纸",
+          "action": "另存为新图纸",
+          "offlineTitle": "已离线保存",
+          "offlineBody": "你编辑 of 图纸已保存在此设备上，恢复网络连接后将自动同步到你的账号。",
+          "errors": {
+            "generic": "无法保存个人图纸，请重试。"
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "该登录属于另一个账户。您当前的账户未被更改。",
+        "providerRejected": "该验证已被拒绝。请检查账户或验证码后重试。"
+      },
+      "generic": {
+        "failure": "出了点问题，请重试。",
+        "supportReferenceLabel": "支持编号：{{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Stitch Wish 会使用您选择的照片来创建个人图案或设置公开创作者头像。"
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "欢迎来到 STITCH WISH",
+        "title": "选个颜色，然后点点匹配的方格吧。",
+        "heroAlt": "“温暖的心”新手图纸预览",
+        "handedness": {
+          "sectionTitle": "控制面板想放在哪一边呢？",
+          "groupLabel": "控制面板位置",
+          "optionRight": "控制面板在右侧",
+          "optionLeft": "控制面板在左侧",
+          "saveErrorText": "哎呀，没能保存你的选择。",
+          "retry": "再试一次"
+        },
+        "note": "你以后随时可以在“设置”中修改。",
+        "start": "开始 Stitch",
+        "starting": "正在启动…",
+        "browse": "浏览新手图纸",
+        "signIn": "登录"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "选择 DMC 321 圣诞红线。",
+          "stitchAction": "轻点高亮显示的匹配格子。",
+          "mismatchedTap": "轻点高亮显示的不同格子。点错了也不会有任何消耗哦。",
+          "undoAction": "撤销那一针 Stitch，然后重新绣上吧。",
+          "stitchSweep": "按住匹配的格子，然后顺着高亮区域滑动。",
+          "threadColorCompletion": "绣完高亮显示的白线，然后选择下一个颜色吧。"
+        },
+        "hints": {
+          "anchoredZoom": "双指捏合进行缩放，手指下的格子会固定在原位哦。",
+          "panVsSweep": "拖拽可以移动画布。从匹配的格子开始滑动，就能连续 Stitch 啦。",
+          "edgeAutoPan": "在边缘附近继续滑动，画布就会跟着你的手指移动哦。",
+          "remainingCellLocator": "用定位器来寻找这根线剩下的下一个格子吧。"
+        },
+        "skip": "先跳过",
+        "skipAccessibilityLabel": "先跳过新手教程",
+        "dismiss": "知道了",
+        "dismissAccessibilityLabel": "关闭提示"
+      },
+      "recap": {
+        "title": "你已经完全掌握啦！",
+        "lines": {
+          "matchNumbers": "根据数字配对，完成每一针 Stitch。",
+          "dragSweep": "在匹配的格子上滑动，进行连续绣制。",
+          "pinchZoom": "需要看细节时，双指捏合即可缩放。",
+          "undoLocator": "撤销和定位器功能完全免费，可以随便用哦。"
+        },
+        "continue": "继续 Stitch",
+        "browsePatterns": "浏览图纸"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "绣台",
+        "subtitle": "继续你上次的进度，或者恢复最近的手作吧。",
+        "loading": "正在加载你的 Stitch...",
+        "empty": {
+          "title": "暂无进行中的手作",
+          "body": "你的绣架现在空空如也。快去图纸库看看，找个好看的图案开绣吧！",
+          "action": "浏览图纸库"
+        },
+        "unknownPattern": "未知图纸",
+        "idLabel": "ID: {{id}}",
+        "unknownPatternLabel": "图纸 {{id}}",
+        "deleteSessionAccessibilityLabel": "删除当前进度",
+        "viewFinishedAccessibilityLabel": "查看已完成的绣作",
+        "resumeAccessibilityLabel": "继续绣制",
+        "status": {
+          "ready": "准备就绪",
+          "done": "已完成",
+          "active": "进行中",
+          "preparing": "准备中",
+          "failed": "失败"
+        },
+        "deleteConfirm": {
+          "title": "删除进度",
+          "message": "你确定要删除“{{title}}”的进度吗？此操作无法撤销哦。",
+          "cancel": "取消",
+          "confirm": "删除"
+        },
+        "preparingCard": {
+          "discardTitle": "放弃当前进度",
+          "cancelTitle": "取消下载",
+          "discardMessage": "你确定要放弃这次失败的记录吗？",
+          "cancelMessage": "你确定要取消下载这张图纸吗？",
+          "keep": "保留",
+          "discard": "放弃",
+          "cancel": "取消"
+        }
+      },
+      "loading": {
+        "text": "正在打开进度，准备绣布中..."
+      },
+      "error": {
+        "title": "进度加载失败",
+        "fallbackMessage": "无法加载你的 Stitch 进度。",
+        "backButton": "返回",
+        "tableButton": "前往绣台"
+      },
+      "header": {
+        "backButton": "← 返回",
+        "tableButton": "← 绣台",
+        "defaultTitle": "Stitch 进度",
+        "progress": "{{completed}} / {{total}} 格 (已完成 {{percent}}%)",
+        "resumeTutorialAccessibilityLabel": "继续教程"
+      },
+      "banners": {
+        "patternRemoved": "该图纸已被管理员下架，不再可用。轻触退出。",
+        "syncConflict": "已与另一台设备同步 — 部分格子已更新。轻触关闭。"
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "定位当前线色下一个未绣的格子",
+        "undoAccessibilityLabel": "撤销上一步 Stitch"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "颜色 {{number}}：DMC {{dmcCode}}，还剩 {{count}} 个 Stitch",
+        "chipAccessibilityLabel_other": "颜色 {{number}}：DMC {{dmcCode}}，还剩 {{count}} 个 Stitch",
+        "done": "已完成",
+        "remaining_one": "还剩 {{count}} 个",
+        "remaining_other": "还剩 {{count}} 个"
+      },
+      "celebration": {
+        "title": "大功告成，太美啦！",
+        "subtitle": "你已经完成了这块绣布上的每一个 Stitch。",
+        "stitchesLabel_one": "针",
+        "stitchesLabel_other": "针",
+        "colorsLabel_one": "颜色",
+        "colorsLabel_other": "颜色",
+        "replayButton": "再次 Stitch",
+        "catalogButton": "返回图纸库"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "返回",
+        "tryAgain": "再试一次"
+      },
+      "rejectionReasons": {
+        "safety": "安全问题",
+        "publication_rights": "发表权",
+        "duplicate_or_spam": "重复或垃圾内容",
+        "technical_invalidity": "技术性失效",
+        "quality_standard": "质量标准"
+      },
+      "submissionStatus": {
+        "accepted": "已发布",
+        "appeal_pending": "申诉处理中",
+        "appeal_upheld": "申诉已驳回",
+        "precheck_failed": "预检不可用",
+        "precheck_pending": "检查中",
+        "quarantined": "需要审核",
+        "rejected": "已拒绝",
+        "review_pending": "审核中"
+      },
+      "revisionStatus": {
+        "accepted": "已发布",
+        "appeal_pending": "申诉处理中",
+        "appeal_upheld": "申诉已驳回",
+        "pending": "审核中",
+        "rejected": "已拒绝",
+        "withdrawn": "已撤回"
+      },
+      "home": {
+        "identity": {
+          "establishing": "正在建立身份...",
+          "pendingTitle": "身份确认中",
+          "offline": "离线",
+          "retryConnection": "重试连接",
+          "loadingPublicProfile": "正在加载个人主页...",
+          "unavailableTitle": "个人主页不可用",
+          "checkConnection": "请检查你的网络连接并重试。",
+          "createTitle": "创建你的个人主页",
+          "createBody": "设置一个永久用户名，它会展示在你的社区图案旁。你的账户详细信息将保持私密。",
+          "createAction": "创建个人主页",
+          "editAction": "编辑个人主页",
+          "offlinePendingSync": "离线 — 等待同步",
+          "guestPlayer": "游客玩家",
+          "playingSince": "自 {{date}} 起开始玩",
+          "creatorSince": "自 {{date}} 起成为创作者"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "打开商店",
+          "title": "工作室余额",
+          "commerceStoreLink": "商店",
+          "stitchCoinsAccessibilityLabel": "Stitch Coins 余额：{{balance}}。轻触以获取金币。",
+          "packs": "组合包",
+          "stitchCoinsLabel": "Stitch Coins",
+          "stitchCoinsSub": "用于解锁图案",
+          "aiCreditsAccessibilityLabel": "AI Credits 余额：{{balance}}。轻触以获取额度。",
+          "aiCreditsSignInAccessibilityLabel": "AI Credits。登录以购买。",
+          "aiCreditsLabel": "AI Credits",
+          "aiCreditsSubOwned": "用于 AI 创作图案",
+          "aiCreditsSubGuest": "登录以拥有",
+          "membershipActiveAccessibilityLabel": "Premium 会员已激活（{{plan}}）。轻触以管理。",
+          "membershipInactiveAccessibilityLabel": "十字绣 Premium。轻触以查看订阅方案。",
+          "membershipActiveTitle": "Premium 已激活 · {{plan}}",
+          "membershipInactiveTitle": "十字绣 Premium",
+          "planAnnual": "年付",
+          "planMonthly": "月付",
+          "planWeekly": "周付",
+          "planActive": "已激活",
+          "trialBadge": "试用",
+          "membershipSubActive": "所有主题已解锁 · 每日即时领取金币",
+          "membershipSubInactive": "每日即时领取 30 金币、自定义主题及 AI Credits",
+          "manage": "管理",
+          "explore": "探索"
+        },
+        "quickNav": {
+          "sectionEyebrow": "账户与社区",
+          "submissionsAccessibilityLabel": "目录投稿：追踪审核、决定与申诉",
+          "submissionsTitle": "投稿",
+          "submissionsSub": "追踪审核进度",
+          "publishedAccessibilityLabel": "已发布图案：修改元数据、下架并追踪申诉",
+          "publishedTitle": "已发布",
+          "publishedSub": "管理图案",
+          "moderationAccessibilityLabel": "审核通知：查看影响你图案的目录决定",
+          "moderationTitle": "审核通知",
+          "moderationSub": "政策通知",
+          "likedAccessibilityLabel": "喜欢的图案：你收藏的社区图案",
+          "likedTitle": "喜欢的图案",
+          "likedSavedCount_one": "已保存 {{count}} 个",
+          "likedSavedCount_other": "已保存 {{count}} 个",
+          "likedSavedDefault": "已保存的图案"
+        },
+        "dailySection": {
+          "title": "每日绣图与奖励",
+          "tasksGroupLabel": "每日任务（最多 +30 金币）",
+          "connectToTrack": "连接以追踪每日任务进度。",
+          "loadingTasks": "正在加载任务…",
+          "loadFailed": "无法加载每日任务。",
+          "retry": "重试",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "正在重置…",
+          "resetsInHoursMinutes": "{{hours}} 小时 {{minutes}} 分钟后重置",
+          "resetsInMinutes": "{{minutes}} 分钟后重置"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 次 Stitch 操作",
+            "body": "今天填满 100 个匹配网格"
+          },
+          "three_colors_10": {
+            "title": "3 种颜色，每种进行 10 次操作",
+            "body": "在 3 种绣线颜色中各达到 10 次操作"
+          },
+          "color_completion": {
+            "title": "完成一种绣线颜色",
+            "body": "完全绣完任意一种颜色"
+          }
+        },
+        "dailyPool": {
+          "title": "每日 30 金币奖励池",
+          "premiumInstantClaim": "Premium 立即领取",
+          "rewardedAds": "激励广告",
+          "claimedAmount": "今天已领取 {{amount}} 个 Stitch Coins！",
+          "poolAlreadyClosed": "今天的奖励池已经关闭。",
+          "claimedForToday": "今天已领取。将在下一个奖励日重置。",
+          "poolExhausted": "今天的 30 金币奖励池已领完。",
+          "claimButtonRetry": "尝试重新领取",
+          "claimButtonInstant": "立即领取 {{count}} 金币",
+          "poolClaimedResetsTomorrow": "今天的金币池已领完。明天重置。",
+          "allAdRewardsCompleted": "今天的所有广告奖励已完成！（30/30 金币）",
+          "watchAdButton": "观看广告获得 +10 金币（还剩 {{count}} 次）",
+          "adPerkNote": "每天最多观看 3 次广告 · Premium 可解锁即时领取 30 金币",
+          "adRewardEarned": "已获得广告奖励！正在后台验证…",
+          "claimFailed": "领取失败：{{message}}",
+          "claimFailedGeneric": "出了点问题。请再试一次。",
+          "adLoadFailedDefault": "广告加载失败",
+          "adAttemptFailedDefault": "未能打开广告"
+        },
+        "tabs": {
+          "myCreations": "我的创作 {{count}}",
+          "likedPatterns": "喜欢的图案 {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "登录以查看个人图案",
+          "signInBody": "需要注册账户才能创建并私有拥有转换后的照片图案。",
+          "signIn": "登录",
+          "patternMeta": "{{width}}×{{height}} · {{count}} 色",
+          "pendingSync": "等待同步",
+          "play": "开始绣",
+          "edit": "编辑",
+          "submitAccessibilityLabel": "将《{{title}}》投稿至社区目录",
+          "emptyTitle": "暂无个人创作",
+          "emptyBody": "你还没有转换任何照片或生成 AI 艺术。快去“创建”开始你的第一个杰作吧！",
+          "emptyAction": "开始创建",
+          "actionFailedGeneric": "出了点问题。请再试一次。"
+        },
+        "likedTab": {
+          "unavailableTitle": "喜欢的图案不可用",
+          "unavailableDefault": "无法加载喜欢的图案。",
+          "byCreator": "作者：{{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} 色",
+          "emptyTitle": "暂无喜欢的图案",
+          "emptyBody": "浏览目录，在任何设计上轻触爱心图标，即可保存到这里以便稍后查看。",
+          "emptyAction": "探索图案"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Premium 每日金币领取",
+        "description": "领取今天共享的 30 金币奖励池余额。",
+        "connectPrompt": "连接到游戏后台以检查今天的奖励。",
+        "checkingReward": "正在检查今天的 Premium 奖励…",
+        "unavailableGeneric": "今天的 Premium 奖励不可用。",
+        "tryAgain": "再试一次",
+        "resultAdded": "游戏后台已添加 {{amount}} 个 Stitch Coins。余额：{{balance}}。",
+        "poolAlreadyClosed": "今天共享的奖励池已经关闭。",
+        "alreadyClaimed": "在此奖励日已领取。",
+        "poolExhausted": "今天共享的奖励池已领完。将在下一个奖励日重置。",
+        "availableNow": "现在有 {{count}} 个 Stitch Coins 可领取",
+        "resetsAt": "将在 {{date}} 重置",
+        "claimButtonRetry": "尝试重新领取",
+        "claimButtonInstant": "领取 {{count}} 金币",
+        "lockedDescription": "Premium 会员资格（包括符合条件的月度试用）可解锁此每日领取功能。",
+        "viewPremiumPlans": "查看 Premium 订阅方案"
+      },
+      "publicProfile": {
+        "editTitle": "编辑个人主页",
+        "createTitle": "创建个人主页",
+        "signInTitle": "需要登录",
+        "signInBody": "需要注册账户才能创建公开的创作者身份。",
+        "signInAction": "登录",
+        "unavailableTitle": "个人主页不可用",
+        "unavailableBody": "无法加载你的个人主页。请检查网络连接并重试。",
+        "tryAgain": "再试一次",
+        "intro": "此名称和照片会与你的社区图案一起展示。你的电子邮箱和登录提供商将保持私密。",
+        "choosePhoto": "选择照片",
+        "changePhoto": "更换照片",
+        "remove": "移除",
+        "avatarHelper": "可选 · JPEG、PNG 或 WebP 格式 · 最大 5 MB",
+        "usernameLabel": "用户名",
+        "usernameAccessibilityLabel": "公开用户名",
+        "usernamePlaceholder": "绣者昵称",
+        "usernameHelperLocked": "你的用户名是永久性的。",
+        "usernameHelperEditable": "3-30 个小写字母、数字或下划线。设置后无法更改。",
+        "displayNameLabel": "显示名称",
+        "displayNameAccessibilityLabel": "公开显示名称",
+        "displayNamePlaceholder": "你的创作者名称",
+        "displayNameHelper": "你可以在以后更改此名称。",
+        "safetyNotice": "名称和照片在发布前会经过审核。如果更改未通过，你当前的个人主页将保持不变。",
+        "saveAction": "保存个人主页",
+        "publishAction": "发布个人主页",
+        "photoPermissionRequired": "需要照片库访问权限才能选择头像照片。",
+        "photoTypeInvalid": "头像照片必须是 JPEG、PNG 或 WebP 格式。",
+        "photoTooLarge": "头像照片必须小于或等于 5 MB。",
+        "saveFailedDefault": "无法保存你的个人主页"
+      },
+      "submissions": {
+        "title": "目录投稿",
+        "unavailableTitle": "投稿不可用",
+        "unavailableDefault": "无法加载你的投稿。",
+        "emptyTitle": "暂无目录投稿",
+        "emptyBody": "从“我的创作”中提交已同步的个人图案。",
+        "emptyAction": "返回我的创作",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "自动检查未能完成。此快照未发布。",
+        "publishedToCatalog": "已发布到社区目录。",
+        "appealAction": "对决定提出申诉",
+        "appealHelp": "你可以对这个未更改的快照申诉一次。",
+        "appealNoteAccessibilityLabel": "申诉备注",
+        "appealNotePlaceholder": "为审核版主提供可选的背景信息",
+        "cancelAction": "取消",
+        "submitAppealAction": "提交申诉"
+      },
+      "publishedPatterns": {
+        "title": "已发布图案",
+        "unavailableTitle": "图案不可用",
+        "unavailableDefault": "无法加载你已发布的图案。",
+        "emptyTitle": "暂无已发布图案",
+        "emptyBody": "你发布到社区目录的图案会显示在这里。",
+        "emptyAction": "返回个人主页",
+        "withdrawnFromCatalog": "已从目录中撤回",
+        "underReviewHold": "审核挂起中",
+        "meta": "{{category}} · 发布于 {{date}}",
+        "withdrawnHelp": "此身份已被永久撤回。已有正在进行的绣图会话 (Stitching Session) 的玩家将保留其进度和访问权限。",
+        "reviewHoldHelp": "此图案已暂时从探索中移出，无法开始新会话。现有的绣图会话仍可继续游玩。你仍可以提交元数据修改建议。",
+        "reviseAction": "修改元数据",
+        "withdrawRevisionAction": "撤回修改",
+        "appealAction": "对决定提出申诉",
+        "withdrawFromCatalogAction": "从目录中下架",
+        "appealHelp": "你可以对这个未更改的快照申诉一次。如果提交新的修改建议，则视为放弃此次申诉。",
+        "appealNoteAccessibilityLabel": "申诉备注",
+        "appealNotePlaceholder": "为审核版主提供可选的背景信息",
+        "cancelAction": "取消",
+        "submitAppealAction": "提交申诉",
+        "withdrawRevisionFailedTitle": "无法撤回修改",
+        "withdrawPatternFailedTitle": "无法撤回图案",
+        "withdrawPatternSuccessTitle": "图案已撤回",
+        "withdrawPatternSuccessBody": "该图案已不再能被发现，也无法开始新会话。现有的绣图会话将保留其进度和游玩数据。",
+        "withdrawConfirmTitle": "确认从社区目录撤回吗？",
+        "withdrawConfirmBody": "“{{title}}”将从探索中消失，且无法开始新会话。此图案标识无法恢复。现有的绣图会话及其进度仍可继续游玩。",
+        "withdrawConfirmCancel": "取消",
+        "withdrawConfirmAction": "永久撤回"
+      },
+      "revisePatternMetadata": {
+        "title": "修改元数据",
+        "signInTitle": "需要注册账户",
+        "signInBody": "在修改社区图案元数据之前，请先登录。",
+        "signInAction": "登录",
+        "notFoundTitle": "未找到社区图案",
+        "notFoundBody": "只有你已发布的社区图案可以进行修改。",
+        "notFoundAction": "返回已发布图案",
+        "inProgressTitle": "已有正在处理的修改",
+        "inProgressBody": "此图案已有等待中的修改或正在进行的申诉. 在提交另一个之前请先撤回它。",
+        "inProgressAction": "返回已发布图案",
+        "currentlyPublished": "当前已发布在社区目录上",
+        "titleFieldLabel": "目录标题",
+        "titlePlaceholder": "图案标题",
+        "titleAccessibilityLabel": "目录标题",
+        "descriptionFieldLabel": "描述",
+        "descriptionPlaceholder": "描述该设计、主题以及绣图体验。",
+        "descriptionAccessibilityLabel": "目录描述",
+        "sourceLanguageFieldLabel": "源语言",
+        "categoryFieldLabel": "类别",
+        "tagsFieldLabel": "标签",
+        "notice": "修改会生成一个新的不可变快照。在你提交的修改被人工版主接受之前，你当前已发布的元数据将继续保持可见。",
+        "submitAction": "提交修改"
+      },
+      "submitPattern": {
+        "title": "提交至社区",
+        "signInTitle": "需要注册账户",
+        "signInBody": "在向社区目录提交个人图案之前，请先登录。",
+        "signInAction": "登录",
+        "createProfileTitle": "创建公开的创作者主页",
+        "createProfileBody": "社区图案将署名为你的公开创作者身份。",
+        "createProfileAction": "创建主页",
+        "patternNotFoundTitle": "未找到个人图案",
+        "patternNotFoundBody": "只有已同步的个人图案可以提交。",
+        "patternNotFoundAction": "返回个人主页",
+        "patternMeta": "{{width}}×{{height}} · {{count}} 色",
+        "byCreator": "作者：@{{username}}",
+        "titleFieldLabel": "目录标题",
+        "titlePlaceholder": "图案标题",
+        "titleAccessibilityLabel": "目录标题",
+        "descriptionFieldLabel": "描述",
+        "descriptionPlaceholder": "描述该设计、主题以及绣图体验。",
+        "descriptionAccessibilityLabel": "目录描述",
+        "sourceLanguageFieldLabel": "源语言",
+        "categoryFieldLabel": "类别",
+        "tagsFieldLabel": "标签",
+        "rightsDeclaration": "我创建了此作品，或者拥有根据《发表权声明 v1》发布该作品所需的权利。",
+        "notice": "提交会捕获一个不可变的副本。虽然自动检查会提供参考依据，但所有决定都将由人工版主做出。",
+        "submitAction": "提交审核"
+      },
+      "moderationNotices": {
+        "title": "审核通知",
+        "signInTitle": "登录以查看通知",
+        "signInBody": "审核通知属于发布了受影响社区图案的注册账户。",
+        "signInAction": "登录",
+        "unavailableTitle": "通知不可用",
+        "unavailableDefault": "无法加载审核通知。",
+        "emptyTitle": "暂无审核通知",
+        "emptyBody": "所有者可见的目录审核决定将显示在这里。",
+        "emptyAction": "返回个人主页",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "目录元数据纠正",
+          "no_violation": "审核关闭 — 无违规行为",
+          "review_hold": "审核挂起",
+          "safety_removal": "安全下架"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "标题、描述和所选标签已被替换为安全的内容。可用性、图案档案 (Pattern Artifact) 及预览不受影响。你随时可以提交新的目录元数据修改建议。",
+          "no_violation": "发布后审核已关闭，此图案已完全恢复在探索中的展示，并可开始新的绣图会话。",
+          "review_hold": "此图案暂时无法在探索中发现，也无法开始新会话。现有的绣图会话、进度和离线图案数据仍可继续游玩。",
+          "safety_removal": "该图案因违反安全、法律或政策而被移除。它已从探索中下架，现有的绣图会话变得不可访问，且你设备上的离线图案数据已被删除。你可以提交一次安全下架申诉。"
+        }
+      },
+      "dailyTasksCard": {
+        "title": "每日任务",
+        "offline": "你已离线 — 每日任务需要网络连接。",
+        "unavailable": "无法加载每日任务。",
+        "empty": "今天暂无任务。"
+      },
+      "rewardedAdCard": {
+        "offline": "你已离线 — 奖励日需要网络连接。",
+        "unavailable": "无法加载奖励日状态。",
+        "premiumClaimClosedPool": "你的 Premium 每日领取已关闭今日共享的金币池。",
+        "allRewardsClaimed": "你已领取今天所有的广告奖励。明天再来吧！",
+        "remaining_one": "今天还剩 {{count}} 个广告（有 {{coins}} 金币可用）",
+        "remaining_other": "今天还剩 {{count}} 个广告（有 {{coins}} 金币可用）",
+        "watchForCoins": "观看广告获得 {{count}} 金币"
+      },
+      "likedPatterns": {
+        "title": "喜欢的图案",
+        "signInTitle": "需要注册账户",
+        "signInBody": "在查看你私藏的“喜欢的图案”系列之前，请先登录。",
+        "signInAction": "登录",
+        "unavailableTitle": "喜欢的图案不可用",
+        "unavailableDefault": "无法加载喜欢的图案。",
+        "emptyTitle": "暂无喜欢的图案",
+        "emptyBody": "浏览图案目录，并在任何设计上轻触爱心图标，即可将其保存到这里。",
+        "emptyAction": "探索图案",
+        "byCreator": "作者：{{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} 色 · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "设置",
+        "subtitleDev": "在这里调整偏好设置并检查后端系统。",
+        "subtitleProd": "在这里调整你的偏好设置。"
+      },
+      "serviceStatus": {
+        "sectionTitle": "服务状态",
+        "apiConnectionTitle": "API 连接",
+        "testingConnection": "正在测试 API 连接...",
+        "offlineUnreachable": "离线 / 无法连接",
+        "unknownConnectionError": "未知连接错误",
+        "retryConnection": "重新连接",
+        "healthy": "正常",
+        "degraded": "服务降级",
+        "postgresLabel": "PostgreSQL 数据库",
+        "redisLabel": "Redis 缓存"
+      },
+      "session": {
+        "sectionTitle": "身份与会话",
+        "statusTitle": "后端会话状态",
+        "statusDescription": "通过 API 验证你当前的游客注册会话。",
+        "noActiveSession": "无活动会话",
+        "sessionActive": "会话已激活",
+        "idLabel": "ID: {{id}} (v{{version}})",
+        "unknownState": "未知状态"
+      },
+      "tutorial": {
+        "sectionTitle": "教程",
+        "learnControlsTitle": "学习操作",
+        "learnControlsDescription": "准备好后，随时继续 Stitch 教程。",
+        "unavailableTitle": "教程不可用",
+        "unavailableMessage": "无法继续教程。请重试。"
+      },
+      "developer": {
+        "sectionTitle": "开发者",
+        "debugDiagnostics": "调试 / 诊断",
+        "debug": {
+          "backAccessibilityLabel": "返回",
+          "title": "调试",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN：已配置 · 环境：{{environment}}",
+            "dsnNotConfigured": "DSN：未配置",
+            "sendTestEvent": "发送测试事件",
+            "throwError": "抛出错误",
+            "disabledTitle": "Sentry 已禁用",
+            "disabledMessage": "Sentry 未配置（未找到 DSN），因此不会发送测试事件。",
+            "testEventSent": "测试事件已发送。事件 ID：{{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "错误",
+            "testEventFailedMessage": "发送测试事件失败：{{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "新手引导",
+            "description": "清除教程进度，并重新从欢迎界面开始。",
+            "restart": "重新开始新手引导",
+            "confirmTitle": "重新开始新手引导？",
+            "confirmMessage": "教程状态将被清除，新手引导将重新从欢迎界面开始。",
+            "cancel": "取消",
+            "resetFailedTitle": "重置失败"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "注销账号",
+        "statusTitle": "账号注销状态",
+        "checkingStatus": "正在检查状态...",
+        "pendingTitle": "账号注销申请处理中",
+        "pendingDescription": "你的账号注销已排期。请在恢复期结束前重新登录以取消注销。",
+        "recoveryWindowEnds": "恢复期截止时间：{{date}}",
+        "cancelling": "正在取消...",
+        "cancelDeletion": "取消注销",
+        "statusError": "无法检查注销状态。请检查网络连接并重试。",
+        "deleteAccountTitle": "注销账号",
+        "deleteAccountDescription": "永久删除你的账号、进度和所有已解锁内容（有 30 天的恢复期）。",
+        "requestedTitle": "已提交账号注销申请",
+        "requestedMessage": "你的注销申请正在处理中，截止日期为 {{date}}。你的账号已退出登录。如果想取消注销，请在此日期前重新登录。",
+        "signOutFailedTitle": "本地退出登录失败",
+        "signOutFailedMessage": "你的注销申请仍在处理中。请尝试在“设置”中重新退出登录。",
+        "requestFailedTitle": "请求失败",
+        "requestFailedMessage": "你的注销申请未提交成功。请检查网络连接并重试。",
+        "cancelSuccessTitle": "成功",
+        "cancelSuccessMessage": "你的账号注销申请已取消。",
+        "reauthRequiredTitle": "需要重新验证身份",
+        "reauthRequiredMessage": "为了安全起见，你在取消账号注销前必须重新登录。",
+        "signInAction": "登录",
+        "cancelFailedTitle": "取消失败",
+        "cancelFailedGeneric": "无法取消账号注销。请检查网络连接并重试。"
+      },
+      "appearance": {
+        "sectionTitle": "外观"
+      },
+      "themeCollectionCard": {
+        "title": "主题合集",
+        "description": "更换网格、Stitch 以及完成效果的外观，不影响游戏玩法。",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "需要 Premium 会员",
+        "selected": "已选择",
+        "accessActive": "Premium 主题使用权限已激活，包括在适用的每月免费试用期内。",
+        "lockedPreview": "可在此预览主题合集。订阅 Premium 会员或在适用的每月免费试用期内即可解锁选择。",
+        "viewPremiumPlans": "查看 Premium 会员方案"
+      },
+      "gameplay": {
+        "sectionTitle": "游戏设置",
+        "showGridLinesTitle": "显示网格线",
+        "showGridLinesDescription": "在刺绣画布的方格之间显示边界",
+        "handednessTitle": "左右手布局",
+        "handednessDescription": "为习惯左手或右手操作的玩家调整交互控件",
+        "left": "左手",
+        "right": "右手",
+        "leftHandedLayout": "左手布局",
+        "rightHandedLayout": "右手布局"
+      },
+      "language": {
+        "sectionTitle": "语言",
+        "description": "选择 Stitch Wish 界面显示的语言。",
+        "followDevice": "跟随系统语言",
+        "followDeviceDescription": "清除自定义设置，以跟随你的设备语言设置。",
+        "optionEnglish": "English",
+        "optionTurkish": "Türkçe",
+        "modalTitle": "选择语言",
+        "modalSubtitle": "选择你偏好的界面语言。",
+        "systemDefault": "系统语言",
+        "systemDefaultWithDetected": "系统语言 ({{language}})",
+        "systemDefaultDescription": "自动匹配你的设备设置。"
+      },
+      "social": {
+        "sectionTitle": "社交与隐私",
+        "blockedCreators": "已屏蔽的创作者"
+      },
+      "account": {
+        "sectionTitle": "账号",
+        "notSignedInTitle": "未登录",
+        "signInRequiredTitle": "需要登录",
+        "notSignedInDescription": "登录以在不同设备间同步进度。",
+        "signIn": "登录",
+        "reconnecting": "正在重新连接…",
+        "signOut": "退出登录",
+        "signOutConfirmTitle": "退出登录？",
+        "signOutConfirmMessage": "你未同步的进度会保留在此设备上，并在你重新登录时载入。",
+        "signOutConfirmAction": "退出登录",
+        "signOutFailedTitle": "退出登录失败",
+        "signOutFailedGeneric": "请重试。",
+        "providerAppleAccount": "Apple 账号",
+        "providerGoogleAccount": "Google 账号",
+        "providerGenericAccount": "注册账号"
+      },
+      "signIn": {
+        "emailHeading": "登录或创建账号",
+        "emailSubtitle": "让你的进度在不同设备间保持同步。",
+        "codeHeading": "输入验证码",
+        "codeSubtitle": "请输入我们发送至 {{email}} 的 6 位数验证码。",
+        "continueWithGoogle": "使用 Google 登录",
+        "orUseEmail": "或使用邮箱",
+        "ssoUnavailable": "在此版本中无法使用 Google 和 Apple 登录。",
+        "emailLabel": "邮箱地址",
+        "emailPlaceholder": "邮箱地址",
+        "sendCode": "发送验证码",
+        "cancel": "取消",
+        "verify": "验证",
+        "resendCode": "重新发送验证码",
+        "resending": "正在重新发送...",
+        "codeSent": "验证码已发送",
+        "useDifferentEmail": "使用其他邮箱",
+        "sendCodeFailed": "无法发送验证码。请检查网络连接并重试。",
+        "codeIncorrect": "验证码不正确或已过期。",
+        "verifyFailedGeneric": "出错了。请重试。",
+        "socialSignInFailed": "无法使用 {{provider}} 登录。请重试。",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "返回",
+        "title": "已屏蔽的创作者",
+        "infoText": "屏蔽操作是私密的，且随时可以撤销。这会从你的目录视图、搜索 and 发现列表中隐藏该创作者的社区图案。这不属于举报或下架内容的行为。",
+        "signInRequiredTitle": "需要注册账号",
+        "signInRequiredBody": "请登录后再管理你的已屏蔽创作者列表。",
+        "signInAction": "登录",
+        "listUnavailableTitle": "列表不可用",
+        "listUnavailableDefault": "无法加载已屏蔽的创作者。",
+        "tryAgain": "重试",
+        "emptyTitle": "无已屏蔽的创作者",
+        "emptyBody": "你还没有屏蔽任何人。你可以从任何创作者的图案详情页中屏蔽他们。",
+        "backToSettings": "返回设置",
+        "unblock": "解除屏蔽",
+        "unblockConfirmTitle": "解除屏蔽创作者",
+        "unblockConfirmMessage": "确定要解除对 {{name}} 的屏蔽吗？他们的图案将重新显示在你的搜索和浏览结果中。",
+        "cancel": "取消",
+        "successTitle": "成功",
+        "unblockedMessage": "{{name}} 已解除屏蔽。",
+        "errorTitle": "错误",
+        "unblockFailedMessage": "解除屏蔽创作者失败：{{message}}",
+        "unblockFailedGeneric": "未知错误"
+      },
+      "data": {
+        "sectionTitle": "数据",
+        "resetGuestTitle": "重置游客数据",
+        "resetGuestDescription": "无法撤销地在服务器上注销该游客身份，并清除所有设备数据。",
+        "resetGuestOffline": "已离线：需要连接服务器才能重置游客数据。",
+        "resetGuestPurchaseLock": "购买项目正在验证中，暂时无法重置。重置后，消耗品和游客的私有数据将无法恢复。",
+        "removeLocalTitle": "清除本地数据",
+        "removeLocalDescription": "从此设备中删除你的本地身份命名空间数据库。",
+        "removeLocalConfirmTitle": "清除本地数据？",
+        "removeLocalConfirmMessage": "警告：此操作仅会从当前设备删除你的本地数据库文件。任何未同步的记录都将永久丢失。",
+        "removeLocalConfirmAction": "清除",
+        "removeLocalSuccessTitle": "成功",
+        "removeLocalSuccessMessage": "本地数据已从设备中清除。",
+        "removeLocalFailedTitle": "清除失败",
+        "removeLocalFailedMessage": "无法清除本地数据：{{message}}"
+      },
+      "links": {
+        "sectionTitle": "信息与链接",
+        "privacyPolicy": "隐私政策",
+        "termsOfService": "服务条款",
+        "contactSupport": "联系支持",
+        "accountDeletion": "账号注销",
+        "openFailedMessage": "无法打开链接：{{url}}",
+        "openFailedGenericTitle": "错误"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — 温馨像素画刺绣",
+        "version": "版本 {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "包名：{{id}}",
+        "schemeLabel": "Scheme：{{scheme}}://"
+      },
+      "resetModal": {
+        "title": "重置游客数据？",
+        "warning": "此操作将无法撤销地在服务器上注销你的游客身份，并永久删除你的：",
+        "bulletProgress": "• 本地进度",
+        "bulletRewards": "• 待领取奖励",
+        "bulletLikes": "• 赞",
+        "bulletUnlockAccess": "• 已解锁内容",
+        "bulletOfflinePatterns": "• 离线图案数据",
+        "confirmPrefix": "请在下方输入 ",
+        "confirmSuffix": " 来确认：",
+        "confirmAction": "重置数据",
+        "resetting": "正在重置游客数据...",
+        "successTitle": "成功",
+        "successMessage": "游客数据已全部重置。",
+        "failedTitle": "重置失败",
+        "failedMessage": "游客数据重置失败：{{message}}。请重试。"
+      },
+      "deleteModal": {
+        "title": "注销账号？",
+        "recoveryPrefix": "你的账号将进入 ",
+        "recoveryBold": "30 天的注销恢复期",
+        "recoverySuffix": "。在此期间重新登录即可取消注销。",
+        "bulletBalances": "• Stitch Coin 和 AI Credit 余额",
+        "bulletUnlocks": "• 所有已解锁图案",
+        "bulletArtwork": "• AI 作品与个人图案",
+        "bulletProgress": "• 已同步的进度与赞",
+        "consequencesPrefix": "恢复期结束后，这些数据将被清除或作废，且无法退款或转让。已发布的社区图案将从目录中下架，署名将变更为 ",
+        "consequencesBold": "已注销创作者",
+        "consequencesSuffix": "，且你的用户名将被永久保留。",
+        "membershipWarning": "注销账号后，你的 Premium 会员可能仍会继续扣费。注销账号并不会自动取消订阅；如需停止扣费，请在继续操作前单独进行管理。",
+        "manageAppleSubscription": "管理 Apple 订阅",
+        "continueAction": "继续",
+        "confirmTitle": "确认注销",
+        "confirmPrefix": "为确认你要注销账号，请在下方输入 ",
+        "confirmBold": "删除",
+        "confirmSuffix": " ：",
+        "submitting": "正在提交注销申请...",
+        "backAction": "返回",
+        "confirmAction": "确认"
+      },
+      "reauthModal": {
+        "title": "验证你的身份",
+        "description": "为了安全起见，请使用已绑定至该账号的登录方式进行验证。验证完成后，将自动继续注销流程。",
+        "loading": "正在加载登录方式...",
+        "codeSentMessage": "请输入发送至 {{email}} 的 6 位数验证码。",
+        "verifyAndDelete": "验证并注销",
+        "emailButton": "发送邮件至 {{email}}",
+        "continueWithProvider": "使用 {{provider}} 继续",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "未找到已绑定的登录方式。请在重试注销前联系支持团队。",
+        "loadFailed": "无法加载已绑定的登录方式。请检查网络连接并重试。",
+        "retryFailed": "你的身份已验证成功，但未成功提交注销申请。请关闭此对话框并重试。",
+        "emailMissing": "绑定的邮箱地址缺失。请选择其他方式。",
+        "genericFailure": "身份验证失败。请检查网络连接并重试。"
+      },
+      "actions": {
+        "cancel": "取消",
+        "retry": "重试"
+      },
+      "common": {
+        "unavailable": "不可用"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "分类",
+        "stitch": "Stitch",
+        "create": "创作",
+        "profile": "我的",
+        "settings": "设置"
+      }
+    }
   }
 }

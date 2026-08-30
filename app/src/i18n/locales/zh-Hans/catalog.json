@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← 返回",
+    "searchPlaceholder": "搜索图案、创作者、标签…",
+    "offlineBanner": "离线状态 — 目录可能不是最新的哦",
+    "sectionError": {
+      "title": "加载失败啦",
+      "retry": "再试一次"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} 种颜色",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} 列",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "英语"
+    },
+    "accessibilityLabel": "以 {{language}} 编写"
+  },
+  "index": {
+    "subtitle": "一针一线，织就你的温馨世界。",
+    "searchBar": {
+      "accessibilityLabel": "搜索图案目录"
+    },
+    "sections": {
+      "starterPatterns": "新手图案",
+      "staffPicks": "官方精选",
+      "categories": "分类",
+      "newPatterns": "最新图案"
+    },
+    "staffPicks": {
+      "emptyTitle": "这里还没有官方精选哦",
+      "emptyBody": "我们精心挑选的温馨设计很快就会在这里呈现啦。",
+      "errorBody": "暂时无法连接到目录，而且目前还没有缓存哦。"
+    },
+    "categories": {
+      "count": "{{count}} 个图案",
+      "errorBody": "暂时无法连接到目录，而且目前还没有缓存哦。"
+    },
+    "newPatterns": {
+      "emptyTitle": "新图案正在制作中",
+      "emptyBody": "新成员正在路上，很快就到！",
+      "errorBody": "暂时无法连接到目录，而且目前还没有缓存哦。",
+      "showMore": "查看更多",
+      "loading": "加载中…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "浏览",
+    "error": {
+      "body": "暂时无法连接到此目录页面，而且目前还没有缓存哦。"
+    },
+    "empty": {
+      "title": "这里空空如也",
+      "body": "还没有符合该筛选条件的图案。新设计会定期更新，过阵子再来看看吧！"
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "目录搜索输入框",
+    "inactive": {
+      "title": "搜索目录",
+      "body": "输入至少两个字符，即可按标题、创作者或标签搜索图案。"
+    },
+    "error": {
+      "title": "搜索需要联网哦",
+      "body": "离线状态下无法搜索目录。不过你依然可以从“目录”标签页浏览已缓存的页面。"
+    },
+    "noResults": {
+      "title": "没有找到匹配项",
+      "body": "目录中还没有与“{{query}}”匹配的内容。"
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "正在以游客身份体验",
+    "body": "游客身份下的 Stitch Coin 和进度只保存在这台设备上。如果卸载或丢失应用，你的游客账本和进度可能就找不回来啦。登录账号可以保护你的进度哦。"
+  },
+  "detail": {
+    "noDescription": "暂无描述。",
+    "specs": {
+      "dimensions": "尺寸",
+      "totalStitches": "总针数",
+      "colors": "颜色",
+      "category": "分类"
+    },
+    "threadsSuffix": "{{count}} 种绣线",
+    "palette": {
+      "title": "所需绣线",
+      "loading": "正在读取绣线配色...",
+      "loadFailed": "配色加载失败：{{error}}",
+      "retry": "重新加载"
+    },
+    "actions": {
+      "startStitching": "开始刺绣",
+      "starting": "正在开始...",
+      "preparing": "正在准备…"
+    },
+    "loadFailedGeneric": "图案文件解析失败。",
+    "sessionCreateFailed": "创建刺绣会话失败，请再试一次。",
+    "unavailable": {
+      "title": "图案不可用",
+      "body": "该图案加载失败。可能已被删除，或者你现在处于离线状态。",
+      "goBack": "返回"
+    },
+    "byCreator": "来自 {{creatorName}}",
+    "byCreatorWithUsername": "来自 {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "屏蔽创作者",
+      "message": "你确定要屏蔽 {{creatorName}} 吗？这是一个私密且可撤销的操作，会从搜索和浏览中隐藏其图案。这不会举报该创作者，也不会中断你当前的刺绣进度。",
+      "cancel": "取消",
+      "confirm": "屏蔽",
+      "blockedTitle": "已屏蔽",
+      "blockedMessage": "已屏蔽 {{creatorName}}。",
+      "errorTitle": "错误",
+      "failedGeneric": "屏蔽创作者失败。"
+    },
+    "likeFailedGeneric": "更新点赞状态失败",
+    "connectToPlay": {
+      "title": "联网以开始刺绣",
+      "body": "开始制作目录图案需要联网以准备你的会话。不过，即使离线，你现在也可以直接体验新手图案哦。"
+    },
+    "insufficientCoins": {
+      "title": "Stitch Coin 不足",
+      "body": "此图案需要 {{price}} 个 Stitch Coin，但你只有 {{balance}} 个 Stitch Coin。\n\n还差：{{shortfall}} 个 Stitch Coin。\n\n完成其他图案就能赚取 Stitch Coin 啦！“首次完成”奖励已开启，快来试试吧。",
+      "getCoins": "获取 Stitch Coin",
+      "findPatterns": "去找些图案来绣吧",
+      "back": "返回"
+    },
+    "unlockFailedGeneric": "解锁失败。请检查网络连接并重试。",
+    "preparationFailedGeneric": "无法开始准备工作。请检查网络连接并重试。",
+    "price": {
+      "label": "价格"
+    },
+    "balance": {
+      "label": "你的余额",
+      "loading": "…"
+    },
+    "unlockButton": "使用 {{price}} 个 Stitch Coin 解锁",
+    "communityReport": {
+      "button": "举报此图案",
+      "title": "举报 {{patternTitle}}",
+      "body": "请选择最符合该问题的举报原因。举报不会自动隐藏或更改图案。",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "不当或不安全内容",
+        "copyright_or_publication_rights": "版权或发表权问题",
+        "duplicate_or_spam": "重复或垃圾内容",
+        "misleading_title_or_tags": "误导性标题或标签",
+        "other": "其他"
+      },
+      "explanationLabel": "证据或说明 {{requirement}}",
+      "explanationRequired": "(必填)",
+      "explanationOptional": "(选填)",
+      "explanationPlaceholder": "分享详细信息，以帮助审核人员评估该图案。",
+      "characterCount": "{{count}}/2000",
+      "cancel": "取消",
+      "submit": "提交举报",
+      "submitFailedGeneric": "无法提交你的举报。请检查网络连接并重试。",
+      "receivedTitle": "已收到举报",
+      "alreadyReceivedTitle": "已收到过该举报",
+      "receivedBody": "审核人员稍后会评估该图案。举报不会自动更改其可用状态。",
+      "alreadyReceivedBody": "你之前提交的举报已处于审核流程中。",
+      "signInRequired": {
+        "title": "登录以提交举报",
+        "message": "社区举报需要注册账号。当前未提交任何内容。",
+        "cancel": "取消",
+        "signIn": "登录"
+      },
+      "validation": {
+        "chooseReason": "请选择一个举报原因。",
+        "explainRequired": "请说明你为什么要举报此图案。",
+        "tooLong": "说明字数不能超过 2000 个字符。",
+        "needsContent": "说明中必须包含字母或数字。"
+      }
+    }
+  }
+}
