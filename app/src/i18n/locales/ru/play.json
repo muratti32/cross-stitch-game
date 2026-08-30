@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Вышивальный стол",
+    "subtitle": "Продолжайте с того места, где остановились, или вернитесь к недавней работе.",
+    "loading": "Загрузка ваших стежков...",
+    "empty": {
+      "title": "Нет активных работ",
+      "body": "Ваши пяльцы сейчас пусты. Загляните в каталог узоров, чтобы найти что-то красивое для вышивания!",
+      "action": "Каталог узоров"
+    },
+    "unknownPattern": "Неизвестный узор",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Узор {{id}}",
+    "deleteSessionAccessibilityLabel": "Удалить сессию",
+    "viewFinishedAccessibilityLabel": "Посмотреть готовую работу",
+    "resumeAccessibilityLabel": "Продолжить вышивать",
+    "status": {
+      "ready": "Готово",
+      "done": "Завершено",
+      "active": "Активно",
+      "preparing": "Подготовка",
+      "failed": "Не удалось"
+    },
+    "deleteConfirm": {
+      "title": "Удалить прогресс",
+      "message": "Вы уверены, что хотите удалить прогресс для «{{title}}»? Это действие нельзя отменить.",
+      "cancel": "Отмена",
+      "confirm": "Удалить"
+    },
+    "preparingCard": {
+      "discardTitle": "Сбросить сессию",
+      "cancelTitle": "Отменить загрузку",
+      "discardMessage": "Вы уверены, что хотите удалить эту неудавшуюся сессию?",
+      "cancelMessage": "Вы уверены, что хотите отменить загрузку этого узора?",
+      "keep": "Оставить",
+      "discard": "Удалить",
+      "cancel": "Отмена"
+    }
+  },
+  "loading": {
+    "text": "Открытие сессии и подготовка канвы..."
+  },
+  "error": {
+    "title": "Не удалось запустить сессию",
+    "fallbackMessage": "Не удалось загрузить вашу вышивальную сессию.",
+    "backButton": "Назад",
+    "tableButton": "К столу"
+  },
+  "header": {
+    "backButton": "← Назад",
+    "tableButton": "← К столу",
+    "defaultTitle": "Сессия вышивания",
+    "progress": "{{completed}} / {{total}} клеток (выполнено {{percent}}%)",
+    "resumeTutorialAccessibilityLabel": "Продолжить обучение"
+  },
+  "banners": {
+    "patternRemoved": "Этот узор был удален модератором и больше недоступен. Нажмите, чтобы выйти.",
+    "syncConflict": "Синхронизировано с другим устройством — некоторые клетки были изменены. Нажмите, чтобы закрыть."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Найти следующую оставшуюся клетку выбранного цвета нити",
+    "undoAccessibilityLabel": "Отменить последний стежок"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Цвет {{number}}: DMC {{dmcCode}}, остался {{count}} стежок",
+    "chipAccessibilityLabel_other": "Цвет {{number}}: DMC {{dmcCode}}, осталось {{count}} стежков",
+    "done": "Завершено",
+    "remaining_one": "Остался {{count}}",
+    "remaining_other": "Осталось {{count}}"
+  },
+  "celebration": {
+    "title": "Прекрасная работа!",
+    "subtitle": "Вы завершили каждый стежок на этой канве.",
+    "stitchesLabel_one": "стежок",
+    "stitchesLabel_other": "стежков",
+    "colorsLabel_one": "цвет",
+    "colorsLabel_other": "цветов",
+    "replayButton": "Вышить снова",
+    "catalogButton": "Назад в каталог"
+  }
+}

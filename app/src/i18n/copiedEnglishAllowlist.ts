@@ -105,4 +105,9 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'pl:profile:home.walletCard.aiCreditsLabel': 'AI Credit is the branded in-game currency, kept English per the Polish pack convention.',
   'pl:settings:developer.debug.title': '"Debug" is a common English loanword in Polish developer UI.',
   'pl:shell:tabs.stitch': '"Stitch" is the branded core-activity name, kept English per the Polish pack convention.',
+  'ru:commerce:premiumHero.benefitAiCredits': 'AI Credit is the branded in-game currency, kept English per the Russian pack convention.',
+  'ru:play:home.idLabel': '"ID" is used identically in Russian tech/UI copy.',
+  'ru:profile:home.walletCard.aiCreditsLabel': 'AI Credit is the branded in-game currency, kept English per the Russian pack convention.',
+  'ru:settings:session.idLabel': '"ID" is used identically in Russian tech/UI copy.',
+  'ru:shell:tabs.stitch': '"Stitch" is the branded core-activity name, kept English per the Russian pack convention.',
 };

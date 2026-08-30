@@ -10,5 +10,6 @@
   "ja": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
   "ko": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
   "nl": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
-  "pl": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false }
+  "pl": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
+  "ru": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false }
 }
