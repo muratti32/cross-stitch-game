@@ -190,4 +190,11 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'pt:play:home.idLabel': '"ID" is used identically in Portuguese tech/UI copy.',
   'pt:settings:session.idLabel': '"ID" is used identically in Portuguese tech/UI copy.',
   'pt:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
+  'ro:play:home.idLabel': '"ID" is used identically in Romanian tech/UI copy.',
+  'ro:settings:session.idLabel': '"ID" is used identically in Romanian tech/UI copy.',
+  'ro:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
+  'ro:create:photoImport.profile.options.standard': '"Standard" is an identical cognate in Romanian.',
+  'ro:profile:home.identity.offline': '"Offline" is used identically in Romanian tech/UI copy.',
+  'ro:settings:tutorial.sectionTitle': '"Tutorial" is an identical cognate in Romanian.',
+  'ro:shell:tabs.catalog': '"Catalog" is spelled identically in Romanian.',
 };

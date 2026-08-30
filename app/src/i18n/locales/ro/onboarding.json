@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "BINE AI VENIT ÎN STITCH WISH",
+    "title": "Alege o culoare, atinge pătrățelele potrivite.",
+    "heroAlt": "Previzualizare model de start Cozy Heart",
+    "handedness": {
+      "sectionTitle": "Pe ce parte ar trebui să fie comenzile?",
+      "groupLabel": "Partea comenzilor",
+      "optionRight": "Comenzi în dreapta",
+      "optionLeft": "Comenzi în stânga",
+      "saveErrorText": "Nu s-a putut salva alegerea.",
+      "retry": "Încearcă din nou"
+    },
+    "note": "Poți schimba asta mai târziu din Setări.",
+    "start": "Începe cusutul",
+    "starting": "Se pornește…",
+    "browse": "Răsfoiește modelele de start",
+    "signIn": "Autentificare"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Selectează DMC 321 Christmas Red.",
+      "stitchAction": "Atinge celula evidențiată care se potrivește.",
+      "mismatchedTap": "Atinge celula diferită evidențiată. Atingerile greșite nu costă nimic.",
+      "undoAction": "Anulează acea cusătură, apoi plasează-o din nou.",
+      "stitchSweep": "Apasă o celulă care se potrivește, apoi trage de-a lungul șirului evidențiat.",
+      "threadColorCompletion": "Termină firul alb evidențiat, apoi alege următoarea culoare."
+    },
+    "hints": {
+      "anchoredZoom": "Ciupește pentru a mări, păstrând celulele sub degete pe loc.",
+      "panVsSweep": "Tragerea deplasează materialul. Începe pe o celulă care se potrivește pentru a cuse în lanț.",
+      "edgeAutoPan": "Continuă să tragi lângă margine și materialul urmărește degetul.",
+      "remainingCellLocator": "Folosește localizatorul pentru a găsi următoarea celulă rămasă pentru acest fir."
+    },
+    "skip": "Sari peste, pentru moment",
+    "skipAccessibilityLabel": "Sari peste tutorial, pentru moment",
+    "dismiss": "Am înțeles",
+    "dismissAccessibilityLabel": "Închide indiciul"
+  },
+  "recap": {
+    "title": "Ai reușit",
+    "lines": {
+      "matchNumbers": "Potrivește numerele pentru a plasa fiecare cusătură.",
+      "dragSweep": "Trage peste celulele care se potrivesc pentru a cuse în lanț.",
+      "pinchZoom": "Ciupește pentru a mări atunci când ai nevoie de o privire mai atentă.",
+      "undoLocator": "Anularea și localizatorul sunt mereu gratuite."
+    },
+    "continue": "Continuă cusutul",
+    "browsePatterns": "Răsfoiește modelele"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Această autentificare aparține unui alt cont. Contul dvs. curent nu a fost modificat.",
+    "providerRejected": "Verificarea a fost respinsă. Verificați contul sau codul și încercați din nou."
+  },
+  "generic": {
+    "failure": "Ceva nu a mers bine. Vă rugăm să încercați din nou.",
+    "supportReferenceLabel": "Referință suport: {{reference}}"
+  }
+}

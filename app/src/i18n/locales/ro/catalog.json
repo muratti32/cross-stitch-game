@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Înapoi",
+    "searchPlaceholder": "Caută modele, creatori, etichete…",
+    "offlineBanner": "Offline — catalogul poate fi neactualizat",
+    "sectionError": {
+      "title": "Nu s-a putut încărca",
+      "retry": "Încearcă din nou"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} culori",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} coloane",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Engleză"
+    },
+    "accessibilityLabel": "Scris în {{language}}"
+  },
+  "index": {
+    "subtitle": "Creează-ți propria lume primitoare, cusătură cu cusătură.",
+    "searchBar": {
+      "accessibilityLabel": "Caută în catalogul de modele"
+    },
+    "sections": {
+      "starterPatterns": "Modele de start",
+      "staffPicks": "Selecția echipei",
+      "categories": "Categorii",
+      "newPatterns": "Modele noi"
+    },
+    "staffPicks": {
+      "emptyTitle": "Încă nu există selecții",
+      "emptyBody": "Colecția noastră de modele primitoare, aleasă manual, va apărea aici în curând.",
+      "errorBody": "Catalogul nu a putut fi accesat și nu există încă nimic salvat local."
+    },
+    "categories": {
+      "count": "{{count}} modele",
+      "errorBody": "Catalogul nu a putut fi accesat și nu există încă nimic salvat local."
+    },
+    "newPatterns": {
+      "emptyTitle": "Modele noi în lucru",
+      "emptyBody": "Sosiri proaspete sunt pe drum!",
+      "errorBody": "Catalogul nu a putut fi accesat și nu există încă nimic salvat local.",
+      "showMore": "Arată mai multe",
+      "loading": "Se încarcă…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Răsfoiește",
+    "error": {
+      "body": "Această pagină din catalog nu a putut fi accesată și nu există încă nimic salvat local."
+    },
+    "empty": {
+      "title": "Încă nimic aici",
+      "body": "Niciun model nu corespunde încă acestei selecții. Modele noi sosesc frecvent."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Câmp de căutare în catalog",
+    "inactive": {
+      "title": "Caută în catalog",
+      "body": "Introdu cel puțin două caractere pentru a căuta modele după titlu, creator sau etichetă."
+    },
+    "error": {
+      "title": "Căutarea necesită conexiune",
+      "body": "Căutarea în catalog nu este disponibilă offline. Paginile de catalog salvate local rămân disponibile din fila catalog."
+    },
+    "noResults": {
+      "title": "Niciun rezultat",
+      "body": "Nimic din catalog nu corespunde încă cu „{{query}}”."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Joci ca invitat",
+    "body": "Stitch Coin și progresul există doar pe acest dispozitiv ca invitat. Dacă instalarea se pierde, registrul și progresul de invitat pot fi irecuperabile. Autentificarea îți protejează progresul."
+  },
+  "detail": {
+    "noDescription": "Nicio descriere disponibilă.",
+    "specs": {
+      "dimensions": "Dimensiuni",
+      "totalStitches": "Total cusături",
+      "colors": "Culori",
+      "category": "Categorie"
+    },
+    "threadsSuffix": "{{count}} fire",
+    "palette": {
+      "title": "Fire necesare",
+      "loading": "Se citește paleta de fire...",
+      "loadFailed": "Încărcarea paletei a eșuat: {{error}}",
+      "retry": "Reîncearcă încărcarea"
+    },
+    "actions": {
+      "startStitching": "Începe cusutul",
+      "starting": "Se pornește...",
+      "preparing": "Se pregătește…"
+    },
+    "loadFailedGeneric": "Decodarea fișierului modelului a eșuat.",
+    "sessionCreateFailed": "Crearea sesiunii de cusut a eșuat. Te rugăm să încerci din nou.",
+    "unavailable": {
+      "title": "Model indisponibil",
+      "body": "Acest model nu a putut fi încărcat. Este posibil să fi fost eliminat sau să fii offline.",
+      "goBack": "Înapoi"
+    },
+    "byCreator": "de {{creatorName}}",
+    "byCreatorWithUsername": "de {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Blochează creatorul",
+      "message": "Sigur dorești să îl blochezi pe {{creatorName}}? Aceasta este o acțiune privată, reversibilă, care ascunde modelele acestuia din căutare/răsfoire. Nu raportează creatorul și nu va întrerupe sesiunea ta de cusut curentă.",
+      "cancel": "Anulează",
+      "confirm": "Blochează",
+      "blockedTitle": "Blocat",
+      "blockedMessage": "{{creatorName}} a fost blocat.",
+      "errorTitle": "Eroare",
+      "failedGeneric": "Blocarea creatorului a eșuat."
+    },
+    "likeFailedGeneric": "Actualizarea statusului de apreciere a eșuat",
+    "connectToPlay": {
+      "title": "Conectează-te pentru a juca",
+      "body": "Pornirea unui model din catalog necesită o conexiune pentru a-ți pregăti sesiunea. Modelele de start sunt jucabile chiar acum, chiar și offline."
+    },
+    "insufficientCoins": {
+      "title": "Monede insuficiente",
+      "body": "Acest model costă {{price}} Stitch Coins, dar ai doar {{balance}} monede.\n\nDiferență: {{shortfall}} monede.\n\nCâștigă Stitch Coins finalizând alte modele! Recompensele pentru prima finalizare sunt active.",
+      "getCoins": "Obține Stitch Coins",
+      "findPatterns": "Găsește modele de cusut",
+      "back": "Înapoi"
+    },
+    "unlockFailedGeneric": "Deblocarea a eșuat. Verifică-ți conexiunea și încearcă din nou.",
+    "preparationFailedGeneric": "Pregătirea nu a putut începe. Verifică-ți conexiunea și încearcă din nou.",
+    "price": {
+      "label": "Preț"
+    },
+    "balance": {
+      "label": "Soldul tău",
+      "loading": "…"
+    },
+    "unlockButton": "Deblochează pentru {{price}} monede",
+    "communityReport": {
+      "button": "Raportează acest model",
+      "title": "Raportează {{patternTitle}}",
+      "body": "Alege motivul care descrie cel mai bine problema. Rapoartele nu ascund și nu modifică niciodată automat un model.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Conținut nepotrivit sau nesigur",
+        "copyright_or_publication_rights": "Drepturi de autor sau publicare",
+        "duplicate_or_spam": "Duplicat sau spam",
+        "misleading_title_or_tags": "Titlu sau etichete înșelătoare",
+        "other": "Altele"
+      },
+      "explanationLabel": "Dovezi sau explicație {{requirement}}",
+      "explanationRequired": "(obligatoriu)",
+      "explanationOptional": "(opțional)",
+      "explanationPlaceholder": "Oferă detalii care vor ajuta un moderator să analizeze modelul.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Anulează",
+      "submit": "Trimite raportul",
+      "submitFailedGeneric": "Raportul nu a putut fi trimis. Verifică-ți conexiunea și încearcă din nou.",
+      "receivedTitle": "Raport primit",
+      "alreadyReceivedTitle": "Raportul a fost deja primit",
+      "receivedBody": "Un moderator poate analiza acum acest model. Raportul nu îi modifică automat disponibilitatea.",
+      "alreadyReceivedBody": "Raportul tău existent face deja parte din analiza deschisă.",
+      "signInRequired": {
+        "title": "Autentifică-te pentru a raporta",
+        "message": "Rapoartele comunității necesită un cont înregistrat. Nu a fost trimis nimic.",
+        "cancel": "Anulează",
+        "signIn": "Autentificare"
+      },
+      "validation": {
+        "chooseReason": "Alege un motiv pentru raport.",
+        "explainRequired": "Explică de ce raportezi acest model.",
+        "tooLong": "Explicația trebuie să aibă cel mult 2.000 de caractere.",
+        "needsContent": "Explicația trebuie să conțină litere sau cifre."
+      }
+    }
+  }
+}

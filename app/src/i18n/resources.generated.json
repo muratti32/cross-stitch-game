@@ -32337,6 +32337,1412 @@
       }
     }
   },
+  "ro": {
+    "catalog": {
+      "common": {
+        "back": "← Înapoi",
+        "searchPlaceholder": "Caută modele, creatori, etichete…",
+        "offlineBanner": "Offline — catalogul poate fi neactualizat",
+        "sectionError": {
+          "title": "Nu s-a putut încărca",
+          "retry": "Încearcă din nou"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} culori",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} coloane",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "Engleză"
+        },
+        "accessibilityLabel": "Scris în {{language}}"
+      },
+      "index": {
+        "subtitle": "Creează-ți propria lume primitoare, cusătură cu cusătură.",
+        "searchBar": {
+          "accessibilityLabel": "Caută în catalogul de modele"
+        },
+        "sections": {
+          "starterPatterns": "Modele de start",
+          "staffPicks": "Selecția echipei",
+          "categories": "Categorii",
+          "newPatterns": "Modele noi"
+        },
+        "staffPicks": {
+          "emptyTitle": "Încă nu există selecții",
+          "emptyBody": "Colecția noastră de modele primitoare, aleasă manual, va apărea aici în curând.",
+          "errorBody": "Catalogul nu a putut fi accesat și nu există încă nimic salvat local."
+        },
+        "categories": {
+          "count": "{{count}} modele",
+          "errorBody": "Catalogul nu a putut fi accesat și nu există încă nimic salvat local."
+        },
+        "newPatterns": {
+          "emptyTitle": "Modele noi în lucru",
+          "emptyBody": "Sosiri proaspete sunt pe drum!",
+          "errorBody": "Catalogul nu a putut fi accesat și nu există încă nimic salvat local.",
+          "showMore": "Arată mai multe",
+          "loading": "Se încarcă…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "Răsfoiește",
+        "error": {
+          "body": "Această pagină din catalog nu a putut fi accesată și nu există încă nimic salvat local."
+        },
+        "empty": {
+          "title": "Încă nimic aici",
+          "body": "Niciun model nu corespunde încă acestei selecții. Modele noi sosesc frecvent."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "Câmp de căutare în catalog",
+        "inactive": {
+          "title": "Caută în catalog",
+          "body": "Introdu cel puțin două caractere pentru a căuta modele după titlu, creator sau etichetă."
+        },
+        "error": {
+          "title": "Căutarea necesită conexiune",
+          "body": "Căutarea în catalog nu este disponibilă offline. Paginile de catalog salvate local rămân disponibile din fila catalog."
+        },
+        "noResults": {
+          "title": "Niciun rezultat",
+          "body": "Nimic din catalog nu corespunde încă cu „{{query}}”."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "Joci ca invitat",
+        "body": "Stitch Coin și progresul există doar pe acest dispozitiv ca invitat. Dacă instalarea se pierde, registrul și progresul de invitat pot fi irecuperabile. Autentificarea îți protejează progresul."
+      },
+      "detail": {
+        "noDescription": "Nicio descriere disponibilă.",
+        "specs": {
+          "dimensions": "Dimensiuni",
+          "totalStitches": "Total cusături",
+          "colors": "Culori",
+          "category": "Categorie"
+        },
+        "threadsSuffix": "{{count}} fire",
+        "palette": {
+          "title": "Fire necesare",
+          "loading": "Se citește paleta de fire...",
+          "loadFailed": "Încărcarea paletei a eșuat: {{error}}",
+          "retry": "Reîncearcă încărcarea"
+        },
+        "actions": {
+          "startStitching": "Începe cusutul",
+          "starting": "Se pornește...",
+          "preparing": "Se pregătește…"
+        },
+        "loadFailedGeneric": "Decodarea fișierului modelului a eșuat.",
+        "sessionCreateFailed": "Crearea sesiunii de cusut a eșuat. Te rugăm să încerci din nou.",
+        "unavailable": {
+          "title": "Model indisponibil",
+          "body": "Acest model nu a putut fi încărcat. Este posibil să fi fost eliminat sau să fii offline.",
+          "goBack": "Înapoi"
+        },
+        "byCreator": "de {{creatorName}}",
+        "byCreatorWithUsername": "de {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "Blochează creatorul",
+          "message": "Sigur dorești să îl blochezi pe {{creatorName}}? Aceasta este o acțiune privată, reversibilă, care ascunde modelele acestuia din căutare/răsfoire. Nu raportează creatorul și nu va întrerupe sesiunea ta de cusut curentă.",
+          "cancel": "Anulează",
+          "confirm": "Blochează",
+          "blockedTitle": "Blocat",
+          "blockedMessage": "{{creatorName}} a fost blocat.",
+          "errorTitle": "Eroare",
+          "failedGeneric": "Blocarea creatorului a eșuat."
+        },
+        "likeFailedGeneric": "Actualizarea statusului de apreciere a eșuat",
+        "connectToPlay": {
+          "title": "Conectează-te pentru a juca",
+          "body": "Pornirea unui model din catalog necesită o conexiune pentru a-ți pregăti sesiunea. Modelele de start sunt jucabile chiar acum, chiar și offline."
+        },
+        "insufficientCoins": {
+          "title": "Monede insuficiente",
+          "body": "Acest model costă {{price}} Stitch Coins, dar ai doar {{balance}} monede.\n\nDiferență: {{shortfall}} monede.\n\nCâștigă Stitch Coins finalizând alte modele! Recompensele pentru prima finalizare sunt active.",
+          "getCoins": "Obține Stitch Coins",
+          "findPatterns": "Găsește modele de cusut",
+          "back": "Înapoi"
+        },
+        "unlockFailedGeneric": "Deblocarea a eșuat. Verifică-ți conexiunea și încearcă din nou.",
+        "preparationFailedGeneric": "Pregătirea nu a putut începe. Verifică-ți conexiunea și încearcă din nou.",
+        "price": {
+          "label": "Preț"
+        },
+        "balance": {
+          "label": "Soldul tău",
+          "loading": "…"
+        },
+        "unlockButton": "Deblochează pentru {{price}} monede",
+        "communityReport": {
+          "button": "Raportează acest model",
+          "title": "Raportează {{patternTitle}}",
+          "body": "Alege motivul care descrie cel mai bine problema. Rapoartele nu ascund și nu modifică niciodată automat un model.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "Conținut nepotrivit sau nesigur",
+            "copyright_or_publication_rights": "Drepturi de autor sau publicare",
+            "duplicate_or_spam": "Duplicat sau spam",
+            "misleading_title_or_tags": "Titlu sau etichete înșelătoare",
+            "other": "Altele"
+          },
+          "explanationLabel": "Dovezi sau explicație {{requirement}}",
+          "explanationRequired": "(obligatoriu)",
+          "explanationOptional": "(opțional)",
+          "explanationPlaceholder": "Oferă detalii care vor ajuta un moderator să analizeze modelul.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "Anulează",
+          "submit": "Trimite raportul",
+          "submitFailedGeneric": "Raportul nu a putut fi trimis. Verifică-ți conexiunea și încearcă din nou.",
+          "receivedTitle": "Raport primit",
+          "alreadyReceivedTitle": "Raportul a fost deja primit",
+          "receivedBody": "Un moderator poate analiza acum acest model. Raportul nu îi modifică automat disponibilitatea.",
+          "alreadyReceivedBody": "Raportul tău existent face deja parte din analiza deschisă.",
+          "signInRequired": {
+            "title": "Autentifică-te pentru a raporta",
+            "message": "Rapoartele comunității necesită un cont înregistrat. Nu a fost trimis nimic.",
+            "cancel": "Anulează",
+            "signIn": "Autentificare"
+          },
+          "validation": {
+            "chooseReason": "Alege un motiv pentru raport.",
+            "explainRequired": "Explică de ce raportezi acest model.",
+            "tooLong": "Explicația trebuie să aibă cel mult 2.000 de caractere.",
+            "needsContent": "Explicația trebuie să conțină litere sau cifre."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "Înapoi",
+        "title": "Magazin",
+        "subtitle": "Abonament și reîncărcări unice"
+      },
+      "signInReturn": {
+        "notice": "Ești autentificat. {{label}} este încă selectat. Verifică-l și atinge Cumpără când ești gata."
+      },
+      "premiumHero": {
+        "eyebrow": "ABONAMENT PREMIUM",
+        "title": "Creează mai mult. Colectează o mică recompensă în fiecare zi.",
+        "body": "Credite AI la fiecare perioadă plătită, teme Premium și o recompensă zilnică de Stitch Coin.",
+        "benefitAiCredits": "Credite AI",
+        "benefitDailyCoins": "Monede zilnice",
+        "benefitThemes": "Teme",
+        "statusNoActiveMembership": "Niciun abonament activ",
+        "statusBrowseAsGuest": "Răsfoiește planurile ca invitat",
+        "periodEndsLabel": "Perioada curentă se încheie",
+        "periodRenewsLabel": "Se reînnoiește",
+        "lifecycleActive": "Activ"
+      },
+      "membershipActions": {
+        "title": "Abonament Premium activ",
+        "body": "Recompensele zilnice sunt în Profil. Temele sunt în Setări › Aspect.",
+        "scheduledChangeNotice": "Modificări la {{plan}} pe {{date}}",
+        "manageSubscription": "Gestionează abonamentul",
+        "manageSubscriptionFailedTitle": "Abonamentele nu s-au putut deschide",
+        "manageSubscriptionFailedBody": "Încearcă din nou din contul magazinului dispozitivului tău."
+      },
+      "pending": {
+        "title": "Reconciliere achiziție în curs",
+        "verifyingTitle": "Se verifică achiziția",
+        "premiumChangeAccepted": "Magazinul a acceptat schimbarea la {{label}}. ",
+        "premiumResponseReceived": "Răspunsul magazinului pentru {{label}} a fost primit. ",
+        "premiumDeferredSuffix": "Schimbarea este programată doar după verificarea de către serverul jocului și intră în vigoare la sfârșitul perioadei tale curente.",
+        "premiumSuffix": "Premium se activează doar după verificarea de către serverul jocului.",
+        "doNotPurchasePlanAgain": " Nu cumpăra din nou acest plan.",
+        "coinPackBody": "Răspunsul magazinului a fost primit. Stitch Coin se actualizează doar după ce serverul jocului expune înregistrarea corespunzătoare din registrul comercial. Nu cumpăra din nou acest pachet.",
+        "aiCreditPackBody": "Răspunsul magazinului a fost primit. Creditele AI se actualizează doar după ce serverul jocului expune înregistrarea corespunzătoare din registrul comercial. Nu cumpăra din nou acest pachet.",
+        "refreshStatus": "Actualizează starea",
+        "retryReconciliation": "Reîncearcă reconcilierea"
+      },
+      "store": {
+        "loadingPrices": "Se încarcă prețurile curente din magazin…",
+        "unavailableTitle": "Magazin temporar indisponibil",
+        "unavailableBody": "Informațiile despre portofel și abonament sunt încă disponibile.",
+        "retry": "Reîncearcă"
+      },
+      "plans": {
+        "choosePremiumPlan": "Alege un plan Premium",
+        "yourPremiumPlan": "Planul tău Premium",
+        "currentPlan": "PLAN CURENT",
+        "upgrade": "ACTUALIZEAZĂ",
+        "planChange": "SCHIMBARE PLAN",
+        "bestValue": "CEA MAI BUNĂ VALOARE",
+        "billedEvery": "Facturat la fiecare {{period}}",
+        "chooseLabel": "Alege {{label}}",
+        "freeTrial": "Gratuit pentru {{offer}}, apoi {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "Pachete unice",
+        "stitchCoinPacksTitle": "Pachete Stitch Coin",
+        "aiCreditPacksTitle": "Pachete de credite AI",
+        "coinsNoun": "Monede",
+        "creditsNoun": "Credite",
+        "fromPrice": "De la {{price}}"
+      },
+      "restore": {
+        "restorePurchases": "Restaurează achizițiile",
+        "restoreGuestPremium": "Restaurează Premium pentru invitat",
+        "requestedTitle": "Restaurare solicitată",
+        "requestedBody": "Accesul Premium verificat va apărea după reconcilierea webhook-ului magazinului. Pachetele Stitch Coin și de credite AI nu se restaurează niciodată."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "Prețuri curente din magazinul aplicației",
+        "closeAccessibilityLabel": "Închide fișa produsului",
+        "closeButtonAccessibilityLabel": "Închide",
+        "selectedBeforeSignIn": "Selectat înainte de autentificare",
+        "buy": "Cumpără"
+      },
+      "confirmation": {
+        "cancel": "Anulează",
+        "confirmLabel": "Confirmă {{label}}",
+        "confirmPremiumTitle": "Confirmă achiziția Premium",
+        "introductoryOffer": "Magazinul tău raportează această ofertă introductivă: {{offer}}.",
+        "premiumAppearsAfterVerification": "Premium apare doar după ce serverul jocului verifică tranzacția din magazin.",
+        "confirmPremiumUpgradeTitle": "Confirmă actualizarea Premium",
+        "confirmPremiumPlanChangeTitle": "Confirmă schimbarea planului Premium",
+        "currentPlanLabel": "Plan curent: {{label}}",
+        "upgradeToLabel": "Actualizează la {{label}} · {{offer}}",
+        "changeToLabel": "Schimbă la {{label}} · {{offer}}",
+        "upgradeBody": "App Store controlează taxa finală și data de intrare în vigoare pentru această actualizare. Premium reflectă {{label}} doar după ce serverul jocului o verifică.",
+        "planChangeBody": "App Store amână această schimbare până la sfârșitul perioadei tale curente: {{currentLabel}} continuă să funcționeze până atunci, iar {{targetLabel}} este facturat de la data schimbării. Anulează schimbarea din Gestionează abonamentul.",
+        "confirmUpgrade": "Confirmă actualizarea",
+        "confirmPlanChange": "Confirmă schimbarea planului",
+        "confirmStitchCoinTitle": "Confirmă achiziția Stitch Coin",
+        "confirmAiCreditTitle": "Confirmă achiziția de credite AI",
+        "balanceChangesAfterVerificationCoin": "Soldul tău se schimbă doar după ce serverul jocului verifică tranzacția din magazin și înregistrează acordarea corespunzătoare în registrul comercial.",
+        "balanceChangesAfterVerificationAiCredit": "Soldul tău se schimbă doar după ce serverul jocului verifică tranzacția din magazin și înregistrează acordarea corespunzătoare în registrul comercial. Abonamentul Premium nu este necesar."
+      },
+      "disclosure": {
+        "subscriptionTerms": "Plata este taxată în contul tău {{store}} la confirmare. {{label}} Premium se reînnoiește automat la {{offer}}, dacă reînnoirea automată nu este dezactivată cu cel puțin 24 de ore înainte de sfârșitul perioadei curente. Orice porțiune neutilizată dintr-o perioadă de probă gratuită se pierde atunci când cumperi un abonament. Poți anula oricând din contul tău {{store}}.",
+        "privacyPolicy": "Politica de confidențialitate",
+        "termsOfService": "Termenii și condițiile",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "Linkul nu a putut fi deschis: {{url}}"
+      },
+      "supportReference": {
+        "label": "Referință suport: {{reference}}",
+        "copyAccessibilityLabel": "Copiază referința suport {{reference}}",
+        "copyAccessibilityHint": "Copiază referința suport în clipboard",
+        "copied": "Copiat",
+        "copyFailedTitle": "Copierea a eșuat",
+        "copyFailedBody": "Referința suport nu a putut fi copiată. Selectează textul pentru a-l copia manual."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "Achizițiile Stitch Coin pentru invitați sunt disponibile doar pe iOS.",
+        "guestIosOnlyGeneric": "Achizițiile pentru invitați sunt disponibile doar pe iOS.",
+        "purchaseFailedTitle": "Achiziția a eșuat",
+        "premiumVerificationNotYet": "Serverul jocului nu a putut verifica această achiziție. Reîncearcă reconcilierea; nu o cumpăra din nou.",
+        "premiumVerificationFailedRetry": "Serverul jocului nu a putut verifica încă această achiziție. Reîncearcă reconcilierea; nu o cumpăra din nou.",
+        "premiumGrantRefreshFailed": "Premium a fost verificat, dar starea abonamentului și a creditelor AI nu a putut fi actualizată. Reîncearcă reconcilierea.",
+        "premiumReconciliationUnreachable": "Reconcilierea achiziției nu a putut ajunge la serverul jocului. Reîncearcă reconcilierea; nu o cumpăra din nou.",
+        "coinPackVerificationMismatch": "Tranzacția din magazin nu a corespuns acestui pachet de monede. Reîncearcă verificarea sau contactează suportul; nu-l cumpăra din nou.",
+        "coinPackGrantUnavailable": "Achiziția a fost verificată, dar acordarea Stitch Coin este indisponibilă. Reîncearcă reconcilierea; nu o cumpăra din nou.",
+        "coinPackBalanceRefreshFailed": "Acordarea de monede a fost verificată, dar soldul curent de Stitch Coin nu a putut fi actualizat. Reîncearcă reconcilierea.",
+        "coinPackVerificationFailedRetry": "Serverul jocului nu a putut verifica încă acest pachet de monede. Reîncearcă reconcilierea; nu-l cumpăra din nou.",
+        "coinPackReconciliationUnreachable": "Reconcilierea pachetului de monede nu a putut ajunge la serverul jocului. Reîncearcă reconcilierea; nu-l cumpăra din nou.",
+        "aiCreditPackVerificationMismatch": "Tranzacția din magazin nu a corespuns acestui pachet de credite AI. Reîncearcă verificarea sau contactează suportul; nu-l cumpăra din nou.",
+        "aiCreditPackGrantUnavailable": "Achiziția a fost verificată, dar acordarea de credite AI este indisponibilă. Reîncearcă reconcilierea; nu o cumpăra din nou.",
+        "aiCreditPackBalanceRefreshFailed": "Acordarea de credite AI a fost verificată, dar soldul curent nu a putut fi actualizat. Reîncearcă reconcilierea.",
+        "aiCreditPackVerificationFailedRetry": "Serverul jocului nu a putut verifica încă acest pachet de credite AI. Reîncearcă reconcilierea; nu-l cumpăra din nou.",
+        "aiCreditPackReconciliationUnreachable": "Reconcilierea pachetului de credite AI nu a putut ajunge la serverul jocului. Reîncearcă reconcilierea; nu-l cumpăra din nou.",
+        "reconciliationStillUnavailable": "Serverul jocului este încă indisponibil. Încearcă reconcilierea din nou mai târziu.",
+        "storeTemporarilyUnavailable": "Magazinul este temporar indisponibil. Te rugăm să încerci din nou peste câteva minute.",
+        "purchasesNotAllowed": "Achizițiile nu sunt permise pe acest dispozitiv. Verifică contul tău de magazin sau controlul parental.",
+        "itemNotAvailable": "Acest articol nu este disponibil pentru achiziție momentan. Alege alt articol sau încearcă din nou mai târziu.",
+        "alreadyOwned": "Deții deja această achiziție. Folosește Restaurează achizițiile pentru a actualiza accesul.",
+        "couldNotConnectToStore": "Nu s-a putut realiza conexiunea la magazin. Verifică-ți conexiunea la internet și încearcă din nou.",
+        "paymentPendingApproval": "Plata ta este în așteptarea aprobării. Achiziția ta va apărea după ce magazinul o finalizează.",
+        "testPurchaseDeclined": "Achiziția de test a fost refuzată. Nicio plată nu a fost efectuată. Alege alt rezultat de magazin de test din Setări, apoi încearcă din nou.",
+        "genericPurchaseFailure": "Achiziția ta nu a putut fi finalizată. Nicio plată nu a fost efectuată. Te rugăm să încerci din nou."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "Se verifică încă",
+        "premiumPending": "Verificarea este încă în curs. Premium se va activa după ce serverul jocului o confirmă.",
+        "premiumPlanChangePending": "Verificarea este încă în curs. Schimbarea planului tău va fi programată după ce serverul jocului o confirmă.",
+        "coinPackPending": "Verificarea este încă în curs. Soldul tău de Stitch Coin se va actualiza după finalizare.",
+        "aiCreditPackPending": "Verificarea este încă în curs. Soldul tău de credite AI se va actualiza după finalizare."
+      },
+      "success": {
+        "purchaseReceivedTitle": "Achiziție primită",
+        "storeAcceptedPlanChange": "Magazinul a acceptat schimbarea la {{label}}. Se confirmă când intră în vigoare.",
+        "storeAcceptedPurchase": "Magazinul a acceptat {{label}}. Se verifică acum achiziția ta.",
+        "premiumChanges": "Premium se schimbă la {{label}}{{effectiveOn}}.",
+        "effectiveOnDate": " pe {{date}}",
+        "planChangeScheduledTitle": "Schimbarea planului programată",
+        "planChangeScheduledBody": "Abonamentul tău Premium își păstrează planul curent până se schimbă la {{label}}{{effectiveOn}}. Anulează schimbarea din Gestionează abonamentul.",
+        "premiumIsActiveTitle": "Premium este activ",
+        "premiumVerifiedAndActive": "{{label}} Premium este verificat și activ.",
+        "premiumNowActiveNoBilling": "{{label}} Premium este acum activ.",
+        "premiumNowActiveBilled": "{{label}} Premium este acum activ, facturat la fiecare {{period}}.",
+        "coinPackGrantedTitle": "Stitch Coins acordate",
+        "coinPackGrantVerified": "Acordarea {{label}} a fost verificată. Sold Stitch Coin: {{balance}}.",
+        "coinPackAddedToBalance": "{{quantity}} Stitch Coins au fost adăugate la soldul tău.",
+        "aiCreditPackGrantedTitle": "Credite AI acordate",
+        "aiCreditPackGrantVerified": "Acordarea {{label}} a fost verificată. Sold credite AI: {{balance}}.",
+        "aiCreditPackAddedToBalance": "{{quantity}} credite AI au fost adăugate la soldul tău."
+      },
+      "products": {
+        "premiumAnnual": "Anual",
+        "premiumMonthly": "Lunar",
+        "premiumWeekly": "Săptămânal",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+        "aiCreditPack_one": "{{formattedCount}} credit AI",
+        "aiCreditPack_other": "{{formattedCount}} credite AI",
+        "billedEveryOffer": "{{price}} la fiecare {{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} credite / perioadă plătită",
+        "creditAllowancePaidNoun": "{{credits}} credite / {{period}} plătit"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "Cumpără ca invitat",
+        "commerceBody": "Poți cumpăra fără înregistrare. Abonamentul Premium poate fi restaurat din magazin, dar Stitch Coin, creditele AI și conținutul privat de invitat sunt irecuperabile dacă această instalare se pierde. Înregistrarea le protejează și nu întrerupe niciodată jocul ca invitat.",
+        "continueAsGuest": "Continuă ca invitat",
+        "signInInstead": "Autentifică-te în schimb",
+        "closeAccessibilityLabel": "Închide"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "Am înțeles",
+        "successButton": "Excelent",
+        "failedButton": "Închide",
+        "infoButton": "Am înțeles",
+        "closeAccessibilityLabel": "Închide"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "Înapoi",
+        "cancel": "Anulează",
+        "duplicateTitle": "Ai deja un model personal numit „{{title}}”. Alege un alt titlu.",
+        "cellsCount_one": "celulă",
+        "cellsCount_other": "celule",
+        "colorsCount_one": "culoare",
+        "colorsCount_other": "culori"
+      },
+      "hub": {
+        "title": "Centrul de creație",
+        "subtitle": "Dă viață propriilor tale modele de cusut cu design personalizat.",
+        "opening": "Se deschide…",
+        "photoImport": {
+          "title": "Import foto",
+          "description": "Încarcă o poză din galerie și transform-o într-un model de cusut.",
+          "action": "Importă poza"
+        },
+        "aiGenerator": {
+          "title": "Generator AI",
+          "description": "Descrie o idee primitoare și lasă inteligența artificială să genereze un design pixelat personalizat.",
+          "action": "Generează design"
+        }
+      },
+      "aspects": {
+        "square": "Pătrat",
+        "portrait_4_3": "Portret 4:3",
+        "landscape_4_3": "Peisaj 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "Conversia modelului a eșuat. Te rugăm să încerci din nou.",
+          "timeout": "Conversia modelului este încă în procesare. Încearcă din nou peste puțin timp.",
+          "generic": "Conversia modelului nu s-a putut finaliza. Te rugăm să încerci din nou."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "Este necesar un cont înregistrat",
+          "body": "Ilustrațiile AI și biblioteca acestora rămân private pentru contul tău.",
+          "signIn": "Autentificare"
+        },
+        "header": {
+          "title": "Generator AI",
+          "backAccessibilityLabel": "Înapoi"
+        },
+        "prompt": {
+          "label": "Descrie ilustrația ta",
+          "placeholder": "O grădină primitoare de căsuță la apus…"
+        },
+        "generate": {
+          "working": "Se procesează…",
+          "action": "Generează — 1 credit AI",
+          "errors": {
+            "promptRejected": "Acel prompt nu a fost permis. Încearcă să descrii altceva.",
+            "generic": "Generarea AI nu a putut începe. Te rugăm să încerci din nou."
+          }
+        },
+        "library": {
+          "title": "Biblioteca ta de ilustrații AI",
+          "status": {
+            "pending": "În așteptare",
+            "dispatched": "Trimis",
+            "running": "În desfășurare",
+            "delivered": "Livrat",
+            "safety_rejected": "Respins de siguranță",
+            "failed": "Eșuat",
+            "deleted": "Șters",
+            "unknown": "Indisponibil"
+          },
+          "failure": {
+            "safety_rejected": "Această ilustrație nu a trecut verificarea de siguranță a furnizorului.",
+            "failed": "Această ilustrație nu a putut fi generată."
+          },
+          "approve": "Aprobă ca model",
+          "delete": "Șterge",
+          "deleteAccessibilityLabel": "Șterge această ilustrație AI",
+          "errors": {
+            "loadFailed": "Biblioteca ta de ilustrații AI nu a putut fi încărcată. Te rugăm să încerci din nou."
+          }
+        },
+        "approve": {
+          "modalTitle": "Creează model personal",
+          "titleLabel": "Titlul modelului",
+          "titleAccessibilityLabel": "Titlul modelului",
+          "defaultTitle": "Modelul meu AI",
+          "placeholder": "Modelul meu AI",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "Anulează",
+          "creating": "Se creează modelul…",
+          "create": "Creează modelul",
+          "errors": {
+            "generic": "Modelul personal nu a putut fi creat. Te rugăm să încerci din nou."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "Este necesar un cont înregistrat",
+          "body": "Modelele personale aparțin contului tău, astfel încât rămân private și disponibile pe toate dispozitivele.",
+          "signIn": "Autentifică-te sau creează un cont",
+          "back": "Înapoi"
+        },
+        "header": {
+          "title": "Model din fotografie",
+          "subtitle": "Încadrează local, apoi aprobă conversia",
+          "backAccessibilityLabel": "Înapoi"
+        },
+        "picker": {
+          "chooseTitle": "Alege o fotografie",
+          "helpText": "Sursa foto locală, la rezoluție completă, rămâne pe acest dispozitiv. Nimic nu se convertește până nu aprobi încadrarea.",
+          "choose": "Alege din bibliotecă",
+          "chooseAnother": "Alege alta",
+          "opening": "Se deschide…",
+          "errors": {
+            "permissionDenied": "Accesul la galeria foto este necesar pentru a alege o sursă foto locală.",
+            "invalidDimensions": "Fotografia selectată nu raportează dimensiuni utilizabile.",
+            "generic": "Galeria foto nu a putut fi deschisă. Te rugăm să încerci din nou."
+          }
+        },
+        "framing": {
+          "title": "Încadrarea ilustrației",
+          "gestureHint": "Trage pentru a poziționa · ciupește pentru a mări",
+          "aspectLabel": "Raport de aspect al cadrului"
+        },
+        "profile": {
+          "title": "Profil de conversie",
+          "options": {
+            "easy": "Ușor",
+            "standard": "Standard",
+            "detailed": "Detaliat"
+          },
+          "custom": "Personalizat",
+          "customMeta": "Liber · formă fixată",
+          "unavailable": "Nu se potrivește acestui cadru",
+          "customShortEdgeLabel": "Latura scurtă",
+          "customColorLimitLabel": "Limită culori DMC",
+          "exceedsLimit": "Aceste valori personalizate depășesc limita de {{max}} celule pentru dimensiunea modelului."
+        },
+        "titleCard": {
+          "label": "Titlul modelului",
+          "placeholder": "Modelul meu foto",
+          "defaultTitle": "Modelul meu foto",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · până la {{maxColors}} {{colorsUnit}} DMC",
+          "privacyNotice": "Aprobarea încarcă doar derivata încadrată și redusă ca dimensiune. Fotografia originală rămâne locală.",
+          "approve": "Aprobă ilustrația și convertește"
+        },
+        "processing": {
+          "preparingFrame": "Se pregătește cadrul aprobat pe acest dispozitiv…",
+          "uploading": "Se încarcă doar cadrul decupat și redus ca dimensiune…",
+          "waitingForWorker": "Se așteaptă procesul de conversie…",
+          "buildingGrid": "Se construiește grila de cusut și paleta DMC…",
+          "preparingSession": "Se pregătește modelul personal pentru joc…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "Acest profil nu se mai potrivește cadrului final. Alege Ușor sau redu detaliul.",
+            "generic": "Această fotografie nu a putut fi convertită. Te rugăm să încerci din nou."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "Niciun model selectat",
+          "noPatternBody": "Acest ecran trebuie deschis dintr-un model personal existent din biblioteca ta.",
+          "accountTitle": "Este necesar un cont înregistrat",
+          "accountBody": "Modelele personale aparțin contului tău, astfel încât rămân private și disponibile pe toate dispozitivele.",
+          "signIn": "Autentifică-te sau creează un cont",
+          "back": "Înapoi"
+        },
+        "loading": "Se reia ciorna editorului...",
+        "load": {
+          "failedTitle": "Încărcarea modelului a eșuat",
+          "retry": "Reîncearcă",
+          "back": "Înapoi",
+          "errors": {
+            "generic": "Acest model personal nu a putut fi încărcat. Te rugăm să încerci din nou."
+          }
+        },
+        "header": {
+          "title": "Editor de modele",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "Înapoi"
+        },
+        "toolbar": {
+          "undo": "Anulează",
+          "redo": "Refă"
+        },
+        "mode": {
+          "paint": "Colorează",
+          "replaceColor": "Înlocuiește culoarea",
+          "replaceStep1": "1. Atinge o culoare din modelul de mai jos pentru a o înlocui:",
+          "replaceStep2": "2. Selectează o culoare DMC țintă mai jos pentru a executa înlocuirea:",
+          "paintSelected": "Selectat: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "Selectează o culoare mai jos, apoi atinge celulele pentru a le colora."
+        },
+        "errors": {
+          "pickColorFirst": "Alege mai întâi o culoare",
+          "paletteLimit": "Acest model folosește deja maximul de {{max}} culori de fir."
+        },
+        "picker": {
+          "title": "Culori de fir DMC",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "Salvează modelul editat",
+          "placeholder": "Titlul modelului meu editat",
+          "action": "Salvează ca nou",
+          "offlineTitle": "Salvat offline",
+          "offlineBody": "Modelul tău editat a fost salvat pe acest dispozitiv și se va sincroniza cu contul tău imediat ce revii online.",
+          "errors": {
+            "generic": "Acest model personal nu a putut fi salvat. Te rugăm să încerci din nou."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "Această autentificare aparține unui alt cont. Contul dvs. curent nu a fost modificat.",
+        "providerRejected": "Verificarea a fost respinsă. Verificați contul sau codul și încercați din nou."
+      },
+      "generic": {
+        "failure": "Ceva nu a mers bine. Vă rugăm să încercați din nou.",
+        "supportReferenceLabel": "Referință suport: {{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Stitch Wish folosește fotografiile selectate pentru a crea modele personale sau pentru a alege o fotografie de profil de creator public."
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "BINE AI VENIT ÎN STITCH WISH",
+        "title": "Alege o culoare, atinge pătrățelele potrivite.",
+        "heroAlt": "Previzualizare model de start Cozy Heart",
+        "handedness": {
+          "sectionTitle": "Pe ce parte ar trebui să fie comenzile?",
+          "groupLabel": "Partea comenzilor",
+          "optionRight": "Comenzi în dreapta",
+          "optionLeft": "Comenzi în stânga",
+          "saveErrorText": "Nu s-a putut salva alegerea.",
+          "retry": "Încearcă din nou"
+        },
+        "note": "Poți schimba asta mai târziu din Setări.",
+        "start": "Începe cusutul",
+        "starting": "Se pornește…",
+        "browse": "Răsfoiește modelele de start",
+        "signIn": "Autentificare"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "Selectează DMC 321 Christmas Red.",
+          "stitchAction": "Atinge celula evidențiată care se potrivește.",
+          "mismatchedTap": "Atinge celula diferită evidențiată. Atingerile greșite nu costă nimic.",
+          "undoAction": "Anulează acea cusătură, apoi plasează-o din nou.",
+          "stitchSweep": "Apasă o celulă care se potrivește, apoi trage de-a lungul șirului evidențiat.",
+          "threadColorCompletion": "Termină firul alb evidențiat, apoi alege următoarea culoare."
+        },
+        "hints": {
+          "anchoredZoom": "Ciupește pentru a mări, păstrând celulele sub degete pe loc.",
+          "panVsSweep": "Tragerea deplasează materialul. Începe pe o celulă care se potrivește pentru a cuse în lanț.",
+          "edgeAutoPan": "Continuă să tragi lângă margine și materialul urmărește degetul.",
+          "remainingCellLocator": "Folosește localizatorul pentru a găsi următoarea celulă rămasă pentru acest fir."
+        },
+        "skip": "Sari peste, pentru moment",
+        "skipAccessibilityLabel": "Sari peste tutorial, pentru moment",
+        "dismiss": "Am înțeles",
+        "dismissAccessibilityLabel": "Închide indiciul"
+      },
+      "recap": {
+        "title": "Ai reușit",
+        "lines": {
+          "matchNumbers": "Potrivește numerele pentru a plasa fiecare cusătură.",
+          "dragSweep": "Trage peste celulele care se potrivesc pentru a cuse în lanț.",
+          "pinchZoom": "Ciupește pentru a mări atunci când ai nevoie de o privire mai atentă.",
+          "undoLocator": "Anularea și localizatorul sunt mereu gratuite."
+        },
+        "continue": "Continuă cusutul",
+        "browsePatterns": "Răsfoiește modelele"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "Masa de cusut",
+        "subtitle": "Continuă de unde ai rămas sau reia un proiect recent.",
+        "loading": "Se încarcă cusăturile tale...",
+        "empty": {
+          "title": "Niciun proiect activ",
+          "body": "Rama ta de cusut este momentan goală. Răsfoiește catalogul de modele pentru a găsi ceva frumos de cusut!",
+          "action": "Răsfoiește catalogul"
+        },
+        "unknownPattern": "Model necunoscut",
+        "idLabel": "ID: {{id}}",
+        "unknownPatternLabel": "Model {{id}}",
+        "deleteSessionAccessibilityLabel": "Șterge sesiunea",
+        "viewFinishedAccessibilityLabel": "Vezi proiectul finalizat",
+        "resumeAccessibilityLabel": "Reia cusutul",
+        "status": {
+          "ready": "Gata",
+          "done": "Finalizat",
+          "active": "Activ",
+          "preparing": "Se pregătește",
+          "failed": "Eșuat"
+        },
+        "deleteConfirm": {
+          "title": "Șterge progresul",
+          "message": "Sigur dorești să ștergi progresul pentru „{{title}}”? Această acțiune nu poate fi anulată.",
+          "cancel": "Anulează",
+          "confirm": "Șterge"
+        },
+        "preparingCard": {
+          "discardTitle": "Renunță la sesiune",
+          "cancelTitle": "Anulează descărcarea",
+          "discardMessage": "Sigur dorești să renunți la această sesiune eșuată?",
+          "cancelMessage": "Sigur dorești să anulezi descărcarea acestui model?",
+          "keep": "Păstrează",
+          "discard": "Renunță",
+          "cancel": "Anulează"
+        }
+      },
+      "loading": {
+        "text": "Se deschide sesiunea și se pregătește materialul..."
+      },
+      "error": {
+        "title": "Încărcarea sesiunii a eșuat",
+        "fallbackMessage": "Nu s-a putut încărca sesiunea de cusut.",
+        "backButton": "Înapoi",
+        "tableButton": "Mergi la masă"
+      },
+      "header": {
+        "backButton": "← Înapoi",
+        "tableButton": "← Masă",
+        "defaultTitle": "Sesiune de cusut",
+        "progress": "{{completed}} / {{total}} celule ({{percent}}% finalizat)",
+        "resumeTutorialAccessibilityLabel": "Reia tutorialul"
+      },
+      "banners": {
+        "patternRemoved": "Acest model a fost eliminat prin moderare și nu mai este disponibil. Atinge pentru a ieși.",
+        "syncConflict": "Sincronizat cu alt dispozitiv — unele celule au fost actualizate. Atinge pentru a închide."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "Localizează următoarea celulă rămasă din culoarea firului activ",
+        "undoAccessibilityLabel": "Anulează ultima cusătură"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "Culoare {{number}}: DMC {{dmcCode}}, mai este {{count}} cusătură",
+        "chipAccessibilityLabel_other": "Culoare {{number}}: DMC {{dmcCode}}, mai sunt {{count}} cusături",
+        "done": "Finalizat",
+        "remaining_one": "Mai este {{count}}",
+        "remaining_other": "Mai sunt {{count}}"
+      },
+      "celebration": {
+        "title": "Lucrat cu măiestrie!",
+        "subtitle": "Ai finalizat fiecare cusătură de pe acest material.",
+        "stitchesLabel_one": "Cusătură",
+        "stitchesLabel_other": "Cusături",
+        "colorsLabel_one": "Culoare",
+        "colorsLabel_other": "Culori",
+        "replayButton": "Cusă din nou",
+        "catalogButton": "Înapoi la catalog"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "Înapoi",
+        "tryAgain": "Încearcă din nou"
+      },
+      "rejectionReasons": {
+        "safety": "Siguranță",
+        "publication_rights": "Drepturi de publicare",
+        "duplicate_or_spam": "Duplicat sau spam",
+        "technical_invalidity": "Nevaliditate tehnică",
+        "quality_standard": "Standard de calitate"
+      },
+      "submissionStatus": {
+        "accepted": "Publicat",
+        "appeal_pending": "Contestație în așteptare",
+        "appeal_upheld": "Contestație respinsă",
+        "precheck_failed": "Verificare prealabilă indisponibilă",
+        "precheck_pending": "Se verifică",
+        "quarantined": "Necesită analiză",
+        "rejected": "Respins",
+        "review_pending": "În analiză"
+      },
+      "revisionStatus": {
+        "accepted": "Publicat",
+        "appeal_pending": "Contestație în așteptare",
+        "appeal_upheld": "Contestație respinsă",
+        "pending": "În analiză",
+        "rejected": "Respins",
+        "withdrawn": "Retras"
+      },
+      "home": {
+        "identity": {
+          "establishing": "Se stabilește identitatea...",
+          "pendingTitle": "Identitate în așteptare",
+          "offline": "Offline",
+          "retryConnection": "Reîncearcă conexiunea",
+          "loadingPublicProfile": "Se încarcă profilul public...",
+          "unavailableTitle": "Profil public indisponibil",
+          "checkConnection": "Verifică-ți conexiunea și încearcă din nou.",
+          "createTitle": "Creează-ți profilul public",
+          "createBody": "Alege numele de utilizator permanent afișat alături de modelele tale comunitare. Detaliile contului tău rămân private.",
+          "createAction": "Creează profil public",
+          "editAction": "Editează profilul public",
+          "offlinePendingSync": "Offline — sincronizare în așteptare",
+          "guestPlayer": "Jucător invitat",
+          "playingSince": "Joacă din {{date}}",
+          "creatorSince": "Creator din {{date}}"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "Deschide magazinul",
+          "title": "Solduri studio",
+          "commerceStoreLink": "Magazin",
+          "stitchCoinsAccessibilityLabel": "Sold Stitch Coins: {{balance}}. Atinge pentru a obține monede.",
+          "packs": "Pachete",
+          "stitchCoinsLabel": "Stitch Coins",
+          "stitchCoinsSub": "Pentru deblocarea modelelor",
+          "aiCreditsAccessibilityLabel": "Sold credite AI: {{balance}}. Atinge pentru a obține credite.",
+          "aiCreditsSignInAccessibilityLabel": "Credite AI. Autentifică-te pentru a cumpăra.",
+          "aiCreditsLabel": "Credite AI",
+          "aiCreditsSubOwned": "Pentru ilustrații AI de modele",
+          "aiCreditsSubGuest": "Autentifică-te pentru a deține",
+          "membershipActiveAccessibilityLabel": "Abonament Premium activ ({{plan}}). Atinge pentru a gestiona.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Premium. Atinge pentru a vedea planurile.",
+          "membershipActiveTitle": "Premium activ · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "Anual",
+          "planMonthly": "Lunar",
+          "planWeekly": "Săptămânal",
+          "planActive": "Activ",
+          "trialBadge": "Probă",
+          "membershipSubActive": "Toate temele deblocate · Recompense zilnice instant",
+          "membershipSubInactive": "30 de monede zilnice instant, teme personalizate și credite AI",
+          "manage": "Gestionează",
+          "explore": "Explorează"
+        },
+        "quickNav": {
+          "sectionEyebrow": "CONT ȘI COMUNITATE",
+          "submissionsAccessibilityLabel": "Trimiteri în catalog: urmărește analizele, deciziile și contestațiile",
+          "submissionsTitle": "Trimiteri",
+          "submissionsSub": "Urmărește analizele",
+          "publishedAccessibilityLabel": "Modele publicate: revizuiește metadatele, retrage și urmărește contestațiile",
+          "publishedTitle": "Publicate",
+          "publishedSub": "Gestionează modelele",
+          "moderationAccessibilityLabel": "Notificări de moderare: analizează deciziile de catalog care afectează modelele tale",
+          "moderationTitle": "Moderare",
+          "moderationSub": "Notificări de politică",
+          "likedAccessibilityLabel": "Modele apreciate: colecția ta privată de modele comunitare apreciate",
+          "likedTitle": "Modele apreciate",
+          "likedSavedCount_one": "{{count}} salvat",
+          "likedSavedCount_other": "{{count}} salvate",
+          "likedSavedDefault": "Modele salvate"
+        },
+        "dailySection": {
+          "title": "Cusut zilnic și recompense",
+          "tasksGroupLabel": "Sarcini zilnice (+30 monede maxim)",
+          "connectToTrack": "Conectează-te pentru a urmări progresul sarcinilor zilnice.",
+          "loadingTasks": "Se încarcă sarcinile…",
+          "loadFailed": "Sarcinile zilnice nu au putut fi încărcate.",
+          "retry": "Reîncearcă",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "Se resetează…",
+          "resetsInHoursMinutes": "Se resetează în {{hours}}h {{minutes}}m",
+          "resetsInMinutes": "Se resetează în {{minutes}}m"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 de acțiuni de cusut",
+            "body": "Completează 100 de celule potrivite astăzi"
+          },
+          "three_colors_10": {
+            "title": "3 culori, 10 acțiuni fiecare",
+            "body": "Ajunge la 10 acțiuni în 3 culori de fir"
+          },
+          "color_completion": {
+            "title": "Finalizează o culoare de fir",
+            "body": "Termină de cusut complet orice culoare"
+          }
+        },
+        "dailyPool": {
+          "title": "Fondul zilnic de recompense de 30 de monede",
+          "premiumInstantClaim": "Revendicare instant Premium",
+          "rewardedAds": "Reclame cu recompensă",
+          "claimedAmount": "{{amount}} Stitch Coins revendicate pentru astăzi!",
+          "poolAlreadyClosed": "Fondul de recompense de astăzi a fost deja închis.",
+          "claimedForToday": "Revendicat pentru astăzi. Se resetează la următoarea Zi de recompensă.",
+          "poolExhausted": "Fondul de 30 de monede de astăzi este epuizat.",
+          "claimButtonRetry": "Reîncearcă revendicarea",
+          "claimButtonInstant": "Revendică {{count}} monede (instant)",
+          "poolClaimedResetsTomorrow": "Fondul de monede de astăzi a fost revendicat. Se resetează mâine.",
+          "allAdRewardsCompleted": "Toate recompensele din reclame au fost finalizate pentru astăzi! (30/30 monede)",
+          "watchAdButton": "Urmărește o reclamă pentru +10 monede ({{count}} rămase)",
+          "adPerkNote": "Urmărește până la 3 reclame/zi · Premium deblochează revendicarea instant de 30 de monede",
+          "adRewardEarned": "Recompensă din reclamă câștigată! Se verifică cu serverul…",
+          "claimFailed": "Revendicarea a eșuat: {{message}}",
+          "claimFailedGeneric": "Ceva nu a mers bine. Te rugăm să încerci din nou.",
+          "adLoadFailedDefault": "Încărcarea reclamei a eșuat",
+          "adAttemptFailedDefault": "Deschiderea încercării de reclamă a eșuat"
+        },
+        "tabs": {
+          "myCreations": "Creațiile mele {{count}}",
+          "likedPatterns": "Modele apreciate {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "Autentifică-te pentru modele personale",
+          "signInBody": "Este necesar un cont înregistrat pentru a crea și a deține în mod privat modele convertite din fotografii.",
+          "signIn": "Autentificare",
+          "patternMeta": "{{width}}×{{height}} · {{count}} culori",
+          "pendingSync": "Sincronizare în așteptare",
+          "play": "Joacă",
+          "edit": "Editează",
+          "submitAccessibilityLabel": "Trimite {{title}} în catalogul comunitar",
+          "emptyTitle": "Nicio creație personală",
+          "emptyBody": "Nu ai convertit nicio fotografie și nu ai generat nicio ilustrație AI încă. Mergi la Creează pentru a-ți începe prima capodoperă!",
+          "emptyAction": "Începe să creezi",
+          "actionFailedGeneric": "Ceva nu a mers bine. Te rugăm să încerci din nou."
+        },
+        "likedTab": {
+          "unavailableTitle": "Modele apreciate indisponibile",
+          "unavailableDefault": "Modelele apreciate nu au putut fi încărcate.",
+          "byCreator": "de {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} culori",
+          "emptyTitle": "Niciun model apreciat",
+          "emptyBody": "Răsfoiește catalogul și atinge pictograma inimă pe orice design pentru a-l salva aici pentru mai târziu.",
+          "emptyAction": "Descoperă modele"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Revendicare zilnică de monede Premium",
+        "description": "Revendică restul fondului comun de recompense de 30 de monede de astăzi.",
+        "connectPrompt": "Conectează-te la serverul jocului pentru a verifica recompensa de astăzi.",
+        "checkingReward": "Se verifică recompensa Premium de astăzi…",
+        "unavailableGeneric": "Recompensa Premium de astăzi este indisponibilă.",
+        "tryAgain": "Încearcă din nou",
+        "resultAdded": "{{amount}} Stitch Coins adăugate de serverul jocului. Sold: {{balance}}.",
+        "poolAlreadyClosed": "Fondul comun de recompense de astăzi a fost deja închis.",
+        "alreadyClaimed": "Deja revendicat pentru această Zi de recompensă.",
+        "poolExhausted": "Fondul comun de recompense de astăzi este epuizat. Se resetează la următoarea Zi de recompensă.",
+        "availableNow": "{{count}} Stitch Coins disponibile acum",
+        "resetsAt": "Se resetează {{date}}",
+        "claimButtonRetry": "Reîncearcă revendicarea",
+        "claimButtonInstant": "Revendică {{count}} monede",
+        "lockedDescription": "Abonamentul Premium, inclusiv o perioadă de probă lunară eligibilă, deblochează această revendicare zilnică.",
+        "viewPremiumPlans": "Vezi planurile Premium"
+      },
+      "publicProfile": {
+        "editTitle": "Editează profilul public",
+        "createTitle": "Creează profil public",
+        "signInTitle": "Autentificare necesară",
+        "signInBody": "Este necesar un cont înregistrat pentru a crea o identitate publică de creator.",
+        "signInAction": "Autentificare",
+        "unavailableTitle": "Profil indisponibil",
+        "unavailableBody": "Profilul tău public nu a putut fi încărcat. Verifică-ți conexiunea și încearcă din nou.",
+        "tryAgain": "Încearcă din nou",
+        "intro": "Acest nume și această fotografie sunt vizibile alături de modelele tale comunitare. E-mailul tău și furnizorul de autentificare rămân private.",
+        "choosePhoto": "Alege fotografia",
+        "changePhoto": "Schimbă fotografia",
+        "remove": "Elimină",
+        "avatarHelper": "Opțional · JPEG, PNG sau WebP · până la 5 MB",
+        "usernameLabel": "Nume de utilizator",
+        "usernameAccessibilityLabel": "Nume de utilizator public",
+        "usernamePlaceholder": "nume_cusator",
+        "usernameHelperLocked": "Numele tău de utilizator este permanent.",
+        "usernameHelperEditable": "3–30 de litere mici, cifre sau underscore-uri. Acesta nu poate fi schimbat ulterior.",
+        "displayNameLabel": "Nume afișat",
+        "displayNameAccessibilityLabel": "Nume public afișat",
+        "displayNamePlaceholder": "Numele tău de creator",
+        "displayNameHelper": "Poți schimba asta mai târziu.",
+        "safetyNotice": "Numele și fotografiile sunt verificate înainte de publicare. Dacă o modificare este respinsă, profilul tău public curent rămâne neschimbat.",
+        "saveAction": "Salvează profilul public",
+        "publishAction": "Publică profilul public",
+        "photoPermissionRequired": "Accesul la galeria foto este necesar pentru a alege o fotografie de profil.",
+        "photoTypeInvalid": "Fotografiile de profil trebuie să fie JPEG, PNG sau WebP.",
+        "photoTooLarge": "Fotografiile de profil trebuie să aibă cel mult 5 MB.",
+        "saveFailedDefault": "Profilul tău public nu a putut fi salvat"
+      },
+      "submissions": {
+        "title": "Trimiteri în catalog",
+        "unavailableTitle": "Trimiteri indisponibile",
+        "unavailableDefault": "Trimiterile tale nu au putut fi încărcate.",
+        "emptyTitle": "Nicio trimitere în catalog",
+        "emptyBody": "Trimite un model personal sincronizat din Creațiile mele.",
+        "emptyAction": "Înapoi la Creațiile mele",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "Verificările automate nu au putut fi finalizate. Această instantanee nu a fost publicată.",
+        "publishedToCatalog": "Publicat în catalogul comunitar.",
+        "appealAction": "Contestă decizia",
+        "appealHelp": "Poți contesta această instantanee neschimbată o singură dată.",
+        "appealNoteAccessibilityLabel": "Notă de contestație",
+        "appealNotePlaceholder": "Context opțional pentru moderatorul care analizează",
+        "cancelAction": "Anulează",
+        "submitAppealAction": "Trimite contestația"
+      },
+      "publishedPatterns": {
+        "title": "Modele publicate",
+        "unavailableTitle": "Modele indisponibile",
+        "unavailableDefault": "Modelele tale publicate nu au putut fi încărcate.",
+        "emptyTitle": "Niciun model publicat",
+        "emptyBody": "Modelele pe care le publici în catalogul comunitar apar aici.",
+        "emptyAction": "Înapoi la profil",
+        "withdrawnFromCatalog": "Retras din catalog",
+        "underReviewHold": "În suspendare pentru analiză",
+        "meta": "{{category}} · Publicat {{date}}",
+        "withdrawnHelp": "Această identitate este retrasă definitiv. Jucătorii cu o sesiune de cusut existentă își păstrează progresul și accesul.",
+        "reviewHoldHelp": "Acest model este temporar în afara descoperirii și nu poate începe sesiuni noi. Sesiunile de cusut existente rămân jucabile. Poți totuși propune o revizuire de metadate.",
+        "reviseAction": "Revizuiește metadatele",
+        "withdrawRevisionAction": "Retrage revizuirea",
+        "appealAction": "Contestă decizia",
+        "withdrawFromCatalogAction": "Retrage din catalog",
+        "appealHelp": "Poți contesta această instantanee neschimbată o singură dată. Trimiterea unei noi revizuiri renunță la această contestație.",
+        "appealNoteAccessibilityLabel": "Notă de contestație",
+        "appealNotePlaceholder": "Context opțional pentru moderatorul care analizează",
+        "cancelAction": "Anulează",
+        "submitAppealAction": "Trimite contestația",
+        "withdrawRevisionFailedTitle": "Retragerea revizuirii a eșuat",
+        "withdrawPatternFailedTitle": "Retragerea modelului a eșuat",
+        "withdrawPatternSuccessTitle": "Model retras",
+        "withdrawPatternSuccessBody": "Nu mai poate fi descoperit și nu poate începe sesiuni noi. Sesiunile de cusut existente își păstrează progresul și datele jucabile.",
+        "withdrawConfirmTitle": "Retragi din catalogul comunitar?",
+        "withdrawConfirmBody": "„{{title}}” va dispărea din descoperire și nu va mai putea începe sesiuni noi. Această identitate de model nu poate fi niciodată restaurată. Sesiunile de cusut existente și progresul lor rămân jucabile.",
+        "withdrawConfirmCancel": "Anulează",
+        "withdrawConfirmAction": "Retrage definitiv"
+      },
+      "revisePatternMetadata": {
+        "title": "Revizuiește metadatele",
+        "signInTitle": "Este necesar un cont înregistrat",
+        "signInBody": "Autentifică-te înainte de a revizui metadatele unui model comunitar.",
+        "signInAction": "Autentificare",
+        "notFoundTitle": "Modelul comunitar nu a fost găsit",
+        "notFoundBody": "Doar propriile tale modele comunitare publicate pot fi revizuite.",
+        "notFoundAction": "Înapoi la modelele publicate",
+        "inProgressTitle": "Revizuire deja în curs",
+        "inProgressBody": "Acest model are deja o revizuire în așteptare sau o contestație activă. Retrage-o înainte de a trimite alta.",
+        "inProgressAction": "Înapoi la modelele publicate",
+        "currentlyPublished": "În prezent publicat în catalogul comunitar",
+        "titleFieldLabel": "Titlu în catalog",
+        "titlePlaceholder": "Titlul modelului",
+        "titleAccessibilityLabel": "Titlu în catalog",
+        "descriptionFieldLabel": "Descriere",
+        "descriptionPlaceholder": "Descrie designul, subiectul și experiența de cusut.",
+        "descriptionAccessibilityLabel": "Descriere catalog",
+        "sourceLanguageFieldLabel": "Limba sursă",
+        "categoryFieldLabel": "Categorie",
+        "tagsFieldLabel": "Etichete",
+        "notice": "Revizuirea creează o nouă instantanee imuabilă. Metadatele tale publicate curent rămân vizibile până când un moderator uman acceptă această revizuire.",
+        "submitAction": "Trimite revizuirea"
+      },
+      "submitPattern": {
+        "title": "Trimite în comunitate",
+        "signInTitle": "Este necesar un cont înregistrat",
+        "signInBody": "Autentifică-te înainte de a trimite un model personal în catalogul comunitar.",
+        "signInAction": "Autentificare",
+        "createProfileTitle": "Creează un profil public de creator",
+        "createProfileBody": "Modelele comunitare sunt atribuite identității tale publice de creator.",
+        "createProfileAction": "Creează profil",
+        "patternNotFoundTitle": "Modelul personal nu a fost găsit",
+        "patternNotFoundBody": "Doar modelele personale sincronizate pot fi trimise.",
+        "patternNotFoundAction": "Înapoi la profil",
+        "patternMeta": "{{width}}×{{height}} · {{count}} culori",
+        "byCreator": "De @{{username}}",
+        "titleFieldLabel": "Titlu în catalog",
+        "titlePlaceholder": "Titlul modelului",
+        "titleAccessibilityLabel": "Titlu în catalog",
+        "descriptionFieldLabel": "Descriere",
+        "descriptionPlaceholder": "Descrie designul, subiectul și experiența de cusut.",
+        "descriptionAccessibilityLabel": "Descriere catalog",
+        "sourceLanguageFieldLabel": "Limba sursă",
+        "categoryFieldLabel": "Categorie",
+        "tagsFieldLabel": "Etichete",
+        "rightsDeclaration": "Am creat această lucrare sau dețin drepturile necesare pentru a o publica conform Declarației privind drepturile de publicare v1.",
+        "notice": "Trimiterea creează o copie imuabilă. Verificările automate oferă dovezi, dar un moderator uman ia fiecare decizie.",
+        "submitAction": "Trimite spre analiză"
+      },
+      "moderationNotices": {
+        "title": "Notificări de moderare",
+        "signInTitle": "Autentifică-te pentru a vedea notificările",
+        "signInBody": "Notificările de moderare aparțin contului înregistrat care a publicat modelul comunitar afectat.",
+        "signInAction": "Autentificare",
+        "unavailableTitle": "Notificări indisponibile",
+        "unavailableDefault": "Notificările de moderare nu au putut fi încărcate.",
+        "emptyTitle": "Nicio notificare de moderare",
+        "emptyBody": "Deciziile de moderare a catalogului vizibile proprietarului vor apărea aici.",
+        "emptyAction": "Înapoi la profil",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "Remediere metadate catalog",
+          "no_violation": "Analiză închisă — nicio încălcare",
+          "review_hold": "Suspendare pentru analiză",
+          "safety_removal": "Eliminare pentru siguranță"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "Titlul, descrierea și etichetele selectate au fost înlocuite cu valori sigure. Disponibilitatea, fișierul modelului și previzualizarea nu sunt afectate. Poți trimite oricând o nouă revizuire de metadate în catalog.",
+          "no_violation": "Analiza post-publicare este închisă, iar acest model este din nou complet disponibil în descoperire și sesiuni noi de cusut.",
+          "review_hold": "Acest model este temporar indisponibil pentru descoperire și sesiuni noi. Sesiunile de cusut existente, progresul și datele offline ale modelului rămân jucabile.",
+          "safety_removal": "Acest model a fost eliminat pentru o încălcare de siguranță, legală sau de politică. A dispărut din descoperire, sesiunile de cusut existente au devenit inaccesibile, iar datele offline ale modelului de pe dispozitivele tale au fost șterse. Poți trimite o singură contestație de eliminare pentru siguranță."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "Sarcini zilnice",
+        "offline": "Ești offline — Sarcinile zilnice necesită o conexiune.",
+        "unavailable": "Sarcinile zilnice nu au putut fi încărcate.",
+        "empty": "Nicio sarcină disponibilă astăzi."
+      },
+      "rewardedAdCard": {
+        "offline": "Ești offline — Ziua de recompensă necesită o conexiune.",
+        "unavailable": "Starea Zilei de recompensă nu a putut fi încărcată.",
+        "premiumClaimClosedPool": "Revendicarea ta zilnică Premium a închis fondul comun de monede de astăzi.",
+        "allRewardsClaimed": "Ai revendicat toate recompensele din reclame pentru astăzi. Revino mâine!",
+        "remaining_one": "A mai rămas {{count}} reclamă astăzi ({{coins}} monede disponibile)",
+        "remaining_other": "Au mai rămas {{count}} reclame astăzi ({{coins}} monede disponibile)",
+        "watchForCoins": "Urmărește o reclamă pentru {{count}} monede"
+      },
+      "likedPatterns": {
+        "title": "Modele apreciate",
+        "signInTitle": "Este necesar un cont înregistrat",
+        "signInBody": "Autentifică-te înainte de a vedea colecția ta privată de modele apreciate.",
+        "signInAction": "Autentificare",
+        "unavailableTitle": "Modele apreciate indisponibile",
+        "unavailableDefault": "Modelele apreciate nu au putut fi încărcate.",
+        "emptyTitle": "Niciun model apreciat",
+        "emptyBody": "Răsfoiește catalogul de modele și atinge pictograma inimă pe orice design pentru a-l salva aici.",
+        "emptyAction": "Descoperă modele",
+        "byCreator": "de {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} culori · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "Setări",
+        "subtitleDev": "Configurează preferințele și inspectează sistemele backend.",
+        "subtitleProd": "Configurează-ți preferințele."
+      },
+      "serviceStatus": {
+        "sectionTitle": "Starea serviciului",
+        "apiConnectionTitle": "Conexiune API",
+        "testingConnection": "Se testează conexiunea api...",
+        "offlineUnreachable": "Offline / Inaccesibil",
+        "unknownConnectionError": "Eroare de conexiune necunoscută",
+        "retryConnection": "Reîncearcă conexiunea",
+        "healthy": "Funcțional",
+        "degraded": "Degradat",
+        "postgresLabel": "Bază de date PostgreSQL",
+        "redisLabel": "Cache Redis"
+      },
+      "session": {
+        "sectionTitle": "Identitate și sesiune",
+        "statusTitle": "Starea sesiunii backend",
+        "statusDescription": "Validează sesiunea ta activă de invitat înregistrat prin API.",
+        "noActiveSession": "Nicio sesiune activă",
+        "sessionActive": "Sesiune activă",
+        "idLabel": "ID: {{id}} (v{{version}})",
+        "unknownState": "Stare necunoscută"
+      },
+      "tutorial": {
+        "sectionTitle": "Tutorial",
+        "learnControlsTitle": "Învață comenzile",
+        "learnControlsDescription": "Reia tutorialul de cusut când ești pregătit.",
+        "unavailableTitle": "Tutorial indisponibil",
+        "unavailableMessage": "Tutorialul nu a putut fi reluat. Te rugăm să încerci din nou."
+      },
+      "developer": {
+        "sectionTitle": "Dezvoltator",
+        "debugDiagnostics": "Depanare / Diagnostic",
+        "debug": {
+          "backAccessibilityLabel": "Înapoi",
+          "title": "Depanare",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: configurat · mediu: {{environment}}",
+            "dsnNotConfigured": "DSN: neconfigurat",
+            "sendTestEvent": "Trimite eveniment de test",
+            "throwError": "Generează eroare",
+            "disabledTitle": "Sentry dezactivat",
+            "disabledMessage": "Sentry nu este configurat (nu s-a găsit niciun DSN), deci niciun eveniment de test nu va fi trimis.",
+            "testEventSent": "Eveniment de test trimis. ID eveniment: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "Eroare",
+            "testEventFailedMessage": "Trimiterea evenimentului de test a eșuat: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Onboarding",
+            "description": "Șterge progresul tutorialului și începe din nou de la Bine ai venit.",
+            "restart": "Repornește onboarding-ul",
+            "confirmTitle": "Repornești onboarding-ul?",
+            "confirmMessage": "Starea tutorialului va fi ștearsă și onboarding-ul va începe de la ecranul Bine ai venit.",
+            "cancel": "Anulează",
+            "resetFailedTitle": "Resetarea a eșuat"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "Ștergerea contului",
+        "statusTitle": "Starea ștergerii contului",
+        "checkingStatus": "Se verifică starea...",
+        "pendingTitle": "Ștergerea contului în curs",
+        "pendingDescription": "Ștergerea contului tău este programată. Autentifică-te din nou înainte de sfârșitul perioadei de recuperare pentru a o anula.",
+        "recoveryWindowEnds": "Perioada de recuperare se încheie: {{date}}",
+        "cancelling": "Se anulează...",
+        "cancelDeletion": "Anulează ștergerea",
+        "statusError": "Starea ștergerii nu a putut fi verificată. Verifică-ți conexiunea și reîncearcă.",
+        "deleteAccountTitle": "Șterge contul",
+        "deleteAccountDescription": "Șterge permanent contul tău, progresul și toate deblocările după o perioadă de recuperare de 30 de zile.",
+        "requestedTitle": "Ștergere cont solicitată",
+        "requestedMessage": "Cererea ta de ștergere este în așteptare până la {{date}}. Contul tău a fost deconectat. Autentifică-te din nou înainte de această dată dacă dorești să anulezi ștergerea.",
+        "signOutFailedTitle": "Deconectarea locală a eșuat",
+        "signOutFailedMessage": "Cererea ta de ștergere este încă în așteptare. Te rugăm să te deconectezi din nou din Setări.",
+        "requestFailedTitle": "Cererea a eșuat",
+        "requestFailedMessage": "Cererea ta de ștergere nu a fost trimisă. Verifică-ți conexiunea și încearcă din nou.",
+        "cancelSuccessTitle": "Succes",
+        "cancelSuccessMessage": "Cererea ta de ștergere a contului a fost anulată.",
+        "reauthRequiredTitle": "Este necesară reautentificarea",
+        "reauthRequiredMessage": "Din motive de securitate, trebuie să te autentifici din nou înainte de a anula ștergerea contului.",
+        "signInAction": "Autentificare",
+        "cancelFailedTitle": "Anularea a eșuat",
+        "cancelFailedGeneric": "Anularea ștergerii contului a eșuat. Verifică-ți conexiunea și încearcă din nou."
+      },
+      "appearance": {
+        "sectionTitle": "Aspect"
+      },
+      "themeCollectionCard": {
+        "title": "Colecție de teme",
+        "description": "Schimbă aspectul grilei, cusăturii și finalizării fără a afecta gameplay-ul.",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "Necesită abonament Premium",
+        "selected": "Selectat",
+        "accessActive": "Accesul la temele Premium este activ, inclusiv în timpul unei perioade de probă lunare eligibile.",
+        "lockedPreview": "Previzualizează colecția aici. Abonamentul Premium sau o perioadă de probă lunară eligibilă deblochează selecția.",
+        "viewPremiumPlans": "Vezi planurile Premium"
+      },
+      "gameplay": {
+        "sectionTitle": "Setări de joc",
+        "showGridLinesTitle": "Afișează liniile grilei",
+        "showGridLinesDescription": "Afișează limitele dintre celulele materialului de cusut",
+        "handednessTitle": "Aspectul comenzilor",
+        "handednessDescription": "Aliniază comenzile interactive pentru joc cu mâna stângă sau dreaptă",
+        "left": "Stânga",
+        "right": "Dreapta",
+        "leftHandedLayout": "Aspect pentru stângaci",
+        "rightHandedLayout": "Aspect pentru dreptaci"
+      },
+      "language": {
+        "sectionTitle": "Limbă",
+        "description": "Alege limba în care Stitch Wish își afișează interfața.",
+        "followDevice": "Urmează limba dispozitivului",
+        "followDeviceDescription": "Șterge suprascrierea ta pentru a urma setarea de limbă a dispozitivului.",
+        "optionEnglish": "English",
+        "optionTurkish": "Türkçe",
+        "modalTitle": "Selectează limba",
+        "modalSubtitle": "Alege limba preferată pentru interfață.",
+        "systemDefault": "Limba sistemului",
+        "systemDefaultWithDetected": "Limba sistemului ({{language}})",
+        "systemDefaultDescription": "Se potrivește automat cu setările dispozitivului tău."
+      },
+      "social": {
+        "sectionTitle": "Social și confidențialitate",
+        "blockedCreators": "Creatori blocați"
+      },
+      "account": {
+        "sectionTitle": "Cont",
+        "notSignedInTitle": "Neautentificat",
+        "signInRequiredTitle": "Autentificare necesară",
+        "notSignedInDescription": "Autentifică-te pentru a sincroniza progresul pe toate dispozitivele.",
+        "signIn": "Autentificare",
+        "reconnecting": "Se reconectează…",
+        "signOut": "Deconectare",
+        "signOutConfirmTitle": "Te deconectezi?",
+        "signOutConfirmMessage": "Progresul tău nesincronizat rămâne pe acest dispozitiv și se redeschide când te autentifici din nou.",
+        "signOutConfirmAction": "Deconectare",
+        "signOutFailedTitle": "Deconectarea a eșuat",
+        "signOutFailedGeneric": "Te rugăm să încerci din nou.",
+        "providerAppleAccount": "Cont Apple",
+        "providerGoogleAccount": "Cont Google",
+        "providerGenericAccount": "Cont înregistrat"
+      },
+      "signIn": {
+        "emailHeading": "Autentifică-te sau creează un cont",
+        "emailSubtitle": "Păstrează-ți progresul disponibil pe toate dispozitivele.",
+        "codeHeading": "Introdu codul tău",
+        "codeSubtitle": "Introdu codul din 6 cifre trimis la {{email}}.",
+        "continueWithGoogle": "Continuă cu Google",
+        "orUseEmail": "sau folosește e-mailul",
+        "ssoUnavailable": "Autentificarea cu Google și Apple nu este disponibilă în această versiune.",
+        "emailLabel": "Adresă de e-mail",
+        "emailPlaceholder": "Adresă de e-mail",
+        "sendCode": "Trimite codul",
+        "cancel": "Anulează",
+        "verify": "Verifică",
+        "resendCode": "Retrimite codul",
+        "resending": "Se retrimite...",
+        "codeSent": "Cod trimis",
+        "useDifferentEmail": "Folosește alt e-mail",
+        "sendCodeFailed": "Codul nu a putut fi trimis. Verifică-ți conexiunea și încearcă din nou.",
+        "codeIncorrect": "Acel cod este incorect sau a expirat.",
+        "verifyFailedGeneric": "Ceva nu a mers bine. Te rugăm să încerci din nou.",
+        "socialSignInFailed": "Autentificarea cu {{provider}} a eșuat. Te rugăm să încerci din nou.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "Înapoi",
+        "title": "Creatori blocați",
+        "infoText": "Blocarea este privată și reversibilă. Ascunde modelele comunitare ale creatorului din vizualizările tale de catalog, căutare și descoperire. Aceasta nu este o raportare sau o eliminare de conținut.",
+        "signInRequiredTitle": "Este necesar un cont înregistrat",
+        "signInRequiredBody": "Autentifică-te înainte de a gestiona lista de creatori blocați.",
+        "signInAction": "Autentificare",
+        "listUnavailableTitle": "Listă indisponibilă",
+        "listUnavailableDefault": "Creatorii blocați nu au putut fi încărcați.",
+        "tryAgain": "Încearcă din nou",
+        "emptyTitle": "Niciun creator blocat",
+        "emptyBody": "Nu ai blocat pe nimeni. Poți bloca un creator din oricare dintre paginile de detalii ale modelelor lui.",
+        "backToSettings": "Înapoi la Setări",
+        "unblock": "Deblochează",
+        "unblockConfirmTitle": "Deblochează creatorul",
+        "unblockConfirmMessage": "Sigur dorești să îl deblochezi pe {{name}}? Modelele acestuia vor reapărea în rezultatele tale de căutare și răsfoire.",
+        "cancel": "Anulează",
+        "successTitle": "Succes",
+        "unblockedMessage": "{{name}} a fost deblocat.",
+        "errorTitle": "Eroare",
+        "unblockFailedMessage": "Deblocarea creatorului a eșuat: {{message}}",
+        "unblockFailedGeneric": "Eroare necunoscută"
+      },
+      "data": {
+        "sectionTitle": "Date",
+        "resetGuestTitle": "Resetează datele de invitat",
+        "resetGuestDescription": "Închide ireversibil identitatea de invitat pe server și șterge toate datele de pe dispozitiv.",
+        "resetGuestOffline": "Offline: este necesară o conexiune activă la server pentru a reseta datele de invitat.",
+        "resetGuestPurchaseLock": "Resetarea este blocată în timp ce o achiziție este încă în curs de verificare. Consumabilele și datele private de invitat nu pot fi recuperate ulterior.",
+        "removeLocalTitle": "Elimină datele locale",
+        "removeLocalDescription": "Șterge baza de date locală a spațiului de identitate de pe acest dispozitiv.",
+        "removeLocalConfirmTitle": "Elimini datele locale?",
+        "removeLocalConfirmMessage": "Atenție: Aceasta va șterge fișierele bazei de date locale doar de pe acest dispozitiv. Orice înregistrare nesincronizată se va pierde definitiv.",
+        "removeLocalConfirmAction": "Elimină",
+        "removeLocalSuccessTitle": "Succes",
+        "removeLocalSuccessMessage": "Datele locale au fost eliminate de pe acest dispozitiv.",
+        "removeLocalFailedTitle": "Eliminarea a eșuat",
+        "removeLocalFailedMessage": "Eliminarea datelor locale a eșuat: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "Informații și linkuri",
+        "privacyPolicy": "Politica de confidențialitate",
+        "termsOfService": "Termenii și condițiile",
+        "contactSupport": "Contactează suportul",
+        "accountDeletion": "Ștergerea contului",
+        "openFailedMessage": "Linkul nu a putut fi deschis: {{url}}",
+        "openFailedGenericTitle": "Eroare"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — Cusătură pixel-art primitoare",
+        "version": "Versiunea {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "Pachet: {{id}}",
+        "schemeLabel": "Schemă: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "Resetezi datele de invitat?",
+        "warning": "Această acțiune va închide ireversibil identitatea ta de invitat pe server și va șterge definitiv:",
+        "bulletProgress": "• progresul local",
+        "bulletRewards": "• recompensele în așteptare",
+        "bulletLikes": "• aprecierile",
+        "bulletUnlockAccess": "• accesul la deblocări",
+        "bulletOfflinePatterns": "• datele modelelor offline",
+        "confirmPrefix": "Scrie ",
+        "confirmSuffix": " mai jos pentru a confirma:",
+        "confirmAction": "Resetează datele",
+        "resetting": "Se resetează datele de invitat...",
+        "successTitle": "Succes",
+        "successMessage": "Datele de invitat au fost resetate complet.",
+        "failedTitle": "Resetarea a eșuat",
+        "failedMessage": "Resetarea datelor de invitat a eșuat: {{message}}. Te rugăm să încerci din nou."
+      },
+      "deleteModal": {
+        "title": "Ștergi contul?",
+        "recoveryPrefix": "Contul tău intră într-o ",
+        "recoveryBold": "perioadă de recuperare de 30 de zile",
+        "recoverySuffix": ". Autentifică-te din nou în această perioadă pentru a anula ștergerea.",
+        "bulletBalances": "• soldurile de Stitch Coin și credite AI",
+        "bulletUnlocks": "• toate deblocările de modele",
+        "bulletArtwork": "• ilustrațiile AI și modelele personale",
+        "bulletProgress": "• progresul sincronizat și aprecierile",
+        "consequencesPrefix": "La sfârșitul perioadei de recuperare, acestea sunt șterse sau pierdute definitiv, fără rambursare sau transfer. Modelele comunitare publicate sunt retrase din catalog, atribuirea devine ",
+        "consequencesBold": "Creator șters",
+        "consequencesSuffix": ", iar numele tău de utilizator rămâne rezervat permanent.",
+        "membershipWarning": "Abonamentul tău Premium poate continua să fie facturat după ștergerea contului. Ștergerea nu îl anulează; gestionează-l separat înainte de a continua dacă dorești ca facturarea să se oprească.",
+        "manageAppleSubscription": "Gestionează abonamentul Apple",
+        "continueAction": "Continuă",
+        "confirmTitle": "Confirmă ștergerea",
+        "confirmPrefix": "Pentru a confirma că dorești să îți ștergi contul, scrie ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": " în caseta de mai jos:",
+        "submitting": "Se trimite cererea de ștergere...",
+        "backAction": "Înapoi",
+        "confirmAction": "Confirmă"
+      },
+      "reauthModal": {
+        "title": "Verifică-ți identitatea",
+        "description": "Din motive de securitate, verifică-te cu o metodă de autentificare deja asociată acestui cont. Ștergerea continuă automat după verificare.",
+        "loading": "Se încarcă metodele de autentificare...",
+        "codeSentMessage": "Introdu codul din 6 cifre trimis la {{email}}.",
+        "verifyAndDelete": "Verifică și șterge",
+        "emailButton": "E-mail {{email}}",
+        "continueWithProvider": "Continuă cu {{provider}}",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "Nicio metodă de autentificare asociată nu este disponibilă. Contactează suportul înainte de a reîncerca ștergerea.",
+        "loadFailed": "Metodele tale de autentificare asociate nu au putut fi încărcate. Verifică-ți conexiunea și reîncearcă.",
+        "retryFailed": "Identitatea ta a fost verificată, dar ștergerea nu a fost trimisă. Închide acest dialog și reîncearcă ștergerea.",
+        "emailMissing": "Această metodă de e-mail asociată nu are nicio adresă. Alege altă metodă.",
+        "genericFailure": "Reautentificarea a eșuat. Verifică-ți conexiunea și reîncearcă."
+      },
+      "actions": {
+        "cancel": "Anulează",
+        "retry": "Reîncearcă"
+      },
+      "common": {
+        "unavailable": "Indisponibil"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "Catalog",
+        "stitch": "Cusătură",
+        "create": "Creează",
+        "profile": "Profil",
+        "settings": "Setări"
+      }
+    }
+  },
   "ru": {
     "catalog": {
       "common": {
