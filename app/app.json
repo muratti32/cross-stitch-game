@@ -154,7 +154,8 @@
       "sl": "./src/i18n/locales/sl/native.json",
       "sv": "./src/i18n/locales/sv/native.json",
       "tl": "./src/i18n/locales/tl/native.json",
-      "uk": "./src/i18n/locales/uk/native.json"
+      "uk": "./src/i18n/locales/uk/native.json",
+      "vi": "./src/i18n/locales/vi/native.json"
     },
     "experiments": {
       "typedRoutes": true,

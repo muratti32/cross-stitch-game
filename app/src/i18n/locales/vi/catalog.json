@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Quay lại",
+    "searchPlaceholder": "Tìm mẫu, người tạo, thẻ…",
+    "offlineBanner": "Ngoại tuyến — danh mục có thể đã lỗi thời",
+    "sectionError": {
+      "title": "Không thể tải",
+      "retry": "Thử lại"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} màu",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} cột",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Tiếng Anh"
+    },
+    "accessibilityLabel": "Viết bằng {{language}}"
+  },
+  "index": {
+    "subtitle": "Kiến tạo thế giới ấm cúng của bạn, từng mũi thêu một.",
+    "searchBar": {
+      "accessibilityLabel": "Tìm kiếm danh mục mẫu thêu"
+    },
+    "sections": {
+      "starterPatterns": "Mẫu khởi đầu",
+      "staffPicks": "Đội ngũ chọn lọc",
+      "categories": "Danh mục",
+      "newPatterns": "Mẫu mới"
+    },
+    "staffPicks": {
+      "emptyTitle": "Chưa có lựa chọn của đội ngũ",
+      "emptyBody": "Bộ sưu tập thiết kế ấm cúng do đội ngũ chọn lọc sẽ sớm xuất hiện tại đây.",
+      "errorBody": "Không thể kết nối tới danh mục và chưa có dữ liệu lưu tạm."
+    },
+    "categories": {
+      "count": "{{count}} mẫu thêu",
+      "errorBody": "Không thể kết nối tới danh mục và chưa có dữ liệu lưu tạm."
+    },
+    "newPatterns": {
+      "emptyTitle": "Mẫu mới đang được tạo",
+      "emptyBody": "Các mẫu mới sắp ra mắt!",
+      "errorBody": "Không thể kết nối tới danh mục và chưa có dữ liệu lưu tạm.",
+      "showMore": "Xem thêm",
+      "loading": "Đang tải…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Duyệt",
+    "error": {
+      "body": "Không thể kết nối tới trang danh mục này và chưa có dữ liệu lưu tạm."
+    },
+    "empty": {
+      "title": "Chưa có gì ở đây",
+      "body": "Không có mẫu thêu nào khớp với lựa chọn này. Thiết kế mới sẽ được cập nhật thường xuyên."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Ô tìm kiếm danh mục",
+    "inactive": {
+      "title": "Tìm kiếm danh mục",
+      "body": "Nhập ít nhất hai ký tự để tìm mẫu thêu theo tiêu đề, người tạo hoặc thẻ."
+    },
+    "error": {
+      "title": "Tìm kiếm cần kết nối mạng",
+      "body": "Tìm kiếm danh mục không khả dụng khi ngoại tuyến. Các trang danh mục đã lưu tạm vẫn có thể duyệt từ tab danh mục."
+    },
+    "noResults": {
+      "title": "Không có kết quả",
+      "body": "Chưa có gì trong danh mục khớp với “{{query}}”."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Đang chơi với tư cách Khách",
+    "body": "Stitch Coin và tiến trình của bạn chỉ được lưu trên thiết bị này với tư cách Khách. Nếu mất bản cài đặt, sổ Khách và tiến trình có thể không thể khôi phục. Đăng nhập sẽ bảo vệ tiến trình của bạn."
+  },
+  "detail": {
+    "noDescription": "Chưa có mô tả.",
+    "specs": {
+      "dimensions": "Kích thước",
+      "totalStitches": "Tổng số mũi thêu",
+      "colors": "Màu sắc",
+      "category": "Danh mục"
+    },
+    "threadsSuffix": "{{count}} loại chỉ",
+    "palette": {
+      "title": "Chỉ thêu cần dùng",
+      "loading": "Đang đọc bảng màu chỉ...",
+      "loadFailed": "Không tải được bảng màu: {{error}}",
+      "retry": "Thử tải lại"
+    },
+    "actions": {
+      "startStitching": "Bắt đầu thêu",
+      "starting": "Đang bắt đầu...",
+      "preparing": "Đang chuẩn bị…"
+    },
+    "loadFailedGeneric": "Không thể giải mã tệp mẫu thêu.",
+    "sessionCreateFailed": "Không thể tạo phiên thêu. Vui lòng thử lại.",
+    "unavailable": {
+      "title": "Mẫu thêu không khả dụng",
+      "body": "Không thể tải mẫu thêu này. Mẫu có thể đã bị gỡ, hoặc bạn đang ngoại tuyến.",
+      "goBack": "Quay lại"
+    },
+    "byCreator": "bởi {{creatorName}}",
+    "byCreatorWithUsername": "bởi {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Chặn người tạo",
+      "message": "Bạn có chắc muốn chặn {{creatorName}} không? Đây là hành động riêng tư, có thể hoàn tác, ẩn các mẫu thêu của họ khỏi tìm kiếm/duyệt. Việc này không báo cáo người tạo và sẽ không làm gián đoạn phiên thêu hiện tại của bạn.",
+      "cancel": "Hủy",
+      "confirm": "Chặn",
+      "blockedTitle": "Đã chặn",
+      "blockedMessage": "{{creatorName}} đã bị chặn.",
+      "errorTitle": "Lỗi",
+      "failedGeneric": "Không thể chặn người tạo."
+    },
+    "likeFailedGeneric": "Không thể cập nhật trạng thái thích",
+    "connectToPlay": {
+      "title": "Kết nối để chơi",
+      "body": "Bắt đầu một mẫu thêu trong danh mục cần kết nối mạng để chuẩn bị phiên của bạn. Mẫu khởi đầu có thể chơi ngay, kể cả khi ngoại tuyến."
+    },
+    "insufficientCoins": {
+      "title": "Không đủ Coin",
+      "body": "Mẫu thêu này có giá {{price}} Stitch Coin, nhưng bạn chỉ có {{balance}} Coin.\n\nCòn thiếu: {{shortfall}} Coin.\n\nKiếm Stitch Coin bằng cách hoàn thành các mẫu thêu khác! Phần thưởng Hoàn thành lần đầu đang hoạt động.",
+      "getCoins": "Nhận Stitch Coin",
+      "findPatterns": "Tìm mẫu thêu để thêu",
+      "back": "Quay lại"
+    },
+    "unlockFailedGeneric": "Mở khóa thất bại. Kiểm tra kết nối và thử lại.",
+    "preparationFailedGeneric": "Không thể bắt đầu chuẩn bị. Kiểm tra kết nối và thử lại.",
+    "price": {
+      "label": "Giá"
+    },
+    "balance": {
+      "label": "Số dư của bạn",
+      "loading": "…"
+    },
+    "unlockButton": "Mở khóa với {{price}} Coin",
+    "communityReport": {
+      "button": "Báo cáo mẫu thêu này",
+      "title": "Báo cáo {{patternTitle}}",
+      "body": "Chọn lý do mô tả đúng nhất vấn đề. Báo cáo không bao giờ tự động ẩn hoặc thay đổi mẫu thêu.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Nội dung không phù hợp hoặc không an toàn",
+        "copyright_or_publication_rights": "Bản quyền hoặc quyền công bố",
+        "duplicate_or_spam": "Trùng lặp hoặc rác",
+        "misleading_title_or_tags": "Tiêu đề hoặc thẻ gây hiểu nhầm",
+        "other": "Khác"
+      },
+      "explanationLabel": "Bằng chứng hoặc giải thích {{requirement}}",
+      "explanationRequired": "(bắt buộc)",
+      "explanationOptional": "(tùy chọn)",
+      "explanationPlaceholder": "Chia sẻ chi tiết giúp người kiểm duyệt xem xét mẫu thêu.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Hủy",
+      "submit": "Gửi báo cáo",
+      "submitFailedGeneric": "Không thể gửi báo cáo của bạn. Kiểm tra kết nối và thử lại.",
+      "receivedTitle": "Đã nhận báo cáo",
+      "alreadyReceivedTitle": "Báo cáo đã được nhận trước đó",
+      "receivedBody": "Người kiểm duyệt giờ có thể xem xét mẫu thêu này. Báo cáo không tự động thay đổi tình trạng khả dụng của mẫu.",
+      "alreadyReceivedBody": "Báo cáo hiện có của bạn đã là một phần của quá trình xem xét đang mở.",
+      "signInRequired": {
+        "title": "Đăng nhập để báo cáo",
+        "message": "Báo cáo cộng đồng yêu cầu Tài khoản đã đăng ký. Chưa có gì được gửi đi.",
+        "cancel": "Hủy",
+        "signIn": "Đăng nhập"
+      },
+      "validation": {
+        "chooseReason": "Chọn một lý do báo cáo.",
+        "explainRequired": "Giải thích lý do bạn báo cáo mẫu thêu này.",
+        "tooLong": "Phần giải thích phải có tối đa 2.000 ký tự.",
+        "needsContent": "Phần giải thích phải chứa chữ cái hoặc số."
+      }
+    }
+  }
+}

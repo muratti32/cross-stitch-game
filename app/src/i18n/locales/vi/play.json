@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Bàn thêu",
+    "subtitle": "Tiếp tục từ nơi bạn dừng lại hoặc tiếp tục một tác phẩm gần đây.",
+    "loading": "Đang tải các mũi thêu của bạn...",
+    "empty": {
+      "title": "Chưa có tác phẩm đang thêu",
+      "body": "Khung thêu của bạn hiện đang trống. Duyệt danh mục mẫu thêu để tìm điều gì đó đẹp để thêu!",
+      "action": "Duyệt danh mục"
+    },
+    "unknownPattern": "Mẫu thêu không xác định",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Mẫu thêu {{id}}",
+    "deleteSessionAccessibilityLabel": "Xóa phiên",
+    "viewFinishedAccessibilityLabel": "Xem tác phẩm đã hoàn thành",
+    "resumeAccessibilityLabel": "Tiếp tục thêu",
+    "status": {
+      "ready": "Sẵn sàng",
+      "done": "Hoàn thành",
+      "active": "Đang thêu",
+      "preparing": "Đang chuẩn bị",
+      "failed": "Thất bại"
+    },
+    "deleteConfirm": {
+      "title": "Xóa tiến trình",
+      "message": "Bạn có chắc muốn xóa tiến trình cho \"{{title}}\" không? Không thể hoàn tác thao tác này.",
+      "cancel": "Hủy",
+      "confirm": "Xóa"
+    },
+    "preparingCard": {
+      "discardTitle": "Bỏ phiên",
+      "cancelTitle": "Hủy tải xuống",
+      "discardMessage": "Bạn có chắc muốn bỏ phiên thất bại này không?",
+      "cancelMessage": "Bạn có chắc muốn hủy tải xuống mẫu thêu này không?",
+      "keep": "Giữ lại",
+      "discard": "Bỏ",
+      "cancel": "Hủy"
+    }
+  },
+  "loading": {
+    "text": "Đang mở phiên & chuẩn bị vải..."
+  },
+  "error": {
+    "title": "Tải phiên thất bại",
+    "fallbackMessage": "Không thể tải phiên thêu của bạn.",
+    "backButton": "Quay lại",
+    "tableButton": "Về Bàn thêu"
+  },
+  "header": {
+    "backButton": "← Quay lại",
+    "tableButton": "← Bàn thêu",
+    "defaultTitle": "Phiên thêu",
+    "progress": "{{completed}} / {{total}} ô ({{percent}}% hoàn thành)",
+    "resumeTutorialAccessibilityLabel": "Tiếp tục hướng dẫn"
+  },
+  "banners": {
+    "patternRemoved": "Mẫu thêu này đã bị gỡ do kiểm duyệt và không còn khả dụng. Chạm để rời khỏi.",
+    "syncConflict": "Đã đồng bộ với thiết bị khác — một số ô đã được cập nhật. Chạm để đóng."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Định vị ô còn lại tiếp theo của màu chỉ đang hoạt động",
+    "undoAccessibilityLabel": "Hoàn tác mũi thêu cuối cùng"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Màu {{number}}: DMC {{dmcCode}}, còn {{count}} mũi thêu",
+    "chipAccessibilityLabel_other": "Màu {{number}}: DMC {{dmcCode}}, còn {{count}} mũi thêu",
+    "done": "Xong",
+    "remaining_one": "còn {{count}}",
+    "remaining_other": "còn {{count}}"
+  },
+  "celebration": {
+    "title": "Thêu thật đẹp!",
+    "subtitle": "Bạn đã hoàn thành mọi mũi thêu trên tấm vải này.",
+    "stitchesLabel_one": "Mũi thêu",
+    "stitchesLabel_other": "Mũi thêu",
+    "colorsLabel_one": "Màu",
+    "colorsLabel_other": "Màu",
+    "replayButton": "Thêu lại",
+    "catalogButton": "Về danh mục"
+  }
+}

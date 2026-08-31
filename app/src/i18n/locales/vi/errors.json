@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Lượt đăng nhập đó thuộc về một tài khoản khác. Tài khoản hiện tại của bạn không bị thay đổi.",
+    "providerRejected": "Xác minh đó đã bị từ chối. Kiểm tra tài khoản hoặc mã và thử lại."
+  },
+  "generic": {
+    "failure": "Đã xảy ra lỗi. Vui lòng thử lại.",
+    "supportReferenceLabel": "Mã hỗ trợ: {{reference}}"
+  }
+}

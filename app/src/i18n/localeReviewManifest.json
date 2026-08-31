@@ -31,5 +31,6 @@
   "sl": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
   "sv": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
   "tl": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
-  "uk": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false }
+  "uk": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
+  "vi": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false }
 }

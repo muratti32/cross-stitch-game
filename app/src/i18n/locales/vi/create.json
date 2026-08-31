@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Quay lại",
+    "cancel": "Hủy",
+    "duplicateTitle": "Bạn đã có một Mẫu thêu cá nhân tên “{{title}}”. Hãy chọn tiêu đề khác.",
+    "cellsCount_one": "ô",
+    "cellsCount_other": "ô",
+    "colorsCount_one": "màu",
+    "colorsCount_other": "màu"
+  },
+  "hub": {
+    "title": "Trung tâm sáng tạo",
+    "subtitle": "Biến ý tưởng của riêng bạn thành hiện thực với các mẫu thêu chữ thập tùy chỉnh.",
+    "opening": "Đang mở…",
+    "photoImport": {
+      "title": "Nhập ảnh",
+      "description": "Tải một bức ảnh từ thư viện của bạn và chuyển đổi thành mẫu thêu.",
+      "action": "Nhập ảnh"
+    },
+    "aiGenerator": {
+      "title": "Tạo bằng AI",
+      "description": "Mô tả một ý tưởng ấm cúng và để trí tuệ nhân tạo tạo ra thiết kế pixel tùy chỉnh.",
+      "action": "Tạo thiết kế"
+    }
+  },
+  "aspects": {
+    "square": "Vuông",
+    "portrait_4_3": "Dọc 4:3",
+    "landscape_4_3": "Ngang 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Chuyển đổi mẫu thêu thất bại. Vui lòng thử lại.",
+      "timeout": "Chuyển đổi mẫu thêu vẫn đang xử lý. Hãy thử lại trong giây lát.",
+      "generic": "Không thể hoàn tất Chuyển đổi mẫu thêu. Vui lòng thử lại."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Yêu cầu Tài khoản đã đăng ký",
+      "body": "Tác phẩm AI và thư viện của nó chỉ dành riêng cho tài khoản của bạn.",
+      "signIn": "Đăng nhập"
+    },
+    "header": {
+      "title": "Tạo bằng AI",
+      "backAccessibilityLabel": "Quay lại"
+    },
+    "prompt": {
+      "label": "Mô tả tác phẩm của bạn",
+      "placeholder": "Một căn nhà tranh ấm cúng lúc hoàng hôn…"
+    },
+    "generate": {
+      "working": "Đang xử lý…",
+      "action": "Tạo — 1 AI Credit",
+      "errors": {
+        "promptRejected": "Mô tả đó không được chấp nhận. Hãy thử mô tả điều gì khác.",
+        "generic": "Không thể bắt đầu tạo bằng AI. Vui lòng thử lại."
+      }
+    },
+    "library": {
+      "title": "Thư viện tác phẩm AI của bạn",
+      "status": {
+        "pending": "Đang chờ",
+        "dispatched": "Đã gửi",
+        "running": "Đang chạy",
+        "delivered": "Đã hoàn tất",
+        "safety_rejected": "Bị từ chối vì an toàn",
+        "failed": "Thất bại",
+        "deleted": "Đã xóa",
+        "unknown": "Không khả dụng"
+      },
+      "failure": {
+        "safety_rejected": "Tác phẩm này không vượt qua kiểm tra an toàn của nhà cung cấp.",
+        "failed": "Không thể tạo tác phẩm này."
+      },
+      "approve": "Duyệt thành mẫu thêu",
+      "delete": "Xóa",
+      "deleteAccessibilityLabel": "Xóa tác phẩm AI này",
+      "errors": {
+        "loadFailed": "Không thể tải Thư viện tác phẩm AI của bạn. Vui lòng thử lại."
+      }
+    },
+    "approve": {
+      "modalTitle": "Tạo Mẫu thêu cá nhân",
+      "titleLabel": "Tiêu đề mẫu thêu",
+      "titleAccessibilityLabel": "Tiêu đề mẫu thêu",
+      "defaultTitle": "Mẫu AI của tôi",
+      "placeholder": "Mẫu AI của tôi",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Hủy",
+      "creating": "Đang tạo mẫu thêu…",
+      "create": "Tạo mẫu thêu",
+      "errors": {
+        "generic": "Không thể tạo Mẫu thêu cá nhân. Vui lòng thử lại."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Yêu cầu Tài khoản đã đăng ký",
+      "body": "Mẫu thêu cá nhân thuộc về tài khoản của bạn để giữ riêng tư và khả dụng trên nhiều thiết bị.",
+      "signIn": "Đăng nhập hoặc tạo tài khoản",
+      "back": "Quay lại"
+    },
+    "header": {
+      "title": "Mẫu thêu từ ảnh",
+      "subtitle": "Khung ảnh cục bộ, sau đó duyệt để chuyển đổi",
+      "backAccessibilityLabel": "Quay lại"
+    },
+    "picker": {
+      "chooseTitle": "Chọn một bức ảnh",
+      "helpText": "Nguồn ảnh cục bộ độ phân giải đầy đủ vẫn ở trên thiết bị này. Không có gì được chuyển đổi cho đến khi bạn duyệt khung ảnh.",
+      "choose": "Chọn từ thư viện",
+      "chooseAnother": "Chọn ảnh khác",
+      "opening": "Đang mở…",
+      "errors": {
+        "permissionDenied": "Cần quyền truy cập thư viện ảnh để chọn Nguồn ảnh cục bộ.",
+        "invalidDimensions": "Bức ảnh đã chọn không báo kích thước sử dụng được.",
+        "generic": "Không thể mở thư viện ảnh. Vui lòng thử lại."
+      }
+    },
+    "framing": {
+      "title": "Đóng khung tác phẩm",
+      "gestureHint": "Kéo để định vị · chụm để phóng to",
+      "aspectLabel": "Tỉ lệ khung"
+    },
+    "profile": {
+      "title": "Hồ sơ chuyển đổi",
+      "options": {
+        "easy": "Dễ",
+        "standard": "Tiêu chuẩn",
+        "detailed": "Chi tiết"
+      },
+      "custom": "Tùy chỉnh",
+      "customMeta": "Miễn phí · hình dạng cố định",
+      "unavailable": "Không phù hợp với khung này",
+      "customShortEdgeLabel": "Cạnh ngắn",
+      "customColorLimitLabel": "Giới hạn màu DMC",
+      "exceedsLimit": "Các giá trị Tùy chỉnh này vượt quá giới hạn kích thước mẫu thêu {{max}} ô."
+    },
+    "titleCard": {
+      "label": "Tiêu đề mẫu thêu",
+      "placeholder": "Mẫu ảnh của tôi",
+      "defaultTitle": "Mẫu ảnh của tôi",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · tối đa {{maxColors}} {{colorsUnit}} DMC",
+      "privacyNotice": "Việc duyệt chỉ tải lên bản dẫn xuất đã đóng khung, thu nhỏ. Ảnh gốc vẫn ở trên thiết bị.",
+      "approve": "Duyệt tác phẩm & chuyển đổi"
+    },
+    "processing": {
+      "preparingFrame": "Đang chuẩn bị khung đã duyệt trên thiết bị này…",
+      "uploading": "Đang tải lên chỉ khung ảnh đã cắt, thu nhỏ…",
+      "waitingForWorker": "Đang chờ tiến trình chuyển đổi…",
+      "buildingGrid": "Đang tạo lưới thêu và bảng màu DMC…",
+      "preparingSession": "Đang chuẩn bị Mẫu thêu cá nhân để chơi…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Hồ sơ này không còn phù hợp với khung cuối cùng. Chọn Dễ hoặc giảm chi tiết.",
+        "generic": "Không thể chuyển đổi bức ảnh này. Vui lòng thử lại."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Chưa chọn mẫu thêu",
+      "noPatternBody": "Màn hình này phải được mở từ một Mẫu thêu cá nhân đã có trong thư viện của bạn.",
+      "accountTitle": "Yêu cầu Tài khoản đã đăng ký",
+      "accountBody": "Mẫu thêu cá nhân thuộc về tài khoản của bạn để giữ riêng tư và khả dụng trên nhiều thiết bị.",
+      "signIn": "Đăng nhập hoặc tạo tài khoản",
+      "back": "Quay lại"
+    },
+    "loading": "Đang khôi phục bản nháp trình chỉnh sửa...",
+    "load": {
+      "failedTitle": "Không thể tải mẫu thêu",
+      "retry": "Thử lại",
+      "back": "Quay lại",
+      "errors": {
+        "generic": "Không thể tải Mẫu thêu cá nhân này. Vui lòng thử lại."
+      }
+    },
+    "header": {
+      "title": "Trình chỉnh sửa mẫu thêu",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Quay lại"
+    },
+    "toolbar": {
+      "undo": "Hoàn tác",
+      "redo": "Làm lại"
+    },
+    "mode": {
+      "paint": "Tô màu",
+      "replaceColor": "Thay đổi màu",
+      "replaceStep1": "1. Chạm vào một màu trong mẫu thêu bên dưới để thay thế:",
+      "replaceStep2": "2. Chọn màu DMC đích bên dưới để thực hiện thay thế:",
+      "paintSelected": "Đã chọn: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Chọn một màu bên dưới, sau đó chạm vào các ô để tô."
+    },
+    "errors": {
+      "pickColorFirst": "Hãy chọn màu trước",
+      "paletteLimit": "Mẫu thêu này đã dùng tối đa {{max}} màu chỉ."
+    },
+    "picker": {
+      "title": "Bảng màu chỉ DMC",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Lưu mẫu thêu đã chỉnh sửa",
+      "placeholder": "Tiêu đề mẫu thêu đã chỉnh sửa của tôi",
+      "action": "Lưu thành bản mới",
+      "offlineTitle": "Đã lưu ngoại tuyến",
+      "offlineBody": "Mẫu thêu đã chỉnh sửa của bạn đã được lưu trên thiết bị này và sẽ đồng bộ vào tài khoản của bạn khi có kết nối mạng trở lại.",
+      "errors": {
+        "generic": "Không thể lưu Mẫu thêu cá nhân này. Vui lòng thử lại."
+      }
+    }
+  }
+}

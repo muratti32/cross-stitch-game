@@ -43585,6 +43585,1412 @@
       }
     }
   },
+  "vi": {
+    "catalog": {
+      "common": {
+        "back": "← Quay lại",
+        "searchPlaceholder": "Tìm mẫu, người tạo, thẻ…",
+        "offlineBanner": "Ngoại tuyến — danh mục có thể đã lỗi thời",
+        "sectionError": {
+          "title": "Không thể tải",
+          "retry": "Thử lại"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} màu",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} cột",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "Tiếng Anh"
+        },
+        "accessibilityLabel": "Viết bằng {{language}}"
+      },
+      "index": {
+        "subtitle": "Kiến tạo thế giới ấm cúng của bạn, từng mũi thêu một.",
+        "searchBar": {
+          "accessibilityLabel": "Tìm kiếm danh mục mẫu thêu"
+        },
+        "sections": {
+          "starterPatterns": "Mẫu khởi đầu",
+          "staffPicks": "Đội ngũ chọn lọc",
+          "categories": "Danh mục",
+          "newPatterns": "Mẫu mới"
+        },
+        "staffPicks": {
+          "emptyTitle": "Chưa có lựa chọn của đội ngũ",
+          "emptyBody": "Bộ sưu tập thiết kế ấm cúng do đội ngũ chọn lọc sẽ sớm xuất hiện tại đây.",
+          "errorBody": "Không thể kết nối tới danh mục và chưa có dữ liệu lưu tạm."
+        },
+        "categories": {
+          "count": "{{count}} mẫu thêu",
+          "errorBody": "Không thể kết nối tới danh mục và chưa có dữ liệu lưu tạm."
+        },
+        "newPatterns": {
+          "emptyTitle": "Mẫu mới đang được tạo",
+          "emptyBody": "Các mẫu mới sắp ra mắt!",
+          "errorBody": "Không thể kết nối tới danh mục và chưa có dữ liệu lưu tạm.",
+          "showMore": "Xem thêm",
+          "loading": "Đang tải…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "Duyệt",
+        "error": {
+          "body": "Không thể kết nối tới trang danh mục này và chưa có dữ liệu lưu tạm."
+        },
+        "empty": {
+          "title": "Chưa có gì ở đây",
+          "body": "Không có mẫu thêu nào khớp với lựa chọn này. Thiết kế mới sẽ được cập nhật thường xuyên."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "Ô tìm kiếm danh mục",
+        "inactive": {
+          "title": "Tìm kiếm danh mục",
+          "body": "Nhập ít nhất hai ký tự để tìm mẫu thêu theo tiêu đề, người tạo hoặc thẻ."
+        },
+        "error": {
+          "title": "Tìm kiếm cần kết nối mạng",
+          "body": "Tìm kiếm danh mục không khả dụng khi ngoại tuyến. Các trang danh mục đã lưu tạm vẫn có thể duyệt từ tab danh mục."
+        },
+        "noResults": {
+          "title": "Không có kết quả",
+          "body": "Chưa có gì trong danh mục khớp với “{{query}}”."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "Đang chơi với tư cách Khách",
+        "body": "Stitch Coin và tiến trình của bạn chỉ được lưu trên thiết bị này với tư cách Khách. Nếu mất bản cài đặt, sổ Khách và tiến trình có thể không thể khôi phục. Đăng nhập sẽ bảo vệ tiến trình của bạn."
+      },
+      "detail": {
+        "noDescription": "Chưa có mô tả.",
+        "specs": {
+          "dimensions": "Kích thước",
+          "totalStitches": "Tổng số mũi thêu",
+          "colors": "Màu sắc",
+          "category": "Danh mục"
+        },
+        "threadsSuffix": "{{count}} loại chỉ",
+        "palette": {
+          "title": "Chỉ thêu cần dùng",
+          "loading": "Đang đọc bảng màu chỉ...",
+          "loadFailed": "Không tải được bảng màu: {{error}}",
+          "retry": "Thử tải lại"
+        },
+        "actions": {
+          "startStitching": "Bắt đầu thêu",
+          "starting": "Đang bắt đầu...",
+          "preparing": "Đang chuẩn bị…"
+        },
+        "loadFailedGeneric": "Không thể giải mã tệp mẫu thêu.",
+        "sessionCreateFailed": "Không thể tạo phiên thêu. Vui lòng thử lại.",
+        "unavailable": {
+          "title": "Mẫu thêu không khả dụng",
+          "body": "Không thể tải mẫu thêu này. Mẫu có thể đã bị gỡ, hoặc bạn đang ngoại tuyến.",
+          "goBack": "Quay lại"
+        },
+        "byCreator": "bởi {{creatorName}}",
+        "byCreatorWithUsername": "bởi {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "Chặn người tạo",
+          "message": "Bạn có chắc muốn chặn {{creatorName}} không? Đây là hành động riêng tư, có thể hoàn tác, ẩn các mẫu thêu của họ khỏi tìm kiếm/duyệt. Việc này không báo cáo người tạo và sẽ không làm gián đoạn phiên thêu hiện tại của bạn.",
+          "cancel": "Hủy",
+          "confirm": "Chặn",
+          "blockedTitle": "Đã chặn",
+          "blockedMessage": "{{creatorName}} đã bị chặn.",
+          "errorTitle": "Lỗi",
+          "failedGeneric": "Không thể chặn người tạo."
+        },
+        "likeFailedGeneric": "Không thể cập nhật trạng thái thích",
+        "connectToPlay": {
+          "title": "Kết nối để chơi",
+          "body": "Bắt đầu một mẫu thêu trong danh mục cần kết nối mạng để chuẩn bị phiên của bạn. Mẫu khởi đầu có thể chơi ngay, kể cả khi ngoại tuyến."
+        },
+        "insufficientCoins": {
+          "title": "Không đủ Coin",
+          "body": "Mẫu thêu này có giá {{price}} Stitch Coin, nhưng bạn chỉ có {{balance}} Coin.\n\nCòn thiếu: {{shortfall}} Coin.\n\nKiếm Stitch Coin bằng cách hoàn thành các mẫu thêu khác! Phần thưởng Hoàn thành lần đầu đang hoạt động.",
+          "getCoins": "Nhận Stitch Coin",
+          "findPatterns": "Tìm mẫu thêu để thêu",
+          "back": "Quay lại"
+        },
+        "unlockFailedGeneric": "Mở khóa thất bại. Kiểm tra kết nối và thử lại.",
+        "preparationFailedGeneric": "Không thể bắt đầu chuẩn bị. Kiểm tra kết nối và thử lại.",
+        "price": {
+          "label": "Giá"
+        },
+        "balance": {
+          "label": "Số dư của bạn",
+          "loading": "…"
+        },
+        "unlockButton": "Mở khóa với {{price}} Coin",
+        "communityReport": {
+          "button": "Báo cáo mẫu thêu này",
+          "title": "Báo cáo {{patternTitle}}",
+          "body": "Chọn lý do mô tả đúng nhất vấn đề. Báo cáo không bao giờ tự động ẩn hoặc thay đổi mẫu thêu.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "Nội dung không phù hợp hoặc không an toàn",
+            "copyright_or_publication_rights": "Bản quyền hoặc quyền công bố",
+            "duplicate_or_spam": "Trùng lặp hoặc rác",
+            "misleading_title_or_tags": "Tiêu đề hoặc thẻ gây hiểu nhầm",
+            "other": "Khác"
+          },
+          "explanationLabel": "Bằng chứng hoặc giải thích {{requirement}}",
+          "explanationRequired": "(bắt buộc)",
+          "explanationOptional": "(tùy chọn)",
+          "explanationPlaceholder": "Chia sẻ chi tiết giúp người kiểm duyệt xem xét mẫu thêu.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "Hủy",
+          "submit": "Gửi báo cáo",
+          "submitFailedGeneric": "Không thể gửi báo cáo của bạn. Kiểm tra kết nối và thử lại.",
+          "receivedTitle": "Đã nhận báo cáo",
+          "alreadyReceivedTitle": "Báo cáo đã được nhận trước đó",
+          "receivedBody": "Người kiểm duyệt giờ có thể xem xét mẫu thêu này. Báo cáo không tự động thay đổi tình trạng khả dụng của mẫu.",
+          "alreadyReceivedBody": "Báo cáo hiện có của bạn đã là một phần của quá trình xem xét đang mở.",
+          "signInRequired": {
+            "title": "Đăng nhập để báo cáo",
+            "message": "Báo cáo cộng đồng yêu cầu Tài khoản đã đăng ký. Chưa có gì được gửi đi.",
+            "cancel": "Hủy",
+            "signIn": "Đăng nhập"
+          },
+          "validation": {
+            "chooseReason": "Chọn một lý do báo cáo.",
+            "explainRequired": "Giải thích lý do bạn báo cáo mẫu thêu này.",
+            "tooLong": "Phần giải thích phải có tối đa 2.000 ký tự.",
+            "needsContent": "Phần giải thích phải chứa chữ cái hoặc số."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "Quay lại",
+        "title": "Cửa hàng",
+        "subtitle": "Gói thành viên và nạp thêm một lần"
+      },
+      "signInReturn": {
+        "notice": "Bạn đã đăng nhập. {{label}} vẫn đang được chọn. Xem lại và nhấn Mua khi sẵn sàng."
+      },
+      "premiumHero": {
+        "eyebrow": "GÓI THÀNH VIÊN PREMIUM",
+        "title": "Sáng tạo nhiều hơn. Nhận một phần thưởng nhỏ mỗi ngày.",
+        "body": "AI Credit mỗi kỳ trả phí, giao diện Premium, và nhận Stitch Coin hằng ngày.",
+        "benefitAiCredits": "AI Credit",
+        "benefitDailyCoins": "Coin hằng ngày",
+        "benefitThemes": "Giao diện",
+        "statusNoActiveMembership": "Không có gói thành viên đang hoạt động",
+        "statusBrowseAsGuest": "Xem các gói với tư cách Khách",
+        "periodEndsLabel": "Kỳ hiện tại kết thúc",
+        "periodRenewsLabel": "Gia hạn",
+        "lifecycleActive": "Đang hoạt động"
+      },
+      "membershipActions": {
+        "title": "Gói thành viên Premium đang hoạt động",
+        "body": "Phần thưởng hằng ngày ở trong Hồ sơ. Giao diện nằm trong Cài đặt › Giao diện.",
+        "scheduledChangeNotice": "Thay đổi sang {{plan}} vào {{date}}",
+        "manageSubscription": "Quản lý gói đăng ký",
+        "manageSubscriptionFailedTitle": "Không thể mở gói đăng ký",
+        "manageSubscriptionFailedBody": "Hãy thử lại từ tài khoản cửa hàng trên thiết bị của bạn."
+      },
+      "pending": {
+        "title": "Đang xác nhận giao dịch mua",
+        "verifyingTitle": "Đang xác minh giao dịch mua",
+        "premiumChangeAccepted": "Cửa hàng đã chấp nhận thay đổi sang {{label}}. ",
+        "premiumResponseReceived": "Đã nhận phản hồi từ cửa hàng cho {{label}}. ",
+        "premiumDeferredSuffix": "Thay đổi chỉ được lên lịch sau khi Máy chủ trò chơi xác minh, và có hiệu lực khi kỳ hiện tại kết thúc.",
+        "premiumSuffix": "Premium chỉ được kích hoạt sau khi Máy chủ trò chơi xác minh.",
+        "doNotPurchasePlanAgain": " Đừng mua lại gói này.",
+        "coinPackBody": "Đã nhận phản hồi từ cửa hàng. Stitch Coin chỉ được cập nhật sau khi Máy chủ trò chơi hiển thị khoản cấp Sổ giao dịch thương mại tương ứng. Đừng mua lại gói này.",
+        "aiCreditPackBody": "Đã nhận phản hồi từ cửa hàng. AI Credit chỉ được cập nhật sau khi Máy chủ trò chơi hiển thị khoản cấp Sổ giao dịch thương mại tương ứng. Đừng mua lại gói này.",
+        "refreshStatus": "Làm mới trạng thái",
+        "retryReconciliation": "Thử xác nhận lại"
+      },
+      "store": {
+        "loadingPrices": "Đang tải giá hiện tại của cửa hàng…",
+        "unavailableTitle": "Cửa hàng tạm thời không khả dụng",
+        "unavailableBody": "Ví và thông tin thành viên của bạn vẫn khả dụng.",
+        "retry": "Thử lại"
+      },
+      "plans": {
+        "choosePremiumPlan": "Chọn gói Premium",
+        "yourPremiumPlan": "Gói Premium của bạn",
+        "currentPlan": "GÓI HIỆN TẠI",
+        "upgrade": "NÂNG CẤP",
+        "planChange": "ĐỔI GÓI",
+        "bestValue": "TỐT NHẤT",
+        "billedEvery": "Thanh toán mỗi {{period}}",
+        "chooseLabel": "Chọn {{label}}",
+        "freeTrial": "Miễn phí trong {{offer}}, sau đó {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "Gói mua một lần",
+        "stitchCoinPacksTitle": "Gói Stitch Coin",
+        "aiCreditPacksTitle": "Gói AI Credit",
+        "coinsNoun": "Coin",
+        "creditsNoun": "Credit",
+        "fromPrice": "Từ {{price}}"
+      },
+      "restore": {
+        "restorePurchases": "Khôi phục giao dịch mua",
+        "restoreGuestPremium": "Khôi phục Premium cho Khách",
+        "requestedTitle": "Đã yêu cầu khôi phục",
+        "requestedBody": "Quyền truy cập Premium đã xác minh sẽ xuất hiện sau khi webhook của cửa hàng được đối soát. Gói Stitch Coin và AI Credit không bao giờ được khôi phục."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "Giá hiện tại từ cửa hàng ứng dụng",
+        "closeAccessibilityLabel": "Đóng bảng sản phẩm",
+        "closeButtonAccessibilityLabel": "Đóng",
+        "selectedBeforeSignIn": "Đã chọn trước khi đăng nhập",
+        "buy": "Mua"
+      },
+      "confirmation": {
+        "cancel": "Hủy",
+        "confirmLabel": "Xác nhận {{label}}",
+        "confirmPremiumTitle": "Xác nhận mua Premium",
+        "introductoryOffer": "Cửa hàng của bạn báo ưu đãi giới thiệu này: {{offer}}.",
+        "premiumAppearsAfterVerification": "Premium chỉ xuất hiện sau khi Máy chủ trò chơi xác minh giao dịch của cửa hàng.",
+        "confirmPremiumUpgradeTitle": "Xác nhận nâng cấp Premium",
+        "confirmPremiumPlanChangeTitle": "Xác nhận đổi gói Premium",
+        "currentPlanLabel": "Gói hiện tại: {{label}}",
+        "upgradeToLabel": "Nâng cấp lên {{label}} · {{offer}}",
+        "changeToLabel": "Đổi sang {{label}} · {{offer}}",
+        "upgradeBody": "App Store kiểm soát khoản phí cuối cùng và ngày có hiệu lực cho lần nâng cấp này. Premium chỉ phản ánh {{label}} sau khi Máy chủ trò chơi xác minh.",
+        "planChangeBody": "App Store hoãn thay đổi này đến cuối kỳ hiện tại của bạn: {{currentLabel}} vẫn tiếp tục chạy đến lúc đó, và {{targetLabel}} sẽ được tính phí từ ngày thay đổi. Hủy thay đổi này từ mục Quản lý gói đăng ký.",
+        "confirmUpgrade": "Xác nhận nâng cấp",
+        "confirmPlanChange": "Xác nhận đổi gói",
+        "confirmStitchCoinTitle": "Xác nhận mua Stitch Coin",
+        "confirmAiCreditTitle": "Xác nhận mua AI Credit",
+        "balanceChangesAfterVerificationCoin": "Số dư của bạn chỉ thay đổi sau khi Máy chủ trò chơi xác minh giao dịch của cửa hàng và ghi nhận khoản cấp Sổ giao dịch thương mại tương ứng.",
+        "balanceChangesAfterVerificationAiCredit": "Số dư của bạn chỉ thay đổi sau khi Máy chủ trò chơi xác minh giao dịch của cửa hàng và ghi nhận khoản cấp Sổ giao dịch thương mại tương ứng. Không yêu cầu gói thành viên Premium."
+      },
+      "disclosure": {
+        "subscriptionTerms": "Khoản thanh toán được tính vào tài khoản {{store}} của bạn khi xác nhận. Gói Premium {{label}} tự động gia hạn với giá {{offer}} trừ khi bạn tắt tự động gia hạn ít nhất 24 giờ trước khi kỳ hiện tại kết thúc. Phần chưa dùng của bản dùng thử miễn phí sẽ mất khi bạn mua gói đăng ký. Bạn có thể hủy bất cứ lúc nào từ tài khoản {{store}} của mình.",
+        "privacyPolicy": "Chính sách quyền riêng tư",
+        "termsOfService": "Điều khoản dịch vụ",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "Không thể mở liên kết: {{url}}"
+      },
+      "supportReference": {
+        "label": "Mã hỗ trợ: {{reference}}",
+        "copyAccessibilityLabel": "Sao chép mã hỗ trợ {{reference}}",
+        "copyAccessibilityHint": "Sao chép mã hỗ trợ vào khay nhớ tạm",
+        "copied": "Đã sao chép",
+        "copyFailedTitle": "Sao chép thất bại",
+        "copyFailedBody": "Không thể sao chép mã hỗ trợ. Hãy chọn văn bản để sao chép thủ công."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "Mua Stitch Coin với tư cách Khách chỉ khả dụng trên iOS.",
+        "guestIosOnlyGeneric": "Mua hàng với tư cách Khách chỉ khả dụng trên iOS.",
+        "purchaseFailedTitle": "Giao dịch mua thất bại",
+        "premiumVerificationNotYet": "Máy chủ trò chơi không thể xác minh giao dịch mua này. Hãy thử xác nhận lại; đừng mua lại.",
+        "premiumVerificationFailedRetry": "Máy chủ trò chơi chưa thể xác minh giao dịch mua này. Hãy thử xác nhận lại; đừng mua lại.",
+        "premiumGrantRefreshFailed": "Premium đã được xác minh, nhưng không thể làm mới trạng thái thành viên và AI Credit. Hãy thử xác nhận lại.",
+        "premiumReconciliationUnreachable": "Không thể kết nối tới Máy chủ trò chơi để xác nhận giao dịch mua. Hãy thử xác nhận lại; đừng mua lại.",
+        "coinPackVerificationMismatch": "Giao dịch của cửa hàng không khớp với Gói Coin này. Hãy thử xác minh lại hoặc liên hệ hỗ trợ; đừng mua lại.",
+        "coinPackGrantUnavailable": "Giao dịch mua đã được xác minh, nhưng khoản cấp Stitch Coin không khả dụng. Hãy thử xác nhận lại; đừng mua lại.",
+        "coinPackBalanceRefreshFailed": "Khoản cấp Coin đã được xác minh, nhưng không thể làm mới số dư Stitch Coin hiện tại. Hãy thử xác nhận lại.",
+        "coinPackVerificationFailedRetry": "Máy chủ trò chơi chưa thể xác minh Gói Coin này. Hãy thử xác nhận lại; đừng mua lại.",
+        "coinPackReconciliationUnreachable": "Không thể kết nối tới Máy chủ trò chơi để xác nhận Gói Coin. Hãy thử xác nhận lại; đừng mua lại.",
+        "aiCreditPackVerificationMismatch": "Giao dịch của cửa hàng không khớp với Gói AI Credit này. Hãy thử xác minh lại hoặc liên hệ hỗ trợ; đừng mua lại.",
+        "aiCreditPackGrantUnavailable": "Giao dịch mua đã được xác minh, nhưng khoản cấp AI Credit không khả dụng. Hãy thử xác nhận lại; đừng mua lại.",
+        "aiCreditPackBalanceRefreshFailed": "Khoản cấp AI Credit đã được xác minh, nhưng không thể làm mới số dư hiện tại. Hãy thử xác nhận lại.",
+        "aiCreditPackVerificationFailedRetry": "Máy chủ trò chơi chưa thể xác minh Gói AI Credit này. Hãy thử xác nhận lại; đừng mua lại.",
+        "aiCreditPackReconciliationUnreachable": "Không thể kết nối tới Máy chủ trò chơi để xác nhận Gói AI Credit. Hãy thử xác nhận lại; đừng mua lại.",
+        "reconciliationStillUnavailable": "Máy chủ trò chơi vẫn chưa khả dụng. Hãy thử xác nhận lại sau.",
+        "storeTemporarilyUnavailable": "Cửa hàng tạm thời không khả dụng. Vui lòng thử lại sau vài phút.",
+        "purchasesNotAllowed": "Không được phép mua hàng trên thiết bị này. Kiểm tra tài khoản cửa hàng hoặc chế độ kiểm soát của phụ huynh.",
+        "itemNotAvailable": "Mặt hàng này hiện không thể mua. Vui lòng chọn mặt hàng khác hoặc thử lại sau.",
+        "alreadyOwned": "Bạn đã sở hữu giao dịch mua này. Dùng Khôi phục giao dịch mua để làm mới quyền truy cập.",
+        "couldNotConnectToStore": "Không thể kết nối với cửa hàng. Kiểm tra kết nối internet và thử lại.",
+        "paymentPendingApproval": "Khoản thanh toán của bạn đang chờ phê duyệt. Giao dịch mua sẽ xuất hiện sau khi cửa hàng hoàn tất.",
+        "testPurchaseDeclined": "Giao dịch mua thử nghiệm đã bị từ chối. Không có khoản thanh toán nào được thực hiện. Chọn kết quả Cửa hàng thử nghiệm khác trong Cài đặt, sau đó thử lại.",
+        "genericPurchaseFailure": "Chúng tôi không thể hoàn tất giao dịch mua của bạn. Không có khoản thanh toán nào bị trừ. Vui lòng thử lại."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "Vẫn đang xác minh",
+        "premiumPending": "Quá trình xác minh vẫn đang diễn ra. Premium sẽ kích hoạt khi Máy chủ trò chơi xác nhận.",
+        "premiumPlanChangePending": "Quá trình xác minh vẫn đang diễn ra. Thay đổi gói của bạn sẽ được lên lịch khi Máy chủ trò chơi xác nhận.",
+        "coinPackPending": "Quá trình xác minh vẫn đang diễn ra. Số dư Stitch Coin của bạn sẽ được cập nhật khi hoàn tất.",
+        "aiCreditPackPending": "Quá trình xác minh vẫn đang diễn ra. Số dư AI Credit của bạn sẽ được cập nhật khi hoàn tất."
+      },
+      "success": {
+        "purchaseReceivedTitle": "Đã nhận giao dịch mua",
+        "storeAcceptedPlanChange": "Cửa hàng đã chấp nhận thay đổi sang {{label}}. Đang xác nhận thời điểm có hiệu lực.",
+        "storeAcceptedPurchase": "Cửa hàng đã chấp nhận {{label}}. Đang xác minh giao dịch mua của bạn.",
+        "premiumChanges": "Premium chuyển sang {{label}}{{effectiveOn}}.",
+        "effectiveOnDate": " vào {{date}}",
+        "planChangeScheduledTitle": "Đã lên lịch đổi gói",
+        "planChangeScheduledBody": "Gói thành viên Premium của bạn giữ nguyên gói hiện tại cho đến khi chuyển sang {{label}}{{effectiveOn}}. Hủy thay đổi từ mục Quản lý gói đăng ký.",
+        "premiumIsActiveTitle": "Premium đang hoạt động",
+        "premiumVerifiedAndActive": "{{label}} Premium đã được xác minh và đang hoạt động.",
+        "premiumNowActiveNoBilling": "{{label}} Premium hiện đang hoạt động.",
+        "premiumNowActiveBilled": "{{label}} Premium hiện đang hoạt động, thanh toán mỗi {{period}}.",
+        "coinPackGrantedTitle": "Đã cấp Stitch Coin",
+        "coinPackGrantVerified": "Khoản cấp {{label}} đã xác minh. Số dư Stitch Coin: {{balance}}.",
+        "coinPackAddedToBalance": "{{quantity}} Stitch Coin đã được cộng vào số dư của bạn.",
+        "aiCreditPackGrantedTitle": "Đã cấp AI Credit",
+        "aiCreditPackGrantVerified": "Khoản cấp {{label}} đã xác minh. Số dư AI Credit: {{balance}}.",
+        "aiCreditPackAddedToBalance": "{{quantity}} AI Credit đã được cộng vào số dư của bạn."
+      },
+      "products": {
+        "premiumAnnual": "Hàng năm",
+        "premiumMonthly": "Hàng tháng",
+        "premiumWeekly": "Hàng tuần",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coin",
+        "aiCreditPack_one": "{{formattedCount}} AI Credit",
+        "aiCreditPack_other": "{{formattedCount}} AI Credit",
+        "billedEveryOffer": "{{price}} mỗi {{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} credit / kỳ trả phí",
+        "creditAllowancePaidNoun": "{{credits}} credit / {{period}} trả phí"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "Mua hàng với tư cách Khách",
+        "commerceBody": "Bạn có thể mua hàng mà không cần đăng ký. Gói thành viên Premium có thể được khôi phục từ cửa hàng, nhưng Stitch Coin, AI Credit và nội dung Khách riêng tư sẽ không thể khôi phục nếu mất bản cài đặt này. Đăng ký sẽ bảo vệ chúng và không bao giờ làm gián đoạn việc chơi với tư cách Khách.",
+        "continueAsGuest": "Tiếp tục với tư cách Khách",
+        "signInInstead": "Đăng nhập thay vào đó",
+        "closeAccessibilityLabel": "Đóng"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "Đã hiểu",
+        "successButton": "Tuyệt vời",
+        "failedButton": "Đóng",
+        "infoButton": "Đã hiểu",
+        "closeAccessibilityLabel": "Đóng"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "Quay lại",
+        "cancel": "Hủy",
+        "duplicateTitle": "Bạn đã có một Mẫu thêu cá nhân tên “{{title}}”. Hãy chọn tiêu đề khác.",
+        "cellsCount_one": "ô",
+        "cellsCount_other": "ô",
+        "colorsCount_one": "màu",
+        "colorsCount_other": "màu"
+      },
+      "hub": {
+        "title": "Trung tâm sáng tạo",
+        "subtitle": "Biến ý tưởng của riêng bạn thành hiện thực với các mẫu thêu chữ thập tùy chỉnh.",
+        "opening": "Đang mở…",
+        "photoImport": {
+          "title": "Nhập ảnh",
+          "description": "Tải một bức ảnh từ thư viện của bạn và chuyển đổi thành mẫu thêu.",
+          "action": "Nhập ảnh"
+        },
+        "aiGenerator": {
+          "title": "Tạo bằng AI",
+          "description": "Mô tả một ý tưởng ấm cúng và để trí tuệ nhân tạo tạo ra thiết kế pixel tùy chỉnh.",
+          "action": "Tạo thiết kế"
+        }
+      },
+      "aspects": {
+        "square": "Vuông",
+        "portrait_4_3": "Dọc 4:3",
+        "landscape_4_3": "Ngang 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "Chuyển đổi mẫu thêu thất bại. Vui lòng thử lại.",
+          "timeout": "Chuyển đổi mẫu thêu vẫn đang xử lý. Hãy thử lại trong giây lát.",
+          "generic": "Không thể hoàn tất Chuyển đổi mẫu thêu. Vui lòng thử lại."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "Yêu cầu Tài khoản đã đăng ký",
+          "body": "Tác phẩm AI và thư viện của nó chỉ dành riêng cho tài khoản của bạn.",
+          "signIn": "Đăng nhập"
+        },
+        "header": {
+          "title": "Tạo bằng AI",
+          "backAccessibilityLabel": "Quay lại"
+        },
+        "prompt": {
+          "label": "Mô tả tác phẩm của bạn",
+          "placeholder": "Một căn nhà tranh ấm cúng lúc hoàng hôn…"
+        },
+        "generate": {
+          "working": "Đang xử lý…",
+          "action": "Tạo — 1 AI Credit",
+          "errors": {
+            "promptRejected": "Mô tả đó không được chấp nhận. Hãy thử mô tả điều gì khác.",
+            "generic": "Không thể bắt đầu tạo bằng AI. Vui lòng thử lại."
+          }
+        },
+        "library": {
+          "title": "Thư viện tác phẩm AI của bạn",
+          "status": {
+            "pending": "Đang chờ",
+            "dispatched": "Đã gửi",
+            "running": "Đang chạy",
+            "delivered": "Đã hoàn tất",
+            "safety_rejected": "Bị từ chối vì an toàn",
+            "failed": "Thất bại",
+            "deleted": "Đã xóa",
+            "unknown": "Không khả dụng"
+          },
+          "failure": {
+            "safety_rejected": "Tác phẩm này không vượt qua kiểm tra an toàn của nhà cung cấp.",
+            "failed": "Không thể tạo tác phẩm này."
+          },
+          "approve": "Duyệt thành mẫu thêu",
+          "delete": "Xóa",
+          "deleteAccessibilityLabel": "Xóa tác phẩm AI này",
+          "errors": {
+            "loadFailed": "Không thể tải Thư viện tác phẩm AI của bạn. Vui lòng thử lại."
+          }
+        },
+        "approve": {
+          "modalTitle": "Tạo Mẫu thêu cá nhân",
+          "titleLabel": "Tiêu đề mẫu thêu",
+          "titleAccessibilityLabel": "Tiêu đề mẫu thêu",
+          "defaultTitle": "Mẫu AI của tôi",
+          "placeholder": "Mẫu AI của tôi",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "Hủy",
+          "creating": "Đang tạo mẫu thêu…",
+          "create": "Tạo mẫu thêu",
+          "errors": {
+            "generic": "Không thể tạo Mẫu thêu cá nhân. Vui lòng thử lại."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "Yêu cầu Tài khoản đã đăng ký",
+          "body": "Mẫu thêu cá nhân thuộc về tài khoản của bạn để giữ riêng tư và khả dụng trên nhiều thiết bị.",
+          "signIn": "Đăng nhập hoặc tạo tài khoản",
+          "back": "Quay lại"
+        },
+        "header": {
+          "title": "Mẫu thêu từ ảnh",
+          "subtitle": "Khung ảnh cục bộ, sau đó duyệt để chuyển đổi",
+          "backAccessibilityLabel": "Quay lại"
+        },
+        "picker": {
+          "chooseTitle": "Chọn một bức ảnh",
+          "helpText": "Nguồn ảnh cục bộ độ phân giải đầy đủ vẫn ở trên thiết bị này. Không có gì được chuyển đổi cho đến khi bạn duyệt khung ảnh.",
+          "choose": "Chọn từ thư viện",
+          "chooseAnother": "Chọn ảnh khác",
+          "opening": "Đang mở…",
+          "errors": {
+            "permissionDenied": "Cần quyền truy cập thư viện ảnh để chọn Nguồn ảnh cục bộ.",
+            "invalidDimensions": "Bức ảnh đã chọn không báo kích thước sử dụng được.",
+            "generic": "Không thể mở thư viện ảnh. Vui lòng thử lại."
+          }
+        },
+        "framing": {
+          "title": "Đóng khung tác phẩm",
+          "gestureHint": "Kéo để định vị · chụm để phóng to",
+          "aspectLabel": "Tỉ lệ khung"
+        },
+        "profile": {
+          "title": "Hồ sơ chuyển đổi",
+          "options": {
+            "easy": "Dễ",
+            "standard": "Tiêu chuẩn",
+            "detailed": "Chi tiết"
+          },
+          "custom": "Tùy chỉnh",
+          "customMeta": "Miễn phí · hình dạng cố định",
+          "unavailable": "Không phù hợp với khung này",
+          "customShortEdgeLabel": "Cạnh ngắn",
+          "customColorLimitLabel": "Giới hạn màu DMC",
+          "exceedsLimit": "Các giá trị Tùy chỉnh này vượt quá giới hạn kích thước mẫu thêu {{max}} ô."
+        },
+        "titleCard": {
+          "label": "Tiêu đề mẫu thêu",
+          "placeholder": "Mẫu ảnh của tôi",
+          "defaultTitle": "Mẫu ảnh của tôi",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · tối đa {{maxColors}} {{colorsUnit}} DMC",
+          "privacyNotice": "Việc duyệt chỉ tải lên bản dẫn xuất đã đóng khung, thu nhỏ. Ảnh gốc vẫn ở trên thiết bị.",
+          "approve": "Duyệt tác phẩm & chuyển đổi"
+        },
+        "processing": {
+          "preparingFrame": "Đang chuẩn bị khung đã duyệt trên thiết bị này…",
+          "uploading": "Đang tải lên chỉ khung ảnh đã cắt, thu nhỏ…",
+          "waitingForWorker": "Đang chờ tiến trình chuyển đổi…",
+          "buildingGrid": "Đang tạo lưới thêu và bảng màu DMC…",
+          "preparingSession": "Đang chuẩn bị Mẫu thêu cá nhân để chơi…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "Hồ sơ này không còn phù hợp với khung cuối cùng. Chọn Dễ hoặc giảm chi tiết.",
+            "generic": "Không thể chuyển đổi bức ảnh này. Vui lòng thử lại."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "Chưa chọn mẫu thêu",
+          "noPatternBody": "Màn hình này phải được mở từ một Mẫu thêu cá nhân đã có trong thư viện của bạn.",
+          "accountTitle": "Yêu cầu Tài khoản đã đăng ký",
+          "accountBody": "Mẫu thêu cá nhân thuộc về tài khoản của bạn để giữ riêng tư và khả dụng trên nhiều thiết bị.",
+          "signIn": "Đăng nhập hoặc tạo tài khoản",
+          "back": "Quay lại"
+        },
+        "loading": "Đang khôi phục bản nháp trình chỉnh sửa...",
+        "load": {
+          "failedTitle": "Không thể tải mẫu thêu",
+          "retry": "Thử lại",
+          "back": "Quay lại",
+          "errors": {
+            "generic": "Không thể tải Mẫu thêu cá nhân này. Vui lòng thử lại."
+          }
+        },
+        "header": {
+          "title": "Trình chỉnh sửa mẫu thêu",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "Quay lại"
+        },
+        "toolbar": {
+          "undo": "Hoàn tác",
+          "redo": "Làm lại"
+        },
+        "mode": {
+          "paint": "Tô màu",
+          "replaceColor": "Thay đổi màu",
+          "replaceStep1": "1. Chạm vào một màu trong mẫu thêu bên dưới để thay thế:",
+          "replaceStep2": "2. Chọn màu DMC đích bên dưới để thực hiện thay thế:",
+          "paintSelected": "Đã chọn: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "Chọn một màu bên dưới, sau đó chạm vào các ô để tô."
+        },
+        "errors": {
+          "pickColorFirst": "Hãy chọn màu trước",
+          "paletteLimit": "Mẫu thêu này đã dùng tối đa {{max}} màu chỉ."
+        },
+        "picker": {
+          "title": "Bảng màu chỉ DMC",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "Lưu mẫu thêu đã chỉnh sửa",
+          "placeholder": "Tiêu đề mẫu thêu đã chỉnh sửa của tôi",
+          "action": "Lưu thành bản mới",
+          "offlineTitle": "Đã lưu ngoại tuyến",
+          "offlineBody": "Mẫu thêu đã chỉnh sửa của bạn đã được lưu trên thiết bị này và sẽ đồng bộ vào tài khoản của bạn khi có kết nối mạng trở lại.",
+          "errors": {
+            "generic": "Không thể lưu Mẫu thêu cá nhân này. Vui lòng thử lại."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "Lượt đăng nhập đó thuộc về một tài khoản khác. Tài khoản hiện tại của bạn không bị thay đổi.",
+        "providerRejected": "Xác minh đó đã bị từ chối. Kiểm tra tài khoản hoặc mã và thử lại."
+      },
+      "generic": {
+        "failure": "Đã xảy ra lỗi. Vui lòng thử lại.",
+        "supportReferenceLabel": "Mã hỗ trợ: {{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Stitch Wish sử dụng ảnh đã chọn để tạo Mẫu thêu cá nhân hoặc chọn ảnh hồ sơ người tạo công khai."
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "CHÀO MỪNG ĐẾN VỚI STITCH WISH",
+        "title": "Chọn một màu, chạm vào các ô khớp màu.",
+        "heroAlt": "Xem trước mẫu khởi đầu Trái tim ấm cúng",
+        "handedness": {
+          "sectionTitle": "Các nút điều khiển nên nằm ở bên nào?",
+          "groupLabel": "Bên điều khiển",
+          "optionRight": "Điều khiển ở bên phải",
+          "optionLeft": "Điều khiển ở bên trái",
+          "saveErrorText": "Không thể lưu lựa chọn đó.",
+          "retry": "Thử lại"
+        },
+        "note": "Bạn có thể thay đổi điều này sau trong Cài đặt.",
+        "start": "Bắt đầu thêu",
+        "starting": "Đang bắt đầu…",
+        "browse": "Duyệt mẫu khởi đầu",
+        "signIn": "Đăng nhập"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "Chọn DMC 321 Đỏ Giáng sinh.",
+          "stitchAction": "Chạm vào ô đang khớp được đánh dấu.",
+          "mismatchedTap": "Chạm vào ô khác đang được đánh dấu. Chạm sai không tốn gì cả.",
+          "undoAction": "Hoàn tác mũi thêu đó, rồi đặt lại.",
+          "stitchSweep": "Nhấn vào một ô khớp, sau đó kéo qua dãy được đánh dấu.",
+          "threadColorCompletion": "Hoàn thành sợi chỉ trắng đang được đánh dấu, sau đó chọn màu tiếp theo."
+        },
+        "hints": {
+          "anchoredZoom": "Chụm để phóng to trong khi giữ các ô ở dưới ngón tay bạn cố định.",
+          "panVsSweep": "Kéo để di chuyển vải. Bắt đầu trên một ô khớp để thêu theo dãy.",
+          "edgeAutoPan": "Tiếp tục kéo gần mép và vải sẽ theo ngón tay của bạn.",
+          "remainingCellLocator": "Dùng công cụ định vị để tìm ô còn lại tiếp theo cho màu chỉ này."
+        },
+        "skip": "Bỏ qua lúc này",
+        "skipAccessibilityLabel": "Bỏ qua hướng dẫn lúc này",
+        "dismiss": "Đã hiểu",
+        "dismissAccessibilityLabel": "Đóng gợi ý"
+      },
+      "recap": {
+        "title": "Bạn đã nắm được rồi",
+        "lines": {
+          "matchNumbers": "Khớp các số để đặt từng mũi thêu.",
+          "dragSweep": "Kéo qua các ô khớp để thêu theo dãy.",
+          "pinchZoom": "Chụm để phóng to khi cần nhìn gần hơn.",
+          "undoLocator": "Hoàn tác và công cụ định vị luôn miễn phí."
+        },
+        "continue": "Tiếp tục thêu",
+        "browsePatterns": "Duyệt mẫu thêu"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "Bàn thêu",
+        "subtitle": "Tiếp tục từ nơi bạn dừng lại hoặc tiếp tục một tác phẩm gần đây.",
+        "loading": "Đang tải các mũi thêu của bạn...",
+        "empty": {
+          "title": "Chưa có tác phẩm đang thêu",
+          "body": "Khung thêu của bạn hiện đang trống. Duyệt danh mục mẫu thêu để tìm điều gì đó đẹp để thêu!",
+          "action": "Duyệt danh mục"
+        },
+        "unknownPattern": "Mẫu thêu không xác định",
+        "idLabel": "ID: {{id}}",
+        "unknownPatternLabel": "Mẫu thêu {{id}}",
+        "deleteSessionAccessibilityLabel": "Xóa phiên",
+        "viewFinishedAccessibilityLabel": "Xem tác phẩm đã hoàn thành",
+        "resumeAccessibilityLabel": "Tiếp tục thêu",
+        "status": {
+          "ready": "Sẵn sàng",
+          "done": "Hoàn thành",
+          "active": "Đang thêu",
+          "preparing": "Đang chuẩn bị",
+          "failed": "Thất bại"
+        },
+        "deleteConfirm": {
+          "title": "Xóa tiến trình",
+          "message": "Bạn có chắc muốn xóa tiến trình cho \"{{title}}\" không? Không thể hoàn tác thao tác này.",
+          "cancel": "Hủy",
+          "confirm": "Xóa"
+        },
+        "preparingCard": {
+          "discardTitle": "Bỏ phiên",
+          "cancelTitle": "Hủy tải xuống",
+          "discardMessage": "Bạn có chắc muốn bỏ phiên thất bại này không?",
+          "cancelMessage": "Bạn có chắc muốn hủy tải xuống mẫu thêu này không?",
+          "keep": "Giữ lại",
+          "discard": "Bỏ",
+          "cancel": "Hủy"
+        }
+      },
+      "loading": {
+        "text": "Đang mở phiên & chuẩn bị vải..."
+      },
+      "error": {
+        "title": "Tải phiên thất bại",
+        "fallbackMessage": "Không thể tải phiên thêu của bạn.",
+        "backButton": "Quay lại",
+        "tableButton": "Về Bàn thêu"
+      },
+      "header": {
+        "backButton": "← Quay lại",
+        "tableButton": "← Bàn thêu",
+        "defaultTitle": "Phiên thêu",
+        "progress": "{{completed}} / {{total}} ô ({{percent}}% hoàn thành)",
+        "resumeTutorialAccessibilityLabel": "Tiếp tục hướng dẫn"
+      },
+      "banners": {
+        "patternRemoved": "Mẫu thêu này đã bị gỡ do kiểm duyệt và không còn khả dụng. Chạm để rời khỏi.",
+        "syncConflict": "Đã đồng bộ với thiết bị khác — một số ô đã được cập nhật. Chạm để đóng."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "Định vị ô còn lại tiếp theo của màu chỉ đang hoạt động",
+        "undoAccessibilityLabel": "Hoàn tác mũi thêu cuối cùng"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "Màu {{number}}: DMC {{dmcCode}}, còn {{count}} mũi thêu",
+        "chipAccessibilityLabel_other": "Màu {{number}}: DMC {{dmcCode}}, còn {{count}} mũi thêu",
+        "done": "Xong",
+        "remaining_one": "còn {{count}}",
+        "remaining_other": "còn {{count}}"
+      },
+      "celebration": {
+        "title": "Thêu thật đẹp!",
+        "subtitle": "Bạn đã hoàn thành mọi mũi thêu trên tấm vải này.",
+        "stitchesLabel_one": "Mũi thêu",
+        "stitchesLabel_other": "Mũi thêu",
+        "colorsLabel_one": "Màu",
+        "colorsLabel_other": "Màu",
+        "replayButton": "Thêu lại",
+        "catalogButton": "Về danh mục"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "Quay lại",
+        "tryAgain": "Thử lại"
+      },
+      "rejectionReasons": {
+        "safety": "An toàn",
+        "publication_rights": "Quyền công bố",
+        "duplicate_or_spam": "Trùng lặp hoặc rác",
+        "technical_invalidity": "Không hợp lệ về kỹ thuật",
+        "quality_standard": "Tiêu chuẩn chất lượng"
+      },
+      "submissionStatus": {
+        "accepted": "Đã xuất bản",
+        "appeal_pending": "Đang chờ khiếu nại",
+        "appeal_upheld": "Khiếu nại bị từ chối",
+        "precheck_failed": "Kiểm tra sơ bộ không khả dụng",
+        "precheck_pending": "Đang kiểm tra",
+        "quarantined": "Cần xem xét",
+        "rejected": "Bị từ chối",
+        "review_pending": "Đang xem xét"
+      },
+      "revisionStatus": {
+        "accepted": "Đã xuất bản",
+        "appeal_pending": "Đang chờ khiếu nại",
+        "appeal_upheld": "Khiếu nại bị từ chối",
+        "pending": "Đang xem xét",
+        "rejected": "Bị từ chối",
+        "withdrawn": "Đã rút lại"
+      },
+      "home": {
+        "identity": {
+          "establishing": "Đang thiết lập danh tính...",
+          "pendingTitle": "Danh tính đang chờ",
+          "offline": "Ngoại tuyến",
+          "retryConnection": "Thử kết nối lại",
+          "loadingPublicProfile": "Đang tải hồ sơ công khai...",
+          "unavailableTitle": "Hồ sơ công khai không khả dụng",
+          "checkConnection": "Kiểm tra kết nối và thử lại.",
+          "createTitle": "Tạo hồ sơ công khai của bạn",
+          "createBody": "Chọn tên người dùng vĩnh viễn hiển thị cùng các mẫu thêu cộng đồng của bạn. Chi tiết tài khoản của bạn vẫn được giữ riêng tư.",
+          "createAction": "Tạo hồ sơ công khai",
+          "editAction": "Chỉnh sửa hồ sơ công khai",
+          "offlinePendingSync": "Ngoại tuyến — đang chờ đồng bộ",
+          "guestPlayer": "Người chơi Khách",
+          "playingSince": "Chơi từ {{date}}",
+          "creatorSince": "Người tạo từ {{date}}"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "Mở cửa hàng",
+          "title": "Số dư Studio",
+          "commerceStoreLink": "Cửa hàng",
+          "stitchCoinsAccessibilityLabel": "Số dư Stitch Coin: {{balance}}. Chạm để nhận coin.",
+          "packs": "Gói",
+          "stitchCoinsLabel": "Stitch Coin",
+          "stitchCoinsSub": "Để mở khóa mẫu thêu",
+          "aiCreditsAccessibilityLabel": "Số dư AI Credit: {{balance}}. Chạm để nhận credit.",
+          "aiCreditsSignInAccessibilityLabel": "AI Credit. Đăng nhập để mua.",
+          "aiCreditsLabel": "AI Credit",
+          "aiCreditsSubOwned": "Cho tác phẩm mẫu thêu AI",
+          "aiCreditsSubGuest": "Đăng nhập để sở hữu",
+          "membershipActiveAccessibilityLabel": "Gói thành viên Premium đang hoạt động ({{plan}}). Chạm để quản lý.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Premium. Chạm để xem các gói.",
+          "membershipActiveTitle": "Premium đang hoạt động · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "Hàng năm",
+          "planMonthly": "Hàng tháng",
+          "planWeekly": "Hàng tuần",
+          "planActive": "Đang hoạt động",
+          "trialBadge": "Dùng thử",
+          "membershipSubActive": "Đã mở khóa mọi giao diện · Nhận coin hằng ngày ngay lập tức",
+          "membershipSubInactive": "30 coin hằng ngày ngay lập tức, giao diện tùy chỉnh & AI credit",
+          "manage": "Quản lý",
+          "explore": "Khám phá"
+        },
+        "quickNav": {
+          "sectionEyebrow": "TÀI KHOẢN & CỘNG ĐỒNG",
+          "submissionsAccessibilityLabel": "Bài nộp danh mục: Theo dõi xem xét, quyết định và khiếu nại",
+          "submissionsTitle": "Bài nộp",
+          "submissionsSub": "Theo dõi xem xét",
+          "publishedAccessibilityLabel": "Mẫu thêu đã xuất bản: Sửa siêu dữ liệu, rút lại, và theo dõi khiếu nại",
+          "publishedTitle": "Đã xuất bản",
+          "publishedSub": "Quản lý mẫu thêu",
+          "moderationAccessibilityLabel": "Thông báo kiểm duyệt: Xem xét các quyết định danh mục ảnh hưởng đến mẫu thêu của bạn",
+          "moderationTitle": "Kiểm duyệt",
+          "moderationSub": "Thông báo chính sách",
+          "likedAccessibilityLabel": "Mẫu thêu đã thích: Bộ sưu tập riêng tư các mẫu thêu cộng đồng bạn đã thích",
+          "likedTitle": "Mẫu thêu đã thích",
+          "likedSavedCount_one": "đã lưu {{count}}",
+          "likedSavedCount_other": "đã lưu {{count}}",
+          "likedSavedDefault": "Mẫu thêu đã lưu"
+        },
+        "dailySection": {
+          "title": "Thêu hằng ngày & Phần thưởng",
+          "tasksGroupLabel": "Nhiệm vụ hằng ngày (+30 Coin tối đa)",
+          "connectToTrack": "Kết nối để theo dõi tiến độ nhiệm vụ hằng ngày.",
+          "loadingTasks": "Đang tải nhiệm vụ…",
+          "loadFailed": "Không thể tải nhiệm vụ hằng ngày.",
+          "retry": "Thử lại",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "Đang đặt lại…",
+          "resetsInHoursMinutes": "Đặt lại sau {{hours}} giờ {{minutes}} phút",
+          "resetsInMinutes": "Đặt lại sau {{minutes}} phút"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 thao tác thêu",
+            "body": "Điền 100 ô khớp hôm nay"
+          },
+          "three_colors_10": {
+            "title": "3 màu, 10 thao tác mỗi màu",
+            "body": "Đạt 10 thao tác ở 3 màu chỉ"
+          },
+          "color_completion": {
+            "title": "Hoàn thành một màu chỉ",
+            "body": "Thêu xong hoàn toàn một màu bất kỳ"
+          }
+        },
+        "dailyPool": {
+          "title": "Kho phần thưởng 30 Coin hằng ngày",
+          "premiumInstantClaim": "Nhận ngay dành cho Premium",
+          "rewardedAds": "Quảng cáo có thưởng",
+          "claimedAmount": "{{amount}} Stitch Coin đã được nhận cho hôm nay!",
+          "poolAlreadyClosed": "Kho phần thưởng hôm nay đã đóng.",
+          "claimedForToday": "Đã nhận cho hôm nay. Đặt lại vào Ngày phần thưởng tiếp theo.",
+          "poolExhausted": "Kho phần thưởng 30-Coin hôm nay đã hết.",
+          "claimButtonRetry": "Thử nhận lại",
+          "claimButtonInstant": "Nhận {{count}} Coin (Ngay lập tức)",
+          "poolClaimedResetsTomorrow": "Kho coin hôm nay đã được nhận. Đặt lại vào ngày mai.",
+          "allAdRewardsCompleted": "Đã hoàn thành mọi phần thưởng quảng cáo hôm nay! (30/30 coin)",
+          "watchAdButton": "Xem quảng cáo để nhận +10 Coin (còn {{count}})",
+          "adPerkNote": "Xem tối đa 3 quảng cáo/ngày · Premium mở khóa nhận ngay 30 coin",
+          "adRewardEarned": "Đã nhận phần thưởng quảng cáo! Đang xác minh với máy chủ…",
+          "claimFailed": "Nhận thất bại: {{message}}",
+          "claimFailedGeneric": "Đã xảy ra lỗi. Vui lòng thử lại.",
+          "adLoadFailedDefault": "Không thể tải quảng cáo",
+          "adAttemptFailedDefault": "Không thể mở lượt xem quảng cáo"
+        },
+        "tabs": {
+          "myCreations": "Tác phẩm của tôi {{count}}",
+          "likedPatterns": "Mẫu thêu đã thích {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "Đăng nhập để có Mẫu thêu cá nhân",
+          "signInBody": "Cần Tài khoản đã đăng ký để tạo và sở hữu riêng tư các mẫu thêu ảnh đã chuyển đổi.",
+          "signIn": "Đăng nhập",
+          "patternMeta": "{{width}}×{{height}} · {{count}} màu",
+          "pendingSync": "Đang chờ đồng bộ",
+          "play": "Chơi",
+          "edit": "Chỉnh sửa",
+          "submitAccessibilityLabel": "Nộp {{title}} vào Danh mục cộng đồng",
+          "emptyTitle": "Chưa có tác phẩm cá nhân",
+          "emptyBody": "Bạn chưa chuyển đổi ảnh nào hoặc tạo tác phẩm AI nào. Hãy đến mục Sáng tạo để bắt đầu kiệt tác đầu tiên của bạn!",
+          "emptyAction": "Bắt đầu sáng tạo",
+          "actionFailedGeneric": "Đã xảy ra lỗi. Vui lòng thử lại."
+        },
+        "likedTab": {
+          "unavailableTitle": "Mẫu thêu đã thích không khả dụng",
+          "unavailableDefault": "Không thể tải mẫu thêu đã thích.",
+          "byCreator": "bởi {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} màu",
+          "emptyTitle": "Chưa có mẫu thêu đã thích",
+          "emptyBody": "Duyệt danh mục và chạm vào biểu tượng trái tim trên bất kỳ thiết kế nào để lưu vào đây cho sau này.",
+          "emptyAction": "Khám phá mẫu thêu"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Nhận Coin hằng ngày Premium",
+        "description": "Nhận phần còn lại của kho phần thưởng 30-Coin chung hôm nay.",
+        "connectPrompt": "Kết nối tới Máy chủ trò chơi để kiểm tra phần thưởng hôm nay.",
+        "checkingReward": "Đang kiểm tra phần thưởng Premium hôm nay…",
+        "unavailableGeneric": "Phần thưởng Premium hôm nay không khả dụng.",
+        "tryAgain": "Thử lại",
+        "resultAdded": "{{amount}} Stitch Coin đã được Máy chủ trò chơi cộng thêm. Số dư: {{balance}}.",
+        "poolAlreadyClosed": "Kho phần thưởng chung hôm nay đã đóng.",
+        "alreadyClaimed": "Đã nhận cho Ngày phần thưởng này.",
+        "poolExhausted": "Kho phần thưởng chung hôm nay đã hết. Đặt lại vào Ngày phần thưởng tiếp theo.",
+        "availableNow": "{{count}} Stitch Coin khả dụng ngay bây giờ",
+        "resetsAt": "Đặt lại {{date}}",
+        "claimButtonRetry": "Thử nhận lại",
+        "claimButtonInstant": "Nhận {{count}} Coin",
+        "lockedDescription": "Gói thành viên Premium, bao gồm cả bản Dùng thử hàng tháng đủ điều kiện, mở khóa việc nhận thưởng hằng ngày này.",
+        "viewPremiumPlans": "Xem các gói Premium"
+      },
+      "publicProfile": {
+        "editTitle": "Chỉnh sửa hồ sơ công khai",
+        "createTitle": "Tạo hồ sơ công khai",
+        "signInTitle": "Cần đăng nhập",
+        "signInBody": "Cần Tài khoản đã đăng ký để tạo danh tính người tạo công khai.",
+        "signInAction": "Đăng nhập",
+        "unavailableTitle": "Hồ sơ không khả dụng",
+        "unavailableBody": "Không thể tải hồ sơ công khai của bạn. Kiểm tra kết nối và thử lại.",
+        "tryAgain": "Thử lại",
+        "intro": "Tên và ảnh này hiển thị cùng các mẫu thêu cộng đồng của bạn. Email và nhà cung cấp đăng nhập của bạn vẫn được giữ riêng tư.",
+        "choosePhoto": "Chọn ảnh",
+        "changePhoto": "Đổi ảnh",
+        "remove": "Xóa",
+        "avatarHelper": "Tùy chọn · JPEG, PNG, hoặc WebP · tối đa 5 MB",
+        "usernameLabel": "Tên người dùng",
+        "usernameAccessibilityLabel": "Tên người dùng công khai",
+        "usernamePlaceholder": "ten_nguoi_theu",
+        "usernameHelperLocked": "Tên người dùng của bạn là vĩnh viễn.",
+        "usernameHelperEditable": "3–30 chữ cái thường, số hoặc dấu gạch dưới. Không thể thay đổi sau này.",
+        "displayNameLabel": "Tên hiển thị",
+        "displayNameAccessibilityLabel": "Tên hiển thị công khai",
+        "displayNamePlaceholder": "Tên người tạo của bạn",
+        "displayNameHelper": "Bạn có thể thay đổi điều này sau.",
+        "safetyNotice": "Tên và ảnh được kiểm tra trước khi xuất bản. Nếu một thay đổi bị từ chối, hồ sơ công khai hiện tại của bạn vẫn giữ nguyên.",
+        "saveAction": "Lưu hồ sơ công khai",
+        "publishAction": "Xuất bản hồ sơ công khai",
+        "photoPermissionRequired": "Cần quyền truy cập thư viện ảnh để chọn ảnh hồ sơ.",
+        "photoTypeInvalid": "Ảnh hồ sơ phải là JPEG, PNG, hoặc WebP.",
+        "photoTooLarge": "Ảnh hồ sơ phải nhỏ hơn hoặc bằng 5 MB.",
+        "saveFailedDefault": "Không thể lưu hồ sơ công khai của bạn"
+      },
+      "submissions": {
+        "title": "Bài nộp danh mục",
+        "unavailableTitle": "Bài nộp không khả dụng",
+        "unavailableDefault": "Không thể tải bài nộp của bạn.",
+        "emptyTitle": "Chưa có bài nộp danh mục",
+        "emptyBody": "Nộp một Mẫu thêu cá nhân đã đồng bộ từ mục Tác phẩm của tôi.",
+        "emptyAction": "Về Tác phẩm của tôi",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "Không thể hoàn tất kiểm tra tự động. Bản chụp này không được xuất bản.",
+        "publishedToCatalog": "Đã xuất bản vào Danh mục cộng đồng.",
+        "appealAction": "Khiếu nại quyết định",
+        "appealHelp": "Bạn có thể khiếu nại bản chụp không đổi này một lần.",
+        "appealNoteAccessibilityLabel": "Ghi chú khiếu nại",
+        "appealNotePlaceholder": "Bối cảnh tùy chọn cho người kiểm duyệt xem xét",
+        "cancelAction": "Hủy",
+        "submitAppealAction": "Gửi khiếu nại"
+      },
+      "publishedPatterns": {
+        "title": "Mẫu thêu đã xuất bản",
+        "unavailableTitle": "Mẫu thêu không khả dụng",
+        "unavailableDefault": "Không thể tải mẫu thêu đã xuất bản của bạn.",
+        "emptyTitle": "Chưa có mẫu thêu đã xuất bản",
+        "emptyBody": "Mẫu thêu bạn xuất bản vào Danh mục cộng đồng sẽ xuất hiện tại đây.",
+        "emptyAction": "Về hồ sơ",
+        "withdrawnFromCatalog": "Đã rút khỏi danh mục",
+        "underReviewHold": "Đang tạm giữ để xem xét",
+        "meta": "{{category}} · Xuất bản {{date}}",
+        "withdrawnHelp": "Danh tính này đã bị rút vĩnh viễn. Người chơi có Phiên thêu hiện có vẫn giữ tiến trình và quyền truy cập.",
+        "reviewHoldHelp": "Mẫu thêu này tạm thời nằm ngoài khám phá và không thể bắt đầu phiên mới. Các Phiên thêu hiện có vẫn có thể chơi được. Bạn vẫn có thể đề xuất bản sửa siêu dữ liệu.",
+        "reviseAction": "Sửa siêu dữ liệu",
+        "withdrawRevisionAction": "Rút bản sửa",
+        "appealAction": "Khiếu nại quyết định",
+        "withdrawFromCatalogAction": "Rút khỏi danh mục",
+        "appealHelp": "Bạn có thể khiếu nại bản chụp không đổi này một lần. Nộp bản sửa mới thay vào đó sẽ từ bỏ quyền khiếu nại này.",
+        "appealNoteAccessibilityLabel": "Ghi chú khiếu nại",
+        "appealNotePlaceholder": "Bối cảnh tùy chọn cho người kiểm duyệt xem xét",
+        "cancelAction": "Hủy",
+        "submitAppealAction": "Gửi khiếu nại",
+        "withdrawRevisionFailedTitle": "Không thể rút bản sửa",
+        "withdrawPatternFailedTitle": "Không thể rút mẫu thêu",
+        "withdrawPatternSuccessTitle": "Đã rút mẫu thêu",
+        "withdrawPatternSuccessBody": "Mẫu thêu không còn được khám phá và không thể bắt đầu phiên mới. Các Phiên thêu hiện có vẫn giữ tiến trình và dữ liệu chơi được.",
+        "withdrawConfirmTitle": "Rút khỏi Danh mục cộng đồng?",
+        "withdrawConfirmBody": "“{{title}}” sẽ biến mất khỏi khám phá và không thể bắt đầu phiên mới. Danh tính mẫu thêu này không bao giờ có thể được khôi phục. Các Phiên thêu hiện có và tiến trình của chúng vẫn có thể chơi được.",
+        "withdrawConfirmCancel": "Hủy",
+        "withdrawConfirmAction": "Rút vĩnh viễn"
+      },
+      "revisePatternMetadata": {
+        "title": "Sửa siêu dữ liệu",
+        "signInTitle": "Yêu cầu Tài khoản đã đăng ký",
+        "signInBody": "Đăng nhập trước khi sửa siêu dữ liệu của một Mẫu thêu cộng đồng.",
+        "signInAction": "Đăng nhập",
+        "notFoundTitle": "Không tìm thấy Mẫu thêu cộng đồng",
+        "notFoundBody": "Chỉ Mẫu thêu cộng đồng đã xuất bản của bạn mới có thể được sửa.",
+        "notFoundAction": "Về mẫu thêu đã xuất bản",
+        "inProgressTitle": "Bản sửa đang được xử lý",
+        "inProgressBody": "Mẫu thêu này đã có một bản sửa đang chờ hoặc khiếu nại đang hoạt động. Hãy rút bản đó trước khi nộp bản khác.",
+        "inProgressAction": "Về mẫu thêu đã xuất bản",
+        "currentlyPublished": "Hiện đang được xuất bản trên Danh mục cộng đồng",
+        "titleFieldLabel": "Tiêu đề danh mục",
+        "titlePlaceholder": "Tiêu đề mẫu thêu",
+        "titleAccessibilityLabel": "Tiêu đề danh mục",
+        "descriptionFieldLabel": "Mô tả",
+        "descriptionPlaceholder": "Mô tả thiết kế, chủ đề và trải nghiệm thêu.",
+        "descriptionAccessibilityLabel": "Mô tả danh mục",
+        "sourceLanguageFieldLabel": "Ngôn ngữ nguồn",
+        "categoryFieldLabel": "Danh mục",
+        "tagsFieldLabel": "Thẻ",
+        "notice": "Sửa siêu dữ liệu sẽ tạo một bản chụp bất biến mới. Siêu dữ liệu đã xuất bản hiện tại của bạn vẫn hiển thị cho đến khi một người kiểm duyệt chấp nhận bản sửa này.",
+        "submitAction": "Nộp bản sửa"
+      },
+      "submitPattern": {
+        "title": "Nộp cho cộng đồng",
+        "signInTitle": "Yêu cầu Tài khoản đã đăng ký",
+        "signInBody": "Đăng nhập trước khi nộp một Mẫu thêu cá nhân vào Danh mục cộng đồng.",
+        "signInAction": "Đăng nhập",
+        "createProfileTitle": "Tạo hồ sơ người tạo công khai",
+        "createProfileBody": "Mẫu thêu cộng đồng được ghi nhận cho danh tính người tạo công khai của bạn.",
+        "createProfileAction": "Tạo hồ sơ",
+        "patternNotFoundTitle": "Không tìm thấy Mẫu thêu cá nhân",
+        "patternNotFoundBody": "Chỉ Mẫu thêu cá nhân đã đồng bộ mới có thể được nộp.",
+        "patternNotFoundAction": "Về hồ sơ",
+        "patternMeta": "{{width}}×{{height}} · {{count}} màu",
+        "byCreator": "Bởi @{{username}}",
+        "titleFieldLabel": "Tiêu đề danh mục",
+        "titlePlaceholder": "Tiêu đề mẫu thêu",
+        "titleAccessibilityLabel": "Tiêu đề danh mục",
+        "descriptionFieldLabel": "Mô tả",
+        "descriptionPlaceholder": "Mô tả thiết kế, chủ đề và trải nghiệm thêu.",
+        "descriptionAccessibilityLabel": "Mô tả danh mục",
+        "sourceLanguageFieldLabel": "Ngôn ngữ nguồn",
+        "categoryFieldLabel": "Danh mục",
+        "tagsFieldLabel": "Thẻ",
+        "rightsDeclaration": "Tôi đã tạo ra tác phẩm này hoặc có các quyền cần thiết để xuất bản nó theo Tuyên bố quyền công bố v1.",
+        "notice": "Việc nộp bài sẽ tạo một bản sao bất biến. Kiểm tra tự động cung cấp bằng chứng, nhưng một người kiểm duyệt đưa ra mọi quyết định.",
+        "submitAction": "Nộp để xem xét"
+      },
+      "moderationNotices": {
+        "title": "Thông báo kiểm duyệt",
+        "signInTitle": "Đăng nhập để xem thông báo",
+        "signInBody": "Thông báo kiểm duyệt thuộc về Tài khoản đã đăng ký đã xuất bản Mẫu thêu cộng đồng bị ảnh hưởng.",
+        "signInAction": "Đăng nhập",
+        "unavailableTitle": "Thông báo không khả dụng",
+        "unavailableDefault": "Không thể tải Thông báo kiểm duyệt.",
+        "emptyTitle": "Chưa có thông báo kiểm duyệt",
+        "emptyBody": "Các quyết định kiểm duyệt danh mục hiển thị cho chủ sở hữu sẽ xuất hiện tại đây.",
+        "emptyAction": "Về hồ sơ",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "Khắc phục siêu dữ liệu danh mục",
+          "no_violation": "Xem xét đã đóng — không vi phạm",
+          "review_hold": "Tạm giữ để xem xét",
+          "safety_removal": "Gỡ bỏ vì an toàn"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "Tiêu đề, mô tả và các thẻ đã chọn đã được thay thế bằng giá trị an toàn. Tình trạng khả dụng, Tệp mẫu thêu và bản xem trước không bị ảnh hưởng. Bạn có thể nộp Bản sửa siêu dữ liệu danh mục mới bất cứ lúc nào.",
+          "no_violation": "Xem xét sau xuất bản đã đóng và mẫu thêu này hoàn toàn khả dụng trở lại trong khám phá và các Phiên thêu mới.",
+          "review_hold": "Mẫu thêu này tạm thời không khả dụng để khám phá và các phiên mới. Các Phiên thêu hiện có, tiến trình và Dữ liệu mẫu thêu ngoại tuyến vẫn có thể chơi được.",
+          "safety_removal": "Mẫu thêu này đã bị gỡ do vi phạm an toàn, pháp lý hoặc chính sách. Mẫu đã rời khỏi khám phá, các Phiên thêu hiện có không còn truy cập được, và Dữ liệu mẫu thêu ngoại tuyến trên thiết bị của bạn đã bị xóa. Bạn có thể nộp một Khiếu nại gỡ bỏ vì an toàn."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "Nhiệm vụ hằng ngày",
+        "offline": "Bạn đang ngoại tuyến — Nhiệm vụ hằng ngày cần kết nối mạng.",
+        "unavailable": "Không thể tải Nhiệm vụ hằng ngày.",
+        "empty": "Chưa có nhiệm vụ nào hôm nay."
+      },
+      "rewardedAdCard": {
+        "offline": "Bạn đang ngoại tuyến — Ngày phần thưởng cần kết nối mạng.",
+        "unavailable": "Không thể tải trạng thái Ngày phần thưởng.",
+        "premiumClaimClosedPool": "Lượt nhận Premium hằng ngày của bạn đã đóng kho coin chung hôm nay.",
+        "allRewardsClaimed": "Bạn đã nhận mọi phần thưởng quảng cáo hôm nay. Quay lại vào ngày mai!",
+        "remaining_one": "còn {{count}} quảng cáo hôm nay ({{coins}} coin khả dụng)",
+        "remaining_other": "còn {{count}} quảng cáo hôm nay ({{coins}} coin khả dụng)",
+        "watchForCoins": "Xem quảng cáo để nhận {{count}} Coin"
+      },
+      "likedPatterns": {
+        "title": "Mẫu thêu đã thích",
+        "signInTitle": "Yêu cầu Tài khoản đã đăng ký",
+        "signInBody": "Đăng nhập trước khi xem bộ sưu tập Mẫu thêu đã thích riêng tư của bạn.",
+        "signInAction": "Đăng nhập",
+        "unavailableTitle": "Mẫu thêu đã thích không khả dụng",
+        "unavailableDefault": "Không thể tải mẫu thêu đã thích.",
+        "emptyTitle": "Chưa có mẫu thêu đã thích",
+        "emptyBody": "Duyệt danh mục mẫu thêu và chạm vào biểu tượng trái tim trên bất kỳ thiết kế nào để lưu vào đây.",
+        "emptyAction": "Khám phá mẫu thêu",
+        "byCreator": "bởi {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} màu · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "Cài đặt",
+        "subtitleDev": "Cấu hình tùy chọn và kiểm tra hệ thống máy chủ.",
+        "subtitleProd": "Cấu hình tùy chọn của bạn."
+      },
+      "serviceStatus": {
+        "sectionTitle": "Trạng thái dịch vụ",
+        "apiConnectionTitle": "Kết nối API",
+        "testingConnection": "Đang kiểm tra kết nối api...",
+        "offlineUnreachable": "Ngoại tuyến / Không thể kết nối",
+        "unknownConnectionError": "Lỗi kết nối không xác định",
+        "retryConnection": "Thử kết nối lại",
+        "healthy": "Ổn định",
+        "degraded": "Suy giảm",
+        "postgresLabel": "Cơ sở dữ liệu PostgreSQL",
+        "redisLabel": "Bộ nhớ đệm Redis"
+      },
+      "session": {
+        "sectionTitle": "Danh tính & Phiên",
+        "statusTitle": "Trạng thái phiên máy chủ",
+        "statusDescription": "Xác thực phiên đăng ký khách đang hoạt động của bạn qua API.",
+        "noActiveSession": "Không có phiên hoạt động",
+        "sessionActive": "Phiên đang hoạt động",
+        "idLabel": "ID: {{id}} (v{{version}})",
+        "unknownState": "Trạng thái không xác định"
+      },
+      "tutorial": {
+        "sectionTitle": "Hướng dẫn",
+        "learnControlsTitle": "Học cách điều khiển",
+        "learnControlsDescription": "Tiếp tục hướng dẫn thêu khi bạn sẵn sàng.",
+        "unavailableTitle": "Hướng dẫn không khả dụng",
+        "unavailableMessage": "Không thể tiếp tục hướng dẫn. Vui lòng thử lại."
+      },
+      "developer": {
+        "sectionTitle": "Nhà phát triển",
+        "debugDiagnostics": "Gỡ lỗi / Chẩn đoán",
+        "debug": {
+          "backAccessibilityLabel": "Quay lại",
+          "title": "Gỡ lỗi",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: đã cấu hình · môi trường: {{environment}}",
+            "dsnNotConfigured": "DSN: chưa cấu hình",
+            "sendTestEvent": "Gửi sự kiện thử nghiệm",
+            "throwError": "Gây lỗi",
+            "disabledTitle": "Sentry đã tắt",
+            "disabledMessage": "Sentry chưa được cấu hình (không tìm thấy DSN), vì vậy sẽ không có sự kiện thử nghiệm nào được gửi.",
+            "testEventSent": "Đã gửi sự kiện thử nghiệm. ID sự kiện: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "Lỗi",
+            "testEventFailedMessage": "Gửi sự kiện thử nghiệm thất bại: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Hướng dẫn ban đầu",
+            "description": "Xóa tiến trình hướng dẫn và bắt đầu lại từ đầu.",
+            "restart": "Khởi động lại hướng dẫn",
+            "confirmTitle": "Khởi động lại hướng dẫn?",
+            "confirmMessage": "Trạng thái hướng dẫn sẽ bị xóa và hướng dẫn sẽ bắt đầu lại từ màn hình Chào mừng.",
+            "cancel": "Hủy",
+            "resetFailedTitle": "Đặt lại thất bại"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "Xóa tài khoản",
+        "statusTitle": "Trạng thái xóa tài khoản",
+        "checkingStatus": "Đang kiểm tra trạng thái...",
+        "pendingTitle": "Đang chờ xóa tài khoản",
+        "pendingDescription": "Việc xóa tài khoản của bạn đã được lên lịch. Hãy đăng nhập lại trước khi hết thời gian khôi phục để hủy việc này.",
+        "recoveryWindowEnds": "Thời gian khôi phục kết thúc: {{date}}",
+        "cancelling": "Đang hủy...",
+        "cancelDeletion": "Hủy xóa",
+        "statusError": "Không thể kiểm tra trạng thái xóa. Kiểm tra kết nối và thử lại.",
+        "deleteAccountTitle": "Xóa tài khoản",
+        "deleteAccountDescription": "Xóa vĩnh viễn tài khoản, tiến trình và mọi nội dung đã mở khóa sau thời gian khôi phục 30 ngày.",
+        "requestedTitle": "Đã yêu cầu xóa tài khoản",
+        "requestedMessage": "Yêu cầu xóa của bạn đang chờ đến {{date}}. Tài khoản của bạn đã được đăng xuất. Đăng nhập lại trước thời điểm đó nếu bạn muốn hủy việc xóa này.",
+        "signOutFailedTitle": "Đăng xuất cục bộ thất bại",
+        "signOutFailedMessage": "Yêu cầu xóa của bạn vẫn đang chờ xử lý. Vui lòng đăng xuất lại từ Cài đặt.",
+        "requestFailedTitle": "Yêu cầu thất bại",
+        "requestFailedMessage": "Yêu cầu xóa của bạn chưa được gửi. Kiểm tra kết nối và thử lại.",
+        "cancelSuccessTitle": "Thành công",
+        "cancelSuccessMessage": "Yêu cầu xóa tài khoản của bạn đã bị hủy.",
+        "reauthRequiredTitle": "Yêu cầu xác thực lại",
+        "reauthRequiredMessage": "Vì lý do bảo mật, bạn phải đăng nhập lại trước khi hủy việc xóa tài khoản.",
+        "signInAction": "Đăng nhập",
+        "cancelFailedTitle": "Hủy thất bại",
+        "cancelFailedGeneric": "Không thể hủy việc xóa tài khoản. Kiểm tra kết nối và thử lại."
+      },
+      "appearance": {
+        "sectionTitle": "Giao diện"
+      },
+      "themeCollectionCard": {
+        "title": "Bộ sưu tập giao diện",
+        "description": "Thay đổi hình ảnh lưới, mũi thêu và hiệu ứng hoàn thành mà không ảnh hưởng đến lối chơi.",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "Yêu cầu Gói thành viên Premium",
+        "selected": "Đã chọn",
+        "accessActive": "Quyền truy cập giao diện Premium đang hoạt động, kể cả trong bản Dùng thử hàng tháng đủ điều kiện.",
+        "lockedPreview": "Xem trước bộ sưu tập tại đây. Gói thành viên Premium hoặc bản Dùng thử hàng tháng đủ điều kiện sẽ mở khóa lựa chọn.",
+        "viewPremiumPlans": "Xem các gói Premium"
+      },
+      "gameplay": {
+        "sectionTitle": "Cài đặt lối chơi",
+        "showGridLinesTitle": "Hiển thị đường lưới",
+        "showGridLinesDescription": "Hiển thị ranh giới giữa các ô trên vải thêu",
+        "handednessTitle": "Bố cục thuận tay",
+        "handednessDescription": "Sắp xếp các nút điều khiển tương tác cho việc chơi thuận tay trái hoặc phải",
+        "left": "Trái",
+        "right": "Phải",
+        "leftHandedLayout": "Bố cục thuận tay trái",
+        "rightHandedLayout": "Bố cục thuận tay phải"
+      },
+      "language": {
+        "sectionTitle": "Ngôn ngữ",
+        "description": "Chọn ngôn ngữ hiển thị giao diện của Stitch Wish.",
+        "followDevice": "Theo ngôn ngữ thiết bị",
+        "followDeviceDescription": "Xóa tùy chọn ghi đè để theo cài đặt ngôn ngữ thiết bị của bạn.",
+        "optionEnglish": "Tiếng Anh",
+        "optionTurkish": "Türkçe",
+        "modalTitle": "Chọn ngôn ngữ",
+        "modalSubtitle": "Chọn ngôn ngữ ưa thích của bạn cho giao diện.",
+        "systemDefault": "Ngôn ngữ hệ thống",
+        "systemDefaultWithDetected": "Ngôn ngữ hệ thống ({{language}})",
+        "systemDefaultDescription": "Tự động khớp với cài đặt thiết bị của bạn."
+      },
+      "social": {
+        "sectionTitle": "Xã hội & Quyền riêng tư",
+        "blockedCreators": "Người tạo đã chặn"
+      },
+      "account": {
+        "sectionTitle": "Tài khoản",
+        "notSignedInTitle": "Chưa đăng nhập",
+        "signInRequiredTitle": "Yêu cầu đăng nhập",
+        "notSignedInDescription": "Đăng nhập để đồng bộ tiến trình trên các thiết bị.",
+        "signIn": "Đăng nhập",
+        "reconnecting": "Đang kết nối lại…",
+        "signOut": "Đăng xuất",
+        "signOutConfirmTitle": "Đăng xuất?",
+        "signOutConfirmMessage": "Tiến trình chưa đồng bộ của bạn vẫn ở trên thiết bị này và mở lại khi bạn đăng nhập trở lại.",
+        "signOutConfirmAction": "Đăng xuất",
+        "signOutFailedTitle": "Đăng xuất thất bại",
+        "signOutFailedGeneric": "Vui lòng thử lại.",
+        "providerAppleAccount": "Tài khoản Apple",
+        "providerGoogleAccount": "Tài khoản Google",
+        "providerGenericAccount": "Tài khoản đã đăng ký"
+      },
+      "signIn": {
+        "emailHeading": "Đăng nhập hoặc tạo tài khoản",
+        "emailSubtitle": "Giữ tiến trình của bạn khả dụng trên các thiết bị.",
+        "codeHeading": "Nhập mã của bạn",
+        "codeSubtitle": "Nhập mã 6 chữ số chúng tôi đã gửi tới {{email}}.",
+        "continueWithGoogle": "Tiếp tục với Google",
+        "orUseEmail": "hoặc dùng email",
+        "ssoUnavailable": "Đăng nhập Google và Apple không khả dụng trong bản dựng này.",
+        "emailLabel": "Địa chỉ email",
+        "emailPlaceholder": "Địa chỉ email",
+        "sendCode": "Gửi mã",
+        "cancel": "Hủy",
+        "verify": "Xác minh",
+        "resendCode": "Gửi lại mã",
+        "resending": "Đang gửi lại...",
+        "codeSent": "Đã gửi mã",
+        "useDifferentEmail": "Dùng email khác",
+        "sendCodeFailed": "Không thể gửi mã. Kiểm tra kết nối và thử lại.",
+        "codeIncorrect": "Mã đó không đúng hoặc đã hết hạn.",
+        "verifyFailedGeneric": "Đã xảy ra lỗi. Vui lòng thử lại.",
+        "socialSignInFailed": "Không thể đăng nhập với {{provider}}. Vui lòng thử lại.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "Quay lại",
+        "title": "Người tạo đã chặn",
+        "infoText": "Chặn là hành động riêng tư và có thể hoàn tác. Nó ẩn các mẫu thêu cộng đồng của người tạo khỏi chế độ xem danh mục, tìm kiếm và khám phá của bạn. Đây không phải là báo cáo hay gỡ bỏ nội dung.",
+        "signInRequiredTitle": "Yêu cầu Tài khoản đã đăng ký",
+        "signInRequiredBody": "Đăng nhập trước khi quản lý danh sách người tạo đã chặn của bạn.",
+        "signInAction": "Đăng nhập",
+        "listUnavailableTitle": "Danh sách không khả dụng",
+        "listUnavailableDefault": "Không thể tải người tạo đã chặn.",
+        "tryAgain": "Thử lại",
+        "emptyTitle": "Chưa chặn người tạo nào",
+        "emptyBody": "Bạn chưa chặn ai. Bạn có thể chặn một người tạo từ bất kỳ trang chi tiết mẫu thêu nào của họ.",
+        "backToSettings": "Về Cài đặt",
+        "unblock": "Bỏ chặn",
+        "unblockConfirmTitle": "Bỏ chặn người tạo",
+        "unblockConfirmMessage": "Bạn có chắc muốn bỏ chặn {{name}} không? Mẫu thêu của họ sẽ xuất hiện lại trong kết quả tìm kiếm và duyệt của bạn.",
+        "cancel": "Hủy",
+        "successTitle": "Thành công",
+        "unblockedMessage": "{{name}} đã được bỏ chặn.",
+        "errorTitle": "Lỗi",
+        "unblockFailedMessage": "Bỏ chặn người tạo thất bại: {{message}}",
+        "unblockFailedGeneric": "Lỗi không xác định"
+      },
+      "data": {
+        "sectionTitle": "Dữ liệu",
+        "resetGuestTitle": "Đặt lại dữ liệu Khách",
+        "resetGuestDescription": "Đóng vĩnh viễn danh tính khách trên máy chủ và xóa toàn bộ dữ liệu thiết bị.",
+        "resetGuestOffline": "Ngoại tuyến: Cần kết nối máy chủ đang hoạt động để đặt lại dữ liệu khách.",
+        "resetGuestPurchaseLock": "Việc đặt lại bị chặn trong khi một giao dịch mua vẫn đang được xác minh. Dữ liệu tiêu hao và dữ liệu Khách riêng tư không thể khôi phục sau đó.",
+        "removeLocalTitle": "Xóa dữ liệu cục bộ",
+        "removeLocalDescription": "Xóa cơ sở dữ liệu không gian danh tính cục bộ khỏi thiết bị này.",
+        "removeLocalConfirmTitle": "Xóa dữ liệu cục bộ?",
+        "removeLocalConfirmMessage": "Cảnh báo: Điều này sẽ xóa các tệp cơ sở dữ liệu cục bộ của bạn khỏi thiết bị này. Mọi bản ghi chưa đồng bộ sẽ bị mất vĩnh viễn.",
+        "removeLocalConfirmAction": "Xóa",
+        "removeLocalSuccessTitle": "Thành công",
+        "removeLocalSuccessMessage": "Dữ liệu cục bộ đã được xóa khỏi thiết bị này.",
+        "removeLocalFailedTitle": "Xóa thất bại",
+        "removeLocalFailedMessage": "Xóa dữ liệu cục bộ thất bại: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "Thông tin & Liên kết",
+        "privacyPolicy": "Chính sách quyền riêng tư",
+        "termsOfService": "Điều khoản dịch vụ",
+        "contactSupport": "Liên hệ hỗ trợ",
+        "accountDeletion": "Xóa tài khoản",
+        "openFailedMessage": "Không thể mở liên kết: {{url}}",
+        "openFailedGenericTitle": "Lỗi"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — Thêu Pixel-Art Ấm cúng",
+        "version": "Phiên bản {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "Gói: {{id}}",
+        "schemeLabel": "Lược đồ: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "Đặt lại dữ liệu Khách?",
+        "warning": "Hành động này sẽ đóng vĩnh viễn danh tính khách của bạn trên máy chủ và xóa vĩnh viễn:",
+        "bulletProgress": "• tiến trình cục bộ",
+        "bulletRewards": "• phần thưởng đang chờ",
+        "bulletLikes": "• lượt thích",
+        "bulletUnlockAccess": "• quyền truy cập mở khóa",
+        "bulletOfflinePatterns": "• dữ liệu mẫu thêu ngoại tuyến",
+        "confirmPrefix": "Nhập ",
+        "confirmSuffix": " bên dưới để xác nhận:",
+        "confirmAction": "Đặt lại dữ liệu",
+        "resetting": "Đang đặt lại dữ liệu khách...",
+        "successTitle": "Thành công",
+        "successMessage": "Dữ liệu khách đã được đặt lại hoàn toàn.",
+        "failedTitle": "Đặt lại thất bại",
+        "failedMessage": "Đặt lại dữ liệu khách thất bại: {{message}}. Vui lòng thử lại."
+      },
+      "deleteModal": {
+        "title": "Xóa tài khoản?",
+        "recoveryPrefix": "Tài khoản của bạn bước vào một ",
+        "recoveryBold": "Thời gian khôi phục xóa 30 ngày",
+        "recoverySuffix": ". Đăng nhập lại trong thời gian này để hủy việc xóa.",
+        "bulletBalances": "• Số dư Stitch Coin và AI Credit",
+        "bulletUnlocks": "• Mọi lượt mở khóa mẫu thêu",
+        "bulletArtwork": "• Tác phẩm AI và Mẫu thêu cá nhân",
+        "bulletProgress": "• Tiến trình và Lượt thích đã đồng bộ",
+        "consequencesPrefix": "Vào cuối thời gian khôi phục, những dữ liệu này sẽ bị xóa hoặc mất mà không hoàn tiền hay chuyển nhượng. Mẫu thêu cộng đồng đã xuất bản sẽ bị rút khỏi danh mục, ghi nhận trở thành ",
+        "consequencesBold": "Người tạo đã xóa",
+        "consequencesSuffix": ", và tên người dùng của bạn vẫn được giữ vĩnh viễn.",
+        "membershipWarning": "Gói thành viên Premium của bạn có thể vẫn tiếp tục thanh toán sau khi xóa tài khoản. Việc xóa không hủy gói này; hãy quản lý riêng trước khi tiếp tục nếu bạn muốn dừng thanh toán.",
+        "manageAppleSubscription": "Quản lý gói đăng ký Apple",
+        "continueAction": "Tiếp tục",
+        "confirmTitle": "Xác nhận xóa",
+        "confirmPrefix": "Để xác nhận bạn muốn xóa tài khoản, hãy nhập ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": " vào ô bên dưới:",
+        "submitting": "Đang gửi yêu cầu xóa...",
+        "backAction": "Quay lại",
+        "confirmAction": "Xác nhận"
+      },
+      "reauthModal": {
+        "title": "Xác minh danh tính của bạn",
+        "description": "Vì lý do bảo mật, hãy xác minh bằng một phương thức đăng nhập đã liên kết với tài khoản này. Việc xóa sẽ tự động tiếp tục sau khi xác minh.",
+        "loading": "Đang tải các phương thức đăng nhập...",
+        "codeSentMessage": "Nhập mã 6 chữ số đã gửi tới {{email}}.",
+        "verifyAndDelete": "Xác minh và xóa",
+        "emailButton": "Tiếp tục với {{email}}",
+        "continueWithProvider": "Tiếp tục với {{provider}}",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "Không có phương thức đăng nhập nào được liên kết. Liên hệ hỗ trợ trước khi thử xóa lại.",
+        "loadFailed": "Không thể tải các phương thức đăng nhập đã liên kết của bạn. Kiểm tra kết nối và thử lại.",
+        "retryFailed": "Danh tính của bạn đã được xác minh, nhưng việc xóa chưa được gửi. Đóng hộp thoại này và thử xóa lại.",
+        "emailMissing": "Phương thức email đã liên kết này không có địa chỉ. Chọn phương thức khác.",
+        "genericFailure": "Xác thực lại thất bại. Kiểm tra kết nối và thử lại."
+      },
+      "actions": {
+        "cancel": "Hủy",
+        "retry": "Thử lại"
+      },
+      "common": {
+        "unavailable": "Không khả dụng"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "Danh mục",
+        "stitch": "Thêu",
+        "create": "Sáng tạo",
+        "profile": "Hồ sơ",
+        "settings": "Cài đặt"
+      }
+    }
+  },
   "zh-Hans": {
     "catalog": {
       "common": {

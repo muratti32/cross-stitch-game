@@ -230,4 +230,7 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'uk:play:home.idLabel': '"ID" is used identically in Ukrainian tech/UI copy.',
   'uk:settings:session.idLabel': '"ID" is used identically in Ukrainian tech/UI copy.',
   'uk:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
+  'vi:play:home.idLabel': '"ID" is used identically in Vietnamese tech/UI copy.',
+  'vi:settings:session.idLabel': '"ID" is used identically in Vietnamese tech/UI copy.',
+  'vi:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
 };
