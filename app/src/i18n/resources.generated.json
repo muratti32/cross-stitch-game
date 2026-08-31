@@ -37961,6 +37961,1412 @@
       }
     }
   },
+  "sv": {
+    "catalog": {
+      "common": {
+        "back": "← Tillbaka",
+        "searchPlaceholder": "Sök mönster, skapare, taggar…",
+        "offlineBanner": "Offline — katalogen kan vara inaktuell",
+        "sectionError": {
+          "title": "Kunde inte läsa in",
+          "retry": "Försök igen"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} färger",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} kolumner",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "Engelska"
+        },
+        "accessibilityLabel": "Skrivet på {{language}}"
+      },
+      "index": {
+        "subtitle": "Skapa din mysiga värld, stygn för stygn.",
+        "searchBar": {
+          "accessibilityLabel": "Sök i mönsterkatalogen"
+        },
+        "sections": {
+          "starterPatterns": "Startmönster",
+          "staffPicks": "Redaktionens val",
+          "categories": "Kategorier",
+          "newPatterns": "Nya mönster"
+        },
+        "staffPicks": {
+          "emptyTitle": "Inga redaktionella val ännu",
+          "emptyBody": "Vår handplockade samling av mysiga design visas här snart.",
+          "errorBody": "Katalogen kunde inte nås och inget finns cachat ännu."
+        },
+        "categories": {
+          "count": "{{count}} mönster",
+          "errorBody": "Katalogen kunde inte nås och inget finns cachat ännu."
+        },
+        "newPatterns": {
+          "emptyTitle": "Nya mönster skapas",
+          "emptyBody": "Nya tillägg är på väg!",
+          "errorBody": "Katalogen kunde inte nås och inget finns cachat ännu.",
+          "showMore": "Visa fler",
+          "loading": "Läser in…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "Bläddra",
+        "error": {
+          "body": "Den här katalogsidan kunde inte nås och inget finns cachat ännu."
+        },
+        "empty": {
+          "title": "Inget här ännu",
+          "body": "Inga mönster matchar det här urvalet ännu. Nya design kommer regelbundet."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "Sökfält för katalog",
+        "inactive": {
+          "title": "Sök i katalogen",
+          "body": "Skriv minst två tecken för att söka mönster efter titel, skapare eller tagg."
+        },
+        "error": {
+          "title": "Sökning kräver anslutning",
+          "body": "Katalogsökning är inte tillgänglig offline. Cachade katalogsidor går fortfarande att bläddra i från katalogfliken."
+        },
+        "noResults": {
+          "title": "Inga träffar",
+          "body": "Inget i katalogen matchar ”{{query}}” ännu."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "Spelar som gäst",
+        "body": "Stitch Coin och framsteg lever bara på den här enheten som gäst. Om installationen förloras kan gästkontot och framstegen bli oåterkalleliga. Att logga in skyddar dina framsteg."
+      },
+      "detail": {
+        "noDescription": "Ingen beskrivning tillgänglig.",
+        "specs": {
+          "dimensions": "Mått",
+          "totalStitches": "Totalt antal stygn",
+          "colors": "Färger",
+          "category": "Kategori"
+        },
+        "threadsSuffix": "{{count}} trådar",
+        "palette": {
+          "title": "Nödvändiga trådar",
+          "loading": "Läser in trådpalett...",
+          "loadFailed": "Kunde inte läsa in palett: {{error}}",
+          "retry": "Försök läsa in igen"
+        },
+        "actions": {
+          "startStitching": "Börja sy",
+          "starting": "Startar...",
+          "preparing": "Förbereder…"
+        },
+        "loadFailedGeneric": "Det gick inte att läsa mönsterfilen.",
+        "sessionCreateFailed": "Det gick inte att skapa en sysession. Försök igen.",
+        "unavailable": {
+          "title": "Mönstret är inte tillgängligt",
+          "body": "Det här mönstret kunde inte läsas in. Det kan ha tagits bort, eller så är du offline.",
+          "goBack": "Gå tillbaka"
+        },
+        "byCreator": "av {{creatorName}}",
+        "byCreatorWithUsername": "av {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "Blockera skapare",
+          "message": "Är du säker på att du vill blockera {{creatorName}}? Det här är en privat, reversibel åtgärd som döljer deras mönster från sök/bläddra. Det anmäler inte skaparen och avbryter inte din pågående sysession.",
+          "cancel": "Avbryt",
+          "confirm": "Blockera",
+          "blockedTitle": "Blockerad",
+          "blockedMessage": "{{creatorName}} har blockerats.",
+          "errorTitle": "Fel",
+          "failedGeneric": "Det gick inte att blockera skaparen."
+        },
+        "likeFailedGeneric": "Det gick inte att uppdatera gilla-status",
+        "connectToPlay": {
+          "title": "Anslut för att spela",
+          "body": "Att starta ett katalogmönster kräver en anslutning för att förbereda din session. Startmönster går att spela direkt, även offline."
+        },
+        "insufficientCoins": {
+          "title": "Otillräckligt med mynt",
+          "body": "Det här mönstret kostar {{price}} Stitch Coins, men du har bara {{balance}} mynt.\n\nDet fattas: {{shortfall}} mynt.\n\nTjäna Stitch Coins genom att slutföra andra mönster! Belöningar för första slutförande är aktiva.",
+          "getCoins": "Skaffa Stitch Coins",
+          "findPatterns": "Hitta mönster att sy",
+          "back": "Tillbaka"
+        },
+        "unlockFailedGeneric": "Upplåsning misslyckades. Kontrollera din anslutning och försök igen.",
+        "preparationFailedGeneric": "Det gick inte att starta förberedelsen. Kontrollera din anslutning och försök igen.",
+        "price": {
+          "label": "Pris"
+        },
+        "balance": {
+          "label": "Ditt saldo",
+          "loading": "…"
+        },
+        "unlockButton": "Lås upp för {{price}} mynt",
+        "communityReport": {
+          "button": "Anmäl det här mönstret",
+          "title": "Anmäl {{patternTitle}}",
+          "body": "Välj anledningen som bäst beskriver problemet. Anmälningar döljer eller ändrar aldrig ett mönster automatiskt.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "Olämpligt eller osäkert innehåll",
+            "copyright_or_publication_rights": "Upphovsrätt eller publiceringsrättigheter",
+            "duplicate_or_spam": "Dubblett eller skräppost",
+            "misleading_title_or_tags": "Vilseledande titel eller taggar",
+            "other": "Annat"
+          },
+          "explanationLabel": "Bevis eller förklaring {{requirement}}",
+          "explanationRequired": "(obligatoriskt)",
+          "explanationOptional": "(valfritt)",
+          "explanationPlaceholder": "Dela detaljer som hjälper en moderator att granska mönstret.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "Avbryt",
+          "submit": "Skicka anmälan",
+          "submitFailedGeneric": "Det gick inte att skicka din anmälan. Kontrollera din anslutning och försök igen.",
+          "receivedTitle": "Anmälan mottagen",
+          "alreadyReceivedTitle": "Anmälan redan mottagen",
+          "receivedBody": "En moderator kan nu granska det här mönstret. Anmälan ändrar inte automatiskt dess tillgänglighet.",
+          "alreadyReceivedBody": "Din befintliga anmälan är redan en del av den öppna granskningen.",
+          "signInRequired": {
+            "title": "Logga in för att anmäla",
+            "message": "Community-anmälningar kräver ett registrerat konto. Inget har skickats in.",
+            "cancel": "Avbryt",
+            "signIn": "Logga in"
+          },
+          "validation": {
+            "chooseReason": "Välj en anledning till anmälan.",
+            "explainRequired": "Förklara varför du anmäler det här mönstret.",
+            "tooLong": "Förklaringen får vara högst 2 000 tecken.",
+            "needsContent": "Förklaringen måste innehålla bokstäver eller siffror."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "Tillbaka",
+        "title": "Butik",
+        "subtitle": "Medlemskap och engångsköp"
+      },
+      "signInReturn": {
+        "notice": "Du är inloggad. {{label}} är fortfarande valt. Granska det och tryck på Köp när du är redo."
+      },
+      "premiumHero": {
+        "eyebrow": "PREMIUM-MEDLEMSKAP",
+        "title": "Skapa mer. Samla en liten belöning varje dag.",
+        "body": "AI-krediter varje betalperiod, Premium-teman och en daglig Stitch Coin-hämtning.",
+        "benefitAiCredits": "AI-krediter",
+        "benefitDailyCoins": "Dagliga mynt",
+        "benefitThemes": "Teman",
+        "statusNoActiveMembership": "Inget aktivt medlemskap",
+        "statusBrowseAsGuest": "Bläddra bland planer som gästspelare",
+        "periodEndsLabel": "Nuvarande period slutar",
+        "periodRenewsLabel": "Förnyas",
+        "lifecycleActive": "Aktiv"
+      },
+      "membershipActions": {
+        "title": "Aktivt Premium-medlemskap",
+        "body": "Dagliga belöningar finns i Profil. Teman finns under Inställningar › Utseende.",
+        "scheduledChangeNotice": "Ändringar till {{plan}} den {{date}}",
+        "manageSubscription": "Hantera prenumeration",
+        "manageSubscriptionFailedTitle": "Det gick inte att öppna prenumerationer",
+        "manageSubscriptionFailedBody": "Försök igen från ditt enhetsbutikskonto."
+      },
+      "pending": {
+        "title": "Köpavstämning pågår",
+        "verifyingTitle": "Verifierar köp",
+        "premiumChangeAccepted": "Butiken godkände ändringen till {{label}}. ",
+        "premiumResponseReceived": "Butikssvaret för {{label}} har tagits emot. ",
+        "premiumDeferredSuffix": "Ändringen schemaläggs först efter verifiering från spelbackend och träder i kraft när din nuvarande period löper ut.",
+        "premiumSuffix": "Premium aktiveras först efter verifiering från spelbackend.",
+        "doNotPurchasePlanAgain": " Köp inte den här planen igen.",
+        "coinPackBody": "Butikssvaret har tagits emot. Stitch Coin uppdateras först när spelbackend exponerar den matchande Commerce Ledger-tilldelningen. Köp inte det här paketet igen.",
+        "aiCreditPackBody": "Butikssvaret har tagits emot. AI-krediter uppdateras först när spelbackend exponerar den matchande Commerce Ledger-tilldelningen. Köp inte det här paketet igen.",
+        "refreshStatus": "Uppdatera status",
+        "retryReconciliation": "Försök avstämning igen"
+      },
+      "store": {
+        "loadingPrices": "Läser in aktuella butikspriser…",
+        "unavailableTitle": "Butiken är tillfälligt otillgänglig",
+        "unavailableBody": "Din plånbok och dina medlemskapsuppgifter är fortfarande tillgängliga.",
+        "retry": "Försök igen"
+      },
+      "plans": {
+        "choosePremiumPlan": "Välj en Premium-plan",
+        "yourPremiumPlan": "Din Premium-plan",
+        "currentPlan": "NUVARANDE PLAN",
+        "upgrade": "UPPGRADERA",
+        "planChange": "PLANÄNDRING",
+        "bestValue": "BÄST VÄRDE",
+        "billedEvery": "Debiteras var {{period}}",
+        "chooseLabel": "Välj {{label}}",
+        "freeTrial": "Gratis i {{offer}}, sedan {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "Engångspaket",
+        "stitchCoinPacksTitle": "Stitch Coin-paket",
+        "aiCreditPacksTitle": "AI-kreditpaket",
+        "coinsNoun": "Mynt",
+        "creditsNoun": "Krediter",
+        "fromPrice": "Från {{price}}"
+      },
+      "restore": {
+        "restorePurchases": "Återställ köp",
+        "restoreGuestPremium": "Återställ gäst-Premium",
+        "requestedTitle": "Återställning begärd",
+        "requestedBody": "Verifierad Premium-åtkomst visas efter att butikens webhook har stämts av. Stitch Coin- och AI-kreditpaket återställs aldrig."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "Aktuella priser från appbutiken",
+        "closeAccessibilityLabel": "Stäng produktrutan",
+        "closeButtonAccessibilityLabel": "Stäng",
+        "selectedBeforeSignIn": "Valt före inloggning",
+        "buy": "Köp"
+      },
+      "confirmation": {
+        "cancel": "Avbryt",
+        "confirmLabel": "Bekräfta {{label}}",
+        "confirmPremiumTitle": "Bekräfta Premium-köp",
+        "introductoryOffer": "Din butik rapporterar detta introduktionserbjudande: {{offer}}.",
+        "premiumAppearsAfterVerification": "Premium visas först efter att spelbackend har verifierat butikstransaktionen.",
+        "confirmPremiumUpgradeTitle": "Bekräfta Premium-uppgradering",
+        "confirmPremiumPlanChangeTitle": "Bekräfta Premium-planändring",
+        "currentPlanLabel": "Nuvarande plan: {{label}}",
+        "upgradeToLabel": "Uppgradera till {{label}} · {{offer}}",
+        "changeToLabel": "Ändra till {{label}} · {{offer}}",
+        "upgradeBody": "App Store styr den slutliga debiteringen och datumet för denna uppgradering. Premium speglar {{label}} först efter att spelbackend har verifierat det.",
+        "planChangeBody": "App Store skjuter upp den här ändringen till slutet av din nuvarande period: {{currentLabel}} fortsätter att gälla fram till dess, och {{targetLabel}} debiteras från ändringsdatumet. Avbryt ändringen från Hantera prenumeration.",
+        "confirmUpgrade": "Bekräfta uppgradering",
+        "confirmPlanChange": "Bekräfta planändring",
+        "confirmStitchCoinTitle": "Bekräfta Stitch Coin-köp",
+        "confirmAiCreditTitle": "Bekräfta AI-kreditköp",
+        "balanceChangesAfterVerificationCoin": "Ditt saldo ändras först efter att spelbackend har verifierat butikstransaktionen och registrerat den matchande Commerce Ledger-tilldelningen.",
+        "balanceChangesAfterVerificationAiCredit": "Ditt saldo ändras först efter att spelbackend har verifierat butikstransaktionen och registrerat den matchande Commerce Ledger-tilldelningen. Premium-medlemskap krävs inte."
+      },
+      "disclosure": {
+        "subscriptionTerms": "Betalning debiteras ditt {{store}}-konto vid bekräftelse. {{label}} Premium förnyas automatiskt till {{offer}} om inte automatisk förnyelse stängs av minst 24 timmar innan nuvarande period löper ut. Outnyttjad del av en gratis provperiod går förlorad när du köper en prenumeration. Du kan avbryta när som helst från ditt {{store}}-konto.",
+        "privacyPolicy": "Integritetspolicy",
+        "termsOfService": "Användarvillkor",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "Kunde inte öppna länk: {{url}}"
+      },
+      "supportReference": {
+        "label": "Supportreferens: {{reference}}",
+        "copyAccessibilityLabel": "Kopiera supportreferens {{reference}}",
+        "copyAccessibilityHint": "Kopierar supportreferensen till urklipp",
+        "copied": "Kopierat",
+        "copyFailedTitle": "Kopiering misslyckades",
+        "copyFailedBody": "Supportreferensen kunde inte kopieras. Markera texten för att kopiera den manuellt."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "Stitch Coin-köp som gäst är endast tillgängliga på iOS.",
+        "guestIosOnlyGeneric": "Gästköp är endast tillgängliga på iOS.",
+        "purchaseFailedTitle": "Köpet misslyckades",
+        "premiumVerificationNotYet": "Spelbackend kunde inte verifiera det här köpet. Försök avstämning igen; köp det inte igen.",
+        "premiumVerificationFailedRetry": "Spelbackend kunde ännu inte verifiera det här köpet. Försök avstämning igen; köp det inte igen.",
+        "premiumGrantRefreshFailed": "Premium verifierades, men medlemskaps- och AI-kredittillståndet kunde inte uppdateras. Försök avstämning igen.",
+        "premiumReconciliationUnreachable": "Köpavstämningen kunde inte nå spelbackend. Försök avstämning igen; köp det inte igen.",
+        "coinPackVerificationMismatch": "Butikstransaktionen matchade inte det här myntpaketet. Försök verifiera igen eller kontakta support; köp det inte igen.",
+        "coinPackGrantUnavailable": "Köpet verifierades, men Stitch Coin-tilldelningen är inte tillgänglig. Försök avstämning igen; köp det inte igen.",
+        "coinPackBalanceRefreshFailed": "Mynttilldelningen verifierades, men det aktuella Stitch Coin-saldot kunde inte uppdateras. Försök avstämning igen.",
+        "coinPackVerificationFailedRetry": "Spelbackend kunde ännu inte verifiera det här myntpaketet. Försök avstämning igen; köp det inte igen.",
+        "coinPackReconciliationUnreachable": "Avstämningen för myntpaketet kunde inte nå spelbackend. Försök avstämning igen; köp det inte igen.",
+        "aiCreditPackVerificationMismatch": "Butikstransaktionen matchade inte det här AI-kreditpaketet. Försök verifiera igen eller kontakta support; köp det inte igen.",
+        "aiCreditPackGrantUnavailable": "Köpet verifierades, men AI-kredittilldelningen är inte tillgänglig. Försök avstämning igen; köp det inte igen.",
+        "aiCreditPackBalanceRefreshFailed": "AI-kredittilldelningen verifierades, men det aktuella saldot kunde inte uppdateras. Försök avstämning igen.",
+        "aiCreditPackVerificationFailedRetry": "Spelbackend kunde ännu inte verifiera det här AI-kreditpaketet. Försök avstämning igen; köp det inte igen.",
+        "aiCreditPackReconciliationUnreachable": "Avstämningen för AI-kreditpaketet kunde inte nå spelbackend. Försök avstämning igen; köp det inte igen.",
+        "reconciliationStillUnavailable": "Spelbackend är fortfarande otillgänglig. Försök avstämning igen senare.",
+        "storeTemporarilyUnavailable": "Butiken är tillfälligt otillgänglig. Försök igen om några minuter.",
+        "purchasesNotAllowed": "Köp är inte tillåtna på den här enheten. Kontrollera ditt butikskonto eller föräldrakontroller.",
+        "itemNotAvailable": "Den här artikeln kan inte köpas just nu. Välj en annan artikel eller försök igen senare.",
+        "alreadyOwned": "Du äger redan det här köpet. Använd Återställ köp för att uppdatera din åtkomst.",
+        "couldNotConnectToStore": "Det gick inte att ansluta till butiken. Kontrollera din internetanslutning och försök igen.",
+        "paymentPendingApproval": "Din betalning väntar på godkännande. Ditt köp visas när butiken har slutfört det.",
+        "testPurchaseDeclined": "Testköpet avvisades. Ingen betalning gjordes. Välj ett annat testbutiksresultat i Inställningar och försök igen.",
+        "genericPurchaseFailure": "Vi kunde inte slutföra ditt köp. Ingen betalning togs ut. Försök igen."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "Verifierar fortfarande",
+        "premiumPending": "Verifieringen pågår fortfarande. Premium aktiveras när spelbackend bekräftar det.",
+        "premiumPlanChangePending": "Verifieringen pågår fortfarande. Din planändring schemaläggs när spelbackend bekräftar det.",
+        "coinPackPending": "Verifieringen pågår fortfarande. Ditt Stitch Coin-saldo uppdateras när den är klar.",
+        "aiCreditPackPending": "Verifieringen pågår fortfarande. Ditt AI-kreditsaldo uppdateras när den är klar."
+      },
+      "success": {
+        "purchaseReceivedTitle": "Köp mottaget",
+        "storeAcceptedPlanChange": "Butiken godkände ändringen till {{label}}. Bekräftar när den träder i kraft.",
+        "storeAcceptedPurchase": "Butiken godkände {{label}}. Verifierar ditt köp nu.",
+        "premiumChanges": "Premium ändras till {{label}}{{effectiveOn}}.",
+        "effectiveOnDate": " den {{date}}",
+        "planChangeScheduledTitle": "Planändring schemalagd",
+        "planChangeScheduledBody": "Ditt Premium-medlemskap behåller sin nuvarande plan tills den ändras till {{label}}{{effectiveOn}}. Avbryt ändringen från Hantera prenumeration.",
+        "premiumIsActiveTitle": "Premium är aktivt",
+        "premiumVerifiedAndActive": "{{label}} Premium är verifierat och aktivt.",
+        "premiumNowActiveNoBilling": "{{label}} Premium är nu aktivt.",
+        "premiumNowActiveBilled": "{{label}} Premium är nu aktivt, debiteras var {{period}}.",
+        "coinPackGrantedTitle": "Stitch Coins tilldelade",
+        "coinPackGrantVerified": "{{label}}-tilldelning verifierad. Stitch Coin-saldo: {{balance}}.",
+        "coinPackAddedToBalance": "{{quantity}} Stitch Coins har lagts till ditt saldo.",
+        "aiCreditPackGrantedTitle": "AI-krediter tilldelade",
+        "aiCreditPackGrantVerified": "{{label}}-tilldelning verifierad. AI-kreditsaldo: {{balance}}.",
+        "aiCreditPackAddedToBalance": "{{quantity}} AI-krediter har lagts till ditt saldo."
+      },
+      "products": {
+        "premiumAnnual": "Årsvis",
+        "premiumMonthly": "Månadsvis",
+        "premiumWeekly": "Veckovis",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+        "aiCreditPack_one": "{{formattedCount}} AI-kredit",
+        "aiCreditPack_other": "{{formattedCount}} AI-krediter",
+        "billedEveryOffer": "{{price}} var {{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} krediter / betalperiod",
+        "creditAllowancePaidNoun": "{{credits}} krediter / betald {{period}}"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "Köp som gäst",
+        "commerceBody": "Du kan köpa utan registrering. Premium-medlemskap kan återställas från butiken, men Stitch Coin, AI-krediter och privat gästinnehåll går inte att återskapa om den här installationen förloras. Att registrera dig skyddar dem och avbryter aldrig ditt gästspelande.",
+        "continueAsGuest": "Fortsätt som gäst",
+        "signInInstead": "Logga in istället",
+        "closeAccessibilityLabel": "Stäng"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "Uppfattat",
+        "successButton": "Toppen",
+        "failedButton": "Stäng",
+        "infoButton": "Uppfattat",
+        "closeAccessibilityLabel": "Stäng"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "Tillbaka",
+        "cancel": "Avbryt",
+        "duplicateTitle": "Du har redan ett personligt mönster med namnet ”{{title}}”. Välj en annan titel.",
+        "cellsCount_one": "ruta",
+        "cellsCount_other": "rutor",
+        "colorsCount_one": "färg",
+        "colorsCount_other": "färger"
+      },
+      "hub": {
+        "title": "Skaparhubb",
+        "subtitle": "Väck dina egna design till liv med anpassade korsstygnsmönster.",
+        "opening": "Öppnar…",
+        "photoImport": {
+          "title": "Fotoimport",
+          "description": "Ladda upp en bild från din kamerarulle och omvandla den till ett mönster att sy.",
+          "action": "Importera foto"
+        },
+        "aiGenerator": {
+          "title": "AI-generator",
+          "description": "Beskriv en mysig idé och låt artificiell intelligens skapa en anpassad pixel-design.",
+          "action": "Skapa design"
+        }
+      },
+      "aspects": {
+        "square": "Kvadrat",
+        "portrait_4_3": "Stående 4:3",
+        "landscape_4_3": "Liggande 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "Mönsterkonverteringen misslyckades. Försök igen.",
+          "timeout": "Mönsterkonverteringen bearbetas fortfarande. Försök igen om en liten stund.",
+          "generic": "Det gick inte att slutföra mönsterkonverteringen. Försök igen."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "Registrerat konto krävs",
+          "body": "AI-konst och dess bibliotek förblir privat för ditt konto.",
+          "signIn": "Logga in"
+        },
+        "header": {
+          "title": "AI-generator",
+          "backAccessibilityLabel": "Tillbaka"
+        },
+        "prompt": {
+          "label": "Beskriv din konst",
+          "placeholder": "En mysig stugträdgård i solnedgången…"
+        },
+        "generate": {
+          "working": "Arbetar…",
+          "action": "Skapa — 1 AI-kredit",
+          "errors": {
+            "promptRejected": "Den beskrivningen tillåts inte. Försök beskriva något annat.",
+            "generic": "Det gick inte att starta AI-genereringen. Försök igen."
+          }
+        },
+        "library": {
+          "title": "Ditt AI-konstbibliotek",
+          "status": {
+            "pending": "Väntar",
+            "dispatched": "Skickad",
+            "running": "Pågår",
+            "delivered": "Levererad",
+            "safety_rejected": "Avvisad av säkerhetsskäl",
+            "failed": "Misslyckades",
+            "deleted": "Borttagen",
+            "unknown": "Otillgänglig"
+          },
+          "failure": {
+            "safety_rejected": "Den här konsten klarade inte leverantörens säkerhetskontroll.",
+            "failed": "Den här konsten kunde inte skapas."
+          },
+          "approve": "Godkänn till mönster",
+          "delete": "Ta bort",
+          "deleteAccessibilityLabel": "Ta bort den här AI-konsten",
+          "errors": {
+            "loadFailed": "Det gick inte att läsa in ditt AI-konstbibliotek. Försök igen."
+          }
+        },
+        "approve": {
+          "modalTitle": "Skapa personligt mönster",
+          "titleLabel": "Mönstertitel",
+          "titleAccessibilityLabel": "Mönstertitel",
+          "defaultTitle": "Mitt AI-mönster",
+          "placeholder": "Mitt AI-mönster",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "Avbryt",
+          "creating": "Skapar mönster…",
+          "create": "Skapa mönster",
+          "errors": {
+            "generic": "Det gick inte att skapa det personliga mönstret. Försök igen."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "Registrerat konto krävs",
+          "body": "Personliga mönster tillhör ditt konto så att de förblir privata och tillgängliga på alla enheter.",
+          "signIn": "Logga in eller skapa konto",
+          "back": "Tillbaka"
+        },
+        "header": {
+          "title": "Fotomönster",
+          "subtitle": "Beskär lokalt och godkänn sedan konvertering",
+          "backAccessibilityLabel": "Tillbaka"
+        },
+        "picker": {
+          "chooseTitle": "Välj ett foto",
+          "helpText": "Den fullupplösta lokala fotokällan stannar kvar på den här enheten. Inget konverteras förrän du godkänner beskärningen.",
+          "choose": "Välj från biblioteket",
+          "chooseAnother": "Välj ett annat",
+          "opening": "Öppnar…",
+          "errors": {
+            "permissionDenied": "Åtkomst till fotobiblioteket krävs för att välja en lokal fotokälla.",
+            "invalidDimensions": "Det valda fotot rapporterar inte användbara mått.",
+            "generic": "Det gick inte att öppna fotobiblioteket. Försök igen."
+          }
+        },
+        "framing": {
+          "title": "Beskärning av konstverk",
+          "gestureHint": "Dra för att positionera · nyp för att zooma",
+          "aspectLabel": "Bildförhållande"
+        },
+        "profile": {
+          "title": "Konverteringsprofil",
+          "options": {
+            "easy": "Enkel",
+            "standard": "Standard",
+            "detailed": "Detaljerad"
+          },
+          "custom": "Anpassad",
+          "customMeta": "Fri · form låst",
+          "unavailable": "Passar inte den här beskärningen",
+          "customShortEdgeLabel": "Kort kant",
+          "customColorLimitLabel": "DMC-färgbegränsning",
+          "exceedsLimit": "De här anpassade värdena överstiger gränsen på {{max}} celler för mönsterstorlek."
+        },
+        "titleCard": {
+          "label": "Mönstertitel",
+          "placeholder": "Mitt fotomönster",
+          "defaultTitle": "Mitt fotomönster",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · upp till {{maxColors}} DMC {{colorsUnit}}",
+          "privacyNotice": "Godkännande laddar bara upp den beskurna, nedskalade derivatan. Originalfotot stannar lokalt.",
+          "approve": "Godkänn konstverk och konvertera"
+        },
+        "processing": {
+          "preparingFrame": "Förbereder den godkända beskärningen på den här enheten…",
+          "uploading": "Laddar upp bara den beskurna, nedskalade bilden…",
+          "waitingForWorker": "Väntar på konverteringsarbetaren…",
+          "buildingGrid": "Bygger stygnrutnätet och DMC-paletten…",
+          "preparingSession": "Förbereder det personliga mönstret för spel…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "Den här profilen passar inte längre den slutliga beskärningen. Välj Enkel eller minska detaljerna.",
+            "generic": "Det gick inte att konvertera det här fotot. Försök igen."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "Inget mönster valt",
+          "noPatternBody": "Den här skärmen måste öppnas från ett befintligt personligt mönster i ditt bibliotek.",
+          "accountTitle": "Registrerat konto krävs",
+          "accountBody": "Personliga mönster tillhör ditt konto så att de förblir privata och tillgängliga på alla enheter.",
+          "signIn": "Logga in eller skapa konto",
+          "back": "Tillbaka"
+        },
+        "loading": "Återupptar redigeringsutkast...",
+        "load": {
+          "failedTitle": "Det gick inte att läsa in mönstret",
+          "retry": "Försök igen",
+          "back": "Tillbaka",
+          "errors": {
+            "generic": "Det gick inte att läsa in det här personliga mönstret. Försök igen."
+          }
+        },
+        "header": {
+          "title": "Mönsterredigerare",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "Tillbaka"
+        },
+        "toolbar": {
+          "undo": "Ångra",
+          "redo": "Gör om"
+        },
+        "mode": {
+          "paint": "Måla",
+          "replaceColor": "Ersätt färg",
+          "replaceStep1": "1. Tryck på en färg i mönstret nedan för att ersätta den:",
+          "replaceStep2": "2. Välj en målfärg i DMC nedan för att utföra ersättningen:",
+          "paintSelected": "Vald: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "Välj en färg nedan och tryck sedan på celler för att måla."
+        },
+        "errors": {
+          "pickColorFirst": "Välj en färg först",
+          "paletteLimit": "Det här mönstret använder redan maximalt {{max}} trådfärger."
+        },
+        "picker": {
+          "title": "DMC-trådfärger",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "Spara redigerat mönster",
+          "placeholder": "Min redigerade mönstertitel",
+          "action": "Spara som nytt",
+          "offlineTitle": "Sparat offline",
+          "offlineBody": "Ditt redigerade mönster sparades på den här enheten och synkas till ditt konto när du är online igen.",
+          "errors": {
+            "generic": "Det gick inte att spara det här personliga mönstret. Försök igen."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "Den inloggningen tillhör ett annat konto. Ditt nuvarande konto har inte ändrats.",
+        "providerRejected": "Den verifieringen avvisades. Kontrollera kontot eller koden och försök igen."
+      },
+      "generic": {
+        "failure": "Något gick fel. Försök igen.",
+        "supportReferenceLabel": "Supportreferens: {{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Stitch Wish använder valda foton för att skapa personliga mönster eller välja en offentlig skaparprofilbild."
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "VÄLKOMMEN TILL STITCH WISH",
+        "title": "Välj en färg, tryck på matchande rutor.",
+        "heroAlt": "Förhandsvisning av startmönstret Mysigt hjärta",
+        "handedness": {
+          "sectionTitle": "Vilken sida ska kontrollerna använda?",
+          "groupLabel": "Kontrollsida",
+          "optionRight": "Kontroller till höger",
+          "optionLeft": "Kontroller till vänster",
+          "saveErrorText": "Kunde inte spara det valet.",
+          "retry": "Försök igen"
+        },
+        "note": "Du kan ändra det här senare i Inställningar.",
+        "start": "Börja sy",
+        "starting": "Startar…",
+        "browse": "Bläddra bland startmönster",
+        "signIn": "Logga in"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "Välj DMC 321 Christmas Red.",
+          "stitchAction": "Tryck på den markerade matchande cellen.",
+          "mismatchedTap": "Tryck på den markerade avvikande cellen. Felaktiga tryck kostar ingenting.",
+          "undoAction": "Ångra det stygnet och placera det igen.",
+          "stitchSweep": "Tryck på en matchande cell och dra sedan över den markerade sträckan.",
+          "threadColorCompletion": "Slutför den markerade vita tråden och välj sedan din nästa färg."
+        },
+        "hints": {
+          "anchoredZoom": "Nyp för att zooma medan cellerna under fingrarna hålls kvar på plats.",
+          "panVsSweep": "Att dra panorerar tyget. Börja på en matchande cell för att sy en svep.",
+          "edgeAutoPan": "Fortsätt svepa nära kanten så följer tyget ditt finger.",
+          "remainingCellLocator": "Använd lokaliseraren för att hitta nästa återstående cell för den här tråden."
+        },
+        "skip": "Hoppa över för nu",
+        "skipAccessibilityLabel": "Hoppa över självstudien för nu",
+        "dismiss": "Uppfattat",
+        "dismissAccessibilityLabel": "Stäng tips"
+      },
+      "recap": {
+        "title": "Nu kan du det",
+        "lines": {
+          "matchNumbers": "Matcha siffrorna för att placera varje stygn.",
+          "dragSweep": "Dra över matchande celler för att svepa.",
+          "pinchZoom": "Nyp för att zooma när du behöver se närmare.",
+          "undoLocator": "Ångra och lokaliseraren är alltid gratis."
+        },
+        "continue": "Fortsätt sy",
+        "browsePatterns": "Bläddra bland mönster"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "Sybord",
+        "subtitle": "Fortsätt där du slutade eller återuppta ett tidigare arbete.",
+        "loading": "Läser in dina stygn...",
+        "empty": {
+          "title": "Inga aktiva arbeten",
+          "body": "Din syram är för närvarande tom. Bläddra i mönsterkatalogen för att hitta något vackert att sy!",
+          "action": "Bläddra i katalogen"
+        },
+        "unknownPattern": "Okänt mönster",
+        "idLabel": "ID: {{id}}",
+        "unknownPatternLabel": "Mönster {{id}}",
+        "deleteSessionAccessibilityLabel": "Ta bort session",
+        "viewFinishedAccessibilityLabel": "Visa avslutat arbete",
+        "resumeAccessibilityLabel": "Återuppta syende",
+        "status": {
+          "ready": "Klar",
+          "done": "Färdig",
+          "active": "Aktiv",
+          "preparing": "Förbereder",
+          "failed": "Misslyckades"
+        },
+        "deleteConfirm": {
+          "title": "Ta bort framsteg",
+          "message": "Är du säker på att du vill ta bort dina framsteg för ”{{title}}”? Detta kan inte ångras.",
+          "cancel": "Avbryt",
+          "confirm": "Ta bort"
+        },
+        "preparingCard": {
+          "discardTitle": "Kassera session",
+          "cancelTitle": "Avbryt nedladdning",
+          "discardMessage": "Är du säker på att du vill kassera den här misslyckade sessionen?",
+          "cancelMessage": "Är du säker på att du vill avbryta nedladdningen av det här mönstret?",
+          "keep": "Behåll",
+          "discard": "Kassera",
+          "cancel": "Avbryt"
+        }
+      },
+      "loading": {
+        "text": "Öppnar session och förbereder tyg..."
+      },
+      "error": {
+        "title": "Det gick inte att läsa in sessionen",
+        "fallbackMessage": "Det går inte att läsa in din sysession.",
+        "backButton": "Gå tillbaka",
+        "tableButton": "Gå till sybordet"
+      },
+      "header": {
+        "backButton": "← Tillbaka",
+        "tableButton": "← Sybord",
+        "defaultTitle": "Sysession",
+        "progress": "{{completed}} / {{total}} celler ({{percent}}% klart)",
+        "resumeTutorialAccessibilityLabel": "Återuppta självstudien"
+      },
+      "banners": {
+        "patternRemoved": "Det här mönstret togs bort av moderering och är inte längre tillgängligt. Tryck för att lämna.",
+        "syncConflict": "Synkat med en annan enhet — vissa celler uppdaterades. Tryck för att avfärda."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "Lokalisera nästa återstående cell för aktiv trådfärg",
+        "undoAccessibilityLabel": "Ångra senaste stygnet"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "Färg {{number}}: DMC {{dmcCode}}, {{count}} stygn kvar",
+        "chipAccessibilityLabel_other": "Färg {{number}}: DMC {{dmcCode}}, {{count}} stygn kvar",
+        "done": "Klar",
+        "remaining_one": "{{count}} kvar",
+        "remaining_other": "{{count}} kvar"
+      },
+      "celebration": {
+        "title": "Vackert utfört!",
+        "subtitle": "Du har slutfört varje enda stygn på det här tyget.",
+        "stitchesLabel_one": "Stygn",
+        "stitchesLabel_other": "Stygn",
+        "colorsLabel_one": "Färg",
+        "colorsLabel_other": "Färger",
+        "replayButton": "Sy igen",
+        "catalogButton": "Tillbaka till katalogen"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "Gå tillbaka",
+        "tryAgain": "Försök igen"
+      },
+      "rejectionReasons": {
+        "safety": "Säkerhet",
+        "publication_rights": "Publiceringsrättigheter",
+        "duplicate_or_spam": "Dubblett eller skräppost",
+        "technical_invalidity": "Tekniskt ogiltig",
+        "quality_standard": "Kvalitetsstandard"
+      },
+      "submissionStatus": {
+        "accepted": "Publicerad",
+        "appeal_pending": "Överklagande väntar",
+        "appeal_upheld": "Överklagande avvisat",
+        "precheck_failed": "Förkontroll otillgänglig",
+        "precheck_pending": "Kontrollerar",
+        "quarantined": "Kräver granskning",
+        "rejected": "Avvisad",
+        "review_pending": "Under granskning"
+      },
+      "revisionStatus": {
+        "accepted": "Publicerad",
+        "appeal_pending": "Överklagande väntar",
+        "appeal_upheld": "Överklagande avvisat",
+        "pending": "Under granskning",
+        "rejected": "Avvisad",
+        "withdrawn": "Återkallad"
+      },
+      "home": {
+        "identity": {
+          "establishing": "Etablerar identitet...",
+          "pendingTitle": "Identitet väntar",
+          "offline": "Offline",
+          "retryConnection": "Försök ansluta igen",
+          "loadingPublicProfile": "Läser in offentlig profil...",
+          "unavailableTitle": "Offentlig profil otillgänglig",
+          "checkConnection": "Kontrollera din anslutning och försök igen.",
+          "createTitle": "Skapa din offentliga profil",
+          "createBody": "Välj det permanenta användarnamnet som visas med dina community-mönster. Dina kontouppgifter förblir privata.",
+          "createAction": "Skapa offentlig profil",
+          "editAction": "Redigera offentlig profil",
+          "offlinePendingSync": "Offline — väntar på synk",
+          "guestPlayer": "Gästspelare",
+          "playingSince": "Spelar sedan {{date}}",
+          "creatorSince": "Skapare sedan {{date}}"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "Öppna Commerce Store",
+          "title": "Studiosaldon",
+          "commerceStoreLink": "Butik",
+          "stitchCoinsAccessibilityLabel": "Stitch Coin-saldo: {{balance}}. Tryck för att skaffa mynt.",
+          "packs": "Paket",
+          "stitchCoinsLabel": "Stitch Coins",
+          "stitchCoinsSub": "För mönsterupplåsningar",
+          "aiCreditsAccessibilityLabel": "AI-kreditsaldo: {{balance}}. Tryck för att skaffa krediter.",
+          "aiCreditsSignInAccessibilityLabel": "AI-krediter. Logga in för att köpa.",
+          "aiCreditsLabel": "AI-krediter",
+          "aiCreditsSubOwned": "För AI-mönsterkonst",
+          "aiCreditsSubGuest": "Logga in för att äga",
+          "membershipActiveAccessibilityLabel": "Premium-medlemskap aktivt ({{plan}}). Tryck för att hantera.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Premium. Tryck för att se planer.",
+          "membershipActiveTitle": "Premium aktivt · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "Årsvis",
+          "planMonthly": "Månadsvis",
+          "planWeekly": "Veckovis",
+          "planActive": "Aktiv",
+          "trialBadge": "Provperiod",
+          "membershipSubActive": "Alla teman upplåsta · Direkta dagliga mynthämtningar",
+          "membershipSubInactive": "Direkt 30 dagliga mynt, anpassade teman och AI-krediter",
+          "manage": "Hantera",
+          "explore": "Utforska"
+        },
+        "quickNav": {
+          "sectionEyebrow": "KONTO OCH COMMUNITY",
+          "submissionsAccessibilityLabel": "Kataloginlämningar: Följ granskningar, beslut och överklaganden",
+          "submissionsTitle": "Inlämningar",
+          "submissionsSub": "Följ granskningar",
+          "publishedAccessibilityLabel": "Publicerade mönster: Revidera metadata, återkalla och följ överklaganden",
+          "publishedTitle": "Publicerade",
+          "publishedSub": "Hantera mönster",
+          "moderationAccessibilityLabel": "Modereringsmeddelanden: Granska katalogbeslut som påverkar dina mönster",
+          "moderationTitle": "Moderering",
+          "moderationSub": "Policymeddelanden",
+          "likedAccessibilityLabel": "Gillade mönster: Din privata samling av gillade community-mönster",
+          "likedTitle": "Gillade mönster",
+          "likedSavedCount_one": "{{count}} sparat",
+          "likedSavedCount_other": "{{count}} sparade",
+          "likedSavedDefault": "Sparade mönster"
+        },
+        "dailySection": {
+          "title": "Dagligt syende och belöningar",
+          "tasksGroupLabel": "Dagliga uppgifter (+30 mynt max)",
+          "connectToTrack": "Anslut för att följa dina dagliga uppgiftsframsteg.",
+          "loadingTasks": "Läser in uppgifter…",
+          "loadFailed": "Det gick inte att läsa in dagliga uppgifter.",
+          "retry": "Försök igen",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "Återställer…",
+          "resetsInHoursMinutes": "Återställs om {{hours}}t {{minutes}}m",
+          "resetsInMinutes": "Återställs om {{minutes}}m"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 syåtgärder",
+            "body": "Fyll 100 matchande celler idag"
+          },
+          "three_colors_10": {
+            "title": "3 färger, 10 åtgärder vardera",
+            "body": "Nå 10 åtgärder i 3 trådfärger"
+          },
+          "color_completion": {
+            "title": "Slutför en trådfärg",
+            "body": "Sy klart en färg helt"
+          }
+        },
+        "dailyPool": {
+          "title": "Daglig belöningspool på 30 mynt",
+          "premiumInstantClaim": "Premium direkthämtning",
+          "rewardedAds": "Belönade annonser",
+          "claimedAmount": "{{amount}} Stitch Coins hämtade för idag!",
+          "poolAlreadyClosed": "Dagens belöningspool är redan stängd.",
+          "claimedForToday": "Hämtat för idag. Återställs vid nästa belöningsdag.",
+          "poolExhausted": "Dagens belöningspool på 30 mynt är uttömd.",
+          "claimButtonRetry": "Försök hämta igen",
+          "claimButtonInstant": "Hämta {{count}} mynt (direkt)",
+          "poolClaimedResetsTomorrow": "Dagens myntpool har hämtats. Återställs imorgon.",
+          "allAdRewardsCompleted": "Alla annonsbelöningar för idag är klara! (30/30 mynt)",
+          "watchAdButton": "Titta på annons för +10 mynt ({{count}} kvar)",
+          "adPerkNote": "Titta på upp till 3 annonser/dag · Premium låser upp direkt hämtning av 30 mynt",
+          "adRewardEarned": "Annonsbelöning intjänad! Verifierar med backend…",
+          "claimFailed": "Hämtning misslyckades: {{message}}",
+          "claimFailedGeneric": "Något gick fel. Försök igen.",
+          "adLoadFailedDefault": "Det gick inte att läsa in annonsen",
+          "adAttemptFailedDefault": "Det gick inte att öppna annonsförsöket"
+        },
+        "tabs": {
+          "myCreations": "Mina skapelser {{count}}",
+          "likedPatterns": "Gillade mönster {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "Logga in för personliga mönster",
+          "signInBody": "Ett registrerat konto krävs för att skapa och privat äga konverterade fotomönster.",
+          "signIn": "Logga in",
+          "patternMeta": "{{width}}×{{height}} · {{count}} färger",
+          "pendingSync": "Väntar på synk",
+          "play": "Spela",
+          "edit": "Redigera",
+          "submitAccessibilityLabel": "Skicka in {{title}} till community-katalogen",
+          "emptyTitle": "Inga personliga skapelser",
+          "emptyBody": "Du har inte konverterat några foton eller skapat AI-konst ännu. Gå till Skapa för att starta ditt första mästerverk!",
+          "emptyAction": "Börja skapa",
+          "actionFailedGeneric": "Något gick fel. Försök igen."
+        },
+        "likedTab": {
+          "unavailableTitle": "Gillade mönster otillgängliga",
+          "unavailableDefault": "Det gick inte att läsa in gillade mönster.",
+          "byCreator": "av {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} färger",
+          "emptyTitle": "Inga gillade mönster",
+          "emptyBody": "Bläddra i katalogen och tryck på hjärtikonen på valfri design för att spara den här för senare.",
+          "emptyAction": "Upptäck mönster"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Premium daglig mynthämtning",
+        "description": "Hämta resten av dagens delade belöningspool på 30 mynt.",
+        "connectPrompt": "Anslut till spelbackend för att kontrollera dagens belöning.",
+        "checkingReward": "Kontrollerar dagens Premium-belöning…",
+        "unavailableGeneric": "Dagens Premium-belöning är otillgänglig.",
+        "tryAgain": "Försök igen",
+        "resultAdded": "{{amount}} Stitch Coins tillagda av spelbackend. Saldo: {{balance}}.",
+        "poolAlreadyClosed": "Dagens delade belöningspool är redan stängd.",
+        "alreadyClaimed": "Redan hämtat för denna belöningsdag.",
+        "poolExhausted": "Dagens delade belöningspool är uttömd. Den återställs vid nästa belöningsdag.",
+        "availableNow": "{{count}} Stitch Coins tillgängliga nu",
+        "resetsAt": "Återställs {{date}}",
+        "claimButtonRetry": "Försök hämta igen",
+        "claimButtonInstant": "Hämta {{count}} mynt",
+        "lockedDescription": "Premium-medlemskap, inklusive en berättigad månadsprovperiod, låser upp den här dagliga hämtningen.",
+        "viewPremiumPlans": "Se Premium-planer"
+      },
+      "publicProfile": {
+        "editTitle": "Redigera offentlig profil",
+        "createTitle": "Skapa offentlig profil",
+        "signInTitle": "Inloggning krävs",
+        "signInBody": "Ett registrerat konto krävs för att skapa en offentlig skaparidentitet.",
+        "signInAction": "Logga in",
+        "unavailableTitle": "Profil otillgänglig",
+        "unavailableBody": "Din offentliga profil kunde inte läsas in. Kontrollera din anslutning och försök igen.",
+        "tryAgain": "Försök igen",
+        "intro": "Det här namnet och fotot visas med dina community-mönster. Din e-post och inloggningsleverantör förblir privata.",
+        "choosePhoto": "Välj foto",
+        "changePhoto": "Byt foto",
+        "remove": "Ta bort",
+        "avatarHelper": "Valfritt · JPEG, PNG eller WebP · upp till 5 MB",
+        "usernameLabel": "Användarnamn",
+        "usernameAccessibilityLabel": "Offentligt användarnamn",
+        "usernamePlaceholder": "stitcher_namn",
+        "usernameHelperLocked": "Ditt användarnamn är permanent.",
+        "usernameHelperEditable": "3–30 gemener, siffror eller understreck. Detta kan inte ändras senare.",
+        "displayNameLabel": "Visningsnamn",
+        "displayNameAccessibilityLabel": "Offentligt visningsnamn",
+        "displayNamePlaceholder": "Ditt skaparnamn",
+        "displayNameHelper": "Du kan ändra det här senare.",
+        "safetyNotice": "Namn och foton kontrolleras före publicering. Om en ändring avvisas förblir din nuvarande offentliga profil oförändrad.",
+        "saveAction": "Spara offentlig profil",
+        "publishAction": "Publicera offentlig profil",
+        "photoPermissionRequired": "Åtkomst till fotobiblioteket krävs för att välja en profilbild.",
+        "photoTypeInvalid": "Profilbilder måste vara JPEG, PNG eller WebP.",
+        "photoTooLarge": "Profilbilder måste vara 5 MB eller mindre.",
+        "saveFailedDefault": "Det gick inte att spara din offentliga profil"
+      },
+      "submissions": {
+        "title": "Kataloginlämningar",
+        "unavailableTitle": "Inlämningar otillgängliga",
+        "unavailableDefault": "Det gick inte att läsa in dina inlämningar.",
+        "emptyTitle": "Inga kataloginlämningar",
+        "emptyBody": "Skicka in ett synkat personligt mönster från Mina skapelser.",
+        "emptyAction": "Tillbaka till Mina skapelser",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "De automatiska kontrollerna kunde inte slutföras. Den här ögonblicksbilden publicerades inte.",
+        "publishedToCatalog": "Publicerad i community-katalogen.",
+        "appealAction": "Överklaga beslut",
+        "appealHelp": "Du kan överklaga den här oförändrade ögonblicksbilden en gång.",
+        "appealNoteAccessibilityLabel": "Överklagandenotering",
+        "appealNotePlaceholder": "Valfri kontext till den granskande moderatorn",
+        "cancelAction": "Avbryt",
+        "submitAppealAction": "Skicka överklagande"
+      },
+      "publishedPatterns": {
+        "title": "Publicerade mönster",
+        "unavailableTitle": "Mönster otillgängliga",
+        "unavailableDefault": "Det gick inte att läsa in dina publicerade mönster.",
+        "emptyTitle": "Inga publicerade mönster",
+        "emptyBody": "Mönster du publicerar i community-katalogen visas här.",
+        "emptyAction": "Tillbaka till Profil",
+        "withdrawnFromCatalog": "Återkallad från katalogen",
+        "underReviewHold": "Under granskningsstopp",
+        "meta": "{{category}} · Publicerad {{date}}",
+        "withdrawnHelp": "Den här identiteten är permanent återkallad. Spelare med en befintlig sysession behåller sina framsteg och sin åtkomst.",
+        "reviewHoldHelp": "Det här mönstret är tillfälligt utanför upptäckt och kan inte starta nya sessioner. Befintliga sysessioner förblir spelbara. Du kan fortfarande föreslå en metadatarevision.",
+        "reviseAction": "Revidera metadata",
+        "withdrawRevisionAction": "Återkalla revision",
+        "appealAction": "Överklaga beslut",
+        "withdrawFromCatalogAction": "Återkalla från katalogen",
+        "appealHelp": "Du kan överklaga den här oförändrade ögonblicksbilden en gång. Att skicka in en ny revision istället avstår från detta överklagande.",
+        "appealNoteAccessibilityLabel": "Överklagandenotering",
+        "appealNotePlaceholder": "Valfri kontext till den granskande moderatorn",
+        "cancelAction": "Avbryt",
+        "submitAppealAction": "Skicka överklagande",
+        "withdrawRevisionFailedTitle": "Det gick inte att återkalla revisionen",
+        "withdrawPatternFailedTitle": "Det gick inte att återkalla mönstret",
+        "withdrawPatternSuccessTitle": "Mönster återkallat",
+        "withdrawPatternSuccessBody": "Det går inte längre att upptäcka och kan inte starta nya sessioner. Befintliga sysessioner behåller sina framsteg och spelbara data.",
+        "withdrawConfirmTitle": "Återkalla från community-katalogen?",
+        "withdrawConfirmBody": "”{{title}}” försvinner från upptäckt och kan inte starta nya sessioner. Den här mönsteridentiteten kan aldrig återställas. Befintliga sysessioner och deras framsteg förblir spelbara.",
+        "withdrawConfirmCancel": "Avbryt",
+        "withdrawConfirmAction": "Återkalla permanent"
+      },
+      "revisePatternMetadata": {
+        "title": "Revidera metadata",
+        "signInTitle": "Registrerat konto krävs",
+        "signInBody": "Logga in innan du reviderar metadata för ett community-mönster.",
+        "signInAction": "Logga in",
+        "notFoundTitle": "Community-mönstret hittades inte",
+        "notFoundBody": "Endast dina egna publicerade community-mönster kan revideras.",
+        "notFoundAction": "Tillbaka till publicerade mönster",
+        "inProgressTitle": "Revision redan pågående",
+        "inProgressBody": "Det här mönstret har redan en väntande revision eller ett aktivt överklagande. Återkalla den innan du skickar in en ny.",
+        "inProgressAction": "Tillbaka till publicerade mönster",
+        "currentlyPublished": "För närvarande publicerad i community-katalogen",
+        "titleFieldLabel": "Katalogtitel",
+        "titlePlaceholder": "Mönstertitel",
+        "titleAccessibilityLabel": "Katalogtitel",
+        "descriptionFieldLabel": "Beskrivning",
+        "descriptionPlaceholder": "Beskriv designen, motivet och syupplevelsen.",
+        "descriptionAccessibilityLabel": "Katalogbeskrivning",
+        "sourceLanguageFieldLabel": "Källspråk",
+        "categoryFieldLabel": "Kategori",
+        "tagsFieldLabel": "Taggar",
+        "notice": "Att revidera fångar en ny oföränderlig ögonblicksbild. Din för närvarande publicerade metadata förblir synlig tills en mänsklig moderator accepterar denna revision.",
+        "submitAction": "Skicka in revision"
+      },
+      "submitPattern": {
+        "title": "Skicka till community",
+        "signInTitle": "Registrerat konto krävs",
+        "signInBody": "Logga in innan du skickar in ett personligt mönster till community-katalogen.",
+        "signInAction": "Logga in",
+        "createProfileTitle": "Skapa en offentlig skaparprofil",
+        "createProfileBody": "Community-mönster krediteras din offentliga skaparidentitet.",
+        "createProfileAction": "Skapa profil",
+        "patternNotFoundTitle": "Personligt mönster hittades inte",
+        "patternNotFoundBody": "Endast synkade personliga mönster kan skickas in.",
+        "patternNotFoundAction": "Tillbaka till Profil",
+        "patternMeta": "{{width}}×{{height}} · {{count}} färger",
+        "byCreator": "Av @{{username}}",
+        "titleFieldLabel": "Katalogtitel",
+        "titlePlaceholder": "Mönstertitel",
+        "titleAccessibilityLabel": "Katalogtitel",
+        "descriptionFieldLabel": "Beskrivning",
+        "descriptionPlaceholder": "Beskriv designen, motivet och syupplevelsen.",
+        "descriptionAccessibilityLabel": "Katalogbeskrivning",
+        "sourceLanguageFieldLabel": "Källspråk",
+        "categoryFieldLabel": "Kategori",
+        "tagsFieldLabel": "Taggar",
+        "rightsDeclaration": "Jag skapade det här verket eller har de rättigheter som krävs för att publicera det enligt Publiceringsrättighetsdeklaration v1.",
+        "notice": "Inlämning fångar en oföränderlig kopia. Automatiska kontroller ger bevis, men en mänsklig moderator fattar varje beslut.",
+        "submitAction": "Skicka för granskning"
+      },
+      "moderationNotices": {
+        "title": "Modereringsmeddelanden",
+        "signInTitle": "Logga in för att se meddelanden",
+        "signInBody": "Modereringsmeddelanden tillhör det registrerade konto som publicerade det berörda community-mönstret.",
+        "signInAction": "Logga in",
+        "unavailableTitle": "Meddelanden otillgängliga",
+        "unavailableDefault": "Det gick inte att läsa in modereringsmeddelanden.",
+        "emptyTitle": "Inga modereringsmeddelanden",
+        "emptyBody": "Ägarsynliga katalogmodereringsbeslut visas här.",
+        "emptyAction": "Tillbaka till Profil",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "Åtgärd av katalogmetadata",
+          "no_violation": "Granskning stängd — ingen överträdelse",
+          "review_hold": "Granskningsstopp",
+          "safety_removal": "Säkerhetsborttagning"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "Titeln, beskrivningen och de valda taggarna ersattes med säkra värden. Tillgänglighet, mönsterfilen och förhandsvisningen påverkas inte. Du kan skicka in en ny katalogmetadatarevision när som helst.",
+          "no_violation": "Efterpubliceringsgranskningen är stängd och det här mönstret är fullt tillgängligt igen i upptäckt och nya sysessioner.",
+          "review_hold": "Det här mönstret är tillfälligt otillgängligt för upptäckt och nya sessioner. Befintliga sysessioner, framsteg och offline-mönsterdata förblir spelbara.",
+          "safety_removal": "Det här mönstret togs bort på grund av en säkerhets-, juridisk- eller policyöverträdelse. Det försvann från upptäckt, befintliga sysessioner blev otillgängliga och offline-mönsterdata på dina enheter raderades. Du kan skicka in ett överklagande av säkerhetsborttagningen."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "Dagliga uppgifter",
+        "offline": "Du är offline — dagliga uppgifter kräver en anslutning.",
+        "unavailable": "Det gick inte att läsa in dagliga uppgifter.",
+        "empty": "Inga uppgifter tillgängliga idag."
+      },
+      "rewardedAdCard": {
+        "offline": "Du är offline — belöningsdagen kräver en anslutning.",
+        "unavailable": "Det gick inte att läsa in belöningsdagens status.",
+        "premiumClaimClosedPool": "Din dagliga Premium-hämtning stängde dagens delade myntpool.",
+        "allRewardsClaimed": "Du har hämtat alla annonsbelöningar för idag. Kom tillbaka imorgon!",
+        "remaining_one": "{{count}} annons kvar idag ({{coins}} mynt tillgängliga)",
+        "remaining_other": "{{count}} annonser kvar idag ({{coins}} mynt tillgängliga)",
+        "watchForCoins": "Titta på annons för {{count}} mynt"
+      },
+      "likedPatterns": {
+        "title": "Gillade mönster",
+        "signInTitle": "Registrerat konto krävs",
+        "signInBody": "Logga in innan du visar din privata samling av gillade mönster.",
+        "signInAction": "Logga in",
+        "unavailableTitle": "Gillade mönster otillgängliga",
+        "unavailableDefault": "Det gick inte att läsa in gillade mönster.",
+        "emptyTitle": "Inga gillade mönster",
+        "emptyBody": "Bläddra i mönsterkatalogen och tryck på hjärtikonen på valfri design för att spara den här.",
+        "emptyAction": "Upptäck mönster",
+        "byCreator": "av {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} färger · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "Inställningar",
+        "subtitleDev": "Konfigurera inställningar och inspektera backend-system.",
+        "subtitleProd": "Konfigurera dina inställningar."
+      },
+      "serviceStatus": {
+        "sectionTitle": "Tjänststatus",
+        "apiConnectionTitle": "API-anslutning",
+        "testingConnection": "Testar API-anslutning...",
+        "offlineUnreachable": "Offline / Otillgänglig",
+        "unknownConnectionError": "Okänt anslutningsfel",
+        "retryConnection": "Försök ansluta igen",
+        "healthy": "Frisk",
+        "degraded": "Nedsatt",
+        "postgresLabel": "PostgreSQL-databas",
+        "redisLabel": "Redis-cache"
+      },
+      "session": {
+        "sectionTitle": "Identitet och session",
+        "statusTitle": "Backend-sessionsstatus",
+        "statusDescription": "Validerar din aktiva gästregistreringssession via API:et.",
+        "noActiveSession": "Ingen aktiv session",
+        "sessionActive": "Session aktiv",
+        "idLabel": "ID: {{id}} (v{{version}})",
+        "unknownState": "Okänt tillstånd"
+      },
+      "tutorial": {
+        "sectionTitle": "Självstudie",
+        "learnControlsTitle": "Lär dig kontrollerna",
+        "learnControlsDescription": "Återuppta sysjälvstudien när du är redo.",
+        "unavailableTitle": "Självstudie otillgänglig",
+        "unavailableMessage": "Det gick inte att återuppta självstudien. Försök igen."
+      },
+      "developer": {
+        "sectionTitle": "Utvecklare",
+        "debugDiagnostics": "Felsökning / Diagnostik",
+        "debug": {
+          "backAccessibilityLabel": "Gå tillbaka",
+          "title": "Felsökning",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: konfigurerad · miljö: {{environment}}",
+            "dsnNotConfigured": "DSN: ej konfigurerad",
+            "sendTestEvent": "Skicka testhändelse",
+            "throwError": "Kasta fel",
+            "disabledTitle": "Sentry inaktiverat",
+            "disabledMessage": "Sentry är inte konfigurerat (ingen DSN hittades), så ingen testhändelse skickas.",
+            "testEventSent": "Testhändelse skickad. Händelse-ID: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "Fel",
+            "testEventFailedMessage": "Det gick inte att skicka testhändelsen: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Introduktion",
+            "description": "Rensa självstudiens framsteg och börja om från Välkommen.",
+            "restart": "Starta om introduktionen",
+            "confirmTitle": "Starta om introduktionen?",
+            "confirmMessage": "Självstudiens tillstånd rensas och introduktionen börjar om från välkomstskärmen.",
+            "cancel": "Avbryt",
+            "resetFailedTitle": "Återställning misslyckades"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "Kontoborttagning",
+        "statusTitle": "Status för kontoborttagning",
+        "checkingStatus": "Kontrollerar status...",
+        "pendingTitle": "Kontoborttagning väntar",
+        "pendingDescription": "Din kontoborttagning är schemalagd. Logga in igen innan återställningsperioden slutar för att avbryta den.",
+        "recoveryWindowEnds": "Återställningsperioden slutar: {{date}}",
+        "cancelling": "Avbryter...",
+        "cancelDeletion": "Avbryt borttagning",
+        "statusError": "Det gick inte att kontrollera borttagningsstatus. Kontrollera din anslutning och försök igen.",
+        "deleteAccountTitle": "Ta bort konto",
+        "deleteAccountDescription": "Ta bort ditt konto, dina framsteg och alla upplåsningar permanent efter en 30-dagars återställningsperiod.",
+        "requestedTitle": "Kontoborttagning begärd",
+        "requestedMessage": "Din borttagningsbegäran väntar fram till {{date}}. Ditt konto har loggats ut. Logga in igen innan dess om du vill avbryta den här borttagningen.",
+        "signOutFailedTitle": "Lokal utloggning misslyckades",
+        "signOutFailedMessage": "Din borttagningsbegäran väntar fortfarande. Logga ut igen från Inställningar.",
+        "requestFailedTitle": "Begäran misslyckades",
+        "requestFailedMessage": "Din borttagningsbegäran skickades inte. Kontrollera din anslutning och försök igen.",
+        "cancelSuccessTitle": "Klart",
+        "cancelSuccessMessage": "Din kontoborttagningsbegäran har avbrutits.",
+        "reauthRequiredTitle": "Ominloggning krävs",
+        "reauthRequiredMessage": "Av säkerhetsskäl måste du logga in igen innan du avbryter kontoborttagningen.",
+        "signInAction": "Logga in",
+        "cancelFailedTitle": "Avbrytning misslyckades",
+        "cancelFailedGeneric": "Det gick inte att avbryta kontoborttagningen. Kontrollera din anslutning och försök igen."
+      },
+      "appearance": {
+        "sectionTitle": "Utseende"
+      },
+      "themeCollectionCard": {
+        "title": "Temasamling",
+        "description": "Ändra kosmetika för rutnät, stygn och slutförande utan att påverka spelet.",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "Kräver Premium-medlemskap",
+        "selected": "Valt",
+        "accessActive": "Åtkomst till Premium-teman är aktiv, även under en berättigad månadsprovperiod.",
+        "lockedPreview": "Förhandsgranska samlingen här. Premium-medlemskap eller en berättigad månadsprovperiod låser upp val.",
+        "viewPremiumPlans": "Se Premium-planer"
+      },
+      "gameplay": {
+        "sectionTitle": "Spelinställningar",
+        "showGridLinesTitle": "Visa rutnätslinjer",
+        "showGridLinesDescription": "Visa gränser mellan syytans celler",
+        "handednessTitle": "Handdominanslayout",
+        "handednessDescription": "Justera interaktiva kontroller för höger- eller vänsterhänt spel",
+        "left": "Vänster",
+        "right": "Höger",
+        "leftHandedLayout": "Vänsterhänt layout",
+        "rightHandedLayout": "Högerhänt layout"
+      },
+      "language": {
+        "sectionTitle": "Språk",
+        "description": "Välj vilket språk Stitch Wish visar sitt gränssnitt på.",
+        "followDevice": "Följ enhetens språk",
+        "followDeviceDescription": "Rensa ditt åsidosättande för att följa enhetens språkinställning.",
+        "optionEnglish": "English",
+        "optionTurkish": "Türkçe",
+        "modalTitle": "Välj språk",
+        "modalSubtitle": "Välj ditt föredragna språk för gränssnittet.",
+        "systemDefault": "Systemspråk",
+        "systemDefaultWithDetected": "Systemspråk ({{language}})",
+        "systemDefaultDescription": "Matchar automatiskt dina enhetsinställningar."
+      },
+      "social": {
+        "sectionTitle": "Socialt och integritet",
+        "blockedCreators": "Blockerade skapare"
+      },
+      "account": {
+        "sectionTitle": "Konto",
+        "notSignedInTitle": "Inte inloggad",
+        "signInRequiredTitle": "Inloggning krävs",
+        "notSignedInDescription": "Logga in för att synka framsteg mellan enheter.",
+        "signIn": "Logga in",
+        "reconnecting": "Ansluter igen…",
+        "signOut": "Logga ut",
+        "signOutConfirmTitle": "Logga ut?",
+        "signOutConfirmMessage": "Dina osynkade framsteg stannar kvar på den här enheten och öppnas igen när du loggar in.",
+        "signOutConfirmAction": "Logga ut",
+        "signOutFailedTitle": "Utloggning misslyckades",
+        "signOutFailedGeneric": "Försök igen.",
+        "providerAppleAccount": "Apple-konto",
+        "providerGoogleAccount": "Google-konto",
+        "providerGenericAccount": "Registrerat konto"
+      },
+      "signIn": {
+        "emailHeading": "Logga in eller skapa konto",
+        "emailSubtitle": "Håll dina framsteg tillgängliga på alla enheter.",
+        "codeHeading": "Ange din kod",
+        "codeSubtitle": "Ange den 6-siffriga koden vi skickade till {{email}}.",
+        "continueWithGoogle": "Fortsätt med Google",
+        "orUseEmail": "eller använd e-post",
+        "ssoUnavailable": "Google- och Apple-inloggning är inte tillgängligt i den här versionen.",
+        "emailLabel": "E-postadress",
+        "emailPlaceholder": "E-postadress",
+        "sendCode": "Skicka kod",
+        "cancel": "Avbryt",
+        "verify": "Verifiera",
+        "resendCode": "Skicka kod igen",
+        "resending": "Skickar igen...",
+        "codeSent": "Kod skickad",
+        "useDifferentEmail": "Använd en annan e-postadress",
+        "sendCodeFailed": "Det gick inte att skicka koden. Kontrollera din anslutning och försök igen.",
+        "codeIncorrect": "Den koden är felaktig eller har gått ut.",
+        "verifyFailedGeneric": "Något gick fel. Försök igen.",
+        "socialSignInFailed": "Det gick inte att logga in med {{provider}}. Försök igen.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "Gå tillbaka",
+        "title": "Blockerade skapare",
+        "infoText": "Blockering är privat och reversibel. Det döljer skaparens community-mönster från dina katalogvyer, sökningar och upptäcktslistor. Detta är ingen anmälan eller borttagning av innehåll.",
+        "signInRequiredTitle": "Registrerat konto krävs",
+        "signInRequiredBody": "Logga in innan du hanterar din lista över blockerade skapare.",
+        "signInAction": "Logga in",
+        "listUnavailableTitle": "Listan otillgänglig",
+        "listUnavailableDefault": "Det gick inte att läsa in blockerade skapare.",
+        "tryAgain": "Försök igen",
+        "emptyTitle": "Inga blockerade skapare",
+        "emptyBody": "Du har inte blockerat någon. Du kan blockera en skapare från valfri av deras mönsterdetaljsidor.",
+        "backToSettings": "Tillbaka till Inställningar",
+        "unblock": "Avblockera",
+        "unblockConfirmTitle": "Avblockera skapare",
+        "unblockConfirmMessage": "Är du säker på att du vill avblockera {{name}}? Deras mönster visas igen i dina sök- och bläddringsresultat.",
+        "cancel": "Avbryt",
+        "successTitle": "Klart",
+        "unblockedMessage": "{{name}} har avblockerats.",
+        "errorTitle": "Fel",
+        "unblockFailedMessage": "Det gick inte att avblockera skaparen: {{message}}",
+        "unblockFailedGeneric": "Okänt fel"
+      },
+      "data": {
+        "sectionTitle": "Data",
+        "resetGuestTitle": "Återställ gästdata",
+        "resetGuestDescription": "Stäng oåterkalleligt gästidentiteten på servern och rensa all enhetsdata.",
+        "resetGuestOffline": "Offline: En aktiv serveranslutning krävs för att återställa gästdata.",
+        "resetGuestPurchaseLock": "Återställning är blockerad medan ett köp fortfarande verifieras. Konsumtionsvaror och privat gästdata kan inte återställas efteråt.",
+        "removeLocalTitle": "Ta bort lokal data",
+        "removeLocalDescription": "Ta bort din lokala identitetsnamnrymdsdatabas från den här enheten.",
+        "removeLocalConfirmTitle": "Ta bort lokal data?",
+        "removeLocalConfirmMessage": "Varning: Detta tar bort dina lokala databasfiler från enbart den här enheten. Osynkade poster går permanent förlorade.",
+        "removeLocalConfirmAction": "Ta bort",
+        "removeLocalSuccessTitle": "Klart",
+        "removeLocalSuccessMessage": "Lokal data har tagits bort från den här enheten.",
+        "removeLocalFailedTitle": "Borttagning misslyckades",
+        "removeLocalFailedMessage": "Det gick inte att ta bort lokal data: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "Information och länkar",
+        "privacyPolicy": "Integritetspolicy",
+        "termsOfService": "Användarvillkor",
+        "contactSupport": "Kontakta support",
+        "accountDeletion": "Kontoborttagning",
+        "openFailedMessage": "Kunde inte öppna länk: {{url}}",
+        "openFailedGenericTitle": "Fel"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — Mysigt pixelkonst-handarbete",
+        "version": "Version {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "Paket: {{id}}",
+        "schemeLabel": "Schema: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "Återställa gästdata?",
+        "warning": "Den här åtgärden stänger oåterkalleligt din gästidentitet på servern och tar bort permanent:",
+        "bulletProgress": "• lokala framsteg",
+        "bulletRewards": "• väntande belöningar",
+        "bulletLikes": "• gillanden",
+        "bulletUnlockAccess": "• upplåsningsåtkomst",
+        "bulletOfflinePatterns": "• offline-mönsterdata",
+        "confirmPrefix": "Skriv ",
+        "confirmSuffix": " nedan för att bekräfta:",
+        "confirmAction": "Återställ data",
+        "resetting": "Återställer gästdata...",
+        "successTitle": "Klart",
+        "successMessage": "Gästdata har återställts helt.",
+        "failedTitle": "Återställning misslyckades",
+        "failedMessage": "Återställning av gästdata misslyckades: {{message}}. Försök igen."
+      },
+      "deleteModal": {
+        "title": "Ta bort konto?",
+        "recoveryPrefix": "Ditt konto går in i ett ",
+        "recoveryBold": "30-dagars återställningsfönster för borttagning",
+        "recoverySuffix": ". Logga in igen under det här fönstret för att avbryta borttagningen.",
+        "bulletBalances": "• Stitch Coin- och AI-kreditsaldon",
+        "bulletUnlocks": "• Alla mönsterupplåsningar",
+        "bulletArtwork": "• AI-konst och personliga mönster",
+        "bulletProgress": "• Synkade framsteg och gillanden",
+        "consequencesPrefix": "Vid slutet av återställningsfönstret raderas eller förverkas dessa utan återbetalning eller överföring. Publicerade community-mönster återkallas från katalogen, tillskrivning blir ",
+        "consequencesBold": "Borttagen skapare",
+        "consequencesSuffix": ", och ditt användarnamn förblir permanent reserverat.",
+        "membershipWarning": "Ditt Premium-medlemskap kan fortsätta debiteras efter kontoborttagning. Borttagning avbryter det inte; hantera det separat innan du fortsätter om du vill att debiteringen ska stoppas.",
+        "manageAppleSubscription": "Hantera Apple-prenumeration",
+        "continueAction": "Fortsätt",
+        "confirmTitle": "Bekräfta borttagning",
+        "confirmPrefix": "För att bekräfta att du vill ta bort ditt konto, skriv ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": " i rutan nedan:",
+        "submitting": "Skickar borttagningsbegäran...",
+        "backAction": "Tillbaka",
+        "confirmAction": "Bekräfta"
+      },
+      "reauthModal": {
+        "title": "Verifiera din identitet",
+        "description": "Av säkerhetsskäl, verifiera med en inloggningsmetod som redan är länkad till det här kontot. Borttagningen återupptas automatiskt efter verifiering.",
+        "loading": "Läser in inloggningsmetoder...",
+        "codeSentMessage": "Ange den 6-siffriga koden som skickades till {{email}}.",
+        "verifyAndDelete": "Verifiera och ta bort",
+        "emailButton": "E-post {{email}}",
+        "continueWithProvider": "Fortsätt med {{provider}}",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "Ingen länkad inloggningsmetod är tillgänglig. Kontakta support innan du försöker ta bort kontot igen.",
+        "loadFailed": "Det gick inte att läsa in dina länkade inloggningsmetoder. Kontrollera din anslutning och försök igen.",
+        "retryFailed": "Din identitet verifierades, men borttagningen skickades inte. Stäng den här dialogrutan och försök ta bort igen.",
+        "emailMissing": "Den här länkade e-postmetoden saknar adress. Välj en annan metod.",
+        "genericFailure": "Ominloggningen misslyckades. Kontrollera din anslutning och försök igen."
+      },
+      "actions": {
+        "cancel": "Avbryt",
+        "retry": "Försök igen"
+      },
+      "common": {
+        "unavailable": "Otillgänglig"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "Katalog",
+        "stitch": "Sy",
+        "create": "Skapa",
+        "profile": "Profil",
+        "settings": "Inställningar"
+      }
+    }
+  },
   "tr": {
     "catalog": {
       "common": {

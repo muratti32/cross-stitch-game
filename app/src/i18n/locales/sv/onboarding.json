@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "VÄLKOMMEN TILL STITCH WISH",
+    "title": "Välj en färg, tryck på matchande rutor.",
+    "heroAlt": "Förhandsvisning av startmönstret Mysigt hjärta",
+    "handedness": {
+      "sectionTitle": "Vilken sida ska kontrollerna använda?",
+      "groupLabel": "Kontrollsida",
+      "optionRight": "Kontroller till höger",
+      "optionLeft": "Kontroller till vänster",
+      "saveErrorText": "Kunde inte spara det valet.",
+      "retry": "Försök igen"
+    },
+    "note": "Du kan ändra det här senare i Inställningar.",
+    "start": "Börja sy",
+    "starting": "Startar…",
+    "browse": "Bläddra bland startmönster",
+    "signIn": "Logga in"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Välj DMC 321 Christmas Red.",
+      "stitchAction": "Tryck på den markerade matchande cellen.",
+      "mismatchedTap": "Tryck på den markerade avvikande cellen. Felaktiga tryck kostar ingenting.",
+      "undoAction": "Ångra det stygnet och placera det igen.",
+      "stitchSweep": "Tryck på en matchande cell och dra sedan över den markerade sträckan.",
+      "threadColorCompletion": "Slutför den markerade vita tråden och välj sedan din nästa färg."
+    },
+    "hints": {
+      "anchoredZoom": "Nyp för att zooma medan cellerna under fingrarna hålls kvar på plats.",
+      "panVsSweep": "Att dra panorerar tyget. Börja på en matchande cell för att sy en svep.",
+      "edgeAutoPan": "Fortsätt svepa nära kanten så följer tyget ditt finger.",
+      "remainingCellLocator": "Använd lokaliseraren för att hitta nästa återstående cell för den här tråden."
+    },
+    "skip": "Hoppa över för nu",
+    "skipAccessibilityLabel": "Hoppa över självstudien för nu",
+    "dismiss": "Uppfattat",
+    "dismissAccessibilityLabel": "Stäng tips"
+  },
+  "recap": {
+    "title": "Nu kan du det",
+    "lines": {
+      "matchNumbers": "Matcha siffrorna för att placera varje stygn.",
+      "dragSweep": "Dra över matchande celler för att svepa.",
+      "pinchZoom": "Nyp för att zooma när du behöver se närmare.",
+      "undoLocator": "Ångra och lokaliseraren är alltid gratis."
+    },
+    "continue": "Fortsätt sy",
+    "browsePatterns": "Bläddra bland mönster"
+  }
+}

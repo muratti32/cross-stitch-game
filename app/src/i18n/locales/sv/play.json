@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Sybord",
+    "subtitle": "Fortsätt där du slutade eller återuppta ett tidigare arbete.",
+    "loading": "Läser in dina stygn...",
+    "empty": {
+      "title": "Inga aktiva arbeten",
+      "body": "Din syram är för närvarande tom. Bläddra i mönsterkatalogen för att hitta något vackert att sy!",
+      "action": "Bläddra i katalogen"
+    },
+    "unknownPattern": "Okänt mönster",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Mönster {{id}}",
+    "deleteSessionAccessibilityLabel": "Ta bort session",
+    "viewFinishedAccessibilityLabel": "Visa avslutat arbete",
+    "resumeAccessibilityLabel": "Återuppta syende",
+    "status": {
+      "ready": "Klar",
+      "done": "Färdig",
+      "active": "Aktiv",
+      "preparing": "Förbereder",
+      "failed": "Misslyckades"
+    },
+    "deleteConfirm": {
+      "title": "Ta bort framsteg",
+      "message": "Är du säker på att du vill ta bort dina framsteg för ”{{title}}”? Detta kan inte ångras.",
+      "cancel": "Avbryt",
+      "confirm": "Ta bort"
+    },
+    "preparingCard": {
+      "discardTitle": "Kassera session",
+      "cancelTitle": "Avbryt nedladdning",
+      "discardMessage": "Är du säker på att du vill kassera den här misslyckade sessionen?",
+      "cancelMessage": "Är du säker på att du vill avbryta nedladdningen av det här mönstret?",
+      "keep": "Behåll",
+      "discard": "Kassera",
+      "cancel": "Avbryt"
+    }
+  },
+  "loading": {
+    "text": "Öppnar session och förbereder tyg..."
+  },
+  "error": {
+    "title": "Det gick inte att läsa in sessionen",
+    "fallbackMessage": "Det går inte att läsa in din sysession.",
+    "backButton": "Gå tillbaka",
+    "tableButton": "Gå till sybordet"
+  },
+  "header": {
+    "backButton": "← Tillbaka",
+    "tableButton": "← Sybord",
+    "defaultTitle": "Sysession",
+    "progress": "{{completed}} / {{total}} celler ({{percent}}% klart)",
+    "resumeTutorialAccessibilityLabel": "Återuppta självstudien"
+  },
+  "banners": {
+    "patternRemoved": "Det här mönstret togs bort av moderering och är inte längre tillgängligt. Tryck för att lämna.",
+    "syncConflict": "Synkat med en annan enhet — vissa celler uppdaterades. Tryck för att avfärda."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Lokalisera nästa återstående cell för aktiv trådfärg",
+    "undoAccessibilityLabel": "Ångra senaste stygnet"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Färg {{number}}: DMC {{dmcCode}}, {{count}} stygn kvar",
+    "chipAccessibilityLabel_other": "Färg {{number}}: DMC {{dmcCode}}, {{count}} stygn kvar",
+    "done": "Klar",
+    "remaining_one": "{{count}} kvar",
+    "remaining_other": "{{count}} kvar"
+  },
+  "celebration": {
+    "title": "Vackert utfört!",
+    "subtitle": "Du har slutfört varje enda stygn på det här tyget.",
+    "stitchesLabel_one": "Stygn",
+    "stitchesLabel_other": "Stygn",
+    "colorsLabel_one": "Färg",
+    "colorsLabel_other": "Färger",
+    "replayButton": "Sy igen",
+    "catalogButton": "Tillbaka till katalogen"
+  }
+}

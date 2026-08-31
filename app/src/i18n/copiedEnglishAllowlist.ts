@@ -205,4 +205,11 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'sl:settings:session.idLabel': '"ID" is used identically in Slovenian tech/UI copy.',
   'sl:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
   'sl:profile:home.identity.offline': '"Offline" is used identically in Slovenian tech/UI copy.',
+  'sv:play:home.idLabel': '"ID" is used identically in Swedish tech/UI copy.',
+  'sv:settings:session.idLabel': '"ID" is used identically in Swedish tech/UI copy.',
+  'sv:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
+  'sv:profile:home.identity.offline': '"Offline" is used identically in Swedish tech/UI copy.',
+  'sv:create:photoImport.profile.options.standard': '"Standard" is used identically in Swedish.',
+  'sv:settings:appDetails.version': '"Version" is an identical Swedish cognate.',
+  'sv:settings:data.sectionTitle': '"Data" is an identical Swedish cognate.',
 };

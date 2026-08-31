@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Tillbaka",
+    "cancel": "Avbryt",
+    "duplicateTitle": "Du har redan ett personligt mönster med namnet ”{{title}}”. Välj en annan titel.",
+    "cellsCount_one": "ruta",
+    "cellsCount_other": "rutor",
+    "colorsCount_one": "färg",
+    "colorsCount_other": "färger"
+  },
+  "hub": {
+    "title": "Skaparhubb",
+    "subtitle": "Väck dina egna design till liv med anpassade korsstygnsmönster.",
+    "opening": "Öppnar…",
+    "photoImport": {
+      "title": "Fotoimport",
+      "description": "Ladda upp en bild från din kamerarulle och omvandla den till ett mönster att sy.",
+      "action": "Importera foto"
+    },
+    "aiGenerator": {
+      "title": "AI-generator",
+      "description": "Beskriv en mysig idé och låt artificiell intelligens skapa en anpassad pixel-design.",
+      "action": "Skapa design"
+    }
+  },
+  "aspects": {
+    "square": "Kvadrat",
+    "portrait_4_3": "Stående 4:3",
+    "landscape_4_3": "Liggande 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Mönsterkonverteringen misslyckades. Försök igen.",
+      "timeout": "Mönsterkonverteringen bearbetas fortfarande. Försök igen om en liten stund.",
+      "generic": "Det gick inte att slutföra mönsterkonverteringen. Försök igen."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Registrerat konto krävs",
+      "body": "AI-konst och dess bibliotek förblir privat för ditt konto.",
+      "signIn": "Logga in"
+    },
+    "header": {
+      "title": "AI-generator",
+      "backAccessibilityLabel": "Tillbaka"
+    },
+    "prompt": {
+      "label": "Beskriv din konst",
+      "placeholder": "En mysig stugträdgård i solnedgången…"
+    },
+    "generate": {
+      "working": "Arbetar…",
+      "action": "Skapa — 1 AI-kredit",
+      "errors": {
+        "promptRejected": "Den beskrivningen tillåts inte. Försök beskriva något annat.",
+        "generic": "Det gick inte att starta AI-genereringen. Försök igen."
+      }
+    },
+    "library": {
+      "title": "Ditt AI-konstbibliotek",
+      "status": {
+        "pending": "Väntar",
+        "dispatched": "Skickad",
+        "running": "Pågår",
+        "delivered": "Levererad",
+        "safety_rejected": "Avvisad av säkerhetsskäl",
+        "failed": "Misslyckades",
+        "deleted": "Borttagen",
+        "unknown": "Otillgänglig"
+      },
+      "failure": {
+        "safety_rejected": "Den här konsten klarade inte leverantörens säkerhetskontroll.",
+        "failed": "Den här konsten kunde inte skapas."
+      },
+      "approve": "Godkänn till mönster",
+      "delete": "Ta bort",
+      "deleteAccessibilityLabel": "Ta bort den här AI-konsten",
+      "errors": {
+        "loadFailed": "Det gick inte att läsa in ditt AI-konstbibliotek. Försök igen."
+      }
+    },
+    "approve": {
+      "modalTitle": "Skapa personligt mönster",
+      "titleLabel": "Mönstertitel",
+      "titleAccessibilityLabel": "Mönstertitel",
+      "defaultTitle": "Mitt AI-mönster",
+      "placeholder": "Mitt AI-mönster",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Avbryt",
+      "creating": "Skapar mönster…",
+      "create": "Skapa mönster",
+      "errors": {
+        "generic": "Det gick inte att skapa det personliga mönstret. Försök igen."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Registrerat konto krävs",
+      "body": "Personliga mönster tillhör ditt konto så att de förblir privata och tillgängliga på alla enheter.",
+      "signIn": "Logga in eller skapa konto",
+      "back": "Tillbaka"
+    },
+    "header": {
+      "title": "Fotomönster",
+      "subtitle": "Beskär lokalt och godkänn sedan konvertering",
+      "backAccessibilityLabel": "Tillbaka"
+    },
+    "picker": {
+      "chooseTitle": "Välj ett foto",
+      "helpText": "Den fullupplösta lokala fotokällan stannar kvar på den här enheten. Inget konverteras förrän du godkänner beskärningen.",
+      "choose": "Välj från biblioteket",
+      "chooseAnother": "Välj ett annat",
+      "opening": "Öppnar…",
+      "errors": {
+        "permissionDenied": "Åtkomst till fotobiblioteket krävs för att välja en lokal fotokälla.",
+        "invalidDimensions": "Det valda fotot rapporterar inte användbara mått.",
+        "generic": "Det gick inte att öppna fotobiblioteket. Försök igen."
+      }
+    },
+    "framing": {
+      "title": "Beskärning av konstverk",
+      "gestureHint": "Dra för att positionera · nyp för att zooma",
+      "aspectLabel": "Bildförhållande"
+    },
+    "profile": {
+      "title": "Konverteringsprofil",
+      "options": {
+        "easy": "Enkel",
+        "standard": "Standard",
+        "detailed": "Detaljerad"
+      },
+      "custom": "Anpassad",
+      "customMeta": "Fri · form låst",
+      "unavailable": "Passar inte den här beskärningen",
+      "customShortEdgeLabel": "Kort kant",
+      "customColorLimitLabel": "DMC-färgbegränsning",
+      "exceedsLimit": "De här anpassade värdena överstiger gränsen på {{max}} celler för mönsterstorlek."
+    },
+    "titleCard": {
+      "label": "Mönstertitel",
+      "placeholder": "Mitt fotomönster",
+      "defaultTitle": "Mitt fotomönster",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · upp till {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "Godkännande laddar bara upp den beskurna, nedskalade derivatan. Originalfotot stannar lokalt.",
+      "approve": "Godkänn konstverk och konvertera"
+    },
+    "processing": {
+      "preparingFrame": "Förbereder den godkända beskärningen på den här enheten…",
+      "uploading": "Laddar upp bara den beskurna, nedskalade bilden…",
+      "waitingForWorker": "Väntar på konverteringsarbetaren…",
+      "buildingGrid": "Bygger stygnrutnätet och DMC-paletten…",
+      "preparingSession": "Förbereder det personliga mönstret för spel…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Den här profilen passar inte längre den slutliga beskärningen. Välj Enkel eller minska detaljerna.",
+        "generic": "Det gick inte att konvertera det här fotot. Försök igen."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Inget mönster valt",
+      "noPatternBody": "Den här skärmen måste öppnas från ett befintligt personligt mönster i ditt bibliotek.",
+      "accountTitle": "Registrerat konto krävs",
+      "accountBody": "Personliga mönster tillhör ditt konto så att de förblir privata och tillgängliga på alla enheter.",
+      "signIn": "Logga in eller skapa konto",
+      "back": "Tillbaka"
+    },
+    "loading": "Återupptar redigeringsutkast...",
+    "load": {
+      "failedTitle": "Det gick inte att läsa in mönstret",
+      "retry": "Försök igen",
+      "back": "Tillbaka",
+      "errors": {
+        "generic": "Det gick inte att läsa in det här personliga mönstret. Försök igen."
+      }
+    },
+    "header": {
+      "title": "Mönsterredigerare",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Tillbaka"
+    },
+    "toolbar": {
+      "undo": "Ångra",
+      "redo": "Gör om"
+    },
+    "mode": {
+      "paint": "Måla",
+      "replaceColor": "Ersätt färg",
+      "replaceStep1": "1. Tryck på en färg i mönstret nedan för att ersätta den:",
+      "replaceStep2": "2. Välj en målfärg i DMC nedan för att utföra ersättningen:",
+      "paintSelected": "Vald: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Välj en färg nedan och tryck sedan på celler för att måla."
+    },
+    "errors": {
+      "pickColorFirst": "Välj en färg först",
+      "paletteLimit": "Det här mönstret använder redan maximalt {{max}} trådfärger."
+    },
+    "picker": {
+      "title": "DMC-trådfärger",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Spara redigerat mönster",
+      "placeholder": "Min redigerade mönstertitel",
+      "action": "Spara som nytt",
+      "offlineTitle": "Sparat offline",
+      "offlineBody": "Ditt redigerade mönster sparades på den här enheten och synkas till ditt konto när du är online igen.",
+      "errors": {
+        "generic": "Det gick inte att spara det här personliga mönstret. Försök igen."
+      }
+    }
+  }
+}
