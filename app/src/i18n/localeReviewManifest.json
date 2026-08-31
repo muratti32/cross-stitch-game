@@ -27,5 +27,6 @@
   "nb": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
   "pt": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
   "ro": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
-  "sk": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false }
+  "sk": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false },
+  "sl": { "nativeSpeakerReviewed": false, "sensitiveCopyReviewed": false }
 }

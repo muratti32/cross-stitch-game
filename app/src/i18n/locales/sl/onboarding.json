@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "DOBRODOŠLI V STITCH WISH",
+    "title": "Izberite barvo, tapnite ujemajoča polja.",
+    "heroAlt": "Predogled začetnega vzorca Cozy Heart",
+    "handedness": {
+      "sectionTitle": "Na kateri strani naj bodo kontrolniki?",
+      "groupLabel": "Stran kontrolnikov",
+      "optionRight": "Kontrolniki desno",
+      "optionLeft": "Kontrolniki levo",
+      "saveErrorText": "Te izbire ni bilo mogoče shraniti.",
+      "retry": "Poskusi znova"
+    },
+    "note": "To lahko pozneje spremenite v Nastavitvah.",
+    "start": "Začni šivati",
+    "starting": "Zaganjanje …",
+    "browse": "Prebrskaj začetne vzorce",
+    "signIn": "Prijava"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Izberite DMC 321 Christmas Red.",
+      "stitchAction": "Tapnite označeno ujemajočo celico.",
+      "mismatchedTap": "Tapnite označeno drugačno celico. Napačni tapi nič ne stanejo.",
+      "undoAction": "Razveljavite ta šiv, nato ga postavite znova.",
+      "stitchSweep": "Pritisnite ujemajočo celico, nato povlecite čez označen niz.",
+      "threadColorCompletion": "Dokončajte označeno belo nit, nato izberite naslednjo barvo."
+    },
+    "hints": {
+      "anchoredZoom": "S ščipanjem povečajte, medtem ko celice ostajajo pod vašimi prsti.",
+      "panVsSweep": "Vlečenje premika tkanino. Začnite na ujemajoči celici za šivanje niza.",
+      "edgeAutoPan": "Nadaljujte šivanje blizu roba in tkanina bo sledila vašemu prstu.",
+      "remainingCellLocator": "Uporabite lokator, da najdete naslednjo preostalo celico za to nit."
+    },
+    "skip": "Preskoči za zdaj",
+    "skipAccessibilityLabel": "Preskoči vodič za zdaj",
+    "dismiss": "Razumem",
+    "dismissAccessibilityLabel": "Opusti namig"
+  },
+  "recap": {
+    "title": "Obvladate",
+    "lines": {
+      "matchNumbers": "Ujemajte številke, da postavite vsak šiv.",
+      "dragSweep": "Povlecite čez ujemajoče celice za niz.",
+      "pinchZoom": "S ščipanjem povečajte, ko potrebujete bližji pogled.",
+      "undoLocator": "Razveljavitev in lokator sta vedno brezplačna."
+    },
+    "continue": "Nadaljuj šivanje",
+    "browsePatterns": "Prebrskaj vzorce"
+  }
+}

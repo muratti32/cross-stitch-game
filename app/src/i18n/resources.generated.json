@@ -36555,6 +36555,1412 @@
       }
     }
   },
+  "sl": {
+    "catalog": {
+      "common": {
+        "back": "← Nazaj",
+        "searchPlaceholder": "Iskanje vzorcev, ustvarjalcev, oznak …",
+        "offlineBanner": "Brez povezave — katalog je morda zastarel",
+        "sectionError": {
+          "title": "Nalaganje ni uspelo",
+          "retry": "Poskusi znova"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} barv",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} stolpcev",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "angleščina"
+        },
+        "accessibilityLabel": "Napisano v jeziku {{language}}"
+      },
+      "index": {
+        "subtitle": "Ustvari svoj prijeten svet, šiv za šivom.",
+        "searchBar": {
+          "accessibilityLabel": "Iskanje po katalogu vzorcev"
+        },
+        "sections": {
+          "starterPatterns": "Začetni vzorci",
+          "staffPicks": "Izbor uredništva",
+          "categories": "Kategorije",
+          "newPatterns": "Novi vzorci"
+        },
+        "staffPicks": {
+          "emptyTitle": "Še ni izbora uredništva",
+          "emptyBody": "Naša izbrana zbirka prijetnih vzorcev bo kmalu prikazana tukaj.",
+          "errorBody": "Kataloga ni bilo mogoče doseči in ničesar še ni shranjenega v predpomnilniku."
+        },
+        "categories": {
+          "count": "{{count}} vzorcev",
+          "errorBody": "Kataloga ni bilo mogoče doseči in ničesar še ni shranjenega v predpomnilniku."
+        },
+        "newPatterns": {
+          "emptyTitle": "Novi vzorci nastajajo",
+          "emptyBody": "Svežine so na poti!",
+          "errorBody": "Kataloga ni bilo mogoče doseči in ničesar še ni shranjenega v predpomnilniku.",
+          "showMore": "Prikaži več",
+          "loading": "Nalaganje …"
+        }
+      },
+      "browse": {
+        "defaultTitle": "Brskanje",
+        "error": {
+          "body": "Te strani kataloga ni bilo mogoče doseči in ničesar še ni shranjenega v predpomnilniku."
+        },
+        "empty": {
+          "title": "Tukaj še ni ničesar",
+          "body": "Nobenemu vzorcu še ne ustreza ta izbor. Nove zasnove prihajajo redno."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "Vnosno polje za iskanje po katalogu",
+        "inactive": {
+          "title": "Iskanje po katalogu",
+          "body": "Vnesite vsaj dva znaka za iskanje vzorcev po naslovu, ustvarjalcu ali oznaki."
+        },
+        "error": {
+          "title": "Iskanje potrebuje povezavo",
+          "body": "Iskanje po katalogu brez povezave ni na voljo. Predpomnjene strani kataloga ostanejo dostopne v zavihku Katalog."
+        },
+        "noResults": {
+          "title": "Ni zadetkov",
+          "body": "V katalogu še ni ničesar, kar bi ustrezalo iskanju „{{query}}“."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "Igranje kot gost",
+        "body": "Stitch Coin in napredek kot gost obstajata samo na tej napravi. Če se namestitev izgubi, gostovega dobroimetja in napredka morda ne bo mogoče obnoviti. Prijava ščiti vaš napredek."
+      },
+      "detail": {
+        "noDescription": "Opis ni na voljo.",
+        "specs": {
+          "dimensions": "Dimenzije",
+          "totalStitches": "Skupno število šivov",
+          "colors": "Barve",
+          "category": "Kategorija"
+        },
+        "threadsSuffix": "{{count}} niti",
+        "palette": {
+          "title": "Potrebne niti",
+          "loading": "Branje palete niti ...",
+          "loadFailed": "Nalaganje palete ni uspelo: {{error}}",
+          "retry": "Poskusi znova"
+        },
+        "actions": {
+          "startStitching": "Začni šivati",
+          "starting": "Zaganjanje ...",
+          "preparing": "Pripravljanje …"
+        },
+        "loadFailedGeneric": "Dekodiranje datoteke z vzorcem ni uspelo.",
+        "sessionCreateFailed": "Ustvarjanje seje šivanja ni uspelo. Poskusite znova.",
+        "unavailable": {
+          "title": "Vzorec ni na voljo",
+          "body": "Tega vzorca ni bilo mogoče naložiti. Morda je bil odstranjen ali pa niste povezani s spletom.",
+          "goBack": "Nazaj"
+        },
+        "byCreator": "avtor: {{creatorName}}",
+        "byCreatorWithUsername": "avtor: {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "Blokiraj ustvarjalca",
+          "message": "Ali ste prepričani, da želite blokirati uporabnika {{creatorName}}? To je zasebno, povratno dejanje, ki skrije njegove vzorce pred iskanjem in brskanjem. S tem ustvarjalec ni prijavljen in vaša trenutna seja šivanja ne bo prekinjena.",
+          "cancel": "Prekliči",
+          "confirm": "Blokiraj",
+          "blockedTitle": "Blokirano",
+          "blockedMessage": "Uporabnik {{creatorName}} je bil blokiran.",
+          "errorTitle": "Napaka",
+          "failedGeneric": "Blokiranje ustvarjalca ni uspelo."
+        },
+        "likeFailedGeneric": "Posodobitev statusa všečka ni uspela",
+        "connectToPlay": {
+          "title": "Za igranje se povežite",
+          "body": "Za začetek vzorca iz kataloga je potrebna povezava, da se pripravi vaša seja. Začetni vzorci so igralni takoj, tudi brez povezave."
+        },
+        "insufficientCoins": {
+          "title": "Premalo kovancev",
+          "body": "Ta vzorec stane {{price}} kovancev Stitch Coin, vi pa jih imate le {{balance}}.\n\nManjka: {{shortfall}} kovancev.\n\nStitch Coin zaslužite z dokončanjem drugih vzorcev! Nagrade za prvo dokončanje so na voljo.",
+          "getCoins": "Pridobi kovance Stitch Coin",
+          "findPatterns": "Poišči vzorce za šivanje",
+          "back": "Nazaj"
+        },
+        "unlockFailedGeneric": "Odklepanje ni uspelo. Preverite povezavo in poskusite znova.",
+        "preparationFailedGeneric": "Priprave ni bilo mogoče začeti. Preverite povezavo in poskusite znova.",
+        "price": {
+          "label": "Cena"
+        },
+        "balance": {
+          "label": "Vaše dobroimetje",
+          "loading": "…"
+        },
+        "unlockButton": "Odkleni za {{price}} kovancev",
+        "communityReport": {
+          "button": "Prijavi ta vzorec",
+          "title": "Prijavi {{patternTitle}}",
+          "body": "Izberite razlog, ki najbolje opisuje težavo. Prijave nikoli samodejno ne skrijejo ali spremenijo vzorca.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "Neprimerna ali nevarna vsebina",
+            "copyright_or_publication_rights": "Avtorske ali objavne pravice",
+            "duplicate_or_spam": "Podvojeno ali neželena vsebina",
+            "misleading_title_or_tags": "Zavajajoč naslov ali oznake",
+            "other": "Drugo"
+          },
+          "explanationLabel": "Dokazi ali pojasnilo {{requirement}}",
+          "explanationRequired": "(obvezno)",
+          "explanationOptional": "(neobvezno)",
+          "explanationPlaceholder": "Delite podrobnosti, ki bodo moderatorju pomagale pri pregledu vzorca.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "Prekliči",
+          "submit": "Pošlji prijavo",
+          "submitFailedGeneric": "Prijave ni bilo mogoče poslati. Preverite povezavo in poskusite znova.",
+          "receivedTitle": "Prijava prejeta",
+          "alreadyReceivedTitle": "Prijava je že bila prejeta",
+          "receivedBody": "Moderator lahko zdaj pregleda ta vzorec. Prijava samodejno ne spremeni njegove razpoložljivosti.",
+          "alreadyReceivedBody": "Vaša obstoječa prijava je že del odprtega pregleda.",
+          "signInRequired": {
+            "title": "Za prijavo se prijavite v račun",
+            "message": "Prijave skupnosti zahtevajo registriran račun. Ničesar ni bilo poslano.",
+            "cancel": "Prekliči",
+            "signIn": "Prijava"
+          },
+          "validation": {
+            "chooseReason": "Izberite razlog za prijavo.",
+            "explainRequired": "Pojasnite, zakaj prijavljate ta vzorec.",
+            "tooLong": "Pojasnilo sme imeti največ 2000 znakov.",
+            "needsContent": "Pojasnilo mora vsebovati črke ali številke."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "Nazaj",
+        "title": "Trgovina",
+        "subtitle": "Članstvo in enkratna dopolnila"
+      },
+      "signInReturn": {
+        "notice": "Prijavljeni ste. {{label}} je še vedno izbran. Preglejte in tapnite Kupi, ko boste pripravljeni."
+      },
+      "premiumHero": {
+        "eyebrow": "PREMIUM ČLANSTVO",
+        "title": "Ustvarjajte več. Vsak dan pridobite majhno nagrado.",
+        "body": "AI dobropisi v vsakem plačanem obdobju, Premium teme in dnevni prevzem kovancev Stitch Coin.",
+        "benefitAiCredits": "AI dobropisi",
+        "benefitDailyCoins": "Dnevni kovanci",
+        "benefitThemes": "Teme",
+        "statusNoActiveMembership": "Ni aktivnega članstva",
+        "statusBrowseAsGuest": "Prebrskaj načrte kot gostujoči igralec",
+        "periodEndsLabel": "Trenutno obdobje se konča",
+        "periodRenewsLabel": "Obnovi se",
+        "lifecycleActive": "Aktivno"
+      },
+      "membershipActions": {
+        "title": "Aktivno Premium članstvo",
+        "body": "Dnevne nagrade so v Profilu. Teme so pod Nastavitve › Videz.",
+        "scheduledChangeNotice": "Spremembe na {{plan}} dne {{date}}",
+        "manageSubscription": "Upravljaj naročnino",
+        "manageSubscriptionFailedTitle": "Naročnin ni bilo mogoče odpreti",
+        "manageSubscriptionFailedBody": "Poskusite znova v računu trgovine vaše naprave."
+      },
+      "pending": {
+        "title": "Uskladitev nakupa čaka",
+        "verifyingTitle": "Preverjanje nakupa",
+        "premiumChangeAccepted": "Trgovina je sprejela spremembo na {{label}}. ",
+        "premiumResponseReceived": "Odgovor trgovine za {{label}} je prejet. ",
+        "premiumDeferredSuffix": "Sprememba je predvidena šele po preveritvi zalednega sistema igre in začne veljati ob koncu trenutnega obdobja.",
+        "premiumSuffix": "Premium se aktivira šele po preveritvi zalednega sistema igre.",
+        "doNotPurchasePlanAgain": " Tega načrta ne kupujte ponovno.",
+        "coinPackBody": "Odgovor trgovine je prejet. Stanje kovancev Stitch Coin se posodobi šele, ko zaledni sistem igre izpostavi ustrezno dodelitev v Trgovinski knjigi. Tega paketa ne kupujte ponovno.",
+        "aiCreditPackBody": "Odgovor trgovine je prejet. Stanje AI dobropisov se posodobi šele, ko zaledni sistem igre izpostavi ustrezno dodelitev v Trgovinski knjigi. Tega paketa ne kupujte ponovno.",
+        "refreshStatus": "Osveži stanje",
+        "retryReconciliation": "Poskusi uskladitev znova"
+      },
+      "store": {
+        "loadingPrices": "Nalaganje trenutnih cen v trgovini …",
+        "unavailableTitle": "Trgovina trenutno ni na voljo",
+        "unavailableBody": "Podatki o denarnici in članstvu so še vedno na voljo.",
+        "retry": "Poskusi znova"
+      },
+      "plans": {
+        "choosePremiumPlan": "Izberite Premium načrt",
+        "yourPremiumPlan": "Vaš Premium načrt",
+        "currentPlan": "TRENUTNI NAČRT",
+        "upgrade": "NADGRADNJA",
+        "planChange": "SPREMEMBA NAČRTA",
+        "bestValue": "NAJBOLJŠA VREDNOST",
+        "billedEvery": "Zaračunano vsakih {{period}}",
+        "chooseLabel": "Izberi {{label}}",
+        "freeTrial": "Brezplačno za {{offer}}, nato {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "Enkratni paketi",
+        "stitchCoinPacksTitle": "Paketi kovancev Stitch Coin",
+        "aiCreditPacksTitle": "Paketi AI dobropisov",
+        "coinsNoun": "Kovanci",
+        "creditsNoun": "Dobropisi",
+        "fromPrice": "Od {{price}}"
+      },
+      "restore": {
+        "restorePurchases": "Obnovi nakupe",
+        "restoreGuestPremium": "Obnovi gostujoči Premium",
+        "requestedTitle": "Obnovitev zahtevana",
+        "requestedBody": "Preverjen Premium dostop se prikaže po uskladitvi z obvestilom trgovine (webhook). Paketi Stitch Coin in AI dobropisov se nikoli ne obnovijo."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "Trenutne cene iz trgovine z aplikacijami",
+        "closeAccessibilityLabel": "Zapri list izdelka",
+        "closeButtonAccessibilityLabel": "Zapri",
+        "selectedBeforeSignIn": "Izbrano pred prijavo",
+        "buy": "Kupi"
+      },
+      "confirmation": {
+        "cancel": "Prekliči",
+        "confirmLabel": "Potrdi {{label}}",
+        "confirmPremiumTitle": "Potrdi nakup Premium",
+        "introductoryOffer": "Vaša trgovina poroča o tej uvodni ponudbi: {{offer}}.",
+        "premiumAppearsAfterVerification": "Premium se prikaže šele, ko zaledni sistem igre preveri transakcijo trgovine.",
+        "confirmPremiumUpgradeTitle": "Potrdi nadgradnjo Premium",
+        "confirmPremiumPlanChangeTitle": "Potrdi spremembo Premium načrta",
+        "currentPlanLabel": "Trenutni načrt: {{label}}",
+        "upgradeToLabel": "Nadgradi na {{label}} · {{offer}}",
+        "changeToLabel": "Spremeni na {{label}} · {{offer}}",
+        "upgradeBody": "App Store nadzoruje končni znesek in datum uveljavitve te nadgradnje. Premium odraža {{label}} šele, ko to preveri zaledni sistem igre.",
+        "planChangeBody": "App Store to spremembo odloži do konca vašega trenutnega obdobja: {{currentLabel}} deluje do takrat, {{targetLabel}} pa se zaračuna od datuma spremembe. Spremembo lahko prekličete v razdelku Upravljaj naročnino.",
+        "confirmUpgrade": "Potrdi nadgradnjo",
+        "confirmPlanChange": "Potrdi spremembo načrta",
+        "confirmStitchCoinTitle": "Potrdi nakup kovancev Stitch Coin",
+        "confirmAiCreditTitle": "Potrdi nakup AI dobropisov",
+        "balanceChangesAfterVerificationCoin": "Vaše stanje se spremeni šele, ko zaledni sistem igre preveri transakcijo trgovine in zabeleži ustrezno dodelitev v Trgovinski knjigi.",
+        "balanceChangesAfterVerificationAiCredit": "Vaše stanje se spremeni šele, ko zaledni sistem igre preveri transakcijo trgovine in zabeleži ustrezno dodelitev v Trgovinski knjigi. Premium članstvo ni potrebno."
+      },
+      "disclosure": {
+        "subscriptionTerms": "Plačilo se ob potrditvi zaračuna vašemu računu {{store}}. {{label}} Premium se samodejno obnovi po ceni {{offer}}, razen če samodejno podaljšanje izklopite vsaj 24 ur pred koncem trenutnega obdobja. Neizkoriščeni del brezplačnega preizkusa zapade, ko kupite naročnino. Naročnino lahko kadar koli prekličete v svojem računu {{store}}.",
+        "privacyPolicy": "Politika zasebnosti",
+        "termsOfService": "Pogoji uporabe",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "Povezave ni bilo mogoče odpreti: {{url}}"
+      },
+      "supportReference": {
+        "label": "Referenca za podporo: {{reference}}",
+        "copyAccessibilityLabel": "Kopiraj referenco za podporo {{reference}}",
+        "copyAccessibilityHint": "Kopira referenco za podporo v odložišče",
+        "copied": "Kopirano",
+        "copyFailedTitle": "Kopiranje ni uspelo",
+        "copyFailedBody": "Reference za podporo ni bilo mogoče kopirati. Izberite besedilo in jo kopirajte ročno."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "Gostujoči nakupi kovancev Stitch Coin so na voljo samo na iOS.",
+        "guestIosOnlyGeneric": "Gostujoči nakupi so na voljo samo na iOS.",
+        "purchaseFailedTitle": "Nakup ni uspel",
+        "premiumVerificationNotYet": "Zaledni sistem igre ni mogel preveriti tega nakupa. Poskusite uskladitev znova; ne kupujte ponovno.",
+        "premiumVerificationFailedRetry": "Zaledni sistem igre tega nakupa še ni mogel preveriti. Poskusite uskladitev znova; ne kupujte ponovno.",
+        "premiumGrantRefreshFailed": "Premium je bil preverjen, vendar stanja članstva in AI dobropisov ni bilo mogoče osvežiti. Poskusite uskladitev znova.",
+        "premiumReconciliationUnreachable": "Uskladitev nakupa ni mogla doseči zalednega sistema igre. Poskusite uskladitev znova; ne kupujte ponovno.",
+        "coinPackVerificationMismatch": "Transakcija trgovine se ni ujemala s tem paketom kovancev. Poskusite preverjanje znova ali se obrnite na podporo; ne kupujte ponovno.",
+        "coinPackGrantUnavailable": "Nakup je bil preverjen, vendar dodelitev kovancev Stitch Coin ni na voljo. Poskusite uskladitev znova; ne kupujte ponovno.",
+        "coinPackBalanceRefreshFailed": "Dodelitev kovancev je bila preverjena, vendar trenutnega stanja kovancev Stitch Coin ni bilo mogoče osvežiti. Poskusite uskladitev znova.",
+        "coinPackVerificationFailedRetry": "Zaledni sistem igre tega paketa kovancev še ni mogel preveriti. Poskusite uskladitev znova; ne kupujte ponovno.",
+        "coinPackReconciliationUnreachable": "Uskladitev paketa kovancev ni mogla doseči zalednega sistema igre. Poskusite uskladitev znova; ne kupujte ponovno.",
+        "aiCreditPackVerificationMismatch": "Transakcija trgovine se ni ujemala s tem paketom AI dobropisov. Poskusite preverjanje znova ali se obrnite na podporo; ne kupujte ponovno.",
+        "aiCreditPackGrantUnavailable": "Nakup je bil preverjen, vendar dodelitev AI dobropisov ni na voljo. Poskusite uskladitev znova; ne kupujte ponovno.",
+        "aiCreditPackBalanceRefreshFailed": "Dodelitev AI dobropisov je bila preverjena, vendar trenutnega stanja ni bilo mogoče osvežiti. Poskusite uskladitev znova.",
+        "aiCreditPackVerificationFailedRetry": "Zaledni sistem igre tega paketa AI dobropisov še ni mogel preveriti. Poskusite uskladitev znova; ne kupujte ponovno.",
+        "aiCreditPackReconciliationUnreachable": "Uskladitev paketa AI dobropisov ni mogla doseči zalednega sistema igre. Poskusite uskladitev znova; ne kupujte ponovno.",
+        "reconciliationStillUnavailable": "Zaledni sistem igre še vedno ni na voljo. Uskladitev poskusite pozneje znova.",
+        "storeTemporarilyUnavailable": "Trgovina trenutno ni na voljo. Poskusite znova čez nekaj minut.",
+        "purchasesNotAllowed": "Nakupi na tej napravi niso dovoljeni. Preverite svoj račun trgovine ali starševski nadzor.",
+        "itemNotAvailable": "Ta izdelek trenutno ni na voljo za nakup. Izberite drug izdelek ali poskusite pozneje znova.",
+        "alreadyOwned": "Ta nakup že imate. Za osvežitev dostopa uporabite Obnovi nakupe.",
+        "couldNotConnectToStore": "Povezava s trgovino ni uspela. Preverite internetno povezavo in poskusite znova.",
+        "paymentPendingApproval": "Vaše plačilo čaka na odobritev. Nakup se prikaže, ko ga trgovina zaključi.",
+        "testPurchaseDeclined": "Testni nakup je bil zavrnjen. Plačilo ni bilo izvedeno. V Nastavitvah izberite drug rezultat testne trgovine in poskusite znova.",
+        "genericPurchaseFailure": "Nakupa ni bilo mogoče dokončati. Plačilo ni bilo zaračunano. Poskusite znova."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "Preverjanje še poteka",
+        "premiumPending": "Preverjanje še poteka. Premium se bo aktiviral, ko ga potrdi zaledni sistem igre.",
+        "premiumPlanChangePending": "Preverjanje še poteka. Sprememba načrta bo predvidena, ko jo potrdi zaledni sistem igre.",
+        "coinPackPending": "Preverjanje še poteka. Vaše stanje kovancev Stitch Coin se bo posodobilo, ko se zaključi.",
+        "aiCreditPackPending": "Preverjanje še poteka. Vaše stanje AI dobropisov se bo posodobilo, ko se zaključi."
+      },
+      "success": {
+        "purchaseReceivedTitle": "Nakup prejet",
+        "storeAcceptedPlanChange": "Trgovina je sprejela spremembo na {{label}}. Potrjujemo, kdaj začne veljati.",
+        "storeAcceptedPurchase": "Trgovina je sprejela {{label}}. Vaš nakup se zdaj preverja.",
+        "premiumChanges": "Premium se spremeni na {{label}}{{effectiveOn}}.",
+        "effectiveOnDate": " dne {{date}}",
+        "planChangeScheduledTitle": "Sprememba načrta predvidena",
+        "planChangeScheduledBody": "Vaše Premium članstvo ohrani trenutni načrt, dokler se ne spremeni na {{label}}{{effectiveOn}}. Spremembo lahko prekličete v razdelku Upravljaj naročnino.",
+        "premiumIsActiveTitle": "Premium je aktiven",
+        "premiumVerifiedAndActive": "{{label}} Premium je preverjen in aktiven.",
+        "premiumNowActiveNoBilling": "{{label}} Premium je zdaj aktiven.",
+        "premiumNowActiveBilled": "{{label}} Premium je zdaj aktiven, zaračunano vsakih {{period}}.",
+        "coinPackGrantedTitle": "Kovanci Stitch Coin dodeljeni",
+        "coinPackGrantVerified": "Dodelitev {{label}} je preverjena. Stanje kovancev Stitch Coin: {{balance}}.",
+        "coinPackAddedToBalance": "{{quantity}} kovancev Stitch Coin je bilo dodanih vašemu stanju.",
+        "aiCreditPackGrantedTitle": "AI dobropisi dodeljeni",
+        "aiCreditPackGrantVerified": "Dodelitev {{label}} je preverjena. Stanje AI dobropisov: {{balance}}.",
+        "aiCreditPackAddedToBalance": "{{quantity}} AI dobropisov je bilo dodanih vašemu stanju."
+      },
+      "products": {
+        "premiumAnnual": "Letno",
+        "premiumMonthly": "Mesečno",
+        "premiumWeekly": "Tedensko",
+        "stitchCoinPack_one": "{{formattedCount}} kovanec Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} kovancev Stitch Coin",
+        "aiCreditPack_one": "{{formattedCount}} AI dobropis",
+        "aiCreditPack_other": "{{formattedCount}} AI dobropisov",
+        "billedEveryOffer": "{{price}} vsakih {{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} dobropisov / plačano obdobje",
+        "creditAllowancePaidNoun": "{{credits}} dobropisov / plačano {{period}}"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "Nakup kot gost",
+        "commerceBody": "Nakup lahko opravite brez registracije. Premium članstvo je mogoče obnoviti iz trgovine, vendar so kovanci Stitch Coin, AI dobropisi in zasebna gostujoča vsebina neobnovljivi, če se ta namestitev izgubi. Registracija jih zaščiti in nikoli ne prekine igranja kot gost.",
+        "continueAsGuest": "Nadaljuj kot gost",
+        "signInInstead": "Raje se prijavi",
+        "closeAccessibilityLabel": "Zapri"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "Razumem",
+        "successButton": "Odlično",
+        "failedButton": "Zapri",
+        "infoButton": "Razumem",
+        "closeAccessibilityLabel": "Zapri"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "Nazaj",
+        "cancel": "Prekliči",
+        "duplicateTitle": "Osebni vzorec z imenom „{{title}}“ že imate. Izberite drug naslov.",
+        "cellsCount_one": "celica",
+        "cellsCount_other": "celic",
+        "colorsCount_one": "barva",
+        "colorsCount_other": "barv"
+      },
+      "hub": {
+        "title": "Ustvarjalno vozlišče",
+        "subtitle": "Oživite lastne zasnove z vzorci za križanje po meri.",
+        "opening": "Odpiranje …",
+        "photoImport": {
+          "title": "Uvoz fotografije",
+          "description": "Naložite sliko iz galerije naprave in jo pretvorite v vzorec za šivanje.",
+          "action": "Uvozi fotografijo"
+        },
+        "aiGenerator": {
+          "title": "AI generator",
+          "description": "Opišite prijeten poziv in naj umetna inteligenca ustvari zasnovo po meri v pikslih.",
+          "action": "Ustvari zasnovo"
+        }
+      },
+      "aspects": {
+        "square": "Kvadrat",
+        "portrait_4_3": "Pokončno 4:3",
+        "landscape_4_3": "Ležeče 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "Pretvorba vzorca ni uspela. Poskusite znova.",
+          "timeout": "Pretvorba vzorca še vedno poteka. Poskusite znova kmalu.",
+          "generic": "Pretvorbe vzorca ni bilo mogoče dokončati. Poskusite znova."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "Zahtevan je registriran račun",
+          "body": "AI umetnine in njihova knjižnica ostanejo zasebne za vaš račun.",
+          "signIn": "Prijava"
+        },
+        "header": {
+          "title": "AI generator",
+          "backAccessibilityLabel": "Nazaj"
+        },
+        "prompt": {
+          "label": "Opišite svojo umetnino",
+          "placeholder": "Prijeten podeželski vrt ob sončnem zahodu …"
+        },
+        "generate": {
+          "working": "Delo poteka …",
+          "action": "Ustvari — 1 AI dobropis",
+          "errors": {
+            "promptRejected": "Ta poziv ni bil dovoljen. Poskusite opisati kaj drugega.",
+            "generic": "AI ustvarjanja ni bilo mogoče začeti. Poskusite znova."
+          }
+        },
+        "library": {
+          "title": "Vaša knjižnica AI umetnin",
+          "status": {
+            "pending": "Čaka",
+            "dispatched": "Poslano",
+            "running": "V teku",
+            "delivered": "Dostavljeno",
+            "safety_rejected": "Zavrnjeno zaradi varnosti",
+            "failed": "Neuspešno",
+            "deleted": "Izbrisano",
+            "unknown": "Ni na voljo"
+          },
+          "failure": {
+            "safety_rejected": "Ta umetnina ni prestala varnostnega preverjanja ponudnika.",
+            "failed": "Te umetnine ni bilo mogoče ustvariti."
+          },
+          "approve": "Odobri v vzorec",
+          "delete": "Izbriši",
+          "deleteAccessibilityLabel": "Izbriši to AI umetnino",
+          "errors": {
+            "loadFailed": "Knjižnice AI umetnin ni bilo mogoče naložiti. Poskusite znova."
+          }
+        },
+        "approve": {
+          "modalTitle": "Ustvari osebni vzorec",
+          "titleLabel": "Naslov vzorca",
+          "titleAccessibilityLabel": "Naslov vzorca",
+          "defaultTitle": "Moj AI vzorec",
+          "placeholder": "Moj AI vzorec",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "Prekliči",
+          "creating": "Ustvarjanje vzorca …",
+          "create": "Ustvari vzorec",
+          "errors": {
+            "generic": "Osebnega vzorca ni bilo mogoče ustvariti. Poskusite znova."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "Zahtevan je registriran račun",
+          "body": "Osebni vzorci pripadajo vašemu računu, zato ostanejo zasebni in dostopni na vseh napravah.",
+          "signIn": "Prijava ali ustvarjanje računa",
+          "back": "Nazaj"
+        },
+        "header": {
+          "title": "Vzorec iz fotografije",
+          "subtitle": "Uokvirite lokalno, nato odobrite pretvorbo",
+          "backAccessibilityLabel": "Nazaj"
+        },
+        "picker": {
+          "chooseTitle": "Izberite fotografijo",
+          "helpText": "Lokalni vir fotografije v polni ločljivosti ostane na tej napravi. Nič se ne pretvori, dokler ne odobrite okvirja.",
+          "choose": "Izberi iz knjižnice",
+          "chooseAnother": "Izberi drugo",
+          "opening": "Odpiranje …",
+          "errors": {
+            "permissionDenied": "Za izbiro lokalnega vira fotografije je potreben dostop do knjižnice fotografij.",
+            "invalidDimensions": "Izbrana fotografija ne poroča uporabnih dimenzij.",
+            "generic": "Knjižnice fotografij ni bilo mogoče odpreti. Poskusite znova."
+          }
+        },
+        "framing": {
+          "title": "Uokvirjanje umetnine",
+          "gestureHint": "Povlecite za postavitev · s ščipanjem povečajte",
+          "aspectLabel": "Razmerje okvirja"
+        },
+        "profile": {
+          "title": "Profil pretvorbe",
+          "options": {
+            "easy": "Enostavno",
+            "standard": "Standardno",
+            "detailed": "Podrobno"
+          },
+          "custom": "Po meri",
+          "customMeta": "Prosto · oblika zaklenjena",
+          "unavailable": "Ne ustreza temu okvirju",
+          "customShortEdgeLabel": "Kratki rob",
+          "customColorLimitLabel": "Omejitev DMC barv",
+          "exceedsLimit": "Te vrednosti po meri presegajo omejitev velikosti vzorca {{max}} celic."
+        },
+        "titleCard": {
+          "label": "Naslov vzorca",
+          "placeholder": "Moj vzorec iz fotografije",
+          "defaultTitle": "Moj vzorec iz fotografije",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · do {{maxColors}} DMC {{colorsUnit}}",
+          "privacyNotice": "Odobritev naloži samo uokvirjeno, pomanjšano izpeljanko. Izvirna fotografija ostane lokalna.",
+          "approve": "Odobri umetnino in pretvori"
+        },
+        "processing": {
+          "preparingFrame": "Priprava odobrenega okvirja na tej napravi …",
+          "uploading": "Nalaganje samo obrezanega, pomanjšanega okvirja …",
+          "waitingForWorker": "Čakanje na delavca za pretvorbo …",
+          "buildingGrid": "Izdelava mreže za šivanje in DMC palete …",
+          "preparingSession": "Priprava osebnega vzorca za igranje …"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "Ta profil ne ustreza več končnemu okvirju. Izberite Enostavno ali zmanjšajte podrobnost.",
+            "generic": "Te fotografije ni bilo mogoče pretvoriti. Poskusite znova."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "Noben vzorec ni izbran",
+          "noPatternBody": "Ta zaslon je treba odpreti iz obstoječega osebnega vzorca v vaši knjižnici.",
+          "accountTitle": "Zahtevan je registriran račun",
+          "accountBody": "Osebni vzorci pripadajo vašemu računu, zato ostanejo zasebni in dostopni na vseh napravah.",
+          "signIn": "Prijava ali ustvarjanje računa",
+          "back": "Nazaj"
+        },
+        "loading": "Nadaljevanje osnutka v urejevalniku ...",
+        "load": {
+          "failedTitle": "Nalaganje vzorca ni uspelo",
+          "retry": "Poskusi znova",
+          "back": "Nazaj",
+          "errors": {
+            "generic": "Tega osebnega vzorca ni bilo mogoče naložiti. Poskusite znova."
+          }
+        },
+        "header": {
+          "title": "Urejevalnik vzorcev",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "Nazaj"
+        },
+        "toolbar": {
+          "undo": "Razveljavi",
+          "redo": "Uveljavi"
+        },
+        "mode": {
+          "paint": "Slikanje",
+          "replaceColor": "Zamenjaj barvo",
+          "replaceStep1": "1. Tapnite barvo na spodnjem vzorcu za zamenjavo:",
+          "replaceStep2": "2. Spodaj izberite ciljno DMC barvo za izvedbo zamenjave:",
+          "paintSelected": "Izbrano: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "Spodaj izberite barvo, nato tapnite celice za slikanje."
+        },
+        "errors": {
+          "pickColorFirst": "Najprej izberite barvo",
+          "paletteLimit": "Ta vzorec že uporablja največje dovoljeno število {{max}} barv niti."
+        },
+        "picker": {
+          "title": "DMC barve niti",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "Shrani urejen vzorec",
+          "placeholder": "Naslov mojega urejenega vzorca",
+          "action": "Shrani kot nov",
+          "offlineTitle": "Shranjeno brez povezave",
+          "offlineBody": "Vaš urejeni vzorec je bil shranjen na tej napravi in se bo sinhroniziral z vašim računom, ko boste znova povezani.",
+          "errors": {
+            "generic": "Tega osebnega vzorca ni bilo mogoče shraniti. Poskusite znova."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "Ta prijava pripada drugemu računu. Vaš trenutni račun ni bil spremenjen.",
+        "providerRejected": "Ta preveritev je bila zavrnjena. Preverite račun ali kodo in poskusite znova."
+      },
+      "generic": {
+        "failure": "Prišlo je do napake. Poskusite znova.",
+        "supportReferenceLabel": "Referenca za podporo: {{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Stitch Wish uporablja izbrane fotografije za ustvarjanje osebnih vzorcev ali izbiro javne profilne fotografije ustvarjalca."
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "DOBRODOŠLI V STITCH WISH",
+        "title": "Izberite barvo, tapnite ujemajoča polja.",
+        "heroAlt": "Predogled začetnega vzorca Cozy Heart",
+        "handedness": {
+          "sectionTitle": "Na kateri strani naj bodo kontrolniki?",
+          "groupLabel": "Stran kontrolnikov",
+          "optionRight": "Kontrolniki desno",
+          "optionLeft": "Kontrolniki levo",
+          "saveErrorText": "Te izbire ni bilo mogoče shraniti.",
+          "retry": "Poskusi znova"
+        },
+        "note": "To lahko pozneje spremenite v Nastavitvah.",
+        "start": "Začni šivati",
+        "starting": "Zaganjanje …",
+        "browse": "Prebrskaj začetne vzorce",
+        "signIn": "Prijava"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "Izberite DMC 321 Christmas Red.",
+          "stitchAction": "Tapnite označeno ujemajočo celico.",
+          "mismatchedTap": "Tapnite označeno drugačno celico. Napačni tapi nič ne stanejo.",
+          "undoAction": "Razveljavite ta šiv, nato ga postavite znova.",
+          "stitchSweep": "Pritisnite ujemajočo celico, nato povlecite čez označen niz.",
+          "threadColorCompletion": "Dokončajte označeno belo nit, nato izberite naslednjo barvo."
+        },
+        "hints": {
+          "anchoredZoom": "S ščipanjem povečajte, medtem ko celice ostajajo pod vašimi prsti.",
+          "panVsSweep": "Vlečenje premika tkanino. Začnite na ujemajoči celici za šivanje niza.",
+          "edgeAutoPan": "Nadaljujte šivanje blizu roba in tkanina bo sledila vašemu prstu.",
+          "remainingCellLocator": "Uporabite lokator, da najdete naslednjo preostalo celico za to nit."
+        },
+        "skip": "Preskoči za zdaj",
+        "skipAccessibilityLabel": "Preskoči vodič za zdaj",
+        "dismiss": "Razumem",
+        "dismissAccessibilityLabel": "Opusti namig"
+      },
+      "recap": {
+        "title": "Obvladate",
+        "lines": {
+          "matchNumbers": "Ujemajte številke, da postavite vsak šiv.",
+          "dragSweep": "Povlecite čez ujemajoče celice za niz.",
+          "pinchZoom": "S ščipanjem povečajte, ko potrebujete bližji pogled.",
+          "undoLocator": "Razveljavitev in lokator sta vedno brezplačna."
+        },
+        "continue": "Nadaljuj šivanje",
+        "browsePatterns": "Prebrskaj vzorce"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "Miza za šivanje",
+        "subtitle": "Nadaljujte tam, kjer ste ostali, ali obudite nedaven izdelek.",
+        "loading": "Nalaganje vaših šivov ...",
+        "empty": {
+          "title": "Ni aktivnih izdelkov",
+          "body": "Vaš okvir za šivanje je trenutno prazen. Prebrskajte katalog vzorcev in poiščite nekaj lepega za šivanje!",
+          "action": "Prebrskaj katalog"
+        },
+        "unknownPattern": "Neznan vzorec",
+        "idLabel": "ID: {{id}}",
+        "unknownPatternLabel": "Vzorec {{id}}",
+        "deleteSessionAccessibilityLabel": "Izbriši sejo",
+        "viewFinishedAccessibilityLabel": "Ogled dokončanega izdelka",
+        "resumeAccessibilityLabel": "Nadaljuj šivanje",
+        "status": {
+          "ready": "Pripravljeno",
+          "done": "Končano",
+          "active": "Aktivno",
+          "preparing": "Pripravljanje",
+          "failed": "Neuspešno"
+        },
+        "deleteConfirm": {
+          "title": "Izbriši napredek",
+          "message": "Ali ste prepričani, da želite izbrisati napredek za „{{title}}“? Tega ni mogoče razveljaviti.",
+          "cancel": "Prekliči",
+          "confirm": "Izbriši"
+        },
+        "preparingCard": {
+          "discardTitle": "Zavrzi sejo",
+          "cancelTitle": "Prekliči prenos",
+          "discardMessage": "Ali ste prepričani, da želite zavreči to neuspešno sejo?",
+          "cancelMessage": "Ali ste prepričani, da želite preklicati prenos tega vzorca?",
+          "keep": "Obdrži",
+          "discard": "Zavrzi",
+          "cancel": "Prekliči"
+        }
+      },
+      "loading": {
+        "text": "Odpiranje seje in priprava tkanine ..."
+      },
+      "error": {
+        "title": "Nalaganje seje ni uspelo",
+        "fallbackMessage": "Vaše seje šivanja ni bilo mogoče naložiti.",
+        "backButton": "Nazaj",
+        "tableButton": "Pojdi na mizo"
+      },
+      "header": {
+        "backButton": "← Nazaj",
+        "tableButton": "← Miza",
+        "defaultTitle": "Seja šivanja",
+        "progress": "{{completed}} / {{total}} celic ({{percent}} % dokončano)",
+        "resumeTutorialAccessibilityLabel": "Nadaljuj vodič"
+      },
+      "banners": {
+        "patternRemoved": "Ta vzorec je bil odstranjen zaradi moderiranja in ni več na voljo. Tapnite za izhod.",
+        "syncConflict": "Sinhronizirano z drugo napravo — nekatere celice so bile posodobljene. Tapnite za opustitev."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "Poišči naslednjo preostalo celico aktivne barve niti",
+        "undoAccessibilityLabel": "Razveljavi zadnji šiv"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "Barva {{number}}: DMC {{dmcCode}}, preostane {{count}} šiv",
+        "chipAccessibilityLabel_other": "Barva {{number}}: DMC {{dmcCode}}, preostane {{count}} šivov",
+        "done": "Končano",
+        "remaining_one": "še {{count}}",
+        "remaining_other": "še {{count}}"
+      },
+      "celebration": {
+        "title": "Čudovito izdelano!",
+        "subtitle": "Dokončali ste prav vsak šiv na tej tkanini.",
+        "stitchesLabel_one": "Šiv",
+        "stitchesLabel_other": "Šivi",
+        "colorsLabel_one": "Barva",
+        "colorsLabel_other": "Barve",
+        "replayButton": "Šivaj znova",
+        "catalogButton": "Nazaj na katalog"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "Nazaj",
+        "tryAgain": "Poskusi znova"
+      },
+      "rejectionReasons": {
+        "safety": "Varnost",
+        "publication_rights": "Pravice objave",
+        "duplicate_or_spam": "Podvojeno ali neželena vsebina",
+        "technical_invalidity": "Tehnična neveljavnost",
+        "quality_standard": "Standard kakovosti"
+      },
+      "submissionStatus": {
+        "accepted": "Objavljeno",
+        "appeal_pending": "Pritožba v obravnavi",
+        "appeal_upheld": "Pritožba zavrnjena",
+        "precheck_failed": "Predhodno preverjanje ni na voljo",
+        "precheck_pending": "Preverjanje",
+        "quarantined": "Potreben pregled",
+        "rejected": "Zavrnjeno",
+        "review_pending": "V pregledu"
+      },
+      "revisionStatus": {
+        "accepted": "Objavljeno",
+        "appeal_pending": "Pritožba v obravnavi",
+        "appeal_upheld": "Pritožba zavrnjena",
+        "pending": "V pregledu",
+        "rejected": "Zavrnjeno",
+        "withdrawn": "Umaknjeno"
+      },
+      "home": {
+        "identity": {
+          "establishing": "Vzpostavljanje identitete ...",
+          "pendingTitle": "Identiteta v obravnavi",
+          "offline": "Offline",
+          "retryConnection": "Poskusi povezavo znova",
+          "loadingPublicProfile": "Nalaganje javnega profila ...",
+          "unavailableTitle": "Javni profil ni na voljo",
+          "checkConnection": "Preverite povezavo in poskusite znova.",
+          "createTitle": "Ustvarite svoj javni profil",
+          "createBody": "Izberite trajno uporabniško ime, prikazano ob vaših vzorcih skupnosti. Podatki vašega računa ostanejo zasebni.",
+          "createAction": "Ustvari javni profil",
+          "editAction": "Uredi javni profil",
+          "offlinePendingSync": "Brez povezave — sinhronizacija čaka",
+          "guestPlayer": "Gostujoči igralec",
+          "playingSince": "Igra od {{date}}",
+          "creatorSince": "Ustvarjalec od {{date}}"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "Odpri trgovino",
+          "title": "Stanja v studiu",
+          "commerceStoreLink": "Trgovina",
+          "stitchCoinsAccessibilityLabel": "Stanje kovancev Stitch Coin: {{balance}}. Tapnite za pridobitev kovancev.",
+          "packs": "Paketi",
+          "stitchCoinsLabel": "Kovanci Stitch Coin",
+          "stitchCoinsSub": "Za odklepanje vzorcev",
+          "aiCreditsAccessibilityLabel": "Stanje AI dobropisov: {{balance}}. Tapnite za pridobitev dobropisov.",
+          "aiCreditsSignInAccessibilityLabel": "AI dobropisi. Prijavite se za nakup.",
+          "aiCreditsLabel": "AI dobropisi",
+          "aiCreditsSubOwned": "Za umetnost AI vzorcev",
+          "aiCreditsSubGuest": "Prijavite se za lastništvo",
+          "membershipActiveAccessibilityLabel": "Premium članstvo aktivno ({{plan}}). Tapnite za upravljanje.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Premium. Tapnite za ogled načrtov.",
+          "membershipActiveTitle": "Premium aktiven · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "Letno",
+          "planMonthly": "Mesečno",
+          "planWeekly": "Tedensko",
+          "planActive": "Aktivno",
+          "trialBadge": "Preizkus",
+          "membershipSubActive": "Vse teme odklenjene · Takojšnji dnevni prevzem kovancev",
+          "membershipSubInactive": "Takojšnjih 30 dnevnih kovancev, teme po meri in AI dobropisi",
+          "manage": "Upravljaj",
+          "explore": "Razišči"
+        },
+        "quickNav": {
+          "sectionEyebrow": "RAČUN IN SKUPNOST",
+          "submissionsAccessibilityLabel": "Prispevki v katalog: sledite pregledom, odločitvam in pritožbam",
+          "submissionsTitle": "Prispevki",
+          "submissionsSub": "Sledi pregledom",
+          "publishedAccessibilityLabel": "Objavljeni vzorci: popravite metapodatke, umaknite in sledite pritožbam",
+          "publishedTitle": "Objavljeno",
+          "publishedSub": "Upravljaj vzorce",
+          "moderationAccessibilityLabel": "Obvestila moderiranja: preglejte odločitve o katalogu, ki vplivajo na vaše vzorce",
+          "moderationTitle": "Moderiranje",
+          "moderationSub": "Obvestila politike",
+          "likedAccessibilityLabel": "Priljubljeni vzorci: vaša zasebna zbirka priljubljenih vzorcev skupnosti",
+          "likedTitle": "Priljubljeni vzorci",
+          "likedSavedCount_one": "{{count}} shranjen",
+          "likedSavedCount_other": "{{count}} shranjenih",
+          "likedSavedDefault": "Shranjeni vzorci"
+        },
+        "dailySection": {
+          "title": "Dnevno šivanje in nagrade",
+          "tasksGroupLabel": "Dnevne naloge (+30 kovancev največ)",
+          "connectToTrack": "Povežite se za sledenje napredku dnevnih nalog.",
+          "loadingTasks": "Nalaganje nalog …",
+          "loadFailed": "Dnevnih nalog ni bilo mogoče naložiti.",
+          "retry": "Poskusi znova",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "Ponastavljanje …",
+          "resetsInHoursMinutes": "Ponastavi se čez {{hours}} h {{minutes}} min",
+          "resetsInMinutes": "Ponastavi se čez {{minutes}} min"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 šivalnih dejanj",
+            "body": "Danes izpolnite 100 ujemajočih celic"
+          },
+          "three_colors_10": {
+            "title": "3 barve, po 10 dejanj",
+            "body": "Dosezite 10 dejanj v 3 barvah niti"
+          },
+          "color_completion": {
+            "title": "Dokončaj barvo niti",
+            "body": "Popolnoma dokončajte šivanje katere koli barve"
+          }
+        },
+        "dailyPool": {
+          "title": "Dnevni nagradni sklad 30 kovancev",
+          "premiumInstantClaim": "Takojšen Premium prevzem",
+          "rewardedAds": "Nagrajeni oglasi",
+          "claimedAmount": "{{amount}} kovancev Stitch Coin prevzetih za danes!",
+          "poolAlreadyClosed": "Današnji nagradni sklad je bil že zaprt.",
+          "claimedForToday": "Prevzeto za danes. Ponastavi se na naslednji nagradni dan.",
+          "poolExhausted": "Današnji nagradni sklad 30 kovancev je izčrpan.",
+          "claimButtonRetry": "Poskusi prevzem znova",
+          "claimButtonInstant": "Prevzemi {{count}} kovancev (takoj)",
+          "poolClaimedResetsTomorrow": "Današnji sklad kovancev je bil prevzet. Ponastavi se jutri.",
+          "allAdRewardsCompleted": "Vse nagrade za oglase so za danes dokončane! (30/30 kovancev)",
+          "watchAdButton": "Poglej oglas za +10 kovancev (še {{count}})",
+          "adPerkNote": "Poglejte do 3 oglase/dan · Premium odklene takojšen prevzem 30 kovancev",
+          "adRewardEarned": "Nagrada za oglas prislužena! Preverjanje z zalednim sistemom …",
+          "claimFailed": "Prevzem ni uspel: {{message}}",
+          "claimFailedGeneric": "Prišlo je do napake. Poskusite znova.",
+          "adLoadFailedDefault": "Nalaganje oglasa ni uspelo",
+          "adAttemptFailedDefault": "Odpiranje poskusa oglasa ni uspelo"
+        },
+        "tabs": {
+          "myCreations": "Moje stvaritve {{count}}",
+          "likedPatterns": "Priljubljeni vzorci {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "Prijavite se za osebne vzorce",
+          "signInBody": "Za ustvarjanje in zasebno lastništvo pretvorjenih vzorcev iz fotografij je potreben registriran račun.",
+          "signIn": "Prijava",
+          "patternMeta": "{{width}}×{{height}} · {{count}} barv",
+          "pendingSync": "Sinhronizacija čaka",
+          "play": "Igraj",
+          "edit": "Uredi",
+          "submitAccessibilityLabel": "Pošlji {{title}} v katalog skupnosti",
+          "emptyTitle": "Ni osebnih stvaritev",
+          "emptyBody": "Še niste pretvorili nobene fotografije ali ustvarili AI umetnine. Pojdite na Ustvari in začnite svojo prvo mojstrovino!",
+          "emptyAction": "Začni ustvarjati",
+          "actionFailedGeneric": "Prišlo je do napake. Poskusite znova."
+        },
+        "likedTab": {
+          "unavailableTitle": "Priljubljeni vzorci niso na voljo",
+          "unavailableDefault": "Priljubljenih vzorcev ni bilo mogoče naložiti.",
+          "byCreator": "avtor: {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} barv",
+          "emptyTitle": "Ni priljubljenih vzorcev",
+          "emptyBody": "Prebrskajte katalog in tapnite ikono srca na kateri koli zasnovi, da jo shranite tukaj za pozneje.",
+          "emptyAction": "Odkrij vzorce"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Dnevni Premium prevzem kovancev",
+        "description": "Prevzemite preostanek današnjega skupnega nagradnega sklada 30 kovancev.",
+        "connectPrompt": "Povežite se z zalednim sistemom igre za preverjanje današnje nagrade.",
+        "checkingReward": "Preverjanje današnje Premium nagrade …",
+        "unavailableGeneric": "Današnja Premium nagrada ni na voljo.",
+        "tryAgain": "Poskusi znova",
+        "resultAdded": "{{amount}} kovancev Stitch Coin je dodal zaledni sistem igre. Stanje: {{balance}}.",
+        "poolAlreadyClosed": "Današnji skupni nagradni sklad je bil že zaprt.",
+        "alreadyClaimed": "Za ta nagradni dan je že prevzeto.",
+        "poolExhausted": "Današnji skupni nagradni sklad je izčrpan. Ponastavi se na naslednji nagradni dan.",
+        "availableNow": "{{count}} kovancev Stitch Coin na voljo zdaj",
+        "resetsAt": "Ponastavi se {{date}}",
+        "claimButtonRetry": "Poskusi prevzem znova",
+        "claimButtonInstant": "Prevzemi {{count}} kovancev",
+        "lockedDescription": "Premium članstvo, vključno z upravičenim mesečnim preizkusom, odklene ta dnevni prevzem.",
+        "viewPremiumPlans": "Ogled Premium načrtov"
+      },
+      "publicProfile": {
+        "editTitle": "Uredi javni profil",
+        "createTitle": "Ustvari javni profil",
+        "signInTitle": "Zahtevana je prijava",
+        "signInBody": "Za ustvarjanje javne identitete ustvarjalca je potreben registriran račun.",
+        "signInAction": "Prijava",
+        "unavailableTitle": "Profil ni na voljo",
+        "unavailableBody": "Vašega javnega profila ni bilo mogoče naložiti. Preverite povezavo in poskusite znova.",
+        "tryAgain": "Poskusi znova",
+        "intro": "To ime in fotografija sta vidna ob vaših vzorcih skupnosti. Vaš e-poštni naslov in ponudnik prijave ostaneta zasebna.",
+        "choosePhoto": "Izberi fotografijo",
+        "changePhoto": "Spremeni fotografijo",
+        "remove": "Odstrani",
+        "avatarHelper": "Neobvezno · JPEG, PNG ali WebP · do 5 MB",
+        "usernameLabel": "Uporabniško ime",
+        "usernameAccessibilityLabel": "Javno uporabniško ime",
+        "usernamePlaceholder": "ime_šivalca",
+        "usernameHelperLocked": "Vaše uporabniško ime je trajno.",
+        "usernameHelperEditable": "3–30 malih črk, številk ali podčrtajev. Tega pozneje ni mogoče spremeniti.",
+        "displayNameLabel": "Prikazano ime",
+        "displayNameAccessibilityLabel": "Javno prikazano ime",
+        "displayNamePlaceholder": "Vaše ustvarjalčevo ime",
+        "displayNameHelper": "To lahko pozneje spremenite.",
+        "safetyNotice": "Imena in fotografije so pred objavo preverjeni. Če je sprememba zavrnjena, vaš trenutni javni profil ostane nespremenjen.",
+        "saveAction": "Shrani javni profil",
+        "publishAction": "Objavi javni profil",
+        "photoPermissionRequired": "Za izbiro profilne fotografije je potreben dostop do knjižnice fotografij.",
+        "photoTypeInvalid": "Profilne fotografije morajo biti JPEG, PNG ali WebP.",
+        "photoTooLarge": "Profilne fotografije morajo biti manjše ali enake 5 MB.",
+        "saveFailedDefault": "Vašega javnega profila ni bilo mogoče shraniti"
+      },
+      "submissions": {
+        "title": "Prispevki v katalog",
+        "unavailableTitle": "Prispevki niso na voljo",
+        "unavailableDefault": "Vaših prispevkov ni bilo mogoče naložiti.",
+        "emptyTitle": "Ni prispevkov v katalog",
+        "emptyBody": "Pošljite sinhroniziran osebni vzorec iz Moje stvaritve.",
+        "emptyAction": "Nazaj na Moje stvaritve",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "Samodejnih preverjanj ni bilo mogoče dokončati. Ta posnetek ni bil objavljen.",
+        "publishedToCatalog": "Objavljeno v katalogu skupnosti.",
+        "appealAction": "Vloži pritožbo",
+        "appealHelp": "Ta nespremenjeni posnetek lahko pritožite enkrat.",
+        "appealNoteAccessibilityLabel": "Opomba pritožbe",
+        "appealNotePlaceholder": "Neobvezen kontekst za moderatorja, ki bo pregledal",
+        "cancelAction": "Prekliči",
+        "submitAppealAction": "Pošlji pritožbo"
+      },
+      "publishedPatterns": {
+        "title": "Objavljeni vzorci",
+        "unavailableTitle": "Vzorci niso na voljo",
+        "unavailableDefault": "Vaših objavljenih vzorcev ni bilo mogoče naložiti.",
+        "emptyTitle": "Ni objavljenih vzorcev",
+        "emptyBody": "Vzorci, ki jih objavite v katalogu skupnosti, se prikažejo tukaj.",
+        "emptyAction": "Nazaj na profil",
+        "withdrawnFromCatalog": "Umaknjeno iz kataloga",
+        "underReviewHold": "V zadržanju zaradi pregleda",
+        "meta": "{{category}} · Objavljeno {{date}}",
+        "withdrawnHelp": "Ta identiteta je trajno umaknjena. Igralci z obstoječo sejo šivanja obdržijo svoj napredek in dostop.",
+        "reviewHoldHelp": "Ta vzorec je začasno izven odkrivanja in ne more začeti novih sej. Obstoječe seje šivanja ostanejo igralne. Še vedno lahko predlagate revizijo metapodatkov.",
+        "reviseAction": "Popravi metapodatke",
+        "withdrawRevisionAction": "Umakni revizijo",
+        "appealAction": "Vloži pritožbo",
+        "withdrawFromCatalogAction": "Umakni iz kataloga",
+        "appealHelp": "Ta nespremenjeni posnetek lahko pritožite enkrat. Če namesto tega oddate novo revizijo, se tej pritožbi odpoveste.",
+        "appealNoteAccessibilityLabel": "Opomba pritožbe",
+        "appealNotePlaceholder": "Neobvezen kontekst za moderatorja, ki bo pregledal",
+        "cancelAction": "Prekliči",
+        "submitAppealAction": "Pošlji pritožbo",
+        "withdrawRevisionFailedTitle": "Revizije ni bilo mogoče umakniti",
+        "withdrawPatternFailedTitle": "Vzorca ni bilo mogoče umakniti",
+        "withdrawPatternSuccessTitle": "Vzorec umaknjen",
+        "withdrawPatternSuccessBody": "Ni več mogoče odkriti in ne more začeti novih sej. Obstoječe seje šivanja obdržijo svoj napredek in igralne podatke.",
+        "withdrawConfirmTitle": "Umakniti iz kataloga skupnosti?",
+        "withdrawConfirmBody": "„{{title}}“ bo izginil iz odkrivanja in ne bo mogel začeti novih sej. Te identitete vzorca ni mogoče nikoli obnoviti. Obstoječe seje šivanja in njihov napredek ostanejo igralni.",
+        "withdrawConfirmCancel": "Prekliči",
+        "withdrawConfirmAction": "Trajno umakni"
+      },
+      "revisePatternMetadata": {
+        "title": "Popravi metapodatke",
+        "signInTitle": "Zahtevan je registriran račun",
+        "signInBody": "Pred popravljanjem metapodatkov vzorca skupnosti se prijavite.",
+        "signInAction": "Prijava",
+        "notFoundTitle": "Vzorec skupnosti ni najden",
+        "notFoundBody": "Popraviti je mogoče samo vaše lastne objavljene vzorce skupnosti.",
+        "notFoundAction": "Nazaj na objavljene vzorce",
+        "inProgressTitle": "Revizija že poteka",
+        "inProgressBody": "Ta vzorec že ima čakajočo revizijo ali aktivno pritožbo. Umaknite jo, preden oddate drugo.",
+        "inProgressAction": "Nazaj na objavljene vzorce",
+        "currentlyPublished": "Trenutno objavljeno v katalogu skupnosti",
+        "titleFieldLabel": "Naslov v katalogu",
+        "titlePlaceholder": "Naslov vzorca",
+        "titleAccessibilityLabel": "Naslov v katalogu",
+        "descriptionFieldLabel": "Opis",
+        "descriptionPlaceholder": "Opišite zasnovo, motiv in izkušnjo šivanja.",
+        "descriptionAccessibilityLabel": "Opis v katalogu",
+        "sourceLanguageFieldLabel": "Izvorni jezik",
+        "categoryFieldLabel": "Kategorija",
+        "tagsFieldLabel": "Oznake",
+        "notice": "Popravljanje ustvari nov nespremenljiv posnetek. Vaši trenutno objavljeni metapodatki ostanejo vidni, dokler moderator ne sprejme te revizije.",
+        "submitAction": "Pošlji revizijo"
+      },
+      "submitPattern": {
+        "title": "Pošlji skupnosti",
+        "signInTitle": "Zahtevan je registriran račun",
+        "signInBody": "Pred pošiljanjem osebnega vzorca v katalog skupnosti se prijavite.",
+        "signInAction": "Prijava",
+        "createProfileTitle": "Ustvarite javni profil ustvarjalca",
+        "createProfileBody": "Vzorci skupnosti se pripišejo vaši javni identiteti ustvarjalca.",
+        "createProfileAction": "Ustvari profil",
+        "patternNotFoundTitle": "Osebni vzorec ni najden",
+        "patternNotFoundBody": "Poslati je mogoče samo sinhronizirane osebne vzorce.",
+        "patternNotFoundAction": "Nazaj na profil",
+        "patternMeta": "{{width}}×{{height}} · {{count}} barv",
+        "byCreator": "Avtor: @{{username}}",
+        "titleFieldLabel": "Naslov v katalogu",
+        "titlePlaceholder": "Naslov vzorca",
+        "titleAccessibilityLabel": "Naslov v katalogu",
+        "descriptionFieldLabel": "Opis",
+        "descriptionPlaceholder": "Opišite zasnovo, motiv in izkušnjo šivanja.",
+        "descriptionAccessibilityLabel": "Opis v katalogu",
+        "sourceLanguageFieldLabel": "Izvorni jezik",
+        "categoryFieldLabel": "Kategorija",
+        "tagsFieldLabel": "Oznake",
+        "rightsDeclaration": "To delo sem ustvaril sam ali imam potrebne pravice za njegovo objavo v skladu z izjavo o pravicah objave v1.",
+        "notice": "Oddaja ustvari nespremenljivo kopijo. Samodejna preverjanja zagotavljajo dokaze, vendar vsako odločitev sprejme moderator.",
+        "submitAction": "Pošlji v pregled"
+      },
+      "moderationNotices": {
+        "title": "Obvestila moderiranja",
+        "signInTitle": "Prijavite se za ogled obvestil",
+        "signInBody": "Obvestila moderiranja pripadajo registriranemu računu, ki je objavil prizadeti vzorec skupnosti.",
+        "signInAction": "Prijava",
+        "unavailableTitle": "Obvestila niso na voljo",
+        "unavailableDefault": "Obvestil moderiranja ni bilo mogoče naložiti.",
+        "emptyTitle": "Ni obvestil moderiranja",
+        "emptyBody": "Odločitve moderiranja kataloga, vidne lastniku, se prikažejo tukaj.",
+        "emptyAction": "Nazaj na profil",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "Popravek metapodatkov kataloga",
+          "no_violation": "Pregled zaključen — ni kršitve",
+          "review_hold": "Zadržanje zaradi pregleda",
+          "safety_removal": "Odstranitev zaradi varnosti"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "Naslov, opis in izbrane oznake so bili nadomeščeni z varnimi vrednostmi. Razpoložljivost, artefakt vzorca in predogled niso prizadeti. Kadar koli lahko oddate novo revizijo metapodatkov kataloga.",
+          "no_violation": "Pregled po objavi je zaključen in ta vzorec je znova povsem na voljo pri odkrivanju in novih sejah šivanja.",
+          "review_hold": "Ta vzorec je začasno nedostopen za odkrivanje in nove seje. Obstoječe seje šivanja, napredek in podatki vzorca brez povezave ostanejo igralni.",
+          "safety_removal": "Ta vzorec je bil odstranjen zaradi kršitve varnosti, zakonodaje ali politike. Odstranjen je bil iz odkrivanja, obstoječe seje šivanja so postale nedostopne, podatki vzorca brez povezave na vaših napravah pa so bili izbrisani. Lahko oddate eno pritožbo na odstranitev zaradi varnosti."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "Dnevne naloge",
+        "offline": "Brez povezave ste — dnevne naloge potrebujejo povezavo.",
+        "unavailable": "Dnevnih nalog ni bilo mogoče naložiti.",
+        "empty": "Danes ni na voljo nobenih nalog."
+      },
+      "rewardedAdCard": {
+        "offline": "Brez povezave ste — nagradni dan potrebuje povezavo.",
+        "unavailable": "Stanja nagradnega dneva ni bilo mogoče naložiti.",
+        "premiumClaimClosedPool": "Vaš dnevni Premium prevzem je zaprl današnji skupni sklad kovancev.",
+        "allRewardsClaimed": "Vse nagrade za oglase ste prevzeli za danes. Vrnite se jutri!",
+        "remaining_one": "Danes še {{count}} oglas ({{coins}} kovancev na voljo)",
+        "remaining_other": "Danes še {{count}} oglasov ({{coins}} kovancev na voljo)",
+        "watchForCoins": "Poglej oglas za {{count}} kovancev"
+      },
+      "likedPatterns": {
+        "title": "Priljubljeni vzorci",
+        "signInTitle": "Zahtevan je registriran račun",
+        "signInBody": "Pred ogledom svoje zasebne zbirke priljubljenih vzorcev se prijavite.",
+        "signInAction": "Prijava",
+        "unavailableTitle": "Priljubljeni vzorci niso na voljo",
+        "unavailableDefault": "Priljubljenih vzorcev ni bilo mogoče naložiti.",
+        "emptyTitle": "Ni priljubljenih vzorcev",
+        "emptyBody": "Prebrskajte katalog vzorcev in tapnite ikono srca na kateri koli zasnovi, da jo shranite tukaj.",
+        "emptyAction": "Odkrij vzorce",
+        "byCreator": "avtor: {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} barv · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "Nastavitve",
+        "subtitleDev": "Konfigurirajte nastavitve in preglejte zaledne sisteme.",
+        "subtitleProd": "Konfigurirajte svoje nastavitve."
+      },
+      "serviceStatus": {
+        "sectionTitle": "Stanje storitve",
+        "apiConnectionTitle": "API povezava",
+        "testingConnection": "Testiranje API povezave ...",
+        "offlineUnreachable": "Brez povezave / nedosegljivo",
+        "unknownConnectionError": "Neznana napaka povezave",
+        "retryConnection": "Poskusi povezavo znova",
+        "healthy": "Zdravo",
+        "degraded": "Oslabljeno",
+        "postgresLabel": "Podatkovna baza PostgreSQL",
+        "redisLabel": "Predpomnilnik Redis"
+      },
+      "session": {
+        "sectionTitle": "Identiteta in seja",
+        "statusTitle": "Stanje zaledne seje",
+        "statusDescription": "Preveri vašo aktivno gostujočo registracijsko sejo prek API-ja.",
+        "noActiveSession": "Ni aktivne seje",
+        "sessionActive": "Seja aktivna",
+        "idLabel": "ID: {{id}} (v{{version}})",
+        "unknownState": "Neznano stanje"
+      },
+      "tutorial": {
+        "sectionTitle": "Vodič",
+        "learnControlsTitle": "Spoznaj kontrolnike",
+        "learnControlsDescription": "Nadaljujte vodič za šivanje, ko boste pripravljeni.",
+        "unavailableTitle": "Vodič ni na voljo",
+        "unavailableMessage": "Vodiča ni bilo mogoče nadaljevati. Poskusite znova."
+      },
+      "developer": {
+        "sectionTitle": "Razvijalec",
+        "debugDiagnostics": "Razhroščevanje / diagnostika",
+        "debug": {
+          "backAccessibilityLabel": "Nazaj",
+          "title": "Razhroščevanje",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: konfiguriran · okolje: {{environment}}",
+            "dsnNotConfigured": "DSN: ni konfiguriran",
+            "sendTestEvent": "Pošlji testni dogodek",
+            "throwError": "Sproži napako",
+            "disabledTitle": "Sentry onemogočen",
+            "disabledMessage": "Sentry ni konfiguriran (DSN ni najden), zato testni dogodek ne bo poslan.",
+            "testEventSent": "Testni dogodek poslan. ID dogodka: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "Napaka",
+            "testEventFailedMessage": "Pošiljanje testnega dogodka ni uspelo: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Uvajanje",
+            "description": "Počisti napredek vodiča in začni znova od Dobrodošlice.",
+            "restart": "Ponovno zaženi uvajanje",
+            "confirmTitle": "Ponovno zagnati uvajanje?",
+            "confirmMessage": "Stanje vodiča bo počiščeno in uvajanje se bo začelo znova od zaslona Dobrodošlica.",
+            "cancel": "Prekliči",
+            "resetFailedTitle": "Ponastavitev ni uspela"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "Izbris računa",
+        "statusTitle": "Stanje izbrisa računa",
+        "checkingStatus": "Preverjanje stanja ...",
+        "pendingTitle": "Izbris računa čaka",
+        "pendingDescription": "Izbris vašega računa je predviden. Za preklic se prijavite znova pred koncem okna za obnovitev.",
+        "recoveryWindowEnds": "Okno za obnovitev se konča: {{date}}",
+        "cancelling": "Preklic ...",
+        "cancelDeletion": "Prekliči izbris",
+        "statusError": "Stanja izbrisa ni bilo mogoče preveriti. Preverite povezavo in poskusite znova.",
+        "deleteAccountTitle": "Izbriši račun",
+        "deleteAccountDescription": "Trajno izbrišite svoj račun, napredek in vse odklepe po 30-dnevnem oknu za obnovitev.",
+        "requestedTitle": "Izbris računa zahtevan",
+        "requestedMessage": "Vaša zahteva za izbris čaka do {{date}}. Vaš račun je bil odjavljen. Za preklic tega izbrisa se pred tem znova prijavite.",
+        "signOutFailedTitle": "Lokalna odjava ni uspela",
+        "signOutFailedMessage": "Vaša zahteva za izbris še vedno čaka. Odjavite se znova v Nastavitvah.",
+        "requestFailedTitle": "Zahteva ni uspela",
+        "requestFailedMessage": "Vaša zahteva za izbris ni bila poslana. Preverite povezavo in poskusite znova.",
+        "cancelSuccessTitle": "Uspešno",
+        "cancelSuccessMessage": "Vaša zahteva za izbris računa je bila preklicana.",
+        "reauthRequiredTitle": "Zahtevana je ponovna avtentikacija",
+        "reauthRequiredMessage": "Zaradi varnosti se morate pred preklicem izbrisa računa znova prijaviti.",
+        "signInAction": "Prijava",
+        "cancelFailedTitle": "Preklic ni uspel",
+        "cancelFailedGeneric": "Izbrisa računa ni bilo mogoče preklicati. Preverite povezavo in poskusite znova."
+      },
+      "appearance": {
+        "sectionTitle": "Videz"
+      },
+      "themeCollectionCard": {
+        "title": "Zbirka tem",
+        "description": "Spremenite kozmetiko mreže, šiva in dokončanja brez vpliva na igranje.",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "Zahteva Premium članstvo",
+        "selected": "Izbrano",
+        "accessActive": "Dostop do Premium tem je aktiven, tudi med upravičenim mesečnim preizkusom.",
+        "lockedPreview": "Oglejte si zbirko tukaj. Premium članstvo ali upravičen mesečni preizkus odklene izbiro.",
+        "viewPremiumPlans": "Ogled Premium načrtov"
+      },
+      "gameplay": {
+        "sectionTitle": "Nastavitve igranja",
+        "showGridLinesTitle": "Prikaži mrežne črte",
+        "showGridLinesDescription": "Prikaz meja med celicami platna za šivanje",
+        "handednessTitle": "Postavitev za desničarje/levičarje",
+        "handednessDescription": "Poravnajte interaktivne kontrolnike za igranje z levo ali desno roko",
+        "left": "Levo",
+        "right": "Desno",
+        "leftHandedLayout": "Postavitev za levičarje",
+        "rightHandedLayout": "Postavitev za desničarje"
+      },
+      "language": {
+        "sectionTitle": "Jezik",
+        "description": "Izberite jezik, v katerem Stitch Wish prikazuje vmesnik.",
+        "followDevice": "Sledi jeziku naprave",
+        "followDeviceDescription": "Počistite svojo izbiro, da sledite jezikovni nastavitvi naprave.",
+        "optionEnglish": "English",
+        "optionTurkish": "Türkçe",
+        "modalTitle": "Izberi jezik",
+        "modalSubtitle": "Izberite želeni jezik za vmesnik.",
+        "systemDefault": "Jezik sistema",
+        "systemDefaultWithDetected": "Jezik sistema ({{language}})",
+        "systemDefaultDescription": "Samodejno se ujema z nastavitvami vaše naprave."
+      },
+      "social": {
+        "sectionTitle": "Socialno in zasebnost",
+        "blockedCreators": "Blokirani ustvarjalci"
+      },
+      "account": {
+        "sectionTitle": "Račun",
+        "notSignedInTitle": "Niste prijavljeni",
+        "signInRequiredTitle": "Zahtevana je prijava",
+        "notSignedInDescription": "Prijavite se za sinhronizacijo napredka med napravami.",
+        "signIn": "Prijava",
+        "reconnecting": "Ponovno povezovanje …",
+        "signOut": "Odjava",
+        "signOutConfirmTitle": "Odjava?",
+        "signOutConfirmMessage": "Vaš nesihroniziran napredek ostane na tej napravi in se znova odpre, ko se prijavite nazaj.",
+        "signOutConfirmAction": "Odjava",
+        "signOutFailedTitle": "Odjava ni uspela",
+        "signOutFailedGeneric": "Poskusite znova.",
+        "providerAppleAccount": "Račun Apple",
+        "providerGoogleAccount": "Račun Google",
+        "providerGenericAccount": "Registriran račun"
+      },
+      "signIn": {
+        "emailHeading": "Prijava ali ustvarjanje računa",
+        "emailSubtitle": "Ohranite svoj napredek dostopen na vseh napravah.",
+        "codeHeading": "Vnesite svojo kodo",
+        "codeSubtitle": "Vnesite 6-mestno kodo, ki smo jo poslali na {{email}}.",
+        "continueWithGoogle": "Nadaljuj z Google",
+        "orUseEmail": "ali uporabi e-pošto",
+        "ssoUnavailable": "Prijava z Google in Apple v tej različici ni na voljo.",
+        "emailLabel": "E-poštni naslov",
+        "emailPlaceholder": "E-poštni naslov",
+        "sendCode": "Pošlji kodo",
+        "cancel": "Prekliči",
+        "verify": "Preveri",
+        "resendCode": "Pošlji kodo znova",
+        "resending": "Ponovno pošiljanje ...",
+        "codeSent": "Koda poslana",
+        "useDifferentEmail": "Uporabi drug e-poštni naslov",
+        "sendCodeFailed": "Kode ni bilo mogoče poslati. Preverite povezavo in poskusite znova.",
+        "codeIncorrect": "Ta koda je nepravilna ali je potekla.",
+        "verifyFailedGeneric": "Prišlo je do napake. Poskusite znova.",
+        "socialSignInFailed": "Prijava z {{provider}} ni uspela. Poskusite znova.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "Nazaj",
+        "title": "Blokirani ustvarjalci",
+        "infoText": "Blokiranje je zasebno in povratno dejanje. Skrije ustvarjalčeve vzorce skupnosti iz vaših pogledov kataloga, iskanja in seznamov odkrivanja. To ni prijava ali odstranitev vsebine.",
+        "signInRequiredTitle": "Zahtevan je registriran račun",
+        "signInRequiredBody": "Pred upravljanjem seznama blokiranih ustvarjalcev se prijavite.",
+        "signInAction": "Prijava",
+        "listUnavailableTitle": "Seznam ni na voljo",
+        "listUnavailableDefault": "Blokiranih ustvarjalcev ni bilo mogoče naložiti.",
+        "tryAgain": "Poskusi znova",
+        "emptyTitle": "Ni blokiranih ustvarjalcev",
+        "emptyBody": "Nikogar niste blokirali. Ustvarjalca lahko blokirate na kateri koli strani s podrobnostmi njegovega vzorca.",
+        "backToSettings": "Nazaj na nastavitve",
+        "unblock": "Odblokiraj",
+        "unblockConfirmTitle": "Odblokiraj ustvarjalca",
+        "unblockConfirmMessage": "Ali ste prepričani, da želite odblokirati {{name}}? Njihovi vzorci se bodo znova prikazali v rezultatih vašega iskanja in brskanja.",
+        "cancel": "Prekliči",
+        "successTitle": "Uspešno",
+        "unblockedMessage": "{{name}} je bil odblokiran.",
+        "errorTitle": "Napaka",
+        "unblockFailedMessage": "Odblokiranje ustvarjalca ni uspelo: {{message}}",
+        "unblockFailedGeneric": "Neznana napaka"
+      },
+      "data": {
+        "sectionTitle": "Podatki",
+        "resetGuestTitle": "Ponastavi gostujoče podatke",
+        "resetGuestDescription": "Nepovratno zaprite gostujočo identiteto na strežniku in izbrišite vse podatke na napravi.",
+        "resetGuestOffline": "Brez povezave: za ponastavitev gostujočih podatkov je potrebna aktivna povezava s strežnikom.",
+        "resetGuestPurchaseLock": "Ponastavitev je blokirana, dokler nakup še ni preverjen. Potrošnih dobrin in zasebnih gostujočih podatkov potem ni mogoče obnoviti.",
+        "removeLocalTitle": "Odstrani lokalne podatke",
+        "removeLocalDescription": "Izbrišite podatkovno bazo vašega lokalnega prostora imen identitete s te naprave.",
+        "removeLocalConfirmTitle": "Odstraniti lokalne podatke?",
+        "removeLocalConfirmMessage": "Opozorilo: to bo izbrisalo vaše lokalne podatkovne datoteke samo s te naprave. Vsi nesihronizirani zapisi bodo trajno izgubljeni.",
+        "removeLocalConfirmAction": "Odstrani",
+        "removeLocalSuccessTitle": "Uspešno",
+        "removeLocalSuccessMessage": "Lokalni podatki so bili odstranjeni s te naprave.",
+        "removeLocalFailedTitle": "Odstranitev ni uspela",
+        "removeLocalFailedMessage": "Odstranitev lokalnih podatkov ni uspela: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "Informacije in povezave",
+        "privacyPolicy": "Politika zasebnosti",
+        "termsOfService": "Pogoji uporabe",
+        "contactSupport": "Kontaktiraj podporo",
+        "accountDeletion": "Izbris računa",
+        "openFailedMessage": "Povezave ni bilo mogoče odpreti: {{url}}",
+        "openFailedGenericTitle": "Napaka"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — prijazna pikselna umetnost šivanja",
+        "version": "Različica {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "Paket: {{id}}",
+        "schemeLabel": "Shema: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "Ponastaviti gostujoče podatke?",
+        "warning": "To dejanje bo nepovratno zaprlo vašo gostujočo identiteto na strežniku in trajno izbrisalo:",
+        "bulletProgress": "• lokalni napredek",
+        "bulletRewards": "• čakajoče nagrade",
+        "bulletLikes": "• všečke",
+        "bulletUnlockAccess": "• dostop do odklepov",
+        "bulletOfflinePatterns": "• podatke vzorcev brez povezave",
+        "confirmPrefix": "Za potrditev spodaj vnesite ",
+        "confirmSuffix": ":",
+        "confirmAction": "Ponastavi podatke",
+        "resetting": "Ponastavljanje gostujočih podatkov ...",
+        "successTitle": "Uspešno",
+        "successMessage": "Gostujoči podatki so bili v celoti ponastavljeni.",
+        "failedTitle": "Ponastavitev ni uspela",
+        "failedMessage": "Ponastavitev gostujočih podatkov ni uspela: {{message}}. Poskusite znova."
+      },
+      "deleteModal": {
+        "title": "Izbrisati račun?",
+        "recoveryPrefix": "Vaš račun preide v ",
+        "recoveryBold": "30-dnevno okno za obnovitev izbrisa",
+        "recoverySuffix": ". Za preklic izbrisa se v tem oknu znova prijavite.",
+        "bulletBalances": "• stanja kovancev Stitch Coin in AI dobropisov",
+        "bulletUnlocks": "• vse odklepe vzorcev",
+        "bulletArtwork": "• AI umetnine in osebne vzorce",
+        "bulletProgress": "• sinhroniziran napredek in všečke",
+        "consequencesPrefix": "Ob koncu okna za obnovitev so ti podatki izbrisani ali zapadejo brez povračila ali prenosa. Objavljeni vzorci skupnosti se umaknejo iz kataloga, avtorstvo postane ",
+        "consequencesBold": "Izbrisani ustvarjalec",
+        "consequencesSuffix": ", vaše uporabniško ime pa ostane trajno rezervirano.",
+        "membershipWarning": "Vaše Premium članstvo se lahko še naprej zaračunava tudi po izbrisu računa. Izbris ga ne prekliče; če želite ustaviti zaračunavanje, ga pred nadaljevanjem uredite ločeno.",
+        "manageAppleSubscription": "Upravljaj naročnino Apple",
+        "continueAction": "Nadaljuj",
+        "confirmTitle": "Potrdi izbris",
+        "confirmPrefix": "Za potrditev, da želite izbrisati svoj račun, v spodnje polje vnesite ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": ":",
+        "submitting": "Pošiljanje zahteve za izbris ...",
+        "backAction": "Nazaj",
+        "confirmAction": "Potrdi"
+      },
+      "reauthModal": {
+        "title": "Preverite svojo identiteto",
+        "description": "Zaradi varnosti se preverite z metodo prijave, ki je že povezana s tem računom. Izbris se po preveritvi samodejno nadaljuje.",
+        "loading": "Nalaganje metod prijave ...",
+        "codeSentMessage": "Vnesite 6-mestno kodo, poslano na {{email}}.",
+        "verifyAndDelete": "Preveri in izbriši",
+        "emailButton": "E-pošta {{email}}",
+        "continueWithProvider": "Nadaljuj z {{provider}}",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "Nobena povezana metoda prijave ni na voljo. Pred ponovnim poskusom izbrisa se obrnite na podporo.",
+        "loadFailed": "Vaših povezanih metod prijave ni bilo mogoče naložiti. Preverite povezavo in poskusite znova.",
+        "retryFailed": "Vaša identiteta je bila preverjena, vendar izbris ni bil poslan. Zaprite to pogovorno okno in poskusite izbris znova.",
+        "emailMissing": "Ta povezana e-poštna metoda nima naslova. Izberite drugo metodo.",
+        "genericFailure": "Ponovna avtentikacija ni uspela. Preverite povezavo in poskusite znova."
+      },
+      "actions": {
+        "cancel": "Prekliči",
+        "retry": "Poskusi znova"
+      },
+      "common": {
+        "unavailable": "Ni na voljo"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "Katalog",
+        "stitch": "Šivanje",
+        "create": "Ustvari",
+        "profile": "Profil",
+        "settings": "Nastavitve"
+      }
+    }
+  },
   "tr": {
     "catalog": {
       "common": {

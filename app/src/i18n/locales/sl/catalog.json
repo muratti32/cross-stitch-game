@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Nazaj",
+    "searchPlaceholder": "Iskanje vzorcev, ustvarjalcev, oznak …",
+    "offlineBanner": "Brez povezave — katalog je morda zastarel",
+    "sectionError": {
+      "title": "Nalaganje ni uspelo",
+      "retry": "Poskusi znova"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} barv",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} stolpcev",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "angleščina"
+    },
+    "accessibilityLabel": "Napisano v jeziku {{language}}"
+  },
+  "index": {
+    "subtitle": "Ustvari svoj prijeten svet, šiv za šivom.",
+    "searchBar": {
+      "accessibilityLabel": "Iskanje po katalogu vzorcev"
+    },
+    "sections": {
+      "starterPatterns": "Začetni vzorci",
+      "staffPicks": "Izbor uredništva",
+      "categories": "Kategorije",
+      "newPatterns": "Novi vzorci"
+    },
+    "staffPicks": {
+      "emptyTitle": "Še ni izbora uredništva",
+      "emptyBody": "Naša izbrana zbirka prijetnih vzorcev bo kmalu prikazana tukaj.",
+      "errorBody": "Kataloga ni bilo mogoče doseči in ničesar še ni shranjenega v predpomnilniku."
+    },
+    "categories": {
+      "count": "{{count}} vzorcev",
+      "errorBody": "Kataloga ni bilo mogoče doseči in ničesar še ni shranjenega v predpomnilniku."
+    },
+    "newPatterns": {
+      "emptyTitle": "Novi vzorci nastajajo",
+      "emptyBody": "Svežine so na poti!",
+      "errorBody": "Kataloga ni bilo mogoče doseči in ničesar še ni shranjenega v predpomnilniku.",
+      "showMore": "Prikaži več",
+      "loading": "Nalaganje …"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Brskanje",
+    "error": {
+      "body": "Te strani kataloga ni bilo mogoče doseči in ničesar še ni shranjenega v predpomnilniku."
+    },
+    "empty": {
+      "title": "Tukaj še ni ničesar",
+      "body": "Nobenemu vzorcu še ne ustreza ta izbor. Nove zasnove prihajajo redno."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Vnosno polje za iskanje po katalogu",
+    "inactive": {
+      "title": "Iskanje po katalogu",
+      "body": "Vnesite vsaj dva znaka za iskanje vzorcev po naslovu, ustvarjalcu ali oznaki."
+    },
+    "error": {
+      "title": "Iskanje potrebuje povezavo",
+      "body": "Iskanje po katalogu brez povezave ni na voljo. Predpomnjene strani kataloga ostanejo dostopne v zavihku Katalog."
+    },
+    "noResults": {
+      "title": "Ni zadetkov",
+      "body": "V katalogu še ni ničesar, kar bi ustrezalo iskanju „{{query}}“."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Igranje kot gost",
+    "body": "Stitch Coin in napredek kot gost obstajata samo na tej napravi. Če se namestitev izgubi, gostovega dobroimetja in napredka morda ne bo mogoče obnoviti. Prijava ščiti vaš napredek."
+  },
+  "detail": {
+    "noDescription": "Opis ni na voljo.",
+    "specs": {
+      "dimensions": "Dimenzije",
+      "totalStitches": "Skupno število šivov",
+      "colors": "Barve",
+      "category": "Kategorija"
+    },
+    "threadsSuffix": "{{count}} niti",
+    "palette": {
+      "title": "Potrebne niti",
+      "loading": "Branje palete niti ...",
+      "loadFailed": "Nalaganje palete ni uspelo: {{error}}",
+      "retry": "Poskusi znova"
+    },
+    "actions": {
+      "startStitching": "Začni šivati",
+      "starting": "Zaganjanje ...",
+      "preparing": "Pripravljanje …"
+    },
+    "loadFailedGeneric": "Dekodiranje datoteke z vzorcem ni uspelo.",
+    "sessionCreateFailed": "Ustvarjanje seje šivanja ni uspelo. Poskusite znova.",
+    "unavailable": {
+      "title": "Vzorec ni na voljo",
+      "body": "Tega vzorca ni bilo mogoče naložiti. Morda je bil odstranjen ali pa niste povezani s spletom.",
+      "goBack": "Nazaj"
+    },
+    "byCreator": "avtor: {{creatorName}}",
+    "byCreatorWithUsername": "avtor: {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Blokiraj ustvarjalca",
+      "message": "Ali ste prepričani, da želite blokirati uporabnika {{creatorName}}? To je zasebno, povratno dejanje, ki skrije njegove vzorce pred iskanjem in brskanjem. S tem ustvarjalec ni prijavljen in vaša trenutna seja šivanja ne bo prekinjena.",
+      "cancel": "Prekliči",
+      "confirm": "Blokiraj",
+      "blockedTitle": "Blokirano",
+      "blockedMessage": "Uporabnik {{creatorName}} je bil blokiran.",
+      "errorTitle": "Napaka",
+      "failedGeneric": "Blokiranje ustvarjalca ni uspelo."
+    },
+    "likeFailedGeneric": "Posodobitev statusa všečka ni uspela",
+    "connectToPlay": {
+      "title": "Za igranje se povežite",
+      "body": "Za začetek vzorca iz kataloga je potrebna povezava, da se pripravi vaša seja. Začetni vzorci so igralni takoj, tudi brez povezave."
+    },
+    "insufficientCoins": {
+      "title": "Premalo kovancev",
+      "body": "Ta vzorec stane {{price}} kovancev Stitch Coin, vi pa jih imate le {{balance}}.\n\nManjka: {{shortfall}} kovancev.\n\nStitch Coin zaslužite z dokončanjem drugih vzorcev! Nagrade za prvo dokončanje so na voljo.",
+      "getCoins": "Pridobi kovance Stitch Coin",
+      "findPatterns": "Poišči vzorce za šivanje",
+      "back": "Nazaj"
+    },
+    "unlockFailedGeneric": "Odklepanje ni uspelo. Preverite povezavo in poskusite znova.",
+    "preparationFailedGeneric": "Priprave ni bilo mogoče začeti. Preverite povezavo in poskusite znova.",
+    "price": {
+      "label": "Cena"
+    },
+    "balance": {
+      "label": "Vaše dobroimetje",
+      "loading": "…"
+    },
+    "unlockButton": "Odkleni za {{price}} kovancev",
+    "communityReport": {
+      "button": "Prijavi ta vzorec",
+      "title": "Prijavi {{patternTitle}}",
+      "body": "Izberite razlog, ki najbolje opisuje težavo. Prijave nikoli samodejno ne skrijejo ali spremenijo vzorca.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Neprimerna ali nevarna vsebina",
+        "copyright_or_publication_rights": "Avtorske ali objavne pravice",
+        "duplicate_or_spam": "Podvojeno ali neželena vsebina",
+        "misleading_title_or_tags": "Zavajajoč naslov ali oznake",
+        "other": "Drugo"
+      },
+      "explanationLabel": "Dokazi ali pojasnilo {{requirement}}",
+      "explanationRequired": "(obvezno)",
+      "explanationOptional": "(neobvezno)",
+      "explanationPlaceholder": "Delite podrobnosti, ki bodo moderatorju pomagale pri pregledu vzorca.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Prekliči",
+      "submit": "Pošlji prijavo",
+      "submitFailedGeneric": "Prijave ni bilo mogoče poslati. Preverite povezavo in poskusite znova.",
+      "receivedTitle": "Prijava prejeta",
+      "alreadyReceivedTitle": "Prijava je že bila prejeta",
+      "receivedBody": "Moderator lahko zdaj pregleda ta vzorec. Prijava samodejno ne spremeni njegove razpoložljivosti.",
+      "alreadyReceivedBody": "Vaša obstoječa prijava je že del odprtega pregleda.",
+      "signInRequired": {
+        "title": "Za prijavo se prijavite v račun",
+        "message": "Prijave skupnosti zahtevajo registriran račun. Ničesar ni bilo poslano.",
+        "cancel": "Prekliči",
+        "signIn": "Prijava"
+      },
+      "validation": {
+        "chooseReason": "Izberite razlog za prijavo.",
+        "explainRequired": "Pojasnite, zakaj prijavljate ta vzorec.",
+        "tooLong": "Pojasnilo sme imeti največ 2000 znakov.",
+        "needsContent": "Pojasnilo mora vsebovati črke ali številke."
+      }
+    }
+  }
+}
