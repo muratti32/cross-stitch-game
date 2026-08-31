@@ -6,8 +6,15 @@ const SUPPORTED = ['en', 'tr'] as const;
 
 describe('resolveAppLanguage', () => {
   it('keeps the staged catalog separate from the released resource set', () => {
-    expect(APP_LOCALE_CATALOG.map(({ identifier }) => identifier)).toEqual(['en', 'tr', 'es', 'de', 'fr', 'pt-BR', 'it']);
-    expect(SUPPORTED_LOCALES).toEqual(['de', 'en', 'es', 'fr', 'it', 'pt-BR', 'tr']);
+    expect(APP_LOCALE_CATALOG.map(({ identifier }) => identifier)).toEqual([
+      'en', 'tr', 'es', 'de', 'fr', 'pt-BR', 'it', 'ar', 'ja', 'ko', 'nl', 'pl', 'ru', 'zh-Hans', 'zh-Hant',
+      'ca', 'cs', 'da', 'el', 'fi', 'hi', 'hr', 'hu', 'id', 'ms', 'nb', 'pt', 'ro', 'sk', 'sl', 'sv', 'tl', 'uk', 'vi',
+    ]);
+    expect(SUPPORTED_LOCALES).toEqual([
+      'ar', 'ca', 'cs', 'da', 'de', 'el', 'en', 'es', 'fi', 'fr', 'hi', 'hr', 'hu', 'id', 'it', 'ja',
+      'ko', 'ms', 'nb', 'nl', 'pl', 'pt', 'pt-BR', 'ro', 'ru', 'sk', 'sl', 'sv', 'tl', 'tr', 'uk', 'vi',
+      'zh-Hans', 'zh-Hant',
+    ]);
   });
 
   it('resolves a supported device language to itself', () => {
