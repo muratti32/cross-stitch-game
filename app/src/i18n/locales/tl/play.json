@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Mesa ng Panahian",
+    "subtitle": "Ipagpatuloy kung saan ka huminto o buksan ulit ang dating gawa.",
+    "loading": "Nilo-load ang iyong mga tahi...",
+    "empty": {
+      "title": "Walang aktibong gawa",
+      "body": "Kasalukuyang walang laman ang iyong sewing basket. Mag-browse sa katalogo ng pattern para makahanap ng magandang tatahiin!",
+      "action": "Mag-browse sa katalogo"
+    },
+    "unknownPattern": "Hindi kilalang pattern",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Pattern blg. {{id}}",
+    "deleteSessionAccessibilityLabel": "Tanggalin ang session",
+    "viewFinishedAccessibilityLabel": "Tingnan ang natapos na gawa",
+    "resumeAccessibilityLabel": "Ipagpatuloy ang pananahi",
+    "status": {
+      "ready": "Handa",
+      "done": "Tapos",
+      "active": "Aktibo",
+      "preparing": "Inihahanda",
+      "failed": "Nabigo"
+    },
+    "deleteConfirm": {
+      "title": "Tanggalin ang pag-unlad",
+      "message": "Sigurado ka bang gusto mong tanggalin ang iyong pag-unlad para sa ”{{title}}”? Hindi na ito maibabalik.",
+      "cancel": "Kanselahin",
+      "confirm": "Tanggalin"
+    },
+    "preparingCard": {
+      "discardTitle": "Iwaksi ang session",
+      "cancelTitle": "Kanselahin ang download",
+      "discardMessage": "Sigurado ka bang gusto mong iwaksi ang nabigong session na ito?",
+      "cancelMessage": "Sigurado ka bang gusto mong kanselahin ang pag-download ng pattern na ito?",
+      "keep": "Panatilihin",
+      "discard": "Iwaksi",
+      "cancel": "Kanselahin"
+    }
+  },
+  "loading": {
+    "text": "Binubuksan ang session at inihahanda ang tela..."
+  },
+  "error": {
+    "title": "Hindi na-load ang session",
+    "fallbackMessage": "Hindi ma-load ang iyong stitching session.",
+    "backButton": "Bumalik",
+    "tableButton": "Pumunta sa mesa ng panahian"
+  },
+  "header": {
+    "backButton": "← Bumalik",
+    "tableButton": "← Mesa ng Panahian",
+    "defaultTitle": "Sesyon ng Panahian",
+    "progress": "{{completed}} / {{total}} cell ({{percent}}% tapos na)",
+    "resumeTutorialAccessibilityLabel": "Ipagpatuloy ang tutorial"
+  },
+  "banners": {
+    "patternRemoved": "Natanggal ang pattern na ito dahil sa moderation at hindi na ito available. Pindutin para umalis.",
+    "syncConflict": "Na-sync sa ibang device — na-update ang ilang cell. Pindutin para iwaksi."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Hanapin ang susunod na natitirang cell para sa aktibong kulay ng sinulid",
+    "undoAccessibilityLabel": "I-undo ang huling tahi"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Kulay {{number}}: DMC {{dmcCode}}, {{count}} tahi na natitira",
+    "chipAccessibilityLabel_other": "Kulay {{number}}: DMC {{dmcCode}}, {{count}} tahi na natitira",
+    "done": "Tapos",
+    "remaining_one": "{{count}} natitira",
+    "remaining_other": "{{count}} natitira"
+  },
+  "celebration": {
+    "title": "Magandang natapos!",
+    "subtitle": "Natapos mo na ang bawat tahi sa telang ito.",
+    "stitchesLabel_one": "Tahi",
+    "stitchesLabel_other": "Tahi",
+    "colorsLabel_one": "Kulay",
+    "colorsLabel_other": "Kulay",
+    "replayButton": "Tumahi ulit",
+    "catalogButton": "Bumalik sa katalogo"
+  }
+}

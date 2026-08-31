@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Bumalik",
+    "title": "Tindahan",
+    "subtitle": "Membership at mga isang-beses na bili"
+  },
+  "signInReturn": {
+    "notice": "Naka-log in ka na. Napili pa rin ang {{label}}. Suriin ito at pindutin ang Bilhin kapag handa ka na."
+  },
+  "premiumHero": {
+    "eyebrow": "MEMBERSHIP NA PREMIUM",
+    "title": "Gumawa nang mas marami. Kumolekta ng maliit na reward araw-araw.",
+    "body": "AI credits bawat billing period, mga Premium theme, at araw-araw na Stitch Coin claim.",
+    "benefitAiCredits": "AI Credits",
+    "benefitDailyCoins": "Araw-araw na barya",
+    "benefitThemes": "Mga tema",
+    "statusNoActiveMembership": "Walang aktibong membership",
+    "statusBrowseAsGuest": "Mag-browse ng mga plano bilang guest player",
+    "periodEndsLabel": "Matatapos ang kasalukuyang period",
+    "periodRenewsLabel": "Mare-renew",
+    "lifecycleActive": "Aktibo"
+  },
+  "membershipActions": {
+    "title": "Aktibong Premium membership",
+    "body": "Makikita ang mga araw-araw na reward sa Profile. Makikita ang mga tema sa ilalim ng Settings › Appearance.",
+    "scheduledChangeNotice": "Magbabago sa {{plan}} sa {{date}}",
+    "manageSubscription": "Pamahalaan ang subscription",
+    "manageSubscriptionFailedTitle": "Hindi mabuksan ang mga subscription",
+    "manageSubscriptionFailedBody": "Subukan ulit mula sa iyong device store account."
+  },
+  "pending": {
+    "title": "Kasalukuyang pinoproseso ang bili",
+    "verifyingTitle": "Vine-verify ang bili",
+    "premiumChangeAccepted": "Tinanggap ng tindahan ang pagbabago sa {{label}}. ",
+    "premiumResponseReceived": "Natanggap ang tugon ng tindahan para sa {{label}}. ",
+    "premiumDeferredSuffix": "Ise-iskedyul lang ang pagbabago pagkatapos ng verification mula sa game backend at magsisimula pagkatapos matapos ang iyong kasalukuyang period.",
+    "premiumSuffix": "Ma-a-activate lang ang Premium pagkatapos ng verification mula sa game backend.",
+    "doNotPurchasePlanAgain": " Huwag bilhin ulit ang planong ito.",
+    "coinPackBody": "Natanggap ang tugon ng tindahan. Ma-a-update lang ang Stitch Coin pagkatapos ilantad ng game backend ang katumbas na Commerce Ledger grant. Huwag bilhin ulit ang package na ito.",
+    "aiCreditPackBody": "Natanggap ang tugon ng tindahan. Ma-a-update lang ang AI Credits pagkatapos ilantad ng game backend ang katumbas na Commerce Ledger grant. Huwag bilhin ulit ang package na ito.",
+    "refreshStatus": "I-refresh ang status",
+    "retryReconciliation": "Subukan ulit ang reconciliation"
+  },
+  "store": {
+    "loadingPrices": "Nilo-load ang kasalukuyang presyo ng tindahan…",
+    "unavailableTitle": "Pansamantalang hindi available ang tindahan",
+    "unavailableBody": "Available pa rin ang iyong wallet at detalye ng membership.",
+    "retry": "Subukan ulit"
+  },
+  "plans": {
+    "choosePremiumPlan": "Pumili ng Premium plan",
+    "yourPremiumPlan": "Ang iyong Premium plan",
+    "currentPlan": "KASALUKUYANG PLAN",
+    "upgrade": "I-UPGRADE",
+    "planChange": "PAGBABAGO NG PLAN",
+    "bestValue": "PINAKAMAGANDANG HALAGA",
+    "billedEvery": "Sisingilin bawat {{period}}",
+    "chooseLabel": "Piliin ang {{label}}",
+    "freeTrial": "Libre sa loob ng {{offer}}, pagkatapos ay {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Isang-beses na mga package",
+    "stitchCoinPacksTitle": "Mga Stitch Coin package",
+    "aiCreditPacksTitle": "Mga AI Credit package",
+    "coinsNoun": "Barya",
+    "creditsNoun": "Credits",
+    "fromPrice": "Mula sa {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Ibalik ang mga bili",
+    "restoreGuestPremium": "Ibalik ang guest Premium",
+    "requestedTitle": "Hiniling ang pagbabalik",
+    "requestedBody": "Makikita ang verified na Premium access pagkatapos ma-reconcile ang webhook ng tindahan. Hindi kailanman maibabalik ang mga Stitch Coin at AI Credit package."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Kasalukuyang presyo mula sa app store",
+    "closeAccessibilityLabel": "Isara ang panel ng produkto",
+    "closeButtonAccessibilityLabel": "Isara",
+    "selectedBeforeSignIn": "Napili bago mag-log in",
+    "buy": "Bilhin"
+  },
+  "confirmation": {
+    "cancel": "Kanselahin",
+    "confirmLabel": "Kumpirmahin ang {{label}}",
+    "confirmPremiumTitle": "Kumpirmahin ang Premium na bili",
+    "introductoryOffer": "Iniulat ng iyong tindahan ang panimulang alok na ito: {{offer}}.",
+    "premiumAppearsAfterVerification": "Lalabas lang ang Premium pagkatapos ma-verify ng game backend ang transaksyon sa tindahan.",
+    "confirmPremiumUpgradeTitle": "Kumpirmahin ang Premium upgrade",
+    "confirmPremiumPlanChangeTitle": "Kumpirmahin ang pagbabago ng Premium plan",
+    "currentPlanLabel": "Kasalukuyang plan: {{label}}",
+    "upgradeToLabel": "I-upgrade sa {{label}} · {{offer}}",
+    "changeToLabel": "Baguhin sa {{label}} · {{offer}}",
+    "upgradeBody": "Kinokontrol ng App Store ang huling singil at petsa ng upgrade na ito. Sasalamin lang ang Premium sa {{label}} pagkatapos ito ma-verify ng game backend.",
+    "planChangeBody": "Ipinagpapaliban ng App Store ang pagbabagong ito hanggang sa dulo ng iyong kasalukuyang period: mananatiling epektibo ang {{currentLabel}} hanggang doon, at sisingilin ang {{targetLabel}} mula sa petsa ng pagbabago. Kanselahin ang pagbabago mula sa Pamahalaan ang Subscription.",
+    "confirmUpgrade": "Kumpirmahin ang upgrade",
+    "confirmPlanChange": "Kumpirmahin ang pagbabago ng plan",
+    "confirmStitchCoinTitle": "Kumpirmahin ang Stitch Coin na bili",
+    "confirmAiCreditTitle": "Kumpirmahin ang AI Credit na bili",
+    "balanceChangesAfterVerificationCoin": "Magbabago lang ang iyong balanse pagkatapos ma-verify ng game backend ang transaksyon sa tindahan at marehistro ang katumbas na Commerce Ledger grant.",
+    "balanceChangesAfterVerificationAiCredit": "Magbabago lang ang iyong balanse pagkatapos ma-verify ng game backend ang transaksyon sa tindahan at marehistro ang katumbas na Commerce Ledger grant. Hindi kinakailangan ang Premium membership."
+  },
+  "disclosure": {
+    "subscriptionTerms": "Sisingilin ang bayad sa iyong {{store}} account sa pagkumpirma. Awtomatikong mare-renew ang {{label}} Premium sa {{offer}} maliban kung papatayin ang auto-renew nang hindi bababa sa 24 oras bago matapos ang kasalukuyang period. Mawawala ang hindi nagamit na bahagi ng libreng trial kapag bumili ka ng subscription. Puwede mong kanselahin anumang oras mula sa iyong {{store}} account.",
+    "privacyPolicy": "Patakaran sa Privacy",
+    "termsOfService": "Mga Tuntunin ng Serbisyo",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Hindi mabuksan ang link: {{url}}"
+  },
+  "supportReference": {
+    "label": "Support reference: {{reference}}",
+    "copyAccessibilityLabel": "Kopyahin ang support reference {{reference}}",
+    "copyAccessibilityHint": "Kinokopya ang support reference sa clipboard",
+    "copied": "Nakopya",
+    "copyFailedTitle": "Nabigo ang pagkopya",
+    "copyFailedBody": "Hindi nakopya ang support reference. I-highlight ang teksto para kopyahin ito nang manwal."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Available lang ang Stitch Coin na bili bilang bisita sa iOS.",
+    "guestIosOnlyGeneric": "Available lang ang guest na pagbili sa iOS.",
+    "purchaseFailedTitle": "Nabigo ang bili",
+    "premiumVerificationNotYet": "Hindi na-verify ng game backend ang bili na ito. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+    "premiumVerificationFailedRetry": "Hindi pa na-verify ng game backend ang bili na ito. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+    "premiumGrantRefreshFailed": "Na-verify ang Premium, ngunit hindi na-update ang membership at AI credit access. Subukan ulit ang reconciliation.",
+    "premiumReconciliationUnreachable": "Hindi naabot ng reconciliation ng bili ang game backend. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+    "coinPackVerificationMismatch": "Hindi tumugma ang transaksyon sa tindahan sa coin pack na ito. Subukan ulit i-verify o makipag-ugnayan sa support; huwag itong bilhin ulit.",
+    "coinPackGrantUnavailable": "Na-verify ang bili, ngunit hindi available ang Stitch Coin grant. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+    "coinPackBalanceRefreshFailed": "Na-verify ang coin grant, ngunit hindi na-update ang kasalukuyang balanse ng Stitch Coin. Subukan ulit ang reconciliation.",
+    "coinPackVerificationFailedRetry": "Hindi pa na-verify ng game backend ang coin pack na ito. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+    "coinPackReconciliationUnreachable": "Hindi naabot ng reconciliation ng coin pack ang game backend. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+    "aiCreditPackVerificationMismatch": "Hindi tumugma ang transaksyon sa tindahan sa AI credit pack na ito. Subukan ulit i-verify o makipag-ugnayan sa support; huwag itong bilhin ulit.",
+    "aiCreditPackGrantUnavailable": "Na-verify ang bili, ngunit hindi available ang AI credit grant. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+    "aiCreditPackBalanceRefreshFailed": "Na-verify ang AI credit grant, ngunit hindi na-update ang kasalukuyang balanse. Subukan ulit ang reconciliation.",
+    "aiCreditPackVerificationFailedRetry": "Hindi pa na-verify ng game backend ang AI credit pack na ito. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+    "aiCreditPackReconciliationUnreachable": "Hindi naabot ng reconciliation ng AI credit pack ang game backend. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+    "reconciliationStillUnavailable": "Hindi pa rin available ang game backend. Subukan ulit ang reconciliation mamaya.",
+    "storeTemporarilyUnavailable": "Pansamantalang hindi available ang tindahan. Subukan ulit pagkatapos ng ilang minuto.",
+    "purchasesNotAllowed": "Hindi pinapayagan ang mga bili sa device na ito. Suriin ang iyong store account o parental controls.",
+    "itemNotAvailable": "Hindi mabibili ang item na ito ngayon. Pumili ng ibang item o subukan ulit mamaya.",
+    "alreadyOwned": "Nasa iyo na ang bili na ito. Gamitin ang Ibalik ang mga Bili para i-update ang iyong access.",
+    "couldNotConnectToStore": "Hindi nakakonekta sa tindahan. Suriin ang iyong internet connection at subukan ulit.",
+    "paymentPendingApproval": "Naghihintay ng approval ang iyong bayad. Lalabas ang iyong bili kapag natapos ito ng tindahan.",
+    "testPurchaseDeclined": "Tinanggihan ang test purchase. Walang naprosesong bayad. Pumili ng ibang test store outcome sa Settings at subukan ulit.",
+    "genericPurchaseFailure": "Hindi namin natapos ang iyong bili. Walang naprosesong bayad. Subukan ulit."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Patuloy na Vine-verify",
+    "premiumPending": "Patuloy pa rin ang verification. Ma-a-activate ang Premium kapag nakumpirma ito ng game backend.",
+    "premiumPlanChangePending": "Patuloy pa rin ang verification. Ise-iskedyul ang pagbabago ng plan mo kapag nakumpirma ito ng game backend.",
+    "coinPackPending": "Patuloy pa rin ang verification. Ma-a-update ang balanse ng iyong Stitch Coin kapag tapos na.",
+    "aiCreditPackPending": "Patuloy pa rin ang verification. Ma-a-update ang balanse ng iyong AI Credit kapag tapos na."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Natanggap ang bili",
+    "storeAcceptedPlanChange": "Tinanggap ng tindahan ang pagbabago sa {{label}}. Kinukumpirma kung kailan ito magiging epektibo.",
+    "storeAcceptedPurchase": "Tinanggap ng tindahan ang {{label}}. Vine-verify na ang iyong bili.",
+    "premiumChanges": "Magbabago ang Premium sa {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " sa {{date}}",
+    "planChangeScheduledTitle": "Na-iskedyul ang pagbabago ng plan",
+    "planChangeScheduledBody": "Mananatili ang kasalukuyang plan ng iyong Premium membership hanggang magbago ito sa {{label}}{{effectiveOn}}. Kanselahin ang pagbabago mula sa Pamahalaan ang Subscription.",
+    "premiumIsActiveTitle": "Aktibo na ang Premium",
+    "premiumVerifiedAndActive": "Na-verify at aktibo na ang {{label}} Premium.",
+    "premiumNowActiveNoBilling": "Aktibo na ngayon ang {{label}} Premium.",
+    "premiumNowActiveBilled": "Aktibo na ngayon ang {{label}} Premium, sisingilin bawat {{period}}.",
+    "coinPackGrantedTitle": "Naibigay na ang Stitch Coins",
+    "coinPackGrantVerified": "Na-verify ang grant ng {{label}}. Balanse ng Stitch Coin: {{balance}}.",
+    "coinPackAddedToBalance": "Naidagdag na sa iyong balanse ang {{quantity}} Stitch Coins.",
+    "aiCreditPackGrantedTitle": "Naibigay na ang AI Credits",
+    "aiCreditPackGrantVerified": "Na-verify ang grant ng {{label}}. Balanse ng AI Credit: {{balance}}.",
+    "aiCreditPackAddedToBalance": "Naidagdag na sa iyong balanse ang {{quantity}} AI Credits."
+  },
+  "products": {
+    "premiumAnnual": "Taunan",
+    "premiumMonthly": "Buwanan",
+    "premiumWeekly": "Lingguhan",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+    "aiCreditPack_one": "{{formattedCount}} AI Credit",
+    "aiCreditPack_other": "{{formattedCount}} AI Credits",
+    "billedEveryOffer": "{{price}} bawat {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} credits / billing period",
+    "creditAllowancePaidNoun": "{{credits}} credits / bayad na {{period}}"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Bili bilang bisita",
+    "commerceBody": "Puwede kang bumili nang walang pagpaparehistro. Maibabalik ang Premium membership mula sa tindahan, ngunit hindi na maibabalik ang Stitch Coin, AI Credits, at pribadong guest content kapag nawala ang install na ito. Pinoprotektahan sila ng pagpaparehistro at hindi kailanman kinakansela ang iyong paglalaro bilang bisita.",
+    "continueAsGuest": "Magpatuloy bilang bisita",
+    "signInInstead": "Mag-log in na lang",
+    "closeAccessibilityLabel": "Isara"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "Nakuha ko",
+    "successButton": "Ang galing",
+    "failedButton": "Isara",
+    "infoButton": "Nakuha ko",
+    "closeAccessibilityLabel": "Isara"
+  }
+}

@@ -39367,6 +39367,1412 @@
       }
     }
   },
+  "tl": {
+    "catalog": {
+      "common": {
+        "back": "← Bumalik",
+        "searchPlaceholder": "Maghanap ng mga pattern, gumagawa, tag…",
+        "offlineBanner": "Offline — maaaring luma na ang katalogo",
+        "sectionError": {
+          "title": "Hindi ma-load",
+          "retry": "Subukan ulit"
+        },
+        "patternMeta": {
+          "dimensionsColors": "{{width}}×{{height}} • {{count}} kulay",
+          "dimensionsCols": "{{width}}×{{height}} • {{count}} kolum",
+          "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        }
+      },
+      "sourceLanguage": {
+        "names": {
+          "en": "Ingles"
+        },
+        "accessibilityLabel": "Nakasulat sa {{language}}"
+      },
+      "index": {
+        "subtitle": "Likhain ang iyong cozy na mundo, tahi nang tahi.",
+        "searchBar": {
+          "accessibilityLabel": "Maghanap sa katalogo ng pattern"
+        },
+        "sections": {
+          "starterPatterns": "Panimulang mga pattern",
+          "staffPicks": "Piniling ng staff",
+          "categories": "Mga kategorya",
+          "newPatterns": "Mga bagong pattern"
+        },
+        "staffPicks": {
+          "emptyTitle": "Wala pang piniling ng staff",
+          "emptyBody": "Lalabas dito ang aming pinili nang mahusay na koleksyon ng cozy na disenyo.",
+          "errorBody": "Hindi maabot ang katalogo at wala pang naka-cache."
+        },
+        "categories": {
+          "count": "{{count}} pattern",
+          "errorBody": "Hindi maabot ang katalogo at wala pang naka-cache."
+        },
+        "newPatterns": {
+          "emptyTitle": "Ginagawa ang mga bagong pattern",
+          "emptyBody": "Paparating na ang mga bagong dagdag!",
+          "errorBody": "Hindi maabot ang katalogo at wala pang naka-cache.",
+          "showMore": "Ipakita pa",
+          "loading": "Nilo-load…"
+        }
+      },
+      "browse": {
+        "defaultTitle": "Mag-browse",
+        "error": {
+          "body": "Hindi maabot ang pahinang ito ng katalogo at wala pang naka-cache."
+        },
+        "empty": {
+          "title": "Wala pang laman dito",
+          "body": "Walang pattern na tumutugma sa piniling ito ngayon. May mga bagong disenyo nang regular."
+        }
+      },
+      "search": {
+        "inputAccessibilityLabel": "Field ng paghahanap sa katalogo",
+        "inactive": {
+          "title": "Maghanap sa katalogo",
+          "body": "Mag-type ng hindi bababa sa dalawang letra para maghanap ng pattern ayon sa titulo, gumagawa, o tag."
+        },
+        "error": {
+          "title": "Kailangan ng koneksyon ang paghahanap",
+          "body": "Hindi magagamit ang paghahanap sa katalogo nang offline. Puwede pa ring i-browse ang mga naka-cache na pahina ng katalogo mula sa tab ng katalogo."
+        },
+        "noResults": {
+          "title": "Walang resulta",
+          "body": "Wala pang bagay sa katalogo na tumutugma sa ”{{query}}”."
+        }
+      },
+      "guestDataRiskNotice": {
+        "title": "Naglalaro bilang bisita",
+        "body": "Nabubuhay lang ang Stitch Coin at pag-unlad sa device na ito habang bisita ka. Kung mawala ang install, maaaring hindi na maibalik ang guest account at pag-unlad. Ang pag-log in ay nagpoprotekta sa iyong pag-unlad."
+      },
+      "detail": {
+        "noDescription": "Walang available na paglalarawan.",
+        "specs": {
+          "dimensions": "Sukat",
+          "totalStitches": "Kabuuang bilang ng tahi",
+          "colors": "Kulay",
+          "category": "Kategorya"
+        },
+        "threadsSuffix": "{{count}} sinulid",
+        "palette": {
+          "title": "Kinakailangang sinulid",
+          "loading": "Nilo-load ang palette ng sinulid...",
+          "loadFailed": "Hindi na-load ang palette: {{error}}",
+          "retry": "Subukan ulit i-load"
+        },
+        "actions": {
+          "startStitching": "Simulan ang pananahi",
+          "starting": "Sinisimulan...",
+          "preparing": "Inihahanda…"
+        },
+        "loadFailedGeneric": "Hindi na-load ang file ng pattern.",
+        "sessionCreateFailed": "Hindi nakagawa ng stitching session. Subukan ulit.",
+        "unavailable": {
+          "title": "Hindi available ang pattern",
+          "body": "Hindi na-load ang pattern na ito. Maaaring natanggal na ito, o offline ka.",
+          "goBack": "Bumalik"
+        },
+        "byCreator": "ni {{creatorName}}",
+        "byCreatorWithUsername": "ni {{creatorName}} · @{{username}}",
+        "blockConfirm": {
+          "title": "I-block ang gumagawa",
+          "message": "Sigurado ka bang gusto mong i-block si {{creatorName}}? Ito ay pribado at maaaring bawiin na aksyon na nagtatago ng kanilang mga pattern mula sa paghahanap/pag-browse. Hindi ito nagre-report sa gumagawa at hindi kinakansela ang iyong kasalukuyang stitching session.",
+          "cancel": "Kanselahin",
+          "confirm": "I-block",
+          "blockedTitle": "Na-block na",
+          "blockedMessage": "Na-block na si {{creatorName}}.",
+          "errorTitle": "Kamalian",
+          "failedGeneric": "Hindi na-block ang gumagawa."
+        },
+        "likeFailedGeneric": "Hindi na-update ang status ng like",
+        "connectToPlay": {
+          "title": "Kumonekta para maglaro",
+          "body": "Kailangan ng koneksyon ang pagsisimula ng pattern mula sa katalogo para ihanda ang iyong session. Direktang malalaro ang mga panimulang pattern, kahit offline."
+        },
+        "insufficientCoins": {
+          "title": "Kulang ang barya",
+          "body": "Ang pattern na ito ay {{price}} Stitch Coins, ngunit {{balance}} lang ang balanse mo.\n\nKulang: {{shortfall}} barya.\n\nKumita ng Stitch Coins sa pagtatapos ng ibang mga pattern! Aktibo ang mga reward para sa unang pagkumpleto.",
+          "getCoins": "Kumuha ng Stitch Coins",
+          "findPatterns": "Maghanap ng patterns na tatahiin",
+          "back": "Bumalik"
+        },
+        "unlockFailedGeneric": "Nabigo ang pag-unlock. Suriin ang iyong koneksyon at subukan ulit.",
+        "preparationFailedGeneric": "Hindi nasimulan ang paghahanda. Suriin ang iyong koneksyon at subukan ulit.",
+        "price": {
+          "label": "Presyo"
+        },
+        "balance": {
+          "label": "Iyong balanse",
+          "loading": "…"
+        },
+        "unlockButton": "I-unlock para sa {{price}} barya",
+        "communityReport": {
+          "button": "I-report ang pattern na ito",
+          "title": "I-report ang {{patternTitle}}",
+          "body": "Piliin ang dahilan na pinakamahusay na naglalarawan ng problema. Hindi kailanman awtomatikong nagtatago o nagbabago ng pattern ang mga report.",
+          "reasons": {
+            "inappropriate_or_unsafe_content": "Hindi angkop o hindi ligtas na nilalaman",
+            "copyright_or_publication_rights": "Copyright o karapatan sa publikasyon",
+            "duplicate_or_spam": "Duplicate o spam",
+            "misleading_title_or_tags": "Nakaliligaw na titulo o tag",
+            "other": "Iba pa"
+          },
+          "explanationLabel": "Ebidensya o paliwanag {{requirement}}",
+          "explanationRequired": "(kinakailangan)",
+          "explanationOptional": "(opsyonal)",
+          "explanationPlaceholder": "Magbahagi ng detalye na makakatulong sa moderator na suriin ang pattern.",
+          "characterCount": "{{count}}/2000",
+          "cancel": "Kanselahin",
+          "submit": "Ipadala ang report",
+          "submitFailedGeneric": "Hindi naipadala ang iyong report. Suriin ang iyong koneksyon at subukan ulit.",
+          "receivedTitle": "Natanggap ang report",
+          "alreadyReceivedTitle": "Natanggap na ang report",
+          "receivedBody": "Puwede na ngayong suriin ng moderator ang pattern na ito. Hindi awtomatikong binabago ng report ang availability nito.",
+          "alreadyReceivedBody": "Bahagi na ng bukas na pagsusuri ang iyong umiiral na report.",
+          "signInRequired": {
+            "title": "Mag-log in para mag-report",
+            "message": "Kailangan ng nakarehistrong account ang mga community report. Wala pang naipadala.",
+            "cancel": "Kanselahin",
+            "signIn": "Mag-log in"
+          },
+          "validation": {
+            "chooseReason": "Pumili ng dahilan para sa report.",
+            "explainRequired": "Ipaliwanag kung bakit mo ire-report ang pattern na ito.",
+            "tooLong": "Ang paliwanag ay dapat 2,000 letra o mas mababa.",
+            "needsContent": "Ang paliwanag ay dapat may titik o numero."
+          }
+        }
+      }
+    },
+    "commerce": {
+      "screen": {
+        "backAccessibilityLabel": "Bumalik",
+        "title": "Tindahan",
+        "subtitle": "Membership at mga isang-beses na bili"
+      },
+      "signInReturn": {
+        "notice": "Naka-log in ka na. Napili pa rin ang {{label}}. Suriin ito at pindutin ang Bilhin kapag handa ka na."
+      },
+      "premiumHero": {
+        "eyebrow": "MEMBERSHIP NA PREMIUM",
+        "title": "Gumawa nang mas marami. Kumolekta ng maliit na reward araw-araw.",
+        "body": "AI credits bawat billing period, mga Premium theme, at araw-araw na Stitch Coin claim.",
+        "benefitAiCredits": "AI Credits",
+        "benefitDailyCoins": "Araw-araw na barya",
+        "benefitThemes": "Mga tema",
+        "statusNoActiveMembership": "Walang aktibong membership",
+        "statusBrowseAsGuest": "Mag-browse ng mga plano bilang guest player",
+        "periodEndsLabel": "Matatapos ang kasalukuyang period",
+        "periodRenewsLabel": "Mare-renew",
+        "lifecycleActive": "Aktibo"
+      },
+      "membershipActions": {
+        "title": "Aktibong Premium membership",
+        "body": "Makikita ang mga araw-araw na reward sa Profile. Makikita ang mga tema sa ilalim ng Settings › Appearance.",
+        "scheduledChangeNotice": "Magbabago sa {{plan}} sa {{date}}",
+        "manageSubscription": "Pamahalaan ang subscription",
+        "manageSubscriptionFailedTitle": "Hindi mabuksan ang mga subscription",
+        "manageSubscriptionFailedBody": "Subukan ulit mula sa iyong device store account."
+      },
+      "pending": {
+        "title": "Kasalukuyang pinoproseso ang bili",
+        "verifyingTitle": "Vine-verify ang bili",
+        "premiumChangeAccepted": "Tinanggap ng tindahan ang pagbabago sa {{label}}. ",
+        "premiumResponseReceived": "Natanggap ang tugon ng tindahan para sa {{label}}. ",
+        "premiumDeferredSuffix": "Ise-iskedyul lang ang pagbabago pagkatapos ng verification mula sa game backend at magsisimula pagkatapos matapos ang iyong kasalukuyang period.",
+        "premiumSuffix": "Ma-a-activate lang ang Premium pagkatapos ng verification mula sa game backend.",
+        "doNotPurchasePlanAgain": " Huwag bilhin ulit ang planong ito.",
+        "coinPackBody": "Natanggap ang tugon ng tindahan. Ma-a-update lang ang Stitch Coin pagkatapos ilantad ng game backend ang katumbas na Commerce Ledger grant. Huwag bilhin ulit ang package na ito.",
+        "aiCreditPackBody": "Natanggap ang tugon ng tindahan. Ma-a-update lang ang AI Credits pagkatapos ilantad ng game backend ang katumbas na Commerce Ledger grant. Huwag bilhin ulit ang package na ito.",
+        "refreshStatus": "I-refresh ang status",
+        "retryReconciliation": "Subukan ulit ang reconciliation"
+      },
+      "store": {
+        "loadingPrices": "Nilo-load ang kasalukuyang presyo ng tindahan…",
+        "unavailableTitle": "Pansamantalang hindi available ang tindahan",
+        "unavailableBody": "Available pa rin ang iyong wallet at detalye ng membership.",
+        "retry": "Subukan ulit"
+      },
+      "plans": {
+        "choosePremiumPlan": "Pumili ng Premium plan",
+        "yourPremiumPlan": "Ang iyong Premium plan",
+        "currentPlan": "KASALUKUYANG PLAN",
+        "upgrade": "I-UPGRADE",
+        "planChange": "PAGBABAGO NG PLAN",
+        "bestValue": "PINAKAMAGANDANG HALAGA",
+        "billedEvery": "Sisingilin bawat {{period}}",
+        "chooseLabel": "Piliin ang {{label}}",
+        "freeTrial": "Libre sa loob ng {{offer}}, pagkatapos ay {{paidOffer}}"
+      },
+      "onetime": {
+        "sectionTitle": "Isang-beses na mga package",
+        "stitchCoinPacksTitle": "Mga Stitch Coin package",
+        "aiCreditPacksTitle": "Mga AI Credit package",
+        "coinsNoun": "Barya",
+        "creditsNoun": "Credits",
+        "fromPrice": "Mula sa {{price}}"
+      },
+      "restore": {
+        "restorePurchases": "Ibalik ang mga bili",
+        "restoreGuestPremium": "Ibalik ang guest Premium",
+        "requestedTitle": "Hiniling ang pagbabalik",
+        "requestedBody": "Makikita ang verified na Premium access pagkatapos ma-reconcile ang webhook ng tindahan. Hindi kailanman maibabalik ang mga Stitch Coin at AI Credit package."
+      },
+      "sheet": {
+        "currentPricesSubtitle": "Kasalukuyang presyo mula sa app store",
+        "closeAccessibilityLabel": "Isara ang panel ng produkto",
+        "closeButtonAccessibilityLabel": "Isara",
+        "selectedBeforeSignIn": "Napili bago mag-log in",
+        "buy": "Bilhin"
+      },
+      "confirmation": {
+        "cancel": "Kanselahin",
+        "confirmLabel": "Kumpirmahin ang {{label}}",
+        "confirmPremiumTitle": "Kumpirmahin ang Premium na bili",
+        "introductoryOffer": "Iniulat ng iyong tindahan ang panimulang alok na ito: {{offer}}.",
+        "premiumAppearsAfterVerification": "Lalabas lang ang Premium pagkatapos ma-verify ng game backend ang transaksyon sa tindahan.",
+        "confirmPremiumUpgradeTitle": "Kumpirmahin ang Premium upgrade",
+        "confirmPremiumPlanChangeTitle": "Kumpirmahin ang pagbabago ng Premium plan",
+        "currentPlanLabel": "Kasalukuyang plan: {{label}}",
+        "upgradeToLabel": "I-upgrade sa {{label}} · {{offer}}",
+        "changeToLabel": "Baguhin sa {{label}} · {{offer}}",
+        "upgradeBody": "Kinokontrol ng App Store ang huling singil at petsa ng upgrade na ito. Sasalamin lang ang Premium sa {{label}} pagkatapos ito ma-verify ng game backend.",
+        "planChangeBody": "Ipinagpapaliban ng App Store ang pagbabagong ito hanggang sa dulo ng iyong kasalukuyang period: mananatiling epektibo ang {{currentLabel}} hanggang doon, at sisingilin ang {{targetLabel}} mula sa petsa ng pagbabago. Kanselahin ang pagbabago mula sa Pamahalaan ang Subscription.",
+        "confirmUpgrade": "Kumpirmahin ang upgrade",
+        "confirmPlanChange": "Kumpirmahin ang pagbabago ng plan",
+        "confirmStitchCoinTitle": "Kumpirmahin ang Stitch Coin na bili",
+        "confirmAiCreditTitle": "Kumpirmahin ang AI Credit na bili",
+        "balanceChangesAfterVerificationCoin": "Magbabago lang ang iyong balanse pagkatapos ma-verify ng game backend ang transaksyon sa tindahan at marehistro ang katumbas na Commerce Ledger grant.",
+        "balanceChangesAfterVerificationAiCredit": "Magbabago lang ang iyong balanse pagkatapos ma-verify ng game backend ang transaksyon sa tindahan at marehistro ang katumbas na Commerce Ledger grant. Hindi kinakailangan ang Premium membership."
+      },
+      "disclosure": {
+        "subscriptionTerms": "Sisingilin ang bayad sa iyong {{store}} account sa pagkumpirma. Awtomatikong mare-renew ang {{label}} Premium sa {{offer}} maliban kung papatayin ang auto-renew nang hindi bababa sa 24 oras bago matapos ang kasalukuyang period. Mawawala ang hindi nagamit na bahagi ng libreng trial kapag bumili ka ng subscription. Puwede mong kanselahin anumang oras mula sa iyong {{store}} account.",
+        "privacyPolicy": "Patakaran sa Privacy",
+        "termsOfService": "Mga Tuntunin ng Serbisyo",
+        "appStore": "App Store",
+        "googlePlay": "Google Play",
+        "linkOpenFailedBody": "Hindi mabuksan ang link: {{url}}"
+      },
+      "supportReference": {
+        "label": "Support reference: {{reference}}",
+        "copyAccessibilityLabel": "Kopyahin ang support reference {{reference}}",
+        "copyAccessibilityHint": "Kinokopya ang support reference sa clipboard",
+        "copied": "Nakopya",
+        "copyFailedTitle": "Nabigo ang pagkopya",
+        "copyFailedBody": "Hindi nakopya ang support reference. I-highlight ang teksto para kopyahin ito nang manwal."
+      },
+      "errors": {
+        "guestIosOnlyStitchCoin": "Available lang ang Stitch Coin na bili bilang bisita sa iOS.",
+        "guestIosOnlyGeneric": "Available lang ang guest na pagbili sa iOS.",
+        "purchaseFailedTitle": "Nabigo ang bili",
+        "premiumVerificationNotYet": "Hindi na-verify ng game backend ang bili na ito. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+        "premiumVerificationFailedRetry": "Hindi pa na-verify ng game backend ang bili na ito. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+        "premiumGrantRefreshFailed": "Na-verify ang Premium, ngunit hindi na-update ang membership at AI credit access. Subukan ulit ang reconciliation.",
+        "premiumReconciliationUnreachable": "Hindi naabot ng reconciliation ng bili ang game backend. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+        "coinPackVerificationMismatch": "Hindi tumugma ang transaksyon sa tindahan sa coin pack na ito. Subukan ulit i-verify o makipag-ugnayan sa support; huwag itong bilhin ulit.",
+        "coinPackGrantUnavailable": "Na-verify ang bili, ngunit hindi available ang Stitch Coin grant. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+        "coinPackBalanceRefreshFailed": "Na-verify ang coin grant, ngunit hindi na-update ang kasalukuyang balanse ng Stitch Coin. Subukan ulit ang reconciliation.",
+        "coinPackVerificationFailedRetry": "Hindi pa na-verify ng game backend ang coin pack na ito. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+        "coinPackReconciliationUnreachable": "Hindi naabot ng reconciliation ng coin pack ang game backend. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+        "aiCreditPackVerificationMismatch": "Hindi tumugma ang transaksyon sa tindahan sa AI credit pack na ito. Subukan ulit i-verify o makipag-ugnayan sa support; huwag itong bilhin ulit.",
+        "aiCreditPackGrantUnavailable": "Na-verify ang bili, ngunit hindi available ang AI credit grant. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+        "aiCreditPackBalanceRefreshFailed": "Na-verify ang AI credit grant, ngunit hindi na-update ang kasalukuyang balanse. Subukan ulit ang reconciliation.",
+        "aiCreditPackVerificationFailedRetry": "Hindi pa na-verify ng game backend ang AI credit pack na ito. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+        "aiCreditPackReconciliationUnreachable": "Hindi naabot ng reconciliation ng AI credit pack ang game backend. Subukan ulit ang reconciliation; huwag itong bilhin ulit.",
+        "reconciliationStillUnavailable": "Hindi pa rin available ang game backend. Subukan ulit ang reconciliation mamaya.",
+        "storeTemporarilyUnavailable": "Pansamantalang hindi available ang tindahan. Subukan ulit pagkatapos ng ilang minuto.",
+        "purchasesNotAllowed": "Hindi pinapayagan ang mga bili sa device na ito. Suriin ang iyong store account o parental controls.",
+        "itemNotAvailable": "Hindi mabibili ang item na ito ngayon. Pumili ng ibang item o subukan ulit mamaya.",
+        "alreadyOwned": "Nasa iyo na ang bili na ito. Gamitin ang Ibalik ang mga Bili para i-update ang iyong access.",
+        "couldNotConnectToStore": "Hindi nakakonekta sa tindahan. Suriin ang iyong internet connection at subukan ulit.",
+        "paymentPendingApproval": "Naghihintay ng approval ang iyong bayad. Lalabas ang iyong bili kapag natapos ito ng tindahan.",
+        "testPurchaseDeclined": "Tinanggihan ang test purchase. Walang naprosesong bayad. Pumili ng ibang test store outcome sa Settings at subukan ulit.",
+        "genericPurchaseFailure": "Hindi namin natapos ang iyong bili. Walang naprosesong bayad. Subukan ulit."
+      },
+      "pendingModal": {
+        "stillVerifyingTitle": "Patuloy na Vine-verify",
+        "premiumPending": "Patuloy pa rin ang verification. Ma-a-activate ang Premium kapag nakumpirma ito ng game backend.",
+        "premiumPlanChangePending": "Patuloy pa rin ang verification. Ise-iskedyul ang pagbabago ng plan mo kapag nakumpirma ito ng game backend.",
+        "coinPackPending": "Patuloy pa rin ang verification. Ma-a-update ang balanse ng iyong Stitch Coin kapag tapos na.",
+        "aiCreditPackPending": "Patuloy pa rin ang verification. Ma-a-update ang balanse ng iyong AI Credit kapag tapos na."
+      },
+      "success": {
+        "purchaseReceivedTitle": "Natanggap ang bili",
+        "storeAcceptedPlanChange": "Tinanggap ng tindahan ang pagbabago sa {{label}}. Kinukumpirma kung kailan ito magiging epektibo.",
+        "storeAcceptedPurchase": "Tinanggap ng tindahan ang {{label}}. Vine-verify na ang iyong bili.",
+        "premiumChanges": "Magbabago ang Premium sa {{label}}{{effectiveOn}}.",
+        "effectiveOnDate": " sa {{date}}",
+        "planChangeScheduledTitle": "Na-iskedyul ang pagbabago ng plan",
+        "planChangeScheduledBody": "Mananatili ang kasalukuyang plan ng iyong Premium membership hanggang magbago ito sa {{label}}{{effectiveOn}}. Kanselahin ang pagbabago mula sa Pamahalaan ang Subscription.",
+        "premiumIsActiveTitle": "Aktibo na ang Premium",
+        "premiumVerifiedAndActive": "Na-verify at aktibo na ang {{label}} Premium.",
+        "premiumNowActiveNoBilling": "Aktibo na ngayon ang {{label}} Premium.",
+        "premiumNowActiveBilled": "Aktibo na ngayon ang {{label}} Premium, sisingilin bawat {{period}}.",
+        "coinPackGrantedTitle": "Naibigay na ang Stitch Coins",
+        "coinPackGrantVerified": "Na-verify ang grant ng {{label}}. Balanse ng Stitch Coin: {{balance}}.",
+        "coinPackAddedToBalance": "Naidagdag na sa iyong balanse ang {{quantity}} Stitch Coins.",
+        "aiCreditPackGrantedTitle": "Naibigay na ang AI Credits",
+        "aiCreditPackGrantVerified": "Na-verify ang grant ng {{label}}. Balanse ng AI Credit: {{balance}}.",
+        "aiCreditPackAddedToBalance": "Naidagdag na sa iyong balanse ang {{quantity}} AI Credits."
+      },
+      "products": {
+        "premiumAnnual": "Taunan",
+        "premiumMonthly": "Buwanan",
+        "premiumWeekly": "Lingguhan",
+        "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+        "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+        "aiCreditPack_one": "{{formattedCount}} AI Credit",
+        "aiCreditPack_other": "{{formattedCount}} AI Credits",
+        "billedEveryOffer": "{{price}} bawat {{period}}",
+        "creditAllowancePaidPeriod": "{{credits}} credits / billing period",
+        "creditAllowancePaidNoun": "{{credits}} credits / bayad na {{period}}"
+      },
+      "guestDataRiskNotice": {
+        "commerceTitle": "Bili bilang bisita",
+        "commerceBody": "Puwede kang bumili nang walang pagpaparehistro. Maibabalik ang Premium membership mula sa tindahan, ngunit hindi na maibabalik ang Stitch Coin, AI Credits, at pribadong guest content kapag nawala ang install na ito. Pinoprotektahan sila ng pagpaparehistro at hindi kailanman kinakansela ang iyong paglalaro bilang bisita.",
+        "continueAsGuest": "Magpatuloy bilang bisita",
+        "signInInstead": "Mag-log in na lang",
+        "closeAccessibilityLabel": "Isara"
+      },
+      "purchaseResultModal": {
+        "pendingButton": "Nakuha ko",
+        "successButton": "Ang galing",
+        "failedButton": "Isara",
+        "infoButton": "Nakuha ko",
+        "closeAccessibilityLabel": "Isara"
+      }
+    },
+    "create": {
+      "common": {
+        "back": "Bumalik",
+        "cancel": "Kanselahin",
+        "duplicateTitle": "Mayroon ka nang personal na pattern na may pangalang ”{{title}}”. Pumili ng ibang titulo.",
+        "cellsCount_one": "kahon",
+        "cellsCount_other": "kahon",
+        "colorsCount_one": "kulay",
+        "colorsCount_other": "kulay"
+      },
+      "hub": {
+        "title": "Creator Hub",
+        "subtitle": "Buhayin ang sarili mong disenyo gamit ang mga custom na cross-stitch pattern.",
+        "opening": "Binubuksan…",
+        "photoImport": {
+          "title": "Pag-import ng Larawan",
+          "description": "Mag-upload ng larawan mula sa iyong camera roll at gawin itong pattern na tatahiin.",
+          "action": "Mag-import ng larawan"
+        },
+        "aiGenerator": {
+          "title": "AI na Generator",
+          "description": "Ilarawan ang isang cozy na ideya at hayaang gumawa ng custom na pixel design ang artificial intelligence.",
+          "action": "Gumawa ng disenyo"
+        }
+      },
+      "aspects": {
+        "square": "Parisukat",
+        "portrait_4_3": "Patayo 4:3",
+        "landscape_4_3": "Pahalang 4:3"
+      },
+      "conversion": {
+        "errors": {
+          "failed": "Nabigo ang pag-convert ng pattern. Subukan ulit.",
+          "timeout": "Patuloy pang pinoproseso ang pag-convert ng pattern. Subukan ulit sa ilang sandali.",
+          "generic": "Hindi natapos ang pag-convert ng pattern. Subukan ulit."
+        }
+      },
+      "aiGeneration": {
+        "gate": {
+          "title": "Kinakailangan ang nakarehistrong account",
+          "body": "Mananatiling pribado sa iyong account ang AI art at ang library nito.",
+          "signIn": "Mag-log in"
+        },
+        "header": {
+          "title": "AI na Generator",
+          "backAccessibilityLabel": "Bumalik"
+        },
+        "prompt": {
+          "label": "Ilarawan ang iyong sining",
+          "placeholder": "Isang cozy na hardin ng kubo sa paglubog ng araw…"
+        },
+        "generate": {
+          "working": "Ginagawa…",
+          "action": "Gumawa — 1 AI Credit",
+          "errors": {
+            "promptRejected": "Hindi pinapayagan ang paglalarawang iyon. Subukan ilarawan ang ibang bagay.",
+            "generic": "Hindi nasimulan ang AI generation. Subukan ulit."
+          }
+        },
+        "library": {
+          "title": "Ang iyong AI Art Library",
+          "status": {
+            "pending": "Naghihintay",
+            "dispatched": "Naipadala na",
+            "running": "Kasalukuyang isinasagawa",
+            "delivered": "Naihatid na",
+            "safety_rejected": "Tinanggihan dahil sa kaligtasan",
+            "failed": "Nabigo",
+            "deleted": "Natanggal",
+            "unknown": "Hindi available"
+          },
+          "failure": {
+            "safety_rejected": "Hindi napasa ng art na ito ang safety check ng provider.",
+            "failed": "Hindi nagawa ang art na ito."
+          },
+          "approve": "Aprubahan sa pattern",
+          "delete": "Tanggalin",
+          "deleteAccessibilityLabel": "Tanggalin ang AI art na ito",
+          "errors": {
+            "loadFailed": "Hindi na-load ang iyong AI Art Library. Subukan ulit."
+          }
+        },
+        "approve": {
+          "modalTitle": "Gumawa ng personal na pattern",
+          "titleLabel": "Titulo ng pattern",
+          "titleAccessibilityLabel": "Titulo ng pattern",
+          "defaultTitle": "Ang Aking AI Pattern",
+          "placeholder": "Ang Aking AI Pattern",
+          "characterCount": "{{count}}/{{max}}",
+          "cancel": "Kanselahin",
+          "creating": "Ginagawa ang pattern…",
+          "create": "Gumawa ng pattern",
+          "errors": {
+            "generic": "Hindi nagawa ang personal na pattern. Subukan ulit."
+          }
+        }
+      },
+      "photoImport": {
+        "gate": {
+          "title": "Kinakailangan ang nakarehistrong account",
+          "body": "Kabilang sa iyong account ang mga personal na pattern para manatili silang pribado at available sa lahat ng device.",
+          "signIn": "Mag-log in o gumawa ng account",
+          "back": "Bumalik"
+        },
+        "header": {
+          "title": "Larawang Pattern",
+          "subtitle": "I-crop nang lokal, pagkatapos ay aprubahan ang pag-convert",
+          "backAccessibilityLabel": "Bumalik"
+        },
+        "picker": {
+          "chooseTitle": "Pumili ng larawan",
+          "helpText": "Mananatili sa device na ito ang full-resolution na lokal na larawan. Walang mako-convert hanggang aprubahan mo ang pag-crop.",
+          "choose": "Pumili mula sa library",
+          "chooseAnother": "Pumili ng iba",
+          "opening": "Binubuksan…",
+          "errors": {
+            "permissionDenied": "Kinakailangan ang access sa photo library para pumili ng lokal na larawan.",
+            "invalidDimensions": "Hindi nagbibigay ang napiling larawan ng magagamit na sukat.",
+            "generic": "Hindi mabuksan ang photo library. Subukan ulit."
+          }
+        },
+        "framing": {
+          "title": "Pag-crop ng artwork",
+          "gestureHint": "I-drag para i-posisyon · i-pinch para i-zoom",
+          "aspectLabel": "Aspect ratio"
+        },
+        "profile": {
+          "title": "Profile ng pag-convert",
+          "options": {
+            "easy": "Madali",
+            "standard": "Standard",
+            "detailed": "Detalyado"
+          },
+          "custom": "Pasadya",
+          "customMeta": "Malaya · naka-lock ang hugis",
+          "unavailable": "Hindi bagay sa pag-crop na ito",
+          "customShortEdgeLabel": "Maikling gilid",
+          "customColorLimitLabel": "Limitasyon ng kulay ng DMC",
+          "exceedsLimit": "Lumalampas ang mga custom na value na ito sa limitasyon na {{max}} cell para sa laki ng pattern."
+        },
+        "titleCard": {
+          "label": "Titulo ng pattern",
+          "placeholder": "Ang Aking Photo Pattern",
+          "defaultTitle": "Ang Aking Photo Pattern",
+          "summary": "{{width}}×{{height}} {{cellsUnit}} · hanggang {{maxColors}} DMC {{colorsUnit}}",
+          "privacyNotice": "Ino-upload lang ng pag-apruba ang na-crop at na-downscale na derivative. Mananatiling lokal ang orihinal na larawan.",
+          "approve": "Aprubahan ang artwork at i-convert"
+        },
+        "processing": {
+          "preparingFrame": "Inihahanda ang inaprubahang crop sa device na ito…",
+          "uploading": "Ino-upload lang ang na-crop at na-downscale na larawan…",
+          "waitingForWorker": "Naghihintay sa conversion worker…",
+          "buildingGrid": "Ginagawa ang grid ng tahi at ang DMC palette…",
+          "preparingSession": "Inihahanda ang personal na pattern para sa laro…"
+        },
+        "convert": {
+          "errors": {
+            "profileMisfit": "Hindi na bagay ang profile na ito sa huling crop. Piliin ang Madali o bawasan ang detalye.",
+            "generic": "Hindi na-convert ang larawang ito. Subukan ulit."
+          }
+        }
+      },
+      "patternEditor": {
+        "gate": {
+          "noPatternTitle": "Walang napiling pattern",
+          "noPatternBody": "Dapat buksan ang screen na ito mula sa isang umiiral na personal na pattern sa iyong library.",
+          "accountTitle": "Kinakailangan ang nakarehistrong account",
+          "accountBody": "Kabilang sa iyong account ang mga personal na pattern para manatili silang pribado at available sa lahat ng device.",
+          "signIn": "Mag-log in o gumawa ng account",
+          "back": "Bumalik"
+        },
+        "loading": "Ipinagpapatuloy ang draft ng pag-edit...",
+        "load": {
+          "failedTitle": "Hindi na-load ang pattern",
+          "retry": "Subukan ulit",
+          "back": "Bumalik",
+          "errors": {
+            "generic": "Hindi na-load ang personal na pattern na ito. Subukan ulit."
+          }
+        },
+        "header": {
+          "title": "Editor ng Pattern",
+          "dimensions": "({{width}}x{{height}})",
+          "backAccessibilityLabel": "Bumalik"
+        },
+        "toolbar": {
+          "undo": "I-undo",
+          "redo": "I-redo"
+        },
+        "mode": {
+          "paint": "Pintahan",
+          "replaceColor": "Palitan ang kulay",
+          "replaceStep1": "1. Pindutin ang kulay sa pattern sa ibaba para palitan ito:",
+          "replaceStep2": "2. Pumili ng target na kulay sa DMC sa ibaba para gawin ang pagpapalit:",
+          "paintSelected": "Napili: DMC {{dmcCode}} ({{name}})",
+          "paintUnselected": "Pumili ng kulay sa ibaba pagkatapos pindutin ang mga cell para magpinta."
+        },
+        "errors": {
+          "pickColorFirst": "Pumili muna ng kulay",
+          "paletteLimit": "Gumagamit na ang pattern na ito ng maximum na {{max}} kulay ng sinulid."
+        },
+        "picker": {
+          "title": "Mga kulay ng DMC na sinulid",
+          "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+        },
+        "save": {
+          "label": "I-save ang na-edit na pattern",
+          "placeholder": "Titulo ng aking na-edit na pattern",
+          "action": "I-save bilang bago",
+          "offlineTitle": "Na-save offline",
+          "offlineBody": "Na-save ang iyong na-edit na pattern sa device na ito at magsi-sync sa iyong account kapag online ka ulit.",
+          "errors": {
+            "generic": "Hindi na-save ang personal na pattern na ito. Subukan ulit."
+          }
+        }
+      }
+    },
+    "errors": {
+      "reauthentication": {
+        "differentAccount": "Ang login na iyon ay para sa ibang account. Hindi nagbago ang iyong kasalukuyang account.",
+        "providerRejected": "Tinanggihan ang verification na iyon. Suriin ang account o code at subukan ulit."
+      },
+      "generic": {
+        "failure": "May nagkamali. Subukan ulit.",
+        "supportReferenceLabel": "Support reference: {{reference}}"
+      }
+    },
+    "native": {
+      "NSPhotoLibraryUsageDescription": "Ginagamit ng Stitch Wish ang mga piniling larawan para gumawa ng personal na pattern o pumili ng pampublikong larawan ng profile ng gumagawa."
+    },
+    "onboarding": {
+      "welcome": {
+        "eyebrow": "MALIGAYANG PAGDATING SA STITCH WISH",
+        "title": "Pumili ng kulay, pindutin ang tumutugmang mga cell.",
+        "heroAlt": "Preview ng panimulang pattern na Cozy Heart",
+        "handedness": {
+          "sectionTitle": "Aling gilid ang gagamitin ng mga kontrol?",
+          "groupLabel": "Gilid ng kontrol",
+          "optionRight": "Mga kontrol sa kanan",
+          "optionLeft": "Mga kontrol sa kaliwa",
+          "saveErrorText": "Hindi na-save ang piniling iyon.",
+          "retry": "Subukan ulit"
+        },
+        "note": "Puwede mong baguhin ito sa Settings mamaya.",
+        "start": "Simulan ang pananahi",
+        "starting": "Sinisimulan…",
+        "browse": "Mag-browse ng mga panimulang pattern",
+        "signIn": "Mag-log in"
+      },
+      "coachBanner": {
+        "beats": {
+          "threadPalette": "Piliin ang DMC 321 Christmas Red.",
+          "stitchAction": "Pindutin ang naka-highlight na tumutugmang cell.",
+          "mismatchedTap": "Pindutin ang naka-highlight na hindi tumutugmang cell. Walang gastos ang maling pagpindot.",
+          "undoAction": "I-undo ang tahing iyon at ilagay ito ulit.",
+          "stitchSweep": "Pindutin ang tumutugmang cell pagkatapos i-drag sa naka-highlight na guhit.",
+          "threadColorCompletion": "Tapusin ang naka-highlight na puting sinulid pagkatapos piliin ang susunod mong kulay."
+        },
+        "hints": {
+          "anchoredZoom": "I-pinch para i-zoom habang nananatili sa lugar ang mga cell sa ilalim ng iyong daliri.",
+          "panVsSweep": "Ang pag-drag ay nagpapan sa tela. Magsimula sa tumutugmang cell para tumahi nang sweep.",
+          "edgeAutoPan": "Magpatuloy sa pag-sweep malapit sa gilid at susundan ng tela ang iyong daliri.",
+          "remainingCellLocator": "Gamitin ang locator para hanapin ang susunod na natitirang cell para sa sinulid na ito."
+        },
+        "skip": "Laktawan muna",
+        "skipAccessibilityLabel": "Laktawan muna ang tutorial",
+        "dismiss": "Nakuha ko",
+        "dismissAccessibilityLabel": "Isara ang tip"
+      },
+      "recap": {
+        "title": "Alam mo na ngayon ito",
+        "lines": {
+          "matchNumbers": "Itugma ang mga numero para ilagay ang bawat tahi.",
+          "dragSweep": "I-drag ang tumutugmang mga cell para tumahi nang sweep.",
+          "pinchZoom": "I-pinch para i-zoom kapag kailangan mong tumingin nang mas malapit.",
+          "undoLocator": "Palaging libre ang undo at ang locator."
+        },
+        "continue": "Ipagpatuloy ang pananahi",
+        "browsePatterns": "Mag-browse ng mga pattern"
+      }
+    },
+    "play": {
+      "home": {
+        "title": "Mesa ng Panahian",
+        "subtitle": "Ipagpatuloy kung saan ka huminto o buksan ulit ang dating gawa.",
+        "loading": "Nilo-load ang iyong mga tahi...",
+        "empty": {
+          "title": "Walang aktibong gawa",
+          "body": "Kasalukuyang walang laman ang iyong sewing basket. Mag-browse sa katalogo ng pattern para makahanap ng magandang tatahiin!",
+          "action": "Mag-browse sa katalogo"
+        },
+        "unknownPattern": "Hindi kilalang pattern",
+        "idLabel": "ID: {{id}}",
+        "unknownPatternLabel": "Pattern blg. {{id}}",
+        "deleteSessionAccessibilityLabel": "Tanggalin ang session",
+        "viewFinishedAccessibilityLabel": "Tingnan ang natapos na gawa",
+        "resumeAccessibilityLabel": "Ipagpatuloy ang pananahi",
+        "status": {
+          "ready": "Handa",
+          "done": "Tapos",
+          "active": "Aktibo",
+          "preparing": "Inihahanda",
+          "failed": "Nabigo"
+        },
+        "deleteConfirm": {
+          "title": "Tanggalin ang pag-unlad",
+          "message": "Sigurado ka bang gusto mong tanggalin ang iyong pag-unlad para sa ”{{title}}”? Hindi na ito maibabalik.",
+          "cancel": "Kanselahin",
+          "confirm": "Tanggalin"
+        },
+        "preparingCard": {
+          "discardTitle": "Iwaksi ang session",
+          "cancelTitle": "Kanselahin ang download",
+          "discardMessage": "Sigurado ka bang gusto mong iwaksi ang nabigong session na ito?",
+          "cancelMessage": "Sigurado ka bang gusto mong kanselahin ang pag-download ng pattern na ito?",
+          "keep": "Panatilihin",
+          "discard": "Iwaksi",
+          "cancel": "Kanselahin"
+        }
+      },
+      "loading": {
+        "text": "Binubuksan ang session at inihahanda ang tela..."
+      },
+      "error": {
+        "title": "Hindi na-load ang session",
+        "fallbackMessage": "Hindi ma-load ang iyong stitching session.",
+        "backButton": "Bumalik",
+        "tableButton": "Pumunta sa mesa ng panahian"
+      },
+      "header": {
+        "backButton": "← Bumalik",
+        "tableButton": "← Mesa ng Panahian",
+        "defaultTitle": "Sesyon ng Panahian",
+        "progress": "{{completed}} / {{total}} cell ({{percent}}% tapos na)",
+        "resumeTutorialAccessibilityLabel": "Ipagpatuloy ang tutorial"
+      },
+      "banners": {
+        "patternRemoved": "Natanggal ang pattern na ito dahil sa moderation at hindi na ito available. Pindutin para umalis.",
+        "syncConflict": "Na-sync sa ibang device — na-update ang ilang cell. Pindutin para iwaksi."
+      },
+      "rail": {
+        "locateNextAccessibilityLabel": "Hanapin ang susunod na natitirang cell para sa aktibong kulay ng sinulid",
+        "undoAccessibilityLabel": "I-undo ang huling tahi"
+      },
+      "palette": {
+        "chipNumber": "#{{number}}",
+        "chipAccessibilityLabel_one": "Kulay {{number}}: DMC {{dmcCode}}, {{count}} tahi na natitira",
+        "chipAccessibilityLabel_other": "Kulay {{number}}: DMC {{dmcCode}}, {{count}} tahi na natitira",
+        "done": "Tapos",
+        "remaining_one": "{{count}} natitira",
+        "remaining_other": "{{count}} natitira"
+      },
+      "celebration": {
+        "title": "Magandang natapos!",
+        "subtitle": "Natapos mo na ang bawat tahi sa telang ito.",
+        "stitchesLabel_one": "Tahi",
+        "stitchesLabel_other": "Tahi",
+        "colorsLabel_one": "Kulay",
+        "colorsLabel_other": "Kulay",
+        "replayButton": "Tumahi ulit",
+        "catalogButton": "Bumalik sa katalogo"
+      }
+    },
+    "profile": {
+      "common": {
+        "goBackAccessibilityLabel": "Bumalik",
+        "tryAgain": "Subukan ulit"
+      },
+      "rejectionReasons": {
+        "safety": "Kaligtasan",
+        "publication_rights": "Karapatan sa publikasyon",
+        "duplicate_or_spam": "Duplicate o spam",
+        "technical_invalidity": "Teknikal na hindi wasto",
+        "quality_standard": "Pamantayan ng kalidad"
+      },
+      "submissionStatus": {
+        "accepted": "Nailathala",
+        "appeal_pending": "Naghihintay ang apela",
+        "appeal_upheld": "Tinanggihan ang apela",
+        "precheck_failed": "Hindi available ang precheck",
+        "precheck_pending": "Sinusuri",
+        "quarantined": "Kailangan ng pagsusuri",
+        "rejected": "Tinanggihan",
+        "review_pending": "Isinasagawa ang pagsusuri"
+      },
+      "revisionStatus": {
+        "accepted": "Nailathala",
+        "appeal_pending": "Naghihintay ang apela",
+        "appeal_upheld": "Tinanggihan ang apela",
+        "pending": "Isinasagawa ang pagsusuri",
+        "rejected": "Tinanggihan",
+        "withdrawn": "Binawi"
+      },
+      "home": {
+        "identity": {
+          "establishing": "Itinatatag ang identity...",
+          "pendingTitle": "Naghihintay ang identity",
+          "offline": "Offline",
+          "retryConnection": "Subukan ulit kumonekta",
+          "loadingPublicProfile": "Nilo-load ang pampublikong profile...",
+          "unavailableTitle": "Hindi available ang pampublikong profile",
+          "checkConnection": "Suriin ang iyong koneksyon at subukan ulit.",
+          "createTitle": "Gumawa ng iyong pampublikong profile",
+          "createBody": "Piliin ang permanenteng username na makikita kasama ng iyong mga community pattern. Mananatiling pribado ang mga detalye ng iyong account.",
+          "createAction": "Gumawa ng pampublikong profile",
+          "editAction": "I-edit ang pampublikong profile",
+          "offlinePendingSync": "Offline — naghihintay ng sync",
+          "guestPlayer": "Guest na Manlalaro",
+          "playingSince": "Naglalaro simula noong {{date}}",
+          "creatorSince": "Gumagawa simula noong {{date}}"
+        },
+        "walletCard": {
+          "openCommerceStoreAccessibilityLabel": "Buksan ang Commerce Store",
+          "title": "Balanse ng Studio",
+          "commerceStoreLink": "Tindahan",
+          "stitchCoinsAccessibilityLabel": "Balanse ng Stitch Coin: {{balance}}. Pindutin para kumuha ng barya.",
+          "packs": "Mga Pack",
+          "stitchCoinsLabel": "Stitch Coins",
+          "stitchCoinsSub": "Para sa pag-unlock ng pattern",
+          "aiCreditsAccessibilityLabel": "Balanse ng AI Credit: {{balance}}. Pindutin para kumuha ng credits.",
+          "aiCreditsSignInAccessibilityLabel": "AI Credits. Mag-log in para bumili.",
+          "aiCreditsLabel": "AI Credits",
+          "aiCreditsSubOwned": "Para sa AI pattern art",
+          "aiCreditsSubGuest": "Mag-log in para magkaroon",
+          "membershipActiveAccessibilityLabel": "Aktibo ang Premium membership ({{plan}}). Pindutin para pamahalaan.",
+          "membershipInactiveAccessibilityLabel": "Cross-Stitch Premium. Pindutin para makita ang mga plano.",
+          "membershipActiveTitle": "Aktibo ang Premium · {{plan}}",
+          "membershipInactiveTitle": "Cross-Stitch Premium",
+          "planAnnual": "Taunan",
+          "planMonthly": "Buwanan",
+          "planWeekly": "Lingguhan",
+          "planActive": "Aktibo",
+          "trialBadge": "Pagsubok",
+          "membershipSubActive": "Naka-unlock ang lahat ng tema · Direktang araw-araw na claim ng barya",
+          "membershipSubInactive": "Direktang 30 araw-araw na barya, custom na tema, at AI credits",
+          "manage": "Pamahalaan",
+          "explore": "Galugarin"
+        },
+        "quickNav": {
+          "sectionEyebrow": "ACCOUNT AT COMMUNITY",
+          "submissionsAccessibilityLabel": "Mga isinumite sa katalogo: Subaybayan ang mga pagsusuri, desisyon, at apela",
+          "submissionsTitle": "Mga Isinumite",
+          "submissionsSub": "Subaybayan ang mga pagsusuri",
+          "publishedAccessibilityLabel": "Mga nailathalang pattern: Baguhin ang metadata, bawiin, at subaybayan ang mga apela",
+          "publishedTitle": "Nailathala",
+          "publishedSub": "Pamahalaan ang mga pattern",
+          "moderationAccessibilityLabel": "Mga abiso sa moderation: Suriin ang mga desisyon sa katalogo na nakakaapekto sa iyong mga pattern",
+          "moderationTitle": "Moderasyon",
+          "moderationSub": "Mga abiso ng patakaran",
+          "likedAccessibilityLabel": "Mga na-like na pattern: Ang iyong pribadong koleksyon ng mga na-like na community pattern",
+          "likedTitle": "Mga Na-like na Pattern",
+          "likedSavedCount_one": "{{count}} na-save",
+          "likedSavedCount_other": "{{count}} na-save",
+          "likedSavedDefault": "Mga na-save na pattern"
+        },
+        "dailySection": {
+          "title": "Araw-araw na pananahi at reward",
+          "tasksGroupLabel": "Mga araw-araw na gawain (+30 barya max)",
+          "connectToTrack": "Kumonekta para masubaybayan ang iyong pag-unlad sa araw-araw na gawain.",
+          "loadingTasks": "Nilo-load ang mga gawain…",
+          "loadFailed": "Hindi na-load ang mga araw-araw na gawain.",
+          "retry": "Subukan ulit",
+          "taskCoinReward": "+{{amount}}",
+          "taskProgress": "{{progress}}/{{target}}",
+          "resetting": "Nire-reset…",
+          "resetsInHoursMinutes": "Mag-re-reset sa {{hours}}o {{minutes}}m",
+          "resetsInMinutes": "Mag-re-reset sa {{minutes}}m"
+        },
+        "dailyTasks": {
+          "cells_100": {
+            "title": "100 aksyon ng pananahi",
+            "body": "Punuin ang 100 tumutugmang cell ngayong araw"
+          },
+          "three_colors_10": {
+            "title": "3 kulay, 10 aksyon sa bawat isa",
+            "body": "Umabot ng 10 aksyon sa 3 kulay ng sinulid"
+          },
+          "color_completion": {
+            "title": "Tapusin ang isang kulay ng sinulid",
+            "body": "Tapusin ang isang kulay nang lubusan"
+          }
+        },
+        "dailyPool": {
+          "title": "Araw-araw na reward pool na 30 barya",
+          "premiumInstantClaim": "Instant na claim ng Premium",
+          "rewardedAds": "Mga rewarded ad",
+          "claimedAmount": "Na-claim ang {{amount}} Stitch Coins para ngayong araw!",
+          "poolAlreadyClosed": "Sarado na ang reward pool ngayong araw.",
+          "claimedForToday": "Na-claim na para ngayong araw. Mag-re-reset sa susunod na reward day.",
+          "poolExhausted": "Naubos na ang reward pool na 30 barya ngayong araw.",
+          "claimButtonRetry": "Subukan ulit i-claim",
+          "claimButtonInstant": "I-claim ang {{count}} barya (instant)",
+          "poolClaimedResetsTomorrow": "Na-claim na ang coin pool ngayong araw. Mag-re-reset bukas.",
+          "allAdRewardsCompleted": "Tapos na ang lahat ng ad reward ngayong araw! (30/30 barya)",
+          "watchAdButton": "Manood ng ad para sa +10 barya ({{count}} na natitira)",
+          "adPerkNote": "Manood ng hanggang 3 ad/araw · Naka-unlock sa Premium ang instant na claim ng 30 barya",
+          "adRewardEarned": "Nakuha ang ad reward! Vine-verify sa backend…",
+          "claimFailed": "Nabigo ang claim: {{message}}",
+          "claimFailedGeneric": "May nagkamali. Subukan ulit.",
+          "adLoadFailedDefault": "Hindi na-load ang ad",
+          "adAttemptFailedDefault": "Hindi nabuksan ang pagsubok sa ad"
+        },
+        "tabs": {
+          "myCreations": "Mga Likha Ko {{count}}",
+          "likedPatterns": "Mga Na-like na Pattern {{count}}"
+        },
+        "myPatterns": {
+          "signInTitle": "Mag-log in para sa mga personal na pattern",
+          "signInBody": "Kinakailangan ang nakarehistrong account para gumawa at pribadong pagmayari ng mga na-convert na photo pattern.",
+          "signIn": "Mag-log in",
+          "patternMeta": "{{width}}×{{height}} · {{count}} kulay",
+          "pendingSync": "Naghihintay ng sync",
+          "play": "Maglaro",
+          "edit": "I-edit",
+          "submitAccessibilityLabel": "Isumite ang {{title}} sa community catalog",
+          "emptyTitle": "Walang personal na likha",
+          "emptyBody": "Wala ka pang na-convert na larawan o gawang AI art. Pumunta sa Create para simulan ang iyong unang obra maestra!",
+          "emptyAction": "Simulan ang paggawa",
+          "actionFailedGeneric": "May nagkamali. Subukan ulit."
+        },
+        "likedTab": {
+          "unavailableTitle": "Hindi available ang mga na-like na pattern",
+          "unavailableDefault": "Hindi na-load ang mga na-like na pattern.",
+          "byCreator": "ni {{creatorName}}",
+          "specs": "{{width}}×{{height}} · {{count}} kulay",
+          "emptyTitle": "Walang na-like na pattern",
+          "emptyBody": "Mag-browse sa katalogo at pindutin ang heart icon sa anumang disenyo para i-save ito para mamaya.",
+          "emptyAction": "Tuklasin ang mga pattern"
+        }
+      },
+      "premiumDailyCoinClaimCard": {
+        "title": "Araw-araw na claim ng Premium coin",
+        "description": "I-claim ang natitira sa shared na reward pool na 30 barya ngayong araw.",
+        "connectPrompt": "Kumonekta sa game backend para suriin ang reward ngayong araw.",
+        "checkingReward": "Sinusuri ang Premium reward ngayong araw…",
+        "unavailableGeneric": "Hindi available ang Premium reward ngayong araw.",
+        "tryAgain": "Subukan ulit",
+        "resultAdded": "Naidagdag ng game backend ang {{amount}} Stitch Coins. Balanse: {{balance}}.",
+        "poolAlreadyClosed": "Sarado na ang shared reward pool ngayong araw.",
+        "alreadyClaimed": "Na-claim na para sa reward day na ito.",
+        "poolExhausted": "Naubos na ang shared reward pool ngayong araw. Mag-re-reset ito sa susunod na reward day.",
+        "availableNow": "{{count}} Stitch Coins na available ngayon",
+        "resetsAt": "Mag-re-reset sa {{date}}",
+        "claimButtonRetry": "Subukan ulit i-claim",
+        "claimButtonInstant": "I-claim ang {{count}} barya",
+        "lockedDescription": "Naka-unlock ang araw-araw na claim na ito ng Premium membership, kabilang ang karapat-dapat na buwanang trial.",
+        "viewPremiumPlans": "Tingnan ang mga Premium plan"
+      },
+      "publicProfile": {
+        "editTitle": "I-edit ang pampublikong profile",
+        "createTitle": "Gumawa ng pampublikong profile",
+        "signInTitle": "Kinakailangan ang pag-log in",
+        "signInBody": "Kinakailangan ang nakarehistrong account para gumawa ng pampublikong creator identity.",
+        "signInAction": "Mag-log in",
+        "unavailableTitle": "Hindi available ang profile",
+        "unavailableBody": "Hindi na-load ang iyong pampublikong profile. Suriin ang iyong koneksyon at subukan ulit.",
+        "tryAgain": "Subukan ulit",
+        "intro": "Makikita ang pangalan at larawang ito kasama ang iyong mga community pattern. Mananatiling pribado ang iyong email at login provider.",
+        "choosePhoto": "Pumili ng larawan",
+        "changePhoto": "Palitan ang larawan",
+        "remove": "Tanggalin",
+        "avatarHelper": "Opsyonal · JPEG, PNG, o WebP · hanggang 5 MB",
+        "usernameLabel": "Username",
+        "usernameAccessibilityLabel": "Pampublikong username",
+        "usernamePlaceholder": "stitcher_pangalan",
+        "usernameHelperLocked": "Permanente na ang iyong username.",
+        "usernameHelperEditable": "3–30 maliliit na letra, numero, o underscore. Hindi na ito mababago mamaya.",
+        "displayNameLabel": "Ipinapakitang Pangalan",
+        "displayNameAccessibilityLabel": "Pampublikong display name",
+        "displayNamePlaceholder": "Ang iyong pangalan bilang creator",
+        "displayNameHelper": "Puwede mong baguhin ito mamaya.",
+        "safetyNotice": "Sinusuri ang mga pangalan at larawan bago mailathala. Kung tinanggihan ang isang pagbabago, mananatiling walang pagbabago ang iyong kasalukuyang pampublikong profile.",
+        "saveAction": "I-save ang pampublikong profile",
+        "publishAction": "Ilathala ang pampublikong profile",
+        "photoPermissionRequired": "Kinakailangan ang access sa photo library para pumili ng larawan ng profile.",
+        "photoTypeInvalid": "Dapat JPEG, PNG, o WebP ang mga larawan ng profile.",
+        "photoTooLarge": "Dapat 5 MB o mas mababa ang mga larawan ng profile.",
+        "saveFailedDefault": "Hindi na-save ang iyong pampublikong profile"
+      },
+      "submissions": {
+        "title": "Mga Isinumite sa Katalogo",
+        "unavailableTitle": "Hindi available ang mga isinumite",
+        "unavailableDefault": "Hindi na-load ang iyong mga isinumite.",
+        "emptyTitle": "Walang isinumite sa katalogo",
+        "emptyBody": "Isumite ang na-sync na personal na pattern mula sa Mga Likha Ko.",
+        "emptyAction": "Bumalik sa Mga Likha Ko",
+        "meta": "{{category}} · {{date}}",
+        "precheckFailedHelp": "Hindi natapos ang mga awtomatikong pagsusuri. Hindi nailathala ang snapshot na ito.",
+        "publishedToCatalog": "Nailathala sa community catalog.",
+        "appealAction": "Umapela sa desisyon",
+        "appealHelp": "Puwede kang umapela sa hindi nagbagong snapshot na ito nang isang beses.",
+        "appealNoteAccessibilityLabel": "Tala ng apela",
+        "appealNotePlaceholder": "Opsyonal na konteksto para sa nagsusuring moderator",
+        "cancelAction": "Kanselahin",
+        "submitAppealAction": "Isumite ang apela"
+      },
+      "publishedPatterns": {
+        "title": "Mga Nailathalang Pattern",
+        "unavailableTitle": "Hindi available ang mga pattern",
+        "unavailableDefault": "Hindi na-load ang iyong mga nailathalang pattern.",
+        "emptyTitle": "Walang nailathalang pattern",
+        "emptyBody": "Makikita rito ang mga pattern na inilathala mo sa community catalog.",
+        "emptyAction": "Bumalik sa Profile",
+        "withdrawnFromCatalog": "Binawi mula sa katalogo",
+        "underReviewHold": "Nasa review hold",
+        "meta": "{{category}} · Nailathala {{date}}",
+        "withdrawnHelp": "Permanenteng binawi ang identity na ito. Mananatili sa mga manlalarong may umiiral na stitching session ang kanilang pag-unlad at access.",
+        "reviewHoldHelp": "Pansamantalang hindi available ang pattern na ito para matuklasan at hindi makapagsimula ng bagong session. Mananatiling malalaro ang mga umiiral na stitching session. Puwede ka pa ring magmungkahi ng metadata revision.",
+        "reviseAction": "Baguhin ang metadata",
+        "withdrawRevisionAction": "Bawiin ang revision",
+        "appealAction": "Umapela sa desisyon",
+        "withdrawFromCatalogAction": "Bawiin mula sa katalogo",
+        "appealHelp": "Puwede kang umapela sa hindi nagbagong snapshot na ito nang isang beses. Ang pagsumite ng bagong revision sa halip ay iwawaksi ang apelang ito.",
+        "appealNoteAccessibilityLabel": "Tala ng apela",
+        "appealNotePlaceholder": "Opsyonal na konteksto para sa nagsusuring moderator",
+        "cancelAction": "Kanselahin",
+        "submitAppealAction": "Isumite ang apela",
+        "withdrawRevisionFailedTitle": "Hindi nabawi ang revision",
+        "withdrawPatternFailedTitle": "Hindi nabawi ang pattern",
+        "withdrawPatternSuccessTitle": "Nabawi ang pattern",
+        "withdrawPatternSuccessBody": "Hindi na ito matutuklasan at hindi na makapagsimula ng bagong session. Mananatiling malalaro ang mga umiiral na stitching session kasama ang kanilang pag-unlad at data.",
+        "withdrawConfirmTitle": "Bawiin mula sa community catalog?",
+        "withdrawConfirmBody": "Mawawala ang ”{{title}}” sa pagtuklas at hindi na makapagsisimula ng bagong session. Hindi na mababawi pa ang identity ng pattern na ito. Mananatiling malalaro ang mga umiiral na stitching session at ang kanilang pag-unlad.",
+        "withdrawConfirmCancel": "Kanselahin",
+        "withdrawConfirmAction": "Bawiin nang permanente"
+      },
+      "revisePatternMetadata": {
+        "title": "Baguhin ang metadata",
+        "signInTitle": "Kinakailangan ang nakarehistrong account",
+        "signInBody": "Mag-log in bago baguhin ang metadata ng isang community pattern.",
+        "signInAction": "Mag-log in",
+        "notFoundTitle": "Hindi nahanap ang community pattern",
+        "notFoundBody": "Ang mga sarili mong nailathalang community pattern lang ang puwedeng baguhin.",
+        "notFoundAction": "Bumalik sa mga nailathalang pattern",
+        "inProgressTitle": "May umiiral na ring revision",
+        "inProgressBody": "May naghihintay nang revision o aktibong apela na ang pattern na ito. Bawiin ito bago magsumite ng bago.",
+        "inProgressAction": "Bumalik sa mga nailathalang pattern",
+        "currentlyPublished": "Kasalukuyang nailathala sa community catalog",
+        "titleFieldLabel": "Titulo sa katalogo",
+        "titlePlaceholder": "Titulo ng pattern",
+        "titleAccessibilityLabel": "Titulo sa katalogo",
+        "descriptionFieldLabel": "Paglalarawan",
+        "descriptionPlaceholder": "Ilarawan ang disenyo, tema, at karanasan sa pananahi.",
+        "descriptionAccessibilityLabel": "Paglalarawan sa katalogo",
+        "sourceLanguageFieldLabel": "Pinagmulang wika",
+        "categoryFieldLabel": "Kategorya",
+        "tagsFieldLabel": "Mga Tag",
+        "notice": "Kinukuha ng pagbabago ang isang bagong hindi mababagong snapshot. Mananatiling makikita ang iyong kasalukuyang nailathalang metadata hanggang tanggapin ng human moderator ang revision na ito.",
+        "submitAction": "Isumite ang revision"
+      },
+      "submitPattern": {
+        "title": "Isumite sa community",
+        "signInTitle": "Kinakailangan ang nakarehistrong account",
+        "signInBody": "Mag-log in bago isumite ang personal na pattern sa community catalog.",
+        "signInAction": "Mag-log in",
+        "createProfileTitle": "Gumawa ng pampublikong creator profile",
+        "createProfileBody": "Ikre-credit ang mga community pattern sa iyong pampublikong creator identity.",
+        "createProfileAction": "Gumawa ng profile",
+        "patternNotFoundTitle": "Hindi nahanap ang personal na pattern",
+        "patternNotFoundBody": "Ang mga na-sync na personal na pattern lang ang puwedeng isumite.",
+        "patternNotFoundAction": "Bumalik sa Profile",
+        "patternMeta": "{{width}}×{{height}} · {{count}} kulay",
+        "byCreator": "Ni @{{username}}",
+        "titleFieldLabel": "Titulo sa katalogo",
+        "titlePlaceholder": "Titulo ng pattern",
+        "titleAccessibilityLabel": "Titulo sa katalogo",
+        "descriptionFieldLabel": "Paglalarawan",
+        "descriptionPlaceholder": "Ilarawan ang disenyo, tema, at karanasan sa pananahi.",
+        "descriptionAccessibilityLabel": "Paglalarawan sa katalogo",
+        "sourceLanguageFieldLabel": "Pinagmulang wika",
+        "categoryFieldLabel": "Kategorya",
+        "tagsFieldLabel": "Mga Tag",
+        "rightsDeclaration": "Ginawa ko ang gawang ito o mayroon ako ng mga karapatang kinakailangan para ilathala ito ayon sa Publication Rights Declaration v1.",
+        "notice": "Kinukuha ng pagsumite ang isang hindi mababagong kopya. Nagbibigay ng ebidensya ang mga awtomatikong pagsusuri, ngunit ang human moderator ang gumagawa ng bawat desisyon.",
+        "submitAction": "Isumite para sa pagsusuri"
+      },
+      "moderationNotices": {
+        "title": "Mga Abiso ng Moderation",
+        "signInTitle": "Mag-log in para makita ang mga abiso",
+        "signInBody": "Ang mga abiso ng moderation ay kabilang sa nakarehistrong account na naglathala ng apektadong community pattern.",
+        "signInAction": "Mag-log in",
+        "unavailableTitle": "Hindi available ang mga abiso",
+        "unavailableDefault": "Hindi na-load ang mga abiso ng moderation.",
+        "emptyTitle": "Walang abiso ng moderation",
+        "emptyBody": "Makikita rito ang mga desisyon sa moderation ng katalogo na nakikita ng may-ari.",
+        "emptyAction": "Bumalik sa Profile",
+        "meta": "{{noticeType}} · {{date}}",
+        "noticeTypes": {
+          "metadata_remediation": "Pagsasaayos ng metadata sa katalogo",
+          "no_violation": "Sarado ang pagsusuri — walang paglabag",
+          "review_hold": "Review hold",
+          "safety_removal": "Pagtanggal dahil sa kaligtasan"
+        },
+        "noticeHelp": {
+          "metadata_remediation": "Pinalitan ng ligtas na mga value ang titulo, paglalarawan, at napiling mga tag. Hindi apektado ang availability, ang file ng pattern, at ang preview. Puwede kang magsumite ng bagong revision ng katalogo metadata anumang oras.",
+          "no_violation": "Sarado na ang post-publication na pagsusuri at ganap nang available ulit ang pattern na ito sa pagtuklas at bagong stitching session.",
+          "review_hold": "Pansamantalang hindi available ang pattern na ito para matuklasan at sa bagong session. Mananatiling malalaro ang mga umiiral na stitching session, pag-unlad, at offline na data ng pattern.",
+          "safety_removal": "Natanggal ang pattern na ito dahil sa paglabag sa kaligtasan, batas, o patakaran. Nawala ito sa pagtuklas, hindi na available ang mga umiiral na stitching session, at natanggal ang offline na data ng pattern sa iyong mga device. Puwede kang magsumite ng apela sa pagtanggal dahil sa kaligtasan."
+        }
+      },
+      "dailyTasksCard": {
+        "title": "Mga Araw-araw na Gawain",
+        "offline": "Offline ka — kailangan ng koneksyon ang mga araw-araw na gawain.",
+        "unavailable": "Hindi na-load ang mga araw-araw na gawain.",
+        "empty": "Walang available na gawain ngayong araw."
+      },
+      "rewardedAdCard": {
+        "offline": "Offline ka — kailangan ng koneksyon ang reward day.",
+        "unavailable": "Hindi na-load ang status ng reward day.",
+        "premiumClaimClosedPool": "Isinara ng iyong araw-araw na Premium claim ang shared coin pool ngayong araw.",
+        "allRewardsClaimed": "Na-claim mo na ang lahat ng ad reward ngayong araw. Bumalik bukas!",
+        "remaining_one": "{{count}} ad na natitira ngayong araw ({{coins}} barya na available)",
+        "remaining_other": "{{count}} ad na natitira ngayong araw ({{coins}} barya na available)",
+        "watchForCoins": "Manood ng ad para sa {{count}} barya"
+      },
+      "likedPatterns": {
+        "title": "Mga Na-like na Pattern",
+        "signInTitle": "Kinakailangan ang nakarehistrong account",
+        "signInBody": "Mag-log in bago tingnan ang iyong pribadong koleksyon ng mga na-like na pattern.",
+        "signInAction": "Mag-log in",
+        "unavailableTitle": "Hindi available ang mga na-like na pattern",
+        "unavailableDefault": "Hindi na-load ang mga na-like na pattern.",
+        "emptyTitle": "Walang na-like na pattern",
+        "emptyBody": "Mag-browse sa katalogo ng pattern at pindutin ang heart icon sa anumang disenyo para i-save ito.",
+        "emptyAction": "Tuklasin ang mga pattern",
+        "byCreator": "ni {{creatorName}}",
+        "specs": "{{width}}×{{height}} · {{count}} kulay · {{category}}"
+      }
+    },
+    "settings": {
+      "header": {
+        "title": "Mga Setting",
+        "subtitleDev": "I-configure ang mga kagustuhan at siyasatin ang mga backend system.",
+        "subtitleProd": "I-configure ang iyong mga kagustuhan."
+      },
+      "serviceStatus": {
+        "sectionTitle": "Status ng Serbisyo",
+        "apiConnectionTitle": "Koneksyon sa API",
+        "testingConnection": "Sinusubukan ang koneksyon sa api...",
+        "offlineUnreachable": "Offline / Hindi Maabot",
+        "unknownConnectionError": "Hindi kilalang error sa koneksyon",
+        "retryConnection": "Subukan Ulit ang Koneksyon",
+        "healthy": "Maayos",
+        "degraded": "Nabawasan",
+        "postgresLabel": "Database ng PostgreSQL",
+        "redisLabel": "Cache ng Redis"
+      },
+      "session": {
+        "sectionTitle": "Identity at Session",
+        "statusTitle": "Status ng Backend Session",
+        "statusDescription": "Vine-validate ang iyong aktibong guest registration session sa pamamagitan ng API.",
+        "noActiveSession": "Walang Aktibong Session",
+        "sessionActive": "Aktibo ang Session",
+        "idLabel": "ID: {{id}} (v{{version}})",
+        "unknownState": "Hindi kilalang estado"
+      },
+      "tutorial": {
+        "sectionTitle": "Tutorial",
+        "learnControlsTitle": "Alamin ang mga kontrol",
+        "learnControlsDescription": "Ipagpatuloy ang tutorial sa pananahi kapag handa ka na.",
+        "unavailableTitle": "Hindi available ang tutorial",
+        "unavailableMessage": "Hindi naipagpatuloy ang tutorial. Subukan ulit."
+      },
+      "developer": {
+        "sectionTitle": "Developer",
+        "debugDiagnostics": "Debug / Pagsusuri",
+        "debug": {
+          "backAccessibilityLabel": "Bumalik",
+          "title": "Debug",
+          "sentry": {
+            "sectionTitle": "Sentry",
+            "dsnConfigured": "DSN: naka-configure · env: {{environment}}",
+            "dsnNotConfigured": "DSN: hindi naka-configure",
+            "sendTestEvent": "Magpadala ng Test Event",
+            "throwError": "Mag-throw ng Error",
+            "disabledTitle": "Naka-disable ang Sentry",
+            "disabledMessage": "Hindi naka-configure ang Sentry (walang nahanap na DSN), kaya walang mapapadalang test event.",
+            "testEventSent": "Naipadala ang test event. Event ID: {{eventId}}",
+            "testEventTitle": "Sentry",
+            "testEventFailedTitle": "Kamalian",
+            "testEventFailedMessage": "Hindi naipadala ang test event: {{message}}"
+          },
+          "onboarding": {
+            "sectionTitle": "Introduksyon",
+            "description": "I-clear ang pag-unlad ng tutorial at magsimula ulit mula sa Welcome.",
+            "restart": "I-restart ang introduksyon",
+            "confirmTitle": "I-restart ang introduksyon?",
+            "confirmMessage": "Mabubura ang state ng tutorial at magsisimula ang introduksyon mula sa welcome screen.",
+            "cancel": "Kanselahin",
+            "resetFailedTitle": "Nabigo ang pag-reset"
+          }
+        }
+      },
+      "accountDeletion": {
+        "sectionTitle": "Pagtanggal ng Account",
+        "statusTitle": "Status ng Pagtanggal ng Account",
+        "checkingStatus": "Sinusuri ang status...",
+        "pendingTitle": "Naghihintay ang Pagtanggal ng Account",
+        "pendingDescription": "Naka-iskedyul na ang pagtanggal ng iyong account. Mag-log in ulit bago matapos ang recovery window para kanselahin ito.",
+        "recoveryWindowEnds": "Matatapos ang Recovery Window: {{date}}",
+        "cancelling": "Kinakansela...",
+        "cancelDeletion": "Kanselahin ang pagtanggal",
+        "statusError": "Hindi nasuri ang status ng pagtanggal. Suriin ang iyong koneksyon at subukan ulit.",
+        "deleteAccountTitle": "Tanggalin ang Account",
+        "deleteAccountDescription": "Permanenteng tanggalin ang iyong account, pag-unlad, at lahat ng unlock pagkatapos ng 30-araw na recovery window.",
+        "requestedTitle": "Hiniling ang Pagtanggal ng Account",
+        "requestedMessage": "Naghihintay ang iyong kahilingan sa pagtanggal hanggang {{date}}. Na-log out na ang iyong account. Mag-log in ulit bago dumating iyon kung gusto mong kanselahin ang pagtanggal na ito.",
+        "signOutFailedTitle": "Nabigo ang Lokal na Pag-log Out",
+        "signOutFailedMessage": "Naghihintay pa rin ang iyong kahilingan sa pagtanggal. Mag-log out ulit mula sa Settings.",
+        "requestFailedTitle": "Nabigo ang Kahilingan",
+        "requestFailedMessage": "Hindi naipadala ang iyong kahilingan sa pagtanggal. Suriin ang iyong koneksyon at subukan ulit.",
+        "cancelSuccessTitle": "Tagumpay",
+        "cancelSuccessMessage": "Nakansela na ang iyong kahilingan sa pagtanggal ng account.",
+        "reauthRequiredTitle": "Kinakailangan ang Muling Pag-verify",
+        "reauthRequiredMessage": "Para sa kaligtasan, kailangan mong mag-log in ulit bago kanselahin ang pagtanggal ng account.",
+        "signInAction": "Mag-log In",
+        "cancelFailedTitle": "Nabigo ang Pagkansela",
+        "cancelFailedGeneric": "Hindi nakansela ang pagtanggal ng account. Suriin ang iyong koneksyon at subukan ulit."
+      },
+      "appearance": {
+        "sectionTitle": "Anyo"
+      },
+      "themeCollectionCard": {
+        "title": "Koleksyon ng Tema",
+        "description": "Baguhin ang cosmetics ng grid, tahi, at pagkumpleto nang hindi naaapektuhan ang gameplay.",
+        "premiumBadge": "Premium",
+        "lockedAccessibilityHint": "Nangangailangan ng Premium Membership",
+        "selected": "Napili",
+        "accessActive": "Aktibo ang access sa Premium theme, kabilang na sa panahon ng karapat-dapat na Buwanang Trial.",
+        "lockedPreview": "I-preview ang koleksyon dito. Nagbubukas ng pagpili ang Premium Membership o karapat-dapat na Buwanang Trial.",
+        "viewPremiumPlans": "Tingnan ang mga Premium plan"
+      },
+      "gameplay": {
+        "sectionTitle": "Mga Setting ng Gameplay",
+        "showGridLinesTitle": "Ipakita ang Grid Lines",
+        "showGridLinesDescription": "Ipakita ang mga hangganan sa pagitan ng mga cell ng sewing canvas",
+        "handednessTitle": "Layout ng Kamay",
+        "handednessDescription": "I-align ang mga interactive na kontrol para sa kaliwete o kanang paglalaro",
+        "left": "Kaliwa",
+        "right": "Kanan",
+        "leftHandedLayout": "Layout para sa kaliwete",
+        "rightHandedLayout": "Layout para sa kanan"
+      },
+      "language": {
+        "sectionTitle": "Wika",
+        "description": "Piliin ang wikang ipapakita ng Stitch Wish sa interface nito.",
+        "followDevice": "Sundin ang wika ng device",
+        "followDeviceDescription": "I-clear ang iyong override para sundin ang setting ng wika ng iyong device.",
+        "optionEnglish": "English",
+        "optionTurkish": "Türkçe",
+        "modalTitle": "Piliin ang Wika",
+        "modalSubtitle": "Piliin ang gusto mong wika para sa interface.",
+        "systemDefault": "Wika ng Sistema",
+        "systemDefaultWithDetected": "Wika ng Sistema ({{language}})",
+        "systemDefaultDescription": "Awtomatikong itutugma sa setting ng iyong device."
+      },
+      "social": {
+        "sectionTitle": "Social at Privacy",
+        "blockedCreators": "Mga Na-block na Gumagawa"
+      },
+      "account": {
+        "sectionTitle": "Account",
+        "notSignedInTitle": "Hindi naka-log in",
+        "signInRequiredTitle": "Kinakailangan ang pag-log in",
+        "notSignedInDescription": "Mag-log in para i-sync ang pag-unlad sa lahat ng device.",
+        "signIn": "Mag-log in",
+        "reconnecting": "Kumokonekta ulit…",
+        "signOut": "Mag-log out",
+        "signOutConfirmTitle": "Mag-log out?",
+        "signOutConfirmMessage": "Mananatili sa device na ito ang iyong hindi na-sync na pag-unlad at mabubuksan ulit kapag nag-log in ka ulit.",
+        "signOutConfirmAction": "Mag-log out",
+        "signOutFailedTitle": "Nabigo ang pag-log out",
+        "signOutFailedGeneric": "Subukan ulit.",
+        "providerAppleAccount": "Account ng Apple",
+        "providerGoogleAccount": "Account ng Google",
+        "providerGenericAccount": "Nakarehistrong account"
+      },
+      "signIn": {
+        "emailHeading": "Mag-log in o gumawa ng account",
+        "emailSubtitle": "Panatilihing available ang iyong pag-unlad sa lahat ng device.",
+        "codeHeading": "Ilagay ang iyong code",
+        "codeSubtitle": "Ilagay ang 6-digit na code na ipinadala namin sa {{email}}.",
+        "continueWithGoogle": "Magpatuloy gamit ang Google",
+        "orUseEmail": "o gumamit ng email",
+        "ssoUnavailable": "Hindi available ang pag-log in sa Google at Apple sa build na ito.",
+        "emailLabel": "Address ng Email",
+        "emailPlaceholder": "Address ng Email",
+        "sendCode": "Ipadala ang code",
+        "cancel": "Kanselahin",
+        "verify": "I-verify",
+        "resendCode": "Ipadala ulit ang code",
+        "resending": "Ipinapadala ulit...",
+        "codeSent": "Naipadala ang code",
+        "useDifferentEmail": "Gumamit ng ibang email",
+        "sendCodeFailed": "Hindi naipadala ang code. Suriin ang iyong koneksyon at subukan ulit.",
+        "codeIncorrect": "Mali o expired na ang code na iyon.",
+        "verifyFailedGeneric": "May nagkamali. Subukan ulit.",
+        "socialSignInFailed": "Hindi naka-log in gamit ang {{provider}}. Subukan ulit.",
+        "providerApple": "Apple",
+        "providerGoogle": "Google"
+      },
+      "blockedCreators": {
+        "backAccessibilityLabel": "Bumalik",
+        "title": "Mga Na-block na Gumagawa",
+        "infoText": "Pribado at maaaring bawiin ang pag-block. Itinatago nito ang mga community pattern ng gumagawa mula sa iyong mga tanawin ng katalogo, paghahanap, at listahan ng pagtuklas. Hindi ito isang report o pagtanggal ng content.",
+        "signInRequiredTitle": "Kinakailangan ang Nakarehistrong Account",
+        "signInRequiredBody": "Mag-log in bago pamahalaan ang iyong listahan ng na-block na gumagawa.",
+        "signInAction": "Mag-log In",
+        "listUnavailableTitle": "Hindi Available ang Listahan",
+        "listUnavailableDefault": "Hindi na-load ang mga na-block na gumagawa.",
+        "tryAgain": "Subukan Ulit",
+        "emptyTitle": "Walang Na-block na Gumagawa",
+        "emptyBody": "Wala ka pang na-block. Puwede kang mag-block ng gumagawa mula sa alinman sa kanilang pahina ng detalye ng pattern.",
+        "backToSettings": "Bumalik sa Mga Setting",
+        "unblock": "I-unblock",
+        "unblockConfirmTitle": "I-unblock ang Gumagawa",
+        "unblockConfirmMessage": "Sigurado ka bang gusto mong i-unblock si {{name}}? Muling lalabas ang kanilang mga pattern sa iyong mga resulta ng paghahanap at pag-browse.",
+        "cancel": "Kanselahin",
+        "successTitle": "Tagumpay",
+        "unblockedMessage": "Na-unblock na si {{name}}.",
+        "errorTitle": "Kamalian",
+        "unblockFailedMessage": "Hindi na-unblock ang gumagawa: {{message}}",
+        "unblockFailedGeneric": "Hindi kilalang error"
+      },
+      "data": {
+        "sectionTitle": "Data",
+        "resetGuestTitle": "I-reset ang guest data",
+        "resetGuestDescription": "Hindi na mababawing isara ang guest identity sa server at burahin ang lahat ng data ng device.",
+        "resetGuestOffline": "Offline: Kailangan ng aktibong koneksyon sa server para i-reset ang guest data.",
+        "resetGuestPurchaseLock": "Naka-block ang reset habang vine-verify pa ang isang bili. Hindi na maibabalik ang mga consumable at pribadong Guest data pagkatapos.",
+        "removeLocalTitle": "Tanggalin ang lokal na data",
+        "removeLocalDescription": "Burahin ang lokal na identity namespace database mula sa device na ito.",
+        "removeLocalConfirmTitle": "Tanggalin ang Lokal na Data?",
+        "removeLocalConfirmMessage": "Babala: Buburahin nito ang iyong mga lokal na database file mula sa device na ito lamang. Permanenteng mawawala ang anumang hindi na-sync na record.",
+        "removeLocalConfirmAction": "Tanggalin",
+        "removeLocalSuccessTitle": "Tagumpay",
+        "removeLocalSuccessMessage": "Natanggal na ang lokal na data mula sa device na ito.",
+        "removeLocalFailedTitle": "Nabigo ang Pagtanggal",
+        "removeLocalFailedMessage": "Hindi natanggal ang lokal na data: {{message}}"
+      },
+      "links": {
+        "sectionTitle": "Impormasyon at Link",
+        "privacyPolicy": "Patakaran sa Privacy",
+        "termsOfService": "Mga Tuntunin ng Serbisyo",
+        "contactSupport": "Makipag-ugnayan sa Support",
+        "accountDeletion": "Pagtanggal ng Account",
+        "openFailedMessage": "Hindi mabuksan ang link: {{url}}",
+        "openFailedGenericTitle": "Kamalian"
+      },
+      "appDetails": {
+        "appName": "Stitch Wish — Cozy Pixel-Art na Pananahi",
+        "version": "Bersyon {{version}}",
+        "sdk": "Expo SDK {{sdk}}",
+        "packageLabel": "Pakete: {{id}}",
+        "schemeLabel": "Scheme: {{scheme}}://"
+      },
+      "resetModal": {
+        "title": "I-reset ang Guest Data?",
+        "warning": "Hindi na mababawi nitong isasara ang iyong guest identity sa server at permanenteng buburahin ang iyong:",
+        "bulletProgress": "• lokal na pag-unlad",
+        "bulletRewards": "• naghihintay na reward",
+        "bulletLikes": "• mga like",
+        "bulletUnlockAccess": "• access sa unlock",
+        "bulletOfflinePatterns": "• offline na data ng pattern",
+        "confirmPrefix": "I-type ang ",
+        "confirmSuffix": " sa ibaba para kumpirmahin:",
+        "confirmAction": "I-reset ang Data",
+        "resetting": "Nire-reset ang guest data...",
+        "successTitle": "Tagumpay",
+        "successMessage": "Ganap nang na-reset ang guest data.",
+        "failedTitle": "Nabigo ang Pag-reset",
+        "failedMessage": "Nabigo ang pag-reset ng guest data: {{message}}. Subukan ulit."
+      },
+      "deleteModal": {
+        "title": "Tanggalin ang Account?",
+        "recoveryPrefix": "Papasok ang iyong account sa isang ",
+        "recoveryBold": "30-araw na Deletion Recovery Window",
+        "recoverySuffix": ". Mag-log in ulit sa loob ng window na ito para kanselahin ang pagtanggal.",
+        "bulletBalances": "• Balanse ng Stitch Coin at AI Credit",
+        "bulletUnlocks": "• Lahat ng Pattern Unlock",
+        "bulletArtwork": "• AI Artwork at Mga Personal na Pattern",
+        "bulletProgress": "• Naka-sync na pag-unlad at Mga Like",
+        "consequencesPrefix": "Sa pagtatapos ng recovery window, buburahin o mawawala ang mga ito nang walang refund o transfer. Babawiin ang mga nailathalang Community Pattern mula sa katalogo, magiging ",
+        "consequencesBold": "Natanggal na Gumagawa",
+        "consequencesSuffix": " ang attribution, at mananatiling permanenteng nakareserba ang iyong username.",
+        "membershipWarning": "Maaaring magpatuloy ang billing ng iyong Premium Membership pagkatapos ng pagtanggal ng account. Hindi ito kinakansela ng pagtanggal; pamahalaan ito nang hiwalay bago magpatuloy kung gusto mong itigil ang billing.",
+        "manageAppleSubscription": "Pamahalaan ang Apple Subscription",
+        "continueAction": "Magpatuloy",
+        "confirmTitle": "Kumpirmahin ang Pagtanggal",
+        "confirmPrefix": "Para kumpirmahin na gusto mong tanggalin ang iyong account, i-type ang ",
+        "confirmBold": "DELETE",
+        "confirmSuffix": " sa kahon sa ibaba:",
+        "submitting": "Isinusumite ang kahilingan sa pagtanggal...",
+        "backAction": "Bumalik",
+        "confirmAction": "Kumpirmahin"
+      },
+      "reauthModal": {
+        "title": "I-verify ang Iyong Identity",
+        "description": "Para sa kaligtasan, mag-verify gamit ang paraan ng pag-log in na nakakonekta na sa account na ito. Awtomatikong ipagpapatuloy ang pagtanggal pagkatapos ng verification.",
+        "loading": "Nilo-load ang mga paraan ng pag-log in...",
+        "codeSentMessage": "Ilagay ang 6-digit na code na ipinadala sa {{email}}.",
+        "verifyAndDelete": "I-verify at Tanggalin",
+        "emailButton": "Email: {{email}}",
+        "continueWithProvider": "Magpatuloy gamit ang {{provider}}",
+        "providerApple": "Apple",
+        "providerGoogle": "Google",
+        "noLinkedMethod": "Walang available na nakakonektang paraan ng pag-log in. Makipag-ugnayan sa support bago subukan ulit ang pagtanggal.",
+        "loadFailed": "Hindi na-load ang iyong nakakonektang mga paraan ng pag-log in. Suriin ang iyong koneksyon at subukan ulit.",
+        "retryFailed": "Na-verify ang iyong identity, ngunit hindi naisumite ang pagtanggal. Isara ang dialog na ito at subukan ulit ang pagtanggal.",
+        "emailMissing": "Ang nakakonektang email na ito ay walang address. Pumili ng ibang paraan.",
+        "genericFailure": "Nabigo ang muling pag-verify. Suriin ang iyong koneksyon at subukan ulit."
+      },
+      "actions": {
+        "cancel": "Kanselahin",
+        "retry": "Subukan Ulit"
+      },
+      "common": {
+        "unavailable": "Hindi Available"
+      }
+    },
+    "shell": {
+      "tabs": {
+        "catalog": "Katalogo",
+        "stitch": "Tahi",
+        "create": "Gumawa",
+        "profile": "Profil",
+        "settings": "Mga Setting"
+      }
+    }
+  },
   "tr": {
     "catalog": {
       "common": {

@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Ang login na iyon ay para sa ibang account. Hindi nagbago ang iyong kasalukuyang account.",
+    "providerRejected": "Tinanggihan ang verification na iyon. Suriin ang account o code at subukan ulit."
+  },
+  "generic": {
+    "failure": "May nagkamali. Subukan ulit.",
+    "supportReferenceLabel": "Support reference: {{reference}}"
+  }
+}
