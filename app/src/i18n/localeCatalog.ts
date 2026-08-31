@@ -32,6 +32,7 @@ export const APP_LOCALE_CATALOG = [
   { identifier: 'sl', selfName: 'Slovenščina', englishName: 'Slovenian', flag: '🇸🇮' },
   { identifier: 'sv', selfName: 'Svenska', englishName: 'Swedish', flag: '🇸🇪' },
   { identifier: 'tl', selfName: 'Tagalog', englishName: 'Tagalog', flag: '🇵🇭' },
+  { identifier: 'uk', selfName: 'Українська', englishName: 'Ukrainian', flag: '🇺🇦' },
 ] as const;
 
 export type AppLocale = (typeof APP_LOCALE_CATALOG)[number]['identifier'];

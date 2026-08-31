@@ -227,4 +227,7 @@ export const COPIED_ENGLISH_ALLOWLIST: CopiedEnglishAllowlist = {
   'tl:settings:data.sectionTitle': '"Data" is a common English loanword in Tagalog tech/UI copy.',
   'tl:settings:developer.sectionTitle': '"Developer" is a common English loanword in Tagalog developer UI.',
   'tl:settings:tutorial.sectionTitle': '"Tutorial" is a common English loanword in Tagalog tech/UI copy.',
+  'uk:play:home.idLabel': '"ID" is used identically in Ukrainian tech/UI copy.',
+  'uk:settings:session.idLabel': '"ID" is used identically in Ukrainian tech/UI copy.',
+  'uk:settings:deleteModal.confirmBold': '"DELETE" is the literal confirmation keyword the user must type, kept English.',
 };
