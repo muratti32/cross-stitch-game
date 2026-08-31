@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Jesteś zalogowany na innym koncie. Twoje bieżące konto nie zostało zmienione.",
+    "providerRejected": "Weryfikacja została odrzucona. Sprawdź konto lub kod i spróbuj ponownie."
+  },
+  "generic": {
+    "failure": "Coś poszło nie tak. Spróbuj ponownie.",
+    "supportReferenceLabel": "Numer referencyjny wsparcia: {{reference}}"
+  }
+}

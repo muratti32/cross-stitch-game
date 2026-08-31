@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Tilbake",
+    "searchPlaceholder": "Søk i mønstre, skapere, tagger…",
+    "offlineBanner": "Frakoblet — katalogen kan være utdatert",
+    "sectionError": {
+      "title": "Kunne ikke laste",
+      "retry": "Prøv igjen"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} farger",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} kol.",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Engelsk"
+    },
+    "accessibilityLabel": "Skrevet på {{language}}"
+  },
+  "index": {
+    "subtitle": "Skap din koselige verden, sting for sting.",
+    "searchBar": {
+      "accessibilityLabel": "Søk i mønsterkatalogen"
+    },
+    "sections": {
+      "starterPatterns": "Startmønstre",
+      "staffPicks": "Redaksjonens valg",
+      "categories": "Kategorier",
+      "newPatterns": "Nye mønstre"
+    },
+    "staffPicks": {
+      "emptyTitle": "Ingen redaksjonelle valg ennå",
+      "emptyBody": "Vår håndplukkede samling av koselige design vises her snart.",
+      "errorBody": "Katalogen kunne ikke nås, og ingenting er hurtiglagret ennå."
+    },
+    "categories": {
+      "count": "{{count}} mønstre",
+      "errorBody": "Katalogen kunne ikke nås, og ingenting er hurtiglagret ennå."
+    },
+    "newPatterns": {
+      "emptyTitle": "Nye mønstre er på vei",
+      "emptyBody": "Ferske design er på vei!",
+      "errorBody": "Katalogen kunne ikke nås, og ingenting er hurtiglagret ennå.",
+      "showMore": "Vis mer",
+      "loading": "Laster…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Utforsk",
+    "error": {
+      "body": "Denne katalogsiden kunne ikke nås, og ingenting er hurtiglagret ennå."
+    },
+    "empty": {
+      "title": "Ingenting her ennå",
+      "body": "Ingen mønstre matcher dette utvalget ennå. Nye design kommer jevnlig."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Søkefelt for katalog",
+    "inactive": {
+      "title": "Søk i katalogen",
+      "body": "Skriv minst to tegn for å søke etter mønstre etter tittel, skaper eller tagg."
+    },
+    "error": {
+      "title": "Søk krever tilkobling",
+      "body": "Katalogsøk er ikke tilgjengelig frakoblet. Hurtiglagrede katalogsider kan fortsatt bla gjennom fra katalogfanen."
+    },
+    "noResults": {
+      "title": "Ingen treff",
+      "body": "Ingenting i katalogen samsvarer med «{{query}}» ennå."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Spiller som gjest",
+    "body": "Stitch Coin og fremgang lever kun på denne enheten som gjest. Hvis installasjonen går tapt, kan gjesteregnskapet og fremgangen ikke gjenopprettes. Innlogging beskytter fremgangen din."
+  },
+  "detail": {
+    "noDescription": "Ingen beskrivelse tilgjengelig.",
+    "specs": {
+      "dimensions": "Dimensjoner",
+      "totalStitches": "Totalt antall sting",
+      "colors": "Farger",
+      "category": "Kategori"
+    },
+    "threadsSuffix": "{{count}} tråder",
+    "palette": {
+      "title": "Nødvendige tråder",
+      "loading": "Leser trådpalett...",
+      "loadFailed": "Kunne ikke laste palett: {{error}}",
+      "retry": "Prøv å laste på nytt"
+    },
+    "actions": {
+      "startStitching": "Start stinging",
+      "starting": "Starter...",
+      "preparing": "Forbereder…"
+    },
+    "loadFailedGeneric": "Kunne ikke tolke mønsterfilen.",
+    "sessionCreateFailed": "Kunne ikke opprette en stingeøkt. Prøv igjen.",
+    "unavailable": {
+      "title": "Mønster utilgjengelig",
+      "body": "Dette mønsteret kunne ikke lastes. Det kan ha blitt fjernet, eller du kan være frakoblet.",
+      "goBack": "Gå tilbake"
+    },
+    "byCreator": "av {{creatorName}}",
+    "byCreatorWithUsername": "av {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Blokker skaper",
+      "message": "Er du sikker på at du vil blokkere {{creatorName}}? Dette er en privat, reversibel handling som skjuler mønstrene deres fra søk/utforsking. Det rapporterer ikke skaperen og avbryter ikke din nåværende stingeøkt.",
+      "cancel": "Avbryt",
+      "confirm": "Blokker",
+      "blockedTitle": "Blokkert",
+      "blockedMessage": "{{creatorName}} har blitt blokkert.",
+      "errorTitle": "Feil",
+      "failedGeneric": "Kunne ikke blokkere skaper."
+    },
+    "likeFailedGeneric": "Kunne ikke oppdatere liker-status",
+    "connectToPlay": {
+      "title": "Koble til for å spille",
+      "body": "Å starte et katalogmønster krever en tilkobling for å forberede økten din. Startmønstre kan spilles akkurat nå, selv frakoblet."
+    },
+    "insufficientCoins": {
+      "title": "Utilstrekkelig antall mynter",
+      "body": "Dette mønsteret koster {{price}} Stitch Coins, men du har bare {{balance}} mynter.\n\nMangler: {{shortfall}} mynter.\n\nTjen Stitch Coins ved å fullføre andre mønstre! Belønninger for første fullføring er aktive.",
+      "getCoins": "Få Stitch Coins",
+      "findPatterns": "Finn mønstre å stinge",
+      "back": "Tilbake"
+    },
+    "unlockFailedGeneric": "Opplåsing mislyktes. Sjekk tilkoblingen din og prøv igjen.",
+    "preparationFailedGeneric": "Kunne ikke starte forberedelse. Sjekk tilkoblingen din og prøv igjen.",
+    "price": {
+      "label": "Pris"
+    },
+    "balance": {
+      "label": "Din saldo",
+      "loading": "…"
+    },
+    "unlockButton": "Lås opp for {{price}} mynt",
+    "communityReport": {
+      "button": "Rapporter dette mønsteret",
+      "title": "Rapporter {{patternTitle}}",
+      "body": "Velg årsaken som best beskriver problemet. Rapporter skjuler eller endrer aldri et mønster automatisk.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Upassende eller usikkert innhold",
+        "copyright_or_publication_rights": "Opphavsrett eller publiseringsrettigheter",
+        "duplicate_or_spam": "Duplikat eller spam",
+        "misleading_title_or_tags": "Villedende tittel eller tagger",
+        "other": "Annet"
+      },
+      "explanationLabel": "Bevis eller forklaring {{requirement}}",
+      "explanationRequired": "(påkrevd)",
+      "explanationOptional": "(valgfritt)",
+      "explanationPlaceholder": "Del detaljer som vil hjelpe en moderator med å vurdere mønsteret.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Avbryt",
+      "submit": "Send rapport",
+      "submitFailedGeneric": "Kunne ikke sende rapporten din. Sjekk tilkoblingen din og prøv igjen.",
+      "receivedTitle": "Rapport mottatt",
+      "alreadyReceivedTitle": "Rapport allerede mottatt",
+      "receivedBody": "En moderator kan nå vurdere dette mønsteret. Rapporten endrer ikke automatisk tilgjengeligheten.",
+      "alreadyReceivedBody": "Din eksisterende rapport er allerede en del av den åpne vurderingen.",
+      "signInRequired": {
+        "title": "Logg inn for å rapportere",
+        "message": "Fellesskapsrapporter krever en registrert konto. Ingenting har blitt sendt inn.",
+        "cancel": "Avbryt",
+        "signIn": "Logg inn"
+      },
+      "validation": {
+        "chooseReason": "Velg en årsak for rapporten.",
+        "explainRequired": "Forklar hvorfor du rapporterer dette mønsteret.",
+        "tooLong": "Forklaringen må være 2000 tegn eller færre.",
+        "needsContent": "Forklaringen må inneholde bokstaver eller tall."
+      }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "欢迎来到 STITCH WISH",
+    "title": "选个颜色，然后点点匹配的方格吧。",
+    "heroAlt": "“温暖的心”新手图纸预览",
+    "handedness": {
+      "sectionTitle": "控制面板想放在哪一边呢？",
+      "groupLabel": "控制面板位置",
+      "optionRight": "控制面板在右侧",
+      "optionLeft": "控制面板在左侧",
+      "saveErrorText": "哎呀，没能保存你的选择。",
+      "retry": "再试一次"
+    },
+    "note": "你以后随时可以在“设置”中修改。",
+    "start": "开始 Stitch",
+    "starting": "正在启动…",
+    "browse": "浏览新手图纸",
+    "signIn": "登录"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "选择 DMC 321 圣诞红线。",
+      "stitchAction": "轻点高亮显示的匹配格子。",
+      "mismatchedTap": "轻点高亮显示的不同格子。点错了也不会有任何消耗哦。",
+      "undoAction": "撤销那一针 Stitch，然后重新绣上吧。",
+      "stitchSweep": "按住匹配的格子，然后顺着高亮区域滑动。",
+      "threadColorCompletion": "绣完高亮显示的白线，然后选择下一个颜色吧。"
+    },
+    "hints": {
+      "anchoredZoom": "双指捏合进行缩放，手指下的格子会固定在原位哦。",
+      "panVsSweep": "拖拽可以移动画布。从匹配的格子开始滑动，就能连续 Stitch 啦。",
+      "edgeAutoPan": "在边缘附近继续滑动，画布就会跟着你的手指移动哦。",
+      "remainingCellLocator": "用定位器来寻找这根线剩下的下一个格子吧。"
+    },
+    "skip": "先跳过",
+    "skipAccessibilityLabel": "先跳过新手教程",
+    "dismiss": "知道了",
+    "dismissAccessibilityLabel": "关闭提示"
+  },
+  "recap": {
+    "title": "你已经完全掌握啦！",
+    "lines": {
+      "matchNumbers": "根据数字配对，完成每一针 Stitch。",
+      "dragSweep": "在匹配的格子上滑动，进行连续绣制。",
+      "pinchZoom": "需要看细节时，双指捏合即可缩放。",
+      "undoLocator": "撤销和定位器功能完全免费，可以随便用哦。"
+    },
+    "continue": "继续 Stitch",
+    "browsePatterns": "浏览图纸"
+  }
+}

@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Enrere",
+    "cancel": "Cancel·la",
+    "duplicateTitle": "Ja tens un Patró Personal anomenat «{{title}}». Tria un títol diferent.",
+    "cellsCount_one": "casella",
+    "cellsCount_other": "caselles",
+    "colorsCount_one": "color",
+    "colorsCount_other": "colors"
+  },
+  "hub": {
+    "title": "Centre de Creació",
+    "subtitle": "Dona vida als teus propis dissenys amb patrons de creueta personalitzats.",
+    "opening": "Obrint…",
+    "photoImport": {
+      "title": "Importa Foto",
+      "description": "Puja una imatge del teu carret i converteix-la en un patró punxable.",
+      "action": "Importa una foto"
+    },
+    "aiGenerator": {
+      "title": "Generador d'IA",
+      "description": "Descriu una idea acollidora i deixa que la intel·ligència artificial generi un disseny de píxels personalitzat.",
+      "action": "Genera el disseny"
+    }
+  },
+  "aspects": {
+    "square": "Quadrat",
+    "portrait_4_3": "Vertical 4:3",
+    "landscape_4_3": "Horitzontal 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "La Conversió del Patró ha fallat. Torna-ho a provar.",
+      "timeout": "La Conversió del Patró encara s'està processant. Torna-ho a provar d'aquí a poc.",
+      "generic": "No s'ha pogut completar la Conversió del Patró. Torna-ho a provar."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Cal un Compte Registrat",
+      "body": "L'art generat per IA i la seva biblioteca es mantenen privats al teu compte.",
+      "signIn": "Inicia sessió"
+    },
+    "header": {
+      "title": "Generador d'IA",
+      "backAccessibilityLabel": "Enrere"
+    },
+    "prompt": {
+      "label": "Descriu la teva obra",
+      "placeholder": "Un jardí de cabana acollidor a la posta de sol…"
+    },
+    "generate": {
+      "working": "Treballant…",
+      "action": "Genera — 1 Crèdit d'IA",
+      "errors": {
+        "promptRejected": "Aquesta descripció no ha estat permesa. Prova de descriure una altra cosa.",
+        "generic": "No s'ha pogut iniciar la generació amb IA. Torna-ho a provar."
+      }
+    },
+    "library": {
+      "title": "La Teva Biblioteca d'Art d'IA",
+      "status": {
+        "pending": "Pendent",
+        "dispatched": "Enviat",
+        "running": "En procés",
+        "delivered": "Lliurat",
+        "safety_rejected": "Rebutjat per seguretat",
+        "failed": "Fallit",
+        "deleted": "Eliminat",
+        "unknown": "No disponible"
+      },
+      "failure": {
+        "safety_rejected": "Aquesta obra no ha superat la comprovació de seguretat del proveïdor.",
+        "failed": "Aquesta obra no s'ha pogut generar."
+      },
+      "approve": "Aprova com a Patró",
+      "delete": "Elimina",
+      "deleteAccessibilityLabel": "Elimina aquesta Obra d'IA",
+      "errors": {
+        "loadFailed": "No s'ha pogut carregar la teva Biblioteca d'Art d'IA. Torna-ho a provar."
+      }
+    },
+    "approve": {
+      "modalTitle": "Crea un Patró Personal",
+      "titleLabel": "Títol del patró",
+      "titleAccessibilityLabel": "Títol del patró",
+      "defaultTitle": "El Meu Patró d'IA",
+      "placeholder": "El Meu Patró d'IA",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Cancel·la",
+      "creating": "Creant Patró…",
+      "create": "Crea el Patró",
+      "errors": {
+        "generic": "No s'ha pogut crear el Patró Personal. Torna-ho a provar."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Cal un Compte Registrat",
+      "body": "Els Patrons Personals pertanyen al teu compte perquè es mantinguin privats i disponibles a tots els dispositius.",
+      "signIn": "Inicia sessió o crea un compte",
+      "back": "Enrere"
+    },
+    "header": {
+      "title": "Patró de Foto",
+      "subtitle": "Enquadra localment i després aprova la conversió",
+      "backAccessibilityLabel": "Enrere"
+    },
+    "picker": {
+      "chooseTitle": "Tria una foto",
+      "helpText": "La Font de Foto Local en resolució completa es queda en aquest dispositiu. Res es converteix fins que no aproves l'enquadrament.",
+      "choose": "Tria de la biblioteca",
+      "chooseAnother": "Tria'n una altra",
+      "opening": "Obrint…",
+      "errors": {
+        "permissionDenied": "Cal accés a la biblioteca de fotos per triar una Font de Foto Local.",
+        "invalidDimensions": "La foto seleccionada no indica dimensions utilitzables.",
+        "generic": "No s'ha pogut obrir la biblioteca de fotos. Torna-ho a provar."
+      }
+    },
+    "framing": {
+      "title": "Enquadrament de l'Obra",
+      "gestureHint": "Arrossega per posicionar · pessiga per fer zoom",
+      "aspectLabel": "Proporció de l'enquadrament"
+    },
+    "profile": {
+      "title": "Perfil de Conversió",
+      "options": {
+        "easy": "Fàcil",
+        "standard": "Estàndard",
+        "detailed": "Detallat"
+      },
+      "custom": "Personalitzat",
+      "customMeta": "Lliure · forma fixada",
+      "unavailable": "No s'ajusta a aquest enquadrament",
+      "customShortEdgeLabel": "Costat curt",
+      "customColorLimitLabel": "Límit de colors DMC",
+      "exceedsLimit": "Aquests valors personalitzats superen el límit de {{max}} caselles del Patró."
+    },
+    "titleCard": {
+      "label": "Títol del patró",
+      "placeholder": "El Meu Patró de Foto",
+      "defaultTitle": "El Meu Patró de Foto",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · fins a {{maxColors}} {{colorsUnit}} DMC",
+      "privacyNotice": "L'aprovació només puja la derivada enquadrada i reduïda. La foto original es queda al dispositiu.",
+      "approve": "Aprova l'obra i converteix"
+    },
+    "processing": {
+      "preparingFrame": "Preparant l'enquadrament aprovat en aquest dispositiu…",
+      "uploading": "Pujant només l'enquadrament retallat i reduït…",
+      "waitingForWorker": "Esperant el treballador de conversió…",
+      "buildingGrid": "Construint la quadrícula de puntades i la paleta DMC…",
+      "preparingSession": "Preparant el Patró Personal per jugar…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Aquest perfil ja no s'ajusta a l'enquadrament final. Tria Fàcil o redueix el detall.",
+        "generic": "No s'ha pogut convertir aquesta foto. Torna-ho a provar."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Cap Patró Seleccionat",
+      "noPatternBody": "Aquesta pantalla s'ha d'obrir des d'un Patró Personal existent a la teva biblioteca.",
+      "accountTitle": "Cal un Compte Registrat",
+      "accountBody": "Els Patrons Personals pertanyen al teu compte perquè es mantinguin privats i disponibles a tots els dispositius.",
+      "signIn": "Inicia sessió o crea un compte",
+      "back": "Enrere"
+    },
+    "loading": "Reprenent l'esborrany de l'editor...",
+    "load": {
+      "failedTitle": "Error en Carregar el Patró",
+      "retry": "Torna-ho a provar",
+      "back": "Enrere",
+      "errors": {
+        "generic": "No s'ha pogut carregar aquest Patró Personal. Torna-ho a provar."
+      }
+    },
+    "header": {
+      "title": "Editor de Patrons",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Enrere"
+    },
+    "toolbar": {
+      "undo": "Desfés",
+      "redo": "Refés"
+    },
+    "mode": {
+      "paint": "Pinta",
+      "replaceColor": "Substitueix el Color",
+      "replaceStep1": "1. Toca un color del patró de sota per substituir:",
+      "replaceStep2": "2. Selecciona un color DMC de destí a sota per executar la substitució:",
+      "paintSelected": "Seleccionat: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Selecciona un color a sota i després toca les caselles per pintar."
+    },
+    "errors": {
+      "pickColorFirst": "Tria primer un color",
+      "paletteLimit": "Aquest patró ja fa servir el màxim de {{max}} colors de fil."
+    },
+    "picker": {
+      "title": "Colors de Fil DMC",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Desa el Patró Editat",
+      "placeholder": "Títol del Meu Patró Editat",
+      "action": "Desa com a Nou",
+      "offlineTitle": "Desat sense connexió",
+      "offlineBody": "El teu patró editat s'ha desat en aquest dispositiu i se sincronitzarà amb el teu compte quan tornis a tenir connexió.",
+      "errors": {
+        "generic": "No s'ha pogut desar aquest Patró Personal. Torna-ho a provar."
+      }
+    }
+  }
+}

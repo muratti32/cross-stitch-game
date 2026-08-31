@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "返回",
+    "title": "商城",
+    "subtitle": "会员与单次充值"
+  },
+  "signInReturn": {
+    "notice": "你已登录。已为你保留已选的 {{label}}。请确认，准备好后点击购买即可。"
+  },
+  "premiumHero": {
+    "eyebrow": "PREMIUM 会员",
+    "title": "创作更多。每天领点小奖励。",
+    "body": "每个付费周期的 AI Credits、Premium 主题，以及每日领取 Stitch Coin 的福利。",
+    "benefitAiCredits": "AI Credits",
+    "benefitDailyCoins": "每日 Stitch Coin",
+    "benefitThemes": "专属主题",
+    "statusNoActiveMembership": "暂无生效中的会员",
+    "statusBrowseAsGuest": "以游客身份浏览方案",
+    "periodEndsLabel": "当前周期结束时间",
+    "periodRenewsLabel": "自动续期",
+    "lifecycleActive": "生效中"
+  },
+  "membershipActions": {
+    "title": "已启用 Premium 会员",
+    "body": "每日奖励可在“个人资料”中领取。主题设置请前往“设置 › 外观”。",
+    "scheduledChangeNotice": "将于 {{date}} 变更为 {{plan}}",
+    "manageSubscription": "管理订阅",
+    "manageSubscriptionFailedTitle": "无法打开订阅管理",
+    "manageSubscriptionFailedBody": "请尝试在你的设备应用商店账户中重新操作。"
+  },
+  "pending": {
+    "title": "购买确认处理中",
+    "verifyingTitle": "正在验证购买...",
+    "premiumChangeAccepted": "商店已接受向 {{label}} 的变更。",
+    "premiumResponseReceived": "已收到商店关于 {{label}} 的响应。",
+    "premiumDeferredSuffix": "该变更将在游戏后台验证后生效，并于你当前的周期结束后起效。",
+    "premiumSuffix": "Premium 会员将在游戏后台验证后激活。",
+    "doNotPurchasePlanAgain": "请勿重复购买此方案。",
+    "coinPackBody": "已收到商店响应。Stitch Coin 余额将在游戏后台确认匹配的账单发放后更新。请勿重复购买此礼包。",
+    "aiCreditPackBody": "已收到商店响应。AI Credit 余额将在游戏后台确认匹配的账单发放后更新。请勿重复购买此礼包。",
+    "refreshStatus": "刷新状态",
+    "retryReconciliation": "重试对账"
+  },
+  "store": {
+    "loadingPrices": "正在加载商店价格...",
+    "unavailableTitle": "商店暂时不可用",
+    "unavailableBody": "你的钱包和会员信息依然可用。",
+    "retry": "重试"
+  },
+  "plans": {
+    "choosePremiumPlan": "选择 Premium 方案",
+    "yourPremiumPlan": "你的 Premium 方案",
+    "currentPlan": "当前方案",
+    "upgrade": "升级",
+    "planChange": "变更方案",
+    "bestValue": "最划算",
+    "billedEvery": "每 {{period}} 计费一次",
+    "chooseLabel": "选择 {{label}}",
+    "freeTrial": "前 {{offer}} 免费，随后为 {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "单次购买礼包",
+    "stitchCoinPacksTitle": "Stitch Coin 礼包",
+    "aiCreditPacksTitle": "AI Credit 礼包",
+    "coinsNoun": "Stitch Coins",
+    "creditsNoun": "AI Credits",
+    "fromPrice": "{{price}} 起"
+  },
+  "restore": {
+    "restorePurchases": "恢复购买",
+    "restoreGuestPremium": "恢复游客 Premium",
+    "requestedTitle": "已提交恢复申请",
+    "requestedBody": "验证通过的 Premium 权益将在商店回调对账后生效。Stitch Coin 和 AI Credit 礼包无法恢复。"
+  },
+  "sheet": {
+    "currentPricesSubtitle": "应用商店当前价格",
+    "closeAccessibilityLabel": "关闭商品面板",
+    "closeButtonAccessibilityLabel": "关闭",
+    "selectedBeforeSignIn": "登录前已选择",
+    "buy": "购买"
+  },
+  "confirmation": {
+    "cancel": "取消",
+    "confirmLabel": "确认 {{label}}",
+    "confirmPremiumTitle": "确认购买 Premium 会员",
+    "introductoryOffer": "应用商店显示你的首发优惠为：{{offer}}。",
+    "premiumAppearsAfterVerification": "Premium 会员将在游戏后台验证商店交易后生效。",
+    "confirmPremiumUpgradeTitle": "确认升级 Premium 会员",
+    "confirmPremiumPlanChangeTitle": "确认变更 Premium 会员方案",
+    "currentPlanLabel": "当前方案：{{label}}",
+    "upgradeToLabel": "升级为 {{label}} · {{offer}}",
+    "changeToLabel": "变更为 {{label}} · {{offer}}",
+    "upgradeBody": "App Store 控制本次升级的最终扣费和生效日期。游戏后台验证后，Premium 会员才会更新为 {{label}}。",
+    "planChangeBody": "App Store 会将此变更延迟至你当前周期结束：在此之前 {{currentLabel}} 将继续生效，自变更之日起开始对 {{targetLabel}} 计费。你可以通过“管理订阅”取消此变更。",
+    "confirmUpgrade": "确认升级",
+    "confirmPlanChange": "确认变更",
+    "confirmStitchCoinTitle": "确认购买 Stitch Coin",
+    "confirmAiCreditTitle": "确认购买 AI Credit",
+    "balanceChangesAfterVerificationCoin": "你的余额将在游戏后台验证商店交易并记录相应的账单发放后更新。",
+    "balanceChangesAfterVerificationAiCredit": "你的余额将在游戏后台验证商店交易并记录相应的账单发放后更新。无需购买 Premium 会员。"
+  },
+  "disclosure": {
+    "subscriptionTerms": "确认购买后，款项将从你的 {{store}} 账户扣除。除非在当前订阅期结束前至少 24 小时关闭自动续订，否则 {{label}} Premium 会以 {{offer}} 自动续费。如果你购买了订阅，免费试用期内任何未使用的额度都将失效。你可以随时在 {{store}} 账户中取消订阅。",
+    "privacyPolicy": "隐私政策",
+    "termsOfService": "服务条款",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "无法打开链接：{{url}}"
+  },
+  "supportReference": {
+    "label": "支持参考号：{{reference}}",
+    "copyAccessibilityLabel": "复制支持参考号 {{reference}}",
+    "copyAccessibilityHint": "将支持参考号复制到剪贴板",
+    "copied": "已复制",
+    "copyFailedTitle": "复制失败",
+    "copyFailedBody": "无法复制支持参考号。请选择文本进行手动复制。"
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "游客身份购买 Stitch Coin 仅在 iOS 设备上可用。",
+    "guestIosOnlyGeneric": "游客身份购买仅在 iOS 设备上可用。",
+    "purchaseFailedTitle": "购买失败",
+    "premiumVerificationNotYet": "游戏后台无法验证此购买. 请重试对账，请勿重复购买。",
+    "premiumVerificationFailedRetry": "游戏后台暂时无法验证此购买. 请重试对账，请勿重复购买。",
+    "premiumGrantRefreshFailed": "Premium 会员已通过验证，但会员及 AI Credit 状态刷新失败。请重试对账。",
+    "premiumReconciliationUnreachable": "对账程序无法连接到游戏后台。请重试对账，请勿重复购买。",
+    "coinPackVerificationMismatch": "商店交易与此 Stitch Coin 礼包不匹配。请重试验证或联系客服，请勿重复购买。",
+    "coinPackGrantUnavailable": "购买已通过验证，但无法发放 Stitch Coin。请重试对账，请勿重复购买。",
+    "coinPackBalanceRefreshFailed": "Stitch Coin 发放已通过验证，但无法刷新当前的 Stitch Coin 余额。请重试对账。",
+    "coinPackVerificationFailedRetry": "游戏后台暂时无法验证此 Stitch Coin 礼包。请重试对账，请勿重复购买。",
+    "coinPackReconciliationUnreachable": "Stitch Coin 礼包对账无法连接到游戏后台。请重试对账，请勿重复购买。",
+    "aiCreditPackVerificationMismatch": "商店交易与此 AI Credit 礼包不匹配。请重试验证或联系客服，请勿重复购买。",
+    "aiCreditPackGrantUnavailable": "购买已通过验证，但无法发放 AI Credit。请重试对账，请勿重复购买。",
+    "aiCreditPackBalanceRefreshFailed": "AI Credit 发放已通过验证，但无法刷新当前余额。请重试对账。",
+    "aiCreditPackVerificationFailedRetry": "游戏后台暂时无法验证此 AI Credit 礼包。请重试对账，请勿重复购买。",
+    "aiCreditPackReconciliationUnreachable": "AI Credit 礼包对账无法连接到游戏后台。请重试对账，请勿重复购买。",
+    "reconciliationStillUnavailable": "游戏后台依然不可用。请稍后重试对账。",
+    "storeTemporarilyUnavailable": "商店暂时不可用。请在几分钟后重试。",
+    "purchasesNotAllowed": "此设备上禁止购买。请检查你的商店账户或家长控制设置。",
+    "itemNotAvailable": "此商品目前无法购买。请选择其他商品或稍后重试。",
+    "alreadyOwned": "你已拥有此购买项目。请使用“恢复购买”来刷新你的访问权限。",
+    "couldNotConnectToStore": "无法连接到商店。请检查你的网络连接并重试。",
+    "paymentPendingApproval": "你的付款正在等待批准。购买将在商店处理完成后生效。",
+    "testPurchaseDeclined": "测试购买已被拒绝，未产生扣费。请在“设置”中选择不同的测试商店结果，然后重试。",
+    "genericPurchaseFailure": "我们无法完成你的购买，未产生扣费。请重试。"
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "正在验证",
+    "premiumPending": "验证仍在进行中。游戏后台确认后即可激活 Premium 会员。",
+    "premiumPlanChangePending": "验证仍在进行中。游戏后台确认后将安排你的方案变更。",
+    "coinPackPending": "验证仍在进行中。完成后将更新你的 Stitch Coin 余额。",
+    "aiCreditPackPending": "验证仍在进行中。完成后将更新你的 AI Credit 余额。"
+  },
+  "success": {
+    "purchaseReceivedTitle": "已收到购买项目",
+    "storeAcceptedPlanChange": "商店已接受向 {{label}} 的变更。将在生效时进行确认。",
+    "storeAcceptedPurchase": "商店已接受 {{label}}。正在验证你的购买。",
+    "premiumChanges": "Premium 会员变更为 {{label}}{{effectiveOn}}。",
+    "effectiveOnDate": "，于 {{date}} 生效",
+    "planChangeScheduledTitle": "已安排方案变更",
+    "planChangeScheduledBody": "你的 Premium 会员将保留当前方案，直到变更为 {{label}}{{effectiveOn}}。你可以通过“管理订阅”取消此变更。",
+    "premiumIsActiveTitle": "Premium 会员已激活",
+    "premiumVerifiedAndActive": "{{label}} Premium 会员已验证并激活。",
+    "premiumNowActiveNoBilling": "{{label}} Premium 会员现已激活。",
+    "premiumNowActiveBilled": "{{label}} Premium 会员现已激活，每 {{period}} 计费一次。",
+    "coinPackGrantedTitle": "已发放 Stitch Coin",
+    "coinPackGrantVerified": "{{label}} 发放已验证。Stitch Coin 余额：{{balance}}。",
+    "coinPackAddedToBalance": "已将 {{quantity}} Stitch Coins 添加到你的余额中。",
+    "aiCreditPackGrantedTitle": "已发放 AI Credit",
+    "aiCreditPackGrantVerified": "{{label}} 发放已验证。AI Credit 余额：{{balance}}。",
+    "aiCreditPackAddedToBalance": "已将 {{quantity}} AI Credits 添加到你的余额中。"
+  },
+  "products": {
+    "premiumAnnual": "年付",
+    "premiumMonthly": "月付",
+    "premiumWeekly": "周付",
+    "stitchCoinPack_one": "{{formattedCount}} 个 Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} 个 Stitch Coins",
+    "aiCreditPack_one": "{{formattedCount}} 个 AI Credit",
+    "aiCreditPack_other": "{{formattedCount}} 个 AI Credits",
+    "billedEveryOffer": "每 {{period}} {{price}}",
+    "creditAllowancePaidPeriod": "每个付费周期 {{credits}} AI Credits",
+    "creditAllowancePaidNoun": "每付费 {{period}} {{credits}} AI Credits"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "以游客身份购买",
+    "commerceBody": "你可以在未注册的情况下进行购买。Premium 会员可以从商店恢复，但如果此安装丢失，Stitch Coin、AI Credit 以及私人的游客内容将无法找回。进行注册可以保护这些内容，且绝不会中断你的游客游戏体验。",
+    "continueAsGuest": "继续以游客身份",
+    "signInInstead": "改为登录",
+    "closeAccessibilityLabel": "关闭"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "我知道了",
+    "successButton": "太棒了",
+    "failedButton": "关闭",
+    "infoButton": "我知道了",
+    "closeAccessibilityLabel": "关闭"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "WELKOM BIJ STITCH WISH",
+    "title": "Kies een kleur en tik op vakjes met hetzelfde nummer.",
+    "heroAlt": "Voorbeeld van startpatroon 'Gezellig hart'",
+    "handedness": {
+      "sectionTitle": "Aan welke kant wil je de bedieningsknoppen?",
+      "groupLabel": "Positie van de bedieningsknoppen",
+      "optionRight": "Rechts plaatsen",
+      "optionLeft": "Links plaatsen",
+      "saveErrorText": "De instelling kon niet worden opgeslagen.",
+      "retry": "Opnieuw proberen"
+    },
+    "note": "Je kunt dit later wijzigen in 'Instellingen'.",
+    "start": "Begin met stitchen",
+    "starting": "Bezig met starten…",
+    "browse": "Startpatronen bekijken",
+    "signIn": "Aanmelden"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Kies DMC 321 Christmas Red.",
+      "stitchAction": "Tik op een gemarkeerd vakje met hetzelfde nummer.",
+      "mismatchedTap": "Probeer een ander gemarkeerd vakje. Er is geen straf voor fouten.",
+      "undoAction": "Maak je laatste stitch ongedaan en plaats hem opnieuw.",
+      "stitchSweep": "Houd een vakje met hetzelfde nummer ingedrukt en sleep over de gemarkeerde reeks.",
+      "threadColorCompletion": "Stitch alle gemarkeerde witte vakjes en kies dan de volgende kleur."
+    },
+    "hints": {
+      "anchoredZoom": "Gebruik een knijpgebaar om te zoomen; het vakje onder je vinger blijft vast.",
+      "panVsSweep": "Slepen scrollt door de stof. Begin te slepen op een vakje met hetzelfde nummer om continu te stitchen (sweep).",
+      "edgeAutoPan": "Blijf je vlak bij de rand vegen, dan scrollt de stof mee met je vinger.",
+      "remainingCellLocator": "Gebruik de zoeker om het volgende resterende vakje van dit garen te vinden."
+    },
+    "skip": "Nu overslaan",
+    "skipAccessibilityLabel": "Zelfstudie nu overslaan",
+    "dismiss": "OK",
+    "dismissAccessibilityLabel": "Tip sluiten"
+  },
+  "recap": {
+    "title": "Perfect",
+    "lines": {
+      "matchNumbers": "Zoek de nummers om je stitches te plaatsen.",
+      "dragSweep": "Sleep over vakjes met hetzelfde nummer om continu te stitchen (sweep).",
+      "pinchZoom": "Knijp om te zoomen wanneer je details wilt zien.",
+      "undoLocator": "Ongedaan maken en de zoeker zijn altijd gratis te gebruiken."
+    },
+    "continue": "Verder stitchen",
+    "browsePatterns": "Patronen zoeken"
+  }
+}

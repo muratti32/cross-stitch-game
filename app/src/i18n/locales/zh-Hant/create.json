@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "返回",
+    "cancel": "取消",
+    "duplicateTitle": "你已有一個名為「{{title}}」的個人圖案，請選擇其他標題。",
+    "cellsCount_one": "格",
+    "cellsCount_other": "格",
+    "colorsCount_one": "種顏色",
+    "colorsCount_other": "種顏色"
+  },
+  "hub": {
+    "title": "創作中心",
+    "subtitle": "將你的靈感化為自訂十字繡圖案。",
+    "opening": "開啟中…",
+    "photoImport": {
+      "title": "相片匯入",
+      "description": "從相簿上傳一張照片，將它轉換成可刺繡的圖案。",
+      "action": "匯入照片"
+    },
+    "aiGenerator": {
+      "title": "AI 生成器",
+      "description": "描述一個溫馨的主題，讓人工智慧為你生成自訂像素設計。",
+      "action": "生成設計"
+    }
+  },
+  "aspects": {
+    "square": "正方形",
+    "portrait_4_3": "直式 4:3",
+    "landscape_4_3": "橫式 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "圖案轉換失敗，請再試一次。",
+      "timeout": "圖案轉換仍在處理中，請稍後再試。",
+      "generic": "無法完成圖案轉換，請再試一次。"
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "需要註冊帳號",
+      "body": "AI 作品及其圖庫僅保存於你的帳號中，屬於私人內容。",
+      "signIn": "登入"
+    },
+    "header": {
+      "title": "AI 生成器",
+      "backAccessibilityLabel": "返回"
+    },
+    "prompt": {
+      "label": "描述你的作品",
+      "placeholder": "夕陽下溫馨的鄉村小屋花園…"
+    },
+    "generate": {
+      "working": "處理中…",
+      "action": "生成 — 消耗 1 點 AI 額度",
+      "errors": {
+        "promptRejected": "此描述未通過審核，請嘗試描述其他內容。",
+        "generic": "無法啟動 AI 生成，請再試一次。"
+      }
+    },
+    "library": {
+      "title": "你的 AI 作品圖庫",
+      "status": {
+        "pending": "等待中",
+        "dispatched": "已派送",
+        "running": "處理中",
+        "delivered": "已完成",
+        "safety_rejected": "安全審核未通過",
+        "failed": "生成失敗",
+        "deleted": "已刪除",
+        "unknown": "無法取得"
+      },
+      "failure": {
+        "safety_rejected": "此作品未通過供應商的安全檢查。",
+        "failed": "此作品無法生成。"
+      },
+      "approve": "核准並轉為圖案",
+      "delete": "刪除",
+      "deleteAccessibilityLabel": "刪除此 AI 作品",
+      "errors": {
+        "loadFailed": "無法載入你的 AI 作品圖庫，請再試一次。"
+      }
+    },
+    "approve": {
+      "modalTitle": "建立個人圖案",
+      "titleLabel": "圖案標題",
+      "titleAccessibilityLabel": "圖案標題",
+      "defaultTitle": "我的 AI 圖案",
+      "placeholder": "我的 AI 圖案",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "取消",
+      "creating": "正在建立圖案…",
+      "create": "建立圖案",
+      "errors": {
+        "generic": "無法建立個人圖案，請再試一次。"
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "需要註冊帳號",
+      "body": "個人圖案歸屬於你的帳號，因此可保持私人並跨裝置使用。",
+      "signIn": "登入或建立帳號",
+      "back": "返回"
+    },
+    "header": {
+      "title": "照片圖案",
+      "subtitle": "先在本機取景，核准後再進行轉換",
+      "backAccessibilityLabel": "返回"
+    },
+    "picker": {
+      "chooseTitle": "選擇照片",
+      "helpText": "完整解析度的本機照片來源會保留在此裝置上，未核准取景前不會進行任何轉換。",
+      "choose": "從相簿選擇",
+      "chooseAnother": "選擇其他照片",
+      "opening": "開啟中…",
+      "errors": {
+        "permissionDenied": "選擇本機照片來源需要相簿存取權限。",
+        "invalidDimensions": "所選照片未回報可用的尺寸資訊。",
+        "generic": "無法開啟相簿，請再試一次。"
+      }
+    },
+    "framing": {
+      "title": "作品取景",
+      "gestureHint": "拖曳以調整位置 · 捏合以縮放",
+      "aspectLabel": "取景比例"
+    },
+    "profile": {
+      "title": "轉換設定檔",
+      "options": {
+        "easy": "簡易",
+        "standard": "標準",
+        "detailed": "精細"
+      },
+      "custom": "自訂",
+      "customMeta": "免費 · 形狀鎖定",
+      "unavailable": "與此取景不相符",
+      "customShortEdgeLabel": "短邊長度",
+      "customColorLimitLabel": "DMC 顏色數量上限",
+      "exceedsLimit": "此自訂數值超過 {{max}} 格的圖案尺寸上限。"
+    },
+    "titleCard": {
+      "label": "圖案標題",
+      "placeholder": "我的照片圖案",
+      "defaultTitle": "我的照片圖案",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · 最多 {{maxColors}} 種 DMC {{colorsUnit}}",
+      "privacyNotice": "核准後僅會上傳取景並縮小後的衍生版本，原始照片仍保留在本機。",
+      "approve": "核准作品並轉換"
+    },
+    "processing": {
+      "preparingFrame": "正在於此裝置準備已核准的取景…",
+      "uploading": "正在僅上傳裁切並縮小後的取景…",
+      "waitingForWorker": "正在等待轉換工作程序…",
+      "buildingGrid": "正在建立刺繡格與 DMC 配色…",
+      "preparingSession": "正在準備個人圖案以供遊玩…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "此設定檔與最終取景已不相符，請選擇「簡易」或降低細節程度。",
+        "generic": "無法轉換此照片，請再試一次。"
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "尚未選取圖案",
+      "noPatternBody": "此畫面必須從你圖庫中既有的個人圖案開啟。",
+      "accountTitle": "需要註冊帳號",
+      "accountBody": "個人圖案歸屬於你的帳號，因此可保持私人並跨裝置使用。",
+      "signIn": "登入或建立帳號",
+      "back": "返回"
+    },
+    "loading": "正在還原編輯草稿…",
+    "load": {
+      "failedTitle": "圖案載入失敗",
+      "retry": "重試",
+      "back": "返回",
+      "errors": {
+        "generic": "無法載入此個人圖案，請再試一次。"
+      }
+    },
+    "header": {
+      "title": "圖案編輯器",
+      "dimensions": "（{{width}}x{{height}}）",
+      "backAccessibilityLabel": "返回"
+    },
+    "toolbar": {
+      "undo": "復原",
+      "redo": "重做"
+    },
+    "mode": {
+      "paint": "上色",
+      "replaceColor": "取代顏色",
+      "replaceStep1": "1. 點選下方圖案中要取代的顏色：",
+      "replaceStep2": "2. 於下方選擇要取代成的目標 DMC 顏色：",
+      "paintSelected": "已選取：DMC {{dmcCode}}（{{name}}）",
+      "paintUnselected": "請先在下方選擇顏色，再點選格子上色。"
+    },
+    "errors": {
+      "pickColorFirst": "請先選擇顏色",
+      "paletteLimit": "此圖案已使用達 {{max}} 種繡線顏色上限。"
+    },
+    "picker": {
+      "title": "DMC 繡線顏色",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "儲存已編輯的圖案",
+      "placeholder": "我編輯的圖案標題",
+      "action": "另存為新圖案",
+      "offlineTitle": "已離線儲存",
+      "offlineBody": "你編輯的圖案已儲存於此裝置，恢復連線後將同步至你的帳號。",
+      "errors": {
+        "generic": "無法儲存此個人圖案，請再試一次。"
+      }
+    }
+  }
+}

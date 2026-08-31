@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Pistelypöytä",
+    "subtitle": "Jatka siitä, mihin jäit, tai palaa viimeaikaiseen työhösi.",
+    "loading": "Ladataan pistojasi...",
+    "empty": {
+      "title": "Ei aktiivisia töitä",
+      "body": "Pistelykehyksesi on tällä hetkellä tyhjä. Selaa mallivalikoimaa löytääksesi jotain kaunista pisteltävää!",
+      "action": "Selaa valikoimaa"
+    },
+    "unknownPattern": "Tuntematon malli",
+    "idLabel": "Tunnus: {{id}}",
+    "unknownPatternLabel": "Malli {{id}}",
+    "deleteSessionAccessibilityLabel": "Poista istunto",
+    "viewFinishedAccessibilityLabel": "Katso valmis työ",
+    "resumeAccessibilityLabel": "Jatka pistelyä",
+    "status": {
+      "ready": "Valmis",
+      "done": "Tehty",
+      "active": "Aktiivinen",
+      "preparing": "Valmistellaan",
+      "failed": "Epäonnistui"
+    },
+    "deleteConfirm": {
+      "title": "Poista edistyminen",
+      "message": "Oletko varma, että haluat poistaa edistymisesi mallissa \"{{title}}\"? Tätä ei voi perua.",
+      "cancel": "Peruuta",
+      "confirm": "Poista"
+    },
+    "preparingCard": {
+      "discardTitle": "Hylkää istunto",
+      "cancelTitle": "Peruuta lataus",
+      "discardMessage": "Oletko varma, että haluat hylätä tämän epäonnistuneen istunnon?",
+      "cancelMessage": "Oletko varma, että haluat peruuttaa tämän mallin lataamisen?",
+      "keep": "Säilytä",
+      "discard": "Hylkää",
+      "cancel": "Peruuta"
+    }
+  },
+  "loading": {
+    "text": "Avataan istuntoa ja valmistellaan kangasta..."
+  },
+  "error": {
+    "title": "Istunnon lataaminen epäonnistui",
+    "fallbackMessage": "Pistelyistuntoasi ei voitu ladata.",
+    "backButton": "Palaa takaisin",
+    "tableButton": "Mene pöytään"
+  },
+  "header": {
+    "backButton": "← Takaisin",
+    "tableButton": "← Pöytä",
+    "defaultTitle": "Pistelyistunto",
+    "progress": "{{completed}} / {{total}} ruutua ({{percent}} % valmiina)",
+    "resumeTutorialAccessibilityLabel": "Jatka opetusohjelmaa"
+  },
+  "banners": {
+    "patternRemoved": "Tämä malli poistettiin moderoinnin toimesta, eikä se ole enää saatavilla. Napauta poistuaksesi.",
+    "syncConflict": "Synkronoitu toisen laitteen kanssa – joitakin ruutuja päivitettiin. Napauta ohittaaksesi."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Paikanna aktiivisen langan seuraava jäljellä oleva ruutu",
+    "undoAccessibilityLabel": "Kumoa edellinen pisto"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Väri {{number}}: DMC {{dmcCode}}, {{count}} pisto jäljellä",
+    "chipAccessibilityLabel_other": "Väri {{number}}: DMC {{dmcCode}}, {{count}} pistoa jäljellä",
+    "done": "Valmis",
+    "remaining_one": "{{count}} jäljellä",
+    "remaining_other": "{{count}} jäljellä"
+  },
+  "celebration": {
+    "title": "Kauniisti tehty!",
+    "subtitle": "Olet saanut valmiiksi jokaisen piston tällä kankaalla.",
+    "stitchesLabel_one": "Pisto",
+    "stitchesLabel_other": "Pistoa",
+    "colorsLabel_one": "Väri",
+    "colorsLabel_other": "Väriä",
+    "replayButton": "Pistele uudelleen",
+    "catalogButton": "Takaisin valikoimaan"
+  }
+}

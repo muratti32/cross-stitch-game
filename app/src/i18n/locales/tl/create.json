@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Bumalik",
+    "cancel": "Kanselahin",
+    "duplicateTitle": "Mayroon ka nang personal na pattern na may pangalang ”{{title}}”. Pumili ng ibang titulo.",
+    "cellsCount_one": "kahon",
+    "cellsCount_other": "kahon",
+    "colorsCount_one": "kulay",
+    "colorsCount_other": "kulay"
+  },
+  "hub": {
+    "title": "Creator Hub",
+    "subtitle": "Buhayin ang sarili mong disenyo gamit ang mga custom na cross-stitch pattern.",
+    "opening": "Binubuksan…",
+    "photoImport": {
+      "title": "Pag-import ng Larawan",
+      "description": "Mag-upload ng larawan mula sa iyong camera roll at gawin itong pattern na tatahiin.",
+      "action": "Mag-import ng larawan"
+    },
+    "aiGenerator": {
+      "title": "AI na Generator",
+      "description": "Ilarawan ang isang cozy na ideya at hayaang gumawa ng custom na pixel design ang artificial intelligence.",
+      "action": "Gumawa ng disenyo"
+    }
+  },
+  "aspects": {
+    "square": "Parisukat",
+    "portrait_4_3": "Patayo 4:3",
+    "landscape_4_3": "Pahalang 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Nabigo ang pag-convert ng pattern. Subukan ulit.",
+      "timeout": "Patuloy pang pinoproseso ang pag-convert ng pattern. Subukan ulit sa ilang sandali.",
+      "generic": "Hindi natapos ang pag-convert ng pattern. Subukan ulit."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Kinakailangan ang nakarehistrong account",
+      "body": "Mananatiling pribado sa iyong account ang AI art at ang library nito.",
+      "signIn": "Mag-log in"
+    },
+    "header": {
+      "title": "AI na Generator",
+      "backAccessibilityLabel": "Bumalik"
+    },
+    "prompt": {
+      "label": "Ilarawan ang iyong sining",
+      "placeholder": "Isang cozy na hardin ng kubo sa paglubog ng araw…"
+    },
+    "generate": {
+      "working": "Ginagawa…",
+      "action": "Gumawa — 1 AI Credit",
+      "errors": {
+        "promptRejected": "Hindi pinapayagan ang paglalarawang iyon. Subukan ilarawan ang ibang bagay.",
+        "generic": "Hindi nasimulan ang AI generation. Subukan ulit."
+      }
+    },
+    "library": {
+      "title": "Ang iyong AI Art Library",
+      "status": {
+        "pending": "Naghihintay",
+        "dispatched": "Naipadala na",
+        "running": "Kasalukuyang isinasagawa",
+        "delivered": "Naihatid na",
+        "safety_rejected": "Tinanggihan dahil sa kaligtasan",
+        "failed": "Nabigo",
+        "deleted": "Natanggal",
+        "unknown": "Hindi available"
+      },
+      "failure": {
+        "safety_rejected": "Hindi napasa ng art na ito ang safety check ng provider.",
+        "failed": "Hindi nagawa ang art na ito."
+      },
+      "approve": "Aprubahan sa pattern",
+      "delete": "Tanggalin",
+      "deleteAccessibilityLabel": "Tanggalin ang AI art na ito",
+      "errors": {
+        "loadFailed": "Hindi na-load ang iyong AI Art Library. Subukan ulit."
+      }
+    },
+    "approve": {
+      "modalTitle": "Gumawa ng personal na pattern",
+      "titleLabel": "Titulo ng pattern",
+      "titleAccessibilityLabel": "Titulo ng pattern",
+      "defaultTitle": "Ang Aking AI Pattern",
+      "placeholder": "Ang Aking AI Pattern",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Kanselahin",
+      "creating": "Ginagawa ang pattern…",
+      "create": "Gumawa ng pattern",
+      "errors": {
+        "generic": "Hindi nagawa ang personal na pattern. Subukan ulit."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Kinakailangan ang nakarehistrong account",
+      "body": "Kabilang sa iyong account ang mga personal na pattern para manatili silang pribado at available sa lahat ng device.",
+      "signIn": "Mag-log in o gumawa ng account",
+      "back": "Bumalik"
+    },
+    "header": {
+      "title": "Larawang Pattern",
+      "subtitle": "I-crop nang lokal, pagkatapos ay aprubahan ang pag-convert",
+      "backAccessibilityLabel": "Bumalik"
+    },
+    "picker": {
+      "chooseTitle": "Pumili ng larawan",
+      "helpText": "Mananatili sa device na ito ang full-resolution na lokal na larawan. Walang mako-convert hanggang aprubahan mo ang pag-crop.",
+      "choose": "Pumili mula sa library",
+      "chooseAnother": "Pumili ng iba",
+      "opening": "Binubuksan…",
+      "errors": {
+        "permissionDenied": "Kinakailangan ang access sa photo library para pumili ng lokal na larawan.",
+        "invalidDimensions": "Hindi nagbibigay ang napiling larawan ng magagamit na sukat.",
+        "generic": "Hindi mabuksan ang photo library. Subukan ulit."
+      }
+    },
+    "framing": {
+      "title": "Pag-crop ng artwork",
+      "gestureHint": "I-drag para i-posisyon · i-pinch para i-zoom",
+      "aspectLabel": "Aspect ratio"
+    },
+    "profile": {
+      "title": "Profile ng pag-convert",
+      "options": {
+        "easy": "Madali",
+        "standard": "Standard",
+        "detailed": "Detalyado"
+      },
+      "custom": "Pasadya",
+      "customMeta": "Malaya · naka-lock ang hugis",
+      "unavailable": "Hindi bagay sa pag-crop na ito",
+      "customShortEdgeLabel": "Maikling gilid",
+      "customColorLimitLabel": "Limitasyon ng kulay ng DMC",
+      "exceedsLimit": "Lumalampas ang mga custom na value na ito sa limitasyon na {{max}} cell para sa laki ng pattern."
+    },
+    "titleCard": {
+      "label": "Titulo ng pattern",
+      "placeholder": "Ang Aking Photo Pattern",
+      "defaultTitle": "Ang Aking Photo Pattern",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · hanggang {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "Ino-upload lang ng pag-apruba ang na-crop at na-downscale na derivative. Mananatiling lokal ang orihinal na larawan.",
+      "approve": "Aprubahan ang artwork at i-convert"
+    },
+    "processing": {
+      "preparingFrame": "Inihahanda ang inaprubahang crop sa device na ito…",
+      "uploading": "Ino-upload lang ang na-crop at na-downscale na larawan…",
+      "waitingForWorker": "Naghihintay sa conversion worker…",
+      "buildingGrid": "Ginagawa ang grid ng tahi at ang DMC palette…",
+      "preparingSession": "Inihahanda ang personal na pattern para sa laro…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Hindi na bagay ang profile na ito sa huling crop. Piliin ang Madali o bawasan ang detalye.",
+        "generic": "Hindi na-convert ang larawang ito. Subukan ulit."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Walang napiling pattern",
+      "noPatternBody": "Dapat buksan ang screen na ito mula sa isang umiiral na personal na pattern sa iyong library.",
+      "accountTitle": "Kinakailangan ang nakarehistrong account",
+      "accountBody": "Kabilang sa iyong account ang mga personal na pattern para manatili silang pribado at available sa lahat ng device.",
+      "signIn": "Mag-log in o gumawa ng account",
+      "back": "Bumalik"
+    },
+    "loading": "Ipinagpapatuloy ang draft ng pag-edit...",
+    "load": {
+      "failedTitle": "Hindi na-load ang pattern",
+      "retry": "Subukan ulit",
+      "back": "Bumalik",
+      "errors": {
+        "generic": "Hindi na-load ang personal na pattern na ito. Subukan ulit."
+      }
+    },
+    "header": {
+      "title": "Editor ng Pattern",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Bumalik"
+    },
+    "toolbar": {
+      "undo": "I-undo",
+      "redo": "I-redo"
+    },
+    "mode": {
+      "paint": "Pintahan",
+      "replaceColor": "Palitan ang kulay",
+      "replaceStep1": "1. Pindutin ang kulay sa pattern sa ibaba para palitan ito:",
+      "replaceStep2": "2. Pumili ng target na kulay sa DMC sa ibaba para gawin ang pagpapalit:",
+      "paintSelected": "Napili: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Pumili ng kulay sa ibaba pagkatapos pindutin ang mga cell para magpinta."
+    },
+    "errors": {
+      "pickColorFirst": "Pumili muna ng kulay",
+      "paletteLimit": "Gumagamit na ang pattern na ito ng maximum na {{max}} kulay ng sinulid."
+    },
+    "picker": {
+      "title": "Mga kulay ng DMC na sinulid",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "I-save ang na-edit na pattern",
+      "placeholder": "Titulo ng aking na-edit na pattern",
+      "action": "I-save bilang bago",
+      "offlineTitle": "Na-save offline",
+      "offlineBody": "Na-save ang iyong na-edit na pattern sa device na ito at magsi-sync sa iyong account kapag online ka ulit.",
+      "errors": {
+        "generic": "Hindi na-save ang personal na pattern na ito. Subukan ulit."
+      }
+    }
+  }
+}

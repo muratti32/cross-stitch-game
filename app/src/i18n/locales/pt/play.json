@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Mesa de Bordado",
+    "subtitle": "Continua de onde ficaste ou retoma uma criação recente.",
+    "loading": "A carregar os teus pontos...",
+    "empty": {
+      "title": "Sem Criações Ativas",
+      "body": "A tua moldura de bordado está atualmente vazia. Explora o catálogo de padrões para encontrar algo bonito para bordar!",
+      "action": "Explorar Catálogo"
+    },
+    "unknownPattern": "Padrão Desconhecido",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Padrão {{id}}",
+    "deleteSessionAccessibilityLabel": "Eliminar sessão",
+    "viewFinishedAccessibilityLabel": "Ver criação concluída",
+    "resumeAccessibilityLabel": "Retomar bordado",
+    "status": {
+      "ready": "Pronto",
+      "done": "Concluído",
+      "active": "Ativo",
+      "preparing": "A preparar",
+      "failed": "Falhado"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar Progresso",
+      "message": "Tens a certeza de que queres eliminar o teu progresso em \"{{title}}\"? Esta ação não pode ser desfeita.",
+      "cancel": "Cancelar",
+      "confirm": "Eliminar"
+    },
+    "preparingCard": {
+      "discardTitle": "Descartar Sessão",
+      "cancelTitle": "Cancelar Transferência",
+      "discardMessage": "Tens a certeza de que queres descartar esta sessão falhada?",
+      "cancelMessage": "Tens a certeza de que queres cancelar a transferência deste padrão?",
+      "keep": "Manter",
+      "discard": "Descartar",
+      "cancel": "Cancelar"
+    }
+  },
+  "loading": {
+    "text": "A abrir a sessão e a preparar o tecido..."
+  },
+  "error": {
+    "title": "Falha ao Carregar a Sessão",
+    "fallbackMessage": "Não foi possível carregar a tua sessão de bordado.",
+    "backButton": "Voltar",
+    "tableButton": "Ir para a Mesa"
+  },
+  "header": {
+    "backButton": "← Voltar",
+    "tableButton": "← Mesa",
+    "defaultTitle": "Sessão de Bordado",
+    "progress": "{{completed}} / {{total}} células ({{percent}}% concluído)",
+    "resumeTutorialAccessibilityLabel": "Retomar tutorial"
+  },
+  "banners": {
+    "patternRemoved": "Este Padrão foi removido por moderação e já não está disponível. Toca para sair.",
+    "syncConflict": "Sincronizado com outro dispositivo — algumas células foram atualizadas. Toca para dispensar."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Localizar a próxima célula restante da cor de fio ativa",
+    "undoAccessibilityLabel": "Anular último ponto"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Cor {{number}}: DMC {{dmcCode}}, {{count}} ponto restante",
+    "chipAccessibilityLabel_other": "Cor {{number}}: DMC {{dmcCode}}, {{count}} pontos restantes",
+    "done": "Concluído",
+    "remaining_one": "{{count}} restante",
+    "remaining_other": "{{count}} restantes"
+  },
+  "celebration": {
+    "title": "Lindamente Bordado!",
+    "subtitle": "Completaste todos os pontos deste tecido.",
+    "stitchesLabel_one": "Ponto",
+    "stitchesLabel_other": "Pontos",
+    "colorsLabel_one": "Cor",
+    "colorsLabel_other": "Cores",
+    "replayButton": "Bordar Novamente",
+    "catalogButton": "Voltar ao Catálogo"
+  }
+}

@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← رجوع",
+    "searchPlaceholder": "ابحث عن الأنماط، المبدعين، الوسوم...",
+    "offlineBanner": "غير متصل — قد يكون الكتالوج قديماً",
+    "sectionError": {
+      "title": "تعذر التحميل",
+      "retry": "أعد المحاولة"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} لوناً",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} أعمدة",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "الإنجليزية"
+    },
+    "accessibilityLabel": "مكتوب بـ {{language}}"
+  },
+  "index": {
+    "subtitle": "اصنع عالمك المريح، غرزة بغرزة.",
+    "searchBar": {
+      "accessibilityLabel": "ابحث في كتالوج الأنماط"
+    },
+    "sections": {
+      "starterPatterns": "أنماط البداية",
+      "staffPicks": "اختيارات الموظفين",
+      "categories": "الفئات",
+      "newPatterns": "أنماط جديدة"
+    },
+    "staffPicks": {
+      "emptyTitle": "لا توجد اختيارات للموظفين بعد",
+      "emptyBody": "مجموعتنا المختارة بعناية من التصاميم المريحة ستظهر هنا قريباً.",
+      "errorBody": "تعذر الوصول إلى الكتالوج ولا يوجد شيء مخزن مؤقتاً بعد."
+    },
+    "categories": {
+      "count": "{{count}} نمطاً",
+      "errorBody": "تعذر الوصول إلى الكتالوج ولا يوجد شيء مخزن مؤقتاً بعد."
+    },
+    "newPatterns": {
+      "emptyTitle": "أنماط جديدة قيد الصنع",
+      "emptyBody": "وصول تصاميم جديدة قريباً!",
+      "errorBody": "تعذر الوصول إلى الكتالوج ولا يوجد شيء مخزن مؤقتاً بعد.",
+      "showMore": "عرض المزيد",
+      "loading": "جاري التحميل…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "تصفح",
+    "error": {
+      "body": "تعذر الوصول إلى صفحة الكتالوج هذه ولا يوجد شيء مخزن مؤقتاً بعد."
+    },
+    "empty": {
+      "title": "لا يوجد شيء هنا بعد",
+      "body": "لا توجد أنماط تطابق هذا الاختيار بعد. تتوفر تصاميم جديدة بانتظام."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "حقل إدخال البحث في الكتالوج",
+    "inactive": {
+      "title": "ابحث في الكتالوج",
+      "body": "اكتب حرفين على الأقل للبحث عن الأنماط حسب العنوان أو المبدع أو الوسم."
+    },
+    "error": {
+      "title": "البحث يتطلب اتصالاً بالإنترنت",
+      "body": "البحث في الكتالوج غير متاح دون اتصال بالإنترنت. تظل صفحات الكتالوج المخزنة مؤقتاً قابلة للتصفح من علامة تبويب الكتالوج."
+    },
+    "noResults": {
+      "title": "لا توجد نتائج مطابقة",
+      "body": "لا شيء في الكتالوج يطابق “{{query}}” بعد."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "اللعب كضيف",
+    "body": "Stitch Coin والتقدم يعيشان فقط على هذا الجهاز كلاعب ضيف. في حال فقدان التطبيق، قد لا يمكن استرداد سجل الضيف والتقدم المحرز. تسجيل الدخول يحمي تقدمك."
+  },
+  "detail": {
+    "noDescription": "لا يوجد وصف متاح.",
+    "specs": {
+      "dimensions": "الأبعاد",
+      "totalStitches": "إجمالي الغرز",
+      "colors": "الألوان",
+      "category": "الفئة"
+    },
+    "threadsSuffix": "{{count}} خيوط",
+    "palette": {
+      "title": "الخيوط المطلوبة",
+      "loading": "جاري قراءة لوحة الخيوط...",
+      "loadFailed": "فشل تحميل لوحة الألوان: {{error}}",
+      "retry": "إعادة محاولة التحميل"
+    },
+    "actions": {
+      "startStitching": "ابدأ التطريز",
+      "starting": "جاري البدء...",
+      "preparing": "جاري التحضير…"
+    },
+    "loadFailedGeneric": "فشل فك تشفير ملف النمط.",
+    "sessionCreateFailed": "فشل إنشاء جلسة التطريز. يرجى المحاولة مرة أخرى.",
+    "unavailable": {
+      "title": "النمط غير متاح",
+      "body": "تعذر تحميل هذا النمط. قد يكون قد تمت إزالته، أو قد تكون غير متصل بالإنترنت.",
+      "goBack": "رجوع"
+    },
+    "byCreator": "بواسطة {{creatorName}}",
+    "byCreatorWithUsername": "بواسطة {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "حظر المبدع",
+      "message": "هل أنت متأكد أنك تريد حظر {{creatorName}}؟ هذا إجراء خاص وقابل للتراجع يخفي أنماطهم من البحث والتصفح. لا يبلغ هذا عن المبدع ولن يقاطع جلسة التطريز الحالية.",
+      "cancel": "إلغاء",
+      "confirm": "حظر",
+      "blockedTitle": "تم الحظر",
+      "blockedMessage": "تم حظر {{creatorName}}.",
+      "errorTitle": "خطأ",
+      "failedGeneric": "فشل حظر المبدع."
+    },
+    "likeFailedGeneric": "فشل تحديث حالة الإعجاب",
+    "connectToPlay": {
+      "title": "اتصل بالإنترنت للعب",
+      "body": "يتطلب بدء نمط من الكتالوج اتصالاً بالإنترنت لتحضير جلستك. أنماط البداية قابلة للعب الآن، حتى دون اتصال بالإنترنت."
+    },
+    "insufficientCoins": {
+      "title": "رصيد عملات غير كافٍ",
+      "body": "يكلف هذا النمط {{price}} Stitch Coins، ولكن لديك {{balance}} عملات فقط.\n\nالنقص: {{shortfall}} عملات.\n\nاكسب Stitch Coins من خلال إكمال أنماط أخرى! مكافآت الإكمال الأول متاحة الآن.",
+      "getCoins": "الحصول على Stitch Coins",
+      "findPatterns": "البحث عن أنماط لتطريزها",
+      "back": "رجوع"
+    },
+    "unlockFailedGeneric": "فشل إلغاء القفل. تحقق من اتصالك بالإنترنت وأعد المحاولة.",
+    "preparationFailedGeneric": "تعذر بدء التحضير. تحقق من اتصالك وأعد المحاولة.",
+    "price": {
+      "label": "السعر"
+    },
+    "balance": {
+      "label": "رصيدك",
+      "loading": "…"
+    },
+    "unlockButton": "إلغاء القفل مقابل {{price}} عملة",
+    "communityReport": {
+      "button": "الإبلاغ عن هذا النمط",
+      "title": "الإبلاغ عن {{patternTitle}}",
+      "body": "اختر السبب الذي يصف المشكلة على أفضل وجه. البلاغات لا تخفي النمط أو تغيره تلقائياً.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "محتوى غير لائق أو غير آمن",
+        "copyright_or_publication_rights": "حقوق النشر أو حقوق النشر والتوزيع",
+        "duplicate_or_spam": "مكرر أو غير مرغوب فيه",
+        "misleading_title_or_tags": "عنوان أو وسوم مضللة",
+        "other": "أخرى"
+      },
+      "explanationLabel": "دليل أو شرح {{requirement}}",
+      "explanationRequired": "(مطلوب)",
+      "explanationOptional": "(اختياري)",
+      "explanationPlaceholder": "شارك تفاصيل تساعد المشرف في مراجعة النمط.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "إلغاء",
+      "submit": "تقديم البلاغ",
+      "submitFailedGeneric": "تعذر تقديم بلاغك. تحقق من اتصالك وأعد المحاولة.",
+      "receivedTitle": "تم استلام البلاغ",
+      "alreadyReceivedTitle": "تم استلام البلاغ بالفعل",
+      "receivedBody": "يمكن للمشرف الآن مراجعة هذا النمط. لا يغير البلاغ مدى توفره تلقائياً.",
+      "alreadyReceivedBody": "بلاغك الحالي هو جزء بالفعل من المراجعة المفتوحة.",
+      "signInRequired": {
+        "title": "سجل الدخول للإبلاغ",
+        "message": "تتطلب بلاغات المجتمع حساباً مسجلاً. لم يتم تقديم أي شيء.",
+        "cancel": "إلغاء",
+        "signIn": "تسجيل الدخول"
+      },
+      "validation": {
+        "chooseReason": "اختر سبباً للإبلاغ.",
+        "explainRequired": "اشرح سبب إبلاغك عن هذا النمط.",
+        "tooLong": "يجب أن يكون الشرح 2000 حرف أو أقل.",
+        "needsContent": "يجب أن يحتوي الشرح على أحرف أو أرقام."
+      }
+    }
+  }
+}

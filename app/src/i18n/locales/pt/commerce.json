@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Voltar",
+    "title": "Loja Comercial",
+    "subtitle": "Subscrição e recargas únicas"
+  },
+  "signInReturn": {
+    "notice": "Sessão iniciada. {{label}} continua selecionado. Revê e toca em Comprar quando estiveres pronto."
+  },
+  "premiumHero": {
+    "eyebrow": "SUBSCRIÇÃO PREMIUM",
+    "title": "Cria mais. Recolhe uma pequena recompensa todos os dias.",
+    "body": "Créditos de IA em cada período pago, temas Premium e um resgate diário de Stitch Coin.",
+    "benefitAiCredits": "Créditos de IA",
+    "benefitDailyCoins": "Moedas Diárias",
+    "benefitThemes": "Temas",
+    "statusNoActiveMembership": "Sem subscrição ativa",
+    "statusBrowseAsGuest": "Ver planos como Jogador Convidado",
+    "periodEndsLabel": "O período atual termina em",
+    "periodRenewsLabel": "Renova",
+    "lifecycleActive": "Ativo"
+  },
+  "membershipActions": {
+    "title": "Subscrição Premium Ativa",
+    "body": "As recompensas diárias estão em Perfil. Os temas estão em Definições › Aparência.",
+    "scheduledChangeNotice": "Altera para {{plan}} em {{date}}",
+    "manageSubscription": "Gerir Subscrição",
+    "manageSubscriptionFailedTitle": "Não foi possível abrir as subscrições",
+    "manageSubscriptionFailedBody": "Tenta novamente a partir da conta da loja do teu dispositivo."
+  },
+  "pending": {
+    "title": "Reconciliação de Compra Pendente",
+    "verifyingTitle": "A verificar a compra",
+    "premiumChangeAccepted": "A loja aceitou a alteração para {{label}}. ",
+    "premiumResponseReceived": "A resposta da loja para {{label}} foi recebida. ",
+    "premiumDeferredSuffix": "A alteração só é agendada após a verificação do Game Backend, e produz efeito quando o teu período atual terminar.",
+    "premiumSuffix": "O Premium só ativa após a verificação do Game Backend.",
+    "doNotPurchasePlanAgain": " Não voltes a comprar este plano.",
+    "coinPackBody": "A resposta da loja foi recebida. O saldo de Stitch Coin só é atualizado depois de o Game Backend expor a atribuição correspondente no Livro de Comércio. Não voltes a comprar este pacote.",
+    "aiCreditPackBody": "A resposta da loja foi recebida. O saldo de Créditos de IA só é atualizado depois de o Game Backend expor a atribuição correspondente no Livro de Comércio. Não voltes a comprar este pacote.",
+    "refreshStatus": "Atualizar estado",
+    "retryReconciliation": "Repetir reconciliação"
+  },
+  "store": {
+    "loadingPrices": "A carregar os preços atuais da loja…",
+    "unavailableTitle": "Loja temporariamente indisponível",
+    "unavailableBody": "As informações da tua carteira e subscrição continuam disponíveis.",
+    "retry": "Tentar Novamente"
+  },
+  "plans": {
+    "choosePremiumPlan": "Escolhe um plano Premium",
+    "yourPremiumPlan": "O teu plano Premium",
+    "currentPlan": "PLANO ATUAL",
+    "upgrade": "MELHORAR",
+    "planChange": "ALTERAÇÃO DE PLANO",
+    "bestValue": "MELHOR VALOR",
+    "billedEvery": "Faturado a cada {{period}}",
+    "chooseLabel": "Escolher {{label}}",
+    "freeTrial": "Grátis durante {{offer}}, depois {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Pacotes únicos",
+    "stitchCoinPacksTitle": "Pacotes de Stitch Coin",
+    "aiCreditPacksTitle": "Pacotes de Créditos de IA",
+    "coinsNoun": "Coins",
+    "creditsNoun": "Créditos",
+    "fromPrice": "Desde {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Restaurar compras",
+    "restoreGuestPremium": "Restaurar Premium de Convidado",
+    "requestedTitle": "Restauro pedido",
+    "requestedBody": "O acesso Premium verificado aparecerá após a reconciliação do webhook da loja. Os pacotes de Stitch Coin e Créditos de IA nunca são restaurados."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Preços atuais da loja de aplicações",
+    "closeAccessibilityLabel": "Fechar folha do produto",
+    "closeButtonAccessibilityLabel": "Fechar",
+    "selectedBeforeSignIn": "Selecionado antes de iniciar sessão",
+    "buy": "Comprar"
+  },
+  "confirmation": {
+    "cancel": "Cancelar",
+    "confirmLabel": "Confirmar {{label}}",
+    "confirmPremiumTitle": "Confirmar compra Premium",
+    "introductoryOffer": "A tua loja reporta esta oferta introdutória: {{offer}}.",
+    "premiumAppearsAfterVerification": "O Premium só aparece depois de o Game Backend verificar a transação da loja.",
+    "confirmPremiumUpgradeTitle": "Confirmar melhoria Premium",
+    "confirmPremiumPlanChangeTitle": "Confirmar alteração de plano Premium",
+    "currentPlanLabel": "Plano Atual: {{label}}",
+    "upgradeToLabel": "Melhorar para {{label}} · {{offer}}",
+    "changeToLabel": "Alterar para {{label}} · {{offer}}",
+    "upgradeBody": "A App Store controla o valor final cobrado e a data de efeito desta melhoria. O Premium reflete {{label}} apenas depois de o Game Backend o verificar.",
+    "planChangeBody": "A App Store adia esta alteração para o final do teu período atual: {{currentLabel}} continua ativo até lá, e {{targetLabel}} é faturado a partir da data de alteração. Cancela a alteração em Gerir Subscrição.",
+    "confirmUpgrade": "Confirmar melhoria",
+    "confirmPlanChange": "Confirmar alteração de plano",
+    "confirmStitchCoinTitle": "Confirmar compra de Stitch Coin",
+    "confirmAiCreditTitle": "Confirmar compra de Créditos de IA",
+    "balanceChangesAfterVerificationCoin": "O teu saldo só muda depois de o Game Backend verificar a transação da loja e registar a atribuição correspondente no Livro de Comércio.",
+    "balanceChangesAfterVerificationAiCredit": "O teu saldo só muda depois de o Game Backend verificar a transação da loja e registar a atribuição correspondente no Livro de Comércio. Não é necessária Subscrição Premium."
+  },
+  "disclosure": {
+    "subscriptionTerms": "O pagamento é cobrado à tua conta {{store}} na confirmação. {{label}} Premium renova automaticamente por {{offer}}, salvo se a renovação automática for desativada pelo menos 24 horas antes do fim do período atual. Qualquer parte não utilizada de um período experimental gratuito é perdida ao comprares uma subscrição. Podes cancelar a qualquer momento a partir da tua conta {{store}}.",
+    "privacyPolicy": "Política de Privacidade",
+    "termsOfService": "Termos de Serviço",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Não foi possível abrir a ligação: {{url}}"
+  },
+  "supportReference": {
+    "label": "Referência de Suporte: {{reference}}",
+    "copyAccessibilityLabel": "Copiar referência de suporte {{reference}}",
+    "copyAccessibilityHint": "Copia a referência de suporte para a área de transferência",
+    "copied": "Copiado",
+    "copyFailedTitle": "Cópia falhou",
+    "copyFailedBody": "Não foi possível copiar a referência de suporte. Seleciona o texto para o copiar manualmente."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "As compras de Stitch Coin como Convidado estão disponíveis apenas em iOS.",
+    "guestIosOnlyGeneric": "As compras como Convidado estão disponíveis apenas em iOS.",
+    "purchaseFailedTitle": "A compra falhou",
+    "premiumVerificationNotYet": "O Game Backend não conseguiu verificar esta compra. Repete a reconciliação; não a compres novamente.",
+    "premiumVerificationFailedRetry": "O Game Backend ainda não conseguiu verificar esta compra. Repete a reconciliação; não a compres novamente.",
+    "premiumGrantRefreshFailed": "O Premium foi verificado, mas o estado da subscrição e dos Créditos de IA não pôde ser atualizado. Repete a reconciliação.",
+    "premiumReconciliationUnreachable": "A reconciliação da compra não conseguiu contactar o Game Backend. Repete a reconciliação; não a compres novamente.",
+    "coinPackVerificationMismatch": "A transação da loja não corresponde a este Pacote de Moedas. Repete a verificação ou contacta o suporte; não o compres novamente.",
+    "coinPackGrantUnavailable": "A compra foi verificada, mas a atribuição de Stitch Coin está indisponível. Repete a reconciliação; não a compres novamente.",
+    "coinPackBalanceRefreshFailed": "A atribuição de Moedas foi verificada, mas o saldo atual de Stitch Coin não pôde ser atualizado. Repete a reconciliação.",
+    "coinPackVerificationFailedRetry": "O Game Backend ainda não conseguiu verificar este Pacote de Moedas. Repete a reconciliação; não o compres novamente.",
+    "coinPackReconciliationUnreachable": "A reconciliação do Pacote de Moedas não conseguiu contactar o Game Backend. Repete a reconciliação; não o compres novamente.",
+    "aiCreditPackVerificationMismatch": "A transação da loja não corresponde a este Pacote de Créditos de IA. Repete a verificação ou contacta o suporte; não o compres novamente.",
+    "aiCreditPackGrantUnavailable": "A compra foi verificada, mas a atribuição de Créditos de IA está indisponível. Repete a reconciliação; não o compres novamente.",
+    "aiCreditPackBalanceRefreshFailed": "A atribuição de Créditos de IA foi verificada, mas o saldo atual não pôde ser atualizado. Repete a reconciliação.",
+    "aiCreditPackVerificationFailedRetry": "O Game Backend ainda não conseguiu verificar este Pacote de Créditos de IA. Repete a reconciliação; não o compres novamente.",
+    "aiCreditPackReconciliationUnreachable": "A reconciliação do Pacote de Créditos de IA não conseguiu contactar o Game Backend. Repete a reconciliação; não o compres novamente.",
+    "reconciliationStillUnavailable": "O Game Backend continua indisponível. Tenta a reconciliação novamente mais tarde.",
+    "storeTemporarilyUnavailable": "A loja está temporariamente indisponível. Tenta novamente dentro de alguns minutos.",
+    "purchasesNotAllowed": "As compras não são permitidas neste dispositivo. Verifica a tua conta da loja ou os controlos parentais.",
+    "itemNotAvailable": "Este artigo não está disponível para compra neste momento. Escolhe outro artigo ou tenta novamente mais tarde.",
+    "alreadyOwned": "Já tens esta compra. Usa Restaurar Compras para atualizar o teu acesso.",
+    "couldNotConnectToStore": "Não foi possível ligar à loja. Verifica a tua ligação à internet e tenta novamente.",
+    "paymentPendingApproval": "O teu pagamento está pendente de aprovação. A tua compra aparecerá depois de a loja a concluir.",
+    "testPurchaseDeclined": "A compra de teste foi recusada. Nenhum pagamento foi efetuado. Escolhe outro resultado de Loja de Teste em Definições, e tenta novamente.",
+    "genericPurchaseFailure": "Não foi possível concluir a tua compra. Nenhum pagamento foi efetuado. Por favor, tenta novamente."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Ainda a verificar",
+    "premiumPending": "A verificação ainda está em curso. O Premium ativará assim que o Game Backend o confirmar.",
+    "premiumPlanChangePending": "A verificação ainda está em curso. A alteração de plano será agendada assim que o Game Backend a confirmar.",
+    "coinPackPending": "A verificação ainda está em curso. O teu saldo de Stitch Coin será atualizado assim que concluir.",
+    "aiCreditPackPending": "A verificação ainda está em curso. O teu saldo de Créditos de IA será atualizado assim que concluir."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Compra recebida",
+    "storeAcceptedPlanChange": "A loja aceitou a alteração para {{label}}. A confirmar quando produz efeito.",
+    "storeAcceptedPurchase": "A loja aceitou {{label}}. A verificar a tua compra agora.",
+    "premiumChanges": "O Premium altera para {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " em {{date}}",
+    "planChangeScheduledTitle": "Alteração de plano agendada",
+    "planChangeScheduledBody": "A tua Subscrição Premium mantém o plano atual até se alterar para {{label}}{{effectiveOn}}. Cancela a alteração em Gerir Subscrição.",
+    "premiumIsActiveTitle": "O Premium está ativo",
+    "premiumVerifiedAndActive": "{{label}} Premium está verificado e ativo.",
+    "premiumNowActiveNoBilling": "{{label}} Premium está agora ativo.",
+    "premiumNowActiveBilled": "{{label}} Premium está agora ativo, faturado a cada {{period}}.",
+    "coinPackGrantedTitle": "Stitch Coins atribuídas",
+    "coinPackGrantVerified": "Atribuição de {{label}} verificada. Saldo de Stitch Coin: {{balance}}.",
+    "coinPackAddedToBalance": "{{quantity}} Stitch Coins foram adicionadas ao teu saldo.",
+    "aiCreditPackGrantedTitle": "Créditos de IA atribuídos",
+    "aiCreditPackGrantVerified": "Atribuição de {{label}} verificada. Saldo de Créditos de IA: {{balance}}.",
+    "aiCreditPackAddedToBalance": "{{quantity}} Créditos de IA foram adicionados ao teu saldo."
+  },
+  "products": {
+    "premiumAnnual": "Anual",
+    "premiumMonthly": "Mensal",
+    "premiumWeekly": "Semanal",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+    "aiCreditPack_one": "{{formattedCount}} Crédito de IA",
+    "aiCreditPack_other": "{{formattedCount}} Créditos de IA",
+    "billedEveryOffer": "{{price}} a cada {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} créditos / período pago",
+    "creditAllowancePaidNoun": "{{credits}} créditos / {{period}} pago"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Comprar como Convidado",
+    "commerceBody": "Podes comprar sem registo. A Subscrição Premium pode ser restaurada a partir da loja, mas as Stitch Coin, os Créditos de IA e o conteúdo privado de Convidado são irrecuperáveis se esta instalação se perder. Registar-te protege-os e nunca interrompe jogar como Convidado.",
+    "continueAsGuest": "Continuar como Convidado",
+    "signInInstead": "Iniciar sessão em vez disso",
+    "closeAccessibilityLabel": "Fechar"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "Entendido",
+    "successButton": "Ótimo",
+    "failedButton": "Fechar",
+    "infoButton": "Entendido",
+    "closeAccessibilityLabel": "Fechar"
+  }
+}

@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Terug",
+    "title": "Winkel",
+    "subtitle": "Lidmaatschappen en eenmalige aankopen"
+  },
+  "signInReturn": {
+    "notice": "Je bent aangemeld. Het product {{label}} is geselecteerd. Controleer de details en tik op 'Kopen' wanneer je klaar bent."
+  },
+  "premiumHero": {
+    "eyebrow": "Premium-lidmaatschap",
+    "title": "Maak meer werk en ontvang elke dag kleine beloningen.",
+    "body": "AI Credits per factureringsperiode, premium thema's en dagelijkse Stitch Coins.",
+    "benefitAiCredits": "AI Credits",
+    "benefitDailyCoins": "Dagelijkse coins",
+    "benefitThemes": "Thema's",
+    "statusNoActiveMembership": "Geen actief lidmaatschap",
+    "statusBrowseAsGuest": "Bekijk abonnementen als gastspeler",
+    "periodEndsLabel": "Huidige periode eindigt op",
+    "periodRenewsLabel": "Verlengt op",
+    "lifecycleActive": "Actief"
+  },
+  "membershipActions": {
+    "title": "Actief Premium-lidmaatschap",
+    "body": "Je dagelijkse beloningen vind je in je profiel. Thema's kun je wijzigen via Instellingen › Uiterlijk.",
+    "scheduledChangeNotice": "Wijzigt naar het {{plan}}-abonnement op {{date}}",
+    "manageSubscription": "Abonnement beheren",
+    "manageSubscriptionFailedTitle": "Kan abonnement niet openen",
+    "manageSubscriptionFailedBody": "Probeer het opnieuw via het winkelaccount op je apparaat."
+  },
+  "pending": {
+    "title": "Aankoopbevestiging in behandeling",
+    "verifyingTitle": "Aankoop verifiëren",
+    "premiumChangeAccepted": "De winkel heeft de wijziging naar het {{label}}-abonnement geaccepteerd.",
+    "premiumResponseReceived": "Reactie van de winkel voor {{label}} ontvangen.",
+    "premiumDeferredSuffix": "De wijziging wordt ingepland na verificatie door de Game Backend en gaat in wanneer je huidige periode eindigt.",
+    "premiumSuffix": "Premium wordt geactiveerd na verificatie door de Game Backend.",
+    "doNotPurchasePlanAgain": " Koop dit abonnement niet opnieuw.",
+    "coinPackBody": "Reactie van de winkel ontvangen. Je Stitch Coins worden bijgewerkt zodra de Game Backend de bijbehorende Commerce Ledger-uitkering heeft verwerkt. Koop deze pack niet opnieuw.",
+    "aiCreditPackBody": "Reactie van de winkel ontvangen. Je AI Credits worden bijgewerkt zodra de Game Backend de bijbehorende Commerce Ledger-uitkering heeft verwerkt. Koop deze pack niet opnieuw.",
+    "refreshStatus": "Status vernieuwen",
+    "retryReconciliation": "Verificatie opnieuw proberen"
+  },
+  "store": {
+    "loadingPrices": "Huidige winkelprijzen laden…",
+    "unavailableTitle": "Winkel tijdelijk niet beschikbaar",
+    "unavailableBody": "Je portemonnee en lidmaatschapsgegevens blijven beschikbaar.",
+    "retry": "Opnieuw proberen"
+  },
+  "plans": {
+    "choosePremiumPlan": "Kies je Premium-abonnement",
+    "yourPremiumPlan": "Je Premium-abonnement",
+    "currentPlan": "Huidig abonnement",
+    "upgrade": "Upgraden",
+    "planChange": "Abonnement wijzigen",
+    "bestValue": "Beste waarde",
+    "billedEvery": "Facturering per {{period}}",
+    "chooseLabel": "{{label}} kiezen",
+    "freeTrial": "{{offer}} gratis proberen, daarna {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Eenmalige packs",
+    "stitchCoinPacksTitle": "Stitch Coin-packs",
+    "aiCreditPacksTitle": "AI Credit-packs",
+    "coinsNoun": "coins",
+    "creditsNoun": "credits",
+    "fromPrice": "Vanaf {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Aankopen herstellen",
+    "restoreGuestPremium": "Gast-Premium herstellen",
+    "requestedTitle": "Herstel aangevraagd",
+    "requestedBody": "Geverifieerde Premium-toegang wordt weergegeven zodra de webhook-controle bij de winkel is voltooid. Stitch Coin- en AI Credit-packs worden niet hersteld."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Huidige prijzen in de App Store",
+    "closeAccessibilityLabel": "Productoverzicht sluiten",
+    "closeButtonAccessibilityLabel": "Sluiten",
+    "selectedBeforeSignIn": "Geselecteerd vóór aanmelden",
+    "buy": "Kopen"
+  },
+  "confirmation": {
+    "cancel": "Annuleren",
+    "confirmLabel": "{{label}} bevestigen",
+    "confirmPremiumTitle": "Premium-aankoop bevestigen",
+    "introductoryOffer": "Introductieaanbieding van de winkel: {{offer}}.",
+    "premiumAppearsAfterVerification": "Premium wordt pas weergegeven nadat de Game Backend de wintransactie heeft geverifieerd.",
+    "confirmPremiumUpgradeTitle": "Premium-upgrade bevestigen",
+    "confirmPremiumPlanChangeTitle": "Wijziging Premium-abonnement bevestigen",
+    "currentPlanLabel": "Huidig abonnement: {{label}}",
+    "upgradeToLabel": "Upgraden naar {{label}} · {{offer}}",
+    "changeToLabel": "Wijzigen naar {{label}} · {{offer}}",
+    "upgradeBody": "De uiteindelijke factureringsbedragen en -data voor deze upgrade worden beheerd door de App Store. Je Premium-abonnement toont {{label}} zodra de verificatie door de Game Backend is voltooid.",
+    "planChangeBody": "De App Store houdt deze wijziging aan tot het einde van je huidige periode. Tot die tijd blijft het {{currentLabel}}-abonnement actief; vanaf de wijzigingsdatum begint de facturering voor {{targetLabel}}. Je kunt de wijziging annuleren via 'Abonnement beheren'.",
+    "confirmUpgrade": "Upgrade bevestigen",
+    "confirmPlanChange": "Abonnementswijziging bevestigen",
+    "confirmStitchCoinTitle": "Aankoop Stitch Coins bevestigen",
+    "confirmAiCreditTitle": "Aankoop AI Credit bevestigen",
+    "balanceChangesAfterVerificationCoin": "Je saldo verandert pas nadat de Game Backend de wintransactie heeft geverifieerd en de bijbehorende Commerce Ledger-uitkering heeft geregistreerd.",
+    "balanceChangesAfterVerificationAiCredit": "Je saldo verandert pas nadat de Game Backend de wintransactie heeft geverifieerd en de bijbehorende Commerce Ledger-uitkering heeft geregistreerd. Een Premium-lidmaatschap is niet vereist."
+  },
+  "disclosure": {
+    "subscriptionTerms": "Betalingen worden bij bevestiging van de aankoop in rekening gebracht op je {{store}}-account. Tenzij je automatisch verlengen ten minste 24 uur voor het einde van de huidige periode uitschakelt, wordt {{label}} Premium automatisch verlengd tegen de prijs van {{offer}}. Bij aankoop van een abonnement vervalt een ongebruikt deel van een gratis proefperiode. Opzeggen kan op elk moment via je {{store}}-account.",
+    "privacyPolicy": "Privacybeleid",
+    "termsOfService": "Servicevoorwaarden",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Kan de link niet openen: {{url}}"
+  },
+  "supportReference": {
+    "label": "Ondersteuningsreferentie: {{reference}}",
+    "copyAccessibilityLabel": "Ondersteuningsreferentie {{reference}} kopiëren",
+    "copyAccessibilityHint": "Kopieert de ondersteuningsreferentie naar het klembord",
+    "copied": "Gekopieerd",
+    "copyFailedTitle": "Kopiëren mislukt",
+    "copyFailedBody": "De ondersteuningsreferentie kon niet worden gekopieerd. Selecteer de tekst om deze handmatig te kopiëren."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Stitch Coin-aankopen voor gastspelers zijn alleen beschikbaar op iOS.",
+    "guestIosOnlyGeneric": "Aankopen voor gastspelers zijn alleen beschikbaar op iOS.",
+    "purchaseFailedTitle": "Aankoop mislukt",
+    "premiumVerificationNotYet": "De Game Backend kon je aankoop nog niet verifiëren. Probeer de verificatie opnieuw. Probeer niet nogmaals te betalen voor hetzelfde abonnement.",
+    "premiumVerificationFailedRetry": "De Game Backend heeft je aankoop nog niet geverifieerd. Probeer de verificatie opnieuw. Probeer niet nogmaals te betalen voor hetzelfde abonnement.",
+    "premiumGrantRefreshFailed": "Premium is geverifieerd, maar je lidmaatschaps- en AI Credit-status kon niet worden bijgewerkt. Probeer de verificatie opnieuw.",
+    "premiumReconciliationUnreachable": "De Game Backend kon niet worden bereikt tijdens de aankoopverificatie. Probeer de verificatie opnieuw. Probeer niet nogmaals te betalen voor hetzelfde abonnement.",
+    "coinPackVerificationMismatch": "De wintransactie komt niet overeen met deze Coin-pack. Probeer de verificatie opnieuw of neem contact op met ondersteuning. Probeer niet nogmaals te betalen voor dezelfde pack.",
+    "coinPackGrantUnavailable": "De aankoop is geverifieerd, maar de Stitch Coins konden niet worden bijgeschreven. Probeer de verificatie opnieuw.",
+    "coinPackBalanceRefreshFailed": "De coin-uitkering is geverifieerd, maar je huidige Stitch Coin-saldo kon niet worden bijgewerkt. Probeer de verificatie opnieuw.",
+    "coinPackVerificationFailedRetry": "De Game Backend heeft deze Coin-pack nog niet geverifieerd. Probeer de verificatie opnieuw. Probeer niet nogmaals te betalen voor dezelfde pack.",
+    "coinPackReconciliationUnreachable": "De Game Backend kon niet worden bereikt tijdens de verificatie van de Coin-pack. Probeer de verificatie opnieuw. Probeer niet nogmaals te betalen voor dezelfde pack.",
+    "aiCreditPackVerificationMismatch": "De wintransactie komt niet overeen met deze AI Credit-pack. Probeer de verificatie opnieuw of neem contact op met ondersteuning. Probeer niet nogmaals te betalen voor dezelfde pack.",
+    "aiCreditPackGrantUnavailable": "De aankoop is geverifieerd, maar de AI Credits konden niet worden bijgeschreven. Probeer de verificatie opnieuw.",
+    "aiCreditPackBalanceRefreshFailed": "De credit-uitkering is geverifieerd, maar je huidige saldo kon niet worden bijgewerkt. Probeer de verificatie opnieuw.",
+    "aiCreditPackVerificationFailedRetry": "De Game Backend heeft deze AI Credit-pack nog niet geverifieerd. Probeer de verificatie opnieuw. Probeer niet nogmaals te betalen voor dezelfde pack.",
+    "aiCreditPackReconciliationUnreachable": "De Game Backend kon niet worden bereikt tijdens de verificatie van de AI Credit-pack. Probeer de verificatie opnieuw. Probeer niet nogmaals te betalen voor dezelfde pack.",
+    "reconciliationStillUnavailable": "De Game Backend is tijdelijk niet beschikbaar. Probeer de verificatie later opnieuw.",
+    "storeTemporarilyUnavailable": "De winkel is tijdelijk niet beschikbaar. Probeer het over een paar minuten opnieuw.",
+    "purchasesNotAllowed": "Aankopen zijn niet toegestaan op dit apparaat. Controleer je winkelaccount of ouderlijk toezicht.",
+    "itemNotAvailable": "Dit artikel is momenteel niet beschikbaar voor aankoop. Kies een ander artikel of probeer het later opnieuw.",
+    "alreadyOwned": "Je bezit dit artikel al. Gebruik 'Aankopen herstellen' om je toegang bij te werken.",
+    "couldNotConnectToStore": "Kan geen verbinding maken met de winkel. Controleer je internetverbinding en probeer het opnieuw.",
+    "paymentPendingApproval": "Betaling wacht op goedkeuring. Je aankoop wordt weergegeven zodra de winkel deze heeft verwerkt.",
+    "testPurchaseDeclined": "Testaankoop geweigerd. Er is niets in rekening gebracht. Kies een ander testwinkelresultaat in de instellingen en probeer het opnieuw.",
+    "genericPurchaseFailure": "De aankoop kon niet worden voltooid. Er is niets in rekening gebracht. Probeer het opnieuw."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Verifiëren",
+    "premiumPending": "Er wordt momenteel geverifieerd. Premium wordt geactiveerd zodra de Game Backend dit heeft bevestigd.",
+    "premiumPlanChangePending": "Er wordt momenteel geverifieerd. De abonnementswijziging wordt ingepland zodra de Game Backend dit heeft bevestigd.",
+    "coinPackPending": "Er wordt momenteel geverifieerd. Je Stitch Coin-saldo wordt bijgewerkt zodra dit is voltooid.",
+    "aiCreditPackPending": "Er wordt momenteel geverifieerd. Je AI Credit-saldo wordt bijgewerkt zodra dit is voltooid."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Aankoop ontvangen",
+    "storeAcceptedPlanChange": "De winkel heeft de wijziging naar het {{label}}-abonnement geaccepteerd. De wijziging wordt bevestigd zodra deze actief wordt.",
+    "storeAcceptedPurchase": "De winkel heeft de aankoop van {{label}} geaccepteerd. Je aankoop wordt nu geverifieerd.",
+    "premiumChanges": "Je Premium-abonnement wijzigt op {{effectiveOn}} naar {{label}}.",
+    "effectiveOnDate": "({{date}})",
+    "planChangeScheduledTitle": "Abonnementswijziging ingepland",
+    "planChangeScheduledBody": "Je Premium-lidmaatschap blijft op het huidige abonnement tot {{effectiveOn}}, wanneer het wijzigt naar {{label}}. Je kunt de wijziging annuleren via 'Abonnement beheren'.",
+    "premiumIsActiveTitle": "Premium is actief",
+    "premiumVerifiedAndActive": "{{label}} Premium is geverifieerd en actief.",
+    "premiumNowActiveNoBilling": "{{label}} Premium is nu actief.",
+    "premiumNowActiveBilled": "{{label}} Premium is nu actief (facturering per {{period}}).",
+    "coinPackGrantedTitle": "Stitch Coins bijgeschreven",
+    "coinPackGrantVerified": "De uitkering van {{label}} is geverifieerd. Stitch Coin-saldo: {{balance}}.",
+    "coinPackAddedToBalance": "{{quantity}} Stitch Coins toegevoegd aan je saldo.",
+    "aiCreditPackGrantedTitle": "AI Credits bijgeschreven",
+    "aiCreditPackGrantVerified": "De uitkering van {{label}} is geverifieerd. AI Credit-saldo: {{balance}}.",
+    "aiCreditPackAddedToBalance": "{{quantity}} AI Credits toegevoegd aan je saldo."
+  },
+  "products": {
+    "premiumAnnual": "Jaarlijks",
+    "premiumMonthly": "Maandelijks",
+    "premiumWeekly": "Wekelijks",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+    "aiCreditPack_one": "{{formattedCount}} AI Credit",
+    "aiCreditPack_other": "{{formattedCount}} AI Credits",
+    "billedEveryOffer": "{{price}}/{{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} credits/betaalde periode",
+    "creditAllowancePaidNoun": "{{credits}} credits/betaalde {{period}}"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Kopen als gast",
+    "commerceBody": "Je kunt kopen zonder account. Een Premium-lidmaatschap kan via de winkel worden hersteld, maar als je de app verwijdert, kun je eerder gekochte Stitch Coins, AI Credits en privé gastcontent niet herstellen. Meld je aan om deze veilig te stellen. Gastspelen blijft naadloos werken.",
+    "continueAsGuest": "Doorgaan als gast",
+    "signInInstead": "Toch aanmelden",
+    "closeAccessibilityLabel": "Sluiten"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "OK",
+    "successButton": "OK",
+    "failedButton": "Sluiten",
+    "infoButton": "OK",
+    "closeAccessibilityLabel": "Sluiten"
+  }
+}

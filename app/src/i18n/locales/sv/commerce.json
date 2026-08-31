@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Tillbaka",
+    "title": "Butik",
+    "subtitle": "Medlemskap och engångsköp"
+  },
+  "signInReturn": {
+    "notice": "Du är inloggad. {{label}} är fortfarande valt. Granska det och tryck på Köp när du är redo."
+  },
+  "premiumHero": {
+    "eyebrow": "PREMIUM-MEDLEMSKAP",
+    "title": "Skapa mer. Samla en liten belöning varje dag.",
+    "body": "AI-krediter varje betalperiod, Premium-teman och en daglig Stitch Coin-hämtning.",
+    "benefitAiCredits": "AI-krediter",
+    "benefitDailyCoins": "Dagliga mynt",
+    "benefitThemes": "Teman",
+    "statusNoActiveMembership": "Inget aktivt medlemskap",
+    "statusBrowseAsGuest": "Bläddra bland planer som gästspelare",
+    "periodEndsLabel": "Nuvarande period slutar",
+    "periodRenewsLabel": "Förnyas",
+    "lifecycleActive": "Aktiv"
+  },
+  "membershipActions": {
+    "title": "Aktivt Premium-medlemskap",
+    "body": "Dagliga belöningar finns i Profil. Teman finns under Inställningar › Utseende.",
+    "scheduledChangeNotice": "Ändringar till {{plan}} den {{date}}",
+    "manageSubscription": "Hantera prenumeration",
+    "manageSubscriptionFailedTitle": "Det gick inte att öppna prenumerationer",
+    "manageSubscriptionFailedBody": "Försök igen från ditt enhetsbutikskonto."
+  },
+  "pending": {
+    "title": "Köpavstämning pågår",
+    "verifyingTitle": "Verifierar köp",
+    "premiumChangeAccepted": "Butiken godkände ändringen till {{label}}. ",
+    "premiumResponseReceived": "Butikssvaret för {{label}} har tagits emot. ",
+    "premiumDeferredSuffix": "Ändringen schemaläggs först efter verifiering från spelbackend och träder i kraft när din nuvarande period löper ut.",
+    "premiumSuffix": "Premium aktiveras först efter verifiering från spelbackend.",
+    "doNotPurchasePlanAgain": " Köp inte den här planen igen.",
+    "coinPackBody": "Butikssvaret har tagits emot. Stitch Coin uppdateras först när spelbackend exponerar den matchande Commerce Ledger-tilldelningen. Köp inte det här paketet igen.",
+    "aiCreditPackBody": "Butikssvaret har tagits emot. AI-krediter uppdateras först när spelbackend exponerar den matchande Commerce Ledger-tilldelningen. Köp inte det här paketet igen.",
+    "refreshStatus": "Uppdatera status",
+    "retryReconciliation": "Försök avstämning igen"
+  },
+  "store": {
+    "loadingPrices": "Läser in aktuella butikspriser…",
+    "unavailableTitle": "Butiken är tillfälligt otillgänglig",
+    "unavailableBody": "Din plånbok och dina medlemskapsuppgifter är fortfarande tillgängliga.",
+    "retry": "Försök igen"
+  },
+  "plans": {
+    "choosePremiumPlan": "Välj en Premium-plan",
+    "yourPremiumPlan": "Din Premium-plan",
+    "currentPlan": "NUVARANDE PLAN",
+    "upgrade": "UPPGRADERA",
+    "planChange": "PLANÄNDRING",
+    "bestValue": "BÄST VÄRDE",
+    "billedEvery": "Debiteras var {{period}}",
+    "chooseLabel": "Välj {{label}}",
+    "freeTrial": "Gratis i {{offer}}, sedan {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Engångspaket",
+    "stitchCoinPacksTitle": "Stitch Coin-paket",
+    "aiCreditPacksTitle": "AI-kreditpaket",
+    "coinsNoun": "Mynt",
+    "creditsNoun": "Krediter",
+    "fromPrice": "Från {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Återställ köp",
+    "restoreGuestPremium": "Återställ gäst-Premium",
+    "requestedTitle": "Återställning begärd",
+    "requestedBody": "Verifierad Premium-åtkomst visas efter att butikens webhook har stämts av. Stitch Coin- och AI-kreditpaket återställs aldrig."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Aktuella priser från appbutiken",
+    "closeAccessibilityLabel": "Stäng produktrutan",
+    "closeButtonAccessibilityLabel": "Stäng",
+    "selectedBeforeSignIn": "Valt före inloggning",
+    "buy": "Köp"
+  },
+  "confirmation": {
+    "cancel": "Avbryt",
+    "confirmLabel": "Bekräfta {{label}}",
+    "confirmPremiumTitle": "Bekräfta Premium-köp",
+    "introductoryOffer": "Din butik rapporterar detta introduktionserbjudande: {{offer}}.",
+    "premiumAppearsAfterVerification": "Premium visas först efter att spelbackend har verifierat butikstransaktionen.",
+    "confirmPremiumUpgradeTitle": "Bekräfta Premium-uppgradering",
+    "confirmPremiumPlanChangeTitle": "Bekräfta Premium-planändring",
+    "currentPlanLabel": "Nuvarande plan: {{label}}",
+    "upgradeToLabel": "Uppgradera till {{label}} · {{offer}}",
+    "changeToLabel": "Ändra till {{label}} · {{offer}}",
+    "upgradeBody": "App Store styr den slutliga debiteringen och datumet för denna uppgradering. Premium speglar {{label}} först efter att spelbackend har verifierat det.",
+    "planChangeBody": "App Store skjuter upp den här ändringen till slutet av din nuvarande period: {{currentLabel}} fortsätter att gälla fram till dess, och {{targetLabel}} debiteras från ändringsdatumet. Avbryt ändringen från Hantera prenumeration.",
+    "confirmUpgrade": "Bekräfta uppgradering",
+    "confirmPlanChange": "Bekräfta planändring",
+    "confirmStitchCoinTitle": "Bekräfta Stitch Coin-köp",
+    "confirmAiCreditTitle": "Bekräfta AI-kreditköp",
+    "balanceChangesAfterVerificationCoin": "Ditt saldo ändras först efter att spelbackend har verifierat butikstransaktionen och registrerat den matchande Commerce Ledger-tilldelningen.",
+    "balanceChangesAfterVerificationAiCredit": "Ditt saldo ändras först efter att spelbackend har verifierat butikstransaktionen och registrerat den matchande Commerce Ledger-tilldelningen. Premium-medlemskap krävs inte."
+  },
+  "disclosure": {
+    "subscriptionTerms": "Betalning debiteras ditt {{store}}-konto vid bekräftelse. {{label}} Premium förnyas automatiskt till {{offer}} om inte automatisk förnyelse stängs av minst 24 timmar innan nuvarande period löper ut. Outnyttjad del av en gratis provperiod går förlorad när du köper en prenumeration. Du kan avbryta när som helst från ditt {{store}}-konto.",
+    "privacyPolicy": "Integritetspolicy",
+    "termsOfService": "Användarvillkor",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Kunde inte öppna länk: {{url}}"
+  },
+  "supportReference": {
+    "label": "Supportreferens: {{reference}}",
+    "copyAccessibilityLabel": "Kopiera supportreferens {{reference}}",
+    "copyAccessibilityHint": "Kopierar supportreferensen till urklipp",
+    "copied": "Kopierat",
+    "copyFailedTitle": "Kopiering misslyckades",
+    "copyFailedBody": "Supportreferensen kunde inte kopieras. Markera texten för att kopiera den manuellt."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Stitch Coin-köp som gäst är endast tillgängliga på iOS.",
+    "guestIosOnlyGeneric": "Gästköp är endast tillgängliga på iOS.",
+    "purchaseFailedTitle": "Köpet misslyckades",
+    "premiumVerificationNotYet": "Spelbackend kunde inte verifiera det här köpet. Försök avstämning igen; köp det inte igen.",
+    "premiumVerificationFailedRetry": "Spelbackend kunde ännu inte verifiera det här köpet. Försök avstämning igen; köp det inte igen.",
+    "premiumGrantRefreshFailed": "Premium verifierades, men medlemskaps- och AI-kredittillståndet kunde inte uppdateras. Försök avstämning igen.",
+    "premiumReconciliationUnreachable": "Köpavstämningen kunde inte nå spelbackend. Försök avstämning igen; köp det inte igen.",
+    "coinPackVerificationMismatch": "Butikstransaktionen matchade inte det här myntpaketet. Försök verifiera igen eller kontakta support; köp det inte igen.",
+    "coinPackGrantUnavailable": "Köpet verifierades, men Stitch Coin-tilldelningen är inte tillgänglig. Försök avstämning igen; köp det inte igen.",
+    "coinPackBalanceRefreshFailed": "Mynttilldelningen verifierades, men det aktuella Stitch Coin-saldot kunde inte uppdateras. Försök avstämning igen.",
+    "coinPackVerificationFailedRetry": "Spelbackend kunde ännu inte verifiera det här myntpaketet. Försök avstämning igen; köp det inte igen.",
+    "coinPackReconciliationUnreachable": "Avstämningen för myntpaketet kunde inte nå spelbackend. Försök avstämning igen; köp det inte igen.",
+    "aiCreditPackVerificationMismatch": "Butikstransaktionen matchade inte det här AI-kreditpaketet. Försök verifiera igen eller kontakta support; köp det inte igen.",
+    "aiCreditPackGrantUnavailable": "Köpet verifierades, men AI-kredittilldelningen är inte tillgänglig. Försök avstämning igen; köp det inte igen.",
+    "aiCreditPackBalanceRefreshFailed": "AI-kredittilldelningen verifierades, men det aktuella saldot kunde inte uppdateras. Försök avstämning igen.",
+    "aiCreditPackVerificationFailedRetry": "Spelbackend kunde ännu inte verifiera det här AI-kreditpaketet. Försök avstämning igen; köp det inte igen.",
+    "aiCreditPackReconciliationUnreachable": "Avstämningen för AI-kreditpaketet kunde inte nå spelbackend. Försök avstämning igen; köp det inte igen.",
+    "reconciliationStillUnavailable": "Spelbackend är fortfarande otillgänglig. Försök avstämning igen senare.",
+    "storeTemporarilyUnavailable": "Butiken är tillfälligt otillgänglig. Försök igen om några minuter.",
+    "purchasesNotAllowed": "Köp är inte tillåtna på den här enheten. Kontrollera ditt butikskonto eller föräldrakontroller.",
+    "itemNotAvailable": "Den här artikeln kan inte köpas just nu. Välj en annan artikel eller försök igen senare.",
+    "alreadyOwned": "Du äger redan det här köpet. Använd Återställ köp för att uppdatera din åtkomst.",
+    "couldNotConnectToStore": "Det gick inte att ansluta till butiken. Kontrollera din internetanslutning och försök igen.",
+    "paymentPendingApproval": "Din betalning väntar på godkännande. Ditt köp visas när butiken har slutfört det.",
+    "testPurchaseDeclined": "Testköpet avvisades. Ingen betalning gjordes. Välj ett annat testbutiksresultat i Inställningar och försök igen.",
+    "genericPurchaseFailure": "Vi kunde inte slutföra ditt köp. Ingen betalning togs ut. Försök igen."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Verifierar fortfarande",
+    "premiumPending": "Verifieringen pågår fortfarande. Premium aktiveras när spelbackend bekräftar det.",
+    "premiumPlanChangePending": "Verifieringen pågår fortfarande. Din planändring schemaläggs när spelbackend bekräftar det.",
+    "coinPackPending": "Verifieringen pågår fortfarande. Ditt Stitch Coin-saldo uppdateras när den är klar.",
+    "aiCreditPackPending": "Verifieringen pågår fortfarande. Ditt AI-kreditsaldo uppdateras när den är klar."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Köp mottaget",
+    "storeAcceptedPlanChange": "Butiken godkände ändringen till {{label}}. Bekräftar när den träder i kraft.",
+    "storeAcceptedPurchase": "Butiken godkände {{label}}. Verifierar ditt köp nu.",
+    "premiumChanges": "Premium ändras till {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " den {{date}}",
+    "planChangeScheduledTitle": "Planändring schemalagd",
+    "planChangeScheduledBody": "Ditt Premium-medlemskap behåller sin nuvarande plan tills den ändras till {{label}}{{effectiveOn}}. Avbryt ändringen från Hantera prenumeration.",
+    "premiumIsActiveTitle": "Premium är aktivt",
+    "premiumVerifiedAndActive": "{{label}} Premium är verifierat och aktivt.",
+    "premiumNowActiveNoBilling": "{{label}} Premium är nu aktivt.",
+    "premiumNowActiveBilled": "{{label}} Premium är nu aktivt, debiteras var {{period}}.",
+    "coinPackGrantedTitle": "Stitch Coins tilldelade",
+    "coinPackGrantVerified": "{{label}}-tilldelning verifierad. Stitch Coin-saldo: {{balance}}.",
+    "coinPackAddedToBalance": "{{quantity}} Stitch Coins har lagts till ditt saldo.",
+    "aiCreditPackGrantedTitle": "AI-krediter tilldelade",
+    "aiCreditPackGrantVerified": "{{label}}-tilldelning verifierad. AI-kreditsaldo: {{balance}}.",
+    "aiCreditPackAddedToBalance": "{{quantity}} AI-krediter har lagts till ditt saldo."
+  },
+  "products": {
+    "premiumAnnual": "Årsvis",
+    "premiumMonthly": "Månadsvis",
+    "premiumWeekly": "Veckovis",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+    "aiCreditPack_one": "{{formattedCount}} AI-kredit",
+    "aiCreditPack_other": "{{formattedCount}} AI-krediter",
+    "billedEveryOffer": "{{price}} var {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} krediter / betalperiod",
+    "creditAllowancePaidNoun": "{{credits}} krediter / betald {{period}}"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Köp som gäst",
+    "commerceBody": "Du kan köpa utan registrering. Premium-medlemskap kan återställas från butiken, men Stitch Coin, AI-krediter och privat gästinnehåll går inte att återskapa om den här installationen förloras. Att registrera dig skyddar dem och avbryter aldrig ditt gästspelande.",
+    "continueAsGuest": "Fortsätt som gäst",
+    "signInInstead": "Logga in istället",
+    "closeAccessibilityLabel": "Stäng"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "Uppfattat",
+    "successButton": "Toppen",
+    "failedButton": "Stäng",
+    "infoButton": "Uppfattat",
+    "closeAccessibilityLabel": "Stäng"
+  }
+}

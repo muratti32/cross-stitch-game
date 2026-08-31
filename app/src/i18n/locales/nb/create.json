@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Tilbake",
+    "cancel": "Avbryt",
+    "duplicateTitle": "Du har allerede et personlig mønster med navnet «{{title}}». Velg en annen tittel.",
+    "cellsCount_one": "rute",
+    "cellsCount_other": "ruter",
+    "colorsCount_one": "farge",
+    "colorsCount_other": "farger"
+  },
+  "hub": {
+    "title": "Skapersenter",
+    "subtitle": "Bring dine egne design til live med tilpassede korssting-mønstre.",
+    "opening": "Åpner…",
+    "photoImport": {
+      "title": "Bildeimport",
+      "description": "Last opp et bilde fra kamerarullen og gjør det om til et stingbart mønster.",
+      "action": "Importer bilde"
+    },
+    "aiGenerator": {
+      "title": "AI-generator",
+      "description": "Beskriv en koselig idé og la kunstig intelligens generere et tilpasset pikseldesign.",
+      "action": "Generer design"
+    }
+  },
+  "aspects": {
+    "square": "Kvadrat",
+    "portrait_4_3": "Stående 4:3",
+    "landscape_4_3": "Liggende 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Mønsterkonvertering mislyktes. Prøv igjen.",
+      "timeout": "Mønsterkonvertering behandles fortsatt. Prøv igjen om litt.",
+      "generic": "Kunne ikke fullføre mønsterkonvertering. Prøv igjen."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Registrert konto kreves",
+      "body": "AI-kunstverk og biblioteket ditt forblir privat for kontoen din.",
+      "signIn": "Logg inn"
+    },
+    "header": {
+      "title": "AI-generator",
+      "backAccessibilityLabel": "Tilbake"
+    },
+    "prompt": {
+      "label": "Beskriv kunstverket ditt",
+      "placeholder": "En koselig hagehytte ved solnedgang…"
+    },
+    "generate": {
+      "working": "Arbeider…",
+      "action": "Generer — 1 AI-kreditt",
+      "errors": {
+        "promptRejected": "Den beskrivelsen ble ikke tillatt. Prøv å beskrive noe annet.",
+        "generic": "Kunne ikke starte AI-generering. Prøv igjen."
+      }
+    },
+    "library": {
+      "title": "Ditt AI-kunstverkbibliotek",
+      "status": {
+        "pending": "Venter",
+        "dispatched": "Sendt",
+        "running": "Kjører",
+        "delivered": "Levert",
+        "safety_rejected": "Avvist av sikkerhet",
+        "failed": "Mislyktes",
+        "deleted": "Slettet",
+        "unknown": "Utilgjengelig"
+      },
+      "failure": {
+        "safety_rejected": "Dette kunstverket besto ikke leverandørens sikkerhetssjekk.",
+        "failed": "Dette kunstverket kunne ikke genereres."
+      },
+      "approve": "Godkjenn som mønster",
+      "delete": "Slett",
+      "deleteAccessibilityLabel": "Slett dette AI-kunstverket",
+      "errors": {
+        "loadFailed": "Kunne ikke laste AI-kunstverkbiblioteket ditt. Prøv igjen."
+      }
+    },
+    "approve": {
+      "modalTitle": "Opprett personlig mønster",
+      "titleLabel": "Mønstertittel",
+      "titleAccessibilityLabel": "Mønstertittel",
+      "defaultTitle": "Mitt AI-mønster",
+      "placeholder": "Mitt AI-mønster",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Avbryt",
+      "creating": "Oppretter mønster…",
+      "create": "Opprett mønster",
+      "errors": {
+        "generic": "Kunne ikke opprette det personlige mønsteret. Prøv igjen."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Registrert konto kreves",
+      "body": "Personlige mønstre tilhører kontoen din, slik at de forblir private og tilgjengelige på tvers av enheter.",
+      "signIn": "Logg inn eller opprett konto",
+      "back": "Tilbake"
+    },
+    "header": {
+      "title": "Bildemønster",
+      "subtitle": "Beskjær lokalt, og godkjenn deretter konvertering",
+      "backAccessibilityLabel": "Tilbake"
+    },
+    "picker": {
+      "chooseTitle": "Velg et bilde",
+      "helpText": "Den fullstendige lokale bildekilden forblir på denne enheten. Ingenting konverteres før du godkjenner utsnittet.",
+      "choose": "Velg fra bibliotek",
+      "chooseAnother": "Velg et annet",
+      "opening": "Åpner…",
+      "errors": {
+        "permissionDenied": "Tilgang til bildebiblioteket kreves for å velge en lokal bildekilde.",
+        "invalidDimensions": "Det valgte bildet oppgir ikke brukbare dimensjoner.",
+        "generic": "Kunne ikke åpne bildebiblioteket. Prøv igjen."
+      }
+    },
+    "framing": {
+      "title": "Kunstverk-utsnitt",
+      "gestureHint": "Dra for å posisjonere · knip for å zoome",
+      "aspectLabel": "Bildeforhold"
+    },
+    "profile": {
+      "title": "Konverteringsprofil",
+      "options": {
+        "easy": "Enkel",
+        "standard": "Standard",
+        "detailed": "Detaljert"
+      },
+      "custom": "Tilpasset",
+      "customMeta": "Gratis · form låst",
+      "unavailable": "Passer ikke i dette utsnittet",
+      "customShortEdgeLabel": "Kort kant",
+      "customColorLimitLabel": "DMC-fargegrense",
+      "exceedsLimit": "Disse tilpassede verdiene overskrider mønstergrensen på {{max}} ruter."
+    },
+    "titleCard": {
+      "label": "Mønstertittel",
+      "placeholder": "Mitt bildemønster",
+      "defaultTitle": "Mitt bildemønster",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · opptil {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "Godkjenning laster kun opp den beskårne, nedskalerte versjonen. Originalbildet forblir lokalt.",
+      "approve": "Godkjenn kunstverk og konverter"
+    },
+    "processing": {
+      "preparingFrame": "Forbereder det godkjente utsnittet på denne enheten…",
+      "uploading": "Laster kun opp det beskårne, nedskalerte utsnittet…",
+      "waitingForWorker": "Venter på konverteringsarbeideren…",
+      "buildingGrid": "Bygger stingrutenettet og DMC-paletten…",
+      "preparingSession": "Forbereder det personlige mønsteret for spilling…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Denne profilen passer ikke lenger til det endelige utsnittet. Velg Enkel eller reduser detaljnivået.",
+        "generic": "Kunne ikke konvertere dette bildet. Prøv igjen."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Ingen mønster valgt",
+      "noPatternBody": "Denne skjermen må åpnes fra et eksisterende personlig mønster i biblioteket ditt.",
+      "accountTitle": "Registrert konto kreves",
+      "accountBody": "Personlige mønstre tilhører kontoen din, slik at de forblir private og tilgjengelige på tvers av enheter.",
+      "signIn": "Logg inn eller opprett konto",
+      "back": "Tilbake"
+    },
+    "loading": "Gjenopptar redigeringsutkast...",
+    "load": {
+      "failedTitle": "Kunne ikke laste mønster",
+      "retry": "Prøv igjen",
+      "back": "Tilbake",
+      "errors": {
+        "generic": "Kunne ikke laste dette personlige mønsteret. Prøv igjen."
+      }
+    },
+    "header": {
+      "title": "Mønsterredigering",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Tilbake"
+    },
+    "toolbar": {
+      "undo": "Angre",
+      "redo": "Gjør om"
+    },
+    "mode": {
+      "paint": "Mal",
+      "replaceColor": "Erstatt farge",
+      "replaceStep1": "1. Trykk på en farge i mønsteret nedenfor for å erstatte:",
+      "replaceStep2": "2. Velg en målfarge (DMC) nedenfor for å utføre erstatningen:",
+      "paintSelected": "Valgt: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Velg en farge nedenfor, og trykk deretter på ruter for å male."
+    },
+    "errors": {
+      "pickColorFirst": "Velg en farge først",
+      "paletteLimit": "Dette mønsteret bruker allerede maksimalt {{max}} trådfarger."
+    },
+    "picker": {
+      "title": "DMC-trådfarger",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Lagre redigert mønster",
+      "placeholder": "Min redigerte mønstertittel",
+      "action": "Lagre som ny",
+      "offlineTitle": "Lagret frakoblet",
+      "offlineBody": "Ditt redigerte mønster ble lagret på denne enheten og synkroniseres til kontoen din når du er tilkoblet igjen.",
+      "errors": {
+        "generic": "Kunne ikke lagre dette personlige mønsteret. Prøv igjen."
+      }
+    }
+  }
+}

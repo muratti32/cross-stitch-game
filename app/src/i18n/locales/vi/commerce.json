@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Quay lại",
+    "title": "Cửa hàng",
+    "subtitle": "Gói thành viên và nạp thêm một lần"
+  },
+  "signInReturn": {
+    "notice": "Bạn đã đăng nhập. {{label}} vẫn đang được chọn. Xem lại và nhấn Mua khi sẵn sàng."
+  },
+  "premiumHero": {
+    "eyebrow": "GÓI THÀNH VIÊN PREMIUM",
+    "title": "Sáng tạo nhiều hơn. Nhận một phần thưởng nhỏ mỗi ngày.",
+    "body": "AI Credit mỗi kỳ trả phí, giao diện Premium, và nhận Stitch Coin hằng ngày.",
+    "benefitAiCredits": "AI Credit",
+    "benefitDailyCoins": "Coin hằng ngày",
+    "benefitThemes": "Giao diện",
+    "statusNoActiveMembership": "Không có gói thành viên đang hoạt động",
+    "statusBrowseAsGuest": "Xem các gói với tư cách Khách",
+    "periodEndsLabel": "Kỳ hiện tại kết thúc",
+    "periodRenewsLabel": "Gia hạn",
+    "lifecycleActive": "Đang hoạt động"
+  },
+  "membershipActions": {
+    "title": "Gói thành viên Premium đang hoạt động",
+    "body": "Phần thưởng hằng ngày ở trong Hồ sơ. Giao diện nằm trong Cài đặt › Giao diện.",
+    "scheduledChangeNotice": "Thay đổi sang {{plan}} vào {{date}}",
+    "manageSubscription": "Quản lý gói đăng ký",
+    "manageSubscriptionFailedTitle": "Không thể mở gói đăng ký",
+    "manageSubscriptionFailedBody": "Hãy thử lại từ tài khoản cửa hàng trên thiết bị của bạn."
+  },
+  "pending": {
+    "title": "Đang xác nhận giao dịch mua",
+    "verifyingTitle": "Đang xác minh giao dịch mua",
+    "premiumChangeAccepted": "Cửa hàng đã chấp nhận thay đổi sang {{label}}. ",
+    "premiumResponseReceived": "Đã nhận phản hồi từ cửa hàng cho {{label}}. ",
+    "premiumDeferredSuffix": "Thay đổi chỉ được lên lịch sau khi Máy chủ trò chơi xác minh, và có hiệu lực khi kỳ hiện tại kết thúc.",
+    "premiumSuffix": "Premium chỉ được kích hoạt sau khi Máy chủ trò chơi xác minh.",
+    "doNotPurchasePlanAgain": " Đừng mua lại gói này.",
+    "coinPackBody": "Đã nhận phản hồi từ cửa hàng. Stitch Coin chỉ được cập nhật sau khi Máy chủ trò chơi hiển thị khoản cấp Sổ giao dịch thương mại tương ứng. Đừng mua lại gói này.",
+    "aiCreditPackBody": "Đã nhận phản hồi từ cửa hàng. AI Credit chỉ được cập nhật sau khi Máy chủ trò chơi hiển thị khoản cấp Sổ giao dịch thương mại tương ứng. Đừng mua lại gói này.",
+    "refreshStatus": "Làm mới trạng thái",
+    "retryReconciliation": "Thử xác nhận lại"
+  },
+  "store": {
+    "loadingPrices": "Đang tải giá hiện tại của cửa hàng…",
+    "unavailableTitle": "Cửa hàng tạm thời không khả dụng",
+    "unavailableBody": "Ví và thông tin thành viên của bạn vẫn khả dụng.",
+    "retry": "Thử lại"
+  },
+  "plans": {
+    "choosePremiumPlan": "Chọn gói Premium",
+    "yourPremiumPlan": "Gói Premium của bạn",
+    "currentPlan": "GÓI HIỆN TẠI",
+    "upgrade": "NÂNG CẤP",
+    "planChange": "ĐỔI GÓI",
+    "bestValue": "TỐT NHẤT",
+    "billedEvery": "Thanh toán mỗi {{period}}",
+    "chooseLabel": "Chọn {{label}}",
+    "freeTrial": "Miễn phí trong {{offer}}, sau đó {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Gói mua một lần",
+    "stitchCoinPacksTitle": "Gói Stitch Coin",
+    "aiCreditPacksTitle": "Gói AI Credit",
+    "coinsNoun": "Coin",
+    "creditsNoun": "Credit",
+    "fromPrice": "Từ {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Khôi phục giao dịch mua",
+    "restoreGuestPremium": "Khôi phục Premium cho Khách",
+    "requestedTitle": "Đã yêu cầu khôi phục",
+    "requestedBody": "Quyền truy cập Premium đã xác minh sẽ xuất hiện sau khi webhook của cửa hàng được đối soát. Gói Stitch Coin và AI Credit không bao giờ được khôi phục."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Giá hiện tại từ cửa hàng ứng dụng",
+    "closeAccessibilityLabel": "Đóng bảng sản phẩm",
+    "closeButtonAccessibilityLabel": "Đóng",
+    "selectedBeforeSignIn": "Đã chọn trước khi đăng nhập",
+    "buy": "Mua"
+  },
+  "confirmation": {
+    "cancel": "Hủy",
+    "confirmLabel": "Xác nhận {{label}}",
+    "confirmPremiumTitle": "Xác nhận mua Premium",
+    "introductoryOffer": "Cửa hàng của bạn báo ưu đãi giới thiệu này: {{offer}}.",
+    "premiumAppearsAfterVerification": "Premium chỉ xuất hiện sau khi Máy chủ trò chơi xác minh giao dịch của cửa hàng.",
+    "confirmPremiumUpgradeTitle": "Xác nhận nâng cấp Premium",
+    "confirmPremiumPlanChangeTitle": "Xác nhận đổi gói Premium",
+    "currentPlanLabel": "Gói hiện tại: {{label}}",
+    "upgradeToLabel": "Nâng cấp lên {{label}} · {{offer}}",
+    "changeToLabel": "Đổi sang {{label}} · {{offer}}",
+    "upgradeBody": "App Store kiểm soát khoản phí cuối cùng và ngày có hiệu lực cho lần nâng cấp này. Premium chỉ phản ánh {{label}} sau khi Máy chủ trò chơi xác minh.",
+    "planChangeBody": "App Store hoãn thay đổi này đến cuối kỳ hiện tại của bạn: {{currentLabel}} vẫn tiếp tục chạy đến lúc đó, và {{targetLabel}} sẽ được tính phí từ ngày thay đổi. Hủy thay đổi này từ mục Quản lý gói đăng ký.",
+    "confirmUpgrade": "Xác nhận nâng cấp",
+    "confirmPlanChange": "Xác nhận đổi gói",
+    "confirmStitchCoinTitle": "Xác nhận mua Stitch Coin",
+    "confirmAiCreditTitle": "Xác nhận mua AI Credit",
+    "balanceChangesAfterVerificationCoin": "Số dư của bạn chỉ thay đổi sau khi Máy chủ trò chơi xác minh giao dịch của cửa hàng và ghi nhận khoản cấp Sổ giao dịch thương mại tương ứng.",
+    "balanceChangesAfterVerificationAiCredit": "Số dư của bạn chỉ thay đổi sau khi Máy chủ trò chơi xác minh giao dịch của cửa hàng và ghi nhận khoản cấp Sổ giao dịch thương mại tương ứng. Không yêu cầu gói thành viên Premium."
+  },
+  "disclosure": {
+    "subscriptionTerms": "Khoản thanh toán được tính vào tài khoản {{store}} của bạn khi xác nhận. Gói Premium {{label}} tự động gia hạn với giá {{offer}} trừ khi bạn tắt tự động gia hạn ít nhất 24 giờ trước khi kỳ hiện tại kết thúc. Phần chưa dùng của bản dùng thử miễn phí sẽ mất khi bạn mua gói đăng ký. Bạn có thể hủy bất cứ lúc nào từ tài khoản {{store}} của mình.",
+    "privacyPolicy": "Chính sách quyền riêng tư",
+    "termsOfService": "Điều khoản dịch vụ",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Không thể mở liên kết: {{url}}"
+  },
+  "supportReference": {
+    "label": "Mã hỗ trợ: {{reference}}",
+    "copyAccessibilityLabel": "Sao chép mã hỗ trợ {{reference}}",
+    "copyAccessibilityHint": "Sao chép mã hỗ trợ vào khay nhớ tạm",
+    "copied": "Đã sao chép",
+    "copyFailedTitle": "Sao chép thất bại",
+    "copyFailedBody": "Không thể sao chép mã hỗ trợ. Hãy chọn văn bản để sao chép thủ công."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Mua Stitch Coin với tư cách Khách chỉ khả dụng trên iOS.",
+    "guestIosOnlyGeneric": "Mua hàng với tư cách Khách chỉ khả dụng trên iOS.",
+    "purchaseFailedTitle": "Giao dịch mua thất bại",
+    "premiumVerificationNotYet": "Máy chủ trò chơi không thể xác minh giao dịch mua này. Hãy thử xác nhận lại; đừng mua lại.",
+    "premiumVerificationFailedRetry": "Máy chủ trò chơi chưa thể xác minh giao dịch mua này. Hãy thử xác nhận lại; đừng mua lại.",
+    "premiumGrantRefreshFailed": "Premium đã được xác minh, nhưng không thể làm mới trạng thái thành viên và AI Credit. Hãy thử xác nhận lại.",
+    "premiumReconciliationUnreachable": "Không thể kết nối tới Máy chủ trò chơi để xác nhận giao dịch mua. Hãy thử xác nhận lại; đừng mua lại.",
+    "coinPackVerificationMismatch": "Giao dịch của cửa hàng không khớp với Gói Coin này. Hãy thử xác minh lại hoặc liên hệ hỗ trợ; đừng mua lại.",
+    "coinPackGrantUnavailable": "Giao dịch mua đã được xác minh, nhưng khoản cấp Stitch Coin không khả dụng. Hãy thử xác nhận lại; đừng mua lại.",
+    "coinPackBalanceRefreshFailed": "Khoản cấp Coin đã được xác minh, nhưng không thể làm mới số dư Stitch Coin hiện tại. Hãy thử xác nhận lại.",
+    "coinPackVerificationFailedRetry": "Máy chủ trò chơi chưa thể xác minh Gói Coin này. Hãy thử xác nhận lại; đừng mua lại.",
+    "coinPackReconciliationUnreachable": "Không thể kết nối tới Máy chủ trò chơi để xác nhận Gói Coin. Hãy thử xác nhận lại; đừng mua lại.",
+    "aiCreditPackVerificationMismatch": "Giao dịch của cửa hàng không khớp với Gói AI Credit này. Hãy thử xác minh lại hoặc liên hệ hỗ trợ; đừng mua lại.",
+    "aiCreditPackGrantUnavailable": "Giao dịch mua đã được xác minh, nhưng khoản cấp AI Credit không khả dụng. Hãy thử xác nhận lại; đừng mua lại.",
+    "aiCreditPackBalanceRefreshFailed": "Khoản cấp AI Credit đã được xác minh, nhưng không thể làm mới số dư hiện tại. Hãy thử xác nhận lại.",
+    "aiCreditPackVerificationFailedRetry": "Máy chủ trò chơi chưa thể xác minh Gói AI Credit này. Hãy thử xác nhận lại; đừng mua lại.",
+    "aiCreditPackReconciliationUnreachable": "Không thể kết nối tới Máy chủ trò chơi để xác nhận Gói AI Credit. Hãy thử xác nhận lại; đừng mua lại.",
+    "reconciliationStillUnavailable": "Máy chủ trò chơi vẫn chưa khả dụng. Hãy thử xác nhận lại sau.",
+    "storeTemporarilyUnavailable": "Cửa hàng tạm thời không khả dụng. Vui lòng thử lại sau vài phút.",
+    "purchasesNotAllowed": "Không được phép mua hàng trên thiết bị này. Kiểm tra tài khoản cửa hàng hoặc chế độ kiểm soát của phụ huynh.",
+    "itemNotAvailable": "Mặt hàng này hiện không thể mua. Vui lòng chọn mặt hàng khác hoặc thử lại sau.",
+    "alreadyOwned": "Bạn đã sở hữu giao dịch mua này. Dùng Khôi phục giao dịch mua để làm mới quyền truy cập.",
+    "couldNotConnectToStore": "Không thể kết nối với cửa hàng. Kiểm tra kết nối internet và thử lại.",
+    "paymentPendingApproval": "Khoản thanh toán của bạn đang chờ phê duyệt. Giao dịch mua sẽ xuất hiện sau khi cửa hàng hoàn tất.",
+    "testPurchaseDeclined": "Giao dịch mua thử nghiệm đã bị từ chối. Không có khoản thanh toán nào được thực hiện. Chọn kết quả Cửa hàng thử nghiệm khác trong Cài đặt, sau đó thử lại.",
+    "genericPurchaseFailure": "Chúng tôi không thể hoàn tất giao dịch mua của bạn. Không có khoản thanh toán nào bị trừ. Vui lòng thử lại."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Vẫn đang xác minh",
+    "premiumPending": "Quá trình xác minh vẫn đang diễn ra. Premium sẽ kích hoạt khi Máy chủ trò chơi xác nhận.",
+    "premiumPlanChangePending": "Quá trình xác minh vẫn đang diễn ra. Thay đổi gói của bạn sẽ được lên lịch khi Máy chủ trò chơi xác nhận.",
+    "coinPackPending": "Quá trình xác minh vẫn đang diễn ra. Số dư Stitch Coin của bạn sẽ được cập nhật khi hoàn tất.",
+    "aiCreditPackPending": "Quá trình xác minh vẫn đang diễn ra. Số dư AI Credit của bạn sẽ được cập nhật khi hoàn tất."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Đã nhận giao dịch mua",
+    "storeAcceptedPlanChange": "Cửa hàng đã chấp nhận thay đổi sang {{label}}. Đang xác nhận thời điểm có hiệu lực.",
+    "storeAcceptedPurchase": "Cửa hàng đã chấp nhận {{label}}. Đang xác minh giao dịch mua của bạn.",
+    "premiumChanges": "Premium chuyển sang {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " vào {{date}}",
+    "planChangeScheduledTitle": "Đã lên lịch đổi gói",
+    "planChangeScheduledBody": "Gói thành viên Premium của bạn giữ nguyên gói hiện tại cho đến khi chuyển sang {{label}}{{effectiveOn}}. Hủy thay đổi từ mục Quản lý gói đăng ký.",
+    "premiumIsActiveTitle": "Premium đang hoạt động",
+    "premiumVerifiedAndActive": "{{label}} Premium đã được xác minh và đang hoạt động.",
+    "premiumNowActiveNoBilling": "{{label}} Premium hiện đang hoạt động.",
+    "premiumNowActiveBilled": "{{label}} Premium hiện đang hoạt động, thanh toán mỗi {{period}}.",
+    "coinPackGrantedTitle": "Đã cấp Stitch Coin",
+    "coinPackGrantVerified": "Khoản cấp {{label}} đã xác minh. Số dư Stitch Coin: {{balance}}.",
+    "coinPackAddedToBalance": "{{quantity}} Stitch Coin đã được cộng vào số dư của bạn.",
+    "aiCreditPackGrantedTitle": "Đã cấp AI Credit",
+    "aiCreditPackGrantVerified": "Khoản cấp {{label}} đã xác minh. Số dư AI Credit: {{balance}}.",
+    "aiCreditPackAddedToBalance": "{{quantity}} AI Credit đã được cộng vào số dư của bạn."
+  },
+  "products": {
+    "premiumAnnual": "Hàng năm",
+    "premiumMonthly": "Hàng tháng",
+    "premiumWeekly": "Hàng tuần",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coin",
+    "aiCreditPack_one": "{{formattedCount}} AI Credit",
+    "aiCreditPack_other": "{{formattedCount}} AI Credit",
+    "billedEveryOffer": "{{price}} mỗi {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} credit / kỳ trả phí",
+    "creditAllowancePaidNoun": "{{credits}} credit / {{period}} trả phí"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Mua hàng với tư cách Khách",
+    "commerceBody": "Bạn có thể mua hàng mà không cần đăng ký. Gói thành viên Premium có thể được khôi phục từ cửa hàng, nhưng Stitch Coin, AI Credit và nội dung Khách riêng tư sẽ không thể khôi phục nếu mất bản cài đặt này. Đăng ký sẽ bảo vệ chúng và không bao giờ làm gián đoạn việc chơi với tư cách Khách.",
+    "continueAsGuest": "Tiếp tục với tư cách Khách",
+    "signInInstead": "Đăng nhập thay vào đó",
+    "closeAccessibilityLabel": "Đóng"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "Đã hiểu",
+    "successButton": "Tuyệt vời",
+    "failedButton": "Đóng",
+    "infoButton": "Đã hiểu",
+    "closeAccessibilityLabel": "Đóng"
+  }
+}

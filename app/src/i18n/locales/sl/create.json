@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Nazaj",
+    "cancel": "Prekliči",
+    "duplicateTitle": "Osebni vzorec z imenom „{{title}}“ že imate. Izberite drug naslov.",
+    "cellsCount_one": "celica",
+    "cellsCount_other": "celic",
+    "colorsCount_one": "barva",
+    "colorsCount_other": "barv"
+  },
+  "hub": {
+    "title": "Ustvarjalno vozlišče",
+    "subtitle": "Oživite lastne zasnove z vzorci za križanje po meri.",
+    "opening": "Odpiranje …",
+    "photoImport": {
+      "title": "Uvoz fotografije",
+      "description": "Naložite sliko iz galerije naprave in jo pretvorite v vzorec za šivanje.",
+      "action": "Uvozi fotografijo"
+    },
+    "aiGenerator": {
+      "title": "AI generator",
+      "description": "Opišite prijeten poziv in naj umetna inteligenca ustvari zasnovo po meri v pikslih.",
+      "action": "Ustvari zasnovo"
+    }
+  },
+  "aspects": {
+    "square": "Kvadrat",
+    "portrait_4_3": "Pokončno 4:3",
+    "landscape_4_3": "Ležeče 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Pretvorba vzorca ni uspela. Poskusite znova.",
+      "timeout": "Pretvorba vzorca še vedno poteka. Poskusite znova kmalu.",
+      "generic": "Pretvorbe vzorca ni bilo mogoče dokončati. Poskusite znova."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Zahtevan je registriran račun",
+      "body": "AI umetnine in njihova knjižnica ostanejo zasebne za vaš račun.",
+      "signIn": "Prijava"
+    },
+    "header": {
+      "title": "AI generator",
+      "backAccessibilityLabel": "Nazaj"
+    },
+    "prompt": {
+      "label": "Opišite svojo umetnino",
+      "placeholder": "Prijeten podeželski vrt ob sončnem zahodu …"
+    },
+    "generate": {
+      "working": "Delo poteka …",
+      "action": "Ustvari — 1 AI dobropis",
+      "errors": {
+        "promptRejected": "Ta poziv ni bil dovoljen. Poskusite opisati kaj drugega.",
+        "generic": "AI ustvarjanja ni bilo mogoče začeti. Poskusite znova."
+      }
+    },
+    "library": {
+      "title": "Vaša knjižnica AI umetnin",
+      "status": {
+        "pending": "Čaka",
+        "dispatched": "Poslano",
+        "running": "V teku",
+        "delivered": "Dostavljeno",
+        "safety_rejected": "Zavrnjeno zaradi varnosti",
+        "failed": "Neuspešno",
+        "deleted": "Izbrisano",
+        "unknown": "Ni na voljo"
+      },
+      "failure": {
+        "safety_rejected": "Ta umetnina ni prestala varnostnega preverjanja ponudnika.",
+        "failed": "Te umetnine ni bilo mogoče ustvariti."
+      },
+      "approve": "Odobri v vzorec",
+      "delete": "Izbriši",
+      "deleteAccessibilityLabel": "Izbriši to AI umetnino",
+      "errors": {
+        "loadFailed": "Knjižnice AI umetnin ni bilo mogoče naložiti. Poskusite znova."
+      }
+    },
+    "approve": {
+      "modalTitle": "Ustvari osebni vzorec",
+      "titleLabel": "Naslov vzorca",
+      "titleAccessibilityLabel": "Naslov vzorca",
+      "defaultTitle": "Moj AI vzorec",
+      "placeholder": "Moj AI vzorec",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Prekliči",
+      "creating": "Ustvarjanje vzorca …",
+      "create": "Ustvari vzorec",
+      "errors": {
+        "generic": "Osebnega vzorca ni bilo mogoče ustvariti. Poskusite znova."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Zahtevan je registriran račun",
+      "body": "Osebni vzorci pripadajo vašemu računu, zato ostanejo zasebni in dostopni na vseh napravah.",
+      "signIn": "Prijava ali ustvarjanje računa",
+      "back": "Nazaj"
+    },
+    "header": {
+      "title": "Vzorec iz fotografije",
+      "subtitle": "Uokvirite lokalno, nato odobrite pretvorbo",
+      "backAccessibilityLabel": "Nazaj"
+    },
+    "picker": {
+      "chooseTitle": "Izberite fotografijo",
+      "helpText": "Lokalni vir fotografije v polni ločljivosti ostane na tej napravi. Nič se ne pretvori, dokler ne odobrite okvirja.",
+      "choose": "Izberi iz knjižnice",
+      "chooseAnother": "Izberi drugo",
+      "opening": "Odpiranje …",
+      "errors": {
+        "permissionDenied": "Za izbiro lokalnega vira fotografije je potreben dostop do knjižnice fotografij.",
+        "invalidDimensions": "Izbrana fotografija ne poroča uporabnih dimenzij.",
+        "generic": "Knjižnice fotografij ni bilo mogoče odpreti. Poskusite znova."
+      }
+    },
+    "framing": {
+      "title": "Uokvirjanje umetnine",
+      "gestureHint": "Povlecite za postavitev · s ščipanjem povečajte",
+      "aspectLabel": "Razmerje okvirja"
+    },
+    "profile": {
+      "title": "Profil pretvorbe",
+      "options": {
+        "easy": "Enostavno",
+        "standard": "Standardno",
+        "detailed": "Podrobno"
+      },
+      "custom": "Po meri",
+      "customMeta": "Prosto · oblika zaklenjena",
+      "unavailable": "Ne ustreza temu okvirju",
+      "customShortEdgeLabel": "Kratki rob",
+      "customColorLimitLabel": "Omejitev DMC barv",
+      "exceedsLimit": "Te vrednosti po meri presegajo omejitev velikosti vzorca {{max}} celic."
+    },
+    "titleCard": {
+      "label": "Naslov vzorca",
+      "placeholder": "Moj vzorec iz fotografije",
+      "defaultTitle": "Moj vzorec iz fotografije",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · do {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "Odobritev naloži samo uokvirjeno, pomanjšano izpeljanko. Izvirna fotografija ostane lokalna.",
+      "approve": "Odobri umetnino in pretvori"
+    },
+    "processing": {
+      "preparingFrame": "Priprava odobrenega okvirja na tej napravi …",
+      "uploading": "Nalaganje samo obrezanega, pomanjšanega okvirja …",
+      "waitingForWorker": "Čakanje na delavca za pretvorbo …",
+      "buildingGrid": "Izdelava mreže za šivanje in DMC palete …",
+      "preparingSession": "Priprava osebnega vzorca za igranje …"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Ta profil ne ustreza več končnemu okvirju. Izberite Enostavno ali zmanjšajte podrobnost.",
+        "generic": "Te fotografije ni bilo mogoče pretvoriti. Poskusite znova."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Noben vzorec ni izbran",
+      "noPatternBody": "Ta zaslon je treba odpreti iz obstoječega osebnega vzorca v vaši knjižnici.",
+      "accountTitle": "Zahtevan je registriran račun",
+      "accountBody": "Osebni vzorci pripadajo vašemu računu, zato ostanejo zasebni in dostopni na vseh napravah.",
+      "signIn": "Prijava ali ustvarjanje računa",
+      "back": "Nazaj"
+    },
+    "loading": "Nadaljevanje osnutka v urejevalniku ...",
+    "load": {
+      "failedTitle": "Nalaganje vzorca ni uspelo",
+      "retry": "Poskusi znova",
+      "back": "Nazaj",
+      "errors": {
+        "generic": "Tega osebnega vzorca ni bilo mogoče naložiti. Poskusite znova."
+      }
+    },
+    "header": {
+      "title": "Urejevalnik vzorcev",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Nazaj"
+    },
+    "toolbar": {
+      "undo": "Razveljavi",
+      "redo": "Uveljavi"
+    },
+    "mode": {
+      "paint": "Slikanje",
+      "replaceColor": "Zamenjaj barvo",
+      "replaceStep1": "1. Tapnite barvo na spodnjem vzorcu za zamenjavo:",
+      "replaceStep2": "2. Spodaj izberite ciljno DMC barvo za izvedbo zamenjave:",
+      "paintSelected": "Izbrano: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Spodaj izberite barvo, nato tapnite celice za slikanje."
+    },
+    "errors": {
+      "pickColorFirst": "Najprej izberite barvo",
+      "paletteLimit": "Ta vzorec že uporablja največje dovoljeno število {{max}} barv niti."
+    },
+    "picker": {
+      "title": "DMC barve niti",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Shrani urejen vzorec",
+      "placeholder": "Naslov mojega urejenega vzorca",
+      "action": "Shrani kot nov",
+      "offlineTitle": "Shranjeno brez povezave",
+      "offlineBody": "Vaš urejeni vzorec je bil shranjen na tej napravi in se bo sinhroniziral z vašim računom, ko boste znova povezani.",
+      "errors": {
+        "generic": "Tega osebnega vzorca ni bilo mogoče shraniti. Poskusite znova."
+      }
+    }
+  }
+}

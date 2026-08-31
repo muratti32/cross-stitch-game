@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "कढ़ाई टेबल",
+    "subtitle": "जहां छोड़ा था वहीं से शुरू करें या किसी हालिया क्राफ्ट को आगे बढ़ाएं।",
+    "loading": "आपकी कढ़ाई लोड हो रही है...",
+    "empty": {
+      "title": "कोई सक्रिय क्राफ्ट नहीं",
+      "body": "आपका कढ़ाई फ्रेम अभी खाली है। कढ़ाई करने के लिए कुछ सुंदर खोजने के लिए पैटर्न कैटलॉग देखें!",
+      "action": "कैटलॉग देखें"
+    },
+    "unknownPattern": "अज्ञात पैटर्न",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "पैटर्न {{id}}",
+    "deleteSessionAccessibilityLabel": "सेशन हटाएं",
+    "viewFinishedAccessibilityLabel": "पूरा हो चुका क्राफ्ट देखें",
+    "resumeAccessibilityLabel": "कढ़ाई फिर से शुरू करें",
+    "status": {
+      "ready": "तैयार",
+      "done": "पूरा हुआ",
+      "active": "सक्रिय",
+      "preparing": "तैयारी हो रही है",
+      "failed": "असफल"
+    },
+    "deleteConfirm": {
+      "title": "प्रगति हटाएं",
+      "message": "क्या आप वाकई \"{{title}}\" के लिए अपनी प्रगति को हटाना चाहते हैं? इसे वापस नहीं लिया जा सकता।",
+      "cancel": "रद्द करें",
+      "confirm": "हटाएं"
+    },
+    "preparingCard": {
+      "discardTitle": "सेशन छोड़ें",
+      "cancelTitle": "डाउनलोड रद्द करें",
+      "discardMessage": "क्या आप वाकई इस असफल सेशन को छोड़ना चाहते हैं?",
+      "cancelMessage": "क्या आप वाकई इस पैटर्न का डाउनलोड रद्द करना चाहते हैं?",
+      "keep": "रखें",
+      "discard": "छोड़ें",
+      "cancel": "रद्द करें"
+    }
+  },
+  "loading": {
+    "text": "सेशन खोला जा रहा है और फैब्रिक तैयार किया जा रहा है..."
+  },
+  "error": {
+    "title": "सेशन लोड नहीं हो सका",
+    "fallbackMessage": "आपकी कढ़ाई का सेशन लोड करने में असमर्थ।",
+    "backButton": "पीछे जाएं",
+    "tableButton": "टेबल पर जाएं"
+  },
+  "header": {
+    "backButton": "← पीछे",
+    "tableButton": "← टेबल",
+    "defaultTitle": "कढ़ाई सेशन",
+    "progress": "{{completed}} / {{total}} सेल ({{percent}}% पूरा)",
+    "resumeTutorialAccessibilityLabel": "ट्यूटोरियल फिर से शुरू करें"
+  },
+  "banners": {
+    "patternRemoved": "यह पैटर्न मॉडरेशन द्वारा हटा दिया गया है और अब उपलब्ध नहीं है। बाहर जाने के लिए टैप करें।",
+    "syncConflict": "दूसरे डिवाइस के साथ सिंक किया गया — कुछ सेल अपडेट किए गए। हटाने के लिए टैप करें।"
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "सक्रिय धागे के रंग के अगले बचे हुए सेल का पता लगाएं",
+    "undoAccessibilityLabel": "पिछला टांका वापस लें"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "रंग {{number}}: DMC {{dmcCode}}, {{count}} टांका बचा है",
+    "chipAccessibilityLabel_other": "रंग {{number}}: DMC {{dmcCode}}, {{count}} टांके बचे हैं",
+    "done": "पूरा हुआ",
+    "remaining_one": "{{count}} बचा है",
+    "remaining_other": "{{count}} बचे हैं"
+  },
+  "celebration": {
+    "title": "खूबसूरती से बनाया गया!",
+    "subtitle": "आपने इस फैब्रिक पर हर एक टांका पूरा कर लिया है।",
+    "stitchesLabel_one": "टांका",
+    "stitchesLabel_other": "टांके",
+    "colorsLabel_one": "रंग",
+    "colorsLabel_other": "रंग",
+    "replayButton": "फिर से कढ़ाई करें",
+    "catalogButton": "कैटलॉग पर वापस जाएं"
+  }
+}

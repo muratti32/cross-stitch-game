@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Tilbage",
+    "cancel": "Annuller",
+    "duplicateTitle": "Du har allerede et personligt mønster ved navn “{{title}}”. Vælg en anden titel.",
+    "cellsCount_one": "celle",
+    "cellsCount_other": "celler",
+    "colorsCount_one": "farve",
+    "colorsCount_other": "farver"
+  },
+  "hub": {
+    "title": "Kreativt hub",
+    "subtitle": "Skab dine egne designs som brugerdefinerede korssting-mønstre.",
+    "opening": "Åbner…",
+    "photoImport": {
+      "title": "Fotoimport",
+      "description": "Upload et billede fra dit kamerarulle, og konverter det til et sy-klart mønster.",
+      "action": "Importer foto"
+    },
+    "aiGenerator": {
+      "title": "AI-generator",
+      "description": "Beskriv en hyggelig prompt, og lad kunstig intelligens generere et brugerdefineret pixeldesign.",
+      "action": "Generer design"
+    }
+  },
+  "aspects": {
+    "square": "Kvadrat",
+    "portrait_4_3": "Portræt 4:3",
+    "landscape_4_3": "Landskab 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Mønsterkonvertering mislykkedes. Prøv igen.",
+      "timeout": "Mønsterkonvertering behandles stadig. Prøv igen om lidt.",
+      "generic": "Kunne ikke fuldføre mønsterkonvertering. Prøv igen."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Registreret konto påkrævet",
+      "body": "AI-kunst og dit bibliotek forbliver private for din konto.",
+      "signIn": "Log ind"
+    },
+    "header": {
+      "title": "AI-generator",
+      "backAccessibilityLabel": "Tilbage"
+    },
+    "prompt": {
+      "label": "Beskriv dit kunstværk",
+      "placeholder": "Et hyggeligt landsbyhus i solnedgang…"
+    },
+    "generate": {
+      "working": "Arbejder…",
+      "action": "Generer — 1 AI-kredit",
+      "errors": {
+        "promptRejected": "Den prompt var ikke tilladt. Prøv at beskrive noget andet.",
+        "generic": "Kunne ikke starte AI-generering. Prøv igen."
+      }
+    },
+    "library": {
+      "title": "Dit AI-kunstbibliotek",
+      "status": {
+        "pending": "Afventer",
+        "dispatched": "Afsendt",
+        "running": "Kører",
+        "delivered": "Leveret",
+        "safety_rejected": "Afvist af sikkerhed",
+        "failed": "Mislykkedes",
+        "deleted": "Slettet",
+        "unknown": "Utilgængeligt"
+      },
+      "failure": {
+        "safety_rejected": "Dette kunstværk bestod ikke udbyderens sikkerhedstjek.",
+        "failed": "Dette kunstværk kunne ikke genereres."
+      },
+      "approve": "Godkend til mønster",
+      "delete": "Slet",
+      "deleteAccessibilityLabel": "Slet dette AI-kunstværk",
+      "errors": {
+        "loadFailed": "Kunne ikke indlæse dit AI-kunstbibliotek. Prøv igen."
+      }
+    },
+    "approve": {
+      "modalTitle": "Opret personligt mønster",
+      "titleLabel": "Mønstertitel",
+      "titleAccessibilityLabel": "Mønstertitel",
+      "defaultTitle": "Mit AI-mønster",
+      "placeholder": "Mit AI-mønster",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Annuller",
+      "creating": "Opretter mønster…",
+      "create": "Opret mønster",
+      "errors": {
+        "generic": "Kunne ikke oprette det personlige mønster. Prøv igen."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Registreret konto påkrævet",
+      "body": "Personlige mønstre tilhører din konto, så de forbliver private og tilgængelige på tværs af enheder.",
+      "signIn": "Log ind eller opret konto",
+      "back": "Tilbage"
+    },
+    "header": {
+      "title": "Fotomønster",
+      "subtitle": "Beskær lokalt, godkend derefter konvertering",
+      "backAccessibilityLabel": "Tilbage"
+    },
+    "picker": {
+      "chooseTitle": "Vælg et foto",
+      "helpText": "Fuldopløsningskilden til det lokale foto forbliver på denne enhed. Intet konverteres, før du godkender beskæringen.",
+      "choose": "Vælg fra bibliotek",
+      "chooseAnother": "Vælg et andet",
+      "opening": "Åbner…",
+      "errors": {
+        "permissionDenied": "Adgang til fotobibliotek er påkrævet for at vælge en lokal fotokilde.",
+        "invalidDimensions": "Det valgte foto rapporterer ikke brugbare dimensioner.",
+        "generic": "Kunne ikke åbne fotobiblioteket. Prøv igen."
+      }
+    },
+    "framing": {
+      "title": "Beskæring af kunstværk",
+      "gestureHint": "Træk for at placere · knib for at zoome",
+      "aspectLabel": "Beskæringsformat"
+    },
+    "profile": {
+      "title": "Konverteringsprofil",
+      "options": {
+        "easy": "Let",
+        "standard": "Standard",
+        "detailed": "Detaljeret"
+      },
+      "custom": "Brugerdefineret",
+      "customMeta": "Fri · form låst",
+      "unavailable": "Passer ikke til denne beskæring",
+      "customShortEdgeLabel": "Kort kant",
+      "customColorLimitLabel": "DMC-farvegrænse",
+      "exceedsLimit": "Disse brugerdefinerede værdier overskrider grænsen på {{max}} celler for mønsterstørrelse."
+    },
+    "titleCard": {
+      "label": "Mønstertitel",
+      "placeholder": "Mit fotomønster",
+      "defaultTitle": "Mit fotomønster",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · op til {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "Godkendelse uploader kun det beskårne, nedskalerede derivat. Det originale foto forbliver lokalt.",
+      "approve": "Godkend kunstværk og konverter"
+    },
+    "processing": {
+      "preparingFrame": "Forbereder den godkendte beskæring på denne enhed…",
+      "uploading": "Uploader kun det beskårne, nedskalerede billede…",
+      "waitingForWorker": "Venter på konverteringsprocessen…",
+      "buildingGrid": "Opbygger stingnettet og DMC-paletten…",
+      "preparingSession": "Forbereder det personlige mønster til spil…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Denne profil passer ikke længere til den endelige beskæring. Vælg Let, eller reducer detaljer.",
+        "generic": "Kunne ikke konvertere dette foto. Prøv igen."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Intet mønster valgt",
+      "noPatternBody": "Denne skærm skal åbnes fra et eksisterende personligt mønster i dit bibliotek.",
+      "accountTitle": "Registreret konto påkrævet",
+      "accountBody": "Personlige mønstre tilhører din konto, så de forbliver private og tilgængelige på tværs af enheder.",
+      "signIn": "Log ind eller opret konto",
+      "back": "Tilbage"
+    },
+    "loading": "Genoptager redigeringsudkast...",
+    "load": {
+      "failedTitle": "Kunne ikke indlæse mønster",
+      "retry": "Prøv igen",
+      "back": "Tilbage",
+      "errors": {
+        "generic": "Kunne ikke indlæse dette personlige mønster. Prøv igen."
+      }
+    },
+    "header": {
+      "title": "Mønsterredigering",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Tilbage"
+    },
+    "toolbar": {
+      "undo": "Fortryd",
+      "redo": "Gentag"
+    },
+    "mode": {
+      "paint": "Mal",
+      "replaceColor": "Udskift farve",
+      "replaceStep1": "1. Tryk på en farve i mønsteret nedenfor for at udskifte:",
+      "replaceStep2": "2. Vælg en mål-DMC-farve nedenfor for at udføre udskiftningen:",
+      "paintSelected": "Valgt: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Vælg en farve nedenfor, og tryk derefter på celler for at male."
+    },
+    "errors": {
+      "pickColorFirst": "Vælg en farve først",
+      "paletteLimit": "Dette mønster bruger allerede det maksimale antal på {{max}} trådfarver."
+    },
+    "picker": {
+      "title": "DMC-trådfarver",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Gem redigeret mønster",
+      "placeholder": "Min redigerede mønstertitel",
+      "action": "Gem som nyt",
+      "offlineTitle": "Gemt offline",
+      "offlineBody": "Dit redigerede mønster blev gemt på denne enhed og synkroniseres til din konto, når du er tilbage online.",
+      "errors": {
+        "generic": "Kunne ikke gemme dette personlige mønster. Prøv igen."
+      }
+    }
+  }
+}

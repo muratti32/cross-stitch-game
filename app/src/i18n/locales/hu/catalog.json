@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Vissza",
+    "searchPlaceholder": "Minták, alkotók, címkék keresése…",
+    "offlineBanner": "Nincs kapcsolat — előfordulhat, hogy a katalógus nem naprakész",
+    "sectionError": {
+      "title": "Betöltés sikertelen",
+      "retry": "Próbáld újra"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} szín",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} oszlop",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Angol"
+    },
+    "accessibilityLabel": "{{language}} nyelven íródott"
+  },
+  "index": {
+    "subtitle": "Alkosd meg saját hangulatos világodat, öltésről öltésre.",
+    "searchBar": {
+      "accessibilityLabel": "Mintakatalógus keresése"
+    },
+    "sections": {
+      "starterPatterns": "Kezdő minták",
+      "staffPicks": "Szerkesztői válogatás",
+      "categories": "Kategóriák",
+      "newPatterns": "Új minták"
+    },
+    "staffPicks": {
+      "emptyTitle": "Még nincs szerkesztői válogatás",
+      "emptyBody": "Kézzel válogatott, hangulatos design-gyűjteményünk hamarosan itt jelenik meg.",
+      "errorBody": "A katalógus nem elérhető, és még semmi sincs a gyorsítótárban."
+    },
+    "categories": {
+      "count": "{{count}} minta",
+      "errorBody": "A katalógus nem elérhető, és még semmi sincs a gyorsítótárban."
+    },
+    "newPatterns": {
+      "emptyTitle": "Új minták készülnek",
+      "emptyBody": "Hamarosan érkeznek a friss újdonságok!",
+      "errorBody": "A katalógus nem elérhető, és még semmi sincs a gyorsítótárban.",
+      "showMore": "Több megjelenítése",
+      "loading": "Betöltés…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Böngészés",
+    "error": {
+      "body": "Ez a katalógusoldal nem elérhető, és még semmi sincs a gyorsítótárban."
+    },
+    "empty": {
+      "title": "Itt még nincs semmi",
+      "body": "Egyetlen minta sem felel meg ennek a válogatásnak. Rendszeresen érkeznek új designok."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Katalóguskereső mező",
+    "inactive": {
+      "title": "Katalógus keresése",
+      "body": "Írj be legalább két karaktert a minták cím, alkotó vagy címke szerinti kereséséhez."
+    },
+    "error": {
+      "title": "A kereséshez kapcsolat szükséges",
+      "body": "A katalóguskeresés offline nem elérhető. A mentett katalógusoldalak továbbra is böngészhetők a Katalógus fülön."
+    },
+    "noResults": {
+      "title": "Nincs találat",
+      "body": "Semmi sem felel meg még a(z) „{{query}}” kifejezésnek a katalógusban."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Vendégként játszol",
+    "body": "A Stitch Coin és a haladásod csak ezen az eszközön létezik, amíg vendégként játszol. Ha a telepítés elvész, a vendégegyenleg és a haladás visszavonhatatlanul elveszhet. A bejelentkezés megvédi a haladásodat."
+  },
+  "detail": {
+    "noDescription": "Nincs elérhető leírás.",
+    "specs": {
+      "dimensions": "Méretek",
+      "totalStitches": "Öltések száma összesen",
+      "colors": "Színek",
+      "category": "Kategória"
+    },
+    "threadsSuffix": "{{count}} fonal",
+    "palette": {
+      "title": "Szükséges fonalak",
+      "loading": "Fonalpaletta betöltése...",
+      "loadFailed": "A paletta betöltése sikertelen: {{error}}",
+      "retry": "Újratöltés"
+    },
+    "actions": {
+      "startStitching": "Hímzés indítása",
+      "starting": "Indítás...",
+      "preparing": "Előkészítés…"
+    },
+    "loadFailedGeneric": "A mintafájl dekódolása sikertelen.",
+    "sessionCreateFailed": "A hímzési munkamenet létrehozása sikertelen. Próbáld újra.",
+    "unavailable": {
+      "title": "A minta nem érhető el",
+      "body": "Ezt a mintát nem sikerült betölteni. Lehet, hogy eltávolították, vagy nincs internetkapcsolatod.",
+      "goBack": "Vissza"
+    },
+    "byCreator": "készítette: {{creatorName}}",
+    "byCreatorWithUsername": "készítette: {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Alkotó letiltása",
+      "message": "Biztosan letiltod {{creatorName}} felhasználót? Ez privát, visszavonható művelet, amely elrejti a mintáit a keresésből/böngészésből. Nem jelenti be az alkotót, és nem szakítja meg az aktuális hímzési munkamenetedet.",
+      "cancel": "Mégse",
+      "confirm": "Letiltás",
+      "blockedTitle": "Letiltva",
+      "blockedMessage": "{{creatorName}} felhasználó le lett tiltva.",
+      "errorTitle": "Hiba",
+      "failedGeneric": "Az alkotó letiltása sikertelen."
+    },
+    "likeFailedGeneric": "A kedvelés állapotának frissítése sikertelen",
+    "connectToPlay": {
+      "title": "Kapcsolódj a játékhoz",
+      "body": "A minta katalógusból történő indításához kapcsolat szükséges a munkamenet előkészítéséhez. A kezdő minták azonnal játszhatók, még internetkapcsolat nélkül is."
+    },
+    "insufficientCoins": {
+      "title": "Nincs elég érme",
+      "body": "Ez a minta {{price}} Stitch Coinba kerül, neked pedig csak {{balance}} érméd van.\n\nHiányzik: {{shortfall}} érme.\n\nSzerezz Stitch Coint más minták befejezésével! Az első befejezésért járó jutalmak aktívak.",
+      "getCoins": "Szerezz Stitch Coint",
+      "findPatterns": "Keress hímzésre váró mintákat",
+      "back": "Vissza"
+    },
+    "unlockFailedGeneric": "A feloldás sikertelen. Ellenőrizd a kapcsolatot, és próbáld újra.",
+    "preparationFailedGeneric": "Az előkészítés indítása sikertelen. Ellenőrizd a kapcsolatot, és próbáld újra.",
+    "price": {
+      "label": "Ár"
+    },
+    "balance": {
+      "label": "Egyenleged",
+      "loading": "…"
+    },
+    "unlockButton": "Feloldás {{price}} érméért",
+    "communityReport": {
+      "button": "Minta bejelentése",
+      "title": "{{patternTitle}} bejelentése",
+      "body": "Válaszd ki a problémát legjobban leíró okot. A bejelentések soha nem rejtik el vagy módosítják automatikusan a mintát.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Nem megfelelő vagy nem biztonságos tartalom",
+        "copyright_or_publication_rights": "Szerzői jog vagy közzétételi jogok",
+        "duplicate_or_spam": "Duplikátum vagy spam",
+        "misleading_title_or_tags": "Félrevezető cím vagy címkék",
+        "other": "Egyéb"
+      },
+      "explanationLabel": "Bizonyíték vagy magyarázat {{requirement}}",
+      "explanationRequired": "(kötelező)",
+      "explanationOptional": "(nem kötelező)",
+      "explanationPlaceholder": "Oszd meg a részleteket, amelyek segítik a moderátort a minta áttekintésében.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Mégse",
+      "submit": "Bejelentés küldése",
+      "submitFailedGeneric": "A bejelentés küldése sikertelen. Ellenőrizd a kapcsolatot, és próbáld újra.",
+      "receivedTitle": "Bejelentés fogadva",
+      "alreadyReceivedTitle": "A bejelentés már megérkezett",
+      "receivedBody": "A moderátor most már áttekintheti ezt a mintát. A bejelentés automatikusan nem változtatja meg az elérhetőségét.",
+      "alreadyReceivedBody": "A meglévő bejelentésed már része a nyitott felülvizsgálatnak.",
+      "signInRequired": {
+        "title": "Jelentkezz be a bejelentés küldéséhez",
+        "message": "A közösségi bejelentésekhez regisztrált fiók szükséges. Semmi nem lett elküldve.",
+        "cancel": "Mégse",
+        "signIn": "Bejelentkezés"
+      },
+      "validation": {
+        "chooseReason": "Válaszd ki a bejelentés okát.",
+        "explainRequired": "Magyarázd el, miért jelented be ezt a mintát.",
+        "tooLong": "A magyarázat legfeljebb 2000 karakter lehet.",
+        "needsContent": "A magyarázatnak betűket vagy számokat kell tartalmaznia."
+      }
+    }
+  }
+}

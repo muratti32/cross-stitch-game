@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Стіл для Вишивання",
+    "subtitle": "Продовжте з того місця, де зупинилися, або поверніться до недавньої роботи.",
+    "loading": "Завантаження ваших стібків...",
+    "empty": {
+      "title": "Немає Активних Робіт",
+      "body": "Ваша рамка для вишивання зараз порожня. Перегляньте каталог візерунків, щоб знайти щось гарне для вишивання!",
+      "action": "Переглянути Каталог"
+    },
+    "unknownPattern": "Невідомий Візерунок",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Візерунок {{id}}",
+    "deleteSessionAccessibilityLabel": "Видалити сесію",
+    "viewFinishedAccessibilityLabel": "Переглянути завершену роботу",
+    "resumeAccessibilityLabel": "Продовжити вишивання",
+    "status": {
+      "ready": "Готово",
+      "done": "Завершено",
+      "active": "Активна",
+      "preparing": "Підготовка",
+      "failed": "Помилка"
+    },
+    "deleteConfirm": {
+      "title": "Видалити Прогрес",
+      "message": "Ви впевнені, що хочете видалити свій прогрес для \"{{title}}\"? Це неможливо скасувати.",
+      "cancel": "Скасувати",
+      "confirm": "Видалити"
+    },
+    "preparingCard": {
+      "discardTitle": "Відхилити Сесію",
+      "cancelTitle": "Скасувати Завантаження",
+      "discardMessage": "Ви впевнені, що хочете відхилити цю невдалу сесію?",
+      "cancelMessage": "Ви впевнені, що хочете скасувати завантаження цього візерунка?",
+      "keep": "Залишити",
+      "discard": "Відхилити",
+      "cancel": "Скасувати"
+    }
+  },
+  "loading": {
+    "text": "Відкриття сесії та підготовка тканини..."
+  },
+  "error": {
+    "title": "Не Вдалося Завантажити Сесію",
+    "fallbackMessage": "Не вдалося завантажити вашу сесію вишивання.",
+    "backButton": "Повернутися Назад",
+    "tableButton": "До Столу"
+  },
+  "header": {
+    "backButton": "← Назад",
+    "tableButton": "← Стіл",
+    "defaultTitle": "Сесія Вишивання",
+    "progress": "{{completed}} / {{total}} клітинок ({{percent}}% завершено)",
+    "resumeTutorialAccessibilityLabel": "Продовжити навчання"
+  },
+  "banners": {
+    "patternRemoved": "Цей візерунок було видалено модерацією і він більше недоступний. Торкніться, щоб вийти.",
+    "syncConflict": "Синхронізовано з іншим пристроєм — деякі клітинки оновлено. Торкніться, щоб закрити."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Знайти наступну клітинку активного кольору нитки",
+    "undoAccessibilityLabel": "Скасувати останній стібок"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Колір {{number}}: DMC {{dmcCode}}, залишився {{count}} стібок",
+    "chipAccessibilityLabel_other": "Колір {{number}}: DMC {{dmcCode}}, залишилося стібків: {{count}}",
+    "done": "Готово",
+    "remaining_one": "залишилось {{count}}",
+    "remaining_other": "залишилось {{count}}"
+  },
+  "celebration": {
+    "title": "Чудово Вишито!",
+    "subtitle": "Ви завершили кожен стібок на цій тканині.",
+    "stitchesLabel_one": "Стібок",
+    "stitchesLabel_other": "Стібки",
+    "colorsLabel_one": "Колір",
+    "colorsLabel_other": "Кольори",
+    "replayButton": "Вишити Знову",
+    "catalogButton": "Назад до Каталогу"
+  }
+}

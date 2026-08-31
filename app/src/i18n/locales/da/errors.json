@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Den login tilhører en anden konto. Din nuværende konto er ikke blevet ændret.",
+    "providerRejected": "Den verificering blev afvist. Tjek kontoen eller koden, og prøv igen."
+  },
+  "generic": {
+    "failure": "Noget gik galt. Prøv igen.",
+    "supportReferenceLabel": "Supportreference: {{reference}}"
+  }
+}

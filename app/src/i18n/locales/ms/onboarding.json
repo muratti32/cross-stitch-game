@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "SELAMAT DATANG KE STITCH WISH",
+    "title": "Pilih warna, sentuh petak yang sepadan.",
+    "heroAlt": "Pratonton pola pemula Cozy Heart",
+    "handedness": {
+      "sectionTitle": "Di sisi mana kawalan sepatutnya berada?",
+      "groupLabel": "Sisi kawalan",
+      "optionRight": "Kawalan di kanan",
+      "optionLeft": "Kawalan di kiri",
+      "saveErrorText": "Gagal menyimpan pilihan ini.",
+      "retry": "Cuba lagi"
+    },
+    "note": "Anda boleh menukar ini kemudian di Tetapan.",
+    "start": "Mula menjahit",
+    "starting": "Memulakan…",
+    "browse": "Semak imbas pola pemula",
+    "signIn": "Log masuk"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Pilih warna DMC 321 Christmas Red.",
+      "stitchAction": "Sentuh sel yang sepadan dan disorot.",
+      "mismatchedTap": "Sentuh sel yang berbeza dan disorot. Sentuhan yang salah tidak dikenakan sebarang kos.",
+      "undoAction": "Buat asal jahitan itu, kemudian letakkan semula.",
+      "stitchSweep": "Tekan sel yang sepadan, kemudian seret di sepanjang baris yang disorot.",
+      "threadColorCompletion": "Selesaikan benang putih yang disorot, kemudian pilih warna seterusnya."
+    },
+    "hints": {
+      "anchoredZoom": "Cubit untuk membesarkan sambil mengekalkan sel di bawah jari anda.",
+      "panVsSweep": "Seret untuk menggerakkan kanvas. Mula dari sel yang sepadan untuk menjahit baris.",
+      "edgeAutoPan": "Teruskan menyeret berhampiran tepi, dan kanvas akan mengikut jari anda.",
+      "remainingCellLocator": "Gunakan pencari untuk menemui sel yang tinggal seterusnya bagi benang ini."
+    },
+    "skip": "Langkau sekarang",
+    "skipAccessibilityLabel": "Langkau panduan sekarang",
+    "dismiss": "Faham",
+    "dismissAccessibilityLabel": "Tutup petua"
+  },
+  "recap": {
+    "title": "Berjaya",
+    "lines": {
+      "matchNumbers": "Padankan nombor untuk meletakkan setiap jahitan.",
+      "dragSweep": "Seret di sepanjang sel yang sepadan untuk menjahit baris.",
+      "pinchZoom": "Cubit untuk membesarkan jika anda perlukan paparan yang lebih baik.",
+      "undoLocator": "Buat asal dan pencari sentiasa percuma."
+    },
+    "continue": "Teruskan menjahit",
+    "browsePatterns": "Semak imbas pola"
+  }
+}

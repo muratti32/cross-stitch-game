@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Enrere",
+    "title": "Botiga Comercial",
+    "subtitle": "Subscripció i recàrregues úniques"
+  },
+  "signInReturn": {
+    "notice": "Has iniciat sessió. {{label}} encara està seleccionat. Revisa'l i toca Comprar quan estiguis a punt."
+  },
+  "premiumHero": {
+    "eyebrow": "SUBSCRIPCIÓ PREMIUM",
+    "title": "Crea més. Reclama una petita recompensa cada dia.",
+    "body": "Crèdits d'IA cada període de pagament, temes Premium i una reclamació diària de Stitch Coin.",
+    "benefitAiCredits": "Crèdits d'IA",
+    "benefitDailyCoins": "Monedes Diàries",
+    "benefitThemes": "Temes",
+    "statusNoActiveMembership": "Cap subscripció activa",
+    "statusBrowseAsGuest": "Explora els plans com a Jugador Convidat",
+    "periodEndsLabel": "El període actual acaba",
+    "periodRenewsLabel": "Es renova",
+    "lifecycleActive": "Activa"
+  },
+  "membershipActions": {
+    "title": "Subscripció Premium Activa",
+    "body": "Les recompenses diàries són al Perfil. Els temes són a Configuració › Aparença.",
+    "scheduledChangeNotice": "Canvis a {{plan}} el {{date}}",
+    "manageSubscription": "Gestiona la Subscripció",
+    "manageSubscriptionFailedTitle": "No s'ha pogut obrir les subscripcions",
+    "manageSubscriptionFailedBody": "Torna-ho a provar des del compte de la botiga del teu dispositiu."
+  },
+  "pending": {
+    "title": "Reconciliació de Compra Pendent",
+    "verifyingTitle": "Verificant la compra",
+    "premiumChangeAccepted": "La botiga ha acceptat el canvi a {{label}}. ",
+    "premiumResponseReceived": "S'ha rebut la resposta de la botiga per a {{label}}. ",
+    "premiumDeferredSuffix": "El canvi només es programa després de la verificació del Servidor del Joc, i s'aplica quan acaba el teu període actual.",
+    "premiumSuffix": "El Premium només s'activa després de la verificació del Servidor del Joc.",
+    "doNotPurchasePlanAgain": " No tornis a comprar aquest pla.",
+    "coinPackBody": "S'ha rebut la resposta de la botiga. Les Stitch Coin només s'actualitzen quan el Servidor del Joc exposa la concessió del Registre Comercial corresponent. No tornis a comprar aquest paquet.",
+    "aiCreditPackBody": "S'ha rebut la resposta de la botiga. Els Crèdits d'IA només s'actualitzen quan el Servidor del Joc exposa la concessió del Registre Comercial corresponent. No tornis a comprar aquest paquet.",
+    "refreshStatus": "Actualitza l'estat",
+    "retryReconciliation": "Torna a intentar la reconciliació"
+  },
+  "store": {
+    "loadingPrices": "Carregant els preus actuals de la botiga…",
+    "unavailableTitle": "Botiga temporalment no disponible",
+    "unavailableBody": "La informació del teu saldo i la teva subscripció encara està disponible.",
+    "retry": "Torna-ho a provar"
+  },
+  "plans": {
+    "choosePremiumPlan": "Tria un pla Premium",
+    "yourPremiumPlan": "El teu pla Premium",
+    "currentPlan": "PLA ACTUAL",
+    "upgrade": "MILLORA",
+    "planChange": "CANVI DE PLA",
+    "bestValue": "MILLOR VALOR",
+    "billedEvery": "Facturat cada {{period}}",
+    "chooseLabel": "Tria {{label}}",
+    "freeTrial": "Gratuït durant {{offer}}, després {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Paquets únics",
+    "stitchCoinPacksTitle": "Paquets de Stitch Coin",
+    "aiCreditPacksTitle": "Paquets de Crèdits d'IA",
+    "coinsNoun": "Monedes",
+    "creditsNoun": "Crèdits",
+    "fromPrice": "Des de {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Restaura compres",
+    "restoreGuestPremium": "Restaura Premium de Convidat",
+    "requestedTitle": "Restauració sol·licitada",
+    "requestedBody": "L'accés Premium verificat apareixerà quan es reconciliï el webhook de la botiga. Els paquets de Stitch Coin i Crèdits d'IA mai es restauren."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Preus actuals de la botiga d'aplicacions",
+    "closeAccessibilityLabel": "Tanca el full del producte",
+    "closeButtonAccessibilityLabel": "Tanca",
+    "selectedBeforeSignIn": "Seleccionat abans d'iniciar sessió",
+    "buy": "Compra"
+  },
+  "confirmation": {
+    "cancel": "Cancel·la",
+    "confirmLabel": "Confirma {{label}}",
+    "confirmPremiumTitle": "Confirma la compra Premium",
+    "introductoryOffer": "La teva botiga informa d'aquesta oferta introductòria: {{offer}}.",
+    "premiumAppearsAfterVerification": "El Premium apareix només després que el Servidor del Joc verifiqui la transacció de la botiga.",
+    "confirmPremiumUpgradeTitle": "Confirma la millora Premium",
+    "confirmPremiumPlanChangeTitle": "Confirma el canvi de pla Premium",
+    "currentPlanLabel": "Pla Actual: {{label}}",
+    "upgradeToLabel": "Millora a {{label}} · {{offer}}",
+    "changeToLabel": "Canvia a {{label}} · {{offer}}",
+    "upgradeBody": "L'App Store controla el càrrec final i la data d'efecte d'aquesta millora. El Premium reflecteix {{label}} només després que el Servidor del Joc ho verifiqui.",
+    "planChangeBody": "L'App Store ajorna aquest canvi fins al final del teu període actual: {{currentLabel}} continua fins llavors, i {{targetLabel}} es factura des de la data del canvi. Cancel·la el canvi des de Gestiona la Subscripció.",
+    "confirmUpgrade": "Confirma la millora",
+    "confirmPlanChange": "Confirma el canvi de pla",
+    "confirmStitchCoinTitle": "Confirma la compra de Stitch Coin",
+    "confirmAiCreditTitle": "Confirma la compra de Crèdits d'IA",
+    "balanceChangesAfterVerificationCoin": "El teu saldo canvia només després que el Servidor del Joc verifiqui la transacció de la botiga i registri la concessió del Registre Comercial corresponent.",
+    "balanceChangesAfterVerificationAiCredit": "El teu saldo canvia només després que el Servidor del Joc verifiqui la transacció de la botiga i registri la concessió del Registre Comercial corresponent. No cal Subscripció Premium."
+  },
+  "disclosure": {
+    "subscriptionTerms": "El pagament es carrega al teu compte de {{store}} en confirmar-se. El Premium {{label}} es renova automàticament a {{offer}} tret que es desactivi la renovació automàtica almenys 24 hores abans que acabi el període actual. Qualsevol part no utilitzada d'una prova gratuïta es perd en comprar una subscripció. Pots cancel·lar en qualsevol moment des del teu compte de {{store}}.",
+    "privacyPolicy": "Política de Privacitat",
+    "termsOfService": "Termes del Servei",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "No s'ha pogut obrir l'enllaç: {{url}}"
+  },
+  "supportReference": {
+    "label": "Referència de suport: {{reference}}",
+    "copyAccessibilityLabel": "Copia la referència de suport {{reference}}",
+    "copyAccessibilityHint": "Copia la referència de suport al porta-retalls",
+    "copied": "Copiat",
+    "copyFailedTitle": "Còpia fallida",
+    "copyFailedBody": "No s'ha pogut copiar la referència de suport. Selecciona el text per copiar-lo manualment."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Les compres de Stitch Coin per a Convidats només estan disponibles a iOS.",
+    "guestIosOnlyGeneric": "Les compres de Convidat només estan disponibles a iOS.",
+    "purchaseFailedTitle": "La compra ha fallat",
+    "premiumVerificationNotYet": "El Servidor del Joc no ha pogut verificar aquesta compra. Torna a intentar la reconciliació; no la tornis a comprar.",
+    "premiumVerificationFailedRetry": "El Servidor del Joc encara no ha pogut verificar aquesta compra. Torna a intentar la reconciliació; no la tornis a comprar.",
+    "premiumGrantRefreshFailed": "El Premium s'ha verificat, però l'estat de la subscripció i dels Crèdits d'IA no s'ha pogut actualitzar. Torna a intentar la reconciliació.",
+    "premiumReconciliationUnreachable": "La reconciliació de la compra no ha pogut arribar al Servidor del Joc. Torna a intentar la reconciliació; no la tornis a comprar.",
+    "coinPackVerificationMismatch": "La transacció de la botiga no coincideix amb aquest Paquet de Monedes. Torna a intentar la verificació o contacta amb suport; no el tornis a comprar.",
+    "coinPackGrantUnavailable": "La compra s'ha verificat, però la concessió de Stitch Coin no està disponible. Torna a intentar la reconciliació; no la tornis a comprar.",
+    "coinPackBalanceRefreshFailed": "La concessió de Monedes s'ha verificat, però el saldo actual de Stitch Coin no s'ha pogut actualitzar. Torna a intentar la reconciliació.",
+    "coinPackVerificationFailedRetry": "El Servidor del Joc encara no ha pogut verificar aquest Paquet de Monedes. Torna a intentar la reconciliació; no el tornis a comprar.",
+    "coinPackReconciliationUnreachable": "La reconciliació del Paquet de Monedes no ha pogut arribar al Servidor del Joc. Torna a intentar la reconciliació; no el tornis a comprar.",
+    "aiCreditPackVerificationMismatch": "La transacció de la botiga no coincideix amb aquest Paquet de Crèdits d'IA. Torna a intentar la verificació o contacta amb suport; no el tornis a comprar.",
+    "aiCreditPackGrantUnavailable": "La compra s'ha verificat, però la concessió de Crèdits d'IA no està disponible. Torna a intentar la reconciliació; no el tornis a comprar.",
+    "aiCreditPackBalanceRefreshFailed": "La concessió de Crèdits d'IA s'ha verificat, però el saldo actual no s'ha pogut actualitzar. Torna a intentar la reconciliació.",
+    "aiCreditPackVerificationFailedRetry": "El Servidor del Joc encara no ha pogut verificar aquest Paquet de Crèdits d'IA. Torna a intentar la reconciliació; no el tornis a comprar.",
+    "aiCreditPackReconciliationUnreachable": "La reconciliació del Paquet de Crèdits d'IA no ha pogut arribar al Servidor del Joc. Torna a intentar la reconciliació; no el tornis a comprar.",
+    "reconciliationStillUnavailable": "El Servidor del Joc encara no està disponible. Torna a intentar la reconciliació més tard.",
+    "storeTemporarilyUnavailable": "La botiga no està disponible temporalment. Torna-ho a provar d'aquí a uns minuts.",
+    "purchasesNotAllowed": "Les compres no estan permeses en aquest dispositiu. Comprova el teu compte de la botiga o els controls parentals.",
+    "itemNotAvailable": "Aquest article no està disponible per comprar ara mateix. Tria un altre article o torna-ho a provar més tard.",
+    "alreadyOwned": "Ja tens aquesta compra. Utilitza Restaura Compres per actualitzar el teu accés.",
+    "couldNotConnectToStore": "No s'ha pogut connectar amb la botiga. Comprova la teva connexió a internet i torna-ho a provar.",
+    "paymentPendingApproval": "El teu pagament està pendent d'aprovació. La teva compra apareixerà quan la botiga la completi.",
+    "testPurchaseDeclined": "La compra de prova ha estat rebutjada. No s'ha realitzat cap pagament. Tria un resultat diferent de Botiga de Prova a Configuració i torna-ho a provar.",
+    "genericPurchaseFailure": "No hem pogut completar la teva compra. No s'ha realitzat cap pagament. Torna-ho a provar."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Encara verificant",
+    "premiumPending": "La verificació encara està en curs. El Premium s'activarà quan el Servidor del Joc ho confirmi.",
+    "premiumPlanChangePending": "La verificació encara està en curs. El teu canvi de pla es programarà quan el Servidor del Joc ho confirmi.",
+    "coinPackPending": "La verificació encara està en curs. El teu saldo de Stitch Coin s'actualitzarà quan es completi.",
+    "aiCreditPackPending": "La verificació encara està en curs. El teu saldo de Crèdits d'IA s'actualitzarà quan es completi."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Compra rebuda",
+    "storeAcceptedPlanChange": "La botiga ha acceptat el canvi a {{label}}. Confirmant quan entri en vigor.",
+    "storeAcceptedPurchase": "La botiga ha acceptat {{label}}. Verificant la teva compra ara.",
+    "premiumChanges": "El Premium canvia a {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " el {{date}}",
+    "planChangeScheduledTitle": "Canvi de pla programat",
+    "planChangeScheduledBody": "La teva Subscripció Premium manté el seu pla actual fins que canviï a {{label}}{{effectiveOn}}. Cancel·la el canvi des de Gestiona la Subscripció.",
+    "premiumIsActiveTitle": "El Premium està actiu",
+    "premiumVerifiedAndActive": "El Premium {{label}} està verificat i actiu.",
+    "premiumNowActiveNoBilling": "El Premium {{label}} ja està actiu.",
+    "premiumNowActiveBilled": "El Premium {{label}} ja està actiu, facturat cada {{period}}.",
+    "coinPackGrantedTitle": "Stitch Coins concedides",
+    "coinPackGrantVerified": "Concessió de {{label}} verificada. Saldo de Stitch Coin: {{balance}}.",
+    "coinPackAddedToBalance": "S'han afegit {{quantity}} Stitch Coins al teu saldo.",
+    "aiCreditPackGrantedTitle": "Crèdits d'IA concedits",
+    "aiCreditPackGrantVerified": "Concessió de {{label}} verificada. Saldo de Crèdits d'IA: {{balance}}.",
+    "aiCreditPackAddedToBalance": "S'han afegit {{quantity}} Crèdits d'IA al teu saldo."
+  },
+  "products": {
+    "premiumAnnual": "Anual",
+    "premiumMonthly": "Mensual",
+    "premiumWeekly": "Setmanal",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+    "aiCreditPack_one": "{{formattedCount}} Crèdit d'IA",
+    "aiCreditPack_other": "{{formattedCount}} Crèdits d'IA",
+    "billedEveryOffer": "{{price}} cada {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} crèdits / període de pagament",
+    "creditAllowancePaidNoun": "{{credits}} crèdits / {{period}} de pagament"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Compra com a Convidat",
+    "commerceBody": "Pots comprar sense registrar-te. La Subscripció Premium es pot restaurar des de la botiga, però les Stitch Coin, els Crèdits d'IA i el contingut privat de Convidat són irrecuperables si es perd aquesta instal·lació. Registrar-te els protegeix i mai interromp jugar com a Convidat.",
+    "continueAsGuest": "Continua com a Convidat",
+    "signInInstead": "Inicia sessió en lloc d'això",
+    "closeAccessibilityLabel": "Tanca"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "Entesos",
+    "successButton": "Genial",
+    "failedButton": "Tanca",
+    "infoButton": "Entesos",
+    "closeAccessibilityLabel": "Tanca"
+  }
+}

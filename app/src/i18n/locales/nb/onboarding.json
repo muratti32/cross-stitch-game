@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "VELKOMMEN TIL STITCH WISH",
+    "title": "Velg en farge, trykk på de matchende rutene.",
+    "heroAlt": "Forhåndsvisning av startmønsteret Cozy Heart",
+    "handedness": {
+      "sectionTitle": "Hvilken side skal kontrollene bruke?",
+      "groupLabel": "Kontrollside",
+      "optionRight": "Kontroller til høyre",
+      "optionLeft": "Kontroller til venstre",
+      "saveErrorText": "Kunne ikke lagre det valget.",
+      "retry": "Prøv igjen"
+    },
+    "note": "Du kan endre dette senere i Innstillinger.",
+    "start": "Start stinging",
+    "starting": "Starter…",
+    "browse": "Bla i startmønstre",
+    "signIn": "Logg inn"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Velg DMC 321 Christmas Red.",
+      "stitchAction": "Trykk på den uthevede matchende ruten.",
+      "mismatchedTap": "Trykk på den uthevede, ulike ruten. Feil trykk koster ingenting.",
+      "undoAction": "Angre det stinget, og plasser det igjen.",
+      "stitchSweep": "Trykk på en matchende rute, og dra deretter over den uthevede rekken.",
+      "threadColorCompletion": "Fullfør den uthevede hvite tråden, og velg deretter neste farge."
+    },
+    "hints": {
+      "anchoredZoom": "Knip for å zoome mens rutene holder seg under fingrene dine.",
+      "panVsSweep": "Å dra panorerer stoffet. Start på en matchende rute for å stinge en rekke.",
+      "edgeAutoPan": "Fortsett å dra nær kanten, så følger stoffet fingeren din.",
+      "remainingCellLocator": "Bruk lokaliseringen for å finne neste gjenværende rute for denne tråden."
+    },
+    "skip": "Hopp over for nå",
+    "skipAccessibilityLabel": "Hopp over opplæringen for nå",
+    "dismiss": "Skjønner",
+    "dismissAccessibilityLabel": "Lukk hint"
+  },
+  "recap": {
+    "title": "Du har taket på det",
+    "lines": {
+      "matchNumbers": "Match tallene for å plassere hvert sting.",
+      "dragSweep": "Dra over matchende ruter for å stinge i rekke.",
+      "pinchZoom": "Knip for å zoome når du trenger en nærmere titt.",
+      "undoLocator": "Angre og lokalisering er alltid gratis."
+    },
+    "continue": "Fortsett stingingen",
+    "browsePatterns": "Bla i mønstre"
+  }
+}

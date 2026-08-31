@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Späť",
+    "title": "Obchod",
+    "subtitle": "Predplatné a jednorazové dobitia"
+  },
+  "signInReturn": {
+    "notice": "Si prihlásený. {{label}} je stále vybraté. Skontroluj to a klepni na Kúpiť, keď budeš pripravený."
+  },
+  "premiumHero": {
+    "eyebrow": "PREMIUM PREDPLATNÉ",
+    "title": "Tvor viac. Získavaj malú odmenu každý deň.",
+    "body": "AI kredity každé platené obdobie, Premium témy a denná odmena v Stitch Coins.",
+    "benefitAiCredits": "AI kredity",
+    "benefitDailyCoins": "Denné mince",
+    "benefitThemes": "Témy",
+    "statusNoActiveMembership": "Žiadne aktívne predplatné",
+    "statusBrowseAsGuest": "Prehliadaj plány ako hosť",
+    "periodEndsLabel": "Aktuálne obdobie končí",
+    "periodRenewsLabel": "Obnoví sa",
+    "lifecycleActive": "Aktívne"
+  },
+  "membershipActions": {
+    "title": "Premium predplatné aktívne",
+    "body": "Denné odmeny nájdeš v Profile. Témy nájdeš v Nastavenia › Vzhľad.",
+    "scheduledChangeNotice": "Zmena na {{plan}} dňa {{date}}",
+    "manageSubscription": "Spravovať predplatné",
+    "manageSubscriptionFailedTitle": "Predplatné sa nepodarilo otvoriť",
+    "manageSubscriptionFailedBody": "Skús to znova z účtu obchodu tvojho zariadenia."
+  },
+  "pending": {
+    "title": "Prebieha zosúladenie nákupu",
+    "verifyingTitle": "Overuje sa nákup",
+    "premiumChangeAccepted": "Obchod prijal zmenu na {{label}}. ",
+    "premiumResponseReceived": "Odpoveď obchodu pre {{label}} bola prijatá. ",
+    "premiumDeferredSuffix": "Zmena je naplánovaná až po overení serverom hry a nadobudne účinnosť na konci tvojho aktuálneho obdobia.",
+    "premiumSuffix": "Premium sa aktivuje až po overení serverom hry.",
+    "doNotPurchasePlanAgain": " Nekupuj tento plán znova.",
+    "coinPackBody": "Odpoveď obchodu bola prijatá. Stitch Coins sa aktualizujú až potom, čo server hry zverejní zodpovedajúci záznam v obchodnom registri. Nekupuj tento balík znova.",
+    "aiCreditPackBody": "Odpoveď obchodu bola prijatá. AI kredity sa aktualizujú až potom, čo server hry zverejní zodpovedajúci záznam v obchodnom registri. Nekupuj tento balík znova.",
+    "refreshStatus": "Aktualizovať stav",
+    "retryReconciliation": "Skúsiť zosúladenie znova"
+  },
+  "store": {
+    "loadingPrices": "Načítavajú sa aktuálne ceny z obchodu…",
+    "unavailableTitle": "Obchod dočasne nedostupný",
+    "unavailableBody": "Informácie o peňaženke a predplatnom sú stále dostupné.",
+    "retry": "Skúsiť znova"
+  },
+  "plans": {
+    "choosePremiumPlan": "Vyber si Premium plán",
+    "yourPremiumPlan": "Tvoj Premium plán",
+    "currentPlan": "AKTUÁLNY PLÁN",
+    "upgrade": "UPGRADOVAŤ",
+    "planChange": "ZMENA PLÁNU",
+    "bestValue": "NAJLEPŠIA HODNOTA",
+    "billedEvery": "Fakturované každých {{period}}",
+    "chooseLabel": "Vybrať {{label}}",
+    "freeTrial": "Zadarmo na {{offer}}, potom {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Jednorazové balíky",
+    "stitchCoinPacksTitle": "Balíky Stitch Coin",
+    "aiCreditPacksTitle": "Balíky AI kreditov",
+    "coinsNoun": "Mince",
+    "creditsNoun": "Kredity",
+    "fromPrice": "Od {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Obnoviť nákupy",
+    "restoreGuestPremium": "Obnoviť Premium pre hosťa",
+    "requestedTitle": "Obnovenie vyžiadané",
+    "requestedBody": "Overený Premium prístup sa zobrazí po zosúladení webhooku obchodu. Balíky Stitch Coin a AI kreditov sa nikdy neobnovujú."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Aktuálne ceny z obchodu aplikácie",
+    "closeAccessibilityLabel": "Zavrieť kartu produktu",
+    "closeButtonAccessibilityLabel": "Zavrieť",
+    "selectedBeforeSignIn": "Vybraté pred prihlásením",
+    "buy": "Kúpiť"
+  },
+  "confirmation": {
+    "cancel": "Zrušiť",
+    "confirmLabel": "Potvrdiť {{label}}",
+    "confirmPremiumTitle": "Potvrdiť nákup Premium",
+    "introductoryOffer": "Tvoj obchod hlási túto úvodnú ponuku: {{offer}}.",
+    "premiumAppearsAfterVerification": "Premium sa zobrazí až po tom, čo server hry overí transakciu z obchodu.",
+    "confirmPremiumUpgradeTitle": "Potvrdiť upgrade Premium",
+    "confirmPremiumPlanChangeTitle": "Potvrdiť zmenu Premium plánu",
+    "currentPlanLabel": "Aktuálny plán: {{label}}",
+    "upgradeToLabel": "Upgradovať na {{label}} · {{offer}}",
+    "changeToLabel": "Zmeniť na {{label}} · {{offer}}",
+    "upgradeBody": "App Store riadi konečný poplatok a dátum účinnosti tohto upgradu. Premium odzrkadľuje {{label}} až po overení serverom hry.",
+    "planChangeBody": "App Store odloží túto zmenu do konca tvojho aktuálneho obdobia: {{currentLabel}} funguje dovtedy naďalej a {{targetLabel}} sa fakturuje od dátumu zmeny. Zmenu zruš v časti Spravovať predplatné.",
+    "confirmUpgrade": "Potvrdiť upgrade",
+    "confirmPlanChange": "Potvrdiť zmenu plánu",
+    "confirmStitchCoinTitle": "Potvrdiť nákup Stitch Coin",
+    "confirmAiCreditTitle": "Potvrdiť nákup AI kreditov",
+    "balanceChangesAfterVerificationCoin": "Tvoj zostatok sa zmení až po tom, čo server hry overí transakciu z obchodu a zaznamená zodpovedajúce pripísanie v obchodnom registri.",
+    "balanceChangesAfterVerificationAiCredit": "Tvoj zostatok sa zmení až po tom, čo server hry overí transakciu z obchodu a zaznamená zodpovedajúce pripísanie v obchodnom registri. Premium predplatné nie je potrebné."
+  },
+  "disclosure": {
+    "subscriptionTerms": "Platba sa účtuje na tvoj účet {{store}} pri potvrdení. {{label}} Premium sa automaticky obnovuje za {{offer}}, pokiaľ automatické obnovenie nevypneš najmenej 24 hodín pred koncom aktuálneho obdobia. Akákoľvek nevyužitá časť bezplatnej skúšobnej doby prepadne pri kúpe predplatného. Kedykoľvek môžeš zrušiť predplatné z účtu {{store}}.",
+    "privacyPolicy": "Zásady ochrany osobných údajov",
+    "termsOfService": "Podmienky používania",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Odkaz sa nepodarilo otvoriť: {{url}}"
+  },
+  "supportReference": {
+    "label": "Referencia podpory: {{reference}}",
+    "copyAccessibilityLabel": "Kopírovať referenciu podpory {{reference}}",
+    "copyAccessibilityHint": "Kopírovať referenciu podpory do schránky",
+    "copied": "Skopírované",
+    "copyFailedTitle": "Kopírovanie zlyhalo",
+    "copyFailedBody": "Referenciu podpory sa nepodarilo skopírovať. Vyber text a skopíruj ho ručne."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Nákupy Stitch Coin pre hostí sú dostupné len na iOS.",
+    "guestIosOnlyGeneric": "Nákupy pre hostí sú dostupné len na iOS.",
+    "purchaseFailedTitle": "Nákup zlyhal",
+    "premiumVerificationNotYet": "Server hry nemohol tento nákup overiť. Skús zosúladenie znova; nekupuj ho znova.",
+    "premiumVerificationFailedRetry": "Server hry ešte nemohol tento nákup overiť. Skús zosúladenie znova; nekupuj ho znova.",
+    "premiumGrantRefreshFailed": "Premium bolo overené, ale stav predplatného a AI kreditov sa nepodarilo aktualizovať. Skús zosúladenie znova.",
+    "premiumReconciliationUnreachable": "Zosúladenie nákupu sa nemohlo spojiť so serverom hry. Skús zosúladenie znova; nekupuj ho znova.",
+    "coinPackVerificationMismatch": "Transakcia z obchodu nezodpovedala tomuto balíku mincí. Skús overenie znova alebo kontaktuj podporu; nekupuj ho znova.",
+    "coinPackGrantUnavailable": "Nákup bol overený, ale pripísanie Stitch Coins nie je k dispozícii. Skús zosúladenie znova; nekupuj ho znova.",
+    "coinPackBalanceRefreshFailed": "Pripísanie mincí bolo overené, ale aktuálny zostatok Stitch Coins sa nepodarilo aktualizovať. Skús zosúladenie znova.",
+    "coinPackVerificationFailedRetry": "Server hry ešte nemohol overiť tento balík mincí. Skús zosúladenie znova; nekupuj ho znova.",
+    "coinPackReconciliationUnreachable": "Zosúladenie balíka mincí sa nemohlo spojiť so serverom hry. Skús zosúladenie znova; nekupuj ho znova.",
+    "aiCreditPackVerificationMismatch": "Transakcia z obchodu nezodpovedala tomuto balíku AI kreditov. Skús overenie znova alebo kontaktuj podporu; nekupuj ho znova.",
+    "aiCreditPackGrantUnavailable": "Nákup bol overený, ale pripísanie AI kreditov nie je k dispozícii. Skús zosúladenie znova; nekupuj ho znova.",
+    "aiCreditPackBalanceRefreshFailed": "Pripísanie AI kreditov bolo overené, ale aktuálny zostatok sa nepodarilo aktualizovať. Skús zosúladenie znova.",
+    "aiCreditPackVerificationFailedRetry": "Server hry ešte nemohol overiť tento balík AI kreditov. Skús zosúladenie znova; nekupuj ho znova.",
+    "aiCreditPackReconciliationUnreachable": "Zosúladenie balíka AI kreditov sa nemohlo spojiť so serverom hry. Skús zosúladenie znova; nekupuj ho znova.",
+    "reconciliationStillUnavailable": "Server hry je stále nedostupný. Skús zosúladenie znova neskôr.",
+    "storeTemporarilyUnavailable": "Obchod je dočasne nedostupný. Skús to prosím znova o niekoľko minút.",
+    "purchasesNotAllowed": "Nákupy nie sú na tomto zariadení povolené. Skontroluj svoj účet obchodu alebo rodičovskú kontrolu.",
+    "itemNotAvailable": "Táto položka momentálne nie je dostupná na nákup. Vyber inú položku alebo skús to znova neskôr.",
+    "alreadyOwned": "Tento nákup už vlastníš. Použi Obnoviť nákupy na aktualizáciu prístupu.",
+    "couldNotConnectToStore": "Nepodarilo sa pripojiť k obchodu. Skontroluj internetové pripojenie a skús to znova.",
+    "paymentPendingApproval": "Tvoja platba čaká na schválenie. Nákup sa zobrazí po dokončení obchodom.",
+    "testPurchaseDeclined": "Testovací nákup bol zamietnutý. Žiadna platba nebola vykonaná. Vyber iný výsledok testovacieho obchodu v Nastaveniach a skús to znova.",
+    "genericPurchaseFailure": "Tvoj nákup sa nepodarilo dokončiť. Žiadna platba nebola vykonaná. Skús to prosím znova."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Stále sa overuje",
+    "premiumPending": "Overenie stále prebieha. Premium sa aktivuje po potvrdení serverom hry.",
+    "premiumPlanChangePending": "Overenie stále prebieha. Zmena tvojho plánu bude naplánovaná po potvrdení serverom hry.",
+    "coinPackPending": "Overenie stále prebieha. Tvoj zostatok Stitch Coins sa aktualizuje po dokončení.",
+    "aiCreditPackPending": "Overenie stále prebieha. Tvoj zostatok AI kreditov sa aktualizuje po dokončení."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Nákup prijatý",
+    "storeAcceptedPlanChange": "Obchod prijal zmenu na {{label}}. Potvrdzuje sa, kedy nadobudne účinnosť.",
+    "storeAcceptedPurchase": "Obchod prijal {{label}}. Tvoj nákup sa teraz overuje.",
+    "premiumChanges": "Premium sa mení na {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " dňa {{date}}",
+    "planChangeScheduledTitle": "Zmena plánu naplánovaná",
+    "planChangeScheduledBody": "Tvoje Premium predplatné si zachová aktuálny plán, kým sa nezmení na {{label}}{{effectiveOn}}. Zmenu zruš v časti Spravovať predplatné.",
+    "premiumIsActiveTitle": "Premium je aktívne",
+    "premiumVerifiedAndActive": "{{label}} Premium je overené a aktívne.",
+    "premiumNowActiveNoBilling": "{{label}} Premium je teraz aktívne.",
+    "premiumNowActiveBilled": "{{label}} Premium je teraz aktívne, fakturované každých {{period}}.",
+    "coinPackGrantedTitle": "Stitch Coins pripísané",
+    "coinPackGrantVerified": "Pripísanie {{label}} bolo overené. Zostatok Stitch Coins: {{balance}}.",
+    "coinPackAddedToBalance": "K tvojmu zostatku bolo pridaných {{quantity}} Stitch Coins.",
+    "aiCreditPackGrantedTitle": "AI kredity pripísané",
+    "aiCreditPackGrantVerified": "Pripísanie {{label}} bolo overené. Zostatok AI kreditov: {{balance}}.",
+    "aiCreditPackAddedToBalance": "K tvojmu zostatku bolo pridaných {{quantity}} AI kreditov."
+  },
+  "products": {
+    "premiumAnnual": "Ročne",
+    "premiumMonthly": "Mesačne",
+    "premiumWeekly": "Týždenne",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+    "aiCreditPack_one": "{{formattedCount}} AI kredit",
+    "aiCreditPack_other": "{{formattedCount}} AI kreditov",
+    "billedEveryOffer": "{{price}} každých {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} kreditov / platené obdobie",
+    "creditAllowancePaidNoun": "{{credits}} kreditov / platené {{period}}"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Nakupuj ako hosť",
+    "commerceBody": "Môžeš nakupovať bez registrácie. Premium predplatné je možné obnoviť z obchodu, ale Stitch Coins, AI kredity a súkromný obsah hosťa sú nenávratne stratené, ak sa táto inštalácia stratí. Registrácia ich chráni a nikdy neprerušuje hru ako hosť.",
+    "continueAsGuest": "Pokračovať ako hosť",
+    "signInInstead": "Radšej sa prihlásiť",
+    "closeAccessibilityLabel": "Zavrieť"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "Rozumiem",
+    "successButton": "Výborne",
+    "failedButton": "Zavrieť",
+    "infoButton": "Rozumiem",
+    "closeAccessibilityLabel": "Zavrieť"
+  }
+}

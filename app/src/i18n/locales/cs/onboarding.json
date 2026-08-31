@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "VÍTEJTE V APLIKACI STITCH WISH",
+    "title": "Vyberte barvu a klepejte na odpovídající čtverečky.",
+    "heroAlt": "Náhled úvodního vzoru Útulné srdce",
+    "handedness": {
+      "sectionTitle": "Na které straně chcete mít ovládací prvky?",
+      "groupLabel": "Strana ovládání",
+      "optionRight": "Ovládání vpravo",
+      "optionLeft": "Ovládání vlevo",
+      "saveErrorText": "Tuto volbu se nepodařilo uložit.",
+      "retry": "Zkusit znovu"
+    },
+    "note": "Toto nastavení můžete kdykoli změnit v Nastavení.",
+    "start": "Začít vyšívat",
+    "starting": "Spouštění…",
+    "browse": "Prohlížet úvodní vzory",
+    "signIn": "Přihlásit se"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Vyberte bavlnku DMC 321 Vánoční červená.",
+      "stitchAction": "Klepněte na zvýrazněné odpovídající políčko.",
+      "mismatchedTap": "Klepněte na zvýrazněné odlišné políčko. Špatné klepnutí nic nestojí.",
+      "undoAction": "Vraťte tento steh zpět a poté jej umístěte znovu.",
+      "stitchSweep": "Stiskněte odpovídající políčko a táhněte přes zvýrazněnou řadu.",
+      "threadColorCompletion": "Dokončete zvýrazněnou bílou bavlnku a pak vyberte další barvu."
+    },
+    "hints": {
+      "anchoredZoom": "Sevřením nebo roztažením prstů přibližujte a oddalujte zobrazení.",
+      "panVsSweep": "Tažením posouváte plátno. Začněte na odpovídajícím políčku pro souvislé vyšívání tahem.",
+      "edgeAutoPan": "Vyšívejte tahem u okraje a plátno bude sledovat váš prst.",
+      "remainingCellLocator": "Pomocí lokátoru najděte další zbývající políčko této bavlnky."
+    },
+    "skip": "Zatím přeskočit",
+    "skipAccessibilityLabel": "Zatím přeskočit průvodce",
+    "dismiss": "Rozumím",
+    "dismissAccessibilityLabel": "Zavřít nápovědu"
+  },
+  "recap": {
+    "title": "Už to máte v ruce",
+    "lines": {
+      "matchNumbers": "Podle čísel umisťujte jednotlivé stehy.",
+      "dragSweep": "Táhněte přes shodná políčka pro rychlé vyšívání.",
+      "pinchZoom": "Když potřebujete detailnější pohled, plátno přibližte prsty.",
+      "undoLocator": "Zpětný krok i lokátor políček jsou vždy zdarma."
+    },
+    "continue": "Pokračovat ve vyšívání",
+    "browsePatterns": "Prohlížet vzory"
+  }
+}

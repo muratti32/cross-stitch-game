@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Miza za šivanje",
+    "subtitle": "Nadaljujte tam, kjer ste ostali, ali obudite nedaven izdelek.",
+    "loading": "Nalaganje vaših šivov ...",
+    "empty": {
+      "title": "Ni aktivnih izdelkov",
+      "body": "Vaš okvir za šivanje je trenutno prazen. Prebrskajte katalog vzorcev in poiščite nekaj lepega za šivanje!",
+      "action": "Prebrskaj katalog"
+    },
+    "unknownPattern": "Neznan vzorec",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Vzorec {{id}}",
+    "deleteSessionAccessibilityLabel": "Izbriši sejo",
+    "viewFinishedAccessibilityLabel": "Ogled dokončanega izdelka",
+    "resumeAccessibilityLabel": "Nadaljuj šivanje",
+    "status": {
+      "ready": "Pripravljeno",
+      "done": "Končano",
+      "active": "Aktivno",
+      "preparing": "Pripravljanje",
+      "failed": "Neuspešno"
+    },
+    "deleteConfirm": {
+      "title": "Izbriši napredek",
+      "message": "Ali ste prepričani, da želite izbrisati napredek za „{{title}}“? Tega ni mogoče razveljaviti.",
+      "cancel": "Prekliči",
+      "confirm": "Izbriši"
+    },
+    "preparingCard": {
+      "discardTitle": "Zavrzi sejo",
+      "cancelTitle": "Prekliči prenos",
+      "discardMessage": "Ali ste prepričani, da želite zavreči to neuspešno sejo?",
+      "cancelMessage": "Ali ste prepričani, da želite preklicati prenos tega vzorca?",
+      "keep": "Obdrži",
+      "discard": "Zavrzi",
+      "cancel": "Prekliči"
+    }
+  },
+  "loading": {
+    "text": "Odpiranje seje in priprava tkanine ..."
+  },
+  "error": {
+    "title": "Nalaganje seje ni uspelo",
+    "fallbackMessage": "Vaše seje šivanja ni bilo mogoče naložiti.",
+    "backButton": "Nazaj",
+    "tableButton": "Pojdi na mizo"
+  },
+  "header": {
+    "backButton": "← Nazaj",
+    "tableButton": "← Miza",
+    "defaultTitle": "Seja šivanja",
+    "progress": "{{completed}} / {{total}} celic ({{percent}} % dokončano)",
+    "resumeTutorialAccessibilityLabel": "Nadaljuj vodič"
+  },
+  "banners": {
+    "patternRemoved": "Ta vzorec je bil odstranjen zaradi moderiranja in ni več na voljo. Tapnite za izhod.",
+    "syncConflict": "Sinhronizirano z drugo napravo — nekatere celice so bile posodobljene. Tapnite za opustitev."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Poišči naslednjo preostalo celico aktivne barve niti",
+    "undoAccessibilityLabel": "Razveljavi zadnji šiv"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Barva {{number}}: DMC {{dmcCode}}, preostane {{count}} šiv",
+    "chipAccessibilityLabel_other": "Barva {{number}}: DMC {{dmcCode}}, preostane {{count}} šivov",
+    "done": "Končano",
+    "remaining_one": "še {{count}}",
+    "remaining_other": "še {{count}}"
+  },
+  "celebration": {
+    "title": "Čudovito izdelano!",
+    "subtitle": "Dokončali ste prav vsak šiv na tej tkanini.",
+    "stitchesLabel_one": "Šiv",
+    "stitchesLabel_other": "Šivi",
+    "colorsLabel_one": "Barva",
+    "colorsLabel_other": "Barve",
+    "replayButton": "Šivaj znova",
+    "catalogButton": "Nazaj na katalog"
+  }
+}

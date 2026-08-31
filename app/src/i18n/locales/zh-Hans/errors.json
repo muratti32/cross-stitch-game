@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "该登录属于另一个账户。您当前的账户未被更改。",
+    "providerRejected": "该验证已被拒绝。请检查账户或验证码后重试。"
+  },
+  "generic": {
+    "failure": "出了点问题，请重试。",
+    "supportReferenceLabel": "支持编号：{{reference}}"
+  }
+}

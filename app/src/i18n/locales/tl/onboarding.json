@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "MALIGAYANG PAGDATING SA STITCH WISH",
+    "title": "Pumili ng kulay, pindutin ang tumutugmang mga cell.",
+    "heroAlt": "Preview ng panimulang pattern na Cozy Heart",
+    "handedness": {
+      "sectionTitle": "Aling gilid ang gagamitin ng mga kontrol?",
+      "groupLabel": "Gilid ng kontrol",
+      "optionRight": "Mga kontrol sa kanan",
+      "optionLeft": "Mga kontrol sa kaliwa",
+      "saveErrorText": "Hindi na-save ang piniling iyon.",
+      "retry": "Subukan ulit"
+    },
+    "note": "Puwede mong baguhin ito sa Settings mamaya.",
+    "start": "Simulan ang pananahi",
+    "starting": "Sinisimulan…",
+    "browse": "Mag-browse ng mga panimulang pattern",
+    "signIn": "Mag-log in"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Piliin ang DMC 321 Christmas Red.",
+      "stitchAction": "Pindutin ang naka-highlight na tumutugmang cell.",
+      "mismatchedTap": "Pindutin ang naka-highlight na hindi tumutugmang cell. Walang gastos ang maling pagpindot.",
+      "undoAction": "I-undo ang tahing iyon at ilagay ito ulit.",
+      "stitchSweep": "Pindutin ang tumutugmang cell pagkatapos i-drag sa naka-highlight na guhit.",
+      "threadColorCompletion": "Tapusin ang naka-highlight na puting sinulid pagkatapos piliin ang susunod mong kulay."
+    },
+    "hints": {
+      "anchoredZoom": "I-pinch para i-zoom habang nananatili sa lugar ang mga cell sa ilalim ng iyong daliri.",
+      "panVsSweep": "Ang pag-drag ay nagpapan sa tela. Magsimula sa tumutugmang cell para tumahi nang sweep.",
+      "edgeAutoPan": "Magpatuloy sa pag-sweep malapit sa gilid at susundan ng tela ang iyong daliri.",
+      "remainingCellLocator": "Gamitin ang locator para hanapin ang susunod na natitirang cell para sa sinulid na ito."
+    },
+    "skip": "Laktawan muna",
+    "skipAccessibilityLabel": "Laktawan muna ang tutorial",
+    "dismiss": "Nakuha ko",
+    "dismissAccessibilityLabel": "Isara ang tip"
+  },
+  "recap": {
+    "title": "Alam mo na ngayon ito",
+    "lines": {
+      "matchNumbers": "Itugma ang mga numero para ilagay ang bawat tahi.",
+      "dragSweep": "I-drag ang tumutugmang mga cell para tumahi nang sweep.",
+      "pinchZoom": "I-pinch para i-zoom kapag kailangan mong tumingin nang mas malapit.",
+      "undoLocator": "Palaging libre ang undo at ang locator."
+    },
+    "continue": "Ipagpatuloy ang pananahi",
+    "browsePatterns": "Mag-browse ng mga pattern"
+  }
+}

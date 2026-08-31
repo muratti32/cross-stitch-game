@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Natrag",
+    "cancel": "Odustani",
+    "duplicateTitle": "Već imaš osobni uzorak pod nazivom „{{title}}”. Odaberi drugi naziv.",
+    "cellsCount_one": "ćelija",
+    "cellsCount_other": "ćelija",
+    "colorsCount_one": "boja",
+    "colorsCount_other": "boja"
+  },
+  "hub": {
+    "title": "Centar za izradu",
+    "subtitle": "Oživi vlastite dizajne s prilagođenim uzorcima za vezenje.",
+    "opening": "Otvaranje…",
+    "photoImport": {
+      "title": "Uvoz fotografije",
+      "description": "Učitaj sliku iz galerije i pretvori je u uzorak za vezenje.",
+      "action": "Uvezi fotografiju"
+    },
+    "aiGenerator": {
+      "title": "AI generator",
+      "description": "Opiši ugodan prompt i neka umjetna inteligencija generira prilagođeni piksel dizajn.",
+      "action": "Generiraj dizajn"
+    }
+  },
+  "aspects": {
+    "square": "Kvadrat",
+    "portrait_4_3": "Portret 4:3",
+    "landscape_4_3": "Pejzaž 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Pretvorba uzorka nije uspjela. Pokušaj ponovno.",
+      "timeout": "Pretvorba uzorka se još obrađuje. Pokušaj ponovno uskoro.",
+      "generic": "Pretvorba uzorka nije dovršena. Pokušaj ponovno."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Potreban je registrirani račun",
+      "body": "AI umjetnina i njezina knjižnica ostaju privatne za tvoj račun.",
+      "signIn": "Prijava"
+    },
+    "header": {
+      "title": "AI generator",
+      "backAccessibilityLabel": "Natrag"
+    },
+    "prompt": {
+      "label": "Opiši svoju umjetninu",
+      "placeholder": "Ugodna vrtna kućica u sumrak…"
+    },
+    "generate": {
+      "working": "Obrada…",
+      "action": "Generiraj — 1 AI kredit",
+      "errors": {
+        "promptRejected": "Taj prompt nije dopušten. Pokušaj opisati nešto drugo.",
+        "generic": "Pokretanje AI generiranja nije uspjelo. Pokušaj ponovno."
+      }
+    },
+    "library": {
+      "title": "Tvoja knjižnica AI umjetnina",
+      "status": {
+        "pending": "Na čekanju",
+        "dispatched": "Poslano",
+        "running": "U tijeku",
+        "delivered": "Isporučeno",
+        "safety_rejected": "Odbijeno zbog sigurnosti",
+        "failed": "Neuspjelo",
+        "deleted": "Izbrisano",
+        "unknown": "Nedostupno"
+      },
+      "failure": {
+        "safety_rejected": "Ova umjetnina nije prošla sigurnosnu provjeru pružatelja usluge.",
+        "failed": "Ovu umjetninu nije bilo moguće generirati."
+      },
+      "approve": "Odobri u uzorak",
+      "delete": "Izbriši",
+      "deleteAccessibilityLabel": "Izbriši ovu AI umjetninu",
+      "errors": {
+        "loadFailed": "Učitavanje tvoje knjižnice AI umjetnina nije uspjelo. Pokušaj ponovno."
+      }
+    },
+    "approve": {
+      "modalTitle": "Stvori osobni uzorak",
+      "titleLabel": "Naziv uzorka",
+      "titleAccessibilityLabel": "Naziv uzorka",
+      "defaultTitle": "Moj AI uzorak",
+      "placeholder": "Moj AI uzorak",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Odustani",
+      "creating": "Stvaranje uzorka…",
+      "create": "Stvori uzorak",
+      "errors": {
+        "generic": "Stvaranje osobnog uzorka nije uspjelo. Pokušaj ponovno."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Potreban je registrirani račun",
+      "body": "Osobni uzorci pripadaju tvom računu pa ostaju privatni i dostupni na svim uređajima.",
+      "signIn": "Prijavi se ili stvori račun",
+      "back": "Natrag"
+    },
+    "header": {
+      "title": "Fotografski uzorak",
+      "subtitle": "Uokviri lokalno, zatim odobri pretvorbu",
+      "backAccessibilityLabel": "Natrag"
+    },
+    "picker": {
+      "chooseTitle": "Odaberi fotografiju",
+      "helpText": "Fotografija u punoj rezoluciji ostaje na ovom uređaju. Ništa se ne pretvara dok ne odobriš kadar.",
+      "choose": "Odaberi iz knjižnice",
+      "chooseAnother": "Odaberi drugu",
+      "opening": "Otvaranje…",
+      "errors": {
+        "permissionDenied": "Za odabir lokalnog izvora fotografije potreban je pristup galeriji.",
+        "invalidDimensions": "Odabrana fotografija nema upotrebljive dimenzije.",
+        "generic": "Otvaranje galerije fotografija nije uspjelo. Pokušaj ponovno."
+      }
+    },
+    "framing": {
+      "title": "Kadriranje umjetnine",
+      "gestureHint": "Povuci za pomicanje · uštipni za zumiranje",
+      "aspectLabel": "Omjer kadra"
+    },
+    "profile": {
+      "title": "Profil pretvorbe",
+      "options": {
+        "easy": "Jednostavno",
+        "standard": "Standardno",
+        "detailed": "Detaljno"
+      },
+      "custom": "Prilagođeno",
+      "customMeta": "Slobodno · oblik zaključan",
+      "unavailable": "Ne uklapa se u ovaj kadar",
+      "customShortEdgeLabel": "Kraća stranica",
+      "customColorLimitLabel": "Ograničenje DMC boja",
+      "exceedsLimit": "Ove prilagođene vrijednosti premašuju ograničenje veličine uzorka od {{max}} ćelija."
+    },
+    "titleCard": {
+      "label": "Naziv uzorka",
+      "placeholder": "Moj fotografski uzorak",
+      "defaultTitle": "Moj fotografski uzorak",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · do {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "Odobravanje šalje samo uokvirenu, smanjenu inačicu. Izvorna fotografija ostaje lokalno.",
+      "approve": "Odobri umjetninu i pretvori"
+    },
+    "processing": {
+      "preparingFrame": "Pripremanje odobrenog kadra na ovom uređaju…",
+      "uploading": "Slanje samo izrezanog, smanjenog kadra…",
+      "waitingForWorker": "Čekanje na obradu pretvorbe…",
+      "buildingGrid": "Izrada mreže boda i DMC palete…",
+      "preparingSession": "Pripremanje osobnog uzorka za igru…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Ovaj profil se više ne uklapa u konačni kadar. Odaberi Jednostavno ili smanji detalje.",
+        "generic": "Pretvorba ove fotografije nije uspjela. Pokušaj ponovno."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Nijedan uzorak nije odabran",
+      "noPatternBody": "Ovaj zaslon mora se otvoriti iz postojećeg osobnog uzorka u tvojoj knjižnici.",
+      "accountTitle": "Potreban je registrirani račun",
+      "accountBody": "Osobni uzorci pripadaju tvom računu pa ostaju privatni i dostupni na svim uređajima.",
+      "signIn": "Prijavi se ili stvori račun",
+      "back": "Natrag"
+    },
+    "loading": "Nastavljanje nacrta u uređivaču...",
+    "load": {
+      "failedTitle": "Učitavanje uzorka nije uspjelo",
+      "retry": "Pokušaj ponovno",
+      "back": "Natrag",
+      "errors": {
+        "generic": "Učitavanje ovog osobnog uzorka nije uspjelo. Pokušaj ponovno."
+      }
+    },
+    "header": {
+      "title": "Uređivač uzoraka",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Natrag"
+    },
+    "toolbar": {
+      "undo": "Poništi",
+      "redo": "Ponovi"
+    },
+    "mode": {
+      "paint": "Boji",
+      "replaceColor": "Zamijeni boju",
+      "replaceStep1": "1. Dodirni boju u uzorku ispod za zamjenu:",
+      "replaceStep2": "2. Odaberi ciljanu DMC boju ispod za izvršenje zamjene:",
+      "paintSelected": "Odabrano: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Odaberi boju ispod, zatim dodiruj ćelije za bojanje."
+    },
+    "errors": {
+      "pickColorFirst": "Prvo odaberi boju",
+      "paletteLimit": "Ovaj uzorak već koristi najveći dopušteni broj od {{max}} boja niti."
+    },
+    "picker": {
+      "title": "DMC boje niti",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Spremi uređeni uzorak",
+      "placeholder": "Naziv mog uređenog uzorka",
+      "action": "Spremi kao novi",
+      "offlineTitle": "Spremljeno izvan mreže",
+      "offlineBody": "Tvoj uređeni uzorak spremljen je na ovom uređaju i sinkronizirat će se s tvojim računom čim se ponovno povežeš.",
+      "errors": {
+        "generic": "Spremanje ovog osobnog uzorka nije uspjelo. Pokušaj ponovno."
+      }
+    }
+  }
+}

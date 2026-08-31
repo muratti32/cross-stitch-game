@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Πίσω",
+    "title": "Κατάστημα",
+    "subtitle": "Συνδρομή και εφάπαξ αγορές"
+  },
+  "signInReturn": {
+    "notice": "Είστε συνδεδεμένοι. Το {{label}} παραμένει επιλεγμένο. Ελέγξτε το και πατήστε Αγορά όταν είστε έτοιμοι."
+  },
+  "premiumHero": {
+    "eyebrow": "ΣΥΝΔΡΟΜΗ PREMIUM",
+    "title": "Δημιουργήστε περισσότερα. Συλλέξτε μια μικρή ανταμοιβή κάθε μέρα.",
+    "body": "AI Credits κάθε περίοδο πληρωμής, θέματα Premium και καθημερινή διεκδίκηση Stitch Coin.",
+    "benefitAiCredits": "Μονάδες AI",
+    "benefitDailyCoins": "Καθημερινά Νομίσματα",
+    "benefitThemes": "Θέματα",
+    "statusNoActiveMembership": "Καμία ενεργή συνδρομή",
+    "statusBrowseAsGuest": "Περιήγηση σχεδίων ως Επισκέπτης",
+    "periodEndsLabel": "Η τρέχουσα περίοδος λήγει",
+    "periodRenewsLabel": "Ανανεώνεται",
+    "lifecycleActive": "Ενεργή"
+  },
+  "membershipActions": {
+    "title": "Ενεργή Συνδρομή Premium",
+    "body": "Οι καθημερινές ανταμοιβές βρίσκονται στο Προφίλ. Τα θέματα βρίσκονται στις Ρυθμίσεις › Εμφάνιση.",
+    "scheduledChangeNotice": "Αλλαγές σε {{plan}} στις {{date}}",
+    "manageSubscription": "Διαχείριση Συνδρομής",
+    "manageSubscriptionFailedTitle": "Δεν ήταν δυνατό το άνοιγμα των συνδρομών",
+    "manageSubscriptionFailedBody": "Δοκιμάστε ξανά από τον λογαριασμό καταστήματος της συσκευής σας."
+  },
+  "pending": {
+    "title": "Εκκρεμεί Συμφωνία Αγοράς",
+    "verifyingTitle": "Επαλήθευση αγοράς",
+    "premiumChangeAccepted": "Το κατάστημα αποδέχθηκε την αλλαγή σε {{label}}. ",
+    "premiumResponseReceived": "Ελήφθη η απάντηση του καταστήματος για {{label}}. ",
+    "premiumDeferredSuffix": "Η αλλαγή προγραμματίζεται μόνο μετά την επαλήθευση από το Backend του Παιχνιδιού και ισχύει όταν λήξει η τρέχουσα περίοδός σας.",
+    "premiumSuffix": "Το Premium ενεργοποιείται μόνο μετά την επαλήθευση από το Backend του Παιχνιδιού.",
+    "doNotPurchasePlanAgain": " Μην αγοράσετε ξανά αυτό το πλάνο.",
+    "coinPackBody": "Ελήφθη η απάντηση του καταστήματος. Το Stitch Coin ενημερώνεται μόνο αφού το Backend του Παιχνιδιού εκθέσει την αντίστοιχη εγγραφή στο Commerce Ledger. Μην αγοράσετε ξανά αυτό το πακέτο.",
+    "aiCreditPackBody": "Ελήφθη η απάντηση του καταστήματος. Το AI Credit ενημερώνεται μόνο αφού το Backend του Παιχνιδιού εκθέσει την αντίστοιχη εγγραφή στο Commerce Ledger. Μην αγοράσετε ξανά αυτό το πακέτο.",
+    "refreshStatus": "Ανανέωση κατάστασης",
+    "retryReconciliation": "Επανάληψη συμφωνίας"
+  },
+  "store": {
+    "loadingPrices": "Φόρτωση τρεχουσών τιμών καταστήματος…",
+    "unavailableTitle": "Το κατάστημα είναι προσωρινά μη διαθέσιμο",
+    "unavailableBody": "Το πορτοφόλι και οι πληροφορίες συνδρομής σας παραμένουν διαθέσιμα.",
+    "retry": "Επανάληψη"
+  },
+  "plans": {
+    "choosePremiumPlan": "Επιλέξτε ένα πλάνο Premium",
+    "yourPremiumPlan": "Το πλάνο Premium σας",
+    "currentPlan": "ΤΡΕΧΟΝ ΠΛΑΝΟ",
+    "upgrade": "ΑΝΑΒΑΘΜΙΣΗ",
+    "planChange": "ΑΛΛΑΓΗ ΠΛΑΝΟΥ",
+    "bestValue": "ΚΑΛΥΤΕΡΗ ΑΞΙΑ",
+    "billedEvery": "Χρεώνεται κάθε {{period}}",
+    "chooseLabel": "Επιλογή {{label}}",
+    "freeTrial": "Δωρεάν για {{offer}}, μετά {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Εφάπαξ πακέτα",
+    "stitchCoinPacksTitle": "Πακέτα Stitch Coin",
+    "aiCreditPacksTitle": "Πακέτα AI Credit",
+    "coinsNoun": "Νομίσματα",
+    "creditsNoun": "Μονάδες",
+    "fromPrice": "Από {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Επαναφορά αγορών",
+    "restoreGuestPremium": "Επαναφορά Premium Επισκέπτη",
+    "requestedTitle": "Ζητήθηκε επαναφορά",
+    "requestedBody": "Η επαληθευμένη πρόσβαση Premium θα εμφανιστεί αφού συμφωνηθεί το webhook του καταστήματος. Τα πακέτα Stitch Coin και AI Credit δεν επαναφέρονται ποτέ."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Τρέχουσες τιμές από το κατάστημα εφαρμογών",
+    "closeAccessibilityLabel": "Κλείσιμο φύλλου προϊόντος",
+    "closeButtonAccessibilityLabel": "Κλείσιμο",
+    "selectedBeforeSignIn": "Επιλέχθηκε πριν τη σύνδεση",
+    "buy": "Αγορά"
+  },
+  "confirmation": {
+    "cancel": "Ακύρωση",
+    "confirmLabel": "Επιβεβαίωση {{label}}",
+    "confirmPremiumTitle": "Επιβεβαίωση αγοράς Premium",
+    "introductoryOffer": "Το κατάστημά σας αναφέρει αυτή την εισαγωγική προσφορά: {{offer}}.",
+    "premiumAppearsAfterVerification": "Το Premium εμφανίζεται μόνο αφού το Backend του Παιχνιδιού επαληθεύσει τη συναλλαγή του καταστήματος.",
+    "confirmPremiumUpgradeTitle": "Επιβεβαίωση αναβάθμισης Premium",
+    "confirmPremiumPlanChangeTitle": "Επιβεβαίωση αλλαγής πλάνου Premium",
+    "currentPlanLabel": "Τρέχον Πλάνο: {{label}}",
+    "upgradeToLabel": "Αναβάθμιση σε {{label}} · {{offer}}",
+    "changeToLabel": "Αλλαγή σε {{label}} · {{offer}}",
+    "upgradeBody": "Το App Store ελέγχει την τελική χρέωση και την ημερομηνία ισχύος αυτής της αναβάθμισης. Το Premium αντικατοπτρίζει το {{label}} μόνο αφού το Backend του Παιχνιδιού το επαληθεύσει.",
+    "planChangeBody": "Το App Store αναβάλλει αυτή την αλλαγή έως το τέλος της τρέχουσας περιόδου σας: το {{currentLabel}} συνεχίζει να ισχύει έως τότε, και το {{targetLabel}} χρεώνεται από την ημερομηνία αλλαγής. Ακυρώστε την αλλαγή από τη Διαχείριση Συνδρομής.",
+    "confirmUpgrade": "Επιβεβαίωση αναβάθμισης",
+    "confirmPlanChange": "Επιβεβαίωση αλλαγής πλάνου",
+    "confirmStitchCoinTitle": "Επιβεβαίωση αγοράς Stitch Coin",
+    "confirmAiCreditTitle": "Επιβεβαίωση αγοράς AI Credit",
+    "balanceChangesAfterVerificationCoin": "Το υπόλοιπό σας αλλάζει μόνο αφού το Backend του Παιχνιδιού επαληθεύσει τη συναλλαγή του καταστήματος και καταγράψει την αντίστοιχη εγγραφή στο Commerce Ledger.",
+    "balanceChangesAfterVerificationAiCredit": "Το υπόλοιπό σας αλλάζει μόνο αφού το Backend του Παιχνιδιού επαληθεύσει τη συναλλαγή του καταστήματος και καταγράψει την αντίστοιχη εγγραφή στο Commerce Ledger. Δεν απαιτείται Συνδρομή Premium."
+  },
+  "disclosure": {
+    "subscriptionTerms": "Η πληρωμή χρεώνεται στον λογαριασμό {{store}} σας κατά την επιβεβαίωση. Το {{label}} Premium ανανεώνεται αυτόματα στο {{offer}} εκτός εάν απενεργοποιήσετε την αυτόματη ανανέωση τουλάχιστον 24 ώρες πριν το τέλος της τρέχουσας περιόδου. Οποιοδήποτε αχρησιμοποίητο τμήμα δωρεάν δοκιμής χάνεται όταν αγοράζετε μια συνδρομή. Μπορείτε να ακυρώσετε ανά πάσα στιγμή από τον λογαριασμό {{store}} σας.",
+    "privacyPolicy": "Πολιτική Απορρήτου",
+    "termsOfService": "Όροι Χρήσης",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Δεν ήταν δυνατό το άνοιγμα του συνδέσμου: {{url}}"
+  },
+  "supportReference": {
+    "label": "Κωδικός Υποστήριξης: {{reference}}",
+    "copyAccessibilityLabel": "Αντιγραφή κωδικού υποστήριξης {{reference}}",
+    "copyAccessibilityHint": "Αντιγράφει τον κωδικό υποστήριξης στο πρόχειρο",
+    "copied": "Αντιγράφηκε",
+    "copyFailedTitle": "Η αντιγραφή απέτυχε",
+    "copyFailedBody": "Δεν ήταν δυνατή η αντιγραφή του κωδικού υποστήριξης. Επιλέξτε το κείμενο για να το αντιγράψετε χειροκίνητα."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Οι αγορές Stitch Coin για Επισκέπτες είναι διαθέσιμες μόνο σε iOS.",
+    "guestIosOnlyGeneric": "Οι αγορές Επισκεπτών είναι διαθέσιμες μόνο σε iOS.",
+    "purchaseFailedTitle": "Η αγορά απέτυχε",
+    "premiumVerificationNotYet": "Το Backend του Παιχνιδιού δεν μπόρεσε να επαληθεύσει αυτή την αγορά. Επαναλάβετε τη συμφωνία· μην την αγοράσετε ξανά.",
+    "premiumVerificationFailedRetry": "Το Backend του Παιχνιδιού δεν μπόρεσε ακόμη να επαληθεύσει αυτή την αγορά. Επαναλάβετε τη συμφωνία· μην την αγοράσετε ξανά.",
+    "premiumGrantRefreshFailed": "Το Premium επαληθεύτηκε, αλλά η κατάσταση συνδρομής και AI Credit δεν μπόρεσε να ανανεωθεί. Επαναλάβετε τη συμφωνία.",
+    "premiumReconciliationUnreachable": "Η συμφωνία αγοράς δεν μπόρεσε να συνδεθεί με το Backend του Παιχνιδιού. Επαναλάβετε τη συμφωνία· μην την αγοράσετε ξανά.",
+    "coinPackVerificationMismatch": "Η συναλλαγή του καταστήματος δεν ταίριαξε με αυτό το Πακέτο Νομισμάτων. Επαναλάβετε την επαλήθευση ή επικοινωνήστε με την υποστήριξη· μην το αγοράσετε ξανά.",
+    "coinPackGrantUnavailable": "Η αγορά επαληθεύτηκε, αλλά η εγγραφή Stitch Coin δεν είναι διαθέσιμη. Επαναλάβετε τη συμφωνία· μην το αγοράσετε ξανά.",
+    "coinPackBalanceRefreshFailed": "Η εγγραφή Νομισμάτων επαληθεύτηκε, αλλά το τρέχον υπόλοιπο Stitch Coin δεν μπόρεσε να ανανεωθεί. Επαναλάβετε τη συμφωνία.",
+    "coinPackVerificationFailedRetry": "Το Backend του Παιχνιδιού δεν μπόρεσε ακόμη να επαληθεύσει αυτό το Πακέτο Νομισμάτων. Επαναλάβετε τη συμφωνία· μην το αγοράσετε ξανά.",
+    "coinPackReconciliationUnreachable": "Η συμφωνία Πακέτου Νομισμάτων δεν μπόρεσε να συνδεθεί με το Backend του Παιχνιδιού. Επαναλάβετε τη συμφωνία· μην το αγοράσετε ξανά.",
+    "aiCreditPackVerificationMismatch": "Η συναλλαγή του καταστήματος δεν ταίριαξε με αυτό το Πακέτο AI Credit. Επαναλάβετε την επαλήθευση ή επικοινωνήστε με την υποστήριξη· μην το αγοράσετε ξανά.",
+    "aiCreditPackGrantUnavailable": "Η αγορά επαληθεύτηκε, αλλά η εγγραφή AI Credit δεν είναι διαθέσιμη. Επαναλάβετε τη συμφωνία· μην το αγοράσετε ξανά.",
+    "aiCreditPackBalanceRefreshFailed": "Η εγγραφή AI Credit επαληθεύτηκε, αλλά το τρέχον υπόλοιπο δεν μπόρεσε να ανανεωθεί. Επαναλάβετε τη συμφωνία.",
+    "aiCreditPackVerificationFailedRetry": "Το Backend του Παιχνιδιού δεν μπόρεσε ακόμη να επαληθεύσει αυτό το Πακέτο AI Credit. Επαναλάβετε τη συμφωνία· μην το αγοράσετε ξανά.",
+    "aiCreditPackReconciliationUnreachable": "Η συμφωνία Πακέτου AI Credit δεν μπόρεσε να συνδεθεί με το Backend του Παιχνιδιού. Επαναλάβετε τη συμφωνία· μην το αγοράσετε ξανά.",
+    "reconciliationStillUnavailable": "Το Backend του Παιχνιδιού εξακολουθεί να μην είναι διαθέσιμο. Δοκιμάστε ξανά τη συμφωνία αργότερα.",
+    "storeTemporarilyUnavailable": "Το κατάστημα είναι προσωρινά μη διαθέσιμο. Δοκιμάστε ξανά σε λίγα λεπτά.",
+    "purchasesNotAllowed": "Οι αγορές δεν επιτρέπονται σε αυτή τη συσκευή. Ελέγξτε τον λογαριασμό καταστήματος ή τους γονικούς ελέγχους σας.",
+    "itemNotAvailable": "Αυτό το αντικείμενο δεν είναι διαθέσιμο για αγορά αυτή τη στιγμή. Επιλέξτε άλλο αντικείμενο ή δοκιμάστε ξανά αργότερα.",
+    "alreadyOwned": "Ήδη κατέχετε αυτή την αγορά. Χρησιμοποιήστε την Επαναφορά Αγορών για να ανανεώσετε την πρόσβασή σας.",
+    "couldNotConnectToStore": "Δεν ήταν δυνατή η σύνδεση με το κατάστημα. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά.",
+    "paymentPendingApproval": "Η πληρωμή σας εκκρεμεί έγκριση. Η αγορά σας θα εμφανιστεί αφού το κατάστημα την ολοκληρώσει.",
+    "testPurchaseDeclined": "Η δοκιμαστική αγορά απορρίφθηκε. Δεν έγινε καμία πληρωμή. Επιλέξτε διαφορετικό αποτέλεσμα Δοκιμαστικού Καταστήματος στις Ρυθμίσεις και δοκιμάστε ξανά.",
+    "genericPurchaseFailure": "Δεν μπορέσαμε να ολοκληρώσουμε την αγορά σας. Δεν έγινε καμία πληρωμή. Δοκιμάστε ξανά."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Ακόμη σε επαλήθευση",
+    "premiumPending": "Η επαλήθευση βρίσκεται ακόμη σε εξέλιξη. Το Premium θα ενεργοποιηθεί μόλις το επιβεβαιώσει το Backend του Παιχνιδιού.",
+    "premiumPlanChangePending": "Η επαλήθευση βρίσκεται ακόμη σε εξέλιξη. Η αλλαγή πλάνου σας θα προγραμματιστεί μόλις το επιβεβαιώσει το Backend του Παιχνιδιού.",
+    "coinPackPending": "Η επαλήθευση βρίσκεται ακόμη σε εξέλιξη. Το υπόλοιπο Stitch Coin σας θα ενημερωθεί μόλις ολοκληρωθεί.",
+    "aiCreditPackPending": "Η επαλήθευση βρίσκεται ακόμη σε εξέλιξη. Το υπόλοιπο AI Credit σας θα ενημερωθεί μόλις ολοκληρωθεί."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Η αγορά ελήφθη",
+    "storeAcceptedPlanChange": "Το κατάστημα αποδέχθηκε την αλλαγή σε {{label}}. Επιβεβαίωση όταν θα ισχύσει.",
+    "storeAcceptedPurchase": "Το κατάστημα αποδέχθηκε το {{label}}. Επαλήθευση της αγοράς σας τώρα.",
+    "premiumChanges": "Το Premium αλλάζει σε {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " στις {{date}}",
+    "planChangeScheduledTitle": "Η αλλαγή πλάνου προγραμματίστηκε",
+    "planChangeScheduledBody": "Η Συνδρομή Premium σας διατηρεί το τρέχον πλάνο μέχρι να αλλάξει σε {{label}}{{effectiveOn}}. Ακυρώστε την αλλαγή από τη Διαχείριση Συνδρομής.",
+    "premiumIsActiveTitle": "Το Premium είναι ενεργό",
+    "premiumVerifiedAndActive": "Το {{label}} Premium επαληθεύτηκε και είναι ενεργό.",
+    "premiumNowActiveNoBilling": "Το {{label}} Premium είναι τώρα ενεργό.",
+    "premiumNowActiveBilled": "Το {{label}} Premium είναι τώρα ενεργό, χρεώνεται κάθε {{period}}.",
+    "coinPackGrantedTitle": "Χορηγήθηκαν Stitch Coins",
+    "coinPackGrantVerified": "Η εγγραφή {{label}} επαληθεύτηκε. Υπόλοιπο Stitch Coin: {{balance}}.",
+    "coinPackAddedToBalance": "{{quantity}} Stitch Coins προστέθηκαν στο υπόλοιπό σας.",
+    "aiCreditPackGrantedTitle": "Χορηγήθηκαν AI Credits",
+    "aiCreditPackGrantVerified": "Η εγγραφή {{label}} επαληθεύτηκε. Υπόλοιπο AI Credit: {{balance}}.",
+    "aiCreditPackAddedToBalance": "{{quantity}} AI Credits προστέθηκαν στο υπόλοιπό σας."
+  },
+  "products": {
+    "premiumAnnual": "Ετήσιο",
+    "premiumMonthly": "Μηνιαίο",
+    "premiumWeekly": "Εβδομαδιαίο",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+    "aiCreditPack_one": "{{formattedCount}} AI Credit",
+    "aiCreditPack_other": "{{formattedCount}} AI Credits",
+    "billedEveryOffer": "{{price}} κάθε {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} credits / περίοδο πληρωμής",
+    "creditAllowancePaidNoun": "{{credits}} credits / πληρωμένο {{period}}"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Αγορά ως Επισκέπτης",
+    "commerceBody": "Μπορείτε να αγοράσετε χωρίς εγγραφή. Η Συνδρομή Premium μπορεί να επαναφερθεί από το κατάστημα, αλλά το Stitch Coin, το AI Credit και το ιδιωτικό περιεχόμενο Επισκέπτη δεν ανακτώνται αν χαθεί αυτή η εγκατάσταση. Η εγγραφή τα προστατεύει και δεν διακόπτει ποτέ το παιχνίδι ως Επισκέπτης.",
+    "continueAsGuest": "Συνέχεια ως Επισκέπτης",
+    "signInInstead": "Σύνδεση αντ' αυτού",
+    "closeAccessibilityLabel": "Κλείσιμο"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "Το κατάλαβα",
+    "successButton": "Τέλεια",
+    "failedButton": "Κλείσιμο",
+    "infoButton": "Το κατάλαβα",
+    "closeAccessibilityLabel": "Κλείσιμο"
+  }
+}

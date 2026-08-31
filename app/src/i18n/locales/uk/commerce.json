@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Назад",
+    "title": "Магазин",
+    "subtitle": "Членство та одноразові поповнення"
+  },
+  "signInReturn": {
+    "notice": "Ви увійшли в систему. {{label}} все ще вибрано. Перегляньте і натисніть Купити, коли будете готові."
+  },
+  "premiumHero": {
+    "eyebrow": "ПРЕМІУМ ЧЛЕНСТВО",
+    "title": "Створюйте більше. Отримуйте невелику винагороду щодня.",
+    "body": "AI Кредити щоперіоду оплати, Преміум теми та щоденна винагорода Stitch Coin.",
+    "benefitAiCredits": "AI Кредити",
+    "benefitDailyCoins": "Щоденні Монети",
+    "benefitThemes": "Теми",
+    "statusNoActiveMembership": "Немає активного членства",
+    "statusBrowseAsGuest": "Переглянути плани як Гість",
+    "periodEndsLabel": "Поточний період завершується",
+    "periodRenewsLabel": "Поновлюється",
+    "lifecycleActive": "Активно"
+  },
+  "membershipActions": {
+    "title": "Активне Преміум Членство",
+    "body": "Щоденні винагороди в Профілі. Теми в Налаштуваннях › Зовнішній вигляд.",
+    "scheduledChangeNotice": "Зміни на {{plan}} {{date}}",
+    "manageSubscription": "Керувати Підпискою",
+    "manageSubscriptionFailedTitle": "Не вдалося відкрити підписки",
+    "manageSubscriptionFailedBody": "Спробуйте ще раз з облікового запису магазину на вашому пристрої."
+  },
+  "pending": {
+    "title": "Звірка Покупки Триває",
+    "verifyingTitle": "Перевірка покупки",
+    "premiumChangeAccepted": "Магазин прийняв зміну на {{label}}. ",
+    "premiumResponseReceived": "Отримано відповідь магазину для {{label}}. ",
+    "premiumDeferredSuffix": "Зміна запланована лише після перевірки Ігровим Бекендом і набуде чинності по завершенні поточного періоду.",
+    "premiumSuffix": "Преміум активується лише після перевірки Ігровим Бекендом.",
+    "doNotPurchasePlanAgain": " Не купуйте цей план знову.",
+    "coinPackBody": "Відповідь магазину отримано. Stitch Coin оновлюється лише після того, як Ігровий Бекенд відобразить відповідне нарахування в Комерційному Реєстрі. Не купуйте цей пакет знову.",
+    "aiCreditPackBody": "Відповідь магазину отримано. AI Кредит оновлюється лише після того, як Ігровий Бекенд відобразить відповідне нарахування в Комерційному Реєстрі. Не купуйте цей пакет знову.",
+    "refreshStatus": "Оновити статус",
+    "retryReconciliation": "Повторити звірку"
+  },
+  "store": {
+    "loadingPrices": "Завантаження поточних цін магазину…",
+    "unavailableTitle": "Магазин тимчасово недоступний",
+    "unavailableBody": "Ваш гаманець та інформація про членство все ще доступні.",
+    "retry": "Повторити"
+  },
+  "plans": {
+    "choosePremiumPlan": "Виберіть Преміум план",
+    "yourPremiumPlan": "Ваш Преміум план",
+    "currentPlan": "ПОТОЧНИЙ ПЛАН",
+    "upgrade": "ПОКРАЩЕННЯ",
+    "planChange": "ЗМІНА ПЛАНУ",
+    "bestValue": "НАЙВИГІДНІШЕ",
+    "billedEvery": "Стягується кожні {{period}}",
+    "chooseLabel": "Вибрати {{label}}",
+    "freeTrial": "Безкоштовно на {{offer}}, потім {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Одноразові пакети",
+    "stitchCoinPacksTitle": "Пакети Stitch Coin",
+    "aiCreditPacksTitle": "Пакети AI Кредитів",
+    "coinsNoun": "Монети",
+    "creditsNoun": "Кредити",
+    "fromPrice": "Від {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Відновити покупки",
+    "restoreGuestPremium": "Відновити Гостьовий Преміум",
+    "requestedTitle": "Відновлення запитано",
+    "requestedBody": "Перевірений Преміум доступ з'явиться після звірки вебхука магазину. Пакети Stitch Coin та AI Кредитів ніколи не відновлюються."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Поточні ціни з магазину додатків",
+    "closeAccessibilityLabel": "Закрити картку товару",
+    "closeButtonAccessibilityLabel": "Закрити",
+    "selectedBeforeSignIn": "Вибрано до входу",
+    "buy": "Купити"
+  },
+  "confirmation": {
+    "cancel": "Скасувати",
+    "confirmLabel": "Підтвердити {{label}}",
+    "confirmPremiumTitle": "Підтвердити покупку Преміум",
+    "introductoryOffer": "Ваш магазин повідомляє про цю вступну пропозицію: {{offer}}.",
+    "premiumAppearsAfterVerification": "Преміум з'являється лише після того, як Ігровий Бекенд перевірить транзакцію магазину.",
+    "confirmPremiumUpgradeTitle": "Підтвердити покращення Преміум",
+    "confirmPremiumPlanChangeTitle": "Підтвердити зміну Преміум плану",
+    "currentPlanLabel": "Поточний План: {{label}}",
+    "upgradeToLabel": "Покращити до {{label}} · {{offer}}",
+    "changeToLabel": "Змінити на {{label}} · {{offer}}",
+    "upgradeBody": "App Store контролює остаточне стягнення та дату набуття чинності цього покращення. Преміум відображає {{label}} лише після того, як Ігровий Бекенд це перевірить.",
+    "planChangeBody": "App Store відкладає цю зміну до кінця вашого поточного періоду: {{currentLabel}} продовжує діяти до того часу, а {{targetLabel}} стягується з дати зміни. Скасуйте зміну через Керування Підпискою.",
+    "confirmUpgrade": "Підтвердити покращення",
+    "confirmPlanChange": "Підтвердити зміну плану",
+    "confirmStitchCoinTitle": "Підтвердити покупку Stitch Coin",
+    "confirmAiCreditTitle": "Підтвердити покупку AI Кредиту",
+    "balanceChangesAfterVerificationCoin": "Ваш баланс змінюється лише після того, як Ігровий Бекенд перевірить транзакцію магазину та зафіксує відповідне нарахування в Комерційному Реєстрі.",
+    "balanceChangesAfterVerificationAiCredit": "Ваш баланс змінюється лише після того, як Ігровий Бекенд перевірить транзакцію магазину та зафіксує відповідне нарахування в Комерційному Реєстрі. Преміум Членство не потрібне."
+  },
+  "disclosure": {
+    "subscriptionTerms": "Оплата стягується з вашого облікового запису {{store}} під час підтвердження. {{label}} Преміум автоматично поновлюється за {{offer}}, якщо автопоновлення не вимкнено щонайменше за 24 години до закінчення поточного періоду. Будь-яка невикористана частина безкоштовного пробного періоду втрачається при купівлі підписки. Ви можете скасувати в будь-який час зі свого облікового запису {{store}}.",
+    "privacyPolicy": "Політика Конфіденційності",
+    "termsOfService": "Умови Використання",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Не вдалося відкрити посилання: {{url}}"
+  },
+  "supportReference": {
+    "label": "Довідковий номер підтримки: {{reference}}",
+    "copyAccessibilityLabel": "Копіювати довідковий номер підтримки {{reference}}",
+    "copyAccessibilityHint": "Копіює довідковий номер підтримки в буфер обміну",
+    "copied": "Скопійовано",
+    "copyFailedTitle": "Копіювання не вдалося",
+    "copyFailedBody": "Не вдалося скопіювати довідковий номер підтримки. Виберіть текст, щоб скопіювати його вручну."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Гостьові покупки Stitch Coin доступні лише на iOS.",
+    "guestIosOnlyGeneric": "Гостьові покупки доступні лише на iOS.",
+    "purchaseFailedTitle": "Покупка не вдалася",
+    "premiumVerificationNotYet": "Ігровий Бекенд не зміг перевірити цю покупку. Повторіть звірку; не купуйте знову.",
+    "premiumVerificationFailedRetry": "Ігровий Бекенд ще не зміг перевірити цю покупку. Повторіть звірку; не купуйте знову.",
+    "premiumGrantRefreshFailed": "Преміум перевірено, але не вдалося оновити стан членства та AI Кредиту. Повторіть звірку.",
+    "premiumReconciliationUnreachable": "Звірка покупки не змогла з'єднатися з Ігровим Бекендом. Повторіть звірку; не купуйте знову.",
+    "coinPackVerificationMismatch": "Транзакція магазину не відповідає цьому Пакету Монет. Повторіть перевірку або зверніться до підтримки; не купуйте знову.",
+    "coinPackGrantUnavailable": "Покупку перевірено, але нарахування Stitch Coin недоступне. Повторіть звірку; не купуйте знову.",
+    "coinPackBalanceRefreshFailed": "Нарахування Монет перевірено, але не вдалося оновити поточний баланс Stitch Coin. Повторіть звірку.",
+    "coinPackVerificationFailedRetry": "Ігровий Бекенд ще не зміг перевірити цей Пакет Монет. Повторіть звірку; не купуйте знову.",
+    "coinPackReconciliationUnreachable": "Звірка Пакета Монет не змогла з'єднатися з Ігровим Бекендом. Повторіть звірку; не купуйте знову.",
+    "aiCreditPackVerificationMismatch": "Транзакція магазину не відповідає цьому Пакету AI Кредитів. Повторіть перевірку або зверніться до підтримки; не купуйте знову.",
+    "aiCreditPackGrantUnavailable": "Покупку перевірено, але нарахування AI Кредиту недоступне. Повторіть звірку; не купуйте знову.",
+    "aiCreditPackBalanceRefreshFailed": "Нарахування AI Кредиту перевірено, але не вдалося оновити поточний баланс. Повторіть звірку.",
+    "aiCreditPackVerificationFailedRetry": "Ігровий Бекенд ще не зміг перевірити цей Пакет AI Кредитів. Повторіть звірку; не купуйте знову.",
+    "aiCreditPackReconciliationUnreachable": "Звірка Пакета AI Кредитів не змогла з'єднатися з Ігровим Бекендом. Повторіть звірку; не купуйте знову.",
+    "reconciliationStillUnavailable": "Ігровий Бекенд все ще недоступний. Спробуйте звірку пізніше.",
+    "storeTemporarilyUnavailable": "Магазин тимчасово недоступний. Спробуйте ще раз за кілька хвилин.",
+    "purchasesNotAllowed": "Покупки не дозволені на цьому пристрої. Перевірте свій обліковий запис магазину або батьківський контроль.",
+    "itemNotAvailable": "Цей товар зараз недоступний для купівлі. Виберіть інший товар або спробуйте пізніше.",
+    "alreadyOwned": "Ви вже володієте цією покупкою. Скористайтеся Відновленням Покупок, щоб оновити доступ.",
+    "couldNotConnectToStore": "Не вдалося з'єднатися з магазином. Перевірте інтернет-з'єднання і спробуйте ще раз.",
+    "paymentPendingApproval": "Ваш платіж очікує на підтвердження. Ваша покупка з'явиться після завершення обробки магазином.",
+    "testPurchaseDeclined": "Тестову покупку відхилено. Оплату не здійснено. Виберіть інший результат Тестового Магазину в Налаштуваннях і спробуйте ще раз.",
+    "genericPurchaseFailure": "Не вдалося завершити вашу покупку. Оплату не було знято. Спробуйте ще раз."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Перевірка триває",
+    "premiumPending": "Перевірка ще триває. Преміум активується, коли Ігровий Бекенд це підтвердить.",
+    "premiumPlanChangePending": "Перевірка ще триває. Зміну плану буде заплановано, коли Ігровий Бекенд це підтвердить.",
+    "coinPackPending": "Перевірка ще триває. Ваш баланс Stitch Coin оновиться, коли вона завершиться.",
+    "aiCreditPackPending": "Перевірка ще триває. Ваш баланс AI Кредиту оновиться, коли вона завершиться."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Покупку отримано",
+    "storeAcceptedPlanChange": "Магазин прийняв зміну на {{label}}. Підтверджуємо набуття чинності.",
+    "storeAcceptedPurchase": "Магазин прийняв {{label}}. Перевіряємо вашу покупку.",
+    "premiumChanges": "Преміум змінюється на {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " {{date}}",
+    "planChangeScheduledTitle": "Зміну плану заплановано",
+    "planChangeScheduledBody": "Ваше Преміум Членство зберігає поточний план, поки він не зміниться на {{label}}{{effectiveOn}}. Скасуйте зміну через Керування Підпискою.",
+    "premiumIsActiveTitle": "Преміум активний",
+    "premiumVerifiedAndActive": "{{label}} Преміум перевірено та активовано.",
+    "premiumNowActiveNoBilling": "{{label}} Преміум тепер активний.",
+    "premiumNowActiveBilled": "{{label}} Преміум тепер активний, стягується кожні {{period}}.",
+    "coinPackGrantedTitle": "Stitch Coin нараховано",
+    "coinPackGrantVerified": "Нарахування {{label}} перевірено. Баланс Stitch Coin: {{balance}}.",
+    "coinPackAddedToBalance": "{{quantity}} Stitch Coin додано до вашого балансу.",
+    "aiCreditPackGrantedTitle": "AI Кредити нараховано",
+    "aiCreditPackGrantVerified": "Нарахування {{label}} перевірено. Баланс AI Кредиту: {{balance}}.",
+    "aiCreditPackAddedToBalance": "{{quantity}} AI Кредитів додано до вашого балансу."
+  },
+  "products": {
+    "premiumAnnual": "Річний",
+    "premiumMonthly": "Місячний",
+    "premiumWeekly": "Тижневий",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coin",
+    "aiCreditPack_one": "{{formattedCount}} AI Кредит",
+    "aiCreditPack_other": "{{formattedCount}} AI Кредитів",
+    "billedEveryOffer": "{{price}} кожні {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} кредитів / оплачений період",
+    "creditAllowancePaidNoun": "{{credits}} кредитів / оплачений {{period}}"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Покупка як Гість",
+    "commerceBody": "Ви можете купувати без реєстрації. Преміум Членство можна відновити з магазину, але Stitch Coin, AI Кредит та приватний Гостьовий контент безповоротно втрачаються, якщо це встановлення буде втрачено. Реєстрація захищає їх і ніколи не переривається грою як Гість.",
+    "continueAsGuest": "Продовжити як Гість",
+    "signInInstead": "Увійти замість цього",
+    "closeAccessibilityLabel": "Закрити"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "Зрозуміло",
+    "successButton": "Чудово",
+    "failedButton": "Закрити",
+    "infoButton": "Зрозуміло",
+    "closeAccessibilityLabel": "Закрити"
+  }
+}

@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Kembali",
+    "title": "Kedai",
+    "subtitle": "Keahlian dan isi semula sekali beli"
+  },
+  "signInReturn": {
+    "notice": "Anda telah log masuk. {{label}} kekal terpilih. Semak, kemudian tekan Beli apabila sedia."
+  },
+  "premiumHero": {
+    "eyebrow": "KEAHLIAN PREMIUM",
+    "title": "Cipta lebih banyak. Kumpul hadiah kecil setiap hari.",
+    "body": "Kredit AI setiap tempoh berbayar, tema premium, dan tuntutan Stitch Coin harian.",
+    "benefitAiCredits": "Kredit AI",
+    "benefitDailyCoins": "Koin harian",
+    "benefitThemes": "Tema",
+    "statusNoActiveMembership": "Tiada keahlian aktif",
+    "statusBrowseAsGuest": "Semak imbas pakej sebagai tetamu",
+    "periodEndsLabel": "Penghujung tempoh semasa",
+    "periodRenewsLabel": "Diperbaharui",
+    "lifecycleActive": "Aktif"
+  },
+  "membershipActions": {
+    "title": "Keahlian premium aktif",
+    "body": "Hadiah harian ada di Profil. Tema ada di Tetapan › Rupa.",
+    "scheduledChangeNotice": "Beralih kepada {{plan}} — {{date}}",
+    "manageSubscription": "Urus langganan",
+    "manageSubscriptionFailedTitle": "Gagal membuka langganan",
+    "manageSubscriptionFailedBody": "Cuba lagi melalui akaun kedai pada peranti anda."
+  },
+  "pending": {
+    "title": "Penyesuaian pembelian sedang berlangsung",
+    "verifyingTitle": "Mengesahkan pembelian",
+    "premiumChangeAccepted": "Kedai menerima perubahan kepada {{label}}. ",
+    "premiumResponseReceived": "Respons daripada kedai untuk {{label}} telah diterima. ",
+    "premiumDeferredSuffix": "Perubahan hanya akan dijadualkan selepas pengesahan Game Backend, dan mula berkuat kuasa pada penghujung tempoh semasa.",
+    "premiumSuffix": "Premium hanya diaktifkan selepas pengesahan Game Backend.",
+    "doNotPurchasePlanAgain": " Jangan beli pakej ini lagi.",
+    "coinPackBody": "Respons daripada kedai telah diterima. Stitch Coin hanya akan dikemas kini selepas Game Backend mengesahkan kredit yang sepadan dalam Log Komersial. Jangan beli pakej ini lagi.",
+    "aiCreditPackBody": "Respons daripada kedai telah diterima. Kredit AI hanya akan dikemas kini selepas Game Backend mengesahkan kredit yang sepadan dalam Log Komersial. Jangan beli pakej ini lagi.",
+    "refreshStatus": "Segar semula status",
+    "retryReconciliation": "Cuba lagi penyesuaian"
+  },
+  "store": {
+    "loadingPrices": "Memuatkan harga kedai semasa…",
+    "unavailableTitle": "Kedai buat sementara waktu tidak tersedia",
+    "unavailableBody": "Data dompet dan keahlian tetap tersedia.",
+    "retry": "Cuba lagi"
+  },
+  "plans": {
+    "choosePremiumPlan": "Pilih pakej premium",
+    "yourPremiumPlan": "Pakej premium anda",
+    "currentPlan": "PAKEJ SEMASA",
+    "upgrade": "NAIK TARAF",
+    "planChange": "TUKAR PAKEJ",
+    "bestValue": "NILAI TERBAIK",
+    "billedEvery": "Dibilkan setiap {{period}}",
+    "chooseLabel": "Pilih {{label}}",
+    "freeTrial": "Percuma {{offer}}, kemudian {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Pakej sekali beli",
+    "stitchCoinPacksTitle": "Pakej Stitch Coin",
+    "aiCreditPacksTitle": "Pakej kredit AI",
+    "coinsNoun": "Koin",
+    "creditsNoun": "Kredit",
+    "fromPrice": "Mula daripada: {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Pulihkan pembelian",
+    "restoreGuestPremium": "Pulihkan premium tetamu",
+    "requestedTitle": "Pemulihan diminta",
+    "requestedBody": "Akses premium yang telah disahkan akan muncul selepas penyesuaian webhook kedai selesai. Stitch Coin dan kredit AI tidak boleh dipulihkan sama sekali."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Harga semasa daripada kedai",
+    "closeAccessibilityLabel": "Tutup kad produk",
+    "closeButtonAccessibilityLabel": "Tutup",
+    "selectedBeforeSignIn": "Dipilih sebelum log masuk",
+    "buy": "Beli"
+  },
+  "confirmation": {
+    "cancel": "Batal",
+    "confirmLabel": "Sahkan {{label}}",
+    "confirmPremiumTitle": "Sahkan pembelian Premium",
+    "introductoryOffer": "Kedai anda menyatakan tawaran pengenalan ini: {{offer}}.",
+    "premiumAppearsAfterVerification": "Premium hanya akan muncul selepas Game Backend mengesahkan transaksi kedai.",
+    "confirmPremiumUpgradeTitle": "Sahkan naik taraf Premium",
+    "confirmPremiumPlanChangeTitle": "Sahkan perubahan pakej Premium",
+    "currentPlanLabel": "Pakej semasa: {{label}}",
+    "upgradeToLabel": "Naik taraf kepada {{label}} · {{offer}}",
+    "changeToLabel": "Tukar kepada {{label}} · {{offer}}",
+    "upgradeBody": "App Store menetapkan harga akhir dan tarikh berkuat kuasa naik taraf ini. Premium hanya akan mencerminkan pakej {{label}} selepas disahkan oleh Game Backend.",
+    "planChangeBody": "App Store menangguhkan perubahan ini sehingga penghujung tempoh semasa: {{currentLabel}} kekal berkuat kuasa sehingga itu, dan {{targetLabel}} akan dibilkan mulai tarikh perubahan. Anda boleh membatalkan perubahan ini di Urus Langganan.",
+    "confirmUpgrade": "Sahkan naik taraf",
+    "confirmPlanChange": "Sahkan perubahan pakej",
+    "confirmStitchCoinTitle": "Sahkan pembelian Stitch Coin",
+    "confirmAiCreditTitle": "Sahkan pembelian kredit AI",
+    "balanceChangesAfterVerificationCoin": "Baki anda hanya akan berubah selepas Game Backend mengesahkan transaksi kedai dan merekodkan kredit yang sepadan dalam Log Komersial.",
+    "balanceChangesAfterVerificationAiCredit": "Baki anda hanya akan berubah selepas Game Backend mengesahkan transaksi kedai dan merekodkan kredit yang sepadan dalam Log Komersial. Keahlian Premium tidak diperlukan."
+  },
+  "disclosure": {
+    "subscriptionTerms": "Bayaran akan dibilkan ke akaun {{store}} anda semasa pengesahan. {{label}} Premium akan diperbaharui secara automatik pada harga {{offer}} melainkan anda melumpuhkan pembaharuan automatik sekurang-kurangnya 24 jam sebelum penghujung tempoh semasa. Sebarang baki percubaan percuma yang tidak digunakan akan luput apabila anda membeli langganan. Anda boleh membatalkan langganan pada bila-bila masa melalui akaun {{store}} anda.",
+    "privacyPolicy": "Dasar privasi",
+    "termsOfService": "Terma perkhidmatan",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Gagal membuka pautan: {{url}}"
+  },
+  "supportReference": {
+    "label": "Rujukan sokongan: {{reference}}",
+    "copyAccessibilityLabel": "Salin rujukan sokongan {{reference}}",
+    "copyAccessibilityHint": "Menyalin rujukan sokongan ke papan keratan",
+    "copied": "Disalin",
+    "copyFailedTitle": "Gagal menyalin",
+    "copyFailedBody": "Gagal menyalin rujukan sokongan. Pilih teks untuk menyalin secara manual."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Pembelian Stitch Coin tetamu hanya tersedia di iOS.",
+    "guestIosOnlyGeneric": "Pembelian tetamu hanya tersedia di iOS.",
+    "purchaseFailedTitle": "Pembelian gagal",
+    "premiumVerificationNotYet": "Game Backend belum dapat mengesahkan pembelian ini. Cuba lagi penyesuaian; jangan beli lagi.",
+    "premiumVerificationFailedRetry": "Game Backend belum dapat mengesahkan pembelian ini. Cuba lagi penyesuaian; jangan beli lagi.",
+    "premiumGrantRefreshFailed": "Premium telah disahkan, tetapi gagal mengemas kini status keahlian dan kredit AI. Cuba lagi penyesuaian.",
+    "premiumReconciliationUnreachable": "Penyesuaian pembelian tidak dapat menghubungi Game Backend. Cuba lagi penyesuaian; jangan beli lagi.",
+    "coinPackVerificationMismatch": "Transaksi kedai tidak sepadan dengan pakej koin ini. Cuba lagi pengesahan, atau hubungi sokongan; jangan beli lagi.",
+    "coinPackGrantUnavailable": "Pembelian disahkan, tetapi kredit Stitch Coin tidak tersedia. Cuba lagi penyesuaian; jangan beli lagi.",
+    "coinPackBalanceRefreshFailed": "Kredit koin disahkan, tetapi gagal mengemas kini baki Stitch Coin semasa. Cuba lagi penyesuaian.",
+    "coinPackVerificationFailedRetry": "Game Backend belum dapat mengesahkan pakej koin ini. Cuba lagi penyesuaian; jangan beli lagi.",
+    "coinPackReconciliationUnreachable": "Penyesuaian pakej koin tidak dapat menghubungi Game Backend. Cuba lagi penyesuaian; jangan beli lagi.",
+    "aiCreditPackVerificationMismatch": "Transaksi kedai tidak sepadan dengan pakej kredit AI ini. Cuba lagi pengesahan, atau hubungi sokongan; jangan beli lagi.",
+    "aiCreditPackGrantUnavailable": "Pembelian disahkan, tetapi kredit AI tidak tersedia. Cuba lagi penyesuaian; jangan beli lagi.",
+    "aiCreditPackBalanceRefreshFailed": "Kredit AI disahkan, tetapi gagal mengemas kini baki semasa. Cuba lagi penyesuaian.",
+    "aiCreditPackVerificationFailedRetry": "Game Backend belum dapat mengesahkan pakej kredit AI ini. Cuba lagi penyesuaian; jangan beli lagi.",
+    "aiCreditPackReconciliationUnreachable": "Penyesuaian pakej kredit AI tidak dapat menghubungi Game Backend. Cuba lagi penyesuaian; jangan beli lagi.",
+    "reconciliationStillUnavailable": "Game Backend masih tidak tersedia. Cuba lagi penyesuaian nanti.",
+    "storeTemporarilyUnavailable": "Kedai buat sementara waktu tidak tersedia. Cuba lagi dalam beberapa minit.",
+    "purchasesNotAllowed": "Pembelian tidak dibenarkan pada peranti ini. Semak akaun kedai anda atau kawalan ibu bapa.",
+    "itemNotAvailable": "Produk ini kini tidak boleh dibeli. Pilih produk lain, atau cuba lagi nanti.",
+    "alreadyOwned": "Pembelian ini sudah menjadi milik anda. Gunakan Pulihkan Pembelian untuk menyegarkan akses.",
+    "couldNotConnectToStore": "Gagal menyambung ke kedai. Semak sambungan internet anda dan cuba lagi.",
+    "paymentPendingApproval": "Pembayaran anda sedang menunggu kelulusan. Pembelian akan muncul selepas kedai menyelesaikan prosesnya.",
+    "testPurchaseDeclined": "Pembelian ujian ditolak. Tiada pembayaran berlaku. Pilih hasil ujian lain di Tetapan, kemudian cuba lagi.",
+    "genericPurchaseFailure": "Gagal menyelesaikan pembelian anda. Tiada pembayaran berlaku. Cuba lagi."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Pengesahan sedang berlangsung",
+    "premiumPending": "Pengesahan masih berlangsung. Premium akan diaktifkan selepas Game Backend mengesahkan.",
+    "premiumPlanChangePending": "Pengesahan masih berlangsung. Perubahan pakej akan dijadualkan selepas Game Backend mengesahkan.",
+    "coinPackPending": "Pengesahan masih berlangsung. Baki Stitch Coin anda akan dikemas kini selepas selesai.",
+    "aiCreditPackPending": "Pengesahan masih berlangsung. Baki kredit AI anda akan dikemas kini selepas selesai."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Pembelian diterima",
+    "storeAcceptedPlanChange": "Kedai menerima perubahan kepada {{label}}. Pengesahan apabila berkuat kuasa.",
+    "storeAcceptedPurchase": "Kedai menerima {{label}}. Pengesahan pembelian anda sedang berlangsung.",
+    "premiumChanges": "Premium akan berubah kepada {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " {{date}}",
+    "planChangeScheduledTitle": "Perubahan pakej dijadualkan",
+    "planChangeScheduledBody": "Keahlian premium anda akan mengekalkan pakej semasa sehingga beralih kepada {{label}}{{effectiveOn}}. Anda boleh membatalkan perubahan ini di Urus Langganan.",
+    "premiumIsActiveTitle": "Premium aktif",
+    "premiumVerifiedAndActive": "{{label}} Premium telah disahkan dan aktif.",
+    "premiumNowActiveNoBilling": "{{label}} Premium kini aktif.",
+    "premiumNowActiveBilled": "{{label}} Premium kini aktif, dibilkan setiap {{period}}.",
+    "coinPackGrantedTitle": "Stitch Coin dikreditkan",
+    "coinPackGrantVerified": "Kredit {{label}} telah disahkan. Baki Stitch Coin: {{balance}}.",
+    "coinPackAddedToBalance": "{{quantity}} Stitch Coin ditambah pada baki anda.",
+    "aiCreditPackGrantedTitle": "Kredit AI dikreditkan",
+    "aiCreditPackGrantVerified": "Kredit {{label}} telah disahkan. Baki kredit AI: {{balance}}.",
+    "aiCreditPackAddedToBalance": "{{quantity}} kredit AI ditambah pada baki anda."
+  },
+  "products": {
+    "premiumAnnual": "Tahunan",
+    "premiumMonthly": "Bulanan",
+    "premiumWeekly": "Mingguan",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coin",
+    "aiCreditPack_one": "{{formattedCount}} kredit AI",
+    "aiCreditPack_other": "{{formattedCount}} kredit AI",
+    "billedEveryOffer": "{{price}} / {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} kredit / tempoh berbayar",
+    "creditAllowancePaidNoun": "{{credits}} kredit / {{period}} berbayar"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Beli sebagai tetamu",
+    "commerceBody": "Anda boleh membeli tanpa mendaftar. Keahlian premium boleh dipulihkan daripada kedai, tetapi Stitch Coin, kredit AI, dan kandungan tetamu peribadi boleh hilang secara kekal jika pemasangan hilang. Mendaftar melindungi perkara ini dan tidak sekali-kali mengganggu permainan tetamu.",
+    "continueAsGuest": "Teruskan sebagai tetamu",
+    "signInInstead": "Log masuk sebaliknya",
+    "closeAccessibilityLabel": "Tutup"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "OK",
+    "successButton": "Bagus",
+    "failedButton": "Tutup",
+    "infoButton": "OK",
+    "closeAccessibilityLabel": "Tutup"
+  }
+}

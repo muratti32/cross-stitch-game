@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Tillbaka",
+    "searchPlaceholder": "Sök mönster, skapare, taggar…",
+    "offlineBanner": "Offline — katalogen kan vara inaktuell",
+    "sectionError": {
+      "title": "Kunde inte läsa in",
+      "retry": "Försök igen"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} färger",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} kolumner",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Engelska"
+    },
+    "accessibilityLabel": "Skrivet på {{language}}"
+  },
+  "index": {
+    "subtitle": "Skapa din mysiga värld, stygn för stygn.",
+    "searchBar": {
+      "accessibilityLabel": "Sök i mönsterkatalogen"
+    },
+    "sections": {
+      "starterPatterns": "Startmönster",
+      "staffPicks": "Redaktionens val",
+      "categories": "Kategorier",
+      "newPatterns": "Nya mönster"
+    },
+    "staffPicks": {
+      "emptyTitle": "Inga redaktionella val ännu",
+      "emptyBody": "Vår handplockade samling av mysiga design visas här snart.",
+      "errorBody": "Katalogen kunde inte nås och inget finns cachat ännu."
+    },
+    "categories": {
+      "count": "{{count}} mönster",
+      "errorBody": "Katalogen kunde inte nås och inget finns cachat ännu."
+    },
+    "newPatterns": {
+      "emptyTitle": "Nya mönster skapas",
+      "emptyBody": "Nya tillägg är på väg!",
+      "errorBody": "Katalogen kunde inte nås och inget finns cachat ännu.",
+      "showMore": "Visa fler",
+      "loading": "Läser in…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Bläddra",
+    "error": {
+      "body": "Den här katalogsidan kunde inte nås och inget finns cachat ännu."
+    },
+    "empty": {
+      "title": "Inget här ännu",
+      "body": "Inga mönster matchar det här urvalet ännu. Nya design kommer regelbundet."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Sökfält för katalog",
+    "inactive": {
+      "title": "Sök i katalogen",
+      "body": "Skriv minst två tecken för att söka mönster efter titel, skapare eller tagg."
+    },
+    "error": {
+      "title": "Sökning kräver anslutning",
+      "body": "Katalogsökning är inte tillgänglig offline. Cachade katalogsidor går fortfarande att bläddra i från katalogfliken."
+    },
+    "noResults": {
+      "title": "Inga träffar",
+      "body": "Inget i katalogen matchar ”{{query}}” ännu."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Spelar som gäst",
+    "body": "Stitch Coin och framsteg lever bara på den här enheten som gäst. Om installationen förloras kan gästkontot och framstegen bli oåterkalleliga. Att logga in skyddar dina framsteg."
+  },
+  "detail": {
+    "noDescription": "Ingen beskrivning tillgänglig.",
+    "specs": {
+      "dimensions": "Mått",
+      "totalStitches": "Totalt antal stygn",
+      "colors": "Färger",
+      "category": "Kategori"
+    },
+    "threadsSuffix": "{{count}} trådar",
+    "palette": {
+      "title": "Nödvändiga trådar",
+      "loading": "Läser in trådpalett...",
+      "loadFailed": "Kunde inte läsa in palett: {{error}}",
+      "retry": "Försök läsa in igen"
+    },
+    "actions": {
+      "startStitching": "Börja sy",
+      "starting": "Startar...",
+      "preparing": "Förbereder…"
+    },
+    "loadFailedGeneric": "Det gick inte att läsa mönsterfilen.",
+    "sessionCreateFailed": "Det gick inte att skapa en sysession. Försök igen.",
+    "unavailable": {
+      "title": "Mönstret är inte tillgängligt",
+      "body": "Det här mönstret kunde inte läsas in. Det kan ha tagits bort, eller så är du offline.",
+      "goBack": "Gå tillbaka"
+    },
+    "byCreator": "av {{creatorName}}",
+    "byCreatorWithUsername": "av {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Blockera skapare",
+      "message": "Är du säker på att du vill blockera {{creatorName}}? Det här är en privat, reversibel åtgärd som döljer deras mönster från sök/bläddra. Det anmäler inte skaparen och avbryter inte din pågående sysession.",
+      "cancel": "Avbryt",
+      "confirm": "Blockera",
+      "blockedTitle": "Blockerad",
+      "blockedMessage": "{{creatorName}} har blockerats.",
+      "errorTitle": "Fel",
+      "failedGeneric": "Det gick inte att blockera skaparen."
+    },
+    "likeFailedGeneric": "Det gick inte att uppdatera gilla-status",
+    "connectToPlay": {
+      "title": "Anslut för att spela",
+      "body": "Att starta ett katalogmönster kräver en anslutning för att förbereda din session. Startmönster går att spela direkt, även offline."
+    },
+    "insufficientCoins": {
+      "title": "Otillräckligt med mynt",
+      "body": "Det här mönstret kostar {{price}} Stitch Coins, men du har bara {{balance}} mynt.\n\nDet fattas: {{shortfall}} mynt.\n\nTjäna Stitch Coins genom att slutföra andra mönster! Belöningar för första slutförande är aktiva.",
+      "getCoins": "Skaffa Stitch Coins",
+      "findPatterns": "Hitta mönster att sy",
+      "back": "Tillbaka"
+    },
+    "unlockFailedGeneric": "Upplåsning misslyckades. Kontrollera din anslutning och försök igen.",
+    "preparationFailedGeneric": "Det gick inte att starta förberedelsen. Kontrollera din anslutning och försök igen.",
+    "price": {
+      "label": "Pris"
+    },
+    "balance": {
+      "label": "Ditt saldo",
+      "loading": "…"
+    },
+    "unlockButton": "Lås upp för {{price}} mynt",
+    "communityReport": {
+      "button": "Anmäl det här mönstret",
+      "title": "Anmäl {{patternTitle}}",
+      "body": "Välj anledningen som bäst beskriver problemet. Anmälningar döljer eller ändrar aldrig ett mönster automatiskt.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Olämpligt eller osäkert innehåll",
+        "copyright_or_publication_rights": "Upphovsrätt eller publiceringsrättigheter",
+        "duplicate_or_spam": "Dubblett eller skräppost",
+        "misleading_title_or_tags": "Vilseledande titel eller taggar",
+        "other": "Annat"
+      },
+      "explanationLabel": "Bevis eller förklaring {{requirement}}",
+      "explanationRequired": "(obligatoriskt)",
+      "explanationOptional": "(valfritt)",
+      "explanationPlaceholder": "Dela detaljer som hjälper en moderator att granska mönstret.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Avbryt",
+      "submit": "Skicka anmälan",
+      "submitFailedGeneric": "Det gick inte att skicka din anmälan. Kontrollera din anslutning och försök igen.",
+      "receivedTitle": "Anmälan mottagen",
+      "alreadyReceivedTitle": "Anmälan redan mottagen",
+      "receivedBody": "En moderator kan nu granska det här mönstret. Anmälan ändrar inte automatiskt dess tillgänglighet.",
+      "alreadyReceivedBody": "Din befintliga anmälan är redan en del av den öppna granskningen.",
+      "signInRequired": {
+        "title": "Logga in för att anmäla",
+        "message": "Community-anmälningar kräver ett registrerat konto. Inget har skickats in.",
+        "cancel": "Avbryt",
+        "signIn": "Logga in"
+      },
+      "validation": {
+        "chooseReason": "Välj en anledning till anmälan.",
+        "explainRequired": "Förklara varför du anmäler det här mönstret.",
+        "tooLong": "Förklaringen får vara högst 2 000 tecken.",
+        "needsContent": "Förklaringen måste innehålla bokstäver eller siffror."
+      }
+    }
+  }
+}

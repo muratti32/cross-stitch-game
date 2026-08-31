@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Vyšívací stôl",
+    "subtitle": "Pokračuj tam, kde si skončil, alebo obnov nedávny projekt.",
+    "loading": "Načítavajú sa tvoje výšivky...",
+    "empty": {
+      "title": "Žiadny aktívny projekt",
+      "body": "Tvoj vyšívací rám je momentálne prázdny. Prehliadni katalóg vzorov a nájdi niečo pekné na vyšívanie!",
+      "action": "Prehliadať katalóg"
+    },
+    "unknownPattern": "Neznámy vzor",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Vzor {{id}}",
+    "deleteSessionAccessibilityLabel": "Zmazať reláciu",
+    "viewFinishedAccessibilityLabel": "Zobraziť dokončený projekt",
+    "resumeAccessibilityLabel": "Pokračovať vo vyšívaní",
+    "status": {
+      "ready": "Pripravené",
+      "done": "Dokončené",
+      "active": "Aktívne",
+      "preparing": "Pripravuje sa",
+      "failed": "Zlyhalo"
+    },
+    "deleteConfirm": {
+      "title": "Zmazať postup",
+      "message": "Naozaj chceš zmazať postup pre „{{title}}“? Túto akciu nemožno vrátiť späť.",
+      "cancel": "Zrušiť",
+      "confirm": "Zmazať"
+    },
+    "preparingCard": {
+      "discardTitle": "Zahodiť reláciu",
+      "cancelTitle": "Zrušiť sťahovanie",
+      "discardMessage": "Naozaj chceš zahodiť túto neúspešnú reláciu?",
+      "cancelMessage": "Naozaj chceš zrušiť sťahovanie tohto vzoru?",
+      "keep": "Ponechať",
+      "discard": "Zahodiť",
+      "cancel": "Zrušiť"
+    }
+  },
+  "loading": {
+    "text": "Otvára sa relácia a pripravuje sa materiál..."
+  },
+  "error": {
+    "title": "Načítanie relácie zlyhalo",
+    "fallbackMessage": "Reláciu vyšívania sa nepodarilo načítať.",
+    "backButton": "Späť",
+    "tableButton": "Prejsť na stôl"
+  },
+  "header": {
+    "backButton": "← Späť",
+    "tableButton": "← Stôl",
+    "defaultTitle": "Relácia vyšívania",
+    "progress": "{{completed}} / {{total}} buniek ({{percent}} % dokončené)",
+    "resumeTutorialAccessibilityLabel": "Pokračovať v tutoriáli"
+  },
+  "banners": {
+    "patternRemoved": "Tento vzor bol odstránený moderáciou a už nie je dostupný. Klepnutím ukončíš.",
+    "syncConflict": "Synchronizované s iným zariadením — niektoré bunky boli aktualizované. Klepnutím zavrieš."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Nájsť ďalšiu zostávajúcu bunku aktívnej farby vlákna",
+    "undoAccessibilityLabel": "Vrátiť späť posledný steh"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Farba {{number}}: DMC {{dmcCode}}, zostáva {{count}} steh",
+    "chipAccessibilityLabel_other": "Farba {{number}}: DMC {{dmcCode}}, zostáva {{count}} stehov",
+    "done": "Dokončené",
+    "remaining_one": "Zostáva {{count}}",
+    "remaining_other": "Zostáva {{count}}"
+  },
+  "celebration": {
+    "title": "Majstrovsky vyšité!",
+    "subtitle": "Dokončil si každý steh na tomto materiáli.",
+    "stitchesLabel_one": "Steh",
+    "stitchesLabel_other": "Stehy",
+    "colorsLabel_one": "Farba",
+    "colorsLabel_other": "Farby",
+    "replayButton": "Vyšiť znova",
+    "catalogButton": "Späť do katalógu"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Log masuk ini dikaitkan dengan akaun lain. Akaun anda semasa tidak berubah.",
+    "providerRejected": "Pengesahan ini ditolak. Semak akaun atau kod anda, dan cuba lagi."
+  },
+  "generic": {
+    "failure": "Sesuatu tidak kena. Cuba lagi.",
+    "supportReferenceLabel": "Rujukan sokongan: {{reference}}"
+  }
+}

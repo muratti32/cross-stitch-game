@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "SELAMAT DATANG DI STITCH WISH",
+    "title": "Pilih warna, sentuh kotak yang sesuai.",
+    "heroAlt": "Pratinjau pola pemula Cozy Heart",
+    "handedness": {
+      "sectionTitle": "Di sisi mana kontrol harus berada?",
+      "groupLabel": "Sisi kontrol",
+      "optionRight": "Kontrol di kanan",
+      "optionLeft": "Kontrol di kiri",
+      "saveErrorText": "Gagal menyimpan pilihan ini.",
+      "retry": "Coba lagi"
+    },
+    "note": "Kamu dapat mengubah ini nanti di Pengaturan.",
+    "start": "Mulai menyulam",
+    "starting": "Memulai…",
+    "browse": "Jelajahi pola pemula",
+    "signIn": "Masuk"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Pilih warna DMC 321 Christmas Red.",
+      "stitchAction": "Sentuh sel yang cocok dan disorot.",
+      "mismatchedTap": "Sentuh sel yang berbeda dan disorot. Sentuhan yang salah tidak berbiaya apa pun.",
+      "undoAction": "Urungkan jahitan itu, lalu letakkan lagi.",
+      "stitchSweep": "Tekan sel yang cocok, lalu seret di sepanjang baris yang disorot.",
+      "threadColorCompletion": "Selesaikan benang putih yang disorot, lalu pilih warna berikutnya."
+    },
+    "hints": {
+      "anchoredZoom": "Cubit untuk memperbesar sambil menjaga sel tetap di bawah jarimu.",
+      "panVsSweep": "Seret untuk menggeser kanvas. Mulai dari sel yang cocok untuk menyulam baris.",
+      "edgeAutoPan": "Lanjutkan menyeret di dekat tepi, dan kanvas akan mengikuti jarimu.",
+      "remainingCellLocator": "Gunakan pencari untuk menemukan sel tersisa berikutnya untuk benang ini."
+    },
+    "skip": "Lewati sekarang",
+    "skipAccessibilityLabel": "Lewati panduan sekarang",
+    "dismiss": "Mengerti",
+    "dismissAccessibilityLabel": "Tutup tip"
+  },
+  "recap": {
+    "title": "Berhasil",
+    "lines": {
+      "matchNumbers": "Cocokkan angka untuk menempatkan setiap jahitan.",
+      "dragSweep": "Seret di sepanjang sel yang cocok untuk menyulam baris.",
+      "pinchZoom": "Cubit untuk memperbesar jika kamu butuh tampilan yang lebih baik.",
+      "undoLocator": "Urungkan dan pencari selalu gratis."
+    },
+    "continue": "Lanjutkan menyulam",
+    "browsePatterns": "Jelajahi pola"
+  }
+}

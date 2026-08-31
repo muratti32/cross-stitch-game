@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "CHÀO MỪNG ĐẾN VỚI STITCH WISH",
+    "title": "Chọn một màu, chạm vào các ô khớp màu.",
+    "heroAlt": "Xem trước mẫu khởi đầu Trái tim ấm cúng",
+    "handedness": {
+      "sectionTitle": "Các nút điều khiển nên nằm ở bên nào?",
+      "groupLabel": "Bên điều khiển",
+      "optionRight": "Điều khiển ở bên phải",
+      "optionLeft": "Điều khiển ở bên trái",
+      "saveErrorText": "Không thể lưu lựa chọn đó.",
+      "retry": "Thử lại"
+    },
+    "note": "Bạn có thể thay đổi điều này sau trong Cài đặt.",
+    "start": "Bắt đầu thêu",
+    "starting": "Đang bắt đầu…",
+    "browse": "Duyệt mẫu khởi đầu",
+    "signIn": "Đăng nhập"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Chọn DMC 321 Đỏ Giáng sinh.",
+      "stitchAction": "Chạm vào ô đang khớp được đánh dấu.",
+      "mismatchedTap": "Chạm vào ô khác đang được đánh dấu. Chạm sai không tốn gì cả.",
+      "undoAction": "Hoàn tác mũi thêu đó, rồi đặt lại.",
+      "stitchSweep": "Nhấn vào một ô khớp, sau đó kéo qua dãy được đánh dấu.",
+      "threadColorCompletion": "Hoàn thành sợi chỉ trắng đang được đánh dấu, sau đó chọn màu tiếp theo."
+    },
+    "hints": {
+      "anchoredZoom": "Chụm để phóng to trong khi giữ các ô ở dưới ngón tay bạn cố định.",
+      "panVsSweep": "Kéo để di chuyển vải. Bắt đầu trên một ô khớp để thêu theo dãy.",
+      "edgeAutoPan": "Tiếp tục kéo gần mép và vải sẽ theo ngón tay của bạn.",
+      "remainingCellLocator": "Dùng công cụ định vị để tìm ô còn lại tiếp theo cho màu chỉ này."
+    },
+    "skip": "Bỏ qua lúc này",
+    "skipAccessibilityLabel": "Bỏ qua hướng dẫn lúc này",
+    "dismiss": "Đã hiểu",
+    "dismissAccessibilityLabel": "Đóng gợi ý"
+  },
+  "recap": {
+    "title": "Bạn đã nắm được rồi",
+    "lines": {
+      "matchNumbers": "Khớp các số để đặt từng mũi thêu.",
+      "dragSweep": "Kéo qua các ô khớp để thêu theo dãy.",
+      "pinchZoom": "Chụm để phóng to khi cần nhìn gần hơn.",
+      "undoLocator": "Hoàn tác và công cụ định vị luôn miễn phí."
+    },
+    "continue": "Tiếp tục thêu",
+    "browsePatterns": "Duyệt mẫu thêu"
+  }
+}

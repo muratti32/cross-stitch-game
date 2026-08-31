@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Назад",
+    "title": "Магазин",
+    "subtitle": "Подписки и разовые пополнения"
+  },
+  "signInReturn": {
+    "notice": "Вы вошли в систему. Товар {{label}} все еще выбран. Проверьте детали и нажмите «Купить», когда будете готовы."
+  },
+  "premiumHero": {
+    "eyebrow": "ПОДПИСКА PREMIUM",
+    "title": "Создавайте больше. Получайте небольшую награду каждый день.",
+    "body": "AI Credits каждый оплаченный период, темы Premium и ежедневные Stitch Coins.",
+    "benefitAiCredits": "AI Credits",
+    "benefitDailyCoins": "Ежедневные монеты",
+    "benefitThemes": "Темы",
+    "statusNoActiveMembership": "Нет активной подписки",
+    "statusBrowseAsGuest": "Просмотр планов в режиме Гостя",
+    "periodEndsLabel": "Текущий период заканчивается",
+    "periodRenewsLabel": "Продлевается",
+    "lifecycleActive": "Активна"
+  },
+  "membershipActions": {
+    "title": "Активная подписка Premium",
+    "body": "Ежедневные награды находятся в Профиле. Темы доступны в Настройки › Внешний вид.",
+    "scheduledChangeNotice": "Изменения плана на {{plan}} вступят в силу {{date}}",
+    "manageSubscription": "Управление подпиской",
+    "manageSubscriptionFailedTitle": "Не удалось открыть подписки",
+    "manageSubscriptionFailedBody": "Попробуйте еще раз через настройки учетной записи вашего магазина на устройстве."
+  },
+  "pending": {
+    "title": "Ожидание подтверждения покупки",
+    "verifyingTitle": "Проверка покупки",
+    "premiumChangeAccepted": "Магазин принял изменение плана на {{label}}.",
+    "premiumResponseReceived": "Ответ магазина для {{label}} получен.",
+    "premiumDeferredSuffix": "Изменение запланировано после проверки игровым сервером и вступит в силу по окончании текущего периода.",
+    "premiumSuffix": "Premium активируется только после проверки игровым сервером.",
+    "doNotPurchasePlanAgain": "Не покупайте этот план повторно.",
+    "coinPackBody": "Ответ магазина получен. Количество Stitch Coins обновится после того, как игровой сервер обработает соответствующее начисление в реестре коммерции (Commerce Ledger). Не покупайте этот пакет повторно.",
+    "aiCreditPackBody": "Ответ магазина получен. Количество AI Credits обновится после того, как игровой сервер обработает соответствующее начисление в реестре коммерции (Commerce Ledger). Не покупайте этот пакет повторно.",
+    "refreshStatus": "Обновить статус",
+    "retryReconciliation": "Повторить сверку"
+  },
+  "store": {
+    "loadingPrices": "Загрузка актуальных цен магазина…",
+    "unavailableTitle": "Магазин временно недоступен",
+    "unavailableBody": "Информация о вашем балансе и подписке по-прежнему доступна.",
+    "retry": "Повторить"
+  },
+  "plans": {
+    "choosePremiumPlan": "Выберите тарифный план Premium",
+    "yourPremiumPlan": "Ваш план Premium",
+    "currentPlan": "ТЕКУЩИЙ ПЛАН",
+    "upgrade": "УЛУЧШИТЬ",
+    "planChange": "СМЕНА ТАРИФА",
+    "bestValue": "ВЫГОДНО",
+    "billedEvery": "Оплата каждые {{period}}",
+    "chooseLabel": "Выбрать {{label}}",
+    "freeTrial": "Бесплатно в течение {{offer}}, затем {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Разовые пакеты",
+    "stitchCoinPacksTitle": "Пакеты Stitch Coin",
+    "aiCreditPacksTitle": "Пакеты AI Credit",
+    "coinsNoun": "coins",
+    "creditsNoun": "credits",
+    "fromPrice": "От {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Восстановить покупки",
+    "restoreGuestPremium": "Восстановить Guest Premium",
+    "requestedTitle": "Запрошено восстановление",
+    "requestedBody": "Проверенный Premium-доступ появится после сверки вебхука магазина. Пакеты Stitch Coin и AI Credit не подлежат восстановлению."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Текущие цены из магазина приложений",
+    "closeAccessibilityLabel": "Закрыть карточку товара",
+    "closeButtonAccessibilityLabel": "Закрыть",
+    "selectedBeforeSignIn": "Выбрано до входа в систему",
+    "buy": "Купить"
+  },
+  "confirmation": {
+    "cancel": "Отмена",
+    "confirmLabel": "Подтвердить {{label}}",
+    "confirmPremiumTitle": "Подтвердить покупку Premium",
+    "introductoryOffer": "Магазин сообщает об этом приветственном предложении: {{offer}}.",
+    "premiumAppearsAfterVerification": "Premium появится только после того, как игровой сервер проверит транзакцию магазина.",
+    "confirmPremiumUpgradeTitle": "Подтвердить улучшение Premium",
+    "confirmPremiumPlanChangeTitle": "Подтвердить смену плана Premium",
+    "currentPlanLabel": "Текущий план: {{label}}",
+    "upgradeToLabel": "Улучшить до {{label}} · {{offer}}",
+    "changeToLabel": "Изменить на {{label}} · {{offer}}",
+    "upgradeBody": "Магазин приложений контролирует итоговую плату и дату вступления в силу этого улучшения. Premium обновится до {{label}} только после проверки игровым сервером.",
+    "planChangeBody": "Магазин приложений переносит это изменение на конец вашего текущего периода: до тех пор продолжает действовать {{currentLabel}}, а оплата за {{targetLabel}} начнется с даты смены тарифа. Вы можете отменить изменение в разделе «Управление подпиской».",
+    "confirmUpgrade": "Подтвердить улучшение",
+    "confirmPlanChange": "Подтвердить смену тарифа",
+    "confirmStitchCoinTitle": "Подтвердить покупку Stitch Coin",
+    "confirmAiCreditTitle": "Подтвердить покупку AI Credit",
+    "balanceChangesAfterVerificationCoin": "Ваш баланс изменится только после того, как игровой сервер проверит транзакцию магазина и запишет соответствующее начисление в реестре коммерции (Commerce Ledger).",
+    "balanceChangesAfterVerificationAiCredit": "Ваш баланс изменится только после того, как игровой сервер проверит транзакцию магазина и запишет соответствующее начисление в реестре коммерции (Commerce Ledger). Подписка Premium не требуется."
+  },
+  "disclosure": {
+    "subscriptionTerms": "Оплата взимается с вашей учетной записи {{store}} при подтверждении. Подписка {{label}} Premium продлевается автоматически по цене {{offer}}, если автопродление не отключено по крайней мере за 24 часа до окончания текущего периода. Любая неиспользованная часть бесплатного пробного периода аннулируется при покупке подписки. Вы можете отменить подписку в любое время в настройках учетной записи {{store}}.",
+    "privacyPolicy": "Политика конфиденциальности",
+    "termsOfService": "Условия использования",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Не удалось открыть ссылку: {{url}}"
+  },
+  "supportReference": {
+    "label": "Код поддержки: {{reference}}",
+    "copyAccessibilityLabel": "Скопировать код поддержки {{reference}}",
+    "copyAccessibilityHint": "Копирует код поддержки в буфер обмена",
+    "copied": "Скопировано",
+    "copyFailedTitle": "Не удалось скопировать",
+    "copyFailedBody": "Не удалось скопировать код поддержки. Выделите текст, чтобы скопировать его вручную."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Покупки Stitch Coin в гостевом режиме доступны только на iOS.",
+    "guestIosOnlyGeneric": "Покупки в гостевом режиме доступны только на iOS.",
+    "purchaseFailedTitle": "Ошибка покупки",
+    "premiumVerificationNotYet": "Игровой сервер не смог проверить эту покупку. Повторите попытку сверки; не покупайте ее повторно.",
+    "premiumVerificationFailedRetry": "Игровой сервер пока не смог проверить эту покупку. Повторите попытку сверки; не покупайте ее повторно.",
+    "premiumGrantRefreshFailed": "Premium подтвержден, но статус подписки и баланс AI Credit не удалось обновить. Повторите попытку сверки.",
+    "premiumReconciliationUnreachable": "Не удалось связаться с игровым сервером для проверки покупки. Повторите попытку сверки; не покупайте ее повторно.",
+    "coinPackVerificationMismatch": "Транзакция магазина не совпадает с этим пакетом монет. Повторите попытку проверки или обратитесь в службу поддержки; не покупайте пакет снова.",
+    "coinPackGrantUnavailable": "Покупка подтверждена, но начисление Stitch Coins недоступно. Повторите попытку сверки; не покупайте пакет снова.",
+    "coinPackBalanceRefreshFailed": "Начисление монет подтверждено, но не удалось обновить текущий баланс Stitch Coins. Повторите попытку сверки.",
+    "coinPackVerificationFailedRetry": "Игровой сервер пока не смог проверить этот пакет монет. Повторите попытку сверки; не покупайте его повторно.",
+    "coinPackReconciliationUnreachable": "Не удалось связаться с игровым сервером для проверки пакета монет. Повторите попытку сверки; не покупайте его повторно.",
+    "aiCreditPackVerificationMismatch": "Транзакция магазина не совпадает с этим пакетом AI Credit. Повторите попытку проверки или обратитесь в службу поддержки; не покупайте пакет снова.",
+    "aiCreditPackGrantUnavailable": "Покупка подтверждена, но начисление AI Credits недоступно. Повторите попытку сверки; не покупайте пакет снова.",
+    "aiCreditPackBalanceRefreshFailed": "Начисление AI Credits подтверждено, но не удалось обновить текущий баланс. Повторите попытку сверки.",
+    "aiCreditPackVerificationFailedRetry": "Игровой сервер пока не смог проверить этот пакет AI Credit. Повторите попытку сверки; не покупайте его повторно.",
+    "aiCreditPackReconciliationUnreachable": "Не удалось связаться с игровым сервером для проверки пакета AI Credit. Повторите попытку сверки; не покупайте его повторно.",
+    "reconciliationStillUnavailable": "Игровой сервер по-прежнему недоступен. Попробуйте повторить сверку позже.",
+    "storeTemporarilyUnavailable": "Магазин временно недоступен. Пожалуйста, попробуйте еще раз через несколько минут.",
+    "purchasesNotAllowed": "Покупки на этом устройстве запрещены. Проверьте настройки учетной записи магазина или родительский контроль.",
+    "itemNotAvailable": "Этот товар сейчас недоступен для покупки. Выберите другой товар или попробуйте еще раз позже.",
+    "alreadyOwned": "Эта покупка у вас уже есть. Используйте «Восстановить покупки», чтобы обновить доступ.",
+    "couldNotConnectToStore": "Не удалось подключиться к магазину. Проверьте подключение к Интернету и попробуйте еще раз.",
+    "paymentPendingApproval": "Ваш платеж ожидает подтверждения. Покупка появится после того, как магазин завершит ее.",
+    "testPurchaseDeclined": "Тестовая покупка была отклонена. Плата не взималась. Выберите другой результат Тестового магазина в Настройках, а затем повторите попытку.",
+    "genericPurchaseFailure": "Не удалось завершить покупку. Оплата не производилась. Пожалуйста, попробуйте еще раз."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Проверка...",
+    "premiumPending": "Проверка все еще продолжается. Premium активируется после подтверждения игровым сервером.",
+    "premiumPlanChangePending": "Проверка все еще продолжается. Смена тарифного плана будет запланирована после подтверждения игровым сервером.",
+    "coinPackPending": "Проверка все еще продолжается. Ваш баланс Stitch Coins обновится по завершении.",
+    "aiCreditPackPending": "Проверка все еще продолжается. Ваш баланс AI Credits обновится по завершении."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Покупка получена",
+    "storeAcceptedPlanChange": "Магазин принял изменение тарифного плана на {{label}}. Подтверждение произойдет при вступлении в силу.",
+    "storeAcceptedPurchase": "Магазин принял покупку {{label}}. Сейчас мы проверяем ваш платеж.",
+    "premiumChanges": "План Premium изменится {{effectiveOn}} на {{label}}.",
+    "effectiveOnDate": " ({{date}})",
+    "planChangeScheduledTitle": "Смена тарифного плана запланирована",
+    "planChangeScheduledBody": "Ваша подписка Premium сохраняет свой текущий план до тех пор, пока не сменится на {{label}}{{effectiveOn}}. Вы можете отменить смену тарифа в разделе «Управление подпиской».",
+    "premiumIsActiveTitle": "Premium активен",
+    "premiumVerifiedAndActive": "Подписка {{label}} Premium проверена и активна.",
+    "premiumNowActiveNoBilling": "Подписка {{label}} Premium теперь активна.",
+    "premiumNowActiveBilled": "Подписка {{label}} Premium теперь активна, оплата каждые {{period}}.",
+    "coinPackGrantedTitle": "Stitch Coins начислены",
+    "coinPackGrantVerified": "Начисление {{label}} подтверждено. Баланс Stitch Coins: {{balance}}.",
+    "coinPackAddedToBalance": "В ваш кошелек добавлено {{quantity}} Stitch Coins.",
+    "aiCreditPackGrantedTitle": "AI Credits начислены",
+    "aiCreditPackGrantVerified": "Начисление {{label}} подтверждено. Баланс AI Credits: {{balance}}.",
+    "aiCreditPackAddedToBalance": "В ваш кошелек добавлено {{quantity}} AI Credits."
+  },
+  "products": {
+    "premiumAnnual": "Годовой",
+    "premiumMonthly": "Месячный",
+    "premiumWeekly": "Недельный",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+    "aiCreditPack_one": "{{formattedCount}} AI Credit",
+    "aiCreditPack_other": "{{formattedCount}} AI Credits",
+    "billedEveryOffer": "{{price}} / {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} credits / оплаченный период",
+    "creditAllowancePaidNoun": "{{credits}} credits / оплаченный {{period}}"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Покупка в качестве Гостя",
+    "commerceBody": "Вы можете совершать покупки без регистрации. Подписку Premium можно восстановить через магазин приложений, но Stitch Coin, AI Credit и личный гостевой прогресс будут безвозвратно утеряны при переустановке или потере устройства. Регистрация защитит ваши данные без прерывания гостевой игры.",
+    "continueAsGuest": "Продолжить как гость",
+    "signInInstead": "Войти вместо этого",
+    "closeAccessibilityLabel": "Закрыть"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "ОК",
+    "successButton": "Отлично",
+    "failedButton": "Закрыть",
+    "infoButton": "ОК",
+    "closeAccessibilityLabel": "Закрыть"
+  }
+}

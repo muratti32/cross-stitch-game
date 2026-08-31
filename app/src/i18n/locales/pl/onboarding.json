@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "WITAJ W STITCH WISH",
+    "title": "Wybierz kolor i dotknij pól z tym samym numerem.",
+    "heroAlt": "Podgląd wzoru początkowego 'Przytulne serce'",
+    "handedness": {
+      "sectionTitle": "Po której stronie chcesz mieć elementy sterujące?",
+      "groupLabel": "Pozycja elementów sterujących",
+      "optionRight": "Umieść po prawej",
+      "optionLeft": "Umieść po lewej",
+      "saveErrorText": "Nie udało się zapisać ustawienia.",
+      "retry": "Spróbuj ponownie"
+    },
+    "note": "Możesz to później zmienić w 'Ustawieniach'.",
+    "start": "Zacznij haftować",
+    "starting": "Rozpoczynanie…",
+    "browse": "Przeglądaj wzory początkowe",
+    "signIn": "Zaloguj się"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Wybierz DMC 321 Christmas Red.",
+      "stitchAction": "Dotknij zaznaczonego pola z tym samym numerem.",
+      "mismatchedTap": "Spróbuj innego zaznaczonego pola. Nie ma kary za błędy.",
+      "undoAction": "Cofnij ostatni ścieg i wykonaj go ponownie.",
+      "stitchSweep": "Przytrzymaj pole z tym samym numerem i przeciągnij po zaznaczonej serii.",
+      "threadColorCompletion": "Wyhaftuj wszystkie zaznaczone białe pola, a następnie wybierz kolejny kolor."
+    },
+    "hints": {
+      "anchoredZoom": "Użyj gestu uszczypnięcia, aby przybliżyć; pole pod palcem pozostaje w miejscu.",
+      "panVsSweep": "Przeciąganie przewija tkaninę. Rozpocznij przeciąganie na polu z tym samym numerem, aby haftować w sposób ciągły (sweep).",
+      "edgeAutoPan": "Przeciągając blisko krawędzi, tkanina będzie przewijać się razem z palcem.",
+      "remainingCellLocator": "Użyj lokalizatora, aby znaleźć następne pozostałe pole tej nici."
+    },
+    "skip": "Pomiń teraz",
+    "skipAccessibilityLabel": "Pomiń teraz samouczek",
+    "dismiss": "OK",
+    "dismissAccessibilityLabel": "Zamknij wskazówkę"
+  },
+  "recap": {
+    "title": "Doskonale",
+    "lines": {
+      "matchNumbers": "Znajdź numery, aby umieścić swoje ściegi.",
+      "dragSweep": "Przeciągnij po polach z tym samym numerem, aby haftować w sposób ciągły (sweep).",
+      "pinchZoom": "Uszczypnij, aby przybliżyć, gdy chcesz zobaczyć szczegóły.",
+      "undoLocator": "Cofanie i lokalizator są zawsze dostępne za darmo."
+    },
+    "continue": "Kontynuuj haftowanie",
+    "browsePatterns": "Szukaj wzorów"
+  }
+}

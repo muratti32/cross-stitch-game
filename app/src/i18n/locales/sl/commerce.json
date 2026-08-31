@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Nazaj",
+    "title": "Trgovina",
+    "subtitle": "Članstvo in enkratna dopolnila"
+  },
+  "signInReturn": {
+    "notice": "Prijavljeni ste. {{label}} je še vedno izbran. Preglejte in tapnite Kupi, ko boste pripravljeni."
+  },
+  "premiumHero": {
+    "eyebrow": "PREMIUM ČLANSTVO",
+    "title": "Ustvarjajte več. Vsak dan pridobite majhno nagrado.",
+    "body": "AI dobropisi v vsakem plačanem obdobju, Premium teme in dnevni prevzem kovancev Stitch Coin.",
+    "benefitAiCredits": "AI dobropisi",
+    "benefitDailyCoins": "Dnevni kovanci",
+    "benefitThemes": "Teme",
+    "statusNoActiveMembership": "Ni aktivnega članstva",
+    "statusBrowseAsGuest": "Prebrskaj načrte kot gostujoči igralec",
+    "periodEndsLabel": "Trenutno obdobje se konča",
+    "periodRenewsLabel": "Obnovi se",
+    "lifecycleActive": "Aktivno"
+  },
+  "membershipActions": {
+    "title": "Aktivno Premium članstvo",
+    "body": "Dnevne nagrade so v Profilu. Teme so pod Nastavitve › Videz.",
+    "scheduledChangeNotice": "Spremembe na {{plan}} dne {{date}}",
+    "manageSubscription": "Upravljaj naročnino",
+    "manageSubscriptionFailedTitle": "Naročnin ni bilo mogoče odpreti",
+    "manageSubscriptionFailedBody": "Poskusite znova v računu trgovine vaše naprave."
+  },
+  "pending": {
+    "title": "Uskladitev nakupa čaka",
+    "verifyingTitle": "Preverjanje nakupa",
+    "premiumChangeAccepted": "Trgovina je sprejela spremembo na {{label}}. ",
+    "premiumResponseReceived": "Odgovor trgovine za {{label}} je prejet. ",
+    "premiumDeferredSuffix": "Sprememba je predvidena šele po preveritvi zalednega sistema igre in začne veljati ob koncu trenutnega obdobja.",
+    "premiumSuffix": "Premium se aktivira šele po preveritvi zalednega sistema igre.",
+    "doNotPurchasePlanAgain": " Tega načrta ne kupujte ponovno.",
+    "coinPackBody": "Odgovor trgovine je prejet. Stanje kovancev Stitch Coin se posodobi šele, ko zaledni sistem igre izpostavi ustrezno dodelitev v Trgovinski knjigi. Tega paketa ne kupujte ponovno.",
+    "aiCreditPackBody": "Odgovor trgovine je prejet. Stanje AI dobropisov se posodobi šele, ko zaledni sistem igre izpostavi ustrezno dodelitev v Trgovinski knjigi. Tega paketa ne kupujte ponovno.",
+    "refreshStatus": "Osveži stanje",
+    "retryReconciliation": "Poskusi uskladitev znova"
+  },
+  "store": {
+    "loadingPrices": "Nalaganje trenutnih cen v trgovini …",
+    "unavailableTitle": "Trgovina trenutno ni na voljo",
+    "unavailableBody": "Podatki o denarnici in članstvu so še vedno na voljo.",
+    "retry": "Poskusi znova"
+  },
+  "plans": {
+    "choosePremiumPlan": "Izberite Premium načrt",
+    "yourPremiumPlan": "Vaš Premium načrt",
+    "currentPlan": "TRENUTNI NAČRT",
+    "upgrade": "NADGRADNJA",
+    "planChange": "SPREMEMBA NAČRTA",
+    "bestValue": "NAJBOLJŠA VREDNOST",
+    "billedEvery": "Zaračunano vsakih {{period}}",
+    "chooseLabel": "Izberi {{label}}",
+    "freeTrial": "Brezplačno za {{offer}}, nato {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Enkratni paketi",
+    "stitchCoinPacksTitle": "Paketi kovancev Stitch Coin",
+    "aiCreditPacksTitle": "Paketi AI dobropisov",
+    "coinsNoun": "Kovanci",
+    "creditsNoun": "Dobropisi",
+    "fromPrice": "Od {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Obnovi nakupe",
+    "restoreGuestPremium": "Obnovi gostujoči Premium",
+    "requestedTitle": "Obnovitev zahtevana",
+    "requestedBody": "Preverjen Premium dostop se prikaže po uskladitvi z obvestilom trgovine (webhook). Paketi Stitch Coin in AI dobropisov se nikoli ne obnovijo."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Trenutne cene iz trgovine z aplikacijami",
+    "closeAccessibilityLabel": "Zapri list izdelka",
+    "closeButtonAccessibilityLabel": "Zapri",
+    "selectedBeforeSignIn": "Izbrano pred prijavo",
+    "buy": "Kupi"
+  },
+  "confirmation": {
+    "cancel": "Prekliči",
+    "confirmLabel": "Potrdi {{label}}",
+    "confirmPremiumTitle": "Potrdi nakup Premium",
+    "introductoryOffer": "Vaša trgovina poroča o tej uvodni ponudbi: {{offer}}.",
+    "premiumAppearsAfterVerification": "Premium se prikaže šele, ko zaledni sistem igre preveri transakcijo trgovine.",
+    "confirmPremiumUpgradeTitle": "Potrdi nadgradnjo Premium",
+    "confirmPremiumPlanChangeTitle": "Potrdi spremembo Premium načrta",
+    "currentPlanLabel": "Trenutni načrt: {{label}}",
+    "upgradeToLabel": "Nadgradi na {{label}} · {{offer}}",
+    "changeToLabel": "Spremeni na {{label}} · {{offer}}",
+    "upgradeBody": "App Store nadzoruje končni znesek in datum uveljavitve te nadgradnje. Premium odraža {{label}} šele, ko to preveri zaledni sistem igre.",
+    "planChangeBody": "App Store to spremembo odloži do konca vašega trenutnega obdobja: {{currentLabel}} deluje do takrat, {{targetLabel}} pa se zaračuna od datuma spremembe. Spremembo lahko prekličete v razdelku Upravljaj naročnino.",
+    "confirmUpgrade": "Potrdi nadgradnjo",
+    "confirmPlanChange": "Potrdi spremembo načrta",
+    "confirmStitchCoinTitle": "Potrdi nakup kovancev Stitch Coin",
+    "confirmAiCreditTitle": "Potrdi nakup AI dobropisov",
+    "balanceChangesAfterVerificationCoin": "Vaše stanje se spremeni šele, ko zaledni sistem igre preveri transakcijo trgovine in zabeleži ustrezno dodelitev v Trgovinski knjigi.",
+    "balanceChangesAfterVerificationAiCredit": "Vaše stanje se spremeni šele, ko zaledni sistem igre preveri transakcijo trgovine in zabeleži ustrezno dodelitev v Trgovinski knjigi. Premium članstvo ni potrebno."
+  },
+  "disclosure": {
+    "subscriptionTerms": "Plačilo se ob potrditvi zaračuna vašemu računu {{store}}. {{label}} Premium se samodejno obnovi po ceni {{offer}}, razen če samodejno podaljšanje izklopite vsaj 24 ur pred koncem trenutnega obdobja. Neizkoriščeni del brezplačnega preizkusa zapade, ko kupite naročnino. Naročnino lahko kadar koli prekličete v svojem računu {{store}}.",
+    "privacyPolicy": "Politika zasebnosti",
+    "termsOfService": "Pogoji uporabe",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Povezave ni bilo mogoče odpreti: {{url}}"
+  },
+  "supportReference": {
+    "label": "Referenca za podporo: {{reference}}",
+    "copyAccessibilityLabel": "Kopiraj referenco za podporo {{reference}}",
+    "copyAccessibilityHint": "Kopira referenco za podporo v odložišče",
+    "copied": "Kopirano",
+    "copyFailedTitle": "Kopiranje ni uspelo",
+    "copyFailedBody": "Reference za podporo ni bilo mogoče kopirati. Izberite besedilo in jo kopirajte ročno."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Gostujoči nakupi kovancev Stitch Coin so na voljo samo na iOS.",
+    "guestIosOnlyGeneric": "Gostujoči nakupi so na voljo samo na iOS.",
+    "purchaseFailedTitle": "Nakup ni uspel",
+    "premiumVerificationNotYet": "Zaledni sistem igre ni mogel preveriti tega nakupa. Poskusite uskladitev znova; ne kupujte ponovno.",
+    "premiumVerificationFailedRetry": "Zaledni sistem igre tega nakupa še ni mogel preveriti. Poskusite uskladitev znova; ne kupujte ponovno.",
+    "premiumGrantRefreshFailed": "Premium je bil preverjen, vendar stanja članstva in AI dobropisov ni bilo mogoče osvežiti. Poskusite uskladitev znova.",
+    "premiumReconciliationUnreachable": "Uskladitev nakupa ni mogla doseči zalednega sistema igre. Poskusite uskladitev znova; ne kupujte ponovno.",
+    "coinPackVerificationMismatch": "Transakcija trgovine se ni ujemala s tem paketom kovancev. Poskusite preverjanje znova ali se obrnite na podporo; ne kupujte ponovno.",
+    "coinPackGrantUnavailable": "Nakup je bil preverjen, vendar dodelitev kovancev Stitch Coin ni na voljo. Poskusite uskladitev znova; ne kupujte ponovno.",
+    "coinPackBalanceRefreshFailed": "Dodelitev kovancev je bila preverjena, vendar trenutnega stanja kovancev Stitch Coin ni bilo mogoče osvežiti. Poskusite uskladitev znova.",
+    "coinPackVerificationFailedRetry": "Zaledni sistem igre tega paketa kovancev še ni mogel preveriti. Poskusite uskladitev znova; ne kupujte ponovno.",
+    "coinPackReconciliationUnreachable": "Uskladitev paketa kovancev ni mogla doseči zalednega sistema igre. Poskusite uskladitev znova; ne kupujte ponovno.",
+    "aiCreditPackVerificationMismatch": "Transakcija trgovine se ni ujemala s tem paketom AI dobropisov. Poskusite preverjanje znova ali se obrnite na podporo; ne kupujte ponovno.",
+    "aiCreditPackGrantUnavailable": "Nakup je bil preverjen, vendar dodelitev AI dobropisov ni na voljo. Poskusite uskladitev znova; ne kupujte ponovno.",
+    "aiCreditPackBalanceRefreshFailed": "Dodelitev AI dobropisov je bila preverjena, vendar trenutnega stanja ni bilo mogoče osvežiti. Poskusite uskladitev znova.",
+    "aiCreditPackVerificationFailedRetry": "Zaledni sistem igre tega paketa AI dobropisov še ni mogel preveriti. Poskusite uskladitev znova; ne kupujte ponovno.",
+    "aiCreditPackReconciliationUnreachable": "Uskladitev paketa AI dobropisov ni mogla doseči zalednega sistema igre. Poskusite uskladitev znova; ne kupujte ponovno.",
+    "reconciliationStillUnavailable": "Zaledni sistem igre še vedno ni na voljo. Uskladitev poskusite pozneje znova.",
+    "storeTemporarilyUnavailable": "Trgovina trenutno ni na voljo. Poskusite znova čez nekaj minut.",
+    "purchasesNotAllowed": "Nakupi na tej napravi niso dovoljeni. Preverite svoj račun trgovine ali starševski nadzor.",
+    "itemNotAvailable": "Ta izdelek trenutno ni na voljo za nakup. Izberite drug izdelek ali poskusite pozneje znova.",
+    "alreadyOwned": "Ta nakup že imate. Za osvežitev dostopa uporabite Obnovi nakupe.",
+    "couldNotConnectToStore": "Povezava s trgovino ni uspela. Preverite internetno povezavo in poskusite znova.",
+    "paymentPendingApproval": "Vaše plačilo čaka na odobritev. Nakup se prikaže, ko ga trgovina zaključi.",
+    "testPurchaseDeclined": "Testni nakup je bil zavrnjen. Plačilo ni bilo izvedeno. V Nastavitvah izberite drug rezultat testne trgovine in poskusite znova.",
+    "genericPurchaseFailure": "Nakupa ni bilo mogoče dokončati. Plačilo ni bilo zaračunano. Poskusite znova."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Preverjanje še poteka",
+    "premiumPending": "Preverjanje še poteka. Premium se bo aktiviral, ko ga potrdi zaledni sistem igre.",
+    "premiumPlanChangePending": "Preverjanje še poteka. Sprememba načrta bo predvidena, ko jo potrdi zaledni sistem igre.",
+    "coinPackPending": "Preverjanje še poteka. Vaše stanje kovancev Stitch Coin se bo posodobilo, ko se zaključi.",
+    "aiCreditPackPending": "Preverjanje še poteka. Vaše stanje AI dobropisov se bo posodobilo, ko se zaključi."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Nakup prejet",
+    "storeAcceptedPlanChange": "Trgovina je sprejela spremembo na {{label}}. Potrjujemo, kdaj začne veljati.",
+    "storeAcceptedPurchase": "Trgovina je sprejela {{label}}. Vaš nakup se zdaj preverja.",
+    "premiumChanges": "Premium se spremeni na {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " dne {{date}}",
+    "planChangeScheduledTitle": "Sprememba načrta predvidena",
+    "planChangeScheduledBody": "Vaše Premium članstvo ohrani trenutni načrt, dokler se ne spremeni na {{label}}{{effectiveOn}}. Spremembo lahko prekličete v razdelku Upravljaj naročnino.",
+    "premiumIsActiveTitle": "Premium je aktiven",
+    "premiumVerifiedAndActive": "{{label}} Premium je preverjen in aktiven.",
+    "premiumNowActiveNoBilling": "{{label}} Premium je zdaj aktiven.",
+    "premiumNowActiveBilled": "{{label}} Premium je zdaj aktiven, zaračunano vsakih {{period}}.",
+    "coinPackGrantedTitle": "Kovanci Stitch Coin dodeljeni",
+    "coinPackGrantVerified": "Dodelitev {{label}} je preverjena. Stanje kovancev Stitch Coin: {{balance}}.",
+    "coinPackAddedToBalance": "{{quantity}} kovancev Stitch Coin je bilo dodanih vašemu stanju.",
+    "aiCreditPackGrantedTitle": "AI dobropisi dodeljeni",
+    "aiCreditPackGrantVerified": "Dodelitev {{label}} je preverjena. Stanje AI dobropisov: {{balance}}.",
+    "aiCreditPackAddedToBalance": "{{quantity}} AI dobropisov je bilo dodanih vašemu stanju."
+  },
+  "products": {
+    "premiumAnnual": "Letno",
+    "premiumMonthly": "Mesečno",
+    "premiumWeekly": "Tedensko",
+    "stitchCoinPack_one": "{{formattedCount}} kovanec Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} kovancev Stitch Coin",
+    "aiCreditPack_one": "{{formattedCount}} AI dobropis",
+    "aiCreditPack_other": "{{formattedCount}} AI dobropisov",
+    "billedEveryOffer": "{{price}} vsakih {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} dobropisov / plačano obdobje",
+    "creditAllowancePaidNoun": "{{credits}} dobropisov / plačano {{period}}"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Nakup kot gost",
+    "commerceBody": "Nakup lahko opravite brez registracije. Premium članstvo je mogoče obnoviti iz trgovine, vendar so kovanci Stitch Coin, AI dobropisi in zasebna gostujoča vsebina neobnovljivi, če se ta namestitev izgubi. Registracija jih zaščiti in nikoli ne prekine igranja kot gost.",
+    "continueAsGuest": "Nadaljuj kot gost",
+    "signInInstead": "Raje se prijavi",
+    "closeAccessibilityLabel": "Zapri"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "Razumem",
+    "successButton": "Odlično",
+    "failedButton": "Zapri",
+    "infoButton": "Razumem",
+    "closeAccessibilityLabel": "Zapri"
+  }
+}

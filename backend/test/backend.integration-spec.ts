@@ -2288,6 +2288,87 @@ describe('Stitch Wish backend integration', () => {
       const categoriesIt = await request(httpServer)
         .get(`/v1/catalog/categories?locale=it`)
         .expect(200);
+      const categoriesAr = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=ar`)
+        .expect(200);
+      const categoriesJa = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=ja`)
+        .expect(200);
+      const categoriesKo = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=ko`)
+        .expect(200);
+      const categoriesNl = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=nl`)
+        .expect(200);
+      const categoriesPl = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=pl`)
+        .expect(200);
+      const categoriesRu = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=ru`)
+        .expect(200);
+      const categoriesZhHans = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=zh-Hans`)
+        .expect(200);
+      const categoriesZhHant = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=zh-Hant`)
+        .expect(200);
+      const categoriesCatalan = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=ca`)
+        .expect(200);
+      const categoriesCzech = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=cs`)
+        .expect(200);
+      const categoriesDanish = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=da`)
+        .expect(200);
+      const categoriesGreek = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=el`)
+        .expect(200);
+      const categoriesFinnish = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=fi`)
+        .expect(200);
+      const categoriesHindi = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=hi`)
+        .expect(200);
+      const categoriesCroatian = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=hr`)
+        .expect(200);
+      const categoriesHungarian = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=hu`)
+        .expect(200);
+      const categoriesIndonesian = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=id`)
+        .expect(200);
+      const categoriesMalay = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=ms`)
+        .expect(200);
+      const categoriesNorwegianBokmal = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=nb`)
+        .expect(200);
+      const categoriesPortuguesePortugal = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=pt`)
+        .expect(200);
+      const categoriesRomanian = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=ro`)
+        .expect(200);
+      const categoriesSlovak = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=sk`)
+        .expect(200);
+      const categoriesSlovenian = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=sl`)
+        .expect(200);
+      const categoriesSwedish = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=sv`)
+        .expect(200);
+      const categoriesTagalog = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=tl`)
+        .expect(200);
+      const categoriesUkrainian = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=uk`)
+        .expect(200);
+      const categoriesVietnamese = await request(httpServer)
+        .get(`/v1/catalog/categories?locale=vi`)
+        .expect(200);
       const tagsTr = await request(httpServer)
         .get(`/v1/catalog/tags?locale=tr`)
         .expect(200);
@@ -2303,6 +2384,60 @@ describe('Stitch Wish backend integration', () => {
         .toBe('Tiere');
       expect((categoriesIt.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
         .toBe('Animali');
+      expect((categoriesAr.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('حيوانات');
+      expect((categoriesJa.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('動物');
+      expect((categoriesKo.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('동물');
+      expect((categoriesNl.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Dieren');
+      expect((categoriesPl.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Zwierzęta');
+      expect((categoriesRu.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Животные');
+      expect((categoriesZhHans.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('动物');
+      expect((categoriesZhHant.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('動物');
+      expect((categoriesCatalan.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Animals');
+      expect((categoriesCzech.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Zvířata');
+      expect((categoriesDanish.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Dyr');
+      expect((categoriesGreek.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Ζώα');
+      expect((categoriesFinnish.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Eläimet');
+      expect((categoriesHindi.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('जानवर');
+      expect((categoriesCroatian.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Životinje');
+      expect((categoriesHungarian.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Állatok');
+      expect((categoriesIndonesian.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Hewan');
+      expect((categoriesMalay.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Haiwan');
+      expect((categoriesNorwegianBokmal.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Dyr');
+      expect((categoriesPortuguesePortugal.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Animais');
+      expect((categoriesRomanian.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Animale');
+      expect((categoriesSlovak.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Zvieratá');
+      expect((categoriesSlovenian.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Živali');
+      expect((categoriesSwedish.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Djur');
+      expect((categoriesTagalog.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Mga Hayop');
+      expect((categoriesUkrainian.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Тварини');
+      expect((categoriesVietnamese.body as { code: string; label: string }[]).find((item) => item.code === 'animals')?.label)
+        .toBe('Động vật');
       expect((tagsTr.body as { code: string; label: string }[]).find((item) => item.code === tagCode)?.label)
         .toBe(`Tag Türkçe ${suffix}`);
     });

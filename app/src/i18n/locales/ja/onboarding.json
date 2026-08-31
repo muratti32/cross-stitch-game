@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "STITCH WISHへようこそ",
+    "title": "色を選んで、同じ色のマスをタップしましょう。",
+    "heroAlt": "スターター図案「コージーハート」のプレビュー",
+    "handedness": {
+      "sectionTitle": "操作ボタンはどちらの側に配置しますか？",
+      "groupLabel": "操作ボタンの位置",
+      "optionRight": "右側に配置",
+      "optionLeft": "左側に配置",
+      "saveErrorText": "設定を保存できませんでした。",
+      "retry": "もう一度試す"
+    },
+    "note": "この設定は後から「設定」で変更できます。",
+    "start": "ステッチを始める",
+    "starting": "開始中…",
+    "browse": "スターター図案を見る",
+    "signIn": "サインイン"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "DMC 321 クリスマスレッドを選択してください。",
+      "stitchAction": "ハイライトされた同じ色のマスをタップしてください。",
+      "mismatchedTap": "ハイライトされた異なるマスをタップしてください。間違えてもペナルティはありません。",
+      "undoAction": "今のステッチを取り消して、もう一度配置してください。",
+      "stitchSweep": "同じ色のマスを押し、ハイライトされた範囲をドラッグしてください。",
+      "threadColorCompletion": "ハイライトされた白い糸をすべてステッチしてから、次の色を選んでください。"
+    },
+    "hints": {
+      "anchoredZoom": "指の下のマスがずれないように固定したまま、ピンチ操作でズームします。",
+      "panVsSweep": "ドラッグすると布をスクロールできます。同じ色のマスからドラッグを開始すると、まとめてステッチ（スウィープ）できます。",
+      "edgeAutoPan": "端の近くでスウィープし続けると、指の動きに合わせて布がスクロールします。",
+      "remainingCellLocator": "ロケーターを使って、この糸の次の残りマスを見つけましょう。"
+    },
+    "skip": "今はスキップ",
+    "skipAccessibilityLabel": "チュートリアルを今はスキップする",
+    "dismiss": "了解",
+    "dismissAccessibilityLabel": "ヒントを閉じる"
+  },
+  "recap": {
+    "title": "これでバッチリです",
+    "lines": {
+      "matchNumbers": "数字を合わせてステッチを配置します。",
+      "dragSweep": "同じ色のマスをドラッグして、まとめてステッチ（スウィープ）します。",
+      "pinchZoom": "近くで見たい時は、ピンチ操作でズームします。",
+      "undoLocator": "取り消し（元に戻す）とロケーターはいつでも無料で使えます。"
+    },
+    "continue": "ステッチを続ける",
+    "browsePatterns": "図案を探す"
+  }
+}

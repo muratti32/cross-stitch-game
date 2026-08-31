@@ -1,0 +1,198 @@
+{
+  "screen": {
+    "backAccessibilityLabel": "Înapoi",
+    "title": "Magazin",
+    "subtitle": "Abonament și reîncărcări unice"
+  },
+  "signInReturn": {
+    "notice": "Ești autentificat. {{label}} este încă selectat. Verifică-l și atinge Cumpără când ești gata."
+  },
+  "premiumHero": {
+    "eyebrow": "ABONAMENT PREMIUM",
+    "title": "Creează mai mult. Colectează o mică recompensă în fiecare zi.",
+    "body": "Credite AI la fiecare perioadă plătită, teme Premium și o recompensă zilnică de Stitch Coin.",
+    "benefitAiCredits": "Credite AI",
+    "benefitDailyCoins": "Monede zilnice",
+    "benefitThemes": "Teme",
+    "statusNoActiveMembership": "Niciun abonament activ",
+    "statusBrowseAsGuest": "Răsfoiește planurile ca invitat",
+    "periodEndsLabel": "Perioada curentă se încheie",
+    "periodRenewsLabel": "Se reînnoiește",
+    "lifecycleActive": "Activ"
+  },
+  "membershipActions": {
+    "title": "Abonament Premium activ",
+    "body": "Recompensele zilnice sunt în Profil. Temele sunt în Setări › Aspect.",
+    "scheduledChangeNotice": "Modificări la {{plan}} pe {{date}}",
+    "manageSubscription": "Gestionează abonamentul",
+    "manageSubscriptionFailedTitle": "Abonamentele nu s-au putut deschide",
+    "manageSubscriptionFailedBody": "Încearcă din nou din contul magazinului dispozitivului tău."
+  },
+  "pending": {
+    "title": "Reconciliere achiziție în curs",
+    "verifyingTitle": "Se verifică achiziția",
+    "premiumChangeAccepted": "Magazinul a acceptat schimbarea la {{label}}. ",
+    "premiumResponseReceived": "Răspunsul magazinului pentru {{label}} a fost primit. ",
+    "premiumDeferredSuffix": "Schimbarea este programată doar după verificarea de către serverul jocului și intră în vigoare la sfârșitul perioadei tale curente.",
+    "premiumSuffix": "Premium se activează doar după verificarea de către serverul jocului.",
+    "doNotPurchasePlanAgain": " Nu cumpăra din nou acest plan.",
+    "coinPackBody": "Răspunsul magazinului a fost primit. Stitch Coin se actualizează doar după ce serverul jocului expune înregistrarea corespunzătoare din registrul comercial. Nu cumpăra din nou acest pachet.",
+    "aiCreditPackBody": "Răspunsul magazinului a fost primit. Creditele AI se actualizează doar după ce serverul jocului expune înregistrarea corespunzătoare din registrul comercial. Nu cumpăra din nou acest pachet.",
+    "refreshStatus": "Actualizează starea",
+    "retryReconciliation": "Reîncearcă reconcilierea"
+  },
+  "store": {
+    "loadingPrices": "Se încarcă prețurile curente din magazin…",
+    "unavailableTitle": "Magazin temporar indisponibil",
+    "unavailableBody": "Informațiile despre portofel și abonament sunt încă disponibile.",
+    "retry": "Reîncearcă"
+  },
+  "plans": {
+    "choosePremiumPlan": "Alege un plan Premium",
+    "yourPremiumPlan": "Planul tău Premium",
+    "currentPlan": "PLAN CURENT",
+    "upgrade": "ACTUALIZEAZĂ",
+    "planChange": "SCHIMBARE PLAN",
+    "bestValue": "CEA MAI BUNĂ VALOARE",
+    "billedEvery": "Facturat la fiecare {{period}}",
+    "chooseLabel": "Alege {{label}}",
+    "freeTrial": "Gratuit pentru {{offer}}, apoi {{paidOffer}}"
+  },
+  "onetime": {
+    "sectionTitle": "Pachete unice",
+    "stitchCoinPacksTitle": "Pachete Stitch Coin",
+    "aiCreditPacksTitle": "Pachete de credite AI",
+    "coinsNoun": "Monede",
+    "creditsNoun": "Credite",
+    "fromPrice": "De la {{price}}"
+  },
+  "restore": {
+    "restorePurchases": "Restaurează achizițiile",
+    "restoreGuestPremium": "Restaurează Premium pentru invitat",
+    "requestedTitle": "Restaurare solicitată",
+    "requestedBody": "Accesul Premium verificat va apărea după reconcilierea webhook-ului magazinului. Pachetele Stitch Coin și de credite AI nu se restaurează niciodată."
+  },
+  "sheet": {
+    "currentPricesSubtitle": "Prețuri curente din magazinul aplicației",
+    "closeAccessibilityLabel": "Închide fișa produsului",
+    "closeButtonAccessibilityLabel": "Închide",
+    "selectedBeforeSignIn": "Selectat înainte de autentificare",
+    "buy": "Cumpără"
+  },
+  "confirmation": {
+    "cancel": "Anulează",
+    "confirmLabel": "Confirmă {{label}}",
+    "confirmPremiumTitle": "Confirmă achiziția Premium",
+    "introductoryOffer": "Magazinul tău raportează această ofertă introductivă: {{offer}}.",
+    "premiumAppearsAfterVerification": "Premium apare doar după ce serverul jocului verifică tranzacția din magazin.",
+    "confirmPremiumUpgradeTitle": "Confirmă actualizarea Premium",
+    "confirmPremiumPlanChangeTitle": "Confirmă schimbarea planului Premium",
+    "currentPlanLabel": "Plan curent: {{label}}",
+    "upgradeToLabel": "Actualizează la {{label}} · {{offer}}",
+    "changeToLabel": "Schimbă la {{label}} · {{offer}}",
+    "upgradeBody": "App Store controlează taxa finală și data de intrare în vigoare pentru această actualizare. Premium reflectă {{label}} doar după ce serverul jocului o verifică.",
+    "planChangeBody": "App Store amână această schimbare până la sfârșitul perioadei tale curente: {{currentLabel}} continuă să funcționeze până atunci, iar {{targetLabel}} este facturat de la data schimbării. Anulează schimbarea din Gestionează abonamentul.",
+    "confirmUpgrade": "Confirmă actualizarea",
+    "confirmPlanChange": "Confirmă schimbarea planului",
+    "confirmStitchCoinTitle": "Confirmă achiziția Stitch Coin",
+    "confirmAiCreditTitle": "Confirmă achiziția de credite AI",
+    "balanceChangesAfterVerificationCoin": "Soldul tău se schimbă doar după ce serverul jocului verifică tranzacția din magazin și înregistrează acordarea corespunzătoare în registrul comercial.",
+    "balanceChangesAfterVerificationAiCredit": "Soldul tău se schimbă doar după ce serverul jocului verifică tranzacția din magazin și înregistrează acordarea corespunzătoare în registrul comercial. Abonamentul Premium nu este necesar."
+  },
+  "disclosure": {
+    "subscriptionTerms": "Plata este taxată în contul tău {{store}} la confirmare. {{label}} Premium se reînnoiește automat la {{offer}}, dacă reînnoirea automată nu este dezactivată cu cel puțin 24 de ore înainte de sfârșitul perioadei curente. Orice porțiune neutilizată dintr-o perioadă de probă gratuită se pierde atunci când cumperi un abonament. Poți anula oricând din contul tău {{store}}.",
+    "privacyPolicy": "Politica de confidențialitate",
+    "termsOfService": "Termenii și condițiile",
+    "appStore": "App Store",
+    "googlePlay": "Google Play",
+    "linkOpenFailedBody": "Linkul nu a putut fi deschis: {{url}}"
+  },
+  "supportReference": {
+    "label": "Referință suport: {{reference}}",
+    "copyAccessibilityLabel": "Copiază referința suport {{reference}}",
+    "copyAccessibilityHint": "Copiază referința suport în clipboard",
+    "copied": "Copiat",
+    "copyFailedTitle": "Copierea a eșuat",
+    "copyFailedBody": "Referința suport nu a putut fi copiată. Selectează textul pentru a-l copia manual."
+  },
+  "errors": {
+    "guestIosOnlyStitchCoin": "Achizițiile Stitch Coin pentru invitați sunt disponibile doar pe iOS.",
+    "guestIosOnlyGeneric": "Achizițiile pentru invitați sunt disponibile doar pe iOS.",
+    "purchaseFailedTitle": "Achiziția a eșuat",
+    "premiumVerificationNotYet": "Serverul jocului nu a putut verifica această achiziție. Reîncearcă reconcilierea; nu o cumpăra din nou.",
+    "premiumVerificationFailedRetry": "Serverul jocului nu a putut verifica încă această achiziție. Reîncearcă reconcilierea; nu o cumpăra din nou.",
+    "premiumGrantRefreshFailed": "Premium a fost verificat, dar starea abonamentului și a creditelor AI nu a putut fi actualizată. Reîncearcă reconcilierea.",
+    "premiumReconciliationUnreachable": "Reconcilierea achiziției nu a putut ajunge la serverul jocului. Reîncearcă reconcilierea; nu o cumpăra din nou.",
+    "coinPackVerificationMismatch": "Tranzacția din magazin nu a corespuns acestui pachet de monede. Reîncearcă verificarea sau contactează suportul; nu-l cumpăra din nou.",
+    "coinPackGrantUnavailable": "Achiziția a fost verificată, dar acordarea Stitch Coin este indisponibilă. Reîncearcă reconcilierea; nu o cumpăra din nou.",
+    "coinPackBalanceRefreshFailed": "Acordarea de monede a fost verificată, dar soldul curent de Stitch Coin nu a putut fi actualizat. Reîncearcă reconcilierea.",
+    "coinPackVerificationFailedRetry": "Serverul jocului nu a putut verifica încă acest pachet de monede. Reîncearcă reconcilierea; nu-l cumpăra din nou.",
+    "coinPackReconciliationUnreachable": "Reconcilierea pachetului de monede nu a putut ajunge la serverul jocului. Reîncearcă reconcilierea; nu-l cumpăra din nou.",
+    "aiCreditPackVerificationMismatch": "Tranzacția din magazin nu a corespuns acestui pachet de credite AI. Reîncearcă verificarea sau contactează suportul; nu-l cumpăra din nou.",
+    "aiCreditPackGrantUnavailable": "Achiziția a fost verificată, dar acordarea de credite AI este indisponibilă. Reîncearcă reconcilierea; nu o cumpăra din nou.",
+    "aiCreditPackBalanceRefreshFailed": "Acordarea de credite AI a fost verificată, dar soldul curent nu a putut fi actualizat. Reîncearcă reconcilierea.",
+    "aiCreditPackVerificationFailedRetry": "Serverul jocului nu a putut verifica încă acest pachet de credite AI. Reîncearcă reconcilierea; nu-l cumpăra din nou.",
+    "aiCreditPackReconciliationUnreachable": "Reconcilierea pachetului de credite AI nu a putut ajunge la serverul jocului. Reîncearcă reconcilierea; nu-l cumpăra din nou.",
+    "reconciliationStillUnavailable": "Serverul jocului este încă indisponibil. Încearcă reconcilierea din nou mai târziu.",
+    "storeTemporarilyUnavailable": "Magazinul este temporar indisponibil. Te rugăm să încerci din nou peste câteva minute.",
+    "purchasesNotAllowed": "Achizițiile nu sunt permise pe acest dispozitiv. Verifică contul tău de magazin sau controlul parental.",
+    "itemNotAvailable": "Acest articol nu este disponibil pentru achiziție momentan. Alege alt articol sau încearcă din nou mai târziu.",
+    "alreadyOwned": "Deții deja această achiziție. Folosește Restaurează achizițiile pentru a actualiza accesul.",
+    "couldNotConnectToStore": "Nu s-a putut realiza conexiunea la magazin. Verifică-ți conexiunea la internet și încearcă din nou.",
+    "paymentPendingApproval": "Plata ta este în așteptarea aprobării. Achiziția ta va apărea după ce magazinul o finalizează.",
+    "testPurchaseDeclined": "Achiziția de test a fost refuzată. Nicio plată nu a fost efectuată. Alege alt rezultat de magazin de test din Setări, apoi încearcă din nou.",
+    "genericPurchaseFailure": "Achiziția ta nu a putut fi finalizată. Nicio plată nu a fost efectuată. Te rugăm să încerci din nou."
+  },
+  "pendingModal": {
+    "stillVerifyingTitle": "Se verifică încă",
+    "premiumPending": "Verificarea este încă în curs. Premium se va activa după ce serverul jocului o confirmă.",
+    "premiumPlanChangePending": "Verificarea este încă în curs. Schimbarea planului tău va fi programată după ce serverul jocului o confirmă.",
+    "coinPackPending": "Verificarea este încă în curs. Soldul tău de Stitch Coin se va actualiza după finalizare.",
+    "aiCreditPackPending": "Verificarea este încă în curs. Soldul tău de credite AI se va actualiza după finalizare."
+  },
+  "success": {
+    "purchaseReceivedTitle": "Achiziție primită",
+    "storeAcceptedPlanChange": "Magazinul a acceptat schimbarea la {{label}}. Se confirmă când intră în vigoare.",
+    "storeAcceptedPurchase": "Magazinul a acceptat {{label}}. Se verifică acum achiziția ta.",
+    "premiumChanges": "Premium se schimbă la {{label}}{{effectiveOn}}.",
+    "effectiveOnDate": " pe {{date}}",
+    "planChangeScheduledTitle": "Schimbarea planului programată",
+    "planChangeScheduledBody": "Abonamentul tău Premium își păstrează planul curent până se schimbă la {{label}}{{effectiveOn}}. Anulează schimbarea din Gestionează abonamentul.",
+    "premiumIsActiveTitle": "Premium este activ",
+    "premiumVerifiedAndActive": "{{label}} Premium este verificat și activ.",
+    "premiumNowActiveNoBilling": "{{label}} Premium este acum activ.",
+    "premiumNowActiveBilled": "{{label}} Premium este acum activ, facturat la fiecare {{period}}.",
+    "coinPackGrantedTitle": "Stitch Coins acordate",
+    "coinPackGrantVerified": "Acordarea {{label}} a fost verificată. Sold Stitch Coin: {{balance}}.",
+    "coinPackAddedToBalance": "{{quantity}} Stitch Coins au fost adăugate la soldul tău.",
+    "aiCreditPackGrantedTitle": "Credite AI acordate",
+    "aiCreditPackGrantVerified": "Acordarea {{label}} a fost verificată. Sold credite AI: {{balance}}.",
+    "aiCreditPackAddedToBalance": "{{quantity}} credite AI au fost adăugate la soldul tău."
+  },
+  "products": {
+    "premiumAnnual": "Anual",
+    "premiumMonthly": "Lunar",
+    "premiumWeekly": "Săptămânal",
+    "stitchCoinPack_one": "{{formattedCount}} Stitch Coin",
+    "stitchCoinPack_other": "{{formattedCount}} Stitch Coins",
+    "aiCreditPack_one": "{{formattedCount}} credit AI",
+    "aiCreditPack_other": "{{formattedCount}} credite AI",
+    "billedEveryOffer": "{{price}} la fiecare {{period}}",
+    "creditAllowancePaidPeriod": "{{credits}} credite / perioadă plătită",
+    "creditAllowancePaidNoun": "{{credits}} credite / {{period}} plătit"
+  },
+  "guestDataRiskNotice": {
+    "commerceTitle": "Cumpără ca invitat",
+    "commerceBody": "Poți cumpăra fără înregistrare. Abonamentul Premium poate fi restaurat din magazin, dar Stitch Coin, creditele AI și conținutul privat de invitat sunt irecuperabile dacă această instalare se pierde. Înregistrarea le protejează și nu întrerupe niciodată jocul ca invitat.",
+    "continueAsGuest": "Continuă ca invitat",
+    "signInInstead": "Autentifică-te în schimb",
+    "closeAccessibilityLabel": "Închide"
+  },
+  "purchaseResultModal": {
+    "pendingButton": "Am înțeles",
+    "successButton": "Excelent",
+    "failedButton": "Închide",
+    "infoButton": "Am înțeles",
+    "closeAccessibilityLabel": "Închide"
+  }
+}

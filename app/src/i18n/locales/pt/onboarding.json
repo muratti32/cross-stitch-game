@@ -1,0 +1,51 @@
+{
+  "welcome": {
+    "eyebrow": "BEM-VINDO AO STITCH WISH",
+    "title": "Escolhe uma cor, toca nos quadrados correspondentes.",
+    "heroAlt": "Pré-visualização do padrão inicial Coração Acolhedor",
+    "handedness": {
+      "sectionTitle": "De que lado devem estar os controlos?",
+      "groupLabel": "Lado dos controlos",
+      "optionRight": "Controlos à direita",
+      "optionLeft": "Controlos à esquerda",
+      "saveErrorText": "Não foi possível guardar essa escolha.",
+      "retry": "Tentar novamente"
+    },
+    "note": "Podes alterar isto mais tarde em Definições.",
+    "start": "Começar a bordar",
+    "starting": "A começar…",
+    "browse": "Explorar padrões iniciais",
+    "signIn": "Iniciar sessão"
+  },
+  "coachBanner": {
+    "beats": {
+      "threadPalette": "Seleciona DMC 321 Vermelho Natal.",
+      "stitchAction": "Toca na célula correspondente destacada.",
+      "mismatchedTap": "Toca na célula diferente destacada. Toques errados não custam nada.",
+      "undoAction": "Anula esse ponto, depois coloca-o novamente.",
+      "stitchSweep": "Pressiona uma célula correspondente, depois arrasta pela sequência destacada.",
+      "threadColorCompletion": "Termina o fio branco destacado, depois escolhe a tua próxima cor."
+    },
+    "hints": {
+      "anchoredZoom": "Belisca para ampliar mantendo as células debaixo dos dedos no lugar.",
+      "panVsSweep": "Arrastar move o tecido. Começa numa célula correspondente para bordar em sequência.",
+      "edgeAutoPan": "Continua a arrastar perto da margem e o tecido segue o teu dedo.",
+      "remainingCellLocator": "Usa o localizador para encontrar a próxima célula restante desta cor de fio."
+    },
+    "skip": "Ignorar por agora",
+    "skipAccessibilityLabel": "Ignorar tutorial por agora",
+    "dismiss": "Entendido",
+    "dismissAccessibilityLabel": "Dispensar dica"
+  },
+  "recap": {
+    "title": "Já sabes tudo",
+    "lines": {
+      "matchNumbers": "Faz corresponder os números para colocar cada ponto.",
+      "dragSweep": "Arrasta pelas células correspondentes para bordar em sequência.",
+      "pinchZoom": "Belisca para ampliar quando precisares de ver mais de perto.",
+      "undoLocator": "Anular e o localizador são sempre gratuitos."
+    },
+    "continue": "Continuar a bordar",
+    "browsePatterns": "Explorar padrões"
+  }
+}

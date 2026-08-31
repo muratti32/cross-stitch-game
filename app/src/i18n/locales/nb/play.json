@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Stingebord",
+    "subtitle": "Fortsett der du slapp, eller gjenoppta et nylig håndarbeid.",
+    "loading": "Laster stingene dine...",
+    "empty": {
+      "title": "Ingen aktive håndarbeid",
+      "body": "Stingerammen din er for øyeblikket tom. Bla i mønsterkatalogen for å finne noe vakkert å stinge!",
+      "action": "Bla i katalog"
+    },
+    "unknownPattern": "Ukjent mønster",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Mønster {{id}}",
+    "deleteSessionAccessibilityLabel": "Slett økt",
+    "viewFinishedAccessibilityLabel": "Vis ferdig håndarbeid",
+    "resumeAccessibilityLabel": "Gjenoppta stinging",
+    "status": {
+      "ready": "Klar",
+      "done": "Ferdig",
+      "active": "Aktiv",
+      "preparing": "Forbereder",
+      "failed": "Mislyktes"
+    },
+    "deleteConfirm": {
+      "title": "Slett fremgang",
+      "message": "Er du sikker på at du vil slette fremgangen din for «{{title}}»? Dette kan ikke angres.",
+      "cancel": "Avbryt",
+      "confirm": "Slett"
+    },
+    "preparingCard": {
+      "discardTitle": "Forkast økt",
+      "cancelTitle": "Avbryt nedlasting",
+      "discardMessage": "Er du sikker på at du vil forkaste denne mislykkede økten?",
+      "cancelMessage": "Er du sikker på at du vil avbryte nedlastingen av dette mønsteret?",
+      "keep": "Behold",
+      "discard": "Forkast",
+      "cancel": "Avbryt"
+    }
+  },
+  "loading": {
+    "text": "Åpner økt og forbereder stoff..."
+  },
+  "error": {
+    "title": "Kunne ikke laste økt",
+    "fallbackMessage": "Kunne ikke laste stingeøkten din.",
+    "backButton": "Gå tilbake",
+    "tableButton": "Gå til bordet"
+  },
+  "header": {
+    "backButton": "← Tilbake",
+    "tableButton": "← Bord",
+    "defaultTitle": "Stingeøkt",
+    "progress": "{{completed}} / {{total}} ruter ({{percent}}% fullført)",
+    "resumeTutorialAccessibilityLabel": "Gjenoppta opplæring"
+  },
+  "banners": {
+    "patternRemoved": "Dette mønsteret ble fjernet av moderering og er ikke lenger tilgjengelig. Trykk for å forlate.",
+    "syncConflict": "Synkronisert med en annen enhet — noen ruter ble oppdatert. Trykk for å lukke."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Finn neste gjenværende rute for aktiv trådfarge",
+    "undoAccessibilityLabel": "Angre siste sting"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Farge {{number}}: DMC {{dmcCode}}, {{count}} sting gjenstår",
+    "chipAccessibilityLabel_other": "Farge {{number}}: DMC {{dmcCode}}, {{count}} sting gjenstår",
+    "done": "Ferdig",
+    "remaining_one": "{{count}} igjen",
+    "remaining_other": "{{count}} igjen"
+  },
+  "celebration": {
+    "title": "Vakkert håndarbeid!",
+    "subtitle": "Du har fullført hvert eneste sting på dette stoffet.",
+    "stitchesLabel_one": "Sting",
+    "stitchesLabel_other": "Sting",
+    "colorsLabel_one": "Farge",
+    "colorsLabel_other": "Farger",
+    "replayButton": "Sting igjen",
+    "catalogButton": "Tilbake til katalog"
+  }
+}

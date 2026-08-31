@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Terug",
+    "cancel": "Annuleren",
+    "duplicateTitle": "Er bestaat al een persoonlijk patroon met de naam \"{{title}}\". Kies een andere naam.",
+    "cellsCount_one": "vak",
+    "cellsCount_other": "vakken",
+    "colorsCount_one": "kleur",
+    "colorsCount_other": "kleuren"
+  },
+  "hub": {
+    "title": "Maakhub",
+    "subtitle": "Breng je eigen ontwerpen tot leven als aangepaste borduurpatronen.",
+    "opening": "Openen...",
+    "photoImport": {
+      "title": "Foto importeren",
+      "description": "Upload een foto uit je camerarol om deze om te zetten in een stitchbaar patroon.",
+      "action": "Foto importeren"
+    },
+    "aiGenerator": {
+      "title": "AI-generator",
+      "description": "Beschrijf de afbeelding die je wilt maken en laat AI een aangepast pixelontwerp genereren.",
+      "action": "Ontwerp genereren"
+    }
+  },
+  "aspects": {
+    "square": "Vierkant",
+    "portrait_4_3": "Staand 4:3",
+    "landscape_4_3": "Liggend 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Het omzetten van het patroon is mislukt. Probeer het opnieuw.",
+      "timeout": "Het omzetten van het patroon duurt langer dan verwacht. Probeer het straks opnieuw.",
+      "generic": "Het omzetten van het patroon kon niet worden voltooid. Probeer het opnieuw."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Geregistreerd account vereist",
+      "body": "Je AI-kunstwerken en bibliotheek blijven privé en veilig binnen je account.",
+      "signIn": "Aanmelden"
+    },
+    "header": {
+      "title": "AI-generator",
+      "backAccessibilityLabel": "Terug"
+    },
+    "prompt": {
+      "label": "Beschrijf je kunstwerk",
+      "placeholder": "Een gezellige cottagetuin bij zonsondergang..."
+    },
+    "generate": {
+      "working": "Bezig met genereren...",
+      "action": "Genereren — 1 AI Credit",
+      "errors": {
+        "promptRejected": "Deze prompt is niet toegestaan. Probeer een andere beschrijving.",
+        "generic": "Kan de AI-generatie niet starten. Probeer het opnieuw."
+      }
+    },
+    "library": {
+      "title": "AI-kunstwerkbibliotheek",
+      "status": {
+        "pending": "In afwachting",
+        "dispatched": "Verzonden",
+        "running": "Bezig",
+        "delivered": "Gereed",
+        "safety_rejected": "Niet goedgekeurd voor veiligheid",
+        "failed": "Mislukt",
+        "deleted": "Verwijderd",
+        "unknown": "Niet beschikbaar"
+      },
+      "failure": {
+        "safety_rejected": "Dit kunstwerk voldeed niet aan de veiligheidscontroles van de aanbieder.",
+        "failed": "Dit kunstwerk kon niet worden gegenereerd."
+      },
+      "approve": "Goedkeuren als patroon",
+      "delete": "Verwijderen",
+      "deleteAccessibilityLabel": "Dit AI-kunstwerk verwijderen",
+      "errors": {
+        "loadFailed": "Kan de AI-kunstwerkbibliotheek niet laden. Probeer het opnieuw."
+      }
+    },
+    "approve": {
+      "modalTitle": "Persoonlijk patroon maken",
+      "titleLabel": "Patroonnaam",
+      "titleAccessibilityLabel": "Patroonnaam",
+      "defaultTitle": "Mijn AI-patroon",
+      "placeholder": "Mijn AI-patroon",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Annuleren",
+      "creating": "Patroon maken...",
+      "create": "Patroon maken",
+      "errors": {
+        "generic": "Kan het persoonlijke patroon niet maken. Probeer het opnieuw."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Geregistreerd account vereist",
+      "body": "Persoonlijke patronen worden gekoppeld aan je account, privé opgeslagen en beschikbaar op meerdere apparaten.",
+      "signIn": "Aanmelden of account maken",
+      "back": "Terug"
+    },
+    "header": {
+      "title": "Fotopatroon",
+      "subtitle": "Pas het kader aan op je apparaat en keur de conversie goed",
+      "backAccessibilityLabel": "Terug"
+    },
+    "picker": {
+      "chooseTitle": "Kies een foto",
+      "helpText": "De originele foto in hoge resolutie blijft op je apparaat. De conversie start pas nadat je het kader hebt goedgekeurd.",
+      "choose": "Kies uit bibliotheek",
+      "chooseAnother": "Kies een andere foto",
+      "opening": "Openen...",
+      "errors": {
+        "permissionDenied": "Toegang tot je fotobibliotheek is vereist om een foto te kiezen.",
+        "invalidDimensions": "De geselecteerde foto heeft ongeldige afmetingen.",
+        "generic": "Kan de fotobibliotheek niet openen. Probeer het opnieuw."
+      }
+    },
+    "framing": {
+      "title": "Kunstwerk kaderen",
+      "gestureHint": "Sleep om te verplaatsen · Knijp om te zoomen",
+      "aspectLabel": "Beeldverhouding kader"
+    },
+    "profile": {
+      "title": "Conversieprofiel",
+      "options": {
+        "easy": "Makkelijk",
+        "standard": "Standaard",
+        "detailed": "Gedetailleerd"
+      },
+      "custom": "Aangepast",
+      "customMeta": "Gratis · vaste vorm",
+      "unavailable": "Niet geschikt voor dit kader",
+      "customShortEdgeLabel": "Korte zijde",
+      "customColorLimitLabel": "DMC-kleurenlimiet",
+      "exceedsLimit": "De aangepaste waarden overschrijden de patroongrootte-limiet van {{max}} vakken."
+    },
+    "titleCard": {
+      "label": "Patroonnaam",
+      "placeholder": "Mijn fotopatroon",
+      "defaultTitle": "Mijn fotopatroon",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · max. {{maxColors}} DMC {{colorsUnit}}",
+      "privacyNotice": "Bij goedkeuring wordt alleen de bijgesneden en verkleinde afbeelding geüpload. De originele foto blijft lokaal op je apparaat staan.",
+      "approve": "Kunstwerk goedkeuren en converteren"
+    },
+    "processing": {
+      "preparingFrame": "Het goedgekeurde kader wordt op dit apparaat voorbereid...",
+      "uploading": "Alleen het bijgesneden en verkleinde kader wordt geüpload...",
+      "waitingForWorker": "Wachten op conversieworker...",
+      "buildingGrid": "Stitchraster en DMC-palet worden gegenereerd...",
+      "preparingSession": "Persoonlijk patroon voorbereiden om te spelen..."
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Dit profiel past niet bij het uiteindelijke kader. Kies 'Makkelijk' of verlaag het detailniveau.",
+        "generic": "Deze foto kon niet worden geconverteerd. Probeer het opnieuw."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Geen patroon geselecteerd",
+      "noPatternBody": "Dit scherm moet worden geopend vanuit een bestaand persoonlijk patroon in je bibliotheek.",
+      "accountTitle": "Geregistreerd account vereist",
+      "accountBody": "Persoonlijke patronen worden gekoppeld aan je account, privé opgeslagen en beschikbaar op meerdere apparaten.",
+      "signIn": "Aanmelden of account maken",
+      "back": "Terug"
+    },
+    "loading": "Concept van de editor laden...",
+    "load": {
+      "failedTitle": "Patroon laden mislukt",
+      "retry": "Opnieuw proberen",
+      "back": "Terug",
+      "errors": {
+        "generic": "Kan dit persoonlijke patroon niet laden. Probeer het opnieuw."
+      }
+    },
+    "header": {
+      "title": "Patrooneditor",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Terug"
+    },
+    "toolbar": {
+      "undo": "Ongedaan maken",
+      "redo": "Opnieuw"
+    },
+    "mode": {
+      "paint": "Verven",
+      "replaceColor": "Kleur vervangen",
+      "replaceStep1": "1. Tik op de kleur in het patroon die je wilt vervangen:",
+      "replaceStep2": "2. Kies de DMC-kleur om toe te passen:",
+      "paintSelected": "Geselecteerd: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Kies een kleur en tik daarna op een vakje om het te verven."
+    },
+    "errors": {
+      "pickColorFirst": "Kies eerst een kleur",
+      "paletteLimit": "Dit patroon gebruikt al het maximum van {{max}} garenkleuren."
+    },
+    "picker": {
+      "title": "DMC-garenkleuren",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Bewerkt patroon opslaan",
+      "placeholder": "Naam van bewerkt patroon",
+      "action": "Opslaan als nieuw",
+      "offlineTitle": "Offline opgeslagen",
+      "offlineBody": "Je bewerkte patroon is opgeslagen op dit apparaat. Het wordt gesynchroniseerd met je account zodra je weer online bent.",
+      "errors": {
+        "generic": "Kan dit persoonlijke patroon niet opslaan. Probeer het opnieuw."
+      }
+    }
+  }
+}

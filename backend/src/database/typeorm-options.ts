@@ -178,6 +178,33 @@ import { AddSpanishCatalogCategoryLabels1789862400000 } from './migrations/17898
 import { AddBrazilianPortugueseCatalogCategoryLabels1789948800000 } from './migrations/1789948800000-AddBrazilianPortugueseCatalogCategoryLabels';
 import { AddGermanCatalogCategoryLabels1790035200000 } from './migrations/1790035200000-AddGermanCatalogCategoryLabels';
 import { AddItalianCatalogCategoryLabels1790121600000 } from './migrations/1790121600000-AddItalianCatalogCategoryLabels';
+import { AddArabicCatalogCategoryLabels1790208000000 } from './migrations/1790208000000-AddArabicCatalogCategoryLabels';
+import { AddJapaneseCatalogCategoryLabels1790294400000 } from './migrations/1790294400000-AddJapaneseCatalogCategoryLabels';
+import { AddKoreanCatalogCategoryLabels1790380800000 } from './migrations/1790380800000-AddKoreanCatalogCategoryLabels';
+import { AddDutchCatalogCategoryLabels1790467200000 } from './migrations/1790467200000-AddDutchCatalogCategoryLabels';
+import { AddPolishCatalogCategoryLabels1790553600000 } from './migrations/1790553600000-AddPolishCatalogCategoryLabels';
+import { AddRussianCatalogCategoryLabels1790640000000 } from './migrations/1790640000000-AddRussianCatalogCategoryLabels';
+import { AddSimplifiedChineseCatalogCategoryLabels1790726400000 } from './migrations/1790726400000-AddSimplifiedChineseCatalogCategoryLabels';
+import { AddTraditionalChineseCatalogCategoryLabels1790812800000 } from './migrations/1790812800000-AddTraditionalChineseCatalogCategoryLabels';
+import { AddCatalanCatalogCategoryLabels1790899200000 } from './migrations/1790899200000-AddCatalanCatalogCategoryLabels';
+import { AddCzechCatalogCategoryLabels1790985600000 } from './migrations/1790985600000-AddCzechCatalogCategoryLabels';
+import { AddDanishCatalogCategoryLabels1791072000000 } from './migrations/1791072000000-AddDanishCatalogCategoryLabels';
+import { AddGreekCatalogCategoryLabels1791158400000 } from './migrations/1791158400000-AddGreekCatalogCategoryLabels';
+import { AddFinnishCatalogCategoryLabels1791244800000 } from './migrations/1791244800000-AddFinnishCatalogCategoryLabels';
+import { AddHindiCatalogCategoryLabels1791331200000 } from './migrations/1791331200000-AddHindiCatalogCategoryLabels';
+import { AddCroatianCatalogCategoryLabels1791417600000 } from './migrations/1791417600000-AddCroatianCatalogCategoryLabels';
+import { AddHungarianCatalogCategoryLabels1791504000000 } from './migrations/1791504000000-AddHungarianCatalogCategoryLabels';
+import { AddIndonesianCatalogCategoryLabels1791590400000 } from './migrations/1791590400000-AddIndonesianCatalogCategoryLabels';
+import { AddMalayCatalogCategoryLabels1791676800000 } from './migrations/1791676800000-AddMalayCatalogCategoryLabels';
+import { AddNorwegianBokmalCatalogCategoryLabels1791763200000 } from './migrations/1791763200000-AddNorwegianBokmalCatalogCategoryLabels';
+import { AddPortugueseCatalogCategoryLabels1791849600000 } from './migrations/1791849600000-AddPortugueseCatalogCategoryLabels';
+import { AddRomanianCatalogCategoryLabels1791936000000 } from './migrations/1791936000000-AddRomanianCatalogCategoryLabels';
+import { AddSlovakCatalogCategoryLabels1792022400000 } from './migrations/1792022400000-AddSlovakCatalogCategoryLabels';
+import { AddSlovenianCatalogCategoryLabels1792108800000 } from './migrations/1792108800000-AddSlovenianCatalogCategoryLabels';
+import { AddSwedishCatalogCategoryLabels1792195200000 } from './migrations/1792195200000-AddSwedishCatalogCategoryLabels';
+import { AddTagalogCatalogCategoryLabels1792281600000 } from './migrations/1792281600000-AddTagalogCatalogCategoryLabels';
+import { AddUkrainianCatalogCategoryLabels1792368000000 } from './migrations/1792368000000-AddUkrainianCatalogCategoryLabels';
+import { AddVietnameseCatalogCategoryLabels1792454400000 } from './migrations/1792454400000-AddVietnameseCatalogCategoryLabels';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -341,6 +368,33 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddBrazilianPortugueseCatalogCategoryLabels1789948800000,
       AddGermanCatalogCategoryLabels1790035200000,
       AddItalianCatalogCategoryLabels1790121600000,
+      AddArabicCatalogCategoryLabels1790208000000,
+      AddJapaneseCatalogCategoryLabels1790294400000,
+      AddKoreanCatalogCategoryLabels1790380800000,
+      AddDutchCatalogCategoryLabels1790467200000,
+      AddPolishCatalogCategoryLabels1790553600000,
+      AddRussianCatalogCategoryLabels1790640000000,
+      AddSimplifiedChineseCatalogCategoryLabels1790726400000,
+      AddTraditionalChineseCatalogCategoryLabels1790812800000,
+  AddCatalanCatalogCategoryLabels1790899200000,
+      AddCzechCatalogCategoryLabels1790985600000,
+      AddDanishCatalogCategoryLabels1791072000000,
+      AddGreekCatalogCategoryLabels1791158400000,
+      AddFinnishCatalogCategoryLabels1791244800000,
+      AddHindiCatalogCategoryLabels1791331200000,
+      AddCroatianCatalogCategoryLabels1791417600000,
+      AddHungarianCatalogCategoryLabels1791504000000,
+      AddIndonesianCatalogCategoryLabels1791590400000,
+      AddMalayCatalogCategoryLabels1791676800000,
+      AddNorwegianBokmalCatalogCategoryLabels1791763200000,
+      AddPortugueseCatalogCategoryLabels1791849600000,
+      AddRomanianCatalogCategoryLabels1791936000000,
+      AddSlovakCatalogCategoryLabels1792022400000,
+      AddSlovenianCatalogCategoryLabels1792108800000,
+      AddSwedishCatalogCategoryLabels1792195200000,
+      AddTagalogCatalogCategoryLabels1792281600000,
+      AddUkrainianCatalogCategoryLabels1792368000000,
+      AddVietnameseCatalogCategoryLabels1792454400000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

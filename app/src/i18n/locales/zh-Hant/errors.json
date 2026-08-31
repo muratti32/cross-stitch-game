@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "該登入資訊屬於另一個帳號，你目前的帳號並未變更。",
+    "providerRejected": "該驗證遭到拒絕，請檢查帳號或驗證碼後再試一次。"
+  },
+  "generic": {
+    "failure": "發生錯誤，請再試一次。",
+    "supportReferenceLabel": "支援參考碼：{{reference}}"
+  }
+}

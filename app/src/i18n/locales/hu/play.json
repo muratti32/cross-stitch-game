@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Hímzőasztal",
+    "subtitle": "Folytasd, ahol abbahagytad, vagy térj vissza egy korábbi munkádhoz.",
+    "loading": "Öltéseid betöltése...",
+    "empty": {
+      "title": "Nincs aktív munka",
+      "body": "A hímzőkereted jelenleg üres. Böngéssz a mintakatalógusban, hogy találj valami szépet hímzésre!",
+      "action": "Katalógus böngészése"
+    },
+    "unknownPattern": "Ismeretlen minta",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "{{id}} minta",
+    "deleteSessionAccessibilityLabel": "Munkamenet törlése",
+    "viewFinishedAccessibilityLabel": "Befejezett munka megtekintése",
+    "resumeAccessibilityLabel": "Hímzés folytatása",
+    "status": {
+      "ready": "Kész",
+      "done": "Befejezve",
+      "active": "Aktív",
+      "preparing": "Előkészítés",
+      "failed": "Sikertelen"
+    },
+    "deleteConfirm": {
+      "title": "Haladás törlése",
+      "message": "Biztosan törlöd a haladásodat itt: „{{title}}”? Ez nem vonható vissza.",
+      "cancel": "Mégse",
+      "confirm": "Törlés"
+    },
+    "preparingCard": {
+      "discardTitle": "Munkamenet elvetése",
+      "cancelTitle": "Letöltés megszakítása",
+      "discardMessage": "Biztosan elveted ezt a sikertelen munkamenetet?",
+      "cancelMessage": "Biztosan megszakítod ennek a mintának a letöltését?",
+      "keep": "Megtartás",
+      "discard": "Elvetés",
+      "cancel": "Mégse"
+    }
+  },
+  "loading": {
+    "text": "Munkamenet megnyitása és a vászon előkészítése..."
+  },
+  "error": {
+    "title": "A munkamenet betöltése sikertelen",
+    "fallbackMessage": "A hímzési munkameneted betöltése sikertelen.",
+    "backButton": "Vissza",
+    "tableButton": "Ugrás az asztalhoz"
+  },
+  "header": {
+    "backButton": "← Vissza",
+    "tableButton": "← Asztal",
+    "defaultTitle": "Hímzési munkamenet",
+    "progress": "{{completed}} / {{total}} cella ({{percent}}% kész)",
+    "resumeTutorialAccessibilityLabel": "Útmutató folytatása"
+  },
+  "banners": {
+    "patternRemoved": "Ezt a mintát moderálás miatt eltávolították, és már nem elérhető. Érintsd meg a kilépéshez.",
+    "syncConflict": "Szinkronizálva egy másik eszközzel — néhány cella frissült. Érintsd meg az elvetéshez."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Az aktív fonalszín következő hátralévő cellájának megkeresése",
+    "undoAccessibilityLabel": "Utolsó öltés visszavonása"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "{{number}}. szín: DMC {{dmcCode}}, {{count}} öltés hátra",
+    "chipAccessibilityLabel_other": "{{number}}. szín: DMC {{dmcCode}}, {{count}} öltés hátra",
+    "done": "Kész",
+    "remaining_one": "még {{count}}",
+    "remaining_other": "még {{count}}"
+  },
+  "celebration": {
+    "title": "Gyönyörűen kihímezve!",
+    "subtitle": "Befejezted a vászon minden egyes öltését.",
+    "stitchesLabel_one": "Öltés",
+    "stitchesLabel_other": "Öltés",
+    "colorsLabel_one": "Szín",
+    "colorsLabel_other": "Szín",
+    "replayButton": "Hímzés újra",
+    "catalogButton": "Vissza a katalógushoz"
+  }
+}

@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Späť",
+    "searchPlaceholder": "Hľadať vzory, tvorcov, štítky…",
+    "offlineBanner": "Offline — katalóg môže byť neaktuálny",
+    "sectionError": {
+      "title": "Nepodarilo sa načítať",
+      "retry": "Skúsiť znova"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} farieb",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} stĺpcov",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Angličtina"
+    },
+    "accessibilityLabel": "Napísané v jazyku {{language}}"
+  },
+  "index": {
+    "subtitle": "Vytvor si vlastný útulný svet, steh za stehom.",
+    "searchBar": {
+      "accessibilityLabel": "Hľadať v katalógu vzorov"
+    },
+    "sections": {
+      "starterPatterns": "Úvodné vzory",
+      "staffPicks": "Výber redakcie",
+      "categories": "Kategórie",
+      "newPatterns": "Nové vzory"
+    },
+    "staffPicks": {
+      "emptyTitle": "Zatiaľ žiadne výbery",
+      "emptyBody": "Naša ručne vybraná zbierka útulných vzorov sa tu čoskoro objaví.",
+      "errorBody": "Katalóg sa nepodarilo načítať a zatiaľ nie je nič uložené lokálne."
+    },
+    "categories": {
+      "count": "{{count}} vzorov",
+      "errorBody": "Katalóg sa nepodarilo načítať a zatiaľ nie je nič uložené lokálne."
+    },
+    "newPatterns": {
+      "emptyTitle": "Nové vzory sú na ceste",
+      "emptyBody": "Čerstvé prírastky sú na ceste!",
+      "errorBody": "Katalóg sa nepodarilo načítať a zatiaľ nie je nič uložené lokálne.",
+      "showMore": "Zobraziť viac",
+      "loading": "Načítava sa…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Prehliadať",
+    "error": {
+      "body": "Túto stránku katalógu sa nepodarilo načítať a zatiaľ nie je nič uložené lokálne."
+    },
+    "empty": {
+      "title": "Zatiaľ tu nič nie je",
+      "body": "Tomuto výberu zatiaľ nezodpovedá žiadny vzor. Nové vzory pribúdajú často."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Vyhľadávacie pole katalógu",
+    "inactive": {
+      "title": "Hľadať v katalógu",
+      "body": "Zadaj aspoň dva znaky na vyhľadávanie vzorov podľa názvu, tvorcu alebo štítku."
+    },
+    "error": {
+      "title": "Vyhľadávanie vyžaduje pripojenie",
+      "body": "Vyhľadávanie v katalógu nie je k dispozícii offline. Lokálne uložené stránky katalógu zostávajú dostupné na karte katalógu."
+    },
+    "noResults": {
+      "title": "Žiadne výsledky",
+      "body": "V katalógu zatiaľ nič nezodpovedá výrazu „{{query}}“."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Hráš ako hosť",
+    "body": "Stitch Coins a postup existujú len na tomto zariadení ako hosť. Ak sa inštalácia stratí, register a postup hosťa môžu byť nenávratne stratené. Prihlásenie chráni tvoj postup."
+  },
+  "detail": {
+    "noDescription": "Nie je k dispozícii žiadny popis.",
+    "specs": {
+      "dimensions": "Rozmery",
+      "totalStitches": "Celkový počet stehov",
+      "colors": "Farby",
+      "category": "Kategória"
+    },
+    "threadsSuffix": "{{count}} vlákien",
+    "palette": {
+      "title": "Potrebné vlákna",
+      "loading": "Načítava sa paleta vlákien...",
+      "loadFailed": "Načítanie palety zlyhalo: {{error}}",
+      "retry": "Skúsiť znova"
+    },
+    "actions": {
+      "startStitching": "Začať vyšívať",
+      "starting": "Spúšťa sa...",
+      "preparing": "Pripravuje sa…"
+    },
+    "loadFailedGeneric": "Dekódovanie súboru vzoru zlyhalo.",
+    "sessionCreateFailed": "Vytvorenie relácie vyšívania zlyhalo. Skús to prosím znova.",
+    "unavailable": {
+      "title": "Vzor nedostupný",
+      "body": "Tento vzor sa nepodarilo načítať. Možno bol odstránený alebo si offline.",
+      "goBack": "Späť"
+    },
+    "byCreator": "od {{creatorName}}",
+    "byCreatorWithUsername": "od {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "Zablokovať tvorcu",
+      "message": "Naozaj chceš zablokovať používateľa {{creatorName}}? Ide o súkromnú, vratnú akciu, ktorá skryje jeho vzory z vyhľadávania a prehliadania. Neoznamuje tvorcu a nepreruší tvoju aktuálnu reláciu vyšívania.",
+      "cancel": "Zrušiť",
+      "confirm": "Zablokovať",
+      "blockedTitle": "Zablokovaný",
+      "blockedMessage": "{{creatorName}} bol zablokovaný.",
+      "errorTitle": "Chyba",
+      "failedGeneric": "Blokovanie tvorcu zlyhalo."
+    },
+    "likeFailedGeneric": "Aktualizácia stavu obľúbenosti zlyhala",
+    "connectToPlay": {
+      "title": "Pripoj sa a hraj",
+      "body": "Spustenie vzoru z katalógu vyžaduje pripojenie na prípravu relácie. Úvodné vzory sú hrateľné hneď teraz, aj offline."
+    },
+    "insufficientCoins": {
+      "title": "Nedostatok mincí",
+      "body": "Tento vzor stojí {{price}} Stitch Coins, ale máš len {{balance}} mincí.\n\nRozdiel: {{shortfall}} mincí.\n\nZískaj Stitch Coins dokončením ďalších vzorov! Odmeny za prvé dokončenie sú aktívne.",
+      "getCoins": "Získať Stitch Coins",
+      "findPatterns": "Nájsť vzory na vyšívanie",
+      "back": "Späť"
+    },
+    "unlockFailedGeneric": "Odomknutie zlyhalo. Skontroluj pripojenie a skús to znova.",
+    "preparationFailedGeneric": "Prípravu sa nepodarilo spustiť. Skontroluj pripojenie a skús to znova.",
+    "price": {
+      "label": "Cena"
+    },
+    "balance": {
+      "label": "Tvoj zostatok",
+      "loading": "…"
+    },
+    "unlockButton": "Odomknúť za {{price}} mincí",
+    "communityReport": {
+      "button": "Nahlásiť tento vzor",
+      "title": "Nahlásiť {{patternTitle}}",
+      "body": "Vyber dôvod, ktorý najlepšie vystihuje problém. Nahlásenia nikdy automaticky neskryjú ani nezmenia vzor.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Nevhodný alebo nebezpečný obsah",
+        "copyright_or_publication_rights": "Autorské práva alebo práva na publikovanie",
+        "duplicate_or_spam": "Duplicita alebo spam",
+        "misleading_title_or_tags": "Zavádzajúci názov alebo štítky",
+        "other": "Iné"
+      },
+      "explanationLabel": "Dôkazy alebo vysvetlenie {{requirement}}",
+      "explanationRequired": "(povinné)",
+      "explanationOptional": "(voliteľné)",
+      "explanationPlaceholder": "Uveď podrobnosti, ktoré pomôžu moderátorovi vzor posúdiť.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Zrušiť",
+      "submit": "Odoslať nahlásenie",
+      "submitFailedGeneric": "Nahlásenie sa nepodarilo odoslať. Skontroluj pripojenie a skús to znova.",
+      "receivedTitle": "Nahlásenie prijaté",
+      "alreadyReceivedTitle": "Nahlásenie už bolo prijaté",
+      "receivedBody": "Moderátor teraz môže tento vzor posúdiť. Nahlásenie automaticky nemení jeho dostupnosť.",
+      "alreadyReceivedBody": "Tvoje existujúce nahlásenie je už súčasťou otvoreného posúdenia.",
+      "signInRequired": {
+        "title": "Prihlás sa a nahlás",
+        "message": "Nahlásenia komunity vyžadujú registrovaný účet. Nič nebolo odoslané.",
+        "cancel": "Zrušiť",
+        "signIn": "Prihlásenie"
+      },
+      "validation": {
+        "chooseReason": "Vyber dôvod nahlásenia.",
+        "explainRequired": "Vysvetli, prečo tento vzor nahlasuješ.",
+        "tooLong": "Vysvetlenie môže mať najviac 2 000 znakov.",
+        "needsContent": "Vysvetlenie musí obsahovať písmená alebo číslice."
+      }
+    }
+  }
+}

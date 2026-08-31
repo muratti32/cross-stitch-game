@@ -1,0 +1,177 @@
+{
+  "common": {
+    "back": "← Bumalik",
+    "searchPlaceholder": "Maghanap ng mga pattern, gumagawa, tag…",
+    "offlineBanner": "Offline — maaaring luma na ang katalogo",
+    "sectionError": {
+      "title": "Hindi ma-load",
+      "retry": "Subukan ulit"
+    },
+    "patternMeta": {
+      "dimensionsColors": "{{width}}×{{height}} • {{count}} kulay",
+      "dimensionsCols": "{{width}}×{{height}} • {{count}} kolum",
+      "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    }
+  },
+  "sourceLanguage": {
+    "names": {
+      "en": "Ingles"
+    },
+    "accessibilityLabel": "Nakasulat sa {{language}}"
+  },
+  "index": {
+    "subtitle": "Likhain ang iyong cozy na mundo, tahi nang tahi.",
+    "searchBar": {
+      "accessibilityLabel": "Maghanap sa katalogo ng pattern"
+    },
+    "sections": {
+      "starterPatterns": "Panimulang mga pattern",
+      "staffPicks": "Piniling ng staff",
+      "categories": "Mga kategorya",
+      "newPatterns": "Mga bagong pattern"
+    },
+    "staffPicks": {
+      "emptyTitle": "Wala pang piniling ng staff",
+      "emptyBody": "Lalabas dito ang aming pinili nang mahusay na koleksyon ng cozy na disenyo.",
+      "errorBody": "Hindi maabot ang katalogo at wala pang naka-cache."
+    },
+    "categories": {
+      "count": "{{count}} pattern",
+      "errorBody": "Hindi maabot ang katalogo at wala pang naka-cache."
+    },
+    "newPatterns": {
+      "emptyTitle": "Ginagawa ang mga bagong pattern",
+      "emptyBody": "Paparating na ang mga bagong dagdag!",
+      "errorBody": "Hindi maabot ang katalogo at wala pang naka-cache.",
+      "showMore": "Ipakita pa",
+      "loading": "Nilo-load…"
+    }
+  },
+  "browse": {
+    "defaultTitle": "Mag-browse",
+    "error": {
+      "body": "Hindi maabot ang pahinang ito ng katalogo at wala pang naka-cache."
+    },
+    "empty": {
+      "title": "Wala pang laman dito",
+      "body": "Walang pattern na tumutugma sa piniling ito ngayon. May mga bagong disenyo nang regular."
+    }
+  },
+  "search": {
+    "inputAccessibilityLabel": "Field ng paghahanap sa katalogo",
+    "inactive": {
+      "title": "Maghanap sa katalogo",
+      "body": "Mag-type ng hindi bababa sa dalawang letra para maghanap ng pattern ayon sa titulo, gumagawa, o tag."
+    },
+    "error": {
+      "title": "Kailangan ng koneksyon ang paghahanap",
+      "body": "Hindi magagamit ang paghahanap sa katalogo nang offline. Puwede pa ring i-browse ang mga naka-cache na pahina ng katalogo mula sa tab ng katalogo."
+    },
+    "noResults": {
+      "title": "Walang resulta",
+      "body": "Wala pang bagay sa katalogo na tumutugma sa ”{{query}}”."
+    }
+  },
+  "guestDataRiskNotice": {
+    "title": "Naglalaro bilang bisita",
+    "body": "Nabubuhay lang ang Stitch Coin at pag-unlad sa device na ito habang bisita ka. Kung mawala ang install, maaaring hindi na maibalik ang guest account at pag-unlad. Ang pag-log in ay nagpoprotekta sa iyong pag-unlad."
+  },
+  "detail": {
+    "noDescription": "Walang available na paglalarawan.",
+    "specs": {
+      "dimensions": "Sukat",
+      "totalStitches": "Kabuuang bilang ng tahi",
+      "colors": "Kulay",
+      "category": "Kategorya"
+    },
+    "threadsSuffix": "{{count}} sinulid",
+    "palette": {
+      "title": "Kinakailangang sinulid",
+      "loading": "Nilo-load ang palette ng sinulid...",
+      "loadFailed": "Hindi na-load ang palette: {{error}}",
+      "retry": "Subukan ulit i-load"
+    },
+    "actions": {
+      "startStitching": "Simulan ang pananahi",
+      "starting": "Sinisimulan...",
+      "preparing": "Inihahanda…"
+    },
+    "loadFailedGeneric": "Hindi na-load ang file ng pattern.",
+    "sessionCreateFailed": "Hindi nakagawa ng stitching session. Subukan ulit.",
+    "unavailable": {
+      "title": "Hindi available ang pattern",
+      "body": "Hindi na-load ang pattern na ito. Maaaring natanggal na ito, o offline ka.",
+      "goBack": "Bumalik"
+    },
+    "byCreator": "ni {{creatorName}}",
+    "byCreatorWithUsername": "ni {{creatorName}} · @{{username}}",
+    "blockConfirm": {
+      "title": "I-block ang gumagawa",
+      "message": "Sigurado ka bang gusto mong i-block si {{creatorName}}? Ito ay pribado at maaaring bawiin na aksyon na nagtatago ng kanilang mga pattern mula sa paghahanap/pag-browse. Hindi ito nagre-report sa gumagawa at hindi kinakansela ang iyong kasalukuyang stitching session.",
+      "cancel": "Kanselahin",
+      "confirm": "I-block",
+      "blockedTitle": "Na-block na",
+      "blockedMessage": "Na-block na si {{creatorName}}.",
+      "errorTitle": "Kamalian",
+      "failedGeneric": "Hindi na-block ang gumagawa."
+    },
+    "likeFailedGeneric": "Hindi na-update ang status ng like",
+    "connectToPlay": {
+      "title": "Kumonekta para maglaro",
+      "body": "Kailangan ng koneksyon ang pagsisimula ng pattern mula sa katalogo para ihanda ang iyong session. Direktang malalaro ang mga panimulang pattern, kahit offline."
+    },
+    "insufficientCoins": {
+      "title": "Kulang ang barya",
+      "body": "Ang pattern na ito ay {{price}} Stitch Coins, ngunit {{balance}} lang ang balanse mo.\n\nKulang: {{shortfall}} barya.\n\nKumita ng Stitch Coins sa pagtatapos ng ibang mga pattern! Aktibo ang mga reward para sa unang pagkumpleto.",
+      "getCoins": "Kumuha ng Stitch Coins",
+      "findPatterns": "Maghanap ng patterns na tatahiin",
+      "back": "Bumalik"
+    },
+    "unlockFailedGeneric": "Nabigo ang pag-unlock. Suriin ang iyong koneksyon at subukan ulit.",
+    "preparationFailedGeneric": "Hindi nasimulan ang paghahanda. Suriin ang iyong koneksyon at subukan ulit.",
+    "price": {
+      "label": "Presyo"
+    },
+    "balance": {
+      "label": "Iyong balanse",
+      "loading": "…"
+    },
+    "unlockButton": "I-unlock para sa {{price}} barya",
+    "communityReport": {
+      "button": "I-report ang pattern na ito",
+      "title": "I-report ang {{patternTitle}}",
+      "body": "Piliin ang dahilan na pinakamahusay na naglalarawan ng problema. Hindi kailanman awtomatikong nagtatago o nagbabago ng pattern ang mga report.",
+      "reasons": {
+        "inappropriate_or_unsafe_content": "Hindi angkop o hindi ligtas na nilalaman",
+        "copyright_or_publication_rights": "Copyright o karapatan sa publikasyon",
+        "duplicate_or_spam": "Duplicate o spam",
+        "misleading_title_or_tags": "Nakaliligaw na titulo o tag",
+        "other": "Iba pa"
+      },
+      "explanationLabel": "Ebidensya o paliwanag {{requirement}}",
+      "explanationRequired": "(kinakailangan)",
+      "explanationOptional": "(opsyonal)",
+      "explanationPlaceholder": "Magbahagi ng detalye na makakatulong sa moderator na suriin ang pattern.",
+      "characterCount": "{{count}}/2000",
+      "cancel": "Kanselahin",
+      "submit": "Ipadala ang report",
+      "submitFailedGeneric": "Hindi naipadala ang iyong report. Suriin ang iyong koneksyon at subukan ulit.",
+      "receivedTitle": "Natanggap ang report",
+      "alreadyReceivedTitle": "Natanggap na ang report",
+      "receivedBody": "Puwede na ngayong suriin ng moderator ang pattern na ito. Hindi awtomatikong binabago ng report ang availability nito.",
+      "alreadyReceivedBody": "Bahagi na ng bukas na pagsusuri ang iyong umiiral na report.",
+      "signInRequired": {
+        "title": "Mag-log in para mag-report",
+        "message": "Kailangan ng nakarehistrong account ang mga community report. Wala pang naipadala.",
+        "cancel": "Kanselahin",
+        "signIn": "Mag-log in"
+      },
+      "validation": {
+        "chooseReason": "Pumili ng dahilan para sa report.",
+        "explainRequired": "Ipaliwanag kung bakit mo ire-report ang pattern na ito.",
+        "tooLong": "Ang paliwanag ay dapat 2,000 letra o mas mababa.",
+        "needsContent": "Ang paliwanag ay dapat may titik o numero."
+      }
+    }
+  }
+}

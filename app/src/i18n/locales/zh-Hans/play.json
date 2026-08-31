@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "绣台",
+    "subtitle": "继续你上次的进度，或者恢复最近的手作吧。",
+    "loading": "正在加载你的 Stitch...",
+    "empty": {
+      "title": "暂无进行中的手作",
+      "body": "你的绣架现在空空如也。快去图纸库看看，找个好看的图案开绣吧！",
+      "action": "浏览图纸库"
+    },
+    "unknownPattern": "未知图纸",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "图纸 {{id}}",
+    "deleteSessionAccessibilityLabel": "删除当前进度",
+    "viewFinishedAccessibilityLabel": "查看已完成的绣作",
+    "resumeAccessibilityLabel": "继续绣制",
+    "status": {
+      "ready": "准备就绪",
+      "done": "已完成",
+      "active": "进行中",
+      "preparing": "准备中",
+      "failed": "失败"
+    },
+    "deleteConfirm": {
+      "title": "删除进度",
+      "message": "你确定要删除“{{title}}”的进度吗？此操作无法撤销哦。",
+      "cancel": "取消",
+      "confirm": "删除"
+    },
+    "preparingCard": {
+      "discardTitle": "放弃当前进度",
+      "cancelTitle": "取消下载",
+      "discardMessage": "你确定要放弃这次失败的记录吗？",
+      "cancelMessage": "你确定要取消下载这张图纸吗？",
+      "keep": "保留",
+      "discard": "放弃",
+      "cancel": "取消"
+    }
+  },
+  "loading": {
+    "text": "正在打开进度，准备绣布中..."
+  },
+  "error": {
+    "title": "进度加载失败",
+    "fallbackMessage": "无法加载你的 Stitch 进度。",
+    "backButton": "返回",
+    "tableButton": "前往绣台"
+  },
+  "header": {
+    "backButton": "← 返回",
+    "tableButton": "← 绣台",
+    "defaultTitle": "Stitch 进度",
+    "progress": "{{completed}} / {{total}} 格 (已完成 {{percent}}%)",
+    "resumeTutorialAccessibilityLabel": "继续教程"
+  },
+  "banners": {
+    "patternRemoved": "该图纸已被管理员下架，不再可用。轻触退出。",
+    "syncConflict": "已与另一台设备同步 — 部分格子已更新。轻触关闭。"
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "定位当前线色下一个未绣的格子",
+    "undoAccessibilityLabel": "撤销上一步 Stitch"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "颜色 {{number}}：DMC {{dmcCode}}，还剩 {{count}} 个 Stitch",
+    "chipAccessibilityLabel_other": "颜色 {{number}}：DMC {{dmcCode}}，还剩 {{count}} 个 Stitch",
+    "done": "已完成",
+    "remaining_one": "还剩 {{count}} 个",
+    "remaining_other": "还剩 {{count}} 个"
+  },
+  "celebration": {
+    "title": "大功告成，太美啦！",
+    "subtitle": "你已经完成了这块绣布上的每一个 Stitch。",
+    "stitchesLabel_one": "针",
+    "stitchesLabel_other": "针",
+    "colorsLabel_one": "颜色",
+    "colorsLabel_other": "颜色",
+    "replayButton": "再次 Stitch",
+    "catalogButton": "返回图纸库"
+  }
+}

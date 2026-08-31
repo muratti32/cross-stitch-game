@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Meja jahitan",
+    "subtitle": "Sambung dari tempat anda berhenti, atau kembali ke kerja sebelum ini.",
+    "loading": "Memuatkan jahitan anda...",
+    "empty": {
+      "title": "Tiada kerja aktif",
+      "body": "Bingkai jahitan anda kini kosong. Semak imbas katalog pola untuk menemui sesuatu yang indah untuk dijahit!",
+      "action": "Semak imbas katalog"
+    },
+    "unknownPattern": "Pola tidak diketahui",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Pola {{id}}",
+    "deleteSessionAccessibilityLabel": "Padam sesi",
+    "viewFinishedAccessibilityLabel": "Lihat kerja yang selesai",
+    "resumeAccessibilityLabel": "Sambung menjahit",
+    "status": {
+      "ready": "Sedia",
+      "done": "Selesai",
+      "active": "Aktif",
+      "preparing": "Menyediakan",
+      "failed": "Gagal"
+    },
+    "deleteConfirm": {
+      "title": "Padam kemajuan",
+      "message": "Adakah anda pasti mahu memadam kemajuan anda pada „{{title}}”? Tindakan ini tidak boleh dibatalkan.",
+      "cancel": "Batal",
+      "confirm": "Padam"
+    },
+    "preparingCard": {
+      "discardTitle": "Buang sesi",
+      "cancelTitle": "Batalkan muat turun",
+      "discardMessage": "Adakah anda pasti mahu membuang sesi yang gagal ini?",
+      "cancelMessage": "Adakah anda pasti mahu membatalkan muat turun pola ini?",
+      "keep": "Simpan",
+      "discard": "Buang",
+      "cancel": "Batal"
+    }
+  },
+  "loading": {
+    "text": "Membuka sesi dan menyediakan kanvas..."
+  },
+  "error": {
+    "title": "Gagal memuatkan sesi",
+    "fallbackMessage": "Gagal memuatkan sesi menjahit anda.",
+    "backButton": "Kembali",
+    "tableButton": "Ke meja"
+  },
+  "header": {
+    "backButton": "← Kembali",
+    "tableButton": "← Meja",
+    "defaultTitle": "Sesi menjahit",
+    "progress": "{{completed}} / {{total}} sel ({{percent}}% selesai)",
+    "resumeTutorialAccessibilityLabel": "Sambung panduan"
+  },
+  "banners": {
+    "patternRemoved": "Pola ini telah dialih keluar kerana moderasi, dan tidak lagi tersedia. Sentuh untuk keluar.",
+    "syncConflict": "Disegerakkan dengan peranti lain — beberapa sel telah dikemas kini. Sentuh untuk tutup."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Cari sel yang tinggal seterusnya untuk warna benang aktif",
+    "undoAccessibilityLabel": "Buat asal jahitan terakhir"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Warna {{number}}: DMC {{dmcCode}}, {{count}} jahitan tinggal",
+    "chipAccessibilityLabel_other": "Warna {{number}}: DMC {{dmcCode}}, {{count}} jahitan tinggal",
+    "done": "Selesai",
+    "remaining_one": "{{count}} tinggal",
+    "remaining_other": "{{count}} tinggal"
+  },
+  "celebration": {
+    "title": "Terjahit dengan indah!",
+    "subtitle": "Anda telah menyelesaikan setiap jahitan pada kanvas.",
+    "stitchesLabel_one": "Jahitan",
+    "stitchesLabel_other": "Jahitan",
+    "colorsLabel_one": "Warna",
+    "colorsLabel_other": "Warna",
+    "replayButton": "Jahit lagi",
+    "catalogButton": "Kembali ke katalog"
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Sybord",
+    "subtitle": "Fortsæt hvor du slap, eller genoptag et nyligt arbejde.",
+    "loading": "Indlæser dine sting...",
+    "empty": {
+      "title": "Ingen aktive arbejder",
+      "body": "Din syramme er i øjeblikket tom. Gennemse mønsterkataloget for at finde noget smukt at sy!",
+      "action": "Gennemse katalog"
+    },
+    "unknownPattern": "Ukendt mønster",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Mønster {{id}}",
+    "deleteSessionAccessibilityLabel": "Slet session",
+    "viewFinishedAccessibilityLabel": "Se færdigt arbejde",
+    "resumeAccessibilityLabel": "Genoptag syning",
+    "status": {
+      "ready": "Klar",
+      "done": "Færdig",
+      "active": "Aktiv",
+      "preparing": "Forbereder",
+      "failed": "Mislykkedes"
+    },
+    "deleteConfirm": {
+      "title": "Slet fremskridt",
+      "message": "Er du sikker på, at du vil slette dine fremskridt for \"{{title}}\"? Dette kan ikke fortrydes.",
+      "cancel": "Annuller",
+      "confirm": "Slet"
+    },
+    "preparingCard": {
+      "discardTitle": "Kassér session",
+      "cancelTitle": "Annuller download",
+      "discardMessage": "Er du sikker på, at du vil kassere denne mislykkede session?",
+      "cancelMessage": "Er du sikker på, at du vil annullere download af dette mønster?",
+      "keep": "Behold",
+      "discard": "Kassér",
+      "cancel": "Annuller"
+    }
+  },
+  "loading": {
+    "text": "Åbner session og forbereder stof..."
+  },
+  "error": {
+    "title": "Indlæsning af session mislykkedes",
+    "fallbackMessage": "Kunne ikke indlæse din sy-session.",
+    "backButton": "Gå tilbage",
+    "tableButton": "Gå til bord"
+  },
+  "header": {
+    "backButton": "← Tilbage",
+    "tableButton": "← Bord",
+    "defaultTitle": "Sy-session",
+    "progress": "{{completed}} / {{total}} celler ({{percent}}% fuldført)",
+    "resumeTutorialAccessibilityLabel": "Genoptag vejledning"
+  },
+  "banners": {
+    "patternRemoved": "Dette mønster blev fjernet af moderation og er ikke længere tilgængeligt. Tryk for at forlade.",
+    "syncConflict": "Synkroniseret med en anden enhed — nogle celler blev opdateret. Tryk for at afvise."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Find den næste resterende celle for den aktive trådfarve",
+    "undoAccessibilityLabel": "Fortryd sidste sting"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Farve {{number}}: DMC {{dmcCode}}, {{count}} sting tilbage",
+    "chipAccessibilityLabel_other": "Farve {{number}}: DMC {{dmcCode}}, {{count}} sting tilbage",
+    "done": "Færdig",
+    "remaining_one": "{{count}} tilbage",
+    "remaining_other": "{{count}} tilbage"
+  },
+  "celebration": {
+    "title": "Smukt skabt!",
+    "subtitle": "Du har fuldført hvert eneste sting på dette stof.",
+    "stitchesLabel_one": "Sting",
+    "stitchesLabel_other": "Sting",
+    "colorsLabel_one": "Farve",
+    "colorsLabel_other": "Farver",
+    "replayButton": "Sy igen",
+    "catalogButton": "Tilbage til katalog"
+  }
+}

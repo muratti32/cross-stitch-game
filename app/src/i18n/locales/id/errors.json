@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Login ini terkait dengan akun lain. Akunmu saat ini tidak berubah.",
+    "providerRejected": "Verifikasi ini ditolak. Periksa akun atau kode, dan coba lagi."
+  },
+  "generic": {
+    "failure": "Ada yang salah. Coba lagi.",
+    "supportReferenceLabel": "Referensi dukungan: {{reference}}"
+  }
+}

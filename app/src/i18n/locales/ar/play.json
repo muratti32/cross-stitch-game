@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "طاولة التطريز",
+    "subtitle": "واصل من حيث توقفت أو استأنف عملاً فنياً حديثاً.",
+    "loading": "جاري تحميل غرزك...",
+    "empty": {
+      "title": "لا توجد أعمال تطريز نشطة",
+      "body": "إطار التطريز الخاص بك فارغ حالياً. تصفح كتالوج الأنماط للعثور على شيء جميل لتطريزه!",
+      "action": "تصفح الكتالوج"
+    },
+    "unknownPattern": "نمط غير معروف",
+    "idLabel": "معرف: {{id}}",
+    "unknownPatternLabel": "نمط {{id}}",
+    "deleteSessionAccessibilityLabel": "حذف الجلسة",
+    "viewFinishedAccessibilityLabel": "عرض العمل المكتمل",
+    "resumeAccessibilityLabel": "استئناف التطريز",
+    "status": {
+      "ready": "جاهز",
+      "done": "مكتمل",
+      "active": "نشط",
+      "preparing": "جاري التحضير",
+      "failed": "فشل"
+    },
+    "deleteConfirm": {
+      "title": "حذف التقدم",
+      "message": "هل أنت متأكد أنك تريد حذف تقدمك في \"{{title}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+      "cancel": "إلغاء",
+      "confirm": "حذف"
+    },
+    "preparingCard": {
+      "discardTitle": "تجاهل الجلسة",
+      "cancelTitle": "إلغاء التنزيل",
+      "discardMessage": "هل أنت متأكد أنك تريد تجاهل هذه الجلسة الفاشلة؟",
+      "cancelMessage": "هل أنت متأكد أنك تريد إلغاء تنزيل هذا النمط؟",
+      "keep": "احتفاظ",
+      "discard": "تجاهل",
+      "cancel": "إلغاء"
+    }
+  },
+  "loading": {
+    "text": "جاري فتح الجلسة وتحضير القماش..."
+  },
+  "error": {
+    "title": "فشل تحميل الجلسة",
+    "fallbackMessage": "تعذر تحميل جلسة التطريز الخاصة بك.",
+    "backButton": "رجوع",
+    "tableButton": "ذهاب إلى الطاولة"
+  },
+  "header": {
+    "backButton": "← رجوع",
+    "tableButton": "← الطاولة",
+    "defaultTitle": "جلسة التطريز",
+    "progress": "{{completed}} / {{total}} خلية (تم إكمال {{percent}}%)",
+    "resumeTutorialAccessibilityLabel": "استئناف الدليل التعليمي"
+  },
+  "banners": {
+    "patternRemoved": "تمت إزالة هذا النمط بواسطة الإشراف ولم يعد متاحاً. اضغط للمغادرة.",
+    "syncConflict": "تمت المزامنة مع جهاز آخر — تم تحديث بعض الخلايا. اضغط للتجاهل."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "تحديد موقع الخلية المتبقية التالية للون الخيط النشط",
+    "undoAccessibilityLabel": "التراجع عن آخر غرزة"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "اللون {{number}}: DMC {{dmcCode}}، غرزة {{count}} متبقية",
+    "chipAccessibilityLabel_other": "اللون {{number}}: DMC {{dmcCode}}، {{count}} غرزة متبقية",
+    "done": "مكتمل",
+    "remaining_one": "متبقي {{count}}",
+    "remaining_other": "متبقي {{count}}"
+  },
+  "celebration": {
+    "title": "صُنعت بجمال!",
+    "subtitle": "لقد أكملت كل غرزة على هذا القماش.",
+    "stitchesLabel_one": "غرزة",
+    "stitchesLabel_other": "غرز",
+    "colorsLabel_one": "لون",
+    "colorsLabel_other": "ألوان",
+    "replayButton": "تطريز مرة أخرى",
+    "catalogButton": "العودة إلى الكتالوج"
+  }
+}

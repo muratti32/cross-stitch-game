@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Ez a bejelentkezés egy másik fiókhoz tartozik. Az aktuális fiókod nem változott.",
+    "providerRejected": "Ez az ellenőrzés elutasítva. Ellenőrizd a fiókot vagy a kódot, és próbáld újra."
+  },
+  "generic": {
+    "failure": "Valami elromlott. Próbáld újra.",
+    "supportReferenceLabel": "Támogatási hivatkozás: {{reference}}"
+  }
+}

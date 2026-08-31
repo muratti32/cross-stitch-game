@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Înapoi",
+    "cancel": "Anulează",
+    "duplicateTitle": "Ai deja un model personal numit „{{title}}”. Alege un alt titlu.",
+    "cellsCount_one": "celulă",
+    "cellsCount_other": "celule",
+    "colorsCount_one": "culoare",
+    "colorsCount_other": "culori"
+  },
+  "hub": {
+    "title": "Centrul de creație",
+    "subtitle": "Dă viață propriilor tale modele de cusut cu design personalizat.",
+    "opening": "Se deschide…",
+    "photoImport": {
+      "title": "Import foto",
+      "description": "Încarcă o poză din galerie și transform-o într-un model de cusut.",
+      "action": "Importă poza"
+    },
+    "aiGenerator": {
+      "title": "Generator AI",
+      "description": "Descrie o idee primitoare și lasă inteligența artificială să genereze un design pixelat personalizat.",
+      "action": "Generează design"
+    }
+  },
+  "aspects": {
+    "square": "Pătrat",
+    "portrait_4_3": "Portret 4:3",
+    "landscape_4_3": "Peisaj 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Conversia modelului a eșuat. Te rugăm să încerci din nou.",
+      "timeout": "Conversia modelului este încă în procesare. Încearcă din nou peste puțin timp.",
+      "generic": "Conversia modelului nu s-a putut finaliza. Te rugăm să încerci din nou."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Este necesar un cont înregistrat",
+      "body": "Ilustrațiile AI și biblioteca acestora rămân private pentru contul tău.",
+      "signIn": "Autentificare"
+    },
+    "header": {
+      "title": "Generator AI",
+      "backAccessibilityLabel": "Înapoi"
+    },
+    "prompt": {
+      "label": "Descrie ilustrația ta",
+      "placeholder": "O grădină primitoare de căsuță la apus…"
+    },
+    "generate": {
+      "working": "Se procesează…",
+      "action": "Generează — 1 credit AI",
+      "errors": {
+        "promptRejected": "Acel prompt nu a fost permis. Încearcă să descrii altceva.",
+        "generic": "Generarea AI nu a putut începe. Te rugăm să încerci din nou."
+      }
+    },
+    "library": {
+      "title": "Biblioteca ta de ilustrații AI",
+      "status": {
+        "pending": "În așteptare",
+        "dispatched": "Trimis",
+        "running": "În desfășurare",
+        "delivered": "Livrat",
+        "safety_rejected": "Respins de siguranță",
+        "failed": "Eșuat",
+        "deleted": "Șters",
+        "unknown": "Indisponibil"
+      },
+      "failure": {
+        "safety_rejected": "Această ilustrație nu a trecut verificarea de siguranță a furnizorului.",
+        "failed": "Această ilustrație nu a putut fi generată."
+      },
+      "approve": "Aprobă ca model",
+      "delete": "Șterge",
+      "deleteAccessibilityLabel": "Șterge această ilustrație AI",
+      "errors": {
+        "loadFailed": "Biblioteca ta de ilustrații AI nu a putut fi încărcată. Te rugăm să încerci din nou."
+      }
+    },
+    "approve": {
+      "modalTitle": "Creează model personal",
+      "titleLabel": "Titlul modelului",
+      "titleAccessibilityLabel": "Titlul modelului",
+      "defaultTitle": "Modelul meu AI",
+      "placeholder": "Modelul meu AI",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Anulează",
+      "creating": "Se creează modelul…",
+      "create": "Creează modelul",
+      "errors": {
+        "generic": "Modelul personal nu a putut fi creat. Te rugăm să încerci din nou."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Este necesar un cont înregistrat",
+      "body": "Modelele personale aparțin contului tău, astfel încât rămân private și disponibile pe toate dispozitivele.",
+      "signIn": "Autentifică-te sau creează un cont",
+      "back": "Înapoi"
+    },
+    "header": {
+      "title": "Model din fotografie",
+      "subtitle": "Încadrează local, apoi aprobă conversia",
+      "backAccessibilityLabel": "Înapoi"
+    },
+    "picker": {
+      "chooseTitle": "Alege o fotografie",
+      "helpText": "Sursa foto locală, la rezoluție completă, rămâne pe acest dispozitiv. Nimic nu se convertește până nu aprobi încadrarea.",
+      "choose": "Alege din bibliotecă",
+      "chooseAnother": "Alege alta",
+      "opening": "Se deschide…",
+      "errors": {
+        "permissionDenied": "Accesul la galeria foto este necesar pentru a alege o sursă foto locală.",
+        "invalidDimensions": "Fotografia selectată nu raportează dimensiuni utilizabile.",
+        "generic": "Galeria foto nu a putut fi deschisă. Te rugăm să încerci din nou."
+      }
+    },
+    "framing": {
+      "title": "Încadrarea ilustrației",
+      "gestureHint": "Trage pentru a poziționa · ciupește pentru a mări",
+      "aspectLabel": "Raport de aspect al cadrului"
+    },
+    "profile": {
+      "title": "Profil de conversie",
+      "options": {
+        "easy": "Ușor",
+        "standard": "Standard",
+        "detailed": "Detaliat"
+      },
+      "custom": "Personalizat",
+      "customMeta": "Liber · formă fixată",
+      "unavailable": "Nu se potrivește acestui cadru",
+      "customShortEdgeLabel": "Latura scurtă",
+      "customColorLimitLabel": "Limită culori DMC",
+      "exceedsLimit": "Aceste valori personalizate depășesc limita de {{max}} celule pentru dimensiunea modelului."
+    },
+    "titleCard": {
+      "label": "Titlul modelului",
+      "placeholder": "Modelul meu foto",
+      "defaultTitle": "Modelul meu foto",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · până la {{maxColors}} {{colorsUnit}} DMC",
+      "privacyNotice": "Aprobarea încarcă doar derivata încadrată și redusă ca dimensiune. Fotografia originală rămâne locală.",
+      "approve": "Aprobă ilustrația și convertește"
+    },
+    "processing": {
+      "preparingFrame": "Se pregătește cadrul aprobat pe acest dispozitiv…",
+      "uploading": "Se încarcă doar cadrul decupat și redus ca dimensiune…",
+      "waitingForWorker": "Se așteaptă procesul de conversie…",
+      "buildingGrid": "Se construiește grila de cusut și paleta DMC…",
+      "preparingSession": "Se pregătește modelul personal pentru joc…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Acest profil nu se mai potrivește cadrului final. Alege Ușor sau redu detaliul.",
+        "generic": "Această fotografie nu a putut fi convertită. Te rugăm să încerci din nou."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Niciun model selectat",
+      "noPatternBody": "Acest ecran trebuie deschis dintr-un model personal existent din biblioteca ta.",
+      "accountTitle": "Este necesar un cont înregistrat",
+      "accountBody": "Modelele personale aparțin contului tău, astfel încât rămân private și disponibile pe toate dispozitivele.",
+      "signIn": "Autentifică-te sau creează un cont",
+      "back": "Înapoi"
+    },
+    "loading": "Se reia ciorna editorului...",
+    "load": {
+      "failedTitle": "Încărcarea modelului a eșuat",
+      "retry": "Reîncearcă",
+      "back": "Înapoi",
+      "errors": {
+        "generic": "Acest model personal nu a putut fi încărcat. Te rugăm să încerci din nou."
+      }
+    },
+    "header": {
+      "title": "Editor de modele",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Înapoi"
+    },
+    "toolbar": {
+      "undo": "Anulează",
+      "redo": "Refă"
+    },
+    "mode": {
+      "paint": "Colorează",
+      "replaceColor": "Înlocuiește culoarea",
+      "replaceStep1": "1. Atinge o culoare din modelul de mai jos pentru a o înlocui:",
+      "replaceStep2": "2. Selectează o culoare DMC țintă mai jos pentru a executa înlocuirea:",
+      "paintSelected": "Selectat: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Selectează o culoare mai jos, apoi atinge celulele pentru a le colora."
+    },
+    "errors": {
+      "pickColorFirst": "Alege mai întâi o culoare",
+      "paletteLimit": "Acest model folosește deja maximul de {{max}} culori de fir."
+    },
+    "picker": {
+      "title": "Culori de fir DMC",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Salvează modelul editat",
+      "placeholder": "Titlul modelului meu editat",
+      "action": "Salvează ca nou",
+      "offlineTitle": "Salvat offline",
+      "offlineBody": "Modelul tău editat a fost salvat pe acest dispozitiv și se va sincroniza cu contul tău imediat ce revii online.",
+      "errors": {
+        "generic": "Acest model personal nu a putut fi salvat. Te rugăm să încerci din nou."
+      }
+    }
+  }
+}

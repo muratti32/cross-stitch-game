@@ -1,0 +1,82 @@
+{
+  "home": {
+    "title": "Masa de cusut",
+    "subtitle": "Continuă de unde ai rămas sau reia un proiect recent.",
+    "loading": "Se încarcă cusăturile tale...",
+    "empty": {
+      "title": "Niciun proiect activ",
+      "body": "Rama ta de cusut este momentan goală. Răsfoiește catalogul de modele pentru a găsi ceva frumos de cusut!",
+      "action": "Răsfoiește catalogul"
+    },
+    "unknownPattern": "Model necunoscut",
+    "idLabel": "ID: {{id}}",
+    "unknownPatternLabel": "Model {{id}}",
+    "deleteSessionAccessibilityLabel": "Șterge sesiunea",
+    "viewFinishedAccessibilityLabel": "Vezi proiectul finalizat",
+    "resumeAccessibilityLabel": "Reia cusutul",
+    "status": {
+      "ready": "Gata",
+      "done": "Finalizat",
+      "active": "Activ",
+      "preparing": "Se pregătește",
+      "failed": "Eșuat"
+    },
+    "deleteConfirm": {
+      "title": "Șterge progresul",
+      "message": "Sigur dorești să ștergi progresul pentru „{{title}}”? Această acțiune nu poate fi anulată.",
+      "cancel": "Anulează",
+      "confirm": "Șterge"
+    },
+    "preparingCard": {
+      "discardTitle": "Renunță la sesiune",
+      "cancelTitle": "Anulează descărcarea",
+      "discardMessage": "Sigur dorești să renunți la această sesiune eșuată?",
+      "cancelMessage": "Sigur dorești să anulezi descărcarea acestui model?",
+      "keep": "Păstrează",
+      "discard": "Renunță",
+      "cancel": "Anulează"
+    }
+  },
+  "loading": {
+    "text": "Se deschide sesiunea și se pregătește materialul..."
+  },
+  "error": {
+    "title": "Încărcarea sesiunii a eșuat",
+    "fallbackMessage": "Nu s-a putut încărca sesiunea de cusut.",
+    "backButton": "Înapoi",
+    "tableButton": "Mergi la masă"
+  },
+  "header": {
+    "backButton": "← Înapoi",
+    "tableButton": "← Masă",
+    "defaultTitle": "Sesiune de cusut",
+    "progress": "{{completed}} / {{total}} celule ({{percent}}% finalizat)",
+    "resumeTutorialAccessibilityLabel": "Reia tutorialul"
+  },
+  "banners": {
+    "patternRemoved": "Acest model a fost eliminat prin moderare și nu mai este disponibil. Atinge pentru a ieși.",
+    "syncConflict": "Sincronizat cu alt dispozitiv — unele celule au fost actualizate. Atinge pentru a închide."
+  },
+  "rail": {
+    "locateNextAccessibilityLabel": "Localizează următoarea celulă rămasă din culoarea firului activ",
+    "undoAccessibilityLabel": "Anulează ultima cusătură"
+  },
+  "palette": {
+    "chipNumber": "#{{number}}",
+    "chipAccessibilityLabel_one": "Culoare {{number}}: DMC {{dmcCode}}, mai este {{count}} cusătură",
+    "chipAccessibilityLabel_other": "Culoare {{number}}: DMC {{dmcCode}}, mai sunt {{count}} cusături",
+    "done": "Finalizat",
+    "remaining_one": "Mai este {{count}}",
+    "remaining_other": "Mai sunt {{count}}"
+  },
+  "celebration": {
+    "title": "Lucrat cu măiestrie!",
+    "subtitle": "Ai finalizat fiecare cusătură de pe acest material.",
+    "stitchesLabel_one": "Cusătură",
+    "stitchesLabel_other": "Cusături",
+    "colorsLabel_one": "Culoare",
+    "colorsLabel_other": "Culori",
+    "replayButton": "Cusă din nou",
+    "catalogButton": "Înapoi la catalog"
+  }
+}

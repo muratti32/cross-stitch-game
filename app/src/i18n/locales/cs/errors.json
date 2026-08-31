@@ -1,0 +1,10 @@
+{
+  "reauthentication": {
+    "differentAccount": "Toto přihlášení patří k jinému účtu. Váš stávající účet nebyl změněn.",
+    "providerRejected": "Ověření bylo zamítnuto. Zkontrolujte účet nebo kód a zkuste to znovu."
+  },
+  "generic": {
+    "failure": "Něco se pokazilo. Zkuste to prosím znovu.",
+    "supportReferenceLabel": "Referenční kód podpory: {{reference}}"
+  }
+}

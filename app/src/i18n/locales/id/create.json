@@ -1,0 +1,217 @@
+{
+  "common": {
+    "back": "Kembali",
+    "cancel": "Batal",
+    "duplicateTitle": "Kamu sudah memiliki pola dengan nama „{{title}}”. Pilih nama lain.",
+    "cellsCount_one": "sel",
+    "cellsCount_other": "sel",
+    "colorsCount_one": "warna",
+    "colorsCount_other": "warna"
+  },
+  "hub": {
+    "title": "Pusat kreasi",
+    "subtitle": "Hidupkan desainmu sendiri dengan pola sulaman unik.",
+    "opening": "Membuka…",
+    "photoImport": {
+      "title": "Impor foto",
+      "description": "Unggah gambar dari galeri, dan ubah menjadi pola sulaman.",
+      "action": "Impor foto"
+    },
+    "aiGenerator": {
+      "title": "Generator AI",
+      "description": "Tulis prompt yang hangat, dan biarkan AI menghasilkan desain piksel unik.",
+      "action": "Buat desain"
+    }
+  },
+  "aspects": {
+    "square": "Persegi",
+    "portrait_4_3": "Potret 4:3",
+    "landscape_4_3": "Lanskap 4:3"
+  },
+  "conversion": {
+    "errors": {
+      "failed": "Gagal mengonversi pola. Coba lagi.",
+      "timeout": "Konversi pola masih diproses. Coba lagi sebentar lagi.",
+      "generic": "Konversi pola tidak selesai. Coba lagi."
+    }
+  },
+  "aiGeneration": {
+    "gate": {
+      "title": "Diperlukan akun terdaftar",
+      "body": "Kreasi AI dan pustakanya tetap privat untuk akunmu.",
+      "signIn": "Masuk"
+    },
+    "header": {
+      "title": "Generator AI",
+      "backAccessibilityLabel": "Kembali"
+    },
+    "prompt": {
+      "label": "Jelaskan kreasimu",
+      "placeholder": "Sebuah rumah taman hangat saat senja…"
+    },
+    "generate": {
+      "working": "Memproses…",
+      "action": "Buat — 1 kredit AI",
+      "errors": {
+        "promptRejected": "Prompt ini tidak diizinkan. Coba jelaskan sesuatu yang lain.",
+        "generic": "Gagal memulai pembuatan AI. Coba lagi."
+      }
+    },
+    "library": {
+      "title": "Pustaka kreasi AI-mu",
+      "status": {
+        "pending": "Menunggu",
+        "dispatched": "Dikirim",
+        "running": "Sedang berjalan",
+        "delivered": "Terkirim",
+        "safety_rejected": "Ditolak karena alasan keamanan",
+        "failed": "Gagal",
+        "deleted": "Dihapus",
+        "unknown": "Tidak tersedia"
+      },
+      "failure": {
+        "safety_rejected": "Kreasi ini tidak lolos pemeriksaan keamanan penyedia.",
+        "failed": "Kreasi ini gagal dibuat."
+      },
+      "approve": "Setujui sebagai pola",
+      "delete": "Hapus",
+      "deleteAccessibilityLabel": "Hapus kreasi AI ini",
+      "errors": {
+        "loadFailed": "Gagal memuat pustaka kreasi AI. Coba lagi."
+      }
+    },
+    "approve": {
+      "modalTitle": "Buat pola sendiri",
+      "titleLabel": "Nama pola",
+      "titleAccessibilityLabel": "Nama pola",
+      "defaultTitle": "Pola AI-ku",
+      "placeholder": "Pola AI-ku",
+      "characterCount": "{{count}}/{{max}}",
+      "cancel": "Batal",
+      "creating": "Membuat pola…",
+      "create": "Buat pola",
+      "errors": {
+        "generic": "Gagal membuat pola sendiri. Coba lagi."
+      }
+    }
+  },
+  "photoImport": {
+    "gate": {
+      "title": "Diperlukan akun terdaftar",
+      "body": "Pola sendiri terkait dengan akunmu, sehingga tetap privat dan tersedia di semua perangkat.",
+      "signIn": "Masuk atau buat akun",
+      "back": "Kembali"
+    },
+    "header": {
+      "title": "Pola foto",
+      "subtitle": "Bingkai secara lokal, lalu setujui konversinya",
+      "backAccessibilityLabel": "Kembali"
+    },
+    "picker": {
+      "chooseTitle": "Pilih foto",
+      "helpText": "Foto resolusi penuh tetap ada di perangkat ini. Tidak ada yang dikonversi sampai kamu menyetujui pembingkaian.",
+      "choose": "Pilih dari pustaka",
+      "chooseAnother": "Pilih yang lain",
+      "opening": "Membuka…",
+      "errors": {
+        "permissionDenied": "Akses galeri diperlukan untuk memilih sumber foto lokal.",
+        "invalidDimensions": "Foto yang dipilih tidak memiliki dimensi yang dapat digunakan.",
+        "generic": "Gagal membuka galeri foto. Coba lagi."
+      }
+    },
+    "framing": {
+      "title": "Bingkai kreasimu",
+      "gestureHint": "Seret untuk memindahkan · cubit untuk memperbesar",
+      "aspectLabel": "Rasio bingkai"
+    },
+    "profile": {
+      "title": "Profil konversi",
+      "options": {
+        "easy": "Mudah",
+        "standard": "Standar",
+        "detailed": "Detail"
+      },
+      "custom": "Khusus",
+      "customMeta": "Bebas · bentuk terkunci",
+      "unavailable": "Tidak cocok dengan bingkai ini",
+      "customShortEdgeLabel": "Sisi lebih pendek",
+      "customColorLimitLabel": "Batas warna DMC",
+      "exceedsLimit": "Nilai khusus ini melebihi batas ukuran {{max}} sel pola."
+    },
+    "titleCard": {
+      "label": "Nama pola",
+      "placeholder": "Pola fotoku",
+      "defaultTitle": "Pola fotoku",
+      "summary": "{{width}}×{{height}} {{cellsUnit}} · hingga {{maxColors}} {{colorsUnit}} DMC",
+      "privacyNotice": "Persetujuan hanya mengirim versi yang telah dibingkai dan diperkecil. Foto asli tetap ada di perangkat ini.",
+      "approve": "Setujui kreasi dan konversi"
+    },
+    "processing": {
+      "preparingFrame": "Menyiapkan bingkai yang disetujui di perangkat ini…",
+      "uploading": "Hanya mengirim bingkai yang dipotong dan diperkecil…",
+      "waitingForWorker": "Menunggu proses konversi…",
+      "buildingGrid": "Membangun kisi jahitan dan palet DMC…",
+      "preparingSession": "Menyiapkan pola sendiri untuk permainan…"
+    },
+    "convert": {
+      "errors": {
+        "profileMisfit": "Profil ini tidak lagi cocok dengan bingkai akhir. Pilih Mudah, atau kurangi detailnya.",
+        "generic": "Gagal mengonversi foto ini. Coba lagi."
+      }
+    }
+  },
+  "patternEditor": {
+    "gate": {
+      "noPatternTitle": "Tidak ada pola dipilih",
+      "noPatternBody": "Layar ini harus dibuka dari pola sendiri yang sudah ada di pustakamu.",
+      "accountTitle": "Diperlukan akun terdaftar",
+      "accountBody": "Pola sendiri terkait dengan akunmu, sehingga tetap privat dan tersedia di semua perangkat.",
+      "signIn": "Masuk atau buat akun",
+      "back": "Kembali"
+    },
+    "loading": "Melanjutkan draf di editor...",
+    "load": {
+      "failedTitle": "Gagal memuat pola",
+      "retry": "Coba lagi",
+      "back": "Kembali",
+      "errors": {
+        "generic": "Gagal memuat pola sendiri ini. Coba lagi."
+      }
+    },
+    "header": {
+      "title": "Editor pola",
+      "dimensions": "({{width}}x{{height}})",
+      "backAccessibilityLabel": "Kembali"
+    },
+    "toolbar": {
+      "undo": "Urungkan",
+      "redo": "Ulangi"
+    },
+    "mode": {
+      "paint": "Lukis",
+      "replaceColor": "Ganti warna",
+      "replaceStep1": "1. Sentuh warna yang ingin diganti di pola di bawah:",
+      "replaceStep2": "2. Pilih warna DMC target di bawah untuk melakukan penggantian:",
+      "paintSelected": "Terpilih: DMC {{dmcCode}} ({{name}})",
+      "paintUnselected": "Pilih warna di bawah, lalu sentuh sel untuk melukis."
+    },
+    "errors": {
+      "pickColorFirst": "Pilih warna terlebih dahulu",
+      "paletteLimit": "Pola ini sudah menggunakan {{max}} warna benang maksimum yang diizinkan."
+    },
+    "picker": {
+      "title": "Warna benang DMC",
+      "colorAccessibilityLabel": "DMC {{code}} {{name}}"
+    },
+    "save": {
+      "label": "Simpan pola yang diedit",
+      "placeholder": "Nama pola yang diedit",
+      "action": "Simpan sebagai baru",
+      "offlineTitle": "Disimpan secara offline",
+      "offlineBody": "Pola yang diedit disimpan di perangkat ini, dan akan disinkronkan ke akunmu saat kamu terhubung kembali.",
+      "errors": {
+        "generic": "Gagal menyimpan pola sendiri ini. Coba lagi."
+      }
+    }
+  }
+}
