@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Eliminar esta Criação de IA",
       "errors": {
         "loadFailed": "Não foi possível carregar a tua Biblioteca de Criações de IA. Por favor, tenta novamente."
-      }
+      },
+      "copyPrompt": "Copiar prompt",
+      "copiedPrompt": "Copiado",
+      "reusePrompt": "Usar este prompt",
+      "deleteConfirmTitle": "Excluir arte",
+      "deleteConfirmBody": "Tem certeza de que deseja excluir esta arte de IA?",
+      "deleteConfirmCancel": "Cancelar",
+      "deleteConfirmAction": "Excluir"
     },
     "approve": {
       "modalTitle": "Criar Padrão Pessoal",

@@ -1,10 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
+import * as Haptics from 'expo-haptics';
 import { useFocusEffect, useRouter } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -38,10 +42,54 @@ import { formatNumber } from '@/i18n';
 
 const ASPECT_OPTIONS: readonly ArtworkAspect[] = ['square', 'portrait_4_3', 'landscape_4_3'];
 
+const ASPECT_BADGE_LABELS: Record<ArtworkAspect, string> = {
+  square: '1:1',
+  portrait_4_3: '3:4',
+  landscape_4_3: '4:3',
+};
+
+function getStatusBadgeConfig(status: string) {
+  switch (status) {
+    case 'delivered':
+      return {
+        backgroundColor: '#EBF5EE',
+        borderColor: '#B4DFBC',
+        textColor: '#276738',
+        iconName: 'checkmark-circle-outline' as const,
+      };
+    case 'pending':
+    case 'dispatched':
+    case 'running':
+      return {
+        backgroundColor: '#FFF8EB',
+        borderColor: '#F1D7A4',
+        textColor: '#8C5E1A',
+        iconName: 'hourglass-outline' as const,
+      };
+    case 'safety_rejected':
+    case 'failed':
+      return {
+        backgroundColor: '#FDF0F0',
+        borderColor: '#F4BCBC',
+        textColor: '#B3261E',
+        iconName: 'alert-circle-outline' as const,
+      };
+    default:
+      return {
+        backgroundColor: '#F3F0EA',
+        borderColor: '#E2DDD3',
+        textColor: Theme.colors.textSecondary,
+        iconName: 'help-circle-outline' as const,
+      };
+  }
+}
+
 export default function AiGenerationScreen() {
   const { t, i18n } = useTranslation('create');
   const router = useRouter();
   const isAccount = useIdentityStore((state) => state.isAccount);
+  const scrollRef = useRef<ScrollView>(null);
+  const inputRef = useRef<TextInput>(null);
   const [prompt, setPrompt] = useState('');
   const [aspect, setAspect] = useState<ArtworkAspect>('square');
   const [items, setItems] = useState<AiArtwork[]>([]);
@@ -51,6 +99,65 @@ export default function AiGenerationScreen() {
   const [approvalTitle, setApprovalTitle] = useState(() => t('aiGeneration.approve.defaultTitle'));
   const [approvalError, setApprovalError] = useState<string | null>(null);
   const [existingTitles, setExistingTitles] = useState<Set<string> | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+  const handleCopyPrompt = async (promptText: string, id: string) => {
+    if (!promptText) return;
+    await Clipboard.setStringAsync(promptText);
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setCopiedId(id);
+    setTimeout(() => {
+      setCopiedId((curr) => (curr === id ? null : curr));
+    }, 2000);
+  };
+
+  const handleReusePrompt = (promptText: string, itemAspect?: ArtworkAspect) => {
+    if (!promptText) return;
+    setPrompt(promptText);
+    if (itemAspect && ASPECT_OPTIONS.includes(itemAspect)) {
+      setAspect(itemAspect);
+    }
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    scrollRef.current?.scrollTo({ y: 0, animated: true });
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 150);
+  };
+
+  const toggleExpandPrompt = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const handleDeleteConfirm = (item: AiArtwork) => {
+    Alert.alert(
+      t('aiGeneration.library.deleteConfirmTitle'),
+      t('aiGeneration.library.deleteConfirmBody'),
+      [
+        {
+          text: t('aiGeneration.library.deleteConfirmCancel'),
+          style: 'cancel',
+        },
+        {
+          text: t('aiGeneration.library.deleteConfirmAction'),
+          style: 'destructive',
+          onPress: () => {
+            deleteAiArtwork(item.id)
+              .then(load)
+              .catch((caught: unknown) => setError(resolveCreateErrorMessage(caught)));
+          },
+        },
+      ],
+    );
+  };
 
   const load = useCallback(() => {
     if (!isAccount) return;
@@ -209,7 +316,7 @@ export default function AiGenerationScreen() {
 
   return (
     <>
-      <Screen scrollable contentContainerStyle={styles.container}>
+      <Screen ref={scrollRef} scrollable contentContainerStyle={styles.container}>
         <View style={styles.header}>
           <Pressable
             onPress={() => router.back()}
@@ -227,6 +334,7 @@ export default function AiGenerationScreen() {
         <Card style={styles.card}>
           <Text style={styles.label}>{t('aiGeneration.prompt.label')}</Text>
           <TextInput
+            ref={inputRef}
             value={prompt}
             onChangeText={setPrompt}
             multiline
@@ -252,48 +360,134 @@ export default function AiGenerationScreen() {
         </Card>
         {error && <Text style={styles.error}>{error}</Text>}
         <Text style={styles.library}>{t('aiGeneration.library.title')}</Text>
-        {items.map((item) => (
-          <Card key={item.id} style={styles.item}>
-            {item.imageUrl ? (
-              <StableRemoteImage uri={item.imageUrl} style={styles.image} />
-            ) : (
-              <View style={styles.placeholder}>
-                <ActivityIndicator />
+        {items.map((item) => {
+          const badgeConfig = getStatusBadgeConfig(item.status);
+          const isCopied = copiedId === item.id;
+          const isExpanded = expandedIds.has(item.id);
+          const aspectBadge = ASPECT_BADGE_LABELS[item.aspect] ?? '1:1';
+
+          return (
+            <Card key={item.id} style={styles.itemCard}>
+              <View style={styles.imageWrapper}>
+                {item.imageUrl ? (
+                  <StableRemoteImage uri={item.imageUrl} style={styles.image} />
+                ) : (
+                  <View style={styles.placeholder}>
+                    <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
+                  </View>
+                )}
+                <View style={styles.aspectBadge}>
+                  <Text style={styles.aspectBadgeText}>{aspectBadge}</Text>
+                </View>
               </View>
-            )}
-            <View style={styles.itemBody}>
-              <Text style={styles.status}>
-                {t(`aiGeneration.library.status.${item.status}`, {
-                  defaultValue: t('aiGeneration.library.status.unknown'),
-                })}
-              </Text>
-              {(item.status === 'failed' || item.status === 'safety_rejected') && (
-                <Text style={styles.error}>
-                  {t(`aiGeneration.library.failure.${item.status}`)}
-                </Text>
-              )}
-              {item.failureReason && item.supportReference && (
-                <Text selectable style={styles.supportReference}>
-                  {t('errors:generic.supportReferenceLabel', { reference: item.supportReference })}
-                </Text>
-              )}
-              {item.status === 'delivered' && (
-                <Button
-                  title={t('aiGeneration.library.approve')}
-                  onPress={() => openApproval(item)}
-                  disabled={busy}
-                />
-              )}
-              <Pressable
-                onPress={() => deleteAiArtwork(item.id).then(load).catch((caught: unknown) => setError(resolveCreateErrorMessage(caught)))}
-                accessibilityRole="button"
-                accessibilityLabel={t('aiGeneration.library.deleteAccessibilityLabel')}
-              >
-                <Text style={styles.delete}>{t('aiGeneration.library.delete')}</Text>
-              </Pressable>
-            </View>
-          </Card>
-        ))}
+
+              <View style={styles.itemBody}>
+                <View style={styles.itemHeaderRow}>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      {
+                        backgroundColor: badgeConfig.backgroundColor,
+                        borderColor: badgeConfig.borderColor,
+                      },
+                    ]}
+                  >
+                    <Ionicons
+                      name={badgeConfig.iconName}
+                      size={13}
+                      color={badgeConfig.textColor}
+                    />
+                    <Text style={[styles.statusText, { color: badgeConfig.textColor }]}>
+                      {t(`aiGeneration.library.status.${item.status}`, {
+                        defaultValue: t('aiGeneration.library.status.unknown'),
+                      })}
+                    </Text>
+                  </View>
+
+                  <Pressable
+                    onPress={() => handleDeleteConfirm(item)}
+                    hitSlop={8}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('aiGeneration.library.deleteAccessibilityLabel')}
+                    style={styles.deleteIconButton}
+                  >
+                    <Ionicons name="trash-outline" size={17} color={Theme.colors.accentRose} />
+                  </Pressable>
+                </View>
+
+                {Boolean(item.prompt) && (
+                  <View style={styles.promptContainer}>
+                    <Pressable
+                      onPress={() => toggleExpandPrompt(item.id)}
+                      style={styles.promptTextBox}
+                      accessibilityRole="button"
+                    >
+                      <Text
+                        numberOfLines={isExpanded ? undefined : 2}
+                        style={styles.promptText}
+                      >
+                        "{item.prompt}"
+                      </Text>
+                    </Pressable>
+
+                    <View style={styles.promptActions}>
+                      <Pressable
+                        onPress={() => handleCopyPrompt(item.prompt, item.id)}
+                        hitSlop={6}
+                        style={styles.promptActionButton}
+                        accessibilityRole="button"
+                        accessibilityLabel={
+                          isCopied
+                            ? t('aiGeneration.library.copiedPrompt')
+                            : t('aiGeneration.library.copyPrompt')
+                        }
+                      >
+                        <Ionicons
+                          name={isCopied ? 'checkmark-circle' : 'copy-outline'}
+                          size={15}
+                          color={isCopied ? Theme.colors.success : Theme.colors.textSecondary}
+                        />
+                      </Pressable>
+
+                      <Pressable
+                        onPress={() => handleReusePrompt(item.prompt, item.aspect)}
+                        hitSlop={6}
+                        style={styles.promptActionButton}
+                        accessibilityRole="button"
+                        accessibilityLabel={t('aiGeneration.library.reusePrompt')}
+                      >
+                        <Ionicons
+                          name="arrow-up-circle-outline"
+                          size={16}
+                          color={Theme.colors.accentTeal}
+                        />
+                      </Pressable>
+                    </View>
+                  </View>
+                )}
+
+                {(item.status === 'failed' || item.status === 'safety_rejected') && (
+                  <Text style={styles.failureReason}>
+                    {t(`aiGeneration.library.failure.${item.status}`)}
+                  </Text>
+                )}
+                {item.failureReason && item.supportReference && (
+                  <Text selectable style={styles.supportReference}>
+                    {t('errors:generic.supportReferenceLabel', { reference: item.supportReference })}
+                  </Text>
+                )}
+                {item.status === 'delivered' && (
+                  <Button
+                    title={t('aiGeneration.library.approve')}
+                    onPress={() => openApproval(item)}
+                    disabled={busy}
+                    style={styles.approveButton}
+                  />
+                )}
+              </View>
+            </Card>
+          );
+        })}
       </Screen>
 
       <Modal
@@ -391,15 +585,116 @@ const styles = StyleSheet.create({
   aspects: { flexDirection: 'row', flexWrap: 'wrap', gap: Theme.spacing.xs },
   aspect: { padding: Theme.spacing.sm, borderWidth: 1, borderColor: '#ddd', borderRadius: Theme.radii.sm },
   selected: { borderColor: Theme.colors.accentTeal, backgroundColor: '#e8f6f4' },
-  library: { fontSize: Theme.typography.sizes.md, fontWeight: Theme.typography.weights.bold, marginTop: Theme.spacing.md },
-  item: { flexDirection: 'row', gap: Theme.spacing.md },
-  image: { width: 100, height: 100, borderRadius: Theme.radii.sm },
-  placeholder: { width: 100, height: 100, alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f1f1' },
-  itemBody: { flex: 1, gap: Theme.spacing.sm },
-  status: { textTransform: 'capitalize', fontWeight: Theme.typography.weights.semibold },
-  supportReference: { fontFamily: 'monospace', color: Theme.colors.textSecondary },
-  delete: { color: Theme.colors.accentRose, fontWeight: Theme.typography.weights.semibold },
-  error: { color: '#a22' },
+  library: {
+    fontSize: Theme.typography.sizes.lg,
+    fontWeight: Theme.typography.weights.bold,
+    color: Theme.colors.textPrimary,
+    marginTop: Theme.spacing.md,
+  },
+  itemCard: {
+    flexDirection: 'row',
+    gap: Theme.spacing.md,
+    padding: Theme.spacing.md,
+    alignItems: 'flex-start',
+    backgroundColor: Theme.colors.card,
+    borderRadius: Theme.radii.lg,
+    borderWidth: 1,
+    borderColor: Theme.colors.border,
+  },
+  imageWrapper: {
+    width: 100,
+    height: 100,
+    borderRadius: Theme.radii.md,
+    overflow: 'hidden',
+    position: 'relative',
+    backgroundColor: Theme.colors.patternImageBackdrop,
+  },
+  image: { width: 100, height: 100, borderRadius: Theme.radii.md },
+  placeholder: {
+    width: 100,
+    height: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F3EAD9',
+  },
+  aspectBadge: {
+    position: 'absolute',
+    top: 4,
+    left: 4,
+    backgroundColor: 'rgba(46, 42, 37, 0.75)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: Theme.radii.sm,
+  },
+  aspectBadgeText: {
+    color: '#FAF6F0',
+    fontSize: 10,
+    fontWeight: Theme.typography.weights.bold,
+  },
+  itemBody: { flex: 1, gap: 6 },
+  itemHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: Theme.radii.full,
+    borderWidth: 1,
+  },
+  statusText: {
+    fontSize: Theme.typography.sizes.xs,
+    fontWeight: Theme.typography.weights.semibold,
+  },
+  deleteIconButton: {
+    padding: 4,
+    borderRadius: Theme.radii.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  promptContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#F8F4ED',
+    borderWidth: 1,
+    borderColor: '#E8DEC9',
+    borderRadius: Theme.radii.sm,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    gap: 6,
+    alignItems: 'center',
+    marginVertical: 2,
+  },
+  promptTextBox: { flex: 1 },
+  promptText: {
+    fontSize: 12,
+    lineHeight: 16,
+    color: Theme.colors.textPrimary,
+    fontStyle: 'italic',
+  },
+  promptActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingLeft: 6,
+    borderLeftWidth: 1,
+    borderLeftColor: '#E2D6C0',
+  },
+  promptActionButton: {
+    padding: 2,
+    borderRadius: 4,
+  },
+  approveButton: {
+    height: 40,
+    borderRadius: Theme.radii.md,
+    marginTop: 4,
+  },
+  failureReason: { color: Theme.colors.error, fontSize: Theme.typography.sizes.xs },
+  supportReference: { fontFamily: 'monospace', color: Theme.colors.textSecondary, fontSize: Theme.typography.sizes.xs },
+  error: { color: Theme.colors.error },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.45)',

@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Διαγραφή αυτού του Έργου Τέχνης AI",
       "errors": {
         "loadFailed": "Δεν ήταν δυνατή η φόρτωση της Βιβλιοθήκης Έργων Τέχνης AI. Δοκιμάστε ξανά."
-      }
+      },
+      "copyPrompt": "Copy prompt",
+      "copiedPrompt": "Copied",
+      "reusePrompt": "Use this prompt",
+      "deleteConfirmTitle": "Delete Artwork",
+      "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmAction": "Delete"
     },
     "approve": {
       "modalTitle": "Δημιουργία Προσωπικού Μοτίβου",

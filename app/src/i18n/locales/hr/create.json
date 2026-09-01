@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Izbriši ovu AI umjetninu",
       "errors": {
         "loadFailed": "Učitavanje tvoje knjižnice AI umjetnina nije uspjelo. Pokušaj ponovno."
-      }
+      },
+      "copyPrompt": "Copy prompt",
+      "copiedPrompt": "Copied",
+      "reusePrompt": "Use this prompt",
+      "deleteConfirmTitle": "Delete Artwork",
+      "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmAction": "Delete"
     },
     "approve": {
       "modalTitle": "Stvori osobni uzorak",

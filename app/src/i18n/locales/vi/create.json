@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Xóa tác phẩm AI này",
       "errors": {
         "loadFailed": "Không thể tải Thư viện tác phẩm AI của bạn. Vui lòng thử lại."
-      }
+      },
+      "copyPrompt": "Copy prompt",
+      "copiedPrompt": "Copied",
+      "reusePrompt": "Use this prompt",
+      "deleteConfirmTitle": "Delete Artwork",
+      "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmAction": "Delete"
     },
     "approve": {
       "modalTitle": "Tạo Mẫu thêu cá nhân",

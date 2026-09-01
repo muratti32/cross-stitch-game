@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Șterge această ilustrație AI",
       "errors": {
         "loadFailed": "Biblioteca ta de ilustrații AI nu a putut fi încărcată. Te rugăm să încerci din nou."
-      }
+      },
+      "copyPrompt": "Copy prompt",
+      "copiedPrompt": "Copied",
+      "reusePrompt": "Use this prompt",
+      "deleteConfirmTitle": "Delete Artwork",
+      "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmAction": "Delete"
     },
     "approve": {
       "modalTitle": "Creează model personal",

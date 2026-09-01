@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "删除这个 AI 作品",
       "errors": {
         "loadFailed": "加载你的 AI 作品库失败了，请重试。"
-      }
+      },
+      "copyPrompt": "复制提示词",
+      "copiedPrompt": "已复制",
+      "reusePrompt": "使用此提示词",
+      "deleteConfirmTitle": "删除图像",
+      "deleteConfirmBody": "确定要删除此 AI 图像吗？",
+      "deleteConfirmCancel": "取消",
+      "deleteConfirmAction": "删除"
     },
     "approve": {
       "modalTitle": "创建个人图纸",

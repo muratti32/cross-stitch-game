@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Usuń to dzieło AI",
       "errors": {
         "loadFailed": "Nie można załadować biblioteki prac AI. Spróbuj ponownie."
-      }
+      },
+      "copyPrompt": "Kopiuj prompt",
+      "copiedPrompt": "Skopiowano",
+      "reusePrompt": "Użyj tego promptu",
+      "deleteConfirmTitle": "Usuń obraz",
+      "deleteConfirmBody": "Czy na pewno chcesz usunąć ten obraz AI?",
+      "deleteConfirmCancel": "Anuluj",
+      "deleteConfirmAction": "Usuń"
     },
     "approve": {
       "modalTitle": "Utwórz osobisty wzór",

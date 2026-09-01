@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Zmazať túto AI ilustráciu",
       "errors": {
         "loadFailed": "Tvoju knižnicu AI ilustrácií sa nepodarilo načítať. Skús to prosím znova."
-      }
+      },
+      "copyPrompt": "Copy prompt",
+      "copiedPrompt": "Copied",
+      "reusePrompt": "Use this prompt",
+      "deleteConfirmTitle": "Delete Artwork",
+      "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmAction": "Delete"
     },
     "approve": {
       "modalTitle": "Vytvoriť osobný vzor",

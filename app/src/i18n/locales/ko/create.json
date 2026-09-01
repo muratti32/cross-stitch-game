@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "이 AI 아트워크 삭제",
       "errors": {
         "loadFailed": "AI 아트워크 라이브러리를 불러오지 못했습니다. 다시 시도해 주세요."
-      }
+      },
+      "copyPrompt": "프롬프트 복사",
+      "copiedPrompt": "복사됨",
+      "reusePrompt": "이 프롬프트 사용",
+      "deleteConfirmTitle": "이미지 삭제",
+      "deleteConfirmBody": "이 AI 이미지를 삭제하시겠습니까?",
+      "deleteConfirmCancel": "취소",
+      "deleteConfirmAction": "삭제"
     },
     "approve": {
       "modalTitle": "개인 도안 생성",

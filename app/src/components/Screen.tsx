@@ -5,7 +5,7 @@ import { Theme } from '../theme/theme';
 import { StatusBar } from 'expo-status-bar';
 import { useTabBarSpace } from '@/theme/tabBar';
 
-interface ScreenProps {
+export interface ScreenProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   contentContainerStyle?: StyleProp<ViewStyle>;
@@ -15,15 +15,18 @@ interface ScreenProps {
   clearsTabBar?: boolean;
 }
 
-export function Screen({
-  children,
-  style,
-  contentContainerStyle,
-  scrollable = false,
-  edges = ['top', 'left', 'right'],
-  refreshControl,
-  clearsTabBar = true,
-}: ScreenProps) {
+export const Screen = React.forwardRef<ScrollView, ScreenProps>(function Screen(
+  {
+    children,
+    style,
+    contentContainerStyle,
+    scrollable = false,
+    edges = ['top', 'left', 'right'],
+    refreshControl,
+    clearsTabBar = true,
+  },
+  ref,
+) {
   const tabBarSpace = useTabBarSpace();
 
   return (
@@ -49,7 +52,7 @@ export function Screen({
       )}
     </SafeAreaView>
   );
-}
+});
 
 const styles = StyleSheet.create({
   safeArea: {

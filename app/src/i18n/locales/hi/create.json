@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "इस एआई आर्टवर्क को हटाएं",
       "errors": {
         "loadFailed": "आपकी एआई आर्टवर्क लाइब्रेरी लोड नहीं की जा सकी। कृपया दोबारा प्रयास करें।"
-      }
+      },
+      "copyPrompt": "Copy prompt",
+      "copiedPrompt": "Copied",
+      "reusePrompt": "Use this prompt",
+      "deleteConfirmTitle": "Delete Artwork",
+      "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmAction": "Delete"
     },
     "approve": {
       "modalTitle": "व्यक्तिगत पैटर्न बनाएं",

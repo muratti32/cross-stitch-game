@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Видалити цей AI Твір",
       "errors": {
         "loadFailed": "Не вдалося завантажити вашу Бібліотеку AI Творів. Спробуйте ще раз."
-      }
+      },
+      "copyPrompt": "Copy prompt",
+      "copiedPrompt": "Copied",
+      "reusePrompt": "Use this prompt",
+      "deleteConfirmTitle": "Delete Artwork",
+      "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmAction": "Delete"
     },
     "approve": {
       "modalTitle": "Створити Особистий Візерунок",

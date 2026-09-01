@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Dieses KI-Kunstwerk löschen",
       "errors": {
         "loadFailed": "Deine KI-Kunstgalerie konnte nicht geladen werden. Bitte versuche es erneut."
-      }
+      },
+      "copyPrompt": "Prompt kopieren",
+      "copiedPrompt": "Kopiert",
+      "reusePrompt": "Diesen Prompt verwenden",
+      "deleteConfirmTitle": "Bild löschen",
+      "deleteConfirmBody": "Möchtest du dieses KI-Bild wirklich löschen?",
+      "deleteConfirmCancel": "Abbrechen",
+      "deleteConfirmAction": "Löschen"
     },
     "approve": {
       "modalTitle": "Persönliches Muster erstellen",

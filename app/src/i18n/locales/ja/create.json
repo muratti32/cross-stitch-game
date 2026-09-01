@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "このAIアートワークを削除する",
       "errors": {
         "loadFailed": "AIアートワークライブラリを読み込めませんでした。もう一度お試しください。"
-      }
+      },
+      "copyPrompt": "プロンプトをコピー",
+      "copiedPrompt": "コピー完了",
+      "reusePrompt": "このプロンプトを使用",
+      "deleteConfirmTitle": "画像を削除",
+      "deleteConfirmBody": "このAI画像を削除してもよろしいですか？",
+      "deleteConfirmCancel": "キャンセル",
+      "deleteConfirmAction": "削除"
     },
     "approve": {
       "modalTitle": "個人用パターンの作成",

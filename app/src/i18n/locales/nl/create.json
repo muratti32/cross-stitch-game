@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Dit AI-kunstwerk verwijderen",
       "errors": {
         "loadFailed": "Kan de AI-kunstwerkbibliotheek niet laden. Probeer het opnieuw."
-      }
+      },
+      "copyPrompt": "Prompt kopiëren",
+      "copiedPrompt": "Gekopieerd",
+      "reusePrompt": "Deze prompt gebruiken",
+      "deleteConfirmTitle": "Afbeelding verwijderen",
+      "deleteConfirmBody": "Weet je zeker dat je deze AI-afbeelding wilt verwijderen?",
+      "deleteConfirmCancel": "Annuleren",
+      "deleteConfirmAction": "Verwijderen"
     },
     "approve": {
       "modalTitle": "Persoonlijk patroon maken",

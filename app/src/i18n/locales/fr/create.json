@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Supprimer cette œuvre IA",
       "errors": {
         "loadFailed": "Impossible de charger votre bibliothèque d'œuvres IA. Veuillez réessayer."
-      }
+      },
+      "copyPrompt": "Copier le prompt",
+      "copiedPrompt": "Copié",
+      "reusePrompt": "Utiliser ce prompt",
+      "deleteConfirmTitle": "Supprimer l'image",
+      "deleteConfirmBody": "Voulez-vous vraiment supprimer cette image IA ?",
+      "deleteConfirmCancel": "Annuler",
+      "deleteConfirmAction": "Supprimer"
     },
     "approve": {
       "modalTitle": "Créer un motif personnel",

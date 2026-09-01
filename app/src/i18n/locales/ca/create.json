@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Elimina aquesta Obra d'IA",
       "errors": {
         "loadFailed": "No s'ha pogut carregar la teva Biblioteca d'Art d'IA. Torna-ho a provar."
-      }
+      },
+      "copyPrompt": "Copy prompt",
+      "copiedPrompt": "Copied",
+      "reusePrompt": "Use this prompt",
+      "deleteConfirmTitle": "Delete Artwork",
+      "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmAction": "Delete"
     },
     "approve": {
       "modalTitle": "Crea un Patró Personal",

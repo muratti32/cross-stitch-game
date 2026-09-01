@@ -3,7 +3,7 @@ import { Config } from '@/config';
 import type { ConversionProfile, PendingConversion } from '@/conversion';
 
 export type ArtworkAspect = 'square' | 'portrait_4_3' | 'landscape_4_3';
-export interface AiArtwork { id: string; aspect: ArtworkAspect; status: string; failureReason: string | null; supportReference: string | null; createdAt: string; imageUrl: string | null; }
+export interface AiArtwork { id: string; prompt: string; aspect: ArtworkAspect; status: string; failureReason: string | null; supportReference: string | null; createdAt: string; imageUrl: string | null; }
 export class AiCreditShortfallError extends Error {
   constructor() {
     super('No available AI Credit');

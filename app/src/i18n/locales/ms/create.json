@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Padam ciptaan AI ini",
       "errors": {
         "loadFailed": "Gagal memuatkan pustaka ciptaan AI. Cuba lagi."
-      }
+      },
+      "copyPrompt": "Copy prompt",
+      "copiedPrompt": "Copied",
+      "reusePrompt": "Use this prompt",
+      "deleteConfirmTitle": "Delete Artwork",
+      "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmAction": "Delete"
     },
     "approve": {
       "modalTitle": "Cipta pola sendiri",

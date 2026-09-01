@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Удалить этот рисунок AI",
       "errors": {
         "loadFailed": "Не удалось загрузить вашу AI-библиотеку. Пожалуйста, попробуйте еще раз."
-      }
+      },
+      "copyPrompt": "Скопировать запрос",
+      "copiedPrompt": "Скопировано",
+      "reusePrompt": "Использовать этот запрос",
+      "deleteConfirmTitle": "Удалить изображение",
+      "deleteConfirmBody": "Вы уверены, что хотите удалить это изображение ИИ?",
+      "deleteConfirmCancel": "Отмена",
+      "deleteConfirmAction": "Удалить"
     },
     "approve": {
       "modalTitle": "Создать Личный узор",

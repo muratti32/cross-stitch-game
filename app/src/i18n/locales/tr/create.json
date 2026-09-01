@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Bu Yapay Zeka Görselini sil",
       "errors": {
         "loadFailed": "Yapay Zeka Görsel Kitaplığın yüklenemedi. Lütfen tekrar deneyin."
-      }
+      },
+      "copyPrompt": "Prompt'u kopyala",
+      "copiedPrompt": "Kopyalandı",
+      "reusePrompt": "Bu prompt'u kullan",
+      "deleteConfirmTitle": "Görseli Sil",
+      "deleteConfirmBody": "Bu yapay zeka görselini silmek istediğinizden emin misiniz?",
+      "deleteConfirmCancel": "İptal",
+      "deleteConfirmAction": "Sil"
     },
     "approve": {
       "modalTitle": "Kişisel Desen Oluştur",

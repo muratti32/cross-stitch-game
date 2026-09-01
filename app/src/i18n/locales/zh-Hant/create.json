@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "刪除此 AI 作品",
       "errors": {
         "loadFailed": "無法載入你的 AI 作品圖庫，請再試一次。"
-      }
+      },
+      "copyPrompt": "複製提示詞",
+      "copiedPrompt": "已複製",
+      "reusePrompt": "使用此提示詞",
+      "deleteConfirmTitle": "刪除影像",
+      "deleteConfirmBody": "確定要刪除此 AI 影像嗎？",
+      "deleteConfirmCancel": "取消",
+      "deleteConfirmAction": "刪除"
     },
     "approve": {
       "modalTitle": "建立個人圖案",

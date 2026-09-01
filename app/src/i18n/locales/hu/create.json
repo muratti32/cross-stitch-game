@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Ezen AI alkotás törlése",
       "errors": {
         "loadFailed": "Az AI alkotások könyvtárának betöltése sikertelen. Próbáld újra."
-      }
+      },
+      "copyPrompt": "Copy prompt",
+      "copiedPrompt": "Copied",
+      "reusePrompt": "Use this prompt",
+      "deleteConfirmTitle": "Delete Artwork",
+      "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmAction": "Delete"
     },
     "approve": {
       "modalTitle": "Saját minta létrehozása",

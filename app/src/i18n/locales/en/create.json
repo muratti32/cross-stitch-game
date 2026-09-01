@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Delete this AI Artwork",
       "errors": {
         "loadFailed": "Could not load your AI Artwork Library. Please try again."
-      }
+      },
+      "copyPrompt": "Copy prompt",
+      "copiedPrompt": "Copied",
+      "reusePrompt": "Use this prompt",
+      "deleteConfirmTitle": "Delete Artwork",
+      "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmAction": "Delete"
     },
     "approve": {
       "modalTitle": "Create Personal Pattern",

@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Eliminar esta obra de IA",
       "errors": {
         "loadFailed": "No se pudo cargar tu biblioteca de obras de IA. Por favor, inténtalo de nuevo."
-      }
+      },
+      "copyPrompt": "Copiar prompt",
+      "copiedPrompt": "Copiado",
+      "reusePrompt": "Usar este prompt",
+      "deleteConfirmTitle": "Eliminar imagen",
+      "deleteConfirmBody": "¿Seguro que quieres eliminar esta imagen de IA?",
+      "deleteConfirmCancel": "Cancelar",
+      "deleteConfirmAction": "Eliminar"
     },
     "approve": {
       "modalTitle": "Crear Patrón Personal",

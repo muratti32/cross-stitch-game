@@ -54,6 +54,7 @@ function declaredNativeLocales(appJsonPath: string): string[] {
 }
 
 export interface GateOptions {
+  candidates?: readonly string[];
   localesDir?: string;
   generatedPath?: string;
   reviewManifest?: Partial<Record<string, { nativeSpeakerReviewed: boolean; sensitiveCopyReviewed: boolean }>>;
@@ -64,13 +65,14 @@ export interface GateOptions {
 }
 
 export function runReleaseReadinessGate(options: GateOptions = {}): ReleaseReadinessResult {
+  const candidates = options.candidates ?? (options.backendLocales ?? CANDIDATES);
   const localesDir = options.localesDir ?? LOCALES_DIR;
-  const namespaceNames = namespaces(localesDir, CANDIDATES);
+  const namespaceNames = namespaces(localesDir, candidates);
   const reference = loadResources(localesDir, 'en', namespaceNames);
   const failures: string[] = [];
   if (!checkGeneratedResources(localesDir, options.generatedPath ?? GENERATED_PATH)) failures.push('[generated resources] resources.generated.json is stale');
 
-  for (const locale of CANDIDATES) {
+  for (const locale of candidates) {
     const localeDirExists = fs.existsSync(path.join(localesDir, locale));
     if (!localeDirExists) {
       failures.push(`[${locale}][namespace/key parity] locale directory missing; all English keys are absent`);
@@ -93,14 +95,14 @@ export function runReleaseReadinessGate(options: GateOptions = {}): ReleaseReadi
     validateLocaleReviewManifest([locale], options.reviewManifest ?? reviewManifest).forEach((v) => failures.push(`[${locale}][review] ${v.reason}`));
   }
 
-  compareNativeLocaleDeclarations(CANDIDATES, options.declaredNativeLocales ?? declaredNativeLocales(path.join(ROOT, 'app.json')))
+  compareNativeLocaleDeclarations(candidates, options.declaredNativeLocales ?? declaredNativeLocales(path.join(ROOT, 'app.json')))
     .forEach((v) => failures.push(`[native declarations] ${v.locale}: ${v.reason}`));
-  compareLocaleCohorts(CANDIDATES, options.backendLocales ?? CANDIDATE_APP_DISPLAY_LOCALES)
+  compareLocaleCohorts(candidates, options.backendLocales ?? CANDIDATE_APP_DISPLAY_LOCALES)
     .forEach((locale) => failures.push(`[backend cohort] ${locale} differs from app candidate cohort`));
   const taxonomyCoverage = options.backendTaxonomyCoverage ?? CANDIDATE_TAXONOMY_COVERAGE;
   const expectedCategories = taxonomyCoverage.en?.categories ?? 0;
   const expectedTags = taxonomyCoverage.en?.tags ?? 0;
-  for (const locale of CANDIDATES) {
+  for (const locale of candidates) {
     const coverage = taxonomyCoverage[locale];
     if (!coverage || coverage.categories === 0) failures.push(`[backend taxonomy] ${locale}: no candidate category labels`);
     else if (coverage.categories !== expectedCategories) failures.push(`[backend taxonomy] ${locale}: category label coverage ${coverage.categories}/${expectedCategories}`);

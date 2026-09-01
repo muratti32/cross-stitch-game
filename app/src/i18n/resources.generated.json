@@ -455,7 +455,14 @@
           "deleteAccessibilityLabel": "حذف هذا العمل الفني المولّد بالذكاء الاصطناعي",
           "errors": {
             "loadFailed": "تعذر تحميل مكتبة أعمالك الفنية بالذكاء الاصطناعي. يرجى المحاولة مرة أخرى."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "إنشاء نمط شخصي",
@@ -1863,7 +1870,14 @@
           "deleteAccessibilityLabel": "Elimina aquesta Obra d'IA",
           "errors": {
             "loadFailed": "No s'ha pogut carregar la teva Biblioteca d'Art d'IA. Torna-ho a provar."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Crea un Patró Personal",
@@ -3271,7 +3285,14 @@
           "deleteAccessibilityLabel": "Smazat toto AI dílo",
           "errors": {
             "loadFailed": "Nepodařilo se načíst knihovnu AI děl. Zkuste to prosím znovu."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Vytvořit vlastní vzor",
@@ -4679,7 +4700,14 @@
           "deleteAccessibilityLabel": "Slet dette AI-kunstværk",
           "errors": {
             "loadFailed": "Kunne ikke indlæse dit AI-kunstbibliotek. Prøv igen."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Opret personligt mønster",
@@ -6087,7 +6115,14 @@
           "deleteAccessibilityLabel": "Dieses KI-Kunstwerk löschen",
           "errors": {
             "loadFailed": "Deine KI-Kunstgalerie konnte nicht geladen werden. Bitte versuche es erneut."
-          }
+          },
+          "copyPrompt": "Prompt kopieren",
+          "copiedPrompt": "Kopiert",
+          "reusePrompt": "Diesen Prompt verwenden",
+          "deleteConfirmTitle": "Bild löschen",
+          "deleteConfirmBody": "Möchtest du dieses KI-Bild wirklich löschen?",
+          "deleteConfirmCancel": "Abbrechen",
+          "deleteConfirmAction": "Löschen"
         },
         "approve": {
           "modalTitle": "Persönliches Muster erstellen",
@@ -7495,7 +7530,14 @@
           "deleteAccessibilityLabel": "Διαγραφή αυτού του Έργου Τέχνης AI",
           "errors": {
             "loadFailed": "Δεν ήταν δυνατή η φόρτωση της Βιβλιοθήκης Έργων Τέχνης AI. Δοκιμάστε ξανά."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Δημιουργία Προσωπικού Μοτίβου",
@@ -8903,7 +8945,14 @@
           "deleteAccessibilityLabel": "Delete this AI Artwork",
           "errors": {
             "loadFailed": "Could not load your AI Artwork Library. Please try again."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Create Personal Pattern",
@@ -10311,7 +10360,14 @@
           "deleteAccessibilityLabel": "Eliminar esta obra de IA",
           "errors": {
             "loadFailed": "No se pudo cargar tu biblioteca de obras de IA. Por favor, inténtalo de nuevo."
-          }
+          },
+          "copyPrompt": "Copiar prompt",
+          "copiedPrompt": "Copiado",
+          "reusePrompt": "Usar este prompt",
+          "deleteConfirmTitle": "Eliminar imagen",
+          "deleteConfirmBody": "¿Seguro que quieres eliminar esta imagen de IA?",
+          "deleteConfirmCancel": "Cancelar",
+          "deleteConfirmAction": "Eliminar"
         },
         "approve": {
           "modalTitle": "Crear Patrón Personal",
@@ -11719,7 +11775,14 @@
           "deleteAccessibilityLabel": "Poista tämä tekoälytaideteos",
           "errors": {
             "loadFailed": "Tekoälytaidekirjastoa ei voitu ladata. Yritä uudelleen."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Luo henkilökohtainen malli",
@@ -13127,7 +13190,14 @@
           "deleteAccessibilityLabel": "Supprimer cette œuvre IA",
           "errors": {
             "loadFailed": "Impossible de charger votre bibliothèque d'œuvres IA. Veuillez réessayer."
-          }
+          },
+          "copyPrompt": "Copier le prompt",
+          "copiedPrompt": "Copié",
+          "reusePrompt": "Utiliser ce prompt",
+          "deleteConfirmTitle": "Supprimer l'image",
+          "deleteConfirmBody": "Voulez-vous vraiment supprimer cette image IA ?",
+          "deleteConfirmCancel": "Annuler",
+          "deleteConfirmAction": "Supprimer"
         },
         "approve": {
           "modalTitle": "Créer un motif personnel",
@@ -14535,7 +14605,14 @@
           "deleteAccessibilityLabel": "इस एआई आर्टवर्क को हटाएं",
           "errors": {
             "loadFailed": "आपकी एआई आर्टवर्क लाइब्रेरी लोड नहीं की जा सकी। कृपया दोबारा प्रयास करें।"
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "व्यक्तिगत पैटर्न बनाएं",
@@ -15943,7 +16020,14 @@
           "deleteAccessibilityLabel": "Izbriši ovu AI umjetninu",
           "errors": {
             "loadFailed": "Učitavanje tvoje knjižnice AI umjetnina nije uspjelo. Pokušaj ponovno."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Stvori osobni uzorak",
@@ -17351,7 +17435,14 @@
           "deleteAccessibilityLabel": "Ezen AI alkotás törlése",
           "errors": {
             "loadFailed": "Az AI alkotások könyvtárának betöltése sikertelen. Próbáld újra."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Saját minta létrehozása",
@@ -18759,7 +18850,14 @@
           "deleteAccessibilityLabel": "Hapus kreasi AI ini",
           "errors": {
             "loadFailed": "Gagal memuat pustaka kreasi AI. Coba lagi."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Buat pola sendiri",
@@ -20167,7 +20265,14 @@
           "deleteAccessibilityLabel": "Elimina questa opera d'arte IA",
           "errors": {
             "loadFailed": "Impossibile caricare la tua raccolta di opere d'arte IA. Riprova."
-          }
+          },
+          "copyPrompt": "Copia prompt",
+          "copiedPrompt": "Copiato",
+          "reusePrompt": "Usa questo prompt",
+          "deleteConfirmTitle": "Elimina immagine",
+          "deleteConfirmBody": "Sei sicuro di voler eliminare questa immagine IA?",
+          "deleteConfirmCancel": "Annulla",
+          "deleteConfirmAction": "Elimina"
         },
         "approve": {
           "modalTitle": "Crea Schema Personale",
@@ -21575,7 +21680,14 @@
           "deleteAccessibilityLabel": "このAIアートワークを削除する",
           "errors": {
             "loadFailed": "AIアートワークライブラリを読み込めませんでした。もう一度お試しください。"
-          }
+          },
+          "copyPrompt": "プロンプトをコピー",
+          "copiedPrompt": "コピー完了",
+          "reusePrompt": "このプロンプトを使用",
+          "deleteConfirmTitle": "画像を削除",
+          "deleteConfirmBody": "このAI画像を削除してもよろしいですか？",
+          "deleteConfirmCancel": "キャンセル",
+          "deleteConfirmAction": "削除"
         },
         "approve": {
           "modalTitle": "個人用パターンの作成",
@@ -22983,7 +23095,14 @@
           "deleteAccessibilityLabel": "이 AI 아트워크 삭제",
           "errors": {
             "loadFailed": "AI 아트워크 라이브러리를 불러오지 못했습니다. 다시 시도해 주세요."
-          }
+          },
+          "copyPrompt": "프롬프트 복사",
+          "copiedPrompt": "복사됨",
+          "reusePrompt": "이 프롬프트 사용",
+          "deleteConfirmTitle": "이미지 삭제",
+          "deleteConfirmBody": "이 AI 이미지를 삭제하시겠습니까?",
+          "deleteConfirmCancel": "취소",
+          "deleteConfirmAction": "삭제"
         },
         "approve": {
           "modalTitle": "개인 도안 생성",
@@ -24391,7 +24510,14 @@
           "deleteAccessibilityLabel": "Padam ciptaan AI ini",
           "errors": {
             "loadFailed": "Gagal memuatkan pustaka ciptaan AI. Cuba lagi."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Cipta pola sendiri",
@@ -25799,7 +25925,14 @@
           "deleteAccessibilityLabel": "Slett dette AI-kunstverket",
           "errors": {
             "loadFailed": "Kunne ikke laste AI-kunstverkbiblioteket ditt. Prøv igjen."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Opprett personlig mønster",
@@ -27207,7 +27340,14 @@
           "deleteAccessibilityLabel": "Dit AI-kunstwerk verwijderen",
           "errors": {
             "loadFailed": "Kan de AI-kunstwerkbibliotheek niet laden. Probeer het opnieuw."
-          }
+          },
+          "copyPrompt": "Prompt kopiëren",
+          "copiedPrompt": "Gekopieerd",
+          "reusePrompt": "Deze prompt gebruiken",
+          "deleteConfirmTitle": "Afbeelding verwijderen",
+          "deleteConfirmBody": "Weet je zeker dat je deze AI-afbeelding wilt verwijderen?",
+          "deleteConfirmCancel": "Annuleren",
+          "deleteConfirmAction": "Verwijderen"
         },
         "approve": {
           "modalTitle": "Persoonlijk patroon maken",
@@ -28615,7 +28755,14 @@
           "deleteAccessibilityLabel": "Usuń to dzieło AI",
           "errors": {
             "loadFailed": "Nie można załadować biblioteki prac AI. Spróbuj ponownie."
-          }
+          },
+          "copyPrompt": "Kopiuj prompt",
+          "copiedPrompt": "Skopiowano",
+          "reusePrompt": "Użyj tego promptu",
+          "deleteConfirmTitle": "Usuń obraz",
+          "deleteConfirmBody": "Czy na pewno chcesz usunąć ten obraz AI?",
+          "deleteConfirmCancel": "Anuluj",
+          "deleteConfirmAction": "Usuń"
         },
         "approve": {
           "modalTitle": "Utwórz osobisty wzór",
@@ -30023,7 +30170,14 @@
           "deleteAccessibilityLabel": "Eliminar esta Criação de IA",
           "errors": {
             "loadFailed": "Não foi possível carregar a tua Biblioteca de Criações de IA. Por favor, tenta novamente."
-          }
+          },
+          "copyPrompt": "Copiar prompt",
+          "copiedPrompt": "Copiado",
+          "reusePrompt": "Usar este prompt",
+          "deleteConfirmTitle": "Excluir arte",
+          "deleteConfirmBody": "Tem certeza de que deseja excluir esta arte de IA?",
+          "deleteConfirmCancel": "Cancelar",
+          "deleteConfirmAction": "Excluir"
         },
         "approve": {
           "modalTitle": "Criar Padrão Pessoal",
@@ -31431,7 +31585,14 @@
           "deleteAccessibilityLabel": "Excluir esta arte de IA",
           "errors": {
             "loadFailed": "Não foi possível carregar sua biblioteca de artes de IA. Tente novamente."
-          }
+          },
+          "copyPrompt": "Copiar prompt",
+          "copiedPrompt": "Copiado",
+          "reusePrompt": "Usar este prompt",
+          "deleteConfirmTitle": "Excluir arte",
+          "deleteConfirmBody": "Tem certeza de que deseja excluir esta arte de IA?",
+          "deleteConfirmCancel": "Cancelar",
+          "deleteConfirmAction": "Excluir"
         },
         "approve": {
           "modalTitle": "Criar Gráfico Pessoal",
@@ -32839,7 +33000,14 @@
           "deleteAccessibilityLabel": "Șterge această ilustrație AI",
           "errors": {
             "loadFailed": "Biblioteca ta de ilustrații AI nu a putut fi încărcată. Te rugăm să încerci din nou."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Creează model personal",
@@ -34247,7 +34415,14 @@
           "deleteAccessibilityLabel": "Удалить этот рисунок AI",
           "errors": {
             "loadFailed": "Не удалось загрузить вашу AI-библиотеку. Пожалуйста, попробуйте еще раз."
-          }
+          },
+          "copyPrompt": "Скопировать запрос",
+          "copiedPrompt": "Скопировано",
+          "reusePrompt": "Использовать этот запрос",
+          "deleteConfirmTitle": "Удалить изображение",
+          "deleteConfirmBody": "Вы уверены, что хотите удалить это изображение ИИ?",
+          "deleteConfirmCancel": "Отмена",
+          "deleteConfirmAction": "Удалить"
         },
         "approve": {
           "modalTitle": "Создать Личный узор",
@@ -35655,7 +35830,14 @@
           "deleteAccessibilityLabel": "Zmazať túto AI ilustráciu",
           "errors": {
             "loadFailed": "Tvoju knižnicu AI ilustrácií sa nepodarilo načítať. Skús to prosím znova."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Vytvoriť osobný vzor",
@@ -37063,7 +37245,14 @@
           "deleteAccessibilityLabel": "Izbriši to AI umetnino",
           "errors": {
             "loadFailed": "Knjižnice AI umetnin ni bilo mogoče naložiti. Poskusite znova."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Ustvari osebni vzorec",
@@ -38471,7 +38660,14 @@
           "deleteAccessibilityLabel": "Ta bort den här AI-konsten",
           "errors": {
             "loadFailed": "Det gick inte att läsa in ditt AI-konstbibliotek. Försök igen."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Skapa personligt mönster",
@@ -39879,7 +40075,14 @@
           "deleteAccessibilityLabel": "Tanggalin ang AI art na ito",
           "errors": {
             "loadFailed": "Hindi na-load ang iyong AI Art Library. Subukan ulit."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Gumawa ng personal na pattern",
@@ -41287,7 +41490,14 @@
           "deleteAccessibilityLabel": "Bu Yapay Zeka Görselini sil",
           "errors": {
             "loadFailed": "Yapay Zeka Görsel Kitaplığın yüklenemedi. Lütfen tekrar deneyin."
-          }
+          },
+          "copyPrompt": "Prompt'u kopyala",
+          "copiedPrompt": "Kopyalandı",
+          "reusePrompt": "Bu prompt'u kullan",
+          "deleteConfirmTitle": "Görseli Sil",
+          "deleteConfirmBody": "Bu yapay zeka görselini silmek istediğinizden emin misiniz?",
+          "deleteConfirmCancel": "İptal",
+          "deleteConfirmAction": "Sil"
         },
         "approve": {
           "modalTitle": "Kişisel Desen Oluştur",
@@ -42695,7 +42905,14 @@
           "deleteAccessibilityLabel": "Видалити цей AI Твір",
           "errors": {
             "loadFailed": "Не вдалося завантажити вашу Бібліотеку AI Творів. Спробуйте ще раз."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Створити Особистий Візерунок",
@@ -44103,7 +44320,14 @@
           "deleteAccessibilityLabel": "Xóa tác phẩm AI này",
           "errors": {
             "loadFailed": "Không thể tải Thư viện tác phẩm AI của bạn. Vui lòng thử lại."
-          }
+          },
+          "copyPrompt": "Copy prompt",
+          "copiedPrompt": "Copied",
+          "reusePrompt": "Use this prompt",
+          "deleteConfirmTitle": "Delete Artwork",
+          "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+          "deleteConfirmCancel": "Cancel",
+          "deleteConfirmAction": "Delete"
         },
         "approve": {
           "modalTitle": "Tạo Mẫu thêu cá nhân",
@@ -45511,7 +45735,14 @@
           "deleteAccessibilityLabel": "删除这个 AI 作品",
           "errors": {
             "loadFailed": "加载你的 AI 作品库失败了，请重试。"
-          }
+          },
+          "copyPrompt": "复制提示词",
+          "copiedPrompt": "已复制",
+          "reusePrompt": "使用此提示词",
+          "deleteConfirmTitle": "删除图像",
+          "deleteConfirmBody": "确定要删除此 AI 图像吗？",
+          "deleteConfirmCancel": "取消",
+          "deleteConfirmAction": "删除"
         },
         "approve": {
           "modalTitle": "创建个人图纸",
@@ -46919,7 +47150,14 @@
           "deleteAccessibilityLabel": "刪除此 AI 作品",
           "errors": {
             "loadFailed": "無法載入你的 AI 作品圖庫，請再試一次。"
-          }
+          },
+          "copyPrompt": "複製提示詞",
+          "copiedPrompt": "已複製",
+          "reusePrompt": "使用此提示詞",
+          "deleteConfirmTitle": "刪除影像",
+          "deleteConfirmBody": "確定要刪除此 AI 影像嗎？",
+          "deleteConfirmCancel": "取消",
+          "deleteConfirmAction": "刪除"
         },
         "approve": {
           "modalTitle": "建立個人圖案",

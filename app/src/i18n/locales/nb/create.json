@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Slett dette AI-kunstverket",
       "errors": {
         "loadFailed": "Kunne ikke laste AI-kunstverkbiblioteket ditt. Prøv igjen."
-      }
+      },
+      "copyPrompt": "Copy prompt",
+      "copiedPrompt": "Copied",
+      "reusePrompt": "Use this prompt",
+      "deleteConfirmTitle": "Delete Artwork",
+      "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmAction": "Delete"
     },
     "approve": {
       "modalTitle": "Opprett personlig mønster",

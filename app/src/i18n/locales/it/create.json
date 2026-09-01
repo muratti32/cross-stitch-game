@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Elimina questa opera d'arte IA",
       "errors": {
         "loadFailed": "Impossibile caricare la tua raccolta di opere d'arte IA. Riprova."
-      }
+      },
+      "copyPrompt": "Copia prompt",
+      "copiedPrompt": "Copiato",
+      "reusePrompt": "Usa questo prompt",
+      "deleteConfirmTitle": "Elimina immagine",
+      "deleteConfirmBody": "Sei sicuro di voler eliminare questa immagine IA?",
+      "deleteConfirmCancel": "Annulla",
+      "deleteConfirmAction": "Elimina"
     },
     "approve": {
       "modalTitle": "Crea Schema Personale",

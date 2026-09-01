@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Ta bort den här AI-konsten",
       "errors": {
         "loadFailed": "Det gick inte att läsa in ditt AI-konstbibliotek. Försök igen."
-      }
+      },
+      "copyPrompt": "Copy prompt",
+      "copiedPrompt": "Copied",
+      "reusePrompt": "Use this prompt",
+      "deleteConfirmTitle": "Delete Artwork",
+      "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmAction": "Delete"
     },
     "approve": {
       "modalTitle": "Skapa personligt mönster",

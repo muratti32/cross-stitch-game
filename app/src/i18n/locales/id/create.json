@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Hapus kreasi AI ini",
       "errors": {
         "loadFailed": "Gagal memuat pustaka kreasi AI. Coba lagi."
-      }
+      },
+      "copyPrompt": "Copy prompt",
+      "copiedPrompt": "Copied",
+      "reusePrompt": "Use this prompt",
+      "deleteConfirmTitle": "Delete Artwork",
+      "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmAction": "Delete"
     },
     "approve": {
       "modalTitle": "Buat pola sendiri",

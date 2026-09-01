@@ -78,7 +78,14 @@
       "deleteAccessibilityLabel": "Tanggalin ang AI art na ito",
       "errors": {
         "loadFailed": "Hindi na-load ang iyong AI Art Library. Subukan ulit."
-      }
+      },
+      "copyPrompt": "Copy prompt",
+      "copiedPrompt": "Copied",
+      "reusePrompt": "Use this prompt",
+      "deleteConfirmTitle": "Delete Artwork",
+      "deleteConfirmBody": "Are you sure you want to delete this AI artwork?",
+      "deleteConfirmCancel": "Cancel",
+      "deleteConfirmAction": "Delete"
     },
     "approve": {
       "modalTitle": "Gumawa ng personal na pattern",
