@@ -131,6 +131,34 @@ describe('parseSentryEnvironment', () => {
   });
 });
 
+describe('parseEnvironment storage reconciler sweep', () => {
+  it('defaults to a bounded five-minute sweep with a daily verification interval', () => {
+    const result = parseEnvironment(validEnvironment());
+    expect(result.STORAGE_RECONCILER_INTERVAL_SECONDS).toBe(300);
+    expect(result.STORAGE_RECONCILER_BATCH_SIZE).toBe(250);
+    expect(result.STORAGE_OBJECT_VERIFICATION_INTERVAL_SECONDS).toBe(86400);
+  });
+
+  it('accepts configured sweep bounds', () => {
+    const result = parseEnvironment(
+      validEnvironment({
+        STORAGE_RECONCILER_INTERVAL_SECONDS: '600',
+        STORAGE_RECONCILER_BATCH_SIZE: '50',
+        STORAGE_OBJECT_VERIFICATION_INTERVAL_SECONDS: '43200',
+      }),
+    );
+    expect(result.STORAGE_RECONCILER_INTERVAL_SECONDS).toBe(600);
+    expect(result.STORAGE_RECONCILER_BATCH_SIZE).toBe(50);
+    expect(result.STORAGE_OBJECT_VERIFICATION_INTERVAL_SECONDS).toBe(43200);
+  });
+
+  it('rejects a zero batch size, which would disable verification entirely', () => {
+    expect(() =>
+      parseEnvironment(validEnvironment({ STORAGE_RECONCILER_BATCH_SIZE: '0' })),
+    ).toThrow('STORAGE_RECONCILER_BATCH_SIZE must be a positive integer');
+  });
+});
+
 describe('parseEnvironment R2 object storage', () => {
   it('leaves R2 fields undefined when omitted, keeping LocalObjectStorage active', () => {
     const result = parseEnvironment(validEnvironment());

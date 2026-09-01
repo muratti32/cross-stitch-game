@@ -1954,11 +1954,27 @@ describe('Stitch Wish backend integration', () => {
       expect(staleRows).toHaveLength(0);
       expect(await storage.exists(staleKey)).toBe(false);
 
-      const missingRows: { missing: boolean }[] = await dataSource.query(
+      const missingRows: { missing: boolean; last_verified_at: Date | null }[] =
+        await dataSource.query(
+          'SELECT "missing", "last_verified_at" FROM "storage"."object_registry" WHERE "object_key" = $1',
+          [missingKey],
+        );
+      expect(missingRows[0]?.missing).toBe(true);
+      expect(missingRows[0]?.last_verified_at).not.toBeNull();
+
+      // A restored object is picked up again once its verification stamp is stale.
+      await storage.put(missingKey, Buffer.from('found'));
+      await dataSource.query(
+        `UPDATE "storage"."object_registry" SET "last_verified_at" = now() - interval '2 days' WHERE "object_key" = $1`,
+        [missingKey],
+      );
+      await reconciler.reconcileOnce(86400);
+
+      const restoredRows: { missing: boolean }[] = await dataSource.query(
         'SELECT "missing" FROM "storage"."object_registry" WHERE "object_key" = $1',
         [missingKey],
       );
-      expect(missingRows[0]?.missing).toBe(true);
+      expect(restoredRows[0]?.missing).toBe(false);
     });
   });
 
