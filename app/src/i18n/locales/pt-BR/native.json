@@ -1,3 +1,5 @@
 {
-  "NSPhotoLibraryUsageDescription": "O Stitch Wish usa as fotos selecionadas para criar Padrões Pessoais ou escolher uma foto de perfil pública de criador."
+  "ios": {
+    "NSPhotoLibraryUsageDescription": "O Stitch Wish usa as fotos selecionadas para criar Padrões Pessoais ou escolher uma foto de perfil pública de criador."
+  }
 }

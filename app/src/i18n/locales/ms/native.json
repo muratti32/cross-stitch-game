@@ -1,3 +1,5 @@
 {
-  "NSPhotoLibraryUsageDescription": "Stitch Wish menggunakan foto yang anda pilih untuk membuat pola sendiri atau memilih foto profil pencipta awam."
+  "ios": {
+    "NSPhotoLibraryUsageDescription": "Stitch Wish menggunakan foto yang anda pilih untuk membuat pola sendiri atau memilih foto profil pencipta awam."
+  }
 }

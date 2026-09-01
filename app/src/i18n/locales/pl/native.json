@@ -1,3 +1,5 @@
 {
-  "NSPhotoLibraryUsageDescription": "Stitch Wish korzysta z wybranych zdjęć, aby tworzyć Twoje własne wzory lub wybrać zdjęcie profilowe dla Twojego publicznego profilu twórcy."
+  "ios": {
+    "NSPhotoLibraryUsageDescription": "Stitch Wish korzysta z wybranych zdjęć, aby tworzyć Twoje własne wzory lub wybrać zdjęcie profilowe dla Twojego publicznego profilu twórcy."
+  }
 }

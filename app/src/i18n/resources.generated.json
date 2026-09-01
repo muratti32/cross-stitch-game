@@ -603,7 +603,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "يستخدم Stitch Wish الصور المحددة لإنشاء أنماط شخصية أو لاختيار صورة ملف تعريف عام للمبدع."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "يستخدم Stitch Wish الصور المحددة لإنشاء أنماط شخصية أو لاختيار صورة ملف تعريف عام للمبدع."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -2009,7 +2011,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish utilitza les fotos seleccionades per crear Patrons Personals o triar una foto de perfil de creador públic."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish utilitza les fotos seleccionades per crear Patrons Personals o triar una foto de perfil de creador públic."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -3415,7 +3419,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Aplikace Stitch Wish používá vybrané fotografie k vytváření vlastních vzorů nebo k nastavení veřejné profilové fotky tvůrce."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Aplikace Stitch Wish používá vybrané fotografie k vytváření vlastních vzorů nebo k nastavení veřejné profilové fotky tvůrce."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -4821,7 +4827,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish bruger valgte fotos til at oprette personlige mønstre eller vælge et offentligt skaberprofilbillede."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish bruger valgte fotos til at oprette personlige mønstre eller vælge et offentligt skaberprofilbillede."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -6227,7 +6235,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish verwendet ausgewählte Fotos, um persönliche Muster zu erstellen oder ein öffentliches Creator-Profilbild auszuwählen."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish verwendet ausgewählte Fotos, um persönliche Muster zu erstellen oder ein öffentliches Creator-Profilbild auszuwählen."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -7633,7 +7643,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Το Stitch Wish χρησιμοποιεί επιλεγμένες φωτογραφίες για τη δημιουργία Προσωπικών Μοτίβων ή την επιλογή δημόσιας φωτογραφίας προφίλ δημιουργού."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Το Stitch Wish χρησιμοποιεί επιλεγμένες φωτογραφίες για τη δημιουργία Προσωπικών Μοτίβων ή την επιλογή δημόσιας φωτογραφίας προφίλ δημιουργού."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -9039,7 +9051,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish uses selected photos to create Personal Patterns or choose a public creator profile photo."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish uses selected photos to create Personal Patterns or choose a public creator profile photo."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -10445,7 +10459,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish utiliza las fotos seleccionadas para crear Patrones Personales o elegir una foto de perfil de creador pública."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish utiliza las fotos seleccionadas para crear Patrones Personales o elegir una foto de perfil de creador pública."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -11851,7 +11867,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish käyttää valitsemiasi kuvia omien mallien luomiseen tai julkisen tekijäprofiilin kuvan valitsemiseen."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish käyttää valitsemiasi kuvia omien mallien luomiseen tai julkisen tekijäprofiilin kuvan valitsemiseen."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -13257,7 +13275,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish utilise les photos sélectionnées pour créer des modèles personnels ou choisir la photo de votre profil public de créateur."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish utilise les photos sélectionnées pour créer des modèles personnels ou choisir la photo de votre profil public de créateur."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -14663,7 +14683,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish व्यक्तिगत पैटर्न बनाने या सार्वजनिक क्रिएटर प्रोफ़ाइल फ़ोटो चुनने के लिए आपके द्वारा चुनी गई फ़ोटो का उपयोग करता है।"
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish व्यक्तिगत पैटर्न बनाने या सार्वजनिक क्रिएटर प्रोफ़ाइल फ़ोटो चुनने के लिए आपके द्वारा चुनी गई फ़ोटो का उपयोग करता है।"
+      }
     },
     "onboarding": {
       "welcome": {
@@ -16069,7 +16091,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish koristi odabrane fotografije za izradu osobnih uzoraka ili odabir javne profilne fotografije autora."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish koristi odabrane fotografije za izradu osobnih uzoraka ili odabir javne profilne fotografije autora."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -17475,7 +17499,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "A Stitch Wish a kiválasztott fotókat saját minták készítéséhez vagy nyilvános alkotói profilkép választásához használja."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "A Stitch Wish a kiválasztott fotókat saját minták készítéséhez vagy nyilvános alkotói profilkép választásához használja."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -18881,7 +18907,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish menggunakan foto yang kamu pilih untuk membuat pola sendiri atau memilih foto profil kreator publik."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish menggunakan foto yang kamu pilih untuk membuat pola sendiri atau memilih foto profil kreator publik."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -20287,7 +20315,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish utilizza le foto selezionate per creare Schemi Personali o per scegliere una foto del profilo pubblico del creatore."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish utilizza le foto selezionate per creare Schemi Personali o per scegliere una foto del profilo pubblico del creatore."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -21693,7 +21723,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wishは、選択した写真を使用して自分だけの図案を作成したり、公開クリエイターのプロフィール写真を選択したりします。"
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wishは、選択した写真を使用して自分だけの図案を作成したり、公開クリエイターのプロフィール写真を選択したりします。"
+      }
     },
     "onboarding": {
       "welcome": {
@@ -23099,7 +23131,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish는 선택한 사진을 사용하여 나만의 도안을 제작하거나 공개 크리에이터의 프로필 사진을 선택합니다."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish는 선택한 사진을 사용하여 나만의 도안을 제작하거나 공개 크리에이터의 프로필 사진을 선택합니다."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -24505,7 +24539,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish menggunakan foto yang anda pilih untuk membuat pola sendiri atau memilih foto profil pencipta awam."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish menggunakan foto yang anda pilih untuk membuat pola sendiri atau memilih foto profil pencipta awam."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -25911,7 +25947,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish bruker valgte bilder til å lage personlige mønstre eller velge et offentlig profilbilde for skaperen."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish bruker valgte bilder til å lage personlige mønstre eller velge et offentlig profilbilde for skaperen."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -27317,7 +27355,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish gebruikt geselecteerde foto's om je eigen patronen te maken of een profielfoto te kiezen voor je openbare maker profiel."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish gebruikt geselecteerde foto's om je eigen patronen te maken of een profielfoto te kiezen voor je openbare maker profiel."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -28723,7 +28763,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish korzysta z wybranych zdjęć, aby tworzyć Twoje własne wzory lub wybrać zdjęcie profilowe dla Twojego publicznego profilu twórcy."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish korzysta z wybranych zdjęć, aby tworzyć Twoje własne wzory lub wybrać zdjęcie profilowe dla Twojego publicznego profilu twórcy."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -30129,7 +30171,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "A Stitch Wish usa as fotos selecionadas para criar Padrões Pessoais ou escolher uma foto de perfil pública de criador."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "A Stitch Wish usa as fotos selecionadas para criar Padrões Pessoais ou escolher uma foto de perfil pública de criador."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -31535,7 +31579,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "O Stitch Wish usa as fotos selecionadas para criar Padrões Pessoais ou escolher uma foto de perfil pública de criador."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "O Stitch Wish usa as fotos selecionadas para criar Padrões Pessoais ou escolher uma foto de perfil pública de criador."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -32941,7 +32987,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish folosește fotografiile selectate pentru a crea modele personale sau pentru a alege o fotografie de profil de creator public."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish folosește fotografiile selectate pentru a crea modele personale sau pentru a alege o fotografie de profil de creator public."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -34347,7 +34395,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish использует выбранные фотографии для создания Личных узоров или выбора фотографии для публичного профиля автора."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish использует выбранные фотографии для создания Личных узоров или выбора фотографии для публичного профиля автора."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -35753,7 +35803,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish používa vybrané fotky na vytváranie osobných vzorov alebo na výber profilovej fotky verejného tvorcu."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish používa vybrané fotky na vytváranie osobných vzorov alebo na výber profilovej fotky verejného tvorcu."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -37159,7 +37211,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish uporablja izbrane fotografije za ustvarjanje osebnih vzorcev ali izbiro javne profilne fotografije ustvarjalca."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish uporablja izbrane fotografije za ustvarjanje osebnih vzorcev ali izbiro javne profilne fotografije ustvarjalca."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -38565,7 +38619,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish använder valda foton för att skapa personliga mönster eller välja en offentlig skaparprofilbild."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish använder valda foton för att skapa personliga mönster eller välja en offentlig skaparprofilbild."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -39971,7 +40027,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Ginagamit ng Stitch Wish ang mga piniling larawan para gumawa ng personal na pattern o pumili ng pampublikong larawan ng profile ng gumagawa."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Ginagamit ng Stitch Wish ang mga piniling larawan para gumawa ng personal na pattern o pumili ng pampublikong larawan ng profile ng gumagawa."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -41377,7 +41435,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish, seçtiğiniz fotoğrafları Kişisel Desenler oluşturmak veya herkese açık yaratıcı profiliniz için fotoğraf seçmek amacıyla kullanır."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish, seçtiğiniz fotoğrafları Kişisel Desenler oluşturmak veya herkese açık yaratıcı profiliniz için fotoğraf seçmek amacıyla kullanır."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -42783,7 +42843,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish використовує вибрані фото для створення Особистих Візерунків або вибору публічного фото профілю автора."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish використовує вибрані фото для створення Особистих Візерунків або вибору публічного фото профілю автора."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -44189,7 +44251,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish sử dụng ảnh đã chọn để tạo Mẫu thêu cá nhân hoặc chọn ảnh hồ sơ người tạo công khai."
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish sử dụng ảnh đã chọn để tạo Mẫu thêu cá nhân hoặc chọn ảnh hồ sơ người tạo công khai."
+      }
     },
     "onboarding": {
       "welcome": {
@@ -45595,7 +45659,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish 会使用您选择的照片来创建个人图案或设置公开创作者头像。"
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish 会使用您选择的照片来创建个人图案或设置公开创作者头像。"
+      }
     },
     "onboarding": {
       "welcome": {
@@ -47001,7 +47067,9 @@
       }
     },
     "native": {
-      "NSPhotoLibraryUsageDescription": "Stitch Wish 會使用你選取的照片來建立個人圖案，或設定公開的創作者個人頭像。"
+      "ios": {
+        "NSPhotoLibraryUsageDescription": "Stitch Wish 會使用你選取的照片來建立個人圖案，或設定公開的創作者個人頭像。"
+      }
     },
     "onboarding": {
       "welcome": {

@@ -1,3 +1,5 @@
 {
-  "NSPhotoLibraryUsageDescription": "Stitch Wish utilitza les fotos seleccionades per crear Patrons Personals o triar una foto de perfil de creador públic."
+  "ios": {
+    "NSPhotoLibraryUsageDescription": "Stitch Wish utilitza les fotos seleccionades per crear Patrons Personals o triar una foto de perfil de creador públic."
+  }
 }

@@ -1,3 +1,5 @@
 {
-  "NSPhotoLibraryUsageDescription": "Stitch Wishは、選択した写真を使用して自分だけの図案を作成したり、公開クリエイターのプロフィール写真を選択したりします。"
+  "ios": {
+    "NSPhotoLibraryUsageDescription": "Stitch Wishは、選択した写真を使用して自分だけの図案を作成したり、公開クリエイターのプロフィール写真を選択したりします。"
+  }
 }

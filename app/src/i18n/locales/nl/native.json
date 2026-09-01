@@ -1,3 +1,5 @@
 {
-  "NSPhotoLibraryUsageDescription": "Stitch Wish gebruikt geselecteerde foto's om je eigen patronen te maken of een profielfoto te kiezen voor je openbare maker profiel."
+  "ios": {
+    "NSPhotoLibraryUsageDescription": "Stitch Wish gebruikt geselecteerde foto's om je eigen patronen te maken of een profielfoto te kiezen voor je openbare maker profiel."
+  }
 }

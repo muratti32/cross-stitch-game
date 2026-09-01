@@ -1,3 +1,5 @@
 {
-  "NSPhotoLibraryUsageDescription": "Stitch Wish bruger valgte fotos til at oprette personlige mønstre eller vælge et offentligt skaberprofilbillede."
+  "ios": {
+    "NSPhotoLibraryUsageDescription": "Stitch Wish bruger valgte fotos til at oprette personlige mønstre eller vælge et offentligt skaberprofilbillede."
+  }
 }

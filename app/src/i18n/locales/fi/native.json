@@ -1,3 +1,5 @@
 {
-  "NSPhotoLibraryUsageDescription": "Stitch Wish käyttää valitsemiasi kuvia omien mallien luomiseen tai julkisen tekijäprofiilin kuvan valitsemiseen."
+  "ios": {
+    "NSPhotoLibraryUsageDescription": "Stitch Wish käyttää valitsemiasi kuvia omien mallien luomiseen tai julkisen tekijäprofiilin kuvan valitsemiseen."
+  }
 }

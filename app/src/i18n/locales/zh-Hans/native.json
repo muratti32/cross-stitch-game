@@ -1,3 +1,5 @@
 {
-  "NSPhotoLibraryUsageDescription": "Stitch Wish 会使用您选择的照片来创建个人图案或设置公开创作者头像。"
+  "ios": {
+    "NSPhotoLibraryUsageDescription": "Stitch Wish 会使用您选择的照片来创建个人图案或设置公开创作者头像。"
+  }
 }

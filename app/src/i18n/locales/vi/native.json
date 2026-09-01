@@ -1,3 +1,5 @@
 {
-  "NSPhotoLibraryUsageDescription": "Stitch Wish sử dụng ảnh đã chọn để tạo Mẫu thêu cá nhân hoặc chọn ảnh hồ sơ người tạo công khai."
+  "ios": {
+    "NSPhotoLibraryUsageDescription": "Stitch Wish sử dụng ảnh đã chọn để tạo Mẫu thêu cá nhân hoặc chọn ảnh hồ sơ người tạo công khai."
+  }
 }

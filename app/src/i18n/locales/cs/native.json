@@ -1,3 +1,5 @@
 {
-  "NSPhotoLibraryUsageDescription": "Aplikace Stitch Wish používá vybrané fotografie k vytváření vlastních vzorů nebo k nastavení veřejné profilové fotky tvůrce."
+  "ios": {
+    "NSPhotoLibraryUsageDescription": "Aplikace Stitch Wish používá vybrané fotografie k vytváření vlastních vzorů nebo k nastavení veřejné profilové fotky tvůrce."
+  }
 }
