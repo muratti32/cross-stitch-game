@@ -10,12 +10,14 @@ jest.mock('../../local-db', () => ({
 import * as localDb from '../../local-db';
 import {
   loadOnboardingState,
+  getCurrentOnboardingPosition,
   persistTutorialTransition,
   resumeTutorial,
   saveOnboardingPosition,
   startTutorial,
   resetOnboarding,
 } from '../state';
+import { ForegroundEntryCoordinator } from '../../navigation/foregroundEntryPolicy';
 
 describe('onboarding persistence', () => {
   beforeEach(() => {
@@ -42,6 +44,37 @@ describe('onboarding persistence', () => {
   it('persists valid positions', async () => {
     await saveOnboardingPosition('deferred');
     expect(localDb.setDeviceConfigValue).toHaveBeenCalledWith('onboarding.v1.status', 'deferred');
+  });
+
+  it('exposes the latest position to same-process lifecycle decisions', async () => {
+    jest.mocked(localDb.getDeviceConfigValue).mockResolvedValue('welcome');
+    await loadOnboardingState();
+
+    await saveOnboardingPosition('deferred');
+
+    expect(getCurrentOnboardingPosition()).toBe('deferred');
+  });
+
+  it.each([
+    ['deferred', async () => saveOnboardingPosition('deferred')],
+    ['in_tutorial', async () => persistTutorialTransition({
+      tutorialRunState: 'running', nextBeat: 2, completedBeats: [],
+    })],
+    ['complete', async () => persistTutorialTransition({
+      tutorialRunState: 'complete', nextBeat: 2, completedBeats: [],
+    })],
+  ] as const)('routes a same-process %s transition correctly after background -> active', async (_position, transition) => {
+    jest.mocked(localDb.getDeviceConfigValue).mockResolvedValue('welcome');
+    await loadOnboardingState();
+    await transition();
+
+    const coordinator = new ForegroundEntryCoordinator();
+    coordinator.onLifecycleChange('background');
+    const decision = coordinator.onLifecycleChange('active', {
+      onboardingPosition: getCurrentOnboardingPosition(),
+    });
+
+    expect(decision?.action).toBe('select-catalog');
   });
 
   it('persists the tutorial start as one atomic config transition', async () => {
