@@ -3,7 +3,6 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
-  Image,
   Modal,
   Pressable,
   StyleSheet,
@@ -27,7 +26,7 @@ import {
   type ArtworkAspect,
 } from '@/ai-artwork';
 import { captureGameplayEvent } from '@/analytics/gameplayEvents';
-import { Button, Card, Screen } from '@/components';
+import { Button, Card, Screen, StableRemoteImage } from '@/components';
 import { listPersonalPatterns, resolveCreateErrorMessage, waitForConversion } from '@/conversion';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import {
@@ -256,7 +255,7 @@ export default function AiGenerationScreen() {
         {items.map((item) => (
           <Card key={item.id} style={styles.item}>
             {item.imageUrl ? (
-              <Image source={{ uri: item.imageUrl }} style={styles.image} />
+              <StableRemoteImage uri={item.imageUrl} style={styles.image} />
             ) : (
               <View style={styles.placeholder}>
                 <ActivityIndicator />
@@ -308,8 +307,8 @@ export default function AiGenerationScreen() {
             <Card style={styles.modalCard}>
               <Text style={styles.modalTitle}>{t('aiGeneration.approve.modalTitle')}</Text>
               {approvalArtwork?.imageUrl && (
-                <Image
-                  source={{ uri: approvalArtwork.imageUrl }}
+                <StableRemoteImage
+                  uri={approvalArtwork.imageUrl}
                   style={styles.modalImage}
                 />
               )}

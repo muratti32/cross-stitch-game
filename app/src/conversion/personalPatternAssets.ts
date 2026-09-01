@@ -63,3 +63,20 @@ export async function refreshPersonalSessionAssetUrls<T extends StitchingSession
 
   return changed ? refreshed : sessions;
 }
+
+/**
+ * Resolves fresh private-image grants before a list first presents its cards.
+ * Offline callers retain the cached sessions instead of briefly rendering a
+ * stale URL and replacing it in a second visible pass.
+ */
+export async function refreshPersonalSessionAssetUrlsBeforeRender<T extends StitchingSession>(
+  sessions: T[],
+  onError?: (error: unknown) => void,
+): Promise<T[]> {
+  try {
+    return await refreshPersonalSessionAssetUrls(sessions);
+  } catch (error: unknown) {
+    onError?.(error);
+    return sessions;
+  }
+}

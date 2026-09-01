@@ -3,6 +3,8 @@ import { Image, ImageStyle, StyleProp } from 'react-native';
 import * as FileSystem from 'expo-file-system/legacy';
 import { sha256 } from 'js-sha256';
 
+import { imageResourceIdentity } from './imageResourceIdentity';
+
 interface CachedImageProps {
   uri: string;
   style?: StyleProp<ImageStyle>;
@@ -14,13 +16,14 @@ const CACHE_SUBDIR = 'catalog-previews/';
 // render from the local cache directory so offline browsing keeps its images.
 export function CachedImage({ uri, style }: CachedImageProps) {
   const [source, setSource] = useState<string>(uri);
+  const resourceIdentity = imageResourceIdentity(uri);
 
   useEffect(() => {
     let active = true;
-    setSource(uri);
 
     const cacheDirectory = FileSystem.cacheDirectory;
     if (!cacheDirectory) {
+      setSource(uri);
       return;
     }
     const dir = `${cacheDirectory}${CACHE_SUBDIR}`;
@@ -58,7 +61,11 @@ export function CachedImage({ uri, style }: CachedImageProps) {
     return () => {
       active = false;
     };
-  }, [uri]);
+  // A refreshed private grant changes exp/sig, not the image. Keeping the
+  // resource identity stable prevents an already visible image from blinking.
+  // A remount still receives the newest, valid grant.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resourceIdentity]);
 
   return <Image source={{ uri: source }} style={style} />;
 }

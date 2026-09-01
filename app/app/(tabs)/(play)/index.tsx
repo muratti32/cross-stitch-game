@@ -7,7 +7,7 @@ import { useTabBarSpace } from '@/theme/tabBar';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { getSessions, deleteSession, getSessionCompletedCount, StitchingSession } from '@/local-db';
 import { BUNDLED_PATTERNS } from '@/bundled-patterns';
-import { refreshPersonalSessionAssetUrls } from '@/conversion';
+import { refreshPersonalSessionAssetUrlsBeforeRender } from '@/conversion';
 import {
   cancelDownload,
   retryDownload,
@@ -47,19 +47,16 @@ export default function PlayScreen() {
           };
         })
       );
-      setSessions(sessionsWithProgress);
       // Personal Pattern image urls are short-lived signed grants, so the copy
       // stored at Session Preparation time is usually expired by the time the
-      // card is rendered again. Re-issue them, but never block the list on it:
-      // offline devices keep whatever they already cached.
-      try {
-        const refreshed = await refreshPersonalSessionAssetUrls(sessionsWithProgress);
-        if (refreshed !== sessionsWithProgress) {
-          setSessions(refreshed);
-        }
-      } catch (err) {
-        console.warn('Failed to refresh personal pattern image urls:', err);
-      }
+      // card is rendered again. Refresh before the first visible list update,
+      // avoiding a stale-url render followed by a second image load. Offline
+      // devices keep whatever they already cached.
+      const displaySessions = await refreshPersonalSessionAssetUrlsBeforeRender(
+        sessionsWithProgress,
+        (err) => console.warn('Failed to refresh personal pattern image urls:', err),
+      );
+      setSessions(displaySessions);
     } catch (err) {
       console.error('Failed to load stitching sessions:', err);
     } finally {

@@ -1,4 +1,7 @@
-import { refreshPersonalSessionAssetUrls } from '../personalPatternAssets';
+import {
+  refreshPersonalSessionAssetUrls,
+  refreshPersonalSessionAssetUrlsBeforeRender,
+} from '../personalPatternAssets';
 import type { StitchingSession } from '../../local-db';
 
 jest.mock('../../local-db', () => ({
@@ -96,5 +99,20 @@ describe('refreshPersonalSessionAssetUrls', () => {
 
     await expect(refreshPersonalSessionAssetUrls([session({ id: 's1' })])).rejects.toThrow('offline');
     expect(localDb.updateSessionAssetUrls).not.toHaveBeenCalled();
+  });
+
+  test('refreshes a stale grant before the stitching list presents the session', async () => {
+    const sessions = [session({ id: 's1', thumbnailUrl: '/t?exp=old&sig=old' })];
+    api.listPersonalPatterns.mockResolvedValue([
+      {
+        id: 'pat_1',
+        previewUrl: '/p?exp=fresh&sig=fresh',
+        thumbnailUrls: { browsing: '/t?exp=fresh&sig=fresh', detail: '/d?exp=fresh&sig=fresh' },
+      },
+    ]);
+
+    const presented = await refreshPersonalSessionAssetUrlsBeforeRender(sessions);
+
+    expect(presented[0].thumbnailUrl).toBe('/t?exp=fresh&sig=fresh');
   });
 });
