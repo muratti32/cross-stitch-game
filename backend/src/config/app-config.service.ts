@@ -238,6 +238,12 @@ export class AppConfigService {
     });
   }
 
+  get storageObjectVerificationEnabled(): boolean {
+    return this.configService.get('STORAGE_OBJECT_VERIFICATION_ENABLED', {
+      infer: true,
+    });
+  }
+
   get storageReconcilerIntervalSeconds(): number {
     return this.configService.get('STORAGE_RECONCILER_INTERVAL_SECONDS', {
       infer: true,
