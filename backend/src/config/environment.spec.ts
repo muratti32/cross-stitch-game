@@ -132,6 +132,25 @@ describe('parseSentryEnvironment', () => {
 });
 
 describe('parseEnvironment storage reconciler sweep', () => {
+  it('keeps remote existence verification off unless it is explicitly enabled', () => {
+    expect(
+      parseEnvironment(validEnvironment()).STORAGE_OBJECT_VERIFICATION_ENABLED,
+    ).toBe(false);
+    expect(
+      parseEnvironment(
+        validEnvironment({ STORAGE_OBJECT_VERIFICATION_ENABLED: 'true' }),
+      ).STORAGE_OBJECT_VERIFICATION_ENABLED,
+    ).toBe(true);
+  });
+
+  it('rejects ambiguous verification toggle values', () => {
+    expect(() =>
+      parseEnvironment(
+        validEnvironment({ STORAGE_OBJECT_VERIFICATION_ENABLED: 'off' }),
+      ),
+    ).toThrow('STORAGE_OBJECT_VERIFICATION_ENABLED must be either true or false');
+  });
+
   it('defaults to a bounded five-minute sweep with a daily verification interval', () => {
     const result = parseEnvironment(validEnvironment());
     expect(result.STORAGE_RECONCILER_INTERVAL_SECONDS).toBe(300);

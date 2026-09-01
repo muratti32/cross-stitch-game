@@ -33,6 +33,9 @@ export function seedTestEnvironment(): void {
     GAMEPLAY_EVENT_RETENTION_MONTHS: '13',
     GAMEPLAY_EVENT_PARTITION_MAINTENANCE_INTERVAL_SECONDS: '86400',
     RECONCILIATION_INTERVAL_SECONDS: '900',
+    // Integration tests run against LocalObjectStorage, so verification stays on
+    // here even though production keeps it disabled.
+    STORAGE_OBJECT_VERIFICATION_ENABLED: 'true',
     AI_CREDIT_RESERVATION_STALENESS_SECONDS: '1800',
     OPERATIONAL_ALERTS_EVALUATION_INTERVAL_SECONDS: '300',
     OPERATIONAL_ALERTS_COOLDOWN_SECONDS: '1800',

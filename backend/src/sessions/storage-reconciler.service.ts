@@ -67,6 +67,21 @@ export class StorageReconcilerService {
     const batchSize = this.config.storageReconcilerBatchSize;
 
     const deletedStuckUploads = await this.deleteStuckUploads(cutoff, batchSize);
+
+    // Remote existence checks are the only part of the pass that costs object
+    // storage requests, so they are separately switchable. While they are off
+    // the pass still cleans up stuck uploads, and the operator reconciliation
+    // report keeps detecting missing objects from its single bucket listing.
+    if (!this.config.storageObjectVerificationEnabled) {
+      return {
+        skipped: false,
+        deletedStuckUploads,
+        verifiedObjects: 0,
+        markedMissing: 0,
+        markedRestored: 0,
+      };
+    }
+
     const verification = await this.verifyActiveObjects(batchSize);
 
     return {

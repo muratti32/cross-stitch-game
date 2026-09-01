@@ -8,8 +8,10 @@ import { StorageReconcilerService } from './storage-reconciler.service';
 function config(overrides: Partial<{
   batchSize: number;
   verificationIntervalSeconds: number;
+  verificationEnabled: boolean;
 }> = {}): AppConfigService {
   return {
+    storageObjectVerificationEnabled: overrides.verificationEnabled ?? true,
     storageReconcilerBatchSize: overrides.batchSize ?? 250,
     storageObjectVerificationIntervalSeconds:
       overrides.verificationIntervalSeconds ?? 86400,
@@ -69,6 +71,65 @@ describe('StorageReconcilerService bounded sweep', () => {
       { objectKey: 'patterns/b.bin' },
       expect.objectContaining({ missing: true, lastVerifiedAt: anyDate }),
     );
+  });
+
+  it('issues no remote existence checks while verification is disabled', async () => {
+    const find = jest
+      .fn()
+      .mockResolvedValueOnce([]) // stuck uploads
+      .mockResolvedValue([{ objectKey: 'patterns/a.bin', missing: false }]);
+    const update = jest.fn().mockResolvedValue(undefined);
+    const repository = { find, update } as unknown as Repository<ObjectRegistryEntity>;
+    const storage = {
+      exists: jest.fn(),
+      delete: jest.fn(),
+    } as unknown as ObjectStorage;
+    const service = new StorageReconcilerService(
+      repository,
+      storage,
+      config({ verificationEnabled: false }),
+    );
+
+    const summary = await service.reconcileOnce();
+
+    expect(summary).toEqual({
+      skipped: false,
+      deletedStuckUploads: 0,
+      verifiedObjects: 0,
+      markedMissing: 0,
+      markedRestored: 0,
+    });
+    expect(storage.exists).not.toHaveBeenCalled();
+    expect(update).not.toHaveBeenCalled();
+    // Only the stuck-upload query runs; active rows are never even loaded.
+    expect(find).toHaveBeenCalledTimes(1);
+  });
+
+  it('still deletes stuck uploads while verification is disabled', async () => {
+    const find = jest
+      .fn()
+      .mockResolvedValueOnce([{ objectKey: 'drafts/stuck.bin' }])
+      .mockResolvedValue([]);
+    const repository = {
+      find,
+      delete: jest.fn().mockResolvedValue(undefined),
+      update: jest.fn(),
+    } as unknown as Repository<ObjectRegistryEntity>;
+    const storage = {
+      exists: jest.fn(),
+      delete: jest.fn().mockResolvedValue(undefined),
+    } as unknown as ObjectStorage;
+    const service = new StorageReconcilerService(
+      repository,
+      storage,
+      config({ verificationEnabled: false }),
+    );
+
+    const summary = await service.reconcileOnce();
+
+    expect(summary.deletedStuckUploads).toBe(1);
+    expect(storage.delete).toHaveBeenCalledWith('drafts/stuck.bin');
+    expect(storage.exists).not.toHaveBeenCalled();
   });
 
   it('clears the missing flag once an object is restored', async () => {

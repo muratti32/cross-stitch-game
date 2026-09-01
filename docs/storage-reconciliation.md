@@ -4,7 +4,18 @@ The jobs worker verifies that every active object registry row still has a file
 in object storage. The sweep is bounded so its cost scales with the configured
 batch size, not with the size of the bucket.
 
-## Bounded sweep
+## Current state: verification is off
+
+`STORAGE_OBJECT_VERIFICATION_ENABLED` defaults to `false`, so the reconciler
+issues **no** per-object `HeadObject` requests at all. Each tick still deletes
+stuck `uploading` rows, and the operator reconciliation report below still
+reports missing objects and orphans, because it derives both from one bucket
+listing rather than per-object checks.
+
+Set the variable to `true` to turn per-object verification back on; everything
+in the next section then applies.
+
+## Bounded sweep (when verification is enabled)
 
 - The worker ticks every `STORAGE_RECONCILER_INTERVAL_SECONDS` (default 300).
 - Each tick verifies at most `STORAGE_RECONCILER_BATCH_SIZE` rows (default 250)
