@@ -44,7 +44,8 @@
       "offlinePendingSync": "Offline — synchronizácia čaká",
       "guestPlayer": "Hosťujúci hráč",
       "playingSince": "Hrá od {{date}}",
-      "creatorSince": "Tvorca od {{date}}"
+      "creatorSince": "Tvorca od {{date}}",
+      "signInOrSignUp": "Prihlásiť sa / Zaregistrovať sa"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Otvoriť obchod",

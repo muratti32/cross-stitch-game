@@ -44,7 +44,8 @@
       "offlinePendingSync": "غير متصل — في انتظار المزامنة",
       "guestPlayer": "لاعب ضيف",
       "playingSince": "يلعب منذ {{date}}",
-      "creatorSince": "مبدع منذ {{date}}"
+      "creatorSince": "مبدع منذ {{date}}",
+      "signInOrSignUp": "تسجيل الدخول / إنشاء حساب"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "فتح متجر التجارة",

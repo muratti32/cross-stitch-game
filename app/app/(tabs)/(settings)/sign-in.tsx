@@ -57,6 +57,10 @@ export default function SignInScreen() {
       });
       return;
     }
+    if (params.returnTo === '/(tabs)/(profile)') {
+      router.replace('/(tabs)/(profile)');
+      return;
+    }
     router.replace('/(tabs)/(settings)');
   };
 
@@ -69,6 +73,8 @@ export default function SignInScreen() {
   const onCancel = () => {
     if (router.canGoBack()) {
       router.back();
+    } else if (params.returnTo === '/(tabs)/(profile)') {
+      router.replace('/(tabs)/(profile)');
     } else {
       router.replace('/(tabs)/(settings)');
     }

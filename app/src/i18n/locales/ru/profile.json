@@ -44,7 +44,8 @@
       "offlinePendingSync": "Офлайн — ожидает синхронизации",
       "guestPlayer": "Гостевой игрок",
       "playingSince": "Играет с {{date}}",
-      "creatorSince": "Автор с {{date}}"
+      "creatorSince": "Автор с {{date}}",
+      "signInOrSignUp": "Войти / Зарегистрироваться"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Открыть магазин",

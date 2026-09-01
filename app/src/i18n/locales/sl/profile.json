@@ -44,7 +44,8 @@
       "offlinePendingSync": "Brez povezave — sinhronizacija čaka",
       "guestPlayer": "Gostujoči igralec",
       "playingSince": "Igra od {{date}}",
-      "creatorSince": "Ustvarjalec od {{date}}"
+      "creatorSince": "Ustvarjalec od {{date}}",
+      "signInOrSignUp": "Prijava / Registracija"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Odpri trgovino",

@@ -44,7 +44,8 @@
       "offlinePendingSync": "オフライン — 同期保留中",
       "guestPlayer": "ゲストプレイヤー",
       "playingSince": "{{date}}からプレイ中",
-      "creatorSince": "{{date}}からクリエイター"
+      "creatorSince": "{{date}}からクリエイター",
+      "signInOrSignUp": "ログイン / 新規登録"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "コマースストアを開く",

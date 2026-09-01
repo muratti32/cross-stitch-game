@@ -44,7 +44,8 @@
       "offlinePendingSync": "Çevrimdışı — eşitleme bekliyor",
       "guestPlayer": "Misafir Oyuncu",
       "playingSince": "{{date}} tarihinden beri oynuyor",
-      "creatorSince": "{{date}} tarihinden beri tasarımcı"
+      "creatorSince": "{{date}} tarihinden beri tasarımcı",
+      "signInOrSignUp": "Giriş Yap / Kayıt Ol"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Mağazayı Aç",

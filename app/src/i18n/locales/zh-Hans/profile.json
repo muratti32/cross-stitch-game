@@ -44,7 +44,8 @@
       "offlinePendingSync": "离线 — 等待同步",
       "guestPlayer": "游客玩家",
       "playingSince": "自 {{date}} 起开始玩",
-      "creatorSince": "自 {{date}} 起成为创作者"
+      "creatorSince": "自 {{date}} 起成为创作者",
+      "signInOrSignUp": "登录 / 注册"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "打开商店",

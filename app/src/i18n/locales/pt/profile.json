@@ -44,7 +44,8 @@
       "offlinePendingSync": "Offline — sincronização pendente",
       "guestPlayer": "Jogador Convidado",
       "playingSince": "A jogar desde {{date}}",
-      "creatorSince": "Criador desde {{date}}"
+      "creatorSince": "Criador desde {{date}}",
+      "signInOrSignUp": "Entrar / Cadastrar"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Abrir Loja Comercial",

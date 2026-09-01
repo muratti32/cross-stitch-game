@@ -44,7 +44,8 @@
       "offlinePendingSync": "오프라인 — 동기화 대기 중",
       "guestPlayer": "게스트 플레이어",
       "playingSince": "{{date}}부터 플레이 중",
-      "creatorSince": "{{date}}부터 크리에이터로 활동 중"
+      "creatorSince": "{{date}}부터 크리에이터로 활동 중",
+      "signInOrSignUp": "로그인 / 가입"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "커머스 스토어 열기",

@@ -44,7 +44,8 @@
       "offlinePendingSync": "Offline — naghihintay ng sync",
       "guestPlayer": "Guest na Manlalaro",
       "playingSince": "Naglalaro simula noong {{date}}",
-      "creatorSince": "Gumagawa simula noong {{date}}"
+      "creatorSince": "Gumagawa simula noong {{date}}",
+      "signInOrSignUp": "Mag-log In / Magparehistro"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Buksan ang Commerce Store",

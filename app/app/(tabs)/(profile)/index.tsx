@@ -447,6 +447,22 @@ export default function ProfileScreen() {
               {t('home.identity.playingSince', { date: formatDate(new Date(guestCreatedAt), locale) })}
             </Text>
           )}
+
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t('home.identity.signInOrSignUp')}
+            onPress={() =>
+              router.push({
+                pathname: '/(tabs)/(settings)/sign-in',
+                params: { returnTo: '/(tabs)/(profile)' },
+              })
+            }
+            style={({ pressed }) => [styles.guestSignInButton, pressed && styles.pressed]}
+          >
+            <Ionicons name="log-in-outline" size={14} color={Theme.colors.accentRose} />
+            <Text style={styles.guestSignInButtonText}>{t('home.identity.signInOrSignUp')}</Text>
+          </Pressable>
+
           {isOfflinePending && (
             <View style={styles.offlineBadge}>
               <Ionicons name="alert-circle-outline" size={14} color={Theme.colors.error} />
@@ -1133,6 +1149,23 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.xs,
     fontWeight: Theme.typography.weights.semibold,
     color: Theme.colors.accentTeal,
+  },
+  guestSignInButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 6,
+    paddingHorizontal: Theme.spacing.lg,
+    borderRadius: Theme.radii.full,
+    borderWidth: 1,
+    borderColor: Theme.colors.accentRose,
+    marginTop: 2,
+  },
+  guestSignInButtonText: {
+    fontSize: Theme.typography.sizes.xs,
+    fontWeight: Theme.typography.weights.semibold,
+    color: Theme.colors.accentRose,
   },
   profileStatusText: {
     color: Theme.colors.textSecondary,

@@ -44,7 +44,8 @@
       "offlinePendingSync": "Offline — väntar på synk",
       "guestPlayer": "Gästspelare",
       "playingSince": "Spelar sedan {{date}}",
-      "creatorSince": "Skapare sedan {{date}}"
+      "creatorSince": "Skapare sedan {{date}}",
+      "signInOrSignUp": "Logga in / Registrera dig"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Öppna Commerce Store",

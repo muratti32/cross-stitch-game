@@ -793,7 +793,8 @@
           "offlinePendingSync": "غير متصل — في انتظار المزامنة",
           "guestPlayer": "لاعب ضيف",
           "playingSince": "يلعب منذ {{date}}",
-          "creatorSince": "مبدع منذ {{date}}"
+          "creatorSince": "مبدع منذ {{date}}",
+          "signInOrSignUp": "تسجيل الدخول / إنشاء حساب"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "فتح متجر التجارة",
@@ -2208,7 +2209,8 @@
           "offlinePendingSync": "Sense connexió — sincronització pendent",
           "guestPlayer": "Jugador Convidat",
           "playingSince": "Jugant des de {{date}}",
-          "creatorSince": "Creador des de {{date}}"
+          "creatorSince": "Creador des de {{date}}",
+          "signInOrSignUp": "Inicia la sessió / Registra't"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Obre la Botiga Comercial",
@@ -3623,7 +3625,8 @@
           "offlinePendingSync": "Offline — čeká na synchronizaci",
           "guestPlayer": "Hráč jako host",
           "playingSince": "Hraje od {{date}}",
-          "creatorSince": "Tvůrce od {{date}}"
+          "creatorSince": "Tvůrce od {{date}}",
+          "signInOrSignUp": "Přihlásit se / Zaregistrovat se"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Otevřít obchod",
@@ -5038,7 +5041,8 @@
           "offlinePendingSync": "Offline — synkronisering afventer",
           "guestPlayer": "Gæstespiller",
           "playingSince": "Spillet siden {{date}}",
-          "creatorSince": "Skaber siden {{date}}"
+          "creatorSince": "Skaber siden {{date}}",
+          "signInOrSignUp": "Log ind / Opret profil"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Åbn Commerce Store",
@@ -6453,7 +6457,8 @@
           "offlinePendingSync": "Offline — Synchronisierung ausstehend",
           "guestPlayer": "Gastspieler",
           "playingSince": "Spielt seit {{date}}",
-          "creatorSince": "Ersteller seit {{date}}"
+          "creatorSince": "Ersteller seit {{date}}",
+          "signInOrSignUp": "Anmelden / Registrieren"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Shop öffnen",
@@ -7868,7 +7873,8 @@
           "offlinePendingSync": "Εκτός σύνδεσης — εκκρεμεί συγχρονισμός",
           "guestPlayer": "Παίκτης Επισκέπτης",
           "playingSince": "Παίζει από {{date}}",
-          "creatorSince": "Δημιουργός από {{date}}"
+          "creatorSince": "Δημιουργός από {{date}}",
+          "signInOrSignUp": "Σύνδεση / Εγγραφή"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Άνοιγμα Καταστήματος",
@@ -9283,7 +9289,8 @@
           "offlinePendingSync": "Offline — pending sync",
           "guestPlayer": "Guest Player",
           "playingSince": "Playing since {{date}}",
-          "creatorSince": "Creator since {{date}}"
+          "creatorSince": "Creator since {{date}}",
+          "signInOrSignUp": "Sign In / Sign Up"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Open Commerce Store",
@@ -10698,7 +10705,8 @@
           "offlinePendingSync": "Sin conexión: sincronización pendiente",
           "guestPlayer": "Jugador invitado",
           "playingSince": "Jugando desde el {{date}}",
-          "creatorSince": "Creador desde el {{date}}"
+          "creatorSince": "Creador desde el {{date}}",
+          "signInOrSignUp": "Iniciar sesión / Registrarse"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Abrir tienda comercial",
@@ -12113,7 +12121,8 @@
           "offlinePendingSync": "Offline — odottaa synkronointia",
           "guestPlayer": "Vierailija",
           "playingSince": "Pelannut lähtien: {{date}}",
-          "creatorSince": "Luonut lähtien: {{date}}"
+          "creatorSince": "Luonut lähtien: {{date}}",
+          "signInOrSignUp": "Kirjaudu sisään / Rekisteröidy"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Avaa kauppa",
@@ -13528,7 +13537,8 @@
           "offlinePendingSync": "Hors ligne — en attente de synchronisation",
           "guestPlayer": "Joueur invité",
           "playingSince": "Joue depuis le {{date}}",
-          "creatorSince": "Créateur depuis le {{date}}"
+          "creatorSince": "Créateur depuis le {{date}}",
+          "signInOrSignUp": "Connexion / Inscription"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Ouvrir la boutique",
@@ -14943,7 +14953,8 @@
           "offlinePendingSync": "Offline — सिंक लंबित है",
           "guestPlayer": "गेस्ट प्लेयर",
           "playingSince": "{{date}} से खेल रहे हैं",
-          "creatorSince": "{{date}} से क्रिएटर"
+          "creatorSince": "{{date}} से क्रिएटर",
+          "signInOrSignUp": "साइन इन करें / साइन अप करें"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "कॉमर्स स्टोर खोलें",
@@ -16358,7 +16369,8 @@
           "offlinePendingSync": "Offline — čeka sinkronizaciju",
           "guestPlayer": "Gostujući igrač",
           "playingSince": "Igra od {{date}}",
-          "creatorSince": "Autor od {{date}}"
+          "creatorSince": "Autor od {{date}}",
+          "signInOrSignUp": "Prijava / Registracija"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Otvori trgovinu",
@@ -17773,7 +17785,8 @@
           "offlinePendingSync": "Offline — szinkronizálásra vár",
           "guestPlayer": "Vendégjátékos",
           "playingSince": "Játékos ideje: {{date}}",
-          "creatorSince": "Alkotó ideje: {{date}}"
+          "creatorSince": "Alkotó ideje: {{date}}",
+          "signInOrSignUp": "Bejelentkezés / Regisztráció"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Áruház megnyitása",
@@ -19188,7 +19201,8 @@
           "offlinePendingSync": "Offline — menunggu sinkronisasi",
           "guestPlayer": "Pemain tamu",
           "playingSince": "Bermain sejak: {{date}}",
-          "creatorSince": "Kreator sejak: {{date}}"
+          "creatorSince": "Kreator sejak: {{date}}",
+          "signInOrSignUp": "Masuk / Daftar"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Buka toko",
@@ -20603,7 +20617,8 @@
           "offlinePendingSync": "Offline — sincronizzazione in sospeso",
           "guestPlayer": "Giocatore ospite",
           "playingSince": "Gioca dal {{date}}",
-          "creatorSince": "Creatore dal {{date}}"
+          "creatorSince": "Creatore dal {{date}}",
+          "signInOrSignUp": "Accedi / Registrati"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Apri il Commerce Store",
@@ -22018,7 +22033,8 @@
           "offlinePendingSync": "オフライン — 同期保留中",
           "guestPlayer": "ゲストプレイヤー",
           "playingSince": "{{date}}からプレイ中",
-          "creatorSince": "{{date}}からクリエイター"
+          "creatorSince": "{{date}}からクリエイター",
+          "signInOrSignUp": "ログイン / 新規登録"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "コマースストアを開く",
@@ -23433,7 +23449,8 @@
           "offlinePendingSync": "오프라인 — 동기화 대기 중",
           "guestPlayer": "게스트 플레이어",
           "playingSince": "{{date}}부터 플레이 중",
-          "creatorSince": "{{date}}부터 크리에이터로 활동 중"
+          "creatorSince": "{{date}}부터 크리에이터로 활동 중",
+          "signInOrSignUp": "로그인 / 가입"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "커머스 스토어 열기",
@@ -24848,7 +24865,8 @@
           "offlinePendingSync": "Luar talian — menunggu penyegerakan",
           "guestPlayer": "Pemain tetamu",
           "playingSince": "Bermain sejak: {{date}}",
-          "creatorSince": "Pencipta sejak: {{date}}"
+          "creatorSince": "Pencipta sejak: {{date}}",
+          "signInOrSignUp": "Log Masuk / Daftar"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Buka kedai",
@@ -26263,7 +26281,8 @@
           "offlinePendingSync": "Frakoblet — venter på synkronisering",
           "guestPlayer": "Gjestespiller",
           "playingSince": "Spilt siden {{date}}",
-          "creatorSince": "Skaper siden {{date}}"
+          "creatorSince": "Skaper siden {{date}}",
+          "signInOrSignUp": "Logg inn / Registrer deg"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Åpne butikk",
@@ -27678,7 +27697,8 @@
           "offlinePendingSync": "Offline — synchronisatie in behandeling",
           "guestPlayer": "Gastspeler",
           "playingSince": "Speelt sinds {{date}}",
-          "creatorSince": "Maker sinds {{date}}"
+          "creatorSince": "Maker sinds {{date}}",
+          "signInOrSignUp": "Inloggen / Aanmelden"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Winkel openen",
@@ -29093,7 +29113,8 @@
           "offlinePendingSync": "Offline — synchronizacja w toku",
           "guestPlayer": "Gracz-gość",
           "playingSince": "Gra od {{date}}",
-          "creatorSince": "Twórca od {{date}}"
+          "creatorSince": "Twórca od {{date}}",
+          "signInOrSignUp": "Zaloguj się / Zarejestruj się"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Otwórz sklep",
@@ -30508,7 +30529,8 @@
           "offlinePendingSync": "Offline — sincronização pendente",
           "guestPlayer": "Jogador Convidado",
           "playingSince": "A jogar desde {{date}}",
-          "creatorSince": "Criador desde {{date}}"
+          "creatorSince": "Criador desde {{date}}",
+          "signInOrSignUp": "Entrar / Cadastrar"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Abrir Loja Comercial",
@@ -31923,7 +31945,8 @@
           "offlinePendingSync": "Offline — sincronização pendente",
           "guestPlayer": "Jogador convidado",
           "playingSince": "Jogando desde {{date}}",
-          "creatorSince": "Criador desde {{date}}"
+          "creatorSince": "Criador desde {{date}}",
+          "signInOrSignUp": "Entrar / Cadastrar"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Abrir loja comercial",
@@ -33338,7 +33361,8 @@
           "offlinePendingSync": "Offline — sincronizare în așteptare",
           "guestPlayer": "Jucător invitat",
           "playingSince": "Joacă din {{date}}",
-          "creatorSince": "Creator din {{date}}"
+          "creatorSince": "Creator din {{date}}",
+          "signInOrSignUp": "Conectare / Înregistrare"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Deschide magazinul",
@@ -34753,7 +34777,8 @@
           "offlinePendingSync": "Офлайн — ожидает синхронизации",
           "guestPlayer": "Гостевой игрок",
           "playingSince": "Играет с {{date}}",
-          "creatorSince": "Автор с {{date}}"
+          "creatorSince": "Автор с {{date}}",
+          "signInOrSignUp": "Войти / Зарегистрироваться"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Открыть магазин",
@@ -36168,7 +36193,8 @@
           "offlinePendingSync": "Offline — synchronizácia čaká",
           "guestPlayer": "Hosťujúci hráč",
           "playingSince": "Hrá od {{date}}",
-          "creatorSince": "Tvorca od {{date}}"
+          "creatorSince": "Tvorca od {{date}}",
+          "signInOrSignUp": "Prihlásiť sa / Zaregistrovať sa"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Otvoriť obchod",
@@ -37583,7 +37609,8 @@
           "offlinePendingSync": "Brez povezave — sinhronizacija čaka",
           "guestPlayer": "Gostujoči igralec",
           "playingSince": "Igra od {{date}}",
-          "creatorSince": "Ustvarjalec od {{date}}"
+          "creatorSince": "Ustvarjalec od {{date}}",
+          "signInOrSignUp": "Prijava / Registracija"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Odpri trgovino",
@@ -38998,7 +39025,8 @@
           "offlinePendingSync": "Offline — väntar på synk",
           "guestPlayer": "Gästspelare",
           "playingSince": "Spelar sedan {{date}}",
-          "creatorSince": "Skapare sedan {{date}}"
+          "creatorSince": "Skapare sedan {{date}}",
+          "signInOrSignUp": "Logga in / Registrera dig"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Öppna Commerce Store",
@@ -40413,7 +40441,8 @@
           "offlinePendingSync": "Offline — naghihintay ng sync",
           "guestPlayer": "Guest na Manlalaro",
           "playingSince": "Naglalaro simula noong {{date}}",
-          "creatorSince": "Gumagawa simula noong {{date}}"
+          "creatorSince": "Gumagawa simula noong {{date}}",
+          "signInOrSignUp": "Mag-log In / Magparehistro"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Buksan ang Commerce Store",
@@ -41828,7 +41857,8 @@
           "offlinePendingSync": "Çevrimdışı — eşitleme bekliyor",
           "guestPlayer": "Misafir Oyuncu",
           "playingSince": "{{date}} tarihinden beri oynuyor",
-          "creatorSince": "{{date}} tarihinden beri tasarımcı"
+          "creatorSince": "{{date}} tarihinden beri tasarımcı",
+          "signInOrSignUp": "Giriş Yap / Kayıt Ol"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Mağazayı Aç",
@@ -43243,7 +43273,8 @@
           "offlinePendingSync": "Офлайн — очікує синхронізації",
           "guestPlayer": "Гість",
           "playingSince": "Грає з {{date}}",
-          "creatorSince": "Автор з {{date}}"
+          "creatorSince": "Автор з {{date}}",
+          "signInOrSignUp": "Увійти / Зареєструватися"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Відкрити Магазин",
@@ -44658,7 +44689,8 @@
           "offlinePendingSync": "Ngoại tuyến — đang chờ đồng bộ",
           "guestPlayer": "Người chơi Khách",
           "playingSince": "Chơi từ {{date}}",
-          "creatorSince": "Người tạo từ {{date}}"
+          "creatorSince": "Người tạo từ {{date}}",
+          "signInOrSignUp": "Đăng nhập / Đăng ký"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "Mở cửa hàng",
@@ -46073,7 +46105,8 @@
           "offlinePendingSync": "离线 — 等待同步",
           "guestPlayer": "游客玩家",
           "playingSince": "自 {{date}} 起开始玩",
-          "creatorSince": "自 {{date}} 起成为创作者"
+          "creatorSince": "自 {{date}} 起成为创作者",
+          "signInOrSignUp": "登录 / 注册"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "打开商店",
@@ -47488,7 +47521,8 @@
           "offlinePendingSync": "離線 — 等待同步",
           "guestPlayer": "訪客玩家",
           "playingSince": "自 {{date}} 起遊玩",
-          "creatorSince": "自 {{date}} 起成為創作者"
+          "creatorSince": "自 {{date}} 起成為創作者",
+          "signInOrSignUp": "登入 / 註冊"
         },
         "walletCard": {
           "openCommerceStoreAccessibilityLabel": "開啟商城",

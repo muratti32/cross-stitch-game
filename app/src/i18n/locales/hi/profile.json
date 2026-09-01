@@ -44,7 +44,8 @@
       "offlinePendingSync": "Offline — सिंक लंबित है",
       "guestPlayer": "गेस्ट प्लेयर",
       "playingSince": "{{date}} से खेल रहे हैं",
-      "creatorSince": "{{date}} से क्रिएटर"
+      "creatorSince": "{{date}} से क्रिएटर",
+      "signInOrSignUp": "साइन इन करें / साइन अप करें"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "कॉमर्स स्टोर खोलें",

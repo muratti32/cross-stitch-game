@@ -44,7 +44,8 @@
       "offlinePendingSync": "Εκτός σύνδεσης — εκκρεμεί συγχρονισμός",
       "guestPlayer": "Παίκτης Επισκέπτης",
       "playingSince": "Παίζει από {{date}}",
-      "creatorSince": "Δημιουργός από {{date}}"
+      "creatorSince": "Δημιουργός από {{date}}",
+      "signInOrSignUp": "Σύνδεση / Εγγραφή"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Άνοιγμα Καταστήματος",

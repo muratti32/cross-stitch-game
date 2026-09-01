@@ -44,7 +44,8 @@
       "offlinePendingSync": "Ngoại tuyến — đang chờ đồng bộ",
       "guestPlayer": "Người chơi Khách",
       "playingSince": "Chơi từ {{date}}",
-      "creatorSince": "Người tạo từ {{date}}"
+      "creatorSince": "Người tạo từ {{date}}",
+      "signInOrSignUp": "Đăng nhập / Đăng ký"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Mở cửa hàng",

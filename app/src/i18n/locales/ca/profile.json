@@ -44,7 +44,8 @@
       "offlinePendingSync": "Sense connexió — sincronització pendent",
       "guestPlayer": "Jugador Convidat",
       "playingSince": "Jugant des de {{date}}",
-      "creatorSince": "Creador des de {{date}}"
+      "creatorSince": "Creador des de {{date}}",
+      "signInOrSignUp": "Inicia la sessió / Registra't"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Obre la Botiga Comercial",

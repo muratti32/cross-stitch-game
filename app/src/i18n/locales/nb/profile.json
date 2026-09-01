@@ -44,7 +44,8 @@
       "offlinePendingSync": "Frakoblet — venter på synkronisering",
       "guestPlayer": "Gjestespiller",
       "playingSince": "Spilt siden {{date}}",
-      "creatorSince": "Skaper siden {{date}}"
+      "creatorSince": "Skaper siden {{date}}",
+      "signInOrSignUp": "Logg inn / Registrer deg"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Åpne butikk",

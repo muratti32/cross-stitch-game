@@ -44,7 +44,8 @@
       "offlinePendingSync": "Offline — synchronisatie in behandeling",
       "guestPlayer": "Gastspeler",
       "playingSince": "Speelt sinds {{date}}",
-      "creatorSince": "Maker sinds {{date}}"
+      "creatorSince": "Maker sinds {{date}}",
+      "signInOrSignUp": "Inloggen / Aanmelden"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Winkel openen",

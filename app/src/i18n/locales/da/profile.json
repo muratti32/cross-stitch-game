@@ -44,7 +44,8 @@
       "offlinePendingSync": "Offline — synkronisering afventer",
       "guestPlayer": "Gæstespiller",
       "playingSince": "Spillet siden {{date}}",
-      "creatorSince": "Skaber siden {{date}}"
+      "creatorSince": "Skaber siden {{date}}",
+      "signInOrSignUp": "Log ind / Opret profil"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Åbn Commerce Store",

@@ -44,7 +44,8 @@
       "offlinePendingSync": "Offline — szinkronizálásra vár",
       "guestPlayer": "Vendégjátékos",
       "playingSince": "Játékos ideje: {{date}}",
-      "creatorSince": "Alkotó ideje: {{date}}"
+      "creatorSince": "Alkotó ideje: {{date}}",
+      "signInOrSignUp": "Bejelentkezés / Regisztráció"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Áruház megnyitása",

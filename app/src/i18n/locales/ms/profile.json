@@ -44,7 +44,8 @@
       "offlinePendingSync": "Luar talian — menunggu penyegerakan",
       "guestPlayer": "Pemain tetamu",
       "playingSince": "Bermain sejak: {{date}}",
-      "creatorSince": "Pencipta sejak: {{date}}"
+      "creatorSince": "Pencipta sejak: {{date}}",
+      "signInOrSignUp": "Log Masuk / Daftar"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Buka kedai",

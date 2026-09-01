@@ -44,7 +44,8 @@
       "offlinePendingSync": "Offline — odottaa synkronointia",
       "guestPlayer": "Vierailija",
       "playingSince": "Pelannut lähtien: {{date}}",
-      "creatorSince": "Luonut lähtien: {{date}}"
+      "creatorSince": "Luonut lähtien: {{date}}",
+      "signInOrSignUp": "Kirjaudu sisään / Rekisteröidy"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Avaa kauppa",

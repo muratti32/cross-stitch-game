@@ -44,7 +44,8 @@
       "offlinePendingSync": "Offline — pending sync",
       "guestPlayer": "Guest Player",
       "playingSince": "Playing since {{date}}",
-      "creatorSince": "Creator since {{date}}"
+      "creatorSince": "Creator since {{date}}",
+      "signInOrSignUp": "Sign In / Sign Up"
     },
     "walletCard": {
       "openCommerceStoreAccessibilityLabel": "Open Commerce Store",
