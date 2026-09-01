@@ -17,6 +17,13 @@ export class ObjectRegistryEntity {
   @Column({ type: 'boolean', default: false })
   missing!: boolean;
 
+  /**
+   * Last time the object was checked against remote storage. Drives the bounded
+   * reconciler sweep; null means the object has never been verified.
+   */
+  @Column({ name: 'last_verified_at', type: 'timestamptz', nullable: true })
+  lastVerifiedAt!: Date | null;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt!: Date;
 

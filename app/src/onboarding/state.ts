@@ -129,6 +129,11 @@ export function getStartupOnboardingState(): OnboardingState {
   };
 }
 
+/** Returns the process-current position for lifecycle decisions. */
+export function getCurrentOnboardingPosition(): OnboardingPosition {
+  return getStartupOnboardingState().position;
+}
+
 export async function saveOnboardingPosition(value: Exclude<OnboardingPosition, 'absent'>): Promise<void> {
   await setDeviceConfigValue(KEYS.position, value);
   if (startupState) startupState = { ...startupState, position: value };

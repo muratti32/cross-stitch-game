@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryProvider } from '../src/providers';
 import * as SplashScreen from 'expo-splash-screen';
-import type { OnboardingPosition } from '../src/onboarding/state';
+import { getCurrentOnboardingPosition, type OnboardingPosition } from '../src/onboarding/state';
 import { prepareOnboardingStartup } from '../src/onboarding/startup';
 import { useGameplayStore } from '../src/store/gameplayStore';
 import { bootstrap, useIdentityStore } from '../src/identity/guestIdentity';
@@ -163,7 +163,10 @@ function RootLayout() {
         'active',
         {
           requiresSignIn,
-          onboardingPosition,
+          // Onboarding can advance while this root component stays mounted.
+          // Read the process-current durable state instead of the startup
+          // render snapshot captured by this lifecycle callback.
+          onboardingPosition: getCurrentOnboardingPosition(),
           // A mounted session must remain visible through an ordinary return.
           activeStitchingSession: isActiveStitchingSessionRoute(segments),
         },

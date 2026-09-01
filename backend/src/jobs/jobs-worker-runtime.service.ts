@@ -62,13 +62,12 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     this.running = true;
     this.scheduleDispatch(0);
 
+    // Bounded sweep: each pass verifies at most STORAGE_RECONCILER_BATCH_SIZE
+    // objects and the service itself refuses to run overlapping passes.
     this.reconcileTimer = setInterval(() => {
-      this.reconciler.reconcileOnce().catch((error: unknown) => {
-        this.logger.error(
-          `Error running storage reconciler: ${error instanceof Error ? error.message : String(error)}`,
-        );
-      });
-    }, 60000);
+      void this.reconcileStorage();
+    }, this.config.storageReconcilerIntervalSeconds * 1000);
+    void this.reconcileStorage();
 
     this.accountDeletionFinalizerTimer = setInterval(() => {
       this.accountDeletionFinalizer.finalizeDueRequests().catch((error: unknown) => {
@@ -201,6 +200,17 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     } catch (error: unknown) {
       this.logger.error(
         `Error reconciling AI Artworks: ${errorMessage(error)}`,
+        errorStack(error),
+      );
+    }
+  }
+
+  private async reconcileStorage(): Promise<void> {
+    try {
+      await this.reconciler.reconcileOnce();
+    } catch (error: unknown) {
+      this.logger.error(
+        `Error running storage reconciler: ${errorMessage(error)}`,
         errorStack(error),
       );
     }

@@ -238,6 +238,24 @@ export class AppConfigService {
     });
   }
 
+  get storageReconcilerIntervalSeconds(): number {
+    return this.configService.get('STORAGE_RECONCILER_INTERVAL_SECONDS', {
+      infer: true,
+    });
+  }
+
+  get storageReconcilerBatchSize(): number {
+    return this.configService.get('STORAGE_RECONCILER_BATCH_SIZE', {
+      infer: true,
+    });
+  }
+
+  get storageObjectVerificationIntervalSeconds(): number {
+    return this.configService.get('STORAGE_OBJECT_VERIFICATION_INTERVAL_SECONDS', {
+      infer: true,
+    });
+  }
+
   get aiCreditReservationStalenessSeconds(): number {
     return this.configService.get('AI_CREDIT_RESERVATION_STALENESS_SECONDS', {
       infer: true,

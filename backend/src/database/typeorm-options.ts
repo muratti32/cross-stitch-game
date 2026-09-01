@@ -205,6 +205,7 @@ import { AddSwedishCatalogCategoryLabels1792195200000 } from './migrations/17921
 import { AddTagalogCatalogCategoryLabels1792281600000 } from './migrations/1792281600000-AddTagalogCatalogCategoryLabels';
 import { AddUkrainianCatalogCategoryLabels1792368000000 } from './migrations/1792368000000-AddUkrainianCatalogCategoryLabels';
 import { AddVietnameseCatalogCategoryLabels1792454400000 } from './migrations/1792454400000-AddVietnameseCatalogCategoryLabels';
+import { AddObjectRegistryLastVerifiedAt1792540800000 } from './migrations/1792540800000-AddObjectRegistryLastVerifiedAt';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -395,6 +396,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddTagalogCatalogCategoryLabels1792281600000,
       AddUkrainianCatalogCategoryLabels1792368000000,
       AddVietnameseCatalogCategoryLabels1792454400000,
+      AddObjectRegistryLastVerifiedAt1792540800000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

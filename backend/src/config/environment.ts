@@ -46,6 +46,9 @@ export type EnvironmentVariables = {
   GAMEPLAY_EVENT_RETENTION_MONTHS: number;
   GAMEPLAY_EVENT_PARTITION_MAINTENANCE_INTERVAL_SECONDS: number;
   RECONCILIATION_INTERVAL_SECONDS: number;
+  STORAGE_RECONCILER_INTERVAL_SECONDS: number;
+  STORAGE_RECONCILER_BATCH_SIZE: number;
+  STORAGE_OBJECT_VERIFICATION_INTERVAL_SECONDS: number;
   AI_CREDIT_RESERVATION_STALENESS_SECONDS: number;
   OPERATIONAL_ALERTS_EVALUATION_INTERVAL_SECONDS: number;
   OPERATIONAL_ALERTS_COOLDOWN_SECONDS: number;
@@ -92,6 +95,9 @@ const DEFAULT_WEBHOOK_ARCHIVE_PURGE_INTERVAL_SECONDS = 60 * 60;
 const DEFAULT_GAMEPLAY_EVENT_RETENTION_MONTHS = 13;
 const DEFAULT_GAMEPLAY_EVENT_PARTITION_MAINTENANCE_INTERVAL_SECONDS = 24 * 60 * 60;
 const DEFAULT_RECONCILIATION_INTERVAL_SECONDS = 15 * 60;
+const DEFAULT_STORAGE_RECONCILER_INTERVAL_SECONDS = 5 * 60;
+const DEFAULT_STORAGE_RECONCILER_BATCH_SIZE = 250;
+const DEFAULT_STORAGE_OBJECT_VERIFICATION_INTERVAL_SECONDS = 24 * 60 * 60;
 const DEFAULT_AI_CREDIT_RESERVATION_STALENESS_SECONDS = 30 * 60;
 const DEFAULT_OPERATIONAL_ALERTS_EVALUATION_INTERVAL_SECONDS = 5 * 60;
 const DEFAULT_OPERATIONAL_ALERTS_COOLDOWN_SECONDS = 30 * 60;
@@ -209,6 +215,30 @@ function parseDurationSeconds(
   }
 
   return duration;
+}
+
+function parsePositiveCount(
+  value: unknown,
+  variableName: string,
+  defaultValue: number,
+): number {
+  if (value === undefined || value === '') {
+    return defaultValue;
+  }
+
+  if (
+    (typeof value !== 'string' && typeof value !== 'number') ||
+    (typeof value === 'string' && !/^\d+$/.test(value.trim()))
+  ) {
+    throw new Error(`${variableName} must be a positive integer`);
+  }
+
+  const count = typeof value === 'number' ? value : Number(value);
+  if (!Number.isSafeInteger(count) || count < 1) {
+    throw new Error(`${variableName} must be a positive integer`);
+  }
+
+  return count;
 }
 
 function parseThresholdCount(
@@ -597,6 +627,21 @@ export function parseEnvironment(
       environment.RECONCILIATION_INTERVAL_SECONDS,
       'RECONCILIATION_INTERVAL_SECONDS',
       DEFAULT_RECONCILIATION_INTERVAL_SECONDS,
+    ),
+    STORAGE_RECONCILER_INTERVAL_SECONDS: parseDurationSeconds(
+      environment.STORAGE_RECONCILER_INTERVAL_SECONDS,
+      'STORAGE_RECONCILER_INTERVAL_SECONDS',
+      DEFAULT_STORAGE_RECONCILER_INTERVAL_SECONDS,
+    ),
+    STORAGE_RECONCILER_BATCH_SIZE: parsePositiveCount(
+      environment.STORAGE_RECONCILER_BATCH_SIZE,
+      'STORAGE_RECONCILER_BATCH_SIZE',
+      DEFAULT_STORAGE_RECONCILER_BATCH_SIZE,
+    ),
+    STORAGE_OBJECT_VERIFICATION_INTERVAL_SECONDS: parseDurationSeconds(
+      environment.STORAGE_OBJECT_VERIFICATION_INTERVAL_SECONDS,
+      'STORAGE_OBJECT_VERIFICATION_INTERVAL_SECONDS',
+      DEFAULT_STORAGE_OBJECT_VERIFICATION_INTERVAL_SECONDS,
     ),
     AI_CREDIT_RESERVATION_STALENESS_SECONDS: parseDurationSeconds(
       environment.AI_CREDIT_RESERVATION_STALENESS_SECONDS,
