@@ -16,6 +16,16 @@ Both processes use the same modules, services, entities, and migrations. Postgre
 
 ## Local setup
 
+From the repository root, one command starts PostgreSQL, Redis, the Conversion
+Engine, applies migrations, then runs the API, worker, and ngrok tunnel:
+
+```sh
+yarn start:dev
+```
+
+The infrastructure containers remain running after Ctrl+C so later starts are
+fast. Stop them with `docker compose stop postgres redis conversion-engine`.
+
 Install dependencies and create the local environment file:
 
 ```sh
