@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Aanmelden of account maken",
     "emailSubtitle": "Zorgt dat je voortgang op meerdere apparaten beschikbaar is.",
+    "signInRequiredSubtitle": "Je sessie is beëindigd. Meld je opnieuw aan of speel verder als gast.",
+    "continueAsGuest": "Doorgaan als gast",
+    "continueAsGuestFailed": "Kan niet doorgaan als gast. Probeer het opnieuw.",
     "codeHeading": "Voer de code in",
     "codeSubtitle": "Voer de 6-cijferige code in die naar {{email}} is verzonden.",
     "continueWithGoogle": "Doorgaan met Google",

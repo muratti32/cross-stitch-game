@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Sign in or create account",
     "emailSubtitle": "Keep your progress available across devices.",
+    "signInRequiredSubtitle": "Your session ended. Sign in again, or keep playing as a guest.",
+    "continueAsGuest": "Continue as guest",
+    "continueAsGuestFailed": "Couldn't continue as guest. Please try again.",
     "codeHeading": "Enter your code",
     "codeSubtitle": "Enter the 6-digit code we sent to {{email}}.",
     "continueWithGoogle": "Continue with Google",

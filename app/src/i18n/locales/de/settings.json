@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Anmelden oder Konto erstellen",
     "emailSubtitle": "Halte deinen Fortschritt auf all deinen Geräten verfügbar.",
+    "signInRequiredSubtitle": "Deine Sitzung ist beendet. Melde dich erneut an oder spiele als Gast weiter.",
+    "continueAsGuest": "Als Gast fortfahren",
+    "continueAsGuestFailed": "Fortfahren als Gast nicht möglich. Versuche es erneut.",
     "codeHeading": "Code eingeben",
     "codeSubtitle": "Gib den 6-stelligen Code ein, den wir an {{email}} gesendet haben.",
     "continueWithGoogle": "Mit Google fortfahren",

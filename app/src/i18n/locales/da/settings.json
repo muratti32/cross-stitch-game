@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Log ind eller opret konto",
     "emailSubtitle": "Hold dine fremskridt tilgængelige på tværs af enheder.",
+    "signInRequiredSubtitle": "Din session er udløbet. Log ind igen, eller spil videre som gæst.",
+    "continueAsGuest": "Fortsæt som gæst",
+    "continueAsGuestFailed": "Kunne ikke fortsætte som gæst. Prøv igen.",
     "codeHeading": "Indtast din kode",
     "codeSubtitle": "Indtast den 6-cifrede kode, vi sendte til {{email}}.",
     "continueWithGoogle": "Fortsæt med Google",

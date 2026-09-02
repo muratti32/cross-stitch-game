@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Autentifică-te sau creează un cont",
     "emailSubtitle": "Păstrează-ți progresul disponibil pe toate dispozitivele.",
+    "signInRequiredSubtitle": "Sesiunea ta s-a încheiat. Autentifică-te din nou sau continuă să joci ca invitat.",
+    "continueAsGuest": "Continuă ca invitat",
+    "continueAsGuestFailed": "Nu s-a putut continua ca invitat. Încearcă din nou.",
     "codeHeading": "Introdu codul tău",
     "codeSubtitle": "Introdu codul din 6 cifre trimis la {{email}}.",
     "continueWithGoogle": "Continuă cu Google",

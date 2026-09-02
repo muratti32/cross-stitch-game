@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Masuk atau buat akun",
     "emailSubtitle": "Jaga progresmu tetap tersedia di semua perangkat.",
+    "signInRequiredSubtitle": "Sesimu telah berakhir. Masuk lagi atau lanjutkan bermain sebagai tamu.",
+    "continueAsGuest": "Lanjutkan sebagai tamu",
+    "continueAsGuestFailed": "Tidak bisa melanjutkan sebagai tamu. Coba lagi.",
     "codeHeading": "Masukkan kodemu",
     "codeSubtitle": "Masukkan kode enam digit yang kami kirim ke {{email}}.",
     "continueWithGoogle": "Lanjutkan dengan Google",

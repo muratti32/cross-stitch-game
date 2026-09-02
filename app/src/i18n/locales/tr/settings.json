@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Oturum aç veya hesap oluştur",
     "emailSubtitle": "İlerlemeni cihazlar arasında erişilebilir tut.",
+    "signInRequiredSubtitle": "Oturumun sona erdi. Tekrar giriş yap ya da misafir olarak oynamaya devam et.",
+    "continueAsGuest": "Misafir olarak devam et",
+    "continueAsGuestFailed": "Misafir olarak devam edilemedi. Tekrar dene.",
     "codeHeading": "Kodunu gir",
     "codeSubtitle": "{{email}} adresine gönderdiğimiz 6 haneli kodu gir.",
     "continueWithGoogle": "Google ile devam et",

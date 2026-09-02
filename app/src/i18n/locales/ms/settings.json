@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Log masuk atau cipta akaun",
     "emailSubtitle": "Kekalkan kemajuan anda tersedia pada semua peranti.",
+    "signInRequiredSubtitle": "Sesi anda telah tamat. Log masuk semula atau teruskan bermain sebagai tetamu.",
+    "continueAsGuest": "Teruskan sebagai tetamu",
+    "continueAsGuestFailed": "Tidak dapat meneruskan sebagai tetamu. Cuba lagi.",
     "codeHeading": "Masukkan kod anda",
     "codeSubtitle": "Masukkan kod enam digit yang kami hantar ke {{email}}.",
     "continueWithGoogle": "Teruskan dengan Google",

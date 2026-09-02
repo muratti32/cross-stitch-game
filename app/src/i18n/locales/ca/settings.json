@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Inicia sessió o crea un compte",
     "emailSubtitle": "Mantén el teu progrés disponible a tots els dispositius.",
+    "signInRequiredSubtitle": "La teva sessió ha finalitzat. Torna a iniciar sessió o continua jugant com a convidat.",
+    "continueAsGuest": "Continua com a convidat",
+    "continueAsGuestFailed": "No s'ha pogut continuar com a convidat. Torna-ho a provar.",
     "codeHeading": "Introdueix el teu codi",
     "codeSubtitle": "Introdueix el codi de 6 dígits que hem enviat a {{email}}.",
     "continueWithGoogle": "Continua amb Google",

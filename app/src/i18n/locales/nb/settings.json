@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Logg inn eller opprett konto",
     "emailSubtitle": "Hold fremgangen din tilgjengelig på tvers av enheter.",
+    "signInRequiredSubtitle": "Økten din er avsluttet. Logg inn igjen, eller fortsett å spille som gjest.",
+    "continueAsGuest": "Fortsett som gjest",
+    "continueAsGuestFailed": "Kunne ikke fortsette som gjest. Prøv igjen.",
     "codeHeading": "Skriv inn koden din",
     "codeSubtitle": "Skriv inn den 6-sifrede koden vi sendte til {{email}}.",
     "continueWithGoogle": "Fortsett med Google",

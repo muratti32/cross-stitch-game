@@ -21,6 +21,7 @@ import {
   createSessionLifecycle,
   isCurrentGeneration,
 } from './sessionLifecycle';
+import { installationMarkerStore, shouldDiscardInheritedSession } from './installationScope';
 
 const SECURE_KEYS = {
   INSTALLATION_KEY: 'stitch_wish.installation_key',
@@ -240,9 +241,29 @@ async function readEnvelope(): Promise<SessionEnvelope> {
   return (await readSessionEnvelope(sessionStore, legacyKeys())) ?? emptySessionEnvelope();
 }
 
+/**
+ * Drops a session envelope a fresh installation inherited from a previous
+ * installation of the app, then records that this installation has started.
+ * Idempotent: a marked installation reads its envelope untouched.
+ */
+async function reconcileInstallationScope(envelope: SessionEnvelope): Promise<SessionEnvelope> {
+  const markerPresent = await installationMarkerStore.isPresent();
+  let current = envelope;
+  if (shouldDiscardInheritedSession(markerPresent, current)) {
+    setAccessToken(null);
+    await clearSessionEnvelope(sessionStore);
+    await deleteLegacySessionKeys();
+    current = emptySessionEnvelope();
+  }
+  if (!markerPresent) {
+    await installationMarkerStore.persist();
+  }
+  return current;
+}
+
 /** Hydrates the durable sign-in gate without waiting for any network bootstrap. */
 export async function hydrateStoredIdentity(): Promise<void> {
-  const envelope = await readEnvelope();
+  const envelope = await reconcileInstallationScope(await readEnvelope());
   const namespaceIdentity = envelope.kind === 'account' ? envelope.accountId : envelope.guestId;
   await openNamespace(namespaceIdentity);
   updateStoreState({
@@ -289,7 +310,9 @@ export async function bootstrap(): Promise<void> {
         await SecureStore.setItemAsync(SECURE_KEYS.CREDENTIAL_SECRET, credentialSecret);
       }
 
-      const envelope = await readEnvelope();
+      // Bootstrap can run before (or without) startup hydration, so the
+      // fresh-installation check belongs on both entry points.
+      const envelope = await reconcileInstallationScope(await readEnvelope());
       const principal = principalState(envelope);
       updateStoreStateIfCurrent(generation, {
         ...principal,
@@ -490,6 +513,24 @@ async function requireAccountSignIn(): Promise<void> {
     requiresSignIn: true,
     isHydrated: true,
   });
+}
+
+/**
+ * Leaves the Sign in required gate without authenticating. Sign-in is optional
+ * and never gates core play, so a player whose account session was revoked can
+ * always drop back to Guest play instead of being held on the sign-in screen.
+ *
+ * The account's Local Identity Namespace is locked rather than deleted, so
+ * signing back in later reopens its unsynchronized data.
+ */
+export async function continueAsGuest(): Promise<void> {
+  await logout();
+  try {
+    await bootstrap();
+  } catch {
+    // Guest registration needs the network; offline play continues locally and
+    // the scheduled retry picks the identity up on reconnect.
+  }
 }
 
 export async function handleAuthenticationRequired(): Promise<void> {

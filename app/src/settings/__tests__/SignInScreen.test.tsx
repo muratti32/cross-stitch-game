@@ -3,7 +3,9 @@ import TestRenderer, { act } from 'react-test-renderer';
 import SignInScreen from '../../../app/(tabs)/(settings)/sign-in';
 
 let mockIsAccount = false;
+let mockRequiresSignIn = false;
 let mockParams: { returnTo?: string } = {};
+const mockContinueAsGuest = jest.fn().mockResolvedValue(undefined);
 const mockRouter = {
   push: jest.fn(),
   replace: jest.fn(),
@@ -41,8 +43,10 @@ jest.mock('@/components', () => {
 });
 
 jest.mock('@/identity/guestIdentity', () => ({
-  useIdentityStore: (selector: (state: { isAccount: boolean }) => unknown) =>
-    selector({ isAccount: mockIsAccount }),
+  useIdentityStore: (
+    selector: (state: { isAccount: boolean; requiresSignIn: boolean }) => unknown,
+  ) => selector({ isAccount: mockIsAccount, requiresSignIn: mockRequiresSignIn }),
+  continueAsGuest: (...args: unknown[]) => mockContinueAsGuest(...args),
 }));
 
 jest.mock('@/identity/emailAuth', () => ({
@@ -69,7 +73,9 @@ describe('SignInScreen navigation', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockIsAccount = false;
+    mockRequiresSignIn = false;
     mockParams = {};
+    mockContinueAsGuest.mockResolvedValue(undefined);
   });
 
   it('redirects to profile tab when returnTo is /(tabs)/(profile) and sign-in completes', () => {
@@ -117,5 +123,76 @@ describe('SignInScreen navigation', () => {
       pathname: '/(tabs)/(profile)/commerce',
       params: { source: 'sign_in_return' },
     });
+  });
+});
+
+/**
+ * Regression (#222): the Sign in required gate replaced every route, and its
+ * only exit was authenticating - so a player who could not sign in had no way
+ * back into the game.
+ */
+describe('SignInScreen sign-in gate exit', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockIsAccount = false;
+    mockRequiresSignIn = false;
+    mockParams = {};
+    mockContinueAsGuest.mockResolvedValue(undefined);
+  });
+
+  function findByLabel(tree: TestRenderer.ReactTestRenderer, label: string) {
+    return tree.root.findAll(
+      (node) => typeof node.type !== 'string' && node.props.children === label,
+    );
+  }
+
+  it('offers Cancel rather than a guest exit outside the gate', () => {
+    let tree!: TestRenderer.ReactTestRenderer;
+    act(() => {
+      tree = TestRenderer.create(<SignInScreen />);
+    });
+
+    expect(findByLabel(tree, 'Cancel')).toHaveLength(1);
+    expect(findByLabel(tree, 'Continue as guest')).toHaveLength(0);
+  });
+
+  it('leaves the gate as a Guest Player and returns to the root route', async () => {
+    mockRequiresSignIn = true;
+    let tree!: TestRenderer.ReactTestRenderer;
+    act(() => {
+      tree = TestRenderer.create(<SignInScreen />);
+    });
+
+    expect(findByLabel(tree, 'Cancel')).toHaveLength(0);
+    const [guestExit] = findByLabel(tree, 'Continue as guest');
+    await act(async () => {
+      guestExit.props.onPress();
+    });
+
+    expect(mockContinueAsGuest).toHaveBeenCalledTimes(1);
+    expect(mockRouter.replace).toHaveBeenCalledWith('/');
+  });
+
+  it('keeps the player on the gate and reports a failed guest exit', async () => {
+    mockRequiresSignIn = true;
+    mockContinueAsGuest.mockRejectedValue(new Error('storage unavailable'));
+    let tree!: TestRenderer.ReactTestRenderer;
+    act(() => {
+      tree = TestRenderer.create(<SignInScreen />);
+    });
+
+    const [guestExit] = findByLabel(tree, 'Continue as guest');
+    await act(async () => {
+      guestExit.props.onPress();
+    });
+
+    expect(mockRouter.replace).not.toHaveBeenCalled();
+    expect(
+      tree.root.findAll(
+        (node) =>
+          typeof node.type !== 'string' &&
+          node.props.children === "Couldn't continue as guest. Please try again.",
+      ),
+    ).not.toHaveLength(0);
   });
 });

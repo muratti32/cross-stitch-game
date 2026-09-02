@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "साइन इन करें या खाता बनाएं",
     "emailSubtitle": "सभी डिवाइस पर अपनी प्रगति उपलब्ध रखें।",
+    "signInRequiredSubtitle": "आपका सत्र समाप्त हो गया। फिर से साइन इन करें या गेस्ट के रूप में खेलते रहें।",
+    "continueAsGuest": "गेस्ट के रूप में जारी रखें",
+    "continueAsGuestFailed": "गेस्ट के रूप में जारी नहीं रख सके। कृपया फिर से प्रयास करें।",
     "codeHeading": "अपना कोड दर्ज करें",
     "codeSubtitle": "वह 6-अंकीय कोड दर्ज करें जो हमने {{email}} पर भेजा है।",
     "continueWithGoogle": "Google के साथ जारी रखें",

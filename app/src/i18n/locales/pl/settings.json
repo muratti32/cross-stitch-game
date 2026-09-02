@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Zaloguj się lub utwórz konto",
     "emailSubtitle": "Zapewnia dostępność Twojego postępu na wielu urządzeniach.",
+    "signInRequiredSubtitle": "Twoja sesja się zakończyła. Zaloguj się ponownie lub graj dalej jako gość.",
+    "continueAsGuest": "Kontynuuj jako gość",
+    "continueAsGuestFailed": "Nie udało się kontynuować jako gość. Spróbuj ponownie.",
     "codeHeading": "Wprowadź kod",
     "codeSubtitle": "Wprowadź 6-cyfrowy kod wysłany na {{email}}.",
     "continueWithGoogle": "Kontynuuj z Google",

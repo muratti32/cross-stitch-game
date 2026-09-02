@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Kirjaudu sisään tai luo tili",
     "emailSubtitle": "Pidä edistymisesi saatavilla eri laitteilla.",
+    "signInRequiredSubtitle": "Istuntosi päättyi. Kirjaudu uudelleen sisään tai jatka pelaamista vieraana.",
+    "continueAsGuest": "Jatka vieraana",
+    "continueAsGuestFailed": "Vieraana jatkaminen ei onnistunut. Yritä uudelleen.",
     "codeHeading": "Syötä koodisi",
     "codeSubtitle": "Syötä 6-numeroinen koodi, jonka lähetimme osoitteeseen {{email}}.",
     "continueWithGoogle": "Jatka Googlella",

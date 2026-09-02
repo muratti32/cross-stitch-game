@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Jelentkezz be vagy hozz létre fiókot",
     "emailSubtitle": "Tartsd elérhetővé a haladásodat minden eszközön.",
+    "signInRequiredSubtitle": "A munkameneted véget ért. Jelentkezz be újra, vagy játssz tovább vendégként.",
+    "continueAsGuest": "Folytatás vendégként",
+    "continueAsGuestFailed": "Nem sikerült vendégként folytatni. Próbáld újra.",
     "codeHeading": "Add meg a kódodat",
     "codeSubtitle": "Add meg a hatjegyű kódot, amelyet a(z) {{email}} címre küldtünk.",
     "continueWithGoogle": "Folytatás Google-lel",

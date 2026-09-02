@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Prijava ali ustvarjanje računa",
     "emailSubtitle": "Ohranite svoj napredek dostopen na vseh napravah.",
+    "signInRequiredSubtitle": "Vaša seja se je končala. Znova se prijavite ali nadaljujte igro kot gost.",
+    "continueAsGuest": "Nadaljuj kot gost",
+    "continueAsGuestFailed": "Nadaljevanje kot gost ni uspelo. Poskusite znova.",
     "codeHeading": "Vnesite svojo kodo",
     "codeSubtitle": "Vnesite 6-mestno kodo, ki smo jo poslali na {{email}}.",
     "continueWithGoogle": "Nadaljuj z Google",

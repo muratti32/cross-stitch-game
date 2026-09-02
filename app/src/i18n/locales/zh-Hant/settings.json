@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "登入或建立帳號",
     "emailSubtitle": "讓你的進度可跨裝置使用。",
+    "signInRequiredSubtitle": "你的工作階段已結束。請重新登入，或以訪客身分繼續遊玩。",
+    "continueAsGuest": "以訪客身分繼續",
+    "continueAsGuestFailed": "無法以訪客身分繼續，請再試一次。",
     "codeHeading": "輸入你的驗證碼",
     "codeSubtitle": "輸入我們傳送至 {{email}} 的 6 位數驗證碼。",
     "continueWithGoogle": "使用 Google 繼續",

@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Mag-log in o gumawa ng account",
     "emailSubtitle": "Panatilihing available ang iyong pag-unlad sa lahat ng device.",
+    "signInRequiredSubtitle": "Natapos na ang iyong session. Mag-sign in ulit o magpatuloy na maglaro bilang guest.",
+    "continueAsGuest": "Magpatuloy bilang guest",
+    "continueAsGuestFailed": "Hindi makapagpatuloy bilang guest. Subukan ulit.",
     "codeHeading": "Ilagay ang iyong code",
     "codeSubtitle": "Ilagay ang 6-digit na code na ipinadala namin sa {{email}}.",
     "continueWithGoogle": "Magpatuloy gamit ang Google",

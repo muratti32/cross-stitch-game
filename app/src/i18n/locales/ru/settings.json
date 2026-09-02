@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Войти или создать аккаунт",
     "emailSubtitle": "Синхронизируйте прогресс между устройствами.",
+    "signInRequiredSubtitle": "Ваш сеанс завершён. Войдите снова или продолжайте играть как гость.",
+    "continueAsGuest": "Продолжить как гость",
+    "continueAsGuestFailed": "Не удалось продолжить как гость. Повторите попытку.",
     "codeHeading": "Введите код",
     "codeSubtitle": "Введите 6-значный код, отправленный на адрес {{email}}.",
     "continueWithGoogle": "Войти через Google",

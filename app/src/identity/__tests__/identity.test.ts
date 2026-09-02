@@ -1,6 +1,6 @@
 import { getDatabaseFilename, shouldAdopt } from '../../local-db/namespaceLogic';
 import { decodeJwt, calculateRefreshDelay, isTokenOlderThan12Minutes, shortenGuestId } from '../identityLogic';
-import { adoptAccountSession, bootstrap, hydrateStoredIdentity, refreshSession, useIdentityStore, setAccessToken, getAccessToken, resetGuestData, removeLocalData, logout } from '../guestIdentity';
+import { adoptAccountSession, bootstrap, continueAsGuest, hydrateStoredIdentity, refreshSession, useIdentityStore, setAccessToken, getAccessToken, resetGuestData, removeLocalData, logout } from '../guestIdentity';
 import { requestEmailOtp, verifyEmailOtp } from '../emailAuth';
 import { exchangeFirebaseIdToken } from '../federatedAuth';
 import { apiFetch } from '../../api/apiFetch';
@@ -33,6 +33,19 @@ jest.mock('expo-crypto', () => {
     }),
   };
 });
+
+// The installation marker lives in the app sandbox rather than SecureStore, so
+// only its storage is mocked - the fresh-installation decision stays real.
+let mockInstallationMarkerPresent = true;
+jest.mock('../installationScope', () => ({
+  ...jest.requireActual('../installationScope'),
+  installationMarkerStore: {
+    isPresent: jest.fn(async () => mockInstallationMarkerPresent),
+    persist: jest.fn(async () => {
+      mockInstallationMarkerPresent = true;
+    }),
+  },
+}));
 
 // Mock local-db exports that call expo-sqlite / expo-file-system
 jest.mock('../../local-db', () => {
@@ -126,6 +139,7 @@ describe('Identity Logic (Pure)', () => {
 describe('Guest Identity Client State Machine', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockInstallationMarkerPresent = true;
     mockFetchResponses = [];
     fetchCallCount = 0;
     fetchCalls = [];
@@ -188,6 +202,140 @@ describe('Guest Identity Client State Machine', () => {
 
     expect(require('../../local-db').openNamespace).toHaveBeenCalledWith('account-existing');
     expect(useIdentityStore.getState().requiresSignIn).toBe(true);
+  });
+
+  // Regression (#222): iOS keeps Keychain items when the app is deleted, so a
+  // freshly installed app read the previous installation's revoked account
+  // session and opened on Sign in required instead of the Welcome flow.
+  test('a fresh installation never inherits the previous installation sign-in gate', async () => {
+    mockInstallationMarkerPresent = false;
+    mockSecureStore[SESSION_ENVELOPE] = JSON.stringify({
+      version: 1,
+      kind: 'account',
+      guestId: null,
+      guestCreatedAt: null,
+      accountId: 'account-previous-install',
+      accountEmail: 'player@example.com',
+      accountProvider: 'email',
+      refreshToken: null,
+      requiresSignIn: true,
+    });
+
+    await hydrateStoredIdentity();
+
+    const state = useIdentityStore.getState();
+    expect(state.requiresSignIn).toBe(false);
+    expect(state.isAccount).toBe(false);
+    expect(state.accountId).toBeNull();
+    expect(JSON.parse(mockSecureStore[SESSION_ENVELOPE])).toMatchObject({
+      kind: 'none',
+      requiresSignIn: false,
+    });
+  });
+
+  test('a fresh installation keeps a usable inherited account session', async () => {
+    mockInstallationMarkerPresent = false;
+    mockSecureStore[SESSION_ENVELOPE] = JSON.stringify({
+      version: 1,
+      kind: 'account',
+      guestId: null,
+      guestCreatedAt: null,
+      accountId: 'account-existing',
+      accountEmail: 'player@example.com',
+      accountProvider: 'email',
+      refreshToken: 'refresh-existing',
+      requiresSignIn: false,
+    });
+
+    await hydrateStoredIdentity();
+
+    const state = useIdentityStore.getState();
+    expect(state.isAccount).toBe(true);
+    expect(state.accountId).toBe('account-existing');
+    expect(JSON.parse(mockSecureStore[SESSION_ENVELOPE])).toMatchObject({
+      accountId: 'account-existing',
+      refreshToken: 'refresh-existing',
+    });
+  });
+
+  test('the fresh-installation check runs once, so the next launch keeps its gate', async () => {
+    mockInstallationMarkerPresent = false;
+    await hydrateStoredIdentity();
+
+    mockSecureStore[SESSION_ENVELOPE] = JSON.stringify({
+      version: 1,
+      kind: 'account',
+      guestId: null,
+      guestCreatedAt: null,
+      accountId: 'account-existing',
+      accountEmail: 'player@example.com',
+      accountProvider: 'email',
+      refreshToken: null,
+      requiresSignIn: true,
+    });
+
+    await hydrateStoredIdentity();
+
+    expect(useIdentityStore.getState().requiresSignIn).toBe(true);
+  });
+
+  // Sign-in is optional and never gates core play, so the gate always has a
+  // Guest Player exit.
+  test('continueAsGuest leaves the sign-in gate and registers a guest', async () => {
+    mockSecureStore[SESSION_ENVELOPE] = JSON.stringify({
+      version: 1,
+      kind: 'account',
+      guestId: null,
+      guestCreatedAt: null,
+      accountId: 'account-revoked',
+      accountEmail: 'player@example.com',
+      accountProvider: 'email',
+      refreshToken: null,
+      requiresSignIn: true,
+    });
+    await hydrateStoredIdentity();
+    mockFetchResponses.push({
+      status: 201,
+      body: {
+        guestId: 'guest_after_gate',
+        accessToken: DECODABLE_JWT,
+        refreshToken: 'refresh_after_gate',
+      },
+    });
+
+    await continueAsGuest();
+
+    const state = useIdentityStore.getState();
+    expect(state.requiresSignIn).toBe(false);
+    expect(state.isAccount).toBe(false);
+    expect(state.guestId).toBe('guest_after_gate');
+  });
+
+  test('continueAsGuest leaves the sign-in gate while offline', async () => {
+    mockSecureStore[SESSION_ENVELOPE] = JSON.stringify({
+      version: 1,
+      kind: 'account',
+      guestId: null,
+      guestCreatedAt: null,
+      accountId: 'account-revoked',
+      accountEmail: 'player@example.com',
+      accountProvider: 'email',
+      refreshToken: null,
+      requiresSignIn: true,
+    });
+    await hydrateStoredIdentity();
+    const fetchMock = global.fetch;
+    global.fetch = jest.fn(async () => {
+      throw new Error('Network request failed');
+    }) as unknown as typeof global.fetch;
+
+    try {
+      await expect(continueAsGuest()).resolves.toBeUndefined();
+    } finally {
+      global.fetch = fetchMock;
+    }
+
+    expect(useIdentityStore.getState().requiresSignIn).toBe(false);
   });
 
   test('expected connectivity failures do not emit background retry errors', async () => {

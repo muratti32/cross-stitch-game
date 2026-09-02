@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Prijavi se ili stvori račun",
     "emailSubtitle": "Zadrži svoj napredak dostupnim na svim uređajima.",
+    "signInRequiredSubtitle": "Tvoja sesija je završila. Prijavi se ponovno ili nastavi igrati kao gost.",
+    "continueAsGuest": "Nastavi kao gost",
+    "continueAsGuestFailed": "Nije bilo moguće nastaviti kao gost. Pokušaj ponovno.",
     "codeHeading": "Unesi svoj kod",
     "codeSubtitle": "Unesi šesteroznamenkasti kod koji smo poslali na {{email}}.",
     "continueWithGoogle": "Nastavi s Googleom",

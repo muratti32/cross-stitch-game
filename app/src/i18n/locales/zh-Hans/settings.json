@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "登录或创建账号",
     "emailSubtitle": "让你的进度在不同设备间保持同步。",
+    "signInRequiredSubtitle": "你的会话已结束。请重新登录，或以游客身份继续游戏。",
+    "continueAsGuest": "以游客身份继续",
+    "continueAsGuestFailed": "无法以游客身份继续。请重试。",
     "codeHeading": "输入验证码",
     "codeSubtitle": "请输入我们发送至 {{email}} 的 6 位数验证码。",
     "continueWithGoogle": "使用 Google 登录",

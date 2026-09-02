@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Iniciar sessão ou criar conta",
     "emailSubtitle": "Mantém o teu progresso disponível em todos os dispositivos.",
+    "signInRequiredSubtitle": "A tua sessão terminou. Inicia sessão novamente ou continua a jogar como convidado.",
+    "continueAsGuest": "Continuar como convidado",
+    "continueAsGuestFailed": "Não foi possível continuar como convidado. Tenta novamente.",
     "codeHeading": "Introduz o teu código",
     "codeSubtitle": "Introduz o código de 6 dígitos que enviámos para {{email}}.",
     "continueWithGoogle": "Continuar com Google",

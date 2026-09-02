@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Prihlás sa alebo si vytvor účet",
     "emailSubtitle": "Udrž si postup dostupný na všetkých zariadeniach.",
+    "signInRequiredSubtitle": "Tvoja relácia sa skončila. Prihlás sa znova alebo pokračuj v hre ako hosť.",
+    "continueAsGuest": "Pokračovať ako hosť",
+    "continueAsGuestFailed": "Nepodarilo sa pokračovať ako hosť. Skús to znova.",
     "codeHeading": "Zadaj svoj kód",
     "codeSubtitle": "Zadaj 6-miestny kód odoslaný na {{email}}.",
     "continueWithGoogle": "Pokračovať s Google",

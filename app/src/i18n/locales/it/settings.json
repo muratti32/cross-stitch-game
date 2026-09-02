@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Accedi o crea un account",
     "emailSubtitle": "Mantieni i tuoi progressi disponibili su tutti i dispositivi.",
+    "signInRequiredSubtitle": "La tua sessione è terminata. Accedi di nuovo o continua a giocare come ospite.",
+    "continueAsGuest": "Continua come ospite",
+    "continueAsGuestFailed": "Impossibile continuare come ospite. Riprova.",
     "codeHeading": "Inserisci il codice",
     "codeSubtitle": "Inserisci il codice a 6 cifre inviato a {{email}}.",
     "continueWithGoogle": "Continua con Google",

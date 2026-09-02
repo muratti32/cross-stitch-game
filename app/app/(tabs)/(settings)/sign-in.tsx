@@ -15,13 +15,14 @@ import { isFirebaseSsoConfigured } from '@/config';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { isCommerceReturnTarget } from '@/commerce/commerceIntent';
-import { useIdentityStore } from '@/identity/guestIdentity';
+import { continueAsGuest, useIdentityStore } from '@/identity/guestIdentity';
 import { useTranslation } from 'react-i18next';
 
 export default function SignInScreen() {
   const { t } = useTranslation('settings');
   const params = useLocalSearchParams<{ returnTo?: string }>();
   const isAccount = useIdentityStore((state) => state.isAccount);
+  const requiresSignIn = useIdentityStore((state) => state.requiresSignIn);
   const [step, setStep] = useState<'email' | 'code'>('email');
   const [email, setEmail] = useState<string>('');
   const [code, setCode] = useState<string>('');
@@ -31,6 +32,7 @@ export default function SignInScreen() {
   const [error, setError] = useState<string | null>(null);
   const [appleAvailable, setAppleAvailable] = useState<boolean>(false);
   const [socialProvider, setSocialProvider] = useState<'apple' | 'google' | null>(null);
+  const [leavingGate, setLeavingGate] = useState<boolean>(false);
 
   const firebaseConfigured = isFirebaseSsoConfigured();
   const googleAvailable = canUseGoogleSso();
@@ -77,6 +79,24 @@ export default function SignInScreen() {
       router.replace('/(tabs)/(profile)');
     } else {
       router.replace('/(tabs)/(settings)');
+    }
+  };
+
+  /**
+   * The Sign in required gate replaces every route until it is left, so the
+   * ordinary Cancel would bounce straight back to this screen. Leaving as a
+   * Guest Player is the exit that keeps sign-in optional.
+   */
+  const onContinueAsGuest = async () => {
+    setError(null);
+    setLeavingGate(true);
+    try {
+      await continueAsGuest();
+      router.replace('/');
+    } catch {
+      setError(t('signIn.continueAsGuestFailed'));
+    } finally {
+      setLeavingGate(false);
     }
   };
 
@@ -165,7 +185,7 @@ export default function SignInScreen() {
           <View>
             <Text style={styles.heading}>{t('signIn.emailHeading')}</Text>
             <Text style={styles.subtitle}>
-              {t('signIn.emailSubtitle')}
+              {requiresSignIn ? t('signIn.signInRequiredSubtitle') : t('signIn.emailSubtitle')}
             </Text>
 
             {error && (
@@ -247,7 +267,17 @@ export default function SignInScreen() {
               onPress={onSendCode}
             />
             <View style={styles.buttonSpacer} />
-            <Button title={t('signIn.cancel')} variant="secondary" onPress={onCancel} />
+            {requiresSignIn ? (
+              <Button
+                title={t('signIn.continueAsGuest')}
+                variant="secondary"
+                loading={leavingGate}
+                disabled={leavingGate || submitting}
+                onPress={onContinueAsGuest}
+              />
+            ) : (
+              <Button title={t('signIn.cancel')} variant="secondary" onPress={onCancel} />
+            )}
           </View>
         ) : (
           <View>

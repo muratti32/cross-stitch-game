@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Đăng nhập hoặc tạo tài khoản",
     "emailSubtitle": "Giữ tiến trình của bạn khả dụng trên các thiết bị.",
+    "signInRequiredSubtitle": "Phiên của bạn đã kết thúc. Đăng nhập lại hoặc tiếp tục chơi với tư cách khách.",
+    "continueAsGuest": "Tiếp tục với tư cách khách",
+    "continueAsGuestFailed": "Không thể tiếp tục với tư cách khách. Vui lòng thử lại.",
     "codeHeading": "Nhập mã của bạn",
     "codeSubtitle": "Nhập mã 6 chữ số chúng tôi đã gửi tới {{email}}.",
     "continueWithGoogle": "Tiếp tục với Google",

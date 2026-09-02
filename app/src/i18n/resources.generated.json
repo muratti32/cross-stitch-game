@@ -1265,6 +1265,9 @@
       "signIn": {
         "emailHeading": "تسجيل الدخول أو إنشاء حساب",
         "emailSubtitle": "حافظ على توفر تقدمك عبر الأجهزة.",
+        "signInRequiredSubtitle": "انتهت جلستك. سجّل الدخول مرة أخرى أو تابع اللعب كضيف.",
+        "continueAsGuest": "المتابعة كضيف",
+        "continueAsGuestFailed": "تعذّرت المتابعة كضيف. أعد المحاولة.",
         "codeHeading": "أدخل الرمز الخاص بك",
         "codeSubtitle": "أدخل الرمز المكون من 6 أرقام الذي أرسلناه إلى {{email}}.",
         "continueWithGoogle": "متابعة باستخدام Google",
@@ -2681,6 +2684,9 @@
       "signIn": {
         "emailHeading": "Inicia sessió o crea un compte",
         "emailSubtitle": "Mantén el teu progrés disponible a tots els dispositius.",
+        "signInRequiredSubtitle": "La teva sessió ha finalitzat. Torna a iniciar sessió o continua jugant com a convidat.",
+        "continueAsGuest": "Continua com a convidat",
+        "continueAsGuestFailed": "No s'ha pogut continuar com a convidat. Torna-ho a provar.",
         "codeHeading": "Introdueix el teu codi",
         "codeSubtitle": "Introdueix el codi de 6 dígits que hem enviat a {{email}}.",
         "continueWithGoogle": "Continua amb Google",
@@ -4097,6 +4103,9 @@
       "signIn": {
         "emailHeading": "Přihlaste se nebo vytvořte účet",
         "emailSubtitle": "Mějte svůj postup dostupný na všech zařízeních.",
+        "signInRequiredSubtitle": "Vaše relace skončila. Přihlaste se znovu, nebo pokračujte ve hře jako host.",
+        "continueAsGuest": "Pokračovat jako host",
+        "continueAsGuestFailed": "Nepodařilo se pokračovat jako host. Zkuste to znovu.",
         "codeHeading": "Zadejte svůj kód",
         "codeSubtitle": "Zadejte 6místný kód, který jsme vám poslali na {{email}}.",
         "continueWithGoogle": "Pokračovat přes Google",
@@ -5513,6 +5522,9 @@
       "signIn": {
         "emailHeading": "Log ind eller opret konto",
         "emailSubtitle": "Hold dine fremskridt tilgængelige på tværs af enheder.",
+        "signInRequiredSubtitle": "Din session er udløbet. Log ind igen, eller spil videre som gæst.",
+        "continueAsGuest": "Fortsæt som gæst",
+        "continueAsGuestFailed": "Kunne ikke fortsætte som gæst. Prøv igen.",
         "codeHeading": "Indtast din kode",
         "codeSubtitle": "Indtast den 6-cifrede kode, vi sendte til {{email}}.",
         "continueWithGoogle": "Fortsæt med Google",
@@ -6929,6 +6941,9 @@
       "signIn": {
         "emailHeading": "Anmelden oder Konto erstellen",
         "emailSubtitle": "Halte deinen Fortschritt auf all deinen Geräten verfügbar.",
+        "signInRequiredSubtitle": "Deine Sitzung ist beendet. Melde dich erneut an oder spiele als Gast weiter.",
+        "continueAsGuest": "Als Gast fortfahren",
+        "continueAsGuestFailed": "Fortfahren als Gast nicht möglich. Versuche es erneut.",
         "codeHeading": "Code eingeben",
         "codeSubtitle": "Gib den 6-stelligen Code ein, den wir an {{email}} gesendet haben.",
         "continueWithGoogle": "Mit Google fortfahren",
@@ -8345,6 +8360,9 @@
       "signIn": {
         "emailHeading": "Σύνδεση ή δημιουργία λογαριασμού",
         "emailSubtitle": "Διατηρήστε την πρόοδό σας διαθέσιμη σε όλες τις συσκευές.",
+        "signInRequiredSubtitle": "Η συνεδρία σας έληξε. Συνδεθείτε ξανά ή συνεχίστε το παιχνίδι ως επισκέπτης.",
+        "continueAsGuest": "Συνέχεια ως επισκέπτης",
+        "continueAsGuestFailed": "Δεν ήταν δυνατή η συνέχεια ως επισκέπτης. Δοκιμάστε ξανά.",
         "codeHeading": "Εισαγάγετε τον κωδικό σας",
         "codeSubtitle": "Εισαγάγετε τον 6ψήφιο κωδικό που στείλαμε στο {{email}}.",
         "continueWithGoogle": "Συνέχεια με Google",
@@ -9761,6 +9779,9 @@
       "signIn": {
         "emailHeading": "Sign in or create account",
         "emailSubtitle": "Keep your progress available across devices.",
+        "signInRequiredSubtitle": "Your session ended. Sign in again, or keep playing as a guest.",
+        "continueAsGuest": "Continue as guest",
+        "continueAsGuestFailed": "Couldn't continue as guest. Please try again.",
         "codeHeading": "Enter your code",
         "codeSubtitle": "Enter the 6-digit code we sent to {{email}}.",
         "continueWithGoogle": "Continue with Google",
@@ -11177,6 +11198,9 @@
       "signIn": {
         "emailHeading": "Inicia sesión o crea una cuenta",
         "emailSubtitle": "Mantén tu progreso disponible en varios dispositivos.",
+        "signInRequiredSubtitle": "Tu sesión ha terminado. Inicia sesión de nuevo o sigue jugando como invitado.",
+        "continueAsGuest": "Continuar como invitado",
+        "continueAsGuestFailed": "No se pudo continuar como invitado. Inténtalo de nuevo.",
         "codeHeading": "Introduce tu código",
         "codeSubtitle": "Introduce el código de 6 dígitos que enviamos a {{email}}.",
         "continueWithGoogle": "Continuar con Google",
@@ -12593,6 +12617,9 @@
       "signIn": {
         "emailHeading": "Kirjaudu sisään tai luo tili",
         "emailSubtitle": "Pidä edistymisesi saatavilla eri laitteilla.",
+        "signInRequiredSubtitle": "Istuntosi päättyi. Kirjaudu uudelleen sisään tai jatka pelaamista vieraana.",
+        "continueAsGuest": "Jatka vieraana",
+        "continueAsGuestFailed": "Vieraana jatkaminen ei onnistunut. Yritä uudelleen.",
         "codeHeading": "Syötä koodisi",
         "codeSubtitle": "Syötä 6-numeroinen koodi, jonka lähetimme osoitteeseen {{email}}.",
         "continueWithGoogle": "Jatka Googlella",
@@ -14009,6 +14036,9 @@
       "signIn": {
         "emailHeading": "Se connecter ou créer un compte",
         "emailSubtitle": "Conservez votre progression disponible sur tous vos appareils.",
+        "signInRequiredSubtitle": "Votre session a pris fin. Reconnectez-vous ou continuez à jouer en tant qu'invité.",
+        "continueAsGuest": "Continuer en tant qu'invité",
+        "continueAsGuestFailed": "Impossible de continuer en tant qu'invité. Réessayez.",
         "codeHeading": "Saisissez votre code",
         "codeSubtitle": "Saisissez le code à 6 chiffres envoyé à {{email}}.",
         "continueWithGoogle": "Continuer avec Google",
@@ -15425,6 +15455,9 @@
       "signIn": {
         "emailHeading": "साइन इन करें या खाता बनाएं",
         "emailSubtitle": "सभी डिवाइस पर अपनी प्रगति उपलब्ध रखें।",
+        "signInRequiredSubtitle": "आपका सत्र समाप्त हो गया। फिर से साइन इन करें या गेस्ट के रूप में खेलते रहें।",
+        "continueAsGuest": "गेस्ट के रूप में जारी रखें",
+        "continueAsGuestFailed": "गेस्ट के रूप में जारी नहीं रख सके। कृपया फिर से प्रयास करें।",
         "codeHeading": "अपना कोड दर्ज करें",
         "codeSubtitle": "वह 6-अंकीय कोड दर्ज करें जो हमने {{email}} पर भेजा है।",
         "continueWithGoogle": "Google के साथ जारी रखें",
@@ -16841,6 +16874,9 @@
       "signIn": {
         "emailHeading": "Prijavi se ili stvori račun",
         "emailSubtitle": "Zadrži svoj napredak dostupnim na svim uređajima.",
+        "signInRequiredSubtitle": "Tvoja sesija je završila. Prijavi se ponovno ili nastavi igrati kao gost.",
+        "continueAsGuest": "Nastavi kao gost",
+        "continueAsGuestFailed": "Nije bilo moguće nastaviti kao gost. Pokušaj ponovno.",
         "codeHeading": "Unesi svoj kod",
         "codeSubtitle": "Unesi šesteroznamenkasti kod koji smo poslali na {{email}}.",
         "continueWithGoogle": "Nastavi s Googleom",
@@ -18257,6 +18293,9 @@
       "signIn": {
         "emailHeading": "Jelentkezz be vagy hozz létre fiókot",
         "emailSubtitle": "Tartsd elérhetővé a haladásodat minden eszközön.",
+        "signInRequiredSubtitle": "A munkameneted véget ért. Jelentkezz be újra, vagy játssz tovább vendégként.",
+        "continueAsGuest": "Folytatás vendégként",
+        "continueAsGuestFailed": "Nem sikerült vendégként folytatni. Próbáld újra.",
         "codeHeading": "Add meg a kódodat",
         "codeSubtitle": "Add meg a hatjegyű kódot, amelyet a(z) {{email}} címre küldtünk.",
         "continueWithGoogle": "Folytatás Google-lel",
@@ -19673,6 +19712,9 @@
       "signIn": {
         "emailHeading": "Masuk atau buat akun",
         "emailSubtitle": "Jaga progresmu tetap tersedia di semua perangkat.",
+        "signInRequiredSubtitle": "Sesimu telah berakhir. Masuk lagi atau lanjutkan bermain sebagai tamu.",
+        "continueAsGuest": "Lanjutkan sebagai tamu",
+        "continueAsGuestFailed": "Tidak bisa melanjutkan sebagai tamu. Coba lagi.",
         "codeHeading": "Masukkan kodemu",
         "codeSubtitle": "Masukkan kode enam digit yang kami kirim ke {{email}}.",
         "continueWithGoogle": "Lanjutkan dengan Google",
@@ -21089,6 +21131,9 @@
       "signIn": {
         "emailHeading": "Accedi o crea un account",
         "emailSubtitle": "Mantieni i tuoi progressi disponibili su tutti i dispositivi.",
+        "signInRequiredSubtitle": "La tua sessione è terminata. Accedi di nuovo o continua a giocare come ospite.",
+        "continueAsGuest": "Continua come ospite",
+        "continueAsGuestFailed": "Impossibile continuare come ospite. Riprova.",
         "codeHeading": "Inserisci il codice",
         "codeSubtitle": "Inserisci il codice a 6 cifre inviato a {{email}}.",
         "continueWithGoogle": "Continua con Google",
@@ -22505,6 +22550,9 @@
       "signIn": {
         "emailHeading": "サインインまたはアカウント作成",
         "emailSubtitle": "デバイス間で進行状況を利用できるようにします。",
+        "signInRequiredSubtitle": "セッションが終了しました。もう一度サインインするか、ゲストとしてプレイを続けてください。",
+        "continueAsGuest": "ゲストとして続ける",
+        "continueAsGuestFailed": "ゲストとして続けられませんでした。やり直してください。",
         "codeHeading": "コードを入力",
         "codeSubtitle": "{{email}}に送信された6桁のコードを入力してください。",
         "continueWithGoogle": "Googleで続行",
@@ -23921,6 +23969,9 @@
       "signIn": {
         "emailHeading": "로그인 또는 계정 생성",
         "emailSubtitle": "여러 기기에서 진행 상황을 이용할 수 있도록 합니다.",
+        "signInRequiredSubtitle": "세션이 종료되었습니다. 다시 로그인하거나 게스트로 계속 플레이하세요.",
+        "continueAsGuest": "게스트로 계속하기",
+        "continueAsGuestFailed": "게스트로 계속할 수 없습니다. 다시 시도해 주세요.",
         "codeHeading": "코드 입력",
         "codeSubtitle": "{{email}}로 전송된 6자리 코드를 입력해 주세요.",
         "continueWithGoogle": "Google로 계속하기",
@@ -25337,6 +25388,9 @@
       "signIn": {
         "emailHeading": "Log masuk atau cipta akaun",
         "emailSubtitle": "Kekalkan kemajuan anda tersedia pada semua peranti.",
+        "signInRequiredSubtitle": "Sesi anda telah tamat. Log masuk semula atau teruskan bermain sebagai tetamu.",
+        "continueAsGuest": "Teruskan sebagai tetamu",
+        "continueAsGuestFailed": "Tidak dapat meneruskan sebagai tetamu. Cuba lagi.",
         "codeHeading": "Masukkan kod anda",
         "codeSubtitle": "Masukkan kod enam digit yang kami hantar ke {{email}}.",
         "continueWithGoogle": "Teruskan dengan Google",
@@ -26753,6 +26807,9 @@
       "signIn": {
         "emailHeading": "Logg inn eller opprett konto",
         "emailSubtitle": "Hold fremgangen din tilgjengelig på tvers av enheter.",
+        "signInRequiredSubtitle": "Økten din er avsluttet. Logg inn igjen, eller fortsett å spille som gjest.",
+        "continueAsGuest": "Fortsett som gjest",
+        "continueAsGuestFailed": "Kunne ikke fortsette som gjest. Prøv igjen.",
         "codeHeading": "Skriv inn koden din",
         "codeSubtitle": "Skriv inn den 6-sifrede koden vi sendte til {{email}}.",
         "continueWithGoogle": "Fortsett med Google",
@@ -28169,6 +28226,9 @@
       "signIn": {
         "emailHeading": "Aanmelden of account maken",
         "emailSubtitle": "Zorgt dat je voortgang op meerdere apparaten beschikbaar is.",
+        "signInRequiredSubtitle": "Je sessie is beëindigd. Meld je opnieuw aan of speel verder als gast.",
+        "continueAsGuest": "Doorgaan als gast",
+        "continueAsGuestFailed": "Kan niet doorgaan als gast. Probeer het opnieuw.",
         "codeHeading": "Voer de code in",
         "codeSubtitle": "Voer de 6-cijferige code in die naar {{email}} is verzonden.",
         "continueWithGoogle": "Doorgaan met Google",
@@ -29585,6 +29645,9 @@
       "signIn": {
         "emailHeading": "Zaloguj się lub utwórz konto",
         "emailSubtitle": "Zapewnia dostępność Twojego postępu na wielu urządzeniach.",
+        "signInRequiredSubtitle": "Twoja sesja się zakończyła. Zaloguj się ponownie lub graj dalej jako gość.",
+        "continueAsGuest": "Kontynuuj jako gość",
+        "continueAsGuestFailed": "Nie udało się kontynuować jako gość. Spróbuj ponownie.",
         "codeHeading": "Wprowadź kod",
         "codeSubtitle": "Wprowadź 6-cyfrowy kod wysłany na {{email}}.",
         "continueWithGoogle": "Kontynuuj z Google",
@@ -31001,6 +31064,9 @@
       "signIn": {
         "emailHeading": "Iniciar sessão ou criar conta",
         "emailSubtitle": "Mantém o teu progresso disponível em todos os dispositivos.",
+        "signInRequiredSubtitle": "A tua sessão terminou. Inicia sessão novamente ou continua a jogar como convidado.",
+        "continueAsGuest": "Continuar como convidado",
+        "continueAsGuestFailed": "Não foi possível continuar como convidado. Tenta novamente.",
         "codeHeading": "Introduz o teu código",
         "codeSubtitle": "Introduz o código de 6 dígitos que enviámos para {{email}}.",
         "continueWithGoogle": "Continuar com Google",
@@ -32417,6 +32483,9 @@
       "signIn": {
         "emailHeading": "Entrar ou criar conta",
         "emailSubtitle": "Mantenha seu progresso disponível em vários dispositivos.",
+        "signInRequiredSubtitle": "Sua sessão terminou. Entre novamente ou continue jogando como convidado.",
+        "continueAsGuest": "Continuar como convidado",
+        "continueAsGuestFailed": "Não foi possível continuar como convidado. Tente novamente.",
         "codeHeading": "Insira seu código",
         "codeSubtitle": "Insira o código de 6 dígitos que enviamos para {{email}}.",
         "continueWithGoogle": "Continuar com o Google",
@@ -33833,6 +33902,9 @@
       "signIn": {
         "emailHeading": "Autentifică-te sau creează un cont",
         "emailSubtitle": "Păstrează-ți progresul disponibil pe toate dispozitivele.",
+        "signInRequiredSubtitle": "Sesiunea ta s-a încheiat. Autentifică-te din nou sau continuă să joci ca invitat.",
+        "continueAsGuest": "Continuă ca invitat",
+        "continueAsGuestFailed": "Nu s-a putut continua ca invitat. Încearcă din nou.",
         "codeHeading": "Introdu codul tău",
         "codeSubtitle": "Introdu codul din 6 cifre trimis la {{email}}.",
         "continueWithGoogle": "Continuă cu Google",
@@ -35249,6 +35321,9 @@
       "signIn": {
         "emailHeading": "Войти или создать аккаунт",
         "emailSubtitle": "Синхронизируйте прогресс между устройствами.",
+        "signInRequiredSubtitle": "Ваш сеанс завершён. Войдите снова или продолжайте играть как гость.",
+        "continueAsGuest": "Продолжить как гость",
+        "continueAsGuestFailed": "Не удалось продолжить как гость. Повторите попытку.",
         "codeHeading": "Введите код",
         "codeSubtitle": "Введите 6-значный код, отправленный на адрес {{email}}.",
         "continueWithGoogle": "Войти через Google",
@@ -36665,6 +36740,9 @@
       "signIn": {
         "emailHeading": "Prihlás sa alebo si vytvor účet",
         "emailSubtitle": "Udrž si postup dostupný na všetkých zariadeniach.",
+        "signInRequiredSubtitle": "Tvoja relácia sa skončila. Prihlás sa znova alebo pokračuj v hre ako hosť.",
+        "continueAsGuest": "Pokračovať ako hosť",
+        "continueAsGuestFailed": "Nepodarilo sa pokračovať ako hosť. Skús to znova.",
         "codeHeading": "Zadaj svoj kód",
         "codeSubtitle": "Zadaj 6-miestny kód odoslaný na {{email}}.",
         "continueWithGoogle": "Pokračovať s Google",
@@ -38081,6 +38159,9 @@
       "signIn": {
         "emailHeading": "Prijava ali ustvarjanje računa",
         "emailSubtitle": "Ohranite svoj napredek dostopen na vseh napravah.",
+        "signInRequiredSubtitle": "Vaša seja se je končala. Znova se prijavite ali nadaljujte igro kot gost.",
+        "continueAsGuest": "Nadaljuj kot gost",
+        "continueAsGuestFailed": "Nadaljevanje kot gost ni uspelo. Poskusite znova.",
         "codeHeading": "Vnesite svojo kodo",
         "codeSubtitle": "Vnesite 6-mestno kodo, ki smo jo poslali na {{email}}.",
         "continueWithGoogle": "Nadaljuj z Google",
@@ -39497,6 +39578,9 @@
       "signIn": {
         "emailHeading": "Logga in eller skapa konto",
         "emailSubtitle": "Håll dina framsteg tillgängliga på alla enheter.",
+        "signInRequiredSubtitle": "Din session har avslutats. Logga in igen eller fortsätt spela som gäst.",
+        "continueAsGuest": "Fortsätt som gäst",
+        "continueAsGuestFailed": "Det gick inte att fortsätta som gäst. Försök igen.",
         "codeHeading": "Ange din kod",
         "codeSubtitle": "Ange den 6-siffriga koden vi skickade till {{email}}.",
         "continueWithGoogle": "Fortsätt med Google",
@@ -40913,6 +40997,9 @@
       "signIn": {
         "emailHeading": "Mag-log in o gumawa ng account",
         "emailSubtitle": "Panatilihing available ang iyong pag-unlad sa lahat ng device.",
+        "signInRequiredSubtitle": "Natapos na ang iyong session. Mag-sign in ulit o magpatuloy na maglaro bilang guest.",
+        "continueAsGuest": "Magpatuloy bilang guest",
+        "continueAsGuestFailed": "Hindi makapagpatuloy bilang guest. Subukan ulit.",
         "codeHeading": "Ilagay ang iyong code",
         "codeSubtitle": "Ilagay ang 6-digit na code na ipinadala namin sa {{email}}.",
         "continueWithGoogle": "Magpatuloy gamit ang Google",
@@ -42329,6 +42416,9 @@
       "signIn": {
         "emailHeading": "Oturum aç veya hesap oluştur",
         "emailSubtitle": "İlerlemeni cihazlar arasında erişilebilir tut.",
+        "signInRequiredSubtitle": "Oturumun sona erdi. Tekrar giriş yap ya da misafir olarak oynamaya devam et.",
+        "continueAsGuest": "Misafir olarak devam et",
+        "continueAsGuestFailed": "Misafir olarak devam edilemedi. Tekrar dene.",
         "codeHeading": "Kodunu gir",
         "codeSubtitle": "{{email}} adresine gönderdiğimiz 6 haneli kodu gir.",
         "continueWithGoogle": "Google ile devam et",
@@ -43745,6 +43835,9 @@
       "signIn": {
         "emailHeading": "Увійти або створити обліковий запис",
         "emailSubtitle": "Зберігайте свій прогрес доступним на всіх пристроях.",
+        "signInRequiredSubtitle": "Ваш сеанс завершено. Увійдіть знову або продовжуйте грати як гість.",
+        "continueAsGuest": "Продовжити як гість",
+        "continueAsGuestFailed": "Не вдалося продовжити як гість. Спробуйте ще раз.",
         "codeHeading": "Введіть свій код",
         "codeSubtitle": "Введіть 6-значний код, надісланий на {{email}}.",
         "continueWithGoogle": "Продовжити з Google",
@@ -45161,6 +45254,9 @@
       "signIn": {
         "emailHeading": "Đăng nhập hoặc tạo tài khoản",
         "emailSubtitle": "Giữ tiến trình của bạn khả dụng trên các thiết bị.",
+        "signInRequiredSubtitle": "Phiên của bạn đã kết thúc. Đăng nhập lại hoặc tiếp tục chơi với tư cách khách.",
+        "continueAsGuest": "Tiếp tục với tư cách khách",
+        "continueAsGuestFailed": "Không thể tiếp tục với tư cách khách. Vui lòng thử lại.",
         "codeHeading": "Nhập mã của bạn",
         "codeSubtitle": "Nhập mã 6 chữ số chúng tôi đã gửi tới {{email}}.",
         "continueWithGoogle": "Tiếp tục với Google",
@@ -46577,6 +46673,9 @@
       "signIn": {
         "emailHeading": "登录或创建账号",
         "emailSubtitle": "让你的进度在不同设备间保持同步。",
+        "signInRequiredSubtitle": "你的会话已结束。请重新登录，或以游客身份继续游戏。",
+        "continueAsGuest": "以游客身份继续",
+        "continueAsGuestFailed": "无法以游客身份继续。请重试。",
         "codeHeading": "输入验证码",
         "codeSubtitle": "请输入我们发送至 {{email}} 的 6 位数验证码。",
         "continueWithGoogle": "使用 Google 登录",
@@ -47993,6 +48092,9 @@
       "signIn": {
         "emailHeading": "登入或建立帳號",
         "emailSubtitle": "讓你的進度可跨裝置使用。",
+        "signInRequiredSubtitle": "你的工作階段已結束。請重新登入，或以訪客身分繼續遊玩。",
+        "continueAsGuest": "以訪客身分繼續",
+        "continueAsGuestFailed": "無法以訪客身分繼續，請再試一次。",
         "codeHeading": "輸入你的驗證碼",
         "codeSubtitle": "輸入我們傳送至 {{email}} 的 6 位數驗證碼。",
         "continueWithGoogle": "使用 Google 繼續",

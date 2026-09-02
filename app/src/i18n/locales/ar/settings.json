@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "تسجيل الدخول أو إنشاء حساب",
     "emailSubtitle": "حافظ على توفر تقدمك عبر الأجهزة.",
+    "signInRequiredSubtitle": "انتهت جلستك. سجّل الدخول مرة أخرى أو تابع اللعب كضيف.",
+    "continueAsGuest": "المتابعة كضيف",
+    "continueAsGuestFailed": "تعذّرت المتابعة كضيف. أعد المحاولة.",
     "codeHeading": "أدخل الرمز الخاص بك",
     "codeSubtitle": "أدخل الرمز المكون من 6 أرقام الذي أرسلناه إلى {{email}}.",
     "continueWithGoogle": "متابعة باستخدام Google",

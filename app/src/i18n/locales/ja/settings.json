@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "サインインまたはアカウント作成",
     "emailSubtitle": "デバイス間で進行状況を利用できるようにします。",
+    "signInRequiredSubtitle": "セッションが終了しました。もう一度サインインするか、ゲストとしてプレイを続けてください。",
+    "continueAsGuest": "ゲストとして続ける",
+    "continueAsGuestFailed": "ゲストとして続けられませんでした。やり直してください。",
     "codeHeading": "コードを入力",
     "codeSubtitle": "{{email}}に送信された6桁のコードを入力してください。",
     "continueWithGoogle": "Googleで続行",

@@ -149,6 +149,9 @@
   "signIn": {
     "emailHeading": "Logga in eller skapa konto",
     "emailSubtitle": "Håll dina framsteg tillgängliga på alla enheter.",
+    "signInRequiredSubtitle": "Din session har avslutats. Logga in igen eller fortsätt spela som gäst.",
+    "continueAsGuest": "Fortsätt som gäst",
+    "continueAsGuestFailed": "Det gick inte att fortsätta som gäst. Försök igen.",
     "codeHeading": "Ange din kod",
     "codeSubtitle": "Ange den 6-siffriga koden vi skickade till {{email}}.",
     "continueWithGoogle": "Fortsätt med Google",
