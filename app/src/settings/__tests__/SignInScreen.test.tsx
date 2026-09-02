@@ -12,17 +12,27 @@ const mockRouter = {
   replace: jest.fn(),
   back: jest.fn(),
   canGoBack: jest.fn().mockReturnValue(false),
+  navigate: jest.fn(),
+  dismissTo: jest.fn(),
 };
+const mockDispatch = jest.fn();
 
-jest.mock('expo-router', () => ({
-  router: {
-    push: (...args: unknown[]) => mockRouter.push(...args),
-    replace: (...args: unknown[]) => mockRouter.replace(...args),
-    back: (...args: unknown[]) => mockRouter.back(...args),
-    canGoBack: (...args: unknown[]) => mockRouter.canGoBack(...args),
-  },
-  useLocalSearchParams: () => mockParams,
-}));
+jest.mock('expo-router', () => {
+  const React = require('react');
+  return {
+    router: {
+      push: (...args: unknown[]) => mockRouter.push(...args),
+      replace: (...args: unknown[]) => mockRouter.replace(...args),
+      back: (...args: unknown[]) => mockRouter.back(...args),
+      canGoBack: (...args: unknown[]) => mockRouter.canGoBack(...args),
+      navigate: (...args: unknown[]) => mockRouter.navigate(...args),
+      dismissTo: (...args: unknown[]) => mockRouter.dismissTo(...args),
+    },
+    useLocalSearchParams: () => mockParams,
+    useNavigation: () => ({ dispatch: (...args: unknown[]) => mockDispatch(...args) }),
+    useFocusEffect: (effect: () => void) => React.useEffect(effect, [effect]),
+  };
+});
 
 jest.mock('@expo/vector-icons', () => {
   const React = require('react');
@@ -81,6 +91,7 @@ beforeEach(() => {
   mockParams = {};
   mockOnboardingPosition = 'complete';
   mockContinueAsGuest.mockResolvedValue(undefined);
+  mockRouter.canGoBack.mockReturnValue(false);
 });
 
 describe('SignInScreen navigation', () => {
@@ -93,7 +104,8 @@ describe('SignInScreen navigation', () => {
       TestRenderer.create(<SignInScreen />);
     });
 
-    expect(mockRouter.replace).toHaveBeenCalledWith('/(tabs)/(profile)');
+    expect(mockRouter.navigate).toHaveBeenCalledWith('/(tabs)/(profile)');
+    expect(mockDispatch).toHaveBeenCalledWith({ type: 'POP_TO_TOP' });
   });
 
   it('redirects to settings by default when returnTo is not provided', () => {
@@ -104,7 +116,7 @@ describe('SignInScreen navigation', () => {
       TestRenderer.create(<SignInScreen />);
     });
 
-    expect(mockRouter.replace).toHaveBeenCalledWith('/(tabs)/(settings)');
+    expect(mockRouter.dismissTo).toHaveBeenCalledWith('/(tabs)/(settings)');
   });
 
   it('redirects to onboarding welcome when returnTo is /onboarding/welcome', () => {
@@ -115,7 +127,8 @@ describe('SignInScreen navigation', () => {
       TestRenderer.create(<SignInScreen />);
     });
 
-    expect(mockRouter.replace).toHaveBeenCalledWith('/onboarding/welcome');
+    expect(mockRouter.navigate).toHaveBeenCalledWith('/onboarding/welcome');
+    expect(mockDispatch).toHaveBeenCalledWith({ type: 'POP_TO_TOP' });
   });
 
   it('redirects to commerce when returnTo is a commerce target', () => {
@@ -126,10 +139,24 @@ describe('SignInScreen navigation', () => {
       TestRenderer.create(<SignInScreen />);
     });
 
-    expect(mockRouter.replace).toHaveBeenCalledWith({
+    expect(mockRouter.navigate).toHaveBeenCalledWith({
       pathname: '/(tabs)/(profile)/commerce',
       params: { source: 'sign_in_return' },
     });
+    expect(mockDispatch).toHaveBeenCalledWith({ type: 'POP_TO_TOP' });
+  });
+
+  // Regression (#223): replace() left this screen mounted on the (settings)
+  // stack, so the Settings tab restored the code step long after sign-in.
+  it('pops the settings stack so the signed-in player never sees this screen again', () => {
+    mockParams = {};
+    mockIsAccount = true;
+
+    act(() => {
+      TestRenderer.create(<SignInScreen />);
+    });
+
+    expect(mockRouter.replace).not.toHaveBeenCalled();
   });
 });
 
@@ -169,7 +196,8 @@ describe('SignInScreen sign-in gate exit', () => {
     });
 
     expect(mockContinueAsGuest).toHaveBeenCalledTimes(1);
-    expect(mockRouter.replace).toHaveBeenCalledWith('/(tabs)/(catalog)');
+    expect(mockRouter.navigate).toHaveBeenCalledWith('/(tabs)/(catalog)');
+    expect(mockDispatch).toHaveBeenCalledWith({ type: 'POP_TO_TOP' });
   });
 
   // "/" is the Catalog tab's index, so leaving the gate cannot rely on a root
@@ -187,7 +215,7 @@ describe('SignInScreen sign-in gate exit', () => {
       guestExit.props.onPress();
     });
 
-    expect(mockRouter.replace).toHaveBeenCalledWith('/onboarding/welcome');
+    expect(mockRouter.navigate).toHaveBeenCalledWith('/onboarding/welcome');
   });
 
   // A gated player who never receives the emailed code would otherwise be
@@ -210,7 +238,8 @@ describe('SignInScreen sign-in gate exit', () => {
     });
 
     expect(mockContinueAsGuest).toHaveBeenCalledTimes(1);
-    expect(mockRouter.replace).toHaveBeenCalledWith('/(tabs)/(catalog)');
+    expect(mockRouter.navigate).toHaveBeenCalledWith('/(tabs)/(catalog)');
+    expect(mockDispatch).toHaveBeenCalledWith({ type: 'POP_TO_TOP' });
   });
 
   it('keeps the player on the gate and reports a failed guest exit', async () => {
@@ -226,7 +255,8 @@ describe('SignInScreen sign-in gate exit', () => {
       guestExit.props.onPress();
     });
 
-    expect(mockRouter.replace).not.toHaveBeenCalled();
+    expect(mockRouter.navigate).not.toHaveBeenCalled();
+    expect(mockRouter.dismissTo).not.toHaveBeenCalled();
     expect(
       tree.root.findAll(
         (node) =>

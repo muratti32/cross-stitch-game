@@ -6,6 +6,7 @@ import { Theme } from '@/theme/theme';
 import { AnimatedTabBar } from '@/components';
 import * as Haptics from 'expo-haptics';
 import { PLAY_TAB_ROOT } from '@/navigation/exitSession';
+import { SETTINGS_TAB_ROOT } from '@/navigation/exitSignIn';
 
 export const unstable_settings = {
   initialRouteName: '(catalog)',
@@ -33,6 +34,15 @@ export default function TabsLayout() {
   const resetPlayOnPress = () => {
     triggerHaptic();
     router.dismissTo(PLAY_TAB_ROOT);
+  };
+
+  // Same safety net for the sign-in screen, which every tab pushes onto the
+  // (settings) stack. Without it a screen left behind by the hardware back
+  // button or the swipe-back gesture greets the player on the next Settings
+  // press instead of their settings (#223).
+  const resetSettingsOnPress = () => {
+    triggerHaptic();
+    router.dismissTo(SETTINGS_TAB_ROOT);
   };
 
   return (
@@ -123,7 +133,7 @@ export default function TabsLayout() {
           ),
         }}
         listeners={{
-          tabPress: triggerHaptic,
+          tabPress: resetSettingsOnPress,
         }}
       />
     </Tabs>

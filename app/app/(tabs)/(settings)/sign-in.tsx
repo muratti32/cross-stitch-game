@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { Screen, Button, Card } from '@/components';
@@ -12,7 +12,9 @@ import {
   signInWithGoogleSso,
 } from '@/identity/firebaseSso';
 import { isFirebaseSsoConfigured } from '@/config';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'expo-router';
+import type { Href } from 'expo-router';
+import { exitSignIn, SETTINGS_TAB_ROOT } from '@/navigation/exitSignIn';
 import { Ionicons } from '@expo/vector-icons';
 import { isCommerceReturnTarget } from '@/commerce/commerceIntent';
 import { continueAsGuest, useIdentityStore } from '@/identity/guestIdentity';
@@ -22,6 +24,9 @@ import { useTranslation } from 'react-i18next';
 export default function SignInScreen() {
   const { t } = useTranslation('settings');
   const params = useLocalSearchParams<{ returnTo?: string }>();
+  // The `(settings)` Stack this screen was pushed onto. Leaving has to pop it,
+  // or the screen survives on that tab (#223).
+  const navigation = useNavigation();
   const isAccount = useIdentityStore((state) => state.isAccount);
   const requiresSignIn = useIdentityStore((state) => state.requiresSignIn);
   const [step, setStep] = useState<'email' | 'code'>('email');
@@ -48,39 +53,51 @@ export default function SignInScreen() {
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail);
   const validCode = code.length === 6;
 
-  const finishSignIn = () => {
+  const leaveSignIn = useCallback(
+    (target: Href) => {
+      exitSignIn({ router, stack: navigation, target });
+    },
+    [navigation],
+  );
+
+  const signInReturnTarget = (): Href => {
     if (params.returnTo === '/onboarding/welcome') {
-      router.replace('/onboarding/welcome');
-      return;
+      return '/onboarding/welcome';
     }
     if (isCommerceReturnTarget(params.returnTo)) {
-      router.replace({
+      return {
         pathname: '/(tabs)/(profile)/commerce',
         params: { source: 'sign_in_return' },
-      });
-      return;
+      };
     }
     if (params.returnTo === '/(tabs)/(profile)') {
-      router.replace('/(tabs)/(profile)');
-      return;
+      return '/(tabs)/(profile)';
     }
-    router.replace('/(tabs)/(settings)');
+    return SETTINGS_TAB_ROOT;
   };
 
-  useEffect(() => {
-    if (isAccount) {
-      finishSignIn();
-    }
-  }, [isAccount]);
+  const finishSignIn = () => {
+    leaveSignIn(signInReturnTarget());
+  };
+
+  // Re-running the exit on every focus is the self-heal for a screen that was
+  // left behind by an exit path we do not own - the Android hardware back
+  // button, the iOS swipe-back gesture, or a caller added later that forgets to
+  // pop. A signed-in player has no business on this screen (#223).
+  useFocusEffect(
+    useCallback(() => {
+      if (isAccount) {
+        finishSignIn();
+      }
+    }, [isAccount, leaveSignIn, params.returnTo]),
+  );
 
   const onCancel = () => {
     if (router.canGoBack()) {
       router.back();
-    } else if (params.returnTo === '/(tabs)/(profile)') {
-      router.replace('/(tabs)/(profile)');
-    } else {
-      router.replace('/(tabs)/(settings)');
+      return;
     }
+    leaveSignIn(params.returnTo === '/(tabs)/(profile)' ? '/(tabs)/(profile)' : SETTINGS_TAB_ROOT);
   };
 
   /**
@@ -103,8 +120,10 @@ export default function SignInScreen() {
     // here too - a player who left the gate before onboarding still owes the
     // Welcome step.
     const position = getCurrentOnboardingPosition();
-    router.replace(
-      position === 'absent' || position === 'welcome' ? '/onboarding/welcome' : '/(tabs)/(catalog)',
+    leaveSignIn(
+      position === 'absent' || position === 'welcome'
+        ? '/onboarding/welcome'
+        : '/(tabs)/(catalog)',
     );
   };
 
