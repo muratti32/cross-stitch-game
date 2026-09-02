@@ -33,6 +33,10 @@ const SKIPPED_SUMMARY: StorageReconciliationSummary = {
 export class StorageReconcilerService {
   private readonly logger = new Logger(StorageReconcilerService.name);
   private activePass: Promise<StorageReconciliationSummary> | null = null;
+  private lastScan: {
+    discrepancies: StorageReconciliationDiscrepancies;
+    scannedAt: number;
+  } | null = null;
 
   constructor(
     @InjectRepository(ObjectRegistryEntity)
@@ -169,14 +173,39 @@ export class StorageReconcilerService {
   }
 
   /**
+   * Same comparison as reportDiscrepancies, but the bucket listing is refreshed
+   * at most once per STORAGE_BUCKET_LISTING_INTERVAL_SECONDS; in between, the
+   * last scan's result is replayed unchanged.
+   *
+   * A bucket listing is Class A object storage traffic and costs one request per
+   * 1000 keys, so listing on every reconciliation tick made the cost
+   * `bucket size / 1000 x ticks per day` (issue #222). The operator report is a
+   * slow-moving inventory comparison, not a live signal, so replaying the last
+   * scan keeps the reported counts stable while the listing runs daily.
+   */
+  async reportDiscrepanciesCached(
+    now = Date.now(),
+  ): Promise<StorageReconciliationDiscrepancies> {
+    const maxAgeMs = this.config.storageBucketListingIntervalSeconds * 1000;
+    const cached = this.lastScan;
+    if (cached !== null && now - cached.scannedAt < maxAgeMs) {
+      return cached.discrepancies;
+    }
+    return this.reportDiscrepancies(now);
+  }
+
+  /**
    * Read-only storage comparison used by the operator reconciliation report.
    * Cleanup stays in reconcileOnce; this method deliberately never deletes or
    * mutates registry rows.
    *
    * Both sides are derived from a single bucket listing, so the report costs one
    * paginated `list` instead of one remote existence check per active object.
+   * It always lists; periodic callers use reportDiscrepanciesCached instead.
    */
-  async reportDiscrepancies(): Promise<StorageReconciliationDiscrepancies> {
+  async reportDiscrepancies(
+    now = Date.now(),
+  ): Promise<StorageReconciliationDiscrepancies> {
     const activeRows = await this.objectRegistryRepo.find({
       where: [{ state: 'committed' }, { state: 'available' }],
     });
@@ -190,9 +219,11 @@ export class StorageReconcilerService {
     const registeredKeys = new Set(registryRows.map((row) => row.objectKey));
     const orphans = [...storedKeys].filter((key) => !registeredKeys.has(key));
 
-    return {
+    const discrepancies: StorageReconciliationDiscrepancies = {
       registryMissingObjectKeys: missing,
       storageOrphanObjectKeys: orphans,
     };
+    this.lastScan = { discrepancies, scannedAt: now };
+    return discrepancies;
   }
 }

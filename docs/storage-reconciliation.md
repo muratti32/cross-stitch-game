@@ -38,11 +38,27 @@ active objects that is 6K checks/day, against roughly 8.6M/day before the change
 
 The read-only report behind the reconciliation run derives both missing objects
 and orphans from a single paginated bucket listing, so it costs one `list` per
-run instead of one `HeadObject` per active object. It runs every
-`RECONCILIATION_INTERVAL_SECONDS` (default 900) and never mutates registry rows.
+scan instead of one `HeadObject` per active object. It never mutates registry
+rows.
+
+The reconciliation run itself still ticks every `RECONCILIATION_INTERVAL_SECONDS`
+(default 900), but the bucket listing behind it refreshes at most once per
+`STORAGE_BUCKET_LISTING_INTERVAL_SECONDS` (default 86400). Between scans each run
+replays the last scan's missing/orphan findings unchanged, so the reported counts
+stay stable while the listing cost drops from 96 scans/day to 1. The cache lives
+in the worker process, so a restart triggers a fresh scan on the next tick.
+
+Listings are **Class A** object storage operations billed one request per 1000
+keys, so before this cadence a bucket of N objects cost
+`96 x ceil(N / 1000)` Class A requests per day (issue #222). It is now
+`ceil(N / 1000)`.
 
 ## Verifying a deployment
 
 After deploying, compare the bucket's Class B operation rate with the number of
 active object registry rows. The daily request count should approach the number
 of active rows, not a multiple of it.
+
+For Class A, the daily count should be roughly `ceil(objects / 1000)` plus the
+`PutObject` traffic from real uploads (each published Pattern writes an
+artifact, a preview, and two thumbnails), with no flat overnight baseline.

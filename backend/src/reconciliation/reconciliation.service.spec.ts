@@ -45,7 +45,7 @@ function buildService(params?: {
     transaction: async <T>(work: (transactionManager: EntityManager) => Promise<T>) => work(manager),
   } as unknown as DataSource;
   const storage = {
-    reportDiscrepancies: jest.fn().mockResolvedValue(params?.storage ?? {
+    reportDiscrepanciesCached: jest.fn().mockResolvedValue(params?.storage ?? {
       registryMissingObjectKeys: [], storageOrphanObjectKeys: [],
     }),
   } as unknown as StorageReconcilerService;

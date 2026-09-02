@@ -256,6 +256,12 @@ export class AppConfigService {
     });
   }
 
+  get storageBucketListingIntervalSeconds(): number {
+    return this.configService.get('STORAGE_BUCKET_LISTING_INTERVAL_SECONDS', {
+      infer: true,
+    });
+  }
+
   get storageObjectVerificationIntervalSeconds(): number {
     return this.configService.get('STORAGE_OBJECT_VERIFICATION_INTERVAL_SECONDS', {
       infer: true,

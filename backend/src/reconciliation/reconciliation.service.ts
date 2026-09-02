@@ -66,7 +66,7 @@ export class ReconciliationService {
     );
     const [commerceFindings, storageFindings, reservationFindings] = await Promise.all([
       this.findCommerceDiscrepancies(commerceWindowStart),
-      this.findStorageDiscrepancies(),
+      this.findStorageDiscrepancies(now),
       this.findStuckReservations(reservationCutoff),
     ]);
     const pendingFindings = [
@@ -166,8 +166,15 @@ export class ReconciliationService {
     ];
   }
 
-  private async findStorageDiscrepancies(): Promise<readonly PendingFinding[]> {
-    const discrepancies = await this.storageReconciler.reportDiscrepancies();
+  private async findStorageDiscrepancies(
+    now: Date,
+  ): Promise<readonly PendingFinding[]> {
+    // Cached: the bucket listing behind this comparison is Class A object
+    // storage traffic, so it refreshes on its own daily cadence rather than on
+    // every reconciliation tick (issue #222).
+    const discrepancies = await this.storageReconciler.reportDiscrepanciesCached(
+      now.getTime(),
+    );
     return [
       ...discrepancies.registryMissingObjectKeys.map((objectKey) => ({
         detail: null,

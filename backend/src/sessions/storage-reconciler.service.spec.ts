@@ -7,12 +7,15 @@ import { StorageReconcilerService } from './storage-reconciler.service';
 
 function config(overrides: Partial<{
   batchSize: number;
+  bucketListingIntervalSeconds: number;
   verificationIntervalSeconds: number;
   verificationEnabled: boolean;
 }> = {}): AppConfigService {
   return {
     storageObjectVerificationEnabled: overrides.verificationEnabled ?? true,
     storageReconcilerBatchSize: overrides.batchSize ?? 250,
+    storageBucketListingIntervalSeconds:
+      overrides.bucketListingIntervalSeconds ?? 86400,
     storageObjectVerificationIntervalSeconds:
       overrides.verificationIntervalSeconds ?? 86400,
   } as unknown as AppConfigService;
@@ -243,4 +246,40 @@ describe('StorageReconcilerService reporting', () => {
     expect(storage.exists).not.toHaveBeenCalled();
     expect(storage.list).toHaveBeenCalledTimes(1);
   });
+
+  it('replays the last scan instead of listing the bucket again within the listing interval', async () => {
+    const { service, storage } = reportingService();
+
+    const first = await service.reportDiscrepanciesCached(0);
+    const second = await service.reportDiscrepanciesCached(86_399_000);
+
+    expect(second).toEqual(first);
+    expect(storage.list).toHaveBeenCalledTimes(1);
+  });
+
+  it('lists the bucket again once the listing interval has elapsed', async () => {
+    const { service, storage } = reportingService();
+
+    await service.reportDiscrepanciesCached(0);
+    await service.reportDiscrepanciesCached(86_400_000);
+
+    expect(storage.list).toHaveBeenCalledTimes(2);
+  });
 });
+
+function reportingService(): {
+  service: StorageReconcilerService;
+  storage: ObjectStorage;
+} {
+  const repository = {
+    find: jest.fn().mockResolvedValue([{ objectKey: 'patterns/healthy.bin' }]),
+  } as unknown as Repository<ObjectRegistryEntity>;
+  const storage = {
+    exists: jest.fn(),
+    list: jest.fn().mockResolvedValue(['patterns/healthy.bin', 'patterns/orphan.bin']),
+  } as unknown as ObjectStorage;
+  return {
+    service: new StorageReconcilerService(repository, storage, config()),
+    storage,
+  };
+}
