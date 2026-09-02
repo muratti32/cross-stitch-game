@@ -262,6 +262,12 @@ export class AppConfigService {
     });
   }
 
+  get aiArtworkReconcileIntervalSeconds(): number {
+    return this.configService.get('AI_ARTWORK_RECONCILE_INTERVAL_SECONDS', {
+      infer: true,
+    });
+  }
+
   get storageObjectVerificationIntervalSeconds(): number {
     return this.configService.get('STORAGE_OBJECT_VERIFICATION_INTERVAL_SECONDS', {
       infer: true,

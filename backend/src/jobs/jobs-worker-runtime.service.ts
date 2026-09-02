@@ -99,10 +99,12 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     }, this.config.operationalAlertsEvaluationIntervalSeconds * 1000);
     void this.operationalAlerts.runOnce();
 
+    // Safety net only: fal.ai's webhook is the primary delivery path, so this
+    // poll runs on a configured cadence rather than every few seconds (#223).
     void this.reconcileAiArtworks();
     this.aiArtworkReconcileTimer = setInterval(() => {
       void this.reconcileAiArtworks();
-    }, 15000);
+    }, this.config.aiArtworkReconcileIntervalSeconds * 1000);
 
     this.logger.log('Jobs worker runtime started');
   }

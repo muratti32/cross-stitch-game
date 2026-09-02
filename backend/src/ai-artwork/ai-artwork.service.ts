@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, HttpException, Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, HttpException, Inject, Injectable, Logger, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createHash, createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 import { DataSource, EntityManager, Repository } from 'typeorm';
@@ -22,6 +22,7 @@ import { paidDebitUpdateExpression } from '../economy/paid-reserve';
 
 @Injectable()
 export class AiArtworkService {
+  private readonly logger = new Logger(AiArtworkService.name);
   constructor(private readonly dataSource: DataSource, private readonly jobs: ProcessingJobsRepository, private readonly moderation: PromptModerationService, private readonly fal: FalArtworkProviderService, private readonly conversions: ConversionService, private readonly supportReferences: SupportReferenceService, @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage, @InjectRepository(AiArtworkEntity) private readonly artworks: Repository<AiArtworkEntity>, private readonly accountStateService: AccountStateService, private readonly config: AppConfigService) {}
   async create(principal: AuthPrincipal, dto: CreateAiArtworkDto) {
     const owner = this.owner(principal); const status = await this.accountStatus(principal); if (status === 'closing') throw new ForbiddenException('Account is closing'); const prompt = dto.prompt.trim();
@@ -122,8 +123,20 @@ export class AiArtworkService {
     if (result.failed) return this.release(a, 'failed', 'fal.ai terminal failure');
     if (result.unsafe) return this.release(a, 'safety_rejected', 'Provider safety rejection');
     const image = await fetch(result.url); if (!image.ok) throw new Error('Could not copy fal.ai output'); const bytes = Buffer.from(await image.arrayBuffer()); const contentType = image.headers.get('content-type')?.split(';')[0] ?? 'image/png'; const key = `ai-artworks/${a.accountId ?? a.guestInstallationId}/${a.id}/source`;
-    await this.storage.put(key, bytes, contentType);
-    await this.dataSource.transaction(async (m) => { const current = await m.getRepository(AiArtworkEntity).findOne({ where: { id: a.id }, lock: { mode: 'pessimistic_write' } }); if (!current || current.status !== 'submitted' || current.providerRequestId !== requestId) return; await m.getRepository(AiArtworkEntity).update({ id: a.id }, { status: 'delivered', imageObjectKey: key, imageContentType: contentType, imageChecksum: createHash('sha256').update(bytes).digest('hex'), imageByteLength: String(bytes.length) }); await this.capture(m, current); await this.jobs.completeFromRunning(a.processingJobId, { artworkId: a.id }, m); });
+    // The provider output for a given request never changes, so an object that
+    // is already at the key is the copy an earlier pass wrote. Re-uploading it
+    // is a Class A object storage write, and an artwork that never leaves
+    // `submitted` repeats that write on every reconcile tick (issue #223).
+    if (!(await this.storage.exists(key))) {
+      await this.storage.put(key, bytes, contentType);
+    }
+    const finalized = await this.dataSource.transaction(async (m) => { const current = await m.getRepository(AiArtworkEntity).findOne({ where: { id: a.id }, lock: { mode: 'pessimistic_write' } }); if (!current || current.status !== 'submitted' || current.providerRequestId !== requestId) return false; await m.getRepository(AiArtworkEntity).update({ id: a.id }, { status: 'delivered', imageObjectKey: key, imageContentType: contentType, imageChecksum: createHash('sha256').update(bytes).digest('hex'), imageByteLength: String(bytes.length) }); await this.capture(m, current); await this.jobs.completeFromRunning(a.processingJobId, { artworkId: a.id }, m); return true; });
+    // A pass that copied the output but could not finalize the row leaves the
+    // artwork to be picked up again on the next tick, so surface it instead of
+    // letting it retry silently forever.
+    if (!finalized) {
+      this.logger.warn(`AI Artwork ${a.id} was not finalized for provider request ${requestId} (status ${a.status})`);
+    }
   }
   async reconcilePending() { const rows = await this.artworks.find({ where: { status: 'submitted' } }); for (const a of rows) if (a.providerRequestId) await this.reconcile(a.providerRequestId); }
   async failExhausted(jobId: string, reason: string) { const a = await this.artworks.findOneBy({ processingJobId: jobId }); if (a?.status === 'pending') await this.release(a, 'failed', reason); }

@@ -62,3 +62,16 @@ of active rows, not a multiple of it.
 For Class A, the daily count should be roughly `ceil(objects / 1000)` plus the
 `PutObject` traffic from real uploads (each published Pattern writes an
 artifact, a preview, and two thumbnails), with no flat overnight baseline.
+
+A flat Class A baseline is far more likely to be `PutObject` than listings. The
+account-level breakdown separates them:
+
+```graphql
+r2OperationsAdaptiveGroups(limit: 100, filter: { datetime_geq: $since, datetime_lt: $until })
+{ sum { requests } dimensions { bucketName actionType actionStatus } }
+```
+
+Issue #223 was exactly that shape: the AI Artwork delivery poll re-copied the
+provider output for every artwork stuck in `submitted`, once per tick, which is
+one Class A write per pass. The poll now skips the upload when the object is
+already in the bucket and logs a warning when a pass cannot finalize the row.

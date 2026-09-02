@@ -29,6 +29,7 @@ describe('AiArtworkService - Account Closing Behaviors', () => {
   let jobsRepoMock: {
     findById: jest.Mock;
     failFromRunning: jest.Mock;
+    completeFromRunning: jest.Mock;
   };
   let dataSourceMock: {
     transaction: jest.Mock;
@@ -47,6 +48,8 @@ describe('AiArtworkService - Account Closing Behaviors', () => {
   };
   let storageMock: {
     get: jest.Mock;
+    put: jest.Mock;
+    exists: jest.Mock;
   };
 
   beforeEach(() => {
@@ -64,6 +67,7 @@ describe('AiArtworkService - Account Closing Behaviors', () => {
     jobsRepoMock = {
       findById: jest.fn(),
       failFromRunning: jest.fn().mockResolvedValue(true),
+      completeFromRunning: jest.fn().mockResolvedValue(true),
     };
 
     const fakeReservationRepo = {
@@ -72,6 +76,7 @@ describe('AiArtworkService - Account Closing Behaviors', () => {
     };
 
     const fakeManager = {
+      query: jest.fn().mockResolvedValue([]),
       getRepository: jest.fn().mockImplementation((entity: unknown) => {
         if (entity === AiArtworkEntity) return artworksRepoMock;
         if (entity === AiCreditReservationEntity) return fakeReservationRepo;
@@ -96,6 +101,8 @@ describe('AiArtworkService - Account Closing Behaviors', () => {
     };
     storageMock = {
       get: jest.fn(),
+      put: jest.fn().mockResolvedValue(undefined),
+      exists: jest.fn().mockResolvedValue(false),
     };
 
     service = new AiArtworkService(
@@ -323,5 +330,51 @@ describe('AiArtworkService - Account Closing Behaviors', () => {
       expect(falMock.result).toHaveBeenCalledWith('request-id');
       expect(accountStateServiceMock.getAccountStatus).not.toHaveBeenCalled();
     });
+
+    // Issue #223: an artwork that never leaves `submitted` is retried by the
+    // worker poll, and each pass used to re-upload the provider output, which
+    // is a Class A object storage write.
+    it('copies the provider output when the bucket has no object for the artwork yet', async () => {
+      mockDeliverableArtwork();
+
+      await service.reconcile('request-id');
+
+      expect(storageMock.put).toHaveBeenCalledWith(
+        'ai-artworks/test-account-id/artwork-id/source',
+        expect.any(Buffer),
+        'image/png',
+      );
+    });
+
+    it('does not re-upload the provider output when the object is already in the bucket', async () => {
+      mockDeliverableArtwork();
+      storageMock.exists.mockResolvedValue(true);
+
+      await service.reconcile('request-id');
+
+      expect(storageMock.exists).toHaveBeenCalledWith(
+        'ai-artworks/test-account-id/artwork-id/source',
+      );
+      expect(storageMock.put).not.toHaveBeenCalled();
+    });
   });
+
+  function mockDeliverableArtwork(): void {
+    const artwork = {
+      id: 'artwork-id',
+      accountId: 'test-account-id',
+      guestInstallationId: null,
+      processingJobId: 'job-id',
+      providerRequestId: 'request-id',
+      status: 'submitted',
+    };
+    artworksRepoMock.findOneBy.mockResolvedValue(artwork);
+    artworksRepoMock.findOne.mockResolvedValue(artwork);
+    falMock.result.mockResolvedValue({ unsafe: false, url: 'https://fal.example/output.png' });
+    globalThis.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
+      headers: { get: () => 'image/png' },
+    }) as unknown as typeof fetch;
+  }
 });
