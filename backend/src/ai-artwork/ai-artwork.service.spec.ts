@@ -357,6 +357,24 @@ describe('AiArtworkService - Account Closing Behaviors', () => {
       );
       expect(storageMock.put).not.toHaveBeenCalled();
     });
+
+    it('does not touch object storage for an artwork the owner deleted', async () => {
+      mockDeliverableArtwork();
+      artworksRepoMock.findOneBy.mockResolvedValue({
+        id: 'artwork-id',
+        accountId: 'test-account-id',
+        guestInstallationId: null,
+        processingJobId: 'job-id',
+        providerRequestId: 'request-id',
+        status: 'deleted',
+      });
+
+      await service.reconcile('request-id');
+
+      expect(falMock.result).not.toHaveBeenCalled();
+      expect(storageMock.exists).not.toHaveBeenCalled();
+      expect(storageMock.put).not.toHaveBeenCalled();
+    });
   });
 
   function mockDeliverableArtwork(): void {

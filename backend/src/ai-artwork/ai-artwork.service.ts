@@ -11,7 +11,7 @@ import { AI_ARTWORK_JOB_EVENT_NAME, AI_ARTWORK_JOB_TYPE } from '../jobs/jobs.con
 import { AiCreditLedgerReason } from '../economy/entities/ai-credit-ledger-reason.enum';
 import { ApproveAiArtworkDto } from './dto/approve-ai-artwork.dto';
 import { CreateAiArtworkDto } from './dto/create-ai-artwork.dto';
-import { AiArtworkEntity, AiCreditReservationEntity } from './entities';
+import { AiArtworkEntity, AiCreditReservationEntity, type AiArtworkStatus } from './entities';
 import { PromptModerationService } from './prompt-moderation.service';
 import { FalArtworkProviderService, FalArtworkSubmissionRejectedError } from './fal-artwork-provider.service';
 import { SupportReferenceService } from '../support/support-reference.service';
@@ -19,6 +19,14 @@ import { AccountStateService } from '../deletion/account-state.service';
 import { AppConfigService } from '../config/app-config.service';
 import { toCommerceOwnerPrincipal, type CommerceOwnerPrincipal } from '../economy/commerce-owner';
 import { paidDebitUpdateExpression } from '../economy/paid-reserve';
+
+// Statuses no delivery pass may act on: the artwork has either reached its
+// outcome or lost its owner, so there is nothing left to copy or finalize.
+const TERMINAL_ARTWORK_STATUSES: readonly AiArtworkStatus[] = ['delivered', 'failed', 'safety_rejected', 'deleted', 'cancelled'];
+
+function isTerminalArtworkStatus(status: AiArtworkStatus): boolean {
+  return TERMINAL_ARTWORK_STATUSES.includes(status);
+}
 
 @Injectable()
 export class AiArtworkService {
@@ -55,7 +63,7 @@ export class AiArtworkService {
   async approve(principal: AuthPrincipal, id: string, dto: ApproveAiArtworkDto) { const status = await this.accountStatus(principal); if (status === 'closing') throw new ForbiddenException('Account is closing'); const a = await this.owned(principal, id); if (a.status !== 'delivered' || !a.imageObjectKey || !a.imageContentType) throw new ConflictException('Artwork is not ready for approval'); const bytes = await this.storage.get(a.imageObjectKey); if (!bytes) throw new ConflictException('Artwork bytes are unavailable'); return this.conversions.createPhotoConversion(principal, dto, { buffer: bytes, mimetype: a.imageContentType, size: bytes.length }); }
   async process(jobId: string): Promise<void> {
     const a = await this.artworks.findOneBy({ processingJobId: jobId }); if (!a) throw new Error('AI artwork input is missing');
-    if (a.status === 'delivered' || a.status === 'safety_rejected' || a.status === 'failed') return;
+    if (isTerminalArtworkStatus(a.status)) return;
     if (a.providerRequestId) { await this.reconcile(a.providerRequestId); return; }
     const base = this.config.falWebhookBaseUrl; const secret = this.config.falWebhookSecret;
     if (!base || !secret) throw new Error('fal.ai webhook is not configured');
@@ -118,7 +126,10 @@ export class AiArtworkService {
     if (!a) {
       return;
     }
-    if (a.status === 'delivered' || a.status === 'failed' || a.status === 'safety_rejected') return;
+    // `deleted` and `cancelled` are as terminal as a delivery: the owner is
+    // gone, so copying the provider output would resurrect an object `delete`
+    // already removed and leave the row unfinalizable, retrying forever (#223).
+    if (isTerminalArtworkStatus(a.status)) return;
     const result = await this.fal.result(requestId); if (!result) return;
     if (result.failed) return this.release(a, 'failed', 'fal.ai terminal failure');
     if (result.unsafe) return this.release(a, 'safety_rejected', 'Provider safety rejection');
