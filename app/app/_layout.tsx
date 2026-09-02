@@ -5,7 +5,11 @@ import * as Sentry from '@sentry/react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryProvider } from '../src/providers';
 import * as SplashScreen from 'expo-splash-screen';
-import { getCurrentOnboardingPosition, type OnboardingPosition } from '../src/onboarding/state';
+import {
+  getCurrentOnboardingPosition,
+  getStartupOnboardingState,
+  type OnboardingPosition,
+} from '../src/onboarding/state';
 import { prepareOnboardingStartup } from '../src/onboarding/startup';
 import { useGameplayStore } from '../src/store/gameplayStore';
 import { bootstrap, useIdentityStore } from '../src/identity/guestIdentity';
@@ -50,12 +54,40 @@ function RootLayout() {
   const analyticsRetryDelayRef = useRef(ANALYTICS_RETRY_INITIAL_MS);
   const analyticsNextRetryAtRef = useRef(0);
   const initialURLHandledRef = useRef(false);
+  const rootEntryGateAppliedRef = useRef(false);
+  // The foreground lifecycle subscription must outlive individual navigations,
+  // so it reads the live route through refs instead of closing over them.
+  const pathnameRef = useRef(pathname);
+  const segmentsRef = useRef(segments);
+  const requiresSignInRef = useRef(requiresSignIn);
+  pathnameRef.current = pathname;
+  segmentsRef.current = segments;
+  requiresSignInRef.current = requiresSignIn;
 
   useEffect(() => {
     if (requiresSignIn && !pathname.endsWith('/sign-in')) {
       router.replace('/(tabs)/(settings)/sign-in');
     }
   }, [pathname, requiresSignIn]);
+
+  // The root path "/" is owned by the Catalog tab's index, so a first launch
+  // renders Catalog instead of the onboarding gate. Apply that gate here, once
+  // per app start, as soon as the durable startup state is known.
+  useEffect(() => {
+    if (!dbReady || requiresSignIn || rootEntryGateAppliedRef.current) return;
+    rootEntryGateAppliedRef.current = true;
+    const { position, tutorialSessionId } = getStartupOnboardingState();
+    if (position === 'absent' || position === 'welcome') {
+      router.replace('/onboarding/welcome');
+      return;
+    }
+    if (position === 'in_tutorial' && tutorialSessionId) {
+      router.replace({
+        pathname: '/(tabs)/(play)/[sessionId]',
+        params: { sessionId: tutorialSessionId },
+      });
+    }
+  }, [dbReady, requiresSignIn]);
 
   // This extends the root lifecycle sync trigger already used for pending
   // personal patterns. The retry gate avoids a new reachability subsystem while
@@ -159,20 +191,24 @@ function RootLayout() {
     let disposed = false;
     const handleActive = () => {
       if (disposed) return;
+      // Route state is read through refs, never through this closure: the
+      // effect must not resubscribe on every navigation, or the cold-start
+      // getInitialURL() continuation below is disposed before it can run.
+      const currentSegments = segmentsRef.current;
       handleForegroundLifecycle(
         'active',
         {
-          requiresSignIn,
+          requiresSignIn: requiresSignInRef.current,
           // Onboarding can advance while this root component stays mounted.
           // Read the process-current durable state instead of the startup
           // render snapshot captured by this lifecycle callback.
           onboardingPosition: getCurrentOnboardingPosition(),
           // A mounted session must remain visible through an ordinary return.
-          activeStitchingSession: isActiveStitchingSessionRoute(segments),
+          activeStitchingSession: isActiveStitchingSessionRoute(currentSegments),
         },
         router,
-        pathname,
-        segments,
+        pathnameRef.current,
+        currentSegments,
       );
       syncPendingPersonalPatterns().catch(() => undefined);
       void flushAnalytics();
@@ -200,7 +236,7 @@ function RootLayout() {
       sub.remove();
       inboundSubscription.remove();
     };
-  }, [dbReady, flushAnalytics, onboardingPosition, pathname, requiresSignIn, segments]);
+  }, [dbReady, flushAnalytics, onboardingPosition]);
 
   useEffect(() => {
     const timer = setInterval(() => {

@@ -16,6 +16,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { isCommerceReturnTarget } from '@/commerce/commerceIntent';
 import { continueAsGuest, useIdentityStore } from '@/identity/guestIdentity';
+import { getCurrentOnboardingPosition } from '@/onboarding/state';
 import { useTranslation } from 'react-i18next';
 
 export default function SignInScreen() {
@@ -98,7 +99,13 @@ export default function SignInScreen() {
     } finally {
       setLeavingGate(false);
     }
-    router.replace('/');
+    // "/" is the Catalog tab's index, so the onboarding gate has to be applied
+    // here too - a player who left the gate before onboarding still owes the
+    // Welcome step.
+    const position = getCurrentOnboardingPosition();
+    router.replace(
+      position === 'absent' || position === 'welcome' ? '/onboarding/welcome' : '/(tabs)/(catalog)',
+    );
   };
 
   const onSendCode = async () => {

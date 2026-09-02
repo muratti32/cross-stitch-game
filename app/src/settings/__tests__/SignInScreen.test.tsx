@@ -5,6 +5,7 @@ import SignInScreen from '../../../app/(tabs)/(settings)/sign-in';
 let mockIsAccount = false;
 let mockRequiresSignIn = false;
 let mockParams: { returnTo?: string } = {};
+let mockOnboardingPosition = 'complete';
 const mockContinueAsGuest = jest.fn().mockResolvedValue(undefined);
 const mockRouter = {
   push: jest.fn(),
@@ -49,6 +50,10 @@ jest.mock('@/identity/guestIdentity', () => ({
   continueAsGuest: (...args: unknown[]) => mockContinueAsGuest(...args),
 }));
 
+jest.mock('@/onboarding/state', () => ({
+  getCurrentOnboardingPosition: () => mockOnboardingPosition,
+}));
+
 jest.mock('@/identity/emailAuth', () => ({
   requestEmailOtp: jest.fn().mockResolvedValue(undefined),
   verifyEmailOtp: jest.fn().mockResolvedValue({ kind: 'verified' }),
@@ -74,6 +79,7 @@ beforeEach(() => {
   mockIsAccount = false;
   mockRequiresSignIn = false;
   mockParams = {};
+  mockOnboardingPosition = 'complete';
   mockContinueAsGuest.mockResolvedValue(undefined);
 });
 
@@ -149,7 +155,7 @@ describe('SignInScreen sign-in gate exit', () => {
     expect(findByLabel(tree, 'Continue as guest')).toHaveLength(0);
   });
 
-  it('leaves the gate as a Guest Player and returns to the root route', async () => {
+  it('leaves the gate as a Guest Player and returns to the Catalog', async () => {
     mockRequiresSignIn = true;
     let tree!: TestRenderer.ReactTestRenderer;
     act(() => {
@@ -163,7 +169,25 @@ describe('SignInScreen sign-in gate exit', () => {
     });
 
     expect(mockContinueAsGuest).toHaveBeenCalledTimes(1);
-    expect(mockRouter.replace).toHaveBeenCalledWith('/');
+    expect(mockRouter.replace).toHaveBeenCalledWith('/(tabs)/(catalog)');
+  });
+
+  // "/" is the Catalog tab's index, so leaving the gate cannot rely on a root
+  // route gate to hand a new player their Welcome step.
+  it('sends a Guest Player who still owes onboarding to Welcome', async () => {
+    mockRequiresSignIn = true;
+    mockOnboardingPosition = 'welcome';
+    let tree!: TestRenderer.ReactTestRenderer;
+    act(() => {
+      tree = TestRenderer.create(<SignInScreen />);
+    });
+
+    const [guestExit] = findByLabel(tree, 'Continue as guest');
+    await act(async () => {
+      guestExit.props.onPress();
+    });
+
+    expect(mockRouter.replace).toHaveBeenCalledWith('/onboarding/welcome');
   });
 
   // A gated player who never receives the emailed code would otherwise be
@@ -186,7 +210,7 @@ describe('SignInScreen sign-in gate exit', () => {
     });
 
     expect(mockContinueAsGuest).toHaveBeenCalledTimes(1);
-    expect(mockRouter.replace).toHaveBeenCalledWith('/');
+    expect(mockRouter.replace).toHaveBeenCalledWith('/(tabs)/(catalog)');
   });
 
   it('keeps the player on the gate and reports a failed guest exit', async () => {
