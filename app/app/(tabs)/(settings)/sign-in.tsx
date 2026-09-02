@@ -92,12 +92,13 @@ export default function SignInScreen() {
     setLeavingGate(true);
     try {
       await continueAsGuest();
-      router.replace('/');
     } catch {
       setError(t('signIn.continueAsGuestFailed'));
+      return;
     } finally {
       setLeavingGate(false);
     }
+    router.replace('/');
   };
 
   const onSendCode = async () => {
@@ -177,6 +178,19 @@ export default function SignInScreen() {
       setSocialProvider(null);
     }
   };
+
+  // The gate replaces every route, so its exit has to be reachable from both
+  // steps - a player who cannot receive the emailed code is otherwise stranded
+  // on the code step.
+  const guestExit = (
+    <Button
+      title={t('signIn.continueAsGuest')}
+      variant="secondary"
+      loading={leavingGate}
+      disabled={leavingGate || submitting}
+      onPress={onContinueAsGuest}
+    />
+  );
 
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
@@ -267,15 +281,7 @@ export default function SignInScreen() {
               onPress={onSendCode}
             />
             <View style={styles.buttonSpacer} />
-            {requiresSignIn ? (
-              <Button
-                title={t('signIn.continueAsGuest')}
-                variant="secondary"
-                loading={leavingGate}
-                disabled={leavingGate || submitting}
-                onPress={onContinueAsGuest}
-              />
-            ) : (
+            {requiresSignIn ? guestExit : (
               <Button title={t('signIn.cancel')} variant="secondary" onPress={onCancel} />
             )}
           </View>
@@ -322,6 +328,10 @@ export default function SignInScreen() {
                 <Text style={styles.linkText}>{t('signIn.useDifferentEmail')}</Text>
               </Pressable>
             </View>
+
+            {requiresSignIn && (
+              <View style={styles.gateExitRow}>{guestExit}</View>
+            )}
           </View>
         )}
       </Card>
@@ -440,6 +450,9 @@ const styles = StyleSheet.create({
   },
   buttonSpacer: {
     height: Theme.spacing.md,
+  },
+  gateExitRow: {
+    marginTop: Theme.spacing.lg,
   },
   errorContainer: {
     flexDirection: 'row',

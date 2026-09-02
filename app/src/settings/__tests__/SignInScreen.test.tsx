@@ -69,14 +69,15 @@ jest.mock('@/navigation/foregroundEntryNavigation', () => ({
   withProtectedRoundTrip: jest.fn((fn) => fn()),
 }));
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockIsAccount = false;
+  mockRequiresSignIn = false;
+  mockParams = {};
+  mockContinueAsGuest.mockResolvedValue(undefined);
+});
+
 describe('SignInScreen navigation', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockIsAccount = false;
-    mockRequiresSignIn = false;
-    mockParams = {};
-    mockContinueAsGuest.mockResolvedValue(undefined);
-  });
 
   it('redirects to profile tab when returnTo is /(tabs)/(profile) and sign-in completes', () => {
     mockParams = { returnTo: '/(tabs)/(profile)' };
@@ -132,14 +133,6 @@ describe('SignInScreen navigation', () => {
  * back into the game.
  */
 describe('SignInScreen sign-in gate exit', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockIsAccount = false;
-    mockRequiresSignIn = false;
-    mockParams = {};
-    mockContinueAsGuest.mockResolvedValue(undefined);
-  });
-
   function findByLabel(tree: TestRenderer.ReactTestRenderer, label: string) {
     return tree.root.findAll(
       (node) => typeof node.type !== 'string' && node.props.children === label,
@@ -164,6 +157,29 @@ describe('SignInScreen sign-in gate exit', () => {
     });
 
     expect(findByLabel(tree, 'Cancel')).toHaveLength(0);
+    const [guestExit] = findByLabel(tree, 'Continue as guest');
+    await act(async () => {
+      guestExit.props.onPress();
+    });
+
+    expect(mockContinueAsGuest).toHaveBeenCalledTimes(1);
+    expect(mockRouter.replace).toHaveBeenCalledWith('/');
+  });
+
+  // A gated player who never receives the emailed code would otherwise be
+  // stranded on the code step with no way back into the game.
+  it('keeps the guest exit reachable from the code step', async () => {
+    mockRequiresSignIn = true;
+    let tree!: TestRenderer.ReactTestRenderer;
+    act(() => {
+      tree = TestRenderer.create(<SignInScreen />);
+    });
+
+    await act(async () => {
+      findByLabel(tree, 'Send code')[0].props.onPress();
+    });
+
+    expect(findByLabel(tree, 'Verify')).toHaveLength(1);
     const [guestExit] = findByLabel(tree, 'Continue as guest');
     await act(async () => {
       guestExit.props.onPress();

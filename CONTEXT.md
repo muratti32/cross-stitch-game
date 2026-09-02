@@ -40,6 +40,14 @@ _Avoid_: Anonymous user, device account
 The opaque backend-issued identity bound to one app installation for a player who has not registered. It requires no email, Apple, or Google identity and scopes the Guest Ledger plus backend session identities without making them portable to another device. There is no supported recovery on another device or after the installation credential is lost; registration is the durability and portability boundary. It can be promoted exactly once into a Registered Account and cannot purchase AI Credit Packs or Premium Membership.
 _Avoid_: Registered Account, recoverable login, advertising identifier
 
+**Inherited Session**:
+A session record a fresh app installation reads from device credential storage that a previous installation of the app on the same device wrote, because that storage outlives app deletion on iOS. The installation holds none of the matching Local Identity Namespace, so an Inherited Session that the Game Backend will not honour is discarded in favour of Guest play rather than raising Sign in Required; one that still authenticates simply becomes this installation's session. A retained installation credential likewise lets a reinstalling Guest Player reopen the same Guest Installation Identity and Guest Ledger.
+_Avoid_: Account Cloud State, session restore, Guest Data Promotion
+
+**Sign in Required**:
+The state of a Registered Account whose credentials the Game Backend definitively rejected, which asks the player to authenticate again before account writes resume. It never gates core play: the player can always leave it and continue as a Guest Player, and it is never the first screen a new player sees.
+_Avoid_: Registration wall, logged out, Account Closure Hold
+
 **Guest Data Risk Notice**:
 The non-blocking warning shown before a Guest Player's first Stitch Coin spend and first Pattern Unlock. It explains that losing the device or app installation may make the Guest Installation Identity, Guest Ledger, local progress, and Likes unrecoverable, and offers signup or sign-in to preserve them. The player may dismiss the notice and continue as Guest.
 _Avoid_: Forced registration, purchase confirmation, account recovery

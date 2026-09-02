@@ -53,6 +53,15 @@ let activeRefreshPromise: Promise<string> | null = null;
 let retryDelay = 2000; // ms
 let retryTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
+// True while this fresh installation is running on a Registered Account session
+// it inherited from a previous installation and has not yet proven usable. The
+// installation holds none of that account's local data, so a credential the
+// Game Backend rejects must fall back to Guest play rather than raise the sign
+// -in gate a new player cannot get past. Cleared the moment the session proves
+// itself, so an ordinary revocation later in the installation's life still
+// asks the player to sign in again.
+let inheritedAccountSessionUnproven = false;
+
 function isConnectivityError(err: unknown): boolean {
   const message = err instanceof Error ? err.message : String(err);
   return (
@@ -256,6 +265,7 @@ async function reconcileInstallationScope(envelope: SessionEnvelope): Promise<Se
     current = emptySessionEnvelope();
   }
   if (!markerPresent) {
+    inheritedAccountSessionUnproven = current.kind === 'account';
     await installationMarkerStore.persist();
   }
   return current;
@@ -333,7 +343,10 @@ export async function bootstrap(): Promise<void> {
           return;
         } catch (err: unknown) {
           if (hasHttpStatus(err) && err.status === 401) {
-            if (envelope.kind === 'account') return;
+            // An account session that raised the gate stops here. One this
+            // installation merely inherited was dropped instead, so it carries
+            // on and registers a Guest Installation Identity below.
+            if (envelope.kind === 'account' && useIdentityStore.getState().requiresSignIn) return;
             await clearSessionStateOnly();
           } else {
             updateStoreStateIfCurrent(generation, { isPending: false, isOfflinePending: true });
@@ -446,6 +459,9 @@ export async function refreshSession(): Promise<string> {
       if (!isCurrentGeneration(lifecycle, generation)) {
         throw new Error('Stale identity refresh result');
       }
+      // The inherited session just proved itself, so it is this installation's
+      // session from here on.
+      inheritedAccountSessionUnproven = false;
       const nextEnvelope = { ...envelope, refreshToken: tokens.refreshToken };
       await writeEnvelope(nextEnvelope);
       setAccessToken(tokens.accessToken);
@@ -494,7 +510,51 @@ export async function clearSessionStateOnly(): Promise<void> {
   });
 }
 
+/**
+ * Drops an account session this fresh installation inherited and could not use.
+ * The installation holds none of that account's local data, so there is nothing
+ * to reauthenticate for - and the alternative is a new player meeting the sign
+ * -in gate as the first screen of the game.
+ *
+ * Deliberately leaves the lifecycle generation alone: this runs inside the very
+ * bootstrap that goes on to register the Guest Installation Identity, and a new
+ * generation would discard that result as stale.
+ */
+async function discardUnprovenInheritedSession(): Promise<void> {
+  setAccessToken(null);
+  clearRefreshSchedule();
+  await clearSessionEnvelope(sessionStore);
+  await deleteLegacySessionKeys();
+  await openNamespace(null);
+  updateStoreState({
+    guestId: null,
+    guestCreatedAt: null,
+    accountId: null,
+    accountEmail: null,
+    accountProvider: null,
+    isAccount: false,
+    isAuthenticated: false,
+    isOfflinePending: false,
+    requiresSignIn: false,
+    isHydrated: true,
+  });
+}
+
 async function requireAccountSignIn(): Promise<void> {
+  if (inheritedAccountSessionUnproven) {
+    inheritedAccountSessionUnproven = false;
+    await discardUnprovenInheritedSession();
+    // An in-flight bootstrap continues into guest registration on its own; only
+    // an out-of-band rejection (an authenticated request) has to start one.
+    if (!activeBootstrapPromise) {
+      bootstrap().catch((err: unknown) => {
+        if (!isConnectivityError(err)) {
+          console.error('Guest bootstrap after an unusable inherited session failed:', err);
+        }
+      });
+    }
+    return;
+  }
   advanceGeneration(lifecycle);
   setAccessToken(null);
   clearRefreshSchedule();
@@ -527,9 +587,11 @@ export async function continueAsGuest(): Promise<void> {
   await logout();
   try {
     await bootstrap();
-  } catch {
+  } catch (err: unknown) {
     // Guest registration needs the network; offline play continues locally and
-    // the scheduled retry picks the identity up on reconnect.
+    // the scheduled retry picks the identity up on reconnect. Any other failure
+    // is real and has to reach the player.
+    if (!isConnectivityError(err)) throw err;
   }
 }
 
@@ -632,6 +694,7 @@ export async function adoptAccountSession(
   resetAccountDeletionTrigger();
   clearRefreshSchedule();
   resetRetryDelay();
+  inheritedAccountSessionUnproven = false;
 
   await writeEnvelope({
     ...emptySessionEnvelope(),

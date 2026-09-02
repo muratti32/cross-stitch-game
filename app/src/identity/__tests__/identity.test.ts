@@ -258,6 +258,93 @@ describe('Guest Identity Client State Machine', () => {
     });
   });
 
+  // Regression (#222): the inherited envelope does not have to carry the gate
+  // to produce one. A retained account refresh token that the Game Backend has
+  // already revoked raised Sign in required on the fresh installation's very
+  // first launch, which is the reported symptom.
+  test('a fresh installation falls back to Guest play when its inherited account session is dead', async () => {
+    mockInstallationMarkerPresent = false;
+    mockSecureStore[SESSION_ENVELOPE] = JSON.stringify({
+      version: 1,
+      kind: 'account',
+      guestId: null,
+      guestCreatedAt: null,
+      accountId: 'account-previous-install',
+      accountEmail: 'player@example.com',
+      accountProvider: 'email',
+      refreshToken: 'refresh-revoked',
+      requiresSignIn: false,
+    });
+    await hydrateStoredIdentity();
+    // The revoked refresh, then the guest registration the fallback runs.
+    mockFetchResponses.push({ status: 401, body: {} });
+    mockFetchResponses.push({
+      status: 201,
+      body: {
+        guestId: 'guest_fresh_install',
+        accessToken: DECODABLE_JWT,
+        refreshToken: 'refresh_fresh_install',
+      },
+    });
+
+    await bootstrap().catch(() => undefined);
+
+    const state = useIdentityStore.getState();
+    expect(state.requiresSignIn).toBe(false);
+    expect(state.isAccount).toBe(false);
+    expect(state.guestId).toBe('guest_fresh_install');
+  });
+
+  test('an established installation still requires sign-in when its account session dies', async () => {
+    mockSecureStore[SESSION_ENVELOPE] = JSON.stringify({
+      version: 1,
+      kind: 'account',
+      guestId: null,
+      guestCreatedAt: null,
+      accountId: 'account-established',
+      accountEmail: 'player@example.com',
+      accountProvider: 'email',
+      refreshToken: 'refresh-revoked',
+      requiresSignIn: false,
+    });
+    await hydrateStoredIdentity();
+    mockFetchResponses.push({ status: 401, body: {} });
+
+    await bootstrap().catch(() => undefined);
+
+    expect(useIdentityStore.getState().requiresSignIn).toBe(true);
+  });
+
+  test('an inherited account session that proves itself keeps the ordinary sign-in gate', async () => {
+    mockInstallationMarkerPresent = false;
+    mockSecureStore[SESSION_ENVELOPE] = JSON.stringify({
+      version: 1,
+      kind: 'account',
+      guestId: null,
+      guestCreatedAt: null,
+      accountId: 'account-existing',
+      accountEmail: 'player@example.com',
+      accountProvider: 'email',
+      refreshToken: 'refresh-valid',
+      requiresSignIn: false,
+    });
+    await hydrateStoredIdentity();
+    mockFetchResponses.push({
+      status: 200,
+      body: { accessToken: DECODABLE_JWT, refreshToken: 'refresh-rotated' },
+    });
+
+    await bootstrap();
+    expect(useIdentityStore.getState().isAccount).toBe(true);
+
+    // A later revocation is an ordinary one: the player has used the account on
+    // this installation, so it asks them to sign in again.
+    mockFetchResponses.push({ status: 401, body: {} });
+    await refreshSession().catch(() => undefined);
+
+    expect(useIdentityStore.getState().requiresSignIn).toBe(true);
+  });
+
   test('the fresh-installation check runs once, so the next launch keeps its gate', async () => {
     mockInstallationMarkerPresent = false;
     await hydrateStoredIdentity();
