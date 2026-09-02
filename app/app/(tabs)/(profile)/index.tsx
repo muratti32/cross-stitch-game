@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Image,
   Pressable,
+  RefreshControl,
   StyleSheet,
   Text,
   View,
@@ -218,41 +219,56 @@ export default function ProfileScreen() {
   // Personal & Pending Patterns
   const [personalPatterns, setPersonalPatterns] = useState<PersonalPattern[]>([]);
   const [patternsLoading, setPatternsLoading] = useState(false);
+  const [patternsRefreshing, setPatternsRefreshing] = useState(false);
   const [openingPatternId, setOpeningPatternId] = useState<string | null>(null);
   const [patternsError, setPatternsError] = useState<string | null>(null);
   const [pendingPatterns, setPendingPatterns] = useState<PendingPersonalPattern[]>([]);
   const [openingPendingId, setOpeningPendingId] = useState<string | null>(null);
   const [isRetryingProfile, setIsRetryingProfile] = useState(false);
+  const patternsLoadedRef = useRef(false);
+  const patternsRequestRef = useRef(0);
+  const canLoadPatterns = isAccount && isAuthenticated && !isPending && !isOfflinePending;
+
+  const loadPatterns = useCallback(async () => {
+    if (!canLoadPatterns) return;
+    const requestId = ++patternsRequestRef.current;
+    const isInitialLoad = !patternsLoadedRef.current;
+    if (isInitialLoad) setPatternsLoading(true);
+    else setPatternsRefreshing(true);
+    setPatternsError(null);
+    try {
+      const [patterns, pending] = await Promise.all([listPersonalPatterns(), getPendingPersonalPatterns()]);
+      if (patternsRequestRef.current !== requestId) return;
+      setPersonalPatterns(patterns);
+      const syncedIds = new Set(patterns.map((pattern) => pattern.id));
+      setPendingPatterns(pending.filter((pattern) => !syncedIds.has(pattern.patternId)));
+      patternsLoadedRef.current = true;
+    } catch (error: unknown) {
+      if (patternsRequestRef.current === requestId) {
+        setPatternsError(isServerApiError(error) ? localizeServerError(error) : t('home.myPatterns.actionFailedGeneric'));
+      }
+    } finally {
+      if (patternsRequestRef.current === requestId) {
+        setPatternsLoading(false);
+        setPatternsRefreshing(false);
+      }
+    }
+  }, [canLoadPatterns, t]);
 
   useFocusEffect(
     useCallback(() => {
-      if (!isAccount || activeTab !== 'my-patterns') {
+      if (!isAccount) {
         setPersonalPatterns([]);
         setPendingPatterns([]);
+        patternsLoadedRef.current = false;
         return undefined;
       }
-      let active = true;
-      setPatternsLoading(true);
-      setPatternsError(null);
-      Promise.all([listPersonalPatterns(), getPendingPersonalPatterns()])
-        .then(([patterns, pending]) => {
-          if (!active) return;
-          setPersonalPatterns(patterns);
-          const syncedIds = new Set(patterns.map((p) => p.id));
-          setPendingPatterns(pending.filter((p) => !syncedIds.has(p.patternId)));
-        })
-        .catch((error: unknown) => {
-          if (active) {
-            setPatternsError(isServerApiError(error) ? localizeServerError(error) : t('home.myPatterns.actionFailedGeneric'));
-          }
-        })
-        .finally(() => {
-          if (active) setPatternsLoading(false);
-        });
+      if (activeTab !== 'my-patterns' || !canLoadPatterns) return undefined;
+      void loadPatterns();
       return () => {
-        active = false;
+        patternsRequestRef.current += 1;
       };
-    }, [activeTab, isAccount]),
+    }, [activeTab, canLoadPatterns, isAccount, loadPatterns]),
   );
 
   useFocusEffect(
@@ -348,7 +364,19 @@ export default function ProfileScreen() {
   const creationsCount = personalPatterns.length + pendingPatterns.length;
 
   return (
-    <Screen scrollable contentContainerStyle={styles.container}>
+    <Screen
+      scrollable
+      contentContainerStyle={styles.container}
+      refreshControl={
+        activeTab === 'my-patterns' && canLoadPatterns ? (
+          <RefreshControl
+            refreshing={patternsRefreshing}
+            onRefresh={() => void loadPatterns()}
+            tintColor={Theme.colors.accentRose}
+          />
+        ) : undefined
+      }
+    >
       {/* 1. Profile / Account Identity Header */}
       {isPending && !guestId ? (
         <View style={styles.profileCard}>
@@ -933,10 +961,19 @@ export default function ProfileScreen() {
             onAction={() => router.push('/(tabs)/(settings)/sign-in')}
             actionVariant="rose"
           />
-        ) : activeTab === 'my-patterns' && patternsLoading ? (
+        ) : activeTab === 'my-patterns' && (!canLoadPatterns || (patternsLoading && personalPatterns.length === 0 && pendingPatterns.length === 0)) ? (
           <View style={styles.patternLoader}>
             <ActivityIndicator color={Theme.colors.accentRose} />
           </View>
+        ) : activeTab === 'my-patterns' && patternsError && personalPatterns.length === 0 && pendingPatterns.length === 0 ? (
+          <EmptyState
+            icon="cloud-offline-outline"
+            title={t('home.myPatterns.actionFailedGeneric')}
+            body={patternsError}
+            actionLabel={t('common.tryAgain')}
+            onAction={() => void loadPatterns()}
+            actionVariant="rose"
+          />
         ) : activeTab === 'my-patterns' && (personalPatterns.length > 0 || pendingPatterns.length > 0) ? (
           <View style={styles.patternList}>
             {pendingPatterns.map((pending) => (
