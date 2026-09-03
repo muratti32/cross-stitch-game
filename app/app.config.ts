@@ -1,6 +1,17 @@
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
 const staticConfig = require('./app.json').expo as ExpoConfig;
+
+// ADR-0055. The Google service files are committed under credentials/ because
+// android/ and ios/ are untracked prebuild output. They are client-side
+// identifiers rather than secrets, and a checkout without them must still
+// build: when either is missing the Firebase plugin is left out entirely and
+// the app runs with no Analytics at all.
+const ANDROID_GOOGLE_SERVICES = './credentials/firebase/google-services.json';
+const IOS_GOOGLE_SERVICES = './credentials/firebase/GoogleService-Info.plist';
 
 export default function appConfig(_context: ConfigContext): ExpoConfig {
   const iosUrlScheme =
@@ -27,8 +38,24 @@ export default function appConfig(_context: ConfigContext): ExpoConfig {
     ]);
   }
 
+  // ADR-0055: native Firebase Analytics. Registered only when BOTH service
+  // files are present, so a clone without credentials still prebuilds.
+  const androidGoogleServices = resolve(__dirname, ANDROID_GOOGLE_SERVICES);
+  const iosGoogleServices = resolve(__dirname, IOS_GOOGLE_SERVICES);
+  const hasFirebaseServiceFiles =
+    existsSync(androidGoogleServices) && existsSync(iosGoogleServices);
+  if (hasFirebaseServiceFiles) {
+    plugins.push('@react-native-firebase/app');
+  }
+
   return {
     ...staticConfig,
+    android: hasFirebaseServiceFiles
+      ? { ...staticConfig.android, googleServicesFile: ANDROID_GOOGLE_SERVICES }
+      : staticConfig.android,
+    ios: hasFirebaseServiceFiles
+      ? { ...staticConfig.ios, googleServicesFile: IOS_GOOGLE_SERVICES }
+      : staticConfig.ios,
     plugins,
   };
 }

@@ -252,3 +252,24 @@ export function storeProductId(identifier: string): string {
   const separator = identifier.indexOf(':');
   return separator === -1 ? identifier : identifier.slice(0, separator);
 }
+
+/**
+ * Revenue parameters for the Analytics Mirror only (ADR-0055). The first-party
+ * `purchase_completed` payload is a closed shape the Game Backend validates, so
+ * amount and currency travel beside it rather than inside it, purely so GA4's
+ * revenue reports work. Returns undefined when the store did not report a
+ * price - the mirror never invents an amount.
+ */
+export function purchaseRevenueParams(
+  product: Pick<CommerceProduct, 'package'> | undefined,
+): { currency: string; value: number } | undefined {
+  const storeProduct = product?.package.product;
+  if (storeProduct === undefined) {
+    return undefined;
+  }
+  const { currencyCode, price } = storeProduct;
+  if (typeof price !== 'number' || typeof currencyCode !== 'string' || currencyCode === '') {
+    return undefined;
+  }
+  return { currency: currencyCode, value: price };
+}

@@ -55,6 +55,7 @@ import {
   commerceProductIdentity,
   commerceProductsFromOfferings,
   productsInCategory,
+  purchaseRevenueParams,
   type CommerceCategory,
   type CommerceProduct,
   type PremiumPlanChangeKind,
@@ -554,10 +555,15 @@ export default function CommerceScreen() {
       // Backend derives `subscription_change_completed` from it instead
       // (issue #126).
       if (!attempt.deferred) {
-        await captureGameplayEvent('purchase_completed', {
-          product_kind: 'premium_membership',
-          product_key: completedProduct.productKey,
-        });
+        await captureGameplayEvent(
+          'purchase_completed',
+          {
+            product_kind: 'premium_membership',
+            product_key: completedProduct.productKey,
+          },
+          undefined,
+          purchaseRevenueParams(completedProduct),
+        );
         if (attempt.sourcePlanKey !== null) {
           await captureGameplayEvent('subscription_change_completed', {
             source_plan: attempt.sourcePlanKey,
@@ -724,10 +730,15 @@ export default function CommerceScreen() {
       grantVerified = true;
       const refreshedBalance = await fetchCoinBalance();
       queryClient.setQueryData(['economy', 'balance'], refreshedBalance);
-      await captureGameplayEvent('purchase_completed', {
-        product_kind: 'stitch_coin_pack',
-        product_key: attempt.product.productKey,
-      });
+      await captureGameplayEvent(
+        'purchase_completed',
+        {
+          product_kind: 'stitch_coin_pack',
+          product_key: attempt.product.productKey,
+        },
+        undefined,
+        purchaseRevenueParams(attempt.product),
+      );
       updateCoinReconciliation(null);
       if (!isAccount && guestId !== null) await clearGuestPurchaseAttempt(guestId);
       clearIntent();
@@ -897,10 +908,15 @@ export default function CommerceScreen() {
       grantVerified = true;
       const refreshedBalance = await fetchAiCreditBalance();
       queryClient.setQueryData(['economy', 'aiCreditBalance'], refreshedBalance);
-      await captureGameplayEvent('purchase_completed', {
-        product_kind: 'ai_credit_pack',
-        product_key: attempt.product.productKey,
-      });
+      await captureGameplayEvent(
+        'purchase_completed',
+        {
+          product_kind: 'ai_credit_pack',
+          product_key: attempt.product.productKey,
+        },
+        undefined,
+        purchaseRevenueParams(attempt.product),
+      );
       updateAiCreditReconciliation(null);
       if (!isAccount && guestId !== null) await clearGuestPurchaseAttempt(guestId);
       clearIntent();

@@ -27,6 +27,11 @@ const mockRouter = {
   replace: jest.fn(),
 };
 const mockCaptureGameplayEvent = jest.fn().mockResolvedValue(undefined);
+// Gameplay Events now carry mirror-only arguments (ADR-0055), so "was this kind
+// ever reported?" is asserted on the kinds themselves rather than on an exact
+// argument list that would silently stop matching.
+const capturedEventKinds = (): unknown[] =>
+  mockCaptureGameplayEvent.mock.calls.map(([kind]) => kind);
 const mockGetOfferings = jest.fn();
 const mockMissingCanonicalProducts = jest.fn();
 const mockPurchasePackage = jest.fn();
@@ -217,6 +222,10 @@ function offering(
         .map(([key, priceString]) => ({
           identifier: `$rc_${key}`,
           product: {
+            // The store reports a numeric price and currency beside the display
+            // string; ADR-0055 forwards those to the Analytics Mirror only.
+            currencyCode: 'USD',
+            price: Number(priceString.replace('$', '')),
             identifier: `com.avk.stitchwish.${key}`,
             introPrice: introductoryOffers[key] === undefined
               ? null
@@ -541,10 +550,7 @@ it('stays pending with a Support Reference until the backend verifies membership
     'Purchase Reconciliation Pending',
     'Support Reference: SW-ABCD-EFGH',
   ]));
-  expect(mockCaptureGameplayEvent).not.toHaveBeenCalledWith(
-    'purchase_completed',
-    expect.anything(),
-  );
+  expect(capturedEventKinds()).not.toContain('purchase_completed');
   expect(pressableByText(renderer!.root, 'Choose Annual').props.disabled).toBe(true);
 });
 
@@ -560,10 +566,12 @@ it('emits completion only after verified membership and AI Credit refresh', asyn
   await confirmAnnualPurchase();
 
   expect(mockFetchAiCreditBalance).toHaveBeenCalled();
-  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_completed', {
-    product_kind: 'premium_membership',
-    product_key: 'premium_annual',
-  });
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith(
+    'purchase_completed',
+    { product_kind: 'premium_membership', product_key: 'premium_annual' },
+    undefined,
+    { currency: 'USD', value: 39.99 },
+  );
   expect(allText(renderer!.root)).toContain('Annual Premium is verified and active.');
   expect(allText(renderer!.root)).not.toContain('Purchase Reconciliation Pending');
 });
@@ -739,10 +747,12 @@ it('routes restore through pending and completes from the backend-observed plan'
     product_kind: 'premium_membership',
     product_key: 'premium_annual',
   });
-  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_completed', {
-    product_kind: 'premium_membership',
-    product_key: 'premium_monthly',
-  });
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith(
+    'purchase_completed',
+    { product_kind: 'premium_membership', product_key: 'premium_monthly' },
+    undefined,
+    { currency: 'USD', value: 7.99 },
+  );
 });
 
 it('restores a Guest Player Premium entitlement through the informational modal, not a native alert', async () => {
@@ -1026,9 +1036,7 @@ it('verifies a confirmed downgrade against the Scheduled Plan Change and reports
   );
   // Nothing is granted until the change activates, so neither completion event
   // fires here: the Game Backend reports the activation at the next renewal.
-  expect(mockCaptureGameplayEvent).not.toHaveBeenCalledWith(
-    'purchase_completed', expect.anything(),
-  );
+  expect(capturedEventKinds()).not.toContain('purchase_completed');
   expect(mockCaptureGameplayEvent).not.toHaveBeenCalledWith(
     'subscription_change_completed', expect.anything(),
   );
@@ -1102,10 +1110,12 @@ it('completes a direct iOS upgrade through the ordinary purchase and reconciliat
     target_plan: 'premium_monthly',
     platform: 'ios',
   });
-  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_completed', {
-    product_kind: 'premium_membership',
-    product_key: 'premium_monthly',
-  });
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith(
+    'purchase_completed',
+    { product_kind: 'premium_membership', product_key: 'premium_monthly' },
+    undefined,
+    { currency: 'USD', value: 7.99 },
+  );
   expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('subscription_change_completed', {
     source_plan: 'premium_weekly',
     target_plan: 'premium_monthly',
@@ -1520,10 +1530,7 @@ it('keeps an exact AI Credit Pack intent pending and blocks repeat purchase', as
     'Purchase Reconciliation Pending',
     'Support Reference: SW-AI-CREDIT',
   ]));
-  expect(mockCaptureGameplayEvent).not.toHaveBeenCalledWith(
-    'purchase_completed',
-    expect.anything(),
-  );
+  expect(capturedEventKinds()).not.toContain('purchase_completed');
 
   await openAiCreditPacks();
   expect(pressableByText(renderer!.root, 'Buy').props.disabled).toBe(true);
@@ -1610,10 +1617,12 @@ it('updates AI Credit balance and completes only after the exact backend grant',
 
   expect(mockFetchAiCreditBalance).toHaveBeenCalledTimes(1);
   expect(mockSetQueryData).toHaveBeenCalledWith(['economy', 'aiCreditBalance'], 9);
-  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_completed', {
-    product_kind: 'ai_credit_pack',
-    product_key: 'ai_credit_pack_5',
-  });
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith(
+    'purchase_completed',
+    { product_kind: 'ai_credit_pack', product_key: 'ai_credit_pack_5' },
+    undefined,
+    { currency: 'USD', value: 2.99 },
+  );
   expect(allText(renderer!.root)).toContain(
     '5 AI Credits grant verified. AI Credit balance: 9.',
   );
@@ -1773,10 +1782,7 @@ it('keeps the exact Coin Pack intent pending with Support Reference and blocks r
     'Purchase Reconciliation Pending',
     'Support Reference: SW-COIN-PACK',
   ]));
-  expect(mockCaptureGameplayEvent).not.toHaveBeenCalledWith(
-    'purchase_completed',
-    expect.anything(),
-  );
+  expect(capturedEventKinds()).not.toContain('purchase_completed');
 
   await act(async () => pressAncestor(renderer!.root.findByProps({ testID: 'open-stitch-coin-packs' })));
   expect(pressableByText(renderer!.root, 'Buy').props.disabled).toBe(true);
@@ -1872,10 +1878,12 @@ it('updates the wallet and emits completion only after the matching backend Coin
 
   expect(mockFetchCoinBalance).toHaveBeenCalledTimes(1);
   expect(mockSetQueryData).toHaveBeenCalledWith(['economy', 'balance'], 420);
-  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('purchase_completed', {
-    product_kind: 'stitch_coin_pack',
-    product_key: 'coin_pack_300',
-  });
+  expect(mockCaptureGameplayEvent).toHaveBeenCalledWith(
+    'purchase_completed',
+    { product_kind: 'stitch_coin_pack', product_key: 'coin_pack_300' },
+    undefined,
+    { currency: 'USD', value: 1.99 },
+  );
   expect(allText(renderer!.root)).toContain(
     '300 Stitch Coins grant verified. Stitch Coin balance: 420.',
   );

@@ -3,6 +3,7 @@ import {
   generateUUID,
   getAnalyticsSessionId,
 } from '../local-db';
+import { mirrorGameplayEvent, type AnalyticsMirrorOnlyParams } from './analyticsMirror';
 import type {
   AnalyticsGameplayEventKind,
   AnalyticsGameplayEventPayload,
@@ -18,6 +19,7 @@ export async function captureGameplayEvent<K extends AnalyticsGameplayEventKind>
   kind: K,
   payload: AnalyticsGameplayEventPayloadByKind<K>,
   dedupeKey?: string,
+  mirrorOnly?: AnalyticsMirrorOnlyParams,
 ): Promise<void> {
   try {
     await enqueueAnalyticsGameplayEvent({
@@ -30,6 +32,11 @@ export async function captureGameplayEvent<K extends AnalyticsGameplayEventKind>
   } catch {
     // Analytics must never prevent local play or a player-facing flow.
   }
+
+  // ADR-0055: the Analytics Mirror runs after the first-party enqueue and can
+  // never affect it. `mirrorOnly` is deliberately not passed to the queue - the
+  // Game Backend rejects payload fields its schema does not document.
+  mirrorGameplayEvent(kind, payload, mirrorOnly);
 }
 
 export async function captureSessionGameplayEvent(

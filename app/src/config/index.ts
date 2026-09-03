@@ -13,6 +13,12 @@ export const Config = {
     authDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
     projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
   },
+  // ADR-0055. Collection is off in development builds so local testing cannot
+  // distort production reporting; this opts a single dev device back in for
+  // Firebase DebugView verification.
+  firebaseAnalytics: {
+    enabledInDevelopment: process.env.EXPO_PUBLIC_FIREBASE_ANALYTICS_ENABLED === 'true',
+  },
   google: {
     iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
