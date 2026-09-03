@@ -73,14 +73,28 @@ Display Language.
 | User properties | `is_guest`, `app_language`, `membership_tier` |
 | Data retention | Two months (console default) |
 | Tracking | No advertising identifier, no App Tracking Transparency prompt, no cross-app tracking |
+| Consent signal | TCF Purpose 1 via the AdMob UMP message, interpreted as `analytics_storage` by AdMob's consent mode |
+
+> **Open question (ADR-0033):** the AdMob console also lists an **IDFA explainer
+> message as active** under "Transparency and control". ADR-0033 states the game
+> requests no App Tracking Transparency prompt. Nothing in this repo triggers
+> ATT, so the explainer is presumably dormant, but the console state and the ADR
+> disagree and should be reconciled.
 
 **Required manual setup (console-side, not performed by this repo's code):**
 
 - Register an iOS app (bundle identifier) and an Android app (package name plus
   debug and release SHA-1/SHA-256 signing fingerprints) in the Firebase project,
   then download both service files into `app/credentials/firebase/`.
-- Extend the UMP consent message to cover the analytics purpose, so consent has
-  a correct legal basis without adding in-app copy.
+- ~~Extend the UMP consent message to cover the analytics purpose~~ **done**
+  (AdMob → Privacy & messaging → European regulations → Settings): "Enable
+  consent mode for analytics purposes" was already on, interpreting TCF Purpose 1
+  as `analytics_storage`; "Add purposes for your own use" now declares four
+  purposes on a **Consent** basis — Store and/or access information on a device
+  (P1), Measure content performance (P8), Understand audiences (P9), Develop and
+  improve services (P10). Every advertising and personalization purpose stays
+  "Not used", so ADR-0033 is unaffected. Existing EEA/UK/Swiss players were
+  re-prompted, since their earlier consent did not cover analytics.
 - Confirm Analytics data retention is left at two months.
 
 ### Store privacy declarations
