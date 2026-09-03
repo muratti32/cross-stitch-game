@@ -7,9 +7,10 @@ identifiers and secret-manager *reference names* belong here — never secret
 values.
 
 > **Coverage status:** this file is incomplete. It currently documents app
-> identity, App Display Languages, and the Sentry integration. Store listing,
-> RevenueCat, Firebase/auth, push, backend/infrastructure hosting,
-> and privacy posture are **not yet inventoried here** — absence of a service
+> identity, App Display Languages, the Sentry integration, and the Firebase
+> Analytics integration with its store privacy declarations. Store listing,
+> RevenueCat, Firebase/auth, push, and backend/infrastructure hosting are
+> **not yet inventoried here** — absence of a service
 > below means "not documented yet", never "not provisioned". Extend this file
 > as each area is confirmed.
 
@@ -57,6 +58,39 @@ copy may remain English even while app-owned commerce UI uses the selected App
 Display Language.
 
 ## External services
+
+### Firebase Analytics (product analytics) — see ADR-0055
+
+| Field | Value |
+| --- | --- |
+| Firebase project id | `stitchwish-d3b28` (same project as the ADR-0038 auth broker; one project serves every environment) |
+| Packages | `@react-native-firebase/app`, `@react-native-firebase/analytics` |
+| Config plugin | `@react-native-firebase/app`, registered by `app/app.config.ts` **only when both Google service files are present** |
+| Service files | `app/credentials/firebase/google-services.json`, `app/credentials/firebase/GoogleService-Info.plist` — client-side identifiers, not secrets; absent from a fresh clone, which then builds with no Analytics |
+| Collection default | Disabled. Enabled only after the ADR-0033 UMP consent flow reports consent granted |
+| Development builds | Disabled unless `EXPO_PUBLIC_FIREBASE_ANALYTICS_ENABLED=true` on that device (DebugView verification only) |
+| Identity sent | The opaque player reference (Registered Account id or Guest Installation Identity), the same one Sentry receives. Never an email address, Firebase UID, or auth-provider subject |
+| User properties | `is_guest`, `app_language`, `membership_tier` |
+| Data retention | Two months (console default) |
+| Tracking | No advertising identifier, no App Tracking Transparency prompt, no cross-app tracking |
+
+**Required manual setup (console-side, not performed by this repo's code):**
+
+- Register an iOS app (bundle identifier) and an Android app (package name plus
+  debug and release SHA-1/SHA-256 signing fingerprints) in the Firebase project,
+  then download both service files into `app/credentials/firebase/`.
+- Extend the UMP consent message to cover the analytics purpose, so consent has
+  a correct legal basis without adding in-app copy.
+- Confirm Analytics data retention is left at two months.
+
+### Store privacy declarations
+
+| Surface | Declaration |
+| --- | --- |
+| App Store privacy labels | Add **Analytics → Product Interaction, Other Usage Data** and **Identifiers → User ID** (the opaque player reference), both "Not used to track you". Tracking stays declared as **No** |
+| Play Data safety | Add **App activity → App interactions** and **App info and performance**, collected, not shared, consent-based, deletable via the existing account deletion flow |
+
+Drafts only — submitting updated store metadata remains a human action.
 
 ### Sentry (crash reporting + performance) — see ADR-0035
 
