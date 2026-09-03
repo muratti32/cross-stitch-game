@@ -420,7 +420,8 @@ describe('CatalogService taxonomy fallback alerts', () => {
     await categoryService([
       { locale: 'en', label: 'Animals' }, { locale: 'tr', label: 'Hayvanlar' },
     ]).getCategories('tr');
-    await categoryService([{ locale: 'en', label: 'Animals' }]).getCategories('de');
+    // 'th' is not a released App Display Language, so falling back to English is expected.
+    await categoryService([{ locale: 'en', label: 'Animals' }]).getCategories('th');
 
     expect(captureAlert).not.toHaveBeenCalled();
   });
