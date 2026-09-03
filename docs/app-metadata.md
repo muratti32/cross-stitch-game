@@ -67,7 +67,7 @@ Display Language.
 | Packages | `@react-native-firebase/app`, `@react-native-firebase/analytics` |
 | Config plugin | `@react-native-firebase/app`, registered by `app/app.config.ts` **only when both Google service files are present** |
 | Service files | `app/credentials/firebase/google-services.json`, `app/credentials/firebase/GoogleService-Info.plist` — client-side identifiers, not secrets; absent from a fresh clone, which then builds with no Analytics |
-| Collection default | Disabled. Enabled only after the ADR-0033 UMP consent flow reports consent granted |
+| Collection default | Disabled natively via `app/firebase.json` (`analytics_auto_collection_enabled: false`), which writes `FIREBASE_ANALYTICS_COLLECTION_ENABLED=false` into the iOS Info.plist and the Android manifest at build time. Enabled at runtime only after the ADR-0033 UMP consent flow reports consent granted |
 | Development builds | Disabled unless `EXPO_PUBLIC_FIREBASE_ANALYTICS_ENABLED=true` on that device (DebugView verification only) |
 | Identity sent | The opaque player reference (Registered Account id or Guest Installation Identity), the same one Sentry receives. Never an email address, Firebase UID, or auth-provider subject |
 | User properties | `is_guest`, `app_language`, `membership_tier` |

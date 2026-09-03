@@ -23,10 +23,10 @@ The performance harness is stripped from standard production builds. To build a 
 2. Build the app using a local preview profile:
    ```bash
    # Android
-   EXPO_PUBLIC_PERF_HARNESS=1 npm run build:preview:android
+   EXPO_PUBLIC_PERF_HARNESS=1 npm run build:android:preview
 
    # iOS
-   EXPO_PUBLIC_PERF_HARNESS=1 npm run build:preview:ios
+   EXPO_PUBLIC_PERF_HARNESS=1 npm run build:ios:preview
    ```
 
 ---

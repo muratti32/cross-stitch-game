@@ -11,3 +11,7 @@ screenshots/
 stitchwish-service-account.json
 credentials.json
 .DS_Store
+
+# asc screenshot-upload run reports (local artifacts, regenerated per run)
+.asc/reports/
+

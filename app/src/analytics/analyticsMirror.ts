@@ -91,6 +91,13 @@ let bridge: AnalyticsBridge | null = null;
 let bridgeResolved = false;
 let consentGranted = false;
 let errorReportedThisSession = false;
+// Identity observed before consent was granted. The app learns who the player
+// is at startup, long before the consent flow settles, so the reference and
+// properties are held here and applied the moment collection is allowed -
+// otherwise the first mirrored events would travel without a user id.
+let pendingUserId: string | null = null;
+let pendingUserIdKnown = false;
+let pendingProperties: AnalyticsMirrorUserProperties | null = null;
 
 /**
  * Resolves the native module lazily. A build without the Google service files
@@ -192,6 +199,30 @@ export function applyAnalyticsMirrorConsent(granted: boolean): void {
   } catch (error: unknown) {
     reportMirrorError('set-collection-enabled', error);
   }
+
+  if (enabled) {
+    flushPendingIdentity();
+  }
+}
+
+/**
+ * Applies whatever identity was learned while collection was still disabled.
+ * Called on the consent transition so events after it carry the opaque player
+ * reference rather than starting anonymous until the next identity change.
+ */
+function flushPendingIdentity(): void {
+  if (pendingUserIdKnown) {
+    run('set-user-id', (resolved) => resolved.setUserId(pendingUserId));
+  }
+  if (pendingProperties !== null) {
+    applyUserProperties(pendingProperties);
+  }
+}
+
+function applyUserProperties(properties: AnalyticsMirrorUserProperties): void {
+  for (const [name, value] of Object.entries(properties)) {
+    run('set-user-property', (resolved) => resolved.setUserProperty(name, value));
+  }
 }
 
 /**
@@ -200,15 +231,16 @@ export function applyAnalyticsMirrorConsent(granted: boolean): void {
  * an email address, Firebase UID, or provider subject (ADR-0038).
  */
 export function setAnalyticsMirrorPlayerReference(opaqueId: string | null): void {
+  pendingUserId = opaqueId;
+  pendingUserIdKnown = true;
   run('set-user-id', (resolved) => resolved.setUserId(opaqueId));
 }
 
 export function setAnalyticsMirrorUserProperties(
   properties: AnalyticsMirrorUserProperties,
 ): void {
-  for (const [name, value] of Object.entries(properties)) {
-    run('set-user-property', (resolved) => resolved.setUserProperty(name, value));
-  }
+  pendingProperties = properties;
+  applyUserProperties(properties);
 }
 
 function isMirroredKind(kind: AnalyticsGameplayEventKind): kind is MirroredKind {
@@ -256,4 +288,7 @@ export function __resetAnalyticsMirrorGlobals(): void {
   bridgeResolved = false;
   consentGranted = false;
   errorReportedThisSession = false;
+  pendingUserId = null;
+  pendingUserIdKnown = false;
+  pendingProperties = null;
 }

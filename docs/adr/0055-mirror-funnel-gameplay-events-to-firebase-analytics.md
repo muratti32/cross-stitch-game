@@ -9,8 +9,11 @@ so funnel, retention, and exploration reports are available without querying the
 Game Backend by hand. Nothing is answered from Firebase that the first-party stream
 cannot confirm.
 
-The mirror is bounded by construction. Collection is disabled until the existing
-ads consent flow reports consent granted, and that consent message is extended to
+The mirror is bounded by construction. Native automatic collection is disabled in
+the build itself rather than only at runtime, so no automatic event can be recorded
+before the app has an answer; collection is then enabled only once the existing
+ads consent flow reports consent granted, at which point the opaque player
+reference learned earlier is applied so no mirrored event travels anonymously, and that consent message is extended to
 name the analytics purpose; ad-personalization signals stay off and no App Tracking
 Transparency prompt is requested, so ADR-0033 is unchanged and the store listing
 keeps declaring no cross-app tracking. The only identity sent is the same opaque

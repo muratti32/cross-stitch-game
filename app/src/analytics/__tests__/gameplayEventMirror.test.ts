@@ -2,12 +2,16 @@ import {
   logEvent,
   logScreenView,
   setAnalyticsCollectionEnabled,
+  setUserId,
+  setUserProperty,
 } from '@react-native-firebase/analytics';
 
 import { captureGameplayEvent } from '../gameplayEvents';
 import {
   applyAnalyticsMirrorConsent,
   mirrorScreenView,
+  setAnalyticsMirrorPlayerReference,
+  setAnalyticsMirrorUserProperties,
   __resetAnalyticsMirrorGlobals,
 } from '../analyticsMirror';
 import * as localDb from '../../local-db';
@@ -23,6 +27,8 @@ const mockedDb = localDb as jest.Mocked<typeof localDb>;
 const mockedLogEvent = logEvent as unknown as jest.Mock;
 const mockedLogScreenView = logScreenView as unknown as jest.Mock;
 const mockedSetCollectionEnabled = setAnalyticsCollectionEnabled as unknown as jest.Mock;
+const mockedSetUserId = setUserId as unknown as jest.Mock;
+const mockedSetUserProperty = setUserProperty as unknown as jest.Mock;
 const bridge = {
   logEvent: mockedLogEvent,
   logScreenView: mockedLogScreenView,
@@ -226,6 +232,57 @@ describe('Analytics Mirror through captureGameplayEvent', () => {
       'sw_session_started',
       expect.anything(),
     );
+  });
+
+  // Identity is learned at startup, before the consent flow settles, so the
+  // transition itself is what these cover.
+  describe('identity across the consent transition', () => {
+    const properties = {
+      app_language: 'tr',
+      is_guest: 'true',
+      membership_tier: 'free',
+    } as const;
+
+    it('applies the reference and properties learned before consent, once consent arrives', async () => {
+      setAnalyticsMirrorPlayerReference('opaque-player-1');
+      setAnalyticsMirrorUserProperties(properties);
+      expect(mockedSetUserId).not.toHaveBeenCalled();
+      expect(mockedSetUserProperty).not.toHaveBeenCalled();
+
+      applyAnalyticsMirrorConsent(true);
+
+      expect(mockedSetUserId).toHaveBeenCalledWith(expect.anything(), 'opaque-player-1');
+      expect(mockedSetUserProperty.mock.calls.map(([, name, value]) => [name, value])).toEqual([
+        ['app_language', 'tr'],
+        ['is_guest', 'true'],
+        ['membership_tier', 'free'],
+      ]);
+
+      await captureGameplayEvent('session_started', {
+        session_id: '0b5fe1ce-5f79-4c80-aa32-5ca9e67b8dd5',
+      });
+      expect(bridge.logEvent).toHaveBeenCalledTimes(1);
+    });
+
+    it('applies nothing on a declined consent, and keeps the reference for a later grant', () => {
+      setAnalyticsMirrorPlayerReference('opaque-player-2');
+
+      applyAnalyticsMirrorConsent(false);
+      expect(mockedSetUserId).not.toHaveBeenCalled();
+
+      applyAnalyticsMirrorConsent(true);
+      expect(mockedSetUserId).toHaveBeenCalledWith(expect.anything(), 'opaque-player-2');
+    });
+
+    it('clears the reference on sign-out after consent, without waiting for another grant', () => {
+      applyAnalyticsMirrorConsent(true);
+      setAnalyticsMirrorPlayerReference('opaque-player-3');
+      mockedSetUserId.mockClear();
+
+      setAnalyticsMirrorPlayerReference(null);
+
+      expect(mockedSetUserId).toHaveBeenCalledWith(expect.anything(), null);
+    });
   });
 
   // The one entry point exercised directly: driving it through the router
