@@ -4,6 +4,8 @@
 .expo/
 .gradle/
 tmp/
+metadata/
+sast/
 app/android/build/
 app/android/app/build/
 app/ios/build/
