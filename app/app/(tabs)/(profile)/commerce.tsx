@@ -562,7 +562,9 @@ export default function CommerceScreen() {
             product_key: completedProduct.productKey,
           },
           undefined,
-          purchaseRevenueParams(completedProduct),
+          // The reconciliation attempt id is stable across retries and the
+          // restore path, so GA4 de-duplicates rather than double counting.
+          purchaseRevenueParams(completedProduct, attempt.id),
         );
         if (attempt.sourcePlanKey !== null) {
           await captureGameplayEvent('subscription_change_completed', {
@@ -737,7 +739,7 @@ export default function CommerceScreen() {
           product_key: attempt.product.productKey,
         },
         undefined,
-        purchaseRevenueParams(attempt.product),
+        purchaseRevenueParams(attempt.product, attempt.transactionIdentifier || attempt.id),
       );
       updateCoinReconciliation(null);
       if (!isAccount && guestId !== null) await clearGuestPurchaseAttempt(guestId);
@@ -915,7 +917,7 @@ export default function CommerceScreen() {
           product_key: attempt.product.productKey,
         },
         undefined,
-        purchaseRevenueParams(attempt.product),
+        purchaseRevenueParams(attempt.product, attempt.transactionIdentifier || attempt.id),
       );
       updateAiCreditReconciliation(null);
       if (!isAccount && guestId !== null) await clearGuestPurchaseAttempt(guestId);

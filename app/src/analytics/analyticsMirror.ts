@@ -60,8 +60,23 @@ type MirroredKind = keyof typeof MIRRORED_EVENT_NAMES;
  * reports need value and currency.
  */
 export interface AnalyticsMirrorOnlyParams {
-  readonly value?: number;
   readonly currency?: string;
+  /** GA4 item rows; item_id carries the closed-enum product key, never free text. */
+  readonly items?: readonly AnalyticsMirrorItem[];
+  /**
+   * The store transaction this purchase belongs to. GA4 de-duplicates purchases
+   * on it, so a retry or a reconciliation reporting the same purchase again MUST
+   * pass the same value rather than a freshly generated one.
+   */
+  readonly transactionId?: string;
+  readonly value?: number;
+}
+
+export interface AnalyticsMirrorItem {
+  readonly item_category: string;
+  readonly item_id: string;
+  readonly price?: number;
+  readonly quantity: number;
 }
 
 export interface AnalyticsMirrorUserProperties {
@@ -267,6 +282,12 @@ export function mirrorGameplayEvent(
   }
   if (mirrorOnly?.currency !== undefined) {
     params.currency = mirrorOnly.currency;
+  }
+  if (mirrorOnly?.transactionId !== undefined) {
+    params.transaction_id = mirrorOnly.transactionId;
+  }
+  if (mirrorOnly?.items !== undefined) {
+    params.items = mirrorOnly.items;
   }
   run('log-event', (resolved) => resolved.logEvent(name, params));
 }

@@ -1,7 +1,7 @@
 import { queryClient } from '../providers';
 import { subscribeToOpaquePlayerReference } from '../identity/playerReference';
 import { useIdentityStore } from '../identity/guestIdentity';
-import { getActiveLocale } from '../i18n';
+import { getActiveLocale, i18n } from '../i18n';
 import type { MembershipView } from '../api/membership';
 import {
   setAnalyticsMirrorPlayerReference,
@@ -54,5 +54,12 @@ export function syncAnalyticsMirrorIdentity(): void {
         event.query.queryKey[1] === MEMBERSHIP_QUERY_KEY[1]) {
       applyUserProperties();
     }
+  });
+
+  // The App Display Language can change at any time from Settings, and it is a
+  // user property rather than an event parameter, so it would otherwise stay at
+  // whatever it was when identity last changed.
+  i18n.on('languageChanged', () => {
+    applyUserProperties();
   });
 }

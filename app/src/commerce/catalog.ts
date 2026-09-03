@@ -4,6 +4,7 @@ import type {
   PurchasesPackage,
 } from 'react-native-purchases';
 
+import type { AnalyticsMirrorOnlyParams } from '../analytics/analyticsMirror';
 import type {
   PurchaseProductKey,
   PurchaseProductKind,
@@ -261,15 +262,34 @@ export function storeProductId(identifier: string): string {
  * price - the mirror never invents an amount.
  */
 export function purchaseRevenueParams(
-  product: Pick<CommerceProduct, 'package'> | undefined,
-): { currency: string; value: number } | undefined {
-  const storeProduct = product?.package.product;
+  product: Pick<CommerceProduct, 'package' | 'productKey' | 'productKind'> | undefined,
+  transactionId: string | null | undefined,
+): AnalyticsMirrorOnlyParams | undefined {
+  if (product === undefined) {
+    return undefined;
+  }
+  const storeProduct = product.package.product;
   if (storeProduct === undefined) {
     return undefined;
   }
   const { currencyCode, price } = storeProduct;
-  if (typeof price !== 'number' || typeof currencyCode !== 'string' || currencyCode === '') {
+  const hasAmount =
+    typeof price === 'number' && typeof currencyCode === 'string' && currencyCode !== '';
+  // GA4 de-duplicates on transaction_id, so a purchase without one is worse
+  // than useless in the revenue reports - report nothing instead.
+  if (transactionId === null || transactionId === undefined || transactionId === '') {
     return undefined;
   }
-  return { currency: currencyCode, value: price };
+  return {
+    ...(hasAmount ? { currency: currencyCode, value: price } : {}),
+    items: [
+      {
+        item_category: product.productKind,
+        item_id: product.productKey,
+        ...(hasAmount ? { price } : {}),
+        quantity: 1,
+      },
+    ],
+    transactionId,
+  };
 }

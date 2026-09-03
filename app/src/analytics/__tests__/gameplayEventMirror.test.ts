@@ -126,20 +126,41 @@ describe('Analytics Mirror through captureGameplayEvent', () => {
     expect(mockedDb.enqueueAnalyticsGameplayEvent).toHaveBeenCalledTimes(5);
   });
 
-  it('reports a completed purchase as GA4 purchase with value and currency that never reach the backend', async () => {
+  it('reports a completed purchase as GA4 purchase with the full revenue schema, none of which reaches the backend', async () => {
     applyAnalyticsMirrorConsent(true);
 
     await captureGameplayEvent(
       'purchase_completed',
       { product_kind: 'stitch_coin_pack', product_key: 'coin_pack_300' },
       undefined,
-      { currency: 'USD', value: 4.99 },
+      {
+        currency: 'USD',
+        items: [
+          {
+            item_category: 'stitch_coin_pack',
+            item_id: 'coin_pack_300',
+            price: 4.99,
+            quantity: 1,
+          },
+        ],
+        transactionId: 'store-txn-1',
+        value: 4.99,
+      },
     );
 
     expect(bridge.logEvent).toHaveBeenCalledWith(expect.anything(), 'purchase', {
       currency: 'USD',
+      items: [
+        {
+          item_category: 'stitch_coin_pack',
+          item_id: 'coin_pack_300',
+          price: 4.99,
+          quantity: 1,
+        },
+      ],
       product_kind: 'stitch_coin_pack',
       product_key: 'coin_pack_300',
+      transaction_id: 'store-txn-1',
       value: 4.99,
     });
     expect(mockedDb.enqueueAnalyticsGameplayEvent).toHaveBeenCalledWith(

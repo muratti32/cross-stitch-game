@@ -570,7 +570,16 @@ it('emits completion only after verified membership and AI Credit refresh', asyn
     'purchase_completed',
     { product_kind: 'premium_membership', product_key: 'premium_annual' },
     undefined,
-    { currency: 'USD', value: 39.99 },
+    {
+      currency: 'USD',
+      items: [
+        { item_category: 'premium_membership', item_id: 'premium_annual', price: 39.99, quantity: 1 },
+      ],
+      // Attempt ids are generated at runtime; what matters here is that one
+      // travels at all, so GA4 can de-duplicate a replayed purchase.
+      transactionId: expect.any(String),
+      value: 39.99,
+    },
   );
   expect(allText(renderer!.root)).toContain('Annual Premium is verified and active.');
   expect(allText(renderer!.root)).not.toContain('Purchase Reconciliation Pending');
@@ -751,7 +760,16 @@ it('routes restore through pending and completes from the backend-observed plan'
     'purchase_completed',
     { product_kind: 'premium_membership', product_key: 'premium_monthly' },
     undefined,
-    { currency: 'USD', value: 7.99 },
+    {
+      currency: 'USD',
+      items: [
+        { item_category: 'premium_membership', item_id: 'premium_monthly', price: 7.99, quantity: 1 },
+      ],
+      // Attempt ids are generated at runtime; what matters here is that one
+      // travels at all, so GA4 can de-duplicate a replayed purchase.
+      transactionId: expect.any(String),
+      value: 7.99,
+    },
   );
 });
 
@@ -1114,7 +1132,16 @@ it('completes a direct iOS upgrade through the ordinary purchase and reconciliat
     'purchase_completed',
     { product_kind: 'premium_membership', product_key: 'premium_monthly' },
     undefined,
-    { currency: 'USD', value: 7.99 },
+    {
+      currency: 'USD',
+      items: [
+        { item_category: 'premium_membership', item_id: 'premium_monthly', price: 7.99, quantity: 1 },
+      ],
+      // Attempt ids are generated at runtime; what matters here is that one
+      // travels at all, so GA4 can de-duplicate a replayed purchase.
+      transactionId: expect.any(String),
+      value: 7.99,
+    },
   );
   expect(mockCaptureGameplayEvent).toHaveBeenCalledWith('subscription_change_completed', {
     source_plan: 'premium_weekly',
@@ -1621,7 +1648,16 @@ it('updates AI Credit balance and completes only after the exact backend grant',
     'purchase_completed',
     { product_kind: 'ai_credit_pack', product_key: 'ai_credit_pack_5' },
     undefined,
-    { currency: 'USD', value: 2.99 },
+    {
+      currency: 'USD',
+      items: [
+        { item_category: 'ai_credit_pack', item_id: 'ai_credit_pack_5', price: 2.99, quantity: 1 },
+      ],
+      // Attempt ids are generated at runtime; what matters here is that one
+      // travels at all, so GA4 can de-duplicate a replayed purchase.
+      transactionId: expect.any(String),
+      value: 2.99,
+    },
   );
   expect(allText(renderer!.root)).toContain(
     '5 AI Credits grant verified. AI Credit balance: 9.',
@@ -1882,7 +1918,16 @@ it('updates the wallet and emits completion only after the matching backend Coin
     'purchase_completed',
     { product_kind: 'stitch_coin_pack', product_key: 'coin_pack_300' },
     undefined,
-    { currency: 'USD', value: 1.99 },
+    {
+      currency: 'USD',
+      items: [
+        { item_category: 'stitch_coin_pack', item_id: 'coin_pack_300', price: 1.99, quantity: 1 },
+      ],
+      // Attempt ids are generated at runtime; what matters here is that one
+      // travels at all, so GA4 can de-duplicate a replayed purchase.
+      transactionId: expect.any(String),
+      value: 1.99,
+    },
   );
   expect(allText(renderer!.root)).toContain(
     '300 Stitch Coins grant verified. Stitch Coin balance: 420.',

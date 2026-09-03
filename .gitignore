@@ -14,4 +14,3 @@ credentials.json
 
 # asc screenshot-upload run reports (local artifacts, regenerated per run)
 .asc/reports/
-
