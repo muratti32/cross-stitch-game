@@ -1,7 +1,17 @@
 import { BadRequestException } from '@nestjs/common';
 
-import { CategoryEntity, CategoryLabelEntity, PatternEntity, TagEntity, TagLabelEntity } from '../catalog/entities';
+import { CategoryEntity, CategoryLabelEntity, PatternEntity, TagEntity } from '../catalog/entities';
+import { RELEASED_APP_DISPLAY_LOCALES } from '../catalog/released-locales.constant';
 import { AdminCatalogService } from './admin-catalog.service';
+
+// Taxonomy writes require a label for every released App Display Language, so
+// specs build the complete set and only override the locales they assert on.
+function completeLabels(overrides: Record<string, string> = {}): { locale: string; label: string }[] {
+  return RELEASED_APP_DISPLAY_LOCALES.map((locale) => ({
+    locale,
+    label: overrides[locale] ?? `Label ${locale}`,
+  }));
+}
 
 function pattern(overrides: Partial<PatternEntity> = {}): PatternEntity {
   return Object.assign(new PatternEntity(), {
@@ -157,13 +167,14 @@ describe('AdminCatalogService category labels', () => {
       {} as never, {} as never, {} as never, {} as never, categories as never, labels as never,
     );
 
-    await service.createCategory('operator', 'new-category', [
-      { locale: 'en', label: 'New Category' }, { locale: 'tr', label: 'Yeni Kategori' },
-    ], 'request');
+    await service.createCategory('operator', 'new-category',
+      completeLabels({ en: 'New Category', tr: 'Yeni Kategori' }), 'request');
     expect(labels.save).toHaveBeenCalled();
-    expect(await service.updateCategoryLabels('operator', 'animals', [
-      { locale: 'en', label: 'Animals Updated' }, { locale: 'tr', label: 'Hayvanlar' },
-    ], 'request')).toMatchObject({ code: 'animals', labels: [{ locale: 'en' }, { locale: 'tr' }] });
+    const updated = await service.updateCategoryLabels('operator', 'animals',
+      completeLabels({ en: 'Animals Updated', tr: 'Hayvanlar' }), 'request');
+    expect(updated).toMatchObject({ code: 'animals' });
+    expect(updated.labels.map((row) => row.locale).sort()).toEqual([...RELEASED_APP_DISPLAY_LOCALES].sort());
+    expect(updated.labels.find((row) => row.locale === 'tr')).toMatchObject({ label: 'Hayvanlar' });
     expect(category.code).toBe('animals');
   });
 });
