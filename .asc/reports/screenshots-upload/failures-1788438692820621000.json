@@ -1,0 +1,67 @@
+{
+  "versionLocalizationId": "377d1840-56d2-4133-8e68-f9e2b7c237f8",
+  "path": ".asc/reports/screenshots-upload/failures-1788438692820621000.json",
+  "rootPath": "/private/tmp/stitchwish-asc-correct.VJEXwB",
+  "deviceType": "IPHONE_67",
+  "displayType": "APP_IPHONE_67",
+  "skipExisting": true,
+  "setId": "ecee297b-2f20-4860-8465-18e339693dc4",
+  "files": [
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-01-hero_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-02-catalog_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-03-photo-import_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-04-ai-artwork_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-05-threads_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-06-completion_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-07-offline_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-08-rewards_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-09-themes_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-10-community_APP_IPHONE_67.jpg"
+  ],
+  "orderedIds": [
+    "820e509d-499d-4825-8bcb-d29333b43e58",
+    "de547a9a-093c-4d34-9823-f665e0151f83"
+  ],
+  "pendingFiles": [
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-03-photo-import_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-04-ai-artwork_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-05-threads_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-06-completion_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-07-offline_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-08-rewards_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-09-themes_APP_IPHONE_67.jpg",
+    "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-10-community_APP_IPHONE_67.jpg"
+  ],
+  "pendingAssets": [
+    {
+      "fileName": "ios-6.9-ja-03-photo-import_APP_IPHONE_67.jpg",
+      "filePath": "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-03-photo-import_APP_IPHONE_67.jpg",
+      "assetId": "5a583643-1982-4d58-aba8-886d9b5de09d",
+      "checksum": "d0732765f2c44e91b68df9e0a40700cb",
+      "state": "COMPLETE"
+    }
+  ],
+  "results": [
+    {
+      "fileName": "ios-6.9-ja-01-hero_APP_IPHONE_67.jpg",
+      "filePath": "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-01-hero_APP_IPHONE_67.jpg",
+      "assetId": "820e509d-499d-4825-8bcb-d29333b43e58",
+      "state": "COMPLETE"
+    },
+    {
+      "fileName": "ios-6.9-ja-02-catalog_APP_IPHONE_67.jpg",
+      "filePath": "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-02-catalog_APP_IPHONE_67.jpg",
+      "assetId": "de547a9a-093c-4d34-9823-f665e0151f83",
+      "state": "COMPLETE"
+    }
+  ],
+  "failures": [
+    {
+      "fileName": "ios-6.9-ja-03-photo-import_APP_IPHONE_67.jpg",
+      "filePath": "/private/tmp/stitchwish-asc-correct.VJEXwB/ja/iphone/ios-6.9-ja-03-photo-import_APP_IPHONE_67.jpg",
+      "error": "canceled waiting for screenshot 5a583643-1982-4d58-aba8-886d9b5de09d checksum settlement after delivery state COMPLETE: context canceled"
+    }
+  ],
+  "error": "canceled waiting for screenshot 5a583643-1982-4d58-aba8-886d9b5de09d checksum settlement after delivery state COMPLETE: context canceled",
+  "generatedAt": "2026-09-03T12:31:32Z"
+}

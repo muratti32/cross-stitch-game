@@ -45,7 +45,14 @@ export default function appConfig(_context: ConfigContext): ExpoConfig {
   const hasFirebaseServiceFiles =
     existsSync(androidGoogleServices) && existsSync(iosGoogleServices);
   if (hasFirebaseServiceFiles) {
-    plugins.push('@react-native-firebase/app');
+    // disableSPM: RNFirebase resolves firebase-ios-sdk through Swift Package
+    // Manager by default, whose products are automatic libraries. Under this
+    // project's static pod linkage each Firebase pod would embed its own copy
+    // and collide with duplicate symbols at link time, so Firebase is installed
+    // through CocoaPods instead. The alternative - switching every pod to
+    // dynamic frameworks - would change linkage for Skia, Sentry and RevenueCat
+    // too, for no benefit here.
+    plugins.push(['@react-native-firebase/app', { ios: { disableSPM: true } }]);
   }
 
   return {
