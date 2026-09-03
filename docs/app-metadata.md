@@ -7,9 +7,10 @@ identifiers and secret-manager *reference names* belong here — never secret
 values.
 
 > **Coverage status:** this file is incomplete. It currently documents app
-> identity, App Display Languages, and the Sentry integration. Store listing,
-> RevenueCat, Firebase/auth, push, backend/infrastructure hosting,
-> and privacy posture are **not yet inventoried here** — absence of a service
+> identity, App Display Languages, the Sentry integration, and the Firebase
+> Analytics integration with its store privacy declarations. Store listing,
+> RevenueCat, Firebase/auth, push, and backend/infrastructure hosting are
+> **not yet inventoried here** — absence of a service
 > below means "not documented yet", never "not provisioned". Extend this file
 > as each area is confirmed.
 
@@ -57,6 +58,53 @@ copy may remain English even while app-owned commerce UI uses the selected App
 Display Language.
 
 ## External services
+
+### Firebase Analytics (product analytics) — see ADR-0055
+
+| Field | Value |
+| --- | --- |
+| Firebase project id | `stitchwish-d3b28` (same project as the ADR-0038 auth broker; one project serves every environment) |
+| Packages | `@react-native-firebase/app`, `@react-native-firebase/analytics` |
+| Config plugin | `@react-native-firebase/app`, registered by `app/app.config.ts` **only when both Google service files are present** |
+| Service files | `app/credentials/firebase/google-services.json`, `app/credentials/firebase/GoogleService-Info.plist` — client-side identifiers, not secrets; absent from a fresh clone, which then builds with no Analytics |
+| Collection default | Disabled natively via `app/firebase.json` (`analytics_auto_collection_enabled: false`), which writes `FIREBASE_ANALYTICS_COLLECTION_ENABLED=false` into the iOS Info.plist and the Android manifest at build time. Enabled at runtime only after the ADR-0033 UMP consent flow reports consent granted |
+| Development builds | Disabled unless `EXPO_PUBLIC_FIREBASE_ANALYTICS_ENABLED=true` on that device (DebugView verification only) |
+| Identity sent | The opaque player reference (Registered Account id or Guest Installation Identity), the same one Sentry receives. Never an email address, Firebase UID, or auth-provider subject |
+| User properties | `is_guest`, `app_language`, `membership_tier` |
+| Data retention | Two months (console default) |
+| Tracking | No advertising identifier, no App Tracking Transparency prompt, no cross-app tracking |
+| Consent signal | TCF Purpose 1 via the AdMob UMP message, interpreted as `analytics_storage` by AdMob's consent mode |
+
+> **Open question (ADR-0033):** the AdMob console also lists an **IDFA explainer
+> message as active** under "Transparency and control". ADR-0033 states the game
+> requests no App Tracking Transparency prompt. Nothing in this repo triggers
+> ATT, so the explainer is presumably dormant, but the console state and the ADR
+> disagree and should be reconciled.
+
+**Required manual setup (console-side, not performed by this repo's code):**
+
+- Register an iOS app (bundle identifier) and an Android app (package name plus
+  debug and release SHA-1/SHA-256 signing fingerprints) in the Firebase project,
+  then download both service files into `app/credentials/firebase/`.
+- ~~Extend the UMP consent message to cover the analytics purpose~~ **done**
+  (AdMob → Privacy & messaging → European regulations → Settings): "Enable
+  consent mode for analytics purposes" was already on, interpreting TCF Purpose 1
+  as `analytics_storage`; "Add purposes for your own use" now declares four
+  purposes on a **Consent** basis — Store and/or access information on a device
+  (P1), Measure content performance (P8), Understand audiences (P9), Develop and
+  improve services (P10). Every advertising and personalization purpose stays
+  "Not used", so ADR-0033 is unaffected. Existing EEA/UK/Swiss players were
+  re-prompted, since their earlier consent did not cover analytics.
+- Confirm Analytics data retention is left at two months.
+
+### Store privacy declarations
+
+| Surface | Declaration |
+| --- | --- |
+| App Store privacy labels | Add **Analytics → Product Interaction, Other Usage Data** and **Identifiers → User ID** (the opaque player reference), both "Not used to track you". Tracking stays declared as **No** |
+| Play Data safety | Add **App activity → App interactions** and **App info and performance**, collected, not shared, consent-based, deletable via the existing account deletion flow |
+
+Drafts only — submitting updated store metadata remains a human action.
 
 ### Sentry (crash reporting + performance) — see ADR-0035
 

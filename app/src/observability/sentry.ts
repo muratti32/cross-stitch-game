@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react-native';
 import { Config, isSentryConfigured } from '../config';
-import { useIdentityStore } from '../identity/guestIdentity';
+import { subscribeToOpaquePlayerReference } from '../identity/playerReference';
 import { isOfflineNetworkError } from '../api/networkErrors';
 
 /**
@@ -165,6 +165,20 @@ export function setSentryPlayerReference(opaqueId: string | null): void {
 }
 
 /**
+ * Reports an Analytics Mirror failure (ADR-0055). The context is deliberately
+ * NOT named after the vendor: the scrubber above redacts any key containing
+ * "firebase", which would strip the very diagnostics this reports.
+ */
+export function captureAnalyticsMirrorError(operation: string, error: unknown): void {
+  if (!isSentryConfigured()) {
+    return;
+  }
+  Sentry.captureException(error instanceof Error ? error : new Error(String(error)), {
+    contexts: { analyticsMirror: { operation } },
+  });
+}
+
+/**
  * Keeps the Sentry player reference in sync with the identity store, so
  * crashes/perf events can be correlated with a Support Reference without
  * wiring this into every call site that changes identity.
@@ -174,14 +188,5 @@ export function syncSentryPlayerReferenceWithIdentity(): void {
     return;
   }
 
-  const applyFromState = (state: { accountId: string | null; guestId: string | null }) => {
-    setSentryPlayerReference(state.accountId ?? state.guestId);
-  };
-
-  applyFromState(useIdentityStore.getState());
-  useIdentityStore.subscribe((state, prevState) => {
-    if (state.accountId !== prevState.accountId || state.guestId !== prevState.guestId) {
-      applyFromState(state);
-    }
-  });
+  subscribeToOpaquePlayerReference(setSentryPlayerReference);
 }

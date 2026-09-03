@@ -20,9 +20,11 @@ cannot authorize catalog, progress, economy, moderation, or commerce endpoints;
 only a Game Backend session can.
 
 Passwordless Email Sign-In remains fully game-owned and does not pass through
-Firebase. Firestore, Realtime Database, Firebase Storage, Analytics,
-Crashlytics, Dynamic Links, and Firebase Cloud Messaging are not added by this
-decision. A future push-notification decision may still use a Firebase project
+Firebase. Firestore, Realtime Database, Firebase Storage, Crashlytics, Dynamic
+Links, and Firebase Cloud Messaging are not added by this decision. Firebase
+Analytics was likewise excluded here and was later added by ADR-0055 as a
+product-analytics mirror; it uses a separate native Firebase app that authorizes
+nothing, so the authentication boundary in this ADR is unchanged. A future push-notification decision may still use a Firebase project
 for FCM credentials, but that does not expand the authentication boundary.
 
 We accept a new Firebase Auth and Firebase Admin dependency, native Google and

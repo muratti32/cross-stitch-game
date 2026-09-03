@@ -4,6 +4,7 @@ import type {
   PurchasesPackage,
 } from 'react-native-purchases';
 
+import type { AnalyticsMirrorOnlyParams } from '../analytics/analyticsMirror';
 import type {
   PurchaseProductKey,
   PurchaseProductKind,
@@ -251,4 +252,44 @@ export function classifyPremiumPlanChange(
 export function storeProductId(identifier: string): string {
   const separator = identifier.indexOf(':');
   return separator === -1 ? identifier : identifier.slice(0, separator);
+}
+
+/**
+ * Revenue parameters for the Analytics Mirror only (ADR-0055). The first-party
+ * `purchase_completed` payload is a closed shape the Game Backend validates, so
+ * amount and currency travel beside it rather than inside it, purely so GA4's
+ * revenue reports work. Returns undefined when the store did not report a
+ * price - the mirror never invents an amount.
+ */
+export function purchaseRevenueParams(
+  product: Pick<CommerceProduct, 'package' | 'productKey' | 'productKind'> | undefined,
+  transactionId: string | null | undefined,
+): AnalyticsMirrorOnlyParams | undefined {
+  if (product === undefined) {
+    return undefined;
+  }
+  const storeProduct = product.package.product;
+  if (storeProduct === undefined) {
+    return undefined;
+  }
+  const { currencyCode, price } = storeProduct;
+  const hasAmount =
+    typeof price === 'number' && typeof currencyCode === 'string' && currencyCode !== '';
+  // GA4 de-duplicates on transaction_id, so a purchase without one is worse
+  // than useless in the revenue reports - report nothing instead.
+  if (transactionId === null || transactionId === undefined || transactionId === '') {
+    return undefined;
+  }
+  return {
+    ...(hasAmount ? { currency: currencyCode, value: price } : {}),
+    items: [
+      {
+        item_category: product.productKind,
+        item_id: product.productKey,
+        ...(hasAmount ? { price } : {}),
+        quantity: 1,
+      },
+    ],
+    transactionId,
+  };
 }

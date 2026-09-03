@@ -23,6 +23,35 @@ jest.mock('react-native-reanimated', () => {
   };
 });
 
+// Sentry ships untranspiled ESM that jest cannot parse, and the Analytics
+// Mirror reports failures through it. Every export is a no-op spy; suites that
+// care about reporting assert on the mirror's observable behaviour instead.
+jest.mock('@sentry/react-native', () => {
+  const spies = {};
+  return new Proxy(
+    {},
+    {
+      get: (_target, name) => {
+        if (!(name in spies)) spies[name] = jest.fn();
+        return spies[name];
+      },
+    },
+  );
+});
+
+// ADR-0055: the Analytics Mirror talks to a native module that cannot load
+// under jest. Suites get a JS stand-in so the mirror's real filtering, naming
+// and consent logic still runs and can be observed.
+jest.mock('@react-native-firebase/analytics', () => ({
+  __esModule: true,
+  getAnalytics: jest.fn(() => ({})),
+  logEvent: jest.fn(() => Promise.resolve()),
+  logScreenView: jest.fn(() => Promise.resolve()),
+  setAnalyticsCollectionEnabled: jest.fn(() => Promise.resolve()),
+  setUserId: jest.fn(() => Promise.resolve()),
+  setUserProperty: jest.fn(() => Promise.resolve()),
+}));
+
 // #155/#157: initializes the REAL i18next instance with the REAL English
 // (and Turkish) resources - never a mock of t(). Roughly forty existing
 // test files locate and press elements by their visible English label, and

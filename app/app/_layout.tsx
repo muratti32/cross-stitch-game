@@ -14,7 +14,9 @@ import { prepareOnboardingStartup } from '../src/onboarding/startup';
 import { useGameplayStore } from '../src/store/gameplayStore';
 import { bootstrap, useIdentityStore } from '../src/identity/guestIdentity';
 import { synchronizeRevenueCatIdentity } from '../src/commerce/revenueCat';
-import { initializeAdMob } from '../src/ads';
+import { hasAdsConsent, initializeAdMob } from '../src/ads';
+import { applyAnalyticsMirrorConsent, mirrorScreenView } from '../src/analytics/analyticsMirror';
+import { syncAnalyticsMirrorIdentity } from '../src/analytics/analyticsMirrorSync';
 import { initSentry, syncSentryPlayerReferenceWithIdentity } from '../src/observability/sentry';
 import { initI18n, applyResolvedLanguage } from '../src/i18n';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -39,6 +41,9 @@ const ANALYTICS_FLUSH_INTERVAL_MS = 60_000;
 // Must run before anything else that could throw.
 initSentry();
 syncSentryPlayerReferenceWithIdentity();
+// ADR-0055. Collection stays off until the UMP flow below reports consent; this
+// only wires the identity that would accompany it.
+syncAnalyticsMirrorIdentity();
 initI18n();
 
 // Keep the splash screen visible while we fetch resources
@@ -69,6 +74,15 @@ function RootLayout() {
       router.replace('/(tabs)/(settings)/sign-in');
     }
   }, [pathname, requiresSignIn]);
+
+  // ADR-0055: screen views carry the route TEMPLATE only. `segments` is the
+  // template - "(tabs)/(play)/[sessionId]" - so Pattern ids and other per
+  // -player route parameters never reach the Analytics Mirror.
+  useEffect(() => {
+    const routeTemplate = segments.join('/');
+    if (routeTemplate === '') return;
+    mirrorScreenView(routeTemplate);
+  }, [segments]);
 
   // The root path "/" is owned by the Catalog tab's index, so a first launch
   // renders Catalog instead of the onboarding gate. Apply that gate here, once
@@ -145,12 +159,21 @@ function RootLayout() {
         });
         // Warm up the AdMob SDK in the background so the first Rewarded Ad
         // request is fast (ADR-0033). No-op on web / when unconfigured.
-        initializeAdMob().catch((err: unknown) => {
-          console.log(
-            'AdMob initialization deferred:',
-            err instanceof Error ? err.message : String(err),
-          );
-        });
+        initializeAdMob()
+          .then(() => {
+            // ADR-0055: the UMP flow owns the consent decision; the Analytics
+            // Mirror only mirrors it. `hasAdsConsent()` stays null when the
+            // consent form never ran (web, unconfigured ad unit), and the
+            // mirror deliberately stays silent in that case rather than
+            // assuming consent it was never given.
+            applyAnalyticsMirrorConsent(hasAdsConsent() === true);
+          })
+          .catch((err: unknown) => {
+            console.log(
+              'AdMob initialization deferred:',
+              err instanceof Error ? err.message : String(err),
+            );
+          });
         syncPendingPersonalPatterns().catch((err: unknown) => {
           console.log(
             'Pending Personal Pattern sync deferred:',
