@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react-native';
 import { Config, isSentryConfigured } from '../config';
-import { useIdentityStore } from '../identity/guestIdentity';
+import { subscribeToOpaquePlayerReference } from '../identity/playerReference';
 import { isOfflineNetworkError } from '../api/networkErrors';
 
 /**
@@ -174,14 +174,5 @@ export function syncSentryPlayerReferenceWithIdentity(): void {
     return;
   }
 
-  const applyFromState = (state: { accountId: string | null; guestId: string | null }) => {
-    setSentryPlayerReference(state.accountId ?? state.guestId);
-  };
-
-  applyFromState(useIdentityStore.getState());
-  useIdentityStore.subscribe((state, prevState) => {
-    if (state.accountId !== prevState.accountId || state.guestId !== prevState.guestId) {
-      applyFromState(state);
-    }
-  });
+  subscribeToOpaquePlayerReference(setSentryPlayerReference);
 }
