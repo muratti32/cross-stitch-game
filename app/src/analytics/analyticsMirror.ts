@@ -87,15 +87,25 @@ export interface AnalyticsMirrorUserProperties {
 
 interface FirebaseAnalyticsSdk {
   getAnalytics(): unknown;
-  logEvent(analytics: unknown, name: string, params?: Record<string, unknown>): Promise<void>;
+  /**
+   * Synchronous since v26: the modular helper fires the native call and
+   * discards its promise, so it hands back nothing to await or catch.
+   */
+  logEvent(analytics: unknown, name: string, params?: Record<string, unknown>): void;
   logScreenView(analytics: unknown, params: Record<string, unknown>): Promise<void>;
   setAnalyticsCollectionEnabled(analytics: unknown, enabled: boolean): Promise<void>;
   setUserId(analytics: unknown, id: string | null): Promise<void>;
   setUserProperty(analytics: unknown, name: string, value: string | null): Promise<void>;
 }
 
+/**
+ * Bridge calls are `MirrorCall`s: some SDK helpers return a promise, `logEvent`
+ * returns nothing. `run` normalizes both, so neither shape can reach a caller.
+ */
+type MirrorCall = Promise<unknown> | void;
+
 interface AnalyticsBridge {
-  logEvent(name: string, params?: Record<string, unknown>): Promise<void>;
+  logEvent(name: string, params?: Record<string, unknown>): void;
   logScreenView(params: Record<string, unknown>): Promise<void>;
   setAnalyticsCollectionEnabled(enabled: boolean): Promise<void>;
   setUserId(id: string | null): Promise<void>;
@@ -178,13 +188,25 @@ function reportMirrorError(operation: string, error: unknown): void {
   captureAnalyticsMirrorError(operation, error);
 }
 
-function run(operation: string, call: (bridge: AnalyticsBridge) => Promise<unknown>): void {
+/**
+ * Attaches the rejection handler without assuming the call returned a promise:
+ * `logEvent` returns nothing, and reading `.catch` off that would throw inside
+ * the very path meant to keep mirror failures away from play.
+ */
+function guard(operation: string, result: MirrorCall): void {
+  if (result === undefined) {
+    return;
+  }
+  void Promise.resolve(result).catch((error: unknown) => reportMirrorError(operation, error));
+}
+
+function run(operation: string, call: (bridge: AnalyticsBridge) => MirrorCall): void {
   const resolved = getBridge();
   if (resolved === null || !isCollectionAllowed()) {
     return;
   }
   try {
-    void call(resolved).catch((error: unknown) => reportMirrorError(operation, error));
+    guard(operation, call(resolved));
   } catch (error: unknown) {
     reportMirrorError(operation, error);
   }
@@ -208,9 +230,7 @@ export function applyAnalyticsMirrorConsent(granted: boolean): void {
   }
   const enabled = isCollectionAllowed();
   try {
-    void resolved
-      .setAnalyticsCollectionEnabled(enabled)
-      .catch((error: unknown) => reportMirrorError('set-collection-enabled', error));
+    guard('set-collection-enabled', resolved.setAnalyticsCollectionEnabled(enabled));
   } catch (error: unknown) {
     reportMirrorError('set-collection-enabled', error);
   }

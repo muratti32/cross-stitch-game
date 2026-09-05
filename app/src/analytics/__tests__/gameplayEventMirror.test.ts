@@ -15,13 +15,19 @@ import {
   __resetAnalyticsMirrorGlobals,
 } from '../analyticsMirror';
 import * as localDb from '../../local-db';
+import { captureAnalyticsMirrorError } from '../../observability/sentry';
 
 jest.mock('../../local-db', () => ({
   enqueueAnalyticsGameplayEvent: jest.fn(),
   generateUUID: jest.fn(() => '72bb19f7-e78e-4b72-bc75-d761122a25df'),
 }));
 
+jest.mock('../../observability/sentry', () => ({
+  captureAnalyticsMirrorError: jest.fn(),
+}));
+
 const mockedDb = localDb as jest.Mocked<typeof localDb>;
+const mockedCaptureAnalyticsMirrorError = captureAnalyticsMirrorError as jest.Mock;
 // The SDK is modular: every call receives the Analytics instance first, which
 // these assertions skip over - it carries no product meaning.
 const mockedLogEvent = logEvent as unknown as jest.Mock;
@@ -324,6 +330,42 @@ describe('Analytics Mirror through captureGameplayEvent', () => {
       mirrorScreenView('(tabs)/(catalog)');
 
       expect(bridge.logScreenView).not.toHaveBeenCalled();
+    });
+  });
+
+  // STITCH-WISH-S: the modular `logEvent` returns nothing, so a mirror that
+  // assumed a promise threw on every mirrored event - inside the path whose
+  // whole purpose is to keep analytics failures away from play.
+  describe('SDK helpers that return no promise', () => {
+    it('mirrors an event when logEvent returns undefined, without throwing', async () => {
+      mockedLogEvent.mockReturnValue(undefined);
+      applyAnalyticsMirrorConsent(true);
+
+      await expect(
+        captureGameplayEvent('session_started', {
+          session_id: '0b5fe1ce-5f79-4c80-aa32-5ca9e67b8dd5',
+        }),
+      ).resolves.not.toThrow();
+
+      expect(loggedEvents()).toEqual([
+        ['sw_session_started', { session_id: '0b5fe1ce-5f79-4c80-aa32-5ca9e67b8dd5' }],
+      ]);
+    });
+
+    it('still reports a throwing SDK call to Sentry', async () => {
+      mockedLogEvent.mockImplementation(() => {
+        throw new Error('native module unavailable');
+      });
+      applyAnalyticsMirrorConsent(true);
+
+      await captureGameplayEvent('session_started', {
+        session_id: '0b5fe1ce-5f79-4c80-aa32-5ca9e67b8dd5',
+      });
+
+      expect(mockedCaptureAnalyticsMirrorError).toHaveBeenCalledWith(
+        'log-event',
+        expect.any(Error),
+      );
     });
   });
 });
