@@ -6,9 +6,9 @@ The game needs a public website to satisfy AdMob, App Store, and Google Play req
 
 **A. Add public routes to the existing `admin-console/` Next.js app** — rejected because the operator console is an MFA-protected internal tool; mixing public and protected surfaces in one deployment complicates security posture, Content-Security-Policy, and cookie scope. A future reader would rightly question why a public privacy policy and a protected admin dashboard share the same origin.
 
-**B. Separate Next.js app** — rejected in favour of Vite because the public site has no server-rendering or API-proxy requirements. Next.js adds build complexity and a Node.js runtime dependency for a site that is entirely stateless HTML, CSS, and client-side fetch.
+**B. Separate Next.js app** — rejected in favour of Vite because the public site has no server-rendering or API-proxy requirements (Amended: Pages Functions later added a server-rendered surface — see Amendment below). Next.js adds build complexity and a Node.js runtime dependency for a site that is entirely stateless HTML, CSS, and client-side fetch.
 
-**C. Vite + React SPA (chosen)** — statically exported, deployable to Cloudflare Pages with a single `_redirects` rule. The Account Deletion page makes a direct client-side fetch to the Game Backend API (`VITE_API_URL`); no server runtime is needed. React Router v7 handles client-side routing.
+**C. Vite + React SPA (chosen)** — statically exported, deployable to Cloudflare Pages with a single `_redirects` rule. The Account Deletion page makes a direct client-side fetch to the Game Backend API (`VITE_API_URL`); no server runtime is needed (Amended: Pages Functions later added a server-rendered surface — see Amendment below). React Router v7 handles client-side routing.
 
 ## Consequences
 

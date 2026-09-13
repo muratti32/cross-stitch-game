@@ -59,11 +59,7 @@ Display Language.
 
 ### Store listing assets
 
-- **Google Play screenshot upload** (phone / tablet sets, batch across
-  locales): see `docs/research/2026-09-04-google-play-screenshot-batch-upload.md`
-  — one Edit per batch, single validate + commit; fastlane `supply` is the
-  recommended route. The per-image auto-commit `play-store-mcp` `upload_image`
-  tool fails on this.
+- Google Play screenshot assets: see `docs/research/2026-09-04-google-play-screenshot-batch-upload.md`.
 
 ## External services
 
