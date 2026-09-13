@@ -114,6 +114,9 @@ export class CatalogPrecheckService {
     ) {
       errors.push('Title is not normalized or is outside the allowed length');
     }
+    if (/[<>]/.test(input.title)) {
+      errors.push('Title cannot contain angle brackets');
+    }
     if (
       input.description !== normalizeText(input.description) ||
       input.description.length < 1 ||

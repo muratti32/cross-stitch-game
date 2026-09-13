@@ -76,6 +76,9 @@ export class CatalogSubmissionService {
     if (title.length < 1 || title.length > 120 || description.length < 1 || description.length > 2000) {
       throw new BadRequestException('Catalog Submission text is outside the allowed length');
     }
+    if (/[<>]/.test(title)) {
+      throw new BadRequestException('Title cannot contain angle brackets');
+    }
     const submissionId = randomUUID();
     const processingJobId = randomUUID();
     const submissionKeys = catalogSubmissionObjectKeys(submissionId);

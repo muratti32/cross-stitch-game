@@ -429,4 +429,54 @@ describe('Catalog Metadata Revision persistence', () => {
     await service.reject(operatorId, third.id, 'quality_standard', 'Needs more detail once more');
     await expect(service.appeal(principal, third.id, {})).resolves.toMatchObject({ revisionId: third.id });
   });
+
+  it('screens revision title for markup (rejects angle brackets identically, accepts quotes, ampersands, and non-Latin characters)', async () => {
+    const markupPatternId = randomUUID();
+    await dataSource.query(
+      `INSERT INTO catalog.patterns
+        (id, title, description, creator_name, creator_profile_id, category_code, width, height,
+         palette_size, artifact_object_key, artifact_checksum, artifact_byte_length,
+         artifact_schema_version, preview_object_key, visibility, owner_account_id, status)
+       VALUES ($1, 'Markup Pattern', 'Markup description.', 'Stitch Reviewer', $2, 'other', 2, 2,
+         2, 'community/artifact-markup.bin', $3, 100, 1, 'community/preview-markup.png', 'catalog', NULL, 'available')`,
+      [markupPatternId, profileId, 'm'.repeat(64)],
+    );
+
+    const precheck = new CatalogPrecheckService(
+      { openAiModerationEnabled: false } as AppConfigService,
+      dataSource,
+      storage,
+    );
+    const service = new CatalogMetadataRevisionService(dataSource, precheck, storage);
+    const principal = { id: accountId, tokenVersion: 1, type: PrincipalType.Account };
+    const baseInput = {
+      categoryCode: 'other',
+      description: 'A revised description.',
+      sourceLanguage: 'en',
+      tagCodes: [],
+    };
+
+    await expect(
+      service.create(principal, markupPatternId, { ...baseInput, title: 'Revised <script> Title' }),
+    ).rejects.toMatchObject({
+      message: 'Title cannot contain angle brackets',
+      status: 400,
+    });
+
+    await expect(
+      service.create(principal, markupPatternId, { ...baseInput, title: 'Revised > Title' }),
+    ).rejects.toMatchObject({
+      message: 'Title cannot contain angle brackets',
+      status: 400,
+    });
+
+    const created = await service.create(principal, markupPatternId, {
+      ...baseInput,
+      title: 'L\'oiseau & "Fleur" — 桜 (Märchen)',
+    });
+    expect(created).toMatchObject({
+      status: 'pending',
+      title: 'L\'oiseau & "Fleur" — 桜 (Märchen)',
+    });
+  });
 });

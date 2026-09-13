@@ -330,4 +330,83 @@ describe('Catalog Submission persistence', () => {
       }),
     ).rejects.toMatchObject({ status: 403 });
   });
+
+  it('screens Community Pattern title for markup (rejects angle brackets, accepts quotes, ampersands, and non-Latin characters)', async () => {
+    const patternId = randomUUID();
+    const palette = [{ dmcCode: '310', name: 'Black', rgbHex: '#000000' }];
+    const grid = Uint8Array.from([1, 0, 0, 1]);
+    const artifact = encodePatternArtifactV1({ grid, height: 2, palette, width: 2 });
+    const preview = renderPatternPreviewPng({ grid, height: 2, palette, width: 2 });
+    const objects = new Map<string, Buffer>([
+      ['personal/markup-artifact.bin', artifact.bytes],
+      ['personal/markup-preview.png', preview],
+    ]);
+    const storage: ObjectStorage = {
+      delete: (key) => {
+        objects.delete(key);
+        return Promise.resolve();
+      },
+      exists: (key) => Promise.resolve(objects.has(key)),
+      get: (key) => Promise.resolve(objects.get(key) ?? null),
+      list: () => Promise.resolve([...objects.keys()]),
+      publicUrl: (key) => key,
+      put: (key, bytes) => {
+        objects.set(key, Buffer.from(bytes));
+        return Promise.resolve();
+      },
+    };
+    await dataSource.query(
+      `INSERT INTO catalog.patterns
+        (id, title, creator_name, category_code, width, height, palette_size,
+         artifact_object_key, artifact_checksum, artifact_byte_length,
+         artifact_schema_version, preview_object_key, visibility, owner_account_id)
+       VALUES ($1, 'Markup Source', 'You', 'other', 2, 2, 1,
+         'personal/markup-artifact.bin', $2, $3, 1,
+         'personal/markup-preview.png', 'personal', $4)`,
+      [patternId, artifact.checksum, artifact.byteLength, accountId],
+    );
+
+    const jobs = new ProcessingJobsRepository(dataSource, new JobStateTransitionService());
+    const precheck = new CatalogPrecheckService(
+      { openAiModerationEnabled: false } as AppConfigService,
+      dataSource,
+      storage,
+    );
+    const thumbnails = {
+      stageThumbnails: () => Promise.resolve(null),
+    } as unknown as PatternThumbnailStagingService;
+    const service = new CatalogSubmissionService(dataSource, jobs, precheck, storage, thumbnails);
+    const principal = { id: accountId, tokenVersion: 1, type: PrincipalType.Account };
+    const baseInput = {
+      categoryCode: 'other',
+      description: 'A valid description.',
+      licenseVersion: 'v1' as const,
+      rightsDeclared: true as const,
+      sourceLanguage: 'en',
+      tagCodes: [],
+    };
+
+    await expect(
+      service.create(principal, patternId, { ...baseInput, title: 'Title <with> markup' }),
+    ).rejects.toMatchObject({
+      message: 'Title cannot contain angle brackets',
+      status: 400,
+    });
+
+    await expect(
+      service.create(principal, patternId, { ...baseInput, title: 'Title with > closing bracket' }),
+    ).rejects.toMatchObject({
+      message: 'Title cannot contain angle brackets',
+      status: 400,
+    });
+
+    const accepted = await service.create(principal, patternId, {
+      ...baseInput,
+      title: 'L\'oiseau & "Fleur" — 桜 (Märchen)',
+    });
+    expect(accepted).toMatchObject({
+      status: 'precheck_pending',
+      title: 'L\'oiseau & "Fleur" — 桜 (Märchen)',
+    });
+  });
 });
