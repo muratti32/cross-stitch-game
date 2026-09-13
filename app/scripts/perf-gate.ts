@@ -73,6 +73,15 @@ export function reportsAgree(r1: PerfRunReport, r2: PerfRunReport): boolean {
       if (!res1.thermal || !res2.thermal) return false;
       if (res1.thermal.worst !== res2.thermal.worst) return false;
     }
+    if (res1.memory || res2.memory) {
+      if (!res1.memory || !res2.memory) return false;
+      if (
+        res1.memory.peakFootprintBytes !== res2.memory.peakFootprintBytes ||
+        res1.memory.sampleCount !== res2.memory.sampleCount
+      ) {
+        return false;
+      }
+    }
     if (res1.durationMs !== res2.durationMs) return false;
   }
   return true;
@@ -233,6 +242,23 @@ export function rederiveScenarioFailures(res: ScenarioResult): string[] {
       failures.push(
         `${res.scenarioId}: worst thermal state "${res.thermal.worst}" reached or exceeded "serious"`
       );
+    }
+  }
+
+  if (res.scenarioId === 'worst-case-memory-pressure') {
+    if (res.memory === undefined) {
+      failures.push(`${res.scenarioId}: memory measurement missing from report`);
+    } else {
+      if (res.memory.sampleCount < budget.memory.minSamples) {
+        failures.push(
+          `${res.scenarioId}: memory sample count ${res.memory.sampleCount} is below minimum requirement of ${budget.memory.minSamples}`
+        );
+      }
+      if (res.memory.peakFootprintBytes > budget.memory.maxPeakFootprintBytes) {
+        failures.push(
+          `${res.scenarioId}: peak memory footprint ${(res.memory.peakFootprintBytes / (1024 * 1024)).toFixed(1)} MB exceeds ${(budget.memory.maxPeakFootprintBytes / (1024 * 1024)).toFixed(0)} MB budget`
+        );
+      }
     }
   }
 

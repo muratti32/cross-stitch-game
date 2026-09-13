@@ -16,6 +16,7 @@ import { isServerApiError, localizeServerError } from '@/api/localizeServerError
 import { useTranslation } from 'react-i18next';
 import { SourceLanguageBadge } from '@/components/SourceLanguageBadge';
 import { formatNumber } from '@/i18n';
+import { addScreenMemoryBreadcrumb } from '@/observability/sentry';
 
 export default function PatternDetailScreen() {
   const { t, i18n: i18nInstance } = useTranslation('catalog');
@@ -26,6 +27,10 @@ export default function PatternDetailScreen() {
   const [error, setError] = useState<string | null>(null);
   const [patternData, setPatternData] = useState<PatternData | null>(null);
   const [stitching, setStitching] = useState(false);
+
+  useEffect(() => {
+    addScreenMemoryBreadcrumb(`pattern_detail_${id}`);
+  }, [id]);
 
   const manifestPattern = BUNDLED_PATTERNS.find((p) => p.id === id);
 

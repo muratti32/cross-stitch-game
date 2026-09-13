@@ -79,4 +79,19 @@ describe('sentry beforeSend - offline filtering (#152 / #153)', () => {
     expect((result?.extra as Record<string, unknown>).email).toBe('[Scrubbed]');
     expect((result?.extra as Record<string, unknown>).taskCount).toBe(3);
   });
+
+  test('records navigation memory breadcrumbs with resident metrics', () => {
+    const { addScreenMemoryBreadcrumb } = require('../sentry');
+    addScreenMemoryBreadcrumb('catalog_browse');
+    expect(Sentry.addBreadcrumb).toHaveBeenCalledWith(
+      expect.objectContaining({
+        category: 'navigation.memory',
+        data: expect.objectContaining({
+          screen: 'catalog_browse',
+          residentBytes: expect.any(Number),
+          jsHeapBytes: expect.any(Number),
+        }),
+      }),
+    );
+  });
 });

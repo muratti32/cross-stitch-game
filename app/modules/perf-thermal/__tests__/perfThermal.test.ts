@@ -1,5 +1,5 @@
 import { requireOptionalNativeModule } from 'expo';
-import { getThermalState, getDeviceProfile, isThermalSupported } from '../src/index';
+import { getThermalState, getDeviceProfile, isThermalSupported, getMemoryUsage } from '../src/index';
 
 // Mock expo module
 jest.mock('expo', () => {
@@ -40,6 +40,13 @@ describe('perf-thermal module fallback and native mapping', () => {
       expect(profile.totalMemoryBytes).toBe(0);
       expect(profile.isEmulator).toBe(true);
     });
+
+    it('returns process memory fallback for getMemoryUsage', () => {
+      const mem = getMemoryUsage();
+      expect(mem.residentBytes).toBeGreaterThan(0);
+      expect(mem.footprintBytes).toBeGreaterThan(0);
+      expect(mem.jsHeapBytes).toBeGreaterThan(0);
+    });
   });
 
   describe('when native module is present', () => {
@@ -47,6 +54,7 @@ describe('perf-thermal module fallback and native mapping', () => {
       getThermalState: jest.fn(),
       getDeviceProfile: jest.fn(),
       isThermalSupported: jest.fn(),
+      getMemoryFootprint: jest.fn(),
     };
 
     beforeEach(() => {
@@ -156,6 +164,18 @@ describe('perf-thermal module fallback and native mapping', () => {
       expect(profile.platform).toBe('ios');
       expect(profile.model).toBe('jest-mock-device');
       expect(profile.totalMemoryBytes).toBe(0);
+    });
+
+    it('returns values from native getMemoryFootprint when present', () => {
+      mockNativeModule.getMemoryFootprint.mockReturnValue({
+        residentBytes: 150000000,
+        footprintBytes: 145000000,
+      });
+
+      const mem = getMemoryUsage();
+      expect(mem.residentBytes).toBe(150000000);
+      expect(mem.footprintBytes).toBe(145000000);
+      expect(mem.jsHeapBytes).toBeGreaterThanOrEqual(0);
     });
   });
 });

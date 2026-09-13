@@ -6,6 +6,7 @@ import {
   FrameSampler,
   LatencySampler,
   ThermalSampler,
+  MemorySampler,
 } from './metrics';
 import {
   ScenarioId,
@@ -24,7 +25,7 @@ import {
   getAnchoredZoomTransform,
   computeEdgePanVelocity,
 } from '../renderer/tileMath';
-import { getThermalState } from '../../modules/perf-thermal';
+import { getThermalState, getMemoryUsage } from '../../modules/perf-thermal';
 import { ScenarioMeasurement } from './report';
 
 export interface ScenarioContext {
@@ -40,6 +41,7 @@ export interface ScenarioContext {
   frameSampler: FrameSampler;
   latencySampler: LatencySampler;
   thermalSampler: ThermalSampler;
+  memorySampler?: MemorySampler;
   bumpRevision: () => void;
   stitchCell: (x: number, y: number) => void;
   undoLast: () => void;
@@ -503,6 +505,10 @@ export const SCENARIOS: readonly ScenarioDefinition[] = [
           const dt = now - lastTime;
           lastTime = now;
           ctx.frameSampler.pushFrameInterval(dt);
+
+          if (ctx.memorySampler) {
+            ctx.memorySampler.push(getMemoryUsage());
+          }
           
           const t = (now - startTime) / duration;
           const contentW = ctx.pattern.width * CELL_SIZE * ctx.scale.value;
@@ -749,6 +755,7 @@ export async function runScenario(
   ctx.frameSampler.reset();
   ctx.latencySampler.reset();
   ctx.thermalSampler.reset();
+  ctx.memorySampler?.reset();
   resetCriticalPathSentinel();
 
   const startedAtIso = new Date().toISOString();
@@ -781,6 +788,10 @@ export async function runScenario(
       : undefined;
   const thermalSamples =
     kind === 'sustained' ? ctx.thermalSampler.samples() : undefined;
+  const memorySamples =
+    def.id === 'worst-case-memory-pressure'
+      ? ctx.memorySampler?.samples()
+      : undefined;
 
   return {
     scenarioId: def.id,
@@ -789,6 +800,7 @@ export async function runScenario(
     latencySamplesMs,
     frameIntervalsMs,
     thermalSamples,
+    memorySamples,
     criticalPathViolations: violations,
   };
 }

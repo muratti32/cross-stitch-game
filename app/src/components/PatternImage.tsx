@@ -42,10 +42,10 @@ export function PatternImage({
             <Ionicons name="image-outline" size={32} color={Theme.colors.textSecondary} />
           </View>
         ) : (
-          <Image source={fallbackAsset} style={styles.image} />
+          <Image source={fallbackAsset} style={styles.image} resizeMethod="resize" />
         )
       ) : (
-        <CachedImage uri={selection.url} style={styles.image} />
+        <CachedImage uri={selection.url} style={styles.image} resizeMethod="resize" variant={variant} />
       )}
     </View>
   );

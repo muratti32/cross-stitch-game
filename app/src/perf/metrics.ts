@@ -171,3 +171,67 @@ export class ThermalSampler {
     this.thermalStates = [];
   }
 }
+
+export interface MemorySample {
+  residentBytes: number;
+  footprintBytes: number;
+  jsHeapBytes: number;
+}
+
+export interface MemorySummary {
+  peakResidentBytes: number;
+  peakFootprintBytes: number;
+  peakJsHeapBytes: number;
+  sampleCount: number;
+}
+
+/**
+ * MemorySampler collects memory usage snapshots and computes peak statistics.
+ */
+export class MemorySampler {
+  private memorySamples: MemorySample[] = [];
+
+  push(sample: MemorySample): void {
+    if (
+      Number.isFinite(sample.residentBytes) &&
+      Number.isFinite(sample.footprintBytes) &&
+      Number.isFinite(sample.jsHeapBytes)
+    ) {
+      this.memorySamples.push({ ...sample });
+    }
+  }
+
+  samples(): MemorySample[] {
+    return [...this.memorySamples];
+  }
+
+  summary(): MemorySummary {
+    if (this.memorySamples.length === 0) {
+      return {
+        peakResidentBytes: 0,
+        peakFootprintBytes: 0,
+        peakJsHeapBytes: 0,
+        sampleCount: 0,
+      };
+    }
+    let peakResidentBytes = 0;
+    let peakFootprintBytes = 0;
+    let peakJsHeapBytes = 0;
+    for (const s of this.memorySamples) {
+      if (s.residentBytes > peakResidentBytes) peakResidentBytes = s.residentBytes;
+      if (s.footprintBytes > peakFootprintBytes) peakFootprintBytes = s.footprintBytes;
+      if (s.jsHeapBytes > peakJsHeapBytes) peakJsHeapBytes = s.jsHeapBytes;
+    }
+    return {
+      peakResidentBytes,
+      peakFootprintBytes,
+      peakJsHeapBytes,
+      sampleCount: this.memorySamples.length,
+    };
+  }
+
+  reset(): void {
+    this.memorySamples = [];
+  }
+}
+

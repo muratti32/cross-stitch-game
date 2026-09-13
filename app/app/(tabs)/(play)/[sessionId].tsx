@@ -29,6 +29,7 @@ import { createFocusSlot } from '@/onboarding/focusSlot';
 import { findTutorialSweepRunStart } from '@/onboarding/tutorialSweepRun';
 import { TutorialRecapSheet } from '@/onboarding/TutorialRecapSheet';
 import { useJustInTimeHints } from '@/onboarding/useJustInTimeHints';
+import { addScreenMemoryBreadcrumb } from '@/observability/sentry';
 
 export default function SessionReadyScreen() {
   const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
@@ -37,6 +38,10 @@ export default function SessionReadyScreen() {
   const { theme } = useActiveMembershipTheme();
   const { t, i18n: i18nInstance } = useTranslation('play');
   const locale = i18nInstance.language;
+
+  useEffect(() => {
+    addScreenMemoryBreadcrumb(`session_ready_${sessionId}`);
+  }, [sessionId]);
 
   const handleBack = () => {
     exitSession({ router, stack: navigation, returnTo });

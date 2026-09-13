@@ -44,6 +44,28 @@ public class PerfThermalModule: Module {
     Function("isThermalSupported") { () -> Bool in
       return true
     }
+
+    Function("getMemoryFootprint") { () -> [String: Any] in
+      var taskInfo = task_vm_info_data_t()
+      var count = mach_msg_type_number_t(MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size)
+      let result = withUnsafeMutablePointer(to: &taskInfo) {
+        $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
+          task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), $0, &count)
+        }
+      }
+
+      var residentBytes: Double = 0.0
+      var footprintBytes: Double = 0.0
+      if result == KERN_SUCCESS {
+        residentBytes = Double(taskInfo.resident_size)
+        footprintBytes = Double(taskInfo.phys_footprint)
+      }
+
+      return [
+        "residentBytes": residentBytes,
+        "footprintBytes": footprintBytes
+      ]
+    }
   }
 
   private func getDeviceModel() -> String {

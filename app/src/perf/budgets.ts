@@ -120,6 +120,10 @@ export const STITCH_INTERACTION_BUDGET = {
   criticalPath: {
     maxViolations: 0,
   },
+  memory: {
+    maxPeakFootprintBytes: 300 * 1024 * 1024, // 300 MB budget for peak footprint
+    minSamples: 5,
+  },
   fixture: {
     width: 300,
     height: 300,

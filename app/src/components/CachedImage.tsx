@@ -8,13 +8,16 @@ import { imageResourceIdentity } from './imageResourceIdentity';
 interface CachedImageProps {
   uri: string;
   style?: StyleProp<ImageStyle>;
+  resizeMethod?: 'auto' | 'resize' | 'scale';
+  variant?: 'browsing' | 'detail';
 }
 
 const CACHE_SUBDIR = 'catalog-previews/';
+const MAX_DISK_CACHE_ENTRIES = 100;
 
 // Pattern Previews are part of the Offline Catalog Cache: once fetched they
 // render from the local cache directory so offline browsing keeps its images.
-export function CachedImage({ uri, style }: CachedImageProps) {
+export function CachedImage({ uri, style, resizeMethod = 'resize' }: CachedImageProps) {
   const [source, setSource] = useState<string>(uri);
   const resourceIdentity = imageResourceIdentity(uri);
 
@@ -52,6 +55,8 @@ export function CachedImage({ uri, style }: CachedImageProps) {
         if (active) {
           setSource(result.uri);
         }
+        // Bound disk cache footprint
+        void pruneDiskCacheIfNeeded(dir);
       } catch {
         // Keep the remote URI; the plain Image error state applies.
         await discardCacheEntry(localPath);
@@ -67,9 +72,24 @@ export function CachedImage({ uri, style }: CachedImageProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resourceIdentity]);
 
-  return <Image source={{ uri: source }} style={style} />;
+  return <Image source={{ uri: source }} style={style} resizeMethod={resizeMethod} />;
 }
 
 async function discardCacheEntry(localPath: string): Promise<void> {
   await FileSystem.deleteAsync(localPath, { idempotent: true }).catch(() => undefined);
+}
+
+async function pruneDiskCacheIfNeeded(dir: string): Promise<void> {
+  try {
+    const files = await FileSystem.readDirectoryAsync(dir);
+    if (files.length <= MAX_DISK_CACHE_ENTRIES) return;
+    const toRemove = files.slice(0, files.length - MAX_DISK_CACHE_ENTRIES);
+    await Promise.all(
+      toRemove.map((file) =>
+        FileSystem.deleteAsync(`${dir}${file}`, { idempotent: true }).catch(() => undefined),
+      ),
+    );
+  } catch {
+    // best effort cache eviction
+  }
 }

@@ -176,6 +176,17 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
   const completedCache = useRef<TilePictureCache>(new TilePictureCache());
   const overlayCache = useRef<TilePictureCache>(new TilePictureCache());
 
+  useEffect(() => {
+    const base = baseCache.current;
+    const completed = completedCache.current;
+    const overlay = overlayCache.current;
+    return () => {
+      base.clear();
+      completed.clear();
+      overlay.clear();
+    };
+  }, []);
+
   // Setup gesture handler via Reanimated
   const {
     scale,

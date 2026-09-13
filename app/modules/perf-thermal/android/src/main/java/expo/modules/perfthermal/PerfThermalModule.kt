@@ -22,6 +22,20 @@ class PerfThermalModule : Module() {
     Function("isThermalSupported") { ->
       isThermalSupportedImpl()
     }
+
+    Function("getMemoryFootprint") { ->
+      getMemoryFootprintImpl()
+    }
+  }
+
+  private fun getMemoryFootprintImpl(): Map<String, Any> {
+    val memInfo = android.os.Debug.MemoryInfo()
+    android.os.Debug.getMemoryInfo(memInfo)
+    val pssBytes = memInfo.totalPss.toLong() * 1024L
+    return mapOf(
+      "residentBytes" to pssBytes.toDouble(),
+      "footprintBytes" to pssBytes.toDouble()
+    )
   }
 
   private val context: Context?

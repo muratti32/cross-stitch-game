@@ -9,7 +9,15 @@ import {
   type ThermalState,
 } from "./budgets";
 import { type CriticalPathViolation } from "./criticalPathSentinel";
-import { FrameSampler, percentile, type FrameSummary, ThermalSampler } from "./metrics";
+import {
+  FrameSampler,
+  percentile,
+  type FrameSummary,
+  ThermalSampler,
+  MemorySampler,
+  type MemorySample,
+  type MemorySummary,
+} from "./metrics";
 
 /**
  * ADR-0031: Performance Report Evaluation and Formatting.
@@ -22,6 +30,7 @@ export interface ScenarioMeasurement {
   latencySamplesMs?: number[];
   frameIntervalsMs?: number[];
   thermalSamples?: ThermalState[];
+  memorySamples?: MemorySample[];
   criticalPathViolations: CriticalPathViolation[];
   notes?: string;
 }
@@ -38,6 +47,7 @@ export interface ScenarioResult {
   thermal?: {
     worst: ThermalState;
   };
+  memory?: MemorySummary;
   durationMs: number;
 }
 
@@ -200,6 +210,34 @@ export function evaluateScenario(m: ScenarioMeasurement): ScenarioResult {
     }
   }
 
+  // 5. Evaluate memory footprint
+  let memoryRes: MemorySummary | undefined;
+  if (m.memorySamples !== undefined) {
+    const memorySampler = new MemorySampler();
+    for (const sample of m.memorySamples) {
+      memorySampler.push(sample);
+    }
+    const summary = memorySampler.summary();
+    memoryRes = summary;
+
+    if (m.scenarioId === 'worst-case-memory-pressure') {
+      const minSamples = STITCH_INTERACTION_BUDGET.memory.minSamples;
+      if (summary.sampleCount < minSamples) {
+        failures.push(
+          `${m.scenarioId}: memory sample count ${summary.sampleCount} is below minimum requirement of ${minSamples}`
+        );
+      }
+      const limit = STITCH_INTERACTION_BUDGET.memory.maxPeakFootprintBytes;
+      if (summary.peakFootprintBytes > limit) {
+        failures.push(
+          `${m.scenarioId}: peak memory footprint ${(summary.peakFootprintBytes / (1024 * 1024)).toFixed(1)} MB exceeds ${(limit / (1024 * 1024)).toFixed(0)} MB budget`
+        );
+      }
+    }
+  } else if (m.scenarioId === 'worst-case-memory-pressure') {
+    failures.push(`${m.scenarioId}: memory samples are missing for worst-case-memory-pressure scenario`);
+  }
+
   return {
     scenarioId: m.scenarioId,
     passed: failures.length === 0,
@@ -207,6 +245,7 @@ export function evaluateScenario(m: ScenarioMeasurement): ScenarioResult {
     latency: latencyRes,
     frames: framesRes,
     thermal: thermalRes,
+    memory: memoryRes,
     durationMs: m.durationMs,
   };
 }

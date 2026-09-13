@@ -94,6 +94,14 @@ function createBaseReport(platform: 'ios' | 'android', options: {
           ? { p95Ms: healthyLatency.p95Ms, sampleCount: id === 'worst-case-app-resume' ? 10 : 200 }
           : undefined,
         frames: isLatencyScenario ? undefined : healthyFrames,
+        memory: id === 'worst-case-memory-pressure'
+          ? {
+              peakResidentBytes: 150 * 1024 * 1024,
+              peakFootprintBytes: 140 * 1024 * 1024,
+              peakJsHeapBytes: 25 * 1024 * 1024,
+              sampleCount: 10,
+            }
+          : undefined,
         durationMs: 30_000,
       };
     });
@@ -220,6 +228,30 @@ describe('Stitch Interaction Budget Release Gate', () => {
     expect(result.status).toBe('FAIL');
     expect(
       result.failures.some((f) => f.includes('p95 latency 88.4 ms exceeds 50 ms budget'))
+    ).toBe(true);
+  });
+
+  it('fails release gate when worst-case-memory-pressure exceeds 300 MB budget', () => {
+    const ios = createBaseReport('ios');
+    const android = createBaseReport('android');
+    const memScenario = android.results.find((r) => r.scenarioId === 'worst-case-memory-pressure');
+    expect(memScenario).toBeDefined();
+    if (memScenario) {
+      memScenario.passed = true;
+      memScenario.failures = [];
+      memScenario.memory = {
+        peakResidentBytes: 360 * 1024 * 1024,
+        peakFootprintBytes: 340 * 1024 * 1024,
+        peakJsHeapBytes: 40 * 1024 * 1024,
+        sampleCount: 10,
+      };
+    }
+
+    const result = evaluateGate([ios, android]);
+
+    expect(result.status).toBe('FAIL');
+    expect(
+      result.failures.some((f) => f.includes('peak memory footprint') && f.includes('exceeds 300 MB budget'))
     ).toBe(true);
   });
 });

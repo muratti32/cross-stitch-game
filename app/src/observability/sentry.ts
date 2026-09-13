@@ -1,7 +1,9 @@
+import { AppState } from 'react-native';
 import * as Sentry from '@sentry/react-native';
 import { Config, isSentryConfigured } from '../config';
 import { subscribeToOpaquePlayerReference } from '../identity/playerReference';
 import { isOfflineNetworkError } from '../api/networkErrors';
+import { getMemoryUsage } from '../../modules/perf-thermal';
 
 /**
  * ADR-0035: Sentry events are scrubbed before send. No prompt text, artwork,
@@ -148,6 +150,42 @@ export function initSentry(): void {
       }
 
       return event;
+    },
+  });
+
+  // Listen to OS memory warnings (UIApplicationDidReceiveMemoryWarning on iOS, ComponentCallbacks2 on Android)
+  AppState.addEventListener('memoryWarning', () => {
+    const mem = getMemoryUsage();
+    Sentry.addBreadcrumb({
+      category: 'device.memory_warning',
+      message: `OS low memory warning received (resident: ${(mem.residentBytes / (1024 * 1024)).toFixed(1)}MB, footprint: ${(mem.footprintBytes / (1024 * 1024)).toFixed(1)}MB, jsHeap: ${(mem.jsHeapBytes / (1024 * 1024)).toFixed(1)}MB)`,
+      level: 'warning',
+      data: {
+        residentBytes: mem.residentBytes,
+        footprintBytes: mem.footprintBytes,
+        jsHeapBytes: mem.jsHeapBytes,
+      },
+    });
+  });
+}
+
+/**
+ * Adds an informational Sentry breadcrumb capturing memory state at route/screen transitions.
+ */
+export function addScreenMemoryBreadcrumb(screenName: string): void {
+  if (!isSentryConfigured()) {
+    return;
+  }
+  const mem = getMemoryUsage();
+  Sentry.addBreadcrumb({
+    category: 'navigation.memory',
+    message: `Screen '${screenName}' active (resident: ${(mem.residentBytes / (1024 * 1024)).toFixed(1)}MB, footprint: ${(mem.footprintBytes / (1024 * 1024)).toFixed(1)}MB, jsHeap: ${(mem.jsHeapBytes / (1024 * 1024)).toFixed(1)}MB)`,
+    level: 'info',
+    data: {
+      screen: screenName,
+      residentBytes: mem.residentBytes,
+      footprintBytes: mem.footprintBytes,
+      jsHeapBytes: mem.jsHeapBytes,
     },
   });
 }
