@@ -57,6 +57,14 @@ subscription-group localization. Until that phase, store-controlled purchase
 copy may remain English even while app-owned commerce UI uses the selected App
 Display Language.
 
+### Store listing assets
+
+- **Google Play screenshot upload** (phone / tablet sets, batch across
+  locales): see `docs/research/2026-09-04-google-play-screenshot-batch-upload.md`
+  — one Edit per batch, single validate + commit; fastlane `supply` is the
+  recommended route. The per-image auto-commit `play-store-mcp` `upload_image`
+  tool fails on this.
+
 ## External services
 
 ### Firebase Analytics (product analytics) — see ADR-0055
