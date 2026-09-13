@@ -6,6 +6,7 @@ import { DataSource, In, Not } from 'typeorm';
 import { AppConfigService } from '../config/app-config.service';
 import { readImageDimensions } from '../conversion/image-dimensions';
 import { decodePatternArtifactV1 } from './pattern-artifact-encoder';
+import { CATALOG_TITLE_MARKUP_MESSAGE, titleContainsMarkup } from './catalog-title-markup';
 import { CategoryEntity, CatalogSubmissionEntity, TagEntity } from './entities';
 import { OBJECT_STORAGE, ObjectStorage } from './storage/object-storage.interface';
 
@@ -114,8 +115,8 @@ export class CatalogPrecheckService {
     ) {
       errors.push('Title is not normalized or is outside the allowed length');
     }
-    if (/[<>]/.test(input.title)) {
-      errors.push('Title cannot contain angle brackets');
+    if (titleContainsMarkup(input.title)) {
+      errors.push(CATALOG_TITLE_MARKUP_MESSAGE);
     }
     if (
       input.description !== normalizeText(input.description) ||

@@ -6,6 +6,7 @@ import type { AuthPrincipal } from '../auth/auth.types';
 import { PrincipalType } from '../auth/entities';
 import { CreatorProfileEntity } from '../creator-profile/entities';
 import { CatalogPrecheckService } from './catalog-precheck.service';
+import { CATALOG_TITLE_MARKUP_MESSAGE, titleContainsMarkup } from './catalog-title-markup';
 import { CreateCatalogMetadataAppealDto } from './dto/create-catalog-metadata-appeal.dto';
 import { CreateCatalogMetadataRevisionDto } from './dto/create-catalog-metadata-revision.dto';
 import {
@@ -48,8 +49,8 @@ export class CatalogMetadataRevisionService {
     if (title.length < 1 || title.length > 120 || description.length < 1 || description.length > 2000) {
       throw new ConflictException('Catalog Metadata Revision text is outside the allowed length');
     }
-    if (/[<>]/.test(title)) {
-      throw new BadRequestException('Title cannot contain angle brackets');
+    if (titleContainsMarkup(title)) {
+      throw new BadRequestException(CATALOG_TITLE_MARKUP_MESSAGE);
     }
     const tagCodes = [...dto.tagCodes].sort();
 
