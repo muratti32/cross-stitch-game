@@ -4,16 +4,17 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { sha256 } from 'js-sha256';
 
 import { imageResourceIdentity } from './imageResourceIdentity';
+import { captureCachedImageError } from '../observability/sentry';
 
 interface CachedImageProps {
   uri: string;
   style?: StyleProp<ImageStyle>;
   resizeMethod?: 'auto' | 'resize' | 'scale';
-  variant?: 'browsing' | 'detail';
 }
 
 const CACHE_SUBDIR = 'catalog-previews/';
 const MAX_DISK_CACHE_ENTRIES = 100;
+const mountedCachedPaths = new Map<string, number>();
 
 // Pattern Previews are part of the Offline Catalog Cache: once fetched they
 // render from the local cache directory so offline browsing keeps its images.
@@ -31,11 +32,14 @@ export function CachedImage({ uri, style, resizeMethod = 'resize' }: CachedImage
     }
     const dir = `${cacheDirectory}${CACHE_SUBDIR}`;
     const localPath = `${dir}${sha256(uri)}.img`;
+    retainCachedPath(localPath);
 
     (async () => {
       try {
         const info = await FileSystem.getInfoAsync(localPath);
         if (info.exists) {
+          // The legacy API has no cheap modification-time setter; persisted
+          // modificationTime is therefore the LRU signal.
           if (active) {
             setSource(localPath);
           }
@@ -57,14 +61,16 @@ export function CachedImage({ uri, style, resizeMethod = 'resize' }: CachedImage
         }
         // Bound disk cache footprint
         void pruneDiskCacheIfNeeded(dir);
-      } catch {
+      } catch (error: unknown) {
         // Keep the remote URI; the plain Image error state applies.
         await discardCacheEntry(localPath);
+        captureCachedImageError('cache-download', error);
       }
     })();
 
     return () => {
       active = false;
+      releaseCachedPath(localPath);
     };
   // A refreshed private grant changes exp/sig, not the image. Keeping the
   // resource identity stable prevents an already visible image from blinking.
@@ -76,20 +82,52 @@ export function CachedImage({ uri, style, resizeMethod = 'resize' }: CachedImage
 }
 
 async function discardCacheEntry(localPath: string): Promise<void> {
-  await FileSystem.deleteAsync(localPath, { idempotent: true }).catch(() => undefined);
+  try {
+    await FileSystem.deleteAsync(localPath, { idempotent: true });
+  } catch (error: unknown) {
+    captureCachedImageError('discard-cache-entry', error);
+  }
 }
 
-async function pruneDiskCacheIfNeeded(dir: string): Promise<void> {
+export async function pruneDiskCacheIfNeeded(dir: string): Promise<void> {
   try {
     const files = await FileSystem.readDirectoryAsync(dir);
     if (files.length <= MAX_DISK_CACHE_ENTRIES) return;
-    const toRemove = files.slice(0, files.length - MAX_DISK_CACHE_ENTRIES);
-    await Promise.all(
-      toRemove.map((file) =>
-        FileSystem.deleteAsync(`${dir}${file}`, { idempotent: true }).catch(() => undefined),
-      ),
-    );
-  } catch {
-    // best effort cache eviction
+
+    const entries = (
+      await Promise.all(
+        files.map(async (file) => {
+          const path = `${dir}${file}`;
+          const info = await FileSystem.getInfoAsync(path);
+          if (!info.exists || info.isDirectory) return null;
+          return { path, modificationTime: info.modificationTime };
+        }),
+      )
+    )
+      .filter((entry): entry is { path: string; modificationTime: number } => entry !== null)
+      .sort((left, right) => left.modificationTime - right.modificationTime);
+
+    let remaining = files.length - MAX_DISK_CACHE_ENTRIES;
+    for (const entry of entries) {
+      if (remaining <= 0) break;
+      if (mountedCachedPaths.has(entry.path)) continue;
+      await FileSystem.deleteAsync(entry.path, { idempotent: true });
+      remaining -= 1;
+    }
+  } catch (error: unknown) {
+    captureCachedImageError('prune-disk-cache', error);
+  }
+}
+
+export function retainCachedPath(path: string): void {
+  mountedCachedPaths.set(path, (mountedCachedPaths.get(path) ?? 0) + 1);
+}
+
+export function releaseCachedPath(path: string): void {
+  const count = mountedCachedPaths.get(path);
+  if (count === undefined || count <= 1) {
+    mountedCachedPaths.delete(path);
+  } else {
+    mountedCachedPaths.set(path, count - 1);
   }
 }

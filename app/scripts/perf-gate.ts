@@ -8,6 +8,7 @@ import {
   STITCH_INTERACTION_BUDGET,
 } from '../src/perf/budgets';
 import {
+  evaluateMemoryBudget,
   PerfRunReport,
   ScenarioResult,
   formatRunReport,
@@ -245,22 +246,7 @@ export function rederiveScenarioFailures(res: ScenarioResult): string[] {
     }
   }
 
-  if (res.scenarioId === 'worst-case-memory-pressure') {
-    if (res.memory === undefined) {
-      failures.push(`${res.scenarioId}: memory measurement missing from report`);
-    } else {
-      if (res.memory.sampleCount < budget.memory.minSamples) {
-        failures.push(
-          `${res.scenarioId}: memory sample count ${res.memory.sampleCount} is below minimum requirement of ${budget.memory.minSamples}`
-        );
-      }
-      if (res.memory.peakFootprintBytes > budget.memory.maxPeakFootprintBytes) {
-        failures.push(
-          `${res.scenarioId}: peak memory footprint ${(res.memory.peakFootprintBytes / (1024 * 1024)).toFixed(1)} MB exceeds ${(budget.memory.maxPeakFootprintBytes / (1024 * 1024)).toFixed(0)} MB budget`
-        );
-      }
-    }
-  }
+  failures.push(...evaluateMemoryBudget(res.scenarioId, res.memory));
 
   return failures;
 }

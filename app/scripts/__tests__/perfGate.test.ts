@@ -1,5 +1,5 @@
-import { evaluateGate } from '../perf-gate';
-import { PerfRunReport } from '../../src/perf/report';
+import { evaluateGate, rederiveScenarioFailures } from '../perf-gate';
+import { evaluateMemoryBudget, PerfRunReport } from '../../src/perf/report';
 
 import { ScenarioId } from '../../src/perf/budgets';
 
@@ -100,6 +100,7 @@ function createBaseReport(platform: 'ios' | 'android', options: {
               peakFootprintBytes: 140 * 1024 * 1024,
               peakJsHeapBytes: 25 * 1024 * 1024,
               sampleCount: 10,
+              unavailableCount: 0,
             }
           : undefined,
         durationMs: 30_000,
@@ -129,6 +130,33 @@ function createBaseReport(platform: 'ios' | 'android', options: {
 }
 
 describe('Stitch Interaction Budget Release Gate', () => {
+  it('uses the same memory budget failure strings in report and gate', () => {
+    const memory = {
+      peakResidentBytes: 1,
+      peakFootprintBytes: 0,
+      peakJsHeapBytes: 1,
+      sampleCount: 1,
+      unavailableCount: 1,
+      firstUnavailableReason: 'native read failed',
+    };
+    const reportFailures = evaluateMemoryBudget('worst-case-memory-pressure', memory);
+    const gateFailures = rederiveScenarioFailures({
+      scenarioId: 'worst-case-memory-pressure',
+      passed: false,
+      failures: [],
+      frames: {
+        frameCount: 300,
+        meanFrameMs: 16.6,
+        meanFps: 60.2,
+        p99FrameMs: 19,
+        slowFrameRatio: 0.01,
+      },
+      memory,
+      durationMs: 1,
+    });
+    expect(gateFailures).toEqual(reportFailures);
+  });
+
   it('passes when both platforms pass on reference devices with all scenarios', () => {
     const ios = createBaseReport('ios');
     const android = createBaseReport('android');
@@ -244,6 +272,7 @@ describe('Stitch Interaction Budget Release Gate', () => {
         peakFootprintBytes: 340 * 1024 * 1024,
         peakJsHeapBytes: 40 * 1024 * 1024,
         sampleCount: 10,
+        unavailableCount: 0,
       };
     }
 

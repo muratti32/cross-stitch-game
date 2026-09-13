@@ -1,6 +1,7 @@
 import ExpoModulesCore
 import UIKit
 import Foundation
+import Darwin
 
 public class PerfThermalModule: Module {
   public func definition() -> ModuleDefinition {
@@ -45,7 +46,7 @@ public class PerfThermalModule: Module {
       return true
     }
 
-    Function("getMemoryFootprint") { () -> [String: Any] in
+    AsyncFunction("getMemoryFootprint") { () throws -> [String: Any] in
       var taskInfo = task_vm_info_data_t()
       var count = mach_msg_type_number_t(MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size)
       let result = withUnsafeMutablePointer(to: &taskInfo) {
@@ -54,16 +55,17 @@ public class PerfThermalModule: Module {
         }
       }
 
-      var residentBytes: Double = 0.0
-      var footprintBytes: Double = 0.0
-      if result == KERN_SUCCESS {
-        residentBytes = Double(taskInfo.resident_size)
-        footprintBytes = Double(taskInfo.phys_footprint)
+      guard result == KERN_SUCCESS else {
+        throw Exception(
+          name: "MemoryFootprintError",
+          description: "task_info failed with status \(result)."
+        )
       }
 
+      // iOS footprintBytes is phys_footprint; residentBytes is resident_size.
       return [
-        "residentBytes": residentBytes,
-        "footprintBytes": footprintBytes
+        "residentBytes": Double(taskInfo.resident_size),
+        "footprintBytes": Double(taskInfo.phys_footprint)
       ]
     }
   }

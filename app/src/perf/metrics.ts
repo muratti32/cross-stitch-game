@@ -1,4 +1,5 @@
 import { STITCH_INTERACTION_BUDGET, THERMAL_SEVERITY, type ThermalState } from "./budgets";
+import type { PerfMemoryReading } from "../../modules/perf-thermal";
 
 /**
  * ADR-0031: Pure performance metric math helpers and samplers.
@@ -173,9 +174,9 @@ export class ThermalSampler {
 }
 
 export interface MemorySample {
-  residentBytes: number;
+  residentBytes: number | null;
   footprintBytes: number;
-  jsHeapBytes: number;
+  jsHeapBytes: number | null;
 }
 
 export interface MemorySummary {
@@ -183,6 +184,8 @@ export interface MemorySummary {
   peakFootprintBytes: number;
   peakJsHeapBytes: number;
   sampleCount: number;
+  unavailableCount: number;
+  firstUnavailableReason?: string;
 }
 
 /**
@@ -190,14 +193,23 @@ export interface MemorySummary {
  */
 export class MemorySampler {
   private memorySamples: MemorySample[] = [];
+  private unavailableReadings: string[] = [];
 
-  push(sample: MemorySample): void {
-    if (
-      Number.isFinite(sample.residentBytes) &&
-      Number.isFinite(sample.footprintBytes) &&
-      Number.isFinite(sample.jsHeapBytes)
-    ) {
-      this.memorySamples.push({ ...sample });
+  push(reading: PerfMemoryReading | MemorySample): void {
+    if ('available' in reading) {
+      if (!reading.available) {
+        this.unavailableReadings.push(reading.reason);
+        return;
+      }
+      this.pushAvailableSample(reading);
+      return;
+    }
+    this.pushAvailableSample(reading);
+  }
+
+  recordUnavailable(count: number, reason: string): void {
+    for (let index = 0; index < count; index += 1) {
+      this.unavailableReadings.push(reason);
     }
   }
 
@@ -212,26 +224,50 @@ export class MemorySampler {
         peakFootprintBytes: 0,
         peakJsHeapBytes: 0,
         sampleCount: 0,
+        unavailableCount: this.unavailableReadings.length,
+        firstUnavailableReason: this.unavailableReadings[0],
       };
     }
     let peakResidentBytes = 0;
     let peakFootprintBytes = 0;
     let peakJsHeapBytes = 0;
     for (const s of this.memorySamples) {
-      if (s.residentBytes > peakResidentBytes) peakResidentBytes = s.residentBytes;
+      if (s.residentBytes !== null && s.residentBytes > peakResidentBytes) {
+        peakResidentBytes = s.residentBytes;
+      }
       if (s.footprintBytes > peakFootprintBytes) peakFootprintBytes = s.footprintBytes;
-      if (s.jsHeapBytes > peakJsHeapBytes) peakJsHeapBytes = s.jsHeapBytes;
+      if (s.jsHeapBytes !== null && s.jsHeapBytes > peakJsHeapBytes) {
+        peakJsHeapBytes = s.jsHeapBytes;
+      }
     }
     return {
       peakResidentBytes,
       peakFootprintBytes,
       peakJsHeapBytes,
       sampleCount: this.memorySamples.length,
+      unavailableCount: this.unavailableReadings.length,
+      firstUnavailableReason: this.unavailableReadings[0],
     };
   }
 
   reset(): void {
     this.memorySamples = [];
+    this.unavailableReadings = [];
+  }
+
+  private pushAvailableSample(sample: MemorySample): void {
+    if (
+      (sample.residentBytes === null || Number.isFinite(sample.residentBytes)) &&
+      Number.isFinite(sample.footprintBytes) &&
+      (sample.jsHeapBytes === null || Number.isFinite(sample.jsHeapBytes))
+    ) {
+      this.memorySamples.push({
+        residentBytes: sample.residentBytes,
+        footprintBytes: sample.footprintBytes,
+        jsHeapBytes: sample.jsHeapBytes,
+      });
+    } else {
+      this.unavailableReadings.push('Memory reading contained a non-finite value.');
+    }
   }
 }
-

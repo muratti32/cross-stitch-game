@@ -31,7 +31,7 @@ export default function BrowseScreen() {
   const { isAccount } = useIdentityStore();
 
   React.useEffect(() => {
-    addScreenMemoryBreadcrumb('catalog_browse');
+    void addScreenMemoryBreadcrumb('catalog_browse');
   }, []);
 
   const items: CatalogPatternItem[] =

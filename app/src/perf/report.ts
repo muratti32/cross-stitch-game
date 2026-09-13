@@ -4,10 +4,12 @@ import {
   REQUIRED_SCENARIOS,
   SCENARIO_KIND,
   STITCH_INTERACTION_BUDGET,
+  isMemoryBudgetedScenario,
   isThermalWithinBudget,
   type ScenarioId,
   type ThermalState,
 } from "./budgets";
+import { formatBytesAsMb } from "../../modules/perf-thermal";
 import { type CriticalPathViolation } from "./criticalPathSentinel";
 import {
   FrameSampler,
@@ -31,6 +33,8 @@ export interface ScenarioMeasurement {
   frameIntervalsMs?: number[];
   thermalSamples?: ThermalState[];
   memorySamples?: MemorySample[];
+  memoryUnavailableCount?: number;
+  memoryUnavailableReason?: string;
   criticalPathViolations: CriticalPathViolation[];
   notes?: string;
 }
@@ -73,6 +77,38 @@ export interface PerfRunReport {
   results: ScenarioResult[];
   passed: boolean;
   failures: string[];
+}
+
+export function evaluateMemoryBudget(
+  scenarioId: ScenarioId,
+  summary: MemorySummary | undefined
+): string[] {
+  if (!isMemoryBudgetedScenario(scenarioId)) return [];
+  if (summary === undefined) {
+    return [`${scenarioId}: memory measurement missing from report`];
+  }
+
+  const failures: string[] = [];
+  const budget = STITCH_INTERACTION_BUDGET.memory;
+  if (summary.sampleCount < budget.minSamples) {
+    failures.push(
+      `${scenarioId}: memory sample count ${summary.sampleCount} is below minimum requirement of ${budget.minSamples}`
+    );
+  }
+  if (summary.unavailableCount > 0) {
+    failures.push(
+      `${scenarioId}: memory readings unavailable (${summary.unavailableCount}); first reason: ${summary.firstUnavailableReason ?? 'unspecified'}`
+    );
+  }
+  if (summary.peakFootprintBytes <= 0) {
+    failures.push(`${scenarioId}: peak memory footprint must be greater than 0 MB`);
+  }
+  if (summary.peakFootprintBytes > budget.maxPeakFootprintBytes) {
+    failures.push(
+      `${scenarioId}: peak memory footprint ${formatBytesAsMb(summary.peakFootprintBytes, 1)} MB exceeds ${formatBytesAsMb(budget.maxPeakFootprintBytes, 0)} MB budget`
+    );
+  }
+  return failures;
 }
 
 /**
@@ -217,26 +253,25 @@ export function evaluateScenario(m: ScenarioMeasurement): ScenarioResult {
     for (const sample of m.memorySamples) {
       memorySampler.push(sample);
     }
-    const summary = memorySampler.summary();
-    memoryRes = summary;
-
-    if (m.scenarioId === 'worst-case-memory-pressure') {
-      const minSamples = STITCH_INTERACTION_BUDGET.memory.minSamples;
-      if (summary.sampleCount < minSamples) {
-        failures.push(
-          `${m.scenarioId}: memory sample count ${summary.sampleCount} is below minimum requirement of ${minSamples}`
-        );
-      }
-      const limit = STITCH_INTERACTION_BUDGET.memory.maxPeakFootprintBytes;
-      if (summary.peakFootprintBytes > limit) {
-        failures.push(
-          `${m.scenarioId}: peak memory footprint ${(summary.peakFootprintBytes / (1024 * 1024)).toFixed(1)} MB exceeds ${(limit / (1024 * 1024)).toFixed(0)} MB budget`
-        );
-      }
+    if (m.memoryUnavailableCount !== undefined) {
+      memorySampler.recordUnavailable(
+        m.memoryUnavailableCount,
+        m.memoryUnavailableReason ?? 'Memory reading was unavailable.'
+      );
     }
-  } else if (m.scenarioId === 'worst-case-memory-pressure') {
-    failures.push(`${m.scenarioId}: memory samples are missing for worst-case-memory-pressure scenario`);
+    memoryRes = memorySampler.summary();
+  } else if (m.memoryUnavailableCount !== undefined && m.memoryUnavailableCount > 0) {
+    memoryRes = {
+      peakResidentBytes: 0,
+      peakFootprintBytes: 0,
+      peakJsHeapBytes: 0,
+      sampleCount: 0,
+      unavailableCount: m.memoryUnavailableCount,
+      firstUnavailableReason: m.memoryUnavailableReason,
+    };
   }
+
+  failures.push(...evaluateMemoryBudget(m.scenarioId, memoryRes));
 
   return {
     scenarioId: m.scenarioId,

@@ -45,7 +45,7 @@ export function PatternImage({
           <Image source={fallbackAsset} style={styles.image} resizeMethod="resize" />
         )
       ) : (
-        <CachedImage uri={selection.url} style={styles.image} resizeMethod="resize" variant={variant} />
+        <CachedImage uri={selection.url} style={styles.image} resizeMethod="resize" />
       )}
     </View>
   );

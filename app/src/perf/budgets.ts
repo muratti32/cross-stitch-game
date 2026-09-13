@@ -88,6 +88,10 @@ export function isThermalWithinBudget(state: ThermalState): boolean {
   return THERMAL_SEVERITY[state] < THERMAL_SEVERITY["serious"];
 }
 
+export function isMemoryBudgetedScenario(id: ScenarioId): boolean {
+  return id === "worst-case-memory-pressure";
+}
+
 /**
  * Minimum latency sample counts per scenario. Stitch and Undo scenarios drive
  * hundreds of synthetic inputs; app resume is a coarse lifecycle event, so it

@@ -22,10 +22,37 @@ export interface PerfDeviceProfile {
 /**
  * Measured memory footprint and heap metrics.
  */
-export interface PerfMemoryUsage {
-  residentBytes: number;
+export type PerfMemoryReading =
+  | {
+      available: true;
+      source: 'native' | 'node';
+      footprintBytes: number;
+      residentBytes: number | null;
+      jsHeapBytes: number | null;
+      /** Set when jsHeapBytes is null, explaining why the heap could not be read. */
+      jsHeapUnavailableReason?: string;
+    }
+  | {
+      available: false;
+      reason: string;
+    };
+
+interface HermesInternalLike {
+  getInstrumentedStats: () => Record<string, unknown>;
+}
+
+interface PerformanceMemoryLike {
+  usedJSHeapSize?: unknown;
+}
+
+interface RuntimeGlobals {
+  HermesInternal?: HermesInternalLike;
+  performance?: Performance & { memory?: PerformanceMemoryLike };
+}
+
+interface NativeMemoryFootprint {
+  residentBytes: number | null;
   footprintBytes: number;
-  jsHeapBytes: number;
 }
 
 interface NativePerfThermalModule {
@@ -38,10 +65,7 @@ interface NativePerfThermalModule {
     isEmulator: boolean;
   };
   isThermalSupported(): boolean;
-  getMemoryFootprint?(): {
-    residentBytes: number;
-    footprintBytes: number;
-  };
+  getMemoryFootprint?: () => Promise<NativeMemoryFootprint>;
 }
 
 let cachedNativeModule: NativePerfThermalModule | null = null;
@@ -163,67 +187,122 @@ function getFallbackDeviceProfile(): PerfDeviceProfile {
 
 /**
  * Retrieves the current memory usage (resident, physical footprint, and JS heap).
- * Uses the native PerfThermal module if available, falling back to process.memoryUsage
- * or performance.memory where appropriate.
+ * Uses the native PerfThermal module if available. Node/process fallbacks are
+ * used only when the native module is absent.
  *
- * @returns {PerfMemoryUsage} Current memory usage snapshot.
+ * @returns {Promise<PerfMemoryReading>} Current memory usage reading.
  */
-export function getMemoryUsage(): PerfMemoryUsage {
-  let residentBytes = 0;
-  let footprintBytes = 0;
+export async function getMemoryUsageAsync(): Promise<PerfMemoryReading> {
+  let module: NativePerfThermalModule | null;
+  try {
+    module = getNativeModule();
+  } catch (error: unknown) {
+    return { available: false, reason: errorMessage(error) };
+  }
 
-  const module = getNativeModule();
-  if (module && typeof module.getMemoryFootprint === 'function') {
+  if (module) {
+    if (typeof module.getMemoryFootprint !== 'function') {
+      return { available: false, reason: 'Native memory footprint API is unavailable.' };
+    }
     try {
-      const nativeMem = module.getMemoryFootprint();
-      if (nativeMem && typeof nativeMem === 'object') {
-        residentBytes = Number(nativeMem.residentBytes || 0);
-        footprintBytes = Number(nativeMem.footprintBytes || 0);
+      const nativeMemory = await module.getMemoryFootprint();
+      const footprintBytes = finiteNumber(nativeMemory.footprintBytes);
+      const residentBytes = nullableFiniteNumber(nativeMemory.residentBytes);
+      if (footprintBytes === null || residentBytes === undefined) {
+        return { available: false, reason: 'Native memory footprint response is invalid.' };
       }
-    } catch {
-      // ignore
+      return {
+        available: true,
+        source: 'native',
+        footprintBytes,
+        residentBytes,
+        ...readJsHeap(),
+      };
+    } catch (error: unknown) {
+      return { available: false, reason: errorMessage(error) };
     }
   }
 
-  // Fallback to process.memoryUsage in Node/Jest if native didn't report footprint
-  if (footprintBytes === 0 && typeof process !== 'undefined' && typeof process.memoryUsage === 'function') {
-    try {
-      const mem = process.memoryUsage();
-      residentBytes = mem.rss || 0;
-      footprintBytes = mem.rss || 0;
-    } catch {
-      // ignore
-    }
-  }
-
-  // JS Heap: Hermes or global.performance or process
-  let jsHeapBytes = 0;
-  const g = global as Record<string, unknown>;
-  const hermes = g.HermesInternal as { getInstrumentedStats?: () => Record<string, unknown> } | undefined;
-  if (hermes && typeof hermes.getInstrumentedStats === 'function') {
-    try {
-      const stats = hermes.getInstrumentedStats();
-      jsHeapBytes = Number(stats.jsNumBytes || 0);
-    } catch {
-      jsHeapBytes = 0;
-    }
-  } else {
-    const perf = g.performance as { memory?: { usedJSHeapSize?: number } } | undefined;
-    if (perf?.memory && typeof perf.memory.usedJSHeapSize === 'number') {
-      jsHeapBytes = perf.memory.usedJSHeapSize;
-    } else if (typeof process !== 'undefined' && typeof process.memoryUsage === 'function') {
-      try {
-        jsHeapBytes = process.memoryUsage().heapUsed || 0;
-      } catch {
-        jsHeapBytes = 0;
-      }
-    }
-  }
-
-  return {
-    residentBytes,
-    footprintBytes,
-    jsHeapBytes,
-  };
+  return readNodeMemory();
 }
 
+function finiteNumber(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+function nullableFiniteNumber(value: number | null): number | null | undefined {
+  if (value === null) return null;
+  return finiteNumber(value) ?? undefined;
+}
+
+interface JsHeapReading {
+  jsHeapBytes: number | null;
+  jsHeapUnavailableReason?: string;
+}
+
+function readJsHeap(): JsHeapReading {
+  const runtime = globalThis as typeof globalThis & RuntimeGlobals;
+  const hermes = runtime.HermesInternal;
+  if (hermes) {
+    try {
+      const stats = hermes.getInstrumentedStats();
+      const bytes = finiteNumber(stats.js_heapSize) ?? finiteNumber(stats.js_allocatedBytes);
+      return bytes === null
+        ? { jsHeapBytes: null, jsHeapUnavailableReason: 'Hermes stats report no js_heapSize or js_allocatedBytes.' }
+        : { jsHeapBytes: bytes };
+    } catch (error: unknown) {
+      return { jsHeapBytes: null, jsHeapUnavailableReason: errorMessage(error) };
+    }
+  }
+
+  const browserHeap = finiteNumber(runtime.performance?.memory?.usedJSHeapSize);
+  if (browserHeap !== null) return { jsHeapBytes: browserHeap };
+
+  if (typeof process !== 'undefined' && typeof process.memoryUsage === 'function') {
+    try {
+      return heapFromNode(process.memoryUsage().heapUsed);
+    } catch (error: unknown) {
+      return { jsHeapBytes: null, jsHeapUnavailableReason: errorMessage(error) };
+    }
+  }
+  return { jsHeapBytes: null, jsHeapUnavailableReason: 'No JS heap API is available.' };
+}
+
+function heapFromNode(heapUsed: number): JsHeapReading {
+  const bytes = finiteNumber(heapUsed);
+  return bytes === null
+    ? { jsHeapBytes: null, jsHeapUnavailableReason: 'Node memory API returned an invalid heapUsed value.' }
+    : { jsHeapBytes: bytes };
+}
+
+function readNodeMemory(): PerfMemoryReading {
+  if (typeof process === 'undefined' || typeof process.memoryUsage !== 'function') {
+    return { available: false, reason: 'Node memory API is unavailable.' };
+  }
+  try {
+    const memory = process.memoryUsage();
+    const rssBytes = finiteNumber(memory.rss);
+    if (rssBytes === null) {
+      return { available: false, reason: 'Node memory API returned an invalid RSS value.' };
+    }
+    return {
+      available: true,
+      source: 'node',
+      footprintBytes: rssBytes,
+      residentBytes: rssBytes,
+      ...heapFromNode(memory.heapUsed),
+    };
+  } catch (error: unknown) {
+    return { available: false, reason: errorMessage(error) };
+  }
+}
+
+/** Formats a byte count as mebibytes with the given number of decimals. */
+export function formatBytesAsMb(bytes: number, decimals: number): string {
+  return (bytes / (1024 * 1024)).toFixed(decimals);
+}
+
+function errorMessage(error: unknown): string {
+  if (error instanceof Error && error.message) return error.message;
+  return String(error);
+}

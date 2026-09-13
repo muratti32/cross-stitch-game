@@ -29,7 +29,7 @@ export default function PatternDetailScreen() {
   const [stitching, setStitching] = useState(false);
 
   useEffect(() => {
-    addScreenMemoryBreadcrumb(`pattern_detail_${id}`);
+    void addScreenMemoryBreadcrumb('pattern_detail');
   }, [id]);
 
   const manifestPattern = BUNDLED_PATTERNS.find((p) => p.id === id);

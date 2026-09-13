@@ -80,9 +80,9 @@ describe('sentry beforeSend - offline filtering (#152 / #153)', () => {
     expect((result?.extra as Record<string, unknown>).taskCount).toBe(3);
   });
 
-  test('records navigation memory breadcrumbs with resident metrics', () => {
+  test('records navigation memory breadcrumbs with resident metrics', async () => {
     const { addScreenMemoryBreadcrumb } = require('../sentry');
-    addScreenMemoryBreadcrumb('catalog_browse');
+    await addScreenMemoryBreadcrumb('catalog_browse');
     expect(Sentry.addBreadcrumb).toHaveBeenCalledWith(
       expect.objectContaining({
         category: 'navigation.memory',
@@ -93,5 +93,11 @@ describe('sentry beforeSend - offline filtering (#152 / #153)', () => {
         }),
       }),
     );
+    const breadcrumb = Sentry.addBreadcrumb.mock.calls.at(-1)?.[0] as {
+      message: string;
+      data: { screen: string };
+    };
+    expect(breadcrumb.message).not.toMatch(/pattern_detail_|session_ready_/);
+    expect(breadcrumb.data.screen).toBe('catalog_browse');
   });
 });

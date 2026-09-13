@@ -10,6 +10,7 @@ import {
   LatencySampler,
   FrameSampler,
   ThermalSampler,
+  MemorySampler,
 } from "../metrics";
 import {
   buildBudgetPalette,
@@ -29,6 +30,7 @@ import {
 } from "../criticalPathSentinel";
 import {
   evaluateScenario,
+  evaluateMemoryBudget,
   buildRunReport,
   formatRunReport,
   type ScenarioMeasurement,
@@ -37,6 +39,43 @@ import {
 describe("Performance Measurement Core (ADR-0031)", () => {
   beforeEach(() => {
     resetCriticalPathSentinel();
+  });
+
+  describe("MemorySampler and memory budget", () => {
+    test("counts unavailable readings and keeps the first reason", () => {
+      const sampler = new MemorySampler();
+      sampler.push({ available: false, reason: "native read failed" });
+      sampler.push({
+        available: true,
+        source: "native",
+        residentBytes: null,
+        footprintBytes: 10,
+        jsHeapBytes: null,
+      });
+      sampler.push({ available: false, reason: "later failure" });
+
+      expect(sampler.summary()).toMatchObject({
+        sampleCount: 1,
+        unavailableCount: 2,
+        firstUnavailableReason: "native read failed",
+      });
+    });
+
+    test.each([
+      ["unavailable", { sampleCount: 5, unavailableCount: 1, peakFootprintBytes: 10 }],
+      ["zero", { sampleCount: 5, unavailableCount: 0, peakFootprintBytes: 0 }],
+      ["over budget", { sampleCount: 5, unavailableCount: 0, peakFootprintBytes: 301 * 1024 * 1024 }],
+      ["too few samples", { sampleCount: 4, unavailableCount: 0, peakFootprintBytes: 10 }],
+    ])("fails memory budget for %s", (_name, values) => {
+      const failures = evaluateMemoryBudget("worst-case-memory-pressure", {
+        peakResidentBytes: 1,
+        peakFootprintBytes: values.peakFootprintBytes,
+        peakJsHeapBytes: 1,
+        sampleCount: values.sampleCount,
+        unavailableCount: values.unavailableCount,
+      });
+      expect(failures.length).toBeGreaterThan(0);
+    });
   });
 
   describe("percentile and mean math helpers", () => {
@@ -430,7 +469,7 @@ describe("Performance Measurement Core (ADR-0031)", () => {
       };
       const missingRes = evaluateScenario(missingSamplesMeasure);
       expect(missingRes.passed).toBe(false);
-      expect(missingRes.failures.some((f) => f.includes("memory samples are missing"))).toBe(true);
+      expect(missingRes.failures.some((f) => f.includes("memory measurement missing"))).toBe(true);
     });
   });
 

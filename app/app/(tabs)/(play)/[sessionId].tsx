@@ -40,7 +40,7 @@ export default function SessionReadyScreen() {
   const locale = i18nInstance.language;
 
   useEffect(() => {
-    addScreenMemoryBreadcrumb(`session_ready_${sessionId}`);
+    void addScreenMemoryBreadcrumb('session_ready');
   }, [sessionId]);
 
   const handleBack = () => {

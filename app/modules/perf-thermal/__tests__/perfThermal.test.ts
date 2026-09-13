@@ -1,5 +1,5 @@
 import { requireOptionalNativeModule } from 'expo';
-import { getThermalState, getDeviceProfile, isThermalSupported, getMemoryUsage } from '../src/index';
+import { getThermalState, getDeviceProfile, isThermalSupported, getMemoryUsageAsync } from '../src/index';
 
 // Mock expo module
 jest.mock('expo', () => {
@@ -41,11 +41,14 @@ describe('perf-thermal module fallback and native mapping', () => {
       expect(profile.isEmulator).toBe(true);
     });
 
-    it('returns process memory fallback for getMemoryUsage', () => {
-      const mem = getMemoryUsage();
-      expect(mem.residentBytes).toBeGreaterThan(0);
-      expect(mem.footprintBytes).toBeGreaterThan(0);
-      expect(mem.jsHeapBytes).toBeGreaterThan(0);
+    it('returns process memory fallback for getMemoryUsageAsync', async () => {
+      const mem = await getMemoryUsageAsync();
+      expect(mem).toMatchObject({ available: true, source: 'node' });
+      if (mem.available) {
+        expect(mem.residentBytes).toBeGreaterThan(0);
+        expect(mem.footprintBytes).toBeGreaterThan(0);
+        expect(mem.jsHeapBytes).toBeGreaterThan(0);
+      }
     });
   });
 
@@ -166,16 +169,60 @@ describe('perf-thermal module fallback and native mapping', () => {
       expect(profile.totalMemoryBytes).toBe(0);
     });
 
-    it('returns values from native getMemoryFootprint when present', () => {
-      mockNativeModule.getMemoryFootprint.mockReturnValue({
+    it('returns values from native getMemoryFootprint when present', async () => {
+      mockNativeModule.getMemoryFootprint.mockResolvedValue({
         residentBytes: 150000000,
         footprintBytes: 145000000,
       });
 
-      const mem = getMemoryUsage();
-      expect(mem.residentBytes).toBe(150000000);
-      expect(mem.footprintBytes).toBe(145000000);
-      expect(mem.jsHeapBytes).toBeGreaterThanOrEqual(0);
+      const mem = await getMemoryUsageAsync();
+      expect(mem).toMatchObject({
+        available: true,
+        source: 'native',
+        residentBytes: 150000000,
+        footprintBytes: 145000000,
+      });
+    });
+
+    it('returns unavailable when native memory read fails without Node fallback', async () => {
+      mockNativeModule.getMemoryFootprint.mockRejectedValue(new Error('task_info failed'));
+
+      await expect(getMemoryUsageAsync()).resolves.toEqual({
+        available: false,
+        reason: 'task_info failed',
+      });
+    });
+
+    it('uses Hermes js_heapSize and returns null when no supported heap key exists', async () => {
+      const runtime = globalThis as typeof globalThis & {
+        HermesInternal?: { getInstrumentedStats: () => Record<string, unknown> };
+      };
+      runtime.HermesInternal = {
+        getInstrumentedStats: jest.fn().mockReturnValue({ js_heapSize: 1234, js_allocatedBytes: 5678 }),
+      };
+      mockNativeModule.getMemoryFootprint.mockResolvedValue({ residentBytes: null, footprintBytes: 4321 });
+
+      const withHeap = await getMemoryUsageAsync();
+      expect(withHeap).toMatchObject({ available: true, jsHeapBytes: 1234 });
+
+      runtime.HermesInternal.getInstrumentedStats = jest.fn().mockReturnValue({ unrelated: 5678 });
+      const withoutHeap = await getMemoryUsageAsync();
+      expect(withoutHeap).toMatchObject({
+        available: true,
+        jsHeapBytes: null,
+        jsHeapUnavailableReason: 'Hermes stats report no js_heapSize or js_allocatedBytes.',
+      });
+
+      runtime.HermesInternal.getInstrumentedStats = jest.fn(() => {
+        throw new Error('stats unavailable');
+      });
+      const heapThrows = await getMemoryUsageAsync();
+      expect(heapThrows).toMatchObject({
+        available: true,
+        jsHeapBytes: null,
+        jsHeapUnavailableReason: 'stats unavailable',
+      });
+      delete runtime.HermesInternal;
     });
   });
 });
