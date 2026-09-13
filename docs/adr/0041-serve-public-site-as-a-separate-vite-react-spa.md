@@ -15,3 +15,14 @@ The game needs a public website to satisfy AdMob, App Store, and Google Play req
 - URL structure (`/privacy-policy`, `/account-deletion`, `/support`) is committed once submitted to stores and must not change without setting up redirects.
 - `VITE_API_URL` and `VITE_ADMIN_CONSOLE_URL` must be set at build time for the Cloudflare Pages deployment.
 - The Account Deletion endpoint on the Game Backend must be implemented before the account-deletion form is enabled in production.
+
+## Amendment: Server-Rendered Surface for Catalog Share Links
+
+Cloudflare Pages Functions under `website/functions/` were added after the original decision to serve dynamic metadata and deep-link redirects for Catalog Share Links pointing to Community Patterns and Public Creator Profiles (ADR-0022).
+
+While the main website remains a Vite + React SPA, these Pages Functions introduce an active server-rendered surface. Because HTML assembled in this surface is constructed directly outside React's automatic escaping, it must adhere to the following constraints:
+
+- Any dynamic inputs interpolated into HTML markup (including titles, descriptions, image URLs, and route parameters) must be explicitly HTML-escaped.
+- Any values placed within script contexts (such as inline `<script>` tags for app redirection) must be serialized rather than hand-quoted in string templates.
+
+These constraints document the architectural drift behind the two share-page security findings in #236 (stored XSS via pattern titles/creator display names, and reflected script breakout via path parameters), which stemmed from rendering HTML in a server runtime without the escaping guarantees implicitly assumed when choosing a pure SPA.
