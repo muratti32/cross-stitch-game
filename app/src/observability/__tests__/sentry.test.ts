@@ -83,32 +83,45 @@ describe('sentry beforeSend - offline filtering (#152 / #153)', () => {
 
 describe('sentry init - app hang tracking (#149 / #150)', () => {
   let Sentry: { init: jest.Mock };
+  const originalDev = (globalThis as { __DEV__?: boolean }).__DEV__;
 
   beforeEach(() => {
     jest.resetModules();
+    (globalThis as { __DEV__?: boolean }).__DEV__ = false;
     Sentry = require('@sentry/react-native');
   });
 
-  test('disables enableAppHangTracking in non-production environments to prevent simulator false positives', () => {
-    const { initSentry } = require('../sentry');
-    initSentry();
-    expect(Sentry.init).toHaveBeenCalledWith(
-      expect.objectContaining({
-        enableAppHangTracking: false,
-      }),
-    );
+  afterEach(() => {
+    (globalThis as { __DEV__?: boolean }).__DEV__ = originalDev;
   });
 
-  test('enables enableAppHangTracking in production environment', () => {
-    const { Config } = require('../../config');
-    Config.sentry.environment = 'production';
-    const { initSentry } = require('../sentry');
+  function initAndGetOptions(): Record<string, unknown> {
+    const { initSentry } = require('../sentry') as { initSentry: () => void };
     initSentry();
-    expect(Sentry.init).toHaveBeenCalledWith(
-      expect.objectContaining({
-        enableAppHangTracking: true,
-      }),
-    );
+    return Sentry.init.mock.calls[0][0] as Record<string, unknown>;
+  }
+
+  test('disables enableAppHangTracking for development JS builds', () => {
+    (globalThis as { __DEV__?: boolean }).__DEV__ = true;
+
+    const options = initAndGetOptions();
+
+    expect(options.enableAppHangTracking).toBe(false);
   });
+
+  test.each(['staging', 'production'])(
+    'enables enableAppHangTracking for %s physical-device builds',
+    (environment) => {
+      jest.doMock('../../config', () => ({
+        Config: {
+          sentry: { dsn: 'https://test@sentry.example/1', environment },
+        },
+        isSentryConfigured: () => true,
+      }));
+
+      const options = initAndGetOptions();
+
+      expect(options.enableAppHangTracking).toBe(true);
+    },
+  );
 });
-

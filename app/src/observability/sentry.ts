@@ -107,11 +107,11 @@ export function initSentry(): void {
     // are implemented; this only turns tracing on.
     tracesSampleRate: Config.sentry.environment === 'production' ? 0.2 : 1.0,
     enableAutoSessionTracking: true,
-    // App hang tracking on iOS is kept for production only (#149, #150).
-    // In development and simulator runs, Metro bundle reload, JS compilation,
-    // and debugger pauses stall the main run loop in mach_msg2_trap and trigger
-    // false-positive AppHang events.
-    enableAppHangTracking: Config.sentry.environment === 'production',
+    // App hang tracking is disabled only for development JS builds (#149, #150).
+    // Metro bundle reload, JS compilation, and debugger pauses can stall the
+    // main run loop in mach_msg2_trap and trigger false-positive AppHang events.
+    // Staging and production physical-device builds keep tracking; this is iOS-only.
+    enableAppHangTracking: !__DEV__,
     // Never auto-attach device PII, screenshots, or view hierarchies -
     // screenshots/view hierarchies could capture in-progress artwork or
     // Pattern content.
