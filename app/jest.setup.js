@@ -45,7 +45,10 @@ jest.mock('@sentry/react-native', () => {
 jest.mock('@react-native-firebase/analytics', () => ({
   __esModule: true,
   getAnalytics: jest.fn(() => ({})),
-  logEvent: jest.fn(() => Promise.resolve()),
+  // Returns nothing on purpose: since v26 the modular `logEvent` fires the
+  // native call and discards its promise, so a mock that resolves one would
+  // hide the mirror reading `.catch` off undefined (STITCH-WISH-S).
+  logEvent: jest.fn(() => undefined),
   logScreenView: jest.fn(() => Promise.resolve()),
   setAnalyticsCollectionEnabled: jest.fn(() => Promise.resolve()),
   setUserId: jest.fn(() => Promise.resolve()),
