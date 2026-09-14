@@ -20,7 +20,7 @@ export default function App() {
         <Route path="/account-deletion"  element={<AccountDeletionPage />} />
         <Route path="/support"           element={<SupportPage />} />
         <Route path="/pattern/:id"       element={<SharePatternPage />} />
-        <Route path="/profile/:username" element={<ShareProfilePage />} />
+        <Route path="/profile/:id"       element={<ShareProfilePage />} />
       </Routes>
       <Footer />
     </>

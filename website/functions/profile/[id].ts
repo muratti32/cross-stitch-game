@@ -9,7 +9,7 @@ interface PublicCreatorProfile {
   username: string;
 }
 
-const USERNAME_REGEX = /^[A-Za-z0-9_]{3,30}$/;
+const PROFILE_ID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
 function hasProperty<K extends PropertyKey>(
   value: object,
@@ -29,19 +29,24 @@ export function isPublicCreatorProfile(value: unknown): value is PublicCreatorPr
   );
 }
 
-export function buildProfileApiUrl(apiUrl: string, username: string): string {
-  return `${apiUrl}/v1/catalog/profiles/${encodeURIComponent(username)}`;
+// Catalog Share Links use the opaque profile identifier (ADR-0022), which survives Moderator Username Reset.
+export function buildProfileApiUrl(apiUrl: string, id: string): string {
+  return `${apiUrl}/v1/creator-profiles/${encodeURIComponent(id)}`;
 }
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const { request, env, params } = context;
-  const rawUsername = params.username;
+  const rawId = params.id;
 
-  if (typeof rawUsername !== 'string' || !USERNAME_REGEX.test(rawUsername)) {
+  if (typeof rawId !== 'string') {
     return htmlResponse(getUnavailableHtml(), 404);
   }
 
-  const username = rawUsername.toLowerCase();
+  const id = rawId.toLowerCase();
+  if (!PROFILE_ID_REGEX.test(id)) {
+    return htmlResponse(getUnavailableHtml(), 404);
+  }
+
   const url = new URL(request.url);
 
   if (url.searchParams.has('fallback')) {
@@ -51,7 +56,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   const apiUrl = env.VITE_API_URL || 'https://stitch-wish-staging-api.avkdesign.net';
 
   try {
-    const res = await fetch(buildProfileApiUrl(apiUrl, username));
+    const res = await fetch(buildProfileApiUrl(apiUrl, id));
 
     if (!res.ok) {
       return htmlResponse(getUnavailableHtml(), 404);
@@ -61,13 +66,13 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     if (!isPublicCreatorProfile(value)) {
       // A structurally invalid upstream body is handled like an upstream failure.
-      return htmlResponse(getFallbackHtml(username));
+      return htmlResponse(getFallbackHtml(id));
     }
 
-    return htmlResponse(getProfileHtml(username, value));
+    return htmlResponse(getProfileHtml(id, value));
   } catch {
     // Network or JSON parse errors cannot establish availability, so return the 200 redirect fallback.
-    return htmlResponse(getFallbackHtml(username));
+    return htmlResponse(getFallbackHtml(id));
   }
 };
 
@@ -85,16 +90,19 @@ function redirectScript(appLink: string, fallbackUrl: string): string {
     }, 1500);`;
 }
 
-function getProfileHtml(username: string, profile: PublicCreatorProfile): string {
+function getProfileHtml(id: string, profile: PublicCreatorProfile): string {
+  const { username } = profile;
   const displayName = profile.displayName || `@${username}`;
   const title = `Stitch Wish - ${displayName} (@${username})`;
   const description = `View display name ${displayName} on Stitch Wish: Cross Stitch!`;
-  const appLink = `stitchwish://profile/${username}`;
-  const fallbackUrl = `/profile/${username}?fallback=true`;
+  const appLink = `stitchwish://profile/${id}`;
+  const fallbackUrl = `/profile/${id}?fallback=true`;
+  const canonicalUrl = `https://stitchwish.avkdesign.net/profile/${id}`;
 
   const escapedTitle = escapeHtml(title);
   const escapedDescription = escapeHtml(description);
   const escapedFallbackUrl = escapeHtml(fallbackUrl);
+  const escapedCanonicalUrl = escapeHtml(canonicalUrl);
   const escapedUsername = escapeHtml(username);
 
   return `<!DOCTYPE html>
@@ -105,7 +113,7 @@ function getProfileHtml(username: string, profile: PublicCreatorProfile): string
   <meta property="og:title" content="${escapedTitle}">
   <meta property="og:description" content="${escapedDescription}">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://stitchwish.avkdesign.net/profile/${escapedUsername}">
+  <meta property="og:url" content="${escapedCanonicalUrl}">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="${escapedTitle}">
   <meta name="twitter:description" content="${escapedDescription}">
@@ -120,11 +128,11 @@ function getProfileHtml(username: string, profile: PublicCreatorProfile): string
 </html>`;
 }
 
-function getFallbackHtml(username: string): string {
-  const title = `Stitch Wish - @${username}`;
-  const description = `Open @${username}'s profile in Stitch Wish: Cross Stitch!`;
-  const appLink = `stitchwish://profile/${username}`;
-  const fallbackUrl = `/profile/${username}?fallback=true`;
+function getFallbackHtml(id: string): string {
+  const title = 'Stitch Wish - Creator Profile';
+  const description = "Open this creator's profile in Stitch Wish: Cross Stitch!";
+  const appLink = `stitchwish://profile/${id}`;
+  const fallbackUrl = `/profile/${id}?fallback=true`;
 
   const escapedTitle = escapeHtml(title);
   const escapedDescription = escapeHtml(description);
