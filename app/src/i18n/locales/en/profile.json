@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "All ad rewards completed for today! (30/30 coins)",
       "watchAdButton": "Watch Ad for +10 Coins ({{count}} left)",
       "adPerkNote": "Watch up to 3 ads/day · Premium unlocks instant 30-coin claim",
-      "adRewardEarned": "Ad reward earned! Verifying with backend…",
+      "adRewardEarned": "Ad reward verified!",
       "claimFailed": "Claim failed: {{message}}",
       "claimFailedGeneric": "Something went wrong. Please try again.",
       "adLoadFailedDefault": "Failed to load ad",
-      "adAttemptFailedDefault": "Failed to open ad attempt"
+      "adAttemptFailedDefault": "Failed to open ad attempt",
+      "adRewardVerifying": "Verifying your reward…",
+      "adRewardPending": "Your reward is still being verified. Coins will appear shortly.",
+      "adRewardExpired": "This ad reward couldn't be verified in time. Please try again."
     },
     "tabs": {
       "myCreations": "My Creations {{count}}",

@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Kaikki mainospalkinnot on kerätty tälle päivälle! (30/30 kolikkoa)",
       "watchAdButton": "Katso mainos saadaksesi +10 kolikkoa ({{count}} jäljellä)",
       "adPerkNote": "Katso jopa 3 mainosta päivässä · Premium avaa välittömän 30 kolikon lunastuksen",
-      "adRewardEarned": "Mainospalkinto ansaittu! Varmistetaan palvelimelta…",
+      "adRewardEarned": "Mainospalkinto vahvistettu!",
       "claimFailed": "Lunastus epäonnistui: {{message}}",
       "claimFailedGeneric": "Jotain meni pieleen. Yritä uudelleen.",
       "adLoadFailedDefault": "Mainoksen lataaminen epäonnistui",
-      "adAttemptFailedDefault": "Mainosyrityksen avaaminen epäonnistui"
+      "adAttemptFailedDefault": "Mainosyrityksen avaaminen epäonnistui",
+      "adRewardVerifying": "Palkintoa vahvistetaan…",
+      "adRewardPending": "Palkintoasi vahvistetaan yhä. Kolikot näkyvät pian.",
+      "adRewardExpired": "Tämän mainoksen palkintoa ei voitu vahvistaa ajoissa. Yritä uudelleen."
     },
     "tabs": {
       "myCreations": "Omat luomukset {{count}}",

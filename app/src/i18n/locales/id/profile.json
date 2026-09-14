@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Kamu telah mengklaim semua hadiah iklan hari ini! (30/30 koin)",
       "watchAdButton": "Tonton iklan untuk +10 koin ({{count}} tersisa)",
       "adPerkNote": "Hingga 3 iklan per hari · Premium membuka klaim instan 30 koin",
-      "adRewardEarned": "Hadiah iklan diperoleh! Memverifikasi dengan backend…",
+      "adRewardEarned": "Hadiah iklan terverifikasi!",
       "claimFailed": "Klaim gagal: {{message}}",
       "claimFailedGeneric": "Ada yang salah. Coba lagi.",
       "adLoadFailedDefault": "Gagal memuat iklan",
-      "adAttemptFailedDefault": "Gagal membuka percobaan iklan"
+      "adAttemptFailedDefault": "Gagal membuka percobaan iklan",
+      "adRewardVerifying": "Memverifikasi hadiah Anda…",
+      "adRewardPending": "Hadiah Anda masih diverifikasi. Koin akan segera muncul.",
+      "adRewardExpired": "Hadiah iklan ini tidak dapat diverifikasi tepat waktu. Silakan coba lagi."
     },
     "tabs": {
       "myCreations": "Karyaku {{count}}",

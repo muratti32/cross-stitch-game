@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common';
 import { IsUUID } from 'class-validator';
 
 import { CurrentPrincipal, JwtAuthGuard } from '../auth';
@@ -10,6 +10,7 @@ import {
 } from './economy-read.service';
 import { PatternUnlockService } from './pattern-unlock.service';
 import { AdAttemptService } from './ad-attempt.service';
+import type { AdAttemptStateView, OpenAdAttemptView } from './ad-attempt.types';
 
 class ClaimClientRewardDto {
   @IsUUID()
@@ -38,8 +39,16 @@ export class EconomyController {
   @Post('ad-attempts')
   async createAdAttempt(
     @CurrentPrincipal() principal: AuthPrincipal,
-  ): Promise<{ nonce: string; expiresAt: string }> {
+  ): Promise<OpenAdAttemptView> {
     return this.adAttemptService.openAttempt(principal);
+  }
+
+  @Get('ad-attempts/:nonce')
+  async getAdAttempt(
+    @CurrentPrincipal() principal: AuthPrincipal,
+    @Param('nonce', new ParseUUIDPipe({ version: '4' })) nonce: string,
+  ): Promise<AdAttemptStateView> {
+    return this.adAttemptService.getAttemptState(principal, nonce);
   }
 
   @Post('ad-attempts/claim')

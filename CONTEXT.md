@@ -242,6 +242,10 @@ _Avoid_: Subscription cancellation, daily reward rollback, account deletion
 An optional advertisement that a player explicitly starts outside an active Stitching Session. A verified completion consumes 10 Coin from that Reward Day's Ad-Equivalent Coin Pool and grants the same amount. When the pool is exhausted or closed, the Rewarded Ad entry point is disabled and shows the time remaining until the next Reward Day instead of offering an unrewarded advertisement. The game does not show forced interstitial ads or banners, and advertising can never grant AI Credit.
 _Avoid_: Forced ad, commercial break, AI Credit ad
 
+**Pending Ad Reward Verification**:
+The transient client condition between a player completing a Rewarded Ad and the authoritative AdMob Server-Side Verification (SSV) callback granting the Stitch Coin into the Guest Ledger or account balance. The client does not invent local Coin or mark the pool consumed on its own; it reflects verification progress in the interface and never treats ordinary callback arrival latency as a claim failure or raises a Support Reference.
+_Avoid_: Client claim error, optimistic coin balance, failed ad reward
+
 **Daily Rewarded Ad Limit**:
 The maximum of three verified Rewarded Ad completions for which a player may receive Stitch Coin during one Reward Day, also bounded by the remaining Ad-Equivalent Coin Pool. Abandoned advertisements and completions that are not verified or rewarded consume neither an attempt nor the pool.
 _Avoid_: Ad impression limit, attempt limit, AI Credit allowance

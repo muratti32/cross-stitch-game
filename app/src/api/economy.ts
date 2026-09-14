@@ -1,6 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from './apiFetch';
 
+export const coinBalanceQueryKey = ['economy', 'balance'] as const;
+export const rewardDayQueryKey = ['economy', 'reward-day'] as const;
+
 // Unlock prices are fixed by ADR-0011 by tier.
 // Note: the server remains authoritative on the actual charge.
 export const UNLOCK_PRICE_COIN = {
@@ -95,7 +98,7 @@ export async function fetchUnlockedPatternIds(): Promise<string[]> {
 
 export function useCoinBalance() {
   return useQuery({
-    queryKey: ['economy', 'balance'],
+    queryKey: coinBalanceQueryKey,
     queryFn: fetchCoinBalance,
   });
 }
@@ -112,7 +115,7 @@ export function useUnlockPattern() {
   return useMutation({
     mutationFn: unlockPattern,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
+      queryClient.invalidateQueries({ queryKey: coinBalanceQueryKey });
       queryClient.invalidateQueries({ queryKey: ['economy', 'unlocks'] });
     },
   });
@@ -136,7 +139,7 @@ export async function fetchRewardDay(): Promise<RewardDayView> {
 
 export function useRewardDay() {
   return useQuery({
-    queryKey: ['economy', 'reward-day'],
+    queryKey: rewardDayQueryKey,
     queryFn: fetchRewardDay,
   });
 }
@@ -144,6 +147,19 @@ export function useRewardDay() {
 export interface AdAttempt {
   nonce: string;
   expiresAt: string;
+  /** Missing only from old backends; safely selects the legacy client-claim path. */
+  ssvActive: boolean | undefined;
+}
+
+export interface AdAttemptState {
+  state: 'pending' | 'verified' | 'expired';
+  expiresAt: string;
+}
+
+export async function fetchAdAttemptState(nonce: string): Promise<AdAttemptState> {
+  const res = await apiFetch(`/v1/economy/ad-attempts/${encodeURIComponent(nonce)}`);
+  if (!res.ok) throw await parseEconomyError(res, `Failed to fetch ad attempt: ${res.status}`);
+  return (await res.json()) as AdAttemptState;
 }
 
 export async function openAdAttempt(): Promise<AdAttempt> {
@@ -188,8 +204,8 @@ export function useClaimAdReward() {
   return useMutation({
     mutationFn: claimAdReward,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
-      queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
+      queryClient.invalidateQueries({ queryKey: coinBalanceQueryKey });
+      queryClient.invalidateQueries({ queryKey: rewardDayQueryKey });
     },
   });
 }

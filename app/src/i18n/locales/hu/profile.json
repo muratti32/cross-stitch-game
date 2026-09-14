@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Ma minden hirdetésjutalmat igényeltél! (30/30 érme)",
       "watchAdButton": "Nézz meg egy hirdetést +10 érméért ({{count}} maradt)",
       "adPerkNote": "Naponta legfeljebb 3 hirdetés · A Prémium feloldja a 30 érme azonnali igénylését",
-      "adRewardEarned": "Hirdetésjutalom megszerezve! Ellenőrzés a backenddel…",
+      "adRewardEarned": "A hirdetésjutalom ellenőrizve!",
       "claimFailed": "Az igénylés sikertelen: {{message}}",
       "claimFailedGeneric": "Valami elromlott. Próbáld újra.",
       "adLoadFailedDefault": "A hirdetés betöltése sikertelen",
-      "adAttemptFailedDefault": "A hirdetéspróbálkozás megnyitása sikertelen"
+      "adAttemptFailedDefault": "A hirdetéspróbálkozás megnyitása sikertelen",
+      "adRewardVerifying": "A jutalom ellenőrzése folyamatban…",
+      "adRewardPending": "A jutalmad ellenőrzése még tart. Az érmék hamarosan megjelennek.",
+      "adRewardExpired": "A hirdetés jutalmát nem sikerült időben ellenőrizni. Kérjük, próbáld újra."
     },
     "tabs": {
       "myCreations": "Munkáim {{count}}",

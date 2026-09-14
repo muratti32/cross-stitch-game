@@ -4,6 +4,9 @@ import {
   fetchUnlockedPatternIds,
   InsufficientCoinError,
   unlockPriceForTier,
+  openAdAttempt,
+  claimAdReward,
+  fetchAdAttemptState,
 } from '../economy';
 
 // Mock the authenticated fetch wrapper so no network/identity is touched.
@@ -73,5 +76,66 @@ describe('economy client', () => {
   test('fetchUnlockedPatternIds returns the id list', async () => {
     apiFetch.mockResolvedValue(jsonResponse(200, { patternIds: ['a', 'b'] }));
     await expect(fetchUnlockedPatternIds()).resolves.toEqual(['a', 'b']);
+  });
+
+  test('openAdAttempt returns nonce, expiresAt and ssvActive flag', async () => {
+    apiFetch.mockResolvedValue(
+      jsonResponse(201, {
+        nonce: 'test-nonce-123',
+        expiresAt: '2026-09-14T12:00:00.000Z',
+        ssvActive: true,
+      }),
+    );
+    const result = await openAdAttempt();
+    expect(apiFetch).toHaveBeenCalledWith(
+      '/v1/economy/ad-attempts',
+      expect.objectContaining({ method: 'POST' }),
+    );
+    expect(result).toEqual({
+      nonce: 'test-nonce-123',
+      expiresAt: '2026-09-14T12:00:00.000Z',
+      ssvActive: true,
+    });
+  });
+
+  test('claimAdReward posts nonce and returns grant result', async () => {
+    apiFetch.mockResolvedValue(
+      jsonResponse(200, {
+        granted: false,
+        amount: 0,
+        balance: 50,
+        adsCompleted: 1,
+        coinsConsumed: 10,
+        replayed: false,
+      }),
+    );
+    const result = await claimAdReward('test-nonce-123');
+    expect(apiFetch).toHaveBeenCalledWith(
+      '/v1/economy/ad-attempts/claim',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ nonce: 'test-nonce-123' }),
+      }),
+    );
+    expect(result).toEqual({
+      granted: false,
+      amount: 0,
+      balance: 50,
+      adsCompleted: 1,
+      coinsConsumed: 10,
+      replayed: false,
+    });
+  });
+
+  test('fetchAdAttemptState reads the nonce-specific verification state', async () => {
+    apiFetch.mockResolvedValue(jsonResponse(200, {
+      state: 'pending',
+      expiresAt: '2026-09-14T12:05:00.000Z',
+    }));
+    await expect(fetchAdAttemptState('nonce/unsafe')).resolves.toEqual({
+      state: 'pending',
+      expiresAt: '2026-09-14T12:05:00.000Z',
+    });
+    expect(apiFetch).toHaveBeenCalledWith('/v1/economy/ad-attempts/nonce%2Funsafe');
   });
 });

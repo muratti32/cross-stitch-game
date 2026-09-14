@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "今日的廣告獎勵已全部完成！（30/30 枚金幣）",
       "watchAdButton": "觀看廣告賺取 +10 枚金幣（剩餘 {{count}} 次）",
       "adPerkNote": "每日最多可觀看 3 則廣告 · Premium 解鎖即時領取 30 枚金幣",
-      "adRewardEarned": "已獲得廣告獎勵！正在向後端驗證…",
+      "adRewardEarned": "廣告獎勵已驗證！",
       "claimFailed": "領取失敗：{{message}}",
       "claimFailedGeneric": "發生錯誤，請再試一次。",
       "adLoadFailedDefault": "廣告載入失敗",
-      "adAttemptFailedDefault": "開啟廣告嘗試失敗"
+      "adAttemptFailedDefault": "開啟廣告嘗試失敗",
+      "adRewardVerifying": "正在驗證您的獎勵…",
+      "adRewardPending": "您的獎勵仍在驗證中，金幣很快就會顯示。",
+      "adRewardExpired": "未能及時驗證此廣告獎勵。請再試一次。"
     },
     "tabs": {
       "myCreations": "我的創作 {{count}}",

@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useQueryClient } from '@tanstack/react-query';
 import { Theme } from '../theme/theme';
 import { Card } from './Card';
 import { Button } from './Button';
-import { useRewardDay, useOpenAdAttempt, useClaimAdReward } from '../api/economy';
-import { useRewardedAd } from '../hooks/useRewardedAd';
+import { useRewardDay } from '../api/economy';
+import { adRewardMessageKey, useRewardedAdFlow } from '../hooks/useRewardedAdFlow';
 import { OfflineError } from '../api/networkErrors';
 import { isServerApiError, localizeServerError } from '../api/localizeServerError';
 import { useTranslation } from 'react-i18next';
@@ -33,111 +32,13 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
   const { t } = useTranslation('profile');
   const { data, isLoading, isError, error: rewardDayError, refetch } = useRewardDay();
   const isOffline = rewardDayError instanceof OfflineError;
-  const { mutateAsync: openAdAttempt } = useOpenAdAttempt();
-  const { mutateAsync: claimAdReward } = useClaimAdReward();
-  const queryClient = useQueryClient();
-
-  const [attempt, setAttempt] = useState<{ nonce: string; expiresAt: string } | null>(null);
-  const [attemptPending, setAttemptPending] = useState(false);
-  const [earned, setEarned] = useState(false);
-  const [localError, setLocalError] = useState<string | null>(null);
-
-  const attemptRef = useRef(attempt);
-  attemptRef.current = attempt;
-  const activeNonceRef = useRef<string | null>(null);
-  const claimingNonceRef = useRef<Set<string>>(new Set());
-
-  const handleClaim = useCallback(
-    async (nonce: string) => {
-      if (claimingNonceRef.current.has(nonce)) {
-        return;
-      }
-      claimingNonceRef.current.add(nonce);
-      try {
-        await claimAdReward(nonce);
-        activeNonceRef.current = null;
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] }),
-          queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] }),
-        ]);
-      } catch (err: unknown) {
-        claimingNonceRef.current.delete(nonce);
-        console.error('[RewardedAdCard] Failed to claim client ad reward:', err);
-        setLocalError(isServerApiError(err)
-          ? localizeServerError(err)
-          : t('home.dailyPool.claimFailedGeneric'));
-      }
-    },
-    [claimAdReward, queryClient, t],
-  );
-
-  const { status, show, error } = useRewardedAd({
-    serverSideVerification: attempt?.nonce ? { customData: attempt.nonce } : undefined,
-    onEarnedReward: async () => {
-      setEarned(true);
-      const nonceToClaim = activeNonceRef.current || attemptRef.current?.nonce;
-      if (nonceToClaim) {
-        await handleClaim(nonceToClaim);
-      }
-    },
+  const flow = useRewardedAdFlow({
+    localizeAttemptError: (err) => isServerApiError(err) ? localizeServerError(err) : t('home.dailyPool.adAttemptFailedDefault'),
+    localizeClaimError: (err) => isServerApiError(err) ? localizeServerError(err) : t('home.dailyPool.claimFailedGeneric'),
+    localizeLoadError: () => t('home.dailyPool.adLoadFailedDefault'),
+    localizeVerificationExpired: () => t('home.dailyPool.adRewardExpired'),
   });
-
-  const prevStatusRef = useRef(status);
-
-  useEffect(() => {
-    if (attemptPending && status === 'loaded') {
-      show();
-    }
-  }, [status, attemptPending, show]);
-
-  useEffect(() => {
-    const prevStatus = prevStatusRef.current;
-    prevStatusRef.current = status;
-
-    if (attemptPending && prevStatus === 'showing' && status !== 'showing') {
-      // Ad finished (either dismissed or error during show)
-      const pendingNonce = activeNonceRef.current;
-      if (pendingNonce && !claimingNonceRef.current.has(pendingNonce)) {
-        handleClaim(pendingNonce).finally(() => {
-          queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
-          queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
-          setAttempt(null);
-          setAttemptPending(false);
-        });
-      } else {
-        queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
-        queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
-        setAttempt(null);
-        setAttemptPending(false);
-      }
-    }
-  }, [status, attemptPending, queryClient, handleClaim]);
-
-  useEffect(() => {
-    if (attemptPending && status === 'error') {
-      setLocalError(t('home.dailyPool.adLoadFailedDefault'));
-      activeNonceRef.current = null;
-      setAttempt(null);
-      setAttemptPending(false);
-    }
-  }, [status, attemptPending, error]);
-
-  const handleWatchAd = async () => {
-    try {
-      setLocalError(null);
-      setAttemptPending(true);
-      setEarned(false);
-      const attemptData = await openAdAttempt();
-      activeNonceRef.current = attemptData.nonce;
-      setAttempt(attemptData);
-    } catch (err) {
-      activeNonceRef.current = null;
-      setAttemptPending(false);
-      setLocalError(isServerApiError(err)
-        ? localizeServerError(err)
-        : t('home.dailyPool.adAttemptFailedDefault'));
-    }
-  };
+  const { status } = flow;
 
   if (!enabled || status === 'unavailable') {
     return null;
@@ -216,22 +117,22 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
 
       <Button
         title={t('rewardedAdCard.watchForCoins', { count: AD_REWARD_COIN })}
-        onPress={handleWatchAd}
-        disabled={attemptPending}
-        loading={attemptPending}
+        onPress={flow.watch}
+        disabled={flow.attemptPending || flow.isVerifying}
+        loading={flow.attemptPending || flow.isVerifying}
         variant="honey"
         style={styles.button}
       />
 
-      {earned && (
+      {flow.message && (
         <Text style={styles.successMessage}>
-          {t('home.dailyPool.adRewardEarned')}
+          {t(adRewardMessageKey(flow.message))}
         </Text>
       )}
 
-      {localError && (
+      {flow.errorMessage && (
         <Text style={styles.errorMessage}>
-          {localError}
+          {flow.errorMessage}
         </Text>
       )}
     </Card>

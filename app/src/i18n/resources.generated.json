@@ -881,11 +881,14 @@
           "allAdRewardsCompleted": "اكتملت جميع مكافآت الإعلانات لليوم! (30/30 عملة)",
           "watchAdButton": "شاهد إعلاناً للحصول على +10 عملات (متبقي {{count}})",
           "adPerkNote": "شاهد ما يصل إلى 3 إعلانات يومياً · تفتح العضوية المميزة مطالبة فورية بـ 30 عملة",
-          "adRewardEarned": "تم كسب مكافأة الإعلان! جاري التحقق مع الخلفية البرمجية...",
+          "adRewardEarned": "تم التحقق من مكافأة الإعلان!",
           "claimFailed": "فشلت المطالبة: {{message}}",
           "claimFailedGeneric": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
           "adLoadFailedDefault": "فشل تحميل الإعلان",
-          "adAttemptFailedDefault": "فشل فتح محاولة الإعلان"
+          "adAttemptFailedDefault": "فشل فتح محاولة الإعلان",
+          "adRewardVerifying": "جارٍ التحقق من مكافأتك…",
+          "adRewardPending": "لا تزال مكافأتك قيد التحقق. ستظهر العملات قريبًا.",
+          "adRewardExpired": "تعذّر التحقق من مكافأة هذا الإعلان في الوقت المحدد. يُرجى المحاولة مرة أخرى."
         },
         "tabs": {
           "myCreations": "إبداعاتي {{count}}",
@@ -2300,11 +2303,14 @@
           "allAdRewardsCompleted": "Totes les recompenses d'anuncis completades per avui! (30/30 monedes)",
           "watchAdButton": "Mira un Anunci per +10 Monedes ({{count}} restants)",
           "adPerkNote": "Mira fins a 3 anuncis/dia · Premium desbloqueja la reclamació instantània de 30 monedes",
-          "adRewardEarned": "Recompensa d'anunci guanyada! Verificant amb el servidor…",
+          "adRewardEarned": "Recompensa de l’anunci verificada!",
           "claimFailed": "La reclamació ha fallat: {{message}}",
           "claimFailedGeneric": "S'ha produït un error. Torna-ho a provar.",
           "adLoadFailedDefault": "No s'ha pogut carregar l'anunci",
-          "adAttemptFailedDefault": "No s'ha pogut obrir l'intent d'anunci"
+          "adAttemptFailedDefault": "No s'ha pogut obrir l'intent d'anunci",
+          "adRewardVerifying": "S’està verificant la recompensa…",
+          "adRewardPending": "La recompensa encara s’està verificant. Les monedes apareixeran aviat.",
+          "adRewardExpired": "No s’ha pogut verificar a temps la recompensa d’aquest anunci. Torna-ho a provar."
         },
         "tabs": {
           "myCreations": "Les Meves Creacions {{count}}",
@@ -3719,11 +3725,14 @@
           "allAdRewardsCompleted": "Všechny odměny za reklamy pro dnešek dokončeny! (30/30 coinů)",
           "watchAdButton": "Zhlédnout reklamu za +10 coinů (zbývá {{count}})",
           "adPerkNote": "Sledujte až 3 reklamy denně · Premium odemyká okamžité vyzvednutí 30 coinů",
-          "adRewardEarned": "Odměna za reklamu získána! Ověřuje se na backendu…",
+          "adRewardEarned": "Odměna za reklamu ověřena!",
           "claimFailed": "Vyzvednutí selhalo: {{message}}",
           "claimFailedGeneric": "Něco se pokazilo. Zkuste to prosím znovu.",
           "adLoadFailedDefault": "Reklamu se nepodařilo načíst",
-          "adAttemptFailedDefault": "Nepodařilo se spustit přehrání reklamy"
+          "adAttemptFailedDefault": "Nepodařilo se spustit přehrání reklamy",
+          "adRewardVerifying": "Odměna se ověřuje…",
+          "adRewardPending": "Odměna se stále ověřuje. Mince se brzy zobrazí.",
+          "adRewardExpired": "Odměnu za tuto reklamu se nepodařilo včas ověřit. Zkuste to prosím znovu."
         },
         "tabs": {
           "myCreations": "Má tvorba {{count}}",
@@ -5138,11 +5147,14 @@
           "allAdRewardsCompleted": "Alle annoncebelønninger fuldført for i dag! (30/30 mønter)",
           "watchAdButton": "Se annonce for +10 mønter ({{count}} tilbage)",
           "adPerkNote": "Se op til 3 annoncer/dag · Premium låser op for øjeblikkeligt 30-mønters krav",
-          "adRewardEarned": "Annoncebelønning optjent! Verificerer med backend…",
+          "adRewardEarned": "Annoncebelønning bekræftet!",
           "claimFailed": "Krav mislykkedes: {{message}}",
           "claimFailedGeneric": "Noget gik galt. Prøv igen.",
           "adLoadFailedDefault": "Kunne ikke indlæse annonce",
-          "adAttemptFailedDefault": "Kunne ikke åbne annonceforsøg"
+          "adAttemptFailedDefault": "Kunne ikke åbne annonceforsøg",
+          "adRewardVerifying": "Bekræfter din belønning…",
+          "adRewardPending": "Din belønning bekræftes stadig. Mønterne vises snart.",
+          "adRewardExpired": "Belønningen for denne annonce kunne ikke bekræftes i tide. Prøv igen."
         },
         "tabs": {
           "myCreations": "Mine kreationer {{count}}",
@@ -6557,11 +6569,14 @@
           "allAdRewardsCompleted": "Alle Werbebelohnungen für heute abgeschlossen! (30/30 Coins)",
           "watchAdButton": "Werbung ansehen für +10 Coins (noch {{count}})",
           "adPerkNote": "Sieh dir bis zu 3 Werbevideos am Tag an · Premium schaltet die Sofortabholung von 30 Coins frei",
-          "adRewardEarned": "Werbebelohnung verdient! Überprüfung läuft…",
+          "adRewardEarned": "Werbebelohnung bestätigt!",
           "claimFailed": "Abholen fehlgeschlagen: {{message}}",
           "claimFailedGeneric": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
           "adLoadFailedDefault": "Werbung konnte nicht geladen werden",
-          "adAttemptFailedDefault": "Werbeversuch konnte nicht geöffnet werden"
+          "adAttemptFailedDefault": "Werbeversuch konnte nicht geöffnet werden",
+          "adRewardVerifying": "Belohnung wird überprüft…",
+          "adRewardPending": "Deine Belohnung wird noch überprüft. Die Münzen erscheinen bald.",
+          "adRewardExpired": "Die Belohnung für diese Werbung konnte nicht rechtzeitig überprüft werden. Bitte versuche es erneut."
         },
         "tabs": {
           "myCreations": "Meine Kreationen {{count}}",
@@ -7976,11 +7991,14 @@
           "allAdRewardsCompleted": "Όλες οι επιβραβεύσεις διαφημίσεων ολοκληρώθηκαν για σήμερα! (30/30 νομίσματα)",
           "watchAdButton": "Παρακολουθήστε Διαφήμιση για +10 Νομίσματα ({{count}} απομένουν)",
           "adPerkNote": "Παρακολουθήστε έως 3 διαφημίσεις/ημέρα · Το Premium ξεκλειδώνει άμεση διεκδίκηση 30 νομισμάτων",
-          "adRewardEarned": "Κερδίσατε ανταμοιβή διαφήμισης! Επαλήθευση με το backend…",
+          "adRewardEarned": "Η ανταμοιβή διαφήμισης επαληθεύτηκε!",
           "claimFailed": "Η διεκδίκηση απέτυχε: {{message}}",
           "claimFailedGeneric": "Κάτι πήγε στραβά. Δοκιμάστε ξανά.",
           "adLoadFailedDefault": "Αποτυχία φόρτωσης διαφήμισης",
-          "adAttemptFailedDefault": "Αποτυχία ανοίγματος προσπάθειας διαφήμισης"
+          "adAttemptFailedDefault": "Αποτυχία ανοίγματος προσπάθειας διαφήμισης",
+          "adRewardVerifying": "Η ανταμοιβή επαληθεύεται…",
+          "adRewardPending": "Η ανταμοιβή σας επαληθεύεται ακόμη. Τα νομίσματα θα εμφανιστούν σύντομα.",
+          "adRewardExpired": "Δεν ήταν δυνατή η έγκαιρη επαλήθευση της ανταμοιβής αυτής της διαφήμισης. Δοκιμάστε ξανά."
         },
         "tabs": {
           "myCreations": "Οι Δημιουργίες μου {{count}}",
@@ -9395,11 +9413,14 @@
           "allAdRewardsCompleted": "All ad rewards completed for today! (30/30 coins)",
           "watchAdButton": "Watch Ad for +10 Coins ({{count}} left)",
           "adPerkNote": "Watch up to 3 ads/day · Premium unlocks instant 30-coin claim",
-          "adRewardEarned": "Ad reward earned! Verifying with backend…",
+          "adRewardEarned": "Ad reward verified!",
           "claimFailed": "Claim failed: {{message}}",
           "claimFailedGeneric": "Something went wrong. Please try again.",
           "adLoadFailedDefault": "Failed to load ad",
-          "adAttemptFailedDefault": "Failed to open ad attempt"
+          "adAttemptFailedDefault": "Failed to open ad attempt",
+          "adRewardVerifying": "Verifying your reward…",
+          "adRewardPending": "Your reward is still being verified. Coins will appear shortly.",
+          "adRewardExpired": "This ad reward couldn't be verified in time. Please try again."
         },
         "tabs": {
           "myCreations": "My Creations {{count}}",
@@ -10814,11 +10835,14 @@
           "allAdRewardsCompleted": "¡Todas las recompensas por anuncios de hoy se han completado! (30/30 monedas)",
           "watchAdButton": "Ver anuncio para obtener +10 monedas (quedan {{count}})",
           "adPerkNote": "Mira hasta 3 anuncios al día · Premium desbloquea la reclamación instantánea de 30 monedas",
-          "adRewardEarned": "¡Recompensa de anuncio obtenida! Verificando con el servidor...",
+          "adRewardEarned": "¡Recompensa del anuncio verificada!",
           "claimFailed": "Error al reclamar: {{message}}",
           "claimFailedGeneric": "Algo salió mal. Inténtalo de nuevo.",
           "adLoadFailedDefault": "No se pudo cargar el anuncio",
-          "adAttemptFailedDefault": "No se pudo abrir el intento de anuncio"
+          "adAttemptFailedDefault": "No se pudo abrir el intento de anuncio",
+          "adRewardVerifying": "Verificando tu recompensa…",
+          "adRewardPending": "Tu recompensa aún se está verificando. Las monedas aparecerán pronto.",
+          "adRewardExpired": "No se pudo verificar a tiempo la recompensa de este anuncio. Inténtalo de nuevo."
         },
         "tabs": {
           "myCreations": "Mis creaciones {{count}}",
@@ -12233,11 +12257,14 @@
           "allAdRewardsCompleted": "Kaikki mainospalkinnot on kerätty tälle päivälle! (30/30 kolikkoa)",
           "watchAdButton": "Katso mainos saadaksesi +10 kolikkoa ({{count}} jäljellä)",
           "adPerkNote": "Katso jopa 3 mainosta päivässä · Premium avaa välittömän 30 kolikon lunastuksen",
-          "adRewardEarned": "Mainospalkinto ansaittu! Varmistetaan palvelimelta…",
+          "adRewardEarned": "Mainospalkinto vahvistettu!",
           "claimFailed": "Lunastus epäonnistui: {{message}}",
           "claimFailedGeneric": "Jotain meni pieleen. Yritä uudelleen.",
           "adLoadFailedDefault": "Mainoksen lataaminen epäonnistui",
-          "adAttemptFailedDefault": "Mainosyrityksen avaaminen epäonnistui"
+          "adAttemptFailedDefault": "Mainosyrityksen avaaminen epäonnistui",
+          "adRewardVerifying": "Palkintoa vahvistetaan…",
+          "adRewardPending": "Palkintoasi vahvistetaan yhä. Kolikot näkyvät pian.",
+          "adRewardExpired": "Tämän mainoksen palkintoa ei voitu vahvistaa ajoissa. Yritä uudelleen."
         },
         "tabs": {
           "myCreations": "Omat luomukset {{count}}",
@@ -13652,11 +13679,14 @@
           "allAdRewardsCompleted": "Toutes les récompenses publicitaires ont été obtenues pour aujourd'hui ! (30/30 pièces)",
           "watchAdButton": "Regarder une publicité pour +10 pièces (encore {{count}})",
           "adPerkNote": "Regardez jusqu'à 3 publicités par jour · Le statut Premium déverrouille la réclamation instantanée de 30 pièces",
-          "adRewardEarned": "Récompense publicitaire obtenue ! Vérification avec le serveur…",
+          "adRewardEarned": "Récompense publicitaire vérifiée !",
           "claimFailed": "Échec de la réclamation : {{message}}",
           "claimFailedGeneric": "Une erreur est survenue. Veuillez réessayer.",
           "adLoadFailedDefault": "Impossible de charger la publicité",
-          "adAttemptFailedDefault": "Échec du lancement de la publicité"
+          "adAttemptFailedDefault": "Échec du lancement de la publicité",
+          "adRewardVerifying": "Vérification de votre récompense…",
+          "adRewardPending": "Votre récompense est toujours en cours de vérification. Les pièces apparaîtront bientôt.",
+          "adRewardExpired": "La récompense de cette publicité n’a pas pu être vérifiée à temps. Veuillez réessayer."
         },
         "tabs": {
           "myCreations": "Mes créations {{count}}",
@@ -15071,11 +15101,14 @@
           "allAdRewardsCompleted": "आज के सभी विज्ञापन पुरस्कार पूरे हो गए हैं! (30/30 कॉइन्स)",
           "watchAdButton": "+10 कॉइन्स के लिए विज्ञापन देखें ({{count}} शेष)",
           "adPerkNote": "प्रतिदिन 3 विज्ञापन तक देखें · प्रीमियम से 30-कॉइन का तत्काल क्लेम अनलॉक होता है",
-          "adRewardEarned": "विज्ञापन पुरस्कार अर्जित किया गया! बैकएंड से सत्यापन किया जा रहा है…",
+          "adRewardEarned": "विज्ञापन पुरस्कार सत्यापित हो गया!",
           "claimFailed": "क्लेम विफल: {{message}}",
           "claimFailedGeneric": "कुछ गलत हो गया। कृपया फिर से प्रयास करें।",
           "adLoadFailedDefault": "विज्ञापन लोड करने में विफल",
-          "adAttemptFailedDefault": "विज्ञापन खोलने का प्रयास विफल रहा"
+          "adAttemptFailedDefault": "विज्ञापन खोलने का प्रयास विफल रहा",
+          "adRewardVerifying": "आपके पुरस्कार की पुष्टि हो रही है…",
+          "adRewardPending": "आपके पुरस्कार की पुष्टि अभी जारी है। सिक्के जल्द दिखाई देंगे।",
+          "adRewardExpired": "इस विज्ञापन के पुरस्कार की समय पर पुष्टि नहीं हो सकी। कृपया फिर से कोशिश करें।"
         },
         "tabs": {
           "myCreations": "मेरी कृतियाँ {{count}}",
@@ -16490,11 +16523,14 @@
           "allAdRewardsCompleted": "Sve nagrade za oglase dovršene za danas! (30/30 novčića)",
           "watchAdButton": "Pogledaj oglas za +10 novčića ({{count}} preostalo)",
           "adPerkNote": "Pogledaj do 3 oglasa dnevno · Premium otključava trenutno preuzimanje 30 novčića",
-          "adRewardEarned": "Nagrada za oglas zarađena! Provjera s backendom…",
+          "adRewardEarned": "Nagrada za oglas potvrđena!",
           "claimFailed": "Preuzimanje nije uspjelo: {{message}}",
           "claimFailedGeneric": "Nešto je pošlo po zlu. Pokušaj ponovno.",
           "adLoadFailedDefault": "Učitavanje oglasa nije uspjelo",
-          "adAttemptFailedDefault": "Otvaranje pokušaja oglasa nije uspjelo"
+          "adAttemptFailedDefault": "Otvaranje pokušaja oglasa nije uspjelo",
+          "adRewardVerifying": "Provjera vaše nagrade…",
+          "adRewardPending": "Vaša se nagrada još provjerava. Novčići će se uskoro pojaviti.",
+          "adRewardExpired": "Nagrada za ovaj oglas nije provjerena na vrijeme. Pokušajte ponovno."
         },
         "tabs": {
           "myCreations": "Moji radovi {{count}}",
@@ -17909,11 +17945,14 @@
           "allAdRewardsCompleted": "Ma minden hirdetésjutalmat igényeltél! (30/30 érme)",
           "watchAdButton": "Nézz meg egy hirdetést +10 érméért ({{count}} maradt)",
           "adPerkNote": "Naponta legfeljebb 3 hirdetés · A Prémium feloldja a 30 érme azonnali igénylését",
-          "adRewardEarned": "Hirdetésjutalom megszerezve! Ellenőrzés a backenddel…",
+          "adRewardEarned": "A hirdetésjutalom ellenőrizve!",
           "claimFailed": "Az igénylés sikertelen: {{message}}",
           "claimFailedGeneric": "Valami elromlott. Próbáld újra.",
           "adLoadFailedDefault": "A hirdetés betöltése sikertelen",
-          "adAttemptFailedDefault": "A hirdetéspróbálkozás megnyitása sikertelen"
+          "adAttemptFailedDefault": "A hirdetéspróbálkozás megnyitása sikertelen",
+          "adRewardVerifying": "A jutalom ellenőrzése folyamatban…",
+          "adRewardPending": "A jutalmad ellenőrzése még tart. Az érmék hamarosan megjelennek.",
+          "adRewardExpired": "A hirdetés jutalmát nem sikerült időben ellenőrizni. Kérjük, próbáld újra."
         },
         "tabs": {
           "myCreations": "Munkáim {{count}}",
@@ -19328,11 +19367,14 @@
           "allAdRewardsCompleted": "Kamu telah mengklaim semua hadiah iklan hari ini! (30/30 koin)",
           "watchAdButton": "Tonton iklan untuk +10 koin ({{count}} tersisa)",
           "adPerkNote": "Hingga 3 iklan per hari · Premium membuka klaim instan 30 koin",
-          "adRewardEarned": "Hadiah iklan diperoleh! Memverifikasi dengan backend…",
+          "adRewardEarned": "Hadiah iklan terverifikasi!",
           "claimFailed": "Klaim gagal: {{message}}",
           "claimFailedGeneric": "Ada yang salah. Coba lagi.",
           "adLoadFailedDefault": "Gagal memuat iklan",
-          "adAttemptFailedDefault": "Gagal membuka percobaan iklan"
+          "adAttemptFailedDefault": "Gagal membuka percobaan iklan",
+          "adRewardVerifying": "Memverifikasi hadiah Anda…",
+          "adRewardPending": "Hadiah Anda masih diverifikasi. Koin akan segera muncul.",
+          "adRewardExpired": "Hadiah iklan ini tidak dapat diverifikasi tepat waktu. Silakan coba lagi."
         },
         "tabs": {
           "myCreations": "Karyaku {{count}}",
@@ -20747,11 +20789,14 @@
           "allAdRewardsCompleted": "Tutte le ricompense degli annunci completate per oggi! (30/30 monete)",
           "watchAdButton": "Guarda l'annuncio per +10 monete ({{count}} rimanenti)",
           "adPerkNote": "Guarda fino a 3 annunci al giorno · Premium sblocca il riscatto istantaneo di 30 monete",
-          "adRewardEarned": "Ricompensa dell'annuncio ottenuta! Verifica con il backend in corso...",
+          "adRewardEarned": "Ricompensa dell’annuncio verificata!",
           "claimFailed": "Riscatto non riuscito: {{message}}",
           "claimFailedGeneric": "Qualcosa è andato storto. Riprova.",
           "adLoadFailedDefault": "Impossibile caricare l'annuncio",
-          "adAttemptFailedDefault": "Impossibile aprire l'annuncio"
+          "adAttemptFailedDefault": "Impossibile aprire l'annuncio",
+          "adRewardVerifying": "Verifica della ricompensa…",
+          "adRewardPending": "La ricompensa è ancora in fase di verifica. Le monete appariranno a breve.",
+          "adRewardExpired": "Non è stato possibile verificare in tempo la ricompensa di questo annuncio. Riprova."
         },
         "tabs": {
           "myCreations": "Le mie creazioni {{count}}",
@@ -22166,11 +22211,14 @@
           "allAdRewardsCompleted": "本日のすべての広告報酬が完了しました！ (30/30コイン)",
           "watchAdButton": "広告を視聴して+10コインを獲得 (残り{{count}}回)",
           "adPerkNote": "1日最大3回まで広告視聴可能 · Premiumなら30コインを即時受け取り可能",
-          "adRewardEarned": "広告報酬を獲得しました！サーバーで確認中…",
+          "adRewardEarned": "広告報酬が確認されました！",
           "claimFailed": "受け取り失敗: {{message}}",
           "claimFailedGeneric": "問題が発生しました。もう一度お試しください。",
           "adLoadFailedDefault": "広告の読み込みに失敗しました",
-          "adAttemptFailedDefault": "広告の起動に失敗しました"
+          "adAttemptFailedDefault": "広告の起動に失敗しました",
+          "adRewardVerifying": "報酬を確認しています…",
+          "adRewardPending": "報酬はまだ確認中です。コインはまもなく表示されます。",
+          "adRewardExpired": "この広告の報酬を時間内に確認できませんでした。もう一度お試しください。"
         },
         "tabs": {
           "myCreations": "マイクリエーション {{count}}",
@@ -23585,11 +23633,14 @@
           "allAdRewardsCompleted": "오늘의 모든 광고 보상을 완료했습니다! (30/30코인)",
           "watchAdButton": "광고를 시청하고 +10코인 획득 (남은 횟수: {{count}}회)",
           "adPerkNote": "하루 최대 3회 광고 시청 가능 · Premium 회원은 30코인 즉시 획득 가능",
-          "adRewardEarned": "광고 보상을 획득했습니다! 서버에서 확인 중...",
+          "adRewardEarned": "광고 보상이 확인되었습니다!",
           "claimFailed": "획득 실패: {{message}}",
           "claimFailedGeneric": "문제가 발생했습니다. 다시 시도해 주세요.",
           "adLoadFailedDefault": "광고를 불러오지 못했습니다",
-          "adAttemptFailedDefault": "광고를 실행하지 못했습니다"
+          "adAttemptFailedDefault": "광고를 실행하지 못했습니다",
+          "adRewardVerifying": "보상을 확인하는 중…",
+          "adRewardPending": "보상을 아직 확인 중입니다. 코인이 곧 표시됩니다.",
+          "adRewardExpired": "이 광고 보상을 제시간에 확인하지 못했습니다. 다시 시도해 주세요."
         },
         "tabs": {
           "myCreations": "내 제작 {{count}}",
@@ -25004,11 +25055,14 @@
           "allAdRewardsCompleted": "Anda telah menuntut semua hadiah iklan hari ini! (30/30 koin)",
           "watchAdButton": "Tonton iklan untuk +10 koin ({{count}} tinggal)",
           "adPerkNote": "Sehingga 3 iklan setiap hari · Premium membuka tuntutan segera 30 koin",
-          "adRewardEarned": "Hadiah iklan diperoleh! Mengesahkan dengan backend…",
+          "adRewardEarned": "Ganjaran iklan disahkan!",
           "claimFailed": "Tuntutan gagal: {{message}}",
           "claimFailedGeneric": "Sesuatu tidak kena. Cuba lagi.",
           "adLoadFailedDefault": "Gagal memuatkan iklan",
-          "adAttemptFailedDefault": "Gagal membuka percubaan iklan"
+          "adAttemptFailedDefault": "Gagal membuka percubaan iklan",
+          "adRewardVerifying": "Mengesahkan ganjaran anda…",
+          "adRewardPending": "Ganjaran anda masih disahkan. Syiling akan muncul tidak lama lagi.",
+          "adRewardExpired": "Ganjaran iklan ini tidak dapat disahkan tepat pada masanya. Sila cuba lagi."
         },
         "tabs": {
           "myCreations": "Karya saya {{count}}",
@@ -26423,11 +26477,14 @@
           "allAdRewardsCompleted": "Alle annonsebelønninger fullført for i dag! (30/30 mynter)",
           "watchAdButton": "Se annonse for +10 mynter ({{count}} igjen)",
           "adPerkNote": "Se opptil 3 annonser/dag · Premium låser opp umiddelbart 30-mynts uttak",
-          "adRewardEarned": "Annonsebelønning opptjent! Bekrefter med bakenden…",
+          "adRewardEarned": "Annonsebelønningen er bekreftet!",
           "claimFailed": "Uttak mislyktes: {{message}}",
           "claimFailedGeneric": "Noe gikk galt. Prøv igjen.",
           "adLoadFailedDefault": "Kunne ikke laste annonse",
-          "adAttemptFailedDefault": "Kunne ikke åpne annonseforsøk"
+          "adAttemptFailedDefault": "Kunne ikke åpne annonseforsøk",
+          "adRewardVerifying": "Bekrefter belønningen din…",
+          "adRewardPending": "Belønningen din bekreftes fortsatt. Myntene vises snart.",
+          "adRewardExpired": "Belønningen for denne annonsen kunne ikke bekreftes i tide. Prøv igjen."
         },
         "tabs": {
           "myCreations": "Mine skapelser {{count}}",
@@ -27842,11 +27899,14 @@
           "allAdRewardsCompleted": "Je hebt alle advertentiebeloningen van vandaag voltooid! (30/30 coins)",
           "watchAdButton": "Bekijk advertentie voor +10 coins ({{count}} resterend)",
           "adPerkNote": "Maximaal 3 advertenties per dag · Premium-leden claimen direct 30 coins",
-          "adRewardEarned": "Advertentiebeloning verdiend! Verifiëren op de server...",
+          "adRewardEarned": "Advertentiebeloning geverifieerd!",
           "claimFailed": "Claim mislukt: {{message}}",
           "claimFailedGeneric": "Er is iets misgegaan. Probeer het opnieuw.",
           "adLoadFailedDefault": "Kan de advertentie niet laden",
-          "adAttemptFailedDefault": "Kan de advertentie niet afspelen"
+          "adAttemptFailedDefault": "Kan de advertentie niet afspelen",
+          "adRewardVerifying": "Je beloning wordt geverifieerd…",
+          "adRewardPending": "Je beloning wordt nog geverifieerd. De munten verschijnen binnenkort.",
+          "adRewardExpired": "De beloning voor deze advertentie kon niet op tijd worden geverifieerd. Probeer het opnieuw."
         },
         "tabs": {
           "myCreations": "Mijn creaties {{count}}",
@@ -29261,11 +29321,14 @@
           "allAdRewardsCompleted": "Ukończyłeś wszystkie dzisiejsze nagrody z reklam! (30/30 monet)",
           "watchAdButton": "Obejrzyj reklamę za +10 monet ({{count}} pozostało)",
           "adPerkNote": "Maksymalnie 3 reklamy dziennie · Członkowie Premium odbierają od razu 30 monet",
-          "adRewardEarned": "Zdobyto nagrodę z reklamy! Weryfikowanie na serwerze...",
+          "adRewardEarned": "Nagroda za reklamę zweryfikowana!",
           "claimFailed": "Odbiór nie powiódł się: {{message}}",
           "claimFailedGeneric": "Coś poszło nie tak. Spróbuj ponownie.",
           "adLoadFailedDefault": "Nie można załadować reklamy",
-          "adAttemptFailedDefault": "Nie można odtworzyć reklamy"
+          "adAttemptFailedDefault": "Nie można odtworzyć reklamy",
+          "adRewardVerifying": "Weryfikujemy nagrodę…",
+          "adRewardPending": "Nagroda jest nadal weryfikowana. Monety pojawią się wkrótce.",
+          "adRewardExpired": "Nie udało się na czas zweryfikować nagrody za tę reklamę. Spróbuj ponownie."
         },
         "tabs": {
           "myCreations": "Moje kreacje {{count}}",
@@ -30680,11 +30743,14 @@
           "allAdRewardsCompleted": "Todas as recompensas de anúncios concluídas hoje! (30/30 moedas)",
           "watchAdButton": "Ver Anúncio por +10 Moedas ({{count}} restantes)",
           "adPerkNote": "Vê até 3 anúncios/dia · Premium desbloqueia resgate instantâneo de 30 moedas",
-          "adRewardEarned": "Recompensa de anúncio ganha! A verificar com o backend…",
+          "adRewardEarned": "Recompensa do anúncio verificada!",
           "claimFailed": "O resgate falhou: {{message}}",
           "claimFailedGeneric": "Algo correu mal. Por favor, tenta novamente.",
           "adLoadFailedDefault": "Falha ao carregar o anúncio",
-          "adAttemptFailedDefault": "Falha ao abrir a tentativa de anúncio"
+          "adAttemptFailedDefault": "Falha ao abrir a tentativa de anúncio",
+          "adRewardVerifying": "A verificar a sua recompensa…",
+          "adRewardPending": "A sua recompensa ainda está a ser verificada. As moedas aparecerão em breve.",
+          "adRewardExpired": "Não foi possível verificar a tempo a recompensa deste anúncio. Tente novamente."
         },
         "tabs": {
           "myCreations": "As Minhas Criações {{count}}",
@@ -32099,11 +32165,14 @@
           "allAdRewardsCompleted": "Todas as recompensas de anúncios concluídas por hoje! (30/30 moedas)",
           "watchAdButton": "Assistir ao anúncio para +10 moedas (restam {{count}})",
           "adPerkNote": "Assista a até 3 anúncios por dia · O Premium desbloqueia o resgate instantâneo de 30 moedas",
-          "adRewardEarned": "Recompensa de anúncio obtida! Verificando no servidor...",
+          "adRewardEarned": "Recompensa do anúncio verificada!",
           "claimFailed": "Falha no resgate: {{message}}",
           "claimFailedGeneric": "Algo deu errado. Tente novamente.",
           "adLoadFailedDefault": "Falha ao carregar o anúncio",
-          "adAttemptFailedDefault": "Falha ao tentar abrir o anúncio"
+          "adAttemptFailedDefault": "Falha ao tentar abrir o anúncio",
+          "adRewardVerifying": "Verificando sua recompensa…",
+          "adRewardPending": "Sua recompensa ainda está sendo verificada. As moedas aparecerão em breve.",
+          "adRewardExpired": "Não foi possível verificar a recompensa deste anúncio a tempo. Tente novamente."
         },
         "tabs": {
           "myCreations": "Minhas Criações {{count}}",
@@ -33518,11 +33587,14 @@
           "allAdRewardsCompleted": "Toate recompensele din reclame au fost finalizate pentru astăzi! (30/30 monede)",
           "watchAdButton": "Urmărește o reclamă pentru +10 monede ({{count}} rămase)",
           "adPerkNote": "Urmărește până la 3 reclame/zi · Premium deblochează revendicarea instant de 30 de monede",
-          "adRewardEarned": "Recompensă din reclamă câștigată! Se verifică cu serverul…",
+          "adRewardEarned": "Recompensa din reclamă a fost verificată!",
           "claimFailed": "Revendicarea a eșuat: {{message}}",
           "claimFailedGeneric": "Ceva nu a mers bine. Te rugăm să încerci din nou.",
           "adLoadFailedDefault": "Încărcarea reclamei a eșuat",
-          "adAttemptFailedDefault": "Deschiderea încercării de reclamă a eșuat"
+          "adAttemptFailedDefault": "Deschiderea încercării de reclamă a eșuat",
+          "adRewardVerifying": "Se verifică recompensa…",
+          "adRewardPending": "Recompensa este încă verificată. Monedele vor apărea în curând.",
+          "adRewardExpired": "Recompensa pentru această reclamă nu a putut fi verificată la timp. Încearcă din nou."
         },
         "tabs": {
           "myCreations": "Creațiile mele {{count}}",
@@ -34937,11 +35009,14 @@
           "allAdRewardsCompleted": "Все рекламные награды на сегодня получены! (30/30 монет)",
           "watchAdButton": "Посмотреть рекламу за +10 монет (осталось {{count}})",
           "adPerkNote": "Смотрите до 3 объявлений в день · Premium открывает мгновенное получение 30 монет",
-          "adRewardEarned": "Рекламная награда получена! Проверка на сервере…",
+          "adRewardEarned": "Награда за рекламу подтверждена!",
           "claimFailed": "Не удалось получить: {{message}}",
           "claimFailedGeneric": "Что-то пошло не так. Пожалуйста, попробуйте еще раз.",
           "adLoadFailedDefault": "Не удалось загрузить рекламу",
-          "adAttemptFailedDefault": "Не удалось запустить просмотр рекламы"
+          "adAttemptFailedDefault": "Не удалось запустить просмотр рекламы",
+          "adRewardVerifying": "Проверяем вашу награду…",
+          "adRewardPending": "Ваша награда всё ещё проверяется. Монеты скоро появятся.",
+          "adRewardExpired": "Не удалось вовремя проверить награду за эту рекламу. Попробуйте ещё раз."
         },
         "tabs": {
           "myCreations": "Мои работы {{count}}",
@@ -36356,11 +36431,14 @@
           "allAdRewardsCompleted": "Všetky odmeny z reklám boli dnes dokončené! (30/30 mincí)",
           "watchAdButton": "Pozri si reklamu za +10 mincí (zostáva {{count}})",
           "adPerkNote": "Pozri si až 3 reklamy/deň · Premium odomyká okamžité vyzdvihnutie 30 mincí",
-          "adRewardEarned": "Odmena z reklamy získaná! Overuje sa na serveri…",
+          "adRewardEarned": "Odmena za reklamu overená!",
           "claimFailed": "Vyzdvihnutie zlyhalo: {{message}}",
           "claimFailedGeneric": "Niečo sa pokazilo. Skús to prosím znova.",
           "adLoadFailedDefault": "Načítanie reklamy zlyhalo",
-          "adAttemptFailedDefault": "Otvorenie pokusu o reklamu zlyhalo"
+          "adAttemptFailedDefault": "Otvorenie pokusu o reklamu zlyhalo",
+          "adRewardVerifying": "Overuje sa vaša odmena…",
+          "adRewardPending": "Vaša odmena sa stále overuje. Mince sa čoskoro zobrazia.",
+          "adRewardExpired": "Odmenu za túto reklamu sa nepodarilo včas overiť. Skúste to znova."
         },
         "tabs": {
           "myCreations": "Moje výtvory {{count}}",
@@ -37775,11 +37853,14 @@
           "allAdRewardsCompleted": "Vse nagrade za oglase so za danes dokončane! (30/30 kovancev)",
           "watchAdButton": "Poglej oglas za +10 kovancev (še {{count}})",
           "adPerkNote": "Poglejte do 3 oglase/dan · Premium odklene takojšen prevzem 30 kovancev",
-          "adRewardEarned": "Nagrada za oglas prislužena! Preverjanje z zalednim sistemom …",
+          "adRewardEarned": "Nagrada za oglas je preverjena!",
           "claimFailed": "Prevzem ni uspel: {{message}}",
           "claimFailedGeneric": "Prišlo je do napake. Poskusite znova.",
           "adLoadFailedDefault": "Nalaganje oglasa ni uspelo",
-          "adAttemptFailedDefault": "Odpiranje poskusa oglasa ni uspelo"
+          "adAttemptFailedDefault": "Odpiranje poskusa oglasa ni uspelo",
+          "adRewardVerifying": "Preverjanje vaše nagrade…",
+          "adRewardPending": "Vaša nagrada se še preverja. Kovanci se bodo kmalu prikazali.",
+          "adRewardExpired": "Nagrade za ta oglas ni bilo mogoče pravočasno preveriti. Poskusite znova."
         },
         "tabs": {
           "myCreations": "Moje stvaritve {{count}}",
@@ -39194,11 +39275,14 @@
           "allAdRewardsCompleted": "Alla annonsbelöningar för idag är klara! (30/30 mynt)",
           "watchAdButton": "Titta på annons för +10 mynt ({{count}} kvar)",
           "adPerkNote": "Titta på upp till 3 annonser/dag · Premium låser upp direkt hämtning av 30 mynt",
-          "adRewardEarned": "Annonsbelöning intjänad! Verifierar med backend…",
+          "adRewardEarned": "Annonsbelöningen är verifierad!",
           "claimFailed": "Hämtning misslyckades: {{message}}",
           "claimFailedGeneric": "Något gick fel. Försök igen.",
           "adLoadFailedDefault": "Det gick inte att läsa in annonsen",
-          "adAttemptFailedDefault": "Det gick inte att öppna annonsförsöket"
+          "adAttemptFailedDefault": "Det gick inte att öppna annonsförsöket",
+          "adRewardVerifying": "Verifierar din belöning…",
+          "adRewardPending": "Din belöning verifieras fortfarande. Mynten visas snart.",
+          "adRewardExpired": "Belöningen för den här annonsen kunde inte verifieras i tid. Försök igen."
         },
         "tabs": {
           "myCreations": "Mina skapelser {{count}}",
@@ -40613,11 +40697,14 @@
           "allAdRewardsCompleted": "Tapos na ang lahat ng ad reward ngayong araw! (30/30 barya)",
           "watchAdButton": "Manood ng ad para sa +10 barya ({{count}} na natitira)",
           "adPerkNote": "Manood ng hanggang 3 ad/araw · Naka-unlock sa Premium ang instant na claim ng 30 barya",
-          "adRewardEarned": "Nakuha ang ad reward! Vine-verify sa backend…",
+          "adRewardEarned": "Nakumpirma na ang ad reward!",
           "claimFailed": "Nabigo ang claim: {{message}}",
           "claimFailedGeneric": "May nagkamali. Subukan ulit.",
           "adLoadFailedDefault": "Hindi na-load ang ad",
-          "adAttemptFailedDefault": "Hindi nabuksan ang pagsubok sa ad"
+          "adAttemptFailedDefault": "Hindi nabuksan ang pagsubok sa ad",
+          "adRewardVerifying": "Bine-verify ang reward mo…",
+          "adRewardPending": "Bine-verify pa ang reward mo. Lalabas ang mga coin sa ilang sandali.",
+          "adRewardExpired": "Hindi na-verify sa oras ang reward ng ad na ito. Pakisubukang muli."
         },
         "tabs": {
           "myCreations": "Mga Likha Ko {{count}}",
@@ -42032,11 +42119,14 @@
           "allAdRewardsCompleted": "Bugün için tüm reklam ödülleri tamamlandı! (30/30 para)",
           "watchAdButton": "+10 Para İçin Reklam İzle ({{count}} kaldı)",
           "adPerkNote": "Günde en fazla 3 reklam izleyin · Premium, anında 30 para talebinin kilidini açar",
-          "adRewardEarned": "Reklam ödülü kazanıldı! Sunucuyla doğrulanıyor…",
+          "adRewardEarned": "Reklam ödülü doğrulandı!",
           "claimFailed": "Talep başarısız: {{message}}",
           "claimFailedGeneric": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
           "adLoadFailedDefault": "Reklam yüklenemedi",
-          "adAttemptFailedDefault": "Reklam denemesi açılamadı"
+          "adAttemptFailedDefault": "Reklam denemesi açılamadı",
+          "adRewardVerifying": "Ödülünüz doğrulanıyor…",
+          "adRewardPending": "Ödülünüz hâlâ doğrulanıyor. Coinler kısa süre içinde görünecek.",
+          "adRewardExpired": "Bu reklamın ödülü zamanında doğrulanamadı. Lütfen tekrar deneyin."
         },
         "tabs": {
           "myCreations": "Eserlerim {{count}}",
@@ -43451,11 +43541,14 @@
           "allAdRewardsCompleted": "Усі винагороди за рекламу сьогодні завершено! (30/30 монет)",
           "watchAdButton": "Дивитися Рекламу за +10 Монет (залишилось {{count}})",
           "adPerkNote": "Дивіться до 3 реклам/день · Преміум розблоковує миттєве отримання 30 монет",
-          "adRewardEarned": "Отримано винагороду за рекламу! Перевірка через бекенд…",
+          "adRewardEarned": "Нагороду за рекламу підтверджено!",
           "claimFailed": "Не вдалося отримати: {{message}}",
           "claimFailedGeneric": "Щось пішло не так. Спробуйте ще раз.",
           "adLoadFailedDefault": "Не вдалося завантажити рекламу",
-          "adAttemptFailedDefault": "Не вдалося відкрити спробу перегляду реклами"
+          "adAttemptFailedDefault": "Не вдалося відкрити спробу перегляду реклами",
+          "adRewardVerifying": "Перевіряємо вашу нагороду…",
+          "adRewardPending": "Ваша нагорода ще перевіряється. Монети незабаром з’являться.",
+          "adRewardExpired": "Не вдалося вчасно перевірити нагороду за цю рекламу. Спробуйте ще раз."
         },
         "tabs": {
           "myCreations": "Мої Творіння {{count}}",
@@ -44870,11 +44963,14 @@
           "allAdRewardsCompleted": "Đã hoàn thành mọi phần thưởng quảng cáo hôm nay! (30/30 coin)",
           "watchAdButton": "Xem quảng cáo để nhận +10 Coin (còn {{count}})",
           "adPerkNote": "Xem tối đa 3 quảng cáo/ngày · Premium mở khóa nhận ngay 30 coin",
-          "adRewardEarned": "Đã nhận phần thưởng quảng cáo! Đang xác minh với máy chủ…",
+          "adRewardEarned": "Phần thưởng quảng cáo đã được xác minh!",
           "claimFailed": "Nhận thất bại: {{message}}",
           "claimFailedGeneric": "Đã xảy ra lỗi. Vui lòng thử lại.",
           "adLoadFailedDefault": "Không thể tải quảng cáo",
-          "adAttemptFailedDefault": "Không thể mở lượt xem quảng cáo"
+          "adAttemptFailedDefault": "Không thể mở lượt xem quảng cáo",
+          "adRewardVerifying": "Đang xác minh phần thưởng…",
+          "adRewardPending": "Phần thưởng vẫn đang được xác minh. Xu sẽ sớm xuất hiện.",
+          "adRewardExpired": "Không thể xác minh kịp thời phần thưởng của quảng cáo này. Vui lòng thử lại."
         },
         "tabs": {
           "myCreations": "Tác phẩm của tôi {{count}}",
@@ -46289,11 +46385,14 @@
           "allAdRewardsCompleted": "今天的所有广告奖励已完成！（30/30 金币）",
           "watchAdButton": "观看广告获得 +10 金币（还剩 {{count}} 次）",
           "adPerkNote": "每天最多观看 3 次广告 · Premium 可解锁即时领取 30 金币",
-          "adRewardEarned": "已获得广告奖励！正在后台验证…",
+          "adRewardEarned": "广告奖励已验证！",
           "claimFailed": "领取失败：{{message}}",
           "claimFailedGeneric": "出了点问题。请再试一次。",
           "adLoadFailedDefault": "广告加载失败",
-          "adAttemptFailedDefault": "未能打开广告"
+          "adAttemptFailedDefault": "未能打开广告",
+          "adRewardVerifying": "正在验证您的奖励…",
+          "adRewardPending": "您的奖励仍在验证中，金币很快就会显示。",
+          "adRewardExpired": "未能及时验证此广告奖励。请重试。"
         },
         "tabs": {
           "myCreations": "我的创作 {{count}}",
@@ -47708,11 +47807,14 @@
           "allAdRewardsCompleted": "今日的廣告獎勵已全部完成！（30/30 枚金幣）",
           "watchAdButton": "觀看廣告賺取 +10 枚金幣（剩餘 {{count}} 次）",
           "adPerkNote": "每日最多可觀看 3 則廣告 · Premium 解鎖即時領取 30 枚金幣",
-          "adRewardEarned": "已獲得廣告獎勵！正在向後端驗證…",
+          "adRewardEarned": "廣告獎勵已驗證！",
           "claimFailed": "領取失敗：{{message}}",
           "claimFailedGeneric": "發生錯誤，請再試一次。",
           "adLoadFailedDefault": "廣告載入失敗",
-          "adAttemptFailedDefault": "開啟廣告嘗試失敗"
+          "adAttemptFailedDefault": "開啟廣告嘗試失敗",
+          "adRewardVerifying": "正在驗證您的獎勵…",
+          "adRewardPending": "您的獎勵仍在驗證中，金幣很快就會顯示。",
+          "adRewardExpired": "未能及時驗證此廣告獎勵。請再試一次。"
         },
         "tabs": {
           "myCreations": "我的創作 {{count}}",

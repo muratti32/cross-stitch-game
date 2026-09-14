@@ -45,4 +45,23 @@ export class AdAttemptRepository {
       id: rows[0].principal_id,
     };
   }
+
+  async findOwned(
+    principal: LedgerPrincipal,
+    nonce: string,
+  ): Promise<{ expiresAt: Date; consumedAt: Date | null } | null> {
+    const rows = returningRows<{ expires_at: Date; consumed_at: Date | null }>(
+      await this.dataSource.query(
+        `SELECT expires_at, consumed_at
+         FROM economy.ad_attempts
+         WHERE nonce = $1 AND principal_type = $2 AND principal_id = $3`,
+        [nonce, principal.type, principal.id],
+      ),
+    );
+    if (rows.length === 0) return null;
+    return {
+      expiresAt: new Date(rows[0].expires_at),
+      consumedAt: rows[0].consumed_at === null ? null : new Date(rows[0].consumed_at),
+    };
+  }
 }

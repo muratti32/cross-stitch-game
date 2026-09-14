@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import { useAiCreditBalance } from '@/api/commerce';
@@ -23,17 +22,12 @@ import {
   type DailyTaskKey,
   type DailyTaskStatus,
 } from '@/api/dailyTasks';
-import {
-  useClaimAdReward,
-  useCoinBalance,
-  useOpenAdAttempt,
-  useRewardDay,
-} from '@/api/economy';
+import { useCoinBalance, useRewardDay } from '@/api/economy';
 import { useMembership, usePremiumDailyClaim } from '@/api/membership';
 import { useLikedPatterns } from '@/api/social';
 import { Button, Card, EmptyState, PatternImage, Screen } from '@/components';
 import { listPersonalPatterns, type PersonalPattern } from '@/conversion';
-import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { adRewardMessageKey, useRewardedAdFlow } from '@/hooks/useRewardedAdFlow';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { shortenGuestId } from '@/identity/identityLogic';
 import { formatDate, formatNumber } from '@/i18n';
@@ -68,7 +62,6 @@ export default function ProfileScreen() {
   const { t, i18n: i18nInstance } = useTranslation('profile');
   const locale = i18nInstance.language;
   const router = useRouter();
-  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState<'my-patterns' | 'liked'>('my-patterns');
   const {
     guestId,
@@ -100,106 +93,15 @@ export default function ProfileScreen() {
   // Daily Tasks & Rewarded Ads
   const dailyTasksQuery = useDailyTaskBoard(isConnected);
   const rewardDayQuery = useRewardDay();
-  const { mutateAsync: openAdAttempt } = useOpenAdAttempt();
-  const { mutateAsync: claimAdReward } = useClaimAdReward();
-
-  // Rewarded Ad state
-  const [adAttempt, setAdAttempt] = useState<{ nonce: string; expiresAt: string } | null>(null);
-  const [adAttemptPending, setAdAttemptPending] = useState(false);
-  const [adEarned, setAdEarned] = useState(false);
-  const [adLocalError, setAdLocalError] = useState<string | null>(null);
-
-  const attemptRef = useRef(adAttempt);
-  attemptRef.current = adAttempt;
-  const activeNonceRef = useRef<string | null>(null);
-  const claimingNonceRef = useRef<Set<string>>(new Set());
-
-  const handleClaimAd = useCallback(
-    async (nonce: string) => {
-      if (claimingNonceRef.current.has(nonce)) return;
-      claimingNonceRef.current.add(nonce);
-      try {
-        await claimAdReward(nonce);
-        activeNonceRef.current = null;
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] }),
-          queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] }),
-          queryClient.invalidateQueries({ queryKey: ['commerce', 'membership'] }),
-        ]);
-      } catch (err: unknown) {
-        claimingNonceRef.current.delete(nonce);
-        // #159/#166: EconomyApiError's server-supplied `message` never
-        // reaches the player; its `reason` maps to localized text instead.
-        const msg = isServerApiError(err) ? localizeServerError(err) : t('home.dailyPool.claimFailedGeneric');
-        setAdLocalError(t('home.dailyPool.claimFailed', { message: msg }));
-      }
+  const adFlow = useRewardedAdFlow({
+    localizeAttemptError: (err) => isServerApiError(err) ? localizeServerError(err) : t('home.dailyPool.adAttemptFailedDefault'),
+    localizeClaimError: (err) => {
+      const message = isServerApiError(err) ? localizeServerError(err) : t('home.dailyPool.claimFailedGeneric');
+      return t('home.dailyPool.claimFailed', { message });
     },
-    [claimAdReward, queryClient, t],
-  );
-
-  const { status: adStatus, show: showRewardedAd, error: adPluginError } = useRewardedAd({
-    serverSideVerification: adAttempt?.nonce ? { customData: adAttempt.nonce } : undefined,
-    onEarnedReward: async () => {
-      setAdEarned(true);
-      const nonceToClaim = activeNonceRef.current || attemptRef.current?.nonce;
-      if (nonceToClaim) {
-        await handleClaimAd(nonceToClaim);
-      }
-    },
+    localizeLoadError: (err) => err?.message || t('home.dailyPool.adLoadFailedDefault'),
+    localizeVerificationExpired: () => t('home.dailyPool.adRewardExpired'),
   });
-
-  const prevAdStatusRef = useRef(adStatus);
-  useEffect(() => {
-    if (adAttemptPending && adStatus === 'loaded') {
-      showRewardedAd();
-    }
-  }, [adStatus, adAttemptPending, showRewardedAd]);
-
-  useEffect(() => {
-    const prevStatus = prevAdStatusRef.current;
-    prevAdStatusRef.current = adStatus;
-
-    if (adAttemptPending && prevStatus === 'showing' && adStatus !== 'showing') {
-      const pendingNonce = activeNonceRef.current;
-      if (pendingNonce && !claimingNonceRef.current.has(pendingNonce)) {
-        handleClaimAd(pendingNonce).finally(() => {
-          void queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
-          void queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
-          setAdAttempt(null);
-          setAdAttemptPending(false);
-        });
-      } else {
-        void queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
-        void queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
-        setAdAttempt(null);
-        setAdAttemptPending(false);
-      }
-    }
-  }, [adStatus, adAttemptPending, queryClient, handleClaimAd]);
-
-  useEffect(() => {
-    if (adAttemptPending && adStatus === 'error') {
-      setAdLocalError(adPluginError?.message || t('home.dailyPool.adLoadFailedDefault'));
-      activeNonceRef.current = null;
-      setAdAttempt(null);
-      setAdAttemptPending(false);
-    }
-  }, [adStatus, adAttemptPending, adPluginError, t]);
-
-  const handleWatchAd = async () => {
-    try {
-      setAdLocalError(null);
-      setAdAttemptPending(true);
-      setAdEarned(false);
-      const attemptData = await openAdAttempt();
-      activeNonceRef.current = attemptData.nonce;
-      setAdAttempt(attemptData);
-    } catch (err) {
-      activeNonceRef.current = null;
-      setAdAttemptPending(false);
-      setAdLocalError(isServerApiError(err) ? localizeServerError(err) : t('home.dailyPool.adAttemptFailedDefault'));
-    }
-  };
 
   // Premium Claim Reset Tracking
   const claimResult = premiumClaimMutation.data;
@@ -902,9 +804,9 @@ export default function ProfileScreen() {
                 <>
                   <Button
                     title={t('home.dailyPool.watchAdButton', { count: formatNumber(rewardDay?.adsRemaining ?? 3, locale) })}
-                    onPress={handleWatchAd}
-                    disabled={adAttemptPending || adStatus === 'unavailable'}
-                    loading={adAttemptPending}
+                    onPress={adFlow.watch}
+                    disabled={adFlow.attemptPending || adFlow.isVerifying || adFlow.status === 'unavailable'}
+                    loading={adFlow.attemptPending || adFlow.isVerifying}
                     variant="honey"
                     style={styles.claimButton}
                   />
@@ -914,11 +816,13 @@ export default function ProfileScreen() {
                 </>
               )}
 
-              {adEarned && (
-                <Text style={styles.adSuccessText}>{t('home.dailyPool.adRewardEarned')}</Text>
+              {adFlow.message && (
+                <Text style={styles.adSuccessText}>
+                  {t(adRewardMessageKey(adFlow.message))}
+                </Text>
               )}
-              {adLocalError && (
-                <Text style={styles.errorText}>{adLocalError}</Text>
+              {adFlow.errorMessage && (
+                <Text style={styles.errorText}>{adFlow.errorMessage}</Text>
               )}
             </View>
           )}
