@@ -192,6 +192,17 @@ describe('Creator Profile persistence', () => {
     };
     const username = `safe_${randomUUID().replaceAll('-', '').slice(0, 12)}`;
 
+    await expect(
+      service.create(
+        principal,
+        { displayName: 'Artist ＜tag＞', username },
+        undefined,
+      ),
+    ).rejects.toMatchObject({
+      response: { reason: 'Display name contains markup characters' },
+      status: 422,
+    });
+
     const created = await service.create(
       principal,
       { displayName: 'First Accepted Name', username },
@@ -204,6 +215,18 @@ describe('Creator Profile persistence', () => {
       service.update(principal, { displayName: 'Official Team' }, undefined),
     ).rejects.toMatchObject({
       response: { reason: 'Display name contains a reserved name' },
+      status: 422,
+    });
+    await expect(
+      service.update(principal, { displayName: '<f.u.c.k>' }, undefined),
+    ).rejects.toMatchObject({
+      response: { reason: 'Display name contains language that is not allowed' },
+      status: 422,
+    });
+    await expect(
+      service.update(principal, { displayName: '<tag>' }, undefined),
+    ).rejects.toMatchObject({
+      response: { reason: 'Display name contains markup characters' },
       status: 422,
     });
     await expect(service.getMine(principal)).resolves.toMatchObject({
@@ -219,8 +242,23 @@ describe('Creator Profile persistence', () => {
     ).resolves.toEqual([{ count: '1' }]);
 
     await expect(
+      service.update(
+        principal,
+        { displayName: `O'Connor "Needle" & 织女` },
+        undefined,
+      ),
+    ).resolves.toMatchObject({
+      displayName: `O'Connor "Needle" & 织女`,
+      id: created.id,
+      username,
+    });
+    await expect(
       service.update(principal, { displayName: 'Second Accepted Name' }, undefined),
-    ).resolves.toMatchObject({ displayName: 'Second Accepted Name', id: created.id });
+    ).resolves.toMatchObject({
+      displayName: 'Second Accepted Name',
+      id: created.id,
+      username,
+    });
     await expect(service.getPublic(created.id)).resolves.toMatchObject({
       displayName: 'Second Accepted Name',
       username,
@@ -234,7 +272,8 @@ describe('Creator Profile persistence', () => {
       ),
     ).resolves.toEqual([
       { display_name: 'First Accepted Name', version: 1 },
-      { display_name: 'Second Accepted Name', version: 2 },
+      { display_name: `O'Connor "Needle" & 织女`, version: 2 },
+      { display_name: 'Second Accepted Name', version: 3 },
     ]);
   });
 

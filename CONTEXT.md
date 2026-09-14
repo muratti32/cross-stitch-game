@@ -128,7 +128,7 @@ The public identity a Registered Account must create before its first Catalog Su
 _Avoid_: Registered Account, login profile, email identity
 
 **Profile Safety Check**:
-The server-side automated gate applied before a Public Creator Profile is created or changed. It validates username and display-name text against reserved-name and profanity rules and checks the optional avatar with automated image safety moderation. A failed candidate is not published and returns a user-facing reason; a passing candidate is published immediately without human Profile Review.
+The server-side automated gate applied before a Public Creator Profile is created or changed. It validates username and display-name text against reserved-name and profanity rules, rejects markup in display names, and checks the optional avatar with automated image safety moderation. A failed candidate is not published and returns a user-facing reason; a passing candidate is published immediately without human Profile Review.
 _Avoid_: Profile Review, Catalog Precheck, post-publication report
 
 **Profile Report**:
