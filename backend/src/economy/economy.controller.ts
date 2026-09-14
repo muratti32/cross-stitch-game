@@ -38,7 +38,7 @@ export class EconomyController {
   @Post('ad-attempts')
   async createAdAttempt(
     @CurrentPrincipal() principal: AuthPrincipal,
-  ): Promise<{ nonce: string; expiresAt: string }> {
+  ): Promise<{ nonce: string; expiresAt: string; ssvActive: boolean }> {
     return this.adAttemptService.openAttempt(principal);
   }
 

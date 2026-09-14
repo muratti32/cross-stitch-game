@@ -3066,6 +3066,7 @@ describe('Stitch Wish backend integration', () => {
       expect(res.body.nonce).toBeDefined();
       expect(typeof res.body.nonce).toBe('string');
       expect(res.body.expiresAt).toBeDefined();
+      expect(typeof res.body.ssvActive).toBe('boolean');
 
       const rows = await dataSource.query(
         `SELECT principal_type, principal_id, placement FROM economy.ad_attempts WHERE nonce = $1`,

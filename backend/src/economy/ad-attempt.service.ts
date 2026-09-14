@@ -27,7 +27,7 @@ export class AdAttemptService {
 
   async openAttempt(
     principal: AuthPrincipal,
-  ): Promise<{ nonce: string; expiresAt: string }> {
+  ): Promise<{ nonce: string; expiresAt: string; ssvActive: boolean }> {
     const ledgerPrincipal = toLedgerPrincipal(principal);
     const status = await this.ledger.getRewardDayStatus(
       ledgerPrincipal,
@@ -53,6 +53,7 @@ export class AdAttemptService {
     return {
       nonce,
       expiresAt: expiresAt.toISOString(),
+      ssvActive: this.config.enableAdmobSsv,
     };
   }
 
@@ -60,13 +61,27 @@ export class AdAttemptService {
     principal: AuthPrincipal,
     nonce: string,
   ): Promise<AdRewardGrantResult> {
-    if (this.config.enableAdmobSsv) {
-      throw new BadRequestException(
-        'Client ad reward claim is disabled when AdMob SSV is active',
-      );
-    }
-
     const ledgerPrincipal = toLedgerPrincipal(principal);
+
+    if (this.config.enableAdmobSsv) {
+      // Under SSV, rewards are granted authoritatively by the AdMob server callback (ADR-0033).
+      // We do not consume the nonce here because the SSV verifier callback must consume it.
+      // If a client calls claim anyway (e.g. legacy app versions), return current balance and
+      // status idempotently without throwing 400 so the UI updates smoothly and no Sentry
+      // errors are generated.
+      const [balance, status] = await Promise.all([
+        this.ledger.getBalance(ledgerPrincipal),
+        this.ledger.getRewardDayStatus(ledgerPrincipal, utcRewardDay()),
+      ]);
+      return {
+        granted: false,
+        amount: 0,
+        balance,
+        adsCompleted: status.adsCompleted,
+        coinsConsumed: status.coinsConsumed,
+        replayed: false,
+      };
+    }
     const sourceKey = `ad_client:${nonce}`;
 
     const existing = await this.ledger.findExistingAdGrant(sourceKey);

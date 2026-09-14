@@ -21,6 +21,7 @@ describe('AdAttemptService', () => {
     premiumClaimed?: boolean;
     createResult?: { nonce: string; expiresAt: Date };
     ttlSeconds?: number;
+    enableAdmobSsv?: boolean;
   }) {
     const status = {
       adsCompleted: options.adsCompleted,
@@ -41,6 +42,7 @@ describe('AdAttemptService', () => {
 
     const config = {
       adAttemptTtlSeconds: options.ttlSeconds ?? 300,
+      enableAdmobSsv: options.enableAdmobSsv ?? false,
     } as unknown as AppConfigService;
 
     const service = new AdAttemptService(adAttempts, ledger, config);
@@ -59,12 +61,24 @@ describe('AdAttemptService', () => {
     expect(result).toEqual({
       nonce: 'nonce-uuid-123',
       expiresAt: '2026-07-23T12:00:00.000Z',
+      ssvActive: false,
     });
     expect(adAttempts.create).toHaveBeenCalledWith(
       { type: 'guest', id: 'guest-uuid-1' },
       'rewarded_ad',
       300,
     );
+  });
+
+  it('opens an attempt with ssvActive: true when SSV is enabled', async () => {
+    const { service } = makeService({
+      adsCompleted: 0,
+      coinsConsumed: 0,
+      enableAdmobSsv: true,
+    });
+
+    const result = await service.openAttempt(principal);
+    expect(result.ssvActive).toBe(true);
   });
 
   it('throws ConflictException when adsCompleted >= DAILY_AD_LIMIT', async () => {
@@ -102,21 +116,31 @@ describe('AdAttemptService', () => {
     expect(adAttempts.create).not.toHaveBeenCalled();
   });
 
-  it('throws BadRequestException when claiming client reward with SSV enabled', async () => {
-    const status = { adsCompleted: 0, coinsConsumed: 0, premiumClaimed: false };
+  it('returns current balance and status idempotently when claiming client reward with SSV enabled', async () => {
+    const status = { adsCompleted: 1, coinsConsumed: 10, premiumClaimed: false };
     const ledger = {
+      getBalance: jest.fn().mockResolvedValue(50),
       getRewardDayStatus: jest.fn().mockResolvedValue(status),
     } as unknown as CoinLedgerRepository;
-    const adAttempts = {} as unknown as AdAttemptRepository;
+    const adAttempts = {
+      consume: jest.fn(),
+    } as unknown as AdAttemptRepository;
     const config = {
       enableAdmobSsv: true,
     } as unknown as AppConfigService;
 
     const service = new AdAttemptService(adAttempts, ledger, config);
 
-    await expect(service.claimClientReward(principal, 'nonce-123')).rejects.toThrow(
-      'Client ad reward claim is disabled when AdMob SSV is active',
-    );
+    const result = await service.claimClientReward(principal, 'nonce-123');
+    expect(result).toEqual({
+      granted: false,
+      amount: 0,
+      balance: 50,
+      adsCompleted: 1,
+      coinsConsumed: 10,
+      replayed: false,
+    });
+    expect(adAttempts.consume).not.toHaveBeenCalled();
   });
 
   it('claims client reward successfully when SSV is disabled', async () => {

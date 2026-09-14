@@ -28,12 +28,14 @@ import {
   useCoinBalance,
   useOpenAdAttempt,
   useRewardDay,
+  type AdAttempt,
 } from '@/api/economy';
 import { useMembership, usePremiumDailyClaim } from '@/api/membership';
 import { useLikedPatterns } from '@/api/social';
 import { Button, Card, EmptyState, PatternImage, Screen } from '@/components';
 import { listPersonalPatterns, type PersonalPattern } from '@/conversion';
 import { useRewardedAd } from '@/hooks/useRewardedAd';
+import { useRewardedAdSsvPolling } from '@/hooks/useRewardedAdSsvPolling';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { shortenGuestId } from '@/identity/identityLogic';
 import { formatDate, formatNumber } from '@/i18n';
@@ -104,7 +106,7 @@ export default function ProfileScreen() {
   const { mutateAsync: claimAdReward } = useClaimAdReward();
 
   // Rewarded Ad state
-  const [adAttempt, setAdAttempt] = useState<{ nonce: string; expiresAt: string } | null>(null);
+  const [adAttempt, setAdAttempt] = useState<AdAttempt | null>(null);
   const [adAttemptPending, setAdAttemptPending] = useState(false);
   const [adEarned, setAdEarned] = useState(false);
   const [adLocalError, setAdLocalError] = useState<string | null>(null);
@@ -113,6 +115,26 @@ export default function ProfileScreen() {
   attemptRef.current = adAttempt;
   const activeNonceRef = useRef<string | null>(null);
   const claimingNonceRef = useRef<Set<string>>(new Set());
+  const adInitialAdsRemainingRef = useRef<number>(3);
+  const adInitialBalanceRef = useRef<number>(0);
+
+  const {
+    isVerifying: adIsVerifying,
+    startPolling: startAdSsvPolling,
+    stopPolling: stopAdSsvPolling,
+  } = useRewardedAdSsvPolling({
+    onSuccess: () => {
+      activeNonceRef.current = null;
+      setAdAttempt(null);
+      setAdAttemptPending(false);
+      setAdEarned(true);
+    },
+    onTimeout: () => {
+      activeNonceRef.current = null;
+      setAdAttempt(null);
+      setAdAttemptPending(false);
+    },
+  });
 
   const handleClaimAd = useCallback(
     async (nonce: string) => {
@@ -141,8 +163,18 @@ export default function ProfileScreen() {
     serverSideVerification: adAttempt?.nonce ? { customData: adAttempt.nonce } : undefined,
     onEarnedReward: async () => {
       setAdEarned(true);
-      const nonceToClaim = activeNonceRef.current || attemptRef.current?.nonce;
-      if (nonceToClaim) {
+      const currentAttempt = attemptRef.current;
+      const nonceToClaim = activeNonceRef.current || currentAttempt?.nonce;
+      if (!nonceToClaim) return;
+
+      if (currentAttempt?.ssvActive) {
+        // ADR-0033 / Issue #247: SSV is active. Do NOT call /claim.
+        // Enter Pending Ad Reward Verification and poll reward-day / balance.
+        startAdSsvPolling({
+          adsRemaining: adInitialAdsRemainingRef.current,
+          balance: adInitialBalanceRef.current,
+        });
+      } else {
         await handleClaimAd(nonceToClaim);
       }
     },
@@ -160,22 +192,31 @@ export default function ProfileScreen() {
     prevAdStatusRef.current = adStatus;
 
     if (adAttemptPending && prevStatus === 'showing' && adStatus !== 'showing') {
-      const pendingNonce = activeNonceRef.current;
-      if (pendingNonce && !claimingNonceRef.current.has(pendingNonce)) {
-        handleClaimAd(pendingNonce).finally(() => {
+      const currentAttempt = attemptRef.current;
+      if (currentAttempt?.ssvActive) {
+        if (!adEarned && !adIsVerifying) {
+          activeNonceRef.current = null;
+          setAdAttempt(null);
+          setAdAttemptPending(false);
+        }
+      } else {
+        const pendingNonce = activeNonceRef.current;
+        if (pendingNonce && !claimingNonceRef.current.has(pendingNonce)) {
+          handleClaimAd(pendingNonce).finally(() => {
+            void queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
+            void queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
+            setAdAttempt(null);
+            setAdAttemptPending(false);
+          });
+        } else {
           void queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
           void queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
           setAdAttempt(null);
           setAdAttemptPending(false);
-        });
-      } else {
-        void queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
-        void queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
-        setAdAttempt(null);
-        setAdAttemptPending(false);
+        }
       }
     }
-  }, [adStatus, adAttemptPending, queryClient, handleClaimAd]);
+  }, [adStatus, adAttemptPending, queryClient, handleClaimAd, adEarned, adIsVerifying]);
 
   useEffect(() => {
     if (adAttemptPending && adStatus === 'error') {
@@ -191,6 +232,9 @@ export default function ProfileScreen() {
       setAdLocalError(null);
       setAdAttemptPending(true);
       setAdEarned(false);
+      stopAdSsvPolling();
+      adInitialAdsRemainingRef.current = rewardDayQuery.data?.adsRemaining ?? 3;
+      adInitialBalanceRef.current = rewardDayQuery.data?.balance ?? 0;
       const attemptData = await openAdAttempt();
       activeNonceRef.current = attemptData.nonce;
       setAdAttempt(attemptData);
@@ -903,8 +947,8 @@ export default function ProfileScreen() {
                   <Button
                     title={t('home.dailyPool.watchAdButton', { count: formatNumber(rewardDay?.adsRemaining ?? 3, locale) })}
                     onPress={handleWatchAd}
-                    disabled={adAttemptPending || adStatus === 'unavailable'}
-                    loading={adAttemptPending}
+                    disabled={adAttemptPending || adIsVerifying || adStatus === 'unavailable'}
+                    loading={adAttemptPending || adIsVerifying}
                     variant="honey"
                     style={styles.claimButton}
                   />
@@ -914,7 +958,7 @@ export default function ProfileScreen() {
                 </>
               )}
 
-              {adEarned && (
+              {(adEarned || adIsVerifying) && (
                 <Text style={styles.adSuccessText}>{t('home.dailyPool.adRewardEarned')}</Text>
               )}
               {adLocalError && (

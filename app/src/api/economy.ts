@@ -144,6 +144,7 @@ export function useRewardDay() {
 export interface AdAttempt {
   nonce: string;
   expiresAt: string;
+  ssvActive?: boolean;
 }
 
 export async function openAdAttempt(): Promise<AdAttempt> {

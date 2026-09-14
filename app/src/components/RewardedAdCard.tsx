@@ -5,8 +5,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Theme } from '../theme/theme';
 import { Card } from './Card';
 import { Button } from './Button';
-import { useRewardDay, useOpenAdAttempt, useClaimAdReward } from '../api/economy';
+import { AdAttempt, useRewardDay, useOpenAdAttempt, useClaimAdReward } from '../api/economy';
 import { useRewardedAd } from '../hooks/useRewardedAd';
+import { useRewardedAdSsvPolling } from '../hooks/useRewardedAdSsvPolling';
 import { OfflineError } from '../api/networkErrors';
 import { isServerApiError, localizeServerError } from '../api/localizeServerError';
 import { useTranslation } from 'react-i18next';
@@ -37,7 +38,7 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
   const { mutateAsync: claimAdReward } = useClaimAdReward();
   const queryClient = useQueryClient();
 
-  const [attempt, setAttempt] = useState<{ nonce: string; expiresAt: string } | null>(null);
+  const [attempt, setAttempt] = useState<AdAttempt | null>(null);
   const [attemptPending, setAttemptPending] = useState(false);
   const [earned, setEarned] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
@@ -46,6 +47,22 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
   attemptRef.current = attempt;
   const activeNonceRef = useRef<string | null>(null);
   const claimingNonceRef = useRef<Set<string>>(new Set());
+  const initialAdsRemainingRef = useRef<number>(3);
+  const initialBalanceRef = useRef<number>(0);
+
+  const { isVerifying, startPolling, stopPolling } = useRewardedAdSsvPolling({
+    onSuccess: () => {
+      activeNonceRef.current = null;
+      setAttempt(null);
+      setAttemptPending(false);
+      setEarned(true);
+    },
+    onTimeout: () => {
+      activeNonceRef.current = null;
+      setAttempt(null);
+      setAttemptPending(false);
+    },
+  });
 
   const handleClaim = useCallback(
     async (nonce: string) => {
@@ -75,8 +92,18 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
     serverSideVerification: attempt?.nonce ? { customData: attempt.nonce } : undefined,
     onEarnedReward: async () => {
       setEarned(true);
-      const nonceToClaim = activeNonceRef.current || attemptRef.current?.nonce;
-      if (nonceToClaim) {
+      const currentAttempt = attemptRef.current;
+      const nonceToClaim = activeNonceRef.current || currentAttempt?.nonce;
+      if (!nonceToClaim) return;
+
+      if (currentAttempt?.ssvActive) {
+        // ADR-0033 / Issue #247: SSV is active. Do NOT call /claim.
+        // Enter Pending Ad Reward Verification and poll reward-day / balance.
+        startPolling({
+          adsRemaining: initialAdsRemainingRef.current,
+          balance: initialBalanceRef.current,
+        });
+      } else {
         await handleClaim(nonceToClaim);
       }
     },
@@ -95,23 +122,33 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
     prevStatusRef.current = status;
 
     if (attemptPending && prevStatus === 'showing' && status !== 'showing') {
-      // Ad finished (either dismissed or error during show)
-      const pendingNonce = activeNonceRef.current;
-      if (pendingNonce && !claimingNonceRef.current.has(pendingNonce)) {
-        handleClaim(pendingNonce).finally(() => {
+      const currentAttempt = attemptRef.current;
+      if (currentAttempt?.ssvActive) {
+        if (!earned && !isVerifying) {
+          // Ad closed without reward earned (e.g. dismissed early)
+          activeNonceRef.current = null;
+          setAttempt(null);
+          setAttemptPending(false);
+        }
+      } else {
+        // Ad finished (either dismissed or error during show)
+        const pendingNonce = activeNonceRef.current;
+        if (pendingNonce && !claimingNonceRef.current.has(pendingNonce)) {
+          handleClaim(pendingNonce).finally(() => {
+            queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
+            queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
+            setAttempt(null);
+            setAttemptPending(false);
+          });
+        } else {
           queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
           queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
           setAttempt(null);
           setAttemptPending(false);
-        });
-      } else {
-        queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
-        queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
-        setAttempt(null);
-        setAttemptPending(false);
+        }
       }
     }
-  }, [status, attemptPending, queryClient, handleClaim]);
+  }, [status, attemptPending, queryClient, handleClaim, earned, isVerifying]);
 
   useEffect(() => {
     if (attemptPending && status === 'error') {
@@ -120,13 +157,16 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
       setAttempt(null);
       setAttemptPending(false);
     }
-  }, [status, attemptPending, error]);
+  }, [status, attemptPending, error, t]);
 
   const handleWatchAd = async () => {
     try {
       setLocalError(null);
       setAttemptPending(true);
       setEarned(false);
+      stopPolling();
+      initialAdsRemainingRef.current = data?.adsRemaining ?? 3;
+      initialBalanceRef.current = data?.balance ?? 0;
       const attemptData = await openAdAttempt();
       activeNonceRef.current = attemptData.nonce;
       setAttempt(attemptData);
@@ -217,13 +257,13 @@ export function RewardedAdCard({ enabled }: RewardedAdCardProps) {
       <Button
         title={t('rewardedAdCard.watchForCoins', { count: AD_REWARD_COIN })}
         onPress={handleWatchAd}
-        disabled={attemptPending}
-        loading={attemptPending}
+        disabled={attemptPending || isVerifying}
+        loading={attemptPending || isVerifying}
         variant="honey"
         style={styles.button}
       />
 
-      {earned && (
+      {(earned || isVerifying) && (
         <Text style={styles.successMessage}>
           {t('home.dailyPool.adRewardEarned')}
         </Text>
