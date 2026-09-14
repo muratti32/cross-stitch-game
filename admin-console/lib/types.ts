@@ -69,6 +69,14 @@ export interface TagLabel {
   label: string;
 }
 
+export interface LocatorPriceSetting {
+  price: number;
+  minPrice: number;
+  maxPrice: number;
+  updatedAt: string;
+  updatedByOperatorId: string | null;
+}
+
 export interface Tag {
   code: string;
   active: boolean;

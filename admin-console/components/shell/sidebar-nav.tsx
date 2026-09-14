@@ -14,6 +14,7 @@ import {
   FileEdit,
   Scale,
   ShieldAlert,
+  Coins,
 } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -30,6 +31,7 @@ const NAV_ITEMS = [
   { href: '/categories', icon: Shapes, label: 'Categories' },
   { href: '/support-references', icon: SearchCheck, label: 'Support References' },
   { href: '/reconciliation', icon: Scale, label: 'Reconciliation' },
+  { href: '/economy', icon: Coins, label: 'Economy' },
 ] as const;
 
 export function SidebarNav() {

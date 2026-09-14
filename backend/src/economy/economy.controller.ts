@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common';
-import { IsBoolean, IsInt, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, IsString, IsUUID, Max, MaxLength, Min } from 'class-validator';
 
 import { CurrentPrincipal, JwtAuthGuard } from '../auth';
 import type { AuthPrincipal } from '../auth/auth.types';
@@ -17,6 +17,7 @@ import {
   PrepareLocatorAttemptInput,
   ReleaseLocatorAttemptInput,
 } from './locator-attempt.service';
+import { LOCATOR_PRICE_MAX_COIN, LOCATOR_PRICE_MIN_COIN } from './locator-price';
 
 class ClaimClientRewardDto {
   @IsUUID()
@@ -45,6 +46,11 @@ class PrepareLocatorAttemptDto implements PrepareLocatorAttemptInput {
   @IsString()
   @MaxLength(16)
   dmcCode!: string;
+
+  @IsInt()
+  @Min(LOCATOR_PRICE_MIN_COIN)
+  @Max(LOCATOR_PRICE_MAX_COIN)
+  expectedPrice!: number;
 
   @IsOptional()
   @IsInt()

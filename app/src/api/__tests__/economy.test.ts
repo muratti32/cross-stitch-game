@@ -1,6 +1,8 @@
 import {
   commitLocatorAttempt,
   LocatorInsufficientBalanceError,
+  LocatorPriceChangedError,
+  fetchCoinBalanceView,
   prepareLocatorAttempt,
   releaseLocatorAttempt,
   unlockPattern,
@@ -88,9 +90,10 @@ describe('economy client', () => {
       expiresAt: '2026-09-14T10:01:00.000Z', targetCellIndex: null,
     }));
     await expect(prepareLocatorAttempt({
-      attemptId: 'a', sessionId: 's', patternId: 'p', colorIndex: 0, dmcCode: '310',
+      attemptId: 'a', sessionId: 's', patternId: 'p', colorIndex: 0, dmcCode: '310', expectedPrice: 1,
     })).resolves.toMatchObject({ status: 'prepared', price: 1 });
     expect(apiFetch).toHaveBeenCalledWith('/v1/economy/locator-attempts/prepare', expect.objectContaining({ method: 'POST' }));
+    expect(JSON.parse(apiFetch.mock.calls[0][1].body)).toMatchObject({ expectedPrice: 1 });
   });
 
   test('locator commit/release remain idempotent by using the same attempt id', async () => {
@@ -106,8 +109,34 @@ describe('economy client', () => {
   test('locator prepare exposes insufficient balance without moving the viewport', async () => {
     apiFetch.mockResolvedValue(jsonResponse(409, { code: 'insufficient_balance', price: 1, balance: 0 }));
     await expect(prepareLocatorAttempt({
-      attemptId: 'a', sessionId: 's', patternId: 'p', colorIndex: 0, dmcCode: '310',
+      attemptId: 'a', sessionId: 's', patternId: 'p', colorIndex: 0, dmcCode: '310', expectedPrice: 1,
     })).rejects.toBeInstanceOf(LocatorInsufficientBalanceError);
+  });
+
+  test('locator prepare maps a stale expected price to LocatorPriceChangedError with the new price', async () => {
+    apiFetch.mockResolvedValue(jsonResponse(409, { code: 'locator_price_changed', price: 3, balance: 12 }));
+    await expect(prepareLocatorAttempt({
+      attemptId: 'a', sessionId: 's', patternId: 'p', colorIndex: 0, dmcCode: '310', expectedPrice: 1,
+    })).rejects.toMatchObject({ name: 'LocatorPriceChangedError', price: 3, balance: 12, reason: 'locator_price_changed' });
+    await expect(prepareLocatorAttempt({
+      attemptId: 'a', sessionId: 's', patternId: 'p', colorIndex: 0, dmcCode: '310', expectedPrice: 1,
+    })).rejects.toBeInstanceOf(LocatorPriceChangedError);
+  });
+
+  test('locator prepare surfaces other conflicts with their reason', async () => {
+    apiFetch.mockResolvedValue(jsonResponse(409, { code: 'session_inactive' }));
+    await expect(prepareLocatorAttempt({
+      attemptId: 'a', sessionId: 's', patternId: 'p', colorIndex: 0, dmcCode: '310', expectedPrice: 1,
+    })).rejects.toMatchObject({ name: 'EconomyApiError', status: 409, reason: 'session_inactive' });
+  });
+
+  test('fetchCoinBalanceView returns the Locator Price and nulls an invalid one', async () => {
+    apiFetch.mockResolvedValueOnce(jsonResponse(200, { balance: 40, locatorPrice: 2 }));
+    await expect(fetchCoinBalanceView()).resolves.toEqual({ balance: 40, locatorPrice: 2 });
+    apiFetch.mockResolvedValueOnce(jsonResponse(200, { balance: 40, locatorPrice: null }));
+    await expect(fetchCoinBalanceView()).resolves.toEqual({ balance: 40, locatorPrice: null });
+    apiFetch.mockResolvedValueOnce(jsonResponse(200, { balance: 40 }));
+    await expect(fetchCoinBalanceView()).resolves.toEqual({ balance: 40, locatorPrice: null });
   });
 
   test('openAdAttempt returns nonce, expiresAt and ssvActive flag', async () => {

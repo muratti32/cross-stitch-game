@@ -61,6 +61,7 @@ import {
   CommerceTransactionBindingEntity,
   AdAttemptEntity,
   LocatorAttemptEntity,
+  LocatorPriceSettingEntity,
 } from '../economy/entities';
 import {
   PromotionLockEntity,
@@ -209,6 +210,7 @@ import { AddVietnameseCatalogCategoryLabels1792454400000 } from './migrations/17
 import { AddObjectRegistryLastVerifiedAt1792540800000 } from './migrations/1792540800000-AddObjectRegistryLastVerifiedAt';
 import { AddRenderStopExposureGameplayEvent1792627200000 } from './migrations/1792627200000-AddRenderStopExposureGameplayEvent';
 import { CreateLocatorAttempts1792713600000 } from './migrations/1792713600000-CreateLocatorAttempts';
+import { AddOperatorManagedLocatorPrice1792800000000 } from './migrations/1792800000000-AddOperatorManagedLocatorPrice';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -260,6 +262,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CommerceTransactionBindingEntity,
       AdAttemptEntity,
       LocatorAttemptEntity,
+      LocatorPriceSettingEntity,
       AiArtworkEntity,
       AiCreditReservationEntity,
       SupportReferenceEntity,
@@ -403,6 +406,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddObjectRegistryLastVerifiedAt1792540800000,
       AddRenderStopExposureGameplayEvent1792627200000,
       CreateLocatorAttempts1792713600000,
+      AddOperatorManagedLocatorPrice1792800000000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

@@ -228,7 +228,7 @@ describe('Guest Data Reset and Account Deletion regrant protection', () => {
     await request(httpServer)
       .get('/v1/economy/balance')
       .set(guestHeaders(second.accessToken))
-      .expect(200, { balance: 0 });
+      .expect(200, { balance: 0, locatorPrice: 1 });
 
     const tombstones = await dataSource.query<readonly { source_key: string }[]>(
       `SELECT source_key FROM economy.commerce_grant_tombstones
@@ -271,7 +271,7 @@ describe('Guest Data Reset and Account Deletion regrant protection', () => {
     await request(httpServer)
       .get('/v1/economy/balance')
       .set(guestHeaders(first.accessToken))
-      .expect(200, { balance: 300 });
+      .expect(200, { balance: 300, locatorPrice: 1 });
 
     await request(httpServer)
       .post('/v1/auth/guest/reset')
@@ -291,7 +291,7 @@ describe('Guest Data Reset and Account Deletion regrant protection', () => {
     await request(httpServer)
       .get('/v1/economy/balance')
       .set(guestHeaders(second.accessToken))
-      .expect(200, { balance: 0 });
+      .expect(200, { balance: 0, locatorPrice: 1 });
     const bindings = await dataSource.query<readonly { principal_id: string }[]>(
       `SELECT principal_id FROM economy.commerce_transaction_bindings
        WHERE environment = 'sandbox' AND provider_transaction_id = $1`,

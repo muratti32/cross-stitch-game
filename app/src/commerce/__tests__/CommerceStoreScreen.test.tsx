@@ -1913,7 +1913,11 @@ it('updates the wallet and emits completion only after the matching backend Coin
   await confirmSmallCoinPackPurchase();
 
   expect(mockFetchCoinBalance).toHaveBeenCalledTimes(1);
-  expect(mockSetQueryData).toHaveBeenCalledWith(['economy', 'balance'], 420);
+  expect(mockSetQueryData).toHaveBeenCalledWith(['economy', 'balance'], expect.any(Function));
+  const balanceUpdate = mockSetQueryData.mock.calls.find(([key]) => key[1] === 'balance')?.[1];
+  // The refreshed balance keeps the Locator Price already cached with it.
+  expect(balanceUpdate({ balance: 120, locatorPrice: 3 })).toEqual({ balance: 420, locatorPrice: 3 });
+  expect(balanceUpdate(undefined)).toEqual({ balance: 420, locatorPrice: null });
   expect(mockCaptureGameplayEvent).toHaveBeenCalledWith(
     'purchase_completed',
     { product_kind: 'stitch_coin_pack', product_key: 'coin_pack_300' },

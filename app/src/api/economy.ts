@@ -3,7 +3,6 @@ import { apiFetch } from './apiFetch';
 
 export const coinBalanceQueryKey = ['economy', 'balance'] as const;
 export const rewardDayQueryKey = ['economy', 'reward-day'] as const;
-export const LOCATOR_PRICE_COIN = 1;
 
 // Unlock prices are fixed by ADR-0011 by tier.
 // Note: the server remains authoritative on the actual charge.
@@ -43,6 +42,19 @@ export class LocatorInsufficientBalanceError extends EconomyApiError {
   }
 }
 
+export class LocatorPriceChangedError extends EconomyApiError {
+  constructor(readonly price: number, readonly balance: number) {
+    super(409, 'locator_price_changed', 'locator_price_changed');
+    this.name = 'LocatorPriceChangedError';
+  }
+}
+
+export interface CoinBalanceView {
+  balance: number;
+  /** Current operator-managed Locator Price; null when the server cannot provide it (ADR-0060). */
+  locatorPrice: number | null;
+}
+
 export interface LocatorAttemptView {
   attemptId: string;
   status: 'prepared' | 'committed' | 'released' | 'expired' | 'rejected';
@@ -58,6 +70,8 @@ export interface PrepareLocatorAttemptInput {
   patternId: string;
   colorIndex: number;
   dmcCode: string;
+  /** The Locator Price shown to the player; the server rejects a stale value without charge. */
+  expectedPrice: number;
   progressRevision?: number;
   progressHash?: string;
 }
@@ -111,20 +125,35 @@ export async function unlockPattern(patternId: string): Promise<UnlockResult> {
   return (await res.json()) as UnlockResult;
 }
 
-export async function fetchCoinBalance(): Promise<number> {
+export async function fetchCoinBalanceView(): Promise<CoinBalanceView> {
   const res = await apiFetch('/v1/economy/balance');
   if (!res.ok) {
     throw await parseEconomyError(res, 'Failed to fetch coin balance: ' + res.status);
   }
-  const data = (await res.json()) as { balance: number };
-  return data.balance;
+  const data = (await res.json()) as { balance: number; locatorPrice?: unknown };
+  const locatorPrice = typeof data.locatorPrice === 'number' && Number.isSafeInteger(data.locatorPrice) && data.locatorPrice > 0
+    ? data.locatorPrice
+    : null;
+  return { balance: data.balance, locatorPrice };
+}
+
+export async function fetchCoinBalance(): Promise<number> {
+  return (await fetchCoinBalanceView()).balance;
 }
 
 async function parseLocatorResult(res: Response): Promise<LocatorAttemptView> {
   if (res.status === 409) {
-    const data = await res.json().catch(() => null) as { code?: string; price?: number; balance?: number } | null;
-    if (data?.code === 'insufficient_balance') {
-      throw new LocatorInsufficientBalanceError(data.price ?? LOCATOR_PRICE_COIN, data.balance ?? 0);
+    const data = await res.json().catch(() => null) as { code?: string; price?: unknown; balance?: unknown } | null;
+    const price = typeof data?.price === 'number' ? data.price : null;
+    const balance = typeof data?.balance === 'number' ? data.balance : 0;
+    if (data?.code === 'locator_price_changed' && price !== null) {
+      throw new LocatorPriceChangedError(price, balance);
+    }
+    if (data?.code === 'insufficient_balance' && price !== null) {
+      throw new LocatorInsufficientBalanceError(price, balance);
+    }
+    if (data?.code !== undefined) {
+      throw new EconomyApiError(409, data.code, data.code);
     }
   }
   if (!res.ok) throw await parseEconomyError(res, 'Locator attempt failed: ' + res.status);
@@ -180,7 +209,17 @@ export async function fetchUnlockedPatternIds(): Promise<string[]> {
 export function useCoinBalance() {
   return useQuery({
     queryKey: coinBalanceQueryKey,
-    queryFn: fetchCoinBalance,
+    queryFn: fetchCoinBalanceView,
+    select: (view: CoinBalanceView) => view.balance,
+  });
+}
+
+/** Shares the balance query so the locator button shows the price last served with the balance. */
+export function useLocatorPrice() {
+  return useQuery({
+    queryKey: coinBalanceQueryKey,
+    queryFn: fetchCoinBalanceView,
+    select: (view: CoinBalanceView) => view.locatorPrice,
   });
 }
 

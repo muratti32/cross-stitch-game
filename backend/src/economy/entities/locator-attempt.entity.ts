@@ -14,6 +14,7 @@ import {
   'CHK_locator_attempts_principal_type',
   '"principal_type" IN (\'guest\', \'account\')',
 )
+@Check('CHK_locator_attempts_reserved_price', '"reserved_price" BETWEEN 1 AND 10')
 @Check(
   'CHK_locator_attempts_status',
   '"status" IN (\'prepared\', \'committed\', \'released\', \'expired\', \'rejected\')',
@@ -48,6 +49,9 @@ export class LocatorAttemptEntity {
 
   @Column({ name: 'progress_hash', type: 'varchar', length: 128, nullable: true })
   progressHash!: string | null;
+
+  @Column({ name: 'reserved_price', type: 'integer' })
+  reservedPrice!: number;
 
   @Column({ name: 'reserved_paid_amount', type: 'bigint', default: 0 })
   reservedPaidAmount!: string;

@@ -11,3 +11,4 @@ export { AiCreditLedgerReason } from './ai-credit-ledger-reason.enum';
 export { CommerceTransactionBindingEntity } from './commerce-transaction-binding.entity';
 export { AdAttemptEntity } from './ad-attempt.entity';
 export { LocatorAttemptEntity } from './locator-attempt.entity';
+export { LocatorPriceSettingEntity } from './locator-price-setting.entity';
