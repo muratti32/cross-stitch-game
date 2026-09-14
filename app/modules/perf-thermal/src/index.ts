@@ -20,6 +20,14 @@ export interface PerfDeviceProfile {
 }
 
 /**
+ * ADR-0056: Android totalMem reports less than marketed RAM, so a 3.25 GiB
+ * reported-memory threshold covers devices marketed with up to 3 GB RAM.
+ */
+export type DeviceRenderingProfile = 'low' | 'standard';
+
+export const LOW_END_RAM_THRESHOLD_BYTES = 3.25 * 1024 * 1024 * 1024;
+
+/**
  * Measured memory footprint and heap metrics.
  */
 export type PerfMemoryReading =
@@ -135,6 +143,25 @@ export function getDeviceProfile(): PerfDeviceProfile {
   } catch {
     return getFallbackDeviceProfile();
   }
+}
+
+/**
+ * ADR-0056: Resolves the Android rendering profile from reported total memory.
+ */
+export function getDeviceRenderingProfile(
+  profile?: Partial<PerfDeviceProfile>,
+): DeviceRenderingProfile {
+  const target = profile ?? getDeviceProfile();
+  const platform = target.platform ?? Platform.OS;
+  const totalMemoryBytes = target.totalMemoryBytes ?? 0;
+  if (
+    platform === 'android'
+    && totalMemoryBytes > 0
+    && totalMemoryBytes <= LOW_END_RAM_THRESHOLD_BYTES
+  ) {
+    return 'low';
+  }
+  return 'standard';
 }
 
 /**

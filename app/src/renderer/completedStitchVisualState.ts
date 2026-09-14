@@ -1,5 +1,6 @@
 import { THREAD_WIDTH_PLAIN, THREAD_WIDTH_TEXTURED, type LodBand } from './tileMath';
 import type { ThreadFinish } from '../membership/themes';
+import type { DeviceRenderingProfile } from '../../modules/perf-thermal';
 
 export type CompletedStitchOrigin = 'local' | 'restored' | 'synchronized';
 export type CompletedStitchPhase = 'placing' | 'removing' | 'settled' | 'hidden';
@@ -54,6 +55,7 @@ export interface CompletedStitchVisualDecision {
   readonly lightDirection: 'upper-left';
   readonly dmcColor: string;
   readonly finish: ThreadFinish;
+  readonly threadShadow: boolean;
   readonly isDynamic: boolean;
 }
 
@@ -72,9 +74,13 @@ function clamp(value: number): number {
   return Math.max(0, Math.min(1, value));
 }
 
-function representationFor(lod: LodBand): CompletedStitchRepresentation {
+function representationFor(
+  lod: LodBand,
+  deviceRenderingProfile: DeviceRenderingProfile,
+): CompletedStitchRepresentation {
   if (lod === 'out') return 'mosaic';
-  return lod === 'mid' ? 'cross' : 'textured-cross';
+  if (lod === 'mid') return 'cross';
+  return deviceRenderingProfile === 'low' ? 'cross' : 'textured-cross';
 }
 
 /**
@@ -84,6 +90,11 @@ function representationFor(lod: LodBand): CompletedStitchRepresentation {
  */
 export class CompletedStitchVisualState {
   private readonly active = new Map<number, ActiveVisual>();
+  private readonly deviceRenderingProfile: DeviceRenderingProfile;
+
+  constructor(deviceRenderingProfile: DeviceRenderingProfile) {
+    this.deviceRenderingProfile = deviceRenderingProfile;
+  }
 
   place(cellIndex: number, origin: CompletedStitchOrigin, lod: LodBand, now: number, reduceMotion: boolean): readonly number[] {
     if (origin !== 'local' || lod === 'out' || reduceMotion) {
@@ -165,7 +176,9 @@ export class CompletedStitchVisualState {
     const upperStrandProgress = clamp(progress * 2 - 1);
     // The renderer receives the chosen representation at placement start so
     // its first dynamic-frame work is not delayed until a later state change.
-    const representation = (visible || active !== undefined) ? representationFor(lod) : 'none';
+    const representation = (visible || active !== undefined)
+      ? representationFor(lod, this.deviceRenderingProfile)
+      : 'none';
 
     return {
       phase,
@@ -181,6 +194,7 @@ export class CompletedStitchVisualState {
       lightDirection: 'upper-left',
       dmcColor: color,
       finish: theme.finish,
+      threadShadow: this.deviceRenderingProfile !== 'low',
       isDynamic: active !== undefined && lod !== 'out',
     };
   }

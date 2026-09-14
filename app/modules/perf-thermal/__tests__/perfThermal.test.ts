@@ -1,5 +1,12 @@
 import { requireOptionalNativeModule } from 'expo';
-import { getThermalState, getDeviceProfile, isThermalSupported, getMemoryUsageAsync } from '../src/index';
+import {
+  getThermalState,
+  getDeviceProfile,
+  isThermalSupported,
+  getMemoryUsageAsync,
+  getDeviceRenderingProfile,
+  LOW_END_RAM_THRESHOLD_BYTES,
+} from '../src/index';
 
 // Mock expo module
 jest.mock('expo', () => {
@@ -223,6 +230,43 @@ describe('perf-thermal module fallback and native mapping', () => {
         jsHeapUnavailableReason: 'stats unavailable',
       });
       delete runtime.HermesInternal;
+    });
+  });
+
+  describe('getDeviceRenderingProfile (ADR-0056)', () => {
+    it('classifies constrained Android devices as low', () => {
+      // Reported memory is lower than marketed RAM on the reference device.
+      const tabA7LiteBytes = 2.9 * 1024 * 1024 * 1024;
+      expect(getDeviceRenderingProfile({
+        platform: 'android',
+        totalMemoryBytes: tabA7LiteBytes,
+      })).toBe('low');
+
+      expect(getDeviceRenderingProfile({
+        platform: 'android',
+        totalMemoryBytes: LOW_END_RAM_THRESHOLD_BYTES,
+      })).toBe('low');
+    });
+
+    it('classifies Android devices above the threshold as standard', () => {
+      const fourGbBytes = 4 * 1024 * 1024 * 1024;
+      expect(getDeviceRenderingProfile({
+        platform: 'android',
+        totalMemoryBytes: fourGbBytes,
+      })).toBe('standard');
+    });
+
+    it('keeps iOS standard regardless of reported memory', () => {
+      const constrainedMemoryBytes = 2.9 * 1024 * 1024 * 1024;
+      expect(getDeviceRenderingProfile({
+        platform: 'ios',
+        totalMemoryBytes: constrainedMemoryBytes,
+      })).toBe('standard');
+    });
+
+    it('defaults to standard when Android memory is 0 or unavailable', () => {
+      expect(getDeviceRenderingProfile({ platform: 'android', totalMemoryBytes: 0 })).toBe('standard');
+      expect(getDeviceRenderingProfile({ platform: 'android' })).toBe('standard');
     });
   });
 });

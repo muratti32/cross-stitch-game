@@ -40,7 +40,10 @@ import {
   ThermalSampler,
   MemorySampler,
 } from '../metrics';
-import { getDeviceProfile } from '../../../modules/perf-thermal';
+import {
+  getDeviceProfile,
+  getDeviceRenderingProfile,
+} from '../../../modules/perf-thermal';
 import { getDatabase } from '@/local-db';
 import { Ionicons } from '@expo/vector-icons';
 import { buildLatePlayFixture, buildFullyCompletedFixture } from '../fixtures';
@@ -167,7 +170,8 @@ export default function PerfHarnessScreen() {
         const state = new RendererState(
           fixtureData.pattern.width,
           fixtureData.pattern.height,
-          fixtureData.completed
+          fixtureData.completed,
+          getDeviceRenderingProfile(),
         );
         setRendererState(state);
 

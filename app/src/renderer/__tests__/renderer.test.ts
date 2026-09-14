@@ -196,6 +196,24 @@ describe('Stitch Renderer Pure Logic', () => {
   });
 
   describe('RendererState', () => {
+    test('propagates the device rendering profile to completed stitch decisions', () => {
+      const completed = new Uint8Array(100);
+      completed[0] = 1;
+      const state = new RendererState(10, 10, completed, 'low');
+
+      expect(state.deviceRenderingProfile).toBe('low');
+      expect(state.getCompletedStitchVisualDecision(
+        0,
+        'readable',
+        '#123456',
+        'matte',
+        0,
+      )).toMatchObject({
+        representation: 'cross',
+        threadShadow: false,
+      });
+    });
+
     test('completing a cell dirties exactly its tile', () => {
       const state = new RendererState(100, 100);
 

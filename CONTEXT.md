@@ -606,6 +606,14 @@ _Avoid_: Node, knot, painted cell, filled square
 The first-release performance gate for stitching interactions, measured on the oldest supported iOS and Android reference devices with a maximum-size Pattern: Stitch and Undo Actions must reach visible local state within the fixed latency budget, and pan, Anchored Zoom, and Stitch Sweep must hold the target frame rate with no network, sync, conversion, or decompression work on the interaction-critical path. Background work yields while an active gesture runs; the concrete scenario, latency, frame-rate, and thermal thresholds are fixed by ADR-0031, and failing them blocks release.
 _Avoid_: Best-effort performance, server tap, average-only benchmark
 
+**Device Rendering Profile**:
+The Android-only hardware-capability classification ('low' or 'standard') derived on-device from available system memory to keep the Stitch Interaction Budget within GPU flush limits on constrained devices. On a low profile, Completed Stitch rendering drops the thread shadow and highlight strands without changing DMC Thread Colors, progress, gameplay rules, or cosmetic theme palettes.
+_Avoid_: Graphics setting, low quality mode, visual downgrade
+
+**Pan Redraw Coalescing**:
+The synchronization boundary where high-frequency touch-movement events during viewport pan are consolidated to the display frame rate. It preserves full touch tracking while reducing intermediate viewport transform writes.
+_Avoid_: Frame dropping, input throttle, gesture lag
+
 **Undo Action**:
 The free action that records an incomplete Progress Operation for a previously completed cell in an active Stitching Session. It is never gated by Stitch Coin, AI Credit, Premium Membership, advertising, lives, or score. A causally later Undo synchronizes normally; only a truly concurrent completed operation wins. Completed sessions are read-only and use Replay Session instead.
 _Avoid_: Paid correction, reset, delete progress
