@@ -113,8 +113,15 @@ export class LocatorAttemptService {
           [owner.type, owner.id, input.sessionId],
         );
         if (active[0]) {
-          this.assertSameContext(active[0], input);
-          return this.view(active[0], await this.readBalance(manager, owner));
+          if (reservedPrice(active[0]) === input.expectedPrice) {
+            this.assertSameContext(active[0], input);
+            return this.view(active[0], await this.readBalance(manager, owner));
+          }
+          // A hold left at a superseded price (e.g. a failed release) is never
+          // reused for a player now shown a different price (ADR-0060). If the
+          // new expected price is also stale, the rejection below rolls this
+          // release back and the hold simply expires.
+          await this.releaseLocked(manager, active[0], owner, 'released');
         }
 
         const recent = await manager.query<readonly { count: string }[]>(

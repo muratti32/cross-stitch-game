@@ -1,4 +1,4 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
 import type { AuthPrincipal } from '../auth/auth.types';
@@ -57,8 +57,9 @@ export class EconomyReadService {
     try {
       return (await readLocatorPrice(this.dataSource.manager)).price;
     } catch (error) {
-      if (!(error instanceof HttpException)) throw error;
-      this.logger.error('Locator Price setting is unavailable; balance served without it');
+      // Balance reads back the catalog, profile, and store; a Locator Price
+      // failure must not take them down. Reservations still fail closed.
+      this.logger.error('Locator Price setting is unavailable; balance served without it', error instanceof Error ? error.stack : String(error));
       return null;
     }
   }

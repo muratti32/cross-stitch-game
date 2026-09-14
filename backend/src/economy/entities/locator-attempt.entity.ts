@@ -50,7 +50,7 @@ export class LocatorAttemptEntity {
   @Column({ name: 'progress_hash', type: 'varchar', length: 128, nullable: true })
   progressHash!: string | null;
 
-  @Column({ name: 'reserved_price', type: 'integer' })
+  @Column({ name: 'reserved_price', type: 'integer', default: 1 })
   reservedPrice!: number;
 
   @Column({ name: 'reserved_paid_amount', type: 'bigint', default: 0 })

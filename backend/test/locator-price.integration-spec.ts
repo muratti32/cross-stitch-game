@@ -143,6 +143,28 @@ describe('Operator-managed Locator Price', () => {
       .resolves.toMatchObject({ status: 'released', price: 4, balance: 19 });
   });
 
+  it('never commits a leftover hold at a superseded price for a player shown the new price', async () => {
+    await admin.update(operatorId, 5, null);
+    const { principal, sessionId, patternId } = await guestWithSession(10);
+    const base = { sessionId, patternId, colorIndex: 0, dmcCode: '310' };
+    const leftover = randomUUID();
+    await expect(locator.prepare(principal, { ...base, attemptId: leftover, expectedPrice: 5 }))
+      .resolves.toMatchObject({ price: 5, balance: 5 });
+
+    // The release was lost; the operator lowers the price and the player taps again.
+    await admin.update(operatorId, 1, null);
+    const retry = randomUUID();
+    await expect(locator.prepare(principal, { ...base, attemptId: retry, expectedPrice: 1 }))
+      .resolves.toMatchObject({ attemptId: retry, price: 1, balance: 9 });
+    await expect(locator.commit(principal, retry, { targetCellIndex: 1 }))
+      .resolves.toMatchObject({ status: 'committed', price: 1, balance: 9 });
+    const rows = await dataSource.query<readonly { status: string }[]>(
+      'SELECT status FROM economy.locator_attempts WHERE attempt_id = $1',
+      [leftover],
+    );
+    expect(rows).toEqual([{ status: 'released' }]);
+  });
+
   it('reports insufficient balance at the current price', async () => {
     await admin.update(operatorId, 5, null);
     const { principal, sessionId, patternId } = await guestWithSession(3);

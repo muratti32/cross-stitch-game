@@ -247,4 +247,60 @@ describe('LocatorAttemptService', () => {
       targetCellIndex: 5,
     });
   });
+  it('releases an open hold at a superseded price instead of charging it to a player shown the new price', async () => {
+    const stale = {
+      attempt_id: '55555555-5555-4555-8555-555555555555',
+      principal_type: 'guest', principal_id: principal.id,
+      session_id: input.sessionId, pattern_id: input.patternId,
+      color_index: 0, dmc_code: '310', target_cell_index: null,
+      progress_revision: null, progress_hash: null, reserved_price: 5,
+      reserved_paid_amount: '0', status: 'prepared',
+      reserved_until: new Date(Date.now() + 60_000), terminal_at: null,
+    };
+    const fresh = { ...stale, attempt_id: input.attemptId, reserved_price: 1 };
+    const query = jest.fn()
+      .mockResolvedValueOnce([]) // expire
+      .mockResolvedValueOnce([]) // idempotency lookup
+      .mockResolvedValueOnce([{ principal_type: 'guest', principal_id: principal.id, pattern_id: input.patternId, status: 'active' }])
+      .mockResolvedValueOnce([stale]) // active prepared attempt at the old price
+      .mockResolvedValueOnce([[{ ...stale, status: 'released' }], 1]) // release
+      .mockResolvedValueOnce([]) // refund balance
+      .mockResolvedValueOnce([]) // release ledger
+      .mockResolvedValueOnce([{ balance: '10' }]) // release view balance
+      .mockResolvedValueOnce([{ count: '1' }]) // rate limit
+      .mockResolvedValueOnce([{ balance: '10', paid_balance: '0' }])
+      .mockResolvedValueOnce(priceRow(1))
+      .mockResolvedValueOnce([fresh])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([]);
+    const { service } = makeService(query);
+
+    await expect(service.prepare(principal, input)).resolves.toMatchObject({ attemptId: input.attemptId, price: 1, balance: 9 });
+    const calls = query.mock.calls as unknown[][];
+    const refund = calls.find((call) => String(call[0]).includes('balance = balance + $3'));
+    expect((refund?.[1] as unknown[])[2]).toBe(5);
+    expect(calls.some((call) => (call[1] as unknown[] | undefined)?.includes(`locator:${stale.attempt_id}:commit`))).toBe(false);
+  });
+
+  it('replays an open hold whose locked price matches the expected price', async () => {
+    const active = {
+      attempt_id: '55555555-5555-4555-8555-555555555555',
+      principal_type: 'guest', principal_id: principal.id,
+      session_id: input.sessionId, pattern_id: input.patternId,
+      color_index: 0, dmc_code: '310', target_cell_index: null,
+      progress_revision: null, progress_hash: null, reserved_price: 1,
+      reserved_paid_amount: '0', status: 'prepared',
+      reserved_until: new Date(Date.now() + 60_000), terminal_at: null,
+    };
+    const query = jest.fn()
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ principal_type: 'guest', principal_id: principal.id, pattern_id: input.patternId, status: 'active' }])
+      .mockResolvedValueOnce([active])
+      .mockResolvedValueOnce([{ balance: '9' }]);
+    const { service } = makeService(query);
+
+    await expect(service.prepare(principal, input)).resolves.toMatchObject({ attemptId: active.attempt_id, price: 1, balance: 9 });
+    expect(query).toHaveBeenCalledTimes(5);
+  });
 });
