@@ -22,6 +22,23 @@ _Avoid_: Queue payload, worker log, webhook
 The explicit Online, Offline, or Reconnecting condition shown without blocking locally available play. Ready Sessions, Personal Patterns, and local Stitch and Undo Actions continue offline; only the specific operation that requires the Game Backend—such as Session Preparation, purchase, Unlock, Catalog Submission, or AI generation—shows an actionable retry state. A generic connection screen never replaces usable local content.
 _Avoid_: App offline error, global loading screen, network reachability guess
 
+**Unconfirmed Render-Stop ANR Signal**:
+An isolated Android `AppExitInfo` observation in which the main thread waits on
+RenderThread (the #148 `HardwareRenderer.setStopped` signal), without physical
+reproduction or a causal trace. It is not a confirmed defect, shared root cause,
+or fix, and is distinct from #248's active-pan `renderImmediate` signature.
+_Avoid_: confirmed ANR, #248 duplicate, proven renderer cause
+
+**Render-Stop Exposure**:
+A privacy-safe first-party telemetry event emitted once when an Android
+production Stitching Session canvas is visible and focused and the app moves
+from `active` to `background`. Its payload records only the unique native app
+release and build, Android API, and Device Rendering Profile; it contains no
+Pattern, content, session, player, or identity field. Like every gameplay event,
+the backend row remains associated with the authenticated player principal. It
+measures exposure and recurrence, not an ANR or its cause.
+_Avoid_: crash report, ANR confirmation, player/session identifier
+
 **Support Reference**:
 The short opaque code a player can copy from a failed or delayed sync, Processing Job, purchase, promotion, or moderation flow so support can find the corresponding server records. It contains no email, provider identifier, prompt, artwork, Pattern bytes, or access credential and can be shared without exposing another player's data.
 _Avoid_: Raw log, transaction receipt, error stack

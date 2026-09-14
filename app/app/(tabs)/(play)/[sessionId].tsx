@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-native';
-import { useLocalSearchParams, useRouter, useNavigation, useFocusEffect } from 'expo-router';
+import { useLocalSearchParams, useRouter, useNavigation, useFocusEffect, useIsFocused } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Screen, Button } from '@/components';
 import { Theme } from '@/theme/theme';
@@ -30,6 +30,7 @@ import { findTutorialSweepRunStart } from '@/onboarding/tutorialSweepRun';
 import { TutorialRecapSheet } from '@/onboarding/TutorialRecapSheet';
 import { useJustInTimeHints } from '@/onboarding/useJustInTimeHints';
 import { addScreenMemoryBreadcrumb } from '@/observability/sentry';
+import { useRenderStopExposure } from '@/analytics/renderStopExposure';
 
 export default function SessionReadyScreen() {
   const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
@@ -38,6 +39,7 @@ export default function SessionReadyScreen() {
   const { theme } = useActiveMembershipTheme();
   const { t, i18n: i18nInstance } = useTranslation('play');
   const locale = i18nInstance.language;
+  const isSessionScreenFocused = useIsFocused();
 
   useEffect(() => {
     void addScreenMemoryBreadcrumb('session_ready');
@@ -78,6 +80,15 @@ export default function SessionReadyScreen() {
     syncTick,
     patternRemoved,
   } = useStitchingSession(sessionId);
+
+  // The exposure observer is active only while this route has a real session
+  // canvas to render; it is production Android-only inside the hook.
+  useRenderStopExposure(
+    {
+      canvasVisible: !loading && Boolean(session && patternData && rendererState),
+      screenFocused: isSessionScreenFocused,
+    },
+  );
 
   const { selectedColorIndex, setSelectedColorIndex, handedness } = useGameplayStore();
   const initialSelectionDone = useRef(false);

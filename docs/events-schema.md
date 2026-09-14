@@ -14,6 +14,7 @@ Every event has `event_id` (client UUID), `occurred_at` (ISO-8601 timestamp), an
 | --- | --- |
 | `session_started` | `session_id` (UUID) |
 | `session_completed` | `session_id` (UUID) |
+| `render_stop_exposure` | `release` (required, max 32, pattern `^\d+(\.\d+){1,2}\+\d+$`, format `<version>+<nativeBuildVersion>`); `android_api` (positive integer); `device_rendering_profile`: `low` \| `standard` |
 | `daily_task_completed` | `task_key`: `cells_100` \| `three_colors_10` \| `color_completion` |
 | `pattern_conversion_started` | `source_artwork_kind`: `photo_artwork` \| `ai_artwork`; `conversion_profile`: `easy` \| `standard` \| `detailed` \| `custom` |
 | `pattern_conversion_completed` | `source_artwork_kind`: `photo_artwork` \| `ai_artwork` |
@@ -55,3 +56,9 @@ The four `subscription_change_*` kinds cover a Premium Plan change between the t
 `purchase_completed` is emitted only after the Game Backend exposes the verified Commerce Ledger grant. A successful RevenueCat SDK return emits neither `purchase_completed` nor client-side value; it proceeds to `purchase_reconciliation_pending` when the grant is not yet visible.
 
 The API accepts up to 500 events at `POST /v1/events`. It returns `accepted: true` for both new and replayed event identifiers, allowing the client to safely prune its local queue. The read service exposes per-kind daily counts for an ascending date range; it does not expose individual player events.
+
+`render_stop_exposure` is emitted once per `active` to `background` stop by a
+production Android Stitching Session while its canvas is visible and focused;
+`active` to `inactive` to `background` is one stop. Its payload contains no
+Pattern, content, session, player, or identity field. It is not mirrored to
+Firebase. See ADR-0057.
