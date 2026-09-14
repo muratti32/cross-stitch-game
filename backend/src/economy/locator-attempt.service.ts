@@ -250,9 +250,9 @@ export class LocatorAttemptService {
            (principal_type, principal_id, amount, reason, source_key, granted, metadata)
          VALUES ($1, $2, $3, $4, $5, true, $6)
          ON CONFLICT (source_key) DO NOTHING`,
-          [owner.type, owner.id, LOCATOR_PRICE_COIN, CoinLedgerReason.LocatorSpend, `locator:${attempt.attempt_id}:release`, {
-            action: attempt.status === 'committed' ? 'cancel_after_commit' : status,
-          }],
+        [owner.type, owner.id, LOCATOR_PRICE_COIN, CoinLedgerReason.LocatorSpend, `locator:${attempt.attempt_id}:release`, {
+          action: attempt.status === 'committed' ? 'cancel_after_commit' : status,
+        }],
       );
     }
     return this.view(row, await this.readBalance(manager, owner));

@@ -127,10 +127,12 @@ describe('LocatorAttemptService', () => {
     await expect(service.release(principal, input.attemptId)).resolves.toMatchObject({
       status: 'released', balance: 1,
     });
-    const releaseCall = query.mock.calls.find((call) => (
-      Array.isArray(call[1]) && call[1].includes(`locator:${input.attemptId}:release`)
-    ));
-    expect(releaseCall?.[1]?.at(-1)).toMatchObject({ action: 'cancel_after_commit' });
+    const releaseCall = (query.mock.calls as unknown[][]).find((call) => {
+      const params = call[1];
+      return Array.isArray(params) && params.some((value: unknown) => value === `locator:${input.attemptId}:release`);
+    });
+    const releaseParams = releaseCall?.[1] as readonly unknown[] | undefined;
+    expect(releaseParams?.at(-1)).toMatchObject({ action: 'cancel_after_commit' });
     expect(query.mock.calls.flat().join(' ')).toContain('locator:22222222-2222-4222-8222-222222222222:release');
   });
 });
