@@ -17,3 +17,5 @@ We accept slight visual texture flattening on low-memory Android hardware and fr
 
 **Open**:
 Reproduction on an Android reference device marketed with at most 3 GB RAM and pan frame-time measurement are not yet complete. Reanimated mappers may already batch Skia redraws per display frame, so the synchronous per-frame picture render remains on the UI thread and the benefit of pan coalescing is unverified.
+
+The `HardwareRenderer.setStopped` ANR is out of scope and tracked by ADR-0057.

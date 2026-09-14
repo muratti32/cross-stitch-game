@@ -206,6 +206,7 @@ import { AddTagalogCatalogCategoryLabels1792281600000 } from './migrations/17922
 import { AddUkrainianCatalogCategoryLabels1792368000000 } from './migrations/1792368000000-AddUkrainianCatalogCategoryLabels';
 import { AddVietnameseCatalogCategoryLabels1792454400000 } from './migrations/1792454400000-AddVietnameseCatalogCategoryLabels';
 import { AddObjectRegistryLastVerifiedAt1792540800000 } from './migrations/1792540800000-AddObjectRegistryLastVerifiedAt';
+import { AddRenderStopExposureGameplayEvent1792627200000 } from './migrations/1792627200000-AddRenderStopExposureGameplayEvent';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -397,6 +398,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddUkrainianCatalogCategoryLabels1792368000000,
       AddVietnameseCatalogCategoryLabels1792454400000,
       AddObjectRegistryLastVerifiedAt1792540800000,
+      AddRenderStopExposureGameplayEvent1792627200000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',
