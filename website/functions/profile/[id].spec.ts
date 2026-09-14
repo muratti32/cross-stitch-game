@@ -39,6 +39,12 @@ describe('Profile Share Page - onRequestGet', () => {
     } as unknown as EventContext<Env, 'id', Record<string, unknown>>;
   }
 
+  function expectTemporaryFailure(response: Response) {
+    expect(response.status).toBe(503);
+    expect(response.headers.get('Cache-Control')).toBe('no-store');
+    expect(response.headers.get('Retry-After')).toBe('60');
+  }
+
   function stubProfileResponse(body: unknown, init?: ResponseInit) {
     const fetchSpy = vi.fn<typeof fetch>().mockResolvedValue(
       new Response(JSON.stringify(body), {
@@ -166,7 +172,7 @@ describe('Profile Share Page - onRequestGet', () => {
       );
     });
 
-    it('returns 200 fallback HTML for invalid JSON bodies', async () => {
+    it('returns 503 fallback HTML for invalid JSON bodies', async () => {
       vi.stubGlobal(
         'fetch',
         vi.fn<typeof fetch>().mockResolvedValue(new Response('{not json', { status: 200 }))
@@ -175,7 +181,7 @@ describe('Profile Share Page - onRequestGet', () => {
       const response = await onRequestGet(createMockContext({ id: validId }));
       const html = await response.text();
 
-      expect(response.status).toBe(200);
+      expectTemporaryFailure(response);
       expect(html).toContain('<title>Stitch Wish - Creator Profile</title>');
       expect(html).not.toContain('View display name');
     });
@@ -187,19 +193,37 @@ describe('Profile Share Page - onRequestGet', () => {
       ['a body missing username', { displayName: 'Creator 123' }],
       ['a non-string displayName', { username: 'creator_123', displayName: 42 }],
       ['a non-string username', { username: 123, displayName: 'Creator 123' }],
-    ])('returns 200 fallback HTML when the response fails the profile guard: %s', async (_label, body) => {
+    ])('returns 503 fallback HTML when the response fails the profile guard: %s', async (_label, body) => {
       stubProfileResponse(body);
 
       const response = await onRequestGet(createMockContext({ id: validId }));
       const html = await response.text();
 
-      expect(response.status).toBe(200);
+      expectTemporaryFailure(response);
       expect(html).toContain('<title>Stitch Wish - Creator Profile</title>');
       expect(html).not.toContain('View display name');
       expect(html).not.toContain('undefined');
     });
 
-    it.each([403, 404, 410, 500])(
+    it.each([500, 502, 503, 504])(
+      'returns 503 fallback HTML for upstream status %s instead of the unavailable page',
+      async (status) => {
+        vi.stubGlobal(
+          'fetch',
+          vi.fn<typeof fetch>().mockResolvedValue(new Response('{}', { status }))
+        );
+
+        const response = await onRequestGet(createMockContext({ id: validId }));
+
+        expectTemporaryFailure(response);
+        const html = await response.text();
+        expect(html).toContain('<title>Stitch Wish - Creator Profile</title>');
+        expect(html).not.toContain('Profile Unavailable');
+        expect(html).toContain(`window.location.replace("stitchwish://profile/${validId}");`);
+      }
+    );
+
+    it.each([403, 404, 410])(
       'returns 404 unavailable page for upstream status %s',
       async (status) => {
         vi.stubGlobal(
@@ -304,12 +328,12 @@ describe('Profile Share Page - onRequestGet', () => {
   });
 
   describe('Fallback branch (backend unreachable or error thrown)', () => {
-    it('covers the fallback branch when fetch rejects and serialises values safely', async () => {
+    it('returns 503 fallback HTML when fetch rejects and serialises values safely', async () => {
       vi.stubGlobal('fetch', vi.fn<typeof fetch>().mockRejectedValue(new Error('Connection refused')));
 
       const response = await onRequestGet(createMockContext({ id: validId }));
 
-      expect(response.status).toBe(200);
+      expectTemporaryFailure(response);
       const html = await response.text();
 
       expect(html).toContain('<title>Stitch Wish - Creator Profile</title>');

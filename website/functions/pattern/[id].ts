@@ -108,6 +108,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   try {
     const res = await fetch(buildPatternApiUrl(apiUrl, id));
 
+    if (res.status >= 500) {
+      // A backend outage cannot establish availability; a temporary 503 keeps crawlers from caching a removal.
+      return temporaryFailureResponse(getFallbackHtml(id));
+    }
+
     if (!res.ok) {
       // The backend answers non-OK for patterns it will not show (e.g. Review Hold, Account Closure Hold,
       // Catalog Withdrawal, Safety Removal), so render the static unavailable page.
@@ -118,15 +123,26 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     if (!isCatalogPattern(value)) {
       // A structurally invalid upstream body is handled like an upstream failure.
-      return htmlResponse(getFallbackHtml(id));
+      return temporaryFailureResponse(getFallbackHtml(id));
     }
 
     return htmlResponse(getPatternHtml(id, value));
   } catch {
-    // Network or JSON parse errors cannot establish availability, so return the 200 redirect fallback.
-    return htmlResponse(getFallbackHtml(id));
+    // Network or JSON parse errors cannot establish availability, so return the temporary redirect fallback.
+    return temporaryFailureResponse(getFallbackHtml(id));
   }
 };
+
+function temporaryFailureResponse(body: string): Response {
+  return new Response(body, {
+    status: 503,
+    headers: {
+      'Content-Type': 'text/html;charset=UTF-8',
+      'Cache-Control': 'no-store',
+      'Retry-After': '60',
+    },
+  });
+}
 
 function htmlResponse(body: string, status = 200): Response {
   return new Response(body, {

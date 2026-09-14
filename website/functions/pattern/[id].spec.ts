@@ -45,6 +45,12 @@ describe('Pattern Share Page - onRequestGet', () => {
     } as unknown as EventContext<Env, 'id', Record<string, unknown>>;
   }
 
+  function expectTemporaryFailure(response: Response) {
+    expect(response.status).toBe(503);
+    expect(response.headers.get('Cache-Control')).toBe('no-store');
+    expect(response.headers.get('Retry-After')).toBe('60');
+  }
+
   function stubCatalogResponse(body: unknown, init?: ResponseInit) {
     const fetchSpy = vi.fn<typeof fetch>().mockResolvedValue(
       new Response(JSON.stringify(body), init)
@@ -421,7 +427,7 @@ describe('Pattern Share Page - onRequestGet', () => {
   });
 
   describe('Upstream error and fallback handling', () => {
-    it('returns 200 fallback HTML when fetch rejects', async () => {
+    it('returns 503 fallback HTML when fetch rejects', async () => {
       const fetchSpy = vi.fn<typeof fetch>().mockRejectedValue(
         new Error('Upstream connection timeout')
       );
@@ -429,7 +435,7 @@ describe('Pattern Share Page - onRequestGet', () => {
 
       const response = await onRequestGet(createMockContext({ id: validUuid }));
 
-      expect(response.status).toBe(200);
+      expectTemporaryFailure(response);
       const html = await response.text();
       expect(html).toContain('<title>Stitch Wish - View Pattern</title>');
       expectRedirectScript(html, [
@@ -439,7 +445,7 @@ describe('Pattern Share Page - onRequestGet', () => {
       expect((html.match(/<script>/g) ?? []).length).toBe(1);
     });
 
-    it('returns 200 fallback HTML for invalid JSON bodies', async () => {
+    it('returns 503 fallback HTML for invalid JSON bodies', async () => {
       vi.stubGlobal(
         'fetch',
         vi.fn<typeof fetch>().mockResolvedValue(new Response('{not json'))
@@ -447,13 +453,13 @@ describe('Pattern Share Page - onRequestGet', () => {
 
       const response = await onRequestGet(createMockContext({ id: validUuid }));
 
-      expect(response.status).toBe(200);
+      expectTemporaryFailure(response);
       expect(await response.text()).toContain(
         '<title>Stitch Wish - View Pattern</title>'
       );
     });
 
-    it('returns 200 fallback HTML when the response fails the catalog guard', async () => {
+    it('returns 503 fallback HTML when the response fails the catalog guard', async () => {
       stubCatalogResponse({
         creatorName: 'Alice',
         width: 32,
@@ -465,11 +471,29 @@ describe('Pattern Share Page - onRequestGet', () => {
 
       const response = await onRequestGet(createMockContext({ id: validUuid }));
 
-      expect(response.status).toBe(200);
+      expectTemporaryFailure(response);
       expect(await response.text()).toContain(
         '<title>Stitch Wish - View Pattern</title>'
       );
     });
+
+    it.each([500, 502, 503, 504])(
+      'returns 503 fallback HTML for upstream status %s instead of the unavailable page',
+      async (status) => {
+        stubCatalogResponse({}, { status });
+
+        const response = await onRequestGet(createMockContext({ id: validUuid }));
+
+        expectTemporaryFailure(response);
+        const html = await response.text();
+        expect(html).toContain('<title>Stitch Wish - View Pattern</title>');
+        expect(html).not.toContain('Content Unavailable');
+        expectRedirectScript(html, [
+          `stitchwish://catalog/pattern/${validUuid}`,
+          `/pattern/${validUuid}?fallback=true`,
+        ]);
+      }
+    );
 
     it.each([403, 404, 410])(
       'returns 404 Content Unavailable for upstream status %s',
