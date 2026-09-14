@@ -418,6 +418,22 @@ export default function SessionReadyScreen() {
         return;
       }
 
+      // The local context may change while commit is in flight. Compensate
+      // the accepted commit instead of focusing a stale target or charging a
+      // locator the player cancelled during the round trip.
+      const targetStillCurrent =
+        locatorRunRef.current === runId
+        && parentRevisionRef.current === requestRevision
+        && useGameplayStore.getState().selectedColorIndex === selectedColorIndex
+        && patternData.grid[nextIdx] === selectedColorIndex + 1
+        && !rendererState.isCompleted(targetX, targetY);
+      if (!targetStillCurrent) {
+        locatorAttemptIdRef.current = null;
+        await releaseLocatorAttempt(prepared.attemptId, { cancellation: true }).catch(() => {});
+        queryClient.invalidateQueries({ queryKey: coinBalanceQueryKey });
+        return;
+      }
+
       locatorAttemptIdRef.current = null;
       locatorAbortRef.current = null;
       const cx = targetX;

@@ -151,9 +151,14 @@ export async function commitLocatorAttempt(attemptId: string, input: CommitLocat
   return parseLocatorResult(res);
 }
 
-export async function releaseLocatorAttempt(attemptId: string): Promise<LocatorAttemptView> {
+export async function releaseLocatorAttempt(
+  attemptId: string,
+  input: { cancellation?: boolean } = { cancellation: true },
+): Promise<LocatorAttemptView> {
   const res = await apiFetch(`/v1/economy/locator-attempts/${encodeURIComponent(attemptId)}/release`, {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
   });
   return parseLocatorResult(res);
 }

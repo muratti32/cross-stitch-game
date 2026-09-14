@@ -124,7 +124,7 @@ describe('LocatorAttemptService', () => {
       .mockResolvedValueOnce([{ balance: '1' }]);
     const { service } = makeService(query);
 
-    await expect(service.release(principal, input.attemptId)).resolves.toMatchObject({
+    await expect(service.release(principal, input.attemptId, { cancellation: true })).resolves.toMatchObject({
       status: 'released', balance: 1,
     });
     const releaseCall = (query.mock.calls as unknown[][]).find((call) => {

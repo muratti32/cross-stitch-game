@@ -32,6 +32,10 @@ export interface CommitLocatorAttemptInput {
   progressHash?: string;
 }
 
+export interface ReleaseLocatorAttemptInput {
+  cancellation?: boolean;
+}
+
 export interface LocatorAttemptView {
   attemptId: string;
   status: 'prepared' | 'committed' | 'released' | 'expired' | 'rejected';
@@ -190,7 +194,11 @@ export class LocatorAttemptService {
     });
   }
 
-  async release(principal: AuthPrincipal, attemptId: string): Promise<LocatorAttemptView> {
+  async release(
+    principal: AuthPrincipal,
+    attemptId: string,
+    input: ReleaseLocatorAttemptInput = {},
+  ): Promise<LocatorAttemptView> {
     return this.dataSource.transaction(async (manager) => {
       const owner = toLedgerPrincipal(principal);
       const attempt = await this.requireAttempt(manager, attemptId, true);
@@ -199,6 +207,9 @@ export class LocatorAttemptService {
       // Releasing a committed attempt compensates that commit, so cancellation
       // remains charge-free while the ledger retains an auditable reversal.
       if (attempt.status !== 'prepared' && attempt.status !== 'committed') {
+        return this.view(attempt, await this.readBalance(manager, owner));
+      }
+      if (attempt.status === 'committed' && input.cancellation !== true) {
         return this.view(attempt, await this.readBalance(manager, owner));
       }
       const terminal = attempt.status === 'prepared'

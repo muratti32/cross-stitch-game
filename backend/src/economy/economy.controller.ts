@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common';
-import { IsInt, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
 
 import { CurrentPrincipal, JwtAuthGuard } from '../auth';
 import type { AuthPrincipal } from '../auth/auth.types';
@@ -15,6 +15,7 @@ import {
   CommitLocatorAttemptInput,
   LocatorAttemptService,
   PrepareLocatorAttemptInput,
+  ReleaseLocatorAttemptInput,
 } from './locator-attempt.service';
 
 class ClaimClientRewardDto {
@@ -70,6 +71,12 @@ class CommitLocatorAttemptDto implements CommitLocatorAttemptInput {
   @IsString()
   @MaxLength(128)
   progressHash?: string;
+}
+
+class ReleaseLocatorAttemptDto implements ReleaseLocatorAttemptInput {
+  @IsOptional()
+  @IsBoolean()
+  cancellation?: boolean;
 }
 
 /**
@@ -160,8 +167,9 @@ export class EconomyController {
   async releaseLocatorAttempt(
     @CurrentPrincipal() principal: AuthPrincipal,
     @Param('attemptId', new ParseUUIDPipe({ version: '4' })) attemptId: string,
+    @Body() dto: ReleaseLocatorAttemptDto,
   ) {
-    return this.locatorAttemptService.release(principal, attemptId);
+    return this.locatorAttemptService.release(principal, attemptId, dto);
   }
 
   @Get('locator-attempts/:attemptId')
