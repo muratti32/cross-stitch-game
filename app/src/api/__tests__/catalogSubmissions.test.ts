@@ -1,6 +1,7 @@
 jest.mock('@sentry/react-native', () => ({
+  addBreadcrumb: jest.fn(),
   captureMessage: jest.fn(() => 'submission-error-event'),
-  withScope: jest.fn((callback) => callback({ setContext: jest.fn(), setLevel: jest.fn(), setTag: jest.fn() })),
+  withScope: jest.fn((callback) => callback({ setContext: jest.fn(), setFingerprint: jest.fn(), setLevel: jest.fn(), setTag: jest.fn() })),
 }));
 
 import {

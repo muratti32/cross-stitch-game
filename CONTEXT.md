@@ -40,7 +40,7 @@ measures exposure and recurrence, not an ANR or its cause.
 _Avoid_: crash report, ANR confirmation, player/session identifier
 
 **Support Reference**:
-The short opaque code a player can copy from a failed or delayed sync, Processing Job, purchase, promotion, or moderation flow so support can find the corresponding server records. It contains no email, provider identifier, prompt, artwork, Pattern bytes, or access credential and can be shared without exposing another player's data.
+The short opaque code a player can copy from a failed or delayed sync, Processing Job, purchase, promotion, or moderation flow so support can find the corresponding server records or the client diagnostic event reported for that failure. One presented failure yields one Support Reference; showing the same failure again repeats the same code rather than minting a new one. It contains no email, provider identifier, prompt, artwork, Pattern bytes, or access credential and can be shared without exposing another player's data.
 _Avoid_: Raw log, transaction receipt, error stack
 
 **App Display Language**:

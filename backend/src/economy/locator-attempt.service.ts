@@ -195,8 +195,16 @@ export class LocatorAttemptService {
       const owner = toLedgerPrincipal(principal);
       const attempt = await this.requireAttempt(manager, attemptId, true);
       this.assertOwner(attempt, owner);
-      if (attempt.status !== 'prepared') return this.view(attempt, await this.readBalance(manager, owner));
-      const terminal = new Date(attempt.reserved_until).getTime() <= Date.now() ? 'expired' : 'released';
+      // A cancellation can race a commit already accepted by the backend.
+      // Releasing a committed attempt compensates that commit, so cancellation
+      // remains charge-free while the ledger retains an auditable reversal.
+      if (attempt.status !== 'prepared' && attempt.status !== 'committed') {
+        return this.view(attempt, await this.readBalance(manager, owner));
+      }
+      const terminal = attempt.status === 'prepared'
+        && new Date(attempt.reserved_until).getTime() <= Date.now()
+        ? 'expired'
+        : 'released';
       return this.releaseLocked(manager, attempt, owner, terminal);
     });
   }
@@ -226,7 +234,7 @@ export class LocatorAttemptService {
   private async releaseLocked(manager: EntityManager, attempt: AttemptRow, owner: LedgerPrincipal, status: 'released' | 'expired'): Promise<LocatorAttemptView> {
     const updated = await manager.query<AttemptRow[]>(
       `UPDATE economy.locator_attempts SET status = $2, terminal_at = now(), updated_at = now()
-       WHERE attempt_id = $1 AND status = 'prepared' RETURNING *`,
+       WHERE attempt_id = $1 AND status IN ('prepared', 'committed') RETURNING *`,
       [attempt.attempt_id, status],
     );
     const row = updated[0] ?? attempt;
@@ -242,7 +250,9 @@ export class LocatorAttemptService {
            (principal_type, principal_id, amount, reason, source_key, granted, metadata)
          VALUES ($1, $2, $3, $4, $5, true, $6)
          ON CONFLICT (source_key) DO NOTHING`,
-        [owner.type, owner.id, LOCATOR_PRICE_COIN, CoinLedgerReason.LocatorSpend, `locator:${attempt.attempt_id}:release`, { action: status }],
+          [owner.type, owner.id, LOCATOR_PRICE_COIN, CoinLedgerReason.LocatorSpend, `locator:${attempt.attempt_id}:release`, {
+            action: attempt.status === 'committed' ? 'cancel_after_commit' : status,
+          }],
       );
     }
     return this.view(row, await this.readBalance(manager, owner));

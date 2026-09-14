@@ -35,6 +35,7 @@ import { useRenderStopExposure } from '@/analytics/renderStopExposure';
 import {
   coinBalanceQueryKey,
   commitLocatorAttempt,
+  LocatorInsufficientBalanceError,
   prepareLocatorAttempt,
   releaseLocatorAttempt,
 } from '@/api/economy';
@@ -45,7 +46,7 @@ export default function SessionReadyScreen() {
   const router = useRouter();
   const navigation = useNavigation();
   const { theme } = useActiveMembershipTheme();
-  const { t, i18n: i18nInstance } = useTranslation('play');
+  const { t, i18n: i18nInstance } = useTranslation(['play', 'catalog', 'errors']);
   const locale = i18nInstance.language;
   const isSessionScreenFocused = useIsFocused();
   const queryClient = useQueryClient();
@@ -429,6 +430,17 @@ export default function SessionReadyScreen() {
     } catch (error) {
       queryClient.invalidateQueries({ queryKey: coinBalanceQueryKey });
       if (error instanceof Error && error.name === 'AbortError') return;
+      if (error instanceof LocatorInsufficientBalanceError) {
+        const details = [
+          `${t('price.label', { ns: 'catalog' })}: ${error.price}`,
+          `${t('balance.label', { ns: 'catalog' })}: ${error.balance}`,
+        ].join(' · ');
+        Alert.alert(
+          t('insufficientCoins.title', { ns: 'catalog' }),
+          `${t('generic.failure', { ns: 'errors' })}\n\n${details}`,
+        );
+        return;
+      }
       // Keep a prepared attempt pending when commit outcome is unknown; a
       // retry/status check with the same attempt id is the only safe path.
       const message = isServerApiError(error)

@@ -104,4 +104,33 @@ describe('LocatorAttemptService', () => {
     expect(calls).toContain('locator:22222222-2222-4222-8222-222222222222:commit');
     expect(calls.match(/locator:22222222-2222-4222-8222-222222222222:commit/g)).toHaveLength(1);
   });
+
+  it('compensates a commit that races a client cancellation', async () => {
+    const committed = {
+      attempt_id: input.attemptId,
+      principal_type: 'guest', principal_id: principal.id,
+      session_id: input.sessionId, pattern_id: input.patternId,
+      color_index: 0, dmc_code: '310', target_cell_index: 7,
+      progress_revision: null, progress_hash: null,
+      reserved_paid_amount: '0', status: 'committed',
+      reserved_until: new Date(Date.now() + 60_000), terminal_at: null,
+    };
+    const released = { ...committed, status: 'released' };
+    const query = jest.fn()
+      .mockResolvedValueOnce([committed])
+      .mockResolvedValueOnce([released])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ balance: '1' }]);
+    const { service } = makeService(query);
+
+    await expect(service.release(principal, input.attemptId)).resolves.toMatchObject({
+      status: 'released', balance: 1,
+    });
+    const releaseCall = query.mock.calls.find((call) => (
+      Array.isArray(call[1]) && call[1].includes(`locator:${input.attemptId}:release`)
+    ));
+    expect(releaseCall?.[1]?.at(-1)).toMatchObject({ action: 'cancel_after_commit' });
+    expect(query.mock.calls.flat().join(' ')).toContain('locator:22222222-2222-4222-8222-222222222222:release');
+  });
 });
