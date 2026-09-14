@@ -607,11 +607,11 @@ The first-release performance gate for stitching interactions, measured on the o
 _Avoid_: Best-effort performance, server tap, average-only benchmark
 
 **Device Rendering Profile**:
-The hardware-capability classification ('low' or 'standard') derived on-device from available system memory to keep the Stitch Interaction Budget within GPU flush limits on constrained mobile devices. On a low profile, Completed Stitch rendering caps fine-grained thread highlighting and shadow passes without changing DMC Thread Colors, progress, gameplay rules, or cosmetic theme palettes.
+The Android-only hardware-capability classification ('low' or 'standard') derived on-device from available system memory to keep the Stitch Interaction Budget within GPU flush limits on constrained devices. On a low profile, Completed Stitch rendering drops the thread shadow and highlight strands without changing DMC Thread Colors, progress, gameplay rules, or cosmetic theme palettes.
 _Avoid_: Graphics setting, low quality mode, visual downgrade
 
 **Pan Redraw Coalescing**:
-The synchronization boundary where high-frequency touch-movement events during viewport pan and Anchored Zoom are consolidated to the display frame rate. It prevents redundant intermediate scene redraws on the UI thread while preserving full touch tracking and gesture responsiveness.
+The synchronization boundary where high-frequency touch-movement events during viewport pan are consolidated to the display frame rate. It preserves full touch tracking while reducing intermediate viewport transform writes.
 _Avoid_: Frame dropping, input throttle, gesture lag
 
 **Undo Action**:

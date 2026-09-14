@@ -4,7 +4,7 @@ import {
   getDeviceProfile,
   isThermalSupported,
   getMemoryUsageAsync,
-  getDeviceClass,
+  getDeviceRenderingProfile,
   LOW_END_RAM_THRESHOLD_BYTES,
 } from '../src/index';
 
@@ -233,27 +233,40 @@ describe('perf-thermal module fallback and native mapping', () => {
     });
   });
 
-  describe('getDeviceClass (ADR-0056)', () => {
-    it('classifies devices with <= 3.25 GB RAM as low', () => {
-      // e.g. Samsung Galaxy Tab A7 Lite (SM-T225) ~2.9 GB
+  describe('getDeviceRenderingProfile (ADR-0056)', () => {
+    it('classifies constrained Android devices as low', () => {
+      // Reported memory is lower than marketed RAM on the reference device.
       const tabA7LiteBytes = 2.9 * 1024 * 1024 * 1024;
-      expect(getDeviceClass({ totalMemoryBytes: tabA7LiteBytes })).toBe('low');
+      expect(getDeviceRenderingProfile({
+        platform: 'android',
+        totalMemoryBytes: tabA7LiteBytes,
+      })).toBe('low');
 
-      // Exact threshold
-      expect(getDeviceClass({ totalMemoryBytes: LOW_END_RAM_THRESHOLD_BYTES })).toBe('low');
+      expect(getDeviceRenderingProfile({
+        platform: 'android',
+        totalMemoryBytes: LOW_END_RAM_THRESHOLD_BYTES,
+      })).toBe('low');
     });
 
-    it('classifies devices with > 3.25 GB RAM as standard', () => {
+    it('classifies Android devices above the threshold as standard', () => {
       const fourGbBytes = 4 * 1024 * 1024 * 1024;
-      expect(getDeviceClass({ totalMemoryBytes: fourGbBytes })).toBe('standard');
-
-      const sixGbBytes = 6 * 1024 * 1024 * 1024;
-      expect(getDeviceClass({ totalMemoryBytes: sixGbBytes })).toBe('standard');
+      expect(getDeviceRenderingProfile({
+        platform: 'android',
+        totalMemoryBytes: fourGbBytes,
+      })).toBe('standard');
     });
 
-    it('defaults to standard when memory is 0 or unavailable', () => {
-      expect(getDeviceClass({ totalMemoryBytes: 0 })).toBe('standard');
-      expect(getDeviceClass({})).toBe('standard');
+    it('keeps iOS standard regardless of reported memory', () => {
+      const constrainedMemoryBytes = 2.9 * 1024 * 1024 * 1024;
+      expect(getDeviceRenderingProfile({
+        platform: 'ios',
+        totalMemoryBytes: constrainedMemoryBytes,
+      })).toBe('standard');
+    });
+
+    it('defaults to standard when Android memory is 0 or unavailable', () => {
+      expect(getDeviceRenderingProfile({ platform: 'android', totalMemoryBytes: 0 })).toBe('standard');
+      expect(getDeviceRenderingProfile({ platform: 'android' })).toBe('standard');
     });
   });
 });

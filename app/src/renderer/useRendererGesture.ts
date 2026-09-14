@@ -15,7 +15,6 @@ import {
   clampTranslation,
   computeEdgePanVelocity,
   translationBounds,
-  drainPanDeltas,
 } from './tileMath';
 
 /**
@@ -124,14 +123,15 @@ export function useRendererGesture({
 
   const flushPendingPanDeltas = () => {
     'worklet';
-    const { dx, dy, shouldUpdate } = drainPanDeltas(pendingPanDx.value, pendingPanDy.value);
-    if (shouldUpdate) {
-      pendingPanDx.value = 0;
-      pendingPanDy.value = 0;
-      translateX.value += dx;
-      translateY.value += dy;
-      clampTranslations(scale.value);
-    }
+    const dx = pendingPanDx.value;
+    const dy = pendingPanDy.value;
+    if (dx === 0 && dy === 0) return;
+
+    pendingPanDx.value = 0;
+    pendingPanDy.value = 0;
+    translateX.value += dx;
+    translateY.value += dy;
+    clampTranslations(scale.value);
   };
 
   // Helper worklet to clamp translations so content doesn't fly off screen

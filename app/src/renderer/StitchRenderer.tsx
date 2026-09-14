@@ -23,13 +23,14 @@ import {
   getVisibleTiles,
   getLodBand,
   type Point,
+  type LodBand,
 } from './tileMath';
 import { createSymbolAtlas, type SymbolAtlas } from './symbolAtlas';
 import { RendererState } from './RendererState';
 import { deriveThreadSurfaceColors, getThreadWidth } from './completedStitchVisualState';
 import { useRendererGesture } from './useRendererGesture';
 import { PatternData } from '../pattern-artifact';
-import { type DeviceClass, getDeviceClass } from '../../modules/perf-thermal';
+import type { DeviceRenderingProfile } from '../../modules/perf-thermal';
 import {
   useDerivedValue,
   useAnimatedReaction,
@@ -46,7 +47,6 @@ import {
 export interface StitchRendererProps {
   pattern: PatternData;
   rendererState: RendererState;
-  deviceClass?: DeviceClass;
   onCellTapped: (x: number, y: number) => void;
   onSweepStitch?: (x: number, y: number, gestureId: number) => void;
   onPinch?: () => void;
@@ -89,11 +89,18 @@ function drawStrand(
   canvas.drawLine(left + start.x, top + start.y, left + end.x, top + end.y, paint);
 }
 
+function completedTileCacheKey(
+  completedBaseKey: string,
+  lodBand: LodBand,
+  deviceRenderingProfile: DeviceRenderingProfile,
+): string {
+  return `${completedBaseKey}_${lodBand}_${deviceRenderingProfile}`;
+}
+
 export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRendererProps>((
   {
     pattern,
     rendererState,
-    deviceClass,
     onCellTapped,
     onSweepStitch,
     onPinch,
@@ -114,7 +121,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
   },
   ref
 ) => {
-  const effectiveDeviceClass = deviceClass ?? rendererState.getDeviceClass?.() ?? getDeviceClass();
+  const deviceRenderingProfile = rendererState.deviceRenderingProfile;
   // Local state revision to trigger React re-renders when gameplayState updates
   const [revision, setRevision] = useState(0);
   const [reduceMotion, setReduceMotion] = useState<boolean | null>(null);
@@ -447,8 +454,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
   const renderedTiles = visibleTiles.map(({ tileX, tileY }) => {
     const baseKey = `${theme.id}_${tileX}_${tileY}_${lodBand}`;
     const completedBaseKey = `${theme.id}_${tileX}_${tileY}`;
-    const completedVariant = `${lodBand}_${effectiveDeviceClass}`;
-    const completedKey = `${completedBaseKey}_${completedVariant}`;
+    const completedKey = completedTileCacheKey(completedBaseKey, lodBand, deviceRenderingProfile);
     const overlayKey = `${theme.id}_${tileX}_${tileY}`;
 
     // --- 1. Base Picture (Immutable per LOD band) ---
@@ -533,12 +539,12 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     // --- 2. Completed stitches Picture (Re-recorded on cell state changes) ---
     const isCompletedDirty = rendererState.checkAndClearCompletedDirty(tileX, tileY);
     if (isCompletedDirty) {
-      completedCache.current.delete(`${completedBaseKey}_out_${effectiveDeviceClass}`);
-      completedCache.current.delete(`${completedBaseKey}_mid_${effectiveDeviceClass}`);
-      completedCache.current.delete(`${completedBaseKey}_readable_${effectiveDeviceClass}`);
-      completedCache.current.delete(`${completedBaseKey}_out`);
-      completedCache.current.delete(`${completedBaseKey}_mid`);
-      completedCache.current.delete(`${completedBaseKey}_readable`);
+      const lodBands: readonly LodBand[] = ['out', 'mid', 'readable'];
+      for (const band of lodBands) {
+        completedCache.current.delete(
+          completedTileCacheKey(completedBaseKey, band, deviceRenderingProfile),
+        );
+      }
     }
     let completedPic = completedCache.current.get(completedKey);
 
@@ -593,9 +599,11 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
                   const threadWidth = getThreadWidth(decision.representation);
                   const surface = deriveThreadSurfaceColors(decision.dmcColor, decision.finish);
                   const geom = getStitchGeometry();
-                  stitchPaint.setStrokeWidth(threadWidth + THREAD_SHADOW_DELTA);
-                  stitchPaint.setColor(Skia.Color(surface.shadow));
-                  drawStrand(canvas, stitchPaint, left, top, geom.lowerStart, geom.lowerEnd);
+                  if (decision.threadShadow) {
+                    stitchPaint.setStrokeWidth(threadWidth + THREAD_SHADOW_DELTA);
+                    stitchPaint.setColor(Skia.Color(surface.shadow));
+                    drawStrand(canvas, stitchPaint, left, top, geom.lowerStart, geom.lowerEnd);
+                  }
                   stitchPaint.setStrokeWidth(threadWidth);
                   stitchPaint.setColor(Skia.Color(surface.base));
                   drawStrand(canvas, stitchPaint, left, top, geom.lowerStart, geom.lowerEnd);
@@ -720,7 +728,11 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     );
     const completedVisibleKeys = new Set(
       visibleTiles.map(
-        (t) => `${theme.id}_${t.tileX}_${t.tileY}_${lodBand}_${effectiveDeviceClass}`,
+        (t) => completedTileCacheKey(
+          `${theme.id}_${t.tileX}_${t.tileY}`,
+          lodBand,
+          deviceRenderingProfile,
+        ),
       ),
     );
     completedCache.current.prune(completedVisibleKeys, TILE_CACHE_BUDGET);
@@ -730,7 +742,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
       visibleTiles.map((t) => `${theme.id}_${t.tileX}_${t.tileY}_${lodBand}`)
     );
     baseCache.current.prune(baseVisibleKeys, TILE_CACHE_BUDGET);
-  }, [visibleTiles, lodBand, viewportMoving, theme.id]);
+  }, [visibleTiles, lodBand, viewportMoving, theme.id, deviceRenderingProfile]);
 
   // Setup dynamic transform array for Reanimated/Skia
   const skiaTransform = useDerivedValue(() => [
@@ -796,7 +808,9 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
               return (
                 <Group key={`dynamic-${cellIndex}`}>
                   <Rect x={left + FABRIC_INSET} y={top + FABRIC_INSET} width={CELL_SIZE - FABRIC_INSET * 2} height={CELL_SIZE - FABRIC_INSET * 2} color={theme.gridBackground} />
-                  <Line p1={lowerStart} p2={lowerEnd} color={surface.shadow} style="stroke" strokeWidth={threadWidth + THREAD_SHADOW_DELTA} />
+                  {decision.threadShadow && (
+                    <Line p1={lowerStart} p2={lowerEnd} color={surface.shadow} style="stroke" strokeWidth={threadWidth + THREAD_SHADOW_DELTA} />
+                  )}
                   <Line p1={lowerStart} p2={lowerEnd} color={surface.base} style="stroke" strokeWidth={threadWidth} />
                   <Line p1={upperStart} p2={upperEnd} color={surface.base} style="stroke" strokeWidth={threadWidth} />
                   {decision.representation === 'textured-cross' && (

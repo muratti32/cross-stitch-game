@@ -5,14 +5,14 @@ import {
 } from './completedStitchVisualState';
 import type { LodBand } from './tileMath';
 import type { ThreadFinish } from '../membership/themes';
-import type { DeviceClass } from '../../modules/perf-thermal';
+import type { DeviceRenderingProfile } from '../../modules/perf-thermal';
 
 export class RendererState {
   public readonly width: number;
   public readonly height: number;
   public readonly tilesX: number;
   public readonly tilesY: number;
-  public readonly deviceClass: DeviceClass;
+  public readonly deviceRenderingProfile: DeviceRenderingProfile;
 
   // Compact state: 1 if completed, 0 if not
   private readonly completed: Uint8Array;
@@ -30,14 +30,14 @@ export class RendererState {
     width: number,
     height: number,
     initialCompleted?: Uint8Array,
-    deviceClass: DeviceClass = 'standard',
+    deviceRenderingProfile: DeviceRenderingProfile = 'standard',
   ) {
     this.width = width;
     this.height = height;
-    this.deviceClass = deviceClass;
+    this.deviceRenderingProfile = deviceRenderingProfile;
     this.tilesX = Math.ceil(width / TILE_CELLS);
     this.tilesY = Math.ceil(height / TILE_CELLS);
-    this.completedStitchVisuals = new CompletedStitchVisualState(deviceClass);
+    this.completedStitchVisuals = new CompletedStitchVisualState(deviceRenderingProfile);
 
     this.completed = initialCompleted && initialCompleted.length === width * height
       ? new Uint8Array(initialCompleted)
@@ -77,10 +77,6 @@ export class RendererState {
   public isCompleted(x: number, y: number): boolean {
     if (x < 0 || x >= this.width || y < 0 || y >= this.height) return false;
     return this.completed[y * this.width + x] === 1;
-  }
-
-  public getDeviceClass(): DeviceClass {
-    return this.deviceClass;
   }
 
   /**

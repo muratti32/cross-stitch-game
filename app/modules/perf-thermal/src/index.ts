@@ -20,11 +20,10 @@ export interface PerfDeviceProfile {
 }
 
 /**
- * ADR-0056: Device Rendering Profile.
- * 'low' indicates hardware with <= 3.25 GB RAM (e.g. Galaxy Tab A7 Lite).
- * 'standard' indicates normal or high-performance hardware.
+ * ADR-0056: Android totalMem reports less than marketed RAM, so a 3.25 GiB
+ * reported-memory threshold covers devices marketed with up to 3 GB RAM.
  */
-export type DeviceClass = 'low' | 'standard';
+export type DeviceRenderingProfile = 'low' | 'standard';
 
 export const LOW_END_RAM_THRESHOLD_BYTES = 3.25 * 1024 * 1024 * 1024;
 
@@ -147,12 +146,19 @@ export function getDeviceProfile(): PerfDeviceProfile {
 }
 
 /**
- * ADR-0056: Resolves the device rendering profile ('low' or 'standard') based on total RAM.
- * Constrained devices (<= 3.25 GB RAM) cap tile picture complexity to prevent ANR.
+ * ADR-0056: Resolves the Android rendering profile from reported total memory.
  */
-export function getDeviceClass(profile?: Partial<PerfDeviceProfile>): DeviceClass {
+export function getDeviceRenderingProfile(
+  profile?: Partial<PerfDeviceProfile>,
+): DeviceRenderingProfile {
   const target = profile ?? getDeviceProfile();
-  if (target.totalMemoryBytes && target.totalMemoryBytes > 0 && target.totalMemoryBytes <= LOW_END_RAM_THRESHOLD_BYTES) {
+  const platform = target.platform ?? Platform.OS;
+  const totalMemoryBytes = target.totalMemoryBytes ?? 0;
+  if (
+    platform === 'android'
+    && totalMemoryBytes > 0
+    && totalMemoryBytes <= LOW_END_RAM_THRESHOLD_BYTES
+  ) {
     return 'low';
   }
   return 'standard';
