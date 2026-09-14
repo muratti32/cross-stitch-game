@@ -11,6 +11,24 @@ interface PublicCreatorProfile {
 
 const USERNAME_REGEX = /^[A-Za-z0-9_]{3,30}$/;
 
+function hasProperty<K extends PropertyKey>(
+  value: object,
+  key: K
+): value is object & Record<K, unknown> {
+  return Object.prototype.hasOwnProperty.call(value, key);
+}
+
+export function isPublicCreatorProfile(value: unknown): value is PublicCreatorProfile {
+  if (typeof value !== 'object' || value === null) return false;
+
+  return (
+    hasProperty(value, 'displayName') &&
+    typeof value.displayName === 'string' &&
+    hasProperty(value, 'username') &&
+    typeof value.username === 'string'
+  );
+}
+
 export function buildProfileApiUrl(apiUrl: string, username: string): string {
   return `${apiUrl}/v1/catalog/profiles/${encodeURIComponent(username)}`;
 }
@@ -30,7 +48,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
     return context.next();
   }
 
-  const apiUrl = env.VITE_API_URL ?? 'https://stitch-wish-staging-api.avkdesign.net';
+  const apiUrl = env.VITE_API_URL || 'https://stitch-wish-staging-api.avkdesign.net';
 
   try {
     const res = await fetch(buildProfileApiUrl(apiUrl, username));
@@ -39,9 +57,16 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       return htmlResponse(getUnavailableHtml(), 404);
     }
 
-    const profile = (await res.json()) as PublicCreatorProfile;
-    return htmlResponse(getProfileHtml(username, profile));
+    const value: unknown = await res.json();
+
+    if (!isPublicCreatorProfile(value)) {
+      // A structurally invalid upstream body is handled like an upstream failure.
+      return htmlResponse(getFallbackHtml(username));
+    }
+
+    return htmlResponse(getProfileHtml(username, value));
   } catch {
+    // Network or JSON parse errors cannot establish availability, so return the 200 redirect fallback.
     return htmlResponse(getFallbackHtml(username));
   }
 };

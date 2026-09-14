@@ -140,6 +140,83 @@ describe('Profile Share Page - onRequestGet', () => {
       expect(html).toContain('<a href="/profile/creator_123?fallback=true">click here to view in browser</a>');
     });
 
+    it('uses the default API URL when VITE_API_URL is an empty string', async () => {
+      const fetchSpy = vi.fn<typeof fetch>().mockResolvedValue(
+        new Response(JSON.stringify({ username: 'creator_123', displayName: 'Creator 123' }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        })
+      );
+      vi.stubGlobal('fetch', fetchSpy);
+
+      const context = createMockContext({ username: 'creator_123', env: { VITE_API_URL: '' } });
+      const response = await onRequestGet(context);
+
+      expect(fetchSpy).toHaveBeenCalledWith(
+        'https://stitch-wish-staging-api.avkdesign.net/v1/catalog/profiles/creator_123'
+      );
+      expect(response.status).toBe(200);
+      expect(await response.text()).toContain(
+        '<title>Stitch Wish - Creator 123 (@creator_123)</title>'
+      );
+    });
+
+    it('returns 200 fallback HTML for invalid JSON bodies', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn<typeof fetch>().mockResolvedValue(new Response('{not json', { status: 200 }))
+      );
+
+      const response = await onRequestGet(createMockContext({ username: 'creator_123' }));
+      const html = await response.text();
+
+      expect(response.status).toBe(200);
+      expect(html).toContain('<title>Stitch Wish - @creator_123</title>');
+      expect(html).not.toContain('View display name');
+    });
+
+    it.each([
+      ['a null body', null],
+      ['an array body', []],
+      ['a body missing displayName', { username: 'creator_123' }],
+      ['a body missing username', { displayName: 'Creator 123' }],
+      ['a non-string displayName', { username: 'creator_123', displayName: 42 }],
+      ['a non-string username', { username: 123, displayName: 'Creator 123' }],
+    ])('returns 200 fallback HTML when the response fails the profile guard: %s', async (_label, body) => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn<typeof fetch>().mockResolvedValue(
+          new Response(JSON.stringify(body), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        )
+      );
+
+      const response = await onRequestGet(createMockContext({ username: 'creator_123' }));
+      const html = await response.text();
+
+      expect(response.status).toBe(200);
+      expect(html).toContain('<title>Stitch Wish - @creator_123</title>');
+      expect(html).not.toContain('View display name');
+      expect(html).not.toContain('undefined');
+    });
+
+    it.each([403, 404, 410, 500])(
+      'returns 404 unavailable page for upstream status %s',
+      async (status) => {
+        vi.stubGlobal(
+          'fetch',
+          vi.fn<typeof fetch>().mockResolvedValue(new Response('{}', { status }))
+        );
+
+        const response = await onRequestGet(createMockContext({ username: 'creator_123' }));
+
+        expect(response.status).toBe(404);
+        expect(await response.text()).toContain('Profile Unavailable');
+      }
+    );
+
     it('resolves to unavailable page for an Account Closure Hold response', async () => {
       const fetchSpy = vi.fn<typeof fetch>().mockResolvedValue(
         new Response(
