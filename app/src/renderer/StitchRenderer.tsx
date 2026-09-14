@@ -29,6 +29,7 @@ import { RendererState } from './RendererState';
 import { deriveThreadSurfaceColors, getThreadWidth } from './completedStitchVisualState';
 import { useRendererGesture } from './useRendererGesture';
 import { PatternData } from '../pattern-artifact';
+import { type DeviceClass, getDeviceClass } from '../../modules/perf-thermal';
 import {
   useDerivedValue,
   useAnimatedReaction,
@@ -45,6 +46,7 @@ import {
 export interface StitchRendererProps {
   pattern: PatternData;
   rendererState: RendererState;
+  deviceClass?: DeviceClass;
   onCellTapped: (x: number, y: number) => void;
   onSweepStitch?: (x: number, y: number, gestureId: number) => void;
   onPinch?: () => void;
@@ -91,6 +93,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
   {
     pattern,
     rendererState,
+    deviceClass,
     onCellTapped,
     onSweepStitch,
     onPinch,
@@ -111,6 +114,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
   },
   ref
 ) => {
+  const effectiveDeviceClass = deviceClass ?? rendererState.getDeviceClass?.() ?? getDeviceClass();
   // Local state revision to trigger React re-renders when gameplayState updates
   const [revision, setRevision] = useState(0);
   const [reduceMotion, setReduceMotion] = useState<boolean | null>(null);
@@ -443,7 +447,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
   const renderedTiles = visibleTiles.map(({ tileX, tileY }) => {
     const baseKey = `${theme.id}_${tileX}_${tileY}_${lodBand}`;
     const completedBaseKey = `${theme.id}_${tileX}_${tileY}`;
-    const completedVariant = lodBand;
+    const completedVariant = `${lodBand}_${effectiveDeviceClass}`;
     const completedKey = `${completedBaseKey}_${completedVariant}`;
     const overlayKey = `${theme.id}_${tileX}_${tileY}`;
 
@@ -529,6 +533,9 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     // --- 2. Completed stitches Picture (Re-recorded on cell state changes) ---
     const isCompletedDirty = rendererState.checkAndClearCompletedDirty(tileX, tileY);
     if (isCompletedDirty) {
+      completedCache.current.delete(`${completedBaseKey}_out_${effectiveDeviceClass}`);
+      completedCache.current.delete(`${completedBaseKey}_mid_${effectiveDeviceClass}`);
+      completedCache.current.delete(`${completedBaseKey}_readable_${effectiveDeviceClass}`);
       completedCache.current.delete(`${completedBaseKey}_out`);
       completedCache.current.delete(`${completedBaseKey}_mid`);
       completedCache.current.delete(`${completedBaseKey}_readable`);
@@ -713,7 +720,7 @@ export const StitchRenderer = React.forwardRef<StitchRendererRef, StitchRenderer
     );
     const completedVisibleKeys = new Set(
       visibleTiles.map(
-        (t) => `${theme.id}_${t.tileX}_${t.tileY}_${lodBand}`,
+        (t) => `${theme.id}_${t.tileX}_${t.tileY}_${lodBand}_${effectiveDeviceClass}`,
       ),
     );
     completedCache.current.prune(completedVisibleKeys, TILE_CACHE_BUDGET);

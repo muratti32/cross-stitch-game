@@ -15,6 +15,7 @@ import {
   clampTranslation,
   computeEdgePanVelocity,
   translationBounds,
+  drainPanDeltas,
 } from './tileMath';
 
 /**
@@ -116,6 +117,23 @@ export function useRendererGesture({
   const sweepMovementThreshold = 8;
   const edgeAutoPanObserved = useSharedValue(false);
 
+  // Frame-rate redraw coalescing (ADR-0056): buffers touch move deltas so
+  // translateX/translateY only update once per display frame (VSYNC).
+  const pendingPanDx = useSharedValue(0.0);
+  const pendingPanDy = useSharedValue(0.0);
+
+  const flushPendingPanDeltas = () => {
+    'worklet';
+    const { dx, dy, shouldUpdate } = drainPanDeltas(pendingPanDx.value, pendingPanDy.value);
+    if (shouldUpdate) {
+      pendingPanDx.value = 0;
+      pendingPanDy.value = 0;
+      translateX.value += dx;
+      translateY.value += dy;
+      clampTranslations(scale.value);
+    }
+  };
+
   // Helper worklet to clamp translations so content doesn't fly off screen
   const clampTranslations = (currentScale: number) => {
     'worklet';
@@ -154,9 +172,12 @@ export function useRendererGesture({
     }
   }, [panSlack.bottom, panSlack.left, panSlack.right, panSlack.top]);
 
-  // Edge auto-pan loop
+  // VSYNC frame loop: coalesces pan updates to display cadence (ADR-0056)
+  // and drives Edge Auto-Pan during active Stitch Sweep.
   useFrameCallback((frameInfo) => {
     'worklet';
+    flushPendingPanDeltas();
+
     if (!isSweepActive.value) return;
 
     if (isColorCompletedShared.value) {
@@ -329,11 +350,13 @@ export function useRendererGesture({
   const pinchGesture = Gesture.Pinch()
     .onStart(() => {
       if (onPinch) runOnJS(onPinch)();
+      flushPendingPanDeltas();
       cancelAnimation(scale);
       cancelAnimation(translateX);
       cancelAnimation(translateY);
     })
     .onChange((event) => {
+      flushPendingPanDeltas();
       const prevScale = scale.value;
       const s = clamp(prevScale * event.scaleChange, minScale.value, maxScale);
       const applied = s / prevScale;
@@ -393,6 +416,8 @@ export function useRendererGesture({
     })
     .onStart(() => {
       if (isSweepActive.value) return;
+      pendingPanDx.value = 0;
+      pendingPanDy.value = 0;
       cancelAnimation(translateX);
       cancelAnimation(translateY);
     })
@@ -452,12 +477,16 @@ export function useRendererGesture({
           }
         }
       } else {
-        translateX.value += event.changeX;
-        translateY.value += event.changeY;
-        clampTranslations(scale.value);
+        // ADR-0056: Coalesce pan deltas to the display frame (VSYNC) via useFrameCallback
+        // instead of mutating translateX/translateY on every high-frequency touch event.
+        pendingPanDx.value += event.changeX;
+        pendingPanDy.value += event.changeY;
       }
     })
     .onEnd((event) => {
+      // Synchronously flush any residual touch deltas before calculating decay bounds
+      flushPendingPanDeltas();
+
       if (isSweepActive.value) {
         isSweepActive.value = false;
         isSweepCandidate.value = false;
@@ -500,6 +529,8 @@ export function useRendererGesture({
     .numberOfTaps(1)
     .maxDistance(TAP_MAX_TRAVEL_PX)
     .onEnd((event) => {
+      flushPendingPanDeltas();
+
       // A Stitch Sweep already stitched the pressed cell from onBegin, so this
       // touch has had its Stitch Action.
       if (sweptThisTouch.value) return;

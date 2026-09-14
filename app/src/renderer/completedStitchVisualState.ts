@@ -1,5 +1,6 @@
 import { THREAD_WIDTH_PLAIN, THREAD_WIDTH_TEXTURED, type LodBand } from './tileMath';
 import type { ThreadFinish } from '../membership/themes';
+import type { DeviceClass } from '../../modules/perf-thermal';
 
 export type CompletedStitchOrigin = 'local' | 'restored' | 'synchronized';
 export type CompletedStitchPhase = 'placing' | 'removing' | 'settled' | 'hidden';
@@ -72,9 +73,12 @@ function clamp(value: number): number {
   return Math.max(0, Math.min(1, value));
 }
 
-function representationFor(lod: LodBand): CompletedStitchRepresentation {
+function representationFor(lod: LodBand, deviceClass: DeviceClass = 'standard'): CompletedStitchRepresentation {
   if (lod === 'out') return 'mosaic';
-  return lod === 'mid' ? 'cross' : 'textured-cross';
+  if (lod === 'mid') return 'cross';
+  // ADR-0056: On low-memory devices (<= 3.25 GB RAM), cap readable LOD to plain cross
+  // to avoid nested SkPicture replay exceeding the 5s ANR watchdog.
+  return deviceClass === 'low' ? 'cross' : 'textured-cross';
 }
 
 /**
@@ -84,6 +88,11 @@ function representationFor(lod: LodBand): CompletedStitchRepresentation {
  */
 export class CompletedStitchVisualState {
   private readonly active = new Map<number, ActiveVisual>();
+  public readonly deviceClass: DeviceClass;
+
+  constructor(deviceClass: DeviceClass = 'standard') {
+    this.deviceClass = deviceClass;
+  }
 
   place(cellIndex: number, origin: CompletedStitchOrigin, lod: LodBand, now: number, reduceMotion: boolean): readonly number[] {
     if (origin !== 'local' || lod === 'out' || reduceMotion) {
@@ -165,7 +174,7 @@ export class CompletedStitchVisualState {
     const upperStrandProgress = clamp(progress * 2 - 1);
     // The renderer receives the chosen representation at placement start so
     // its first dynamic-frame work is not delayed until a later state change.
-    const representation = (visible || active !== undefined) ? representationFor(lod) : 'none';
+    const representation = (visible || active !== undefined) ? representationFor(lod, this.deviceClass) : 'none';
 
     return {
       phase,

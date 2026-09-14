@@ -1,5 +1,12 @@
 import { requireOptionalNativeModule } from 'expo';
-import { getThermalState, getDeviceProfile, isThermalSupported, getMemoryUsageAsync } from '../src/index';
+import {
+  getThermalState,
+  getDeviceProfile,
+  isThermalSupported,
+  getMemoryUsageAsync,
+  getDeviceClass,
+  LOW_END_RAM_THRESHOLD_BYTES,
+} from '../src/index';
 
 // Mock expo module
 jest.mock('expo', () => {
@@ -223,6 +230,30 @@ describe('perf-thermal module fallback and native mapping', () => {
         jsHeapUnavailableReason: 'stats unavailable',
       });
       delete runtime.HermesInternal;
+    });
+  });
+
+  describe('getDeviceClass (ADR-0056)', () => {
+    it('classifies devices with <= 3.25 GB RAM as low', () => {
+      // e.g. Samsung Galaxy Tab A7 Lite (SM-T225) ~2.9 GB
+      const tabA7LiteBytes = 2.9 * 1024 * 1024 * 1024;
+      expect(getDeviceClass({ totalMemoryBytes: tabA7LiteBytes })).toBe('low');
+
+      // Exact threshold
+      expect(getDeviceClass({ totalMemoryBytes: LOW_END_RAM_THRESHOLD_BYTES })).toBe('low');
+    });
+
+    it('classifies devices with > 3.25 GB RAM as standard', () => {
+      const fourGbBytes = 4 * 1024 * 1024 * 1024;
+      expect(getDeviceClass({ totalMemoryBytes: fourGbBytes })).toBe('standard');
+
+      const sixGbBytes = 6 * 1024 * 1024 * 1024;
+      expect(getDeviceClass({ totalMemoryBytes: sixGbBytes })).toBe('standard');
+    });
+
+    it('defaults to standard when memory is 0 or unavailable', () => {
+      expect(getDeviceClass({ totalMemoryBytes: 0 })).toBe('standard');
+      expect(getDeviceClass({})).toBe('standard');
     });
   });
 });

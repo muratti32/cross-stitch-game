@@ -5,12 +5,14 @@ import {
 } from './completedStitchVisualState';
 import type { LodBand } from './tileMath';
 import type { ThreadFinish } from '../membership/themes';
+import type { DeviceClass } from '../../modules/perf-thermal';
 
 export class RendererState {
   public readonly width: number;
   public readonly height: number;
   public readonly tilesX: number;
   public readonly tilesY: number;
+  public readonly deviceClass: DeviceClass;
 
   // Compact state: 1 if completed, 0 if not
   private readonly completed: Uint8Array;
@@ -18,17 +20,24 @@ export class RendererState {
   // Dirty flags for tile pictures (1 if dirty, 0 if clean)
   private readonly completedDirty: Uint8Array;
   private readonly overlayDirty: Uint8Array;
-  private readonly completedStitchVisuals = new CompletedStitchVisualState();
+  private readonly completedStitchVisuals: CompletedStitchVisualState;
 
   // Remaining cell locator focus coordinates (-1 if none)
   private focusedCellX: number = -1;
   private focusedCellY: number = -1;
 
-  constructor(width: number, height: number, initialCompleted?: Uint8Array) {
+  constructor(
+    width: number,
+    height: number,
+    initialCompleted?: Uint8Array,
+    deviceClass: DeviceClass = 'standard',
+  ) {
     this.width = width;
     this.height = height;
+    this.deviceClass = deviceClass;
     this.tilesX = Math.ceil(width / TILE_CELLS);
     this.tilesY = Math.ceil(height / TILE_CELLS);
+    this.completedStitchVisuals = new CompletedStitchVisualState(deviceClass);
 
     this.completed = initialCompleted && initialCompleted.length === width * height
       ? new Uint8Array(initialCompleted)
@@ -68,6 +77,10 @@ export class RendererState {
   public isCompleted(x: number, y: number): boolean {
     if (x < 0 || x >= this.width || y < 0 || y >= this.height) return false;
     return this.completed[y * this.width + x] === 1;
+  }
+
+  public getDeviceClass(): DeviceClass {
+    return this.deviceClass;
   }
 
   /**

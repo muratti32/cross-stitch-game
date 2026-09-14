@@ -357,3 +357,20 @@ export function computeEdgePanVelocity(
   }
   return 0;
 }
+
+/**
+ * ADR-0056: Pan Redraw Coalescing.
+ * Evaluates accumulated pan deltas for VSYNC / gesture-boundary coalescing.
+ * Returns the deltas to apply and whether an update should occur.
+ */
+export function drainPanDeltas(
+  pendingDx: number,
+  pendingDy: number,
+): { dx: number; dy: number; shouldUpdate: boolean } {
+  'worklet';
+  if (pendingDx !== 0 || pendingDy !== 0) {
+    return { dx: pendingDx, dy: pendingDy, shouldUpdate: true };
+  }
+  return { dx: 0, dy: 0, shouldUpdate: false };
+}
+

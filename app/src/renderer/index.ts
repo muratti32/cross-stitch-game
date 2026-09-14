@@ -14,6 +14,7 @@ export {
   computeEdgePanVelocity,
   clampTranslation,
   translationBounds,
+  drainPanDeltas,
   type Viewport,
   type LodBand,
 } from './tileMath';
