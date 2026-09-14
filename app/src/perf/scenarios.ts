@@ -6,12 +6,14 @@ import {
   FrameSampler,
   LatencySampler,
   ThermalSampler,
+  MemorySampler,
 } from './metrics';
 import {
   ScenarioId,
   SCENARIO_KIND,
   ThermalState,
   REQUIRED_SCENARIOS,
+  isMemoryBudgetedScenario,
 } from './budgets';
 import {
   beginCriticalPathWindow,
@@ -24,7 +26,7 @@ import {
   getAnchoredZoomTransform,
   computeEdgePanVelocity,
 } from '../renderer/tileMath';
-import { getThermalState } from '../../modules/perf-thermal';
+import { getMemoryUsageAsync, getThermalState } from '../../modules/perf-thermal';
 import { ScenarioMeasurement } from './report';
 
 export interface ScenarioContext {
@@ -40,6 +42,7 @@ export interface ScenarioContext {
   frameSampler: FrameSampler;
   latencySampler: LatencySampler;
   thermalSampler: ThermalSampler;
+  memorySampler: MemorySampler;
   bumpRevision: () => void;
   stitchCell: (x: number, y: number) => void;
   undoLast: () => void;
@@ -62,6 +65,10 @@ const getCurrentTime = () =>
     : Date.now();
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const MEMORY_BALLAST_BUFFER_COUNT = 8;
+const MEMORY_BALLAST_BUFFER_BYTES = 24 * 1024 * 1024;
+const MEMORY_BALLAST_PAGE_BYTES = 4096;
+const MEMORY_BALLAST_BYTES = MEMORY_BALLAST_BUFFER_COUNT * MEMORY_BALLAST_BUFFER_BYTES;
 
 function clampTranslation(
   tx: number,
@@ -484,8 +491,13 @@ export const SCENARIOS: readonly ScenarioDefinition[] = [
     async run(ctx, signal) {
       const ballast: ArrayBuffer[] = [];
       try {
-        for (let i = 0; i < 8; i++) {
-          ballast.push(new ArrayBuffer(24 * 1024 * 1024));
+        for (let i = 0; i < MEMORY_BALLAST_BUFFER_COUNT; i++) {
+          const buffer = new ArrayBuffer(MEMORY_BALLAST_BUFFER_BYTES);
+          const view = new Uint8Array(buffer);
+          for (let offset = 0; offset < view.byteLength; offset += MEMORY_BALLAST_PAGE_BYTES) {
+            view[offset] = i + 1;
+          }
+          ballast.push(buffer);
         }
         
         let lastTime = getCurrentTime();
@@ -503,7 +515,7 @@ export const SCENARIOS: readonly ScenarioDefinition[] = [
           const dt = now - lastTime;
           lastTime = now;
           ctx.frameSampler.pushFrameInterval(dt);
-          
+
           const t = (now - startTime) / duration;
           const contentW = ctx.pattern.width * CELL_SIZE * ctx.scale.value;
           const contentH = ctx.pattern.height * CELL_SIZE * ctx.scale.value;
@@ -749,6 +761,7 @@ export async function runScenario(
   ctx.frameSampler.reset();
   ctx.latencySampler.reset();
   ctx.thermalSampler.reset();
+  ctx.memorySampler.reset();
   resetCriticalPathSentinel();
 
   const startedAtIso = new Date().toISOString();
@@ -757,17 +770,43 @@ export async function runScenario(
   beginCriticalPathWindow(def.id);
 
   const signal = { cancelled: false };
+  const inFlightMemorySamples = new Set<Promise<void>>();
+  const sampleMemory = (): void => {
+    const samplePromise = getMemoryUsageAsync().then(
+      (reading) => {
+        ctx.memorySampler.push(reading);
+      },
+      (error: unknown) => {
+        ctx.memorySampler.push({ available: false, reason: errorMessage(error) });
+      }
+    );
+    inFlightMemorySamples.add(samplePromise);
+    void samplePromise.then(
+      () => {
+        inFlightMemorySamples.delete(samplePromise);
+      },
+      () => {
+        inFlightMemorySamples.delete(samplePromise);
+      }
+    );
+  };
+  sampleMemory();
+  const memoryTimer = setInterval(sampleMemory, 1000);
+  let endTime = startTime;
+  let violations: CriticalPathViolation[] = [];
   try {
     if (hooks?.onProgress) {
       hooks.onProgress(`Starting scenario ${def.title}...`);
     }
     await def.run(ctx, signal);
   } finally {
-    // Make sure we end window even if it fails
+    clearInterval(memoryTimer);
+    endTime = getCurrentTime();
+    sampleMemory();
+    await Promise.all(Array.from(inFlightMemorySamples));
+    violations = endCriticalPathWindow();
   }
 
-  const endTime = getCurrentTime();
-  const violations = endCriticalPathWindow();
   const durationMs = endTime - startTime;
 
   const kind = SCENARIO_KIND[def.id];
@@ -781,6 +820,8 @@ export async function runScenario(
       : undefined;
   const thermalSamples =
     kind === 'sustained' ? ctx.thermalSampler.samples() : undefined;
+  const memorySummary = ctx.memorySampler.summary();
+  const memorySamples = ctx.memorySampler.samples();
 
   return {
     scenarioId: def.id,
@@ -789,6 +830,18 @@ export async function runScenario(
     latencySamplesMs,
     frameIntervalsMs,
     thermalSamples,
+    memorySamples,
+    memoryUnavailableCount: memorySummary.unavailableCount,
+    memoryUnavailableReason: memorySummary.firstUnavailableReason,
     criticalPathViolations: violations,
+    notes:
+      isMemoryBudgetedScenario(def.id)
+        ? `Synthetic ballast: ${MEMORY_BALLAST_BYTES} bytes (${MEMORY_BALLAST_BUFFER_COUNT} x ${MEMORY_BALLAST_BUFFER_BYTES} bytes).`
+        : undefined,
   };
+}
+
+function errorMessage(error: unknown): string {
+  if (error instanceof Error && error.message) return error.message;
+  return String(error);
 }

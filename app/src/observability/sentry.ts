@@ -1,7 +1,13 @@
+import { AppState } from 'react-native';
 import * as Sentry from '@sentry/react-native';
 import { Config, isSentryConfigured } from '../config';
 import { subscribeToOpaquePlayerReference } from '../identity/playerReference';
 import { isOfflineNetworkError } from '../api/networkErrors';
+import {
+  formatBytesAsMb,
+  getMemoryUsageAsync,
+  type PerfMemoryReading,
+} from '../../modules/perf-thermal';
 
 /**
  * ADR-0035: Sentry events are scrubbed before send. No prompt text, artwork,
@@ -86,6 +92,54 @@ function scrubBreadcrumb(breadcrumb: Sentry.Breadcrumb): Sentry.Breadcrumb {
 }
 
 let initialized = false;
+let memoryWarningSubscriptionAdded = false;
+type MemoryBreadcrumbScreen = 'pattern_detail' | 'catalog_browse' | 'session_ready';
+
+function errorMessage(error: unknown): string {
+  if (error instanceof Error && error.message) return error.message;
+  return String(error);
+}
+
+function addMemoryBreadcrumb(
+  category: string,
+  level: 'info' | 'warning',
+  reading: PerfMemoryReading,
+  screenName?: string
+): void {
+  const prefix = screenName
+    ? `Screen '${screenName}' memory snapshot`
+    : 'OS low memory warning received';
+  if (!reading.available) {
+    Sentry.addBreadcrumb({
+      category,
+      message: `${prefix}; memory unavailable: ${reading.reason}`,
+      level,
+      data: { available: false, reason: reading.reason, ...(screenName ? { screen: screenName } : {}) },
+    });
+    return;
+  }
+
+  Sentry.addBreadcrumb({
+    category,
+    message: `${prefix} (resident: ${formatMemoryBytes(reading.residentBytes)}, footprint: ${formatBytesAsMb(reading.footprintBytes, 1)}MB, jsHeap: ${formatMemoryBytes(reading.jsHeapBytes)})`,
+    level,
+    data: {
+      available: true,
+      source: reading.source,
+      ...(screenName ? { screen: screenName } : {}),
+      residentBytes: reading.residentBytes,
+      footprintBytes: reading.footprintBytes,
+      jsHeapBytes: reading.jsHeapBytes,
+      ...(reading.jsHeapUnavailableReason
+        ? { jsHeapUnavailableReason: reading.jsHeapUnavailableReason }
+        : {}),
+    },
+  });
+}
+
+function formatMemoryBytes(bytes: number | null): string {
+  return bytes === null ? 'n/a' : `${formatBytesAsMb(bytes, 1)}MB`;
+}
 
 /**
  * Initializes Sentry crash reporting and performance instrumentation.
@@ -155,6 +209,38 @@ export function initSentry(): void {
       return event;
     },
   });
+
+  // Listen to OS memory warnings. React Native emits memoryWarning on iOS.
+  if (!memoryWarningSubscriptionAdded) {
+    memoryWarningSubscriptionAdded = true;
+    AppState.addEventListener('memoryWarning', () => {
+      void getMemoryUsageAsync().then(
+        (reading) => addMemoryBreadcrumb('device.memory_warning', 'warning', reading),
+        (error: unknown) =>
+          addMemoryBreadcrumb('device.memory_warning', 'warning', {
+            available: false,
+            reason: errorMessage(error),
+          })
+      );
+    });
+  }
+}
+
+/**
+ * Adds an informational Sentry breadcrumb capturing memory state at route/screen transitions.
+ */
+export function addScreenMemoryBreadcrumb(screenName: MemoryBreadcrumbScreen): Promise<void> {
+  if (!isSentryConfigured()) {
+    return Promise.resolve();
+  }
+  return getMemoryUsageAsync().then(
+    (reading) => addMemoryBreadcrumb('navigation.memory', 'info', reading, screenName),
+    (error: unknown) =>
+      addMemoryBreadcrumb('navigation.memory', 'info', {
+        available: false,
+        reason: errorMessage(error),
+      }, screenName)
+  );
 }
 
 /**
@@ -180,6 +266,16 @@ export function captureAnalyticsMirrorError(operation: string, error: unknown): 
   }
   Sentry.captureException(error instanceof Error ? error : new Error(String(error)), {
     contexts: { analyticsMirror: { operation } },
+  });
+}
+
+export function captureCachedImageError(operation: string, error: unknown): void {
+  const normalizedError = error instanceof Error ? error : new Error(String(error));
+  if (!isSentryConfigured() || isOfflineNetworkError(normalizedError)) {
+    return;
+  }
+  Sentry.captureException(normalizedError, {
+    contexts: { cachedImage: { operation } },
   });
 }
 

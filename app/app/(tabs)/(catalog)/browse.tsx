@@ -15,6 +15,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalLikes } from '@/api/social';
 import { useIdentityStore } from '@/identity/guestIdentity';
+import { addScreenMemoryBreadcrumb } from '@/observability/sentry';
 
 export default function BrowseScreen() {
   const { t } = useTranslation('catalog');
@@ -28,6 +29,10 @@ export default function BrowseScreen() {
   const browse = usePatternsBrowse({ category, tag });
   const { data: localLikes } = useLocalLikes();
   const { isAccount } = useIdentityStore();
+
+  React.useEffect(() => {
+    void addScreenMemoryBreadcrumb('catalog_browse');
+  }, []);
 
   const items: CatalogPatternItem[] =
     browse.data?.pages.flatMap((page) => page.data.items) ?? [];

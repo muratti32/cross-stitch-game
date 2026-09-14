@@ -10,6 +10,7 @@ import {
   LatencySampler,
   FrameSampler,
   ThermalSampler,
+  MemorySampler,
 } from "../metrics";
 import {
   buildBudgetPalette,
@@ -29,6 +30,7 @@ import {
 } from "../criticalPathSentinel";
 import {
   evaluateScenario,
+  evaluateMemoryBudget,
   buildRunReport,
   formatRunReport,
   type ScenarioMeasurement,
@@ -37,6 +39,43 @@ import {
 describe("Performance Measurement Core (ADR-0031)", () => {
   beforeEach(() => {
     resetCriticalPathSentinel();
+  });
+
+  describe("MemorySampler and memory budget", () => {
+    test("counts unavailable readings and keeps the first reason", () => {
+      const sampler = new MemorySampler();
+      sampler.push({ available: false, reason: "native read failed" });
+      sampler.push({
+        available: true,
+        source: "native",
+        residentBytes: null,
+        footprintBytes: 10,
+        jsHeapBytes: null,
+      });
+      sampler.push({ available: false, reason: "later failure" });
+
+      expect(sampler.summary()).toMatchObject({
+        sampleCount: 1,
+        unavailableCount: 2,
+        firstUnavailableReason: "native read failed",
+      });
+    });
+
+    test.each([
+      ["unavailable", { sampleCount: 5, unavailableCount: 1, peakFootprintBytes: 10 }],
+      ["zero", { sampleCount: 5, unavailableCount: 0, peakFootprintBytes: 0 }],
+      ["over budget", { sampleCount: 5, unavailableCount: 0, peakFootprintBytes: 301 * 1024 * 1024 }],
+      ["too few samples", { sampleCount: 4, unavailableCount: 0, peakFootprintBytes: 10 }],
+    ])("fails memory budget for %s", (_name, values) => {
+      const failures = evaluateMemoryBudget("worst-case-memory-pressure", {
+        peakResidentBytes: 1,
+        peakFootprintBytes: values.peakFootprintBytes,
+        peakJsHeapBytes: 1,
+        sampleCount: values.sampleCount,
+        unavailableCount: values.unavailableCount,
+      });
+      expect(failures.length).toBeGreaterThan(0);
+    });
   });
 
   describe("percentile and mean math helpers", () => {
@@ -387,6 +426,51 @@ describe("Performance Measurement Core (ADR-0031)", () => {
       expect(res.passed).toBe(false);
       expect(res.failures[0]).toContain("critical path violation [network]");
     });
+
+    test("evaluates worst-case-memory-pressure against memory budget", () => {
+      // Pass: under 300MB budget with >= 5 samples
+      const passingMeasure: ScenarioMeasurement = {
+        scenarioId: "worst-case-memory-pressure",
+        startedAtIso: new Date().toISOString(),
+        durationMs: 1000,
+        frameIntervalsMs: Array(300).fill(16.6),
+        memorySamples: [
+          { residentBytes: 150 * 1024 * 1024, footprintBytes: 140 * 1024 * 1024, jsHeapBytes: 20 * 1024 * 1024 },
+          { residentBytes: 180 * 1024 * 1024, footprintBytes: 170 * 1024 * 1024, jsHeapBytes: 25 * 1024 * 1024 },
+          { residentBytes: 210 * 1024 * 1024, footprintBytes: 200 * 1024 * 1024, jsHeapBytes: 28 * 1024 * 1024 },
+          { residentBytes: 250 * 1024 * 1024, footprintBytes: 240 * 1024 * 1024, jsHeapBytes: 30 * 1024 * 1024 },
+          { residentBytes: 220 * 1024 * 1024, footprintBytes: 210 * 1024 * 1024, jsHeapBytes: 26 * 1024 * 1024 },
+        ],
+        criticalPathViolations: [],
+      };
+      const passRes = evaluateScenario(passingMeasure);
+      expect(passRes.passed).toBe(true);
+      expect(passRes.memory?.peakFootprintBytes).toBe(240 * 1024 * 1024);
+
+      // Fail: exceeds 300MB budget (e.g. 350 MB)
+      const failingMeasure: ScenarioMeasurement = {
+        ...passingMeasure,
+        memorySamples: [
+          ...passingMeasure.memorySamples!,
+          { residentBytes: 380 * 1024 * 1024, footprintBytes: 350 * 1024 * 1024, jsHeapBytes: 40 * 1024 * 1024 },
+        ],
+      };
+      const failRes = evaluateScenario(failingMeasure);
+      expect(failRes.passed).toBe(false);
+      expect(failRes.failures.some((f) => f.includes("peak memory footprint") && f.includes("exceeds 300 MB budget"))).toBe(true);
+
+      // Fail: missing memory samples
+      const missingSamplesMeasure: ScenarioMeasurement = {
+        scenarioId: "worst-case-memory-pressure",
+        startedAtIso: new Date().toISOString(),
+        durationMs: 1000,
+        frameIntervalsMs: Array(300).fill(16.6),
+        criticalPathViolations: [],
+      };
+      const missingRes = evaluateScenario(missingSamplesMeasure);
+      expect(missingRes.passed).toBe(false);
+      expect(missingRes.failures.some((f) => f.includes("memory measurement missing"))).toBe(true);
+    });
   });
 
   describe("buildRunReport and formatRunReport", () => {
@@ -403,10 +487,10 @@ describe("Performance Measurement Core (ADR-0031)", () => {
       isReferenceDevice: true,
     };
 
-    // Helper to generate a minimal passing measurement for a scenario ID
     function makePassingMeasurement(id: ScenarioId): ScenarioMeasurement {
       const isLatency = id === "stitch-latency" || id === "undo-latency" || id === "worst-case-app-resume";
       const isSustained = id === "sustained-15min";
+      const isMemory = id === "worst-case-memory-pressure";
       return {
         scenarioId: id,
         startedAtIso: new Date().toISOString(),
@@ -414,6 +498,13 @@ describe("Performance Measurement Core (ADR-0031)", () => {
         latencySamplesMs: isLatency ? Array(100).fill(10) : undefined,
         frameIntervalsMs: !isLatency ? Array(300).fill(16.6) : undefined,
         thermalSamples: isSustained ? ["nominal"] : undefined,
+        memorySamples: isMemory
+          ? Array(10).fill({
+              residentBytes: 120 * 1024 * 1024,
+              footprintBytes: 110 * 1024 * 1024,
+              jsHeapBytes: 25 * 1024 * 1024,
+            })
+          : undefined,
         criticalPathViolations: [],
       };
     }

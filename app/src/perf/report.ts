@@ -4,12 +4,22 @@ import {
   REQUIRED_SCENARIOS,
   SCENARIO_KIND,
   STITCH_INTERACTION_BUDGET,
+  isMemoryBudgetedScenario,
   isThermalWithinBudget,
   type ScenarioId,
   type ThermalState,
 } from "./budgets";
+import { formatBytesAsMb } from "../../modules/perf-thermal";
 import { type CriticalPathViolation } from "./criticalPathSentinel";
-import { FrameSampler, percentile, type FrameSummary, ThermalSampler } from "./metrics";
+import {
+  FrameSampler,
+  percentile,
+  type FrameSummary,
+  ThermalSampler,
+  MemorySampler,
+  type MemorySample,
+  type MemorySummary,
+} from "./metrics";
 
 /**
  * ADR-0031: Performance Report Evaluation and Formatting.
@@ -22,6 +32,9 @@ export interface ScenarioMeasurement {
   latencySamplesMs?: number[];
   frameIntervalsMs?: number[];
   thermalSamples?: ThermalState[];
+  memorySamples?: MemorySample[];
+  memoryUnavailableCount?: number;
+  memoryUnavailableReason?: string;
   criticalPathViolations: CriticalPathViolation[];
   notes?: string;
 }
@@ -38,6 +51,7 @@ export interface ScenarioResult {
   thermal?: {
     worst: ThermalState;
   };
+  memory?: MemorySummary;
   durationMs: number;
 }
 
@@ -63,6 +77,38 @@ export interface PerfRunReport {
   results: ScenarioResult[];
   passed: boolean;
   failures: string[];
+}
+
+export function evaluateMemoryBudget(
+  scenarioId: ScenarioId,
+  summary: MemorySummary | undefined
+): string[] {
+  if (!isMemoryBudgetedScenario(scenarioId)) return [];
+  if (summary === undefined) {
+    return [`${scenarioId}: memory measurement missing from report`];
+  }
+
+  const failures: string[] = [];
+  const budget = STITCH_INTERACTION_BUDGET.memory;
+  if (summary.sampleCount < budget.minSamples) {
+    failures.push(
+      `${scenarioId}: memory sample count ${summary.sampleCount} is below minimum requirement of ${budget.minSamples}`
+    );
+  }
+  if (summary.unavailableCount > 0) {
+    failures.push(
+      `${scenarioId}: memory readings unavailable (${summary.unavailableCount}); first reason: ${summary.firstUnavailableReason ?? 'unspecified'}`
+    );
+  }
+  if (summary.peakFootprintBytes <= 0) {
+    failures.push(`${scenarioId}: peak memory footprint must be greater than 0 MB`);
+  }
+  if (summary.peakFootprintBytes > budget.maxPeakFootprintBytes) {
+    failures.push(
+      `${scenarioId}: peak memory footprint ${formatBytesAsMb(summary.peakFootprintBytes, 1)} MB exceeds ${formatBytesAsMb(budget.maxPeakFootprintBytes, 0)} MB budget`
+    );
+  }
+  return failures;
 }
 
 /**
@@ -200,6 +246,33 @@ export function evaluateScenario(m: ScenarioMeasurement): ScenarioResult {
     }
   }
 
+  // 5. Evaluate memory footprint
+  let memoryRes: MemorySummary | undefined;
+  if (m.memorySamples !== undefined) {
+    const memorySampler = new MemorySampler();
+    for (const sample of m.memorySamples) {
+      memorySampler.push(sample);
+    }
+    if (m.memoryUnavailableCount !== undefined) {
+      memorySampler.recordUnavailable(
+        m.memoryUnavailableCount,
+        m.memoryUnavailableReason ?? 'Memory reading was unavailable.'
+      );
+    }
+    memoryRes = memorySampler.summary();
+  } else if (m.memoryUnavailableCount !== undefined && m.memoryUnavailableCount > 0) {
+    memoryRes = {
+      peakResidentBytes: 0,
+      peakFootprintBytes: 0,
+      peakJsHeapBytes: 0,
+      sampleCount: 0,
+      unavailableCount: m.memoryUnavailableCount,
+      firstUnavailableReason: m.memoryUnavailableReason,
+    };
+  }
+
+  failures.push(...evaluateMemoryBudget(m.scenarioId, memoryRes));
+
   return {
     scenarioId: m.scenarioId,
     passed: failures.length === 0,
@@ -207,6 +280,7 @@ export function evaluateScenario(m: ScenarioMeasurement): ScenarioResult {
     latency: latencyRes,
     frames: framesRes,
     thermal: thermalRes,
+    memory: memoryRes,
     durationMs: m.durationMs,
   };
 }

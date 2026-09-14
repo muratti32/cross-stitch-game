@@ -38,6 +38,7 @@ import {
   FrameSampler,
   LatencySampler,
   ThermalSampler,
+  MemorySampler,
 } from '../metrics';
 import { getDeviceProfile } from '../../../modules/perf-thermal';
 import { getDatabase } from '@/local-db';
@@ -50,6 +51,7 @@ export default function PerfHarnessScreen() {
   const frameSampler = useRef(new FrameSampler()).current;
   const latencySampler = useRef(new LatencySampler()).current;
   const thermalSampler = useRef(new ThermalSampler()).current;
+  const memorySampler = useRef(new MemorySampler()).current;
 
   const [runStatus, setRunStatus] = useState<
     'idle' | 'running' | 'operator-action-required' | 'cancelled' | 'error' | 'completed'
@@ -197,6 +199,7 @@ export default function PerfHarnessScreen() {
           frameSampler,
           latencySampler,
           thermalSampler,
+          memorySampler,
           bumpRevision: () => {
             setRevision((r) => r + 1);
           },
