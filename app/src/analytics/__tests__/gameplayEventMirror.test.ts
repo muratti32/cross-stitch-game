@@ -350,6 +350,9 @@ describe('Analytics Mirror through captureGameplayEvent', () => {
       expect(loggedEvents()).toEqual([
         ['sw_session_started', { session_id: '0b5fe1ce-5f79-4c80-aa32-5ca9e67b8dd5' }],
       ]);
+      // The outer `try` swallows a throw, so "no throw" alone cannot catch
+      // STITCH-WISH-S: the symptom players saw was this Sentry report.
+      expect(mockedCaptureAnalyticsMirrorError).not.toHaveBeenCalled();
     });
 
     it('still reports a throwing SDK call to Sentry', async () => {
