@@ -279,6 +279,14 @@ export function captureCachedImageError(operation: string, error: unknown): void
   });
 }
 
+export function captureAdRewardVerificationError(error: unknown): void {
+  const normalizedError = error instanceof Error ? error : new Error(String(error));
+  if (!isSentryConfigured() || isOfflineNetworkError(normalizedError)) return;
+  Sentry.captureException(normalizedError, {
+    contexts: { adRewardVerification: { operation: 'poll-attempt-state' } },
+  });
+}
+
 /**
  * Keeps the Sentry player reference in sync with the identity store, so
  * crashes/perf events can be correlated with a Support Reference without

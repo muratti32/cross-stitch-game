@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Alla annonsbelöningar för idag är klara! (30/30 mynt)",
       "watchAdButton": "Titta på annons för +10 mynt ({{count}} kvar)",
       "adPerkNote": "Titta på upp till 3 annonser/dag · Premium låser upp direkt hämtning av 30 mynt",
-      "adRewardEarned": "Annonsbelöning intjänad! Verifierar med backend…",
+      "adRewardEarned": "Annonsbelöningen är verifierad!",
       "claimFailed": "Hämtning misslyckades: {{message}}",
       "claimFailedGeneric": "Något gick fel. Försök igen.",
       "adLoadFailedDefault": "Det gick inte att läsa in annonsen",
-      "adAttemptFailedDefault": "Det gick inte att öppna annonsförsöket"
+      "adAttemptFailedDefault": "Det gick inte att öppna annonsförsöket",
+      "adRewardVerifying": "Verifierar din belöning…",
+      "adRewardPending": "Din belöning verifieras fortfarande. Mynten visas snart.",
+      "adRewardExpired": "Belöningen för den här annonsen kunde inte verifieras i tid. Försök igen."
     },
     "tabs": {
       "myCreations": "Mina skapelser {{count}}",

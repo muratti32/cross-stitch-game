@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Ukończyłeś wszystkie dzisiejsze nagrody z reklam! (30/30 monet)",
       "watchAdButton": "Obejrzyj reklamę za +10 monet ({{count}} pozostało)",
       "adPerkNote": "Maksymalnie 3 reklamy dziennie · Członkowie Premium odbierają od razu 30 monet",
-      "adRewardEarned": "Zdobyto nagrodę z reklamy! Weryfikowanie na serwerze...",
+      "adRewardEarned": "Nagroda za reklamę zweryfikowana!",
       "claimFailed": "Odbiór nie powiódł się: {{message}}",
       "claimFailedGeneric": "Coś poszło nie tak. Spróbuj ponownie.",
       "adLoadFailedDefault": "Nie można załadować reklamy",
-      "adAttemptFailedDefault": "Nie można odtworzyć reklamy"
+      "adAttemptFailedDefault": "Nie można odtworzyć reklamy",
+      "adRewardVerifying": "Weryfikujemy nagrodę…",
+      "adRewardPending": "Nagroda jest nadal weryfikowana. Monety pojawią się wkrótce.",
+      "adRewardExpired": "Nie udało się na czas zweryfikować nagrody za tę reklamę. Spróbuj ponownie."
     },
     "tabs": {
       "myCreations": "Moje kreacje {{count}}",

@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "本日のすべての広告報酬が完了しました！ (30/30コイン)",
       "watchAdButton": "広告を視聴して+10コインを獲得 (残り{{count}}回)",
       "adPerkNote": "1日最大3回まで広告視聴可能 · Premiumなら30コインを即時受け取り可能",
-      "adRewardEarned": "広告報酬を獲得しました！サーバーで確認中…",
+      "adRewardEarned": "広告報酬が確認されました！",
       "claimFailed": "受け取り失敗: {{message}}",
       "claimFailedGeneric": "問題が発生しました。もう一度お試しください。",
       "adLoadFailedDefault": "広告の読み込みに失敗しました",
-      "adAttemptFailedDefault": "広告の起動に失敗しました"
+      "adAttemptFailedDefault": "広告の起動に失敗しました",
+      "adRewardVerifying": "報酬を確認しています…",
+      "adRewardPending": "報酬はまだ確認中です。コインはまもなく表示されます。",
+      "adRewardExpired": "この広告の報酬を時間内に確認できませんでした。もう一度お試しください。"
     },
     "tabs": {
       "myCreations": "マイクリエーション {{count}}",

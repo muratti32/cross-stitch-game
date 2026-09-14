@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 
 import type { AuthPrincipal } from '../auth/auth.types';
 import { PrincipalType } from '../auth/entities';
@@ -16,6 +16,7 @@ import {
   DAILY_POOL_COIN,
 } from './economy.constants';
 import { utcRewardDay } from './reward-day';
+import type { AdAttemptStateView, OpenAdAttemptView } from './ad-attempt.types';
 
 @Injectable()
 export class AdAttemptService {
@@ -27,7 +28,7 @@ export class AdAttemptService {
 
   async openAttempt(
     principal: AuthPrincipal,
-  ): Promise<{ nonce: string; expiresAt: string; ssvActive: boolean }> {
+  ): Promise<OpenAdAttemptView> {
     const ledgerPrincipal = toLedgerPrincipal(principal);
     const status = await this.ledger.getRewardDayStatus(
       ledgerPrincipal,
@@ -54,6 +55,17 @@ export class AdAttemptService {
       nonce,
       expiresAt: expiresAt.toISOString(),
       ssvActive: this.config.enableAdmobSsv,
+    };
+  }
+
+  async getAttemptState(principal: AuthPrincipal, nonce: string): Promise<AdAttemptStateView> {
+    const attempt = await this.adAttempts.findOwned(toLedgerPrincipal(principal), nonce);
+    if (attempt === null) throw new NotFoundException('Ad attempt was not found');
+    return {
+      state: attempt.consumedAt !== null
+        ? 'verified'
+        : attempt.expiresAt.getTime() <= Date.now() ? 'expired' : 'pending',
+      expiresAt: attempt.expiresAt.toISOString(),
     };
   }
 

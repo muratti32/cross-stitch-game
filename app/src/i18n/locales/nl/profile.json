@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Je hebt alle advertentiebeloningen van vandaag voltooid! (30/30 coins)",
       "watchAdButton": "Bekijk advertentie voor +10 coins ({{count}} resterend)",
       "adPerkNote": "Maximaal 3 advertenties per dag · Premium-leden claimen direct 30 coins",
-      "adRewardEarned": "Advertentiebeloning verdiend! Verifiëren op de server...",
+      "adRewardEarned": "Advertentiebeloning geverifieerd!",
       "claimFailed": "Claim mislukt: {{message}}",
       "claimFailedGeneric": "Er is iets misgegaan. Probeer het opnieuw.",
       "adLoadFailedDefault": "Kan de advertentie niet laden",
-      "adAttemptFailedDefault": "Kan de advertentie niet afspelen"
+      "adAttemptFailedDefault": "Kan de advertentie niet afspelen",
+      "adRewardVerifying": "Je beloning wordt geverifieerd…",
+      "adRewardPending": "Je beloning wordt nog geverifieerd. De munten verschijnen binnenkort.",
+      "adRewardExpired": "De beloning voor deze advertentie kon niet op tijd worden geverifieerd. Probeer het opnieuw."
     },
     "tabs": {
       "myCreations": "Mijn creaties {{count}}",

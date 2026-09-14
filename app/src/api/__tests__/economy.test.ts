@@ -6,6 +6,7 @@ import {
   unlockPriceForTier,
   openAdAttempt,
   claimAdReward,
+  fetchAdAttemptState,
 } from '../economy';
 
 // Mock the authenticated fetch wrapper so no network/identity is touched.
@@ -124,5 +125,17 @@ describe('economy client', () => {
       coinsConsumed: 10,
       replayed: false,
     });
+  });
+
+  test('fetchAdAttemptState reads the nonce-specific verification state', async () => {
+    apiFetch.mockResolvedValue(jsonResponse(200, {
+      state: 'pending',
+      expiresAt: '2026-09-14T12:05:00.000Z',
+    }));
+    await expect(fetchAdAttemptState('nonce/unsafe')).resolves.toEqual({
+      state: 'pending',
+      expiresAt: '2026-09-14T12:05:00.000Z',
+    });
+    expect(apiFetch).toHaveBeenCalledWith('/v1/economy/ad-attempts/nonce%2Funsafe');
   });
 });

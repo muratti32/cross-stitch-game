@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Alle annonsebelønninger fullført for i dag! (30/30 mynter)",
       "watchAdButton": "Se annonse for +10 mynter ({{count}} igjen)",
       "adPerkNote": "Se opptil 3 annonser/dag · Premium låser opp umiddelbart 30-mynts uttak",
-      "adRewardEarned": "Annonsebelønning opptjent! Bekrefter med bakenden…",
+      "adRewardEarned": "Annonsebelønningen er bekreftet!",
       "claimFailed": "Uttak mislyktes: {{message}}",
       "claimFailedGeneric": "Noe gikk galt. Prøv igjen.",
       "adLoadFailedDefault": "Kunne ikke laste annonse",
-      "adAttemptFailedDefault": "Kunne ikke åpne annonseforsøk"
+      "adAttemptFailedDefault": "Kunne ikke åpne annonseforsøk",
+      "adRewardVerifying": "Bekrefter belønningen din…",
+      "adRewardPending": "Belønningen din bekreftes fortsatt. Myntene vises snart.",
+      "adRewardExpired": "Belønningen for denne annonsen kunne ikke bekreftes i tide. Prøv igjen."
     },
     "tabs": {
       "myCreations": "Mine skapelser {{count}}",

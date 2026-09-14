@@ -3,6 +3,7 @@ import TestRenderer, { act } from 'react-test-renderer';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RewardedAdCard } from '../RewardedAdCard';
 import * as useRewardedAdHook from '../../hooks/useRewardedAd';
+import type { UseRewardedAdOptions } from '../../hooks/useRewardedAd';
 
 const mockOpenAdAttempt = jest.fn();
 const mockClaimAdReward = jest.fn();
@@ -64,7 +65,7 @@ jest.mock('react-i18next', () => ({
 
 describe('RewardedAdCard', () => {
   let queryClient: QueryClient;
-  let adHookCallbacks: { onEarnedReward?: () => Promise<void> };
+  let adHookCallbacks: UseRewardedAdOptions;
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -74,7 +75,7 @@ describe('RewardedAdCard', () => {
     });
 
     adHookCallbacks = {};
-    jest.spyOn(useRewardedAdHook, 'useRewardedAd').mockImplementation((options: any) => {
+    jest.spyOn(useRewardedAdHook, 'useRewardedAd').mockImplementation((options: UseRewardedAdOptions = {}) => {
       adHookCallbacks.onEarnedReward = options?.onEarnedReward;
       return {
         status: 'loaded',
@@ -97,7 +98,7 @@ describe('RewardedAdCard', () => {
       ssvActive: true,
     });
 
-    let renderer: TestRenderer.ReactTestRenderer = undefined as any;
+    let renderer!: TestRenderer.ReactTestRenderer;
     await act(async () => {
       renderer = TestRenderer.create(
         <QueryClientProvider client={queryClient}>
@@ -117,7 +118,7 @@ describe('RewardedAdCard', () => {
 
     // Trigger ad reward earned
     await act(async () => {
-      await adHookCallbacks.onEarnedReward?.();
+      await adHookCallbacks.onEarnedReward?.({ amount: 10, type: 'coin' });
     });
 
     // claimAdReward should NOT have been called because ssvActive is true (Issue #247 / ADR-0033)
@@ -131,7 +132,7 @@ describe('RewardedAdCard', () => {
       ssvActive: false,
     });
 
-    let renderer: TestRenderer.ReactTestRenderer = undefined as any;
+    let renderer!: TestRenderer.ReactTestRenderer;
     await act(async () => {
       renderer = TestRenderer.create(
         <QueryClientProvider client={queryClient}>
@@ -151,7 +152,7 @@ describe('RewardedAdCard', () => {
 
     // Trigger ad reward earned
     await act(async () => {
-      await adHookCallbacks.onEarnedReward?.();
+      await adHookCallbacks.onEarnedReward?.({ amount: 10, type: 'coin' });
     });
 
     // In non-SSV mode, claimAdReward MUST be called

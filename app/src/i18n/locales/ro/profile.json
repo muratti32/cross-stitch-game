@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Toate recompensele din reclame au fost finalizate pentru astăzi! (30/30 monede)",
       "watchAdButton": "Urmărește o reclamă pentru +10 monede ({{count}} rămase)",
       "adPerkNote": "Urmărește până la 3 reclame/zi · Premium deblochează revendicarea instant de 30 de monede",
-      "adRewardEarned": "Recompensă din reclamă câștigată! Se verifică cu serverul…",
+      "adRewardEarned": "Recompensa din reclamă a fost verificată!",
       "claimFailed": "Revendicarea a eșuat: {{message}}",
       "claimFailedGeneric": "Ceva nu a mers bine. Te rugăm să încerci din nou.",
       "adLoadFailedDefault": "Încărcarea reclamei a eșuat",
-      "adAttemptFailedDefault": "Deschiderea încercării de reclamă a eșuat"
+      "adAttemptFailedDefault": "Deschiderea încercării de reclamă a eșuat",
+      "adRewardVerifying": "Se verifică recompensa…",
+      "adRewardPending": "Recompensa este încă verificată. Monedele vor apărea în curând.",
+      "adRewardExpired": "Recompensa pentru această reclamă nu a putut fi verificată la timp. Încearcă din nou."
     },
     "tabs": {
       "myCreations": "Creațiile mele {{count}}",

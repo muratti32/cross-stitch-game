@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Todas as recompensas de anúncios concluídas hoje! (30/30 moedas)",
       "watchAdButton": "Ver Anúncio por +10 Moedas ({{count}} restantes)",
       "adPerkNote": "Vê até 3 anúncios/dia · Premium desbloqueia resgate instantâneo de 30 moedas",
-      "adRewardEarned": "Recompensa de anúncio ganha! A verificar com o backend…",
+      "adRewardEarned": "Recompensa do anúncio verificada!",
       "claimFailed": "O resgate falhou: {{message}}",
       "claimFailedGeneric": "Algo correu mal. Por favor, tenta novamente.",
       "adLoadFailedDefault": "Falha ao carregar o anúncio",
-      "adAttemptFailedDefault": "Falha ao abrir a tentativa de anúncio"
+      "adAttemptFailedDefault": "Falha ao abrir a tentativa de anúncio",
+      "adRewardVerifying": "A verificar a sua recompensa…",
+      "adRewardPending": "A sua recompensa ainda está a ser verificada. As moedas aparecerão em breve.",
+      "adRewardExpired": "Não foi possível verificar a tempo a recompensa deste anúncio. Tente novamente."
     },
     "tabs": {
       "myCreations": "As Minhas Criações {{count}}",

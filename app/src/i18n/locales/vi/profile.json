@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Đã hoàn thành mọi phần thưởng quảng cáo hôm nay! (30/30 coin)",
       "watchAdButton": "Xem quảng cáo để nhận +10 Coin (còn {{count}})",
       "adPerkNote": "Xem tối đa 3 quảng cáo/ngày · Premium mở khóa nhận ngay 30 coin",
-      "adRewardEarned": "Đã nhận phần thưởng quảng cáo! Đang xác minh với máy chủ…",
+      "adRewardEarned": "Phần thưởng quảng cáo đã được xác minh!",
       "claimFailed": "Nhận thất bại: {{message}}",
       "claimFailedGeneric": "Đã xảy ra lỗi. Vui lòng thử lại.",
       "adLoadFailedDefault": "Không thể tải quảng cáo",
-      "adAttemptFailedDefault": "Không thể mở lượt xem quảng cáo"
+      "adAttemptFailedDefault": "Không thể mở lượt xem quảng cáo",
+      "adRewardVerifying": "Đang xác minh phần thưởng…",
+      "adRewardPending": "Phần thưởng vẫn đang được xác minh. Xu sẽ sớm xuất hiện.",
+      "adRewardExpired": "Không thể xác minh kịp thời phần thưởng của quảng cáo này. Vui lòng thử lại."
     },
     "tabs": {
       "myCreations": "Tác phẩm của tôi {{count}}",

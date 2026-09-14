@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Sve nagrade za oglase dovršene za danas! (30/30 novčića)",
       "watchAdButton": "Pogledaj oglas za +10 novčića ({{count}} preostalo)",
       "adPerkNote": "Pogledaj do 3 oglasa dnevno · Premium otključava trenutno preuzimanje 30 novčića",
-      "adRewardEarned": "Nagrada za oglas zarađena! Provjera s backendom…",
+      "adRewardEarned": "Nagrada za oglas potvrđena!",
       "claimFailed": "Preuzimanje nije uspjelo: {{message}}",
       "claimFailedGeneric": "Nešto je pošlo po zlu. Pokušaj ponovno.",
       "adLoadFailedDefault": "Učitavanje oglasa nije uspjelo",
-      "adAttemptFailedDefault": "Otvaranje pokušaja oglasa nije uspjelo"
+      "adAttemptFailedDefault": "Otvaranje pokušaja oglasa nije uspjelo",
+      "adRewardVerifying": "Provjera vaše nagrade…",
+      "adRewardPending": "Vaša se nagrada još provjerava. Novčići će se uskoro pojaviti.",
+      "adRewardExpired": "Nagrada za ovaj oglas nije provjerena na vrijeme. Pokušajte ponovno."
     },
     "tabs": {
       "myCreations": "Moji radovi {{count}}",

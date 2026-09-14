@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "¡Todas las recompensas por anuncios de hoy se han completado! (30/30 monedas)",
       "watchAdButton": "Ver anuncio para obtener +10 monedas (quedan {{count}})",
       "adPerkNote": "Mira hasta 3 anuncios al día · Premium desbloquea la reclamación instantánea de 30 monedas",
-      "adRewardEarned": "¡Recompensa de anuncio obtenida! Verificando con el servidor...",
+      "adRewardEarned": "¡Recompensa del anuncio verificada!",
       "claimFailed": "Error al reclamar: {{message}}",
       "claimFailedGeneric": "Algo salió mal. Inténtalo de nuevo.",
       "adLoadFailedDefault": "No se pudo cargar el anuncio",
-      "adAttemptFailedDefault": "No se pudo abrir el intento de anuncio"
+      "adAttemptFailedDefault": "No se pudo abrir el intento de anuncio",
+      "adRewardVerifying": "Verificando tu recompensa…",
+      "adRewardPending": "Tu recompensa aún se está verificando. Las monedas aparecerán pronto.",
+      "adRewardExpired": "No se pudo verificar a tiempo la recompensa de este anuncio. Inténtalo de nuevo."
     },
     "tabs": {
       "myCreations": "Mis creaciones {{count}}",

@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Totes les recompenses d'anuncis completades per avui! (30/30 monedes)",
       "watchAdButton": "Mira un Anunci per +10 Monedes ({{count}} restants)",
       "adPerkNote": "Mira fins a 3 anuncis/dia · Premium desbloqueja la reclamació instantània de 30 monedes",
-      "adRewardEarned": "Recompensa d'anunci guanyada! Verificant amb el servidor…",
+      "adRewardEarned": "Recompensa de l’anunci verificada!",
       "claimFailed": "La reclamació ha fallat: {{message}}",
       "claimFailedGeneric": "S'ha produït un error. Torna-ho a provar.",
       "adLoadFailedDefault": "No s'ha pogut carregar l'anunci",
-      "adAttemptFailedDefault": "No s'ha pogut obrir l'intent d'anunci"
+      "adAttemptFailedDefault": "No s'ha pogut obrir l'intent d'anunci",
+      "adRewardVerifying": "S’està verificant la recompensa…",
+      "adRewardPending": "La recompensa encara s’està verificant. Les monedes apareixeran aviat.",
+      "adRewardExpired": "No s’ha pogut verificar a temps la recompensa d’aquest anunci. Torna-ho a provar."
     },
     "tabs": {
       "myCreations": "Les Meves Creacions {{count}}",

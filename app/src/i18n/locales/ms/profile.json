@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Anda telah menuntut semua hadiah iklan hari ini! (30/30 koin)",
       "watchAdButton": "Tonton iklan untuk +10 koin ({{count}} tinggal)",
       "adPerkNote": "Sehingga 3 iklan setiap hari · Premium membuka tuntutan segera 30 koin",
-      "adRewardEarned": "Hadiah iklan diperoleh! Mengesahkan dengan backend…",
+      "adRewardEarned": "Ganjaran iklan disahkan!",
       "claimFailed": "Tuntutan gagal: {{message}}",
       "claimFailedGeneric": "Sesuatu tidak kena. Cuba lagi.",
       "adLoadFailedDefault": "Gagal memuatkan iklan",
-      "adAttemptFailedDefault": "Gagal membuka percubaan iklan"
+      "adAttemptFailedDefault": "Gagal membuka percubaan iklan",
+      "adRewardVerifying": "Mengesahkan ganjaran anda…",
+      "adRewardPending": "Ganjaran anda masih disahkan. Syiling akan muncul tidak lama lagi.",
+      "adRewardExpired": "Ganjaran iklan ini tidak dapat disahkan tepat pada masanya. Sila cuba lagi."
     },
     "tabs": {
       "myCreations": "Karya saya {{count}}",

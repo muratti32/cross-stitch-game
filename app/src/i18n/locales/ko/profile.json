@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "오늘의 모든 광고 보상을 완료했습니다! (30/30코인)",
       "watchAdButton": "광고를 시청하고 +10코인 획득 (남은 횟수: {{count}}회)",
       "adPerkNote": "하루 최대 3회 광고 시청 가능 · Premium 회원은 30코인 즉시 획득 가능",
-      "adRewardEarned": "광고 보상을 획득했습니다! 서버에서 확인 중...",
+      "adRewardEarned": "광고 보상이 확인되었습니다!",
       "claimFailed": "획득 실패: {{message}}",
       "claimFailedGeneric": "문제가 발생했습니다. 다시 시도해 주세요.",
       "adLoadFailedDefault": "광고를 불러오지 못했습니다",
-      "adAttemptFailedDefault": "광고를 실행하지 못했습니다"
+      "adAttemptFailedDefault": "광고를 실행하지 못했습니다",
+      "adRewardVerifying": "보상을 확인하는 중…",
+      "adRewardPending": "보상을 아직 확인 중입니다. 코인이 곧 표시됩니다.",
+      "adRewardExpired": "이 광고 보상을 제시간에 확인하지 못했습니다. 다시 시도해 주세요."
     },
     "tabs": {
       "myCreations": "내 제작 {{count}}",

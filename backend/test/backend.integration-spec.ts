@@ -3078,6 +3078,36 @@ describe('Stitch Wish backend integration', () => {
         principal_id: guest.guestId,
         placement: 'rewarded_ad',
       });
+
+      const pending = await request(httpServer)
+        .get(`/v1/economy/ad-attempts/${res.body.nonce}`)
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(200);
+      expect(pending.body).toMatchObject({ state: 'pending', expiresAt: res.body.expiresAt });
+
+      const otherGuest = await newGuest();
+      await request(httpServer)
+        .get(`/v1/economy/ad-attempts/${res.body.nonce}`)
+        .set('Authorization', `Bearer ${otherGuest.accessToken}`)
+        .expect(404);
+
+      await dataSource.query(
+        `UPDATE economy.ad_attempts SET consumed_at = now() WHERE nonce = $1`,
+        [res.body.nonce],
+      );
+      const verified = await request(httpServer)
+        .get(`/v1/economy/ad-attempts/${res.body.nonce}`)
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(200);
+      expect(verified.body.state).toBe('verified');
+    });
+
+    it('validates ad attempt nonce format', async () => {
+      const guest = await newGuest();
+      await request(httpServer)
+        .get('/v1/economy/ad-attempts/not-a-uuid')
+        .set('Authorization', `Bearer ${guest.accessToken}`)
+        .expect(400);
     });
 
     it('rejects ad attempts when daily limits are exhausted', async () => {

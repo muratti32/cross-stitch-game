@@ -1,113 +1,94 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { fetchRewardDay } from '../api/economy';
+import { coinBalanceQueryKey, fetchAdAttemptState, rewardDayQueryKey } from '../api/economy';
+import { membershipQueryKey } from '../api/membership';
+import { captureAdRewardVerificationError } from '../observability/sentry';
+
+const INITIAL_DELAY_MS = 1500;
+const MAX_DELAY_MS = 10_000;
+const EXPIRY_GRACE_MS = 2_000;
 
 export interface UseRewardedAdSsvPollingOptions {
-  onSuccess?: () => void;
-  onTimeout?: () => void;
-  maxPolls?: number;
-  intervalMs?: number;
+  onVerified?: () => void;
+  /** The polling window ended without a verdict; the callback may still land. */
+  onPending?: () => void;
+  /** The backend says the attempt expired unconsumed; no Coins will be granted. */
+  onExpired?: () => void;
 }
 
-export interface InitialRewardState {
-  adsRemaining: number;
-  balance?: number;
-}
-
-export interface UseRewardedAdSsvPollingResult {
-  isVerifying: boolean;
-  startPolling: (initialState: InitialRewardState) => void;
-  stopPolling: () => void;
-}
-
-/**
- * Polls reward-day and balance queries while awaiting an authoritative AdMob
- * Server-Side Verification callback (ADR-0033 / Issue #247).
- *
- * When AdMob SSV is active, the client must not call /claim. Instead, it enters
- * Pending Ad Reward Verification and monitors the reward-day status until the
- * server grants the coin (adsRemaining decrements / balance increments) or the
- * polling window expires without error.
- */
-export function useRewardedAdSsvPolling(
-  options: UseRewardedAdSsvPollingOptions = {},
-): UseRewardedAdSsvPollingResult {
-  const { onSuccess, onTimeout, maxPolls = 5, intervalMs = 1500 } = options;
+export function useRewardedAdSsvPolling(options: UseRewardedAdSsvPollingOptions = {}) {
   const queryClient = useQueryClient();
   const [isVerifying, setIsVerifying] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const baseAdsRemainingRef = useRef<number>(0);
-  const baseBalanceRef = useRef<number>(0);
-  const onSuccessRef = useRef(onSuccess);
-  onSuccessRef.current = onSuccess;
-  const onTimeoutRef = useRef(onTimeout);
-  onTimeoutRef.current = onTimeout;
+  const generationRef = useRef(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mountedRef = useRef(true);
+  const callbacksRef = useRef(options);
+  callbacksRef.current = options;
 
-  const stopPolling = useCallback(() => {
-    if (timerRef.current !== null) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-    setIsVerifying(false);
+  const stopPolling = useCallback((updateState = true) => {
+    generationRef.current += 1;
+    if (timerRef.current !== null) clearTimeout(timerRef.current);
+    timerRef.current = null;
+    if (updateState && mountedRef.current) setIsVerifying(false);
   }, []);
 
-  const startPolling = useCallback(
-    (initialState: InitialRewardState) => {
+  const startPolling = useCallback((nonce: string, expiresAt: string) => {
+    stopPolling();
+    const generation = generationRef.current;
+    const deadline = new Date(expiresAt).getTime() + EXPIRY_GRACE_MS;
+    let delay = INITIAL_DELAY_MS;
+    let errorReported = false;
+    setIsVerifying(true);
+
+    const isCurrent = () => mountedRef.current && generationRef.current === generation;
+    const finishPending = () => {
+      if (!isCurrent()) return;
       stopPolling();
-      baseAdsRemainingRef.current = initialState.adsRemaining;
-      baseBalanceRef.current = initialState.balance ?? 0;
-      setIsVerifying(true);
-      let pollsRemaining = maxPolls;
-
-      timerRef.current = setInterval(async () => {
-        try {
-          const rewardDay = await queryClient.fetchQuery({
-            queryKey: ['economy', 'reward-day'],
-            queryFn: fetchRewardDay,
-          });
-
-          if (
-            rewardDay.adsRemaining < baseAdsRemainingRef.current ||
-            rewardDay.balance > baseBalanceRef.current
-          ) {
-            stopPolling();
-            await Promise.all([
-              queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] }),
-              queryClient.invalidateQueries({ queryKey: ['commerce', 'membership'] }),
-            ]);
-            onSuccessRef.current?.();
-            return;
-          }
-        } catch {
-          // Ignore transient fetch errors and continue polling
-        }
-
-        pollsRemaining -= 1;
-        if (pollsRemaining <= 0) {
+      callbacksRef.current.onPending?.();
+    };
+    const schedule = () => {
+      if (!isCurrent()) return;
+      if (Date.now() >= deadline) return finishPending();
+      timerRef.current = setTimeout(tick, Math.min(delay, deadline - Date.now()));
+      delay = Math.min(Math.round(delay * 1.7), MAX_DELAY_MS);
+    };
+    const tick = async () => {
+      if (!isCurrent()) return;
+      try {
+        const result = await fetchAdAttemptState(nonce);
+        if (!isCurrent()) return;
+        if (result.state === 'verified') {
           stopPolling();
           await Promise.all([
-            queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] }),
-            queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] }),
+            queryClient.invalidateQueries({ queryKey: coinBalanceQueryKey }),
+            queryClient.invalidateQueries({ queryKey: rewardDayQueryKey }),
+            queryClient.invalidateQueries({ queryKey: membershipQueryKey }),
           ]);
-          onTimeoutRef.current?.();
+          if (!mountedRef.current || generationRef.current !== generation + 1) return;
+          callbacksRef.current.onVerified?.();
+          return;
         }
-      }, intervalMs);
-    },
-    [queryClient, stopPolling, maxPolls, intervalMs],
-  );
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current !== null) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
+        if (result.state === 'expired') {
+          stopPolling();
+          callbacksRef.current.onExpired?.();
+          return;
+        }
+      } catch (error: unknown) {
+        if (!isCurrent()) return;
+        if (!errorReported) {
+          errorReported = true;
+          captureAdRewardVerificationError(error);
+        }
       }
+      schedule();
     };
-  }, []);
+    schedule();
+  }, [queryClient, stopPolling]);
 
-  return {
-    isVerifying,
-    startPolling,
-    stopPolling,
-  };
+  useEffect(() => () => {
+    mountedRef.current = false;
+    stopPolling(false);
+  }, [stopPolling]);
+
+  return { isVerifying, startPolling, stopPolling };
 }
