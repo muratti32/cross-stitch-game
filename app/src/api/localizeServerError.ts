@@ -106,11 +106,23 @@ function supportReferenceFor(error: Error & ServerApiErrorLike): string {
 }
 
 /**
- * Leaves a breadcrumb (no Sentry event) for a recognized reason code. Safe
- * to send as-is: a recognized reason is a short app-defined enum value, not
- * raw backend prose.
+ * Tracks which Error objects already left a known-reason breadcrumb, so a
+ * render-path caller presenting the same Error object repeatedly (the same
+ * concern #249 fixes for Sentry events) does not spam a fresh breadcrumb on
+ * every render.
  */
-function addKnownReasonBreadcrumb(reason: string): void {
+const knownReasonBreadcrumbedErrors = new WeakSet<Error>();
+
+/**
+ * Leaves a breadcrumb (no Sentry event) for a recognized reason code, once
+ * per Error object. Safe to send as-is: a recognized reason is a short
+ * app-defined enum value, not raw backend prose.
+ */
+function addKnownReasonBreadcrumb(error: Error, reason: string): void {
+  if (knownReasonBreadcrumbedErrors.has(error)) {
+    return;
+  }
+  knownReasonBreadcrumbedErrors.add(error);
   const Sentry = require('@sentry/react-native') as typeof import('@sentry/react-native');
   Sentry.addBreadcrumb({
     category: 'server_error',
@@ -152,7 +164,7 @@ export function localizeServerError(error: Error & ServerApiErrorLike): string {
   const decision = presentServerError(error.reason, error.status);
   if (!('supportReference' in decision)) {
     if (typeof error.reason === 'string') {
-      addKnownReasonBreadcrumb(error.reason);
+      addKnownReasonBreadcrumb(error, error.reason);
     }
     return appendSupportReference(i18n.t(decision.messageKey), undefined);
   }

@@ -1,3 +1,9 @@
+// captureMessage returns a distinct id per call (not a constant) so tests
+// that assert "the same Support Reference" or "a new capture" are only
+// meaningful because of the production dedup logic, not because the mock
+// happens to always return the same value.
+let mockEventIdCounter = 0;
+
 jest.mock('@sentry/react-native', () => {
   const scope = {
     setContext: jest.fn(),
@@ -8,13 +14,24 @@ jest.mock('@sentry/react-native', () => {
   return {
     __scope: scope,
     addBreadcrumb: jest.fn(),
-    captureMessage: jest.fn(() => '0123456789abcdef0123456789abcdef'),
+    captureMessage: jest.fn(() => {
+      mockEventIdCounter += 1;
+      return mockEventIdCounter.toString(16).padStart(32, '0');
+    }),
     withScope: jest.fn((callback) => callback(scope)),
   };
 });
 
 import * as Sentry from '@sentry/react-native';
+import i18n from '../../i18n/i18n';
 import { isServerApiError, localizeServerError } from '../localizeServerError';
+
+/** The Support Reference string produced from the Nth (1-indexed) captureMessage call this test. */
+function supportReferenceLine(callIndex: number): string {
+  const mock = Sentry.captureMessage as jest.Mock;
+  const eventId = mock.mock.results[callIndex - 1].value as string;
+  return `Support Reference: SW-${eventId.toUpperCase()}`;
+}
 
 type MockedSentry = typeof Sentry & {
   __scope: {
@@ -63,14 +80,14 @@ describe('localizeServerError', () => {
     const error = new FakeServerApiError(500, 'Raw backend failure text', 'some_unmapped_code');
     const result = localizeServerError(error);
     expect(result).toContain('Something went wrong. Please try again.');
-    expect(result).toContain('Support Reference: SW-0123456789ABCDEF0123456789ABCDEF');
+    expect(result).toContain(supportReferenceLine(1));
   });
 
   it('returns the generic localized failure with a Support Reference for a null reason code', () => {
     const error = new FakeServerApiError(500, 'Raw backend failure text', null);
     const result = localizeServerError(error);
     expect(result).toContain('Something went wrong. Please try again.');
-    expect(result).toContain('Support Reference: SW-0123456789ABCDEF0123456789ABCDEF');
+    expect(result).toContain(supportReferenceLine(1));
   });
 
   it('never includes the server raw message string in the returned text', () => {
@@ -137,5 +154,79 @@ describe('localizeServerError', () => {
     localizeServerError(error);
     expect(Sentry.captureMessage).not.toHaveBeenCalled();
     expect(Sentry.withScope).not.toHaveBeenCalled();
+  });
+
+  it('breadcrumbs a recognized reason with only the reason code, never the raw message', () => {
+    const error = new FakeServerApiError(
+      403,
+      'a very specific raw backend sentence about this account',
+      'different_account',
+    );
+    localizeServerError(error);
+    expect(Sentry.addBreadcrumb).toHaveBeenCalledWith({
+      category: 'server_error',
+      level: 'info',
+      data: { reason: 'different_account' },
+    });
+    const allBreadcrumbArgs = (Sentry.addBreadcrumb as jest.Mock).mock.calls.map((call) => JSON.stringify(call));
+    expect(allBreadcrumbArgs.join('\n')).not.toContain('a very specific raw backend sentence about this account');
+  });
+
+  it('breadcrumbs a known reason only once when the same Error object is presented twice', () => {
+    const error = new FakeServerApiError(403, 'x', 'different_account');
+    localizeServerError(error);
+    localizeServerError(error);
+    expect(Sentry.addBreadcrumb).toHaveBeenCalledTimes(1);
+  });
+
+  it('re-resolves localized text on a language switch but keeps the same Support Reference and a single capture', async () => {
+    const originalLanguage = i18n.language;
+    try {
+      await i18n.changeLanguage('en');
+      const error = new FakeServerApiError(500, 'Raw backend failure text', null);
+
+      const englishResult = localizeServerError(error);
+      await i18n.changeLanguage('tr');
+      const turkishResult = localizeServerError(error);
+
+      expect(Sentry.captureMessage).toHaveBeenCalledTimes(1);
+      expect(englishResult).not.toBe(turkishResult);
+      expect(englishResult).toContain('Something went wrong. Please try again.');
+      expect(turkishResult).toContain('Bir şeyler ters gitti. Lütfen tekrar deneyin.');
+
+      const reference = supportReferenceLine(1);
+      expect(englishResult).toContain(reference);
+      expect(turkishResult.replace('Destek Referansı', 'Support Reference')).toContain(reference);
+    } finally {
+      await i18n.changeLanguage(originalLanguage);
+    }
+  });
+
+  describe('serverErrorKey edge cases (#249 follow-up)', () => {
+    it('uses a 64-character lowercase code-shaped reason as the fingerprint key', () => {
+      const reason = 'a'.repeat(64);
+      const error = new FakeServerApiError(400, 'x', reason);
+      localizeServerError(error);
+      const scope = (Sentry as MockedSentry).__scope;
+      expect(scope.setFingerprint).toHaveBeenCalledWith(['server-error', reason]);
+      expect(Sentry.captureMessage).toHaveBeenCalledWith(`Backend error presented: ${reason}`);
+    });
+
+    it('falls back to status for a 65-character reason (one over the code-shape limit)', () => {
+      const reason = 'a'.repeat(65);
+      const error = new FakeServerApiError(400, 'x', reason);
+      localizeServerError(error);
+      const scope = (Sentry as MockedSentry).__scope;
+      expect(scope.setFingerprint).toHaveBeenCalledWith(['server-error', '400']);
+      expect(Sentry.captureMessage).toHaveBeenCalledWith('Backend error presented: 400');
+    });
+
+    it('falls back to status for an uppercase reason, even one that looks code-shaped', () => {
+      const error = new FakeServerApiError(409, 'x', 'USERNAME_TAKEN');
+      localizeServerError(error);
+      const scope = (Sentry as MockedSentry).__scope;
+      expect(scope.setFingerprint).toHaveBeenCalledWith(['server-error', '409']);
+      expect(Sentry.captureMessage).toHaveBeenCalledWith('Backend error presented: 409');
+    });
   });
 });

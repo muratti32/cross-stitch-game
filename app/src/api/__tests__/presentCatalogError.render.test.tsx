@@ -9,6 +9,11 @@
  * object (exactly what a re-rendering query error state does), and asserts
  * the capture and the Support Reference both stay stable.
  */
+// A distinct id per call (not a constant) so the "same Support Reference
+// across rerenders" assertion below is meaningful only because of the
+// production dedup logic, not because the mock always returns one value.
+let mockEventIdCounter = 0;
+
 jest.mock('@sentry/react-native', () => {
   const scope = {
     setContext: jest.fn(),
@@ -19,7 +24,10 @@ jest.mock('@sentry/react-native', () => {
   return {
     __scope: scope,
     addBreadcrumb: jest.fn(),
-    captureMessage: jest.fn(() => '0123456789abcdef0123456789abcdef'),
+    captureMessage: jest.fn(() => {
+      mockEventIdCounter += 1;
+      return mockEventIdCounter.toString(16).padStart(32, '0');
+    }),
     withScope: jest.fn((callback) => callback(scope)),
   };
 });
@@ -65,20 +73,32 @@ describe('presentCatalogError render-path capture (#249)', () => {
 
     expect(Sentry.captureMessage).toHaveBeenCalledTimes(1);
     expect(lastText).toBe(firstText);
-    expect(lastText).toContain('Support Reference: SW-0123456789ABCDEF0123456789ABCDEF');
+    const eventId = (Sentry.captureMessage as jest.Mock).mock.results[0].value as string;
+    expect(lastText).toContain(`Support Reference: SW-${eventId.toUpperCase()}`);
+
+    act(() => {
+      testRenderer!.unmount();
+    });
   });
 
   it('captures a second event only for a genuinely different error object', () => {
     const errorA = new CatalogApiError(503, 'Catalog request failed with status 503', null);
     const errorB = new CatalogApiError(503, 'Catalog request failed with status 503', null);
 
+    let rendererA: TestRenderer.ReactTestRenderer;
+    let rendererB: TestRenderer.ReactTestRenderer;
     act(() => {
-      TestRenderer.create(<RenderedSectionError error={errorA} />);
+      rendererA = TestRenderer.create(<RenderedSectionError error={errorA} />);
     });
     act(() => {
-      TestRenderer.create(<RenderedSectionError error={errorB} />);
+      rendererB = TestRenderer.create(<RenderedSectionError error={errorB} />);
     });
 
     expect(Sentry.captureMessage).toHaveBeenCalledTimes(2);
+
+    act(() => {
+      rendererA!.unmount();
+      rendererB!.unmount();
+    });
   });
 });
