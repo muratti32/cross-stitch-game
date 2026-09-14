@@ -43,7 +43,7 @@
       "matchNumbers": "Combine os números para fazer cada ponto.",
       "dragSweep": "Arraste pelas células correspondentes para bordar em sequência.",
       "pinchZoom": "Faça o movimento de pinça para dar zoom quando precisar ver de perto.",
-      "undoLocator": "Desfazer e o localizador são sempre gratuitos."
+      "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
     },
     "continue": "Continuar bordando",
     "browsePatterns": "Explorar gráficos"

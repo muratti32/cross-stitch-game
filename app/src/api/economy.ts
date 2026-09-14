@@ -3,6 +3,7 @@ import { apiFetch } from './apiFetch';
 
 export const coinBalanceQueryKey = ['economy', 'balance'] as const;
 export const rewardDayQueryKey = ['economy', 'reward-day'] as const;
+export const LOCATOR_PRICE_COIN = 1;
 
 // Unlock prices are fixed by ADR-0011 by tier.
 // Note: the server remains authoritative on the actual charge.
@@ -33,6 +34,38 @@ export class EconomyApiError extends Error {
     super(message);
     this.name = 'EconomyApiError';
   }
+}
+
+export class LocatorInsufficientBalanceError extends EconomyApiError {
+  constructor(readonly price: number, readonly balance: number) {
+    super(409, 'insufficient_balance', 'insufficient_balance');
+    this.name = 'LocatorInsufficientBalanceError';
+  }
+}
+
+export interface LocatorAttemptView {
+  attemptId: string;
+  status: 'prepared' | 'committed' | 'released' | 'expired' | 'rejected';
+  price: number;
+  balance: number;
+  expiresAt: string;
+  targetCellIndex: number | null;
+}
+
+export interface PrepareLocatorAttemptInput {
+  attemptId: string;
+  sessionId: string;
+  patternId: string;
+  colorIndex: number;
+  dmcCode: string;
+  progressRevision?: number;
+  progressHash?: string;
+}
+
+export interface CommitLocatorAttemptInput {
+  targetCellIndex: number;
+  progressRevision?: number;
+  progressHash?: string;
 }
 
 async function parseEconomyError(response: Response, fallback: string): Promise<EconomyApiError> {
@@ -85,6 +118,49 @@ export async function fetchCoinBalance(): Promise<number> {
   }
   const data = (await res.json()) as { balance: number };
   return data.balance;
+}
+
+async function parseLocatorResult(res: Response): Promise<LocatorAttemptView> {
+  if (res.status === 409) {
+    const data = await res.json().catch(() => null) as { code?: string; price?: number; balance?: number } | null;
+    if (data?.code === 'insufficient_balance') {
+      throw new LocatorInsufficientBalanceError(data.price ?? LOCATOR_PRICE_COIN, data.balance ?? 0);
+    }
+  }
+  if (!res.ok) throw await parseEconomyError(res, 'Locator attempt failed: ' + res.status);
+  return (await res.json()) as LocatorAttemptView;
+}
+
+export async function prepareLocatorAttempt(input: PrepareLocatorAttemptInput, signal?: AbortSignal): Promise<LocatorAttemptView> {
+  const res = await apiFetch('/v1/economy/locator-attempts/prepare', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal,
+    body: JSON.stringify(input),
+  });
+  return parseLocatorResult(res);
+}
+
+export async function commitLocatorAttempt(attemptId: string, input: CommitLocatorAttemptInput, signal?: AbortSignal): Promise<LocatorAttemptView> {
+  const res = await apiFetch(`/v1/economy/locator-attempts/${encodeURIComponent(attemptId)}/commit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal,
+    body: JSON.stringify(input),
+  });
+  return parseLocatorResult(res);
+}
+
+export async function releaseLocatorAttempt(attemptId: string): Promise<LocatorAttemptView> {
+  const res = await apiFetch(`/v1/economy/locator-attempts/${encodeURIComponent(attemptId)}/release`, {
+    method: 'POST',
+  });
+  return parseLocatorResult(res);
+}
+
+export async function fetchLocatorAttempt(attemptId: string): Promise<LocatorAttemptView> {
+  const res = await apiFetch(`/v1/economy/locator-attempts/${encodeURIComponent(attemptId)}`);
+  return parseLocatorResult(res);
 }
 
 export async function fetchUnlockedPatternIds(): Promise<string[]> {

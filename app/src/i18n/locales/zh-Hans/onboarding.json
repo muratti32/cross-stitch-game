@@ -43,7 +43,7 @@
       "matchNumbers": "根据数字配对，完成每一针 Stitch。",
       "dragSweep": "在匹配的格子上滑动，进行连续绣制。",
       "pinchZoom": "需要看细节时，双指捏合即可缩放。",
-      "undoLocator": "撤销和定位器功能完全免费，可以随便用哦。"
+      "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
     },
     "continue": "继续 Stitch",
     "browsePatterns": "浏览图纸"

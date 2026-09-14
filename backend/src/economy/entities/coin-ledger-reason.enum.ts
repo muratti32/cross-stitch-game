@@ -14,4 +14,5 @@ export enum CoinLedgerReason {
   CommerceReversal = 'commerce_reversal',
   PremiumDailyClaim = 'premium_daily_claim',
   CommerceTransfer = 'commerce_transfer',
+  LocatorSpend = 'locator_spend',
 }

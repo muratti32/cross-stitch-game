@@ -1,4 +1,8 @@
 import {
+  commitLocatorAttempt,
+  LocatorInsufficientBalanceError,
+  prepareLocatorAttempt,
+  releaseLocatorAttempt,
   unlockPattern,
   fetchCoinBalance,
   fetchUnlockedPatternIds,
@@ -76,6 +80,34 @@ describe('economy client', () => {
   test('fetchUnlockedPatternIds returns the id list', async () => {
     apiFetch.mockResolvedValue(jsonResponse(200, { patternIds: ['a', 'b'] }));
     await expect(fetchUnlockedPatternIds()).resolves.toEqual(['a', 'b']);
+  });
+
+  test('prepareLocatorAttempt sends the idempotency and session context', async () => {
+    apiFetch.mockResolvedValue(jsonResponse(200, {
+      attemptId: 'a', status: 'prepared', price: 1, balance: 4,
+      expiresAt: '2026-09-14T10:01:00.000Z', targetCellIndex: null,
+    }));
+    await expect(prepareLocatorAttempt({
+      attemptId: 'a', sessionId: 's', patternId: 'p', colorIndex: 0, dmcCode: '310',
+    })).resolves.toMatchObject({ status: 'prepared', price: 1 });
+    expect(apiFetch).toHaveBeenCalledWith('/v1/economy/locator-attempts/prepare', expect.objectContaining({ method: 'POST' }));
+  });
+
+  test('locator commit/release remain idempotent by using the same attempt id', async () => {
+    apiFetch
+      .mockResolvedValueOnce(jsonResponse(200, { attemptId: 'a', status: 'committed', price: 1, balance: 3, expiresAt: 'x', targetCellIndex: 4 }))
+      .mockResolvedValueOnce(jsonResponse(200, { attemptId: 'a', status: 'released', price: 1, balance: 4, expiresAt: 'x', targetCellIndex: null }));
+    await commitLocatorAttempt('a', { targetCellIndex: 4 });
+    await releaseLocatorAttempt('a');
+    expect(apiFetch.mock.calls[0][0]).toBe('/v1/economy/locator-attempts/a/commit');
+    expect(apiFetch.mock.calls[1][0]).toBe('/v1/economy/locator-attempts/a/release');
+  });
+
+  test('locator prepare exposes insufficient balance without moving the viewport', async () => {
+    apiFetch.mockResolvedValue(jsonResponse(409, { code: 'insufficient_balance', price: 1, balance: 0 }));
+    await expect(prepareLocatorAttempt({
+      attemptId: 'a', sessionId: 's', patternId: 'p', colorIndex: 0, dmcCode: '310',
+    })).rejects.toBeInstanceOf(LocatorInsufficientBalanceError);
   });
 
   test('openAdAttempt returns nonce, expiresAt and ssvActive flag', async () => {

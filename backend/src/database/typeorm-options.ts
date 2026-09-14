@@ -60,6 +60,7 @@ import {
   AiCreditLedgerEntryEntity,
   CommerceTransactionBindingEntity,
   AdAttemptEntity,
+  LocatorAttemptEntity,
 } from '../economy/entities';
 import {
   PromotionLockEntity,
@@ -207,6 +208,7 @@ import { AddUkrainianCatalogCategoryLabels1792368000000 } from './migrations/179
 import { AddVietnameseCatalogCategoryLabels1792454400000 } from './migrations/1792454400000-AddVietnameseCatalogCategoryLabels';
 import { AddObjectRegistryLastVerifiedAt1792540800000 } from './migrations/1792540800000-AddObjectRegistryLastVerifiedAt';
 import { AddRenderStopExposureGameplayEvent1792627200000 } from './migrations/1792627200000-AddRenderStopExposureGameplayEvent';
+import { CreateLocatorAttempts1792713600000 } from './migrations/1792713600000-CreateLocatorAttempts';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -257,6 +259,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AiCreditLedgerEntryEntity,
       CommerceTransactionBindingEntity,
       AdAttemptEntity,
+      LocatorAttemptEntity,
       AiArtworkEntity,
       AiCreditReservationEntity,
       SupportReferenceEntity,
@@ -399,6 +402,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddVietnameseCatalogCategoryLabels1792454400000,
       AddObjectRegistryLastVerifiedAt1792540800000,
       AddRenderStopExposureGameplayEvent1792627200000,
+      CreateLocatorAttempts1792713600000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

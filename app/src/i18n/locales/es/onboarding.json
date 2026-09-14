@@ -43,7 +43,7 @@
       "matchNumbers": "Haz coincidir los números para colocar cada puntada.",
       "dragSweep": "Arrastra por las celdas correspondientes para hacer un barrido.",
       "pinchZoom": "Pellizca para ampliar cuando necesites ver más de cerca.",
-      "undoLocator": "Deshacer y el localizador siempre son gratis."
+      "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
     },
     "continue": "Continuar bordando",
     "browsePatterns": "Explorar patrones"

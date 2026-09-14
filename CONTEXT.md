@@ -194,7 +194,7 @@ A consumable real-money product that a Registered Account may purchase to add AI
 _Avoid_: Stitch Coin Pack, Membership Credit Grant, AI subscription
 
 **Stitch Coin**:
-The backend-authoritative gameplay currency earned through play or Rewarded Ads, received through a Premium Daily Coin Claim, or purchased in a Stitch Coin Pack. A Registered Account holds it in its account balance, while a Guest Player holds it in a Guest Ledger. In the first release its only spend is the online purchase of permanent Pattern Unlocks; it remains separate from AI Credit and can never fund AI Artwork generation.
+The backend-authoritative gameplay currency earned through play or Rewarded Ads, received through a Premium Daily Coin Claim, or purchased in a Stitch Coin Pack. A Registered Account holds it in its account balance, while a Guest Player holds it in a Guest Ledger; online spending is idempotent and server-authoritative, funding permanent Pattern Unlocks and one successful Remaining Cell Locator use for 1 Coin. It remains separate from AI Credit and can never fund AI Artwork generation.
 _Avoid_: Coin, gold, point, token
 
 **Stitch Coin Pack**:
@@ -664,8 +664,16 @@ A tap on a cell whose DMC Thread Color does not match the Active Thread Color. I
 _Avoid_: Mistake, wrong stitch, error
 
 **Remaining Cell Locator**:
-The free, unlimited action that centers the viewport on the next unfinished cell for Active Thread Color and cycles deterministically through remaining matches. It never fills a cell, changes progress, grants a reward, selects the next color, shows an advertisement, or consumes Stitch Coin, AI Credit, or Premium access. The first release provides no auto-fill assistance.
-_Avoid_: Hint currency, auto-stitch, paid help
+The online-gated action that centers the viewport on the next unfinished cell for Active Thread Color and cycles deterministically through remaining matches; a successful use costs 1 Stitch Coin through a server-authoritative Locator Attempt for either a Guest Player or Registered Account. It never fills a cell, changes progress, grants a reward, selects the next color, or shows an advertisement; no-target, failure, insufficient balance, cancellation, or offline use charges nothing and does not move the viewport.
+_Avoid_: Hint currency, auto-stitch, free locator, paid auto-fill
+
+**Locator Attempt**:
+A server-authoritative, idempotent lifecycle for one requested paid Remaining Cell Locator use, bound to one player identity, Stitching Session, Pattern, Active Thread Color, target context, and client attempt identifier. It holds 1 Coin for at most 60 seconds, commits exactly one spend on success, and otherwise releases or expires without charge; an unknown commit remains pending and is retried with the same identifier.
+_Avoid_: Local locator tap, viewport hint, repeatable charge
+
+**Locator Reservation**:
+The temporary hard hold of 1 Stitch Coin for a Locator Attempt. It reduces spendable balance while prepared, is released when the target context becomes stale or the action is cancelled or rejected, and is never transferable across identities or sessions.
+_Avoid_: Local balance deduction, permanent spend, authorization token
 
 ### Social
 

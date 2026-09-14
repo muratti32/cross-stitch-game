@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, UseGuards } from '@nestjs/common';
-import { IsUUID } from 'class-validator';
+import { IsInt, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
 
 import { CurrentPrincipal, JwtAuthGuard } from '../auth';
 import type { AuthPrincipal } from '../auth/auth.types';
@@ -11,6 +11,11 @@ import {
 import { PatternUnlockService } from './pattern-unlock.service';
 import { AdAttemptService } from './ad-attempt.service';
 import type { AdAttemptStateView, OpenAdAttemptView } from './ad-attempt.types';
+import {
+  CommitLocatorAttemptInput,
+  LocatorAttemptService,
+  PrepareLocatorAttemptInput,
+} from './locator-attempt.service';
 
 class ClaimClientRewardDto {
   @IsUUID()
@@ -20,6 +25,51 @@ class ClaimClientRewardDto {
 class UnlockRequestDto {
   @IsUUID()
   patternId!: string;
+}
+
+class PrepareLocatorAttemptDto implements PrepareLocatorAttemptInput {
+  @IsUUID()
+  attemptId!: string;
+
+  @IsUUID()
+  sessionId!: string;
+
+  @IsUUID()
+  patternId!: string;
+
+  @IsInt()
+  @Min(0)
+  colorIndex!: number;
+
+  @IsString()
+  @MaxLength(16)
+  dmcCode!: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  progressRevision?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  progressHash?: string;
+}
+
+class CommitLocatorAttemptDto implements CommitLocatorAttemptInput {
+  @IsInt()
+  @Min(0)
+  targetCellIndex!: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  progressRevision?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(128)
+  progressHash?: string;
 }
 
 /**
@@ -34,6 +84,7 @@ export class EconomyController {
     private readonly economyRead: EconomyReadService,
     private readonly patternUnlock: PatternUnlockService,
     private readonly adAttemptService: AdAttemptService,
+    private readonly locatorAttemptService: LocatorAttemptService,
   ) {}
 
   @Post('ad-attempts')
@@ -86,6 +137,39 @@ export class EconomyController {
     @Body() dto: UnlockRequestDto,
   ) {
     return this.patternUnlock.unlock(p, dto.patternId);
+  }
+
+  @Post('locator-attempts/prepare')
+  async prepareLocatorAttempt(
+    @CurrentPrincipal() principal: AuthPrincipal,
+    @Body() dto: PrepareLocatorAttemptDto,
+  ) {
+    return this.locatorAttemptService.prepare(principal, dto);
+  }
+
+  @Post('locator-attempts/:attemptId/commit')
+  async commitLocatorAttempt(
+    @CurrentPrincipal() principal: AuthPrincipal,
+    @Param('attemptId', new ParseUUIDPipe({ version: '4' })) attemptId: string,
+    @Body() dto: CommitLocatorAttemptDto,
+  ) {
+    return this.locatorAttemptService.commit(principal, attemptId, dto);
+  }
+
+  @Post('locator-attempts/:attemptId/release')
+  async releaseLocatorAttempt(
+    @CurrentPrincipal() principal: AuthPrincipal,
+    @Param('attemptId', new ParseUUIDPipe({ version: '4' })) attemptId: string,
+  ) {
+    return this.locatorAttemptService.release(principal, attemptId);
+  }
+
+  @Get('locator-attempts/:attemptId')
+  async getLocatorAttempt(
+    @CurrentPrincipal() principal: AuthPrincipal,
+    @Param('attemptId', new ParseUUIDPipe({ version: '4' })) attemptId: string,
+  ) {
+    return this.locatorAttemptService.status(principal, attemptId);
   }
 
   @Get('unlocks')

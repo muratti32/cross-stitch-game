@@ -99,7 +99,7 @@ Rules for the coach-mark layer:
 | --- | --- |
 | Route | Bottom sheet over the session |
 | Purpose | End the lesson without requiring pattern completion |
-| Shows | Four-line recap: match the numbers, drag to sweep, pinch to zoom, Undo and the locator are always free |
+| Shows | Four-line recap: match the numbers, drag to sweep, pinch to zoom, Undo is always free, and a successful locator use costs 1 Stitch Coin |
 | Primary | **Continue stitching** (dismiss = same) |
 | Secondary | **Browse patterns** → Catalog |
 | Copy tone | Short and non-celebratory. No confetti economy, no reward. |

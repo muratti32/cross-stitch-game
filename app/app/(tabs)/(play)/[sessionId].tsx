@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, Pressable, ScrollView, Alert } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter, useNavigation, useFocusEffect, useIsFocused } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Screen, Button } from '@/components';
 import { Theme } from '@/theme/theme';
 import { formatNumber } from '@/i18n';
-import { createReplaySession } from '@/local-db';
+import { createReplaySession, generateUUID } from '@/local-db';
 import { StitchRenderer, type StitchRendererRef, nextRemainingCell } from '@/renderer';
 import { useGameplayStore } from '@/store/gameplayStore';
 import { useStitchingSession } from '@/hooks/useStitchingSession';
@@ -31,6 +32,13 @@ import { TutorialRecapSheet } from '@/onboarding/TutorialRecapSheet';
 import { useJustInTimeHints } from '@/onboarding/useJustInTimeHints';
 import { addScreenMemoryBreadcrumb } from '@/observability/sentry';
 import { useRenderStopExposure } from '@/analytics/renderStopExposure';
+import {
+  coinBalanceQueryKey,
+  commitLocatorAttempt,
+  prepareLocatorAttempt,
+  releaseLocatorAttempt,
+} from '@/api/economy';
+import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 
 export default function SessionReadyScreen() {
   const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
@@ -40,14 +48,11 @@ export default function SessionReadyScreen() {
   const { t, i18n: i18nInstance } = useTranslation('play');
   const locale = i18nInstance.language;
   const isSessionScreenFocused = useIsFocused();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     void addScreenMemoryBreadcrumb('session_ready');
   }, [sessionId]);
-
-  const handleBack = () => {
-    exitSession({ router, stack: navigation, returnTo });
-  };
 
   // Hide the OS bottom tab bar while a stitching session is focused, so a
   // finger drifting past the thread palette can't land on another app tab
@@ -105,6 +110,35 @@ export default function SessionReadyScreen() {
   const rendererRef = useRef<StitchRendererRef>(null);
   const lastLocatedIndex = useRef<number>(-1);
   const focusSlot = useRef(createFocusSlot());
+  const locatorAttemptIdRef = useRef<string | null>(null);
+  const locatorAbortRef = useRef<AbortController | null>(null);
+  const locatorRunRef = useRef(0);
+  const parentRevisionRef = useRef(0);
+  const [locatorBusy, setLocatorBusy] = useState(false);
+
+  useEffect(() => {
+    parentRevisionRef.current = parentRevision;
+  }, [parentRevision]);
+
+  const cancelLocatorAttempt = () => {
+    locatorRunRef.current += 1;
+    locatorAbortRef.current?.abort();
+    locatorAbortRef.current = null;
+    const attemptId = locatorAttemptIdRef.current;
+    locatorAttemptIdRef.current = null;
+    if (attemptId) {
+      void releaseLocatorAttempt(attemptId).catch(() => {
+        // The server TTL releases an unresolved hold when the device is offline.
+      });
+    }
+  };
+
+  const handleBack = () => {
+    cancelLocatorAttempt();
+    exitSession({ router, stack: navigation, returnTo });
+  };
+
+  useEffect(() => () => cancelLocatorAttempt(), []);
 
   const focusTutorialCell = (target: TutorialFocusTarget) => {
     if (!patternData || !rendererState) return;
@@ -317,8 +351,8 @@ export default function SessionReadyScreen() {
   };
 
   // Handle locator cell navigation
-  const handleLocateNext = () => {
-    if (!patternData || !rendererState) return;
+  const handleLocateNext = async () => {
+    if (!patternData || !rendererState || !session || locatorBusy) return;
 
     const completed = rendererState.getCompletedArray();
     const nextIdx = nextRemainingCell(
@@ -330,18 +364,79 @@ export default function SessionReadyScreen() {
       lastLocatedIndex.current
     );
 
-    if (nextIdx !== null) {
-      const cx = nextIdx % patternData.width;
-      const cy = Math.floor(nextIdx / patternData.width);
+    // A no-target lookup never creates a reservation and never charges.
+    if (nextIdx === null) return;
 
+    const color = patternData.palette[selectedColorIndex];
+    if (!color) return;
+
+    const attemptId = generateUUID();
+    const runId = locatorRunRef.current;
+    const requestRevision = parentRevisionRef.current;
+    const abortController = new AbortController();
+    locatorAbortRef.current = abortController;
+    setLocatorBusy(true);
+    try {
+      const prepared = await prepareLocatorAttempt({
+        attemptId,
+        sessionId: session.id,
+        patternId: session.patternId,
+        colorIndex: selectedColorIndex,
+        dmcCode: color.dmcCode,
+        progressRevision: requestRevision,
+      }, abortController.signal);
+      locatorAttemptIdRef.current = prepared.attemptId;
+      queryClient.invalidateQueries({ queryKey: coinBalanceQueryKey });
+
+      // A color/progress change while the network round trip was in flight
+      // makes the prepared target stale. Release the hold; never charge a
+      // locator for a different local context.
+      const targetX = nextIdx % patternData.width;
+      const targetY = Math.floor(nextIdx / patternData.width);
+      const targetStillRemaining = patternData.grid[nextIdx] === selectedColorIndex + 1
+        && !rendererState.isCompleted(targetX, targetY);
+      if (
+        locatorRunRef.current !== runId
+        || parentRevisionRef.current !== requestRevision
+        || useGameplayStore.getState().selectedColorIndex !== selectedColorIndex
+        || !targetStillRemaining
+      ) {
+        locatorAttemptIdRef.current = null;
+        await releaseLocatorAttempt(prepared.attemptId);
+        queryClient.invalidateQueries({ queryKey: coinBalanceQueryKey });
+        return;
+      }
+
+      const committed = await commitLocatorAttempt(prepared.attemptId, {
+        targetCellIndex: nextIdx,
+        progressRevision: requestRevision,
+      }, abortController.signal);
+      queryClient.invalidateQueries({ queryKey: coinBalanceQueryKey });
+      if (committed.status !== 'committed') {
+        locatorAttemptIdRef.current = null;
+        return;
+      }
+
+      locatorAttemptIdRef.current = null;
+      locatorAbortRef.current = null;
+      const cx = targetX;
+      const cy = targetY;
       lastLocatedIndex.current = nextIdx;
       focusSlot.current.acquire('locator');
       rendererState.focusCell(cx, cy);
       setParentRevision((r) => r + 1);
-
-      if (rendererRef.current) {
-        rendererRef.current.locateCell(cx, cy);
-      }
+      rendererRef.current?.locateCell(cx, cy);
+    } catch (error) {
+      queryClient.invalidateQueries({ queryKey: coinBalanceQueryKey });
+      if (error instanceof Error && error.name === 'AbortError') return;
+      // Keep a prepared attempt pending when commit outcome is unknown; a
+      // retry/status check with the same attempt id is the only safe path.
+      const message = isServerApiError(error)
+        ? localizeServerError(error)
+        : t('error.fallbackMessage');
+      Alert.alert(t('error.title'), message);
+    } finally {
+      setLocatorBusy(false);
     }
   };
 
@@ -489,9 +584,10 @@ export default function SessionReadyScreen() {
               styles.floatingButton,
               (selectedColorIndex < 0 || remainingCounts[selectedColorIndex] === 0)
                 && styles.floatingButtonDisabled,
+              locatorBusy && styles.floatingButtonDisabled,
             ]}
             onPress={handleLocateNext}
-            disabled={selectedColorIndex < 0 || remainingCounts[selectedColorIndex] === 0}
+            disabled={locatorBusy || selectedColorIndex < 0 || remainingCounts[selectedColorIndex] === 0}
             accessibilityRole="button"
             accessibilityLabel={t('rail.locateNextAccessibilityLabel')}
           >

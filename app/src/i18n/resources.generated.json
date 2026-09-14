@@ -659,7 +659,7 @@
           "matchNumbers": "طابق الأرقام لوضع كل غرزة.",
           "dragSweep": "اسحب عبر الخلايا المتطابقة لتطريز مسار مسحوب.",
           "pinchZoom": "قرّب بأصابعك للتكبير عندما تحتاج إلى نظرة أقرب.",
-          "undoLocator": "التراجع ومحدد المواقع مجانيان دائماً."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "متابعة التطريز",
         "browsePatterns": "تصفح الأنماط"
@@ -2081,7 +2081,7 @@
           "matchNumbers": "Fes coincidir els números per col·locar cada puntada.",
           "dragSweep": "Arrossega per les caselles coincidents per fer una passada seguida.",
           "pinchZoom": "Pessiga per fer zoom quan necessitis veure-ho més de prop.",
-          "undoLocator": "Desfer i el localitzador sempre són gratuïts."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Continua puntant",
         "browsePatterns": "Explora patrons"
@@ -3503,7 +3503,7 @@
           "matchNumbers": "Podle čísel umisťujte jednotlivé stehy.",
           "dragSweep": "Táhněte přes shodná políčka pro rychlé vyšívání.",
           "pinchZoom": "Když potřebujete detailnější pohled, plátno přibližte prsty.",
-          "undoLocator": "Zpětný krok i lokátor políček jsou vždy zdarma."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Pokračovat ve vyšívání",
         "browsePatterns": "Prohlížet vzory"
@@ -4925,7 +4925,7 @@
           "matchNumbers": "Match tallene for at placere hvert sting.",
           "dragSweep": "Træk hen over matchende celler for at sy et forløb.",
           "pinchZoom": "Knib for at zoome, når du har brug for et nærmere kig.",
-          "undoLocator": "Fortryd og lokaliseringen er altid gratis."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Fortsæt med at sy",
         "browsePatterns": "Gennemse mønstre"
@@ -6347,7 +6347,7 @@
           "matchNumbers": "Gleiche die Nummern ab, um jeden Stich zu platzieren.",
           "dragSweep": "Ziehe über passende Kästchen, um in einer Wischbewegung zu sticken.",
           "pinchZoom": "Zoome mit zwei Fingern, wenn du einen genaueren Blick brauchst.",
-          "undoLocator": "Rückgängig-Machen und der Finder sind immer kostenlos."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Weitersticken",
         "browsePatterns": "Muster durchstöbern"
@@ -7769,7 +7769,7 @@
           "matchNumbers": "Ταιριάξτε τους αριθμούς για να τοποθετήσετε κάθε βελονιά.",
           "dragSweep": "Σύρετε κατά μήκος αντίστοιχων κελιών για να σαρώσετε.",
           "pinchZoom": "Τσιμπήστε για ζουμ όταν χρειάζεστε καλύτερη προβολή.",
-          "undoLocator": "Η αναίρεση και ο εντοπιστής είναι πάντα δωρεάν."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Συνέχιση κεντήματος",
         "browsePatterns": "Περιήγηση μοτίβων"
@@ -9191,7 +9191,7 @@
           "matchNumbers": "Match the numbers to place each stitch.",
           "dragSweep": "Drag across matching cells to sweep.",
           "pinchZoom": "Pinch to zoom when you need a closer look.",
-          "undoLocator": "Undo and the locator are always free."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Continue stitching",
         "browsePatterns": "Browse patterns"
@@ -10613,7 +10613,7 @@
           "matchNumbers": "Haz coincidir los números para colocar cada puntada.",
           "dragSweep": "Arrastra por las celdas correspondientes para hacer un barrido.",
           "pinchZoom": "Pellizca para ampliar cuando necesites ver más de cerca.",
-          "undoLocator": "Deshacer y el localizador siempre son gratis."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Continuar bordando",
         "browsePatterns": "Explorar patrones"
@@ -12035,7 +12035,7 @@
           "matchNumbers": "Yhdistä numerot asettaaksesi jokaisen piston.",
           "dragSweep": "Pyyhkäise vetämällä vastaavien ruutujen yli.",
           "pinchZoom": "Nipistä zoomataksesi, kun haluat katsoa tarkemmin.",
-          "undoLocator": "Kumoaminen ja paikannin ovat aina ilmaisia."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Jatka pistelyä",
         "browsePatterns": "Selaa malleja"
@@ -13457,7 +13457,7 @@
           "matchNumbers": "Faites correspondre les numéros pour placer chaque point.",
           "dragSweep": "Faites glisser votre doigt sur les cases correspondantes pour broder en continu.",
           "pinchZoom": "Pincez l'écran pour zoomer lorsque vous avez besoin de regarder de plus près.",
-          "undoLocator": "L'annulation et le localisateur sont toujours gratuits."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Continuer à broder",
         "browsePatterns": "Parcourir les modèles"
@@ -14879,7 +14879,7 @@
           "matchNumbers": "हर स्टिच लगाने के लिए नंबरों का मिलान करें।",
           "dragSweep": "स्वीप करने के लिए मिलते-जुलते खानों पर ड्रैग करें।",
           "pinchZoom": "पास से देखने की ज़रूरत होने पर ज़ूम करने के लिए पिंच करें।",
-          "undoLocator": "अनडू और लोकेटर हमेशा मुफ्त हैं।"
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "स्टिच करना जारी रखें",
         "browsePatterns": "पैटर्न देखें"
@@ -16301,7 +16301,7 @@
           "matchNumbers": "Poveži brojeve za postavljanje svakog boda.",
           "dragSweep": "Povuci preko odgovarajućih ćelija za vezenje niza.",
           "pinchZoom": "Uštipni za zumiranje kad trebaš bolji pogled.",
-          "undoLocator": "Poništavanje i lokator uvijek su besplatni."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Nastavi vesti",
         "browsePatterns": "Pregledaj uzorke"
@@ -17723,7 +17723,7 @@
           "matchNumbers": "Párosítsd a számokat minden öltés elhelyezéséhez.",
           "dragSweep": "Húzd végig a megfelelő cellákon a sor hímzéséhez.",
           "pinchZoom": "Csippentsd a nagyításhoz, ha jobb rálátásra van szükséged.",
-          "undoLocator": "A visszavonás és a kereső mindig ingyenes."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Hímzés folytatása",
         "browsePatterns": "Minták böngészése"
@@ -19145,7 +19145,7 @@
           "matchNumbers": "Cocokkan angka untuk menempatkan setiap jahitan.",
           "dragSweep": "Seret di sepanjang sel yang cocok untuk menyulam baris.",
           "pinchZoom": "Cubit untuk memperbesar jika kamu butuh tampilan yang lebih baik.",
-          "undoLocator": "Urungkan dan pencari selalu gratis."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Lanjutkan menyulam",
         "browsePatterns": "Jelajahi pola"
@@ -20567,7 +20567,7 @@
           "matchNumbers": "Abbina i numeri per posizionare ogni punto.",
           "dragSweep": "Trascina sulle celle corrispondenti per ricamare a scorrimento.",
           "pinchZoom": "Pizzica per ingrandire quando hai bisogno di guardare più da vicino.",
-          "undoLocator": "Annulla e il localizzatore sono sempre gratuiti."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Continua a ricamare",
         "browsePatterns": "Sfoglia gli schemi"
@@ -21989,7 +21989,7 @@
           "matchNumbers": "数字を合わせてステッチを配置します。",
           "dragSweep": "同じ色のマスをドラッグして、まとめてステッチ（スウィープ）します。",
           "pinchZoom": "近くで見たい時は、ピンチ操作でズームします。",
-          "undoLocator": "取り消し（元に戻す）とロケーターはいつでも無料で使えます。"
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "ステッチを続ける",
         "browsePatterns": "図案を探す"
@@ -23411,7 +23411,7 @@
           "matchNumbers": "숫자를 맞춰서 스티치를 배치합니다.",
           "dragSweep": "같은 색상의 칸을 드래그하여 연속 스티치(스윕)를 합니다.",
           "pinchZoom": "자세히 보고 싶을 때는 핀치 제스처로 줌합니다.",
-          "undoLocator": "실행 취소와 로케이터는 언제나 무료로 사용할 수 있습니다."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "스티치 계속하기",
         "browsePatterns": "도안 찾기"
@@ -24833,7 +24833,7 @@
           "matchNumbers": "Padankan nombor untuk meletakkan setiap jahitan.",
           "dragSweep": "Seret di sepanjang sel yang sepadan untuk menjahit baris.",
           "pinchZoom": "Cubit untuk membesarkan jika anda perlukan paparan yang lebih baik.",
-          "undoLocator": "Buat asal dan pencari sentiasa percuma."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Teruskan menjahit",
         "browsePatterns": "Semak imbas pola"
@@ -26255,7 +26255,7 @@
           "matchNumbers": "Match tallene for å plassere hvert sting.",
           "dragSweep": "Dra over matchende ruter for å stinge i rekke.",
           "pinchZoom": "Knip for å zoome når du trenger en nærmere titt.",
-          "undoLocator": "Angre og lokalisering er alltid gratis."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Fortsett stingingen",
         "browsePatterns": "Bla i mønstre"
@@ -27677,7 +27677,7 @@
           "matchNumbers": "Zoek de nummers om je stitches te plaatsen.",
           "dragSweep": "Sleep over vakjes met hetzelfde nummer om continu te stitchen (sweep).",
           "pinchZoom": "Knijp om te zoomen wanneer je details wilt zien.",
-          "undoLocator": "Ongedaan maken en de zoeker zijn altijd gratis te gebruiken."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Verder stitchen",
         "browsePatterns": "Patronen zoeken"
@@ -29099,7 +29099,7 @@
           "matchNumbers": "Znajdź numery, aby umieścić swoje ściegi.",
           "dragSweep": "Przeciągnij po polach z tym samym numerem, aby haftować w sposób ciągły (sweep).",
           "pinchZoom": "Uszczypnij, aby przybliżyć, gdy chcesz zobaczyć szczegóły.",
-          "undoLocator": "Cofanie i lokalizator są zawsze dostępne za darmo."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Kontynuuj haftowanie",
         "browsePatterns": "Szukaj wzorów"
@@ -30521,7 +30521,7 @@
           "matchNumbers": "Faz corresponder os números para colocar cada ponto.",
           "dragSweep": "Arrasta pelas células correspondentes para bordar em sequência.",
           "pinchZoom": "Belisca para ampliar quando precisares de ver mais de perto.",
-          "undoLocator": "Anular e o localizador são sempre gratuitos."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Continuar a bordar",
         "browsePatterns": "Explorar padrões"
@@ -31943,7 +31943,7 @@
           "matchNumbers": "Combine os números para fazer cada ponto.",
           "dragSweep": "Arraste pelas células correspondentes para bordar em sequência.",
           "pinchZoom": "Faça o movimento de pinça para dar zoom quando precisar ver de perto.",
-          "undoLocator": "Desfazer e o localizador são sempre gratuitos."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Continuar bordando",
         "browsePatterns": "Explorar gráficos"
@@ -33365,7 +33365,7 @@
           "matchNumbers": "Potrivește numerele pentru a plasa fiecare cusătură.",
           "dragSweep": "Trage peste celulele care se potrivesc pentru a cuse în lanț.",
           "pinchZoom": "Ciupește pentru a mări atunci când ai nevoie de o privire mai atentă.",
-          "undoLocator": "Anularea și localizatorul sunt mereu gratuite."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Continuă cusutul",
         "browsePatterns": "Răsfoiește modelele"
@@ -34787,7 +34787,7 @@
           "matchNumbers": "Сопоставляйте номера, чтобы делать стежки.",
           "dragSweep": "Проводите пальцем по клеткам с тем же номером для непрерывной вышивки (sweep).",
           "pinchZoom": "Сводите и разводите пальцы, чтобы приблизить изображение.",
-          "undoLocator": "Отмена и локатор всегда бесплатны."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Продолжить вышивать",
         "browsePatterns": "Выбрать узор"
@@ -36209,7 +36209,7 @@
           "matchNumbers": "Priraď čísla, aby si umiestnil každý steh.",
           "dragSweep": "Ťahaj cez zodpovedajúce bunky a vyšívaj v reťazi.",
           "pinchZoom": "Štipnutím priblíž, keď potrebuješ bližší pohľad.",
-          "undoLocator": "Vrátenie späť a lokátor sú vždy zadarmo."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Pokračovať vo vyšívaní",
         "browsePatterns": "Prehliadať vzory"
@@ -37631,7 +37631,7 @@
           "matchNumbers": "Ujemajte številke, da postavite vsak šiv.",
           "dragSweep": "Povlecite čez ujemajoče celice za niz.",
           "pinchZoom": "S ščipanjem povečajte, ko potrebujete bližji pogled.",
-          "undoLocator": "Razveljavitev in lokator sta vedno brezplačna."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Nadaljuj šivanje",
         "browsePatterns": "Prebrskaj vzorce"
@@ -39053,7 +39053,7 @@
           "matchNumbers": "Matcha siffrorna för att placera varje stygn.",
           "dragSweep": "Dra över matchande celler för att svepa.",
           "pinchZoom": "Nyp för att zooma när du behöver se närmare.",
-          "undoLocator": "Ångra och lokaliseraren är alltid gratis."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Fortsätt sy",
         "browsePatterns": "Bläddra bland mönster"
@@ -40475,7 +40475,7 @@
           "matchNumbers": "Itugma ang mga numero para ilagay ang bawat tahi.",
           "dragSweep": "I-drag ang tumutugmang mga cell para tumahi nang sweep.",
           "pinchZoom": "I-pinch para i-zoom kapag kailangan mong tumingin nang mas malapit.",
-          "undoLocator": "Palaging libre ang undo at ang locator."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Ipagpatuloy ang pananahi",
         "browsePatterns": "Mag-browse ng mga pattern"
@@ -41897,7 +41897,7 @@
           "matchNumbers": "Her dikişi yerleştirmek için numaraları eşleştir.",
           "dragSweep": "Eşleşen kareler boyunca sürükleyerek dikiş yap.",
           "pinchZoom": "Daha yakından bakmak istediğinde iki parmağınla yakınlaştır.",
-          "undoLocator": "Geri al ve konum bulucu her zaman ücretsizdir."
+          "undoLocator": "Geri alma her zaman ücretsizdir; başarılı bir konum bulucu kullanımı 1 Stitch Coin harcar."
         },
         "continue": "Dikişe devam et",
         "browsePatterns": "Desenlere göz at"
@@ -43319,7 +43319,7 @@
           "matchNumbers": "Зіставляйте номери, щоб розмістити кожен стібок.",
           "dragSweep": "Проведіть по відповідних клітинках, щоб вишити ряд.",
           "pinchZoom": "Зведіть пальці, щоб наблизити, коли потрібно розгледіти детальніше.",
-          "undoLocator": "Скасування та локатор завжди безкоштовні."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Продовжити вишивати",
         "browsePatterns": "Переглянути візерунки"
@@ -44741,7 +44741,7 @@
           "matchNumbers": "Khớp các số để đặt từng mũi thêu.",
           "dragSweep": "Kéo qua các ô khớp để thêu theo dãy.",
           "pinchZoom": "Chụm để phóng to khi cần nhìn gần hơn.",
-          "undoLocator": "Hoàn tác và công cụ định vị luôn miễn phí."
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "Tiếp tục thêu",
         "browsePatterns": "Duyệt mẫu thêu"
@@ -46163,7 +46163,7 @@
           "matchNumbers": "根据数字配对，完成每一针 Stitch。",
           "dragSweep": "在匹配的格子上滑动，进行连续绣制。",
           "pinchZoom": "需要看细节时，双指捏合即可缩放。",
-          "undoLocator": "撤销和定位器功能完全免费，可以随便用哦。"
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "继续 Stitch",
         "browsePatterns": "浏览图纸"
@@ -47585,7 +47585,7 @@
           "matchNumbers": "配對數字以放置每一針。",
           "dragSweep": "拖曳過對應的格子即可連續刺繡。",
           "pinchZoom": "需要看得更清楚時，捏合即可縮放。",
-          "undoLocator": "復原與定位功能永遠免費。"
+          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
         },
         "continue": "繼續刺繡",
         "browsePatterns": "瀏覽圖案"

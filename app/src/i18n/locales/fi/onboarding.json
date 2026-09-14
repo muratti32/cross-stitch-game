@@ -43,7 +43,7 @@
       "matchNumbers": "Yhdistä numerot asettaaksesi jokaisen piston.",
       "dragSweep": "Pyyhkäise vetämällä vastaavien ruutujen yli.",
       "pinchZoom": "Nipistä zoomataksesi, kun haluat katsoa tarkemmin.",
-      "undoLocator": "Kumoaminen ja paikannin ovat aina ilmaisia."
+      "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
     },
     "continue": "Jatka pistelyä",
     "browsePatterns": "Selaa malleja"
