@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api } from '@/lib/client/fetcher';
 import { buildQueryString } from '@/lib/client/query-string';
-import type { AdminPatternDetail, AdminPatternPage, BulkRemovePatternsInput, BulkRemovePatternsResponse, PatternStatus, UpdatePatternMetadataInput } from '@/lib/types';
+import type { AdminPatternDetail, AdminPatternPage, BulkRemovePatternsInput, BulkRemovePatternsResponse, BulkSetPatternsPaidInput, BulkSetPatternsPaidResponse, PatternStatus, SetPatternPaidResponse, UpdatePatternMetadataInput } from '@/lib/types';
 
 export type PatternListParams = {
   status?: PatternStatus;
@@ -62,6 +62,32 @@ export function useRemovePattern(id: string) {
 
 export function useRestorePattern(id: string) {
   return usePatternStatusMutation(id, 'restore');
+}
+
+export function useSetPatternPaid(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (paid: boolean) =>
+      api.put<SetPatternPaidResponse>(`/api/admin/patterns/${id}/paid`, { paid }),
+    onSuccess: (result) => {
+      queryClient.setQueryData<AdminPatternDetail>(['admin-pattern', id], (current) =>
+        current === undefined ? current : { ...current, unlockPriceTier: result.afterTier },
+      );
+      return queryClient.invalidateQueries({ queryKey: ['admin-patterns'] });
+    },
+  });
+}
+
+export function useBulkSetPatternsPaid() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: BulkSetPatternsPaidInput) =>
+      api.post<BulkSetPatternsPaidResponse>('/api/admin/patterns/bulk-paid', input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['admin-patterns'] });
+      void queryClient.invalidateQueries({ queryKey: ['admin-pattern'] });
+    },
+  });
 }
 
 export function useBulkRemovePatterns() {

@@ -56,6 +56,34 @@ export interface BulkRemovePatternsResponse {
   removedCount: number;
 }
 
+export type PatternPaidErrorCode =
+  | 'pattern_not_found'
+  | 'pattern_not_eligible'
+  | 'stitchable_cell_count_unknown'
+  | 'internal_error';
+
+export interface SetPatternPaidResponse {
+  patternId: string;
+  changed: boolean;
+  beforeTier: PatternUnlockPriceTier;
+  afterTier: PatternUnlockPriceTier;
+  grandfatheredCount: number;
+}
+
+export interface BulkSetPatternsPaidInput {
+  patternIds: string[];
+  paid: boolean;
+}
+
+export type BulkSetPatternPaidResult =
+  | ({ outcome: 'changed' | 'unchanged' } & Omit<SetPatternPaidResponse, 'changed'>)
+  | { patternId: string; outcome: 'failed'; errorCode: PatternPaidErrorCode };
+
+export interface BulkSetPatternsPaidResponse {
+  paid: boolean;
+  results: BulkSetPatternPaidResult[];
+}
+
 export interface StaffPickItem {
   patternId: string;
   title: string;

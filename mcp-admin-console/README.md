@@ -88,6 +88,8 @@ and the `McpServer` and register each module's tools:
 | `admin_list_patterns` | Lists all existing patterns matching filter and pagination criteria |
 | `admin_get_pattern` | Retrieves full details of a specific pattern by ID |
 | `admin_update_pattern_metadata` | Directly edits pattern details (distinguished from creator-proposed revisions) |
+| `admin_set_pattern_paid` | Makes one eligible Official Pattern paid or free, with server-derived tier and grandfathering result |
+| `admin_bulk_set_patterns_paid` | Makes up to 50 unique eligible Official Patterns paid or free, with partial-success results |
 | `admin_withdraw_pattern` | Temporarily withdraws a pattern from public view |
 | `admin_remove_pattern` | Removes a pattern as a moderation takedown (reversible via `admin_restore_pattern`) |
 | `admin_restore_pattern` | Restores a previously removed pattern |
@@ -169,6 +171,9 @@ and the `McpServer` and register each module's tools:
 6. `admin_update_pattern_metadata` / `admin_withdraw_pattern` /
    `admin_remove_pattern` / `admin_restore_pattern` to edit or change status
    later.
+   Use `admin_set_pattern_paid` or `admin_bulk_set_patterns_paid` to change pricing. The backend derives
+   paid tiers and reports grandfathered players or guests after the change; inspect every bulk result because
+   failures do not roll back successful Patterns. Making a Pattern free keeps Unlocks and gives no refund.
 7. `admin_add_staff_pick` (patternId, optional 1-based position) to feature a
    Pattern; `admin_list_staff_picks` to see current order. The backend only
    exposes an atomic full-list replace (ADR-0039: no single-item add

@@ -19,6 +19,10 @@ const selected: AdminPatternListItem[] = [{
   title: 'Fox', unlockPriceTier: null,
 }];
 
+function pattern(id: string, status: AdminPatternListItem['status'] = 'available'): AdminPatternListItem {
+  return { ...selected[0], id, status, title: id };
+}
+
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
@@ -94,5 +98,24 @@ describe('BulkRemoveDialog', () => {
     expect(onOpenChange).toHaveBeenCalledWith(false);
     rerender(<BulkRemoveDialog patterns={selected} open onOpenChange={onOpenChange} onSuccess={onSuccess} />);
     expect((screen.getByRole('textbox', { name: /Removal reason/ }) as HTMLTextAreaElement).value).toBe('');
+  });
+
+  it('skips Review Hold Patterns and sends only removable ids', async () => {
+    const user = userEvent.setup();
+    mocks.mutateAsync.mockResolvedValueOnce({ batchId: 'batch', patternIds: ['fox'], removedCount: 1 });
+    render(<BulkRemoveDialog patterns={[selected[0], pattern('held', 'review_hold')]} open onOpenChange={vi.fn()} onSuccess={vi.fn()} />);
+
+    expect(screen.getByText(/1 selected Pattern is skipped because Review Hold/)).not.toBeNull();
+    await user.type(screen.getByRole('textbox', { name: /Removal reason/ }), 'Confirmed policy removal');
+    await user.click(screen.getByRole('button', { name: 'Remove selected' }));
+
+    await waitFor(() => expect(mocks.mutateAsync).toHaveBeenCalled());
+    expect(mocks.mutateAsync.mock.calls[0][0].patternIds).toEqual(['fox']);
+  });
+
+  it('blocks submission when more than 20 removable Patterns are selected', async () => {
+    render(<BulkRemoveDialog patterns={Array.from({ length: 21 }, (_, index) => pattern(String(index)))} open onOpenChange={vi.fn()} onSuccess={vi.fn()} />);
+    expect(screen.getByRole('alert').textContent).toContain('at most 20 Patterns');
+    expect(screen.getByRole('button', { name: 'Remove selected' }).hasAttribute('disabled')).toBe(true);
   });
 });
