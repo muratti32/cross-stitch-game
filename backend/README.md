@@ -329,12 +329,6 @@ npm run lint
 npm test
 ```
 
-Integration tests require a running Docker daemon. Testcontainers starts isolated real PostgreSQL and Redis containers; the local Compose services are not used:
-
-```sh
-npm run test:integration
-```
-
 ## Job delivery architecture
 
 `POST /v1/demo-jobs` commits a Processing Job and Job Outbox row in one PostgreSQL transaction. The worker deployable's dispatcher claims undispatched outbox rows with `FOR UPDATE SKIP LOCKED`, publishes each row to BullMQ using the outbox row identifier as `jobId`, and records dispatch in PostgreSQL. The consumer guards the database state transition before doing work, so at-least-once queue replays observe the existing state and cannot create a second terminal result.

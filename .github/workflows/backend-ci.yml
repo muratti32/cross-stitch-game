@@ -1,4 +1,4 @@
-name: Backend Integration
+name: Backend CI
 
 on:
   push:
@@ -7,24 +7,24 @@ on:
       - staging
     paths:
       - 'backend/**'
-      - '.github/workflows/backend-integration.yml'
+      - '.github/workflows/backend-ci.yml'
   pull_request:
     branches:
       - main
       - staging
     paths:
       - 'backend/**'
-      - '.github/workflows/backend-integration.yml'
+      - '.github/workflows/backend-ci.yml'
 
 defaults:
   run:
     working-directory: backend
 
 jobs:
-  integration:
-    name: Backend Integration Suite
+  unit:
+    name: Backend Typecheck and Unit Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repository
@@ -42,12 +42,10 @@ jobs:
 
       # `npm run lint` is deliberately absent: the tree carries 379 pre-existing
       # ESLint errors, so gating on it here would keep this workflow permanently
-      # red for reasons unrelated to the integration suite.
+      # red for reasons unrelated to the unit suite.
       - name: Run TypeScript typecheck
         run: npm run typecheck
 
       - name: Run unit tests
         run: npm test
 
-      - name: Run integration tests
-        run: npm run test:integration

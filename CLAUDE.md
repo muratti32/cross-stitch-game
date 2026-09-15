@@ -10,6 +10,10 @@ Before answering questions or taking action about the application, AI agents mus
 
 Before answering questions or taking action about the app identity, store listing, platform targets, languages, external services, infrastructure providers, authentication or push-service boundaries, provisioning status, or privacy posture, AI agents must read `docs/app-metadata.md` and use it as the canonical inventory. Cross-check the underlying product and architecture decisions in `CONTEXT.md` and `docs/adr/`. Never invent account or project IDs, domains, credentials, secrets, or provisioning status; add only confirmed public identifiers and secret-manager reference names to `docs/app-metadata.md`, never secret values.
 
+## Testing
+
+Unit tests only. Do not add integration tests — the integration suite was removed because it slowed development. Verify backend work with `npm run typecheck` and `npm test` in `backend/`; app work with `npm run ts:check` and `npm test` in `app/`. Cover new behavior with unit tests (mocked repositories/providers) instead.
+
 ## Wiki
 
 When the user refers to the "wiki," interpret it as the `vault/wiki/` directory. Before answering a question about the wiki or its contents, search the relevant files under `vault/wiki/` and base the answer on what you find there.

@@ -10,7 +10,6 @@
     "coverage",
     "test",
     "scripts",
-    "**/*.spec.ts",
-    "**/*.integration-spec.ts"
+    "**/*.spec.ts"
   ]
 }
