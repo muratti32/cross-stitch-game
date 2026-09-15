@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Tapos na ang lahat ng ad reward ngayong araw! (30/30 barya)",
       "watchAdButton": "Manood ng ad para sa +10 barya ({{count}} na natitira)",
       "adPerkNote": "Manood ng hanggang 3 ad/araw · Naka-unlock sa Premium ang instant na claim ng 30 barya",
-      "adRewardEarned": "Nakuha ang ad reward! Vine-verify sa backend…",
+      "adRewardEarned": "Nakumpirma na ang ad reward!",
       "claimFailed": "Nabigo ang claim: {{message}}",
       "claimFailedGeneric": "May nagkamali. Subukan ulit.",
       "adLoadFailedDefault": "Hindi na-load ang ad",
-      "adAttemptFailedDefault": "Hindi nabuksan ang pagsubok sa ad"
+      "adAttemptFailedDefault": "Hindi nabuksan ang pagsubok sa ad",
+      "adRewardVerifying": "Bine-verify ang reward mo…",
+      "adRewardPending": "Bine-verify pa ang reward mo. Lalabas ang mga coin sa ilang sandali.",
+      "adRewardExpired": "Hindi na-verify sa oras ang reward ng ad na ito. Pakisubukang muli."
     },
     "tabs": {
       "myCreations": "Mga Likha Ko {{count}}",

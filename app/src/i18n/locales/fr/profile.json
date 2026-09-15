@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Toutes les récompenses publicitaires ont été obtenues pour aujourd'hui ! (30/30 pièces)",
       "watchAdButton": "Regarder une publicité pour +10 pièces (encore {{count}})",
       "adPerkNote": "Regardez jusqu'à 3 publicités par jour · Le statut Premium déverrouille la réclamation instantanée de 30 pièces",
-      "adRewardEarned": "Récompense publicitaire obtenue ! Vérification avec le serveur…",
+      "adRewardEarned": "Récompense publicitaire vérifiée !",
       "claimFailed": "Échec de la réclamation : {{message}}",
       "claimFailedGeneric": "Une erreur est survenue. Veuillez réessayer.",
       "adLoadFailedDefault": "Impossible de charger la publicité",
-      "adAttemptFailedDefault": "Échec du lancement de la publicité"
+      "adAttemptFailedDefault": "Échec du lancement de la publicité",
+      "adRewardVerifying": "Vérification de votre récompense…",
+      "adRewardPending": "Votre récompense est toujours en cours de vérification. Les pièces apparaîtront bientôt.",
+      "adRewardExpired": "La récompense de cette publicité n’a pas pu être vérifiée à temps. Veuillez réessayer."
     },
     "tabs": {
       "myCreations": "Mes créations {{count}}",

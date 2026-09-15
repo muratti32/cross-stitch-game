@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Az aktív fonalszín következő hátralévő cellájának megkeresése",
     "undoAccessibilityLabel": "Utolsó öltés visszavonása"
   },
+  "locator": {
+    "priceTitle": "Kereső ára",
+    "priceConfirmMessage": "Ár: {{price}} · Egyenleg: {{balance}}\nKoppints újra a keresőre a használatához.",
+    "priceChangedTitle": "A kereső ára megváltozott",
+    "priceChangedMessage": "Új ár: {{price}} · Egyenleg: {{balance}}\nKoppints újra a keresőre, hogy az új áron használd."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "{{number}}. szín: DMC {{dmcCode}}, {{count}} öltés hátra",

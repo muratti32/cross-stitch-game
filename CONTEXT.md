@@ -22,8 +22,25 @@ _Avoid_: Queue payload, worker log, webhook
 The explicit Online, Offline, or Reconnecting condition shown without blocking locally available play. Ready Sessions, Personal Patterns, and local Stitch and Undo Actions continue offline; only the specific operation that requires the Game Backend—such as Session Preparation, purchase, Unlock, Catalog Submission, or AI generation—shows an actionable retry state. A generic connection screen never replaces usable local content.
 _Avoid_: App offline error, global loading screen, network reachability guess
 
+**Unconfirmed Render-Stop ANR Signal**:
+An isolated Android `AppExitInfo` observation in which the main thread waits on
+RenderThread (the #148 `HardwareRenderer.setStopped` signal), without physical
+reproduction or a causal trace. It is not a confirmed defect, shared root cause,
+or fix, and is distinct from #248's active-pan `renderImmediate` signature.
+_Avoid_: confirmed ANR, #248 duplicate, proven renderer cause
+
+**Render-Stop Exposure**:
+A privacy-safe first-party telemetry event emitted once when an Android
+production Stitching Session canvas is visible and focused and the app moves
+from `active` to `background`. Its payload records only the unique native app
+release and build, Android API, and Device Rendering Profile; it contains no
+Pattern, content, session, player, or identity field. Like every gameplay event,
+the backend row remains associated with the authenticated player principal. It
+measures exposure and recurrence, not an ANR or its cause.
+_Avoid_: crash report, ANR confirmation, player/session identifier
+
 **Support Reference**:
-The short opaque code a player can copy from a failed or delayed sync, Processing Job, purchase, promotion, or moderation flow so support can find the corresponding server records. It contains no email, provider identifier, prompt, artwork, Pattern bytes, or access credential and can be shared without exposing another player's data.
+The short opaque code a player can copy from a failed or delayed sync, Processing Job, purchase, promotion, or moderation flow so support can find the corresponding server records or the client diagnostic event reported for that failure. One presented failure yields one Support Reference; showing the same failure again repeats the same code rather than minting a new one. It contains no email, provider identifier, prompt, artwork, Pattern bytes, or access credential and can be shared without exposing another player's data.
 _Avoid_: Raw log, transaction receipt, error stack
 
 **App Display Language**:
@@ -111,7 +128,7 @@ The public identity a Registered Account must create before its first Catalog Su
 _Avoid_: Registered Account, login profile, email identity
 
 **Profile Safety Check**:
-The server-side automated gate applied before a Public Creator Profile is created or changed. It validates username and display-name text against reserved-name and profanity rules and checks the optional avatar with automated image safety moderation. A failed candidate is not published and returns a user-facing reason; a passing candidate is published immediately without human Profile Review.
+The server-side automated gate applied before a Public Creator Profile is created or changed. It validates username and display-name text against reserved-name and profanity rules, rejects markup in display names, and checks the optional avatar with automated image safety moderation. A failed candidate is not published and returns a user-facing reason; a passing candidate is published immediately without human Profile Review.
 _Avoid_: Profile Review, Catalog Precheck, post-publication report
 
 **Profile Report**:
@@ -177,7 +194,7 @@ A consumable real-money product that a Registered Account may purchase to add AI
 _Avoid_: Stitch Coin Pack, Membership Credit Grant, AI subscription
 
 **Stitch Coin**:
-The backend-authoritative gameplay currency earned through play or Rewarded Ads, received through a Premium Daily Coin Claim, or purchased in a Stitch Coin Pack. A Registered Account holds it in its account balance, while a Guest Player holds it in a Guest Ledger. In the first release its only spend is the online purchase of permanent Pattern Unlocks; it remains separate from AI Credit and can never fund AI Artwork generation.
+The backend-authoritative gameplay currency earned through play or Rewarded Ads, received through a Premium Daily Coin Claim, or purchased in a Stitch Coin Pack. A Registered Account holds it in its account balance, while a Guest Player holds it in a Guest Ledger; online spending is idempotent and server-authoritative, funding permanent Pattern Unlocks and each successful Remaining Cell Locator use at the current Locator Price. It remains separate from AI Credit and can never fund AI Artwork generation.
 _Avoid_: Coin, gold, point, token
 
 **Stitch Coin Pack**:
@@ -241,6 +258,10 @@ _Avoid_: Subscription cancellation, daily reward rollback, account deletion
 **Rewarded Ad**:
 An optional advertisement that a player explicitly starts outside an active Stitching Session. A verified completion consumes 10 Coin from that Reward Day's Ad-Equivalent Coin Pool and grants the same amount. When the pool is exhausted or closed, the Rewarded Ad entry point is disabled and shows the time remaining until the next Reward Day instead of offering an unrewarded advertisement. The game does not show forced interstitial ads or banners, and advertising can never grant AI Credit.
 _Avoid_: Forced ad, commercial break, AI Credit ad
+
+**Pending Ad Reward Verification**:
+The transient client condition between a player completing a Rewarded Ad and the authoritative AdMob Server-Side Verification (SSV) callback granting the Stitch Coin into the Guest Ledger or account balance. The client does not invent local Coin or mark the pool consumed on its own; it reflects verification progress in the interface and never treats ordinary callback arrival latency as a claim failure or raises a Support Reference.
+_Avoid_: Client claim error, optimistic coin balance, failed ad reward
 
 **Daily Rewarded Ad Limit**:
 The maximum of three verified Rewarded Ad completions for which a player may receive Stitch Coin during one Reward Day, also bounded by the remaining Ad-Equivalent Coin Pool. Abandoned advertisements and completions that are not verified or rewarded consume neither an attempt nor the pool.
@@ -506,6 +527,10 @@ _Avoid_: Offline Catalog Cache, demo Pattern, tutorial-only Pattern
 The permanent backend entitlement to start Stitching Sessions for a non-free Official Pattern after a one-time online Stitch Coin spend from a Registered Account balance or Guest Ledger. Premium Membership does not replace or temporarily grant it. It survives session deletion, replay, and Guest Data Promotion; Community Patterns, undo, Stitch Actions, accessibility features, and other core play capabilities never require it.
 _Avoid_: Rental, Pattern purchase, pay-to-play action
 
+**Grandfathered Pattern Unlock**:
+A zero-cost Pattern Unlock the backend grants, without any Stitch Coin spend or ledger entry, when an operator changes a published free Official Pattern to paid. Every Registered Account and Guest Installation that already has any Stitching Session for that Pattern, including one with zero stitches, receives one. Changing the Pattern back to free keeps it and refunds nothing (ADR-0061).
+_Avoid_: Free unlock, legacy access, refund
+
 **Pattern Unlock Price Tier**:
 The fixed Stitch Coin price of an Official Pattern, derived from the same stitchable-cell ranges as its Completion Reward Tier: Small costs 75, Medium costs 150, and Large costs 300. Popularity and demand do not change the price.
 _Avoid_: Dynamic pricing, popularity price, real-money Pattern price
@@ -602,6 +627,14 @@ _Avoid_: Node, knot, painted cell, filled square
 The first-release performance gate for stitching interactions, measured on the oldest supported iOS and Android reference devices with a maximum-size Pattern: Stitch and Undo Actions must reach visible local state within the fixed latency budget, and pan, Anchored Zoom, and Stitch Sweep must hold the target frame rate with no network, sync, conversion, or decompression work on the interaction-critical path. Background work yields while an active gesture runs; the concrete scenario, latency, frame-rate, and thermal thresholds are fixed by ADR-0031, and failing them blocks release.
 _Avoid_: Best-effort performance, server tap, average-only benchmark
 
+**Device Rendering Profile**:
+The Android-only hardware-capability classification ('low' or 'standard') derived on-device from available system memory to keep the Stitch Interaction Budget within GPU flush limits on constrained devices. On a low profile, Completed Stitch rendering drops the thread shadow and highlight strands without changing DMC Thread Colors, progress, gameplay rules, or cosmetic theme palettes.
+_Avoid_: Graphics setting, low quality mode, visual downgrade
+
+**Pan Redraw Coalescing**:
+The synchronization boundary where high-frequency touch-movement events during viewport pan are consolidated to the display frame rate. It preserves full touch tracking while reducing intermediate viewport transform writes.
+_Avoid_: Frame dropping, input throttle, gesture lag
+
 **Undo Action**:
 The free action that records an incomplete Progress Operation for a previously completed cell in an active Stitching Session. It is never gated by Stitch Coin, AI Credit, Premium Membership, advertising, lives, or score. A causally later Undo synchronizes normally; only a truly concurrent completed operation wins. Completed sessions are read-only and use Replay Session instead.
 _Avoid_: Paid correction, reset, delete progress
@@ -635,8 +668,20 @@ A tap on a cell whose DMC Thread Color does not match the Active Thread Color. I
 _Avoid_: Mistake, wrong stitch, error
 
 **Remaining Cell Locator**:
-The free, unlimited action that centers the viewport on the next unfinished cell for Active Thread Color and cycles deterministically through remaining matches. It never fills a cell, changes progress, grants a reward, selects the next color, shows an advertisement, or consumes Stitch Coin, AI Credit, or Premium access. The first release provides no auto-fill assistance.
-_Avoid_: Hint currency, auto-stitch, paid help
+The online-gated action that centers the viewport on the next unfinished cell for Active Thread Color and cycles deterministically through remaining matches; a successful use costs the current Locator Price through a server-authoritative Locator Attempt for either a Guest Player or Registered Account, with no Premium Membership discount. It never fills a cell, changes progress, grants a reward, selects the next color, or shows an advertisement; no-target, failure, insufficient balance, cancellation, or offline use charges nothing and does not move the viewport.
+_Avoid_: Hint currency, auto-stitch, free locator, paid auto-fill
+
+**Locator Attempt**:
+A server-authoritative, idempotent lifecycle for one requested paid Remaining Cell Locator use, bound to one player identity, Stitching Session, Pattern, Active Thread Color, target context, and client attempt identifier. It locks the Locator Price the player saw at reservation, holds that amount for at most 60 seconds, commits exactly one spend of it on success, and otherwise releases or expires without charge; an unknown commit remains pending and is retried with the same identifier.
+_Avoid_: Local locator tap, viewport hint, repeatable charge
+
+**Locator Reservation**:
+The temporary hard hold of the locked Locator Price in Stitch Coin for a Locator Attempt. It reduces spendable balance while prepared, is released when the target context becomes stale or the action is cancelled or rejected, and is never transferable across identities or sessions.
+_Avoid_: Local balance deduction, permanent spend, authorization token
+
+**Locator Price**:
+The single global whole-number Stitch Coin amount, from 1 to 10, charged for one successful Remaining Cell Locator use. An authorized operator may change it with immediate effect and an audited record of the previous and new amount; it applies equally to every Guest Player and Registered Account, and never changes a Locator Attempt already reserved at a different amount. A request made against a Locator Price that is no longer current is rejected without charge.
+_Avoid_: Hint cost, free locator, per-Pattern locator price, Premium locator discount
 
 ### Social
 

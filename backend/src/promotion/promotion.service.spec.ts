@@ -259,6 +259,50 @@ describe('PromotionService', () => {
     });
   });
 
+  describe('drainSession', () => {
+    it('locks the Pattern and preserves a guest unlock when reassigning the session', async () => {
+      jest.spyOn(transferPackageRepo, 'findOne').mockResolvedValue({
+        status: 'committed',
+      } as PromotionTransferPackageEntity);
+      managerQuery
+        .mockResolvedValueOnce([
+          { id: 'guest-session', status: 'active', completed_at: null },
+        ])
+        .mockResolvedValueOnce([{ unlock_price_tier: 'medium' }])
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([])
+        .mockResolvedValueOnce([{ '?column?': 1 }]);
+
+      await expect(
+        service.drainSession(
+          'account-uuid',
+          'guest-uuid',
+          'pattern-uuid',
+          'guest-session',
+        ),
+      ).resolves.toEqual({ status: 'transferred', isLocked: false });
+
+      expect(managerQuery).toHaveBeenNthCalledWith(
+        2,
+        expect.stringContaining(
+          'SELECT unlock_price_tier FROM catalog.patterns WHERE id = $1 FOR SHARE',
+        ),
+        ['pattern-uuid'],
+      );
+      expect(managerQuery).toHaveBeenNthCalledWith(
+        3,
+        expect.stringContaining(
+          "SELECT 'account', $1, pattern_id, source",
+        ),
+        ['account-uuid', 'guest-uuid', 'pattern-uuid'],
+      );
+      expect(managerQuery.mock.calls[2][0]).toContain(
+        'ON CONFLICT ON CONSTRAINT "PK_pattern_unlocks" DO NOTHING',
+      );
+    });
+  });
+
   describe('drainLike', () => {
     it('throws ForbiddenException if package is not found or not committed', async () => {
       jest.spyOn(transferPackageRepo, 'findOne').mockResolvedValue(null);

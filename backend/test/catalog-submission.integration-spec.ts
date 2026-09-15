@@ -166,20 +166,7 @@ describe('Catalog Submission persistence', () => {
       ['personal/source-artifact.bin', artifact.bytes],
       ['personal/source-preview.png', preview],
     ]);
-    const storage: ObjectStorage = {
-      delete: (key) => {
-        objects.delete(key);
-        return Promise.resolve();
-      },
-      exists: (key) => Promise.resolve(objects.has(key)),
-      get: (key) => Promise.resolve(objects.get(key) ?? null),
-      list: () => Promise.resolve([...objects.keys()]),
-      publicUrl: (key) => key,
-      put: (key, bytes) => {
-        objects.set(key, Buffer.from(bytes));
-        return Promise.resolve();
-      },
-    };
+    const storage = createStorage(objects);
     await dataSource.query(
       `INSERT INTO catalog.patterns
         (id, title, creator_name, category_code, width, height, palette_size,
@@ -298,14 +285,7 @@ describe('Catalog Submission persistence', () => {
          'personal/restricted-preview.png', 'personal', $4)`,
       [sourcePatternId, artifact.checksum, artifact.byteLength, restrictedAccountId],
     );
-    const storage: ObjectStorage = {
-      delete: () => Promise.resolve(),
-      exists: () => Promise.resolve(false),
-      get: () => Promise.resolve(null),
-      list: () => Promise.resolve([]),
-      publicUrl: (key) => key,
-      put: () => Promise.resolve(),
-    };
+    const storage = createStorage();
     const jobs = new ProcessingJobsRepository(dataSource, new JobStateTransitionService());
     const precheck = new CatalogPrecheckService(
       { openAiModerationEnabled: false } as AppConfigService,
@@ -341,20 +321,7 @@ describe('Catalog Submission persistence', () => {
       ['personal/markup-artifact.bin', artifact.bytes],
       ['personal/markup-preview.png', preview],
     ]);
-    const storage: ObjectStorage = {
-      delete: (key) => {
-        objects.delete(key);
-        return Promise.resolve();
-      },
-      exists: (key) => Promise.resolve(objects.has(key)),
-      get: (key) => Promise.resolve(objects.get(key) ?? null),
-      list: () => Promise.resolve([...objects.keys()]),
-      publicUrl: (key) => key,
-      put: (key, bytes) => {
-        objects.set(key, Buffer.from(bytes));
-        return Promise.resolve();
-      },
-    };
+    const storage = createStorage(objects);
     await dataSource.query(
       `INSERT INTO catalog.patterns
         (id, title, creator_name, category_code, width, height, palette_size,
@@ -410,3 +377,20 @@ describe('Catalog Submission persistence', () => {
     });
   });
 });
+
+function createStorage(objects = new Map<string, Buffer>()): ObjectStorage {
+  return {
+    delete: (key) => {
+      objects.delete(key);
+      return Promise.resolve();
+    },
+    exists: (key) => Promise.resolve(objects.has(key)),
+    get: (key) => Promise.resolve(objects.get(key) ?? null),
+    list: () => Promise.resolve([...objects.keys()]),
+    publicUrl: (key) => key,
+    put: (key, bytes) => {
+      objects.set(key, Buffer.from(bytes));
+      return Promise.resolve();
+    },
+  };
+}

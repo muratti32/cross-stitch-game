@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from './apiFetch';
 import type { PurchaseProductKey } from '../analytics/schema';
 
+export const membershipQueryKey = ['commerce', 'membership'] as const;
+
 export type PremiumPlan = 'weekly' | 'monthly' | 'annual';
 export type MembershipLifecycle =
   | 'trial'
@@ -111,7 +113,7 @@ export async function claimPremiumDailyCoin(): Promise<PremiumDailyClaimResult> 
 
 export function useMembership(enabled = true) {
   return useQuery({
-    queryKey: ['commerce', 'membership'],
+    queryKey: membershipQueryKey,
     queryFn: fetchMembership,
     enabled,
     staleTime: 30_000,
@@ -124,7 +126,7 @@ export function usePremiumDailyClaim() {
   return useMutation({
     mutationFn: claimPremiumDailyCoin,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['commerce', 'membership'] });
+      queryClient.invalidateQueries({ queryKey: membershipQueryKey });
       queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
       queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
     },

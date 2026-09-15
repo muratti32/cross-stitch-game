@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Všetky odmeny z reklám boli dnes dokončené! (30/30 mincí)",
       "watchAdButton": "Pozri si reklamu za +10 mincí (zostáva {{count}})",
       "adPerkNote": "Pozri si až 3 reklamy/deň · Premium odomyká okamžité vyzdvihnutie 30 mincí",
-      "adRewardEarned": "Odmena z reklamy získaná! Overuje sa na serveri…",
+      "adRewardEarned": "Odmena za reklamu overená!",
       "claimFailed": "Vyzdvihnutie zlyhalo: {{message}}",
       "claimFailedGeneric": "Niečo sa pokazilo. Skús to prosím znova.",
       "adLoadFailedDefault": "Načítanie reklamy zlyhalo",
-      "adAttemptFailedDefault": "Otvorenie pokusu o reklamu zlyhalo"
+      "adAttemptFailedDefault": "Otvorenie pokusu o reklamu zlyhalo",
+      "adRewardVerifying": "Overuje sa vaša odmena…",
+      "adRewardPending": "Vaša odmena sa stále overuje. Mince sa čoskoro zobrazia.",
+      "adRewardExpired": "Odmenu za túto reklamu sa nepodarilo včas overiť. Skúste to znova."
     },
     "tabs": {
       "myCreations": "Moje výtvory {{count}}",

@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Etkin iplik renginin kalan bir sonraki karesini bul",
     "undoAccessibilityLabel": "Son dikişi geri al"
   },
+  "locator": {
+    "priceTitle": "Konum bulucu fiyatı",
+    "priceConfirmMessage": "Fiyat: {{price}} · Bakiye: {{balance}}\nKullanmak için konum bulucuya tekrar dokun.",
+    "priceChangedTitle": "Konum bulucu fiyatı değişti",
+    "priceChangedMessage": "Yeni fiyat: {{price}} · Bakiye: {{balance}}\nYeni fiyattan kullanmak için konum bulucuya tekrar dokun."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Renk {{number}}: DMC {{dmcCode}}, {{count}} dikiş kaldı",

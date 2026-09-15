@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Všechny odměny za reklamy pro dnešek dokončeny! (30/30 coinů)",
       "watchAdButton": "Zhlédnout reklamu za +10 coinů (zbývá {{count}})",
       "adPerkNote": "Sledujte až 3 reklamy denně · Premium odemyká okamžité vyzvednutí 30 coinů",
-      "adRewardEarned": "Odměna za reklamu získána! Ověřuje se na backendu…",
+      "adRewardEarned": "Odměna za reklamu ověřena!",
       "claimFailed": "Vyzvednutí selhalo: {{message}}",
       "claimFailedGeneric": "Něco se pokazilo. Zkuste to prosím znovu.",
       "adLoadFailedDefault": "Reklamu se nepodařilo načíst",
-      "adAttemptFailedDefault": "Nepodařilo se spustit přehrání reklamy"
+      "adAttemptFailedDefault": "Nepodařilo se spustit přehrání reklamy",
+      "adRewardVerifying": "Odměna se ověřuje…",
+      "adRewardPending": "Odměna se stále ověřuje. Mince se brzy zobrazí.",
+      "adRewardExpired": "Odměnu za tuto reklamu se nepodařilo včas ověřit. Zkuste to prosím znovu."
     },
     "tabs": {
       "myCreations": "Má tvorba {{count}}",

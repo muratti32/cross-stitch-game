@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Alle annoncebelønninger fuldført for i dag! (30/30 mønter)",
       "watchAdButton": "Se annonce for +10 mønter ({{count}} tilbage)",
       "adPerkNote": "Se op til 3 annoncer/dag · Premium låser op for øjeblikkeligt 30-mønters krav",
-      "adRewardEarned": "Annoncebelønning optjent! Verificerer med backend…",
+      "adRewardEarned": "Annoncebelønning bekræftet!",
       "claimFailed": "Krav mislykkedes: {{message}}",
       "claimFailedGeneric": "Noget gik galt. Prøv igen.",
       "adLoadFailedDefault": "Kunne ikke indlæse annonce",
-      "adAttemptFailedDefault": "Kunne ikke åbne annonceforsøg"
+      "adAttemptFailedDefault": "Kunne ikke åbne annonceforsøg",
+      "adRewardVerifying": "Bekræfter din belønning…",
+      "adRewardPending": "Din belønning bekræftes stadig. Mønterne vises snart.",
+      "adRewardExpired": "Belønningen for denne annonce kunne ikke bekræftes i tide. Prøv igen."
     },
     "tabs": {
       "myCreations": "Mine kreationer {{count}}",

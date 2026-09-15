@@ -26,4 +26,28 @@ describe('ProfileTextPolicyService', () => {
     );
     expect(policy.rejectionReason('display name', 'Classic Assistant')).toBeNull();
   });
+
+  it('rejects literal markup characters in normalized display names', () => {
+    const normalized = policy.normalizeDisplayName('Artist ＜tag＞');
+
+    expect(normalized).toBe('Artist <tag>');
+    expect(policy.rejectionReason('display name', normalized)).toBe(
+      'Display name contains markup characters',
+    );
+  });
+
+  it('keeps reserved and profanity reasons ahead of the markup rule', () => {
+    expect(policy.rejectionReason('display name', '<Official>')).toBe(
+      'Display name contains a reserved name',
+    );
+    expect(policy.rejectionReason('display name', '<f.u.c.k>')).toBe(
+      'Display name contains language that is not allowed',
+    );
+  });
+
+  it('allows punctuation and international display names', () => {
+    expect(
+      policy.rejectionReason('display name', `O'Connor "Needle" & 织女`),
+    ).toBeNull();
+  });
 });

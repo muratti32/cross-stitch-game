@@ -10,8 +10,9 @@ import { AccountReauthenticationApiError } from '@/api/accountReauthentication';
 // see src/api/__tests__/localizeServerError.test.ts for that behavior's own
 // coverage. This suite only needs the dependency not to explode.
 jest.mock('@sentry/react-native', () => ({
+  addBreadcrumb: jest.fn(),
   captureMessage: jest.fn(() => 'settings-error-event'),
-  withScope: jest.fn((callback) => callback({ setContext: jest.fn(), setLevel: jest.fn(), setTag: jest.fn() })),
+  withScope: jest.fn((callback) => callback({ setContext: jest.fn(), setFingerprint: jest.fn(), setLevel: jest.fn(), setTag: jest.fn() })),
 }));
 
 let mockIsAccount = false;

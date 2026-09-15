@@ -429,6 +429,10 @@ export class AccountDeletionFinalizerService {
         [accountId],
       );
       await manager.query(
+        `DELETE FROM economy.locator_attempts WHERE principal_type = 'account' AND principal_id = $1`,
+        [accountId],
+      );
+      await manager.query(
         `DELETE FROM economy.ai_credit_balances WHERE principal_type = 'account' AND principal_id = $1`,
         [accountId],
       );

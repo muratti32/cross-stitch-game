@@ -282,7 +282,7 @@ describe('Commerce migration backfill compatibility', () => {
     await request(httpServer)
       .get('/v1/economy/balance')
       .set(authHeaders(account.accessToken))
-      .expect(200, { balance: 300 });
+      .expect(200, { balance: 300, locatorPrice: 1 });
     await request(httpServer)
       .get('/v1/commerce/membership')
       .set(authHeaders(account.accessToken))
@@ -304,7 +304,7 @@ describe('Commerce migration backfill compatibility', () => {
     await request(httpServer)
       .get('/v1/economy/balance')
       .set(authHeaders(account.accessToken))
-      .expect(200, { balance: 0 });
+      .expect(200, { balance: 0, locatorPrice: 1 });
 
     const finalBinding = await dataSource.query<readonly {
       account_id: string;

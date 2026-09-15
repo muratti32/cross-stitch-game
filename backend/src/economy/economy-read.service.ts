@@ -1,14 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { DataSource } from 'typeorm';
 
 import type { AuthPrincipal } from '../auth/auth.types';
 import { PrincipalType } from '../auth/entities';
 import { CoinLedgerRepository, LedgerPrincipal } from './coin-ledger.repository';
 import { CommerceLedgerRepository } from './commerce-ledger.repository';
 import { DAILY_AD_LIMIT, DAILY_POOL_COIN } from './economy.constants';
+import { readLocatorPrice } from './locator-price';
 import { nextRewardDayResetAt, utcRewardDay } from './reward-day';
 
 export interface CoinBalanceView {
   balance: number;
+  /**
+   * Current Locator Price for display and the locator's expected price
+   * (ADR-0060); null when the setting is unavailable, so balance reads keep
+   * working while locator reservations fail closed.
+   */
+  locatorPrice: number | null;
 }
 
 export interface RewardDayView {
@@ -29,14 +37,31 @@ export interface RewardDayView {
  */
 @Injectable()
 export class EconomyReadService {
+  private readonly logger = new Logger(EconomyReadService.name);
+
   constructor(
     private readonly ledger: CoinLedgerRepository,
     private readonly commerceLedger: CommerceLedgerRepository,
+    private readonly dataSource: DataSource,
   ) {}
 
   async getBalance(principal: AuthPrincipal): Promise<CoinBalanceView> {
-    const balance = await this.ledger.getBalance(toLedgerPrincipal(principal));
-    return { balance };
+    const [balance, locatorPrice] = await Promise.all([
+      this.ledger.getBalance(toLedgerPrincipal(principal)),
+      this.readDisplayLocatorPrice(),
+    ]);
+    return { balance, locatorPrice };
+  }
+
+  private async readDisplayLocatorPrice(): Promise<number | null> {
+    try {
+      return (await readLocatorPrice(this.dataSource.manager)).price;
+    } catch (error) {
+      // Balance reads back the catalog, profile, and store; a Locator Price
+      // failure must not take them down. Reservations still fail closed.
+      this.logger.error('Locator Price setting is unavailable; balance served without it', error instanceof Error ? error.stack : String(error));
+      return null;
+    }
   }
 
   async getAiCreditBalance(principal: AuthPrincipal): Promise<{ balance: number }> {

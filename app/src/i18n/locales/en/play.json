@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Locate next remaining cell of active thread color",
     "undoAccessibilityLabel": "Undo last stitch"
   },
+  "locator": {
+    "priceTitle": "Locator price",
+    "priceConfirmMessage": "Price: {{price}} · Balance: {{balance}}\nTap the locator again to use it.",
+    "priceChangedTitle": "Locator price changed",
+    "priceChangedMessage": "New price: {{price}} · Balance: {{balance}}\nTap the locator again to use it at the new price."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Color {{number}}: DMC {{dmcCode}}, {{count}} stitch remaining",

@@ -102,6 +102,11 @@ export class EconomyGuestPurgeRepository {
       [guestInstallationId],
     );
     await manager.query(
+      `DELETE FROM economy.locator_attempts
+       WHERE principal_type = 'guest' AND principal_id = $1`,
+      [guestInstallationId],
+    );
+    await manager.query(
       `DELETE FROM economy.pattern_unlocks
        WHERE principal_type = 'guest' AND principal_id = $1`,
       [guestInstallationId],

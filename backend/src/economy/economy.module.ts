@@ -14,7 +14,7 @@ import { EconomyController } from './economy.controller';
 import { EconomyReadService } from './economy-read.service';
 import { RewardGrantService } from './reward-grant.service';
 import { PatternUnlockService } from './pattern-unlock.service';
-import { PatternUnlockEntity } from './entities';
+import { LocatorAttemptEntity, PatternUnlockEntity } from './entities';
 import { DailyTaskController } from './daily-task.controller';
 import { DailyTaskService } from './daily-task.service';
 import { RevenueCatWebhookController } from './revenuecat-webhook.controller';
@@ -36,10 +36,11 @@ import { CommerceCapabilitiesController } from './commerce-capabilities.controll
 import { GuestPurchaseAttemptController } from './guest-purchase-attempt.controller';
 import { GuestPurchaseAttemptService } from './guest-purchase-attempt.service';
 import { SubscriptionChangeReporter } from './subscription-change-reporter.service';
+import { LocatorAttemptService } from './locator-attempt.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PatternEntity, PatternUnlockEntity, RegisteredAccountEntity]),
+    TypeOrmModule.forFeature([PatternEntity, PatternUnlockEntity, RegisteredAccountEntity, LocatorAttemptEntity]),
     AuthModule,
     AppConfigModule,
     forwardRef(() => PromotionModule),
@@ -76,6 +77,7 @@ import { SubscriptionChangeReporter } from './subscription-change-reporter.servi
     AiCreditPackReconciliationService,
     GuestPurchaseAttemptService,
     SubscriptionChangeReporter,
+    LocatorAttemptService,
   ],
 
   exports: [
@@ -84,6 +86,7 @@ import { SubscriptionChangeReporter } from './subscription-change-reporter.servi
     PatternUnlockService,
     RevenueCatWebhookService,
     RewardGrantService,
+    LocatorAttemptService,
   ],
 })
 export class EconomyModule {}

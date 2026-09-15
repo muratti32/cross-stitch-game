@@ -14,6 +14,27 @@ describe('Gameplay event schema', () => {
     });
   });
 
+  it('accepts a valid Render-Stop Exposure payload', () => {
+    const payload = {
+      release: '1.2.0+43',
+      android_api: 35,
+      device_rendering_profile: 'low',
+    };
+    expect(validateGameplayEventPayload('render_stop_exposure', payload)).toEqual({
+      kind: 'render_stop_exposure',
+      payload,
+    });
+  });
+
+  it.each([
+    { android_api: 35, device_rendering_profile: 'low' },
+    { release: '1.2', android_api: 35, device_rendering_profile: 'low' },
+    { release: '1.2.0+43', android_api: 35, device_rendering_profile: 'low', session_id: 'extra' },
+    { release: '1.2.0+43', android_api: 0, device_rendering_profile: 'low' },
+  ])('rejects an invalid Render-Stop Exposure payload', (payload) => {
+    expect(() => validateGameplayEventPayload('render_stop_exposure', payload)).toThrow(BadRequestException);
+  });
+
   it('rejects an unknown kind', () => {
     expect(() => validateGameplayEventPayload('analytics_ping', {})).toThrow(
       BadRequestException,

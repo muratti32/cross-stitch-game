@@ -4,6 +4,8 @@ import android.app.ActivityManager
 import android.content.Context
 import android.os.Build
 import android.os.PowerManager
+import java.io.File
+import java.io.IOException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -21,6 +23,40 @@ class PerfThermalModule : Module() {
 
     Function("isThermalSupported") { ->
       isThermalSupportedImpl()
+    }
+
+    AsyncFunction("getMemoryFootprint") { ->
+      getMemoryFootprintImpl()
+    }
+  }
+
+  private fun getMemoryFootprintImpl(): Map<String, Any?> {
+    val memInfo = android.os.Debug.MemoryInfo()
+    android.os.Debug.getMemoryInfo(memInfo)
+    val pssBytes = memInfo.totalPss.toLong() * 1024L
+    // Android footprintBytes is total PSS; residentBytes is real RSS from VmRSS.
+    return mapOf(
+      "residentBytes" to readResidentBytes()?.toDouble(),
+      "footprintBytes" to pssBytes.toDouble()
+    )
+  }
+
+  private fun readResidentBytes(): Long? {
+    return try {
+      File("/proc/self/status").useLines { lines ->
+        lines.firstOrNull { it.startsWith("VmRSS:") }
+          ?.substringAfter(":")
+          ?.trim()
+          ?.split(Regex("\\s+"))
+          ?.firstOrNull()
+          ?.toLongOrNull()
+          ?.times(1024L)
+      }
+    } catch (error: IOException) {
+      // VmRSS is optional; null explicitly records that RSS was unavailable.
+      null
+    } catch (error: SecurityException) {
+      null
     }
   }
 

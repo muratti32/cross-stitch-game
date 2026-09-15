@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Alle Werbebelohnungen für heute abgeschlossen! (30/30 Coins)",
       "watchAdButton": "Werbung ansehen für +10 Coins (noch {{count}})",
       "adPerkNote": "Sieh dir bis zu 3 Werbevideos am Tag an · Premium schaltet die Sofortabholung von 30 Coins frei",
-      "adRewardEarned": "Werbebelohnung verdient! Überprüfung läuft…",
+      "adRewardEarned": "Werbebelohnung bestätigt!",
       "claimFailed": "Abholen fehlgeschlagen: {{message}}",
       "claimFailedGeneric": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
       "adLoadFailedDefault": "Werbung konnte nicht geladen werden",
-      "adAttemptFailedDefault": "Werbeversuch konnte nicht geöffnet werden"
+      "adAttemptFailedDefault": "Werbeversuch konnte nicht geöffnet werden",
+      "adRewardVerifying": "Belohnung wird überprüft…",
+      "adRewardPending": "Deine Belohnung wird noch überprüft. Die Münzen erscheinen bald.",
+      "adRewardExpired": "Die Belohnung für diese Werbung konnte nicht rechtzeitig überprüft werden. Bitte versuche es erneut."
     },
     "tabs": {
       "myCreations": "Meine Kreationen {{count}}",

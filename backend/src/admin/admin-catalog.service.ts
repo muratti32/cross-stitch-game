@@ -12,6 +12,7 @@ import {
   TagEntity,
   TagLabelEntity,
 } from '../catalog/entities';
+import { CATALOG_TITLE_MARKUP_MESSAGE, titleContainsMarkup } from '../catalog/catalog-title-markup';
 import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { MAX_TAG_CODES_PER_PATTERN } from './admin.constants';
 import { BulkPatternRemovalEntity } from './entities';
@@ -125,6 +126,9 @@ export class AdminCatalogService {
     dto: { title: string; creatorName: string; categoryCode: string; tagCodes: string[] },
     requestId: string | null,
   ): Promise<AdminPatternDetail> {
+    if (titleContainsMarkup(dto.title)) {
+      throw new BadRequestException(CATALOG_TITLE_MARKUP_MESSAGE);
+    }
     if (dto.tagCodes.length > MAX_TAG_CODES_PER_PATTERN) {
       throw new BadRequestException(
         `A pattern can have at most ${MAX_TAG_CODES_PER_PATTERN} tags`,

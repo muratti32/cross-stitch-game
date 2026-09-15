@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Nächstes verbleibendes Kästchen der aktiven Garnfarbe finden",
     "undoAccessibilityLabel": "Letzten Stich rückgängig machen"
   },
+  "locator": {
+    "priceTitle": "Preis der Zellsuche",
+    "priceConfirmMessage": "Preis: {{price}} · Guthaben: {{balance}}\nTippe erneut auf die Zellsuche, um sie zu verwenden.",
+    "priceChangedTitle": "Preis der Zellsuche geändert",
+    "priceChangedMessage": "Neuer Preis: {{price}} · Guthaben: {{balance}}\nTippe erneut auf die Zellsuche, um sie zum neuen Preis zu verwenden."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Farbe {{number}}: DMC {{dmcCode}}, {{count}} verbleibender Stich",

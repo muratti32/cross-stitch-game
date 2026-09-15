@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 
 export type ProfileTextField = 'display name' | 'username';
 
+const MARKUP_CHARACTERS = /[<>]/u;
+
 const RESERVED_TOKENS = new Set([
   'admin',
   'administrator',
@@ -58,6 +60,10 @@ export class ProfileTextPolicyService {
         [...PROFANITY_TOKENS].some((word) => compact.includes(word)));
     if (hasProfanity) {
       return `${this.label(field)} contains language that is not allowed`;
+    }
+
+    if (field === 'display name' && MARKUP_CHARACTERS.test(value)) {
+      return `${this.label(field)} contains markup characters`;
     }
 
     return null;

@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Tutte le ricompense degli annunci completate per oggi! (30/30 monete)",
       "watchAdButton": "Guarda l'annuncio per +10 monete ({{count}} rimanenti)",
       "adPerkNote": "Guarda fino a 3 annunci al giorno · Premium sblocca il riscatto istantaneo di 30 monete",
-      "adRewardEarned": "Ricompensa dell'annuncio ottenuta! Verifica con il backend in corso...",
+      "adRewardEarned": "Ricompensa dell’annuncio verificata!",
       "claimFailed": "Riscatto non riuscito: {{message}}",
       "claimFailedGeneric": "Qualcosa è andato storto. Riprova.",
       "adLoadFailedDefault": "Impossibile caricare l'annuncio",
-      "adAttemptFailedDefault": "Impossibile aprire l'annuncio"
+      "adAttemptFailedDefault": "Impossibile aprire l'annuncio",
+      "adRewardVerifying": "Verifica della ricompensa…",
+      "adRewardPending": "La ricompensa è ancora in fase di verifica. Le monete appariranno a breve.",
+      "adRewardExpired": "Non è stato possibile verificare in tempo la ricompensa di questo annuncio. Riprova."
     },
     "tabs": {
       "myCreations": "Le mie creazioni {{count}}",

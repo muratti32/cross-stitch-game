@@ -43,7 +43,7 @@
       "matchNumbers": "Párosítsd a számokat minden öltés elhelyezéséhez.",
       "dragSweep": "Húzd végig a megfelelő cellákon a sor hímzéséhez.",
       "pinchZoom": "Csippentsd a nagyításhoz, ha jobb rálátásra van szükséged.",
-      "undoLocator": "A visszavonás és a kereső mindig ingyenes."
+      "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
     },
     "continue": "Hímzés folytatása",
     "browsePatterns": "Minták böngészése"

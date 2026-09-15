@@ -69,6 +69,7 @@ describe('EconomyGuestPurgeRepository', () => {
       'economy.gameplay_events',
       'economy.daily_color_action_counts',
       'economy.ad_attempts',
+      'economy.locator_attempts',
       'economy.pattern_unlocks',
     ]);
   });

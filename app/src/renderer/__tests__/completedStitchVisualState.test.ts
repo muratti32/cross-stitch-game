@@ -10,7 +10,7 @@ const color = '#123456';
 
 describe('Completed Stitch visual state', () => {
   test('locally places a near stitch, then settles it without its number', () => {
-    const state = new CompletedStitchVisualState();
+    const state = new CompletedStitchVisualState('standard');
     state.place(7, 'local', 'readable', 0, false);
 
     expect(state.get(7, true, 'readable', color, theme, 0)).toMatchObject({
@@ -26,7 +26,7 @@ describe('Completed Stitch visual state', () => {
   });
 
   test('sweep placements progress independently and do not queue', () => {
-    const state = new CompletedStitchVisualState();
+    const state = new CompletedStitchVisualState('standard');
     state.place(1, 'local', 'readable', 0, false);
     state.place(2, 'local', 'readable', 40, false);
     state.place(3, 'local', 'readable', 80, false);
@@ -37,7 +37,7 @@ describe('Completed Stitch visual state', () => {
   });
 
   test('re-placing an active cell does not restart its placement timeline', () => {
-    const state = new CompletedStitchVisualState();
+    const state = new CompletedStitchVisualState('standard');
     state.place(7, 'local', 'readable', 0, false);
 
     expect(state.place(7, 'local', 'readable', 70, false)).toEqual([]);
@@ -45,7 +45,7 @@ describe('Completed Stitch visual state', () => {
   });
 
   test('advance settles every completed placement once and cleans up active visuals', () => {
-    const state = new CompletedStitchVisualState();
+    const state = new CompletedStitchVisualState('standard');
     state.place(1, 'local', 'readable', 0, false);
     state.place(2, 'local', 'readable', 40, false);
     state.place(3, 'local', 'readable', 80, false);
@@ -56,7 +56,7 @@ describe('Completed Stitch visual state', () => {
   });
 
   test('undo reverses an in-flight placement from its current visible progress', () => {
-    const state = new CompletedStitchVisualState();
+    const state = new CompletedStitchVisualState('standard');
     state.place(3, 'local', 'readable', 0, false);
     state.undo(3, 70, false);
 
@@ -71,7 +71,7 @@ describe('Completed Stitch visual state', () => {
   });
 
   test('re-placing a removing cell resumes from its current visible progress', () => {
-    const state = new CompletedStitchVisualState();
+    const state = new CompletedStitchVisualState('standard');
     state.place(3, 'local', 'readable', 0, false);
     state.undo(3, 70, false);
 
@@ -96,7 +96,7 @@ describe('Completed Stitch visual state', () => {
   });
 
   test('reduce motion, restored, and synchronized completion are settled immediately', () => {
-    const state = new CompletedStitchVisualState();
+    const state = new CompletedStitchVisualState('standard');
     state.place(1, 'local', 'readable', 0, true);
     state.place(2, 'restored', 'readable', 0, false);
     state.place(3, 'synchronized', 'readable', 0, false);
@@ -109,7 +109,7 @@ describe('Completed Stitch visual state', () => {
   });
 
   test('places the lower strand first and removes the upper strand first', () => {
-    const state = new CompletedStitchVisualState();
+    const state = new CompletedStitchVisualState('standard');
     state.place(1, 'local', 'readable', 0, false);
 
     expect(state.get(1, true, 'readable', color, theme, 35)).toMatchObject({
@@ -131,7 +131,7 @@ describe('Completed Stitch visual state', () => {
   });
 
   test('far LOD and reduce motion never create active motion', () => {
-    const state = new CompletedStitchVisualState();
+    const state = new CompletedStitchVisualState('standard');
     state.place(1, 'local', 'out', 0, false);
     state.place(2, 'local', 'readable', 0, true);
 
@@ -142,7 +142,7 @@ describe('Completed Stitch visual state', () => {
   });
 
   test('bounds the dynamic layer and snaps the oldest visual to settled', () => {
-    const state = new CompletedStitchVisualState();
+    const state = new CompletedStitchVisualState('standard');
     for (let index = 0; index < MAX_ACTIVE_COMPLETED_STITCHES; index++) {
       expect(state.place(index, 'local', 'readable', index, false)).toEqual([]);
     }
@@ -153,7 +153,7 @@ describe('Completed Stitch visual state', () => {
   });
 
   test('undo at the dynamic layer bound snaps the oldest visual to settled', () => {
-    const state = new CompletedStitchVisualState();
+    const state = new CompletedStitchVisualState('standard');
     for (let index = 0; index < MAX_ACTIVE_COMPLETED_STITCHES; index++) {
       expect(state.place(index, 'local', 'readable', index, false)).toEqual([]);
     }
@@ -164,7 +164,7 @@ describe('Completed Stitch visual state', () => {
   });
 
   test('uses the three stable LOD decisions and preserves cross invariants across themes', () => {
-    const state = new CompletedStitchVisualState();
+    const state = new CompletedStitchVisualState('standard');
     const near = state.get(1, true, 'readable', '#F8F7F0', theme, 0);
     const mid = state.get(1, true, 'mid', '#7C4A22', { finish: 'satin' }, 0);
     const far = state.get(1, true, 'out', '#101820', theme, 0);
@@ -177,6 +177,36 @@ describe('Completed Stitch visual state', () => {
     }
     expect(near.strandOrder).toEqual(mid.strandOrder);
     expect(mid.dmcColor).toBe('#7C4A22');
+  });
+
+  test('caps readable completed stitches on the low profile', () => {
+    const decision = new CompletedStitchVisualState('low')
+      .get(0, true, 'readable', color, theme, 0);
+
+    expect(decision).toMatchObject({
+      representation: 'cross',
+      threadShadow: false,
+    });
+  });
+
+  test('keeps readable texture and shadow on the standard profile', () => {
+    const decision = new CompletedStitchVisualState('standard')
+      .get(0, true, 'readable', color, theme, 0);
+
+    expect(decision).toMatchObject({
+      representation: 'textured-cross',
+      threadShadow: true,
+    });
+  });
+
+  test('keeps mid LOD plain and removes its shadow on the low profile', () => {
+    const decision = new CompletedStitchVisualState('low')
+      .get(0, true, 'mid', color, theme, 0);
+
+    expect(decision).toMatchObject({
+      representation: 'cross',
+      threadShadow: false,
+    });
   });
 
   test('keeps very light, mid-tone, and very dark DMC colors recognizable under bounded depth treatment', () => {

@@ -1,6 +1,7 @@
 export type AnalyticsGameplayEventKind =
   | 'session_started'
   | 'session_completed'
+  | 'render_stop_exposure'
   | 'daily_task_completed'
   | 'pattern_conversion_started'
   | 'pattern_conversion_completed'
@@ -45,6 +46,11 @@ export type TutorialHintId = 'anchored_zoom' | 'pan_vs_sweep' | 'edge_auto_pan' 
 export type AccountSoftPromptContext = 'welcome' | 'tutorial' | 'recap';
 export type AccountSoftPromptAction = 'sign_in' | 'dismissed';
 export type OnboardingPayloadBase = { onboarding_version: OnboardingVersion };
+export type RenderStopExposurePayload = {
+  release: string;
+  android_api: number;
+  device_rendering_profile: 'low' | 'standard';
+};
 
 export type DailyTaskKey = 'cells_100' | 'three_colors_10' | 'color_completion';
 export type ArtworkSourceKind = 'photo_artwork' | 'ai_artwork';
@@ -97,6 +103,7 @@ type SubscriptionChangePayload = {
 export type AnalyticsGameplayEventPayload =
   | { kind: 'session_started'; payload: { session_id: string } }
   | { kind: 'session_completed'; payload: { session_id: string } }
+  | { kind: 'render_stop_exposure'; payload: RenderStopExposurePayload }
   | { kind: 'daily_task_completed'; payload: { task_key: DailyTaskKey } }
   | {
       kind: 'pattern_conversion_started';

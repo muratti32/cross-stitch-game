@@ -3,6 +3,7 @@ import { BadRequestException } from '@nestjs/common';
 export const GAMEPLAY_EVENT_KINDS = [
   'session_started',
   'session_completed',
+  'render_stop_exposure',
   'daily_task_completed',
   'pattern_conversion_started',
   'pattern_conversion_completed',
@@ -41,6 +42,11 @@ export const GAMEPLAY_EVENT_KINDS = [
 export type GameplayEventKind = (typeof GAMEPLAY_EVENT_KINDS)[number];
 
 type SessionPayload = { session_id: string };
+type RenderStopExposurePayload = {
+  release: string;
+  android_api: number;
+  device_rendering_profile: 'low' | 'standard';
+};
 type DailyTaskPayload = {
   task_key: 'cells_100' | 'three_colors_10' | 'color_completion';
 };
@@ -105,6 +111,7 @@ type OnboardingPayload = OnboardingBase & Record<string, unknown>;
 
 export type GameplayEventPayload =
   | SessionPayload
+  | RenderStopExposurePayload
   | DailyTaskPayload
   | PatternConversionStartedPayload
   | PatternConversionCompletedPayload
@@ -159,10 +166,21 @@ const PRODUCT_KEYS_BY_KIND: Readonly<Record<string, ReadonlySet<string>>> = {
 const PURCHASE_FAILURE_STAGES = new Set(['store', 'verification', 'grant']);
 const PREMIUM_PLAN_KEYS = PRODUCT_KEYS_BY_KIND.premium_membership;
 const SUBSCRIPTION_CHANGE_PLATFORMS = new Set(['ios', 'android']);
+const DEVICE_RENDERING_PROFILES = new Set(['low', 'standard']);
+const RELEASE_PATTERN = /^\d+(\.\d+){1,2}\+\d+$/;
 
 const payloadRules: Readonly<Record<GameplayEventKind, PayloadRule>> = {
   session_started: sessionRule(),
   session_completed: sessionRule(),
+  render_stop_exposure: {
+    allowedFields: ['release', 'android_api', 'device_rendering_profile'],
+    validate: (payload) =>
+      typeof payload.release === 'string' &&
+      payload.release.length <= 32 &&
+      RELEASE_PATTERN.test(payload.release) &&
+      isPositiveInteger(payload.android_api) &&
+      isMember(payload.device_rendering_profile, DEVICE_RENDERING_PROFILES),
+  },
   daily_task_completed: {
     allowedFields: ['task_key'],
     validate: (payload) => isMember(payload.task_key, DAILY_TASK_KEYS),
@@ -320,6 +338,10 @@ function onboardingRule(fields: readonly string[], validate: (payload: Record<st
 
 function isNonNegativeInteger(value: unknown): boolean {
   return typeof value === 'number' && Number.isInteger(value) && value >= 0;
+}
+
+function isPositiveInteger(value: unknown): boolean {
+  return typeof value === 'number' && Number.isInteger(value) && value > 0;
 }
 
 function isMember(value: unknown, values: ReadonlySet<string>): boolean {

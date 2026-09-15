@@ -1,5 +1,7 @@
 # Separate AI credit from gameplay currency
 
+> The locator-spend rule in this ADR is superseded by ADR-0058. Its AI Credit, reward, and other Stitch Coin rules remain in force.
+
 > Guest economy details are governed by ADR-0026. Guest Stitch Coin and Pattern Unlocks are server-authoritative in an installation-scoped Guest Ledger; only offline reward evidence and gameplay progress remain local-first.
 
 AI Credit funds fal.ai-backed AI Artwork and can enter a Registered Account only through purchase or a Membership Credit Grant. Pattern completion, replay, daily activity, advertising rewards, Premium daily rewards, and real-money Stitch Coin Packs feed the separate Stitch Coin economy and never mint AI Credit. The first-release United States Stitch Coin Packs grant 300 Coin for `$1.99`, 900 for `$4.99`, or 2,000 for `$9.99`; they remain independent of AI Credit with no exchange between balances. Only a Registered Account may purchase a pack, while Guest Stitch Coin is held in the installation-scoped, server-authoritative Guest Ledger defined by ADR-0026.

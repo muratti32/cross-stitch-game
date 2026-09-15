@@ -1,6 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from './apiFetch';
 
+export const coinBalanceQueryKey = ['economy', 'balance'] as const;
+export const rewardDayQueryKey = ['economy', 'reward-day'] as const;
+
 // Unlock prices are fixed by ADR-0011 by tier.
 // Note: the server remains authoritative on the actual charge.
 export const UNLOCK_PRICE_COIN = {
@@ -30,6 +33,62 @@ export class EconomyApiError extends Error {
     super(message);
     this.name = 'EconomyApiError';
   }
+}
+
+export class LocatorInsufficientBalanceError extends EconomyApiError {
+  constructor(readonly price: number, readonly balance: number) {
+    super(409, 'insufficient_balance', 'insufficient_balance');
+    this.name = 'LocatorInsufficientBalanceError';
+  }
+}
+
+export class LocatorPriceChangedError extends EconomyApiError {
+  constructor(readonly price: number, readonly balance: number) {
+    super(409, 'locator_price_changed', 'locator_price_changed');
+    this.name = 'LocatorPriceChangedError';
+  }
+}
+
+// ADR-0060: the server could not serve a Locator Price, so the locator must not
+// reserve. Shaped as a backend failure so it reaches Sentry with a Support Reference.
+export class LocatorPriceUnavailableError extends EconomyApiError {
+  constructor() {
+    super(503, 'locator_price_unavailable', 'locator_price_unavailable');
+    this.name = 'LocatorPriceUnavailableError';
+  }
+}
+
+export interface CoinBalanceView {
+  balance: number;
+  /** Current operator-managed Locator Price; null when the server cannot provide it (ADR-0060). */
+  locatorPrice: number | null;
+}
+
+export interface LocatorAttemptView {
+  attemptId: string;
+  status: 'prepared' | 'committed' | 'released' | 'expired' | 'rejected';
+  price: number;
+  balance: number;
+  expiresAt: string;
+  targetCellIndex: number | null;
+}
+
+export interface PrepareLocatorAttemptInput {
+  attemptId: string;
+  sessionId: string;
+  patternId: string;
+  colorIndex: number;
+  dmcCode: string;
+  /** The Locator Price shown to the player; the server rejects a stale value without charge. */
+  expectedPrice: number;
+  progressRevision?: number;
+  progressHash?: string;
+}
+
+export interface CommitLocatorAttemptInput {
+  targetCellIndex: number;
+  progressRevision?: number;
+  progressHash?: string;
 }
 
 async function parseEconomyError(response: Response, fallback: string): Promise<EconomyApiError> {
@@ -75,13 +134,82 @@ export async function unlockPattern(patternId: string): Promise<UnlockResult> {
   return (await res.json()) as UnlockResult;
 }
 
-export async function fetchCoinBalance(): Promise<number> {
+export async function fetchCoinBalanceView(): Promise<CoinBalanceView> {
   const res = await apiFetch('/v1/economy/balance');
   if (!res.ok) {
     throw await parseEconomyError(res, 'Failed to fetch coin balance: ' + res.status);
   }
-  const data = (await res.json()) as { balance: number };
-  return data.balance;
+  const data = (await res.json().catch(() => null)) as { balance?: unknown; locatorPrice?: unknown } | null;
+  if (typeof data?.balance !== 'number' || !Number.isSafeInteger(data.balance)) {
+    throw new EconomyApiError(res.status, 'invalid_balance_response', 'invalid_balance_response');
+  }
+  const locatorPrice = typeof data.locatorPrice === 'number' && Number.isSafeInteger(data.locatorPrice) && data.locatorPrice > 0
+    ? data.locatorPrice
+    : null;
+  return { balance: data.balance, locatorPrice };
+}
+
+export async function fetchCoinBalance(): Promise<number> {
+  return (await fetchCoinBalanceView()).balance;
+}
+
+async function parseLocatorResult(res: Response): Promise<LocatorAttemptView> {
+  if (res.status === 409) {
+    const data = await res.json().catch(() => null) as { code?: unknown; price?: unknown; balance?: unknown } | null;
+    const code = typeof data?.code === 'string' ? data.code : null;
+    const price = typeof data?.price === 'number' ? data.price : null;
+    const balance = typeof data?.balance === 'number' ? data.balance : null;
+    // A conflict missing its price or balance is surfaced as a generic
+    // failure rather than showing the player an invented amount.
+    if (code === 'locator_price_changed' && price !== null && balance !== null) {
+      throw new LocatorPriceChangedError(price, balance);
+    }
+    if (code === 'insufficient_balance' && price !== null && balance !== null) {
+      throw new LocatorInsufficientBalanceError(price, balance);
+    }
+    if (code !== null) {
+      throw new EconomyApiError(409, code, code);
+    }
+  }
+  if (!res.ok) throw await parseEconomyError(res, 'Locator attempt failed: ' + res.status);
+  return (await res.json()) as LocatorAttemptView;
+}
+
+export async function prepareLocatorAttempt(input: PrepareLocatorAttemptInput, signal?: AbortSignal): Promise<LocatorAttemptView> {
+  const res = await apiFetch('/v1/economy/locator-attempts/prepare', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal,
+    body: JSON.stringify(input),
+  });
+  return parseLocatorResult(res);
+}
+
+export async function commitLocatorAttempt(attemptId: string, input: CommitLocatorAttemptInput, signal?: AbortSignal): Promise<LocatorAttemptView> {
+  const res = await apiFetch(`/v1/economy/locator-attempts/${encodeURIComponent(attemptId)}/commit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    signal,
+    body: JSON.stringify(input),
+  });
+  return parseLocatorResult(res);
+}
+
+export async function releaseLocatorAttempt(
+  attemptId: string,
+  input: { cancellation?: boolean } = { cancellation: true },
+): Promise<LocatorAttemptView> {
+  const res = await apiFetch(`/v1/economy/locator-attempts/${encodeURIComponent(attemptId)}/release`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  return parseLocatorResult(res);
+}
+
+export async function fetchLocatorAttempt(attemptId: string): Promise<LocatorAttemptView> {
+  const res = await apiFetch(`/v1/economy/locator-attempts/${encodeURIComponent(attemptId)}`);
+  return parseLocatorResult(res);
 }
 
 export async function fetchUnlockedPatternIds(): Promise<string[]> {
@@ -95,8 +223,18 @@ export async function fetchUnlockedPatternIds(): Promise<string[]> {
 
 export function useCoinBalance() {
   return useQuery({
-    queryKey: ['economy', 'balance'],
-    queryFn: fetchCoinBalance,
+    queryKey: coinBalanceQueryKey,
+    queryFn: fetchCoinBalanceView,
+    select: (view: CoinBalanceView) => view.balance,
+  });
+}
+
+/** Shares the balance query so the locator button shows the price last served with the balance. */
+export function useLocatorPrice() {
+  return useQuery({
+    queryKey: coinBalanceQueryKey,
+    queryFn: fetchCoinBalanceView,
+    select: (view: CoinBalanceView) => view.locatorPrice,
   });
 }
 
@@ -112,7 +250,7 @@ export function useUnlockPattern() {
   return useMutation({
     mutationFn: unlockPattern,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
+      queryClient.invalidateQueries({ queryKey: coinBalanceQueryKey });
       queryClient.invalidateQueries({ queryKey: ['economy', 'unlocks'] });
     },
   });
@@ -136,7 +274,7 @@ export async function fetchRewardDay(): Promise<RewardDayView> {
 
 export function useRewardDay() {
   return useQuery({
-    queryKey: ['economy', 'reward-day'],
+    queryKey: rewardDayQueryKey,
     queryFn: fetchRewardDay,
   });
 }
@@ -144,6 +282,19 @@ export function useRewardDay() {
 export interface AdAttempt {
   nonce: string;
   expiresAt: string;
+  /** Missing only from old backends; safely selects the legacy client-claim path. */
+  ssvActive: boolean | undefined;
+}
+
+export interface AdAttemptState {
+  state: 'pending' | 'verified' | 'expired';
+  expiresAt: string;
+}
+
+export async function fetchAdAttemptState(nonce: string): Promise<AdAttemptState> {
+  const res = await apiFetch(`/v1/economy/ad-attempts/${encodeURIComponent(nonce)}`);
+  if (!res.ok) throw await parseEconomyError(res, `Failed to fetch ad attempt: ${res.status}`);
+  return (await res.json()) as AdAttemptState;
 }
 
 export async function openAdAttempt(): Promise<AdAttempt> {
@@ -188,8 +339,8 @@ export function useClaimAdReward() {
   return useMutation({
     mutationFn: claimAdReward,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['economy', 'balance'] });
-      queryClient.invalidateQueries({ queryKey: ['economy', 'reward-day'] });
+      queryClient.invalidateQueries({ queryKey: coinBalanceQueryKey });
+      queryClient.invalidateQueries({ queryKey: rewardDayQueryKey });
     },
   });
 }

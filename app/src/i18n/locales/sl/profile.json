@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Vse nagrade za oglase so za danes dokončane! (30/30 kovancev)",
       "watchAdButton": "Poglej oglas za +10 kovancev (še {{count}})",
       "adPerkNote": "Poglejte do 3 oglase/dan · Premium odklene takojšen prevzem 30 kovancev",
-      "adRewardEarned": "Nagrada za oglas prislužena! Preverjanje z zalednim sistemom …",
+      "adRewardEarned": "Nagrada za oglas je preverjena!",
       "claimFailed": "Prevzem ni uspel: {{message}}",
       "claimFailedGeneric": "Prišlo je do napake. Poskusite znova.",
       "adLoadFailedDefault": "Nalaganje oglasa ni uspelo",
-      "adAttemptFailedDefault": "Odpiranje poskusa oglasa ni uspelo"
+      "adAttemptFailedDefault": "Odpiranje poskusa oglasa ni uspelo",
+      "adRewardVerifying": "Preverjanje vaše nagrade…",
+      "adRewardPending": "Vaša nagrada se še preverja. Kovanci se bodo kmalu prikazali.",
+      "adRewardExpired": "Nagrade za ta oglas ni bilo mogoče pravočasno preveriti. Poskusite znova."
     },
     "tabs": {
       "myCreations": "Moje stvaritve {{count}}",

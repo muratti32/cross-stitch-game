@@ -15,8 +15,11 @@ import {
 import type { PatternStatus } from '../catalog/entities';
 import { AdminCatalogService } from './admin-catalog.service';
 import { BulkRemovePatternsDto } from './dto/bulk-remove-patterns.dto';
+import { BulkSetPatternsPaidDto } from './dto/bulk-set-patterns-paid.dto';
 import { CurrentOperator } from './current-operator.decorator';
+import { SetPatternPaidDto } from './dto/set-pattern-paid.dto';
 import { UpdatePatternMetadataDto } from './dto/update-pattern-metadata.dto';
+import { PatternPaidAdminService } from './pattern-paid-admin.service';
 import { OperatorAuthGuard } from './operator-auth.guard';
 import { OperatorPermissionsGuard } from './operator-permissions.guard';
 import { OperatorPrincipal } from './operator-auth.types';
@@ -32,7 +35,10 @@ const KNOWN_STATUSES: readonly PatternStatus[] = [
 @Controller('admin/patterns')
 @UseGuards(OperatorAuthGuard, OperatorPermissionsGuard)
 export class AdminPatternsController {
-  constructor(private readonly adminCatalog: AdminCatalogService) {}
+  constructor(
+    private readonly adminCatalog: AdminCatalogService,
+    private readonly patternPaidAdmin: PatternPaidAdminService,
+  ) {}
 
   @Get()
   @RequireOperatorPermissions('catalog.pattern.read')
@@ -69,6 +75,37 @@ export class AdminPatternsController {
       operator.id,
       id,
       body,
+      requestId ?? null,
+    );
+  }
+
+  @Post('bulk-paid')
+  @RequireOperatorPermissions('catalog.pattern.manage')
+  bulkSetPaid(
+    @CurrentOperator() operator: OperatorPrincipal,
+    @Body() body: BulkSetPatternsPaidDto,
+    @Headers('x-request-id') requestId?: string,
+  ) {
+    return this.patternPaidAdmin.setPatternsPaid(
+      operator.id,
+      body.patternIds,
+      body.paid,
+      requestId ?? null,
+    );
+  }
+
+  @Put(':id/paid')
+  @RequireOperatorPermissions('catalog.pattern.manage')
+  setPaid(
+    @CurrentOperator() operator: OperatorPrincipal,
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() body: SetPatternPaidDto,
+    @Headers('x-request-id') requestId?: string,
+  ) {
+    return this.patternPaidAdmin.setPatternPaid(
+      operator.id,
+      id,
+      body.paid,
       requestId ?? null,
     );
   }

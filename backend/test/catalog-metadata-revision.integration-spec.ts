@@ -18,14 +18,7 @@ describe('Catalog Metadata Revision persistence', () => {
   let patternId: string;
   let revisionId: string;
 
-  const storage: ObjectStorage = {
-    delete: () => Promise.resolve(),
-    exists: () => Promise.resolve(false),
-    get: () => Promise.resolve(null),
-    list: () => Promise.resolve([]),
-    publicUrl: (key: string) => key,
-    put: () => Promise.resolve(),
-  };
+  const storage = createStorage();
 
   beforeAll(async () => {
     postgres = await new PostgreSqlContainer('postgres:16-alpine').start();
@@ -480,3 +473,14 @@ describe('Catalog Metadata Revision persistence', () => {
     });
   });
 });
+
+function createStorage(): ObjectStorage {
+  return {
+    delete: () => Promise.resolve(),
+    exists: () => Promise.resolve(false),
+    get: () => Promise.resolve(null),
+    list: () => Promise.resolve([]),
+    publicUrl: (key: string) => key,
+    put: () => Promise.resolve(),
+  };
+}

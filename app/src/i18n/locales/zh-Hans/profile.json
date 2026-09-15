@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "今天的所有广告奖励已完成！（30/30 金币）",
       "watchAdButton": "观看广告获得 +10 金币（还剩 {{count}} 次）",
       "adPerkNote": "每天最多观看 3 次广告 · Premium 可解锁即时领取 30 金币",
-      "adRewardEarned": "已获得广告奖励！正在后台验证…",
+      "adRewardEarned": "广告奖励已验证！",
       "claimFailed": "领取失败：{{message}}",
       "claimFailedGeneric": "出了点问题。请再试一次。",
       "adLoadFailedDefault": "广告加载失败",
-      "adAttemptFailedDefault": "未能打开广告"
+      "adAttemptFailedDefault": "未能打开广告",
+      "adRewardVerifying": "正在验证您的奖励…",
+      "adRewardPending": "您的奖励仍在验证中，金币很快就会显示。",
+      "adRewardExpired": "未能及时验证此广告奖励。请重试。"
     },
     "tabs": {
       "myCreations": "我的创作 {{count}}",

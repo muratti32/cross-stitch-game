@@ -4,4 +4,8 @@ Crash reporting and client performance telemetry use Sentry. Its performance ins
 
 Product analytics does not add a third-party SDK. (Superseded in part by ADR-0055, which adds Firebase Analytics as a consent-gated mirror of funnel events; the first-party stream described below remains the single source of truth.) The client records a minimal set of pseudonymous first-party gameplay events—session starts and completions, Daily Task completion, conversion and generation funnel steps, purchase funnel outcomes—delivered to the Game Backend over the existing sync channel and queryable next to the domain data they describe. Events carry opaque identities only, respect Connectivity State by batching offline, and are bounded by a documented event schema rather than free-form logging. Store privacy labels therefore declare Sentry diagnostics, first-party analytics, and AdMob advertising data, plus the ADR-0055 Firebase Analytics mirror; no cross-app tracking is performed and the game does not request App Tracking Transparency for its own analytics.
 
+Extended in part by ADR-0059, which fingerprints and deduplicates presented-backend-error Sentry events so a player's Support Reference is stable per failure.
+
 We accept operating our own event schema, storage, and dashboards instead of a ready-made analytics product, plus Sentry as a vendor dependency, in exchange for a small and explainable privacy surface, telemetry that can actually enforce the performance release gate, and product questions answered against the backend's own domain tables rather than a divergent third-party copy of the truth.
+
+Amended by ADR-0057, which permits one bounded first-party performance-exposure event because Sentry cannot count non-crashing exposures.

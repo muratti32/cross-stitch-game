@@ -335,6 +335,7 @@ export class PromotionService {
                   principalType: 'account',
                   principalId: accountId,
                   patternId: unlock.patternId,
+                  source: unlock.source,
                 })
                 .orIgnore()
                 .execute();
@@ -475,6 +476,23 @@ export class PromotionService {
 
         const gSession = guestSession[0];
 
+        const pattern = await manager.query<any[]>(
+          `SELECT unlock_price_tier FROM catalog.patterns WHERE id = $1 FOR SHARE`,
+          [patternId]
+        );
+
+        await manager.query(
+          `INSERT INTO economy.pattern_unlocks
+             (principal_type, principal_id, pattern_id, source)
+           SELECT 'account', $1, pattern_id, source
+           FROM economy.pattern_unlocks
+           WHERE principal_type = 'guest'
+             AND principal_id = $2
+             AND pattern_id = $3
+           ON CONFLICT ON CONSTRAINT "PK_pattern_unlocks" DO NOTHING`,
+          [accountId, guestId, patternId]
+        );
+
         // Find target account session
         const accountSessions = await manager.query<any[]>(
           `SELECT id, status, completed_at FROM sessions.stitching_sessions 
@@ -492,10 +510,6 @@ export class PromotionService {
           );
 
           // Check if pattern is Official and locked by the account
-          const pattern = await manager.query<any[]>(
-            `SELECT unlock_price_tier FROM catalog.patterns WHERE id = $1`,
-            [patternId]
-          );
           let isLocked = false;
           if (pattern.length > 0 && pattern[0].unlock_price_tier !== null) {
             const unlock = await manager.query<any[]>(

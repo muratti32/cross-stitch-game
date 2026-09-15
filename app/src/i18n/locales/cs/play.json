@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Najít další zbývající políčko aktivní barvy bavlnky",
     "undoAccessibilityLabel": "Vrátit poslední steh"
   },
+  "locator": {
+    "priceTitle": "Cena lokátoru",
+    "priceConfirmMessage": "Cena: {{price}} · Zůstatek: {{balance}}\nPro použití znovu klepněte na lokátor.",
+    "priceChangedTitle": "Cena lokátoru se změnila",
+    "priceChangedMessage": "Nová cena: {{price}} · Zůstatek: {{balance}}\nPro použití za novou cenu znovu klepněte na lokátor."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Barva {{number}}: DMC {{dmcCode}}, zbývá {{count}} steh",

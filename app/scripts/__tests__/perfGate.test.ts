@@ -1,5 +1,5 @@
-import { evaluateGate } from '../perf-gate';
-import { PerfRunReport } from '../../src/perf/report';
+import { evaluateGate, rederiveScenarioFailures } from '../perf-gate';
+import { evaluateMemoryBudget, PerfRunReport } from '../../src/perf/report';
 
 import { ScenarioId } from '../../src/perf/budgets';
 
@@ -94,6 +94,15 @@ function createBaseReport(platform: 'ios' | 'android', options: {
           ? { p95Ms: healthyLatency.p95Ms, sampleCount: id === 'worst-case-app-resume' ? 10 : 200 }
           : undefined,
         frames: isLatencyScenario ? undefined : healthyFrames,
+        memory: id === 'worst-case-memory-pressure'
+          ? {
+              peakResidentBytes: 150 * 1024 * 1024,
+              peakFootprintBytes: 140 * 1024 * 1024,
+              peakJsHeapBytes: 25 * 1024 * 1024,
+              sampleCount: 10,
+              unavailableCount: 0,
+            }
+          : undefined,
         durationMs: 30_000,
       };
     });
@@ -121,6 +130,33 @@ function createBaseReport(platform: 'ios' | 'android', options: {
 }
 
 describe('Stitch Interaction Budget Release Gate', () => {
+  it('uses the same memory budget failure strings in report and gate', () => {
+    const memory = {
+      peakResidentBytes: 1,
+      peakFootprintBytes: 0,
+      peakJsHeapBytes: 1,
+      sampleCount: 1,
+      unavailableCount: 1,
+      firstUnavailableReason: 'native read failed',
+    };
+    const reportFailures = evaluateMemoryBudget('worst-case-memory-pressure', memory);
+    const gateFailures = rederiveScenarioFailures({
+      scenarioId: 'worst-case-memory-pressure',
+      passed: false,
+      failures: [],
+      frames: {
+        frameCount: 300,
+        meanFrameMs: 16.6,
+        meanFps: 60.2,
+        p99FrameMs: 19,
+        slowFrameRatio: 0.01,
+      },
+      memory,
+      durationMs: 1,
+    });
+    expect(gateFailures).toEqual(reportFailures);
+  });
+
   it('passes when both platforms pass on reference devices with all scenarios', () => {
     const ios = createBaseReport('ios');
     const android = createBaseReport('android');
@@ -220,6 +256,31 @@ describe('Stitch Interaction Budget Release Gate', () => {
     expect(result.status).toBe('FAIL');
     expect(
       result.failures.some((f) => f.includes('p95 latency 88.4 ms exceeds 50 ms budget'))
+    ).toBe(true);
+  });
+
+  it('fails release gate when worst-case-memory-pressure exceeds 300 MB budget', () => {
+    const ios = createBaseReport('ios');
+    const android = createBaseReport('android');
+    const memScenario = android.results.find((r) => r.scenarioId === 'worst-case-memory-pressure');
+    expect(memScenario).toBeDefined();
+    if (memScenario) {
+      memScenario.passed = true;
+      memScenario.failures = [];
+      memScenario.memory = {
+        peakResidentBytes: 360 * 1024 * 1024,
+        peakFootprintBytes: 340 * 1024 * 1024,
+        peakJsHeapBytes: 40 * 1024 * 1024,
+        sampleCount: 10,
+        unavailableCount: 0,
+      };
+    }
+
+    const result = evaluateGate([ios, android]);
+
+    expect(result.status).toBe('FAIL');
+    expect(
+      result.failures.some((f) => f.includes('peak memory footprint') && f.includes('exceeds 300 MB budget'))
     ).toBe(true);
   });
 });

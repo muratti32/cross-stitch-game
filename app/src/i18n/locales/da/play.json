@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Find den næste resterende celle for den aktive trådfarve",
     "undoAccessibilityLabel": "Fortryd sidste sting"
   },
+  "locator": {
+    "priceTitle": "Pris for lokalisering",
+    "priceConfirmMessage": "Pris: {{price}} · Saldo: {{balance}}\nTryk på lokaliseringen igen for at bruge den.",
+    "priceChangedTitle": "Prisen for lokalisering er ændret",
+    "priceChangedMessage": "Ny pris: {{price}} · Saldo: {{balance}}\nTryk på lokaliseringen igen for at bruge den til den nye pris."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Farve {{number}}: DMC {{dmcCode}}, {{count}} sting tilbage",

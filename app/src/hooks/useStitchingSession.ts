@@ -37,6 +37,7 @@ import { decodePatternArtifact } from '../pattern-artifact';
 import { getActiveIdentity } from '../local-db';
 import { PatternData } from '../pattern-artifact';
 import { RendererState } from '../renderer';
+import { getDeviceRenderingProfile } from '../../modules/perf-thermal';
 import { useIdentityStore } from '../identity/guestIdentity';
 import { syncSession, completeSession } from '../sync/progressSyncEngine';
 import { emitTutorialEvent } from '../onboarding/tutorialEvents';
@@ -424,7 +425,12 @@ export function useStitchingSession(sessionId: string | undefined) {
         undoStackRef.current = undoStack;
 
         // 9. Instantiate Renderer State
-        const rState = new RendererState(pat.width, pat.height, completed);
+        const rState = new RendererState(
+          pat.width,
+          pat.height,
+          completed,
+          getDeviceRenderingProfile(),
+        );
 
         if (active) {
           setSession(sess);

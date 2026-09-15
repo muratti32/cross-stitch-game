@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Localizează următoarea celulă rămasă din culoarea firului activ",
     "undoAccessibilityLabel": "Anulează ultima cusătură"
   },
+  "locator": {
+    "priceTitle": "Prețul localizatorului",
+    "priceConfirmMessage": "Preț: {{price}} · Sold: {{balance}}\nAtinge din nou localizatorul pentru a-l folosi.",
+    "priceChangedTitle": "Prețul localizatorului s-a schimbat",
+    "priceChangedMessage": "Preț nou: {{price}} · Sold: {{balance}}\nAtinge din nou localizatorul pentru a-l folosi la noul preț."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Culoare {{number}}: DMC {{dmcCode}}, mai este {{count}} cusătură",

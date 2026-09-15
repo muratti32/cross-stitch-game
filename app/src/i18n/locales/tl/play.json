@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Hanapin ang susunod na natitirang cell para sa aktibong kulay ng sinulid",
     "undoAccessibilityLabel": "I-undo ang huling tahi"
   },
+  "locator": {
+    "priceTitle": "Presyo ng locator",
+    "priceConfirmMessage": "Presyo: {{price}} · Balanse: {{balance}}\nI-tap muli ang locator para gamitin ito.",
+    "priceChangedTitle": "Nagbago ang presyo ng locator",
+    "priceChangedMessage": "Bagong presyo: {{price}} · Balanse: {{balance}}\nI-tap muli ang locator para gamitin ito sa bagong presyo."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Kulay {{number}}: DMC {{dmcCode}}, {{count}} tahi na natitira",

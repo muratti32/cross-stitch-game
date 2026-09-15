@@ -8,6 +8,7 @@ import {
   STITCH_INTERACTION_BUDGET,
 } from '../src/perf/budgets';
 import {
+  evaluateMemoryBudget,
   PerfRunReport,
   ScenarioResult,
   formatRunReport,
@@ -72,6 +73,15 @@ export function reportsAgree(r1: PerfRunReport, r2: PerfRunReport): boolean {
     if (res1.thermal || res2.thermal) {
       if (!res1.thermal || !res2.thermal) return false;
       if (res1.thermal.worst !== res2.thermal.worst) return false;
+    }
+    if (res1.memory || res2.memory) {
+      if (!res1.memory || !res2.memory) return false;
+      if (
+        res1.memory.peakFootprintBytes !== res2.memory.peakFootprintBytes ||
+        res1.memory.sampleCount !== res2.memory.sampleCount
+      ) {
+        return false;
+      }
     }
     if (res1.durationMs !== res2.durationMs) return false;
   }
@@ -235,6 +245,8 @@ export function rederiveScenarioFailures(res: ScenarioResult): string[] {
       );
     }
   }
+
+  failures.push(...evaluateMemoryBudget(res.scenarioId, res.memory));
 
   return failures;
 }

@@ -132,11 +132,14 @@
       "allAdRewardsCompleted": "Bugün için tüm reklam ödülleri tamamlandı! (30/30 para)",
       "watchAdButton": "+10 Para İçin Reklam İzle ({{count}} kaldı)",
       "adPerkNote": "Günde en fazla 3 reklam izleyin · Premium, anında 30 para talebinin kilidini açar",
-      "adRewardEarned": "Reklam ödülü kazanıldı! Sunucuyla doğrulanıyor…",
+      "adRewardEarned": "Reklam ödülü doğrulandı!",
       "claimFailed": "Talep başarısız: {{message}}",
       "claimFailedGeneric": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
       "adLoadFailedDefault": "Reklam yüklenemedi",
-      "adAttemptFailedDefault": "Reklam denemesi açılamadı"
+      "adAttemptFailedDefault": "Reklam denemesi açılamadı",
+      "adRewardVerifying": "Ödülünüz doğrulanıyor…",
+      "adRewardPending": "Ödülünüz hâlâ doğrulanıyor. Coinler kısa süre içinde görünecek.",
+      "adRewardExpired": "Bu reklamın ödülü zamanında doğrulanamadı. Lütfen tekrar deneyin."
     },
     "tabs": {
       "myCreations": "Eserlerim {{count}}",

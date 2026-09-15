@@ -38,8 +38,12 @@ import {
   FrameSampler,
   LatencySampler,
   ThermalSampler,
+  MemorySampler,
 } from '../metrics';
-import { getDeviceProfile } from '../../../modules/perf-thermal';
+import {
+  getDeviceProfile,
+  getDeviceRenderingProfile,
+} from '../../../modules/perf-thermal';
 import { getDatabase } from '@/local-db';
 import { Ionicons } from '@expo/vector-icons';
 import { buildLatePlayFixture, buildFullyCompletedFixture } from '../fixtures';
@@ -50,6 +54,7 @@ export default function PerfHarnessScreen() {
   const frameSampler = useRef(new FrameSampler()).current;
   const latencySampler = useRef(new LatencySampler()).current;
   const thermalSampler = useRef(new ThermalSampler()).current;
+  const memorySampler = useRef(new MemorySampler()).current;
 
   const [runStatus, setRunStatus] = useState<
     'idle' | 'running' | 'operator-action-required' | 'cancelled' | 'error' | 'completed'
@@ -165,7 +170,8 @@ export default function PerfHarnessScreen() {
         const state = new RendererState(
           fixtureData.pattern.width,
           fixtureData.pattern.height,
-          fixtureData.completed
+          fixtureData.completed,
+          getDeviceRenderingProfile(),
         );
         setRendererState(state);
 
@@ -197,6 +203,7 @@ export default function PerfHarnessScreen() {
           frameSampler,
           latencySampler,
           thermalSampler,
+          memorySampler,
           bumpRevision: () => {
             setRevision((r) => r + 1);
           },

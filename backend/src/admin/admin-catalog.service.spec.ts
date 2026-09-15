@@ -1,6 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 
 import { CategoryEntity, CategoryLabelEntity, PatternEntity, TagEntity } from '../catalog/entities';
+import { CATALOG_TITLE_MARKUP_MESSAGE } from '../catalog/catalog-title-markup';
 import { RELEASED_APP_DISPLAY_LOCALES } from '../catalog/released-locales.constant';
 import { AdminCatalogService } from './admin-catalog.service';
 
@@ -129,6 +130,23 @@ describe('AdminCatalogService Pattern contract', () => {
       ),
     );
     expect(entity.status).toBe('available');
+    expect(save).not.toHaveBeenCalled();
+    expect(auditLog.record).not.toHaveBeenCalled();
+  });
+
+  it('rejects an operator metadata update whose title contains angle brackets', async () => {
+    const entity = pattern();
+    const { auditLog, save, service } = serviceWithTransactionPattern(entity);
+
+    await expect(
+      service.updateMetadata(
+        'operator-id',
+        entity.id,
+        { categoryCode: 'animals', creatorName: 'Stitch Wish', tagCodes: [], title: '<b>Fox</b>' },
+        'request-id',
+      ),
+    ).rejects.toThrow(new BadRequestException(CATALOG_TITLE_MARKUP_MESSAGE));
+    expect(entity.title).toBe('Fox');
     expect(save).not.toHaveBeenCalled();
     expect(auditLog.record).not.toHaveBeenCalled();
   });

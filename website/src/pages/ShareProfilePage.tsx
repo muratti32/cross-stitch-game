@@ -4,31 +4,39 @@ import { useParams, Link } from 'react-router-dom'
 interface ProfileMetadata {
   username: string
   displayName: string
-  avatarUrl?: string
-  creationsCount: number
+}
+
+function isProfileMetadata(value: unknown): value is ProfileMetadata {
+  if (typeof value !== 'object' || value === null) return false
+  return (
+    'username' in value &&
+    typeof value.username === 'string' &&
+    'displayName' in value &&
+    typeof value.displayName === 'string'
+  )
 }
 
 export function ShareProfilePage() {
-  const { username } = useParams<{ username: string }>()
+  const { id } = useParams<{ id: string }>()
   const [profile, setProfile] = useState<ProfileMetadata | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!username) return
+    if (!id) return
 
     const apiUrl = import.meta.env.VITE_API_URL || 'https://stitch-wish-staging-api.avkdesign.net'
     let active = true
 
-    fetch(`${apiUrl}/v1/catalog/profiles/${username}`)
+    fetch(`${apiUrl}/v1/creator-profiles/${encodeURIComponent(id)}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error('Profile not found or unavailable')
         }
         return res.json()
       })
-      .then((data) => {
+      .then((data: unknown) => {
         if (active) {
-          setProfile(data)
+          setProfile(isProfileMetadata(data) ? data : null)
           setLoading(false)
         }
       })
@@ -42,7 +50,7 @@ export function ShareProfilePage() {
     return () => {
       active = false
     }
-  }, [username])
+  }, [id])
 
   if (loading) {
     return (
@@ -55,17 +63,18 @@ export function ShareProfilePage() {
     )
   }
 
-  const appLink = `stitchwish://profile/${username}`
-  const profileName = profile?.displayName || `@${username}`
+  const appLink = `stitchwish://profile/${encodeURIComponent(id ?? '')}`
+  const handle = profile ? `@${profile.username}` : 'Creator Profile'
+  const profileName = profile?.displayName || handle
 
   return (
     <main id="main-content" className="share-page">
       <div className="page-hero">
         <div className="container">
           <p className="page-hero__breadcrumb">
-            <Link to="/">Home</Link> / Creators / @{username}
+            <Link to="/">Home</Link> / Creators / {handle}
           </p>
-          <h1 className="page-hero__title">@{username}</h1>
+          <h1 className="page-hero__title">{handle}</h1>
           <p className="page-hero__subtitle">
             Stitch Wish Creator Profile
           </p>
@@ -99,7 +108,7 @@ export function ShareProfilePage() {
                 href={appLink}
                 style={{ display: 'block', textAlign: 'center', background: '#2D6A4F', color: '#fff', padding: '14px', borderRadius: '8px', fontWeight: 'bold', textDecoration: 'none', boxShadow: '0 4px 6px rgba(45,106,79,0.2)' }}
               >
-                🚀 Open @{username} in Stitch Wish
+                🚀 Open {profile ? handle : 'profile'} in Stitch Wish
               </a>
             </div>
 

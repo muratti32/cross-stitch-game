@@ -18,6 +18,7 @@ import { CATALOG_PRECHECK_EVENT_NAME, CATALOG_PRECHECK_JOB_TYPE } from '../jobs/
 import { ProcessingJobsRepository } from '../jobs/processing-jobs.repository';
 import { ObjectRegistryEntity } from '../sessions/entities';
 import { CatalogPrecheckService } from './catalog-precheck.service';
+import { CATALOG_TITLE_MARKUP_MESSAGE, titleContainsMarkup } from './catalog-title-markup';
 import { CreateCatalogAppealDto } from './dto/create-catalog-appeal.dto';
 import { CreateCatalogSubmissionDto } from './dto/create-catalog-submission.dto';
 import {
@@ -76,8 +77,8 @@ export class CatalogSubmissionService {
     if (title.length < 1 || title.length > 120 || description.length < 1 || description.length > 2000) {
       throw new BadRequestException('Catalog Submission text is outside the allowed length');
     }
-    if (/[<>]/.test(title)) {
-      throw new BadRequestException('Title cannot contain angle brackets');
+    if (titleContainsMarkup(title)) {
+      throw new BadRequestException(CATALOG_TITLE_MARKUP_MESSAGE);
     }
     const submissionId = randomUUID();
     const processingJobId = randomUUID();
