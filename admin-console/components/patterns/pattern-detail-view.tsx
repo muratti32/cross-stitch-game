@@ -18,6 +18,7 @@ import { PRICE_TIER_UNIT_LABELS } from '@/lib/price-tier';
 import { toConsolePreviewSrc } from '@/lib/preview-url';
 
 import { PatternMetadataForm } from './pattern-metadata-form';
+import { PatternPaidAction } from './pattern-paid-action';
 import { PatternStatusActions } from './pattern-status-actions';
 
 export function PatternDetailView({ patternId }: { patternId: string }) {
@@ -61,7 +62,12 @@ export function PatternDetailView({ patternId }: { patternId: string }) {
           <PageHeader
             title={patternQuery.data.title}
             description={`by ${patternQuery.data.creatorName}`}
-            actions={<PatternStatusActions pattern={patternQuery.data} />}
+            actions={(
+              <div className="flex flex-wrap gap-2">
+                <PatternPaidAction pattern={patternQuery.data} />
+                <PatternStatusActions pattern={patternQuery.data} />
+              </div>
+            )}
           />
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr]">

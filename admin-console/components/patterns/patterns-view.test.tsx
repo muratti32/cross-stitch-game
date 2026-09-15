@@ -6,13 +6,14 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { PatternsView } from './patterns-view';
 
-const mocks = vi.hoisted(() => ({ bulkRemove: vi.fn(), usePatterns: vi.fn() }));
+const mocks = vi.hoisted(() => ({ bulkPaid: vi.fn(), bulkRemove: vi.fn(), usePatterns: vi.fn() }));
 
 vi.mock('@/hooks/use-categories', () => ({
   useCategories: () => ({ data: [] }),
 }));
 vi.mock('@/hooks/use-patterns', () => ({
   useBulkRemovePatterns: () => ({ isPending: false, mutateAsync: mocks.bulkRemove }),
+  useBulkSetPatternsPaid: () => ({ isPending: false, mutateAsync: mocks.bulkPaid }),
   usePatterns: mocks.usePatterns,
 }));
 
@@ -60,5 +61,56 @@ describe('PatternsView bulk removal wiring', () => {
     await waitFor(() => expect(screen.getByText('Page 1 of 2')).not.toBeNull());
     expect(screen.queryByText('1 selected')).toBeNull();
     expect(mocks.bulkRemove).toHaveBeenCalledOnce();
+  });
+});
+
+describe('PatternsView bulk paid wiring', () => {
+  it.each([
+    ['Make paid', true],
+    ['Make free', false],
+  ] as const)('opens %s and sends the requested paid value', async (label, paid) => {
+    mocks.usePatterns.mockReturnValue({
+      data: { items: [{
+        categoryCode: 'animals', createdAt: '2026-08-01T00:00:00.000Z', creatorName: 'Stitch Wish', id: 'fox',
+        patternType: 'official', previewUrl: '/preview.webp', publishedAt: '2026-08-01T00:00:00.000Z', status: 'available',
+        title: 'Fox', unlockPriceTier: paid ? null : 'small',
+      }], page: 1, pageSize: 20, total: 1 },
+      error: null, isError: false, isPending: false,
+    });
+    mocks.bulkPaid.mockResolvedValue({ paid, results: [] });
+    const user = userEvent.setup();
+    render(<PatternsView />);
+
+    await user.click(screen.getByRole('checkbox', { name: 'Select Fox' }));
+    await user.click(screen.getByRole('button', { name: label }));
+    expect(screen.getByRole('dialog')).not.toBeNull();
+    await user.click(screen.getByRole('button', { name: label }));
+    await waitFor(() => expect(mocks.bulkPaid).toHaveBeenCalledWith({ patternIds: ['fox'], paid }));
+  });
+
+  it('keeps only failed ids that remain on the current page', async () => {
+    mocks.usePatterns.mockReturnValue({
+      data: { items: [{
+        categoryCode: 'animals', createdAt: '2026-08-01T00:00:00.000Z', creatorName: 'Stitch Wish', id: 'fox',
+        patternType: 'official', previewUrl: '/preview.webp', publishedAt: '2026-08-01T00:00:00.000Z', status: 'available',
+        title: 'Fox', unlockPriceTier: null,
+      }], page: 1, pageSize: 20, total: 2 },
+      error: null, isError: false, isPending: false,
+    });
+    mocks.bulkPaid.mockResolvedValue({
+      paid: true,
+      results: [
+        { outcome: 'failed', patternId: 'fox' },
+        { outcome: 'failed', patternId: 'off-page' },
+      ],
+    });
+    const user = userEvent.setup();
+    render(<PatternsView />);
+
+    await user.click(screen.getByRole('checkbox', { name: 'Select Fox' }));
+    await user.click(screen.getByRole('button', { name: 'Make paid' }));
+    await user.click(screen.getByRole('button', { name: 'Make paid' }));
+
+    await waitFor(() => expect(screen.getByText('1 selected')).not.toBeNull());
   });
 });

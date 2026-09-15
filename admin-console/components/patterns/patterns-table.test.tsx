@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { AdminPatternListItem } from '@/lib/types';
 
-import { bulkRemovalReasonId } from './bulk-remove-policy';
+import { patternSelectionReasonId } from './pattern-selection-policy';
 import { PatternsTable } from './patterns-table';
 
 function pattern(overrides: Partial<AdminPatternListItem>): AdminPatternListItem {
@@ -39,9 +39,9 @@ describe('PatternsTable bulk selection', () => {
     expect(onSelectionChange).toHaveBeenLastCalledWith(new Set(['fox']));
 
     await user.click(screen.getByRole('checkbox', { name: /Select all eligible/ }));
-    expect(onSelectionChange).toHaveBeenLastCalledWith(new Set(['fox', 'owl']));
+    expect(onSelectionChange).toHaveBeenLastCalledWith(new Set(['fox', 'owl', 'hold']));
 
-    for (const title of ['Community Bee', 'Held Cat', 'Removed Dog']) {
+    for (const title of ['Community Bee', 'Removed Dog']) {
       const checkbox = screen.getByRole('checkbox', { name: `Select ${title}` });
       expect(
         checkbox.hasAttribute('disabled') ||
@@ -50,11 +50,12 @@ describe('PatternsTable bulk selection', () => {
       ).toBe(true);
     }
     const communityCheckbox = screen.getByRole('checkbox', { name: 'Select Community Bee' });
-    expect(communityCheckbox.getAttribute('aria-describedby')).toBe(bulkRemovalReasonId('community'));
-    expect(document.getElementById(bulkRemovalReasonId('community'))?.textContent).toContain('Community Patterns');
+    expect(communityCheckbox.getAttribute('aria-describedby')).toBe(patternSelectionReasonId('community'));
+    expect(document.getElementById(patternSelectionReasonId('community'))?.textContent).toContain('Official Patterns');
+    expect(screen.getByRole('checkbox', { name: 'Select Held Cat' }).hasAttribute('disabled')).toBe(false);
 
     rerender(
-      <PatternsTable items={items} categoriesByCode={new Map()} selectedIds={new Set(['fox', 'owl'])} onSelectionChange={onSelectionChange} />,
+      <PatternsTable items={items} categoriesByCode={new Map()} selectedIds={new Set(['fox', 'owl', 'hold'])} onSelectionChange={onSelectionChange} />,
     );
     expect(screen.getByRole('checkbox', { name: /Select all eligible/ }).getAttribute('data-checked')).not.toBeNull();
   });

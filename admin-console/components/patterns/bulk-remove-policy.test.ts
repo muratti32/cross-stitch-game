@@ -1,11 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import type { AdminPatternListItem } from '@/lib/types';
-import {
-  bulkRemovalReasonId,
-  eligiblePatternIds,
-  getBulkRemovalIneligibility,
-} from './bulk-remove-policy';
+import { getBulkRemovalIneligibility } from './bulk-remove-policy';
+import { getPatternSelectionIneligibility, selectablePatternIds } from './pattern-selection-policy';
 
 function pattern(overrides: Partial<AdminPatternListItem> = {}): AdminPatternListItem {
   return {
@@ -16,25 +13,24 @@ function pattern(overrides: Partial<AdminPatternListItem> = {}): AdminPatternLis
 }
 
 describe('bulk remove selection policy', () => {
-  it('selects only current-page eligible Official Patterns', () => {
-    const items = [
-      pattern(),
-      pattern({ id: 'withdrawn', status: 'withdrawn' }),
-      pattern({ id: 'community', patternType: 'community' }),
-      pattern({ id: 'hold', status: 'review_hold' }),
-      pattern({ id: 'removed', status: 'removed' }),
-    ];
-    expect(eligiblePatternIds(items)).toEqual(['official', 'withdrawn']);
-  });
-
   it('provides a concrete explanation for every disabled row', () => {
     expect(getBulkRemovalIneligibility(pattern({ patternType: 'community' }))).toContain('Community');
     expect(getBulkRemovalIneligibility(pattern({ status: 'review_hold' }))).toContain('Review Hold');
     expect(getBulkRemovalIneligibility(pattern({ status: 'removed' }))).toContain('already removed');
-    expect(bulkRemovalReasonId('stable-id')).toBe('bulk-remove-reason-stable-id');
+  });
+});
+
+describe('shared Pattern selection policy', () => {
+  it('includes Review Hold and caps selection at 50', () => {
+    const items = [pattern({ id: 'hold', status: 'review_hold' }), ...Array.from(
+      { length: 55 }, (_, id) => pattern({ id: String(id) }),
+    )];
+    expect(selectablePatternIds(items)).toHaveLength(50);
+    expect(selectablePatternIds(items)).toContain('hold');
   });
 
-  it('caps eligible selection at 20 unique page IDs', () => {
-    expect(eligiblePatternIds(Array.from({ length: 25 }, (_, id) => pattern({ id: String(id) })))).toHaveLength(20);
+  it('excludes Community and removed Patterns with reasons', () => {
+    expect(getPatternSelectionIneligibility(pattern({ patternType: 'community' }))).toContain('Official');
+    expect(getPatternSelectionIneligibility(pattern({ status: 'removed' }))).toContain('Removed');
   });
 });

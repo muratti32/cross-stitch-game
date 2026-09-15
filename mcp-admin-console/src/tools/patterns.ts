@@ -8,6 +8,11 @@ import { buildQuery, fail, ok } from '../shared.js';
  * Catalog Pattern read/moderation tools and the Staff Picks collection.
  */
 export function registerPatternTools(server: McpServer, client: AdminClient): void {
+  const uniquePatternIds = z
+    .array(z.uuidv4())
+    .min(1)
+    .max(50)
+    .refine((ids) => new Set(ids.map((id) => id.toLowerCase())).size === ids.length, 'patternIds must be unique');
   server.registerTool(
     'admin_list_patterns',
     {
@@ -36,7 +41,7 @@ export function registerPatternTools(server: McpServer, client: AdminClient): vo
     {
       title: 'Get one pattern',
       description: 'Fetches full admin detail for one Pattern by id.',
-      inputSchema: { id: z.string().uuid() },
+      inputSchema: { id: z.uuidv4() },
     },
     async ({ id }) => {
       try {
@@ -57,7 +62,7 @@ export function registerPatternTools(server: McpServer, client: AdminClient): vo
         '/admin/patterns/:id/metadata). categoryCode must be an active Catalog Category code — see ' +
         'admin_list_categories. This is a full replacement of these fields, not a partial patch.',
       inputSchema: {
-        id: z.string().uuid(),
+        id: z.uuidv4(),
         title: z.string().min(1).max(255),
         creatorName: z.string().min(1).max(255),
         categoryCode: z.string().min(1).max(64),
@@ -80,11 +85,53 @@ export function registerPatternTools(server: McpServer, client: AdminClient): vo
   );
 
   server.registerTool(
+    'admin_set_pattern_paid',
+    {
+      title: 'Make one Official Pattern paid or free',
+      description:
+        'Changes an eligible Official Pattern in available, withdrawn, or review_hold to paid/free. ' +
+        'The backend derives the paid tier from stitchable-cell count. Free-to-paid grants a zero-cost ' +
+        'Grandfathered Pattern Unlock to every account/guest with a Stitching Session; paid-to-free keeps ' +
+        'unlocks and gives no refund. Errors: pattern_not_found, pattern_not_eligible, or ' +
+        'stitchable_cell_count_unknown.',
+      inputSchema: { id: z.uuidv4(), paid: z.boolean() },
+    },
+    async ({ id, paid }) => {
+      try {
+        return ok(await client.request('PUT', `/patterns/${id}/paid`, { paid }));
+      } catch (error) {
+        return fail(error);
+      }
+    },
+  );
+
+  server.registerTool(
+    'admin_bulk_set_patterns_paid',
+    {
+      title: 'Make Official Patterns paid or free in bulk',
+      description:
+        'Changes 1-50 unique Pattern ids to paid/free. Eligible Patterns are Official and available, ' +
+        'withdrawn, or review_hold. Paid tiers are derived from stitchable-cell count; free-to-paid ' +
+        'grandfathers every account/guest with a Stitching Session, while paid-to-free keeps unlocks and ' +
+        'gives no refund. Results may partially succeed and report changed, unchanged, or failed with ' +
+        'pattern_not_found, pattern_not_eligible, stitchable_cell_count_unknown, or internal_error.',
+      inputSchema: { patternIds: uniquePatternIds, paid: z.boolean() },
+    },
+    async ({ patternIds, paid }) => {
+      try {
+        return ok(await client.request('POST', '/patterns/bulk-paid', { patternIds, paid }));
+      } catch (error) {
+        return fail(error);
+      }
+    },
+  );
+
+  server.registerTool(
     'admin_withdraw_pattern',
     {
       title: 'Withdraw a pattern',
       description: 'Withdraws a Pattern from the catalog (reversible via admin_restore_pattern).',
-      inputSchema: { id: z.string().uuid() },
+      inputSchema: { id: z.uuidv4() },
     },
     async ({ id }) => {
       try {
@@ -101,7 +148,7 @@ export function registerPatternTools(server: McpServer, client: AdminClient): vo
     {
       title: 'Remove a pattern',
       description: 'Removes a Pattern from the catalog (moderation-style takedown, reversible via admin_restore_pattern).',
-      inputSchema: { id: z.string().uuid() },
+      inputSchema: { id: z.uuidv4() },
     },
     async ({ id }) => {
       try {
@@ -118,7 +165,7 @@ export function registerPatternTools(server: McpServer, client: AdminClient): vo
     {
       title: 'Restore a pattern',
       description: 'Restores a withdrawn or removed Pattern back to available.',
-      inputSchema: { id: z.string().uuid() },
+      inputSchema: { id: z.uuidv4() },
     },
     async ({ id }) => {
       try {
@@ -158,7 +205,7 @@ export function registerPatternTools(server: McpServer, client: AdminClient): vo
         'inserts it at the given 1-based position (or appends it at the end if position is omitted), and ' +
         'writes the full list back in one PUT. The Pattern must currently be an available catalog Pattern.',
       inputSchema: {
-        patternId: z.string().uuid(),
+        patternId: z.uuidv4(),
         position: z
           .number()
           .int()

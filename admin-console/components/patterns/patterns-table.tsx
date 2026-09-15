@@ -18,10 +18,10 @@ import { PRICE_TIER_UNIT_LABELS } from '@/lib/price-tier';
 import { toConsolePreviewSrc } from '@/lib/preview-url';
 import type { AdminPatternListItem, Category } from '@/lib/types';
 import {
-  bulkRemovalReasonId,
-  eligiblePatternIds,
-  getBulkRemovalIneligibility,
-} from './bulk-remove-policy';
+  getPatternSelectionIneligibility,
+  patternSelectionReasonId,
+  selectablePatternIds,
+} from './pattern-selection-policy';
 
 export function PatternsTable({
   items,
@@ -34,7 +34,7 @@ export function PatternsTable({
   selectedIds: Set<string>;
   onSelectionChange: (ids: Set<string>) => void;
 }) {
-  const eligibleIds = eligiblePatternIds(items);
+  const eligibleIds = selectablePatternIds(items);
   const allEligibleSelected =
     eligibleIds.length > 0 && eligibleIds.every((id) => selectedIds.has(id));
   return (
@@ -63,8 +63,8 @@ export function PatternsTable({
       </TableHeader>
       <TableBody>
         {items.map((pattern) => {
-          const ineligibility = getBulkRemovalIneligibility(pattern);
-          const reasonId = ineligibility === null ? undefined : bulkRemovalReasonId(pattern.id);
+          const ineligibility = getPatternSelectionIneligibility(pattern);
+          const reasonId = ineligibility === null ? undefined : patternSelectionReasonId(pattern.id);
           return (
           <TableRow key={pattern.id} className="cursor-pointer">
             <TableCell>

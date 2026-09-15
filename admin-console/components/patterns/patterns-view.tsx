@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Plus, Search, Trash2 } from 'lucide-react';
+import { Coins, Plus, Search, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { EmptyState } from '@/components/common/empty-state';
@@ -20,6 +20,7 @@ import { ApiError } from '@/lib/client/fetcher';
 import type { PatternStatus } from '@/lib/types';
 
 import { BulkRemoveDialog } from './bulk-remove-dialog';
+import { BulkSetPaidDialog } from './bulk-set-paid-dialog';
 import { pageAfterBulkRemoval } from './bulk-remove-state';
 import { PatternStatusTabs } from './pattern-status-tabs';
 import { PatternsTable } from './patterns-table';
@@ -32,6 +33,7 @@ export function PatternsView() {
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
+  const [bulkPaid, setBulkPaid] = useState<boolean | null>(null);
   const search = useDebouncedValue(searchInput, 400);
 
   const categoriesQuery = useCategories();
@@ -97,9 +99,13 @@ export function PatternsView() {
       {selectedIds.size > 0 && (
         <div className="mb-4 flex items-center justify-between rounded-md border p-3">
           <span className="text-sm">{selectedIds.size} selected</span>
-          <Button variant="destructive" onClick={() => setBulkDialogOpen(true)}>
-            <Trash2 className="size-4" /> Remove selected
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setBulkPaid(true)}><Coins className="size-4" /> Make paid</Button>
+            <Button variant="outline" onClick={() => setBulkPaid(false)}>Make free</Button>
+            <Button variant="destructive" onClick={() => setBulkDialogOpen(true)}>
+              <Trash2 className="size-4" /> Remove selected
+            </Button>
+          </div>
         </div>
       )}
 
@@ -171,6 +177,24 @@ export function PatternsView() {
           toast.success(`${result.removedCount} Patterns removed.`);
         }}
       />
+      {bulkPaid !== null && (
+        <BulkSetPaidDialog
+          patterns={selectedPatterns}
+          paid={bulkPaid}
+          open
+          onOpenChange={(open) => { if (!open) setBulkPaid(null); }}
+          onSuccess={(result) => {
+            const currentPageIds = new Set(
+              (patternsQuery.data?.items ?? []).map((pattern) => pattern.id),
+            );
+            setSelectedIds(new Set(
+              result.results
+                .filter((item) => item.outcome === 'failed' && currentPageIds.has(item.patternId))
+                .map((item) => item.patternId),
+            ));
+          }}
+        />
+      )}
     </div>
   );
 }
