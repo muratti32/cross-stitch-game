@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Định vị ô còn lại tiếp theo của màu chỉ đang hoạt động",
     "undoAccessibilityLabel": "Hoàn tác mũi thêu cuối cùng"
   },
+  "locator": {
+    "priceTitle": "Giá công cụ định vị",
+    "priceConfirmMessage": "Giá: {{price}} · Số dư: {{balance}}\nChạm lại vào công cụ định vị để sử dụng.",
+    "priceChangedTitle": "Giá công cụ định vị đã thay đổi",
+    "priceChangedMessage": "Giá mới: {{price}} · Số dư: {{balance}}\nChạm lại vào công cụ định vị để sử dụng với giá mới."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Màu {{number}}: DMC {{dmcCode}}, còn {{count}} mũi thêu",

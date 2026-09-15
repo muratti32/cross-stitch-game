@@ -35,7 +35,12 @@ import { useRenderStopExposure } from '@/analytics/renderStopExposure';
 import {
   coinBalanceQueryKey,
   commitLocatorAttempt,
+  fetchCoinBalanceView,
   LocatorInsufficientBalanceError,
+  LocatorPriceChangedError,
+  LocatorPriceUnavailableError,
+  useLocatorPrice,
+  type CoinBalanceView,
   prepareLocatorAttempt,
   releaseLocatorAttempt,
 } from '@/api/economy';
@@ -116,6 +121,7 @@ export default function SessionReadyScreen() {
   const locatorRunRef = useRef(0);
   const parentRevisionRef = useRef(0);
   const [locatorBusy, setLocatorBusy] = useState(false);
+  const { data: locatorPrice } = useLocatorPrice();
 
   useEffect(() => {
     parentRevisionRef.current = parentRevision;
@@ -378,12 +384,31 @@ export default function SessionReadyScreen() {
     locatorAbortRef.current = abortController;
     setLocatorBusy(true);
     try {
+      // ADR-0060: only a price the player has already seen is sent as the
+      // expected price. Without one, fetch it, show it, and let the player
+      // tap again; the server rejects a stale value without charge.
+      if (locatorPrice == null) {
+        const view = await queryClient.fetchQuery({ queryKey: coinBalanceQueryKey, queryFn: fetchCoinBalanceView });
+        if (locatorRunRef.current !== runId) return;
+        if (view.locatorPrice === null) throw new LocatorPriceUnavailableError();
+        Alert.alert(
+          t('locator.priceTitle'),
+          t('locator.priceConfirmMessage', {
+            price: formatNumber(view.locatorPrice, locale),
+            balance: formatNumber(view.balance, locale),
+          }),
+        );
+        return;
+      }
+      const expectedPrice = locatorPrice;
+
       const prepared = await prepareLocatorAttempt({
         attemptId,
         sessionId: session.id,
         patternId: session.patternId,
         colorIndex: selectedColorIndex,
         dmcCode: color.dmcCode,
+        expectedPrice,
         progressRevision: requestRevision,
       }, abortController.signal);
       locatorAttemptIdRef.current = prepared.attemptId;
@@ -446,6 +471,21 @@ export default function SessionReadyScreen() {
     } catch (error) {
       queryClient.invalidateQueries({ queryKey: coinBalanceQueryKey });
       if (error instanceof Error && error.name === 'AbortError') return;
+      if (error instanceof LocatorPriceChangedError) {
+        // Show the new price on the button; the player decides whether to tap again.
+        queryClient.setQueryData<CoinBalanceView>(coinBalanceQueryKey, {
+          balance: error.balance,
+          locatorPrice: error.price,
+        });
+        Alert.alert(
+          t('locator.priceChangedTitle'),
+          t('locator.priceChangedMessage', {
+            price: formatNumber(error.price, locale),
+            balance: formatNumber(error.balance, locale),
+          }),
+        );
+        return;
+      }
       if (error instanceof LocatorInsufficientBalanceError) {
         const details = [
           `${t('price.label', { ns: 'catalog' })}: ${error.price}`,
@@ -617,7 +657,11 @@ export default function SessionReadyScreen() {
             onPress={handleLocateNext}
             disabled={locatorBusy || selectedColorIndex < 0 || remainingCounts[selectedColorIndex] === 0}
             accessibilityRole="button"
-            accessibilityLabel={t('rail.locateNextAccessibilityLabel')}
+            accessibilityLabel={
+              locatorPrice == null
+                ? t('rail.locateNextAccessibilityLabel')
+                : `${t('rail.locateNextAccessibilityLabel')}, ${t('price.label', { ns: 'catalog' })}: ${formatNumber(locatorPrice, locale)}`
+            }
           >
             <Ionicons
               name="locate-outline"
@@ -628,6 +672,11 @@ export default function SessionReadyScreen() {
                   : Theme.colors.disabledText
               }
             />
+            {locatorPrice != null && (
+              <View style={styles.locatorPriceBadge} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
+                <Text style={styles.locatorPriceBadgeText}>{formatNumber(locatorPrice, locale)}</Text>
+              </View>
+            )}
           </Pressable>
 
           {/* Undo Button */}
@@ -902,6 +951,23 @@ const styles = StyleSheet.create({
   },
   floatingRailLeft: {
     left: Theme.spacing.lg,
+  },
+  locatorPriceBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    minWidth: 18,
+    height: 18,
+    paddingHorizontal: 4,
+    borderRadius: 9,
+    backgroundColor: Theme.colors.accentHoney,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  locatorPriceBadgeText: {
+    color: Theme.colors.textPrimary,
+    fontSize: 11,
+    fontWeight: '700',
   },
   floatingButton: {
     width: 48,

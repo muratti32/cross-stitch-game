@@ -3033,7 +3033,7 @@ describe('Stitch Wish backend integration', () => {
         .get('/v1/economy/balance')
         .set('Authorization', `Bearer ${guest.accessToken}`)
         .expect(200);
-      expect(balance.body).toEqual({ balance: 10 });
+      expect(balance.body).toEqual({ balance: 10, locatorPrice: 1 });
 
       const rewardDay = await request(httpServer)
         .get('/v1/economy/reward-day')
@@ -3228,7 +3228,7 @@ describe('Stitch Wish backend integration', () => {
         .get('/v1/economy/balance')
         .set('Authorization', `Bearer ${guest.accessToken}`)
         .expect(200);
-      expect(balance.body).toEqual({ balance: 25 });
+      expect(balance.body).toEqual({ balance: 25, locatorPrice: 1 });
 
       // Replay: permanent entitlement, no second charge.
       const replay = await request(httpServer)
@@ -3270,7 +3270,7 @@ describe('Stitch Wish backend integration', () => {
         .get('/v1/economy/balance')
         .set('Authorization', `Bearer ${guest.accessToken}`)
         .expect(200);
-      expect(balance.body).toEqual({ balance: 50 });
+      expect(balance.body).toEqual({ balance: 50, locatorPrice: 1 });
       expect(await countUnlockLedgerEntries(guest.guestId)).toBe(0);
     });
 
@@ -3366,7 +3366,7 @@ describe('Stitch Wish backend integration', () => {
         .get('/v1/economy/balance')
         .set('Authorization', `Bearer ${guest.accessToken}`)
         .expect(200);
-      expect(balance.body).toEqual({ balance: 0 });
+      expect(balance.body).toEqual({ balance: 0, locatorPrice: 1 });
 
       // A repeat unlock call after cancellation/replay is still idempotent:
       // still exactly one ledger debit total for this guest.
@@ -3963,7 +3963,7 @@ describe('Stitch Wish backend integration', () => {
       await webhook().expect(200, { status: 'ok' });
       await webhook().expect(200, { status: 'ok' });
       await request(httpServer).get('/v1/economy/balance')
-        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 300 });
+        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 300, locatorPrice: 1 });
       await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`)
         .set('Authorization', `Bearer ${guest.accessToken}`).expect(200)
         .expect((response) => expect(response.body.status).toBe('granted'));
@@ -3996,7 +3996,7 @@ describe('Stitch Wish backend integration', () => {
         });
       // Nothing was granted while the webhook was still in flight.
       await request(httpServer).get('/v1/economy/balance')
-        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 0 });
+        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 0, locatorPrice: 1 });
 
       await request(httpServer).post('/v1/commerce/revenuecat/webhook')
         .set('Authorization', `Bearer ${WEBHOOK_TOKEN}`).send({ event: {
@@ -4005,7 +4005,7 @@ describe('Stitch Wish backend integration', () => {
           environment: 'SANDBOX',
         } }).expect(200, { status: 'ok' });
       await request(httpServer).get('/v1/economy/balance')
-        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 300 });
+        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 300, locatorPrice: 1 });
       await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${attemptId}`)
         .set('Authorization', `Bearer ${guest.accessToken}`).expect(200)
         .expect((response) => {
@@ -4037,7 +4037,7 @@ describe('Stitch Wish backend integration', () => {
       await webhook(`first-${randomUUID()}`).expect(200, { status: 'ok' });
       await webhook(`second-${randomUUID()}`).expect(200, { status: 'ok' });
       await request(httpServer).get('/v1/economy/balance')
-        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 300 });
+        .set('Authorization', `Bearer ${guest.accessToken}`).expect(200, { balance: 300, locatorPrice: 1 });
     });
 
     it('refuses unresolved repurchases but allows a new attempt after a grant', async () => {

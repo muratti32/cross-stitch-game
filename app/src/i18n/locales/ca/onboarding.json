@@ -43,7 +43,7 @@
       "matchNumbers": "Fes coincidir els números per col·locar cada puntada.",
       "dragSweep": "Arrossega per les caselles coincidents per fer una passada seguida.",
       "pinchZoom": "Pessiga per fer zoom quan necessitis veure-ho més de prop.",
-      "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+      "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
     },
     "continue": "Continua puntant",
     "browsePatterns": "Explora patrons"

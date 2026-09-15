@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "تحديد موقع الخلية المتبقية التالية للون الخيط النشط",
     "undoAccessibilityLabel": "التراجع عن آخر غرزة"
   },
+  "locator": {
+    "priceTitle": "سعر أداة التحديد",
+    "priceConfirmMessage": "السعر: {{price}} · الرصيد: {{balance}}\nاضغط على أداة التحديد مرة أخرى لاستخدامها.",
+    "priceChangedTitle": "تغيّر سعر أداة التحديد",
+    "priceChangedMessage": "السعر الجديد: {{price}} · الرصيد: {{balance}}\nاضغط على أداة التحديد مرة أخرى لاستخدامها بالسعر الجديد."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "اللون {{number}}: DMC {{dmcCode}}، غرزة {{count}} متبقية",

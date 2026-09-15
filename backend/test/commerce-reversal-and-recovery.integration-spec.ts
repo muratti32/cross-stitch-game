@@ -174,15 +174,15 @@ describe('Commerce reversal and operational recovery', () => {
     it('reverses a Guest Coin Pack once and ignores an identical refund replay', async () => {
       const guest = await newGuest();
       const purchase = await guestCoinPurchase(guest);
-      await request(httpServer).get('/v1/economy/balance').set(guestHeaders(guest.accessToken)).expect(200, { balance: 300 });
+      await request(httpServer).get('/v1/economy/balance').set(guestHeaders(guest.accessToken)).expect(200, { balance: 300, locatorPrice: 1 });
       const refund = { id: `refund-${randomUUID()}`, type: 'REFUND', app_user_id: purchase.subscriberId, aliases: [purchase.subscriberId],
         transaction_id: purchase.transactionId, product_id: coinProduct, environment: 'SANDBOX' };
       await webhook(refund).expect(200, { status: 'ok' });
-      await request(httpServer).get('/v1/economy/balance').set(guestHeaders(guest.accessToken)).expect(200, { balance: 0 });
+      await request(httpServer).get('/v1/economy/balance').set(guestHeaders(guest.accessToken)).expect(200, { balance: 0, locatorPrice: 1 });
       const count = () => countRows('coin_ledger_entries', "principal_type = 'guest' AND principal_id = $1 AND reason = 'commerce_reversal'", [guest.guestId]);
       expect(await count()).toBe(1);
       await webhook(refund).expect(200, { status: 'ok' });
-      await request(httpServer).get('/v1/economy/balance').set(guestHeaders(guest.accessToken)).expect(200, { balance: 0 });
+      await request(httpServer).get('/v1/economy/balance').set(guestHeaders(guest.accessToken)).expect(200, { balance: 0, locatorPrice: 1 });
       expect(await count()).toBe(1);
     });
 
@@ -197,7 +197,7 @@ describe('Commerce reversal and operational recovery', () => {
       const refund = { id: `refund-${randomUUID()}`, type: 'REFUND', app_user_id: `$RCAnonymousID:unused-${randomUUID()}`,
         transaction_id: binding[0].provider_transaction_id, product_id: coinProduct, environment: 'SANDBOX' };
       await webhook(refund).expect(200, { status: 'ok' });
-      await request(httpServer).get('/v1/economy/balance').set(guestHeaders(guest.accessToken)).expect(200, { balance: -75 });
+      await request(httpServer).get('/v1/economy/balance').set(guestHeaders(guest.accessToken)).expect(200, { balance: -75, locatorPrice: 1 });
       await request(httpServer).get('/v1/economy/unlocks').set(guestHeaders(guest.accessToken)).expect(200)
         .expect((response) => expect(readField(response.body, 'patternIds')).toContain(ownedPattern));
       await request(httpServer).post('/v1/economy/unlocks').set(guestHeaders(guest.accessToken)).send({ patternId: otherPattern }).expect(409)
@@ -257,7 +257,7 @@ describe('Commerce reversal and operational recovery', () => {
       };
       const responses = await Promise.all([webhook(event), webhook(event)]);
       expect(responses.map((response) => response.status)).toEqual([200, 200]);
-      await request(httpServer).get('/v1/economy/balance').set(guestHeaders(guest.accessToken)).expect(200, { balance: 300 });
+      await request(httpServer).get('/v1/economy/balance').set(guestHeaders(guest.accessToken)).expect(200, { balance: 300, locatorPrice: 1 });
       const rows = await dataSource.query<readonly { count: string }[]>(`SELECT COUNT(*) AS count FROM economy.commerce_transaction_bindings WHERE environment = 'sandbox' AND provider_transaction_id = $1`, [event.transaction_id]);
       expect(Number(rows[0].count)).toBe(1);
     });
@@ -279,7 +279,7 @@ describe('Commerce reversal and operational recovery', () => {
       await webhook(event).expect(200); await webhook(event).expect(200);
       await request(httpServer).get(`/v1/commerce/guest/purchase-attempts/${readString(attempt.body, 'id')}`).set(guestHeaders(guest.accessToken)).expect(200)
         .expect((response) => expect(readString(response.body, 'status')).toBe('granted'));
-      await request(httpServer).get('/v1/economy/balance').set(guestHeaders(guest.accessToken)).expect(200, { balance: 300 });
+      await request(httpServer).get('/v1/economy/balance').set(guestHeaders(guest.accessToken)).expect(200, { balance: 300, locatorPrice: 1 });
     });
   });
 
@@ -422,7 +422,7 @@ describe('Commerce reversal and operational recovery', () => {
         await request(httpServer).post('/v1/commerce/guest/revenuecat-mapping').set(guestHeaders(guest.accessToken)).send({ subscriberId: `$RCAnonymousID:new-${randomUUID()}` }).expect(403);
         await request(httpServer).post('/v1/commerce/guest/purchase-attempts').set(guestHeaders(guest.accessToken)).send({ productId: coinProduct, idempotencyKey: randomUUID(), subscriberId }).expect(403);
         await webhook({ id: `refund-${randomUUID()}`, type: 'REFUND', app_user_id: subscriberId, transaction_id: purchase.transactionId, product_id: coinProduct, environment: 'SANDBOX' }).expect(200);
-        await request(httpServer).get('/v1/economy/balance').set(guestHeaders(guest.accessToken)).expect(200, { balance: 0 });
+        await request(httpServer).get('/v1/economy/balance').set(guestHeaders(guest.accessToken)).expect(200, { balance: 0, locatorPrice: 1 });
         await webhook({ id: `transfer-${randomUUID()}`, type: 'TRANSFER', environment: 'SANDBOX', transferred_from: [membershipSubscriber], transferred_to: [account.accountId] }).expect(200);
       } finally { toggle.mockRestore(); }
       await request(httpServer).get('/v1/commerce/capabilities').set(guestHeaders(guest.accessToken)).expect(200, { guestCommerceAvailable: true });

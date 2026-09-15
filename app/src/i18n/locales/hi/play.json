@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "सक्रिय धागे के रंग के अगले बचे हुए सेल का पता लगाएं",
     "undoAccessibilityLabel": "पिछला टांका वापस लें"
   },
+  "locator": {
+    "priceTitle": "लोकेटर की कीमत",
+    "priceConfirmMessage": "कीमत: {{price}} · बैलेंस: {{balance}}\nइस्तेमाल करने के लिए लोकेटर पर फिर से टैप करें।",
+    "priceChangedTitle": "लोकेटर की कीमत बदल गई",
+    "priceChangedMessage": "नई कीमत: {{price}} · बैलेंस: {{balance}}\nनई कीमत पर इस्तेमाल करने के लिए लोकेटर पर फिर से टैप करें।"
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "रंग {{number}}: DMC {{dmcCode}}, {{count}} टांका बचा है",

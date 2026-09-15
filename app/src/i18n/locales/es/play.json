@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Localizar la siguiente celda restante del color de hilo activo",
     "undoAccessibilityLabel": "Deshacer última puntada"
   },
+  "locator": {
+    "priceTitle": "Precio del localizador",
+    "priceConfirmMessage": "Precio: {{price}} · Saldo: {{balance}}\nToca el localizador de nuevo para usarlo.",
+    "priceChangedTitle": "El precio del localizador cambió",
+    "priceChangedMessage": "Nuevo precio: {{price}} · Saldo: {{balance}}\nToca el localizador de nuevo para usarlo al nuevo precio."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Color {{number}}: DMC {{dmcCode}}, queda {{count}} puntada",

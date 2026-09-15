@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Lokalisera nästa återstående cell för aktiv trådfärg",
     "undoAccessibilityLabel": "Ångra senaste stygnet"
   },
+  "locator": {
+    "priceTitle": "Pris för sökaren",
+    "priceConfirmMessage": "Pris: {{price}} · Saldo: {{balance}}\nTryck på sökaren igen för att använda den.",
+    "priceChangedTitle": "Priset för sökaren har ändrats",
+    "priceChangedMessage": "Nytt pris: {{price}} · Saldo: {{balance}}\nTryck på sökaren igen för att använda den till det nya priset."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Färg {{number}}: DMC {{dmcCode}}, {{count}} stygn kvar",

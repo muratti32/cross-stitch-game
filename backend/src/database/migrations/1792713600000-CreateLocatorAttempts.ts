@@ -29,11 +29,11 @@ export class CreateLocatorAttempts1792713600000 implements MigrationInterface {
       )
     `);
     await queryRunner.query(`
-      CREATE INDEX "economy"."IDX_locator_attempts_principal_session"
+      CREATE INDEX "IDX_locator_attempts_principal_session"
       ON "economy"."locator_attempts" ("principal_type", "principal_id", "session_id")
     `);
     await queryRunner.query(`
-      CREATE UNIQUE INDEX "economy"."UQ_locator_attempts_one_prepared"
+      CREATE UNIQUE INDEX "UQ_locator_attempts_one_prepared"
       ON "economy"."locator_attempts" ("principal_type", "principal_id", "session_id")
       WHERE "status" = 'prepared'
     `);

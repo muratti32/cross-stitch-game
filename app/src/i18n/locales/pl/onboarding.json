@@ -43,7 +43,7 @@
       "matchNumbers": "Znajdź numery, aby umieścić swoje ściegi.",
       "dragSweep": "Przeciągnij po polach z tym samym numerem, aby haftować w sposób ciągły (sweep).",
       "pinchZoom": "Uszczypnij, aby przybliżyć, gdy chcesz zobaczyć szczegóły.",
-      "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+      "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
     },
     "continue": "Kontynuuj haftowanie",
     "browsePatterns": "Szukaj wzorów"

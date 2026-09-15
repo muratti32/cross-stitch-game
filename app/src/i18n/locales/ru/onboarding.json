@@ -43,7 +43,7 @@
       "matchNumbers": "Сопоставляйте номера, чтобы делать стежки.",
       "dragSweep": "Проводите пальцем по клеткам с тем же номером для непрерывной вышивки (sweep).",
       "pinchZoom": "Сводите и разводите пальцы, чтобы приблизить изображение.",
-      "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+      "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
     },
     "continue": "Продолжить вышивать",
     "browsePatterns": "Выбрать узор"

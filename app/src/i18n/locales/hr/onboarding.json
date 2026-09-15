@@ -43,7 +43,7 @@
       "matchNumbers": "Poveži brojeve za postavljanje svakog boda.",
       "dragSweep": "Povuci preko odgovarajućih ćelija za vezenje niza.",
       "pinchZoom": "Uštipni za zumiranje kad trebaš bolji pogled.",
-      "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+      "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
     },
     "continue": "Nastavi vesti",
     "browsePatterns": "Pregledaj uzorke"

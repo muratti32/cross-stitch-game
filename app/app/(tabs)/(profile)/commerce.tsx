@@ -41,7 +41,7 @@ import {
   mapGuestRevenueCatSubscriber,
   type GuestPurchaseAttemptReference,
 } from '@/api/guestPurchase';
-import { fetchCoinBalance, useCoinBalance } from '@/api/economy';
+import { fetchCoinBalance, useCoinBalance, type CoinBalanceView } from '@/api/economy';
 import {
   createPremiumReconciliation,
   fetchMembership,
@@ -731,7 +731,11 @@ export default function CommerceScreen() {
 
       grantVerified = true;
       const refreshedBalance = await fetchCoinBalance();
-      queryClient.setQueryData(['economy', 'balance'], refreshedBalance);
+      // The balance query also carries the Locator Price (ADR-0060); keep it.
+      queryClient.setQueryData<CoinBalanceView>(['economy', 'balance'], (previous) => ({
+        balance: refreshedBalance,
+        locatorPrice: previous?.locatorPrice ?? null,
+      }));
       await captureGameplayEvent(
         'purchase_completed',
         {

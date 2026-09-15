@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "定位目前繡線顏色的下一個剩餘格子",
     "undoAccessibilityLabel": "復原上一針"
   },
+  "locator": {
+    "priceTitle": "定位器價格",
+    "priceConfirmMessage": "價格：{{price}} · 餘額：{{balance}}\n再次點按定位器即可使用。",
+    "priceChangedTitle": "定位器價格已變更",
+    "priceChangedMessage": "新價格：{{price}} · 餘額：{{balance}}\n再次點按定位器即可依新價格使用。"
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "顏色 {{number}}：DMC {{dmcCode}}，剩餘 {{count}} 針",

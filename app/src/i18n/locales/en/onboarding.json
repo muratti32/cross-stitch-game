@@ -43,7 +43,7 @@
       "matchNumbers": "Match the numbers to place each stitch.",
       "dragSweep": "Drag across matching cells to sweep.",
       "pinchZoom": "Pinch to zoom when you need a closer look.",
-      "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+      "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
     },
     "continue": "Continue stitching",
     "browsePatterns": "Browse patterns"

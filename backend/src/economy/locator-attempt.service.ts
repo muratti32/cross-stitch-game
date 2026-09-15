@@ -11,9 +11,10 @@ import { DataSource, EntityManager } from 'typeorm';
 import type { AuthPrincipal } from '../auth/auth.types';
 import { PrincipalType } from '../auth/entities';
 import { CoinLedgerReason } from './entities';
+import { returningRows } from '../database/query-results';
 import { InsufficientCoinError, LedgerPrincipal } from './coin-ledger.repository';
+import { readLocatorPrice } from './locator-price';
 
-export const LOCATOR_PRICE_COIN = 1;
 export const LOCATOR_RESERVATION_TTL_SECONDS = 60;
 
 export interface PrepareLocatorAttemptInput {
@@ -22,6 +23,8 @@ export interface PrepareLocatorAttemptInput {
   patternId: string;
   colorIndex: number;
   dmcCode: string;
+  /** The Locator Price the player saw; a stale value is rejected without charge (ADR-0060). */
+  expectedPrice: number;
   progressRevision?: number;
   progressHash?: string;
 }
@@ -56,6 +59,7 @@ interface AttemptRow {
   target_cell_index: number | null;
   progress_revision: string | null;
   progress_hash: string | null;
+  reserved_price: number;
   reserved_paid_amount: string;
   status: LocatorAttemptView['status'];
   reserved_until: Date | string;
@@ -63,6 +67,12 @@ interface AttemptRow {
 }
 
 interface BalanceRow { balance: string; }
+
+class LocatorPriceChangedError extends Error {
+  constructor(readonly price: number, readonly balance: number) {
+    super('locator_price_changed');
+  }
+}
 
 @Injectable()
 export class LocatorAttemptService {
@@ -103,8 +113,15 @@ export class LocatorAttemptService {
           [owner.type, owner.id, input.sessionId],
         );
         if (active[0]) {
-          this.assertSameContext(active[0], input);
-          return this.view(active[0], await this.readBalance(manager, owner));
+          if (reservedPrice(active[0]) === input.expectedPrice) {
+            this.assertSameContext(active[0], input);
+            return this.view(active[0], await this.readBalance(manager, owner));
+          }
+          // A hold left at a superseded price (e.g. a failed release) is never
+          // reused for a player now shown a different price (ADR-0060). If the
+          // new expected price is also stale, the rejection below rolls this
+          // release back and the hold simply expires.
+          await this.releaseLocked(manager, active[0], owner, 'released');
         }
 
         const recent = await manager.query<readonly { count: string }[]>(
@@ -123,38 +140,45 @@ export class LocatorAttemptService {
           [owner.type, owner.id],
         );
         const balance = Number(balanceRows[0]?.balance ?? 0);
-        if (balance < LOCATOR_PRICE_COIN) throw new InsufficientCoinError(LOCATOR_PRICE_COIN, balance);
+        // FOR SHARE blocks an operator price change until this reservation
+        // commits, so the locked price is the price current at reservation.
+        const { price } = await readLocatorPrice(manager, 'share');
+        if (price !== input.expectedPrice) throw new LocatorPriceChangedError(price, balance);
+        if (balance < price) throw new InsufficientCoinError(price, balance);
         const paidBalance = Number(balanceRows[0]?.paid_balance ?? 0);
-        const paidDebit = Math.max(0, LOCATOR_PRICE_COIN - Math.max(0, balance - paidBalance));
+        const paidDebit = Math.max(0, price - Math.max(0, balance - paidBalance));
 
         const expiresAt = new Date(Date.now() + LOCATOR_RESERVATION_TTL_SECONDS * 1000);
         const inserted = await manager.query<AttemptRow[]>(
           `INSERT INTO economy.locator_attempts
              (attempt_id, principal_type, principal_id, session_id, pattern_id, color_index, dmc_code,
-              progress_revision, progress_hash, reserved_paid_amount, status, reserved_until, metadata)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'prepared', $11, $12)
+              progress_revision, progress_hash, reserved_price, reserved_paid_amount, status, reserved_until, metadata)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 'prepared', $12, $13)
            RETURNING *`,
           [
             input.attemptId, owner.type, owner.id, input.sessionId, input.patternId,
             input.colorIndex, input.dmcCode, input.progressRevision ?? null,
-            input.progressHash ?? null, paidDebit, expiresAt, { sessionId: input.sessionId, patternId: input.patternId },
+            input.progressHash ?? null, price, paidDebit, expiresAt, { sessionId: input.sessionId, patternId: input.patternId },
           ],
         );
         await manager.query(
           `UPDATE economy.coin_balances
            SET balance = balance - $3, paid_balance = paid_balance - $4, updated_at = now()
            WHERE principal_type = $1 AND principal_id = $2`,
-          [owner.type, owner.id, LOCATOR_PRICE_COIN, paidDebit],
+          [owner.type, owner.id, price, paidDebit],
         );
         await manager.query(
           `INSERT INTO economy.coin_ledger_entries
              (principal_type, principal_id, amount, reason, source_key, granted, metadata)
            VALUES ($1, $2, 0, $3, $4, true, $5)`,
-          [owner.type, owner.id, CoinLedgerReason.LocatorSpend, `locator:${input.attemptId}:reserve`, { action: 'reserve', price: LOCATOR_PRICE_COIN, ...input }],
+          [owner.type, owner.id, CoinLedgerReason.LocatorSpend, `locator:${input.attemptId}:reserve`, { action: 'reserve', price, ...input }],
         );
-        return this.view(inserted[0], balance - LOCATOR_PRICE_COIN);
+        return this.view(inserted[0], balance - price);
       });
     } catch (error) {
+      if (error instanceof LocatorPriceChangedError) {
+        throw new ConflictException({ code: 'locator_price_changed', price: error.price, balance: error.balance });
+      }
       if (error instanceof InsufficientCoinError) {
         throw new ConflictException({ code: 'insufficient_balance', price: error.price, balance: error.balance });
       }
@@ -172,7 +196,8 @@ export class LocatorAttemptService {
       if (new Date(attempt.reserved_until).getTime() <= Date.now()) {
         return this.releaseLocked(manager, attempt, owner, 'expired');
       }
-      const updated = await manager.query<AttemptRow[]>(
+      // UPDATE ... RETURNING yields [rows, count] through TypeORM on PostgreSQL.
+      const updated = returningRows<AttemptRow>(await manager.query(
         `UPDATE economy.locator_attempts
          SET status = 'committed', target_cell_index = $2, progress_revision = $3,
              progress_hash = $4, terminal_at = now(), metadata = COALESCE(metadata, '{}'::jsonb) || $5::jsonb,
@@ -181,14 +206,14 @@ export class LocatorAttemptService {
          RETURNING *`,
         [attemptId, input.targetCellIndex, input.progressRevision ?? attempt.progress_revision, input.progressHash ?? attempt.progress_hash,
           JSON.stringify({ targetCellIndex: input.targetCellIndex, committedAt: new Date().toISOString() })],
-      );
+      ));
       if (!updated[0]) throw new ConflictException({ code: 'locator_attempt_terminal' });
       await manager.query(
         `INSERT INTO economy.coin_ledger_entries
            (principal_type, principal_id, amount, reason, source_key, granted, metadata)
          VALUES ($1, $2, $3, $4, $5, true, $6)
          ON CONFLICT (source_key) DO NOTHING`,
-        [owner.type, owner.id, -LOCATOR_PRICE_COIN, CoinLedgerReason.LocatorSpend, `locator:${attemptId}:commit`, { action: 'commit', ...input }],
+        [owner.type, owner.id, -reservedPrice(attempt), CoinLedgerReason.LocatorSpend, `locator:${attemptId}:commit`, { action: 'commit', price: reservedPrice(attempt), ...input }],
       );
       return this.view(updated[0], await this.readBalance(manager, owner));
     });
@@ -243,26 +268,27 @@ export class LocatorAttemptService {
   }
 
   private async releaseLocked(manager: EntityManager, attempt: AttemptRow, owner: LedgerPrincipal, status: 'released' | 'expired'): Promise<LocatorAttemptView> {
-    const updated = await manager.query<AttemptRow[]>(
+    const updated = returningRows<AttemptRow>(await manager.query(
       `UPDATE economy.locator_attempts SET status = $2, terminal_at = now(), updated_at = now()
        WHERE attempt_id = $1 AND status IN ('prepared', 'committed') RETURNING *`,
       [attempt.attempt_id, status],
-    );
+    ));
     const row = updated[0] ?? attempt;
     if (updated[0]) {
       await manager.query(
         `UPDATE economy.coin_balances
          SET balance = balance + $3, paid_balance = paid_balance + $4, updated_at = now()
          WHERE principal_type = $1 AND principal_id = $2`,
-        [owner.type, owner.id, LOCATOR_PRICE_COIN, Number(attempt.reserved_paid_amount ?? 0)],
+        [owner.type, owner.id, reservedPrice(attempt), Number(attempt.reserved_paid_amount ?? 0)],
       );
       await manager.query(
         `INSERT INTO economy.coin_ledger_entries
            (principal_type, principal_id, amount, reason, source_key, granted, metadata)
          VALUES ($1, $2, $3, $4, $5, true, $6)
          ON CONFLICT (source_key) DO NOTHING`,
-        [owner.type, owner.id, LOCATOR_PRICE_COIN, CoinLedgerReason.LocatorSpend, `locator:${attempt.attempt_id}:release`, {
+        [owner.type, owner.id, reservedPrice(attempt), CoinLedgerReason.LocatorSpend, `locator:${attempt.attempt_id}:release`, {
           action: attempt.status === 'committed' ? 'cancel_after_commit' : status,
+          price: reservedPrice(attempt),
         }],
       );
     }
@@ -307,12 +333,21 @@ export class LocatorAttemptService {
     return {
       attemptId: attempt.attempt_id,
       status: attempt.status,
-      price: LOCATOR_PRICE_COIN,
+      price: reservedPrice(attempt),
       balance,
       expiresAt: new Date(attempt.reserved_until).toISOString(),
       targetCellIndex: attempt.target_cell_index,
     };
   }
+}
+
+/** Commit, release, and expiry always use the price locked at reservation (ADR-0060). */
+function reservedPrice(attempt: AttemptRow): number {
+  const price = Number(attempt.reserved_price);
+  if (!Number.isSafeInteger(price) || price < 1) {
+    throw new Error(`Locator attempt ${attempt.attempt_id} has no valid reserved price`);
+  }
+  return price;
 }
 
 function toLedgerPrincipal(principal: AuthPrincipal): LedgerPrincipal {

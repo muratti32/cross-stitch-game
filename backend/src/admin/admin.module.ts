@@ -63,6 +63,8 @@ import { AdminReconciliationController } from './admin-reconciliation.controller
 import { ReconciliationAdminService } from './reconciliation-admin.service';
 import { ObservabilityAlertsModule } from '../observability';
 import { AdminOperationalAlertsController } from './admin-operational-alerts.controller';
+import { AdminLocatorPriceController } from './admin-locator-price.controller';
+import { LocatorPriceAdminService } from './locator-price-admin.service';
 import { OperationalAlertsAdminService } from './operational-alerts-admin.service';
 
 @Module({
@@ -82,6 +84,7 @@ import { OperationalAlertsAdminService } from './operational-alerts-admin.servic
     AdminWebhookDeliveriesController,
     AdminReconciliationController,
     AdminOperationalAlertsController,
+    AdminLocatorPriceController,
     OfficialPatternDraftsController,
   ],
   exports: [
@@ -156,6 +159,7 @@ import { OperationalAlertsAdminService } from './operational-alerts-admin.servic
     WebhookDeliveriesAdminService,
     ReconciliationAdminService,
     OperationalAlertsAdminService,
+    LocatorPriceAdminService,
   ],
 })
 export class AdminModule {}

@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Paikanna aktiivisen langan seuraava jäljellä oleva ruutu",
     "undoAccessibilityLabel": "Kumoa edellinen pisto"
   },
+  "locator": {
+    "priceTitle": "Paikantimen hinta",
+    "priceConfirmMessage": "Hinta: {{price}} · Saldo: {{balance}}\nKäytä paikanninta napauttamalla sitä uudelleen.",
+    "priceChangedTitle": "Paikantimen hinta muuttui",
+    "priceChangedMessage": "Uusi hinta: {{price}} · Saldo: {{balance}}\nKäytä paikanninta uuteen hintaan napauttamalla sitä uudelleen."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Väri {{number}}: DMC {{dmcCode}}, {{count}} pisto jäljellä",

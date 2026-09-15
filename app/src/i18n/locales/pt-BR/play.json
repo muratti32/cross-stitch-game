@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Localizar próxima célula restante da cor da linha ativa",
     "undoAccessibilityLabel": "Desfazer último ponto"
   },
+  "locator": {
+    "priceTitle": "Preço do localizador",
+    "priceConfirmMessage": "Preço: {{price}} · Saldo: {{balance}}\nToque no localizador de novo para usá-lo.",
+    "priceChangedTitle": "O preço do localizador mudou",
+    "priceChangedMessage": "Novo preço: {{price}} · Saldo: {{balance}}\nToque no localizador de novo para usá-lo pelo novo preço."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Cor {{number}}: DMC {{dmcCode}}, {{count}} ponto restante",

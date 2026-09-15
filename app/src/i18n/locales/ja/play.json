@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "選択中の糸の色で、次に残っているマスを見つける",
     "undoAccessibilityLabel": "最後のステッチを元に戻す"
   },
+  "locator": {
+    "priceTitle": "ロケーターの価格",
+    "priceConfirmMessage": "価格: {{price}} · 残高: {{balance}}\n使用するにはロケーターをもう一度タップしてください。",
+    "priceChangedTitle": "ロケーターの価格が変更されました",
+    "priceChangedMessage": "新しい価格: {{price}} · 残高: {{balance}}\n新しい価格で使用するにはロケーターをもう一度タップしてください。"
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "色 {{number}}: DMC {{dmcCode}}、残り {{count}} ステッチ",

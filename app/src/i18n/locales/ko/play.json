@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "선택한 실 색상 중 남은 다음 칸 찾기",
     "undoAccessibilityLabel": "마지막 스티치 실행 취소"
   },
+  "locator": {
+    "priceTitle": "위치 찾기 가격",
+    "priceConfirmMessage": "가격: {{price}} · 잔액: {{balance}}\n사용하려면 위치 찾기를 다시 탭하세요.",
+    "priceChangedTitle": "위치 찾기 가격이 변경됨",
+    "priceChangedMessage": "새 가격: {{price}} · 잔액: {{balance}}\n새 가격으로 사용하려면 위치 찾기를 다시 탭하세요."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "색상 {{number}}: DMC {{dmcCode}}, 남은 스티치 {{count}}개",

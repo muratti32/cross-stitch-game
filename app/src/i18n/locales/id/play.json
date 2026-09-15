@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Temukan sel tersisa berikutnya untuk warna benang aktif",
     "undoAccessibilityLabel": "Urungkan jahitan terakhir"
   },
+  "locator": {
+    "priceTitle": "Harga pencari",
+    "priceConfirmMessage": "Harga: {{price}} · Saldo: {{balance}}\nKetuk pencari lagi untuk menggunakannya.",
+    "priceChangedTitle": "Harga pencari berubah",
+    "priceChangedMessage": "Harga baru: {{price}} · Saldo: {{balance}}\nKetuk pencari lagi untuk menggunakannya dengan harga baru."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Warna {{number}}: DMC {{dmcCode}}, {{count}} jahitan tersisa",

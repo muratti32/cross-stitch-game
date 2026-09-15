@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Localitza la següent casella pendent del color de fil actiu",
     "undoAccessibilityLabel": "Desfés l'última puntada"
   },
+  "locator": {
+    "priceTitle": "Preu del localitzador",
+    "priceConfirmMessage": "Preu: {{price}} · Saldo: {{balance}}\nToca el localitzador de nou per utilitzar-lo.",
+    "priceChangedTitle": "El preu del localitzador ha canviat",
+    "priceChangedMessage": "Preu nou: {{price}} · Saldo: {{balance}}\nToca el localitzador de nou per utilitzar-lo al preu nou."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Color {{number}}: DMC {{dmcCode}}, {{count}} puntada restant",

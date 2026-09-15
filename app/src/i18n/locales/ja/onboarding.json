@@ -43,7 +43,7 @@
       "matchNumbers": "数字を合わせてステッチを配置します。",
       "dragSweep": "同じ色のマスをドラッグして、まとめてステッチ（スウィープ）します。",
       "pinchZoom": "近くで見たい時は、ピンチ操作でズームします。",
-      "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+      "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
     },
     "continue": "ステッチを続ける",
     "browsePatterns": "図案を探す"

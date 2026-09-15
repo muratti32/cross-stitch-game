@@ -43,7 +43,7 @@
       "matchNumbers": "Potrivește numerele pentru a plasa fiecare cusătură.",
       "dragSweep": "Trage peste celulele care se potrivesc pentru a cuse în lanț.",
       "pinchZoom": "Ciupește pentru a mări atunci când ai nevoie de o privire mai atentă.",
-      "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+      "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
     },
     "continue": "Continuă cusutul",
     "browsePatterns": "Răsfoiește modelele"

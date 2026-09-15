@@ -43,7 +43,7 @@
       "matchNumbers": "Podle čísel umisťujte jednotlivé stehy.",
       "dragSweep": "Táhněte přes shodná políčka pro rychlé vyšívání.",
       "pinchZoom": "Když potřebujete detailnější pohled, plátno přibližte prsty.",
-      "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+      "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
     },
     "continue": "Pokračovat ve vyšívání",
     "browsePatterns": "Prohlížet vzory"
