@@ -527,6 +527,10 @@ _Avoid_: Offline Catalog Cache, demo Pattern, tutorial-only Pattern
 The permanent backend entitlement to start Stitching Sessions for a non-free Official Pattern after a one-time online Stitch Coin spend from a Registered Account balance or Guest Ledger. Premium Membership does not replace or temporarily grant it. It survives session deletion, replay, and Guest Data Promotion; Community Patterns, undo, Stitch Actions, accessibility features, and other core play capabilities never require it.
 _Avoid_: Rental, Pattern purchase, pay-to-play action
 
+**Grandfathered Pattern Unlock**:
+A zero-cost Pattern Unlock the backend grants, without any Stitch Coin spend or ledger entry, when an operator changes a published free Official Pattern to paid. Every Registered Account and Guest Installation that already has any Stitching Session for that Pattern, including one with zero stitches, receives one. Changing the Pattern back to free keeps it and refunds nothing (ADR-0061).
+_Avoid_: Free unlock, legacy access, refund
+
 **Pattern Unlock Price Tier**:
 The fixed Stitch Coin price of an Official Pattern, derived from the same stitchable-cell ranges as its Completion Reward Tier: Small costs 75, Medium costs 150, and Large costs 300. Popularity and demand do not change the price.
 _Avoid_: Dynamic pricing, popularity price, real-money Pattern price

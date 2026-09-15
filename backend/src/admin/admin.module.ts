@@ -66,6 +66,7 @@ import { AdminOperationalAlertsController } from './admin-operational-alerts.con
 import { AdminLocatorPriceController } from './admin-locator-price.controller';
 import { LocatorPriceAdminService } from './locator-price-admin.service';
 import { OperationalAlertsAdminService } from './operational-alerts-admin.service';
+import { PatternPaidAdminService } from './pattern-paid-admin.service';
 
 @Module({
   controllers: [
@@ -160,6 +161,7 @@ import { OperationalAlertsAdminService } from './operational-alerts-admin.servic
     ReconciliationAdminService,
     OperationalAlertsAdminService,
     LocatorPriceAdminService,
+    PatternPaidAdminService,
   ],
 })
 export class AdminModule {}

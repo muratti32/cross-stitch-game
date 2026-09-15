@@ -10,18 +10,27 @@ import request from 'supertest';
 import { configureApi } from '../api/configure-api';
 import { AdminCatalogService } from './admin-catalog.service';
 import { AdminPatternsController } from './admin-patterns.controller';
+import { PatternPaidAdminService } from './pattern-paid-admin.service';
 import { OperatorAuthGuard } from './operator-auth.guard';
 import { OperatorPermissionsGuard } from './operator-permissions.guard';
 
 describe('AdminPatternsController bulk removal API', () => {
   const bulkRemovePatterns = jest.fn();
+  const setPatternPaid = jest.fn();
+  const setPatternsPaid = jest.fn();
   let app: INestApplication;
   let httpServer: Server;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       controllers: [AdminPatternsController],
-      providers: [{ provide: AdminCatalogService, useValue: { bulkRemovePatterns } }],
+      providers: [
+        { provide: AdminCatalogService, useValue: { bulkRemovePatterns } },
+        {
+          provide: PatternPaidAdminService,
+          useValue: { setPatternPaid, setPatternsPaid },
+        },
+      ],
     })
       .overrideGuard(OperatorAuthGuard)
       .useValue({
@@ -108,5 +117,52 @@ describe('AdminPatternsController bulk removal API', () => {
       })
       .expect(400);
     expect(bulkRemovePatterns).not.toHaveBeenCalled();
+  });
+
+  it('delegates a single paid-state change through the validated route', async () => {
+    const patternId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
+    setPatternPaid.mockResolvedValueOnce({
+      patternId,
+      changed: true,
+      beforeTier: null,
+      afterTier: 'medium',
+      grandfatheredCount: 2,
+    });
+
+    await request(httpServer)
+      .put(`/v1/admin/patterns/${patternId}/paid`)
+      .set('x-request-id', 'paid-request')
+      .send({ paid: true })
+      .expect(200);
+    expect(setPatternPaid).toHaveBeenCalledWith(
+      'operator-id',
+      patternId,
+      true,
+      'paid-request',
+    );
+  });
+
+  it('delegates bulk paid-state changes and validates uniqueness', async () => {
+    const patternIds = [
+      'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1',
+      'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb2',
+    ];
+    setPatternsPaid.mockResolvedValueOnce({ paid: false, results: [] });
+
+    await request(httpServer)
+      .post('/v1/admin/patterns/bulk-paid')
+      .send({ patternIds, paid: false })
+      .expect(201);
+    expect(setPatternsPaid).toHaveBeenCalledWith(
+      'operator-id',
+      patternIds,
+      false,
+      null,
+    );
+
+    await request(httpServer)
+      .post('/v1/admin/patterns/bulk-paid')
+      .send({ patternIds: [patternIds[0], patternIds[0]], paid: true })
+      .expect(400);
   });
 });

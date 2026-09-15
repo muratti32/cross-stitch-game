@@ -211,6 +211,7 @@ import { AddObjectRegistryLastVerifiedAt1792540800000 } from './migrations/17925
 import { AddRenderStopExposureGameplayEvent1792627200000 } from './migrations/1792627200000-AddRenderStopExposureGameplayEvent';
 import { CreateLocatorAttempts1792713600000 } from './migrations/1792713600000-CreateLocatorAttempts';
 import { AddOperatorManagedLocatorPrice1792800000000 } from './migrations/1792800000000-AddOperatorManagedLocatorPrice';
+import { AddPatternUnlockSource1792886400000 } from './migrations/1792886400000-AddPatternUnlockSource';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -407,6 +408,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddRenderStopExposureGameplayEvent1792627200000,
       CreateLocatorAttempts1792713600000,
       AddOperatorManagedLocatorPrice1792800000000,
+      AddPatternUnlockSource1792886400000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',
