@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}}색",
       "dimensionsCols": "{{width}}×{{height}} • {{count}}열",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "잠김, {{price}} Stitch Coins로 잠금 해제"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "카탈로그에 연결할 수 없으며 캐시도 존재하지 않습니다.",
       "showMore": "더 보기",
       "loading": "불러오는 중…"
+    },
+    "paidPatternsBanner": {
+      "body": "이제 일부 도안은 코인으로 잠금 해제됩니다. 이미 시작한 도안은 계속 내 도안입니다.",
+      "dismiss": "닫기"
     }
   },
   "browse": {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Screen, Button, Card, PatternImage, CommunityReportAction, EmptyState, GuestDataRiskNotice } from '@/components';
+import { Screen, Button, Card, PatternImage, CommunityReportAction, EmptyState, GuestDataRiskNotice, PatternLockBadge } from '@/components';
 import { Theme } from '@/theme/theme';
 import { BUNDLED_PATTERNS, loadBundledPattern } from '@/bundled-patterns';
 import { PatternData } from '@/pattern-artifact';
@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { SourceLanguageBadge } from '@/components/SourceLanguageBadge';
 import { formatNumber } from '@/i18n';
 import { addScreenMemoryBreadcrumb } from '@/observability/sentry';
+import { recordUnlockResult, shouldEmitUnlockPrompt, unlockGetCoinsTapped, unlockInsufficientCoins, unlockPromptShown, unlockShortfall } from '@/analytics/patternUnlock';
 
 export default function PatternDetailScreen() {
   const { t, i18n: i18nInstance } = useTranslation('catalog');
@@ -202,7 +203,7 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
   };
 
   const { data: balance, isLoading: balanceLoading } = useCoinBalance();
-  const { data: unlockedIds, isLoading: unlocksLoading } = useUnlockedPatternIds();
+  const { data: unlockedIds, isLoading: unlocksLoading, isError: unlocksError, isSuccess: unlocksSuccess } = useUnlockedPatternIds();
   const unlockMutation = useUnlockPattern();
 
   const { data: localLikes } = useLocalLikes();
@@ -214,6 +215,34 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
   const [noticeVisible, setNoticeVisible] = useState(false);
   const [insufficientError, setInsufficientError] = useState<{ price: number; balance: number } | null>(null);
   const [unlockCTAOverride, setUnlockCTAOverride] = useState(false);
+  const promptedPatternIds = React.useRef(new Set<string>());
+  const unlockedIdSet = React.useMemo(
+    () => unlocksSuccess && !unlocksError ? new Set(unlockedIds) : null,
+    [unlockedIds, unlocksError, unlocksSuccess],
+  );
+
+  const loadedItem = pattern.data?.data;
+  const loadedTier = loadedItem?.unlockPriceTier ?? null;
+  const owned = loadedItem
+    ? (loadedTier === null || (unlockedIds ?? []).includes(loadedItem.id)) && !unlockCTAOverride
+    : true;
+  useEffect(() => {
+    if (
+      loadedItem
+      && loadedTier !== null
+      && shouldEmitUnlockPrompt({
+        isAuthenticated,
+        unlocksLoaded: unlocksSuccess && !unlocksError,
+        tier: loadedTier,
+        owned,
+        insufficientPanelOpen: insufficientError !== null,
+        alreadyPrompted: promptedPatternIds.current.has(loadedItem.id),
+      })
+    ) {
+      promptedPatternIds.current.add(loadedItem.id);
+      unlockPromptShown(loadedTier, unlockPriceForTier(loadedTier));
+    }
+  }, [insufficientError, isAuthenticated, loadedItem, loadedTier, owned, unlocksError, unlocksSuccess]);
 
   if (pattern.isLoading) {
     return (
@@ -241,7 +270,6 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
   const item = pattern.data.data;
   const tier = item.unlockPriceTier;
   const price = tier ? unlockPriceForTier(tier) : 0;
-  const owned = (tier === null || (unlockedIds ?? []).includes(item.id)) && !unlockCTAOverride;
 
   const isLiked = isAccount ? item.viewerLiked : !!localLikes?.[item.id];
 
@@ -325,7 +353,8 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
       setPreparing(true);
       setPrepareError(null);
       setInsufficientError(null);
-      await unlockMutation.mutateAsync(item.id);
+      const result = await unlockMutation.mutateAsync(item.id);
+      recordUnlockResult(tier, result);
       setUnlockCTAOverride(false);
       
       const session = await prepareCatalogSession(item.id, {
@@ -342,6 +371,10 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
     } catch (err) {
       if (err instanceof InsufficientCoinError) {
         setInsufficientError({ price: err.price, balance: err.balance });
+        const shortfall = unlockShortfall(err.price, err.balance);
+        if (tier !== null && shortfall !== null) {
+          unlockInsufficientCoins(tier, shortfall);
+        }
       } else {
         setPrepareError(
           isServerApiError(err) ? localizeServerError(err) : t('detail.unlockFailedGeneric'),
@@ -410,11 +443,13 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
       <View style={styles.infoSection}>
         <View style={styles.titleRow}>
           <Text style={styles.title}>{item.title}</Text>
-          {item.unlockPriceTier && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{item.unlockPriceTier.toUpperCase()}</Text>
-            </View>
-          )}
+          <PatternLockBadge
+            tier={tier}
+            patternId={item.id}
+            unlockedIds={unlockedIdSet}
+            forceLocked={unlockCTAOverride}
+            style={styles.detailLockBadge}
+          />
         </View>
         <Text style={styles.description}>
           {item.creatorUsername
@@ -487,13 +522,19 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
               </Text>
               <Button
                 title={t('detail.insufficientCoins.getCoins')}
-                onPress={() => router.push({
-                  pathname: '/(tabs)/(profile)/commerce',
-                  params: {
-                    category: 'stitch_coin',
-                    source: 'stitch_coin_shortfall',
-                  },
-                })}
+                onPress={() => {
+                  const shortfall = unlockShortfall(insufficientError.price, insufficientError.balance);
+                  if (tier !== null && shortfall !== null) {
+                    unlockGetCoinsTapped(tier, shortfall);
+                  }
+                  router.push({
+                    pathname: '/(tabs)/(profile)/commerce',
+                    params: {
+                      category: 'stitch_coin',
+                      source: 'stitch_coin_shortfall',
+                    },
+                  });
+                }}
                 variant="honey"
                 style={styles.actionButton}
               />
@@ -687,6 +728,9 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.xs,
     fontWeight: Theme.typography.weights.bold,
     color: Theme.colors.accentTeal,
+  },
+  detailLockBadge: {
+    marginLeft: Theme.spacing.md,
   },
   description: {
     fontSize: Theme.typography.sizes.md,

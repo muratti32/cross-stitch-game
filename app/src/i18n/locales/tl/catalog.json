@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} kulay",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} kolum",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Naka-lock, i-unlock gamit ang {{price}} Stitch Coins"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Hindi maabot ang katalogo at wala pang naka-cache.",
       "showMore": "Ipakita pa",
       "loading": "Nilo-load…"
+    },
+    "paidPatternsBanner": {
+      "body": "Maaari nang i-unlock gamit ang coins ang ilang pattern — mananatiling iyo ang mga nasimulan mo.",
+      "dismiss": "Isara"
     }
   },
   "browse": {

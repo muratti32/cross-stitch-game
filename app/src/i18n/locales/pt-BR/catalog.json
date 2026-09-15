@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} cores",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} colunas",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Bloqueado, desbloqueia por {{price}} Stitch Coins"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Não foi possível acessar o catálogo e nada foi armazenado no cache ainda.",
       "showMore": "Mostrar mais",
       "loading": "Carregando…"
+    },
+    "paidPatternsBanner": {
+      "body": "Alguns padrões agora são desbloqueados com moedas — os que você começou continuam seus.",
+      "dismiss": "Fechar"
     }
   },
   "browse": {

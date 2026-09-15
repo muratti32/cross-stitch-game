@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from './apiFetch';
+import { useIdentityStore } from '../identity/guestIdentity';
 
 export const coinBalanceQueryKey = ['economy', 'balance'] as const;
 export const rewardDayQueryKey = ['economy', 'reward-day'] as const;
@@ -239,10 +240,19 @@ export function useLocatorPrice() {
 }
 
 export function useUnlockedPatternIds() {
-  return useQuery({
+  const isAuthenticated = useIdentityStore((state) => state.isAuthenticated);
+  const query = useQuery({
     queryKey: ['economy', 'unlocks'],
     queryFn: fetchUnlockedPatternIds,
+    enabled: isAuthenticated,
   });
+  return {
+    ...query,
+    data: isAuthenticated ? query.data : undefined,
+    isError: isAuthenticated && query.isError,
+    isLoading: isAuthenticated && query.isLoading,
+    isSuccess: isAuthenticated && query.isSuccess,
+  };
 }
 
 export function useUnlockPattern() {

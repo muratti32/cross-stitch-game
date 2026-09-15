@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} renk",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} renk",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Kilitli, {{price}} Stitch Coin ile açılır"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Kataloğa ulaşılamadı ve henüz önbellekte bir şey yok.",
       "showMore": "Daha fazla göster",
       "loading": "Yükleniyor…"
+    },
+    "paidPatternsBanner": {
+      "body": "Bazı desenler artık coin ile açılıyor — başladıkların senin kalacak.",
+      "dismiss": "Kapat"
     }
   },
   "browse": {

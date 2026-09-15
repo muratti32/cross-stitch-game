@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} barev",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} bar.",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Zamčeno, odemknete za {{price}} Stitch Coinů"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Ke katalogu se nelze připojit a zatím není nic uloženo v mezipaměti.",
       "showMore": "Zobrazit více",
       "loading": "Načítání…"
+    },
+    "paidPatternsBanner": {
+      "body": "Některé vzory se teď odemykají za coiny — ty, které jste začali, vám zůstávají.",
+      "dismiss": "Zavřít"
     }
   },
   "browse": {

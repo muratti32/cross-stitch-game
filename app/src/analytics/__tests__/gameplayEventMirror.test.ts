@@ -82,6 +82,7 @@ describe('Analytics Mirror through captureGameplayEvent', () => {
       duration_ms: 61_000,
       stitch_count: 42,
     });
+    await captureGameplayEvent('pattern_unlocked', { tier: 'medium', price: 150 });
 
     expect(loggedEvents()).toEqual([
       ['sw_session_started', { session_id: '0b5fe1ce-5f79-4c80-aa32-5ca9e67b8dd5' }],
@@ -98,6 +99,7 @@ describe('Analytics Mirror through captureGameplayEvent', () => {
           stitch_count: 42,
         },
       ],
+      ['sw_pattern_unlocked', { tier: 'medium', price: 150 }],
     ]);
   });
 

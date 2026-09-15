@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} warna",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} kolom",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Terkunci, buka dengan {{price}} Stitch Coin"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Katalog tidak tersedia, dan belum ada apa pun di cache.",
       "showMore": "Tampilkan lebih banyak",
       "loading": "Memuat…"
+    },
+    "paidPatternsBanner": {
+      "body": "Beberapa pola kini dibuka dengan koin — pola yang sudah kamu mulai tetap menjadi milikmu.",
+      "dismiss": "Tutup"
     }
   },
   "browse": {

@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} colori",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} col.",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Bloccato, si sblocca con {{price}} Stitch Coin"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Impossibile raggiungere il catalogo e nessun elemento è ancora memorizzato nella cache.",
       "showMore": "Mostra altro",
       "loading": "Caricamento…"
+    },
+    "paidPatternsBanner": {
+      "body": "Ora alcuni schemi si sbloccano con le monete; quelli che hai iniziato restano tuoi.",
+      "dismiss": "Chiudi"
     }
   },
   "browse": {

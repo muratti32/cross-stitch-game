@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from 'expo-router';
-import { Screen, Card, Button, EmptyState, PatternImage, SourceLanguageBadge } from '@/components';
+import { Screen, Card, Button, EmptyState, PatternImage, SourceLanguageBadge, PatternLockBadge } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useTabBarSpace } from '@/theme/tabBar';
 import {
@@ -21,6 +21,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalLikes } from '@/api/social';
 import { useIdentityStore } from '@/identity/guestIdentity';
+import { useUnlockedPatternIds } from '@/api/economy';
 
 const DEBOUNCE_MS = 300;
 
@@ -40,6 +41,11 @@ export default function SearchScreen() {
   const active = query.trim().length >= 2;
   const { data: localLikes } = useLocalLikes();
   const { isAccount } = useIdentityStore();
+  const unlocks = useUnlockedPatternIds();
+  const unlockedIdSet = React.useMemo(
+    () => unlocks.isSuccess ? new Set(unlocks.data) : null,
+    [unlocks.data, unlocks.isSuccess],
+  );
   // Search is an online-only surface (no offline cache, #160): a genuine
   // backend failure (#159) gets the neutral "couldn't load" title plus its
   // reason-coded or generic-plus-Support-Reference message, never this
@@ -142,6 +148,7 @@ export default function SearchScreen() {
                     sourceLanguage={item.sourceLanguage}
                     style={styles.sourceLanguageBadge}
                   />
+                  <PatternLockBadge tier={item.unlockPriceTier} patternId={item.id} unlockedIds={unlockedIdSet} style={styles.lockBadge} />
                   <Text style={styles.resultMeta}>
                     {t('common.patternMeta.creatorDimensions', {
                       creatorName: item.creatorName,
@@ -223,6 +230,9 @@ const styles = StyleSheet.create({
     color: Theme.colors.textPrimary,
   },
   sourceLanguageBadge: {
+    marginTop: Theme.spacing.xs,
+  },
+  lockBadge: {
     marginTop: Theme.spacing.xs,
   },
   resultMeta: {

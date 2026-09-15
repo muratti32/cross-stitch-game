@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} цветов",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} столбцов",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Заблокировано, открывается за {{price}} Stitch Coins"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Не удалось подключиться к каталогу, кэшированные данные отсутствуют.",
       "showMore": "Показать еще",
       "loading": "Загрузка…"
+    },
+    "paidPatternsBanner": {
+      "body": "Некоторые схемы теперь открываются за монеты — начатые вами схемы остаются вашими.",
+      "dismiss": "Закрыть"
     }
   },
   "browse": {

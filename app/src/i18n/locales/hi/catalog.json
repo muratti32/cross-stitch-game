@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} रंग",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} कॉलम",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "लॉक है, {{price}} Stitch Coins में अनलॉक होगा"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "कैटलॉग तक नहीं पहुँचा जा सका और अभी तक कुछ भी कैश नहीं किया गया है।",
       "showMore": "और दिखाएं",
       "loading": "लोड हो रहा है…"
+    },
+    "paidPatternsBanner": {
+      "body": "कुछ पैटर्न अब कॉइन से अनलॉक होते हैं — जिन्हें आपने शुरू किया था, वे आपके ही रहेंगे।",
+      "dismiss": "बंद करें"
     }
   },
   "browse": {

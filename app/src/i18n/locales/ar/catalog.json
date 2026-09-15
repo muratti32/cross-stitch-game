@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} لوناً",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} أعمدة",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "مقفل، يُفتح مقابل {{price}} من عملات Stitch Coin"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "تعذر الوصول إلى الكتالوج ولا يوجد شيء مخزن مؤقتاً بعد.",
       "showMore": "عرض المزيد",
       "loading": "جاري التحميل…"
+    },
+    "paidPatternsBanner": {
+      "body": "تُفتح بعض الأنماط الآن بالعملات — وتبقى الأنماط التي بدأت بها ملكك.",
+      "dismiss": "إغلاق"
     }
   },
   "browse": {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView, ActivityIndicator, Pressable, RefreshControl } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Screen, EmptyState, SectionHeader, Card, Button, PatternImage, SourceLanguageBadge } from '@/components';
+import { Screen, EmptyState, SectionHeader, Card, Button, PatternImage, SourceLanguageBadge, PatternLockBadge } from '@/components';
 import { Theme } from '@/theme/theme';
 import { BUNDLED_PATTERNS } from '@/bundled-patterns';
 import { useRouter } from 'expo-router';
@@ -18,6 +18,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalLikes } from '@/api/social';
 import { useIdentityStore } from '@/identity/guestIdentity';
+import { useUnlockedPatternIds } from '@/api/economy';
+import { usePaidPatternsBanner } from '@/hooks/usePaidPatternsBanner';
 
 export default function CatalogScreen() {
   const { t } = useTranslation('catalog');
@@ -26,6 +28,8 @@ export default function CatalogScreen() {
   const newPatterns = useNewPatterns();
   const categories = useCatalogCategories();
   const tags = useCatalogTags();
+  const unlocks = useUnlockedPatternIds();
+  const isAuthenticated = useIdentityStore((state) => state.isAuthenticated);
   const [refreshing, setRefreshing] = React.useState(false);
 
   const handleRefresh = async () => {
@@ -36,6 +40,7 @@ export default function CatalogScreen() {
         newPatterns.refetch(),
         categories.refetch(),
         tags.refetch(),
+        ...(isAuthenticated ? [unlocks.refetch()] : []),
       ]);
     } finally {
       setRefreshing(false);
@@ -53,6 +58,14 @@ export default function CatalogScreen() {
 
   const newItems: CatalogPatternItem[] =
     newPatterns.data?.pages.flatMap((page) => page.data.items) ?? [];
+  const unlockedIdSet = React.useMemo(
+    () => unlocks.isSuccess ? new Set(unlocks.data) : null,
+    [unlocks.data, unlocks.isSuccess],
+  );
+  const hasPaidPattern =
+    (staffPicks.data?.data.some((pattern) => pattern.unlockPriceTier !== null) ?? false) ||
+    newItems.some((pattern) => pattern.unlockPriceTier !== null);
+  const paidPatternsBanner = usePaidPatternsBanner(hasPaidPattern);
 
   return (
     <Screen
@@ -80,6 +93,20 @@ export default function CatalogScreen() {
       >
         <Text style={styles.searchBarText}>{t('common.searchPlaceholder')}</Text>
       </Pressable>
+
+      {paidPatternsBanner.visible && (
+        <View style={styles.paidPatternsBanner}>
+          <Text style={styles.paidPatternsBannerText}>{t('index.paidPatternsBanner.body')}</Text>
+          <Pressable
+            onPress={paidPatternsBanner.dismiss}
+            accessibilityRole="button"
+            accessibilityLabel={t('index.paidPatternsBanner.dismiss')}
+            hitSlop={8}
+          >
+            <Ionicons name="close" size={18} color={Theme.colors.textPrimary} />
+          </Pressable>
+        </View>
+      )}
 
       {servedFromCache && (
         <View style={styles.offlineBanner}>
@@ -151,6 +178,7 @@ export default function CatalogScreen() {
             <ServerPatternCard
               key={pattern.id}
               pattern={pattern}
+              unlockedIds={unlockedIdSet}
               onPress={() => handleSelectPattern(pattern.id)}
             />
           ))}
@@ -237,6 +265,7 @@ export default function CatalogScreen() {
             <NewPatternRow
               key={pattern.id}
               pattern={pattern}
+              unlockedIds={unlockedIdSet}
               onPress={() => handleSelectPattern(pattern.id)}
             />
           ))}
@@ -263,9 +292,11 @@ export default function CatalogScreen() {
 
 function ServerPatternCard({
   pattern,
+  unlockedIds,
   onPress,
 }: {
   pattern: CatalogPatternItem;
+  unlockedIds: ReadonlySet<string> | null;
   onPress: () => void;
 }) {
   const { t } = useTranslation('catalog');
@@ -287,6 +318,7 @@ function ServerPatternCard({
         <Text style={styles.patternTitle} numberOfLines={1}>
           {pattern.title}
         </Text>
+        <PatternLockBadge tier={pattern.unlockPriceTier} patternId={pattern.id} unlockedIds={unlockedIds} style={styles.lockBadge} />
         <SourceLanguageBadge
           sourceLanguage={pattern.sourceLanguage}
           style={styles.sourceLanguageBadge}
@@ -313,9 +345,11 @@ function ServerPatternCard({
 
 function NewPatternRow({
   pattern,
+  unlockedIds,
   onPress,
 }: {
   pattern: CatalogPatternItem;
+  unlockedIds: ReadonlySet<string> | null;
   onPress: () => void;
 }) {
   const { t } = useTranslation('catalog');
@@ -351,6 +385,7 @@ function NewPatternRow({
           sourceLanguage={pattern.sourceLanguage}
           style={styles.sourceLanguageBadge}
         />
+        <PatternLockBadge tier={pattern.unlockPriceTier} patternId={pattern.id} unlockedIds={unlockedIds} style={styles.lockBadge} />
         <Text style={styles.patternMeta}>
           {t('common.patternMeta.creatorDimensions', {
             creatorName: pattern.creatorName,
@@ -461,6 +496,23 @@ const styles = StyleSheet.create({
     color: Theme.colors.textSecondary,
     textAlign: 'center',
   },
+  paidPatternsBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: Theme.spacing.lg,
+    marginBottom: Theme.spacing.md,
+    padding: Theme.spacing.md,
+    gap: Theme.spacing.sm,
+    backgroundColor: Theme.colors.card,
+    borderRadius: Theme.radii.md,
+    borderWidth: 1,
+    borderColor: Theme.colors.accentHoney,
+  },
+  paidPatternsBannerText: {
+    flex: 1,
+    color: Theme.colors.textPrimary,
+    fontSize: Theme.typography.sizes.sm,
+  },
   horizontalScroll: {
     paddingHorizontal: Theme.spacing.lg,
     paddingBottom: Theme.spacing.md,
@@ -487,6 +539,9 @@ const styles = StyleSheet.create({
     color: Theme.colors.textPrimary,
   },
   sourceLanguageBadge: {
+    marginTop: Theme.spacing.xs,
+  },
+  lockBadge: {
     marginTop: Theme.spacing.xs,
   },
   patternMeta: {

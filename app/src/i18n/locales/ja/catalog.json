@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}}色",
       "dimensionsCols": "{{width}}×{{height}} • {{count}}列",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "ロック中、{{price}} Stitch Coinsで解除"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "カタログに接続できず、キャッシュも存在しません。",
       "showMore": "もっと見る",
       "loading": "読み込み中…"
+    },
+    "paidPatternsBanner": {
+      "body": "一部のパターンはコインでアンロックするようになりました。始めたパターンは引き続きあなたのものです。",
+      "dismiss": "閉じる"
     }
   },
   "browse": {

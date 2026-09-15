@@ -49,6 +49,10 @@ const MIRRORED_EVENT_NAMES = {
   onboarding_started: `${MIRROR_EVENT_PREFIX}onboarding_started`,
   onboarding_finished: `${MIRROR_EVENT_PREFIX}onboarding_finished`,
   account_soft_prompt_action: `${MIRROR_EVENT_PREFIX}account_soft_prompt_action`,
+  unlock_prompt_shown: `${MIRROR_EVENT_PREFIX}unlock_prompt_shown`,
+  pattern_unlocked: `${MIRROR_EVENT_PREFIX}pattern_unlocked`,
+  unlock_insufficient_coins: `${MIRROR_EVENT_PREFIX}unlock_insufficient_coins`,
+  unlock_get_coins_tapped: `${MIRROR_EVENT_PREFIX}unlock_get_coins_tapped`,
 } as const satisfies Partial<Record<AnalyticsGameplayEventKind, string>>;
 
 type MirroredKind = keyof typeof MIRRORED_EVENT_NAMES;

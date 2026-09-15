@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} culori",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} coloane",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Blocat, se deblochează cu {{price}} Stitch Coins"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Catalogul nu a putut fi accesat și nu există încă nimic salvat local.",
       "showMore": "Arată mai multe",
       "loading": "Se încarcă…"
+    },
+    "paidPatternsBanner": {
+      "body": "Unele modele se deblochează acum cu monede — cele pe care le-ai început rămân ale tale.",
+      "dismiss": "Închide"
     }
   },
   "browse": {

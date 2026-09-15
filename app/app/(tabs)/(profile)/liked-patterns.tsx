@@ -6,15 +6,21 @@ import { useTranslation } from 'react-i18next';
 
 import { useLikedPatterns } from '@/api/social';
 import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
-import { Card, EmptyState, Screen, PatternImage } from '@/components';
+import { Card, EmptyState, Screen, PatternImage, PatternLockBadge } from '@/components';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { Theme } from '@/theme/theme';
 import { absolutePreviewUrl, absoluteThumbnailUrls } from '@/api/catalog';
+import { useUnlockedPatternIds } from '@/api/economy';
 
 export default function LikedPatternsScreen() {
   const { t } = useTranslation('profile');
   const isAccount = useIdentityStore((state) => state.isAccount);
   const query = useLikedPatterns();
+  const unlocks = useUnlockedPatternIds();
+  const unlockedIdSet = React.useMemo(
+    () => unlocks.isSuccess ? new Set(unlocks.data) : null,
+    [unlocks.data, unlocks.isSuccess],
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -134,6 +140,12 @@ export default function LikedPatternsScreen() {
                     })}
                   </Text>
                 </View>
+                <PatternLockBadge
+                  tier={item.unlockPriceTier}
+                  patternId={item.id}
+                  unlockedIds={unlockedIdSet}
+                  style={styles.lockBadge}
+                />
                 <Ionicons name="chevron-forward" size={18} color={Theme.colors.textSecondary} />
               </Card>
             </Pressable>
@@ -158,5 +170,6 @@ const styles = StyleSheet.create({
   title: { color: Theme.colors.textPrimary, fontSize: Theme.typography.sizes.sm, fontWeight: Theme.typography.weights.bold },
   meta: { color: Theme.colors.accentTeal, fontSize: Theme.typography.sizes.xs, fontWeight: Theme.typography.weights.semibold },
   specs: { color: Theme.colors.textSecondary, fontSize: Theme.typography.sizes.xs },
+  lockBadge: { marginRight: Theme.spacing.sm },
   pressedItem: { opacity: 0.75 },
 });

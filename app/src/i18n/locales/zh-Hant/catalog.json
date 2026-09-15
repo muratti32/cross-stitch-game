@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} 種顏色",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} 欄",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "已鎖定，使用 {{price}} Stitch Coin 解鎖"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "無法連線至目錄，目前也沒有快取資料。",
       "showMore": "顯示更多",
       "loading": "載入中…"
+    },
+    "paidPatternsBanner": {
+      "body": "部分圖案現在需要使用金幣解鎖；你已開始的圖案仍歸你所有。",
+      "dismiss": "關閉"
     }
   },
   "browse": {

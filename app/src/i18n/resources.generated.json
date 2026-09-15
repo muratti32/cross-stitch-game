@@ -13,6 +13,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} لوناً",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} أعمدة",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "مقفل، يُفتح مقابل {{price}} من عملات Stitch Coin"
         }
       },
       "sourceLanguage": {
@@ -47,6 +50,10 @@
           "errorBody": "تعذر الوصول إلى الكتالوج ولا يوجد شيء مخزن مؤقتاً بعد.",
           "showMore": "عرض المزيد",
           "loading": "جاري التحميل…"
+        },
+        "paidPatternsBanner": {
+          "body": "تُفتح بعض الأنماط الآن بالعملات — وتبقى الأنماط التي بدأت بها ملكك.",
+          "dismiss": "إغلاق"
         }
       },
       "browse": {
@@ -1441,6 +1448,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} colors",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} cols",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Bloquejat, es desbloqueja per {{price}} Stitch Coins"
         }
       },
       "sourceLanguage": {
@@ -1475,6 +1485,10 @@
           "errorBody": "No s'ha pogut accedir al catàleg i encara no hi ha res desat en memòria cau.",
           "showMore": "Mostra'n més",
           "loading": "Carregant…"
+        },
+        "paidPatternsBanner": {
+          "body": "Alguns patrons ara es desbloquegen amb monedes; els que ja havies començat continuen sent teus.",
+          "dismiss": "Descarta"
         }
       },
       "browse": {
@@ -2869,6 +2883,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} barev",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} bar.",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Zamčeno, odemknete za {{price}} Stitch Coinů"
         }
       },
       "sourceLanguage": {
@@ -2903,6 +2920,10 @@
           "errorBody": "Ke katalogu se nelze připojit a zatím není nic uloženo v mezipaměti.",
           "showMore": "Zobrazit více",
           "loading": "Načítání…"
+        },
+        "paidPatternsBanner": {
+          "body": "Některé vzory se teď odemykají za coiny — ty, které jste začali, vám zůstávají.",
+          "dismiss": "Zavřít"
         }
       },
       "browse": {
@@ -4297,6 +4318,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} farver",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} kol.",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Låst, kan låses op for {{price}} Stitch Coins"
         }
       },
       "sourceLanguage": {
@@ -4331,6 +4355,10 @@
           "errorBody": "Kataloget kunne ikke nås, og intet er cachet endnu.",
           "showMore": "Vis mere",
           "loading": "Indlæser…"
+        },
+        "paidPatternsBanner": {
+          "body": "Nogle mønstre låses nu op med mønter – dem, du er begyndt på, er stadig dine.",
+          "dismiss": "Luk"
         }
       },
       "browse": {
@@ -5725,6 +5753,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} Farben",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} Farb.",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Gesperrt, für {{price}} Stitch Coins freischalten"
         }
       },
       "sourceLanguage": {
@@ -5759,6 +5790,10 @@
           "errorBody": "Der Katalog konnte nicht geladen werden und es ist noch nichts zwischengespeichert.",
           "showMore": "Mehr anzeigen",
           "loading": "Lädt…"
+        },
+        "paidPatternsBanner": {
+          "body": "Einige Muster werden jetzt mit Münzen freigeschaltet – angefangene Muster bleiben deine.",
+          "dismiss": "Schließen"
         }
       },
       "browse": {
@@ -7153,6 +7188,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} χρώματα",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} στήλες",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Κλειδωμένο, ξεκλειδώνει με {{price}} Stitch Coins"
         }
       },
       "sourceLanguage": {
@@ -7187,6 +7225,10 @@
           "errorBody": "Δεν ήταν δυνατή η πρόσβαση στον κατάλογο και δεν υπάρχει ακόμη αποθηκευμένο περιεχόμενο.",
           "showMore": "Εμφάνιση περισσότερων",
           "loading": "Φόρτωση…"
+        },
+        "paidPatternsBanner": {
+          "body": "Ορισμένα σχέδια ξεκλειδώνουν πλέον με νομίσματα — όσα ξεκίνησες παραμένουν δικά σου.",
+          "dismiss": "Κλείσιμο"
         }
       },
       "browse": {
@@ -8581,6 +8623,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} colors",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} cols",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Locked, unlocks for {{price}} Stitch Coins"
         }
       },
       "sourceLanguage": {
@@ -8615,6 +8660,10 @@
           "errorBody": "The catalog could not be reached and nothing is cached yet.",
           "showMore": "Show more",
           "loading": "Loading…"
+        },
+        "paidPatternsBanner": {
+          "body": "Some patterns now unlock with coins — the ones you started stay yours.",
+          "dismiss": "Dismiss"
         }
       },
       "browse": {
@@ -10009,6 +10058,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} colores",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} columnas",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Bloqueado, se desbloquea por {{price}} Stitch Coins"
         }
       },
       "sourceLanguage": {
@@ -10043,6 +10095,10 @@
           "errorBody": "No se pudo acceder al catálogo y aún no hay nada guardado en caché.",
           "showMore": "Mostrar más",
           "loading": "Cargando…"
+        },
+        "paidPatternsBanner": {
+          "body": "Algunos patrones ahora se desbloquean con monedas; los que empezaste siguen siendo tuyos.",
+          "dismiss": "Cerrar"
         }
       },
       "browse": {
@@ -11437,6 +11493,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} väriä",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} saraketta",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Lukittu, avautuu {{price}} Stitch Coinilla"
         }
       },
       "sourceLanguage": {
@@ -11471,6 +11530,10 @@
           "errorBody": "Valikoimaan ei saatu yhteyttä, eikä mitään ole vielä välimuistissa.",
           "showMore": "Näytä lisää",
           "loading": "Ladataan…"
+        },
+        "paidPatternsBanner": {
+          "body": "Jotkin kuviot avataan nyt kolikoilla – aloittamasi kuviot pysyvät ominasi.",
+          "dismiss": "Sulje"
         }
       },
       "browse": {
@@ -12865,6 +12928,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} couleurs",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} col.",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Verrouillé, se débloque pour {{price}} Stitch Coins"
         }
       },
       "sourceLanguage": {
@@ -12899,6 +12965,10 @@
           "errorBody": "Le catalogue est inaccessible et aucun contenu n'est actuellement mis en cache.",
           "showMore": "Afficher plus",
           "loading": "Chargement…"
+        },
+        "paidPatternsBanner": {
+          "body": "Certains modèles se débloquent désormais avec des pièces ; ceux que vous avez commencés restent à vous.",
+          "dismiss": "Fermer"
         }
       },
       "browse": {
@@ -14293,6 +14363,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} रंग",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} कॉलम",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "लॉक है, {{price}} Stitch Coins में अनलॉक होगा"
         }
       },
       "sourceLanguage": {
@@ -14327,6 +14400,10 @@
           "errorBody": "कैटलॉग तक नहीं पहुँचा जा सका और अभी तक कुछ भी कैश नहीं किया गया है।",
           "showMore": "और दिखाएं",
           "loading": "लोड हो रहा है…"
+        },
+        "paidPatternsBanner": {
+          "body": "कुछ पैटर्न अब कॉइन से अनलॉक होते हैं — जिन्हें आपने शुरू किया था, वे आपके ही रहेंगे।",
+          "dismiss": "बंद करें"
         }
       },
       "browse": {
@@ -15721,6 +15798,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} boja",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} stupaca",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Zaključano, otključava se za {{price}} Stitch Coina"
         }
       },
       "sourceLanguage": {
@@ -15755,6 +15835,10 @@
           "errorBody": "Katalog nije dostupan i još ništa nije spremljeno u predmemoriju.",
           "showMore": "Prikaži više",
           "loading": "Učitavanje…"
+        },
+        "paidPatternsBanner": {
+          "body": "Neki se uzorci sada otključavaju novčićima — oni koje ste započeli ostaju vaši.",
+          "dismiss": "Zatvori"
         }
       },
       "browse": {
@@ -17149,6 +17233,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} szín",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} oszlop",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Zárolva, feloldható {{price}} Stitch Coinért"
         }
       },
       "sourceLanguage": {
@@ -17183,6 +17270,10 @@
           "errorBody": "A katalógus nem elérhető, és még semmi sincs a gyorsítótárban.",
           "showMore": "Több megjelenítése",
           "loading": "Betöltés…"
+        },
+        "paidPatternsBanner": {
+          "body": "Néhány minta mostantól érmékkel oldható fel – a már megkezdett minták továbbra is a tieid.",
+          "dismiss": "Bezárás"
         }
       },
       "browse": {
@@ -18577,6 +18668,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} warna",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} kolom",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Terkunci, buka dengan {{price}} Stitch Coin"
         }
       },
       "sourceLanguage": {
@@ -18611,6 +18705,10 @@
           "errorBody": "Katalog tidak tersedia, dan belum ada apa pun di cache.",
           "showMore": "Tampilkan lebih banyak",
           "loading": "Memuat…"
+        },
+        "paidPatternsBanner": {
+          "body": "Beberapa pola kini dibuka dengan koin — pola yang sudah kamu mulai tetap menjadi milikmu.",
+          "dismiss": "Tutup"
         }
       },
       "browse": {
@@ -20005,6 +20103,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} colori",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} col.",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Bloccato, si sblocca con {{price}} Stitch Coin"
         }
       },
       "sourceLanguage": {
@@ -20039,6 +20140,10 @@
           "errorBody": "Impossibile raggiungere il catalogo e nessun elemento è ancora memorizzato nella cache.",
           "showMore": "Mostra altro",
           "loading": "Caricamento…"
+        },
+        "paidPatternsBanner": {
+          "body": "Ora alcuni schemi si sbloccano con le monete; quelli che hai iniziato restano tuoi.",
+          "dismiss": "Chiudi"
         }
       },
       "browse": {
@@ -21433,6 +21538,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}}色",
           "dimensionsCols": "{{width}}×{{height}} • {{count}}列",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "ロック中、{{price}} Stitch Coinsで解除"
         }
       },
       "sourceLanguage": {
@@ -21467,6 +21575,10 @@
           "errorBody": "カタログに接続できず、キャッシュも存在しません。",
           "showMore": "もっと見る",
           "loading": "読み込み中…"
+        },
+        "paidPatternsBanner": {
+          "body": "一部のパターンはコインでアンロックするようになりました。始めたパターンは引き続きあなたのものです。",
+          "dismiss": "閉じる"
         }
       },
       "browse": {
@@ -22861,6 +22973,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}}색",
           "dimensionsCols": "{{width}}×{{height}} • {{count}}열",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "잠김, {{price}} Stitch Coins로 잠금 해제"
         }
       },
       "sourceLanguage": {
@@ -22895,6 +23010,10 @@
           "errorBody": "카탈로그에 연결할 수 없으며 캐시도 존재하지 않습니다.",
           "showMore": "더 보기",
           "loading": "불러오는 중…"
+        },
+        "paidPatternsBanner": {
+          "body": "이제 일부 도안은 코인으로 잠금 해제됩니다. 이미 시작한 도안은 계속 내 도안입니다.",
+          "dismiss": "닫기"
         }
       },
       "browse": {
@@ -24289,6 +24408,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} warna",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} lajur",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Dikunci, buka dengan {{price}} Stitch Coin"
         }
       },
       "sourceLanguage": {
@@ -24323,6 +24445,10 @@
           "errorBody": "Katalog tidak tersedia, dan belum ada apa-apa dalam cache.",
           "showMore": "Tunjukkan lebih banyak",
           "loading": "Memuatkan…"
+        },
+        "paidPatternsBanner": {
+          "body": "Sesetengah corak kini dibuka dengan syiling — corak yang telah anda mulakan kekal milik anda.",
+          "dismiss": "Tutup"
         }
       },
       "browse": {
@@ -25717,6 +25843,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} farger",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} kol.",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Låst, låses opp for {{price}} Stitch Coins"
         }
       },
       "sourceLanguage": {
@@ -25751,6 +25880,10 @@
           "errorBody": "Katalogen kunne ikke nås, og ingenting er hurtiglagret ennå.",
           "showMore": "Vis mer",
           "loading": "Laster…"
+        },
+        "paidPatternsBanner": {
+          "body": "Noen mønstre låses nå opp med mynter – de du har startet på, er fortsatt dine.",
+          "dismiss": "Lukk"
         }
       },
       "browse": {
@@ -27145,6 +27278,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} kleuren",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} kolommen",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Vergrendeld, ontgrendel voor {{price}} Stitch Coins"
         }
       },
       "sourceLanguage": {
@@ -27179,6 +27315,10 @@
           "errorBody": "De catalogus kan niet worden bereikt en er is geen cache beschikbaar.",
           "showMore": "Meer weergeven",
           "loading": "Laden…"
+        },
+        "paidPatternsBanner": {
+          "body": "Sommige patronen worden nu met munten ontgrendeld. Patronen waaraan je bent begonnen, blijven van jou.",
+          "dismiss": "Sluiten"
         }
       },
       "browse": {
@@ -28573,6 +28713,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} kolorów",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} kolumn",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Zablokowany, odblokuj za {{price}} Stitch Coinów"
         }
       },
       "sourceLanguage": {
@@ -28607,6 +28750,10 @@
           "errorBody": "Nie można połączyć się z katalogiem, a pamięć podręczna jest niedostępna.",
           "showMore": "Pokaż więcej",
           "loading": "Ładowanie…"
+        },
+        "paidPatternsBanner": {
+          "body": "Niektóre wzory odblokowuje się teraz monetami — rozpoczęte wzory nadal należą do Ciebie.",
+          "dismiss": "Zamknij"
         }
       },
       "browse": {
@@ -30001,6 +30148,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} cores",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} colunas",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Bloqueado, desbloqueia por {{price}} Stitch Coins"
         }
       },
       "sourceLanguage": {
@@ -30035,6 +30185,10 @@
           "errorBody": "Não foi possível aceder ao catálogo e ainda não há nada em cache.",
           "showMore": "Mostrar mais",
           "loading": "A carregar…"
+        },
+        "paidPatternsBanner": {
+          "body": "Alguns padrões agora são desbloqueados com moedas — os que começou continuam seus.",
+          "dismiss": "Fechar"
         }
       },
       "browse": {
@@ -31429,6 +31583,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} cores",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} colunas",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Bloqueado, desbloqueia por {{price}} Stitch Coins"
         }
       },
       "sourceLanguage": {
@@ -31463,6 +31620,10 @@
           "errorBody": "Não foi possível acessar o catálogo e nada foi armazenado no cache ainda.",
           "showMore": "Mostrar mais",
           "loading": "Carregando…"
+        },
+        "paidPatternsBanner": {
+          "body": "Alguns padrões agora são desbloqueados com moedas — os que você começou continuam seus.",
+          "dismiss": "Fechar"
         }
       },
       "browse": {
@@ -32857,6 +33018,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} culori",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} coloane",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Blocat, se deblochează cu {{price}} Stitch Coins"
         }
       },
       "sourceLanguage": {
@@ -32891,6 +33055,10 @@
           "errorBody": "Catalogul nu a putut fi accesat și nu există încă nimic salvat local.",
           "showMore": "Arată mai multe",
           "loading": "Se încarcă…"
+        },
+        "paidPatternsBanner": {
+          "body": "Unele modele se deblochează acum cu monede — cele pe care le-ai început rămân ale tale.",
+          "dismiss": "Închide"
         }
       },
       "browse": {
@@ -34285,6 +34453,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} цветов",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} столбцов",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Заблокировано, открывается за {{price}} Stitch Coins"
         }
       },
       "sourceLanguage": {
@@ -34319,6 +34490,10 @@
           "errorBody": "Не удалось подключиться к каталогу, кэшированные данные отсутствуют.",
           "showMore": "Показать еще",
           "loading": "Загрузка…"
+        },
+        "paidPatternsBanner": {
+          "body": "Некоторые схемы теперь открываются за монеты — начатые вами схемы остаются вашими.",
+          "dismiss": "Закрыть"
         }
       },
       "browse": {
@@ -35713,6 +35888,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} farieb",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} stĺpcov",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Zamknuté, odomknete za {{price}} Stitch Coinov"
         }
       },
       "sourceLanguage": {
@@ -35747,6 +35925,10 @@
           "errorBody": "Katalóg sa nepodarilo načítať a zatiaľ nie je nič uložené lokálne.",
           "showMore": "Zobraziť viac",
           "loading": "Načítava sa…"
+        },
+        "paidPatternsBanner": {
+          "body": "Niektoré vzory sa teraz odomykajú mincami — tie, ktoré ste začali, vám zostávajú.",
+          "dismiss": "Zavrieť"
         }
       },
       "browse": {
@@ -37141,6 +37323,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} barv",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} stolpcev",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Zaklenjeno, odklene se za {{price}} Stitch Coinov"
         }
       },
       "sourceLanguage": {
@@ -37175,6 +37360,10 @@
           "errorBody": "Kataloga ni bilo mogoče doseči in ničesar še ni shranjenega v predpomnilniku.",
           "showMore": "Prikaži več",
           "loading": "Nalaganje …"
+        },
+        "paidPatternsBanner": {
+          "body": "Nekateri vzorci se zdaj odklenejo s kovanci — tisti, ki ste jih začeli, ostanejo vaši.",
+          "dismiss": "Zapri"
         }
       },
       "browse": {
@@ -38569,6 +38758,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} färger",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} kolumner",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Låst, låses upp för {{price}} Stitch Coins"
         }
       },
       "sourceLanguage": {
@@ -38603,6 +38795,10 @@
           "errorBody": "Katalogen kunde inte nås och inget finns cachat ännu.",
           "showMore": "Visa fler",
           "loading": "Läser in…"
+        },
+        "paidPatternsBanner": {
+          "body": "Vissa mönster låses nu upp med mynt – de du har påbörjat är fortfarande dina.",
+          "dismiss": "Stäng"
         }
       },
       "browse": {
@@ -39997,6 +40193,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} kulay",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} kolum",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Naka-lock, i-unlock gamit ang {{price}} Stitch Coins"
         }
       },
       "sourceLanguage": {
@@ -40031,6 +40230,10 @@
           "errorBody": "Hindi maabot ang katalogo at wala pang naka-cache.",
           "showMore": "Ipakita pa",
           "loading": "Nilo-load…"
+        },
+        "paidPatternsBanner": {
+          "body": "Maaari nang i-unlock gamit ang coins ang ilang pattern — mananatiling iyo ang mga nasimulan mo.",
+          "dismiss": "Isara"
         }
       },
       "browse": {
@@ -41425,6 +41628,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} renk",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} renk",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Kilitli, {{price}} Stitch Coin ile açılır"
         }
       },
       "sourceLanguage": {
@@ -41459,6 +41665,10 @@
           "errorBody": "Kataloğa ulaşılamadı ve henüz önbellekte bir şey yok.",
           "showMore": "Daha fazla göster",
           "loading": "Yükleniyor…"
+        },
+        "paidPatternsBanner": {
+          "body": "Bazı desenler artık coin ile açılıyor — başladıkların senin kalacak.",
+          "dismiss": "Kapat"
         }
       },
       "browse": {
@@ -42853,6 +43063,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} кольорів",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} стовпців",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Заблоковано, відкривається за {{price}} Stitch Coin"
         }
       },
       "sourceLanguage": {
@@ -42887,6 +43100,10 @@
           "errorBody": "Не вдалося з'єднатися з каталогом, і кешу поки що немає.",
           "showMore": "Показати більше",
           "loading": "Завантаження…"
+        },
+        "paidPatternsBanner": {
+          "body": "Деякі візерунки тепер відкриваються за монети — розпочаті вами залишаються вашими.",
+          "dismiss": "Закрити"
         }
       },
       "browse": {
@@ -44281,6 +44498,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} màu",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} cột",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "Đã khóa, mở bằng {{price}} Stitch Coin"
         }
       },
       "sourceLanguage": {
@@ -44315,6 +44535,10 @@
           "errorBody": "Không thể kết nối tới danh mục và chưa có dữ liệu lưu tạm.",
           "showMore": "Xem thêm",
           "loading": "Đang tải…"
+        },
+        "paidPatternsBanner": {
+          "body": "Một số mẫu giờ được mở khóa bằng xu — những mẫu bạn đã bắt đầu vẫn thuộc về bạn.",
+          "dismiss": "Đóng"
         }
       },
       "browse": {
@@ -45709,6 +45933,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} 种颜色",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} 列",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "已锁定，使用 {{price}} Stitch Coin 解锁"
         }
       },
       "sourceLanguage": {
@@ -45743,6 +45970,10 @@
           "errorBody": "暂时无法连接到目录，而且目前还没有缓存哦。",
           "showMore": "查看更多",
           "loading": "加载中…"
+        },
+        "paidPatternsBanner": {
+          "body": "部分图案现在需要使用金币解锁；你已开始的图案仍归你所有。",
+          "dismiss": "关闭"
         }
       },
       "browse": {
@@ -47137,6 +47368,9 @@
           "dimensionsColors": "{{width}}×{{height}} • {{count}} 種顏色",
           "dimensionsCols": "{{width}}×{{height}} • {{count}} 欄",
           "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+        },
+        "patternLock": {
+          "accessibilityLabel": "已鎖定，使用 {{price}} Stitch Coin 解鎖"
         }
       },
       "sourceLanguage": {
@@ -47171,6 +47405,10 @@
           "errorBody": "無法連線至目錄，目前也沒有快取資料。",
           "showMore": "顯示更多",
           "loading": "載入中…"
+        },
+        "paidPatternsBanner": {
+          "body": "部分圖案現在需要使用金幣解鎖；你已開始的圖案仍歸你所有。",
+          "dismiss": "關閉"
         }
       },
       "browse": {

@@ -34,7 +34,11 @@ export type AnalyticsGameplayEventKind =
   | 'tutorial_resumed'
   | 'onboarding_finished'
   | 'account_soft_prompt_shown'
-  | 'account_soft_prompt_action';
+  | 'account_soft_prompt_action'
+  | 'unlock_prompt_shown'
+  | 'pattern_unlocked'
+  | 'unlock_insufficient_coins'
+  | 'unlock_get_coins_tapped';
 
 export type OnboardingVersion = string;
 export type OnboardingStep = 'welcome' | 'tutorial' | 'recap';
@@ -86,6 +90,7 @@ export type CommerceEntrySource =
 export type PurchaseFailureStage = 'store' | 'verification' | 'grant';
 export type SubscriptionChangePlatform = 'ios' | 'android';
 export type SubscriptionChangeFailureStage = 'store' | 'verification' | 'grant';
+export type PatternUnlockTier = 'small' | 'medium' | 'large';
 
 type PurchasePayload = {
   product_kind: PurchaseProductKind;
@@ -151,7 +156,11 @@ export type AnalyticsGameplayEventPayload =
   | { kind: 'tutorial_resumed'; payload: OnboardingPayloadBase & { beat_id: string; resume_source: string } }
   | { kind: 'onboarding_finished'; payload: OnboardingPayloadBase & { outcome: OnboardingOutcome; destination: OnboardingDestination; duration_ms: number; stitch_count: number } }
   | { kind: 'account_soft_prompt_shown'; payload: OnboardingPayloadBase & { context: AccountSoftPromptContext } }
-  | { kind: 'account_soft_prompt_action'; payload: OnboardingPayloadBase & { context: AccountSoftPromptContext; action: AccountSoftPromptAction } };
+  | { kind: 'account_soft_prompt_action'; payload: OnboardingPayloadBase & { context: AccountSoftPromptContext; action: AccountSoftPromptAction } }
+  | { kind: 'unlock_prompt_shown'; payload: { tier: PatternUnlockTier; price: number } }
+  | { kind: 'pattern_unlocked'; payload: { tier: PatternUnlockTier; price: number } }
+  | { kind: 'unlock_insufficient_coins'; payload: { tier: PatternUnlockTier; shortfall: number } }
+  | { kind: 'unlock_get_coins_tapped'; payload: { tier: PatternUnlockTier; shortfall: number } };
 
 export interface AnalyticsGameplayEvent {
   eventId: string;
