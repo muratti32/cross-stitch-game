@@ -845,6 +845,23 @@ export async function markGuestDataRiskNoticeSeen(): Promise<void> {
   });
 }
 
+export async function hasSeenPaidPatternsBanner(): Promise<boolean> {
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{ value: string }>(
+      "SELECT value FROM device_config WHERE key = 'paid_patterns_banner_seen'"
+    );
+    return row?.value === '1';
+  });
+}
+
+export async function markPaidPatternsBannerSeen(): Promise<void> {
+  await withDatabase(async (db) => {
+    await db.runAsync(
+      "INSERT OR REPLACE INTO device_config (key, value) VALUES ('paid_patterns_banner_seen', '1')"
+    );
+  });
+}
+
 
 /**
  * Gets and increments the global monotonic sequence counter for this device.

@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Text, FlatList, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Screen, Card, Button, EmptyState, PatternImage, SourceLanguageBadge } from '@/components';
+import { Screen, Card, Button, EmptyState, PatternImage, SourceLanguageBadge, PatternLockBadge } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useTabBarSpace } from '@/theme/tabBar';
 import {
@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalLikes } from '@/api/social';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { addScreenMemoryBreadcrumb } from '@/observability/sentry';
+import { useUnlockedPatternIds } from '@/api/economy';
 
 export default function BrowseScreen() {
   const { t } = useTranslation('catalog');
@@ -29,6 +30,11 @@ export default function BrowseScreen() {
   const browse = usePatternsBrowse({ category, tag });
   const { data: localLikes } = useLocalLikes();
   const { isAccount } = useIdentityStore();
+  const unlocks = useUnlockedPatternIds();
+  const unlockedIdSet = React.useMemo(
+    () => unlocks.isSuccess ? new Set(unlocks.data) : null,
+    [unlocks.data, unlocks.isSuccess],
+  );
 
   React.useEffect(() => {
     void addScreenMemoryBreadcrumb('catalog_browse');
@@ -127,6 +133,7 @@ export default function BrowseScreen() {
                 <Text style={styles.gridTitle} numberOfLines={1}>
                   {item.title}
                 </Text>
+                <PatternLockBadge tier={item.unlockPriceTier} patternId={item.id} unlockedIds={unlockedIdSet} style={styles.lockBadge} />
                 <SourceLanguageBadge
                   sourceLanguage={item.sourceLanguage}
                   style={styles.sourceLanguageBadge}
@@ -222,6 +229,9 @@ const styles = StyleSheet.create({
     marginTop: Theme.spacing.sm,
   },
   sourceLanguageBadge: {
+    marginTop: Theme.spacing.xs,
+  },
+  lockBadge: {
     marginTop: Theme.spacing.xs,
   },
   gridMeta: {

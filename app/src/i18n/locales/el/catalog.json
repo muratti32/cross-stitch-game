@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} χρώματα",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} στήλες",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Κλειδωμένο, ξεκλειδώνει με {{price}} Stitch Coins"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Δεν ήταν δυνατή η πρόσβαση στον κατάλογο και δεν υπάρχει ακόμη αποθηκευμένο περιεχόμενο.",
       "showMore": "Εμφάνιση περισσότερων",
       "loading": "Φόρτωση…"
+    },
+    "paidPatternsBanner": {
+      "body": "Ορισμένα σχέδια ξεκλειδώνουν πλέον με νομίσματα — όσα ξεκίνησες παραμένουν δικά σου.",
+      "dismiss": "Κλείσιμο"
     }
   },
   "browse": {

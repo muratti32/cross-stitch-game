@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} Farben",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} Farb.",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Gesperrt, für {{price}} Stitch Coins freischalten"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Der Katalog konnte nicht geladen werden und es ist noch nichts zwischengespeichert.",
       "showMore": "Mehr anzeigen",
       "loading": "Lädt…"
+    },
+    "paidPatternsBanner": {
+      "body": "Einige Muster werden jetzt mit Münzen freigeschaltet – angefangene Muster bleiben deine.",
+      "dismiss": "Schließen"
     }
   },
   "browse": {

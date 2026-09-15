@@ -203,4 +203,23 @@ describe('Gameplay event schema', () => {
       onboarding_version: '1', outcome: 'completed', destination: 'stitching', duration_ms: 1, stitch_count: 1, email: 'secret',
     })).toThrow(BadRequestException);
   });
+
+  it.each(['unlock_prompt_shown', 'pattern_unlocked'] as const)('accepts %s', (kind) => {
+    const payload = { tier: 'medium', price: 150 };
+    expect(validateGameplayEventPayload(kind, payload)).toEqual({ kind, payload });
+  });
+
+  it.each(['unlock_insufficient_coins', 'unlock_get_coins_tapped'] as const)('accepts %s', (kind) => {
+    const payload = { tier: 'large', shortfall: 25 };
+    expect(validateGameplayEventPayload(kind, payload)).toEqual({ kind, payload });
+  });
+
+  it.each([
+    ['unlock_prompt_shown', { tier: 'tiny', price: 75 }],
+    ['pattern_unlocked', { tier: 'small', price: 0 }],
+    ['unlock_insufficient_coins', { tier: 'large', shortfall: 0 }],
+    ['unlock_get_coins_tapped', { tier: 'medium', shortfall: 1, pattern_id: 'secret' }],
+  ])('rejects invalid %s payloads', (kind, payload) => {
+    expect(() => validateGameplayEventPayload(kind, payload)).toThrow(BadRequestException);
+  });
 });

@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} kolorów",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} kolumn",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Zablokowany, odblokuj za {{price}} Stitch Coinów"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Nie można połączyć się z katalogiem, a pamięć podręczna jest niedostępna.",
       "showMore": "Pokaż więcej",
       "loading": "Ładowanie…"
+    },
+    "paidPatternsBanner": {
+      "body": "Niektóre wzory odblokowuje się teraz monetami — rozpoczęte wzory nadal należą do Ciebie.",
+      "dismiss": "Zamknij"
     }
   },
   "browse": {

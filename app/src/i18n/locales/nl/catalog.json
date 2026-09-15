@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} kleuren",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} kolommen",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Vergrendeld, ontgrendel voor {{price}} Stitch Coins"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "De catalogus kan niet worden bereikt en er is geen cache beschikbaar.",
       "showMore": "Meer weergeven",
       "loading": "Laden…"
+    },
+    "paidPatternsBanner": {
+      "body": "Sommige patronen worden nu met munten ontgrendeld. Patronen waaraan je bent begonnen, blijven van jou.",
+      "dismiss": "Sluiten"
     }
   },
   "browse": {

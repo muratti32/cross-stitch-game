@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} barv",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} stolpcev",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Zaklenjeno, odklene se za {{price}} Stitch Coinov"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Kataloga ni bilo mogoče doseči in ničesar še ni shranjenega v predpomnilniku.",
       "showMore": "Prikaži več",
       "loading": "Nalaganje …"
+    },
+    "paidPatternsBanner": {
+      "body": "Nekateri vzorci se zdaj odklenejo s kovanci — tisti, ki ste jih začeli, ostanejo vaši.",
+      "dismiss": "Zapri"
     }
   },
   "browse": {

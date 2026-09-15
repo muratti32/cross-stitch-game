@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} couleurs",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} col.",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Verrouillé, se débloque pour {{price}} Stitch Coins"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Le catalogue est inaccessible et aucun contenu n'est actuellement mis en cache.",
       "showMore": "Afficher plus",
       "loading": "Chargement…"
+    },
+    "paidPatternsBanner": {
+      "body": "Certains modèles se débloquent désormais avec des pièces ; ceux que vous avez commencés restent à vous.",
+      "dismiss": "Fermer"
     }
   },
   "browse": {

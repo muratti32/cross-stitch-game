@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} кольорів",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} стовпців",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Заблоковано, відкривається за {{price}} Stitch Coin"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Не вдалося з'єднатися з каталогом, і кешу поки що немає.",
       "showMore": "Показати більше",
       "loading": "Завантаження…"
+    },
+    "paidPatternsBanner": {
+      "body": "Деякі візерунки тепер відкриваються за монети — розпочаті вами залишаються вашими.",
+      "dismiss": "Закрити"
     }
   },
   "browse": {

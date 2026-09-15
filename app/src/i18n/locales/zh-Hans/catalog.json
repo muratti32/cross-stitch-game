@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} 种颜色",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} 列",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "已锁定，使用 {{price}} Stitch Coin 解锁"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "暂时无法连接到目录，而且目前还没有缓存哦。",
       "showMore": "查看更多",
       "loading": "加载中…"
+    },
+    "paidPatternsBanner": {
+      "body": "部分图案现在需要使用金币解锁；你已开始的图案仍归你所有。",
+      "dismiss": "关闭"
     }
   },
   "browse": {

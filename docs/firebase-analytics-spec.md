@@ -122,11 +122,12 @@ sign-in, ads personalisation, or the first-party pipeline changes.
 - A single tap inside the existing Gameplay Event capture function forwards every
   captured event to one new mirror module, which filters against an allow-list.
   No call site changes.
-- Fourteen of the thirty-five Gameplay Event kinds are mirrored — the endpoints of
+- Eighteen of the forty Gameplay Event kinds are mirrored — the endpoints of
   each funnel: Stitching Session started and completed; Daily Task completed;
   Pattern conversion started and completed; AI generation started, completed and
   failed; store viewed; purchase started and completed; onboarding started and
-  finished; account soft prompt action.
+  finished; account soft prompt action; unlock prompt shown; Pattern unlocked;
+  insufficient Coin; get-Coins tapped.
 - Deliberately excluded as GA4 noise: tutorial beats, per-step onboarding views,
   most cancelled and failed variants, catalog-incomplete, purchase reconciliation
   pending, and subscription change events. They remain fully available in the
@@ -183,7 +184,7 @@ boundary receive? It must not assert the mirror module's internal shape, so the
 mirror can be restructured without touching tests.
 
 **One seam.** Tests drive the existing Gameplay Event capture function — already
-the single funnel for all thirty-five event kinds — and observe the mocked native
+the single funnel for all forty event kinds — and observe the mocked native
 Firebase analytics module. The mirror module is not unit-tested directly; its
 allow-list, name mapping, consent gating and purchase value handling are all
 observable through that one seam.

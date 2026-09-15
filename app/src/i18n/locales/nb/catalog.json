@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} farger",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} kol.",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Låst, låses opp for {{price}} Stitch Coins"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Katalogen kunne ikke nås, og ingenting er hurtiglagret ennå.",
       "showMore": "Vis mer",
       "loading": "Laster…"
+    },
+    "paidPatternsBanner": {
+      "body": "Noen mønstre låses nå opp med mynter – de du har startet på, er fortsatt dine.",
+      "dismiss": "Lukk"
     }
   },
   "browse": {

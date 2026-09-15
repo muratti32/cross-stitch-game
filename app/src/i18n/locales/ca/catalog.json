@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} colors",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} cols",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Bloquejat, es desbloqueja per {{price}} Stitch Coins"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "No s'ha pogut accedir al catàleg i encara no hi ha res desat en memòria cau.",
       "showMore": "Mostra'n més",
       "loading": "Carregant…"
+    },
+    "paidPatternsBanner": {
+      "body": "Alguns patrons ara es desbloquegen amb monedes; els que ja havies començat continuen sent teus.",
+      "dismiss": "Descarta"
     }
   },
   "browse": {

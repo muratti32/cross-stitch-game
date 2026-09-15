@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} colors",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} cols",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Locked, unlocks for {{price}} Stitch Coins"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "The catalog could not be reached and nothing is cached yet.",
       "showMore": "Show more",
       "loading": "Loading…"
+    },
+    "paidPatternsBanner": {
+      "body": "Some patterns now unlock with coins — the ones you started stay yours.",
+      "dismiss": "Dismiss"
     }
   },
   "browse": {

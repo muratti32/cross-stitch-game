@@ -48,6 +48,12 @@ Every event has `event_id` (client UUID), `occurred_at` (ISO-8601 timestamp), an
 | `onboarding_finished` | `onboarding_version`: `1`; `outcome`: `completed` \| `deferred`; `destination`; `duration_ms`; `stitch_count` |
 | `account_soft_prompt_shown` | `onboarding_version`: `1`; `context` |
 | `account_soft_prompt_action` | `onboarding_version`: `1`; `context`; `action` |
+| `unlock_prompt_shown` | `tier`: `small` \| `medium` \| `large`; `price` (positive integer) |
+| `pattern_unlocked` | `tier`: `small` \| `medium` \| `large`; `price` (positive integer) |
+| `unlock_insufficient_coins` | `tier`: `small` \| `medium` \| `large`; `shortfall` (positive integer) |
+| `unlock_get_coins_tapped` | `tier`: `small` \| `medium` \| `large`; `shortfall` (positive integer) |
+
+`unlock_prompt_shown` fires at most once per detail-screen visit for a pattern. Opening that pattern in a later visit may fire it again.
 
 The four `subscription_change_*` kinds cover a Premium Plan change between the three Premium Plans, which is distinct from a first purchase: `source_plan` is the plan held when the change was requested and `target_plan` the plan requested, so both are always present and never equal in practice. `subscription_change_completed` is emitted only once the Game Backend exposes the new plan as the active membership, never on a store-side success alone; `subscription_change_cancelled` covers the player dismissing the in-app plan-change confirmation, dismissing the store sheet, or cancelling a Scheduled Plan Change before it activates. A confirmed downgrade is deferred by the store, so it reports no `subscription_change_completed` when the Scheduled Plan Change appears — only when that change activates (ADR-0049). That activation is the one kind the Game Backend records for itself, from the Membership Period that fulfils the plan-change request rather than from a client observation, so it counts once per change instead of once per device that happens to be watching (ADR-0050).
 

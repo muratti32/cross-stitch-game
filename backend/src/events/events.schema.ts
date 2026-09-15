@@ -37,6 +37,10 @@ export const GAMEPLAY_EVENT_KINDS = [
   'onboarding_finished',
   'account_soft_prompt_shown',
   'account_soft_prompt_action',
+  'unlock_prompt_shown',
+  'pattern_unlocked',
+  'unlock_insufficient_coins',
+  'unlock_get_coins_tapped',
 ] as const;
 
 export type GameplayEventKind = (typeof GAMEPLAY_EVENT_KINDS)[number];
@@ -50,6 +54,9 @@ type RenderStopExposurePayload = {
 type DailyTaskPayload = {
   task_key: 'cells_100' | 'three_colors_10' | 'color_completion';
 };
+type PatternUnlockTier = 'small' | 'medium' | 'large';
+type PatternUnlockPricePayload = { tier: PatternUnlockTier; price: number };
+type PatternUnlockShortfallPayload = { tier: PatternUnlockTier; shortfall: number };
 type PatternConversionStartedPayload = {
   source_artwork_kind: 'photo_artwork' | 'ai_artwork';
   conversion_profile: 'easy' | 'standard' | 'detailed' | 'custom';
@@ -113,6 +120,8 @@ export type GameplayEventPayload =
   | SessionPayload
   | RenderStopExposurePayload
   | DailyTaskPayload
+  | PatternUnlockPricePayload
+  | PatternUnlockShortfallPayload
   | PatternConversionStartedPayload
   | PatternConversionCompletedPayload
   | PatternConversionFailedPayload
@@ -255,6 +264,10 @@ const payloadRules: Readonly<Record<GameplayEventKind, PayloadRule>> = {
   onboarding_finished: onboardingRule(['outcome', 'destination', 'duration_ms', 'stitch_count'], p => isMember(p.outcome, new Set(['completed', 'deferred'])) && typeof p.destination === 'string' && isNonNegativeInteger(p.duration_ms) && isNonNegativeInteger(p.stitch_count)),
   account_soft_prompt_shown: onboardingRule(['context'], p => isMember(p.context, new Set(['welcome', 'tutorial', 'recap']))),
   account_soft_prompt_action: onboardingRule(['context', 'action'], p => isMember(p.context, new Set(['welcome', 'tutorial', 'recap'])) && isMember(p.action, new Set(['sign_in', 'dismissed']))),
+  unlock_prompt_shown: patternUnlockPriceRule(),
+  pattern_unlocked: patternUnlockPriceRule(),
+  unlock_insufficient_coins: patternUnlockShortfallRule(),
+  unlock_get_coins_tapped: patternUnlockShortfallRule(),
 };
 
 export function validateGameplayEventPayload(
@@ -292,6 +305,24 @@ function sessionRule(): PayloadRule {
     allowedFields: ['session_id'],
     validate: (payload) =>
       typeof payload.session_id === 'string' && UUID_PATTERN.test(payload.session_id),
+  };
+}
+
+const PATTERN_UNLOCK_TIERS = new Set(['small', 'medium', 'large']);
+
+function patternUnlockPriceRule(): PayloadRule {
+  return {
+    allowedFields: ['tier', 'price'],
+    validate: (payload) =>
+      isMember(payload.tier, PATTERN_UNLOCK_TIERS) && isPositiveInteger(payload.price),
+  };
+}
+
+function patternUnlockShortfallRule(): PayloadRule {
+  return {
+    allowedFields: ['tier', 'shortfall'],
+    validate: (payload) =>
+      isMember(payload.tier, PATTERN_UNLOCK_TIERS) && isPositiveInteger(payload.shortfall),
   };
 }
 

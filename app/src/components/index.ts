@@ -19,3 +19,5 @@ export { ThemeCollectionCard } from './ThemeCollectionCard';
 export { LanguageSettingsCard } from './LanguageSettingsCard';
 export { PurchaseResultModal } from './PurchaseResultModal';
 export type { PurchaseResultVariant } from './PurchaseResultModal';
+export { PatternLockBadge, patternLockState } from './PatternLockBadge';
+export type { PatternLockState } from './PatternLockBadge';

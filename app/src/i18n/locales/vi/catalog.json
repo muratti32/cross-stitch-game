@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} màu",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} cột",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Đã khóa, mở bằng {{price}} Stitch Coin"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Không thể kết nối tới danh mục và chưa có dữ liệu lưu tạm.",
       "showMore": "Xem thêm",
       "loading": "Đang tải…"
+    },
+    "paidPatternsBanner": {
+      "body": "Một số mẫu giờ được mở khóa bằng xu — những mẫu bạn đã bắt đầu vẫn thuộc về bạn.",
+      "dismiss": "Đóng"
     }
   },
   "browse": {

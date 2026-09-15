@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} farieb",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} stĺpcov",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Zamknuté, odomknete za {{price}} Stitch Coinov"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Katalóg sa nepodarilo načítať a zatiaľ nie je nič uložené lokálne.",
       "showMore": "Zobraziť viac",
       "loading": "Načítava sa…"
+    },
+    "paidPatternsBanner": {
+      "body": "Niektoré vzory sa teraz odomykajú mincami — tie, ktoré ste začali, vám zostávajú.",
+      "dismiss": "Zavrieť"
     }
   },
   "browse": {

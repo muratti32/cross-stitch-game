@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} boja",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} stupaca",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Zaključano, otključava se za {{price}} Stitch Coina"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Katalog nije dostupan i još ništa nije spremljeno u predmemoriju.",
       "showMore": "Prikaži više",
       "loading": "Učitavanje…"
+    },
+    "paidPatternsBanner": {
+      "body": "Neki se uzorci sada otključavaju novčićima — oni koje ste započeli ostaju vaši.",
+      "dismiss": "Zatvori"
     }
   },
   "browse": {

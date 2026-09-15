@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} väriä",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} saraketta",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Lukittu, avautuu {{price}} Stitch Coinilla"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Valikoimaan ei saatu yhteyttä, eikä mitään ole vielä välimuistissa.",
       "showMore": "Näytä lisää",
       "loading": "Ladataan…"
+    },
+    "paidPatternsBanner": {
+      "body": "Jotkin kuviot avataan nyt kolikoilla – aloittamasi kuviot pysyvät ominasi.",
+      "dismiss": "Sulje"
     }
   },
   "browse": {

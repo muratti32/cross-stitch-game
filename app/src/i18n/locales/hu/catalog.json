@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} szín",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} oszlop",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Zárolva, feloldható {{price}} Stitch Coinért"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "A katalógus nem elérhető, és még semmi sincs a gyorsítótárban.",
       "showMore": "Több megjelenítése",
       "loading": "Betöltés…"
+    },
+    "paidPatternsBanner": {
+      "body": "Néhány minta mostantól érmékkel oldható fel – a már megkezdett minták továbbra is a tieid.",
+      "dismiss": "Bezárás"
     }
   },
   "browse": {

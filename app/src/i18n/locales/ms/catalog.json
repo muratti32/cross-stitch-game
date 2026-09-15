@@ -11,6 +11,9 @@
       "dimensionsColors": "{{width}}×{{height}} • {{count}} warna",
       "dimensionsCols": "{{width}}×{{height}} • {{count}} lajur",
       "creatorDimensions": "{{creatorName}} • {{width}}×{{height}}"
+    },
+    "patternLock": {
+      "accessibilityLabel": "Dikunci, buka dengan {{price}} Stitch Coin"
     }
   },
   "sourceLanguage": {
@@ -45,6 +48,10 @@
       "errorBody": "Katalog tidak tersedia, dan belum ada apa-apa dalam cache.",
       "showMore": "Tunjukkan lebih banyak",
       "loading": "Memuatkan…"
+    },
+    "paidPatternsBanner": {
+      "body": "Sesetengah corak kini dibuka dengan syiling — corak yang telah anda mulakan kekal milik anda.",
+      "dismiss": "Tutup"
     }
   },
   "browse": {
