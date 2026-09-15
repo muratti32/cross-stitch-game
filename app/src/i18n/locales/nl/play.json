@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Volgende resterende vakje van geselecteerde garenkleur zoeken",
     "undoAccessibilityLabel": "Laatste stitch ongedaan maken"
   },
+  "locator": {
+    "priceTitle": "Prijs van de zoeker",
+    "priceConfirmMessage": "Prijs: {{price}} · Saldo: {{balance}}\nTik opnieuw op de zoeker om hem te gebruiken.",
+    "priceChangedTitle": "Prijs van de zoeker gewijzigd",
+    "priceChangedMessage": "Nieuwe prijs: {{price}} · Saldo: {{balance}}\nTik opnieuw op de zoeker om hem voor de nieuwe prijs te gebruiken."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Kleur {{number}}: DMC {{dmcCode}}, {{count}} stitch resterend",

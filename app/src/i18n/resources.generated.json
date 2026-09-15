@@ -659,7 +659,7 @@
           "matchNumbers": "طابق الأرقام لوضع كل غرزة.",
           "dragSweep": "اسحب عبر الخلايا المتطابقة لتطريز مسار مسحوب.",
           "pinchZoom": "قرّب بأصابعك للتكبير عندما تحتاج إلى نظرة أقرب.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "متابعة التطريز",
         "browsePatterns": "تصفح الأنماط"
@@ -727,6 +727,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "تحديد موقع الخلية المتبقية التالية للون الخيط النشط",
         "undoAccessibilityLabel": "التراجع عن آخر غرزة"
+      },
+      "locator": {
+        "priceTitle": "سعر أداة التحديد",
+        "priceConfirmMessage": "السعر: {{price}} · الرصيد: {{balance}}\nاضغط على أداة التحديد مرة أخرى لاستخدامها.",
+        "priceChangedTitle": "تغيّر سعر أداة التحديد",
+        "priceChangedMessage": "السعر الجديد: {{price}} · الرصيد: {{balance}}\nاضغط على أداة التحديد مرة أخرى لاستخدامها بالسعر الجديد."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -2081,7 +2087,7 @@
           "matchNumbers": "Fes coincidir els números per col·locar cada puntada.",
           "dragSweep": "Arrossega per les caselles coincidents per fer una passada seguida.",
           "pinchZoom": "Pessiga per fer zoom quan necessitis veure-ho més de prop.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Continua puntant",
         "browsePatterns": "Explora patrons"
@@ -2149,6 +2155,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Localitza la següent casella pendent del color de fil actiu",
         "undoAccessibilityLabel": "Desfés l'última puntada"
+      },
+      "locator": {
+        "priceTitle": "Preu del localitzador",
+        "priceConfirmMessage": "Preu: {{price}} · Saldo: {{balance}}\nToca el localitzador de nou per utilitzar-lo.",
+        "priceChangedTitle": "El preu del localitzador ha canviat",
+        "priceChangedMessage": "Preu nou: {{price}} · Saldo: {{balance}}\nToca el localitzador de nou per utilitzar-lo al preu nou."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -3503,7 +3515,7 @@
           "matchNumbers": "Podle čísel umisťujte jednotlivé stehy.",
           "dragSweep": "Táhněte přes shodná políčka pro rychlé vyšívání.",
           "pinchZoom": "Když potřebujete detailnější pohled, plátno přibližte prsty.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Pokračovat ve vyšívání",
         "browsePatterns": "Prohlížet vzory"
@@ -3571,6 +3583,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Najít další zbývající políčko aktivní barvy bavlnky",
         "undoAccessibilityLabel": "Vrátit poslední steh"
+      },
+      "locator": {
+        "priceTitle": "Cena lokátoru",
+        "priceConfirmMessage": "Cena: {{price}} · Zůstatek: {{balance}}\nPro použití znovu klepněte na lokátor.",
+        "priceChangedTitle": "Cena lokátoru se změnila",
+        "priceChangedMessage": "Nová cena: {{price}} · Zůstatek: {{balance}}\nPro použití za novou cenu znovu klepněte na lokátor."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -4925,7 +4943,7 @@
           "matchNumbers": "Match tallene for at placere hvert sting.",
           "dragSweep": "Træk hen over matchende celler for at sy et forløb.",
           "pinchZoom": "Knib for at zoome, når du har brug for et nærmere kig.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Fortsæt med at sy",
         "browsePatterns": "Gennemse mønstre"
@@ -4993,6 +5011,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Find den næste resterende celle for den aktive trådfarve",
         "undoAccessibilityLabel": "Fortryd sidste sting"
+      },
+      "locator": {
+        "priceTitle": "Pris for lokalisering",
+        "priceConfirmMessage": "Pris: {{price}} · Saldo: {{balance}}\nTryk på lokaliseringen igen for at bruge den.",
+        "priceChangedTitle": "Prisen for lokalisering er ændret",
+        "priceChangedMessage": "Ny pris: {{price}} · Saldo: {{balance}}\nTryk på lokaliseringen igen for at bruge den til den nye pris."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -6347,7 +6371,7 @@
           "matchNumbers": "Gleiche die Nummern ab, um jeden Stich zu platzieren.",
           "dragSweep": "Ziehe über passende Kästchen, um in einer Wischbewegung zu sticken.",
           "pinchZoom": "Zoome mit zwei Fingern, wenn du einen genaueren Blick brauchst.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Weitersticken",
         "browsePatterns": "Muster durchstöbern"
@@ -6415,6 +6439,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Nächstes verbleibendes Kästchen der aktiven Garnfarbe finden",
         "undoAccessibilityLabel": "Letzten Stich rückgängig machen"
+      },
+      "locator": {
+        "priceTitle": "Preis der Zellsuche",
+        "priceConfirmMessage": "Preis: {{price}} · Guthaben: {{balance}}\nTippe erneut auf die Zellsuche, um sie zu verwenden.",
+        "priceChangedTitle": "Preis der Zellsuche geändert",
+        "priceChangedMessage": "Neuer Preis: {{price}} · Guthaben: {{balance}}\nTippe erneut auf die Zellsuche, um sie zum neuen Preis zu verwenden."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -7769,7 +7799,7 @@
           "matchNumbers": "Ταιριάξτε τους αριθμούς για να τοποθετήσετε κάθε βελονιά.",
           "dragSweep": "Σύρετε κατά μήκος αντίστοιχων κελιών για να σαρώσετε.",
           "pinchZoom": "Τσιμπήστε για ζουμ όταν χρειάζεστε καλύτερη προβολή.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Συνέχιση κεντήματος",
         "browsePatterns": "Περιήγηση μοτίβων"
@@ -7837,6 +7867,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Εντοπισμός επόμενου εναπομείναντος κελιού του ενεργού χρώματος κλωστής",
         "undoAccessibilityLabel": "Αναίρεση τελευταίας βελονιάς"
+      },
+      "locator": {
+        "priceTitle": "Τιμή εντοπισμού",
+        "priceConfirmMessage": "Τιμή: {{price}} · Υπόλοιπο: {{balance}}\nΠάτησε ξανά τον εντοπισμό για να τον χρησιμοποιήσεις.",
+        "priceChangedTitle": "Η τιμή εντοπισμού άλλαξε",
+        "priceChangedMessage": "Νέα τιμή: {{price}} · Υπόλοιπο: {{balance}}\nΠάτησε ξανά τον εντοπισμό για να τον χρησιμοποιήσεις με τη νέα τιμή."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -9191,7 +9227,7 @@
           "matchNumbers": "Match the numbers to place each stitch.",
           "dragSweep": "Drag across matching cells to sweep.",
           "pinchZoom": "Pinch to zoom when you need a closer look.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Continue stitching",
         "browsePatterns": "Browse patterns"
@@ -9259,6 +9295,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Locate next remaining cell of active thread color",
         "undoAccessibilityLabel": "Undo last stitch"
+      },
+      "locator": {
+        "priceTitle": "Locator price",
+        "priceConfirmMessage": "Price: {{price}} · Balance: {{balance}}\nTap the locator again to use it.",
+        "priceChangedTitle": "Locator price changed",
+        "priceChangedMessage": "New price: {{price}} · Balance: {{balance}}\nTap the locator again to use it at the new price."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -10613,7 +10655,7 @@
           "matchNumbers": "Haz coincidir los números para colocar cada puntada.",
           "dragSweep": "Arrastra por las celdas correspondientes para hacer un barrido.",
           "pinchZoom": "Pellizca para ampliar cuando necesites ver más de cerca.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Continuar bordando",
         "browsePatterns": "Explorar patrones"
@@ -10681,6 +10723,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Localizar la siguiente celda restante del color de hilo activo",
         "undoAccessibilityLabel": "Deshacer última puntada"
+      },
+      "locator": {
+        "priceTitle": "Precio del localizador",
+        "priceConfirmMessage": "Precio: {{price}} · Saldo: {{balance}}\nToca el localizador de nuevo para usarlo.",
+        "priceChangedTitle": "El precio del localizador cambió",
+        "priceChangedMessage": "Nuevo precio: {{price}} · Saldo: {{balance}}\nToca el localizador de nuevo para usarlo al nuevo precio."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -12035,7 +12083,7 @@
           "matchNumbers": "Yhdistä numerot asettaaksesi jokaisen piston.",
           "dragSweep": "Pyyhkäise vetämällä vastaavien ruutujen yli.",
           "pinchZoom": "Nipistä zoomataksesi, kun haluat katsoa tarkemmin.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Jatka pistelyä",
         "browsePatterns": "Selaa malleja"
@@ -12103,6 +12151,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Paikanna aktiivisen langan seuraava jäljellä oleva ruutu",
         "undoAccessibilityLabel": "Kumoa edellinen pisto"
+      },
+      "locator": {
+        "priceTitle": "Paikantimen hinta",
+        "priceConfirmMessage": "Hinta: {{price}} · Saldo: {{balance}}\nKäytä paikanninta napauttamalla sitä uudelleen.",
+        "priceChangedTitle": "Paikantimen hinta muuttui",
+        "priceChangedMessage": "Uusi hinta: {{price}} · Saldo: {{balance}}\nKäytä paikanninta uuteen hintaan napauttamalla sitä uudelleen."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -13457,7 +13511,7 @@
           "matchNumbers": "Faites correspondre les numéros pour placer chaque point.",
           "dragSweep": "Faites glisser votre doigt sur les cases correspondantes pour broder en continu.",
           "pinchZoom": "Pincez l'écran pour zoomer lorsque vous avez besoin de regarder de plus près.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Continuer à broder",
         "browsePatterns": "Parcourir les modèles"
@@ -13525,6 +13579,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Localiser la prochaine case restante de la couleur de fil active",
         "undoAccessibilityLabel": "Annuler le dernier point"
+      },
+      "locator": {
+        "priceTitle": "Prix du localisateur",
+        "priceConfirmMessage": "Prix : {{price}} · Solde : {{balance}}\nTouchez à nouveau le localisateur pour l’utiliser.",
+        "priceChangedTitle": "Le prix du localisateur a changé",
+        "priceChangedMessage": "Nouveau prix : {{price}} · Solde : {{balance}}\nTouchez à nouveau le localisateur pour l’utiliser au nouveau prix."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -14879,7 +14939,7 @@
           "matchNumbers": "हर स्टिच लगाने के लिए नंबरों का मिलान करें।",
           "dragSweep": "स्वीप करने के लिए मिलते-जुलते खानों पर ड्रैग करें।",
           "pinchZoom": "पास से देखने की ज़रूरत होने पर ज़ूम करने के लिए पिंच करें।",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "स्टिच करना जारी रखें",
         "browsePatterns": "पैटर्न देखें"
@@ -14947,6 +15007,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "सक्रिय धागे के रंग के अगले बचे हुए सेल का पता लगाएं",
         "undoAccessibilityLabel": "पिछला टांका वापस लें"
+      },
+      "locator": {
+        "priceTitle": "लोकेटर की कीमत",
+        "priceConfirmMessage": "कीमत: {{price}} · बैलेंस: {{balance}}\nइस्तेमाल करने के लिए लोकेटर पर फिर से टैप करें।",
+        "priceChangedTitle": "लोकेटर की कीमत बदल गई",
+        "priceChangedMessage": "नई कीमत: {{price}} · बैलेंस: {{balance}}\nनई कीमत पर इस्तेमाल करने के लिए लोकेटर पर फिर से टैप करें।"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -16301,7 +16367,7 @@
           "matchNumbers": "Poveži brojeve za postavljanje svakog boda.",
           "dragSweep": "Povuci preko odgovarajućih ćelija za vezenje niza.",
           "pinchZoom": "Uštipni za zumiranje kad trebaš bolji pogled.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Nastavi vesti",
         "browsePatterns": "Pregledaj uzorke"
@@ -16369,6 +16435,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Pronađi sljedeću preostalu ćeliju aktivne boje niti",
         "undoAccessibilityLabel": "Poništi zadnji bod"
+      },
+      "locator": {
+        "priceTitle": "Cijena lokatora",
+        "priceConfirmMessage": "Cijena: {{price}} · Stanje: {{balance}}\nPonovno dodirni lokator da ga upotrijebiš.",
+        "priceChangedTitle": "Cijena lokatora je promijenjena",
+        "priceChangedMessage": "Nova cijena: {{price}} · Stanje: {{balance}}\nPonovno dodirni lokator da ga upotrijebiš po novoj cijeni."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -17723,7 +17795,7 @@
           "matchNumbers": "Párosítsd a számokat minden öltés elhelyezéséhez.",
           "dragSweep": "Húzd végig a megfelelő cellákon a sor hímzéséhez.",
           "pinchZoom": "Csippentsd a nagyításhoz, ha jobb rálátásra van szükséged.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Hímzés folytatása",
         "browsePatterns": "Minták böngészése"
@@ -17791,6 +17863,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Az aktív fonalszín következő hátralévő cellájának megkeresése",
         "undoAccessibilityLabel": "Utolsó öltés visszavonása"
+      },
+      "locator": {
+        "priceTitle": "Kereső ára",
+        "priceConfirmMessage": "Ár: {{price}} · Egyenleg: {{balance}}\nKoppints újra a keresőre a használatához.",
+        "priceChangedTitle": "A kereső ára megváltozott",
+        "priceChangedMessage": "Új ár: {{price}} · Egyenleg: {{balance}}\nKoppints újra a keresőre, hogy az új áron használd."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -19145,7 +19223,7 @@
           "matchNumbers": "Cocokkan angka untuk menempatkan setiap jahitan.",
           "dragSweep": "Seret di sepanjang sel yang cocok untuk menyulam baris.",
           "pinchZoom": "Cubit untuk memperbesar jika kamu butuh tampilan yang lebih baik.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Lanjutkan menyulam",
         "browsePatterns": "Jelajahi pola"
@@ -19213,6 +19291,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Temukan sel tersisa berikutnya untuk warna benang aktif",
         "undoAccessibilityLabel": "Urungkan jahitan terakhir"
+      },
+      "locator": {
+        "priceTitle": "Harga pencari",
+        "priceConfirmMessage": "Harga: {{price}} · Saldo: {{balance}}\nKetuk pencari lagi untuk menggunakannya.",
+        "priceChangedTitle": "Harga pencari berubah",
+        "priceChangedMessage": "Harga baru: {{price}} · Saldo: {{balance}}\nKetuk pencari lagi untuk menggunakannya dengan harga baru."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -20567,7 +20651,7 @@
           "matchNumbers": "Abbina i numeri per posizionare ogni punto.",
           "dragSweep": "Trascina sulle celle corrispondenti per ricamare a scorrimento.",
           "pinchZoom": "Pizzica per ingrandire quando hai bisogno di guardare più da vicino.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Continua a ricamare",
         "browsePatterns": "Sfoglia gli schemi"
@@ -20635,6 +20719,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Trova la prossima casella rimanente del colore del filo attivo",
         "undoAccessibilityLabel": "Annulla l'ultimo punto"
+      },
+      "locator": {
+        "priceTitle": "Prezzo del localizzatore",
+        "priceConfirmMessage": "Prezzo: {{price}} · Saldo: {{balance}}\nTocca di nuovo il localizzatore per usarlo.",
+        "priceChangedTitle": "Il prezzo del localizzatore è cambiato",
+        "priceChangedMessage": "Nuovo prezzo: {{price}} · Saldo: {{balance}}\nTocca di nuovo il localizzatore per usarlo al nuovo prezzo."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -21989,7 +22079,7 @@
           "matchNumbers": "数字を合わせてステッチを配置します。",
           "dragSweep": "同じ色のマスをドラッグして、まとめてステッチ（スウィープ）します。",
           "pinchZoom": "近くで見たい時は、ピンチ操作でズームします。",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "ステッチを続ける",
         "browsePatterns": "図案を探す"
@@ -22057,6 +22147,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "選択中の糸の色で、次に残っているマスを見つける",
         "undoAccessibilityLabel": "最後のステッチを元に戻す"
+      },
+      "locator": {
+        "priceTitle": "ロケーターの価格",
+        "priceConfirmMessage": "価格: {{price}} · 残高: {{balance}}\n使用するにはロケーターをもう一度タップしてください。",
+        "priceChangedTitle": "ロケーターの価格が変更されました",
+        "priceChangedMessage": "新しい価格: {{price}} · 残高: {{balance}}\n新しい価格で使用するにはロケーターをもう一度タップしてください。"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -23411,7 +23507,7 @@
           "matchNumbers": "숫자를 맞춰서 스티치를 배치합니다.",
           "dragSweep": "같은 색상의 칸을 드래그하여 연속 스티치(스윕)를 합니다.",
           "pinchZoom": "자세히 보고 싶을 때는 핀치 제스처로 줌합니다.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "스티치 계속하기",
         "browsePatterns": "도안 찾기"
@@ -23479,6 +23575,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "선택한 실 색상 중 남은 다음 칸 찾기",
         "undoAccessibilityLabel": "마지막 스티치 실행 취소"
+      },
+      "locator": {
+        "priceTitle": "위치 찾기 가격",
+        "priceConfirmMessage": "가격: {{price}} · 잔액: {{balance}}\n사용하려면 위치 찾기를 다시 탭하세요.",
+        "priceChangedTitle": "위치 찾기 가격이 변경됨",
+        "priceChangedMessage": "새 가격: {{price}} · 잔액: {{balance}}\n새 가격으로 사용하려면 위치 찾기를 다시 탭하세요."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -24833,7 +24935,7 @@
           "matchNumbers": "Padankan nombor untuk meletakkan setiap jahitan.",
           "dragSweep": "Seret di sepanjang sel yang sepadan untuk menjahit baris.",
           "pinchZoom": "Cubit untuk membesarkan jika anda perlukan paparan yang lebih baik.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Teruskan menjahit",
         "browsePatterns": "Semak imbas pola"
@@ -24901,6 +25003,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Cari sel yang tinggal seterusnya untuk warna benang aktif",
         "undoAccessibilityLabel": "Buat asal jahitan terakhir"
+      },
+      "locator": {
+        "priceTitle": "Harga pencari",
+        "priceConfirmMessage": "Harga: {{price}} · Baki: {{balance}}\nKetik pencari sekali lagi untuk menggunakannya.",
+        "priceChangedTitle": "Harga pencari telah berubah",
+        "priceChangedMessage": "Harga baharu: {{price}} · Baki: {{balance}}\nKetik pencari sekali lagi untuk menggunakannya pada harga baharu."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -26255,7 +26363,7 @@
           "matchNumbers": "Match tallene for å plassere hvert sting.",
           "dragSweep": "Dra over matchende ruter for å stinge i rekke.",
           "pinchZoom": "Knip for å zoome når du trenger en nærmere titt.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Fortsett stingingen",
         "browsePatterns": "Bla i mønstre"
@@ -26323,6 +26431,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Finn neste gjenværende rute for aktiv trådfarge",
         "undoAccessibilityLabel": "Angre siste sting"
+      },
+      "locator": {
+        "priceTitle": "Pris for søker",
+        "priceConfirmMessage": "Pris: {{price}} · Saldo: {{balance}}\nTrykk på søkeren igjen for å bruke den.",
+        "priceChangedTitle": "Prisen for søker er endret",
+        "priceChangedMessage": "Ny pris: {{price}} · Saldo: {{balance}}\nTrykk på søkeren igjen for å bruke den til ny pris."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -27677,7 +27791,7 @@
           "matchNumbers": "Zoek de nummers om je stitches te plaatsen.",
           "dragSweep": "Sleep over vakjes met hetzelfde nummer om continu te stitchen (sweep).",
           "pinchZoom": "Knijp om te zoomen wanneer je details wilt zien.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Verder stitchen",
         "browsePatterns": "Patronen zoeken"
@@ -27745,6 +27859,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Volgende resterende vakje van geselecteerde garenkleur zoeken",
         "undoAccessibilityLabel": "Laatste stitch ongedaan maken"
+      },
+      "locator": {
+        "priceTitle": "Prijs van de zoeker",
+        "priceConfirmMessage": "Prijs: {{price}} · Saldo: {{balance}}\nTik opnieuw op de zoeker om hem te gebruiken.",
+        "priceChangedTitle": "Prijs van de zoeker gewijzigd",
+        "priceChangedMessage": "Nieuwe prijs: {{price}} · Saldo: {{balance}}\nTik opnieuw op de zoeker om hem voor de nieuwe prijs te gebruiken."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -29099,7 +29219,7 @@
           "matchNumbers": "Znajdź numery, aby umieścić swoje ściegi.",
           "dragSweep": "Przeciągnij po polach z tym samym numerem, aby haftować w sposób ciągły (sweep).",
           "pinchZoom": "Uszczypnij, aby przybliżyć, gdy chcesz zobaczyć szczegóły.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Kontynuuj haftowanie",
         "browsePatterns": "Szukaj wzorów"
@@ -29167,6 +29287,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Znajdź następne pozostałe pole wybranego koloru nici",
         "undoAccessibilityLabel": "Cofnij ostatni ścieg"
+      },
+      "locator": {
+        "priceTitle": "Cena lokalizatora",
+        "priceConfirmMessage": "Cena: {{price}} · Saldo: {{balance}}\nDotknij lokalizatora ponownie, aby go użyć.",
+        "priceChangedTitle": "Cena lokalizatora się zmieniła",
+        "priceChangedMessage": "Nowa cena: {{price}} · Saldo: {{balance}}\nDotknij lokalizatora ponownie, aby użyć go po nowej cenie."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -30521,7 +30647,7 @@
           "matchNumbers": "Faz corresponder os números para colocar cada ponto.",
           "dragSweep": "Arrasta pelas células correspondentes para bordar em sequência.",
           "pinchZoom": "Belisca para ampliar quando precisares de ver mais de perto.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Continuar a bordar",
         "browsePatterns": "Explorar padrões"
@@ -30589,6 +30715,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Localizar a próxima célula restante da cor de fio ativa",
         "undoAccessibilityLabel": "Anular último ponto"
+      },
+      "locator": {
+        "priceTitle": "Preço do localizador",
+        "priceConfirmMessage": "Preço: {{price}} · Saldo: {{balance}}\nToque novamente no localizador para o usar.",
+        "priceChangedTitle": "O preço do localizador mudou",
+        "priceChangedMessage": "Novo preço: {{price}} · Saldo: {{balance}}\nToque novamente no localizador para o usar ao novo preço."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -31943,7 +32075,7 @@
           "matchNumbers": "Combine os números para fazer cada ponto.",
           "dragSweep": "Arraste pelas células correspondentes para bordar em sequência.",
           "pinchZoom": "Faça o movimento de pinça para dar zoom quando precisar ver de perto.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Continuar bordando",
         "browsePatterns": "Explorar gráficos"
@@ -32011,6 +32143,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Localizar próxima célula restante da cor da linha ativa",
         "undoAccessibilityLabel": "Desfazer último ponto"
+      },
+      "locator": {
+        "priceTitle": "Preço do localizador",
+        "priceConfirmMessage": "Preço: {{price}} · Saldo: {{balance}}\nToque no localizador de novo para usá-lo.",
+        "priceChangedTitle": "O preço do localizador mudou",
+        "priceChangedMessage": "Novo preço: {{price}} · Saldo: {{balance}}\nToque no localizador de novo para usá-lo pelo novo preço."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -33365,7 +33503,7 @@
           "matchNumbers": "Potrivește numerele pentru a plasa fiecare cusătură.",
           "dragSweep": "Trage peste celulele care se potrivesc pentru a cuse în lanț.",
           "pinchZoom": "Ciupește pentru a mări atunci când ai nevoie de o privire mai atentă.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Continuă cusutul",
         "browsePatterns": "Răsfoiește modelele"
@@ -33433,6 +33571,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Localizează următoarea celulă rămasă din culoarea firului activ",
         "undoAccessibilityLabel": "Anulează ultima cusătură"
+      },
+      "locator": {
+        "priceTitle": "Prețul localizatorului",
+        "priceConfirmMessage": "Preț: {{price}} · Sold: {{balance}}\nAtinge din nou localizatorul pentru a-l folosi.",
+        "priceChangedTitle": "Prețul localizatorului s-a schimbat",
+        "priceChangedMessage": "Preț nou: {{price}} · Sold: {{balance}}\nAtinge din nou localizatorul pentru a-l folosi la noul preț."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -34787,7 +34931,7 @@
           "matchNumbers": "Сопоставляйте номера, чтобы делать стежки.",
           "dragSweep": "Проводите пальцем по клеткам с тем же номером для непрерывной вышивки (sweep).",
           "pinchZoom": "Сводите и разводите пальцы, чтобы приблизить изображение.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Продолжить вышивать",
         "browsePatterns": "Выбрать узор"
@@ -34855,6 +34999,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Найти следующую оставшуюся клетку выбранного цвета нити",
         "undoAccessibilityLabel": "Отменить последний стежок"
+      },
+      "locator": {
+        "priceTitle": "Цена поиска клетки",
+        "priceConfirmMessage": "Цена: {{price}} · Баланс: {{balance}}\nНажмите на поиск ещё раз, чтобы использовать его.",
+        "priceChangedTitle": "Цена поиска клетки изменилась",
+        "priceChangedMessage": "Новая цена: {{price}} · Баланс: {{balance}}\nНажмите на поиск ещё раз, чтобы использовать его по новой цене."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -36209,7 +36359,7 @@
           "matchNumbers": "Priraď čísla, aby si umiestnil každý steh.",
           "dragSweep": "Ťahaj cez zodpovedajúce bunky a vyšívaj v reťazi.",
           "pinchZoom": "Štipnutím priblíž, keď potrebuješ bližší pohľad.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Pokračovať vo vyšívaní",
         "browsePatterns": "Prehliadať vzory"
@@ -36277,6 +36427,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Nájsť ďalšiu zostávajúcu bunku aktívnej farby vlákna",
         "undoAccessibilityLabel": "Vrátiť späť posledný steh"
+      },
+      "locator": {
+        "priceTitle": "Cena lokátora",
+        "priceConfirmMessage": "Cena: {{price}} · Zostatok: {{balance}}\nNa použitie znova ťuknite na lokátor.",
+        "priceChangedTitle": "Cena lokátora sa zmenila",
+        "priceChangedMessage": "Nová cena: {{price}} · Zostatok: {{balance}}\nNa použitie za novú cenu znova ťuknite na lokátor."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -37631,7 +37787,7 @@
           "matchNumbers": "Ujemajte številke, da postavite vsak šiv.",
           "dragSweep": "Povlecite čez ujemajoče celice za niz.",
           "pinchZoom": "S ščipanjem povečajte, ko potrebujete bližji pogled.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Nadaljuj šivanje",
         "browsePatterns": "Prebrskaj vzorce"
@@ -37699,6 +37855,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Poišči naslednjo preostalo celico aktivne barve niti",
         "undoAccessibilityLabel": "Razveljavi zadnji šiv"
+      },
+      "locator": {
+        "priceTitle": "Cena iskalnika",
+        "priceConfirmMessage": "Cena: {{price}} · Stanje: {{balance}}\nZa uporabo znova tapnite iskalnik.",
+        "priceChangedTitle": "Cena iskalnika se je spremenila",
+        "priceChangedMessage": "Nova cena: {{price}} · Stanje: {{balance}}\nZa uporabo po novi ceni znova tapnite iskalnik."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -39053,7 +39215,7 @@
           "matchNumbers": "Matcha siffrorna för att placera varje stygn.",
           "dragSweep": "Dra över matchande celler för att svepa.",
           "pinchZoom": "Nyp för att zooma när du behöver se närmare.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Fortsätt sy",
         "browsePatterns": "Bläddra bland mönster"
@@ -39121,6 +39283,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Lokalisera nästa återstående cell för aktiv trådfärg",
         "undoAccessibilityLabel": "Ångra senaste stygnet"
+      },
+      "locator": {
+        "priceTitle": "Pris för sökaren",
+        "priceConfirmMessage": "Pris: {{price}} · Saldo: {{balance}}\nTryck på sökaren igen för att använda den.",
+        "priceChangedTitle": "Priset för sökaren har ändrats",
+        "priceChangedMessage": "Nytt pris: {{price}} · Saldo: {{balance}}\nTryck på sökaren igen för att använda den till det nya priset."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -40475,7 +40643,7 @@
           "matchNumbers": "Itugma ang mga numero para ilagay ang bawat tahi.",
           "dragSweep": "I-drag ang tumutugmang mga cell para tumahi nang sweep.",
           "pinchZoom": "I-pinch para i-zoom kapag kailangan mong tumingin nang mas malapit.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Ipagpatuloy ang pananahi",
         "browsePatterns": "Mag-browse ng mga pattern"
@@ -40543,6 +40711,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Hanapin ang susunod na natitirang cell para sa aktibong kulay ng sinulid",
         "undoAccessibilityLabel": "I-undo ang huling tahi"
+      },
+      "locator": {
+        "priceTitle": "Presyo ng locator",
+        "priceConfirmMessage": "Presyo: {{price}} · Balanse: {{balance}}\nI-tap muli ang locator para gamitin ito.",
+        "priceChangedTitle": "Nagbago ang presyo ng locator",
+        "priceChangedMessage": "Bagong presyo: {{price}} · Balanse: {{balance}}\nI-tap muli ang locator para gamitin ito sa bagong presyo."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -41897,7 +42071,7 @@
           "matchNumbers": "Her dikişi yerleştirmek için numaraları eşleştir.",
           "dragSweep": "Eşleşen kareler boyunca sürükleyerek dikiş yap.",
           "pinchZoom": "Daha yakından bakmak istediğinde iki parmağınla yakınlaştır.",
-          "undoLocator": "Geri alma her zaman ücretsizdir; başarılı bir konum bulucu kullanımı 1 Stitch Coin harcar."
+          "undoLocator": "Geri alma her zaman ücretsizdir; başarılı bir konum bulucu kullanımı, konum bulucu düğmesinde gösterilen Stitch Coin fiyatını harcar."
         },
         "continue": "Dikişe devam et",
         "browsePatterns": "Desenlere göz at"
@@ -41965,6 +42139,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Etkin iplik renginin kalan bir sonraki karesini bul",
         "undoAccessibilityLabel": "Son dikişi geri al"
+      },
+      "locator": {
+        "priceTitle": "Konum bulucu fiyatı",
+        "priceConfirmMessage": "Fiyat: {{price}} · Bakiye: {{balance}}\nKullanmak için konum bulucuya tekrar dokun.",
+        "priceChangedTitle": "Konum bulucu fiyatı değişti",
+        "priceChangedMessage": "Yeni fiyat: {{price}} · Bakiye: {{balance}}\nYeni fiyattan kullanmak için konum bulucuya tekrar dokun."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -43319,7 +43499,7 @@
           "matchNumbers": "Зіставляйте номери, щоб розмістити кожен стібок.",
           "dragSweep": "Проведіть по відповідних клітинках, щоб вишити ряд.",
           "pinchZoom": "Зведіть пальці, щоб наблизити, коли потрібно розгледіти детальніше.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Продовжити вишивати",
         "browsePatterns": "Переглянути візерунки"
@@ -43387,6 +43567,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Знайти наступну клітинку активного кольору нитки",
         "undoAccessibilityLabel": "Скасувати останній стібок"
+      },
+      "locator": {
+        "priceTitle": "Ціна пошуку клітинки",
+        "priceConfirmMessage": "Ціна: {{price}} · Баланс: {{balance}}\nТоркніться пошуку ще раз, щоб скористатися ним.",
+        "priceChangedTitle": "Ціна пошуку клітинки змінилася",
+        "priceChangedMessage": "Нова ціна: {{price}} · Баланс: {{balance}}\nТоркніться пошуку ще раз, щоб скористатися ним за новою ціною."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -44741,7 +44927,7 @@
           "matchNumbers": "Khớp các số để đặt từng mũi thêu.",
           "dragSweep": "Kéo qua các ô khớp để thêu theo dãy.",
           "pinchZoom": "Chụm để phóng to khi cần nhìn gần hơn.",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "Tiếp tục thêu",
         "browsePatterns": "Duyệt mẫu thêu"
@@ -44809,6 +44995,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "Định vị ô còn lại tiếp theo của màu chỉ đang hoạt động",
         "undoAccessibilityLabel": "Hoàn tác mũi thêu cuối cùng"
+      },
+      "locator": {
+        "priceTitle": "Giá công cụ định vị",
+        "priceConfirmMessage": "Giá: {{price}} · Số dư: {{balance}}\nChạm lại vào công cụ định vị để sử dụng.",
+        "priceChangedTitle": "Giá công cụ định vị đã thay đổi",
+        "priceChangedMessage": "Giá mới: {{price}} · Số dư: {{balance}}\nChạm lại vào công cụ định vị để sử dụng với giá mới."
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -46163,7 +46355,7 @@
           "matchNumbers": "根据数字配对，完成每一针 Stitch。",
           "dragSweep": "在匹配的格子上滑动，进行连续绣制。",
           "pinchZoom": "需要看细节时，双指捏合即可缩放。",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "继续 Stitch",
         "browsePatterns": "浏览图纸"
@@ -46231,6 +46423,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "定位当前线色下一个未绣的格子",
         "undoAccessibilityLabel": "撤销上一步 Stitch"
+      },
+      "locator": {
+        "priceTitle": "定位器价格",
+        "priceConfirmMessage": "价格：{{price}} · 余额：{{balance}}\n再次点按定位器即可使用。",
+        "priceChangedTitle": "定位器价格已变更",
+        "priceChangedMessage": "新价格：{{price}} · 余额：{{balance}}\n再次点按定位器即可按新价格使用。"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -47585,7 +47783,7 @@
           "matchNumbers": "配對數字以放置每一針。",
           "dragSweep": "拖曳過對應的格子即可連續刺繡。",
           "pinchZoom": "需要看得更清楚時，捏合即可縮放。",
-          "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+          "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
         },
         "continue": "繼續刺繡",
         "browsePatterns": "瀏覽圖案"
@@ -47653,6 +47851,12 @@
       "rail": {
         "locateNextAccessibilityLabel": "定位目前繡線顏色的下一個剩餘格子",
         "undoAccessibilityLabel": "復原上一針"
+      },
+      "locator": {
+        "priceTitle": "定位器價格",
+        "priceConfirmMessage": "價格：{{price}} · 餘額：{{balance}}\n再次點按定位器即可使用。",
+        "priceChangedTitle": "定位器價格已變更",
+        "priceChangedMessage": "新價格：{{price}} · 餘額：{{balance}}\n再次點按定位器即可依新價格使用。"
       },
       "palette": {
         "chipNumber": "#{{number}}",

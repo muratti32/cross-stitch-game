@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Найти следующую оставшуюся клетку выбранного цвета нити",
     "undoAccessibilityLabel": "Отменить последний стежок"
   },
+  "locator": {
+    "priceTitle": "Цена поиска клетки",
+    "priceConfirmMessage": "Цена: {{price}} · Баланс: {{balance}}\nНажмите на поиск ещё раз, чтобы использовать его.",
+    "priceChangedTitle": "Цена поиска клетки изменилась",
+    "priceChangedMessage": "Новая цена: {{price}} · Баланс: {{balance}}\nНажмите на поиск ещё раз, чтобы использовать его по новой цене."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Цвет {{number}}: DMC {{dmcCode}}, остался {{count}} стежок",

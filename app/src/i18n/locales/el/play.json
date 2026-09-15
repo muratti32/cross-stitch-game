@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Εντοπισμός επόμενου εναπομείναντος κελιού του ενεργού χρώματος κλωστής",
     "undoAccessibilityLabel": "Αναίρεση τελευταίας βελονιάς"
   },
+  "locator": {
+    "priceTitle": "Τιμή εντοπισμού",
+    "priceConfirmMessage": "Τιμή: {{price}} · Υπόλοιπο: {{balance}}\nΠάτησε ξανά τον εντοπισμό για να τον χρησιμοποιήσεις.",
+    "priceChangedTitle": "Η τιμή εντοπισμού άλλαξε",
+    "priceChangedMessage": "Νέα τιμή: {{price}} · Υπόλοιπο: {{balance}}\nΠάτησε ξανά τον εντοπισμό για να τον χρησιμοποιήσεις με τη νέα τιμή."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Χρώμα {{number}}: DMC {{dmcCode}}, {{count}} βελονιά εναπομένει",

@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Znajdź następne pozostałe pole wybranego koloru nici",
     "undoAccessibilityLabel": "Cofnij ostatni ścieg"
   },
+  "locator": {
+    "priceTitle": "Cena lokalizatora",
+    "priceConfirmMessage": "Cena: {{price}} · Saldo: {{balance}}\nDotknij lokalizatora ponownie, aby go użyć.",
+    "priceChangedTitle": "Cena lokalizatora się zmieniła",
+    "priceChangedMessage": "Nowa cena: {{price}} · Saldo: {{balance}}\nDotknij lokalizatora ponownie, aby użyć go po nowej cenie."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Kolor {{number}}: DMC {{dmcCode}}, pozostał {{count}} ścieg",

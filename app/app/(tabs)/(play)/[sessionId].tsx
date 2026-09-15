@@ -38,6 +38,7 @@ import {
   fetchCoinBalanceView,
   LocatorInsufficientBalanceError,
   LocatorPriceChangedError,
+  LocatorPriceUnavailableError,
   useLocatorPrice,
   type CoinBalanceView,
   prepareLocatorAttempt,
@@ -383,15 +384,23 @@ export default function SessionReadyScreen() {
     locatorAbortRef.current = abortController;
     setLocatorBusy(true);
     try {
-      // The server rejects a stale expected price without charge, so the
-      // player never pays more than the price shown on the button (ADR-0060).
-      const expectedPrice = locatorPrice
-        ?? (await queryClient.fetchQuery({ queryKey: coinBalanceQueryKey, queryFn: fetchCoinBalanceView })).locatorPrice;
-      if (expectedPrice === null) {
-        Alert.alert(t('error.title'), t('error.fallbackMessage'));
+      // ADR-0060: only a price the player has already seen is sent as the
+      // expected price. Without one, fetch it, show it, and let the player
+      // tap again; the server rejects a stale value without charge.
+      if (locatorPrice == null) {
+        const view = await queryClient.fetchQuery({ queryKey: coinBalanceQueryKey, queryFn: fetchCoinBalanceView });
+        if (locatorRunRef.current !== runId) return;
+        if (view.locatorPrice === null) throw new LocatorPriceUnavailableError();
+        Alert.alert(
+          t('locator.priceTitle'),
+          t('locator.priceConfirmMessage', {
+            price: formatNumber(view.locatorPrice, locale),
+            balance: formatNumber(view.balance, locale),
+          }),
+        );
         return;
       }
-      if (locatorRunRef.current !== runId) return;
+      const expectedPrice = locatorPrice;
 
       const prepared = await prepareLocatorAttempt({
         attemptId,
@@ -469,11 +478,11 @@ export default function SessionReadyScreen() {
           locatorPrice: error.price,
         });
         Alert.alert(
-          t('price.label', { ns: 'catalog' }),
-          [
-            `${t('price.label', { ns: 'catalog' })}: ${formatNumber(error.price, locale)}`,
-            `${t('balance.label', { ns: 'catalog' })}: ${formatNumber(error.balance, locale)}`,
-          ].join(' · '),
+          t('locator.priceChangedTitle'),
+          t('locator.priceChangedMessage', {
+            price: formatNumber(error.price, locale),
+            balance: formatNumber(error.balance, locale),
+          }),
         );
         return;
       }

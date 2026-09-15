@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Poišči naslednjo preostalo celico aktivne barve niti",
     "undoAccessibilityLabel": "Razveljavi zadnji šiv"
   },
+  "locator": {
+    "priceTitle": "Cena iskalnika",
+    "priceConfirmMessage": "Cena: {{price}} · Stanje: {{balance}}\nZa uporabo znova tapnite iskalnik.",
+    "priceChangedTitle": "Cena iskalnika se je spremenila",
+    "priceChangedMessage": "Nova cena: {{price}} · Stanje: {{balance}}\nZa uporabo po novi ceni znova tapnite iskalnik."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Barva {{number}}: DMC {{dmcCode}}, preostane {{count}} šiv",

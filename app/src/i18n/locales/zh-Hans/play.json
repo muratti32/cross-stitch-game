@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "定位当前线色下一个未绣的格子",
     "undoAccessibilityLabel": "撤销上一步 Stitch"
   },
+  "locator": {
+    "priceTitle": "定位器价格",
+    "priceConfirmMessage": "价格：{{price}} · 余额：{{balance}}\n再次点按定位器即可使用。",
+    "priceChangedTitle": "定位器价格已变更",
+    "priceChangedMessage": "新价格：{{price}} · 余额：{{balance}}\n再次点按定位器即可按新价格使用。"
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "颜色 {{number}}：DMC {{dmcCode}}，还剩 {{count}} 个 Stitch",

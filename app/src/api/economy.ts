@@ -49,6 +49,15 @@ export class LocatorPriceChangedError extends EconomyApiError {
   }
 }
 
+// ADR-0060: the server could not serve a Locator Price, so the locator must not
+// reserve. Shaped as a backend failure so it reaches Sentry with a Support Reference.
+export class LocatorPriceUnavailableError extends EconomyApiError {
+  constructor() {
+    super(503, 'locator_price_unavailable', 'locator_price_unavailable');
+    this.name = 'LocatorPriceUnavailableError';
+  }
+}
+
 export interface CoinBalanceView {
   balance: number;
   /** Current operator-managed Locator Price; null when the server cannot provide it (ADR-0060). */
@@ -130,7 +139,10 @@ export async function fetchCoinBalanceView(): Promise<CoinBalanceView> {
   if (!res.ok) {
     throw await parseEconomyError(res, 'Failed to fetch coin balance: ' + res.status);
   }
-  const data = (await res.json()) as { balance: number; locatorPrice?: unknown };
+  const data = (await res.json().catch(() => null)) as { balance?: unknown; locatorPrice?: unknown } | null;
+  if (typeof data?.balance !== 'number' || !Number.isSafeInteger(data.balance)) {
+    throw new EconomyApiError(res.status, 'invalid_balance_response', 'invalid_balance_response');
+  }
   const locatorPrice = typeof data.locatorPrice === 'number' && Number.isSafeInteger(data.locatorPrice) && data.locatorPrice > 0
     ? data.locatorPrice
     : null;
@@ -143,17 +155,20 @@ export async function fetchCoinBalance(): Promise<number> {
 
 async function parseLocatorResult(res: Response): Promise<LocatorAttemptView> {
   if (res.status === 409) {
-    const data = await res.json().catch(() => null) as { code?: string; price?: unknown; balance?: unknown } | null;
+    const data = await res.json().catch(() => null) as { code?: unknown; price?: unknown; balance?: unknown } | null;
+    const code = typeof data?.code === 'string' ? data.code : null;
     const price = typeof data?.price === 'number' ? data.price : null;
-    const balance = typeof data?.balance === 'number' ? data.balance : 0;
-    if (data?.code === 'locator_price_changed' && price !== null) {
+    const balance = typeof data?.balance === 'number' ? data.balance : null;
+    // A conflict missing its price or balance is surfaced as a generic
+    // failure rather than showing the player an invented amount.
+    if (code === 'locator_price_changed' && price !== null && balance !== null) {
       throw new LocatorPriceChangedError(price, balance);
     }
-    if (data?.code === 'insufficient_balance' && price !== null) {
+    if (code === 'insufficient_balance' && price !== null && balance !== null) {
       throw new LocatorInsufficientBalanceError(price, balance);
     }
-    if (data?.code !== undefined) {
-      throw new EconomyApiError(409, data.code, data.code);
+    if (code !== null) {
+      throw new EconomyApiError(409, code, code);
     }
   }
   if (!res.ok) throw await parseEconomyError(res, 'Locator attempt failed: ' + res.status);

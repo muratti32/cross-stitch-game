@@ -43,7 +43,7 @@
       "matchNumbers": "हर स्टिच लगाने के लिए नंबरों का मिलान करें।",
       "dragSweep": "स्वीप करने के लिए मिलते-जुलते खानों पर ड्रैग करें।",
       "pinchZoom": "पास से देखने की ज़रूरत होने पर ज़ूम करने के लिए पिंच करें।",
-      "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+      "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
     },
     "continue": "स्टिच करना जारी रखें",
     "browsePatterns": "पैटर्न देखें"

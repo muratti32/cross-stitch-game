@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Знайти наступну клітинку активного кольору нитки",
     "undoAccessibilityLabel": "Скасувати останній стібок"
   },
+  "locator": {
+    "priceTitle": "Ціна пошуку клітинки",
+    "priceConfirmMessage": "Ціна: {{price}} · Баланс: {{balance}}\nТоркніться пошуку ще раз, щоб скористатися ним.",
+    "priceChangedTitle": "Ціна пошуку клітинки змінилася",
+    "priceChangedMessage": "Нова ціна: {{price}} · Баланс: {{balance}}\nТоркніться пошуку ще раз, щоб скористатися ним за новою ціною."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Колір {{number}}: DMC {{dmcCode}}, залишився {{count}} стібок",

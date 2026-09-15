@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Nájsť ďalšiu zostávajúcu bunku aktívnej farby vlákna",
     "undoAccessibilityLabel": "Vrátiť späť posledný steh"
   },
+  "locator": {
+    "priceTitle": "Cena lokátora",
+    "priceConfirmMessage": "Cena: {{price}} · Zostatok: {{balance}}\nNa použitie znova ťuknite na lokátor.",
+    "priceChangedTitle": "Cena lokátora sa zmenila",
+    "priceChangedMessage": "Nová cena: {{price}} · Zostatok: {{balance}}\nNa použitie za novú cenu znova ťuknite na lokátor."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Farba {{number}}: DMC {{dmcCode}}, zostáva {{count}} steh",

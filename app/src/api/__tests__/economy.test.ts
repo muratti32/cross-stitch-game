@@ -2,6 +2,7 @@ import {
   commitLocatorAttempt,
   LocatorInsufficientBalanceError,
   LocatorPriceChangedError,
+  LocatorPriceUnavailableError,
   fetchCoinBalanceView,
   prepareLocatorAttempt,
   releaseLocatorAttempt,
@@ -137,6 +138,28 @@ describe('economy client', () => {
     await expect(fetchCoinBalanceView()).resolves.toEqual({ balance: 40, locatorPrice: null });
     apiFetch.mockResolvedValueOnce(jsonResponse(200, { balance: 40 }));
     await expect(fetchCoinBalanceView()).resolves.toEqual({ balance: 40, locatorPrice: null });
+  });
+
+  test('fetchCoinBalanceView rejects a response without a valid balance instead of inventing one', async () => {
+    apiFetch.mockResolvedValueOnce(jsonResponse(200, { locatorPrice: 2 }));
+    await expect(fetchCoinBalanceView()).rejects.toMatchObject({ name: 'EconomyApiError', reason: 'invalid_balance_response' });
+  });
+
+  test('locator conflicts missing price or balance surface as generic economy errors, never a zero balance', async () => {
+    apiFetch.mockResolvedValueOnce(jsonResponse(409, { code: 'locator_price_changed', price: 3 }));
+    await expect(prepareLocatorAttempt({
+      attemptId: 'a', sessionId: 's', patternId: 'p', colorIndex: 0, dmcCode: '310', expectedPrice: 1,
+    })).rejects.toMatchObject({ name: 'EconomyApiError', status: 409, reason: 'locator_price_changed' });
+    apiFetch.mockResolvedValueOnce(jsonResponse(409, { code: 'insufficient_balance', balance: 0 }));
+    await expect(prepareLocatorAttempt({
+      attemptId: 'a', sessionId: 's', patternId: 'p', colorIndex: 0, dmcCode: '310', expectedPrice: 1,
+    })).rejects.toMatchObject({ name: 'EconomyApiError', status: 409, reason: 'insufficient_balance' });
+  });
+
+  test('LocatorPriceUnavailableError is a server-shaped failure so it gets a Support Reference', () => {
+    const error = new LocatorPriceUnavailableError();
+    expect(error).toBeInstanceOf(Error);
+    expect(error).toMatchObject({ status: 503, reason: 'locator_price_unavailable' });
   });
 
   test('openAdAttempt returns nonce, expiresAt and ssvActive flag', async () => {

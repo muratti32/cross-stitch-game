@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Finn neste gjenværende rute for aktiv trådfarge",
     "undoAccessibilityLabel": "Angre siste sting"
   },
+  "locator": {
+    "priceTitle": "Pris for søker",
+    "priceConfirmMessage": "Pris: {{price}} · Saldo: {{balance}}\nTrykk på søkeren igjen for å bruke den.",
+    "priceChangedTitle": "Prisen for søker er endret",
+    "priceChangedMessage": "Ny pris: {{price}} · Saldo: {{balance}}\nTrykk på søkeren igjen for å bruke den til ny pris."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Farge {{number}}: DMC {{dmcCode}}, {{count}} sting gjenstår",

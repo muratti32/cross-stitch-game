@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Trova la prossima casella rimanente del colore del filo attivo",
     "undoAccessibilityLabel": "Annulla l'ultimo punto"
   },
+  "locator": {
+    "priceTitle": "Prezzo del localizzatore",
+    "priceConfirmMessage": "Prezzo: {{price}} · Saldo: {{balance}}\nTocca di nuovo il localizzatore per usarlo.",
+    "priceChangedTitle": "Il prezzo del localizzatore è cambiato",
+    "priceChangedMessage": "Nuovo prezzo: {{price}} · Saldo: {{balance}}\nTocca di nuovo il localizzatore per usarlo al nuovo prezzo."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Colore {{number}}: DMC {{dmcCode}}, {{count}} punto rimanente",

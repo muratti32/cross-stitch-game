@@ -43,7 +43,7 @@
       "matchNumbers": "Зіставляйте номери, щоб розмістити кожен стібок.",
       "dragSweep": "Проведіть по відповідних клітинках, щоб вишити ряд.",
       "pinchZoom": "Зведіть пальці, щоб наблизити, коли потрібно розгледіти детальніше.",
-      "undoLocator": "Undo is always free; a successful locator use costs 1 Stitch Coin."
+      "undoLocator": "Undo is always free; a successful locator use costs the Stitch Coin price shown on the locator button."
     },
     "continue": "Продовжити вишивати",
     "browsePatterns": "Переглянути візерунки"

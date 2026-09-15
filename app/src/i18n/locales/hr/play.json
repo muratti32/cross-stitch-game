@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Pronađi sljedeću preostalu ćeliju aktivne boje niti",
     "undoAccessibilityLabel": "Poništi zadnji bod"
   },
+  "locator": {
+    "priceTitle": "Cijena lokatora",
+    "priceConfirmMessage": "Cijena: {{price}} · Stanje: {{balance}}\nPonovno dodirni lokator da ga upotrijebiš.",
+    "priceChangedTitle": "Cijena lokatora je promijenjena",
+    "priceChangedMessage": "Nova cijena: {{price}} · Stanje: {{balance}}\nPonovno dodirni lokator da ga upotrijebiš po novoj cijeni."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Boja {{number}}: DMC {{dmcCode}}, {{count}} bod preostao",

@@ -61,6 +61,12 @@
     "locateNextAccessibilityLabel": "Localizar a próxima célula restante da cor de fio ativa",
     "undoAccessibilityLabel": "Anular último ponto"
   },
+  "locator": {
+    "priceTitle": "Preço do localizador",
+    "priceConfirmMessage": "Preço: {{price}} · Saldo: {{balance}}\nToque novamente no localizador para o usar.",
+    "priceChangedTitle": "O preço do localizador mudou",
+    "priceChangedMessage": "Novo preço: {{price}} · Saldo: {{balance}}\nToque novamente no localizador para o usar ao novo preço."
+  },
   "palette": {
     "chipNumber": "#{{number}}",
     "chipAccessibilityLabel_one": "Cor {{number}}: DMC {{dmcCode}}, {{count}} ponto restante",
