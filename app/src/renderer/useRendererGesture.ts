@@ -121,20 +121,11 @@ export function useRendererGesture({
   const pendingPanDx = useSharedValue(0.0);
   const pendingPanDy = useSharedValue(0.0);
 
-  const flushPendingPanDeltas = () => {
-    'worklet';
-    const dx = pendingPanDx.value;
-    const dy = pendingPanDy.value;
-    if (dx === 0 && dy === 0) return;
-
-    pendingPanDx.value = 0;
-    pendingPanDy.value = 0;
-    translateX.value += dx;
-    translateY.value += dy;
-    clampTranslations(scale.value);
-  };
-
-  // Helper worklet to clamp translations so content doesn't fly off screen
+  // Helper worklet to clamp translations so content doesn't fly off screen.
+  // Must be declared before flushPendingPanDeltas: the worklets Babel plugin
+  // captures each worklet's closure at its own declaration site, so a worklet
+  // referencing a `const` declared later captures it as undefined instead of
+  // the live function.
   const clampTranslations = (currentScale: number) => {
     'worklet';
     const cW = containerWidth.value;
@@ -156,6 +147,19 @@ export function useRendererGesture({
       slackTop.value,
       slackBottom.value,
     );
+  };
+
+  const flushPendingPanDeltas = () => {
+    'worklet';
+    const dx = pendingPanDx.value;
+    const dy = pendingPanDy.value;
+    if (dx === 0 && dy === 0) return;
+
+    pendingPanDx.value = 0;
+    pendingPanDy.value = 0;
+    translateX.value += dx;
+    translateY.value += dy;
+    clampTranslations(scale.value);
   };
 
   // Publish the slack props to the UI thread, then re-clamp: when the floating
