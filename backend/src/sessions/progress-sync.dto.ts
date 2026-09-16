@@ -3,6 +3,7 @@ import {
   IsArray,
   IsIn,
   IsInt,
+  IsOptional,
   IsUUID,
   Min,
   ValidateNested,
@@ -47,4 +48,9 @@ export class ProgressSyncDto {
 export class CompleteProgressDto {
   @IsUUID()
   deviceId!: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  completedCells?: number;
 }

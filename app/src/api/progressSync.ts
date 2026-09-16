@@ -36,6 +36,10 @@ export interface ProgressSyncResponse {
 export interface ProgressCompleteResponse {
   revision: number;
   terminalCompleted: boolean;
+  firstCompletionReward?: {
+    amount: number;
+    balance: number;
+  };
 }
 
 export interface ProgressCheckpoint {
@@ -81,13 +85,18 @@ export async function syncProgress(
 export async function completeProgress(
   remoteSessionId: string,
   deviceId: string,
+  completedCells?: number,
 ): Promise<ProgressCompleteResponse> {
   const response = await apiFetch(
     `/v1/sessions/${remoteSessionId}/progress/complete`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ deviceId }),
+      body: JSON.stringify(
+        completedCells === undefined
+          ? { deviceId }
+          : { deviceId, completedCells },
+      ),
     },
   );
   if (response.status !== 200) {

@@ -288,7 +288,7 @@ A durable local record that a Daily Task or eligible first Pattern completion oc
 _Avoid_: Unclaimed reward, expired reward, manual claim
 
 **First Completion Reward**:
-The base Stitch Coin reward granted automatically and exactly once when a player completes an eligible Official Pattern or Community Pattern for the first time. An offline completion creates a Pending Coin Reward. Personal Patterns never grant it, and Replay Sessions do not grant it again, but either kind of session may still advance separately defined quests or events.
+The base Stitch Coin reward granted automatically and exactly once when a player completes an eligible Official Pattern or Community Pattern for the first time. A Registered Account receives it after backend validation of synchronized progress. A Guest Player receives it after the backend accepts a Guest Session Completion Claim and grants it to the Guest Ledger. An offline completion creates a Pending Coin Reward. Personal Patterns never grant it, and Replay Sessions do not grant it again, but either kind of session may still advance separately defined quests or events.
 _Avoid_: Replay reward, completion farming, repeat completion reward
 
 **Completion Reward Tier**:
@@ -568,6 +568,10 @@ _Avoid_: Completed Session, backend-only session, downloaded preview
 **Session Completion**:
 The permanent local-first result recorded atomically when every Pattern cell in an active Stitching Session has been completed. It closes that device's session at its final progress revision immediately, even offline, and the backend later validates and accepts the same idempotent completion as the terminal server revision. The completed session becomes read-only history; any Late Progress Operation from another device is acknowledged as superseded and cannot reopen it. Playing again creates a Replay Session instead of reopening or resetting the attempt.
 _Avoid_: Pattern Completion, finished Pattern, 100% progress
+
+**Guest Session Completion Claim**:
+The idempotent online request that reconciles a Guest Player's device-local Session Completion with the Game Backend without uploading Guest Session Progress. The backend requires the Guest's owned session, a Pattern not under Safety Removal, a client-asserted full cell count, at least one authenticated ingested Stitch Action for that session, and at least 50 milliseconds of elapsed server time per cell. An eligible catalog completion grants the First Completion Reward exactly once to the Guest Ledger. Offline or retryable delivery remains a Pending Coin Reward; rejected evidence never reopens the local completion (ADR-0062).
+_Avoid_: Guest progress sync, trusted client reward, Account completion upload
 
 **Replay Session**:
 A new Stitching Session created when a player chooses to play a Pattern again after Session Completion, or an already-active session reclassified during Promotion Session Merge because another completed attempt is retained. A player has at most one active session for a Pattern at a time, and replay never overwrites an earlier completed session.

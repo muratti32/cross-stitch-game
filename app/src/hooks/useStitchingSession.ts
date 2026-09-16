@@ -22,7 +22,8 @@ import {
   setGameplaySeqHigh,
   insertGameplayEventsBatch,
 } from '../local-db';
-import { flushGameplayEvents } from '../sync/gameplayEventEngine';
+import { flushGameplayEventsAndCompletionClaims } from '../sync/gameplayEventEngine';
+import { queueGuestCompletionClaim } from '../sync/guestCompletionClaimEngine';
 import * as FileSystem from 'expo-file-system/legacy';
 
 import { loadBundledPattern } from '../bundled-patterns';
@@ -190,7 +191,7 @@ export function useStitchingSession(sessionId: string | undefined) {
     gameplaySyncInFlightRef.current = true;
     try {
       await flushPendingGameplayEvents();
-      await flushGameplayEvents();
+      await flushGameplayEventsAndCompletionClaims();
     } catch {
       // Stay queued locally (nothing is deleted from local-db until a 201
       // response); the next sync trigger retries.
@@ -596,29 +597,64 @@ export function useStitchingSession(sessionId: string | undefined) {
         const ts = new Date().toISOString();
         setSession((prev) => prev ? { ...prev, status: 'completed', completedAt: ts } : null);
         setIsSessionCompleted(true);
+        const remoteSessionId = remoteSessionIdRef.current;
+        const isAccountSession = isAccountSessionRef.current;
+        const guestCompletionEvents = !isAccountSession && remoteSessionId
+          ? [...pendingGameplayEventsRef.current]
+          : [];
+        if (guestCompletionEvents.length > 0) {
+          pendingGameplayEventsRef.current = [];
+        }
 
         // Async write completion checkpoint, then finalize server-side.
-        (async () => {
-          await updateSessionStatus(sess.id, 'completed', ts);
+        void (async () => {
+          if (!isAccountSession && remoteSessionId) {
+            await queueGuestCompletionClaim(
+              {
+                localSessionId: sess.id,
+                remoteSessionId,
+                deviceId: deviceIdRef.current,
+                completedCells: totalCellsRef.current,
+              },
+              ts,
+              guestCompletionEvents,
+              gameplayClientSeqRef.current,
+            );
+          } else {
+            await updateSessionStatus(sess.id, 'completed', ts);
+          }
           await captureSessionGameplayEvent(
             'session_completed',
             sess.id,
-            remoteSessionIdRef.current,
+            remoteSessionId,
           );
           await saveSessionCheckpoint();
-          if (isAccountSessionRef.current && remoteSessionIdRef.current) {
+          if (isAccountSession && remoteSessionId) {
             await runSync();
             try {
               await completeSession(
-                remoteSessionIdRef.current,
+                remoteSessionId,
                 deviceIdRef.current,
               );
             } catch {
               // Server may still be catching up on the final ops; the next sync
               // retries completion. Local completion already stands.
             }
+          } else if (remoteSessionId) {
+            await flushGameplayEventsToServer();
           }
-        })();
+        })().catch((completionError: unknown) => {
+          pendingGameplayEventsRef.current = [
+            ...guestCompletionEvents,
+            ...pendingGameplayEventsRef.current,
+          ];
+          console.error('Failed to persist Session Completion:', completionError);
+          setError(
+            completionError instanceof Error
+              ? completionError.message
+              : 'Session Completion could not be saved.',
+          );
+        });
       } else {
         // Trigger flush if buffer gets large
         if (pendingOpsRef.current.length >= 50) {

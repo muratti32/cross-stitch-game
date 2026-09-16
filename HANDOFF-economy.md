@@ -27,7 +27,8 @@ Backend has NO per-cell DMC color map — color lives only inside the binary pat
 
 ## NOT built (deferred — do NOT start without explicit user confirmation)
 - **Daily Tasks CLIENT wiring**: emit gameplay events during stitching (carry `dmcCode` per Stitch Action + `color_completion`), batch-POST to `/v1/economy/daily-tasks/events`; task-board UI reading `GET /v1/economy/daily-tasks`. This is the natural next slice.
-- Guest Daily Tasks + offline **Pending Coin Reward** path (ADR-0026) — current grants are account-only.
+- Offline Daily Task **Pending Coin Reward** reconciliation remains deferred; online Daily Tasks support Guests and Accounts.
+- Guest Data Promotion handling for unresolved First Completion claim records remains deferred after ADR-0062's online claim path.
 - Coin Packs (#17, RevenueCat ADR-0032), Premium Daily Coin Claim (#18), Guest Economy Promotion (#31/#32), standalone coin-balance / rewarded-ad UI surface.
 
 ## Verify gates (backend/)

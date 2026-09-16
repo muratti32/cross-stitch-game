@@ -22,6 +22,7 @@ import { initI18n, applyResolvedLanguage } from '../src/i18n';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { syncPendingPersonalPatterns } from '../src/pattern-editor/sync';
 import { flushAnalyticsGameplayEvents } from '../src/sync/analyticsGameplayEventEngine';
+import { flushPendingGuestCompletionClaims } from '../src/sync/guestCompletionClaimEngine';
 import {
   handleForegroundLifecycle,
   foregroundEntryCoordinator,
@@ -234,6 +235,9 @@ function RootLayout() {
         currentSegments,
       );
       syncPendingPersonalPatterns().catch(() => undefined);
+      // A Guest who completed offline may never reopen a session screen, so the
+      // pending completion claim is also delivered on every foreground.
+      flushPendingGuestCompletionClaims().catch(() => undefined);
       void flushAnalytics();
     };
     const handleAppStateChange = (nextStatus: AppStateStatus) => {

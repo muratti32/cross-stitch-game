@@ -11,6 +11,8 @@ import {
 } from '../api/progressSync';
 import { applyResolvedOperations } from './syncApply';
 import { markCriticalPathActivity } from '../perf/criticalPathSentinel';
+import { queryClient } from '../providers';
+import { coinBalanceQueryKey } from '../api/economy';
 
 export interface SyncOutcome {
   /** Authoritative server revision after this sync. */
@@ -108,5 +110,8 @@ export async function completeSession(
 ): Promise<boolean> {
   markCriticalPathActivity('progress-sync', 'completeSession');
   const result = await completeProgress(remoteSessionId, deviceId);
+  if (result.firstCompletionReward) {
+    queryClient.invalidateQueries({ queryKey: coinBalanceQueryKey });
+  }
   return result.terminalCompleted;
 }

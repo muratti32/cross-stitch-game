@@ -52,6 +52,13 @@ export interface GameplayEvent {
   occurredAt: string;
 }
 
+export interface PendingGuestCompletionClaim {
+  localSessionId: string;
+  remoteSessionId: string;
+  deviceId: string;
+  completedCells: number;
+}
+
 export interface Checkpoint {
   sessionId: string;
   revision: number;
@@ -708,6 +715,25 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
         ALTER TABLE sessions ADD COLUMN thumbnail_url TEXT;
       `);
       await db.execAsync('PRAGMA user_version = 10;');
+    });
+  }
+
+  if (currentVersion < 11) {
+    await runInTransaction(db, async () => {
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS guest_completion_claims (
+          local_session_id TEXT PRIMARY KEY NOT NULL,
+          remote_session_id TEXT NOT NULL,
+          device_id TEXT NOT NULL,
+          completed_cells INTEGER NOT NULL,
+          resolution TEXT NOT NULL DEFAULT 'pending'
+            CHECK (resolution IN ('pending', 'accepted', 'rejected')),
+          rejection_status INTEGER,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        );
+      `);
+      await db.execAsync('PRAGMA user_version = 11;');
     });
   }
 }
@@ -1391,6 +1417,96 @@ export async function markGameplayEventsAcked(eventIds: string[]): Promise<void>
         await db.runAsync('DELETE FROM gameplay_events WHERE event_id = ?', eventId);
       }
     });
+  });
+}
+
+export async function completeGuestSessionWithPendingClaim(
+  claim: PendingGuestCompletionClaim,
+  completedAt: string,
+  gameplayEvents: GameplayEvent[],
+  gameplaySeq: number,
+): Promise<void> {
+  await withDatabase(async (db) => {
+    await runInTransaction(db, async () => {
+      for (const event of gameplayEvents) {
+        await db.runAsync(
+          `INSERT OR IGNORE INTO gameplay_events
+             (event_id, session_id, kind, dmc_code, client_seq, occurred_at)
+           VALUES (?, ?, ?, ?, ?, ?)`,
+          event.eventId,
+          event.sessionId,
+          event.kind,
+          event.dmcCode,
+          event.clientSeq,
+          event.occurredAt,
+        );
+      }
+      await db.runAsync(
+        'INSERT OR REPLACE INTO gameplay_event_seq (session_id, seq) VALUES (?, ?)',
+        claim.localSessionId,
+        gameplaySeq,
+      );
+      await db.runAsync(
+        `UPDATE sessions
+         SET status = 'completed', completed_at = ?, updated_at = ?
+         WHERE id = ?`,
+        completedAt,
+        completedAt,
+        claim.localSessionId,
+      );
+      await db.runAsync(
+        `INSERT OR IGNORE INTO guest_completion_claims
+           (local_session_id, remote_session_id, device_id, completed_cells,
+            resolution, rejection_status, created_at, updated_at)
+         VALUES (?, ?, ?, ?, 'pending', NULL, ?, ?)`,
+        claim.localSessionId,
+        claim.remoteSessionId,
+        claim.deviceId,
+        claim.completedCells,
+        completedAt,
+        completedAt,
+      );
+    });
+  });
+}
+
+export async function getPendingGuestCompletionClaims(): Promise<PendingGuestCompletionClaim[]> {
+  return withDatabase(async (db) => {
+    const rows = await db.getAllAsync<{
+      local_session_id: string;
+      remote_session_id: string;
+      device_id: string;
+      completed_cells: number;
+    }>(
+      `SELECT local_session_id, remote_session_id, device_id, completed_cells
+       FROM guest_completion_claims
+       WHERE resolution = 'pending'
+       ORDER BY created_at ASC`,
+    );
+    return rows.map((row) => ({
+      localSessionId: row.local_session_id,
+      remoteSessionId: row.remote_session_id,
+      deviceId: row.device_id,
+      completedCells: row.completed_cells,
+    }));
+  });
+}
+
+export async function resolveGuestCompletionClaim(
+  localSessionId: string,
+  resolution: 'accepted' | 'rejected',
+  rejectionStatus: number | null = null,
+): Promise<void> {
+  await withDatabase(async (db) => {
+    await db.runAsync(
+      `UPDATE guest_completion_claims
+       SET resolution = ?, rejection_status = ?, updated_at = ?
+       WHERE local_session_id = ? AND resolution = 'pending'`,
+      resolution,
+      rejectionStatus,
+      new Date().toISOString(),
+      localSessionId,
+    );
   });
 }
 
