@@ -11,7 +11,6 @@ import {
   DAILY_TASK_DISTINCT_COLORS_TARGET,
   DAILY_TASK_KEYS,
   DailyTaskKey,
-  MIN_MS_PER_STITCH,
 } from './economy.constants';
 import { nextRewardDayResetAt, utcRewardDay } from './reward-day';
 
@@ -83,42 +82,13 @@ export class DailyTaskService {
         }
       }
 
-      // Group stitch actions by sessionId to apply the velocity check
-      const stitchActionsBySession = new Map<string, GameplayEventDto[]>();
-      for (const event of events) {
-        if (event.kind === 'stitch_action' && ownedSessionIds.has(event.sessionId) && !invalidEventIds.has(event.eventId)) {
-          let list = stitchActionsBySession.get(event.sessionId);
-          if (!list) {
-            list = [];
-            stitchActionsBySession.set(event.sessionId, list);
-          }
-          list.push(event);
-        }
-      }
-
-      // Velocity Check (AC for Gap 2): Reject stitch actions that are denser than physically plausible.
-      // We define the physical limit of manual stitching at 50 milliseconds (0.05 seconds) per stitch.
-      // Any consecutive stitch actions in the same session below that limit are dropped/skipped.
-      for (const [sessionId, sessionEvents] of stitchActionsBySession.entries()) {
-        const sorted = [...sessionEvents].sort((a, b) => {
-          const aTime = a.occurredAt ? new Date(a.occurredAt).getTime() : nowMs;
-          const bTime = b.occurredAt ? new Date(b.occurredAt).getTime() : nowMs;
-          return aTime - bTime;
-        });
-
-        for (let i = 1; i < sorted.length; i++) {
-          const prev = sorted[i - 1];
-          const curr = sorted[i];
-          const prevTime = prev.occurredAt ? new Date(prev.occurredAt).getTime() : nowMs;
-          const currTime = curr.occurredAt ? new Date(curr.occurredAt).getTime() : nowMs;
-          if (currTime - prevTime < MIN_MS_PER_STITCH) {
-            invalidEventIds.add(curr.eventId);
-            this.logger.warn(
-              `Rejecting event ${curr.eventId} in session ${sessionId} due to velocity limit (delta: ${currTime - prevTime}ms)`
-            );
-          }
-        }
-      }
+      // No per-event velocity floor runs here. A Stitch Sweep produces one
+      // Stitch Action for every newly filled cell within a single gesture, so
+      // consecutive stitch evidence is legitimately milliseconds apart. The
+      // 50 ms physical floor of ADR-0062 is an aggregate over a whole session
+      // and belongs to the Completion Claim validator, not to Daily Task
+      // evidence; Daily Task evidence is bounded by authentication, session
+      // ownership, and eventId deduplication instead (ADR-0063).
 
       const affectedRewardDays = new Set<string>();
 

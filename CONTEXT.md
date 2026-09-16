@@ -620,7 +620,7 @@ The moment every cell of the Active Thread Color has been filled. Any active Sti
 _Avoid_: Auto-next color, color finished, palette completion
 
 **Stitch Action**:
-A player action that turns an unfinished Pattern cell whose DMC Thread Color matches the Active Thread Color into a Completed Stitch and records a completed Progress Operation. It may be undone freely while the Stitching Session remains active.
+A player action that turns an unfinished Pattern cell whose DMC Thread Color matches the Active Thread Color into a Completed Stitch and records a completed Progress Operation. It may be undone freely while the Stitching Session remains active; Undo returns the cell to unfinished but does not retract the Stitch Action that already happened, so Daily Task counting never decreases, and stitching that cell again is a further Stitch Action.
 _Avoid_: Paint, color, mark
 
 **Completed Stitch**:

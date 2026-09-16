@@ -61,7 +61,13 @@ export const DAILY_TASK_COLOR_ACTIONS_MIN = 10;
 /** Task three_colors_10: distinct qualifying DMC colors required. */
 export const DAILY_TASK_DISTINCT_COLORS_TARGET = 3;
 
-/** Physical plausibility floor shared by gameplay evidence validators. */
+/**
+ * Physical plausibility floor for a whole Stitching Session, applied as an
+ * aggregate by the Completion Claim validator (ADR-0062). It is deliberately
+ * not a per-event Daily Task velocity limit: a Stitch Sweep fills many cells
+ * inside one gesture, so Daily Task evidence is bounded by ownership and
+ * deduplication instead (ADR-0063).
+ */
 export const MIN_MS_PER_STITCH = 50;
 
 export type DailyTaskKey = 'cells_100' | 'three_colors_10' | 'color_completion';
