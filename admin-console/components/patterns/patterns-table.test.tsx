@@ -14,6 +14,7 @@ function pattern(overrides: Partial<AdminPatternListItem>): AdminPatternListItem
     categoryCode: 'animals', createdAt: '2026-08-01T00:00:00.000Z', creatorName: 'Stitch Wish',
     id: 'official', patternType: 'official', previewUrl: '/preview.webp', publishedAt: '2026-08-01T00:00:00.000Z',
     status: 'available', title: 'Fox', unlockPriceTier: null, ...overrides,
+    stitchableCellCount: overrides.stitchableCellCount ?? null,
   };
 }
 

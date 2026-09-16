@@ -13,6 +13,7 @@ export interface AdminPatternListItem {
   status: PatternStatus;
   patternType: PatternType;
   unlockPriceTier: PatternUnlockPriceTier;
+  stitchableCellCount: number | null;
   previewUrl: string;
   publishedAt: string;
   createdAt: string;

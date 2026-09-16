@@ -4,6 +4,8 @@ import { CategoryEntity, CategoryLabelEntity, PatternEntity, TagEntity } from '.
 import { CATALOG_TITLE_MARKUP_MESSAGE } from '../catalog/catalog-title-markup';
 import { RELEASED_APP_DISPLAY_LOCALES } from '../catalog/released-locales.constant';
 import { AdminCatalogService } from './admin-catalog.service';
+import { OfficialPatternDraftEntity } from './entities';
+import type { RecordAuditLogInput } from './operator-audit-log.service';
 
 // Taxonomy writes require a label for every released App Display Language, so
 // specs build the complete set and only override the locales they assert on.
@@ -42,18 +44,31 @@ function pattern(overrides: Partial<PatternEntity> = {}): PatternEntity {
   });
 }
 
-function serviceWithTransactionPattern(value: PatternEntity) {
+function serviceWithTransactionPattern(
+  value: PatternEntity,
+  stitchableCellCount: number | null = null,
+) {
   const save = jest.fn((entity: PatternEntity) => Promise.resolve(entity));
   const findOne = jest.fn(() => Promise.resolve(value));
+  const draftFind = jest.fn(() => Promise.resolve(
+    stitchableCellCount === null
+      ? []
+      : [Object.assign(new OfficialPatternDraftEntity(), {
+          publishedPatternId: value.id,
+          stitchableCellCount,
+        })],
+  ));
   const manager = {
-    getRepository: jest.fn(() => ({ findOne, save })),
+    getRepository: jest.fn(() => ({ find: draftFind, findOne, save })),
   };
   const dataSource = {
     transaction: jest.fn((callback: (transactionManager: typeof manager) => unknown) =>
       Promise.resolve(callback(manager)),
     ),
   };
-  const auditLog = { record: jest.fn() };
+  const auditLog = {
+    record: jest.fn<Promise<void>, [unknown, RecordAuditLogInput]>(),
+  };
   const service = new AdminCatalogService(
     dataSource as never,
     { publicUrl: (key: string) => `https://cdn.test/${key}` } as never,
@@ -65,7 +80,7 @@ function serviceWithTransactionPattern(value: PatternEntity) {
     {} as never,
     {} as never,
   );
-  return { auditLog, save, service };
+  return { auditLog, draftFind, save, service };
 }
 
 describe('AdminCatalogService Pattern contract', () => {
@@ -85,8 +100,14 @@ describe('AdminCatalogService Pattern contract', () => {
       where: jest.fn().mockReturnThis(),
     };
     const patterns = { createQueryBuilder: jest.fn(() => queryBuilder) };
+    const draftFind = jest.fn().mockResolvedValue([
+      Object.assign(new OfficialPatternDraftEntity(), {
+        publishedPatternId: entity.id,
+        stitchableCellCount: 3_500,
+      }),
+    ]);
     const service = new AdminCatalogService(
-      {} as never,
+      { getRepository: jest.fn(() => ({ find: draftFind })) } as never,
       { publicUrl: (key: string) => `https://cdn.test/${key}` } as never,
       {} as never,
       patterns as never,
@@ -99,8 +120,80 @@ describe('AdminCatalogService Pattern contract', () => {
 
     const result = await service.listPatterns({ page: 1, pageSize: 20 });
 
-    expect(result.items[0]).toMatchObject({ patternType });
+    expect(result.items[0]).toMatchObject({ patternType, stitchableCellCount: 3_500 });
     expect(result.items[0]).not.toHaveProperty('creatorProfileId');
+    expect(draftFind).toHaveBeenCalledTimes(1);
+  });
+
+  it('resolves the stitchable-cell counts of a whole page in one draft query', async () => {
+    const withDraft = pattern();
+    const withoutDraft = pattern({ id: '00000000-0000-4000-8000-000000000002' });
+    const queryBuilder = {
+      addOrderBy: jest.fn().mockReturnThis(),
+      andWhere: jest.fn().mockReturnThis(),
+      createQueryBuilder: jest.fn(),
+      getManyAndCount: jest.fn().mockResolvedValue([[withDraft, withoutDraft], 2]),
+      orderBy: jest.fn().mockReturnThis(),
+      skip: jest.fn().mockReturnThis(),
+      take: jest.fn().mockReturnThis(),
+      where: jest.fn().mockReturnThis(),
+    };
+    const draftFind = jest.fn().mockResolvedValue([
+      Object.assign(new OfficialPatternDraftEntity(), {
+        publishedPatternId: withDraft.id,
+        stitchableCellCount: 3_500,
+      }),
+    ]);
+    const service = new AdminCatalogService(
+      { getRepository: jest.fn(() => ({ find: draftFind })) } as never,
+      { publicUrl: (key: string) => `https://cdn.test/${key}` } as never,
+      {} as never,
+      { createQueryBuilder: jest.fn(() => queryBuilder) } as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      {} as never,
+    );
+
+    const result = await service.listPatterns({ page: 1, pageSize: 20 });
+
+    expect(result.items.map((item) => item.stitchableCellCount)).toEqual([3_500, null]);
+    expect(draftFind).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns null stitchable cell count in detail when no publishing draft exists', async () => {
+    const entity = pattern();
+    const draftFind = jest.fn().mockResolvedValue([]);
+    const service = new AdminCatalogService(
+      { getRepository: jest.fn(() => ({ find: draftFind })) } as never,
+      { publicUrl: (key: string) => `https://cdn.test/${key}` } as never,
+      {} as never,
+      { findOne: jest.fn().mockResolvedValue(entity) } as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      {} as never,
+      {} as never,
+    );
+
+    await expect(service.getPatternById(entity.id)).resolves.toMatchObject({
+      id: entity.id,
+      stitchableCellCount: null,
+    });
+    expect(draftFind).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports the publishing draft stitchable-cell count on a status transition', async () => {
+    const entity = pattern();
+    const { auditLog, draftFind, service } = serviceWithTransactionPattern(entity, 3_500);
+
+    await expect(service.withdrawPattern('operator-1', entity.id, null)).resolves.toMatchObject({
+      stitchableCellCount: 3_500,
+    });
+    expect(draftFind).toHaveBeenCalledTimes(1);
+    const auditEntry = auditLog.record.mock.calls[0]?.[1];
+    expect(auditEntry).toMatchObject({ after: { stitchableCellCount: 3_500 } });
   });
 
   it('removes an Official Pattern without deleting its identity or stored object references', async () => {
@@ -334,6 +427,10 @@ describe('AdminCatalogService bulk removal', () => {
       action: 'pattern.bulk_remove', requestId: 'request-id',
       after: expect.objectContaining({ batchId: '00000000-0000-4000-8000-000000000099', reason: 'Confirmed policy removal' }),
     }));
+    const patternAudit = auditLog.record.mock.calls.find((call) =>
+      call[1].action === 'pattern.bulk_remove',
+    );
+    expect(patternAudit?.[1].after.pattern).not.toHaveProperty('stitchableCellCount');
     expect(auditLog.record).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({
       action: 'staffpick.bulk_remove_compact',
       requestId: 'request-id',

@@ -1,6 +1,6 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, EntityManager, Repository } from 'typeorm';
+import { DataSource, EntityManager, In, Repository } from 'typeorm';
 
 import {
   CategoryEntity,
@@ -15,7 +15,7 @@ import {
 import { CATALOG_TITLE_MARKUP_MESSAGE, titleContainsMarkup } from '../catalog/catalog-title-markup';
 import { OBJECT_STORAGE, ObjectStorage } from '../catalog/storage/object-storage.interface';
 import { MAX_TAG_CODES_PER_PATTERN } from './admin.constants';
-import { BulkPatternRemovalEntity } from './entities';
+import { BulkPatternRemovalEntity, OfficialPatternDraftEntity } from './entities';
 import { OperatorAuditLogService } from './operator-audit-log.service';
 import { RELEASED_APP_DISPLAY_LOCALES } from '../catalog/released-locales.constant';
 
@@ -27,6 +27,7 @@ export interface AdminPatternListItem {
   status: PatternStatus;
   patternType: 'official' | 'community';
   unlockPriceTier: string | null;
+  stitchableCellCount: number | null;
   previewUrl: string;
   publishedAt: string;
   createdAt: string;
@@ -101,8 +102,13 @@ export class AdminCatalogService {
       .take(options.pageSize);
 
     const [items, total] = await queryBuilder.getManyAndCount();
+    const stitchableCellCounts = await this.getStitchableCellCounts(
+      items.map((pattern) => pattern.id),
+    );
     return {
-      items: items.map((pattern) => this.formatListItem(pattern)),
+      items: items.map((pattern) =>
+        this.formatListItem(pattern, stitchableCellCounts.get(pattern.id) ?? null),
+      ),
       page: options.page,
       pageSize: options.pageSize,
       total,
@@ -117,7 +123,8 @@ export class AdminCatalogService {
     if (pattern === null) {
       throw new NotFoundException(`Pattern ${id} was not found`);
     }
-    return this.formatDetail(pattern);
+    const stitchableCellCounts = await this.getStitchableCellCounts([pattern.id]);
+    return this.formatDetail(pattern, stitchableCellCounts.get(pattern.id) ?? null);
   }
 
   async updateMetadata(
@@ -163,13 +170,17 @@ export class AdminCatalogService {
         tags.push(tag);
       }
 
-      const before = this.formatDetail(pattern);
+      // Metadata never changes the publishing draft's stitchable-cell count, so
+      // one read feeds both audit snapshots and the response.
+      const stitchableCellCount =
+        (await this.getStitchableCellCounts([pattern.id], manager)).get(pattern.id) ?? null;
+      const before = this.formatDetail(pattern, stitchableCellCount);
       pattern.title = dto.title;
       pattern.creatorName = dto.creatorName;
       pattern.categoryCode = dto.categoryCode;
       pattern.tags = tags;
       const saved = await patternRepository.save(pattern);
-      const after = this.formatDetail(saved);
+      const after = this.formatDetail(saved, stitchableCellCount);
 
       await this.auditLog.record(manager, {
         action: 'pattern.metadata.update',
@@ -270,7 +281,7 @@ export class AdminCatalogService {
       }
 
       const beforeById = new Map(
-        orderedPatterns.map((pattern) => [pattern.id, this.formatListItem(pattern)]),
+        orderedPatterns.map((pattern) => [pattern.id, this.formatAuditListItem(pattern)]),
       );
       for (const pattern of orderedPatterns) {
         pattern.status = 'removed';
@@ -296,7 +307,7 @@ export class AdminCatalogService {
       for (const pattern of orderedPatterns) {
         await this.auditLog.record(manager, {
           action: 'pattern.bulk_remove',
-          after: { batchId: canonicalBatchId, pattern: this.formatListItem(pattern), reason: trimmedReason },
+          after: { batchId: canonicalBatchId, pattern: this.formatAuditListItem(pattern), reason: trimmedReason },
           before: { batchId: canonicalBatchId, pattern: beforeById.get(pattern.id), reason: trimmedReason },
           operatorAccountId,
           outcome: 'success',
@@ -718,12 +729,14 @@ export class AdminCatalogService {
         );
       }
 
-      const before = this.formatDetail(pattern);
+      const stitchableCellCount =
+        (await this.getStitchableCellCounts([pattern.id], manager)).get(pattern.id) ?? null;
+      const before = this.formatDetail(pattern, stitchableCellCount);
       if (pattern.status !== options.to) {
         pattern.status = options.to;
         await patternRepository.save(pattern);
       }
-      const after = this.formatDetail(pattern);
+      const after = this.formatDetail(pattern, stitchableCellCount);
 
       await this.auditLog.record(manager, {
         action: options.action,
@@ -777,7 +790,9 @@ export class AdminCatalogService {
       }));
   }
 
-  private formatListItem(pattern: PatternEntity): AdminPatternListItem {
+  private formatAuditListItem(
+    pattern: PatternEntity,
+  ): Omit<AdminPatternListItem, 'stitchableCellCount'> {
     return {
       categoryCode: pattern.categoryCode,
       createdAt: pattern.createdAt.toISOString(),
@@ -792,9 +807,22 @@ export class AdminCatalogService {
     };
   }
 
-  private formatDetail(pattern: PatternEntity): AdminPatternDetail {
+  private formatListItem(
+    pattern: PatternEntity,
+    stitchableCellCount: number | null,
+  ): AdminPatternListItem {
     return {
-      ...this.formatListItem(pattern),
+      ...this.formatAuditListItem(pattern),
+      stitchableCellCount,
+    };
+  }
+
+  private formatDetail(
+    pattern: PatternEntity,
+    stitchableCellCount: number | null,
+  ): AdminPatternDetail {
+    return {
+      ...this.formatListItem(pattern, stitchableCellCount),
       height: pattern.height,
       paletteSize: pattern.paletteSize,
       tags: (pattern.tags ?? []).map((tag) => {
@@ -804,5 +832,27 @@ export class AdminCatalogService {
       }),
       width: pattern.width,
     };
+  }
+
+  private async getStitchableCellCounts(
+    patternIds: string[],
+    manager?: EntityManager,
+  ): Promise<Map<string, number | null>> {
+    if (patternIds.length === 0) {
+      return new Map();
+    }
+    const drafts = await (manager ?? this.dataSource)
+      .getRepository(OfficialPatternDraftEntity)
+      .find({
+        select: { publishedPatternId: true, stitchableCellCount: true },
+        where: { publishedPatternId: In(patternIds) },
+      });
+    return new Map(
+      drafts.flatMap((draft) =>
+        draft.publishedPatternId === null
+          ? []
+          : [[draft.publishedPatternId, draft.stitchableCellCount] as const],
+      ),
+    );
   }
 }
