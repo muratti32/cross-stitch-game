@@ -29,6 +29,9 @@ export interface DailyTaskBoardView {
   tasks: DailyTaskStatus[];
 }
 
+/** Shared by the future check and the Stitching Session lower bound (ADR-0064). */
+const CLOCK_SKEW_TOLERANCE_MS = 60_000;
+
 /**
  * A `GameplayEventDto` known to be owned, not future-dated, and stamped with
  * its own Reward Day. `eventId`/`sessionId` are lowercased because Postgres
@@ -65,18 +68,21 @@ export class DailyTaskService {
     const ledgerPrincipal = toLedgerPrincipal(principal);
 
     return this.dataSource.transaction(async (manager) => {
-      // Lowercased sessionIds (see ValidEvent).
+      // Lowercased sessionIds (see ValidEvent). Ownership and each session's
+      // creation time (the ADR-0064 lower bound) come from the same query.
       const sessionIds = Array.from(new Set(events.map(e => e.sessionId.toLowerCase())));
-      let ownedSessionIds = new Set<string>();
+      const sessionCreatedAt = new Map<string, Date>();
       if (sessionIds.length > 0) {
-        const ownedRows = await manager.query<{ id: string }[]>(
-          `SELECT id FROM sessions.stitching_sessions
+        const ownedRows = await manager.query<{ id: string; created_at: Date }[]>(
+          `SELECT id, created_at FROM sessions.stitching_sessions
            WHERE id = ANY($1::uuid[])
              AND principal_type = $2
              AND principal_id = $3`,
           [sessionIds, ledgerPrincipal.type, principal.id]
         );
-        ownedSessionIds = new Set(ownedRows.map(r => r.id));
+        for (const row of ownedRows) {
+          sessionCreatedAt.set(row.id, new Date(row.created_at));
+        }
       }
 
       const invalidEventIds = new Set<string>();
@@ -87,7 +93,7 @@ export class DailyTaskService {
       for (const event of events) {
         if (event.occurredAt) {
           const occurredAtVal = new Date(event.occurredAt);
-          if (occurredAtVal.getTime() > nowMs + 60000) { // 60 seconds tolerance for clock skew
+          if (occurredAtVal.getTime() > nowMs + CLOCK_SKEW_TOLERANCE_MS) {
             invalidEventIds.add(event.eventId.toLowerCase());
             this.logger.warn(`Rejecting event ${event.eventId} because occurredAt is in the future: ${event.occurredAt}`);
           }
@@ -100,7 +106,8 @@ export class DailyTaskService {
       // 50 ms physical floor of ADR-0062 is an aggregate over a whole session
       // and belongs to the Completion Claim validator, not to Daily Task
       // evidence; Daily Task evidence is bounded by authentication, session
-      // ownership, and eventId deduplication instead (ADR-0063).
+      // ownership, and eventId deduplication instead (ADR-0063), and
+      // Stitching Session creation (ADR-0064).
 
       const affectedRewardDays = new Set<string>();
       // First occurrence wins; without this a duplicate eventId would be
@@ -108,15 +115,27 @@ export class DailyTaskService {
       const dedupedValidEvents = new Map<string, ValidEvent>();
 
       // For each owned, valid event:
+      let belowSessionCreationCount = 0;
+      const belowSessionCreationSessionIds = new Set<string>();
       for (const event of events) {
         const sessionId = event.sessionId.toLowerCase();
         const eventId = event.eventId.toLowerCase();
-        if (!ownedSessionIds.has(sessionId) || invalidEventIds.has(eventId)) {
+        const sessionCreated = sessionCreatedAt.get(sessionId);
+        if (!sessionCreated || invalidEventIds.has(eventId)) {
           continue;
         }
 
         // Parsed once so it and the Reward Day below agree (see ValidEvent).
         const occurredAtDate = event.occurredAt ? new Date(event.occurredAt) : null;
+
+        // Evidence can't predate the Stitching Session it's evidence for
+        // (ADR-0064); tolerate the same clock skew as the future check.
+        if (occurredAtDate && occurredAtDate.getTime() < sessionCreated.getTime() - CLOCK_SKEW_TOLERANCE_MS) {
+          belowSessionCreationCount++;
+          belowSessionCreationSessionIds.add(sessionId);
+          continue;
+        }
+
         // Derive each event's Reward Day from its own evidence (occurredAt) if present, otherwise fallback to server time
         const eventRewardDay = occurredAtDate ? utcRewardDay(occurredAtDate) : utcRewardDay();
         affectedRewardDays.add(eventRewardDay);
@@ -124,6 +143,12 @@ export class DailyTaskService {
         if (!dedupedValidEvents.has(eventId)) {
           dedupedValidEvents.set(eventId, { ...event, eventId, sessionId, eventRewardDay, occurredAtDate });
         }
+      }
+
+      if (belowSessionCreationCount > 0) {
+        this.logger.warn(
+          `Rejected ${belowSessionCreationCount} event(s) dated before their Stitching Session's creation, session(s): ${[...belowSessionCreationSessionIds].join(', ')}`,
+        );
       }
 
       const validEvents = [...dedupedValidEvents.values()];

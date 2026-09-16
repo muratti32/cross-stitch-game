@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import type { DataSource, EntityManager } from 'typeorm';
 
 import type { AuthPrincipal } from '../auth/auth.types';
@@ -10,6 +11,7 @@ import type { GameplayEventDto } from './daily-task.dto';
 
 const GUEST_ID = '11111111-1111-4111-8111-111111111111';
 const SESSION_ID = '1bc5c633-8546-40f5-b408-926b652a6ed9';
+const OTHER_SESSION_ID = '2bc5c633-8546-40f5-b408-926b652a6ed9';
 
 function uuid(n: number): string {
   const tail = n.toString(16).padStart(12, '0');
@@ -56,13 +58,27 @@ type GrantDailyTaskMock = jest.Mock<
 // (e.g. the batched insert's unnest arrays) gets those params typed, not `any`.
 type QueryMock = jest.Mock<unknown, [string, unknown[]?]>;
 
-function makeService(options: { ownsSession?: boolean } = {}): {
+function makeService(options: {
+  ownsSession?: boolean;
+  // Either one ISO created_at applied to every owned session, or a map of
+  // lowercased sessionId to its own ISO created_at, for tests that own more
+  // than one session with different ages. Defaults to 2 days ago: earlier
+  // than every fixed-past-day fixture below (e.g. "yesterday noon UTC")
+  // without needing every test to pass it.
+  sessionCreatedAt?: string | Record<string, string>;
+} = {}): {
   service: DailyTaskService;
   insertedStitchEventIds: string[];
   grantDailyTask: GrantDailyTaskMock;
   query: QueryMock;
 } {
   const ownsSession = options.ownsSession ?? true;
+  const defaultSessionCreatedAt = new Date(Date.now() - 2 * 24 * 60 * 60_000).toISOString();
+  const sessionCreatedAtFor = (sessionId: string): string => {
+    if (options.sessionCreatedAt === undefined) return defaultSessionCreatedAt;
+    if (typeof options.sessionCreatedAt === 'string') return options.sessionCreatedAt;
+    return options.sessionCreatedAt[sessionId] ?? defaultSessionCreatedAt;
+  };
   const insertedStitchEventIds: string[] = [];
   // ON CONFLICT DO NOTHING across the whole service lifetime: an eventId seen
   // in an earlier call (or earlier in the same unnest batch) never inserts again.
@@ -83,7 +99,10 @@ function makeService(options: { ownsSession?: boolean } = {}): {
       // casing a client queried with — model that here so a service that
       // forgets to normalize before comparing fails this mock's tests too.
       return ownsSession
-        ? (params?.[0] as string[]).map((id) => ({ id: id.toLowerCase() }))
+        ? (params?.[0] as string[]).map((id) => {
+            const lower = id.toLowerCase();
+            return { id: lower, created_at: sessionCreatedAtFor(lower) };
+          })
         : [];
     }
     if (sql.includes('INSERT INTO economy.gameplay_events')) {
@@ -175,6 +194,13 @@ const principal: AuthPrincipal = {
 } as AuthPrincipal;
 
 describe('DailyTaskService.ingest — Stitch Sweep evidence', () => {
+  // Restores any jest.spyOn (e.g. the Logger.prototype.warn spy below) even
+  // when the test that installed it fails, so a failing assertion can't
+  // leak a silenced logger into later tests.
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('counts every newly filled cell of a Stitch Sweep as a Stitch Action', async () => {
     const { service, insertedStitchEventIds } = makeService();
     const events = sweepEvents(20, new Date().toISOString());
@@ -260,7 +286,6 @@ describe('DailyTaskService.ingest — Stitch Sweep evidence', () => {
   });
 
   it('settles an offline backlog on the Reward Day each event happened in', async () => {
-    const { service, grantDailyTask } = makeService();
     // A player who stitched offline yesterday and resumed today flushes both
     // days in one batch. Each event's own occurredAt owns its Reward Day, so
     // yesterday's finished task is still granted against yesterday.
@@ -273,6 +298,10 @@ describe('DailyTaskService.ingest — Stitch Sweep evidence', () => {
         12,
       ),
     );
+    // Explicitly before the backlog: the session existed a full day before
+    // the earliest evidence in it, well outside the ADR-0064 tolerance.
+    const sessionCreatedAt = new Date(yesterdayNoon.getTime() - 24 * 60 * 60_000).toISOString();
+    const { service, grantDailyTask } = makeService({ sessionCreatedAt });
 
     await service.ingest(principal, [
       ...sweepEvents(DAILY_TASK_CELLS_TARGET, yesterdayNoon.toISOString()),
@@ -284,6 +313,99 @@ describe('DailyTaskService.ingest — Stitch Sweep evidence', () => {
       .map((call) => call[2]);
     expect(grantedDays).toEqual([utcRewardDay(yesterdayNoon)]);
     expect(grantedDays).not.toContain(utcRewardDay());
+  });
+
+  it('does not count evidence dated days before its Stitching Session was created', async () => {
+    const sessionCreatedAt = new Date();
+    const { service, insertedStitchEventIds, grantDailyTask } = makeService({
+      sessionCreatedAt: sessionCreatedAt.toISOString(),
+    });
+    const daysBeforeCreation = new Date(sessionCreatedAt.getTime() - 3 * 24 * 60 * 60_000);
+
+    const board = await service.ingest(principal, sweepEvents(20, daysBeforeCreation.toISOString()));
+
+    expect(insertedStitchEventIds).toHaveLength(0);
+    expect(board.tasks.find((t) => t.key === 'cells_100')?.progress).toBe(0);
+    expect(grantDailyTask).not.toHaveBeenCalled();
+  });
+
+  it('counts evidence dated within the clock-skew tolerance before its Stitching Session was created', async () => {
+    const sessionCreatedAt = new Date();
+    const { service, insertedStitchEventIds } = makeService({
+      sessionCreatedAt: sessionCreatedAt.toISOString(),
+    });
+    const withinTolerance = new Date(sessionCreatedAt.getTime() - 30_000); // 30 s, within the 60 s tolerance
+
+    await service.ingest(principal, sweepEvents(20, withinTolerance.toISOString()));
+
+    expect(insertedStitchEventIds).toHaveLength(20);
+  });
+
+  it('logs a below-bound rejection once per batch, not once per event', async () => {
+    const warnSpy = jest.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+    const sessionCreatedAt = new Date();
+    const { service, insertedStitchEventIds } = makeService({
+      sessionCreatedAt: sessionCreatedAt.toISOString(),
+    });
+    const daysBeforeCreation = new Date(sessionCreatedAt.getTime() - 3 * 24 * 60 * 60_000);
+
+    await service.ingest(principal, sweepEvents(20, daysBeforeCreation.toISOString()));
+
+    expect(insertedStitchEventIds).toHaveLength(0);
+    const belowBoundWarnings = warnSpy.mock.calls.filter(([message]) =>
+      String(message).includes('Stitching Session'),
+    );
+    expect(belowBoundWarnings).toHaveLength(1);
+  });
+
+  it("bounds evidence against its own session's creation, not another owned session's", async () => {
+    const oldCreatedAt = new Date(Date.now() - 30 * 24 * 60 * 60_000); // 30 days ago
+    const newCreatedAt = new Date(Date.now() - 60 * 60_000); // 1 hour ago
+    const { service, insertedStitchEventIds } = makeService({
+      sessionCreatedAt: {
+        [SESSION_ID.toLowerCase()]: oldCreatedAt.toISOString(),
+        [OTHER_SESSION_ID.toLowerCase()]: newCreatedAt.toISOString(),
+      },
+    });
+    // Both events share one occurredAt: 5 days after the OLD session's creation
+    // but weeks before the NEW session's. Valid for the old session's evidence;
+    // invalid for the new session's — but only if each is checked against its
+    // own session rather than the oldest owned session or whichever
+    // ownership row happens to come back first.
+    const betweenCreations = new Date(oldCreatedAt.getTime() + 5 * 24 * 60 * 60_000).toISOString();
+    const eventForOldSession: GameplayEventDto = {
+      ...sweepEvents(1, betweenCreations, 9400)[0],
+      sessionId: SESSION_ID,
+    };
+    const eventForNewSession: GameplayEventDto = {
+      ...sweepEvents(1, betweenCreations, 9401)[0],
+      sessionId: OTHER_SESSION_ID,
+    };
+
+    await service.ingest(principal, [eventForOldSession, eventForNewSession]);
+
+    expect(insertedStitchEventIds).toHaveLength(1);
+    expect(insertedStitchEventIds).toContain(eventForOldSession.eventId);
+    expect(insertedStitchEventIds).not.toContain(eventForNewSession.eventId);
+  });
+
+  it('counts evidence with no occurredAt against a recently created session', async () => {
+    const { service, insertedStitchEventIds } = makeService({
+      sessionCreatedAt: new Date().toISOString(),
+    });
+    // No occurredAt: falls back to server time for its Reward Day and must
+    // not be treated as before creation just because it has no date to compare.
+    const event: GameplayEventDto = {
+      eventId: uuid(9300),
+      kind: 'stitch_action',
+      sessionId: SESSION_ID,
+      dmcCode: '310',
+      clientSeq: 1,
+    };
+
+    await service.ingest(principal, [event]);
+
+    expect(insertedStitchEventIds).toHaveLength(1);
   });
 
   it('deduplicates replayed evidence by eventId', async () => {
@@ -357,7 +479,9 @@ describe('DailyTaskService.ingest — Stitch Sweep evidence', () => {
   });
 
   it('parses occurredAt once, so the stored value and the derived Reward Day agree for a zone-less timestamp', async () => {
-    const { service, query } = makeService();
+    // Session predates the fixed occurredAt below by a wide margin so the
+    // ADR-0064 lower bound never interferes with what this test checks.
+    const { service, query } = makeService({ sessionCreatedAt: '2020-01-01T00:00:00Z' });
     // No offset: JS and Postgres can read this differently if the raw string
     // ever reaches Postgres instead of a Date parsed by this service.
     const zoneless = '2026-01-01T00:30:00';
