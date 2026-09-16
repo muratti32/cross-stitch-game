@@ -2,6 +2,7 @@ import { getUnackedGameplayEvents, markGameplayEventsAcked } from '../local-db';
 import { postGameplayEvents } from '../api/dailyTasks';
 import { queryClient } from '../providers';
 import { captureGameplayEvent } from '../analytics/gameplayEvents';
+import { flushPendingGuestCompletionClaims } from './guestCompletionClaimEngine';
 
 const FLUSH_BATCH_LIMIT = 500;
 
@@ -51,4 +52,9 @@ export async function flushGameplayEvents(): Promise<void> {
   if (flushedAny) {
     queryClient.invalidateQueries({ queryKey: ['economy', 'dailyTasks'] });
   }
+}
+
+export async function flushGameplayEventsAndCompletionClaims(): Promise<void> {
+  await flushGameplayEvents();
+  await flushPendingGuestCompletionClaims();
 }

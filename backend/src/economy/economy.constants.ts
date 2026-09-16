@@ -61,6 +61,9 @@ export const DAILY_TASK_COLOR_ACTIONS_MIN = 10;
 /** Task three_colors_10: distinct qualifying DMC colors required. */
 export const DAILY_TASK_DISTINCT_COLORS_TARGET = 3;
 
+/** Physical plausibility floor shared by gameplay evidence validators. */
+export const MIN_MS_PER_STITCH = 50;
+
 export type DailyTaskKey = 'cells_100' | 'three_colors_10' | 'color_completion';
 export const DAILY_TASK_KEYS: readonly DailyTaskKey[] = [
   'cells_100',
@@ -69,5 +72,4 @@ export const DAILY_TASK_KEYS: readonly DailyTaskKey[] = [
 ];
 
 export const AD_PLACEMENT_REWARDED = 'rewarded_ad';
-
 

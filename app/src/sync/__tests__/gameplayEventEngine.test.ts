@@ -1,7 +1,11 @@
-import { flushGameplayEvents } from '../gameplayEventEngine';
+import {
+  flushGameplayEvents,
+  flushGameplayEventsAndCompletionClaims,
+} from '../gameplayEventEngine';
 import * as localDb from '../../local-db';
 import * as api from '../../api/dailyTasks';
 import * as analytics from '../../analytics/gameplayEvents';
+import * as guestCompletion from '../guestCompletionClaimEngine';
 import { queryClient } from '../../providers';
 
 jest.mock('../../local-db', () => ({
@@ -17,9 +21,14 @@ jest.mock('../../analytics/gameplayEvents', () => ({
   captureGameplayEvent: jest.fn(),
 }));
 
-const mockedDb = localDb as jest.Mocked<typeof localDb>;
-const mockedApi = api as jest.Mocked<typeof api>;
-const mockedAnalytics = analytics as jest.Mocked<typeof analytics>;
+jest.mock('../guestCompletionClaimEngine', () => ({
+  flushPendingGuestCompletionClaims: jest.fn(),
+}));
+
+const mockedDb = jest.mocked(localDb);
+const mockedApi = jest.mocked(api);
+const mockedAnalytics = jest.mocked(analytics);
+const mockedGuestCompletion = jest.mocked(guestCompletion);
 
 const dailyTaskBoard = {
   rewardDay: '2026-07-22',
@@ -31,6 +40,7 @@ const dailyTaskBoard = {
 describe('flushGameplayEvents', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockedGuestCompletion.flushPendingGuestCompletionClaims.mockResolvedValue(undefined);
   });
 
   it('flushes a single batch under 500 and marks them acked', async () => {
@@ -229,6 +239,20 @@ describe('flushGameplayEvents', () => {
       'daily_task_completed',
       { task_key: 'cells_100' },
       'daily-task:2026-07-22:cells_100',
+    );
+  });
+
+  it('flushes Guest gameplay evidence before claiming completion', async () => {
+    mockedDb.getUnackedGameplayEvents.mockResolvedValueOnce([]);
+
+    await flushGameplayEventsAndCompletionClaims();
+
+    expect(mockedDb.getUnackedGameplayEvents).toHaveBeenCalledTimes(1);
+    expect(mockedGuestCompletion.flushPendingGuestCompletionClaims).toHaveBeenCalledTimes(1);
+    expect(
+      mockedDb.getUnackedGameplayEvents.mock.invocationCallOrder[0],
+    ).toBeLessThan(
+      mockedGuestCompletion.flushPendingGuestCompletionClaims.mock.invocationCallOrder[0],
     );
   });
 });

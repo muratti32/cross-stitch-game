@@ -11,6 +11,7 @@ import {
   DAILY_TASK_DISTINCT_COLORS_TARGET,
   DAILY_TASK_KEYS,
   DailyTaskKey,
+  MIN_MS_PER_STITCH,
 } from './economy.constants';
 import { nextRewardDayResetAt, utcRewardDay } from './reward-day';
 
@@ -97,7 +98,7 @@ export class DailyTaskService {
 
       // Velocity Check (AC for Gap 2): Reject stitch actions that are denser than physically plausible.
       // We define the physical limit of manual stitching at 50 milliseconds (0.05 seconds) per stitch.
-      // Any consecutive stitch actions in the same session with a time delta less than 50ms are dropped/skipped.
+      // Any consecutive stitch actions in the same session below that limit are dropped/skipped.
       for (const [sessionId, sessionEvents] of stitchActionsBySession.entries()) {
         const sorted = [...sessionEvents].sort((a, b) => {
           const aTime = a.occurredAt ? new Date(a.occurredAt).getTime() : nowMs;
@@ -110,7 +111,7 @@ export class DailyTaskService {
           const curr = sorted[i];
           const prevTime = prev.occurredAt ? new Date(prev.occurredAt).getTime() : nowMs;
           const currTime = curr.occurredAt ? new Date(curr.occurredAt).getTime() : nowMs;
-          if (currTime - prevTime < 50) {
+          if (currTime - prevTime < MIN_MS_PER_STITCH) {
             invalidEventIds.add(curr.eventId);
             this.logger.warn(
               `Rejecting event ${curr.eventId} in session ${sessionId} due to velocity limit (delta: ${currTime - prevTime}ms)`

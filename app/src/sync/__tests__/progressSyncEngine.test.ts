@@ -1,6 +1,7 @@
-import { syncSession } from '../progressSyncEngine';
+import { completeSession, syncSession } from '../progressSyncEngine';
 import * as localDb from '../../local-db';
 import * as api from '../../api/progressSync';
+import { queryClient } from '../../providers';
 
 jest.mock('../../local-db', () => ({
   getUnackedProgressOps: jest.fn(),
@@ -11,10 +12,11 @@ jest.mock('../../local-db', () => ({
 
 jest.mock('../../api/progressSync', () => ({
   syncProgress: jest.fn(),
+  completeProgress: jest.fn(),
 }));
 
-const mockedDb = localDb as jest.Mocked<typeof localDb>;
-const mockedApi = api as jest.Mocked<typeof api>;
+const mockedDb = jest.mocked(localDb);
+const mockedApi = jest.mocked(api);
 
 describe('syncSession', () => {
   beforeEach(() => {
@@ -131,5 +133,21 @@ describe('syncSession', () => {
 
     expect(completed[2]).toBe(1);
     expect(outcome.conflictedCells).toEqual([2]);
+  });
+
+  it('keeps the Account completion request body unchanged', async () => {
+    const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
+    mockedApi.completeProgress.mockResolvedValue({
+      revision: 5,
+      terminalCompleted: true,
+      firstCompletionReward: { amount: 25, balance: 40 },
+    });
+
+    await expect(completeSession('remote-1', 'devA')).resolves.toBe(true);
+    expect(mockedApi.completeProgress).toHaveBeenCalledWith('remote-1', 'devA');
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: ['economy', 'balance'],
+    });
+    invalidateSpy.mockRestore();
   });
 });

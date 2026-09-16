@@ -1,4 +1,10 @@
-import { ConflictException, GoneException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  GoneException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 
 import { PrincipalType } from '../auth/entities';
@@ -14,12 +20,18 @@ import type {
 } from './progress-sync.dto';
 import { ProgressCheckpointService } from './progress-checkpoint.service';
 import { CoinLedgerRepository } from '../economy/coin-ledger.repository';
+import { MIN_MS_PER_STITCH } from '../economy/economy.constants';
 import { PromotionService } from '../promotion/promotion.service';
 
 interface SessionRecord {
   id: string;
   principalType: string;
   principalId: string;
+}
+
+interface GuestSessionRecord extends SessionRecord {
+  status: string;
+  createdAt: Date;
 }
 
 interface SyncStateRecord {
@@ -60,6 +72,14 @@ interface PatternProgressRecord {
   completedCount: string;
 }
 
+interface GuestCompletionPatternRecord {
+  width: number;
+  height: number;
+  visibility: string;
+  patternId: string;
+  elapsedMs: string;
+}
+
 export interface ProgressAcknowledgement {
   opId: string;
   status: 'duplicate' | 'superseded' | 'applied';
@@ -94,7 +114,7 @@ export interface ProgressCompleteResult {
   terminalCompleted: true;
   /**
    * Present only when this call minted the First Completion Reward (ADR-0011):
-   * an eligible catalog Pattern completed for the first time by this account.
+   * an eligible catalog Pattern completed for the first time by this principal.
    * Absent on replays, already-completed sessions, and Personal Patterns.
    */
   firstCompletionReward?: FirstCompletionRewardSummary;
@@ -249,7 +269,23 @@ export class ProgressSyncService {
     dto: CompleteProgressDto,
   ): Promise<ProgressCompleteResult> {
     await this.promotionService.assertNotLocked(principal.id, principal.type);
-    void dto;
+    if (principal.type === PrincipalType.Guest) {
+      const completedCells = dto.completedCells;
+      if (completedCells === undefined) {
+        throw new BadRequestException({
+          code: 'completed_cells_required',
+        });
+      }
+      return this.dataSource.transaction((manager) =>
+        this.completeGuestSession(
+          manager,
+          principal,
+          sessionId,
+          completedCells,
+        ),
+      );
+    }
+
     return this.dataSource.transaction(async (manager) => {
       await this.requireAccountSession(manager, principal, sessionId);
       await this.lockSession(manager, sessionId);
@@ -318,6 +354,128 @@ export class ProgressSyncService {
         terminalCompleted: true,
         firstCompletionReward,
       };
+    });
+  }
+
+  private async completeGuestSession(
+    manager: EntityManager,
+    principal: AuthPrincipal,
+    sessionId: string,
+    completedCells: number,
+  ): Promise<ProgressCompleteResult> {
+    const sessions = await manager.query<readonly GuestSessionRecord[]>(
+      `SELECT id,
+              principal_type AS "principalType",
+              principal_id AS "principalId",
+              status,
+              created_at AS "createdAt"
+       FROM sessions.stitching_sessions
+       WHERE id = $1
+         AND principal_type = 'guest'
+         AND principal_id = $2
+       FOR UPDATE`,
+      [sessionId, principal.id],
+    );
+    const session = sessions[0] ?? null;
+    if (
+      !session ||
+      session.principalType !== 'guest' ||
+      session.principalId !== principal.id
+    ) {
+      throw new NotFoundException('Session not found');
+    }
+
+    await this.assertPatternNotRemoved(manager, sessionId);
+
+    const patterns = await manager.query<readonly GuestCompletionPatternRecord[]>(
+      `SELECT p.width,
+              p.height,
+              p.visibility,
+              p.id AS "patternId",
+              FLOOR(EXTRACT(EPOCH FROM (now() - s.created_at)) * 1000)::bigint AS "elapsedMs"
+       FROM sessions.stitching_sessions s
+       INNER JOIN catalog.patterns p ON p.id = s.pattern_id
+       WHERE s.id = $1`,
+      [sessionId],
+    );
+    const pattern = patterns[0];
+    if (!pattern) {
+      throw new NotFoundException('Session not found');
+    }
+
+    if (session.status === 'completed') {
+      return { revision: 0, terminalCompleted: true };
+    }
+
+    const cellCount = pattern.width * pattern.height;
+    if (completedCells !== cellCount) {
+      this.throwImplausibleCompletion('completed_cells');
+    }
+
+    const evidence = await manager.query<readonly { exists: boolean }[]>(
+      `SELECT EXISTS(
+         SELECT 1
+         FROM economy.gameplay_events
+         WHERE principal_type = 'guest'
+           AND principal_id = $1
+           AND session_id = $2
+           AND kind = 'stitch_action'
+       ) AS "exists"`,
+      [principal.id, sessionId],
+    );
+    if (!(evidence[0]?.exists ?? false)) {
+      this.throwImplausibleCompletion('stitch_action');
+    }
+
+    if (Number(pattern.elapsedMs) < cellCount * MIN_MS_PER_STITCH) {
+      this.throwImplausibleCompletion('elapsed_time');
+    }
+
+    await manager.query<readonly SessionRecord[]>(
+      `UPDATE sessions.stitching_sessions
+       SET status = 'completed', completed_at = COALESCE(completed_at, now())
+       WHERE id = $1 AND status <> 'completed'`,
+      [sessionId],
+    );
+    // Guest Data Promotion reassigns this session to the Registered Account,
+    // after which account progress sync reads its sync state. Without a
+    // terminal marker a late device op would reopen completed history, so the
+    // guest claim records the same terminal state the account path writes.
+    await this.ensureSyncState(manager, sessionId);
+    await manager.query<readonly SyncStateRecord[]>(
+      `UPDATE sessions.session_sync_state
+       SET terminal_completed_at = COALESCE(terminal_completed_at, now()), updated_at = now()
+       WHERE session_id = $1`,
+      [sessionId],
+    );
+
+    let firstCompletionReward: FirstCompletionRewardSummary | undefined;
+    if (pattern.visibility === 'catalog') {
+      const grant = await this.coinLedger.grantFirstCompletion(
+        manager,
+        { type: 'guest', id: principal.id },
+        pattern.patternId,
+        cellCount,
+      );
+      if (grant.granted) {
+        firstCompletionReward = {
+          amount: grant.amount,
+          balance: grant.balance,
+        };
+      }
+    }
+
+    return {
+      revision: 0,
+      terminalCompleted: true,
+      firstCompletionReward,
+    };
+  }
+
+  private throwImplausibleCompletion(check: string): never {
+    throw new ConflictException({
+      code: 'implausible_completion',
+      check,
     });
   }
 
