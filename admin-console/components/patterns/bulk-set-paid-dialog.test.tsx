@@ -19,7 +19,7 @@ describe('BulkSetPaidDialog', () => {
       { afterTier: 'small', beforeTier: null, grandfatheredCount: 3, outcome: 'changed', patternId: 'fox' },
       { errorCode: 'stitchable_cell_count_unknown', outcome: 'failed', patternId: 'owl' },
     ] });
-    const base = { categoryCode: 'animals', createdAt: '', creatorName: 'CrossCraft', patternType: 'official' as const, previewUrl: '', publishedAt: '', status: 'available' as const, unlockPriceTier: null };
+    const base = { categoryCode: 'animals', createdAt: '', creatorName: 'CrossCraft', patternType: 'official' as const, previewUrl: '', publishedAt: '', status: 'available' as const, stitchableCellCount: null, unlockPriceTier: null };
     const user = userEvent.setup();
     render(<BulkSetPaidDialog patterns={[
       { ...base, id: 'fox', title: 'Fox' }, { ...base, id: 'owl', title: 'Owl' },
@@ -36,7 +36,7 @@ describe('BulkSetPaidDialog', () => {
     const user = userEvent.setup();
     render(<BulkSetPaidDialog patterns={[{
       categoryCode: 'animals', createdAt: '', creatorName: 'CrossCraft', id: 'fox', patternType: 'official',
-      previewUrl: '', publishedAt: '', status: 'available', title: 'Fox', unlockPriceTier: null,
+      previewUrl: '', publishedAt: '', status: 'available', stitchableCellCount: null, title: 'Fox', unlockPriceTier: null,
     }]} paid open onOpenChange={vi.fn()} onSuccess={vi.fn()} />);
     await user.click(screen.getByRole('button', { name: 'Make paid' }));
     expect((await screen.findByRole('alert')).textContent).toContain('Network failed');
@@ -49,7 +49,7 @@ describe('BulkSetPaidDialog', () => {
     const user = userEvent.setup();
     render(<BulkSetPaidDialog patterns={[{
       categoryCode: 'animals', createdAt: '', creatorName: 'CrossCraft', id: 'fox', patternType: 'official',
-      previewUrl: '', publishedAt: '', status: 'available', title: 'Fox', unlockPriceTier: null,
+      previewUrl: '', publishedAt: '', status: 'available', stitchableCellCount: null, title: 'Fox', unlockPriceTier: null,
     }]} paid open onOpenChange={vi.fn()} onSuccess={onSuccess} />);
     await user.click(screen.getByRole('button', { name: 'Make paid' }));
     await screen.findByRole('heading', { name: 'Paid change results' });
@@ -59,7 +59,7 @@ describe('BulkSetPaidDialog', () => {
 
   it('excludes ineligible rows and reports the skipped count', async () => {
     mocks.mutateAsync.mockResolvedValueOnce({ paid: false, results: [] });
-    const base = { categoryCode: 'animals', createdAt: '', creatorName: 'CrossCraft', previewUrl: '', publishedAt: '', title: 'Pattern', unlockPriceTier: 'small' as const };
+    const base = { categoryCode: 'animals', createdAt: '', creatorName: 'CrossCraft', previewUrl: '', publishedAt: '', stitchableCellCount: null, title: 'Pattern', unlockPriceTier: 'small' as const };
     const user = userEvent.setup();
     render(<BulkSetPaidDialog patterns={[
       { ...base, id: 'fox', patternType: 'official', status: 'available' },

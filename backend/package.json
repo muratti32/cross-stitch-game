@@ -29,7 +29,8 @@
     "seed:catalog": "ts-node scripts/seed-catalog.ts",
     "operator:create": "ts-node scripts/create-operator.ts",
     "operator:create:prod": "node dist/main.create-operator.js",
-    "revenuecat:test-store-lane": "ts-node scripts/revenuecat-test-store-lane.ts"
+    "revenuecat:test-store-lane": "ts-node scripts/revenuecat-test-store-lane.ts",
+    "patterns:paid-rollout": "ts-node scripts/paid-pattern-rollout.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1090.0",

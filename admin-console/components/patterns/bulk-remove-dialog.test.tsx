@@ -16,7 +16,7 @@ vi.mock('@/hooks/use-patterns', () => ({
 const selected: AdminPatternListItem[] = [{
   categoryCode: 'animals', createdAt: '', creatorName: 'Stitch Wish', id: 'fox',
   patternType: 'official', previewUrl: '', publishedAt: '', status: 'available',
-  title: 'Fox', unlockPriceTier: null,
+  stitchableCellCount: null, title: 'Fox', unlockPriceTier: null,
 }];
 
 function pattern(id: string, status: AdminPatternListItem['status'] = 'available'): AdminPatternListItem {

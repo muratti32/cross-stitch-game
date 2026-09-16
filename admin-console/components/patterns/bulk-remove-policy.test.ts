@@ -9,6 +9,7 @@ function pattern(overrides: Partial<AdminPatternListItem> = {}): AdminPatternLis
     categoryCode: 'animals', createdAt: '', creatorName: 'Stitch Wish',
     id: 'official', patternType: 'official', previewUrl: '', publishedAt: '',
     status: 'available', title: 'Fox', unlockPriceTier: null, ...overrides,
+    stitchableCellCount: overrides.stitchableCellCount ?? null,
   };
 }
 

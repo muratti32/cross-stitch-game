@@ -17,7 +17,7 @@ vi.mock('sonner', () => ({ toast: { success: mocks.toast } }));
 const pattern = {
   categoryCode: 'animals', createdAt: '', creatorName: 'CrossCraft', height: 40, id: 'fox',
   paletteSize: 8, patternType: 'official' as const, previewUrl: '', publishedAt: '',
-  status: 'available' as const, tags: [], title: 'Fox', unlockPriceTier: null, width: 40,
+  status: 'available' as const, stitchableCellCount: 5_000, tags: [], title: 'Fox', unlockPriceTier: null, width: 40,
 };
 
 afterEach(() => { cleanup(); vi.clearAllMocks(); });

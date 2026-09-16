@@ -8,7 +8,7 @@ import { formatBulkPaidSummary, getPatternPaidIneligibility, patternPaidErrorMes
 const pattern: AdminPatternListItem = {
   categoryCode: 'animals', createdAt: '', creatorName: 'CrossCraft', id: 'fox',
   patternType: 'official', previewUrl: '', publishedAt: '', status: 'available',
-  title: 'Fox', unlockPriceTier: null,
+  stitchableCellCount: null, title: 'Fox', unlockPriceTier: null,
 };
 
 describe('pattern paid policy', () => {
