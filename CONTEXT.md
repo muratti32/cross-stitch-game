@@ -648,11 +648,11 @@ A gesture that begins by pressing an eligible cell and produces one distinct Sti
 _Avoid_: Paint mode, drag fill, continuous stitch
 
 **Gameplay Event**:
-A pseudonymous first-party record of a discrete player action or milestone — a Stitch Action, Thread Color Completion, session start, or funnel step — carrying only opaque identities and batched to the Game Backend over the existing sync channel per ADR-0035. Daily Task progress and product analytics are both queried from the same event stream; a Gameplay Event is evidence, not a reward grant or a Progress Operation.
+A pseudonymous first-party record of a discrete player action or milestone — a Stitch Action, Thread Color Completion, session start, or funnel step — carrying only opaque identities and batched to the Game Backend over the existing sync channel per ADR-0035. Daily Task progress and product analytics keep separate records of Gameplay Events, and Daily Task progress is never read from the analytics record; a Gameplay Event is evidence, not a reward grant or a Progress Operation.
 _Avoid_: Analytics ping, telemetry event, Progress Operation, Pending Coin Reward
 
 **Analytics Mirror**:
-The filtered, consent-gated copy of selected Gameplay Events and screen views sent to Firebase Analytics for funnel and retention reporting per ADR-0055. It carries only funnel endpoints, closed-enum payload fields, route templates without parameters, and the same opaque player reference used for a Support Reference. The Mirror is a reporting convenience and never an authority: every product or Daily Task answer is confirmed against the first-party Gameplay Event stream, which remains the single source of truth.
+The filtered, consent-gated copy of selected Gameplay Events and screen views sent to Firebase Analytics for funnel and retention reporting per ADR-0055. It carries only funnel endpoints, closed-enum payload fields, route templates without parameters, and the same opaque player reference used for a Support Reference. The Mirror is a reporting convenience and never an authority: every product or Daily Task answer is confirmed against the game's own first-party record of Gameplay Events, never against the Mirror.
 _Avoid_: Firebase event stream, analytics source of truth, third-party telemetry
 
 **Edge Auto-Pan**:
