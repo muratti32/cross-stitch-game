@@ -280,7 +280,7 @@ The server-authoritative calendar day from `00:00 UTC` up to but not including t
 _Avoid_: Local day, device midnight, rolling 24 hours
 
 **Daily Task**:
-One of three play activities offered during each Reward Day, each worth 10 Stitch Coin for a daily maximum of 30. The first-release set is: complete 100 successful cell-level Stitch Actions; complete at least 10 Stitch Actions in each of three different DMC Thread Colors; and achieve one Thread Color Completion. A Stitch Sweep contributes one Stitch Action for every newly filled eligible cell rather than one per gesture. All three tasks may progress together in catalog, Personal, or Replay Sessions; none requires advertising, purchasing, AI generation, or sharing. Completion grants its reward automatically, while incomplete tasks expire without a streak loss or missed-day penalty.
+One of three play activities offered during each Reward Day, each worth 10 Stitch Coin for a daily maximum of 30. The first-release set is: complete 100 successful cell-level Stitch Actions; complete at least 10 Stitch Actions in each of three different DMC Thread Colors; and achieve one Thread Color Completion. A Stitch Sweep contributes one Stitch Action for every newly filled eligible cell rather than one per gesture. A Gameplay Event dated before its Stitching Session began, beyond a small clock-skew tolerance, counts toward no Daily Task. All three tasks may progress together in catalog, Personal, or Replay Sessions; none requires advertising, purchasing, AI generation, or sharing. Completion grants its reward automatically, while incomplete tasks expire without a streak loss or missed-day penalty.
 _Avoid_: Streak, mandatory quest, Premium task
 
 **Pending Coin Reward**:
