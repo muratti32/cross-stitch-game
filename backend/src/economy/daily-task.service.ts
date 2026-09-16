@@ -11,7 +11,6 @@ import {
   DAILY_TASK_DISTINCT_COLORS_TARGET,
   DAILY_TASK_KEYS,
   DailyTaskKey,
-  MIN_MS_PER_STITCH,
 } from './economy.constants';
 import { nextRewardDayResetAt, utcRewardDay } from './reward-day';
 
@@ -29,6 +28,17 @@ export interface DailyTaskBoardView {
   balance: number;
   tasks: DailyTaskStatus[];
 }
+
+/**
+ * A `GameplayEventDto` known to be owned, not future-dated, and stamped with
+ * its own Reward Day. `eventId`/`sessionId` are lowercased because Postgres
+ * returns uuid columns lowercase, and `occurredAt` is parsed once into
+ * `occurredAtDate` so the stored value and the derived Reward Day agree.
+ */
+type ValidEvent = Omit<GameplayEventDto, 'occurredAt'> & {
+  eventRewardDay: string;
+  occurredAtDate: Date | null;
+};
 
 @Injectable()
 export class DailyTaskService {
@@ -55,8 +65,8 @@ export class DailyTaskService {
     const ledgerPrincipal = toLedgerPrincipal(principal);
 
     return this.dataSource.transaction(async (manager) => {
-      // Gather distinct sessionIds from events
-      const sessionIds = Array.from(new Set(events.map(e => e.sessionId)));
+      // Lowercased sessionIds (see ValidEvent).
+      const sessionIds = Array.from(new Set(events.map(e => e.sessionId.toLowerCase())));
       let ownedSessionIds = new Set<string>();
       if (sessionIds.length > 0) {
         const ownedRows = await manager.query<{ id: string }[]>(
@@ -72,102 +82,108 @@ export class DailyTaskService {
       const invalidEventIds = new Set<string>();
       const nowMs = Date.now();
 
-      // Check future events
+      // Check future events. Keyed by the lowercased eventId (see ValidEvent)
+      // so a differently-cased copy of the same id is still caught below.
       for (const event of events) {
         if (event.occurredAt) {
           const occurredAtVal = new Date(event.occurredAt);
           if (occurredAtVal.getTime() > nowMs + 60000) { // 60 seconds tolerance for clock skew
-            invalidEventIds.add(event.eventId);
+            invalidEventIds.add(event.eventId.toLowerCase());
             this.logger.warn(`Rejecting event ${event.eventId} because occurredAt is in the future: ${event.occurredAt}`);
           }
         }
       }
 
-      // Group stitch actions by sessionId to apply the velocity check
-      const stitchActionsBySession = new Map<string, GameplayEventDto[]>();
-      for (const event of events) {
-        if (event.kind === 'stitch_action' && ownedSessionIds.has(event.sessionId) && !invalidEventIds.has(event.eventId)) {
-          let list = stitchActionsBySession.get(event.sessionId);
-          if (!list) {
-            list = [];
-            stitchActionsBySession.set(event.sessionId, list);
-          }
-          list.push(event);
-        }
-      }
-
-      // Velocity Check (AC for Gap 2): Reject stitch actions that are denser than physically plausible.
-      // We define the physical limit of manual stitching at 50 milliseconds (0.05 seconds) per stitch.
-      // Any consecutive stitch actions in the same session below that limit are dropped/skipped.
-      for (const [sessionId, sessionEvents] of stitchActionsBySession.entries()) {
-        const sorted = [...sessionEvents].sort((a, b) => {
-          const aTime = a.occurredAt ? new Date(a.occurredAt).getTime() : nowMs;
-          const bTime = b.occurredAt ? new Date(b.occurredAt).getTime() : nowMs;
-          return aTime - bTime;
-        });
-
-        for (let i = 1; i < sorted.length; i++) {
-          const prev = sorted[i - 1];
-          const curr = sorted[i];
-          const prevTime = prev.occurredAt ? new Date(prev.occurredAt).getTime() : nowMs;
-          const currTime = curr.occurredAt ? new Date(curr.occurredAt).getTime() : nowMs;
-          if (currTime - prevTime < MIN_MS_PER_STITCH) {
-            invalidEventIds.add(curr.eventId);
-            this.logger.warn(
-              `Rejecting event ${curr.eventId} in session ${sessionId} due to velocity limit (delta: ${currTime - prevTime}ms)`
-            );
-          }
-        }
-      }
+      // No per-event velocity floor runs here. A Stitch Sweep produces one
+      // Stitch Action for every newly filled cell within a single gesture, so
+      // consecutive stitch evidence is legitimately milliseconds apart. The
+      // 50 ms physical floor of ADR-0062 is an aggregate over a whole session
+      // and belongs to the Completion Claim validator, not to Daily Task
+      // evidence; Daily Task evidence is bounded by authentication, session
+      // ownership, and eventId deduplication instead (ADR-0063).
 
       const affectedRewardDays = new Set<string>();
+      // First occurrence wins; without this a duplicate eventId would be
+      // counted twice in the aggregation below.
+      const dedupedValidEvents = new Map<string, ValidEvent>();
 
       // For each owned, valid event:
       for (const event of events) {
-        if (!ownedSessionIds.has(event.sessionId) || invalidEventIds.has(event.eventId)) {
+        const sessionId = event.sessionId.toLowerCase();
+        const eventId = event.eventId.toLowerCase();
+        if (!ownedSessionIds.has(sessionId) || invalidEventIds.has(eventId)) {
           continue;
         }
 
-        const occurredAtVal = event.occurredAt ? new Date(event.occurredAt) : null;
+        // Parsed once so it and the Reward Day below agree (see ValidEvent).
+        const occurredAtDate = event.occurredAt ? new Date(event.occurredAt) : null;
         // Derive each event's Reward Day from its own evidence (occurredAt) if present, otherwise fallback to server time
-        const eventRewardDay = occurredAtVal ? utcRewardDay(occurredAtVal) : utcRewardDay();
+        const eventRewardDay = occurredAtDate ? utcRewardDay(occurredAtDate) : utcRewardDay();
         affectedRewardDays.add(eventRewardDay);
 
-        const insertResult = await manager.query<{ event_id: string }[]>(
+        if (!dedupedValidEvents.has(eventId)) {
+          dedupedValidEvents.set(eventId, { ...event, eventId, sessionId, eventRewardDay, occurredAtDate });
+        }
+      }
+
+      const validEvents = [...dedupedValidEvents.values()];
+
+      if (validEvents.length > 0) {
+        const insertedRows = await manager.query<{ event_id: string }[]>(
           `INSERT INTO economy.gameplay_events
              (event_id, principal_type, principal_id, reward_day, kind, session_id, dmc_code, client_seq, occurred_at)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+           SELECT e.event_id, $1, $2, e.reward_day, e.kind, e.session_id, e.dmc_code, e.client_seq, e.occurred_at
+           FROM unnest($3::uuid[], $4::date[], $5::varchar[], $6::uuid[], $7::varchar[], $8::bigint[], $9::timestamptz[])
+             AS e(event_id, reward_day, kind, session_id, dmc_code, client_seq, occurred_at)
            ON CONFLICT ON CONSTRAINT "PK_gameplay_events" DO NOTHING
            RETURNING event_id`,
           [
-            event.eventId,
             ledgerPrincipal.type,
             ledgerPrincipal.id,
-            eventRewardDay,
-            event.kind,
-            event.sessionId,
-            event.dmcCode,
-            event.clientSeq,
-            occurredAtVal,
+            validEvents.map((e) => e.eventId),
+            validEvents.map((e) => e.eventRewardDay),
+            validEvents.map((e) => e.kind),
+            validEvents.map((e) => e.sessionId),
+            validEvents.map((e) => e.dmcCode),
+            validEvents.map((e) => e.clientSeq),
+            validEvents.map((e) => e.occurredAtDate),
           ]
         );
 
-        const inserted = insertResult.length > 0;
+        const insertedEventIds = new Set(insertedRows.map((r) => r.event_id));
 
-        if (inserted && event.kind === 'stitch_action') {
-          // Upsert the color counter
+        // Aggregate inserted stitch_action events by (reward_day, dmc_code) so
+        // each key appears at most once in the upsert statement below.
+        const colorCountDeltas = new Map<string, { rewardDay: string; dmcCode: string; count: number }>();
+        for (const event of validEvents) {
+          if (!insertedEventIds.has(event.eventId) || event.kind !== 'stitch_action') {
+            continue;
+          }
+          const key = `${event.eventRewardDay}|${event.dmcCode}`;
+          const existing = colorCountDeltas.get(key);
+          if (existing) {
+            existing.count += 1;
+          } else {
+            colorCountDeltas.set(key, { rewardDay: event.eventRewardDay, dmcCode: event.dmcCode, count: 1 });
+          }
+        }
+
+        const deltas = [...colorCountDeltas.values()];
+        if (deltas.length > 0) {
           await manager.query(
             `INSERT INTO economy.daily_color_action_counts
                (principal_type, principal_id, reward_day, dmc_code, action_count)
-             VALUES ($1, $2, $3, $4, 1)
+             SELECT $1, $2, e.reward_day, e.dmc_code, e.action_count
+             FROM unnest($3::date[], $4::varchar[], $5::integer[]) AS e(reward_day, dmc_code, action_count)
              ON CONFLICT ON CONSTRAINT "PK_daily_color_action_counts"
-               DO UPDATE SET action_count = economy.daily_color_action_counts.action_count + 1,
+               DO UPDATE SET action_count = economy.daily_color_action_counts.action_count + EXCLUDED.action_count,
                              updated_at = now()`,
             [
               ledgerPrincipal.type,
               ledgerPrincipal.id,
-              eventRewardDay,
-              event.dmcCode,
+              deltas.map((d) => d.rewardDay),
+              deltas.map((d) => d.dmcCode),
+              deltas.map((d) => d.count),
             ]
           );
         }

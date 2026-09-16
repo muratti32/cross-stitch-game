@@ -284,7 +284,7 @@ One of three play activities offered during each Reward Day, each worth 10 Stitc
 _Avoid_: Streak, mandatory quest, Premium task
 
 **Pending Coin Reward**:
-A durable local record that a Daily Task or eligible first Pattern completion occurred while its Stitch Coin reward could not reach the backend. It carries an idempotent source key, Session and Pattern references, the device's monotonic gameplay-event sequence, and enough state-transition evidence for server validation. The backend owns Reward Day and per-Pattern uniqueness, reward caps, and impossible-transition or velocity checks; a client record alone never authorizes Coin. Valid evidence survives any Reward Day boundary and is granted exactly once to the applicable Guest Ledger or Registered Account when connectivity returns; invalid evidence is rejected. It is evidence awaiting reconciliation, not spendable Stitch Coin.
+A durable local record that a Daily Task or eligible first Pattern completion occurred while its Stitch Coin reward could not reach the backend. It carries an idempotent source key, Session and Pattern references, the device's monotonic gameplay-event sequence, and enough state-transition evidence for server validation. The backend owns Reward Day and per-Pattern uniqueness, reward caps, and impossible-transition and completion-plausibility checks; a client record alone never authorizes Coin. Valid evidence survives any Reward Day boundary and is granted exactly once to the applicable Guest Ledger or Registered Account when connectivity returns; invalid evidence is rejected. It is evidence awaiting reconciliation, not spendable Stitch Coin.
 _Avoid_: Unclaimed reward, expired reward, manual claim
 
 **First Completion Reward**:
@@ -620,7 +620,7 @@ The moment every cell of the Active Thread Color has been filled. Any active Sti
 _Avoid_: Auto-next color, color finished, palette completion
 
 **Stitch Action**:
-A player action that turns an unfinished Pattern cell whose DMC Thread Color matches the Active Thread Color into a Completed Stitch and records a completed Progress Operation. It may be undone freely while the Stitching Session remains active.
+A player action that turns an unfinished Pattern cell whose DMC Thread Color matches the Active Thread Color into a Completed Stitch and records a completed Progress Operation. It may be undone freely while the Stitching Session remains active; Undo returns the cell to unfinished but does not retract the Stitch Action that already happened, so Daily Task counting never decreases, and stitching that cell again is a further Stitch Action.
 _Avoid_: Paint, color, mark
 
 **Completed Stitch**:
@@ -648,11 +648,11 @@ A gesture that begins by pressing an eligible cell and produces one distinct Sti
 _Avoid_: Paint mode, drag fill, continuous stitch
 
 **Gameplay Event**:
-A pseudonymous first-party record of a discrete player action or milestone — a Stitch Action, Thread Color Completion, session start, or funnel step — carrying only opaque identities and batched to the Game Backend over the existing sync channel per ADR-0035. Daily Task progress and product analytics are both queried from the same event stream; a Gameplay Event is evidence, not a reward grant or a Progress Operation.
+A pseudonymous first-party record of a discrete player action or milestone — a Stitch Action, Thread Color Completion, session start, or funnel step — carrying only opaque identities and batched to the Game Backend over the existing sync channel per ADR-0035. Daily Task progress and product analytics keep separate records of Gameplay Events, and Daily Task progress is never read from the analytics record; a Gameplay Event is evidence, not a reward grant or a Progress Operation.
 _Avoid_: Analytics ping, telemetry event, Progress Operation, Pending Coin Reward
 
 **Analytics Mirror**:
-The filtered, consent-gated copy of selected Gameplay Events and screen views sent to Firebase Analytics for funnel and retention reporting per ADR-0055. It carries only funnel endpoints, closed-enum payload fields, route templates without parameters, and the same opaque player reference used for a Support Reference. The Mirror is a reporting convenience and never an authority: every product or Daily Task answer is confirmed against the first-party Gameplay Event stream, which remains the single source of truth.
+The filtered, consent-gated copy of selected Gameplay Events and screen views sent to Firebase Analytics for funnel and retention reporting per ADR-0055. It carries only funnel endpoints, closed-enum payload fields, route templates without parameters, and the same opaque player reference used for a Support Reference. The Mirror is a reporting convenience and never an authority: every product or Daily Task answer is confirmed against the game's own first-party record of Gameplay Events, never against the Mirror.
 _Avoid_: Firebase event stream, analytics source of truth, third-party telemetry
 
 **Edge Auto-Pan**:
