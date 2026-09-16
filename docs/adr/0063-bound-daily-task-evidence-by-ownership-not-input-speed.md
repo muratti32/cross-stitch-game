@@ -8,6 +8,8 @@ The 50-millisecond physical floor stays where it was designed to work: as an agg
 
 We therefore accept that a client which fabricates authenticated events for a Stitching Session it genuinely owns can reach the Daily Task cap. That is the same bounded-evidence trade-off ADR-0062 already made when it rejected treating the event stream as a canonical cell-state log. Closing it needs cell identity on a Stitch Action and a per-Pattern cell ceiling, which is a separate decision about the meaning of Gameplay Events, not a speed threshold.
 
+This amends the Pending Coin Reward reconciliation sentence of ADR-0011 and the shared-floor sentence of ADR-0062: the backend still owns Reward Day and per-Pattern uniqueness, reward caps, and impossible-transition checks, but it owns no Daily Task event-rate check.
+
 ## Considered options
 
 - Keep a per-event speed floor but raise or tune the threshold: rejected because no threshold separates a Stitch Sweep from a script — the sweep is the fastest legitimate input the game has, and any floor low enough to admit it admits fabrication too.

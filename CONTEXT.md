@@ -284,7 +284,7 @@ One of three play activities offered during each Reward Day, each worth 10 Stitc
 _Avoid_: Streak, mandatory quest, Premium task
 
 **Pending Coin Reward**:
-A durable local record that a Daily Task or eligible first Pattern completion occurred while its Stitch Coin reward could not reach the backend. It carries an idempotent source key, Session and Pattern references, the device's monotonic gameplay-event sequence, and enough state-transition evidence for server validation. The backend owns Reward Day and per-Pattern uniqueness, reward caps, and impossible-transition or velocity checks; a client record alone never authorizes Coin. Valid evidence survives any Reward Day boundary and is granted exactly once to the applicable Guest Ledger or Registered Account when connectivity returns; invalid evidence is rejected. It is evidence awaiting reconciliation, not spendable Stitch Coin.
+A durable local record that a Daily Task or eligible first Pattern completion occurred while its Stitch Coin reward could not reach the backend. It carries an idempotent source key, Session and Pattern references, the device's monotonic gameplay-event sequence, and enough state-transition evidence for server validation. The backend owns Reward Day and per-Pattern uniqueness, reward caps, and impossible-transition and completion-plausibility checks; a client record alone never authorizes Coin. Valid evidence survives any Reward Day boundary and is granted exactly once to the applicable Guest Ledger or Registered Account when connectivity returns; invalid evidence is rejected. It is evidence awaiting reconciliation, not spendable Stitch Coin.
 _Avoid_: Unclaimed reward, expired reward, manual claim
 
 **First Completion Reward**:
