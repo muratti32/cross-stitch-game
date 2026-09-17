@@ -4,6 +4,7 @@ import {
   LocatorPriceChangedError,
   LocatorPriceUnavailableError,
   fetchCoinBalanceView,
+  locatorSessionBinding,
   prepareLocatorAttempt,
   releaseLocatorAttempt,
   unlockPattern,
@@ -95,6 +96,27 @@ describe('economy client', () => {
     })).resolves.toMatchObject({ status: 'prepared', price: 1 });
     expect(apiFetch).toHaveBeenCalledWith('/v1/economy/locator-attempts/prepare', expect.objectContaining({ method: 'POST' }));
     expect(JSON.parse(apiFetch.mock.calls[0][1].body)).toMatchObject({ expectedPrice: 1 });
+  });
+
+  test('locator binds to the backend Stitching Session, never the local session row id', () => {
+    // A local session row id ('session_<ts>_<rand>') is not a UUID; sending it
+    // made prepare fail with a reason-less 400 shown as a Support Reference.
+    expect(locatorSessionBinding({
+      id: 'session_1789569000000_k3j9x2abc',
+      patternId: 'fd49ea79-a07c-4b4b-8c7a-e82c862d1dc4',
+      remoteSessionId: '0bdeb0f9-ba3e-4773-acaf-cd7f8b19eab9',
+    })).toEqual({
+      sessionId: '0bdeb0f9-ba3e-4773-acaf-cd7f8b19eab9',
+      patternId: 'fd49ea79-a07c-4b4b-8c7a-e82c862d1dc4',
+    });
+  });
+
+  test('locator has no binding for a session the backend does not know', () => {
+    // Bundled, replay, and offline-created personal sessions have no backend session.
+    expect(locatorSessionBinding({
+      id: 'session_1789569000000_k3j9x2abc', patternId: 'bundled-heart', remoteSessionId: null,
+    })).toBeNull();
+    expect(locatorSessionBinding({ id: 'session_1789569000000_k3j9x2abc', patternId: 'bundled-heart' })).toBeNull();
   });
 
   test('locator commit/release remain idempotent by using the same attempt id', async () => {

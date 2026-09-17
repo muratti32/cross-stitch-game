@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from './apiFetch';
 import { useIdentityStore } from '../identity/guestIdentity';
+import type { StitchingSession } from '../local-db';
 
 export const coinBalanceQueryKey = ['economy', 'balance'] as const;
 export const rewardDayQueryKey = ['economy', 'reward-day'] as const;
@@ -72,6 +73,25 @@ export interface LocatorAttemptView {
   balance: number;
   expiresAt: string;
   targetCellIndex: number | null;
+}
+
+/** The backend Stitching Session a Locator Attempt is bound to (ADR-0058). */
+export interface LocatorSessionBinding {
+  sessionId: string;
+  patternId: string;
+}
+
+/**
+ * Resolves a local session row to its backend Stitching Session. The local row
+ * id is device-only and never valid on the server; a session the backend does
+ * not know (bundled, replay, offline-created personal) has no binding, so the
+ * locator cannot reserve or charge for it.
+ */
+export function locatorSessionBinding(
+  session: Pick<StitchingSession, 'id' | 'patternId' | 'remoteSessionId'>,
+): LocatorSessionBinding | null {
+  if (!session.remoteSessionId) return null;
+  return { sessionId: session.remoteSessionId, patternId: session.patternId };
 }
 
 export interface PrepareLocatorAttemptInput {

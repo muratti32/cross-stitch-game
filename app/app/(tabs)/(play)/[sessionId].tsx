@@ -39,6 +39,7 @@ import {
   LocatorInsufficientBalanceError,
   LocatorPriceChangedError,
   LocatorPriceUnavailableError,
+  locatorSessionBinding,
   useLocatorPrice,
   type CoinBalanceView,
   prepareLocatorAttempt,
@@ -122,6 +123,8 @@ export default function SessionReadyScreen() {
   const parentRevisionRef = useRef(0);
   const [locatorBusy, setLocatorBusy] = useState(false);
   const { data: locatorPrice } = useLocatorPrice();
+  // Only a session the backend knows can hold a Locator Attempt (ADR-0058).
+  const locatorBinding = session ? locatorSessionBinding(session) : null;
 
   useEffect(() => {
     parentRevisionRef.current = parentRevision;
@@ -359,7 +362,7 @@ export default function SessionReadyScreen() {
 
   // Handle locator cell navigation
   const handleLocateNext = async () => {
-    if (!patternData || !rendererState || !session || locatorBusy) return;
+    if (!patternData || !rendererState || !locatorBinding || locatorBusy) return;
 
     const completed = rendererState.getCompletedArray();
     const nextIdx = nextRemainingCell(
@@ -404,8 +407,8 @@ export default function SessionReadyScreen() {
 
       const prepared = await prepareLocatorAttempt({
         attemptId,
-        sessionId: session.id,
-        patternId: session.patternId,
+        sessionId: locatorBinding.sessionId,
+        patternId: locatorBinding.patternId,
         colorIndex: selectedColorIndex,
         dmcCode: color.dmcCode,
         expectedPrice,
@@ -551,6 +554,11 @@ export default function SessionReadyScreen() {
     );
   }
 
+  const locatorDisabled = locatorBusy
+    || !locatorBinding
+    || selectedColorIndex < 0
+    || remainingCounts[selectedColorIndex] === 0;
+
   const percentComplete = totalCellsCount > 0 
     ? Math.floor((completedCellsCount / totalCellsCount) * 100) 
     : 0;
@@ -650,15 +658,13 @@ export default function SessionReadyScreen() {
           <Pressable
             style={[
               styles.floatingButton,
-              (selectedColorIndex < 0 || remainingCounts[selectedColorIndex] === 0)
-                && styles.floatingButtonDisabled,
-              locatorBusy && styles.floatingButtonDisabled,
+              locatorDisabled && styles.floatingButtonDisabled,
             ]}
             onPress={handleLocateNext}
-            disabled={locatorBusy || selectedColorIndex < 0 || remainingCounts[selectedColorIndex] === 0}
+            disabled={locatorDisabled}
             accessibilityRole="button"
             accessibilityLabel={
-              locatorPrice == null
+              !locatorBinding || locatorPrice == null
                 ? t('rail.locateNextAccessibilityLabel')
                 : `${t('rail.locateNextAccessibilityLabel')}, ${t('price.label', { ns: 'catalog' })}: ${formatNumber(locatorPrice, locale)}`
             }
@@ -667,12 +673,12 @@ export default function SessionReadyScreen() {
               name="locate-outline"
               size={24}
               color={
-                remainingCounts[selectedColorIndex] > 0
+                locatorBinding && remainingCounts[selectedColorIndex] > 0
                   ? Theme.colors.textPrimary
                   : Theme.colors.disabledText
               }
             />
-            {locatorPrice != null && (
+            {locatorBinding && locatorPrice != null && (
               <View style={styles.locatorPriceBadge} importantForAccessibility="no-hide-descendants" accessibilityElementsHidden>
                 <Text style={styles.locatorPriceBadgeText}>{formatNumber(locatorPrice, locale)}</Text>
               </View>
