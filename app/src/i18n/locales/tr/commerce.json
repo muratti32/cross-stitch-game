@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Tamam",
     "successButton": "Harika",
+    "returnToGameButton": "Oyuna Dön",
     "failedButton": "Kapat",
     "infoButton": "Tamam",
     "closeAccessibilityLabel": "Kapat"

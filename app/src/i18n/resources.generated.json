@@ -377,6 +377,7 @@
       "purchaseResultModal": {
         "pendingButton": "حسناً",
         "successButton": "رائع",
+        "returnToGameButton": "العودة إلى اللعبة",
         "failedButton": "إلغاء",
         "infoButton": "حسناً",
         "closeAccessibilityLabel": "إغلاق"
@@ -1820,6 +1821,7 @@
       "purchaseResultModal": {
         "pendingButton": "Entesos",
         "successButton": "Genial",
+        "returnToGameButton": "Torna al joc",
         "failedButton": "Tanca",
         "infoButton": "Entesos",
         "closeAccessibilityLabel": "Tanca"
@@ -3263,6 +3265,7 @@
       "purchaseResultModal": {
         "pendingButton": "Rozumím",
         "successButton": "Skvělé",
+        "returnToGameButton": "Zpět do hry",
         "failedButton": "Zavřít",
         "infoButton": "Rozumím",
         "closeAccessibilityLabel": "Zavřít"
@@ -4706,6 +4709,7 @@
       "purchaseResultModal": {
         "pendingButton": "Forstået",
         "successButton": "Fantastisk",
+        "returnToGameButton": "Tilbage til spillet",
         "failedButton": "Luk",
         "infoButton": "Forstået",
         "closeAccessibilityLabel": "Luk"
@@ -6149,6 +6153,7 @@
       "purchaseResultModal": {
         "pendingButton": "Alles klar",
         "successButton": "Super",
+        "returnToGameButton": "Zurück zum Spiel",
         "failedButton": "Schließen",
         "infoButton": "Alles klar",
         "closeAccessibilityLabel": "Schließen"
@@ -7592,6 +7597,7 @@
       "purchaseResultModal": {
         "pendingButton": "Το κατάλαβα",
         "successButton": "Τέλεια",
+        "returnToGameButton": "Επιστροφή στο παιχνίδι",
         "failedButton": "Κλείσιμο",
         "infoButton": "Το κατάλαβα",
         "closeAccessibilityLabel": "Κλείσιμο"
@@ -9035,6 +9041,7 @@
       "purchaseResultModal": {
         "pendingButton": "Got it",
         "successButton": "Great",
+        "returnToGameButton": "Back to Game",
         "failedButton": "Close",
         "infoButton": "Got it",
         "closeAccessibilityLabel": "Close"
@@ -10478,6 +10485,7 @@
       "purchaseResultModal": {
         "pendingButton": "Entendido",
         "successButton": "Genial",
+        "returnToGameButton": "Volver al juego",
         "failedButton": "Cerrar",
         "infoButton": "Entendido",
         "closeAccessibilityLabel": "Cerrar"
@@ -11921,6 +11929,7 @@
       "purchaseResultModal": {
         "pendingButton": "Selvä",
         "successButton": "Mahtavaa",
+        "returnToGameButton": "Takaisin peliin",
         "failedButton": "Sulje",
         "infoButton": "Selvä",
         "closeAccessibilityLabel": "Sulje"
@@ -13364,6 +13373,7 @@
       "purchaseResultModal": {
         "pendingButton": "Compris",
         "successButton": "Super",
+        "returnToGameButton": "Retour au jeu",
         "failedButton": "Fermer",
         "infoButton": "Compris",
         "closeAccessibilityLabel": "Fermer"
@@ -14807,6 +14817,7 @@
       "purchaseResultModal": {
         "pendingButton": "समझ गया",
         "successButton": "बहुत बढ़िया",
+        "returnToGameButton": "गेम पर वापस जाएँ",
         "failedButton": "बंद करें",
         "infoButton": "समझ गया",
         "closeAccessibilityLabel": "बंद करें"
@@ -16250,6 +16261,7 @@
       "purchaseResultModal": {
         "pendingButton": "U redu",
         "successButton": "Odlično",
+        "returnToGameButton": "Povratak u igru",
         "failedButton": "Zatvori",
         "infoButton": "U redu",
         "closeAccessibilityLabel": "Zatvori"
@@ -17693,6 +17705,7 @@
       "purchaseResultModal": {
         "pendingButton": "Rendben",
         "successButton": "Remek",
+        "returnToGameButton": "Vissza a játékhoz",
         "failedButton": "Bezárás",
         "infoButton": "Rendben",
         "closeAccessibilityLabel": "Bezárás"
@@ -19136,6 +19149,7 @@
       "purchaseResultModal": {
         "pendingButton": "Oke",
         "successButton": "Bagus",
+        "returnToGameButton": "Kembali ke Game",
         "failedButton": "Tutup",
         "infoButton": "Oke",
         "closeAccessibilityLabel": "Tutup"
@@ -20579,6 +20593,7 @@
       "purchaseResultModal": {
         "pendingButton": "Ho capito",
         "successButton": "Ottimo",
+        "returnToGameButton": "Torna al gioco",
         "failedButton": "Chiudi",
         "infoButton": "Ho capito",
         "closeAccessibilityLabel": "Chiudi"
@@ -22022,6 +22037,7 @@
       "purchaseResultModal": {
         "pendingButton": "了解",
         "successButton": "OK",
+        "returnToGameButton": "ゲームに戻る",
         "failedButton": "閉じる",
         "infoButton": "了解",
         "closeAccessibilityLabel": "閉じる"
@@ -23465,6 +23481,7 @@
       "purchaseResultModal": {
         "pendingButton": "확인",
         "successButton": "확인",
+        "returnToGameButton": "게임으로 돌아가기",
         "failedButton": "닫기",
         "infoButton": "확인",
         "closeAccessibilityLabel": "닫기"
@@ -24908,6 +24925,7 @@
       "purchaseResultModal": {
         "pendingButton": "OK",
         "successButton": "Bagus",
+        "returnToGameButton": "Kembali ke Permainan",
         "failedButton": "Tutup",
         "infoButton": "OK",
         "closeAccessibilityLabel": "Tutup"
@@ -26351,6 +26369,7 @@
       "purchaseResultModal": {
         "pendingButton": "Skjønner",
         "successButton": "Flott",
+        "returnToGameButton": "Tilbake til spillet",
         "failedButton": "Lukk",
         "infoButton": "Skjønner",
         "closeAccessibilityLabel": "Lukk"
@@ -27794,6 +27813,7 @@
       "purchaseResultModal": {
         "pendingButton": "OK",
         "successButton": "OK",
+        "returnToGameButton": "Terug naar het spel",
         "failedButton": "Sluiten",
         "infoButton": "OK",
         "closeAccessibilityLabel": "Sluiten"
@@ -29237,6 +29257,7 @@
       "purchaseResultModal": {
         "pendingButton": "OK",
         "successButton": "OK",
+        "returnToGameButton": "Wróć do gry",
         "failedButton": "Zamknij",
         "infoButton": "OK",
         "closeAccessibilityLabel": "Zamknij"
@@ -30680,6 +30701,7 @@
       "purchaseResultModal": {
         "pendingButton": "Entendido",
         "successButton": "Ótimo",
+        "returnToGameButton": "Voltar ao jogo",
         "failedButton": "Fechar",
         "infoButton": "Entendido",
         "closeAccessibilityLabel": "Fechar"
@@ -32123,6 +32145,7 @@
       "purchaseResultModal": {
         "pendingButton": "Entendi",
         "successButton": "Excelente",
+        "returnToGameButton": "Voltar ao jogo",
         "failedButton": "Fechar",
         "infoButton": "Entendi",
         "closeAccessibilityLabel": "Fechar"
@@ -33566,6 +33589,7 @@
       "purchaseResultModal": {
         "pendingButton": "Am înțeles",
         "successButton": "Excelent",
+        "returnToGameButton": "Înapoi la joc",
         "failedButton": "Închide",
         "infoButton": "Am înțeles",
         "closeAccessibilityLabel": "Închide"
@@ -35009,6 +35033,7 @@
       "purchaseResultModal": {
         "pendingButton": "ОК",
         "successButton": "Отлично",
+        "returnToGameButton": "Вернуться в игру",
         "failedButton": "Закрыть",
         "infoButton": "ОК",
         "closeAccessibilityLabel": "Закрыть"
@@ -36452,6 +36477,7 @@
       "purchaseResultModal": {
         "pendingButton": "Rozumiem",
         "successButton": "Výborne",
+        "returnToGameButton": "Späť do hry",
         "failedButton": "Zavrieť",
         "infoButton": "Rozumiem",
         "closeAccessibilityLabel": "Zavrieť"
@@ -37895,6 +37921,7 @@
       "purchaseResultModal": {
         "pendingButton": "Razumem",
         "successButton": "Odlično",
+        "returnToGameButton": "Nazaj v igro",
         "failedButton": "Zapri",
         "infoButton": "Razumem",
         "closeAccessibilityLabel": "Zapri"
@@ -39338,6 +39365,7 @@
       "purchaseResultModal": {
         "pendingButton": "Uppfattat",
         "successButton": "Toppen",
+        "returnToGameButton": "Tillbaka till spelet",
         "failedButton": "Stäng",
         "infoButton": "Uppfattat",
         "closeAccessibilityLabel": "Stäng"
@@ -40781,6 +40809,7 @@
       "purchaseResultModal": {
         "pendingButton": "Nakuha ko",
         "successButton": "Ang galing",
+        "returnToGameButton": "Bumalik sa Laro",
         "failedButton": "Isara",
         "infoButton": "Nakuha ko",
         "closeAccessibilityLabel": "Isara"
@@ -42224,6 +42253,7 @@
       "purchaseResultModal": {
         "pendingButton": "Tamam",
         "successButton": "Harika",
+        "returnToGameButton": "Oyuna Dön",
         "failedButton": "Kapat",
         "infoButton": "Tamam",
         "closeAccessibilityLabel": "Kapat"
@@ -43667,6 +43697,7 @@
       "purchaseResultModal": {
         "pendingButton": "Зрозуміло",
         "successButton": "Чудово",
+        "returnToGameButton": "Повернутися до гри",
         "failedButton": "Закрити",
         "infoButton": "Зрозуміло",
         "closeAccessibilityLabel": "Закрити"
@@ -45110,6 +45141,7 @@
       "purchaseResultModal": {
         "pendingButton": "Đã hiểu",
         "successButton": "Tuyệt vời",
+        "returnToGameButton": "Quay lại trò chơi",
         "failedButton": "Đóng",
         "infoButton": "Đã hiểu",
         "closeAccessibilityLabel": "Đóng"
@@ -46553,6 +46585,7 @@
       "purchaseResultModal": {
         "pendingButton": "我知道了",
         "successButton": "太棒了",
+        "returnToGameButton": "返回游戏",
         "failedButton": "关闭",
         "infoButton": "我知道了",
         "closeAccessibilityLabel": "关闭"
@@ -47996,6 +48029,7 @@
       "purchaseResultModal": {
         "pendingButton": "知道了",
         "successButton": "太好了",
+        "returnToGameButton": "返回遊戲",
         "failedButton": "關閉",
         "infoButton": "知道了",
         "closeAccessibilityLabel": "關閉"

@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Alles klar",
     "successButton": "Super",
+    "returnToGameButton": "Zurück zum Spiel",
     "failedButton": "Schließen",
     "infoButton": "Alles klar",
     "closeAccessibilityLabel": "Schließen"

@@ -63,6 +63,7 @@ import {
 import {
   commerceEntrySource,
   useCommerceIntentStore,
+  type LocatorShortfallOrigin,
 } from '@/commerce/commerceIntent';
 import {
   getRevenueCatOfferings,
@@ -139,6 +140,10 @@ interface PurchaseResultModalState {
   readonly title: string;
   readonly body: string;
   readonly detail: string | null;
+  // The Stitching Session this confirmed result may return to, fixed when the
+  // result is raised so no later store or route change can retarget it (#268).
+  // Every result that is not a confirmed Locator shortfall grant carries null.
+  readonly locatorReturn: LocatorShortfallOrigin | null;
 }
 
 // Product names are app-authored display text, not the store price, so
@@ -175,14 +180,48 @@ export default function CommerceScreen() {
   const { t, i18n: i18nInstance } = useTranslation('commerce');
   const locale = i18nInstance.language;
   const router = useRouter();
-  const params = useLocalSearchParams<{ category?: string; source?: string }>();
+  const params = useLocalSearchParams<{
+    category?: string;
+    returnSessionId?: string;
+    returnSessionTo?: string;
+    source?: string;
+  }>();
   const queryClient = useQueryClient();
   const { accountId, guestId, isAccount } = useIdentityStore();
   const revenueCatRuntime = useRevenueCatRuntime();
   const pendingIntent = useCommerceIntentStore((state) => state.intent);
   const preserveIntent = useCommerceIntentStore((state) => state.preserveIntent);
   const clearIntent = useCommerceIntentStore((state) => state.clearIntent);
+  const locatorShortfallOrigin = useCommerceIntentStore(
+    (state) => state.locatorShortfallOrigin,
+  );
+  const clearLocatorShortfallOrigin = useCommerceIntentStore(
+    (state) => state.clearLocatorShortfallOrigin,
+  );
   const source = commerceEntrySource(params.source);
+  // `stitch_coin_shortfall` is shared with the Pattern unlock shortfall, which
+  // has no Stitching Session to return to, so the direct route is recognized by
+  // the parameters only the Stitching Session sends. The authentication detour
+  // arrives as sign-in's own `sign_in_return` and is recognized by the
+  // category-level intent #267 preserved for it (#268).
+  const locatorReturn: LocatorShortfallOrigin | null = useMemo(() => {
+    if (source === 'stitch_coin_shortfall' && params.returnSessionId !== undefined) {
+      return {
+        sessionId: params.returnSessionId,
+        returnTo: params.returnSessionTo ?? null,
+      };
+    }
+    if (source === 'sign_in_return' && pendingIntent?.entrySource === 'stitch_coin_shortfall') {
+      return locatorShortfallOrigin;
+    }
+    return null;
+  }, [
+    locatorShortfallOrigin,
+    params.returnSessionId,
+    params.returnSessionTo,
+    pendingIntent?.entrySource,
+    source,
+  ]);
 
   const { data: coinBalance } = useCoinBalance();
   const { data: aiCreditBalance } = useAiCreditBalance(true);
@@ -218,7 +257,30 @@ export default function CommerceScreen() {
   // flow is already imperative, so the modal is set at the call sites rather
   // than re-derived from reconciliation and query state.
   const [resultModal, setResultModal] = useState<PurchaseResultModalState | null>(null);
+  // A result only leaves the screen once the native surface has actually gone,
+  // so its visibility is tracked apart from the result itself (#268).
+  const [resultModalVisible, setResultModalVisible] = useState(false);
   const [productSheetPresented, setProductSheetPresented] = useState(false);
+
+  useEffect(() => {
+    setResultModalVisible(resultModal !== null);
+  }, [resultModal]);
+
+  const handleResultModalDismissed = useCallback(() => {
+    const origin = resultModal?.locatorReturn ?? null;
+    setResultModal(null);
+    if (origin === null) return;
+    clearLocatorShortfallOrigin();
+    // Returning restores the session exactly as it was left: no Locator
+    // Attempt is prepared, committed or retried, and the viewport is
+    // untouched. The next explicit tap reads the current price and balance.
+    router.navigate({
+      pathname: '/(tabs)/(play)/[sessionId]',
+      params: origin.returnTo === null
+        ? { sessionId: origin.sessionId }
+        : { sessionId: origin.sessionId, returnTo: origin.returnTo },
+    });
+  }, [clearLocatorShortfallOrigin, resultModal, router]);
 
   // The pack sheet is a native RN <Modal>, and the Premium/Coin/AI Credit
   // confirmations and the GuestDataRiskNotice are Modals too. iOS never
@@ -484,6 +546,7 @@ export default function CommerceScreen() {
       title: t('errors.purchaseFailedTitle'),
       body: message,
       detail: supportReference === null ? null : t('supportReference.label', { reference: supportReference }),
+      locatorReturn: null,
     });
   }, [t]);
 
@@ -491,7 +554,13 @@ export default function CommerceScreen() {
   // says verification is still under way and the balance will update, and offers
   // no retry — retry stays on the page-level banner, one path only.
   const showReconciliationPendingModal = useCallback((body: string) => {
-    setResultModal({ variant: 'info', title: t('pendingModal.stillVerifyingTitle'), body, detail: null });
+    setResultModal({
+      variant: 'info',
+      title: t('pendingModal.stillVerifyingTitle'),
+      body,
+      detail: null,
+      locatorReturn: null,
+    });
   }, [t]);
 
   const reconcilePremium = useCallback(async (attempt: PremiumReconciliation) => {
@@ -592,6 +661,7 @@ export default function CommerceScreen() {
           title: t('success.planChangeScheduledTitle'),
           body: t('success.planChangeScheduledBody', { label: completedLabel, effectiveOn }),
           detail: null,
+          locatorReturn: null,
         });
       } else {
         setPurchaseSuccess(t('success.premiumVerifiedAndActive', { label: completedLabel }));
@@ -602,6 +672,7 @@ export default function CommerceScreen() {
             ? t('success.premiumNowActiveNoBilling', { label: completedLabel })
             : t('success.premiumNowActiveBilled', { label: completedLabel, period: completedProduct.billingPeriod }),
           detail: null,
+          locatorReturn: null,
         });
       }
     } catch (error: unknown) {
@@ -751,6 +822,9 @@ export default function CommerceScreen() {
       );
       updateCoinReconciliation(null);
       if (!isAccount && guestId !== null) await clearGuestPurchaseAttempt(guestId);
+      // Capture the confirmed journey before clearIntent() drops the preserved
+      // source it was derived from (#268).
+      const confirmedLocatorReturn = locatorReturn;
       clearIntent();
       setPurchaseError(null);
       const label = productLabel(attempt.product, t, locale);
@@ -762,6 +836,7 @@ export default function CommerceScreen() {
         title: t('success.coinPackGrantedTitle'),
         body: t('success.coinPackAddedToBalance', { quantity: formatNumber(attempt.product.quantity, locale) }),
         detail: null,
+        locatorReturn: confirmedLocatorReturn,
       });
     } catch (error: unknown) {
       const failureStage = grantVerified ? 'grant' : 'verification';
@@ -779,7 +854,7 @@ export default function CommerceScreen() {
       setPurchaseError(message);
       showFailureModal(message, attempt.supportReference);
     }
-  }, [clearIntent, guestId, isAccount, locale, queryClient, scheduleCoinReconciliation, showFailureModal, showReconciliationPendingModal, t, updateCoinReconciliation]);
+  }, [clearIntent, guestId, isAccount, locale, locatorReturn, queryClient, scheduleCoinReconciliation, showFailureModal, showReconciliationPendingModal, t, updateCoinReconciliation]);
 
   const beginCoinPackReconciliation = useCallback(async (
     product: CommerceProduct,
@@ -940,6 +1015,7 @@ export default function CommerceScreen() {
         title: t('success.aiCreditPackGrantedTitle'),
         body: t('success.aiCreditPackAddedToBalance', { quantity: formatNumber(attempt.product.quantity, locale) }),
         detail: null,
+        locatorReturn: null,
       });
     } catch (error: unknown) {
       const failureStage = grantVerified ? 'grant' : 'verification';
@@ -1113,6 +1189,7 @@ export default function CommerceScreen() {
           ? t('success.storeAcceptedPlanChange', { label: purchasedLabel })
           : t('success.storeAcceptedPurchase', { label: purchasedLabel }),
         detail: null,
+        locatorReturn: null,
       });
       failureStage = 'verification';
       if (product.category === 'premium') {
@@ -1190,6 +1267,7 @@ export default function CommerceScreen() {
         detail: guestAttempt === null
           ? null
           : t('supportReference.label', { reference: guestAttempt.supportReference }),
+        locatorReturn: null,
       });
     } finally {
       setPurchasingKey(null);
@@ -1316,6 +1394,7 @@ export default function CommerceScreen() {
       title: t('restore.requestedTitle'),
       body: t('restore.requestedBody'),
       detail: null,
+      locatorReturn: null,
     });
   }, [queryClient, t]);
 
@@ -1854,12 +1933,16 @@ export default function CommerceScreen() {
       />
       {resultModal !== null && !productSheetPresented && (
         <PurchaseResultModal
-          visible
+          visible={resultModalVisible}
           variant={resultModal.variant}
           title={resultModal.title}
           body={resultModal.body}
           detail={resultModal.detail}
-          onDismiss={() => setResultModal(null)}
+          actionLabel={resultModal.locatorReturn === null
+            ? undefined
+            : t('purchaseResultModal.returnToGameButton')}
+          onDismiss={() => setResultModalVisible(false)}
+          onDismissed={handleResultModalDismissed}
         />
       )}
       <PremiumConfirmation

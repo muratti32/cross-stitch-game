@@ -16,13 +16,19 @@ import { WebLinks } from '@/config';
 import { Theme } from '@/theme/theme';
 import { useCommerceIntentStore } from '../commerceIntent';
 
-let mockParams: { category?: string; source?: string } = { source: 'profile' };
+let mockParams: {
+  category?: string;
+  returnSessionId?: string;
+  returnSessionTo?: string;
+  source?: string;
+} = { source: 'profile' };
 let mockIdentity = { accountId: null as string | null, isAccount: false };
 let mockAiCreditWalletBalance = 4;
 let mockMembership: Record<string, unknown> | undefined;
 
 const mockRouter = {
   back: jest.fn(),
+  navigate: jest.fn(),
   push: jest.fn(),
   replace: jest.fn(),
 };
@@ -253,6 +259,7 @@ function offering(
 
 beforeEach(() => {
   jest.clearAllMocks();
+  Object.defineProperty(Platform, 'OS', { configurable: true, value: 'ios' });
   mockParams = { source: 'profile' };
   mockIdentity = { accountId: null, isAccount: false };
   mockAiCreditWalletBalance = 4;
@@ -289,6 +296,7 @@ beforeEach(() => {
   });
   mockFetchAiCreditPackReconciliation.mockResolvedValue({ status: 'pending', balance: null });
   useCommerceIntentStore.getState().clearIntent();
+  useCommerceIntentStore.getState().clearLocatorShortfallOrigin();
 });
 
 it('selects Annual as Best Value and reads periods and eligible trial from RevenueCat', async () => {
@@ -1992,6 +2000,152 @@ it('carries the purchase result modal from pending to a verified Coin Pack grant
     'Stitch Coins granted',
     '300 Stitch Coins have been added to your balance.',
   ]));
+});
+
+it.each(['ios', 'android'] as const)(
+  'returns a Registered Account to the exact Locator session after %s modal dismissal',
+  async (os) => {
+    Object.defineProperty(Platform, 'OS', { configurable: true, value: os });
+    mockIdentity = { accountId: 'account_locator', isAccount: true };
+    mockParams = {
+      category: 'stitch_coin',
+      source: 'stitch_coin_shortfall',
+      returnSessionId: 'session-origin',
+      returnSessionTo: '/(tabs)/(catalog)',
+    };
+    mockFetchCoinPackReconciliation.mockResolvedValue({ status: 'granted', balance: 420 });
+    await renderScreen();
+    await confirmSmallCoinPackPurchase();
+
+    expect(allText(renderer!.root)).toContain('Back to Game');
+    const nativeModal = renderer!.root.findAllByType(Modal)
+      .find((modal) => modal.props.visible === true);
+    expect(nativeModal).toBeDefined();
+    await act(async () => pressByText(renderer!.root, 'Back to Game'));
+
+    if (os === 'ios') {
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+      await act(async () => nativeModal!.props.onDismiss());
+    }
+    expect(mockRouter.navigate).toHaveBeenCalledWith({
+      pathname: '/(tabs)/(play)/[sessionId]',
+      params: { sessionId: 'session-origin', returnTo: '/(tabs)/(catalog)' },
+    });
+    expect(useCommerceIntentStore.getState().locatorShortfallOrigin).toBeNull();
+  },
+);
+
+it('returns an iOS Guest Player after a confirmed Locator shortfall Coin grant', async () => {
+  Object.defineProperty(Platform, 'OS', { configurable: true, value: 'ios' });
+  mockParams = {
+    category: 'stitch_coin',
+    source: 'stitch_coin_shortfall',
+    returnSessionId: 'guest-session',
+  };
+  await renderScreen();
+  await openCoinPacks();
+  await act(async () => pressByText(renderer!.root, 'Buy'));
+  await act(async () => pressByText(renderer!.root, 'Continue as Guest'));
+  await act(async () => {
+    pressByText(renderer!.root, 'Confirm 300 Stitch Coins');
+    await flushPromises();
+  });
+  await dismissProductSheet();
+
+  expect(allText(renderer!.root)).toContain('Back to Game');
+  const nativeModal = renderer!.root.findAllByType(Modal)
+    .find((modal) => modal.props.visible === true);
+  await act(async () => pressByText(renderer!.root, 'Back to Game'));
+  expect(mockRouter.navigate).not.toHaveBeenCalled();
+  await act(async () => nativeModal!.props.onDismiss());
+  expect(mockRouter.navigate).toHaveBeenCalledWith({
+    pathname: '/(tabs)/(play)/[sessionId]',
+    params: { sessionId: 'guest-session' },
+  });
+});
+
+it('restores the Locator return after an Android Guest signs in', async () => {
+  Object.defineProperty(Platform, 'OS', { configurable: true, value: 'android' });
+  mockIdentity = { accountId: 'promoted_account', isAccount: true };
+  mockParams = { source: 'sign_in_return' };
+  useCommerceIntentStore.getState().preserveCategoryIntent(
+    'stitch_coin',
+    'stitch_coin_shortfall',
+  );
+  useCommerceIntentStore.getState().rememberLocatorShortfallOrigin({
+    sessionId: 'promoted-session',
+    returnTo: null,
+  });
+  mockFetchCoinPackReconciliation.mockResolvedValue({ status: 'granted', balance: 420 });
+  await renderScreen();
+  await confirmSmallCoinPackPurchase();
+
+  expect(allText(renderer!.root)).toContain('Back to Game');
+  await act(async () => pressByText(renderer!.root, 'Back to Game'));
+  expect(mockRouter.navigate).toHaveBeenCalledWith({
+    pathname: '/(tabs)/(play)/[sessionId]',
+    params: { sessionId: 'promoted-session' },
+  });
+});
+
+it.each(['pending', 'verification_failed', 'cancelled'] as const)(
+  'never offers a Locator return for a %s Coin result',
+  async (status) => {
+    mockIdentity = { accountId: 'account_locator_failure', isAccount: true };
+    mockParams = {
+      category: 'stitch_coin',
+      source: 'stitch_coin_shortfall',
+      returnSessionId: 'failed-session',
+    };
+    mockFetchCoinPackReconciliation.mockResolvedValue({ status, balance: null });
+    await renderScreen();
+    await confirmSmallCoinPackPurchase();
+
+    expect(allText(renderer!.root)).not.toContain('Back to Game');
+    expect(mockRouter.navigate).not.toHaveBeenCalled();
+  },
+);
+
+it('keeps the ordinary success action for a non-shortfall Coin grant', async () => {
+  mockIdentity = { accountId: 'account_profile', isAccount: true };
+  useCommerceIntentStore.getState().rememberLocatorShortfallOrigin({
+    sessionId: 'stale-session',
+    returnTo: null,
+  });
+  mockFetchCoinPackReconciliation.mockResolvedValue({ status: 'granted', balance: 420 });
+  await renderScreen();
+  await confirmSmallCoinPackPurchase();
+
+  expect(allText(renderer!.root)).toContain('Great');
+  expect(allText(renderer!.root)).not.toContain('Back to Game');
+  const nativeModal = renderer!.root.findAllByType(Modal)
+    .find((modal) => modal.props.visible === true);
+  await act(async () => pressByText(renderer!.root, 'Great'));
+  await act(async () => nativeModal!.props.onDismiss());
+  expect(mockRouter.navigate).not.toHaveBeenCalled();
+});
+
+// The Pattern unlock shortfall enters Commerce with the same entry source and
+// has no Stitching Session to return to, so a Locator journey the player
+// abandoned must not lend it one (#268).
+it('never returns a Pattern unlock shortfall to a Stitching Session', async () => {
+  mockIdentity = { accountId: 'account_unlock', isAccount: true };
+  mockParams = { category: 'stitch_coin', source: 'stitch_coin_shortfall' };
+  useCommerceIntentStore.getState().rememberLocatorShortfallOrigin({
+    sessionId: 'abandoned-session',
+    returnTo: null,
+  });
+  mockFetchCoinPackReconciliation.mockResolvedValue({ status: 'granted', balance: 420 });
+  await renderScreen();
+  await confirmSmallCoinPackPurchase();
+
+  expect(allText(renderer!.root)).toContain('Great');
+  expect(allText(renderer!.root)).not.toContain('Back to Game');
+  const nativeModal = renderer!.root.findAllByType(Modal)
+    .find((modal) => modal.props.visible === true);
+  await act(async () => pressByText(renderer!.root, 'Great'));
+  await act(async () => nativeModal!.props.onDismiss());
+  expect(mockRouter.navigate).not.toHaveBeenCalled();
 });
 
 it('lets the pending modal be dismissed without stopping Coin Pack reconciliation', async () => {

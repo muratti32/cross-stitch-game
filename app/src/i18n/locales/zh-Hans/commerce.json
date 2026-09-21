@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "我知道了",
     "successButton": "太棒了",
+    "returnToGameButton": "返回游戏",
     "failedButton": "关闭",
     "infoButton": "我知道了",
     "closeAccessibilityLabel": "关闭"

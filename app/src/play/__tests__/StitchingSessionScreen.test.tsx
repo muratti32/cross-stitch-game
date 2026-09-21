@@ -323,6 +323,7 @@ beforeEach(() => {
   mockReleaseLocatorAttempt.mockResolvedValue({ status: 'released' });
   useGameplayStore.setState({ selectedColorIndex: 0, handedness: 'right' });
   useCommerceIntentStore.getState().clearIntent();
+  useCommerceIntentStore.getState().clearLocatorShortfallOrigin();
 });
 
 afterEach(() => {
@@ -384,8 +385,15 @@ it.each(['ios', 'android'] as const)(
     expect(mockRouter.push).toHaveBeenCalledTimes(1);
     expect(mockRouter.push).toHaveBeenCalledWith({
       pathname: '/(tabs)/(profile)/commerce',
-      params: { category: 'stitch_coin', source: 'stitch_coin_shortfall' },
+      params: {
+        category: 'stitch_coin',
+        source: 'stitch_coin_shortfall',
+        returnSessionId: 'local-session-1',
+      },
     });
+    // The direct route carries its own origin, so nothing is left in the store
+    // for the Pattern unlock shortfall to pick up (#268).
+    expect(useCommerceIntentStore.getState().locatorShortfallOrigin).toBeNull();
   },
 );
 
@@ -400,6 +408,10 @@ it('offers the purchase route to an iOS Guest Player', async () => {
   await act(async () => modal.props.onDismiss());
 
   expect(mockRouter.push).toHaveBeenCalledTimes(1);
+  expect(mockRouter.push.mock.calls[0][0].params).toMatchObject({
+    returnSessionId: 'local-session-1',
+  });
+  expect(useCommerceIntentStore.getState().locatorShortfallOrigin).toBeNull();
 });
 
 it('continues an Android Guest Player through authentication after native dismissal', async () => {
@@ -422,6 +434,8 @@ it('continues an Android Guest Player through authentication after native dismis
     productKey: null,
     productKind: null,
   });
+  expect(useCommerceIntentStore.getState().locatorShortfallOrigin)
+    .toEqual({ sessionId: 'local-session-1', returnTo: null });
   expect(mockRouter.push).toHaveBeenCalledWith({
     pathname: '/(tabs)/(settings)/sign-in',
     params: { returnTo: 'commerce' },
@@ -440,6 +454,7 @@ it('preserves no Commerce intent when an Android Guest dismisses the sheet inste
   await press(buttonNamed(tree.root, 'Not Now')!);
 
   expect(useCommerceIntentStore.getState().intent).toBeNull();
+  expect(useCommerceIntentStore.getState().locatorShortfallOrigin).toBeNull();
   expect(mockRouter.push).not.toHaveBeenCalled();
   expect(eventCalls('locator_coin_shortfall_cta_pressed')).toHaveLength(0);
 });
@@ -478,6 +493,20 @@ it.each(['button', 'backdrop', 'back', 'gesture'] as const)(
     expect(mockFocusCell).not.toHaveBeenCalled();
   },
 );
+
+it('does not prepare or move a Locator when the remembered session is returned to', async () => {
+  useCommerceIntentStore.getState().rememberLocatorShortfallOrigin({
+    sessionId: 'local-session-1',
+    returnTo: null,
+  });
+
+  await renderScreen();
+
+  expect(mockPrepareLocatorAttempt).not.toHaveBeenCalled();
+  expect(mockCommitLocatorAttempt).not.toHaveBeenCalled();
+  expect(mockLocateCell).not.toHaveBeenCalled();
+  expect(mockFocusCell).not.toHaveBeenCalled();
+});
 
 // The pending purchase intent lives in a ref that only a dismissal clears.
 // Leaving the session while the sheet is up must not strand a navigation that

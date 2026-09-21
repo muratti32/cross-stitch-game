@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Entesos",
     "successButton": "Genial",
+    "returnToGameButton": "Torna al joc",
     "failedButton": "Tanca",
     "infoButton": "Entesos",
     "closeAccessibilityLabel": "Tanca"

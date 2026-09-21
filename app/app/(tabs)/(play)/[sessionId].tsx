@@ -140,6 +140,9 @@ export default function SessionReadyScreen() {
   const preserveCategoryIntent = useCommerceIntentStore(
     (state) => state.preserveCategoryIntent,
   );
+  const rememberLocatorShortfallOrigin = useCommerceIntentStore(
+    (state) => state.rememberLocatorShortfallOrigin,
+  );
   // Only a session the backend knows can hold a Locator Attempt (ADR-0058).
   const locatorBinding = session ? locatorSessionBinding(session) : null;
 
@@ -858,6 +861,12 @@ export default function SessionReadyScreen() {
             const destination = shortfallDestinationRef.current;
             shortfallDestinationRef.current = null;
             if (destination === 'authenticate') {
+              // Only the authentication detour needs the store: it leaves
+              // Commerce's route behind and comes back through sign-in's own
+              // `sign_in_return` entry, which carries no parameters of ours.
+              // Dismissing the sheet records nothing, so no abandoned journey
+              // leaves a return target behind (#268).
+              rememberLocatorShortfallOrigin({ sessionId, returnTo: returnTo ?? null });
               preserveCategoryIntent('stitch_coin', 'stitch_coin_shortfall');
               router.push({
                 pathname: '/(tabs)/(settings)/sign-in',
@@ -866,9 +875,18 @@ export default function SessionReadyScreen() {
               return;
             }
             if (destination !== 'purchase') return;
+            // The direct route carries its own origin. `stitch_coin_shortfall`
+            // is also the Pattern unlock shortfall's entry source, so only the
+            // parameters this screen sends may authorize a return to a
+            // Stitching Session (#268).
             router.push({
               pathname: '/(tabs)/(profile)/commerce',
-              params: { category: 'stitch_coin', source: 'stitch_coin_shortfall' },
+              params: {
+                category: 'stitch_coin',
+                source: 'stitch_coin_shortfall',
+                returnSessionId: sessionId,
+                ...(returnTo === undefined ? {} : { returnSessionTo: returnTo }),
+              },
             });
           }}
         />

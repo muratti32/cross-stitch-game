@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "समझ गया",
     "successButton": "बहुत बढ़िया",
+    "returnToGameButton": "गेम पर वापस जाएँ",
     "failedButton": "बंद करें",
     "infoButton": "समझ गया",
     "closeAccessibilityLabel": "बंद करें"

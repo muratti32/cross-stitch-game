@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Зрозуміло",
     "successButton": "Чудово",
+    "returnToGameButton": "Повернутися до гри",
     "failedButton": "Закрити",
     "infoButton": "Зрозуміло",
     "closeAccessibilityLabel": "Закрити"
