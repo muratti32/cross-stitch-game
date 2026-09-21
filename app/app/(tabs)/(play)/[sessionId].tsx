@@ -490,14 +490,14 @@ export default function SessionReadyScreen() {
         return;
       }
       if (error instanceof LocatorInsufficientBalanceError) {
+        // A balance too low for the Locator Price is an expected outcome, not
+        // a failure: the player sees the price and their balance, never the
+        // generic "something went wrong" text.
         const details = [
-          `${t('price.label', { ns: 'catalog' })}: ${error.price}`,
-          `${t('balance.label', { ns: 'catalog' })}: ${error.balance}`,
+          `${t('detail.price.label', { ns: 'catalog' })}: ${formatNumber(error.price, locale)}`,
+          `${t('detail.balance.label', { ns: 'catalog' })}: ${formatNumber(error.balance, locale)}`,
         ].join(' · ');
-        Alert.alert(
-          t('insufficientCoins.title', { ns: 'catalog' }),
-          `${t('generic.failure', { ns: 'errors' })}\n\n${details}`,
-        );
+        Alert.alert(t('detail.insufficientCoins.title', { ns: 'catalog' }), details);
         return;
       }
       // Keep a prepared attempt pending when commit outcome is unknown; a
@@ -666,7 +666,7 @@ export default function SessionReadyScreen() {
             accessibilityLabel={
               !locatorBinding || locatorPrice == null
                 ? t('rail.locateNextAccessibilityLabel')
-                : `${t('rail.locateNextAccessibilityLabel')}, ${t('price.label', { ns: 'catalog' })}: ${formatNumber(locatorPrice, locale)}`
+                : `${t('rail.locateNextAccessibilityLabel')}, ${t('detail.price.label', { ns: 'catalog' })}: ${formatNumber(locatorPrice, locale)}`
             }
           >
             <Ionicons
