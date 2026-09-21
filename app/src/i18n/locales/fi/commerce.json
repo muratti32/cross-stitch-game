@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Selvä",
     "successButton": "Mahtavaa",
+    "returnToGameButton": "Takaisin peliin",
     "failedButton": "Sulje",
     "infoButton": "Selvä",
     "closeAccessibilityLabel": "Sulje"

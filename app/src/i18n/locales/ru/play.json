@@ -62,10 +62,18 @@
     "undoAccessibilityLabel": "Отменить последний стежок"
   },
   "locator": {
-    "priceTitle": "Цена поиска клетки",
-    "priceConfirmMessage": "Цена: {{price}} · Баланс: {{balance}}\nНажмите на поиск ещё раз, чтобы использовать его.",
     "priceChangedTitle": "Цена поиска клетки изменилась",
     "priceChangedMessage": "Новая цена: {{price}} · Баланс: {{balance}}\nНажмите на поиск ещё раз, чтобы использовать его по новой цене."
+  },
+  "locatorShortfall": {
+    "title": "Недостаточно Stitch Coin",
+    "body": "Чтобы воспользоваться поиском клетки сейчас, вам нужно больше Stitch Coin.",
+    "priceLabel": "Цена поиска клетки",
+    "balanceLabel": "Ваш баланс",
+    "purchaseAction": "Получить Stitch Coin",
+    "authAction": "Создать аккаунт / Войти",
+    "dismissAction": "Не сейчас",
+    "dismissAccessibilityLabel": "Закрыть"
   },
   "palette": {
     "chipNumber": "#{{number}}",

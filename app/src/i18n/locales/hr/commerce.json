@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "U redu",
     "successButton": "Odlično",
+    "returnToGameButton": "Povratak u igru",
     "failedButton": "Zatvori",
     "infoButton": "U redu",
     "closeAccessibilityLabel": "Zatvori"

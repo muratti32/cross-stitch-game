@@ -62,10 +62,18 @@
     "undoAccessibilityLabel": "التراجع عن آخر غرزة"
   },
   "locator": {
-    "priceTitle": "سعر أداة التحديد",
-    "priceConfirmMessage": "السعر: {{price}} · الرصيد: {{balance}}\nاضغط على أداة التحديد مرة أخرى لاستخدامها.",
     "priceChangedTitle": "تغيّر سعر أداة التحديد",
     "priceChangedMessage": "السعر الجديد: {{price}} · الرصيد: {{balance}}\nاضغط على أداة التحديد مرة أخرى لاستخدامها بالسعر الجديد."
+  },
+  "locatorShortfall": {
+    "title": "رصيد Stitch Coin غير كافٍ",
+    "body": "تحتاج إلى المزيد من Stitch Coin لاستخدام أداة التحديد الآن.",
+    "priceLabel": "سعر أداة التحديد",
+    "balanceLabel": "رصيدك",
+    "purchaseAction": "احصل على Stitch Coin",
+    "authAction": "إنشاء حساب / تسجيل الدخول",
+    "dismissAction": "ليس الآن",
+    "dismissAccessibilityLabel": "إغلاق"
   },
   "palette": {
     "chipNumber": "#{{number}}",

@@ -62,10 +62,18 @@
     "undoAccessibilityLabel": "撤销上一步 Stitch"
   },
   "locator": {
-    "priceTitle": "定位器价格",
-    "priceConfirmMessage": "价格：{{price}} · 余额：{{balance}}\n再次点按定位器即可使用。",
     "priceChangedTitle": "定位器价格已变更",
     "priceChangedMessage": "新价格：{{price}} · 余额：{{balance}}\n再次点按定位器即可按新价格使用。"
+  },
+  "locatorShortfall": {
+    "title": "Stitch Coin 不足",
+    "body": "你需要更多 Stitch Coin 才能立即使用定位器。",
+    "priceLabel": "定位器价格",
+    "balanceLabel": "你的余额",
+    "purchaseAction": "获取 Stitch Coin",
+    "authAction": "创建账户 / 登录",
+    "dismissAction": "暂时不要",
+    "dismissAccessibilityLabel": "关闭"
   },
   "palette": {
     "chipNumber": "#{{number}}",

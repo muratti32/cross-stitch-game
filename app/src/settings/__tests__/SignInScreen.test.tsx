@@ -1,6 +1,7 @@
 import React from 'react';
 import TestRenderer, { act } from 'react-test-renderer';
 import SignInScreen from '../../../app/(tabs)/(settings)/sign-in';
+import { useCommerceIntentStore } from '@/commerce/commerceIntent';
 
 let mockIsAccount = false;
 let mockRequiresSignIn = false;
@@ -92,6 +93,69 @@ beforeEach(() => {
   mockOnboardingPosition = 'complete';
   mockContinueAsGuest.mockResolvedValue(undefined);
   mockRouter.canGoBack.mockReturnValue(false);
+  useCommerceIntentStore.getState().clearIntent();
+});
+
+/**
+ * The Locator Coin Shortfall route (#267) sends an Android Guest Player here
+ * with a category-level Commerce intent. Abandoning authentication must leave
+ * nothing behind for a later Commerce entry to reopen, and must never start a
+ * Stitch Coin Pack purchase.
+ */
+describe('SignInScreen commerce intent abandonment', () => {
+  function findByLabel(tree: TestRenderer.ReactTestRenderer, label: string) {
+    return tree.root.findAll(
+      (node) => typeof node.type !== 'string' && node.props.children === label,
+    );
+  }
+
+  it('drops a category-level intent when the player cancels', () => {
+    mockParams = { returnTo: 'commerce' };
+    useCommerceIntentStore.getState().preserveCategoryIntent('stitch_coin', 'stitch_coin_shortfall');
+    let tree!: TestRenderer.ReactTestRenderer;
+    act(() => {
+      tree = TestRenderer.create(<SignInScreen />);
+    });
+
+    act(() => findByLabel(tree, 'Cancel')[0].props.onPress());
+
+    expect(useCommerceIntentStore.getState().intent).toBeNull();
+    expect(mockRouter.push).not.toHaveBeenCalled();
+  });
+
+  it('drops a category-level intent when the player continues as a Guest', async () => {
+    mockRequiresSignIn = true;
+    useCommerceIntentStore.getState().preserveCategoryIntent('stitch_coin', 'stitch_coin_shortfall');
+    let tree!: TestRenderer.ReactTestRenderer;
+    act(() => {
+      tree = TestRenderer.create(<SignInScreen />);
+    });
+
+    await act(async () => {
+      findByLabel(tree, 'Continue as guest')[0].props.onPress();
+    });
+
+    expect(useCommerceIntentStore.getState().intent).toBeNull();
+  });
+
+  it('keeps the product the player selected before signing in', () => {
+    mockParams = { returnTo: 'commerce' };
+    const productIntent = {
+      category: 'stitch_coin',
+      entrySource: 'profile',
+      productKey: 'coin_pack_300',
+      productKind: 'stitch_coin_pack',
+    } as const;
+    useCommerceIntentStore.getState().preserveIntent(productIntent);
+    let tree!: TestRenderer.ReactTestRenderer;
+    act(() => {
+      tree = TestRenderer.create(<SignInScreen />);
+    });
+
+    act(() => findByLabel(tree, 'Cancel')[0].props.onPress());
+
+    expect(useCommerceIntentStore.getState().intent).toEqual(productIntent);
+  });
 });
 
 describe('SignInScreen navigation', () => {

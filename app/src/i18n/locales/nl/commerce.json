@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "OK",
     "successButton": "OK",
+    "returnToGameButton": "Terug naar het spel",
     "failedButton": "Sluiten",
     "infoButton": "OK",
     "closeAccessibilityLabel": "Sluiten"

@@ -62,10 +62,18 @@
     "undoAccessibilityLabel": "I-undo ang huling tahi"
   },
   "locator": {
-    "priceTitle": "Presyo ng locator",
-    "priceConfirmMessage": "Presyo: {{price}} · Balanse: {{balance}}\nI-tap muli ang locator para gamitin ito.",
     "priceChangedTitle": "Nagbago ang presyo ng locator",
     "priceChangedMessage": "Bagong presyo: {{price}} · Balanse: {{balance}}\nI-tap muli ang locator para gamitin ito sa bagong presyo."
+  },
+  "locatorShortfall": {
+    "title": "Hindi sapat ang Stitch Coin",
+    "body": "Kailangan mo ng mas maraming Stitch Coin para magamit ang locator ngayon.",
+    "priceLabel": "Presyo ng locator",
+    "balanceLabel": "Balanse mo",
+    "purchaseAction": "Kumuha ng Stitch Coin",
+    "authAction": "Gumawa ng Account / Mag-sign In",
+    "dismissAction": "Hindi muna",
+    "dismissAccessibilityLabel": "Isara"
   },
   "palette": {
     "chipNumber": "#{{number}}",

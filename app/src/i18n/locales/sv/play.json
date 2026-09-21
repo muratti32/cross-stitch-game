@@ -62,10 +62,18 @@
     "undoAccessibilityLabel": "Ångra senaste stygnet"
   },
   "locator": {
-    "priceTitle": "Pris för sökaren",
-    "priceConfirmMessage": "Pris: {{price}} · Saldo: {{balance}}\nTryck på sökaren igen för att använda den.",
     "priceChangedTitle": "Priset för sökaren har ändrats",
     "priceChangedMessage": "Nytt pris: {{price}} · Saldo: {{balance}}\nTryck på sökaren igen för att använda den till det nya priset."
+  },
+  "locatorShortfall": {
+    "title": "Inte tillräckligt med Stitch Coin",
+    "body": "Du behöver fler Stitch Coin för att använda sökaren just nu.",
+    "priceLabel": "Pris för sökaren",
+    "balanceLabel": "Ditt saldo",
+    "purchaseAction": "Skaffa Stitch Coin",
+    "authAction": "Skapa konto / Logga in",
+    "dismissAction": "Inte nu",
+    "dismissAccessibilityLabel": "Stäng"
   },
   "palette": {
     "chipNumber": "#{{number}}",

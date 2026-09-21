@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Am înțeles",
     "successButton": "Excelent",
+    "returnToGameButton": "Înapoi la joc",
     "failedButton": "Închide",
     "infoButton": "Am înțeles",
     "closeAccessibilityLabel": "Închide"

@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "확인",
     "successButton": "확인",
+    "returnToGameButton": "게임으로 돌아가기",
     "failedButton": "닫기",
     "infoButton": "확인",
     "closeAccessibilityLabel": "닫기"

@@ -62,10 +62,18 @@
     "undoAccessibilityLabel": "Undo last stitch"
   },
   "locator": {
-    "priceTitle": "Locator price",
-    "priceConfirmMessage": "Price: {{price}} · Balance: {{balance}}\nTap the locator again to use it.",
     "priceChangedTitle": "Locator price changed",
     "priceChangedMessage": "New price: {{price}} · Balance: {{balance}}\nTap the locator again to use it at the new price."
+  },
+  "locatorShortfall": {
+    "title": "Not Enough Stitch Coin",
+    "body": "You need more Stitch Coin to use the locator right now.",
+    "priceLabel": "Locator price",
+    "balanceLabel": "Your balance",
+    "purchaseAction": "Get Stitch Coin",
+    "authAction": "Create Account / Sign In",
+    "dismissAction": "Not Now",
+    "dismissAccessibilityLabel": "Close"
   },
   "palette": {
     "chipNumber": "#{{number}}",

@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Uppfattat",
     "successButton": "Toppen",
+    "returnToGameButton": "Tillbaka till spelet",
     "failedButton": "Stäng",
     "infoButton": "Uppfattat",
     "closeAccessibilityLabel": "Stäng"

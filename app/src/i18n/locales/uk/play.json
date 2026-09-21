@@ -62,10 +62,18 @@
     "undoAccessibilityLabel": "Скасувати останній стібок"
   },
   "locator": {
-    "priceTitle": "Ціна пошуку клітинки",
-    "priceConfirmMessage": "Ціна: {{price}} · Баланс: {{balance}}\nТоркніться пошуку ще раз, щоб скористатися ним.",
     "priceChangedTitle": "Ціна пошуку клітинки змінилася",
     "priceChangedMessage": "Нова ціна: {{price}} · Баланс: {{balance}}\nТоркніться пошуку ще раз, щоб скористатися ним за новою ціною."
+  },
+  "locatorShortfall": {
+    "title": "Недостатньо Stitch Coin",
+    "body": "Щоб скористатися пошуком клітинки зараз, вам потрібно більше Stitch Coin.",
+    "priceLabel": "Ціна пошуку клітинки",
+    "balanceLabel": "Ваш баланс",
+    "purchaseAction": "Отримати Stitch Coin",
+    "authAction": "Створити обліковий запис / Увійти",
+    "dismissAction": "Не зараз",
+    "dismissAccessibilityLabel": "Закрити"
   },
   "palette": {
     "chipNumber": "#{{number}}",

@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Entendido",
     "successButton": "Genial",
+    "returnToGameButton": "Volver al juego",
     "failedButton": "Cerrar",
     "infoButton": "Entendido",
     "closeAccessibilityLabel": "Cerrar"

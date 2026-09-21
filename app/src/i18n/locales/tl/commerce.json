@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Nakuha ko",
     "successButton": "Ang galing",
+    "returnToGameButton": "Bumalik sa Laro",
     "failedButton": "Isara",
     "infoButton": "Nakuha ko",
     "closeAccessibilityLabel": "Isara"

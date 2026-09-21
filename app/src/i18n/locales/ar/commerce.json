@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "حسناً",
     "successButton": "رائع",
+    "returnToGameButton": "العودة إلى اللعبة",
     "failedButton": "إلغاء",
     "infoButton": "حسناً",
     "closeAccessibilityLabel": "إغلاق"

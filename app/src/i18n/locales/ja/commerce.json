@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "了解",
     "successButton": "OK",
+    "returnToGameButton": "ゲームに戻る",
     "failedButton": "閉じる",
     "infoButton": "了解",
     "closeAccessibilityLabel": "閉じる"

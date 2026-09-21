@@ -62,10 +62,18 @@
     "undoAccessibilityLabel": "Buat asal jahitan terakhir"
   },
   "locator": {
-    "priceTitle": "Harga pencari",
-    "priceConfirmMessage": "Harga: {{price}} · Baki: {{balance}}\nKetik pencari sekali lagi untuk menggunakannya.",
     "priceChangedTitle": "Harga pencari telah berubah",
     "priceChangedMessage": "Harga baharu: {{price}} · Baki: {{balance}}\nKetik pencari sekali lagi untuk menggunakannya pada harga baharu."
+  },
+  "locatorShortfall": {
+    "title": "Stitch Coin tidak mencukupi",
+    "body": "Anda memerlukan lebih banyak Stitch Coin untuk menggunakan pencari sekarang.",
+    "priceLabel": "Harga pencari",
+    "balanceLabel": "Baki anda",
+    "purchaseAction": "Dapatkan Stitch Coin",
+    "authAction": "Cipta Akaun / Log Masuk",
+    "dismissAction": "Bukan sekarang",
+    "dismissAccessibilityLabel": "Tutup"
   },
   "palette": {
     "chipNumber": "#{{number}}",

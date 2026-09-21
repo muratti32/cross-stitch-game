@@ -62,10 +62,18 @@
     "undoAccessibilityLabel": "पिछला टांका वापस लें"
   },
   "locator": {
-    "priceTitle": "लोकेटर की कीमत",
-    "priceConfirmMessage": "कीमत: {{price}} · बैलेंस: {{balance}}\nइस्तेमाल करने के लिए लोकेटर पर फिर से टैप करें।",
     "priceChangedTitle": "लोकेटर की कीमत बदल गई",
     "priceChangedMessage": "नई कीमत: {{price}} · बैलेंस: {{balance}}\nनई कीमत पर इस्तेमाल करने के लिए लोकेटर पर फिर से टैप करें।"
+  },
+  "locatorShortfall": {
+    "title": "पर्याप्त स्टिच कॉइन नहीं हैं",
+    "body": "अभी लोकेटर का उपयोग करने के लिए आपको और स्टिच कॉइन चाहिए।",
+    "priceLabel": "लोकेटर की कीमत",
+    "balanceLabel": "आपका बैलेंस",
+    "purchaseAction": "स्टिच कॉइन प्राप्त करें",
+    "authAction": "खाता बनाएँ / साइन इन करें",
+    "dismissAction": "अभी नहीं",
+    "dismissAccessibilityLabel": "बंद करें"
   },
   "palette": {
     "chipNumber": "#{{number}}",
