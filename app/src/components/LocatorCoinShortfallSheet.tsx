@@ -14,13 +14,19 @@ import { Theme } from '@/theme/theme';
 
 import { Button } from './Button';
 
+/**
+ * What the sheet's primary action promises: a direct Stitch Coin Pack purchase,
+ * or the optional registration/sign-in an Android Guest Player needs first.
+ */
+export type LocatorShortfallPrimaryAction = 'purchase' | 'authenticate';
+
 interface Props {
   readonly visible: boolean;
   readonly price: number;
   readonly balance: number;
   readonly locale: string;
-  readonly showPurchaseAction: boolean;
-  readonly onPurchase: () => void;
+  readonly primaryAction: LocatorShortfallPrimaryAction;
+  readonly onPrimaryAction: () => void;
   readonly onDismiss: () => void;
   /**
    * Fires once the sheet has given up the screen, so the caller can navigate
@@ -36,8 +42,8 @@ export function LocatorCoinShortfallSheet({
   price,
   balance,
   locale,
-  showPurchaseAction,
-  onPurchase,
+  primaryAction,
+  onPrimaryAction,
   onDismiss,
   onDismissed,
 }: Props) {
@@ -128,14 +134,14 @@ export function LocatorCoinShortfallSheet({
               <Text style={styles.amountLabel} allowFontScaling>{balanceLabel}</Text>
               <Text style={styles.amountValue} allowFontScaling>{formattedBalance}</Text>
             </View>
-            {showPurchaseAction && (
-              <Button
-                title={t('locatorShortfall.purchaseAction')}
-                onPress={onPurchase}
-                variant="primary"
-                style={styles.action}
-              />
-            )}
+            <Button
+              title={t(primaryAction === 'purchase'
+                ? 'locatorShortfall.purchaseAction'
+                : 'locatorShortfall.authAction')}
+              onPress={onPrimaryAction}
+              variant="primary"
+              style={styles.action}
+            />
             <Button
               title={t('locatorShortfall.dismissAction')}
               onPress={onDismiss}

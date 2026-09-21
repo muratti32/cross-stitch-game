@@ -71,6 +71,7 @@
     "priceLabel": "Pris for lokalisering",
     "balanceLabel": "Din saldo",
     "purchaseAction": "Få Stitch Coin",
+    "authAction": "Opret konto / Log ind",
     "dismissAction": "Ikke nu",
     "dismissAccessibilityLabel": "Luk"
   },

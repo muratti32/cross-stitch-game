@@ -71,6 +71,7 @@
     "priceLabel": "Cena lokátoru",
     "balanceLabel": "Váš zůstatek",
     "purchaseAction": "Získat Stitch Coin",
+    "authAction": "Vytvořit účet / Přihlásit se",
     "dismissAction": "Teď ne",
     "dismissAccessibilityLabel": "Zavřít"
   },

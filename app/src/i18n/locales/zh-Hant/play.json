@@ -71,6 +71,7 @@
     "priceLabel": "定位器價格",
     "balanceLabel": "你的餘額",
     "purchaseAction": "取得 Stitch Coin",
+    "authAction": "建立帳號 / 登入",
     "dismissAction": "暫時不要",
     "dismissAccessibilityLabel": "關閉"
   },

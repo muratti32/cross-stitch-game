@@ -17,6 +17,7 @@ import {
   LocatorPriceUnavailableError,
 } from '@/api/economy';
 import { useGameplayStore } from '@/store/gameplayStore';
+import { useCommerceIntentStore } from '@/commerce/commerceIntent';
 
 const mockRouter = {
   back: jest.fn(),
@@ -321,6 +322,7 @@ beforeEach(() => {
   mockCommitLocatorAttempt.mockResolvedValue({ status: 'committed' });
   mockReleaseLocatorAttempt.mockResolvedValue({ status: 'released' });
   useGameplayStore.setState({ selectedColorIndex: 0, handedness: 'right' });
+  useCommerceIntentStore.getState().clearIntent();
 });
 
 afterEach(() => {
@@ -400,13 +402,46 @@ it('offers the purchase route to an iOS Guest Player', async () => {
   expect(mockRouter.push).toHaveBeenCalledTimes(1);
 });
 
-it('keeps Android Guest Players on the dismiss-only path from issue #267', async () => {
+it('continues an Android Guest Player through authentication after native dismissal', async () => {
+  setPlatform('android');
+  mockIsAccount = false;
+  const tree = await showShortfall();
+  const primary = buttonNamed(tree.root, 'Create Account / Sign In');
+
+  expect(primary).toBeDefined();
+  expect(buttonNamed(tree.root, 'Get Stitch Coin')).toBeUndefined();
+  await act(async () => {
+    primary!.props.onPress();
+    expect(mockRouter.push).not.toHaveBeenCalled();
+    expect(useCommerceIntentStore.getState().intent).toBeNull();
+  });
+
+  expect(useCommerceIntentStore.getState().intent).toEqual({
+    category: 'stitch_coin',
+    entrySource: 'stitch_coin_shortfall',
+    productKey: null,
+    productKind: null,
+  });
+  expect(mockRouter.push).toHaveBeenCalledWith({
+    pathname: '/(tabs)/(settings)/sign-in',
+    params: { returnTo: 'commerce' },
+  });
+  expect(eventCalls('locator_coin_shortfall_cta_pressed')).toHaveLength(1);
+  expectExactAmounts(eventCalls('locator_coin_shortfall_cta_pressed')[0], 5, 2);
+  expect(mockLocateCell).not.toHaveBeenCalled();
+  expect(mockFocusCell).not.toHaveBeenCalled();
+});
+
+it('preserves no Commerce intent when an Android Guest dismisses the sheet instead', async () => {
   setPlatform('android');
   mockIsAccount = false;
   const tree = await showShortfall();
 
-  expect(buttonNamed(tree.root, 'Get Stitch Coin')).toBeUndefined();
-  expect(buttonNamed(tree.root, 'Not Now')).toBeDefined();
+  await press(buttonNamed(tree.root, 'Not Now')!);
+
+  expect(useCommerceIntentStore.getState().intent).toBeNull();
+  expect(mockRouter.push).not.toHaveBeenCalled();
+  expect(eventCalls('locator_coin_shortfall_cta_pressed')).toHaveLength(0);
 });
 
 it.each(['button', 'backdrop', 'back', 'gesture'] as const)(
@@ -433,6 +468,7 @@ it.each(['button', 'backdrop', 'back', 'gesture'] as const)(
     }
 
     expect(mockRouter.push).not.toHaveBeenCalled();
+    expect(useCommerceIntentStore.getState().intent).toBeNull();
     expect(mockPrepareLocatorAttempt).toHaveBeenCalledTimes(before.prepare);
     expect(mockCommitLocatorAttempt).toHaveBeenCalledTimes(before.commit);
     expect(mockReleaseLocatorAttempt).toHaveBeenCalledTimes(before.release);

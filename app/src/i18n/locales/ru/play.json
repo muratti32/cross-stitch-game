@@ -71,6 +71,7 @@
     "priceLabel": "Цена поиска клетки",
     "balanceLabel": "Ваш баланс",
     "purchaseAction": "Получить Stitch Coin",
+    "authAction": "Создать аккаунт / Войти",
     "dismissAction": "Не сейчас",
     "dismissAccessibilityLabel": "Закрыть"
   },

@@ -71,6 +71,7 @@
     "priceLabel": "Prețul localizatorului",
     "balanceLabel": "Soldul tău",
     "purchaseAction": "Obține Stitch Coin",
+    "authAction": "Creează cont / Autentifică-te",
     "dismissAction": "Nu acum",
     "dismissAccessibilityLabel": "Închide"
   },

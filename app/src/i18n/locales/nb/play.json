@@ -71,6 +71,7 @@
     "priceLabel": "Pris for søker",
     "balanceLabel": "Saldoen din",
     "purchaseAction": "Skaff Stitch Coin",
+    "authAction": "Opprett konto / Logg inn",
     "dismissAction": "Ikke nå",
     "dismissAccessibilityLabel": "Lukk"
   },

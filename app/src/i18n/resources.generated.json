@@ -745,6 +745,7 @@
         "priceLabel": "سعر أداة التحديد",
         "balanceLabel": "رصيدك",
         "purchaseAction": "احصل على Stitch Coin",
+        "authAction": "إنشاء حساب / تسجيل الدخول",
         "dismissAction": "ليس الآن",
         "dismissAccessibilityLabel": "إغلاق"
       },
@@ -2187,6 +2188,7 @@
         "priceLabel": "Preu del localitzador",
         "balanceLabel": "El teu saldo",
         "purchaseAction": "Aconsegueix Stitch Coin",
+        "authAction": "Crea un compte / Inicia sessió",
         "dismissAction": "Ara no",
         "dismissAccessibilityLabel": "Tanca"
       },
@@ -3629,6 +3631,7 @@
         "priceLabel": "Cena lokátoru",
         "balanceLabel": "Váš zůstatek",
         "purchaseAction": "Získat Stitch Coin",
+        "authAction": "Vytvořit účet / Přihlásit se",
         "dismissAction": "Teď ne",
         "dismissAccessibilityLabel": "Zavřít"
       },
@@ -5071,6 +5074,7 @@
         "priceLabel": "Pris for lokalisering",
         "balanceLabel": "Din saldo",
         "purchaseAction": "Få Stitch Coin",
+        "authAction": "Opret konto / Log ind",
         "dismissAction": "Ikke nu",
         "dismissAccessibilityLabel": "Luk"
       },
@@ -6513,6 +6517,7 @@
         "priceLabel": "Preis der Zellsuche",
         "balanceLabel": "Dein Guthaben",
         "purchaseAction": "Stitch Coin holen",
+        "authAction": "Konto erstellen / Anmelden",
         "dismissAction": "Nicht jetzt",
         "dismissAccessibilityLabel": "Schließen"
       },
@@ -7955,6 +7960,7 @@
         "priceLabel": "Τιμή εντοπισμού",
         "balanceLabel": "Το υπόλοιπό σου",
         "purchaseAction": "Απόκτησε Stitch Coin",
+        "authAction": "Δημιουργία λογαριασμού / Σύνδεση",
         "dismissAction": "Όχι τώρα",
         "dismissAccessibilityLabel": "Κλείσιμο"
       },
@@ -9397,6 +9403,7 @@
         "priceLabel": "Locator price",
         "balanceLabel": "Your balance",
         "purchaseAction": "Get Stitch Coin",
+        "authAction": "Create Account / Sign In",
         "dismissAction": "Not Now",
         "dismissAccessibilityLabel": "Close"
       },
@@ -10839,6 +10846,7 @@
         "priceLabel": "Precio del localizador",
         "balanceLabel": "Tu saldo",
         "purchaseAction": "Conseguir Stitch Coin",
+        "authAction": "Crear cuenta / Iniciar sesión",
         "dismissAction": "Ahora no",
         "dismissAccessibilityLabel": "Cerrar"
       },
@@ -12281,6 +12289,7 @@
         "priceLabel": "Paikantimen hinta",
         "balanceLabel": "Saldosi",
         "purchaseAction": "Hanki Stitch Coin -valuuttaa",
+        "authAction": "Luo tili / Kirjaudu sisään",
         "dismissAction": "Ei nyt",
         "dismissAccessibilityLabel": "Sulje"
       },
@@ -13723,6 +13732,7 @@
         "priceLabel": "Prix du localisateur",
         "balanceLabel": "Votre solde",
         "purchaseAction": "Obtenir des Stitch Coin",
+        "authAction": "Créer un compte / Se connecter",
         "dismissAction": "Pas maintenant",
         "dismissAccessibilityLabel": "Fermer"
       },
@@ -15165,6 +15175,7 @@
         "priceLabel": "लोकेटर की कीमत",
         "balanceLabel": "आपका बैलेंस",
         "purchaseAction": "स्टिच कॉइन प्राप्त करें",
+        "authAction": "खाता बनाएँ / साइन इन करें",
         "dismissAction": "अभी नहीं",
         "dismissAccessibilityLabel": "बंद करें"
       },
@@ -16607,6 +16618,7 @@
         "priceLabel": "Cijena lokatora",
         "balanceLabel": "Tvoje stanje",
         "purchaseAction": "Nabavi Stitch Coin",
+        "authAction": "Izradi račun / Prijavi se",
         "dismissAction": "Ne sada",
         "dismissAccessibilityLabel": "Zatvori"
       },
@@ -18049,6 +18061,7 @@
         "priceLabel": "A kereső ára",
         "balanceLabel": "Egyenleged",
         "purchaseAction": "Stitch Coin beszerzése",
+        "authAction": "Fiók létrehozása / Bejelentkezés",
         "dismissAction": "Most nem",
         "dismissAccessibilityLabel": "Bezárás"
       },
@@ -19491,6 +19504,7 @@
         "priceLabel": "Harga pencari",
         "balanceLabel": "Saldo kamu",
         "purchaseAction": "Dapatkan Stitch Coin",
+        "authAction": "Buat Akun / Masuk",
         "dismissAction": "Jangan sekarang",
         "dismissAccessibilityLabel": "Tutup"
       },
@@ -20933,6 +20947,7 @@
         "priceLabel": "Prezzo del localizzatore",
         "balanceLabel": "Il tuo saldo",
         "purchaseAction": "Ottieni Stitch Coin",
+        "authAction": "Crea account / Accedi",
         "dismissAction": "Non ora",
         "dismissAccessibilityLabel": "Chiudi"
       },
@@ -22375,6 +22390,7 @@
         "priceLabel": "ロケーターの価格",
         "balanceLabel": "あなたの残高",
         "purchaseAction": "Stitch Coinを獲得",
+        "authAction": "アカウント作成 / サインイン",
         "dismissAction": "今はしない",
         "dismissAccessibilityLabel": "閉じる"
       },
@@ -23817,6 +23833,7 @@
         "priceLabel": "위치 찾기 가격",
         "balanceLabel": "내 잔액",
         "purchaseAction": "Stitch Coin 받기",
+        "authAction": "계정 만들기 / 로그인",
         "dismissAction": "나중에",
         "dismissAccessibilityLabel": "닫기"
       },
@@ -25259,6 +25276,7 @@
         "priceLabel": "Harga pencari",
         "balanceLabel": "Baki anda",
         "purchaseAction": "Dapatkan Stitch Coin",
+        "authAction": "Cipta Akaun / Log Masuk",
         "dismissAction": "Bukan sekarang",
         "dismissAccessibilityLabel": "Tutup"
       },
@@ -26701,6 +26719,7 @@
         "priceLabel": "Pris for søker",
         "balanceLabel": "Saldoen din",
         "purchaseAction": "Skaff Stitch Coin",
+        "authAction": "Opprett konto / Logg inn",
         "dismissAction": "Ikke nå",
         "dismissAccessibilityLabel": "Lukk"
       },
@@ -28143,6 +28162,7 @@
         "priceLabel": "Prijs van de zoeker",
         "balanceLabel": "Je saldo",
         "purchaseAction": "Stitch Coin krijgen",
+        "authAction": "Account maken / Inloggen",
         "dismissAction": "Niet nu",
         "dismissAccessibilityLabel": "Sluiten"
       },
@@ -29585,6 +29605,7 @@
         "priceLabel": "Cena lokalizatora",
         "balanceLabel": "Twoje saldo",
         "purchaseAction": "Zdobądź Stitch Coin",
+        "authAction": "Utwórz konto / Zaloguj się",
         "dismissAction": "Nie teraz",
         "dismissAccessibilityLabel": "Zamknij"
       },
@@ -31027,6 +31048,7 @@
         "priceLabel": "Preço do localizador",
         "balanceLabel": "O teu saldo",
         "purchaseAction": "Obter Stitch Coin",
+        "authAction": "Criar conta / Iniciar sessão",
         "dismissAction": "Agora não",
         "dismissAccessibilityLabel": "Fechar"
       },
@@ -32469,6 +32491,7 @@
         "priceLabel": "Preço do localizador",
         "balanceLabel": "Seu saldo",
         "purchaseAction": "Obter Stitch Coin",
+        "authAction": "Criar conta / Entrar",
         "dismissAction": "Agora não",
         "dismissAccessibilityLabel": "Fechar"
       },
@@ -33911,6 +33934,7 @@
         "priceLabel": "Prețul localizatorului",
         "balanceLabel": "Soldul tău",
         "purchaseAction": "Obține Stitch Coin",
+        "authAction": "Creează cont / Autentifică-te",
         "dismissAction": "Nu acum",
         "dismissAccessibilityLabel": "Închide"
       },
@@ -35353,6 +35377,7 @@
         "priceLabel": "Цена поиска клетки",
         "balanceLabel": "Ваш баланс",
         "purchaseAction": "Получить Stitch Coin",
+        "authAction": "Создать аккаунт / Войти",
         "dismissAction": "Не сейчас",
         "dismissAccessibilityLabel": "Закрыть"
       },
@@ -36795,6 +36820,7 @@
         "priceLabel": "Cena lokátora",
         "balanceLabel": "Tvoj zostatok",
         "purchaseAction": "Získať Stitch Coin",
+        "authAction": "Vytvoriť účet / Prihlásiť sa",
         "dismissAction": "Teraz nie",
         "dismissAccessibilityLabel": "Zavrieť"
       },
@@ -38237,6 +38263,7 @@
         "priceLabel": "Cena iskalnika",
         "balanceLabel": "Vaše stanje",
         "purchaseAction": "Pridobi kovance Stitch Coin",
+        "authAction": "Ustvari račun / Prijava",
         "dismissAction": "Ne zdaj",
         "dismissAccessibilityLabel": "Zapri"
       },
@@ -39679,6 +39706,7 @@
         "priceLabel": "Pris för sökaren",
         "balanceLabel": "Ditt saldo",
         "purchaseAction": "Skaffa Stitch Coin",
+        "authAction": "Skapa konto / Logga in",
         "dismissAction": "Inte nu",
         "dismissAccessibilityLabel": "Stäng"
       },
@@ -41121,6 +41149,7 @@
         "priceLabel": "Presyo ng locator",
         "balanceLabel": "Balanse mo",
         "purchaseAction": "Kumuha ng Stitch Coin",
+        "authAction": "Gumawa ng Account / Mag-sign In",
         "dismissAction": "Hindi muna",
         "dismissAccessibilityLabel": "Isara"
       },
@@ -42563,6 +42592,7 @@
         "priceLabel": "Konum bulucu fiyatı",
         "balanceLabel": "Bakiyen",
         "purchaseAction": "Stitch Coin Al",
+        "authAction": "Hesap Oluştur / Giriş Yap",
         "dismissAction": "Şimdi Değil",
         "dismissAccessibilityLabel": "Kapat"
       },
@@ -44005,6 +44035,7 @@
         "priceLabel": "Ціна пошуку клітинки",
         "balanceLabel": "Ваш баланс",
         "purchaseAction": "Отримати Stitch Coin",
+        "authAction": "Створити обліковий запис / Увійти",
         "dismissAction": "Не зараз",
         "dismissAccessibilityLabel": "Закрити"
       },
@@ -45447,6 +45478,7 @@
         "priceLabel": "Giá công cụ định vị",
         "balanceLabel": "Số dư của bạn",
         "purchaseAction": "Nhận Stitch Coin",
+        "authAction": "Tạo tài khoản / Đăng nhập",
         "dismissAction": "Không phải lúc này",
         "dismissAccessibilityLabel": "Đóng"
       },
@@ -46889,6 +46921,7 @@
         "priceLabel": "定位器价格",
         "balanceLabel": "你的余额",
         "purchaseAction": "获取 Stitch Coin",
+        "authAction": "创建账户 / 登录",
         "dismissAction": "暂时不要",
         "dismissAccessibilityLabel": "关闭"
       },
@@ -48331,6 +48364,7 @@
         "priceLabel": "定位器價格",
         "balanceLabel": "你的餘額",
         "purchaseAction": "取得 Stitch Coin",
+        "authAction": "建立帳號 / 登入",
         "dismissAction": "暫時不要",
         "dismissAccessibilityLabel": "關閉"
       },

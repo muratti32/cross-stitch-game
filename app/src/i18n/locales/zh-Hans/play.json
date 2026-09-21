@@ -71,6 +71,7 @@
     "priceLabel": "定位器价格",
     "balanceLabel": "你的余额",
     "purchaseAction": "获取 Stitch Coin",
+    "authAction": "创建账户 / 登录",
     "dismissAction": "暂时不要",
     "dismissAccessibilityLabel": "关闭"
   },

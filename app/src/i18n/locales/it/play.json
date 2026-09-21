@@ -71,6 +71,7 @@
     "priceLabel": "Prezzo del localizzatore",
     "balanceLabel": "Il tuo saldo",
     "purchaseAction": "Ottieni Stitch Coin",
+    "authAction": "Crea account / Accedi",
     "dismissAction": "Non ora",
     "dismissAccessibilityLabel": "Chiudi"
   },

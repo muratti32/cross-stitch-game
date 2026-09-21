@@ -71,6 +71,7 @@
     "priceLabel": "Paikantimen hinta",
     "balanceLabel": "Saldosi",
     "purchaseAction": "Hanki Stitch Coin -valuuttaa",
+    "authAction": "Luo tili / Kirjaudu sisään",
     "dismissAction": "Ei nyt",
     "dismissAccessibilityLabel": "Sulje"
   },

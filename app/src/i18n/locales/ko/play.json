@@ -71,6 +71,7 @@
     "priceLabel": "위치 찾기 가격",
     "balanceLabel": "내 잔액",
     "purchaseAction": "Stitch Coin 받기",
+    "authAction": "계정 만들기 / 로그인",
     "dismissAction": "나중에",
     "dismissAccessibilityLabel": "닫기"
   },

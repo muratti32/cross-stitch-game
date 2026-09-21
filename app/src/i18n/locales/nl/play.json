@@ -71,6 +71,7 @@
     "priceLabel": "Prijs van de zoeker",
     "balanceLabel": "Je saldo",
     "purchaseAction": "Stitch Coin krijgen",
+    "authAction": "Account maken / Inloggen",
     "dismissAction": "Niet nu",
     "dismissAccessibilityLabel": "Sluiten"
   },

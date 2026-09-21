@@ -71,6 +71,7 @@
     "priceLabel": "Cena iskalnika",
     "balanceLabel": "Vaše stanje",
     "purchaseAction": "Pridobi kovance Stitch Coin",
+    "authAction": "Ustvari račun / Prijava",
     "dismissAction": "Ne zdaj",
     "dismissAccessibilityLabel": "Zapri"
   },

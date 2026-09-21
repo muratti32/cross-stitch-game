@@ -71,6 +71,7 @@
     "priceLabel": "سعر أداة التحديد",
     "balanceLabel": "رصيدك",
     "purchaseAction": "احصل على Stitch Coin",
+    "authAction": "إنشاء حساب / تسجيل الدخول",
     "dismissAction": "ليس الآن",
     "dismissAccessibilityLabel": "إغلاق"
   },

@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter, useNavigation, useFocusEffect, useIsFocused } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Screen, Button, LocatorCoinShortfallSheet } from '@/components';
+import type { LocatorShortfallPrimaryAction } from '@/components';
 import { Theme } from '@/theme/theme';
 import { formatNumber } from '@/i18n';
 import { createReplaySession, generateUUID } from '@/local-db';
@@ -48,6 +49,7 @@ import {
 import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { locatorCoinShortfallCtaPressed, locatorCoinShortfallShown } from '@/analytics/locatorShortfall';
+import { useCommerceIntentStore } from '@/commerce/commerceIntent';
 
 export default function SessionReadyScreen() {
   const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
@@ -124,15 +126,20 @@ export default function SessionReadyScreen() {
   const locatorRunRef = useRef(0);
   const [shortfall, setShortfall] = useState<{ price: number; balance: number } | null>(null);
   const [shortfallVisible, setShortfallVisible] = useState(false);
-  const shortfallPurchaseRef = useRef(false);
+  const shortfallDestinationRef = useRef<LocatorShortfallPrimaryAction | null>(null);
   const parentRevisionRef = useRef(0);
   const [locatorBusy, setLocatorBusy] = useState(false);
   const { data: locatorPrice } = useLocatorPrice();
   const isAccount = useIdentityStore((state) => state.isAccount);
-  // #266 covers Registered Accounts and iOS Guest Players. The Android Guest
-  // path is #267, so an Android Guest Player gets a dismiss-only sheet rather
-  // than a purchase action the platform cannot honour.
-  const canPurchaseStitchCoin = isAccount || Platform.OS === 'ios';
+  // An Android Guest Player has no supported Stitch Coin Pack purchase path, so the
+  // sheet promises registration or sign-in instead and continues the same
+  // shortfall intent into Commerce afterwards (#267).
+  const shortfallPrimaryAction = isAccount || Platform.OS === 'ios'
+    ? 'purchase'
+    : 'authenticate';
+  const preserveCategoryIntent = useCommerceIntentStore(
+    (state) => state.preserveCategoryIntent,
+  );
   // Only a session the backend knows can hold a Locator Attempt (ADR-0058).
   const locatorBinding = session ? locatorSessionBinding(session) : null;
 
@@ -836,20 +843,29 @@ export default function SessionReadyScreen() {
           price={shortfall.price}
           balance={shortfall.balance}
           locale={locale}
-          showPurchaseAction={canPurchaseStitchCoin}
-          onPurchase={() => {
+          primaryAction={shortfallPrimaryAction}
+          onPrimaryAction={() => {
             locatorCoinShortfallCtaPressed(shortfall.price, shortfall.balance);
-            shortfallPurchaseRef.current = true;
+            shortfallDestinationRef.current = shortfallPrimaryAction;
             setShortfallVisible(false);
           }}
           onDismiss={() => {
-            shortfallPurchaseRef.current = false;
+            shortfallDestinationRef.current = null;
             setShortfallVisible(false);
           }}
           onDismissed={() => {
             setShortfall(null);
-            if (!shortfallPurchaseRef.current) return;
-            shortfallPurchaseRef.current = false;
+            const destination = shortfallDestinationRef.current;
+            shortfallDestinationRef.current = null;
+            if (destination === 'authenticate') {
+              preserveCategoryIntent('stitch_coin', 'stitch_coin_shortfall');
+              router.push({
+                pathname: '/(tabs)/(settings)/sign-in',
+                params: { returnTo: 'commerce' },
+              });
+              return;
+            }
+            if (destination !== 'purchase') return;
             router.push({
               pathname: '/(tabs)/(profile)/commerce',
               params: { category: 'stitch_coin', source: 'stitch_coin_shortfall' },

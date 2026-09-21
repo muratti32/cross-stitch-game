@@ -71,6 +71,7 @@
     "priceLabel": "Τιμή εντοπισμού",
     "balanceLabel": "Το υπόλοιπό σου",
     "purchaseAction": "Απόκτησε Stitch Coin",
+    "authAction": "Δημιουργία λογαριασμού / Σύνδεση",
     "dismissAction": "Όχι τώρα",
     "dismissAccessibilityLabel": "Κλείσιμο"
   },

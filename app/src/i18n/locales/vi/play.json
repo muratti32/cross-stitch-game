@@ -71,6 +71,7 @@
     "priceLabel": "Giá công cụ định vị",
     "balanceLabel": "Số dư của bạn",
     "purchaseAction": "Nhận Stitch Coin",
+    "authAction": "Tạo tài khoản / Đăng nhập",
     "dismissAction": "Không phải lúc này",
     "dismissAccessibilityLabel": "Đóng"
   },

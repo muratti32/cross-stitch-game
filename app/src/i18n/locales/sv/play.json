@@ -71,6 +71,7 @@
     "priceLabel": "Pris för sökaren",
     "balanceLabel": "Ditt saldo",
     "purchaseAction": "Skaffa Stitch Coin",
+    "authAction": "Skapa konto / Logga in",
     "dismissAction": "Inte nu",
     "dismissAccessibilityLabel": "Stäng"
   },

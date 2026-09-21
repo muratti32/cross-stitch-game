@@ -71,6 +71,7 @@
     "priceLabel": "Cijena lokatora",
     "balanceLabel": "Tvoje stanje",
     "purchaseAction": "Nabavi Stitch Coin",
+    "authAction": "Izradi račun / Prijavi se",
     "dismissAction": "Ne sada",
     "dismissAccessibilityLabel": "Zatvori"
   },

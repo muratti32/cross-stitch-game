@@ -10,13 +10,18 @@ import type { CommerceCategory } from './catalog';
 export interface CommercePurchaseIntent {
   readonly category: CommerceCategory;
   readonly entrySource: CommerceEntrySource;
-  readonly productKey: PurchaseProductKey;
-  readonly productKind: PurchaseProductKind;
+  readonly productKey: PurchaseProductKey | null;
+  readonly productKind: PurchaseProductKind | null;
 }
 
 interface CommerceIntentState {
   intent: CommercePurchaseIntent | null;
+  clearCategoryIntent: () => void;
   clearIntent: () => void;
+  preserveCategoryIntent: (
+    category: CommerceCategory,
+    entrySource: CommerceEntrySource,
+  ) => void;
   preserveIntent: (intent: CommercePurchaseIntent) => void;
 }
 
@@ -31,7 +36,17 @@ const ENTRY_SOURCES: readonly CommerceEntrySource[] = [
 
 export const useCommerceIntentStore = create<CommerceIntentState>((set) => ({
   intent: null,
+  // A category-level intent belongs to the authentication detour that created
+  // it (#267). Abandoning that detour has to drop it, or a later Commerce
+  // sign-in return would reopen a category the player never asked for. A
+  // product-level intent is the player's own selection and is left alone.
+  clearCategoryIntent: () => set((state) => (
+    state.intent !== null && state.intent.productKey === null ? { intent: null } : state
+  )),
   clearIntent: () => set({ intent: null }),
+  preserveCategoryIntent: (category, entrySource) => set({
+    intent: { category, entrySource, productKey: null, productKind: null },
+  }),
   preserveIntent: (intent) => set({ intent }),
 }));
 

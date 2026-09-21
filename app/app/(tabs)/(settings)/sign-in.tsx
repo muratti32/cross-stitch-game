@@ -16,7 +16,7 @@ import { router, useFocusEffect, useLocalSearchParams, useNavigation } from 'exp
 import type { Href } from 'expo-router';
 import { exitSignIn, SETTINGS_TAB_ROOT } from '@/navigation/exitSignIn';
 import { Ionicons } from '@expo/vector-icons';
-import { isCommerceReturnTarget } from '@/commerce/commerceIntent';
+import { isCommerceReturnTarget, useCommerceIntentStore } from '@/commerce/commerceIntent';
 import { continueAsGuest, useIdentityStore } from '@/identity/guestIdentity';
 import { getCurrentOnboardingPosition } from '@/onboarding/state';
 import { useTranslation } from 'react-i18next';
@@ -52,6 +52,11 @@ export default function SignInScreen() {
   const trimmedEmail = email.trim();
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail);
   const validCode = code.length === 6;
+
+  // Leaving without an account ends the Locator Coin Shortfall detour that a
+  // category-level Commerce intent was created for (#267); the player's own
+  // product selection survives.
+  const abandonCategoryIntent = useCommerceIntentStore((state) => state.clearCategoryIntent);
 
   const leaveSignIn = useCallback(
     (target: Href) => {
@@ -93,6 +98,7 @@ export default function SignInScreen() {
   );
 
   const onCancel = () => {
+    abandonCategoryIntent();
     if (router.canGoBack()) {
       router.back();
       return;
@@ -106,6 +112,7 @@ export default function SignInScreen() {
    * Guest Player is the exit that keeps sign-in optional.
    */
   const onContinueAsGuest = async () => {
+    abandonCategoryIntent();
     setError(null);
     setLeavingGate(true);
     try {

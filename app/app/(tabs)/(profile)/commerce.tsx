@@ -192,7 +192,9 @@ export default function CommerceScreen() {
   const [loadingStore, setLoadingStore] = useState(true);
   const [storeUnavailable, setStoreUnavailable] = useState(false);
   const [selectedPremiumKey, setSelectedPremiumKey] = useState<string>(
-    pendingIntent?.category === 'premium' ? pendingIntent.productKey : 'premium_annual',
+    pendingIntent?.category === 'premium' && pendingIntent.productKey !== null
+      ? pendingIntent.productKey
+      : 'premium_annual',
   );
   const [openCategory, setOpenCategory] = useState<CommerceCategory | null>(null);
   const [purchasingKey, setPurchasingKey] = useState<string | null>(null);
@@ -316,7 +318,9 @@ export default function CommerceScreen() {
 
   useEffect(() => {
     if (source !== 'sign_in_return' || pendingIntent === null) return;
-    setSelectedPremiumKey(pendingIntent.productKey);
+    if (pendingIntent.category === 'premium' && pendingIntent.productKey !== null) {
+      setSelectedPremiumKey(pendingIntent.productKey);
+    }
     if (pendingIntent.category !== 'premium') {
       setOpenCategory(pendingIntent.category);
     }
@@ -449,7 +453,7 @@ export default function CommerceScreen() {
   // A deep link or shortfall entry may ask for a category the store did not
   // return. An empty sheet is worse than none, so it simply does not open.
   const openablePackCategory = openCategoryPacks.length > 0 ? openCategory : null;
-  const returnedProduct = pendingIntent === null
+  const returnedProduct = pendingIntent?.productKey == null
     ? null
     : products.find((product) => product.productKey === pendingIntent.productKey) ?? null;
 

@@ -1364,6 +1364,26 @@ it('keeps Guest catalog intent and makes Continue as Guest primary', async () =>
   });
 });
 
+it('opens Stitch Coin Packs without selecting or purchasing after category-level sign-in return', async () => {
+  mockIdentity = { accountId: 'account_267', isAccount: true };
+  mockParams = { source: 'sign_in_return' };
+  useCommerceIntentStore.getState().preserveCategoryIntent(
+    'stitch_coin',
+    'stitch_coin_shortfall',
+  );
+
+  await renderScreen();
+
+  expect(allText(renderer!.root)).toEqual(expect.arrayContaining([
+    '300 Stitch Coins',
+    '900 Stitch Coins',
+    '2,000 Stitch Coins',
+  ]));
+  expect(allText(renderer!.root)).not.toContain('Selected before sign-in');
+  expect(renderer!.root.findAllByProps({ testID: 'sign-in-return-notice' })).toHaveLength(0);
+  expect(mockPurchasePackage).not.toHaveBeenCalled();
+});
+
 it('shows a Guest their real AI Credit wallet balance instead of a hardcoded 0', async () => {
   // A Guest can buy AI Credit packs and the balance is granted to their Guest
   // Ledger server-side (economy-read.service.ts resolves both principal

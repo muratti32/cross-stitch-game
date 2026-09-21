@@ -71,6 +71,7 @@
     "priceLabel": "Konum bulucu fiyatı",
     "balanceLabel": "Bakiyen",
     "purchaseAction": "Stitch Coin Al",
+    "authAction": "Hesap Oluştur / Giriş Yap",
     "dismissAction": "Şimdi Değil",
     "dismissAccessibilityLabel": "Kapat"
   },

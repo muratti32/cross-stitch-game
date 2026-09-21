@@ -71,6 +71,7 @@
     "priceLabel": "Presyo ng locator",
     "balanceLabel": "Balanse mo",
     "purchaseAction": "Kumuha ng Stitch Coin",
+    "authAction": "Gumawa ng Account / Mag-sign In",
     "dismissAction": "Hindi muna",
     "dismissAccessibilityLabel": "Isara"
   },

@@ -71,6 +71,7 @@
     "priceLabel": "Locator price",
     "balanceLabel": "Your balance",
     "purchaseAction": "Get Stitch Coin",
+    "authAction": "Create Account / Sign In",
     "dismissAction": "Not Now",
     "dismissAccessibilityLabel": "Close"
   },

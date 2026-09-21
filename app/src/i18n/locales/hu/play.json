@@ -71,6 +71,7 @@
     "priceLabel": "A kereső ára",
     "balanceLabel": "Egyenleged",
     "purchaseAction": "Stitch Coin beszerzése",
+    "authAction": "Fiók létrehozása / Bejelentkezés",
     "dismissAction": "Most nem",
     "dismissAccessibilityLabel": "Bezárás"
   },

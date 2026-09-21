@@ -71,6 +71,7 @@
     "priceLabel": "ロケーターの価格",
     "balanceLabel": "あなたの残高",
     "purchaseAction": "Stitch Coinを獲得",
+    "authAction": "アカウント作成 / サインイン",
     "dismissAction": "今はしない",
     "dismissAccessibilityLabel": "閉じる"
   },

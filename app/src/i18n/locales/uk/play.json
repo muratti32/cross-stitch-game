@@ -71,6 +71,7 @@
     "priceLabel": "Ціна пошуку клітинки",
     "balanceLabel": "Ваш баланс",
     "purchaseAction": "Отримати Stitch Coin",
+    "authAction": "Створити обліковий запис / Увійти",
     "dismissAction": "Не зараз",
     "dismissAccessibilityLabel": "Закрити"
   },
