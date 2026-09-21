@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Pressable, Text, ActivityIndicator, ViewStyle, TextStyle, StyleProp } from 'react-native';
+import { StyleSheet, Pressable, Text, ActivityIndicator, View, ViewStyle, TextStyle, StyleProp } from 'react-native';
 import { Theme } from '../theme/theme';
 
 interface ButtonProps {
@@ -8,6 +8,7 @@ interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'rose' | 'sage' | 'honey';
   disabled?: boolean;
   loading?: boolean;
+  leadingIcon?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
 }
@@ -18,6 +19,7 @@ export function Button({
   variant = 'primary',
   disabled = false,
   loading = false,
+  leadingIcon,
   style,
   textStyle,
 }: ButtonProps) {
@@ -54,9 +56,10 @@ export function Button({
       {loading ? (
         <ActivityIndicator size="small" color={getTextColor()} />
       ) : (
-        <Text style={[styles.textBase, { color: getTextColor() }, textStyle]}>
-          {title}
-        </Text>
+        <>
+          {leadingIcon ? <View style={styles.leadingIcon}>{leadingIcon}</View> : null}
+          <Text style={[styles.textBase, { color: getTextColor() }, textStyle]}>{title}</Text>
+        </>
       )}
     </Pressable>
   );
@@ -98,5 +101,8 @@ const styles = StyleSheet.create({
   pressedButton: {
     opacity: 0.85,
     transform: [{ scale: 0.98 }],
+  },
+  leadingIcon: {
+    marginRight: Theme.spacing.xs,
   },
 });

@@ -41,8 +41,8 @@ export interface UseRewardedAd {
   isLoaded: boolean;
   /** The last load/show error, cleared when a new load starts. */
   error: Error | null;
-  /** Present the loaded ad. No-op unless `status === 'loaded'`. */
-  show: () => void;
+  /** Present the loaded ad and return true. No-op returning false when no ad is loaded. */
+  show: () => boolean;
   /** Discard the current ad and fetch a fresh one. */
   reload: () => void;
 }
@@ -159,13 +159,14 @@ export function useRewardedAd(options: UseRewardedAdOptions = {}): UseRewardedAd
   const show = useCallback(() => {
     const ad = adRef.current;
     if (ad === null || !ad.loaded) {
-      return;
+      return false;
     }
     setStatus('showing');
     ad.show().catch((showError: unknown) => {
       setError(showError instanceof Error ? showError : new Error(String(showError)));
       setStatus('error');
     });
+    return true;
   }, []);
 
   const reload = useCallback(() => {

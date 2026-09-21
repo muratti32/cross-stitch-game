@@ -162,9 +162,11 @@ describe('useRewardedAd', () => {
     });
     admobMock.setLoaded(true);
 
+    let presented = false;
     act(() => {
-      current().show();
+      presented = current().show();
     });
+    expect(presented).toBe(true);
     expect(admobMock.show).toHaveBeenCalledTimes(1);
     expect(current().status).toBe('showing');
 
@@ -186,10 +188,12 @@ describe('useRewardedAd', () => {
     const { current } = await mountHook();
     admobMock.setLoaded(false);
 
+    let presented = true;
     act(() => {
-      current().show();
+      presented = current().show();
     });
 
+    expect(presented).toBe(false);
     expect(admobMock.show).not.toHaveBeenCalled();
     expect(current().status).toBe('loading');
   });

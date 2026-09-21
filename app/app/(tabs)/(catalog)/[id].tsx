@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Screen, Button, Card, PatternImage, CommunityReportAction, EmptyState, GuestDataRiskNotice, PatternLockBadge } from '@/components';
+import { Screen, Button, BackButton, Card, PatternImage, CommunityReportAction, EmptyState, GuestDataRiskNotice, PatternLockBadge } from '@/components';
 import { Theme } from '@/theme/theme';
 import { BUNDLED_PATTERNS, loadBundledPattern } from '@/bundled-patterns';
 import { PatternData } from '@/pattern-artifact';
@@ -95,8 +95,7 @@ export default function PatternDetailScreen() {
     <Screen scrollable contentContainerStyle={styles.container}>
       {/* Back navigation header */}
       <View style={styles.headerRow}>
-        <Button
-          variant="secondary"
+        <BackButton
           title={t('common.back')}
           onPress={handleBack}
           style={styles.backButton}
@@ -401,8 +400,7 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
   return (
     <Screen scrollable contentContainerStyle={styles.container}>
       <View style={styles.headerRow}>
-        <Button
-          variant="secondary"
+        <BackButton
           title={t('common.back')}
           onPress={handleBack}
           style={styles.backButton}
@@ -681,9 +679,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     alignSelf: 'flex-start',
-    height: 36,
-    paddingHorizontal: Theme.spacing.md,
-    borderRadius: Theme.radii.md,
   },
   imageContainer: {
     alignItems: 'center',

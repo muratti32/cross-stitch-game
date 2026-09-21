@@ -38,6 +38,7 @@ export function useRewardedAdFlow(options: RewardedAdFlowOptions) {
   attemptRef.current = attempt;
   const claimingRef = useRef<Set<string>>(new Set());
   const earnedRef = useRef(false);
+  const presentedNonceRef = useRef<string | null>(null);
   const optionsRef = useRef(options);
   optionsRef.current = options;
 
@@ -101,8 +102,13 @@ export function useRewardedAdFlow(options: RewardedAdFlowOptions) {
   const previousStatusRef = useRef(status);
 
   useEffect(() => {
-    if (attemptPending && status === 'loaded') show();
-  }, [status, attemptPending, show]);
+    // The preloaded ad has no SSV customData; wait for the ad rebuilt with this attempt's nonce.
+    if (!attemptPending || attempt === null || status !== 'loaded') return;
+    // After dismissal the same ad reloads while the attempt is still pending (SSV polling or
+    // claim), so present at most one ad per attempt instead of chaining ads automatically.
+    if (presentedNonceRef.current === attempt.nonce) return;
+    if (show()) presentedNonceRef.current = attempt.nonce;
+  }, [status, attemptPending, attempt, show]);
 
   useEffect(() => {
     const previous = previousStatusRef.current;

@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, Text, FlatList, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Screen, Card, Button, EmptyState, PatternImage, SourceLanguageBadge, PatternLockBadge } from '@/components';
+import { Screen, Card, Button, BackButton, EmptyState, PatternImage, SourceLanguageBadge, PatternLockBadge } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useTabBarSpace } from '@/theme/tabBar';
 import {
@@ -53,8 +53,7 @@ export default function BrowseScreen() {
   return (
     <Screen clearsTabBar={false}>
       <View style={styles.headerRow}>
-        <Button
-          variant="secondary"
+        <BackButton
           title={t('common.back')}
           onPress={() => router.back()}
           style={styles.backButton}
@@ -173,7 +172,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     paddingHorizontal: Theme.spacing.md,
-    height: 36,
   },
   title: {
     flex: 1,
