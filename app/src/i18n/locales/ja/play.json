@@ -62,10 +62,17 @@
     "undoAccessibilityLabel": "最後のステッチを元に戻す"
   },
   "locator": {
-    "priceTitle": "ロケーターの価格",
-    "priceConfirmMessage": "価格: {{price}} · 残高: {{balance}}\n使用するにはロケーターをもう一度タップしてください。",
     "priceChangedTitle": "ロケーターの価格が変更されました",
     "priceChangedMessage": "新しい価格: {{price}} · 残高: {{balance}}\n新しい価格で使用するにはロケーターをもう一度タップしてください。"
+  },
+  "locatorShortfall": {
+    "title": "Stitch Coinが足りません",
+    "body": "今ロケーターを使用するには、さらにStitch Coinが必要です。",
+    "priceLabel": "ロケーターの価格",
+    "balanceLabel": "あなたの残高",
+    "purchaseAction": "Stitch Coinを獲得",
+    "dismissAction": "今はしない",
+    "dismissAccessibilityLabel": "閉じる"
   },
   "palette": {
     "chipNumber": "#{{number}}",

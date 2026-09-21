@@ -62,10 +62,17 @@
     "undoAccessibilityLabel": "Utolsó öltés visszavonása"
   },
   "locator": {
-    "priceTitle": "Kereső ára",
-    "priceConfirmMessage": "Ár: {{price}} · Egyenleg: {{balance}}\nKoppints újra a keresőre a használatához.",
     "priceChangedTitle": "A kereső ára megváltozott",
     "priceChangedMessage": "Új ár: {{price}} · Egyenleg: {{balance}}\nKoppints újra a keresőre, hogy az új áron használd."
+  },
+  "locatorShortfall": {
+    "title": "Nincs elég Stitch Coin",
+    "body": "A kereső használatához most több Stitch Coin szükséges.",
+    "priceLabel": "A kereső ára",
+    "balanceLabel": "Egyenleged",
+    "purchaseAction": "Stitch Coin beszerzése",
+    "dismissAction": "Most nem",
+    "dismissAccessibilityLabel": "Bezárás"
   },
   "palette": {
     "chipNumber": "#{{number}}",

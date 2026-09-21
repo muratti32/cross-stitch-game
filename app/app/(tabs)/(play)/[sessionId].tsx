@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator, Pressable, ScrollView, Alert } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, Pressable, ScrollView, Alert, Platform } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter, useNavigation, useFocusEffect, useIsFocused } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Screen, Button } from '@/components';
+import { Screen, Button, LocatorCoinShortfallSheet } from '@/components';
 import { Theme } from '@/theme/theme';
 import { formatNumber } from '@/i18n';
 import { createReplaySession, generateUUID } from '@/local-db';
@@ -46,6 +46,8 @@ import {
   releaseLocatorAttempt,
 } from '@/api/economy';
 import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
+import { useIdentityStore } from '@/identity/guestIdentity';
+import { locatorCoinShortfallCtaPressed, locatorCoinShortfallShown } from '@/analytics/locatorShortfall';
 
 export default function SessionReadyScreen() {
   const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
@@ -120,9 +122,17 @@ export default function SessionReadyScreen() {
   const locatorAttemptIdRef = useRef<string | null>(null);
   const locatorAbortRef = useRef<AbortController | null>(null);
   const locatorRunRef = useRef(0);
+  const [shortfall, setShortfall] = useState<{ price: number; balance: number } | null>(null);
+  const [shortfallVisible, setShortfallVisible] = useState(false);
+  const shortfallPurchaseRef = useRef(false);
   const parentRevisionRef = useRef(0);
   const [locatorBusy, setLocatorBusy] = useState(false);
   const { data: locatorPrice } = useLocatorPrice();
+  const isAccount = useIdentityStore((state) => state.isAccount);
+  // #266 covers Registered Accounts and iOS Guest Players. The Android Guest
+  // path is #267, so an Android Guest Player gets a dismiss-only sheet rather
+  // than a purchase action the platform cannot honour.
+  const canPurchaseStitchCoin = isAccount || Platform.OS === 'ios';
   // Only a session the backend knows can hold a Locator Attempt (ADR-0058).
   const locatorBinding = session ? locatorSessionBinding(session) : null;
 
@@ -387,23 +397,15 @@ export default function SessionReadyScreen() {
     locatorAbortRef.current = abortController;
     setLocatorBusy(true);
     try {
-      // ADR-0060: only a price the player has already seen is sent as the
-      // expected price. Without one, fetch it, show it, and let the player
-      // tap again; the server rejects a stale value without charge.
-      if (locatorPrice == null) {
+      // ADR-0060: a cold price is fetched and used on the same user-initiated
+      // tap; the server still rejects a stale expected price without charge.
+      let expectedPrice = locatorPrice;
+      if (expectedPrice == null) {
         const view = await queryClient.fetchQuery({ queryKey: coinBalanceQueryKey, queryFn: fetchCoinBalanceView });
         if (locatorRunRef.current !== runId) return;
         if (view.locatorPrice === null) throw new LocatorPriceUnavailableError();
-        Alert.alert(
-          t('locator.priceTitle'),
-          t('locator.priceConfirmMessage', {
-            price: formatNumber(view.locatorPrice, locale),
-            balance: formatNumber(view.balance, locale),
-          }),
-        );
-        return;
+        expectedPrice = view.locatorPrice;
       }
-      const expectedPrice = locatorPrice;
 
       const prepared = await prepareLocatorAttempt({
         attemptId,
@@ -490,14 +492,9 @@ export default function SessionReadyScreen() {
         return;
       }
       if (error instanceof LocatorInsufficientBalanceError) {
-        // A balance too low for the Locator Price is an expected outcome, not
-        // a failure: the player sees the price and their balance, never the
-        // generic "something went wrong" text.
-        const details = [
-          `${t('detail.price.label', { ns: 'catalog' })}: ${formatNumber(error.price, locale)}`,
-          `${t('detail.balance.label', { ns: 'catalog' })}: ${formatNumber(error.balance, locale)}`,
-        ].join(' · ');
-        Alert.alert(t('detail.insufficientCoins.title', { ns: 'catalog' }), details);
+        setShortfall({ price: error.price, balance: error.balance });
+        setShortfallVisible(true);
+        locatorCoinShortfallShown(error.price, error.balance);
         return;
       }
       // Keep a prepared attempt pending when commit outcome is unknown; a
@@ -833,6 +830,33 @@ export default function SessionReadyScreen() {
           router.navigate('/(tabs)/(catalog)');
         }}
       />
+      {shortfall && (
+        <LocatorCoinShortfallSheet
+          visible={shortfallVisible}
+          price={shortfall.price}
+          balance={shortfall.balance}
+          locale={locale}
+          showPurchaseAction={canPurchaseStitchCoin}
+          onPurchase={() => {
+            locatorCoinShortfallCtaPressed(shortfall.price, shortfall.balance);
+            shortfallPurchaseRef.current = true;
+            setShortfallVisible(false);
+          }}
+          onDismiss={() => {
+            shortfallPurchaseRef.current = false;
+            setShortfallVisible(false);
+          }}
+          onDismissed={() => {
+            setShortfall(null);
+            if (!shortfallPurchaseRef.current) return;
+            shortfallPurchaseRef.current = false;
+            router.push({
+              pathname: '/(tabs)/(profile)/commerce',
+              params: { category: 'stitch_coin', source: 'stitch_coin_shortfall' },
+            });
+          }}
+        />
+      )}
     </Screen>
   );
 }

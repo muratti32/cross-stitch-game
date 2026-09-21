@@ -62,10 +62,17 @@
     "undoAccessibilityLabel": "Angre siste sting"
   },
   "locator": {
-    "priceTitle": "Pris for søker",
-    "priceConfirmMessage": "Pris: {{price}} · Saldo: {{balance}}\nTrykk på søkeren igjen for å bruke den.",
     "priceChangedTitle": "Prisen for søker er endret",
     "priceChangedMessage": "Ny pris: {{price}} · Saldo: {{balance}}\nTrykk på søkeren igjen for å bruke den til ny pris."
+  },
+  "locatorShortfall": {
+    "title": "Ikke nok Stitch Coin",
+    "body": "Du trenger mer Stitch Coin for å bruke søkeren akkurat nå.",
+    "priceLabel": "Pris for søker",
+    "balanceLabel": "Saldoen din",
+    "purchaseAction": "Skaff Stitch Coin",
+    "dismissAction": "Ikke nå",
+    "dismissAccessibilityLabel": "Lukk"
   },
   "palette": {
     "chipNumber": "#{{number}}",

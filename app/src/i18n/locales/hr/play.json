@@ -62,10 +62,17 @@
     "undoAccessibilityLabel": "Poništi zadnji bod"
   },
   "locator": {
-    "priceTitle": "Cijena lokatora",
-    "priceConfirmMessage": "Cijena: {{price}} · Stanje: {{balance}}\nPonovno dodirni lokator da ga upotrijebiš.",
     "priceChangedTitle": "Cijena lokatora je promijenjena",
     "priceChangedMessage": "Nova cijena: {{price}} · Stanje: {{balance}}\nPonovno dodirni lokator da ga upotrijebiš po novoj cijeni."
+  },
+  "locatorShortfall": {
+    "title": "Nemaš dovoljno Stitch Coina",
+    "body": "Treba ti više Stitch Coina da sada upotrijebiš lokator.",
+    "priceLabel": "Cijena lokatora",
+    "balanceLabel": "Tvoje stanje",
+    "purchaseAction": "Nabavi Stitch Coin",
+    "dismissAction": "Ne sada",
+    "dismissAccessibilityLabel": "Zatvori"
   },
   "palette": {
     "chipNumber": "#{{number}}",

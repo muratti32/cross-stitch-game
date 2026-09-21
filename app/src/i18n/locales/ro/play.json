@@ -62,10 +62,17 @@
     "undoAccessibilityLabel": "Anulează ultima cusătură"
   },
   "locator": {
-    "priceTitle": "Prețul localizatorului",
-    "priceConfirmMessage": "Preț: {{price}} · Sold: {{balance}}\nAtinge din nou localizatorul pentru a-l folosi.",
     "priceChangedTitle": "Prețul localizatorului s-a schimbat",
     "priceChangedMessage": "Preț nou: {{price}} · Sold: {{balance}}\nAtinge din nou localizatorul pentru a-l folosi la noul preț."
+  },
+  "locatorShortfall": {
+    "title": "Stitch Coin insuficiente",
+    "body": "Ai nevoie de mai mult Stitch Coin pentru a folosi localizatorul acum.",
+    "priceLabel": "Prețul localizatorului",
+    "balanceLabel": "Soldul tău",
+    "purchaseAction": "Obține Stitch Coin",
+    "dismissAction": "Nu acum",
+    "dismissAccessibilityLabel": "Închide"
   },
   "palette": {
     "chipNumber": "#{{number}}",

@@ -214,6 +214,23 @@ describe('Gameplay event schema', () => {
     expect(validateGameplayEventPayload(kind, payload)).toEqual({ kind, payload });
   });
 
+  it.each(['locator_coin_shortfall_shown', 'locator_coin_shortfall_cta_pressed'] as const)('accepts %s', (kind) => {
+    const payload = { price: 5, balance: 2 };
+    expect(validateGameplayEventPayload(kind, payload)).toEqual({ kind, payload });
+  });
+
+  it.each(['locator_coin_shortfall_shown', 'locator_coin_shortfall_cta_pressed'] as const)('accepts %s with a negative balance', (kind) => {
+    const payload = { price: 5, balance: -3 };
+    expect(validateGameplayEventPayload(kind, payload)).toEqual({ kind, payload });
+  });
+
+  it.each([
+    ['locator_coin_shortfall_shown', { price: 5, balance: 2, session_id: 'x' }],
+    ['locator_coin_shortfall_cta_pressed', { price: 0, balance: 2 }],
+  ])('rejects invalid %s payloads', (kind, payload) => {
+    expect(() => validateGameplayEventPayload(kind, payload)).toThrow(BadRequestException);
+  });
+
   it.each([
     ['unlock_prompt_shown', { tier: 'tiny', price: 75 }],
     ['pattern_unlocked', { tier: 'small', price: 0 }],

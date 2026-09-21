@@ -62,10 +62,17 @@
     "undoAccessibilityLabel": "Desfazer último ponto"
   },
   "locator": {
-    "priceTitle": "Preço do localizador",
-    "priceConfirmMessage": "Preço: {{price}} · Saldo: {{balance}}\nToque no localizador de novo para usá-lo.",
     "priceChangedTitle": "O preço do localizador mudou",
     "priceChangedMessage": "Novo preço: {{price}} · Saldo: {{balance}}\nToque no localizador de novo para usá-lo pelo novo preço."
+  },
+  "locatorShortfall": {
+    "title": "Stitch Coin insuficientes",
+    "body": "Você precisa de mais Stitch Coin para usar o localizador agora.",
+    "priceLabel": "Preço do localizador",
+    "balanceLabel": "Seu saldo",
+    "purchaseAction": "Obter Stitch Coin",
+    "dismissAction": "Agora não",
+    "dismissAccessibilityLabel": "Fechar"
   },
   "palette": {
     "chipNumber": "#{{number}}",

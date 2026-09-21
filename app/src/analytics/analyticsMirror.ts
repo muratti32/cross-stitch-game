@@ -53,6 +53,8 @@ const MIRRORED_EVENT_NAMES = {
   pattern_unlocked: `${MIRROR_EVENT_PREFIX}pattern_unlocked`,
   unlock_insufficient_coins: `${MIRROR_EVENT_PREFIX}unlock_insufficient_coins`,
   unlock_get_coins_tapped: `${MIRROR_EVENT_PREFIX}unlock_get_coins_tapped`,
+  locator_coin_shortfall_shown: `${MIRROR_EVENT_PREFIX}locator_coin_shortfall_shown`,
+  locator_coin_shortfall_cta_pressed: `${MIRROR_EVENT_PREFIX}locator_coin_shortfall_cta_pressed`,
 } as const satisfies Partial<Record<AnalyticsGameplayEventKind, string>>;
 
 type MirroredKind = keyof typeof MIRRORED_EVENT_NAMES;

@@ -62,10 +62,17 @@
     "undoAccessibilityLabel": "Son dikişi geri al"
   },
   "locator": {
-    "priceTitle": "Konum bulucu fiyatı",
-    "priceConfirmMessage": "Fiyat: {{price}} · Bakiye: {{balance}}\nKullanmak için konum bulucuya tekrar dokun.",
     "priceChangedTitle": "Konum bulucu fiyatı değişti",
     "priceChangedMessage": "Yeni fiyat: {{price}} · Bakiye: {{balance}}\nYeni fiyattan kullanmak için konum bulucuya tekrar dokun."
+  },
+  "locatorShortfall": {
+    "title": "Yetersiz Stitch Coin",
+    "body": "Konum bulucuyu şu anda kullanmak için daha fazla Stitch Coin gerekiyor.",
+    "priceLabel": "Konum bulucu fiyatı",
+    "balanceLabel": "Bakiyen",
+    "purchaseAction": "Stitch Coin Al",
+    "dismissAction": "Şimdi Değil",
+    "dismissAccessibilityLabel": "Kapat"
   },
   "palette": {
     "chipNumber": "#{{number}}",

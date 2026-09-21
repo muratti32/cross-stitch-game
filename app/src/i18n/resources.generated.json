@@ -736,10 +736,17 @@
         "undoAccessibilityLabel": "التراجع عن آخر غرزة"
       },
       "locator": {
-        "priceTitle": "سعر أداة التحديد",
-        "priceConfirmMessage": "السعر: {{price}} · الرصيد: {{balance}}\nاضغط على أداة التحديد مرة أخرى لاستخدامها.",
         "priceChangedTitle": "تغيّر سعر أداة التحديد",
         "priceChangedMessage": "السعر الجديد: {{price}} · الرصيد: {{balance}}\nاضغط على أداة التحديد مرة أخرى لاستخدامها بالسعر الجديد."
+      },
+      "locatorShortfall": {
+        "title": "رصيد Stitch Coin غير كافٍ",
+        "body": "تحتاج إلى المزيد من Stitch Coin لاستخدام أداة التحديد الآن.",
+        "priceLabel": "سعر أداة التحديد",
+        "balanceLabel": "رصيدك",
+        "purchaseAction": "احصل على Stitch Coin",
+        "dismissAction": "ليس الآن",
+        "dismissAccessibilityLabel": "إغلاق"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -2171,10 +2178,17 @@
         "undoAccessibilityLabel": "Desfés l'última puntada"
       },
       "locator": {
-        "priceTitle": "Preu del localitzador",
-        "priceConfirmMessage": "Preu: {{price}} · Saldo: {{balance}}\nToca el localitzador de nou per utilitzar-lo.",
         "priceChangedTitle": "El preu del localitzador ha canviat",
         "priceChangedMessage": "Preu nou: {{price}} · Saldo: {{balance}}\nToca el localitzador de nou per utilitzar-lo al preu nou."
+      },
+      "locatorShortfall": {
+        "title": "No tens prou Stitch Coin",
+        "body": "Necessites més Stitch Coin per utilitzar el localitzador ara mateix.",
+        "priceLabel": "Preu del localitzador",
+        "balanceLabel": "El teu saldo",
+        "purchaseAction": "Aconsegueix Stitch Coin",
+        "dismissAction": "Ara no",
+        "dismissAccessibilityLabel": "Tanca"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -3606,10 +3620,17 @@
         "undoAccessibilityLabel": "Vrátit poslední steh"
       },
       "locator": {
-        "priceTitle": "Cena lokátoru",
-        "priceConfirmMessage": "Cena: {{price}} · Zůstatek: {{balance}}\nPro použití znovu klepněte na lokátor.",
         "priceChangedTitle": "Cena lokátoru se změnila",
         "priceChangedMessage": "Nová cena: {{price}} · Zůstatek: {{balance}}\nPro použití za novou cenu znovu klepněte na lokátor."
+      },
+      "locatorShortfall": {
+        "title": "Nedostatek Stitch Coin",
+        "body": "K použití lokátoru teď potřebujete více Stitch Coin.",
+        "priceLabel": "Cena lokátoru",
+        "balanceLabel": "Váš zůstatek",
+        "purchaseAction": "Získat Stitch Coin",
+        "dismissAction": "Teď ne",
+        "dismissAccessibilityLabel": "Zavřít"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -5041,10 +5062,17 @@
         "undoAccessibilityLabel": "Fortryd sidste sting"
       },
       "locator": {
-        "priceTitle": "Pris for lokalisering",
-        "priceConfirmMessage": "Pris: {{price}} · Saldo: {{balance}}\nTryk på lokaliseringen igen for at bruge den.",
         "priceChangedTitle": "Prisen for lokalisering er ændret",
         "priceChangedMessage": "Ny pris: {{price}} · Saldo: {{balance}}\nTryk på lokaliseringen igen for at bruge den til den nye pris."
+      },
+      "locatorShortfall": {
+        "title": "Ikke nok Stitch Coin",
+        "body": "Du skal bruge flere Stitch Coin for at bruge lokaliseringen lige nu.",
+        "priceLabel": "Pris for lokalisering",
+        "balanceLabel": "Din saldo",
+        "purchaseAction": "Få Stitch Coin",
+        "dismissAction": "Ikke nu",
+        "dismissAccessibilityLabel": "Luk"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -6476,10 +6504,17 @@
         "undoAccessibilityLabel": "Letzten Stich rückgängig machen"
       },
       "locator": {
-        "priceTitle": "Preis der Zellsuche",
-        "priceConfirmMessage": "Preis: {{price}} · Guthaben: {{balance}}\nTippe erneut auf die Zellsuche, um sie zu verwenden.",
         "priceChangedTitle": "Preis der Zellsuche geändert",
         "priceChangedMessage": "Neuer Preis: {{price}} · Guthaben: {{balance}}\nTippe erneut auf die Zellsuche, um sie zum neuen Preis zu verwenden."
+      },
+      "locatorShortfall": {
+        "title": "Nicht genug Stitch Coin",
+        "body": "Du brauchst mehr Stitch Coin, um die Zellsuche jetzt zu verwenden.",
+        "priceLabel": "Preis der Zellsuche",
+        "balanceLabel": "Dein Guthaben",
+        "purchaseAction": "Stitch Coin holen",
+        "dismissAction": "Nicht jetzt",
+        "dismissAccessibilityLabel": "Schließen"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -7911,10 +7946,17 @@
         "undoAccessibilityLabel": "Αναίρεση τελευταίας βελονιάς"
       },
       "locator": {
-        "priceTitle": "Τιμή εντοπισμού",
-        "priceConfirmMessage": "Τιμή: {{price}} · Υπόλοιπο: {{balance}}\nΠάτησε ξανά τον εντοπισμό για να τον χρησιμοποιήσεις.",
         "priceChangedTitle": "Η τιμή εντοπισμού άλλαξε",
         "priceChangedMessage": "Νέα τιμή: {{price}} · Υπόλοιπο: {{balance}}\nΠάτησε ξανά τον εντοπισμό για να τον χρησιμοποιήσεις με τη νέα τιμή."
+      },
+      "locatorShortfall": {
+        "title": "Δεν επαρκούν τα Stitch Coin",
+        "body": "Χρειάζεσαι περισσότερα Stitch Coin για να χρησιμοποιήσεις τον εντοπισμό τώρα.",
+        "priceLabel": "Τιμή εντοπισμού",
+        "balanceLabel": "Το υπόλοιπό σου",
+        "purchaseAction": "Απόκτησε Stitch Coin",
+        "dismissAction": "Όχι τώρα",
+        "dismissAccessibilityLabel": "Κλείσιμο"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -9346,10 +9388,17 @@
         "undoAccessibilityLabel": "Undo last stitch"
       },
       "locator": {
-        "priceTitle": "Locator price",
-        "priceConfirmMessage": "Price: {{price}} · Balance: {{balance}}\nTap the locator again to use it.",
         "priceChangedTitle": "Locator price changed",
         "priceChangedMessage": "New price: {{price}} · Balance: {{balance}}\nTap the locator again to use it at the new price."
+      },
+      "locatorShortfall": {
+        "title": "Not Enough Stitch Coin",
+        "body": "You need more Stitch Coin to use the locator right now.",
+        "priceLabel": "Locator price",
+        "balanceLabel": "Your balance",
+        "purchaseAction": "Get Stitch Coin",
+        "dismissAction": "Not Now",
+        "dismissAccessibilityLabel": "Close"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -10781,10 +10830,17 @@
         "undoAccessibilityLabel": "Deshacer última puntada"
       },
       "locator": {
-        "priceTitle": "Precio del localizador",
-        "priceConfirmMessage": "Precio: {{price}} · Saldo: {{balance}}\nToca el localizador de nuevo para usarlo.",
         "priceChangedTitle": "El precio del localizador cambió",
         "priceChangedMessage": "Nuevo precio: {{price}} · Saldo: {{balance}}\nToca el localizador de nuevo para usarlo al nuevo precio."
+      },
+      "locatorShortfall": {
+        "title": "No tienes suficientes Stitch Coin",
+        "body": "Necesitas más Stitch Coin para usar el localizador ahora mismo.",
+        "priceLabel": "Precio del localizador",
+        "balanceLabel": "Tu saldo",
+        "purchaseAction": "Conseguir Stitch Coin",
+        "dismissAction": "Ahora no",
+        "dismissAccessibilityLabel": "Cerrar"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -12216,10 +12272,17 @@
         "undoAccessibilityLabel": "Kumoa edellinen pisto"
       },
       "locator": {
-        "priceTitle": "Paikantimen hinta",
-        "priceConfirmMessage": "Hinta: {{price}} · Saldo: {{balance}}\nKäytä paikanninta napauttamalla sitä uudelleen.",
         "priceChangedTitle": "Paikantimen hinta muuttui",
         "priceChangedMessage": "Uusi hinta: {{price}} · Saldo: {{balance}}\nKäytä paikanninta uuteen hintaan napauttamalla sitä uudelleen."
+      },
+      "locatorShortfall": {
+        "title": "Stitch Coin -saldo ei riitä",
+        "body": "Tarvitset lisää Stitch Coin -valuuttaa käyttääksesi paikanninta nyt.",
+        "priceLabel": "Paikantimen hinta",
+        "balanceLabel": "Saldosi",
+        "purchaseAction": "Hanki Stitch Coin -valuuttaa",
+        "dismissAction": "Ei nyt",
+        "dismissAccessibilityLabel": "Sulje"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -13651,10 +13714,17 @@
         "undoAccessibilityLabel": "Annuler le dernier point"
       },
       "locator": {
-        "priceTitle": "Prix du localisateur",
-        "priceConfirmMessage": "Prix : {{price}} · Solde : {{balance}}\nTouchez à nouveau le localisateur pour l’utiliser.",
         "priceChangedTitle": "Le prix du localisateur a changé",
         "priceChangedMessage": "Nouveau prix : {{price}} · Solde : {{balance}}\nTouchez à nouveau le localisateur pour l’utiliser au nouveau prix."
+      },
+      "locatorShortfall": {
+        "title": "Pas assez de Stitch Coin",
+        "body": "Vous avez besoin de plus de Stitch Coin pour utiliser le localisateur maintenant.",
+        "priceLabel": "Prix du localisateur",
+        "balanceLabel": "Votre solde",
+        "purchaseAction": "Obtenir des Stitch Coin",
+        "dismissAction": "Pas maintenant",
+        "dismissAccessibilityLabel": "Fermer"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -15086,10 +15156,17 @@
         "undoAccessibilityLabel": "पिछला टांका वापस लें"
       },
       "locator": {
-        "priceTitle": "लोकेटर की कीमत",
-        "priceConfirmMessage": "कीमत: {{price}} · बैलेंस: {{balance}}\nइस्तेमाल करने के लिए लोकेटर पर फिर से टैप करें।",
         "priceChangedTitle": "लोकेटर की कीमत बदल गई",
         "priceChangedMessage": "नई कीमत: {{price}} · बैलेंस: {{balance}}\nनई कीमत पर इस्तेमाल करने के लिए लोकेटर पर फिर से टैप करें।"
+      },
+      "locatorShortfall": {
+        "title": "पर्याप्त स्टिच कॉइन नहीं हैं",
+        "body": "अभी लोकेटर का उपयोग करने के लिए आपको और स्टिच कॉइन चाहिए।",
+        "priceLabel": "लोकेटर की कीमत",
+        "balanceLabel": "आपका बैलेंस",
+        "purchaseAction": "स्टिच कॉइन प्राप्त करें",
+        "dismissAction": "अभी नहीं",
+        "dismissAccessibilityLabel": "बंद करें"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -16521,10 +16598,17 @@
         "undoAccessibilityLabel": "Poništi zadnji bod"
       },
       "locator": {
-        "priceTitle": "Cijena lokatora",
-        "priceConfirmMessage": "Cijena: {{price}} · Stanje: {{balance}}\nPonovno dodirni lokator da ga upotrijebiš.",
         "priceChangedTitle": "Cijena lokatora je promijenjena",
         "priceChangedMessage": "Nova cijena: {{price}} · Stanje: {{balance}}\nPonovno dodirni lokator da ga upotrijebiš po novoj cijeni."
+      },
+      "locatorShortfall": {
+        "title": "Nemaš dovoljno Stitch Coina",
+        "body": "Treba ti više Stitch Coina da sada upotrijebiš lokator.",
+        "priceLabel": "Cijena lokatora",
+        "balanceLabel": "Tvoje stanje",
+        "purchaseAction": "Nabavi Stitch Coin",
+        "dismissAction": "Ne sada",
+        "dismissAccessibilityLabel": "Zatvori"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -17956,10 +18040,17 @@
         "undoAccessibilityLabel": "Utolsó öltés visszavonása"
       },
       "locator": {
-        "priceTitle": "Kereső ára",
-        "priceConfirmMessage": "Ár: {{price}} · Egyenleg: {{balance}}\nKoppints újra a keresőre a használatához.",
         "priceChangedTitle": "A kereső ára megváltozott",
         "priceChangedMessage": "Új ár: {{price}} · Egyenleg: {{balance}}\nKoppints újra a keresőre, hogy az új áron használd."
+      },
+      "locatorShortfall": {
+        "title": "Nincs elég Stitch Coin",
+        "body": "A kereső használatához most több Stitch Coin szükséges.",
+        "priceLabel": "A kereső ára",
+        "balanceLabel": "Egyenleged",
+        "purchaseAction": "Stitch Coin beszerzése",
+        "dismissAction": "Most nem",
+        "dismissAccessibilityLabel": "Bezárás"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -19391,10 +19482,17 @@
         "undoAccessibilityLabel": "Urungkan jahitan terakhir"
       },
       "locator": {
-        "priceTitle": "Harga pencari",
-        "priceConfirmMessage": "Harga: {{price}} · Saldo: {{balance}}\nKetuk pencari lagi untuk menggunakannya.",
         "priceChangedTitle": "Harga pencari berubah",
         "priceChangedMessage": "Harga baru: {{price}} · Saldo: {{balance}}\nKetuk pencari lagi untuk menggunakannya dengan harga baru."
+      },
+      "locatorShortfall": {
+        "title": "Stitch Coin tidak cukup",
+        "body": "Kamu memerlukan lebih banyak Stitch Coin untuk menggunakan pencari sekarang.",
+        "priceLabel": "Harga pencari",
+        "balanceLabel": "Saldo kamu",
+        "purchaseAction": "Dapatkan Stitch Coin",
+        "dismissAction": "Jangan sekarang",
+        "dismissAccessibilityLabel": "Tutup"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -20826,10 +20924,17 @@
         "undoAccessibilityLabel": "Annulla l'ultimo punto"
       },
       "locator": {
-        "priceTitle": "Prezzo del localizzatore",
-        "priceConfirmMessage": "Prezzo: {{price}} · Saldo: {{balance}}\nTocca di nuovo il localizzatore per usarlo.",
         "priceChangedTitle": "Il prezzo del localizzatore è cambiato",
         "priceChangedMessage": "Nuovo prezzo: {{price}} · Saldo: {{balance}}\nTocca di nuovo il localizzatore per usarlo al nuovo prezzo."
+      },
+      "locatorShortfall": {
+        "title": "Stitch Coin insufficienti",
+        "body": "Ti servono più Stitch Coin per usare il localizzatore adesso.",
+        "priceLabel": "Prezzo del localizzatore",
+        "balanceLabel": "Il tuo saldo",
+        "purchaseAction": "Ottieni Stitch Coin",
+        "dismissAction": "Non ora",
+        "dismissAccessibilityLabel": "Chiudi"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -22261,10 +22366,17 @@
         "undoAccessibilityLabel": "最後のステッチを元に戻す"
       },
       "locator": {
-        "priceTitle": "ロケーターの価格",
-        "priceConfirmMessage": "価格: {{price}} · 残高: {{balance}}\n使用するにはロケーターをもう一度タップしてください。",
         "priceChangedTitle": "ロケーターの価格が変更されました",
         "priceChangedMessage": "新しい価格: {{price}} · 残高: {{balance}}\n新しい価格で使用するにはロケーターをもう一度タップしてください。"
+      },
+      "locatorShortfall": {
+        "title": "Stitch Coinが足りません",
+        "body": "今ロケーターを使用するには、さらにStitch Coinが必要です。",
+        "priceLabel": "ロケーターの価格",
+        "balanceLabel": "あなたの残高",
+        "purchaseAction": "Stitch Coinを獲得",
+        "dismissAction": "今はしない",
+        "dismissAccessibilityLabel": "閉じる"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -23696,10 +23808,17 @@
         "undoAccessibilityLabel": "마지막 스티치 실행 취소"
       },
       "locator": {
-        "priceTitle": "위치 찾기 가격",
-        "priceConfirmMessage": "가격: {{price}} · 잔액: {{balance}}\n사용하려면 위치 찾기를 다시 탭하세요.",
         "priceChangedTitle": "위치 찾기 가격이 변경됨",
         "priceChangedMessage": "새 가격: {{price}} · 잔액: {{balance}}\n새 가격으로 사용하려면 위치 찾기를 다시 탭하세요."
+      },
+      "locatorShortfall": {
+        "title": "Stitch Coin이 부족합니다",
+        "body": "지금 위치 찾기를 사용하려면 Stitch Coin이 더 필요합니다.",
+        "priceLabel": "위치 찾기 가격",
+        "balanceLabel": "내 잔액",
+        "purchaseAction": "Stitch Coin 받기",
+        "dismissAction": "나중에",
+        "dismissAccessibilityLabel": "닫기"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -25131,10 +25250,17 @@
         "undoAccessibilityLabel": "Buat asal jahitan terakhir"
       },
       "locator": {
-        "priceTitle": "Harga pencari",
-        "priceConfirmMessage": "Harga: {{price}} · Baki: {{balance}}\nKetik pencari sekali lagi untuk menggunakannya.",
         "priceChangedTitle": "Harga pencari telah berubah",
         "priceChangedMessage": "Harga baharu: {{price}} · Baki: {{balance}}\nKetik pencari sekali lagi untuk menggunakannya pada harga baharu."
+      },
+      "locatorShortfall": {
+        "title": "Stitch Coin tidak mencukupi",
+        "body": "Anda memerlukan lebih banyak Stitch Coin untuk menggunakan pencari sekarang.",
+        "priceLabel": "Harga pencari",
+        "balanceLabel": "Baki anda",
+        "purchaseAction": "Dapatkan Stitch Coin",
+        "dismissAction": "Bukan sekarang",
+        "dismissAccessibilityLabel": "Tutup"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -26566,10 +26692,17 @@
         "undoAccessibilityLabel": "Angre siste sting"
       },
       "locator": {
-        "priceTitle": "Pris for søker",
-        "priceConfirmMessage": "Pris: {{price}} · Saldo: {{balance}}\nTrykk på søkeren igjen for å bruke den.",
         "priceChangedTitle": "Prisen for søker er endret",
         "priceChangedMessage": "Ny pris: {{price}} · Saldo: {{balance}}\nTrykk på søkeren igjen for å bruke den til ny pris."
+      },
+      "locatorShortfall": {
+        "title": "Ikke nok Stitch Coin",
+        "body": "Du trenger mer Stitch Coin for å bruke søkeren akkurat nå.",
+        "priceLabel": "Pris for søker",
+        "balanceLabel": "Saldoen din",
+        "purchaseAction": "Skaff Stitch Coin",
+        "dismissAction": "Ikke nå",
+        "dismissAccessibilityLabel": "Lukk"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -28001,10 +28134,17 @@
         "undoAccessibilityLabel": "Laatste stitch ongedaan maken"
       },
       "locator": {
-        "priceTitle": "Prijs van de zoeker",
-        "priceConfirmMessage": "Prijs: {{price}} · Saldo: {{balance}}\nTik opnieuw op de zoeker om hem te gebruiken.",
         "priceChangedTitle": "Prijs van de zoeker gewijzigd",
         "priceChangedMessage": "Nieuwe prijs: {{price}} · Saldo: {{balance}}\nTik opnieuw op de zoeker om hem voor de nieuwe prijs te gebruiken."
+      },
+      "locatorShortfall": {
+        "title": "Niet genoeg Stitch Coin",
+        "body": "Je hebt meer Stitch Coin nodig om de zoeker nu te gebruiken.",
+        "priceLabel": "Prijs van de zoeker",
+        "balanceLabel": "Je saldo",
+        "purchaseAction": "Stitch Coin krijgen",
+        "dismissAction": "Niet nu",
+        "dismissAccessibilityLabel": "Sluiten"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -29436,10 +29576,17 @@
         "undoAccessibilityLabel": "Cofnij ostatni ścieg"
       },
       "locator": {
-        "priceTitle": "Cena lokalizatora",
-        "priceConfirmMessage": "Cena: {{price}} · Saldo: {{balance}}\nDotknij lokalizatora ponownie, aby go użyć.",
         "priceChangedTitle": "Cena lokalizatora się zmieniła",
         "priceChangedMessage": "Nowa cena: {{price}} · Saldo: {{balance}}\nDotknij lokalizatora ponownie, aby użyć go po nowej cenie."
+      },
+      "locatorShortfall": {
+        "title": "Za mało Stitch Coin",
+        "body": "Potrzebujesz więcej Stitch Coin, aby teraz użyć lokalizatora.",
+        "priceLabel": "Cena lokalizatora",
+        "balanceLabel": "Twoje saldo",
+        "purchaseAction": "Zdobądź Stitch Coin",
+        "dismissAction": "Nie teraz",
+        "dismissAccessibilityLabel": "Zamknij"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -30871,10 +31018,17 @@
         "undoAccessibilityLabel": "Anular último ponto"
       },
       "locator": {
-        "priceTitle": "Preço do localizador",
-        "priceConfirmMessage": "Preço: {{price}} · Saldo: {{balance}}\nToque novamente no localizador para o usar.",
         "priceChangedTitle": "O preço do localizador mudou",
         "priceChangedMessage": "Novo preço: {{price}} · Saldo: {{balance}}\nToque novamente no localizador para o usar ao novo preço."
+      },
+      "locatorShortfall": {
+        "title": "Stitch Coin insuficientes",
+        "body": "Precisas de mais Stitch Coin para usar o localizador agora.",
+        "priceLabel": "Preço do localizador",
+        "balanceLabel": "O teu saldo",
+        "purchaseAction": "Obter Stitch Coin",
+        "dismissAction": "Agora não",
+        "dismissAccessibilityLabel": "Fechar"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -32306,10 +32460,17 @@
         "undoAccessibilityLabel": "Desfazer último ponto"
       },
       "locator": {
-        "priceTitle": "Preço do localizador",
-        "priceConfirmMessage": "Preço: {{price}} · Saldo: {{balance}}\nToque no localizador de novo para usá-lo.",
         "priceChangedTitle": "O preço do localizador mudou",
         "priceChangedMessage": "Novo preço: {{price}} · Saldo: {{balance}}\nToque no localizador de novo para usá-lo pelo novo preço."
+      },
+      "locatorShortfall": {
+        "title": "Stitch Coin insuficientes",
+        "body": "Você precisa de mais Stitch Coin para usar o localizador agora.",
+        "priceLabel": "Preço do localizador",
+        "balanceLabel": "Seu saldo",
+        "purchaseAction": "Obter Stitch Coin",
+        "dismissAction": "Agora não",
+        "dismissAccessibilityLabel": "Fechar"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -33741,10 +33902,17 @@
         "undoAccessibilityLabel": "Anulează ultima cusătură"
       },
       "locator": {
-        "priceTitle": "Prețul localizatorului",
-        "priceConfirmMessage": "Preț: {{price}} · Sold: {{balance}}\nAtinge din nou localizatorul pentru a-l folosi.",
         "priceChangedTitle": "Prețul localizatorului s-a schimbat",
         "priceChangedMessage": "Preț nou: {{price}} · Sold: {{balance}}\nAtinge din nou localizatorul pentru a-l folosi la noul preț."
+      },
+      "locatorShortfall": {
+        "title": "Stitch Coin insuficiente",
+        "body": "Ai nevoie de mai mult Stitch Coin pentru a folosi localizatorul acum.",
+        "priceLabel": "Prețul localizatorului",
+        "balanceLabel": "Soldul tău",
+        "purchaseAction": "Obține Stitch Coin",
+        "dismissAction": "Nu acum",
+        "dismissAccessibilityLabel": "Închide"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -35176,10 +35344,17 @@
         "undoAccessibilityLabel": "Отменить последний стежок"
       },
       "locator": {
-        "priceTitle": "Цена поиска клетки",
-        "priceConfirmMessage": "Цена: {{price}} · Баланс: {{balance}}\nНажмите на поиск ещё раз, чтобы использовать его.",
         "priceChangedTitle": "Цена поиска клетки изменилась",
         "priceChangedMessage": "Новая цена: {{price}} · Баланс: {{balance}}\nНажмите на поиск ещё раз, чтобы использовать его по новой цене."
+      },
+      "locatorShortfall": {
+        "title": "Недостаточно Stitch Coin",
+        "body": "Чтобы воспользоваться поиском клетки сейчас, вам нужно больше Stitch Coin.",
+        "priceLabel": "Цена поиска клетки",
+        "balanceLabel": "Ваш баланс",
+        "purchaseAction": "Получить Stitch Coin",
+        "dismissAction": "Не сейчас",
+        "dismissAccessibilityLabel": "Закрыть"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -36611,10 +36786,17 @@
         "undoAccessibilityLabel": "Vrátiť späť posledný steh"
       },
       "locator": {
-        "priceTitle": "Cena lokátora",
-        "priceConfirmMessage": "Cena: {{price}} · Zostatok: {{balance}}\nNa použitie znova ťuknite na lokátor.",
         "priceChangedTitle": "Cena lokátora sa zmenila",
         "priceChangedMessage": "Nová cena: {{price}} · Zostatok: {{balance}}\nNa použitie za novú cenu znova ťuknite na lokátor."
+      },
+      "locatorShortfall": {
+        "title": "Nedostatok Stitch Coin",
+        "body": "Na použitie lokátora teraz potrebuješ viac Stitch Coin.",
+        "priceLabel": "Cena lokátora",
+        "balanceLabel": "Tvoj zostatok",
+        "purchaseAction": "Získať Stitch Coin",
+        "dismissAction": "Teraz nie",
+        "dismissAccessibilityLabel": "Zavrieť"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -38046,10 +38228,17 @@
         "undoAccessibilityLabel": "Razveljavi zadnji šiv"
       },
       "locator": {
-        "priceTitle": "Cena iskalnika",
-        "priceConfirmMessage": "Cena: {{price}} · Stanje: {{balance}}\nZa uporabo znova tapnite iskalnik.",
         "priceChangedTitle": "Cena iskalnika se je spremenila",
         "priceChangedMessage": "Nova cena: {{price}} · Stanje: {{balance}}\nZa uporabo po novi ceni znova tapnite iskalnik."
+      },
+      "locatorShortfall": {
+        "title": "Premalo kovancev Stitch Coin",
+        "body": "Za uporabo iskalnika zdaj potrebujete več kovancev Stitch Coin.",
+        "priceLabel": "Cena iskalnika",
+        "balanceLabel": "Vaše stanje",
+        "purchaseAction": "Pridobi kovance Stitch Coin",
+        "dismissAction": "Ne zdaj",
+        "dismissAccessibilityLabel": "Zapri"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -39481,10 +39670,17 @@
         "undoAccessibilityLabel": "Ångra senaste stygnet"
       },
       "locator": {
-        "priceTitle": "Pris för sökaren",
-        "priceConfirmMessage": "Pris: {{price}} · Saldo: {{balance}}\nTryck på sökaren igen för att använda den.",
         "priceChangedTitle": "Priset för sökaren har ändrats",
         "priceChangedMessage": "Nytt pris: {{price}} · Saldo: {{balance}}\nTryck på sökaren igen för att använda den till det nya priset."
+      },
+      "locatorShortfall": {
+        "title": "Inte tillräckligt med Stitch Coin",
+        "body": "Du behöver fler Stitch Coin för att använda sökaren just nu.",
+        "priceLabel": "Pris för sökaren",
+        "balanceLabel": "Ditt saldo",
+        "purchaseAction": "Skaffa Stitch Coin",
+        "dismissAction": "Inte nu",
+        "dismissAccessibilityLabel": "Stäng"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -40916,10 +41112,17 @@
         "undoAccessibilityLabel": "I-undo ang huling tahi"
       },
       "locator": {
-        "priceTitle": "Presyo ng locator",
-        "priceConfirmMessage": "Presyo: {{price}} · Balanse: {{balance}}\nI-tap muli ang locator para gamitin ito.",
         "priceChangedTitle": "Nagbago ang presyo ng locator",
         "priceChangedMessage": "Bagong presyo: {{price}} · Balanse: {{balance}}\nI-tap muli ang locator para gamitin ito sa bagong presyo."
+      },
+      "locatorShortfall": {
+        "title": "Hindi sapat ang Stitch Coin",
+        "body": "Kailangan mo ng mas maraming Stitch Coin para magamit ang locator ngayon.",
+        "priceLabel": "Presyo ng locator",
+        "balanceLabel": "Balanse mo",
+        "purchaseAction": "Kumuha ng Stitch Coin",
+        "dismissAction": "Hindi muna",
+        "dismissAccessibilityLabel": "Isara"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -42351,10 +42554,17 @@
         "undoAccessibilityLabel": "Son dikişi geri al"
       },
       "locator": {
-        "priceTitle": "Konum bulucu fiyatı",
-        "priceConfirmMessage": "Fiyat: {{price}} · Bakiye: {{balance}}\nKullanmak için konum bulucuya tekrar dokun.",
         "priceChangedTitle": "Konum bulucu fiyatı değişti",
         "priceChangedMessage": "Yeni fiyat: {{price}} · Bakiye: {{balance}}\nYeni fiyattan kullanmak için konum bulucuya tekrar dokun."
+      },
+      "locatorShortfall": {
+        "title": "Yetersiz Stitch Coin",
+        "body": "Konum bulucuyu şu anda kullanmak için daha fazla Stitch Coin gerekiyor.",
+        "priceLabel": "Konum bulucu fiyatı",
+        "balanceLabel": "Bakiyen",
+        "purchaseAction": "Stitch Coin Al",
+        "dismissAction": "Şimdi Değil",
+        "dismissAccessibilityLabel": "Kapat"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -43786,10 +43996,17 @@
         "undoAccessibilityLabel": "Скасувати останній стібок"
       },
       "locator": {
-        "priceTitle": "Ціна пошуку клітинки",
-        "priceConfirmMessage": "Ціна: {{price}} · Баланс: {{balance}}\nТоркніться пошуку ще раз, щоб скористатися ним.",
         "priceChangedTitle": "Ціна пошуку клітинки змінилася",
         "priceChangedMessage": "Нова ціна: {{price}} · Баланс: {{balance}}\nТоркніться пошуку ще раз, щоб скористатися ним за новою ціною."
+      },
+      "locatorShortfall": {
+        "title": "Недостатньо Stitch Coin",
+        "body": "Щоб скористатися пошуком клітинки зараз, вам потрібно більше Stitch Coin.",
+        "priceLabel": "Ціна пошуку клітинки",
+        "balanceLabel": "Ваш баланс",
+        "purchaseAction": "Отримати Stitch Coin",
+        "dismissAction": "Не зараз",
+        "dismissAccessibilityLabel": "Закрити"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -45221,10 +45438,17 @@
         "undoAccessibilityLabel": "Hoàn tác mũi thêu cuối cùng"
       },
       "locator": {
-        "priceTitle": "Giá công cụ định vị",
-        "priceConfirmMessage": "Giá: {{price}} · Số dư: {{balance}}\nChạm lại vào công cụ định vị để sử dụng.",
         "priceChangedTitle": "Giá công cụ định vị đã thay đổi",
         "priceChangedMessage": "Giá mới: {{price}} · Số dư: {{balance}}\nChạm lại vào công cụ định vị để sử dụng với giá mới."
+      },
+      "locatorShortfall": {
+        "title": "Không đủ Stitch Coin",
+        "body": "Bạn cần thêm Stitch Coin để sử dụng công cụ định vị ngay bây giờ.",
+        "priceLabel": "Giá công cụ định vị",
+        "balanceLabel": "Số dư của bạn",
+        "purchaseAction": "Nhận Stitch Coin",
+        "dismissAction": "Không phải lúc này",
+        "dismissAccessibilityLabel": "Đóng"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -46656,10 +46880,17 @@
         "undoAccessibilityLabel": "撤销上一步 Stitch"
       },
       "locator": {
-        "priceTitle": "定位器价格",
-        "priceConfirmMessage": "价格：{{price}} · 余额：{{balance}}\n再次点按定位器即可使用。",
         "priceChangedTitle": "定位器价格已变更",
         "priceChangedMessage": "新价格：{{price}} · 余额：{{balance}}\n再次点按定位器即可按新价格使用。"
+      },
+      "locatorShortfall": {
+        "title": "Stitch Coin 不足",
+        "body": "你需要更多 Stitch Coin 才能立即使用定位器。",
+        "priceLabel": "定位器价格",
+        "balanceLabel": "你的余额",
+        "purchaseAction": "获取 Stitch Coin",
+        "dismissAction": "暂时不要",
+        "dismissAccessibilityLabel": "关闭"
       },
       "palette": {
         "chipNumber": "#{{number}}",
@@ -48091,10 +48322,17 @@
         "undoAccessibilityLabel": "復原上一針"
       },
       "locator": {
-        "priceTitle": "定位器價格",
-        "priceConfirmMessage": "價格：{{price}} · 餘額：{{balance}}\n再次點按定位器即可使用。",
         "priceChangedTitle": "定位器價格已變更",
         "priceChangedMessage": "新價格：{{price}} · 餘額：{{balance}}\n再次點按定位器即可依新價格使用。"
+      },
+      "locatorShortfall": {
+        "title": "Stitch Coin 不足",
+        "body": "你需要更多 Stitch Coin 才能立即使用定位器。",
+        "priceLabel": "定位器價格",
+        "balanceLabel": "你的餘額",
+        "purchaseAction": "取得 Stitch Coin",
+        "dismissAction": "暫時不要",
+        "dismissAccessibilityLabel": "關閉"
       },
       "palette": {
         "chipNumber": "#{{number}}",

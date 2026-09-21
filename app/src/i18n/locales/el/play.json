@@ -62,10 +62,17 @@
     "undoAccessibilityLabel": "Αναίρεση τελευταίας βελονιάς"
   },
   "locator": {
-    "priceTitle": "Τιμή εντοπισμού",
-    "priceConfirmMessage": "Τιμή: {{price}} · Υπόλοιπο: {{balance}}\nΠάτησε ξανά τον εντοπισμό για να τον χρησιμοποιήσεις.",
     "priceChangedTitle": "Η τιμή εντοπισμού άλλαξε",
     "priceChangedMessage": "Νέα τιμή: {{price}} · Υπόλοιπο: {{balance}}\nΠάτησε ξανά τον εντοπισμό για να τον χρησιμοποιήσεις με τη νέα τιμή."
+  },
+  "locatorShortfall": {
+    "title": "Δεν επαρκούν τα Stitch Coin",
+    "body": "Χρειάζεσαι περισσότερα Stitch Coin για να χρησιμοποιήσεις τον εντοπισμό τώρα.",
+    "priceLabel": "Τιμή εντοπισμού",
+    "balanceLabel": "Το υπόλοιπό σου",
+    "purchaseAction": "Απόκτησε Stitch Coin",
+    "dismissAction": "Όχι τώρα",
+    "dismissAccessibilityLabel": "Κλείσιμο"
   },
   "palette": {
     "chipNumber": "#{{number}}",

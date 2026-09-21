@@ -62,10 +62,17 @@
     "undoAccessibilityLabel": "Desfés l'última puntada"
   },
   "locator": {
-    "priceTitle": "Preu del localitzador",
-    "priceConfirmMessage": "Preu: {{price}} · Saldo: {{balance}}\nToca el localitzador de nou per utilitzar-lo.",
     "priceChangedTitle": "El preu del localitzador ha canviat",
     "priceChangedMessage": "Preu nou: {{price}} · Saldo: {{balance}}\nToca el localitzador de nou per utilitzar-lo al preu nou."
+  },
+  "locatorShortfall": {
+    "title": "No tens prou Stitch Coin",
+    "body": "Necessites més Stitch Coin per utilitzar el localitzador ara mateix.",
+    "priceLabel": "Preu del localitzador",
+    "balanceLabel": "El teu saldo",
+    "purchaseAction": "Aconsegueix Stitch Coin",
+    "dismissAction": "Ara no",
+    "dismissAccessibilityLabel": "Tanca"
   },
   "palette": {
     "chipNumber": "#{{number}}",

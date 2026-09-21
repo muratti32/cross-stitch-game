@@ -62,10 +62,17 @@
     "undoAccessibilityLabel": "Vrátit poslední steh"
   },
   "locator": {
-    "priceTitle": "Cena lokátoru",
-    "priceConfirmMessage": "Cena: {{price}} · Zůstatek: {{balance}}\nPro použití znovu klepněte na lokátor.",
     "priceChangedTitle": "Cena lokátoru se změnila",
     "priceChangedMessage": "Nová cena: {{price}} · Zůstatek: {{balance}}\nPro použití za novou cenu znovu klepněte na lokátor."
+  },
+  "locatorShortfall": {
+    "title": "Nedostatek Stitch Coin",
+    "body": "K použití lokátoru teď potřebujete více Stitch Coin.",
+    "priceLabel": "Cena lokátoru",
+    "balanceLabel": "Váš zůstatek",
+    "purchaseAction": "Získat Stitch Coin",
+    "dismissAction": "Teď ne",
+    "dismissAccessibilityLabel": "Zavřít"
   },
   "palette": {
     "chipNumber": "#{{number}}",

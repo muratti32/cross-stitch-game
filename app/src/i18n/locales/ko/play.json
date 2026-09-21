@@ -62,10 +62,17 @@
     "undoAccessibilityLabel": "마지막 스티치 실행 취소"
   },
   "locator": {
-    "priceTitle": "위치 찾기 가격",
-    "priceConfirmMessage": "가격: {{price}} · 잔액: {{balance}}\n사용하려면 위치 찾기를 다시 탭하세요.",
     "priceChangedTitle": "위치 찾기 가격이 변경됨",
     "priceChangedMessage": "새 가격: {{price}} · 잔액: {{balance}}\n새 가격으로 사용하려면 위치 찾기를 다시 탭하세요."
+  },
+  "locatorShortfall": {
+    "title": "Stitch Coin이 부족합니다",
+    "body": "지금 위치 찾기를 사용하려면 Stitch Coin이 더 필요합니다.",
+    "priceLabel": "위치 찾기 가격",
+    "balanceLabel": "내 잔액",
+    "purchaseAction": "Stitch Coin 받기",
+    "dismissAction": "나중에",
+    "dismissAccessibilityLabel": "닫기"
   },
   "palette": {
     "chipNumber": "#{{number}}",

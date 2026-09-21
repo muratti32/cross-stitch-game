@@ -62,10 +62,17 @@
     "undoAccessibilityLabel": "Kumoa edellinen pisto"
   },
   "locator": {
-    "priceTitle": "Paikantimen hinta",
-    "priceConfirmMessage": "Hinta: {{price}} · Saldo: {{balance}}\nKäytä paikanninta napauttamalla sitä uudelleen.",
     "priceChangedTitle": "Paikantimen hinta muuttui",
     "priceChangedMessage": "Uusi hinta: {{price}} · Saldo: {{balance}}\nKäytä paikanninta uuteen hintaan napauttamalla sitä uudelleen."
+  },
+  "locatorShortfall": {
+    "title": "Stitch Coin -saldo ei riitä",
+    "body": "Tarvitset lisää Stitch Coin -valuuttaa käyttääksesi paikanninta nyt.",
+    "priceLabel": "Paikantimen hinta",
+    "balanceLabel": "Saldosi",
+    "purchaseAction": "Hanki Stitch Coin -valuuttaa",
+    "dismissAction": "Ei nyt",
+    "dismissAccessibilityLabel": "Sulje"
   },
   "palette": {
     "chipNumber": "#{{number}}",

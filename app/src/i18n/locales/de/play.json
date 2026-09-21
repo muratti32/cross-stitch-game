@@ -62,10 +62,17 @@
     "undoAccessibilityLabel": "Letzten Stich rückgängig machen"
   },
   "locator": {
-    "priceTitle": "Preis der Zellsuche",
-    "priceConfirmMessage": "Preis: {{price}} · Guthaben: {{balance}}\nTippe erneut auf die Zellsuche, um sie zu verwenden.",
     "priceChangedTitle": "Preis der Zellsuche geändert",
     "priceChangedMessage": "Neuer Preis: {{price}} · Guthaben: {{balance}}\nTippe erneut auf die Zellsuche, um sie zum neuen Preis zu verwenden."
+  },
+  "locatorShortfall": {
+    "title": "Nicht genug Stitch Coin",
+    "body": "Du brauchst mehr Stitch Coin, um die Zellsuche jetzt zu verwenden.",
+    "priceLabel": "Preis der Zellsuche",
+    "balanceLabel": "Dein Guthaben",
+    "purchaseAction": "Stitch Coin holen",
+    "dismissAction": "Nicht jetzt",
+    "dismissAccessibilityLabel": "Schließen"
   },
   "palette": {
     "chipNumber": "#{{number}}",

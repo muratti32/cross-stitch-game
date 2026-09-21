@@ -62,10 +62,17 @@
     "undoAccessibilityLabel": "Laatste stitch ongedaan maken"
   },
   "locator": {
-    "priceTitle": "Prijs van de zoeker",
-    "priceConfirmMessage": "Prijs: {{price}} · Saldo: {{balance}}\nTik opnieuw op de zoeker om hem te gebruiken.",
     "priceChangedTitle": "Prijs van de zoeker gewijzigd",
     "priceChangedMessage": "Nieuwe prijs: {{price}} · Saldo: {{balance}}\nTik opnieuw op de zoeker om hem voor de nieuwe prijs te gebruiken."
+  },
+  "locatorShortfall": {
+    "title": "Niet genoeg Stitch Coin",
+    "body": "Je hebt meer Stitch Coin nodig om de zoeker nu te gebruiken.",
+    "priceLabel": "Prijs van de zoeker",
+    "balanceLabel": "Je saldo",
+    "purchaseAction": "Stitch Coin krijgen",
+    "dismissAction": "Niet nu",
+    "dismissAccessibilityLabel": "Sluiten"
   },
   "palette": {
     "chipNumber": "#{{number}}",

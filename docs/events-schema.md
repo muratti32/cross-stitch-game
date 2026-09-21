@@ -52,6 +52,8 @@ Every event has `event_id` (client UUID), `occurred_at` (ISO-8601 timestamp), an
 | `pattern_unlocked` | `tier`: `small` \| `medium` \| `large`; `price` (positive integer) |
 | `unlock_insufficient_coins` | `tier`: `small` \| `medium` \| `large`; `shortfall` (positive integer) |
 | `unlock_get_coins_tapped` | `tier`: `small` \| `medium` \| `large`; `shortfall` (positive integer) |
+| `locator_coin_shortfall_shown` | `price` (positive integer); `balance` (integer, may be negative after a Commerce Reversal) |
+| `locator_coin_shortfall_cta_pressed` | `price` (positive integer); `balance` (integer, may be negative after a Commerce Reversal) |
 
 `unlock_prompt_shown` fires at most once per detail-screen visit for a pattern. Opening that pattern in a later visit may fire it again.
 
