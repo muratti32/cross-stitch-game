@@ -67,9 +67,15 @@ Store listing copy is canonical in the repository, not in the store consoles
 
 | Field | Location | Locales |
 | --- | --- | --- |
-| App Store name, subtitle, privacy policy URL | `metadata/app-info/<locale>.json` | 32 |
-| App Store description, keywords, promotional text, what's new, marketing/support URLs | `metadata/version/<version>/<locale>.json` | 32 |
+| App Store name, subtitle, privacy policy URL | `metadata/app-info/<locale>.json` | 38 |
+| App Store description, keywords, promotional text, what's new, marketing/support URLs | `metadata/version/<version>/<locale>.json` | 38 in the editable version; shipped versions keep the set they released with |
 | Google Play title, short description, full description | `metadata/play/<locale>.json` | 33 (adds `fil`; full description intentionally empty) |
+
+The App Store set grew from 32 to 38 with `tr`, `en-GB`, `en-CA`, `en-AU`,
+`fr-CA` and `es-MX` (ADR-0066). Those six exist for search, not translation:
+Apple indexes a separate keyword bag per localization and a storefront reads
+only the localizations mapped to it, so `en-GB`/`en-CA` repeat the `en-US` core
+terms while `en-AU`, `fr-CA` and `es-MX` hold terms found nowhere else.
 
 App Store copy is pushed with `asc metadata plan` → `approve` → `apply`
 (App Store app ID `6792383323`). Google Play has no push tooling in this
