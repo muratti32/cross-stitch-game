@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -93,4 +93,39 @@ test('counts a code point once, not its UTF-16 units', () => {
   assert.equal(countCharacters('🧵'), 1);
   assert.equal(countCharacters('十字繡'), 3);
   assert.equal(countCharacters('Cross Stitch&Needlepoint Game'), 29);
+});
+
+test('expects the expanded App Store locale set and reports a missing one', () => {
+  assert.equal(APP_STORE_LOCALES.length, 38);
+  for (const locale of ['tr', 'en-GB', 'en-CA', 'en-AU', 'fr-CA', 'es-MX']) {
+    assert.ok(APP_STORE_LOCALES.includes(locale), `${locale} is missing from APP_STORE_LOCALES`);
+  }
+
+  const dir = buildMetadata();
+  rmSync(join(dir, 'app-info', 'tr.json'));
+  const problems = checkStoreMetadata(dir);
+  assert.equal(problems.length, 1);
+  assert.match(problems[0], /^app-info: missing locales — tr$/);
+});
+
+test('keeps the Play locale set at 33 while the App Store set grows', () => {
+  assert.equal(PLAY_LOCALES.length, 33);
+  for (const locale of ['tr-TR', 'en-GB', 'en-CA', 'en-AU', 'fr-CA', 'es-MX']) {
+    assert.ok(!PLAY_LOCALES.includes(locale), `${locale} should not be in PLAY_LOCALES yet`);
+  }
+});
+
+test('requires full locale coverage only from the newest version', () => {
+  const dir = buildMetadata();
+  const shippedDir = join(dir, 'version', '1.2');
+  mkdirSync(shippedDir, { recursive: true });
+  writeFileSync(
+    join(shippedDir, 'en-US.json'),
+    JSON.stringify({ description: 'Description', keywords: 'one,two' }),
+  );
+  assert.deepEqual(checkStoreMetadata(dir), []);
+
+  rmSync(join(dir, 'version', '1.3', 'tr.json'));
+  const problems = checkStoreMetadata(dir);
+  assert.deepEqual(problems, ['version 1.3: missing locales — tr']);
 });

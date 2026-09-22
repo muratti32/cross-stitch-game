@@ -12,10 +12,10 @@ export const APP_STORE_LIMITS = { name: 30, subtitle: 30, keywords: 100 };
 export const PLAY_LIMITS = { title: 30, shortDescription: 80, fullDescription: 4000 };
 
 export const APP_STORE_LOCALES = [
-  'ar-SA', 'ca', 'cs', 'da', 'de-DE', 'el', 'en-US', 'es-ES', 'fi', 'fr-FR',
-  'hi', 'hr', 'hu', 'id', 'it', 'ja', 'ko', 'ms', 'nl-NL', 'no', 'pl',
-  'pt-BR', 'pt-PT', 'ro', 'ru', 'sk', 'sl-SI', 'sv', 'uk', 'vi', 'zh-Hans',
-  'zh-Hant',
+  'ar-SA', 'ca', 'cs', 'da', 'de-DE', 'el', 'en-AU', 'en-CA', 'en-GB', 'en-US',
+  'es-ES', 'es-MX', 'fi', 'fr-CA', 'fr-FR', 'hi', 'hr', 'hu', 'id', 'it', 'ja',
+  'ko', 'ms', 'nl-NL', 'no', 'pl', 'pt-BR', 'pt-PT', 'ro', 'ru', 'sk', 'sl-SI',
+  'sv', 'tr', 'uk', 'vi', 'zh-Hans', 'zh-Hant',
 ];
 
 export const PLAY_LOCALES = [
@@ -80,10 +80,16 @@ export const checkStoreMetadata = (metadataDir) => {
         .map((entry) => entry.name)
         .sort()
     : [];
+  // Only the newest version is still editable, so it is the only one expected to
+  // carry every locale. Shipped versions keep the locale set they were released
+  // with — back-filling them would rewrite history without reaching any user.
+  const editableVersion = versions[versions.length - 1];
   for (const version of versions) {
     const versionDir = join(versionsDir, version);
     const locales = listLocales(versionDir);
-    checkCoverage(`version ${version}`, APP_STORE_LOCALES, locales, problems);
+    if (version === editableVersion) {
+      checkCoverage(`version ${version}`, APP_STORE_LOCALES, locales, problems);
+    }
     for (const locale of locales) {
       checkLimits(`version ${version}`, locale, readJson(join(versionDir, `${locale}.json`)), APP_STORE_LIMITS, problems);
     }
