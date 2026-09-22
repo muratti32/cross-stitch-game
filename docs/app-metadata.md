@@ -7,10 +7,11 @@ identifiers and secret-manager *reference names* belong here — never secret
 values.
 
 > **Coverage status:** this file is incomplete. It currently documents app
-> identity, App Display Languages, the Sentry integration, and the Firebase
-> Analytics integration with its store privacy declarations. Store listing,
-> RevenueCat, Firebase/auth, push, and backend/infrastructure hosting are
-> **not yet inventoried here** — absence of a service
+> identity, App Display Languages, the store listing name and subtitle, the
+> Sentry integration, and the Firebase Analytics integration with its store
+> privacy declarations. The rest of the store listing (descriptions, keywords,
+> screenshots), RevenueCat, Firebase/auth, push, and backend/infrastructure
+> hosting are **not yet inventoried here** — absence of a service
 > below means "not documented yet", never "not provisioned". Extend this file
 > as each area is confirmed.
 
@@ -18,7 +19,8 @@ values.
 
 | Field | Value | Source |
 | --- | --- | --- |
-| Display name | Stitch Wish | `app/app.json` (`expo.name`) |
+| Brand and on-device display name | Stitch Wish | `app/app.json` (`expo.name`) |
+| Store listing name (en-US) | Cross Stitch&Needlepoint Game | `metadata/app-info/en-US.json` (`name`) — localized per store locale, see ADR-0065 |
 | Slug | `stitch-wish` | `app/app.json` (`expo.slug`) |
 | iOS bundle identifier | `com.avk.stitchwish` | `app/app.json` (`expo.ios.bundleIdentifier`) |
 | Apple Team ID | `X25YH9627H` | `app/app.json` (`expo.ios.appleTeamId`) |
@@ -48,8 +50,9 @@ follow ADR-0052.
 The next cohort must declare all seven languages to the generated iOS and
 Android projects, support both the OS app-language setting and the existing
 in-app selector, show every language using its own name, and localize native
-permission copy. `Stitch Wish` remains the untranslated brand and display
-name.
+permission copy. `Stitch Wish` remains the untranslated brand and on-device
+display name. It is deliberately not the store listing name, which is
+keyword-first and localized per store locale under ADR-0065.
 
 The later store-localization phase owns App Store and Google Play listing
 copy, in-app-purchase and subscription names and descriptions, and
@@ -57,7 +60,26 @@ subscription-group localization. Until that phase, store-controlled purchase
 copy may remain English even while app-owned commerce UI uses the selected App
 Display Language.
 
-### Store listing assets
+### Store listing
+
+Store listing copy is canonical in the repository, not in the store consoles
+(ADR-0065).
+
+| Field | Location | Locales |
+| --- | --- | --- |
+| App Store name, subtitle, privacy policy URL | `metadata/app-info/<locale>.json` | 32 |
+| App Store description, keywords, promotional text, what's new, marketing/support URLs | `metadata/version/<version>/<locale>.json` | 32 |
+| Google Play title, short description, full description | `metadata/play/<locale>.json` | 33 (adds `fil`; full description intentionally empty) |
+
+App Store copy is pushed with `asc metadata plan` → `approve` → `apply`
+(App Store app ID `6792383323`). Google Play has no push tooling in this
+repository; its listing is entered by hand in the Play Console from the
+canonical files. `.asc/metadata/` and `.asc/reports/` are per-run artifacts and
+stay git-ignored.
+
+`scripts/check-store-metadata.mjs` validates both stores' character limits
+(App Store name 30, subtitle 30, keywords 100; Play title 30, short
+description 80) and missing locales.
 
 - Google Play screenshot assets: see `docs/research/2026-09-04-google-play-screenshot-batch-upload.md`.
 
