@@ -1,6 +1,8 @@
 {
     "scripts": {
         "claude": "CLAUDE_CODE_TASK_LIST_ID=cross-wish claude claude --dangerously-skip-permissions",
-        "start:dev": "bash scripts/start-dev-with-ngrok.sh"
+        "start:dev": "bash scripts/start-dev-with-ngrok.sh",
+        "check:store-metadata": "node scripts/check-store-metadata.mjs",
+        "test:scripts": "node --test scripts/check-store-metadata.test.mjs && bash scripts/start-dev-with-ngrok.test.sh"
     }
 }
