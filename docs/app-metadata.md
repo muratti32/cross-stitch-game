@@ -69,7 +69,7 @@ Store listing copy is canonical in the repository, not in the store consoles
 | --- | --- | --- |
 | App Store name, subtitle, privacy policy URL | `metadata/app-info/<locale>.json` | 38 |
 | App Store description, keywords, promotional text, what's new, marketing/support URLs | `metadata/version/<version>/<locale>.json` | 38 in the editable version; shipped versions keep the set they released with |
-| Google Play title, short description, full description | `metadata/play/<locale>.json` | 33 (adds `fil`; full description intentionally empty) |
+| Google Play title, short description, full description | `metadata/play/<locale>.json` | 39 (adds `fil`; `es-419` stands in for `es-MX`; full description empty except in the six ADR-0067 locales) |
 
 The App Store set grew from 32 to 38 with `tr`, `en-GB`, `en-CA`, `en-AU`,
 `fr-CA` and `es-MX` (ADR-0066). Those six exist for search, not translation:
@@ -77,10 +77,15 @@ Apple indexes a separate keyword bag per localization and a storefront reads
 only the localizations mapped to it, so `en-GB`/`en-CA` repeat the `en-US` core
 terms while `en-AU`, `fr-CA` and `es-MX` hold terms found nowhere else.
 
+Google Play mirrors the six additions as `tr-TR`, `en-GB`, `en-CA`, `en-AU`,
+`fr-CA` and `es-419` (ADR-0067); Play has no `es-MX`, so `es-419` (Latin
+America) carries the Mexican Spanish listing.
+
 App Store copy is pushed with `asc metadata plan` → `approve` → `apply`
-(App Store app ID `6792383323`). Google Play has no push tooling in this
-repository; its listing is entered by hand in the Play Console from the
-canonical files. `.asc/metadata/` and `.asc/reports/` are per-run artifacts and
+(App Store app ID `6792383323`). Google Play listings can be pushed with the
+`play-store` MCP server (`play-store-mcp`, package `com.avk.stitchwish`,
+`update_listing` per locale) using the Play service-account credentials; older
+locales were entered by hand in the Play Console. `.asc/metadata/` and `.asc/reports/` are per-run artifacts and
 stay git-ignored.
 
 `scripts/check-store-metadata.mjs` validates both stores' character limits

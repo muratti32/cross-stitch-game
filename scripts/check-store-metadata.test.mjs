@@ -108,10 +108,11 @@ test('expects the expanded App Store locale set and reports a missing one', () =
   assert.match(problems[0], /^app-info: missing locales — tr$/);
 });
 
-test('keeps the Play locale set at 33 while the App Store set grows', () => {
-  assert.equal(PLAY_LOCALES.length, 33);
-  for (const locale of ['tr-TR', 'en-GB', 'en-CA', 'en-AU', 'fr-CA', 'es-MX']) {
-    assert.ok(!PLAY_LOCALES.includes(locale), `${locale} should not be in PLAY_LOCALES yet`);
+test('expects 39 Play locales, mirroring the six App Store additions', () => {
+  assert.equal(PLAY_LOCALES.length, 39);
+  // Play has no es-MX; es-419 (Latin America) is its Mexican Spanish listing.
+  for (const locale of ['tr-TR', 'en-GB', 'en-CA', 'en-AU', 'fr-CA', 'es-419']) {
+    assert.ok(PLAY_LOCALES.includes(locale), `${locale} is missing from PLAY_LOCALES`);
   }
 });
 

@@ -19,10 +19,11 @@ export const APP_STORE_LOCALES = [
 ];
 
 export const PLAY_LOCALES = [
-  'en-US', 'ar', 'ca', 'cs-CZ', 'da-DK', 'de-DE', 'el-GR', 'es-ES', 'fi-FI',
-  'fil', 'fr-FR', 'hi-IN', 'hr', 'hu-HU', 'id', 'it-IT', 'ja-JP', 'ko-KR',
-  'ms-MY', 'nl-NL', 'no-NO', 'pl-PL', 'pt-BR', 'pt-PT', 'ro', 'ru-RU', 'sk',
-  'sl', 'sv-SE', 'uk', 'vi', 'zh-CN', 'zh-TW',
+  'en-US', 'ar', 'ca', 'cs-CZ', 'da-DK', 'de-DE', 'el-GR', 'en-AU', 'en-CA',
+  'en-GB', 'es-419', 'es-ES', 'fi-FI', 'fil', 'fr-CA', 'fr-FR', 'hi-IN', 'hr',
+  'hu-HU', 'id', 'it-IT', 'ja-JP', 'ko-KR', 'ms-MY', 'nl-NL', 'no-NO', 'pl-PL',
+  'pt-BR', 'pt-PT', 'ro', 'ru-RU', 'sk', 'sl', 'sv-SE', 'tr-TR', 'uk', 'vi',
+  'zh-CN', 'zh-TW',
 ];
 
 // Apple and Google both count characters, not UTF-16 code units, so a
