@@ -4,7 +4,6 @@
 .expo/
 .gradle/
 tmp/
-metadata/
 sast/
 app/android/build/
 app/android/app/build/
@@ -14,5 +13,6 @@ stitchwish-service-account.json
 credentials.json
 .DS_Store
 
-# asc screenshot-upload run reports (local artifacts, regenerated per run)
+# asc run artifacts (local, regenerated per run)
 .asc/reports/
+.asc/metadata/

@@ -1,0 +1,22 @@
+# Separate the store listing name from the brand name
+
+**Status: accepted**
+
+`Stitch Wish` is the brand and the on-device name; it is not the App Store or Google Play listing name. The listing name is a keyword-first string chosen for store search, localized per store locale, and free to change without touching anything the brand names. The two now diverge deliberately: `app/app.json` (`expo.name`) keeps `Stitch Wish` as the home-screen name, `com.avk.stitchwish` stays immutable under ADR-0043, and the RevenueCat apps, the marketing and privacy-policy domain, and the Play Console account name all keep the brand. Only `metadata/app-info/<locale>.json` `name` and the Play listing title follow the keyword rule.
+
+The first application of the rule sets the en-US name to `Cross Stitch&Needlepoint Game` (29 of 30 characters) and the en-US subtitle to `Relax: color by number art`. The name carries the category terms, so the subtitle carries different ones: Apple indexes name, subtitle and keywords as one bag, and repeating a name word in the subtitle spends characters on an already-indexed term. The same reasoning removes from `keywords` any term the name absorbed. Where a localized name cannot fit 30 characters, the word for "game" is dropped before `needlepoint` is — "game" earns no searches in any language, the category term does.
+
+Store listing copy is canonical in the repository, not in the store consoles. `metadata/` is no longer git-ignored: its 96 JSON files are the source of truth for the App Store, pushed with `asc metadata plan` / `approve` / `apply`, and a sibling `metadata/play/<locale>.json` holds the Play title, short description and full description. Run artifacts stay out — `.asc/metadata/` and `.asc/reports/` are regenerated per run and remain ignored. Play has no push tooling in this repository, so its listing is still entered by hand in the console; the canonical files exist so that what was entered is reviewable and recoverable, which it was not before.
+
+We accept that this is only partly enforced. The Play full description is declared in the schema but left empty in this change, because pulling 33 locales of it out of the console by hand buys nothing today; an empty field is a visible gap rather than a silent one. Localized term quality is uneven by design: the ten largest markets (en, de, fr, es, it, pt-BR, ja, ko, zh-Hans, ru) get researched search terms for name, subtitle, keywords and the brand sentences in `description`, and the remaining locales get translations. Apple does not index `description`, so the brand sentences left standing in the untouched locales cost search nothing; they cost only the consistency of a listing whose title no longer says the brand.
+
+This narrows the sentence in `docs/app-metadata.md` that read "`Stitch Wish` remains the untranslated brand and display name" to the brand and the on-device display name, and leaves ADR-0051's exclusion of store listings from app-shell localization intact — store-listing localization is this decision's subject, not the app shell's.
+
+## Considered options
+
+- Keep the brand in the listing name (`Stitch Wish: Cross Stitch`): rejected, because the brand has no search volume of its own yet, and its prefix spends 13 of 30 characters that category terms would otherwise hold.
+- Rename the app itself (`expo.name`, bundle identifier) to match the listing: rejected, because the home-screen name is truncated to roughly twelve characters anyway, the bundle namespace is immutable under ADR-0043, and a new binary buys no store visibility.
+- One English listing name across all locales: rejected, because a German user searching "Kreuzstich" never matches an English title; per-locale names are the whole point of localizing the field.
+- Researched terms for all 32 locales: deferred, not rejected — the return past the first ten markets does not pay for the research, but a later decision can extend the researched set.
+- Leave store copy in the consoles and keep `metadata/` ignored: rejected, because the pre-change values of all 32 locales existed nowhere under version control, which made this very change irreversible until the snapshot commit that precedes it.
+- Announce the rename in `whatsNew` and the Play release notes: rejected, because the on-device name does not change, so nothing the user holds is renamed, and the sentence would cost 65 locales of translation.

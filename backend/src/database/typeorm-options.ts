@@ -213,6 +213,7 @@ import { CreateLocatorAttempts1792713600000 } from './migrations/1792713600000-C
 import { AddOperatorManagedLocatorPrice1792800000000 } from './migrations/1792800000000-AddOperatorManagedLocatorPrice';
 import { AddPatternUnlockSource1792886400000 } from './migrations/1792886400000-AddPatternUnlockSource';
 import { AddPatternUnlockGameplayEvents1792972800000 } from './migrations/1792972800000-AddPatternUnlockGameplayEvents';
+import { AddLocatorCoinShortfallGameplayEvents1793059200000 } from './migrations/1793059200000-AddLocatorCoinShortfallGameplayEvents';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -411,6 +412,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddOperatorManagedLocatorPrice1792800000000,
       AddPatternUnlockSource1792886400000,
       AddPatternUnlockGameplayEvents1792972800000,
+      AddLocatorCoinShortfallGameplayEvents1793059200000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

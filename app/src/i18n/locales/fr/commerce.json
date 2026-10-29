@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Compris",
     "successButton": "Super",
+    "returnToGameButton": "Retour au jeu",
     "failedButton": "Fermer",
     "infoButton": "Compris",
     "closeAccessibilityLabel": "Fermer"

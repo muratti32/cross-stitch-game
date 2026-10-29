@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Modal, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -18,12 +18,14 @@ import { Button } from './Button';
 export type PurchaseResultVariant = 'pending' | 'success' | 'failed' | 'info';
 
 interface Props {
-  visible: boolean;
-  variant: PurchaseResultVariant;
-  title: string;
-  body: string;
-  detail?: string | null;
-  onDismiss: () => void;
+  readonly visible: boolean;
+  readonly variant: PurchaseResultVariant;
+  readonly title: string;
+  readonly body: string;
+  readonly detail?: string | null;
+  readonly actionLabel?: string;
+  readonly onDismiss: () => void;
+  readonly onDismissed?: () => void;
 }
 
 interface VariantConfig {
@@ -63,12 +65,24 @@ export function PurchaseResultModal({
   title,
   body,
   detail,
+  actionLabel,
   onDismiss,
+  onDismissed,
 }: Props) {
   const { t } = useTranslation('commerce');
   const config = VARIANTS[variant];
   const isSuccess = variant === 'success';
   const iconScale = useSharedValue(1);
+  const previousVisible = useRef(visible);
+
+  useEffect(() => {
+    const wasVisible = previousVisible.current;
+    previousVisible.current = visible;
+    // iOS exposes the real native post-dismiss callback. No other platform
+    // does, so their completed lifecycle is the true-to-false render edge -
+    // which also keeps the handshake from being lost off-device (#268).
+    if (Platform.OS !== 'ios' && wasVisible && !visible) onDismissed?.();
+  }, [onDismissed, visible]);
 
   useEffect(() => {
     if (!isSuccess) return;
@@ -92,6 +106,7 @@ export function PurchaseResultModal({
       animationType="fade"
       visible={visible}
       onRequestClose={onDismiss}
+      onDismiss={Platform.OS === 'ios' ? onDismissed : undefined}
     >
       <View style={styles.overlay} testID="purchase-result-modal">
         <Card style={styles.card}>
@@ -124,7 +139,7 @@ export function PurchaseResultModal({
           ) : null}
 
           <Button
-            title={t(config.buttonLabelKey)}
+            title={actionLabel ?? t(config.buttonLabelKey)}
             onPress={onDismiss}
             variant="primary"
             style={styles.button}

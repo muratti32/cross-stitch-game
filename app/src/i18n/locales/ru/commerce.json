@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "ОК",
     "successButton": "Отлично",
+    "returnToGameButton": "Вернуться в игру",
     "failedButton": "Закрыть",
     "infoButton": "ОК",
     "closeAccessibilityLabel": "Закрыть"

@@ -1,0 +1,658 @@
+{
+  "generatedAt": "2026-09-23T04:25:03.751Z",
+  "envLabel": "production",
+  "apiUrl": "https://stitchwish-api.avkdesign.net",
+  "mode": "dry-run",
+  "source": "stitch-wish-admin-prod MCP (admin_list_patterns status=available, admin_list_staff_picks); selection via selectPaidPatterns",
+  "algorithm": "paid-pattern-selection/v1",
+  "attempt": 1,
+  "excluded": [],
+  "perCategory": [
+    {
+      "categoryCode": "animals",
+      "eligible": 19,
+      "excluded": 0,
+      "free": 13,
+      "paid": 6,
+      "usable": 19
+    },
+    {
+      "categoryCode": "fantasy",
+      "eligible": 19,
+      "excluded": 0,
+      "free": 13,
+      "paid": 6,
+      "usable": 19
+    },
+    {
+      "categoryCode": "food-drink",
+      "eligible": 19,
+      "excluded": 0,
+      "free": 13,
+      "paid": 6,
+      "usable": 19
+    },
+    {
+      "categoryCode": "geometric-abstract",
+      "eligible": 19,
+      "excluded": 0,
+      "free": 13,
+      "paid": 6,
+      "usable": 19
+    },
+    {
+      "categoryCode": "holidays-seasons",
+      "eligible": 19,
+      "excluded": 0,
+      "free": 13,
+      "paid": 6,
+      "usable": 19
+    },
+    {
+      "categoryCode": "nature-flowers",
+      "eligible": 19,
+      "excluded": 0,
+      "free": 13,
+      "paid": 6,
+      "usable": 19
+    },
+    {
+      "categoryCode": "other",
+      "eligible": 19,
+      "excluded": 0,
+      "free": 13,
+      "paid": 6,
+      "usable": 19
+    },
+    {
+      "categoryCode": "people",
+      "eligible": 19,
+      "excluded": 0,
+      "free": 13,
+      "paid": 6,
+      "usable": 19
+    },
+    {
+      "categoryCode": "places-architecture",
+      "eligible": 19,
+      "excluded": 0,
+      "free": 13,
+      "paid": 6,
+      "usable": 19
+    },
+    {
+      "categoryCode": "words-symbols",
+      "eligible": 19,
+      "excluded": 0,
+      "free": 13,
+      "paid": 6,
+      "usable": 19
+    }
+  ],
+  "perTier": {
+    "large": 0,
+    "medium": 52,
+    "small": 8
+  },
+  "rules": {
+    "paidPerCategory": 6,
+    "minSmallPaid": 6,
+    "maxSmallPaid": 10,
+    "maxAttempts": 10000
+  },
+  "seed": "issue-260",
+  "selected": [
+    {
+      "categoryCode": "animals",
+      "currentTier": null,
+      "id": "0414f141-3b5a-4cc7-b4f8-19a98db6119f",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Flower Crown Alpaca"
+    },
+    {
+      "categoryCode": "animals",
+      "currentTier": null,
+      "id": "1b709e10-8b9d-4795-9ee0-43cbd466cc6d",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Cozy Scarf Penguin"
+    },
+    {
+      "categoryCode": "animals",
+      "currentTier": null,
+      "id": "34641a2d-2953-4a34-8fd3-f0ae5399db77",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Garden Pond Turtle"
+    },
+    {
+      "categoryCode": "animals",
+      "currentTier": null,
+      "id": "49cfc869-fdf8-4e9a-bdd6-d50c03d22007",
+      "staffPick": true,
+      "tier": "medium",
+      "title": "Starry Blue Whale"
+    },
+    {
+      "categoryCode": "animals",
+      "currentTier": null,
+      "id": "8bd838ed-27a1-4838-9437-a5614153e0fd",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "River Otter Picnic"
+    },
+    {
+      "categoryCode": "animals",
+      "currentTier": null,
+      "id": "c97ecec8-d3af-4fa0-a8ef-d2283bd86321",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Cozy Woodland Fox"
+    },
+    {
+      "categoryCode": "fantasy",
+      "currentTier": null,
+      "id": "1dbac4f8-8aaf-49b6-9be6-0a5c373f18bf",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Starlight Wizard Tower"
+    },
+    {
+      "categoryCode": "fantasy",
+      "currentTier": null,
+      "id": "238da92d-a836-4dc6-b091-d9f45bc38e14",
+      "staffPick": true,
+      "tier": "small",
+      "title": "Friendly Baby Dragon"
+    },
+    {
+      "categoryCode": "fantasy",
+      "currentTier": null,
+      "id": "8eecb1ab-3674-4108-b6cb-08839e088a62",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Crystal Seahorse"
+    },
+    {
+      "categoryCode": "fantasy",
+      "currentTier": null,
+      "id": "b978e4af-6b22-4417-bc01-7c494d8ec7d3",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Moonlit Kitsune"
+    },
+    {
+      "categoryCode": "fantasy",
+      "currentTier": null,
+      "id": "e4035a15-f031-4b28-8a45-81cf81ef55a9",
+      "staffPick": true,
+      "tier": "medium",
+      "title": "Golden Ember Phoenix"
+    },
+    {
+      "categoryCode": "fantasy",
+      "currentTier": null,
+      "id": "eb444d15-6dd1-436b-a9ea-2fe5290fd925",
+      "staffPick": true,
+      "tier": "medium",
+      "title": "Rainbow Potion Shelf"
+    },
+    {
+      "categoryCode": "food-drink",
+      "currentTier": null,
+      "id": "3fb58b45-1973-48bb-9878-72895a3df3af",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Parisian Croissant"
+    },
+    {
+      "categoryCode": "food-drink",
+      "currentTier": null,
+      "id": "60669b79-e8de-483c-8533-1e9db4123731",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Cozy Ramen Bowl"
+    },
+    {
+      "categoryCode": "food-drink",
+      "currentTier": null,
+      "id": "667a2708-b3f6-43f5-a0fc-4ec286b8ae3a",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Garden Tea Time"
+    },
+    {
+      "categoryCode": "food-drink",
+      "currentTier": null,
+      "id": "96394b3b-58bb-4950-8e6f-9f1034a0e265",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Autumn Pumpkin Soup"
+    },
+    {
+      "categoryCode": "food-drink",
+      "currentTier": null,
+      "id": "bc7ee34a-6851-4ed0-8d31-f4ae1ee269b9",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Berry Pancake Stack"
+    },
+    {
+      "categoryCode": "food-drink",
+      "currentTier": null,
+      "id": "dcd34ee2-8044-41b3-b9dc-478c198891f0",
+      "staffPick": true,
+      "tier": "medium",
+      "title": "Rainbow Ice Cream Cone"
+    },
+    {
+      "categoryCode": "geometric-abstract",
+      "currentTier": null,
+      "id": "0b147854-da6a-4a9c-90e6-09d6a7ade909",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Ocean Spiral"
+    },
+    {
+      "categoryCode": "geometric-abstract",
+      "currentTier": null,
+      "id": "0ebcb08e-3b7e-49c2-a808-22ac439da482",
+      "staffPick": true,
+      "tier": "small",
+      "title": "Vibrant Geometric Mandala"
+    },
+    {
+      "categoryCode": "geometric-abstract",
+      "currentTier": null,
+      "id": "2c580b5d-2d84-45de-b2c9-4bc3490e42e2",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Geometric Leaf Mosaic"
+    },
+    {
+      "categoryCode": "geometric-abstract",
+      "currentTier": null,
+      "id": "b5b1f47e-f3c4-413d-948f-c637b956f78f",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Colorful Orbit"
+    },
+    {
+      "categoryCode": "geometric-abstract",
+      "currentTier": null,
+      "id": "b8977e76-f788-4c03-9f8c-af3dce6be061",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Jewel Kaleidoscope"
+    },
+    {
+      "categoryCode": "geometric-abstract",
+      "currentTier": null,
+      "id": "dbbfd4c9-8f6d-4772-b1e1-aff662a0c982",
+      "staffPick": true,
+      "tier": "small",
+      "title": "Modern Abstract Geometric Shapes"
+    },
+    {
+      "categoryCode": "holidays-seasons",
+      "currentTier": null,
+      "id": "0f509f6e-d717-4a84-ae5c-d8727fc4b45c",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Festival of Lights Menorah"
+    },
+    {
+      "categoryCode": "holidays-seasons",
+      "currentTier": null,
+      "id": "335b3781-e2a5-475a-990f-3cd11bcc6d49",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Lunar New Year Lanterns"
+    },
+    {
+      "categoryCode": "holidays-seasons",
+      "currentTier": null,
+      "id": "4c9c4eb0-2b7b-45f8-b4bf-98a8ae8f73a7",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Tropical Summer Slice"
+    },
+    {
+      "categoryCode": "holidays-seasons",
+      "currentTier": null,
+      "id": "dc52d95b-54de-4026-a338-e26f8d7ca38d",
+      "staffPick": true,
+      "tier": "medium",
+      "title": "Spring Tulip Bunny"
+    },
+    {
+      "categoryCode": "holidays-seasons",
+      "currentTier": null,
+      "id": "e376b524-aa1a-4de6-b991-c8aab7afc905",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Winter Cabin Glow"
+    },
+    {
+      "categoryCode": "holidays-seasons",
+      "currentTier": null,
+      "id": "e4c4821f-8858-44cf-8657-d838361b59f4",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Harvest Cornucopia"
+    },
+    {
+      "categoryCode": "nature-flowers",
+      "currentTier": null,
+      "id": "0bd4f7e3-acff-44ba-a90e-1c20ef661115",
+      "staffPick": true,
+      "tier": "small",
+      "title": "Blooming Pink Rose"
+    },
+    {
+      "categoryCode": "nature-flowers",
+      "currentTier": null,
+      "id": "253cef22-d38a-454b-a3ca-8621de540866",
+      "staffPick": true,
+      "tier": "medium",
+      "title": "Northern Lights Pines"
+    },
+    {
+      "categoryCode": "nature-flowers",
+      "currentTier": null,
+      "id": "37a258bf-6586-4699-9135-20b5ad736fc5",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Forest Mushroom Cluster"
+    },
+    {
+      "categoryCode": "nature-flowers",
+      "currentTier": null,
+      "id": "5f952916-b098-4ff7-ae93-30dd92747afe",
+      "staffPick": true,
+      "tier": "small",
+      "title": "Sunlit Sunflower Bloom"
+    },
+    {
+      "categoryCode": "nature-flowers",
+      "currentTier": null,
+      "id": "963a1f04-2ac1-445b-bfe6-5a619caa3b7b",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Alpine Sunrise"
+    },
+    {
+      "categoryCode": "nature-flowers",
+      "currentTier": null,
+      "id": "d753173f-8251-4279-804b-24dc759e3cc7",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Wild Poppy Meadow"
+    },
+    {
+      "categoryCode": "other",
+      "currentTier": null,
+      "id": "03de22c0-4311-45da-ac99-96ddff0fed3e",
+      "staffPick": true,
+      "tier": "small",
+      "title": "Retro Arcade Joystick"
+    },
+    {
+      "categoryCode": "other",
+      "currentTier": null,
+      "id": "21ec846d-39a8-4bfc-a437-8978a7d869f0",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Camping Lantern"
+    },
+    {
+      "categoryCode": "other",
+      "currentTier": null,
+      "id": "2965f963-10c6-4c5d-b57e-fb798d506c13",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Little Red Sailboat"
+    },
+    {
+      "categoryCode": "other",
+      "currentTier": null,
+      "id": "39a688a0-04c7-47dd-8180-5b95067e302e",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Rainy Day Umbrella"
+    },
+    {
+      "categoryCode": "other",
+      "currentTier": null,
+      "id": "3b788640-d622-432e-b33c-e7c4df58ac5c",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Explorer Compass"
+    },
+    {
+      "categoryCode": "other",
+      "currentTier": null,
+      "id": "d7d354e8-5167-43a2-9b5a-d873dc2949f4",
+      "staffPick": true,
+      "tier": "medium",
+      "title": "Floral Tea Tin"
+    },
+    {
+      "categoryCode": "people",
+      "currentTier": null,
+      "id": "0cfe9f1d-2478-44b7-9d67-9ce7edab3e64",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Curious Botanist"
+    },
+    {
+      "categoryCode": "people",
+      "currentTier": null,
+      "id": "27458d5f-0fed-44fa-a5aa-facd8521a744",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Joyful Bread Baker"
+    },
+    {
+      "categoryCode": "people",
+      "currentTier": null,
+      "id": "4f52e894-0cc8-49c4-816a-a778b0702f7d",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Ceramic Studio Potter"
+    },
+    {
+      "categoryCode": "people",
+      "currentTier": null,
+      "id": "82166dbb-ee34-4516-90a5-cb9d769fb569",
+      "staffPick": true,
+      "tier": "medium",
+      "title": "Flower Basket Ride"
+    },
+    {
+      "categoryCode": "people",
+      "currentTier": null,
+      "id": "af728b62-8f18-4a74-9919-cfa518224a76",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Young Stargazer"
+    },
+    {
+      "categoryCode": "people",
+      "currentTier": null,
+      "id": "bbfd02c6-2030-4853-b47f-9789c4835855",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Folk Dance Celebration"
+    },
+    {
+      "categoryCode": "places-architecture",
+      "currentTier": null,
+      "id": "060949f0-3a02-498c-9428-ee426b429c45",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Brooklyn Brownstone"
+    },
+    {
+      "categoryCode": "places-architecture",
+      "currentTier": null,
+      "id": "811b9917-5361-45d5-97d4-5a2d26cbbbdc",
+      "staffPick": true,
+      "tier": "small",
+      "title": "Seaside Lighthouse"
+    },
+    {
+      "categoryCode": "places-architecture",
+      "currentTier": null,
+      "id": "a72b268f-a956-45ce-9e8b-9336a1dcdc77",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Covered Wooden Bridge"
+    },
+    {
+      "categoryCode": "places-architecture",
+      "currentTier": null,
+      "id": "ba77d41b-1e79-4107-98cb-8a9b35637a80",
+      "staffPick": true,
+      "tier": "small",
+      "title": "Paris Eiffel Tower"
+    },
+    {
+      "categoryCode": "places-architecture",
+      "currentTier": null,
+      "id": "d648248b-ffb3-4368-ad16-57b48ca9d925",
+      "staffPick": true,
+      "tier": "medium",
+      "title": "Canal House Charm"
+    },
+    {
+      "categoryCode": "places-architecture",
+      "currentTier": null,
+      "id": "ee0a8bee-a44e-4825-a71c-8db79f187043",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "A-Frame Forest Cabin"
+    },
+    {
+      "categoryCode": "words-symbols",
+      "currentTier": null,
+      "id": "81010a0a-05b6-4b74-b22b-5d366546488d",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Grow Gently"
+    },
+    {
+      "categoryCode": "words-symbols",
+      "currentTier": null,
+      "id": "8c26cb4f-4a4d-4be7-8625-ac4d7b19ba27",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Cozy Days"
+    },
+    {
+      "categoryCode": "words-symbols",
+      "currentTier": null,
+      "id": "98b52bda-f6cb-43a1-8f94-849e8025f7b1",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Bloom With Joy"
+    },
+    {
+      "categoryCode": "words-symbols",
+      "currentTier": null,
+      "id": "a1b3012b-e4c8-4d94-b8ff-2d9daac7c9b7",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Dream Among Stars"
+    },
+    {
+      "categoryCode": "words-symbols",
+      "currentTier": null,
+      "id": "ec837b2a-a657-4f02-876a-cfc3c646f6d1",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Be Kind Rainbow"
+    },
+    {
+      "categoryCode": "words-symbols",
+      "currentTier": null,
+      "id": "eee4626a-5d0b-4d32-8637-1641b14f8ad4",
+      "staffPick": false,
+      "tier": "medium",
+      "title": "Stay Brave"
+    }
+  ],
+  "selectedPatternIds": [
+    "03de22c0-4311-45da-ac99-96ddff0fed3e",
+    "0414f141-3b5a-4cc7-b4f8-19a98db6119f",
+    "060949f0-3a02-498c-9428-ee426b429c45",
+    "0b147854-da6a-4a9c-90e6-09d6a7ade909",
+    "0bd4f7e3-acff-44ba-a90e-1c20ef661115",
+    "0cfe9f1d-2478-44b7-9d67-9ce7edab3e64",
+    "0ebcb08e-3b7e-49c2-a808-22ac439da482",
+    "0f509f6e-d717-4a84-ae5c-d8727fc4b45c",
+    "1b709e10-8b9d-4795-9ee0-43cbd466cc6d",
+    "1dbac4f8-8aaf-49b6-9be6-0a5c373f18bf",
+    "21ec846d-39a8-4bfc-a437-8978a7d869f0",
+    "238da92d-a836-4dc6-b091-d9f45bc38e14",
+    "253cef22-d38a-454b-a3ca-8621de540866",
+    "27458d5f-0fed-44fa-a5aa-facd8521a744",
+    "2965f963-10c6-4c5d-b57e-fb798d506c13",
+    "2c580b5d-2d84-45de-b2c9-4bc3490e42e2",
+    "335b3781-e2a5-475a-990f-3cd11bcc6d49",
+    "34641a2d-2953-4a34-8fd3-f0ae5399db77",
+    "37a258bf-6586-4699-9135-20b5ad736fc5",
+    "39a688a0-04c7-47dd-8180-5b95067e302e",
+    "3b788640-d622-432e-b33c-e7c4df58ac5c",
+    "3fb58b45-1973-48bb-9878-72895a3df3af",
+    "49cfc869-fdf8-4e9a-bdd6-d50c03d22007",
+    "4c9c4eb0-2b7b-45f8-b4bf-98a8ae8f73a7",
+    "4f52e894-0cc8-49c4-816a-a778b0702f7d",
+    "5f952916-b098-4ff7-ae93-30dd92747afe",
+    "60669b79-e8de-483c-8533-1e9db4123731",
+    "667a2708-b3f6-43f5-a0fc-4ec286b8ae3a",
+    "81010a0a-05b6-4b74-b22b-5d366546488d",
+    "811b9917-5361-45d5-97d4-5a2d26cbbbdc",
+    "82166dbb-ee34-4516-90a5-cb9d769fb569",
+    "8bd838ed-27a1-4838-9437-a5614153e0fd",
+    "8c26cb4f-4a4d-4be7-8625-ac4d7b19ba27",
+    "8eecb1ab-3674-4108-b6cb-08839e088a62",
+    "96394b3b-58bb-4950-8e6f-9f1034a0e265",
+    "963a1f04-2ac1-445b-bfe6-5a619caa3b7b",
+    "98b52bda-f6cb-43a1-8f94-849e8025f7b1",
+    "a1b3012b-e4c8-4d94-b8ff-2d9daac7c9b7",
+    "a72b268f-a956-45ce-9e8b-9336a1dcdc77",
+    "af728b62-8f18-4a74-9919-cfa518224a76",
+    "b5b1f47e-f3c4-413d-948f-c637b956f78f",
+    "b8977e76-f788-4c03-9f8c-af3dce6be061",
+    "b978e4af-6b22-4417-bc01-7c494d8ec7d3",
+    "ba77d41b-1e79-4107-98cb-8a9b35637a80",
+    "bbfd02c6-2030-4853-b47f-9789c4835855",
+    "bc7ee34a-6851-4ed0-8d31-f4ae1ee269b9",
+    "c97ecec8-d3af-4fa0-a8ef-d2283bd86321",
+    "d648248b-ffb3-4368-ad16-57b48ca9d925",
+    "d753173f-8251-4279-804b-24dc759e3cc7",
+    "d7d354e8-5167-43a2-9b5a-d873dc2949f4",
+    "dbbfd4c9-8f6d-4772-b1e1-aff662a0c982",
+    "dc52d95b-54de-4026-a338-e26f8d7ca38d",
+    "dcd34ee2-8044-41b3-b9dc-478c198891f0",
+    "e376b524-aa1a-4de6-b991-c8aab7afc905",
+    "e4035a15-f031-4b28-8a45-81cf81ef55a9",
+    "e4c4821f-8858-44cf-8657-d838361b59f4",
+    "eb444d15-6dd1-436b-a9ea-2fe5290fd925",
+    "ec837b2a-a657-4f02-876a-cfc3c646f6d1",
+    "ee0a8bee-a44e-4825-a71c-8db79f187043",
+    "eee4626a-5d0b-4d32-8637-1641b14f8ad4"
+  ],
+  "selectionDigest": "9592703d1b4a9ce73e4ae8968e1d192fd3306a25c75d2fd575f4febcd6c2a9bd",
+  "staffPicks": {
+    "maxPaid": 25,
+    "paid": 17,
+    "usable": 50
+  },
+  "totalPaid": 60,
+  "warnings": {
+    "currentlyPaidNotSelected": []
+  }
+}

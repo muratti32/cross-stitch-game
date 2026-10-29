@@ -3,6 +3,7 @@ jest.mock('@sentry/react-native', () => ({
   wrap: jest.fn((x) => x),
   setUser: jest.fn(),
   addBreadcrumb: jest.fn(),
+  captureException: jest.fn(),
 }));
 
 jest.mock('../../config', () => ({
@@ -58,6 +59,22 @@ describe('sentry beforeSend - offline filtering (#152 / #153)', () => {
           {
             type: 'Error',
             value: 'A network error has occurred. The Internet connection appears to be offline.',
+          },
+        ],
+      },
+    };
+
+    expect(beforeSend(event)).toBeNull();
+  });
+
+  test('drops the #152 / STITCH-WISH-12 localized expo/fetch connection-lost event', () => {
+    const event = {
+      exception: {
+        values: [
+          {
+            type: 'Error',
+            value:
+              'fetch failed: UnexpectedException: La connexion réseau a été perdue. (at ExpoModulesCore/Promise.swift:56)',
           },
         ],
       },
@@ -145,4 +162,36 @@ describe('sentry init - app hang tracking (#149 / #150)', () => {
       expect(options.enableAppHangTracking).toBe(true);
     },
   );
+});
+
+describe('captureAdRewardVerificationError - offline filtering (#152 / STITCH-WISH-12)', () => {
+  let Sentry: { captureException: jest.Mock };
+
+  beforeEach(() => {
+    jest.resetModules();
+    Sentry = require('@sentry/react-native');
+    Sentry.captureException.mockClear();
+  });
+
+  function expoFetchTransportError(localizedDescription: string): Error {
+    const { FetchError } = require('expo/src/winter/fetch/FetchErrors');
+    return FetchError.createFromError(
+      new Error(`UnexpectedException: ${localizedDescription} (at ExpoModulesCore/Promise.swift:56)`),
+    );
+  }
+
+  test.each(['La connexion réseau a été perdue.', 'The network connection was lost.'])(
+    'does not report an expo/fetch connection-lost failure: %s',
+    (description) => {
+      const { captureAdRewardVerificationError } = require('../sentry');
+      captureAdRewardVerificationError(expoFetchTransportError(description));
+      expect(Sentry.captureException).not.toHaveBeenCalled();
+    },
+  );
+
+  test('still reports a genuine backend failure', () => {
+    const { captureAdRewardVerificationError } = require('../sentry');
+    captureAdRewardVerificationError(new Error('Rewarded ad attempt state failed: status 500'));
+    expect(Sentry.captureException).toHaveBeenCalledTimes(1);
+  });
 });

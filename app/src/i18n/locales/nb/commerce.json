@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Skjønner",
     "successButton": "Flott",
+    "returnToGameButton": "Tilbake til spillet",
     "failedButton": "Lukk",
     "infoButton": "Skjønner",
     "closeAccessibilityLabel": "Lukk"

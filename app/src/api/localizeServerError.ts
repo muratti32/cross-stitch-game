@@ -66,6 +66,11 @@ const supportReferenceByError = new WeakMap<Error, string>();
  * split by stack trace alone. Its event id becomes the opaque
  * player-visible Support Reference, while the raw backend prose remains
  * diagnostic context only.
+ *
+ * Sent with `captureEvent`, not `captureMessage`: the latter always attaches
+ * a synthetic Error, which the React Native SDK's default
+ * `attachStacktrace: true` turns into an exception interface, and Sentry
+ * then titles the issue by that stack's top frame instead of the message.
  */
 function captureServerErrorDiagnostics(error: Error & ServerApiErrorLike): string {
   // Required lazily, not statically, so call sites that reach this module
@@ -74,18 +79,21 @@ function captureServerErrorDiagnostics(error: Error & ServerApiErrorLike): strin
   // convention).
   const Sentry = require('@sentry/react-native') as typeof import('@sentry/react-native');
   const key = serverErrorKey(error);
-  let eventId = '';
-  Sentry.withScope((scope) => {
-    scope.setLevel('info');
-    scope.setFingerprint(['server-error', key]);
-    scope.setTag('server_error_status', String(error.status));
-    scope.setTag('server_error_code', key);
-    scope.setContext('server_error', {
-      reason: error.reason,
-      rawMessage: error.message,
-      status: error.status,
-    });
-    eventId = Sentry.captureMessage(`Backend error presented: ${key}`);
+  const eventId = Sentry.captureEvent({
+    message: `Backend error presented: ${key}`,
+    level: 'info',
+    fingerprint: ['server-error', key],
+    tags: {
+      server_error_status: String(error.status),
+      server_error_code: key,
+    },
+    contexts: {
+      server_error: {
+        reason: error.reason,
+        rawMessage: error.message,
+        status: error.status,
+      },
+    },
   });
   return `SW-${eventId.toUpperCase()}`;
 }

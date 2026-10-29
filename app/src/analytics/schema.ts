@@ -38,7 +38,9 @@ export type AnalyticsGameplayEventKind =
   | 'unlock_prompt_shown'
   | 'pattern_unlocked'
   | 'unlock_insufficient_coins'
-  | 'unlock_get_coins_tapped';
+  | 'unlock_get_coins_tapped'
+  | 'locator_coin_shortfall_shown'
+  | 'locator_coin_shortfall_cta_pressed';
 
 export type OnboardingVersion = string;
 export type OnboardingStep = 'welcome' | 'tutorial' | 'recap';
@@ -91,6 +93,9 @@ export type PurchaseFailureStage = 'store' | 'verification' | 'grant';
 export type SubscriptionChangePlatform = 'ios' | 'android';
 export type SubscriptionChangeFailureStage = 'store' | 'verification' | 'grant';
 export type PatternUnlockTier = 'small' | 'medium' | 'large';
+// No account, Guest Installation, Stitching Session, Pattern, or target-cell
+// field: the shortfall is measurable from the amounts alone.
+export type LocatorCoinShortfallPayload = { price: number; balance: number };
 
 type PurchasePayload = {
   product_kind: PurchaseProductKind;
@@ -160,7 +165,9 @@ export type AnalyticsGameplayEventPayload =
   | { kind: 'unlock_prompt_shown'; payload: { tier: PatternUnlockTier; price: number } }
   | { kind: 'pattern_unlocked'; payload: { tier: PatternUnlockTier; price: number } }
   | { kind: 'unlock_insufficient_coins'; payload: { tier: PatternUnlockTier; shortfall: number } }
-  | { kind: 'unlock_get_coins_tapped'; payload: { tier: PatternUnlockTier; shortfall: number } };
+  | { kind: 'unlock_get_coins_tapped'; payload: { tier: PatternUnlockTier; shortfall: number } }
+  | { kind: 'locator_coin_shortfall_shown'; payload: LocatorCoinShortfallPayload }
+  | { kind: 'locator_coin_shortfall_cta_pressed'; payload: LocatorCoinShortfallPayload };
 
 export interface AnalyticsGameplayEvent {
   eventId: string;

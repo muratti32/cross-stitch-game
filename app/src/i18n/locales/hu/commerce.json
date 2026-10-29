@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Rendben",
     "successButton": "Remek",
+    "returnToGameButton": "Vissza a játékhoz",
     "failedButton": "Bezárás",
     "infoButton": "Rendben",
     "closeAccessibilityLabel": "Bezárás"

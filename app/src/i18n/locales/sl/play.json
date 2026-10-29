@@ -62,10 +62,18 @@
     "undoAccessibilityLabel": "Razveljavi zadnji šiv"
   },
   "locator": {
-    "priceTitle": "Cena iskalnika",
-    "priceConfirmMessage": "Cena: {{price}} · Stanje: {{balance}}\nZa uporabo znova tapnite iskalnik.",
     "priceChangedTitle": "Cena iskalnika se je spremenila",
     "priceChangedMessage": "Nova cena: {{price}} · Stanje: {{balance}}\nZa uporabo po novi ceni znova tapnite iskalnik."
+  },
+  "locatorShortfall": {
+    "title": "Premalo kovancev Stitch Coin",
+    "body": "Za uporabo iskalnika zdaj potrebujete več kovancev Stitch Coin.",
+    "priceLabel": "Cena iskalnika",
+    "balanceLabel": "Vaše stanje",
+    "purchaseAction": "Pridobi kovance Stitch Coin",
+    "authAction": "Ustvari račun / Prijava",
+    "dismissAction": "Ne zdaj",
+    "dismissAccessibilityLabel": "Zapri"
   },
   "palette": {
     "chipNumber": "#{{number}}",

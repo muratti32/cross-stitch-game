@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Το κατάλαβα",
     "successButton": "Τέλεια",
+    "returnToGameButton": "Επιστροφή στο παιχνίδι",
     "failedButton": "Κλείσιμο",
     "infoButton": "Το κατάλαβα",
     "closeAccessibilityLabel": "Κλείσιμο"

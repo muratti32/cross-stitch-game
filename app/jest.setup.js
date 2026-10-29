@@ -26,8 +26,10 @@ jest.mock('react-native-reanimated', () => {
 // Sentry ships untranspiled ESM that jest cannot parse, and the Analytics
 // Mirror reports failures through it. Every export is a no-op spy; suites that
 // care about reporting assert on the mirror's observable behaviour instead.
+// captureEvent returns an event id as the real SDK does, because
+// localizeServerError turns that id into the player's Support Reference.
 jest.mock('@sentry/react-native', () => {
-  const spies = {};
+  const spies = { captureEvent: jest.fn(() => '0'.repeat(32)) };
   return new Proxy(
     {},
     {

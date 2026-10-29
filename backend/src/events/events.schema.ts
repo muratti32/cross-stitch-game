@@ -41,6 +41,8 @@ export const GAMEPLAY_EVENT_KINDS = [
   'pattern_unlocked',
   'unlock_insufficient_coins',
   'unlock_get_coins_tapped',
+  'locator_coin_shortfall_shown',
+  'locator_coin_shortfall_cta_pressed',
 ] as const;
 
 export type GameplayEventKind = (typeof GAMEPLAY_EVENT_KINDS)[number];
@@ -57,6 +59,7 @@ type DailyTaskPayload = {
 type PatternUnlockTier = 'small' | 'medium' | 'large';
 type PatternUnlockPricePayload = { tier: PatternUnlockTier; price: number };
 type PatternUnlockShortfallPayload = { tier: PatternUnlockTier; shortfall: number };
+type LocatorCoinShortfallPayload = { price: number; balance: number };
 type PatternConversionStartedPayload = {
   source_artwork_kind: 'photo_artwork' | 'ai_artwork';
   conversion_profile: 'easy' | 'standard' | 'detailed' | 'custom';
@@ -122,6 +125,7 @@ export type GameplayEventPayload =
   | DailyTaskPayload
   | PatternUnlockPricePayload
   | PatternUnlockShortfallPayload
+  | LocatorCoinShortfallPayload
   | PatternConversionStartedPayload
   | PatternConversionCompletedPayload
   | PatternConversionFailedPayload
@@ -268,6 +272,8 @@ const payloadRules: Readonly<Record<GameplayEventKind, PayloadRule>> = {
   pattern_unlocked: patternUnlockPriceRule(),
   unlock_insufficient_coins: patternUnlockShortfallRule(),
   unlock_get_coins_tapped: patternUnlockShortfallRule(),
+  locator_coin_shortfall_shown: locatorCoinShortfallRule(),
+  locator_coin_shortfall_cta_pressed: locatorCoinShortfallRule(),
 };
 
 export function validateGameplayEventPayload(
@@ -323,6 +329,16 @@ function patternUnlockShortfallRule(): PayloadRule {
     allowedFields: ['tier', 'shortfall'],
     validate: (payload) =>
       isMember(payload.tier, PATTERN_UNLOCK_TIERS) && isPositiveInteger(payload.shortfall),
+  };
+}
+
+function locatorCoinShortfallRule(): PayloadRule {
+  return {
+    allowedFields: ['price', 'balance'],
+    // A Commerce Reversal can leave a valid negative balance, so only the
+    // price is required to be positive.
+    validate: (payload) =>
+      isPositiveInteger(payload.price) && Number.isSafeInteger(payload.balance),
   };
 }
 

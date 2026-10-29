@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Rozumím",
     "successButton": "Skvělé",
+    "returnToGameButton": "Zpět do hry",
     "failedButton": "Zavřít",
     "infoButton": "Rozumím",
     "closeAccessibilityLabel": "Zavřít"

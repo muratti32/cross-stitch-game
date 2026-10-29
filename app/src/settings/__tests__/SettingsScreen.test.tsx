@@ -11,8 +11,7 @@ import { AccountReauthenticationApiError } from '@/api/accountReauthentication';
 // coverage. This suite only needs the dependency not to explode.
 jest.mock('@sentry/react-native', () => ({
   addBreadcrumb: jest.fn(),
-  captureMessage: jest.fn(() => 'settings-error-event'),
-  withScope: jest.fn((callback) => callback({ setContext: jest.fn(), setFingerprint: jest.fn(), setLevel: jest.fn(), setTag: jest.fn() })),
+  captureEvent: jest.fn(() => 'settings-error-event'),
 }));
 
 let mockIsAccount = false;

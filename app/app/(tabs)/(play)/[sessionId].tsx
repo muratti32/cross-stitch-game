@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View, Text, ActivityIndicator, Pressable, ScrollView, Alert } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, Pressable, ScrollView, Alert, Platform } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter, useNavigation, useFocusEffect, useIsFocused } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Screen, Button } from '@/components';
+import { Screen, Button, LocatorCoinShortfallSheet } from '@/components';
+import type { LocatorShortfallPrimaryAction } from '@/components';
 import { Theme } from '@/theme/theme';
 import { formatNumber } from '@/i18n';
 import { createReplaySession, generateUUID } from '@/local-db';
@@ -46,6 +47,9 @@ import {
   releaseLocatorAttempt,
 } from '@/api/economy';
 import { isServerApiError, localizeServerError } from '@/api/localizeServerError';
+import { useIdentityStore } from '@/identity/guestIdentity';
+import { locatorCoinShortfallCtaPressed, locatorCoinShortfallShown } from '@/analytics/locatorShortfall';
+import { useCommerceIntentStore } from '@/commerce/commerceIntent';
 
 export default function SessionReadyScreen() {
   const { sessionId, returnTo } = useLocalSearchParams<{ sessionId: string; returnTo?: string }>();
@@ -120,9 +124,25 @@ export default function SessionReadyScreen() {
   const locatorAttemptIdRef = useRef<string | null>(null);
   const locatorAbortRef = useRef<AbortController | null>(null);
   const locatorRunRef = useRef(0);
+  const [shortfall, setShortfall] = useState<{ price: number; balance: number } | null>(null);
+  const [shortfallVisible, setShortfallVisible] = useState(false);
+  const shortfallDestinationRef = useRef<LocatorShortfallPrimaryAction | null>(null);
   const parentRevisionRef = useRef(0);
   const [locatorBusy, setLocatorBusy] = useState(false);
   const { data: locatorPrice } = useLocatorPrice();
+  const isAccount = useIdentityStore((state) => state.isAccount);
+  // An Android Guest Player has no supported Stitch Coin Pack purchase path, so the
+  // sheet promises registration or sign-in instead and continues the same
+  // shortfall intent into Commerce afterwards (#267).
+  const shortfallPrimaryAction = isAccount || Platform.OS === 'ios'
+    ? 'purchase'
+    : 'authenticate';
+  const preserveCategoryIntent = useCommerceIntentStore(
+    (state) => state.preserveCategoryIntent,
+  );
+  const rememberLocatorShortfallOrigin = useCommerceIntentStore(
+    (state) => state.rememberLocatorShortfallOrigin,
+  );
   // Only a session the backend knows can hold a Locator Attempt (ADR-0058).
   const locatorBinding = session ? locatorSessionBinding(session) : null;
 
@@ -387,23 +407,15 @@ export default function SessionReadyScreen() {
     locatorAbortRef.current = abortController;
     setLocatorBusy(true);
     try {
-      // ADR-0060: only a price the player has already seen is sent as the
-      // expected price. Without one, fetch it, show it, and let the player
-      // tap again; the server rejects a stale value without charge.
-      if (locatorPrice == null) {
+      // ADR-0060: a cold price is fetched and used on the same user-initiated
+      // tap; the server still rejects a stale expected price without charge.
+      let expectedPrice = locatorPrice;
+      if (expectedPrice == null) {
         const view = await queryClient.fetchQuery({ queryKey: coinBalanceQueryKey, queryFn: fetchCoinBalanceView });
         if (locatorRunRef.current !== runId) return;
         if (view.locatorPrice === null) throw new LocatorPriceUnavailableError();
-        Alert.alert(
-          t('locator.priceTitle'),
-          t('locator.priceConfirmMessage', {
-            price: formatNumber(view.locatorPrice, locale),
-            balance: formatNumber(view.balance, locale),
-          }),
-        );
-        return;
+        expectedPrice = view.locatorPrice;
       }
-      const expectedPrice = locatorPrice;
 
       const prepared = await prepareLocatorAttempt({
         attemptId,
@@ -490,14 +502,9 @@ export default function SessionReadyScreen() {
         return;
       }
       if (error instanceof LocatorInsufficientBalanceError) {
-        const details = [
-          `${t('price.label', { ns: 'catalog' })}: ${error.price}`,
-          `${t('balance.label', { ns: 'catalog' })}: ${error.balance}`,
-        ].join(' · ');
-        Alert.alert(
-          t('insufficientCoins.title', { ns: 'catalog' }),
-          `${t('generic.failure', { ns: 'errors' })}\n\n${details}`,
-        );
+        setShortfall({ price: error.price, balance: error.balance });
+        setShortfallVisible(true);
+        locatorCoinShortfallShown(error.price, error.balance);
         return;
       }
       // Keep a prepared attempt pending when commit outcome is unknown; a
@@ -666,7 +673,7 @@ export default function SessionReadyScreen() {
             accessibilityLabel={
               !locatorBinding || locatorPrice == null
                 ? t('rail.locateNextAccessibilityLabel')
-                : `${t('rail.locateNextAccessibilityLabel')}, ${t('price.label', { ns: 'catalog' })}: ${formatNumber(locatorPrice, locale)}`
+                : `${t('rail.locateNextAccessibilityLabel')}, ${t('detail.price.label', { ns: 'catalog' })}: ${formatNumber(locatorPrice, locale)}`
             }
           >
             <Ionicons
@@ -833,6 +840,57 @@ export default function SessionReadyScreen() {
           router.navigate('/(tabs)/(catalog)');
         }}
       />
+      {shortfall && (
+        <LocatorCoinShortfallSheet
+          visible={shortfallVisible}
+          price={shortfall.price}
+          balance={shortfall.balance}
+          locale={locale}
+          primaryAction={shortfallPrimaryAction}
+          onPrimaryAction={() => {
+            locatorCoinShortfallCtaPressed(shortfall.price, shortfall.balance);
+            shortfallDestinationRef.current = shortfallPrimaryAction;
+            setShortfallVisible(false);
+          }}
+          onDismiss={() => {
+            shortfallDestinationRef.current = null;
+            setShortfallVisible(false);
+          }}
+          onDismissed={() => {
+            setShortfall(null);
+            const destination = shortfallDestinationRef.current;
+            shortfallDestinationRef.current = null;
+            if (destination === 'authenticate') {
+              // Only the authentication detour needs the store: it leaves
+              // Commerce's route behind and comes back through sign-in's own
+              // `sign_in_return` entry, which carries no parameters of ours.
+              // Dismissing the sheet records nothing, so no abandoned journey
+              // leaves a return target behind (#268).
+              rememberLocatorShortfallOrigin({ sessionId, returnTo: returnTo ?? null });
+              preserveCategoryIntent('stitch_coin', 'stitch_coin_shortfall');
+              router.push({
+                pathname: '/(tabs)/(settings)/sign-in',
+                params: { returnTo: 'commerce' },
+              });
+              return;
+            }
+            if (destination !== 'purchase') return;
+            // The direct route carries its own origin. `stitch_coin_shortfall`
+            // is also the Pattern unlock shortfall's entry source, so only the
+            // parameters this screen sends may authorize a return to a
+            // Stitching Session (#268).
+            router.push({
+              pathname: '/(tabs)/(profile)/commerce',
+              params: {
+                category: 'stitch_coin',
+                source: 'stitch_coin_shortfall',
+                returnSessionId: sessionId,
+                ...(returnTo === undefined ? {} : { returnSessionTo: returnTo }),
+              },
+            });
+          }}
+        />
+      )}
     </Screen>
   );
 }

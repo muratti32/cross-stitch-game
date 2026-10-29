@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Đã hiểu",
     "successButton": "Tuyệt vời",
+    "returnToGameButton": "Quay lại trò chơi",
     "failedButton": "Đóng",
     "infoButton": "Đã hiểu",
     "closeAccessibilityLabel": "Đóng"

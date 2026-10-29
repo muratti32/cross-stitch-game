@@ -191,6 +191,7 @@
   "purchaseResultModal": {
     "pendingButton": "Oke",
     "successButton": "Bagus",
+    "returnToGameButton": "Kembali ke Game",
     "failedButton": "Tutup",
     "infoButton": "Oke",
     "closeAccessibilityLabel": "Tutup"
