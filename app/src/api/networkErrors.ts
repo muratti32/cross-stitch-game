@@ -27,6 +27,12 @@ const OFFLINE_MESSAGE_FRAGMENTS = [
   // FetchError then drops the JS `code` too. The wrapper's class name is the
   // only language-independent signal left. Every other expo/fetch failure is
   // a named exception (FetchRedirectException, ...) and is not matched.
+  // Because the code is gone, this matches every URLSession transport
+  // failure, not only lost connectivity: timeouts, DNS failures, an
+  // unreachable host and TLS/certificate errors are classified as offline
+  // and dropped from Sentry too, as 'network request failed' already does
+  // for React Native's fetch. Backend reachability needs server-side
+  // monitoring.
   'fetch failed: unexpectedexception:',
 ];
 

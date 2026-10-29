@@ -20,6 +20,11 @@ prose is never used as a grouping key. The capture message and Sentry issue
 title become `Backend error presented: <key>` instead of the previous
 constant string, and a `server_error_code` tag carries the same key
 alongside the existing `server_error_status` tag and `server_error` context.
+The event is sent with `Sentry.captureEvent`, not `captureMessage`:
+`captureMessage` always attaches a synthetic `Error`, which the React Native
+SDK's default `attachStacktrace: true` turns into an exception interface, and
+Sentry then titles the issue by that stack's top frame
+(`Sentry.withScope$argument_0`, STITCH-WISH-13, #249).
 
 A module-level `WeakMap<Error, string>` caches only the Support Reference
 per presented `Error` object, not its localized text. Presenting the same
