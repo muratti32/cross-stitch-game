@@ -10,6 +10,13 @@ function expoFetchTransportError(localizedDescription: string): FetchError {
   );
 }
 
+// expo/fetch on Android: an OkHttp IOException is wrapped in ExpoModulesCore's
+// UnexpectedException, whose message is the throwable's toString()
+// ("<java class>: <message>"), then rethrown as expo's FetchError.
+function androidExpoFetchTransportError(throwableToString: string): FetchError {
+  return FetchError.createFromError(new Error(throwableToString));
+}
+
 describe('isOfflineNetworkError', () => {
   test('classifies the iOS NSURLErrorNotConnectedToInternet message (#152 / STITCH-WISH-P)', () => {
     const error = new Error(
@@ -51,6 +58,32 @@ describe('isOfflineNetworkError', () => {
       ),
     );
     expect(isOfflineNetworkError(redirectRefused)).toBe(false);
+  });
+
+  test.each([
+    ['DNS failure', 'java.net.UnknownHostException: Unable to resolve host "api.example.com": No address associated with hostname'],
+    ['connection refused', 'java.net.ConnectException: Failed to connect to api.example.com/203.0.113.10:443'],
+    ['connection reset', 'java.net.SocketException: Connection reset'],
+    ['no route to host', 'java.net.NoRouteToHostException: No route to host'],
+    ['socket timeout', 'java.net.SocketTimeoutException: timeout'],
+    ['TLS connection reset', 'javax.net.ssl.SSLException: Read error: ssl=0x7b2c: I/O error during system call, Connection reset by peer'],
+  ])('classifies an expo/fetch Android transport failure (#272): %s', (_, throwableToString) => {
+    expect(isOfflineNetworkError(androidExpoFetchTransportError(throwableToString))).toBe(true);
+  });
+
+  test.each([
+    ['certificate rejected', 'javax.net.ssl.SSLHandshakeException: java.security.cert.CertPathValidatorException: Trust anchor for certification path not found.'],
+    ['cleartext blocked by network security policy', 'java.net.UnknownServiceException: CLEARTEXT communication to api.example.com not permitted by network security policy'],
+    ['generic OkHttp IOException', 'java.io.IOException: unexpected end of stream on https://api.example.com/...'],
+    ['named expo/fetch exception', "Redirect is not allowed when redirect mode is 'error'"],
+  ])('does not classify an expo/fetch Android non-transport failure: %s', (_, message) => {
+    expect(isOfflineNetworkError(androidExpoFetchTransportError(message))).toBe(false);
+  });
+
+  test('does not classify an Android transport class named only inside a longer message', () => {
+    expect(
+      isOfflineNetworkError(new Error('Upload rejected: server logged java.net.SocketException: Connection reset')),
+    ).toBe(false);
   });
 
   test('does not classify a backend error that merely mentions a network error', () => {

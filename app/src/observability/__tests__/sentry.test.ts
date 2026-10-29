@@ -83,6 +83,22 @@ describe('sentry beforeSend - offline filtering (#152 / #153)', () => {
     expect(beforeSend(event)).toBeNull();
   });
 
+  test('drops the #272 Android expo/fetch DNS failure event', () => {
+    const event = {
+      exception: {
+        values: [
+          {
+            type: 'Error',
+            value:
+              'fetch failed: java.net.UnknownHostException: Unable to resolve host "api.example.com": No address associated with hostname',
+          },
+        ],
+      },
+    };
+
+    expect(beforeSend(event)).toBeNull();
+  });
+
   test('keeps a genuine backend failure event and still applies ADR-0035 PII scrubbing', () => {
     const event = {
       exception: { values: [{ type: 'Error', value: 'Session error: status 500' }] },
