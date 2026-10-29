@@ -1,50 +1,33 @@
-// captureMessage returns a distinct id per call (not a constant) so tests
+// captureEvent returns a distinct id per call (not a constant) so tests
 // that assert "the same Support Reference" or "a new capture" are only
 // meaningful because of the production dedup logic, not because the mock
 // happens to always return the same value.
 let mockEventIdCounter = 0;
 
-jest.mock('@sentry/react-native', () => {
-  const scope = {
-    setContext: jest.fn(),
-    setFingerprint: jest.fn(),
-    setLevel: jest.fn(),
-    setTag: jest.fn(),
-  };
-  return {
-    __scope: scope,
-    addBreadcrumb: jest.fn(),
-    captureEvent: jest.fn(() => {
-      mockEventIdCounter += 1;
-      return mockEventIdCounter.toString(16).padStart(32, '0');
-    }),
-    captureMessage: jest.fn(() => {
-      mockEventIdCounter += 1;
-      return mockEventIdCounter.toString(16).padStart(32, '0');
-    }),
-    withScope: jest.fn((callback) => callback(scope)),
-  };
-});
+jest.mock('@sentry/react-native', () => ({
+  addBreadcrumb: jest.fn(),
+  captureEvent: jest.fn(() => {
+    mockEventIdCounter += 1;
+    return mockEventIdCounter.toString(16).padStart(32, '0');
+  }),
+  captureMessage: jest.fn(),
+}));
 
 import * as Sentry from '@sentry/react-native';
 import i18n from '../../i18n/i18n';
 import { isServerApiError, localizeServerError } from '../localizeServerError';
 
-/** The Support Reference string produced from the Nth (1-indexed) captureMessage call this test. */
+/** The Support Reference string produced from the Nth (1-indexed) captureEvent call this test. */
 function supportReferenceLine(callIndex: number): string {
-  const mock = Sentry.captureMessage as jest.Mock;
+  const mock = Sentry.captureEvent as jest.Mock;
   const eventId = mock.mock.results[callIndex - 1].value as string;
   return `Support Reference: SW-${eventId.toUpperCase()}`;
 }
 
-type MockedSentry = typeof Sentry & {
-  __scope: {
-    setContext: jest.Mock;
-    setFingerprint: jest.Mock;
-    setLevel: jest.Mock;
-    setTag: jest.Mock;
-  };
-};
+/** The event sent by the Nth (1-indexed) captureEvent call this test. */
+function capturedEvent(callIndex = 1): Sentry.Event {
+  return (Sentry.captureEvent as jest.Mock).mock.calls[callIndex - 1][0] as Sentry.Event;
+}
 
 class FakeServerApiError extends Error {
   constructor(readonly status: number, message: string, readonly reason: string | null) {
@@ -102,46 +85,42 @@ describe('localizeServerError', () => {
   it('reports the raw server message to Sentry as diagnostic context, fingerprinted by the code-shaped reason', () => {
     const error = new FakeServerApiError(500, 'a very specific raw backend sentence', 'unknown_code');
     localizeServerError(error);
-    expect(Sentry.captureMessage).toHaveBeenCalledWith('Backend error presented: unknown_code');
-    expect(Sentry.withScope).toHaveBeenCalled();
-    const scope = (Sentry as MockedSentry).__scope;
-    expect(scope.setContext).toHaveBeenCalledWith('server_error', {
-      reason: 'unknown_code',
-      rawMessage: 'a very specific raw backend sentence',
-      status: 500,
+    expect(capturedEvent()).toMatchObject({
+      message: 'Backend error presented: unknown_code',
+      fingerprint: ['server-error', 'unknown_code'],
+      contexts: {
+        server_error: {
+          reason: 'unknown_code',
+          rawMessage: 'a very specific raw backend sentence',
+          status: 500,
+        },
+      },
     });
-    expect(scope.setFingerprint).toHaveBeenCalledWith(['server-error', 'unknown_code']);
   });
 
   it('fingerprints a null reason by HTTP status', () => {
     const error = new FakeServerApiError(503, 'Service unavailable', null);
     localizeServerError(error);
-    const scope = (Sentry as MockedSentry).__scope;
-    expect(scope.setFingerprint).toHaveBeenCalledWith(['server-error', '503']);
-    expect(Sentry.captureMessage).toHaveBeenCalledWith('Backend error presented: 503');
+    expect(capturedEvent()).toMatchObject({ message: 'Backend error presented: 503', fingerprint: ['server-error', '503'] });
   });
 
   it('fingerprints a code-shaped reason by that reason, not the status', () => {
     const error = new FakeServerApiError(409, 'Username unavailable', 'username_unavailable');
     localizeServerError(error);
-    const scope = (Sentry as MockedSentry).__scope;
-    expect(scope.setFingerprint).toHaveBeenCalledWith(['server-error', 'username_unavailable']);
-    expect(Sentry.captureMessage).toHaveBeenCalledWith('Backend error presented: username_unavailable');
+    expect(capturedEvent()).toMatchObject({ message: 'Backend error presented: username_unavailable', fingerprint: ['server-error', 'username_unavailable'] });
   });
 
   it('falls back to status when reason is free English prose, not a code', () => {
     const error = new FakeServerApiError(409, 'Username is unavailable', 'Username is unavailable');
     localizeServerError(error);
-    const scope = (Sentry as MockedSentry).__scope;
-    expect(scope.setFingerprint).toHaveBeenCalledWith(['server-error', '409']);
-    expect(Sentry.captureMessage).toHaveBeenCalledWith('Backend error presented: 409');
+    expect(capturedEvent()).toMatchObject({ message: 'Backend error presented: 409', fingerprint: ['server-error', '409'] });
   });
 
   it('captures once and returns the same Support Reference when the same Error object is presented twice', () => {
     const error = new FakeServerApiError(500, 'Raw backend failure text', 'unmapped');
     const first = localizeServerError(error);
     const second = localizeServerError(error);
-    expect(Sentry.captureMessage).toHaveBeenCalledTimes(1);
+    expect(Sentry.captureEvent).toHaveBeenCalledTimes(1);
     expect(first).toBe(second);
   });
 
@@ -150,14 +129,13 @@ describe('localizeServerError', () => {
     const errorB = new FakeServerApiError(500, 'Raw backend failure text', 'unmapped');
     localizeServerError(errorA);
     localizeServerError(errorB);
-    expect(Sentry.captureMessage).toHaveBeenCalledTimes(2);
+    expect(Sentry.captureEvent).toHaveBeenCalledTimes(2);
   });
 
   it('does not capture a Sentry event for a recognized reason', () => {
     const error = new FakeServerApiError(403, 'That sign-in belongs to someone else.', 'different_account');
     localizeServerError(error);
-    expect(Sentry.captureMessage).not.toHaveBeenCalled();
-    expect(Sentry.withScope).not.toHaveBeenCalled();
+    expect(Sentry.captureEvent).not.toHaveBeenCalled();
   });
 
   it('breadcrumbs a recognized reason with only the reason code, never the raw message', () => {
@@ -193,7 +171,7 @@ describe('localizeServerError', () => {
       await i18n.changeLanguage('tr');
       const turkishResult = localizeServerError(error);
 
-      expect(Sentry.captureMessage).toHaveBeenCalledTimes(1);
+      expect(Sentry.captureEvent).toHaveBeenCalledTimes(1);
       expect(englishResult).not.toBe(turkishResult);
       expect(englishResult).toContain('Something went wrong. Please try again.');
       expect(turkishResult).toContain('Bir şeyler ters gitti. Lütfen tekrar deneyin.');
@@ -212,7 +190,7 @@ describe('localizeServerError', () => {
 
     expect(Sentry.captureMessage).not.toHaveBeenCalled();
     expect(Sentry.captureEvent).toHaveBeenCalledTimes(1);
-    const [event] = (Sentry.captureEvent as jest.Mock).mock.calls[0];
+    const event = capturedEvent();
     expect(event).toEqual({
       message: 'Backend error presented: 401',
       level: 'info',
@@ -233,26 +211,20 @@ describe('localizeServerError', () => {
       const reason = 'a'.repeat(64);
       const error = new FakeServerApiError(400, 'x', reason);
       localizeServerError(error);
-      const scope = (Sentry as MockedSentry).__scope;
-      expect(scope.setFingerprint).toHaveBeenCalledWith(['server-error', reason]);
-      expect(Sentry.captureMessage).toHaveBeenCalledWith(`Backend error presented: ${reason}`);
+      expect(capturedEvent()).toMatchObject({ message: `Backend error presented: ${reason}`, fingerprint: ['server-error', reason] });
     });
 
     it('falls back to status for a 65-character reason (one over the code-shape limit)', () => {
       const reason = 'a'.repeat(65);
       const error = new FakeServerApiError(400, 'x', reason);
       localizeServerError(error);
-      const scope = (Sentry as MockedSentry).__scope;
-      expect(scope.setFingerprint).toHaveBeenCalledWith(['server-error', '400']);
-      expect(Sentry.captureMessage).toHaveBeenCalledWith('Backend error presented: 400');
+      expect(capturedEvent()).toMatchObject({ message: 'Backend error presented: 400', fingerprint: ['server-error', '400'] });
     });
 
     it('falls back to status for an uppercase reason, even one that looks code-shaped', () => {
       const error = new FakeServerApiError(409, 'x', 'USERNAME_TAKEN');
       localizeServerError(error);
-      const scope = (Sentry as MockedSentry).__scope;
-      expect(scope.setFingerprint).toHaveBeenCalledWith(['server-error', '409']);
-      expect(Sentry.captureMessage).toHaveBeenCalledWith('Backend error presented: 409');
+      expect(capturedEvent()).toMatchObject({ message: 'Backend error presented: 409', fingerprint: ['server-error', '409'] });
     });
   });
 });

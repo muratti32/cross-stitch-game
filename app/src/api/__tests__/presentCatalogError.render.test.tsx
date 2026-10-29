@@ -14,23 +14,13 @@
 // production dedup logic, not because the mock always returns one value.
 let mockEventIdCounter = 0;
 
-jest.mock('@sentry/react-native', () => {
-  const scope = {
-    setContext: jest.fn(),
-    setFingerprint: jest.fn(),
-    setLevel: jest.fn(),
-    setTag: jest.fn(),
-  };
-  return {
-    __scope: scope,
-    addBreadcrumb: jest.fn(),
-    captureMessage: jest.fn(() => {
-      mockEventIdCounter += 1;
-      return mockEventIdCounter.toString(16).padStart(32, '0');
-    }),
-    withScope: jest.fn((callback) => callback(scope)),
-  };
-});
+jest.mock('@sentry/react-native', () => ({
+  addBreadcrumb: jest.fn(),
+  captureEvent: jest.fn(() => {
+    mockEventIdCounter += 1;
+    return mockEventIdCounter.toString(16).padStart(32, '0');
+  }),
+}));
 
 import React from 'react';
 import TestRenderer, { act } from 'react-test-renderer';
@@ -71,9 +61,9 @@ describe('presentCatalogError render-path capture (#249)', () => {
     });
     const lastText = testRenderer!.root.findByType(Text).props.children;
 
-    expect(Sentry.captureMessage).toHaveBeenCalledTimes(1);
+    expect(Sentry.captureEvent).toHaveBeenCalledTimes(1);
     expect(lastText).toBe(firstText);
-    const eventId = (Sentry.captureMessage as jest.Mock).mock.results[0].value as string;
+    const eventId = (Sentry.captureEvent as jest.Mock).mock.results[0].value as string;
     expect(lastText).toContain(`Support Reference: SW-${eventId.toUpperCase()}`);
 
     act(() => {
@@ -94,7 +84,7 @@ describe('presentCatalogError render-path capture (#249)', () => {
       rendererB = TestRenderer.create(<RenderedSectionError error={errorB} />);
     });
 
-    expect(Sentry.captureMessage).toHaveBeenCalledTimes(2);
+    expect(Sentry.captureEvent).toHaveBeenCalledTimes(2);
 
     act(() => {
       rendererA!.unmount();
