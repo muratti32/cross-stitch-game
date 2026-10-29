@@ -14,6 +14,10 @@ jest.mock('@sentry/react-native', () => {
   return {
     __scope: scope,
     addBreadcrumb: jest.fn(),
+    captureEvent: jest.fn(() => {
+      mockEventIdCounter += 1;
+      return mockEventIdCounter.toString(16).padStart(32, '0');
+    }),
     captureMessage: jest.fn(() => {
       mockEventIdCounter += 1;
       return mockEventIdCounter.toString(16).padStart(32, '0');
@@ -200,6 +204,28 @@ describe('localizeServerError', () => {
     } finally {
       await i18n.changeLanguage(originalLanguage);
     }
+  });
+
+  it('sends one plain message event, with no synthetic exception, so Sentry titles the issue by its message', () => {
+    const error = new FakeServerApiError(401, 'Unauthorized', null);
+    const result = localizeServerError(error);
+
+    expect(Sentry.captureMessage).not.toHaveBeenCalled();
+    expect(Sentry.captureEvent).toHaveBeenCalledTimes(1);
+    const [event] = (Sentry.captureEvent as jest.Mock).mock.calls[0];
+    expect(event).toEqual({
+      message: 'Backend error presented: 401',
+      level: 'info',
+      fingerprint: ['server-error', '401'],
+      tags: { server_error_status: '401', server_error_code: '401' },
+      contexts: { server_error: { reason: null, rawMessage: 'Unauthorized', status: 401 } },
+    });
+    expect(event).not.toHaveProperty('exception');
+    expect(event).not.toHaveProperty('stacktrace');
+    expect(event).not.toHaveProperty('threads');
+
+    const eventId = (Sentry.captureEvent as jest.Mock).mock.results[0].value as string;
+    expect(result).toContain(`Support Reference: SW-${eventId.toUpperCase()}`);
   });
 
   describe('serverErrorKey edge cases (#249 follow-up)', () => {
