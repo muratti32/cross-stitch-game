@@ -1,4 +1,14 @@
+import { FetchError } from 'expo/src/winter/fetch/FetchErrors';
 import { isOfflineNetworkError, OfflineError } from '../networkErrors';
+
+// expo/fetch on iOS: a URLSession transport failure (NSURLErrorDomain) is
+// wrapped in ExpoModulesCore's UnexpectedException, whose message keeps only
+// the device-localized description, then rethrown as expo's FetchError.
+function expoFetchTransportError(localizedDescription: string): FetchError {
+  return FetchError.createFromError(
+    new Error(`UnexpectedException: ${localizedDescription} (at ExpoModulesCore/Promise.swift:56)`),
+  );
+}
 
 describe('isOfflineNetworkError', () => {
   test('classifies the iOS NSURLErrorNotConnectedToInternet message (#152 / STITCH-WISH-P)', () => {
@@ -25,6 +35,22 @@ describe('isOfflineNetworkError', () => {
     expect(
       isOfflineNetworkError(new Error('Request to /v1/economy/balance failed: Network request failed')),
     ).toBe(true);
+  });
+
+  test.each([
+    ['French connection lost (#152 / STITCH-WISH-12)', 'La connexion réseau a été perdue.'],
+    ['English connection lost', 'The network connection was lost.'],
+  ])('classifies an expo/fetch iOS transport failure regardless of device language: %s', (_, description) => {
+    expect(isOfflineNetworkError(expoFetchTransportError(description))).toBe(true);
+  });
+
+  test('does not classify an expo/fetch named native exception', () => {
+    const redirectRefused = FetchError.createFromError(
+      new Error(
+        "FetchRedirectException: Redirect is not allowed when redirect mode is 'error' (at ExpoFetch/NativeResponse.swift:195)",
+      ),
+    );
+    expect(isOfflineNetworkError(redirectRefused)).toBe(false);
   });
 
   test('does not classify a backend error that merely mentions a network error', () => {

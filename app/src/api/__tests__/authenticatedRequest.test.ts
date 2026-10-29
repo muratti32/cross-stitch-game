@@ -1,4 +1,5 @@
 import { performAuthenticatedRequest, resetAccountDeletionTrigger } from '../authenticatedRequest';
+import { FetchError } from 'expo/src/winter/fetch/FetchErrors';
 import { OfflineError } from '../networkErrors';
 import i18n from '../../i18n/i18n';
 
@@ -62,6 +63,27 @@ describe('performAuthenticatedRequest - offline handling', () => {
       .fn()
       .mockRejectedValue(
         new Error('A network error has occurred. The Internet connection appears to be offline.'),
+      );
+
+    const authSession = {
+      getAccessToken: () => null,
+      refreshSession: jest.fn(),
+    };
+
+    await expect(
+      performAuthenticatedRequest('/test-path', {}, authSession),
+    ).rejects.toBeInstanceOf(OfflineError);
+  });
+
+  test('converts a localized expo/fetch connection-lost failure (#152 / STITCH-WISH-12) into an OfflineError', async () => {
+    global.fetch = jest
+      .fn()
+      .mockRejectedValue(
+        FetchError.createFromError(
+          new Error(
+            'UnexpectedException: La connexion réseau a été perdue. (at ExpoModulesCore/Promise.swift:56)',
+          ),
+        ),
       );
 
     const authSession = {
