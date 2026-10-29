@@ -91,6 +91,9 @@ async function discardCacheEntry(localPath: string): Promise<void> {
 
 export async function pruneDiskCacheIfNeeded(dir: string): Promise<void> {
   try {
+    // The OS may clear the cache directory at any time; missing means empty.
+    const dirInfo = await FileSystem.getInfoAsync(dir);
+    if (!dirInfo.exists) return;
     const files = await FileSystem.readDirectoryAsync(dir);
     if (files.length <= MAX_DISK_CACHE_ENTRIES) return;
 
