@@ -308,7 +308,7 @@ function expectExactAmounts(call: unknown[], price: number, balance: number) {
   expect(Object.keys(call[1] as Record<string, unknown>).sort()).toEqual(['balance', 'price']);
 }
 
-beforeEach(() => {
+function resetScenario() {
   jest.clearAllMocks();
   setPlatform('ios');
   mockLocatorPrice = 5;
@@ -324,14 +324,30 @@ beforeEach(() => {
   useGameplayStore.setState({ selectedColorIndex: 0, handedness: 'right' });
   useCommerceIntentStore.getState().clearIntent();
   useCommerceIntentStore.getState().clearLocatorShortfallOrigin();
-});
+}
 
-afterEach(() => {
+function unmountScreen() {
   if (renderer) {
     act(() => renderer?.unmount());
     renderer = null;
   }
-});
+}
+
+// The first screen-and-sheet render in a fresh module registry loads
+// react-native's ScrollView, Animated, renderer, and Modal modules, compiling
+// them first on a cold transform cache. On the CI runner that one-time cost
+// alone exceeded the 5 s per-test timeout of whichever test ran first (#274).
+// Paying it here keeps each test's timeout for the behavior it exercises.
+beforeAll(async () => {
+  resetScenario();
+  const tree = await showShortfall();
+  expect(sheet(tree.root)).toBeDefined();
+  unmountScreen();
+}, 60_000);
+
+beforeEach(resetScenario);
+
+afterEach(unmountScreen);
 
 it('continues a cold-price tap into preparation and presents the shortfall sheet', async () => {
   mockLocatorPrice = undefined;
