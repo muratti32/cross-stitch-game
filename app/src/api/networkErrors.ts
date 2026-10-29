@@ -20,6 +20,14 @@ const OFFLINE_MESSAGE_FRAGMENTS = [
   'internet connection appears to be offline',
   // React Native's own fetch polyfill, on both iOS and Android
   'network request failed',
+  // expo/fetch (the global fetch since Expo SDK 57) on iOS, #152 /
+  // STITCH-WISH-12. A URLSession transport failure is wrapped in
+  // ExpoModulesCore's UnexpectedException, which keeps only the
+  // device-localized NSURLError description and drops its code, and
+  // FetchError then drops the JS `code` too. The wrapper's class name is the
+  // only language-independent signal left. Every other expo/fetch failure is
+  // a named exception (FetchRedirectException, ...) and is not matched.
+  'fetch failed: unexpectedexception:',
 ];
 
 /**
