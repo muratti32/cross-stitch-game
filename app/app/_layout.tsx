@@ -17,7 +17,7 @@ import { synchronizeRevenueCatIdentity } from '../src/commerce/revenueCat';
 import { hasAdsConsent, initializeAdMob } from '../src/ads';
 import { applyAnalyticsMirrorConsent, mirrorScreenView } from '../src/analytics/analyticsMirror';
 import { syncAnalyticsMirrorIdentity } from '../src/analytics/analyticsMirrorSync';
-import { initSentry, syncSentryPlayerReferenceWithIdentity } from '../src/observability/sentry';
+import { initSentry, setSentryScreen, syncSentryPlayerReferenceWithIdentity } from '../src/observability/sentry';
 import { initI18n, applyResolvedLanguage } from '../src/i18n';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { syncPendingPersonalPatterns } from '../src/pattern-editor/sync';
@@ -83,6 +83,7 @@ function RootLayout() {
     const routeTemplate = segments.join('/');
     if (routeTemplate === '') return;
     mirrorScreenView(routeTemplate);
+    setSentryScreen(routeTemplate);
   }, [segments]);
 
   // The root path "/" is owned by the Catalog tab's index, so a first launch

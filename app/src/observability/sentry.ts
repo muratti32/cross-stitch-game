@@ -244,6 +244,25 @@ export function addScreenMemoryBreadcrumb(screenName: MemoryBreadcrumbScreen): P
 }
 
 /**
+ * Names the current route on every later event (#148). Android AppExitInfo
+ * ANRs carry no first-party frames, so the persisted `screen` tag and the
+ * navigation trail are the only way such an event says where the player was.
+ * Pass the route TEMPLATE ("(tabs)/(play)/[sessionId]"), never a concrete
+ * path: route parameters can identify a Pattern or session (ADR-0035).
+ */
+export function setSentryScreen(routeTemplate: string): void {
+  if (!isSentryConfigured()) {
+    return;
+  }
+  Sentry.setTag('screen', routeTemplate);
+  Sentry.addBreadcrumb({
+    category: 'navigation',
+    message: routeTemplate,
+    level: 'info',
+  });
+}
+
+/**
  * Sets or clears the opaque player reference attached to future events - the
  * same Guest Installation Identity or Registered Account id used for a
  * Support Reference. Never pass an email address or provider subject here.
