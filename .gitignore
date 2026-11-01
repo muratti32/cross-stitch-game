@@ -9,6 +9,7 @@ app/android/build/
 app/android/app/build/
 app/ios/build/
 screenshots/
+app/assets/generated/catalog-category-samples/
 stitchwish-service-account.json
 credentials.json
 .DS_Store
