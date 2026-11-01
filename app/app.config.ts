@@ -53,6 +53,13 @@ export default function appConfig(_context: ConfigContext): ExpoConfig {
     // dynamic frameworks - would change linkage for Skia, Sentry and RevenueCat
     // too, for no benefit here.
     plugins.push(['@react-native-firebase/app', { ios: { disableSPM: true } }]);
+    // docs/app-metadata.md declares no advertising identifier. Dropping the
+    // IdentitySupport pod removes the code that reads the IDFA; Android's
+    // AAID read is switched off by app/firebase.json.
+    plugins.push([
+      '@react-native-firebase/analytics',
+      { ios: { withoutAdIdSupport: true } },
+    ]);
   }
 
   return {

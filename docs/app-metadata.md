@@ -109,7 +109,7 @@ description 80) and missing locales.
 | Identity sent | The opaque player reference (Registered Account id or Guest Installation Identity), the same one Sentry receives. Never an email address, Firebase UID, or auth-provider subject |
 | User properties | `is_guest`, `app_language`, `membership_tier` |
 | Data retention | Two months (console default) |
-| Tracking | No advertising identifier, no App Tracking Transparency prompt, no cross-app tracking |
+| Tracking | No advertising identifier, no App Tracking Transparency prompt, no cross-app tracking. Firebase Analytics is built without IDFA/AAID access (#273): `app/app.config.ts` registers the `@react-native-firebase/analytics` plugin with `ios.withoutAdIdSupport`, which drops the `FirebaseAnalytics/IdentitySupport` pod, and `app/firebase.json` sets `google_analytics_adid_collection_enabled: false` for the Android manifest. The AdMob SDK is separate (see the ADR-0033 open question below) |
 | Consent signal | TCF Purpose 1 via the AdMob UMP message, interpreted as `analytics_storage` by AdMob's consent mode |
 
 > **Open question (ADR-0033):** the AdMob console also lists an **IDFA explainer
