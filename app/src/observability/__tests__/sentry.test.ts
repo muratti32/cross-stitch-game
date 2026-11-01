@@ -2,6 +2,7 @@ jest.mock('@sentry/react-native', () => ({
   init: jest.fn(),
   wrap: jest.fn((x) => x),
   setUser: jest.fn(),
+  setTag: jest.fn(),
   addBreadcrumb: jest.fn(),
   captureException: jest.fn(),
 }));
@@ -209,5 +210,22 @@ describe('captureAdRewardVerificationError - offline filtering (#152 / STITCH-WI
     const { captureAdRewardVerificationError } = require('../sentry');
     captureAdRewardVerificationError(new Error('Rewarded ad attempt state failed: status 500'));
     expect(Sentry.captureException).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('setSentryScreen (#148)', () => {
+  test('tags later events with the route template and records it in the navigation trail', () => {
+    jest.resetModules();
+    const Sentry = require('@sentry/react-native') as { setTag: jest.Mock; addBreadcrumb: jest.Mock };
+    const { setSentryScreen } = require('../sentry');
+
+    setSentryScreen('(tabs)/(play)/[sessionId]');
+
+    expect(Sentry.setTag).toHaveBeenCalledWith('screen', '(tabs)/(play)/[sessionId]');
+    expect(Sentry.addBreadcrumb).toHaveBeenCalledWith({
+      category: 'navigation',
+      message: '(tabs)/(play)/[sessionId]',
+      level: 'info',
+    });
   });
 });
