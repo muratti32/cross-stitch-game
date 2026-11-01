@@ -34,6 +34,26 @@ const OFFLINE_MESSAGE_FRAGMENTS = [
   // for React Native's fetch. Backend reachability needs server-side
   // monitoring.
   'fetch failed: unexpectedexception:',
+  // expo/fetch on Android, #272. ExpoFetchModule rejects an OkHttp
+  // IOException through UnexpectedException(throwable.toString()), so the
+  // message starts with the Java class name, which is never localized. No
+  // trailing colon: toString() omits it when the exception has no message, and
+  // no listed class name is a prefix of another class. Only
+  // classes that mean the transport failed are listed, each directly after
+  // FetchError's prefix so a class named elsewhere in a message does not
+  // match (a cause chain, a backend error body). Not matched, so
+  // still reported: certificate failures (SSLHandshakeException), cleartext
+  // blocked by network security policy (UnknownServiceException) and generic
+  // java.io.IOException, which OkHttp also throws for malformed responses.
+  // As on iOS, an unreachable or timing-out backend is classified as offline.
+  ...[
+    'java.net.unknownhostexception',
+    'java.net.connectexception',
+    'java.net.noroutetohostexception',
+    'java.net.socketexception',
+    'java.net.sockettimeoutexception',
+    'javax.net.ssl.sslexception',
+  ].map((javaClass) => `fetch failed: ${javaClass}`),
 ];
 
 /**
