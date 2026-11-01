@@ -36,7 +36,9 @@ const OFFLINE_MESSAGE_FRAGMENTS = [
   'fetch failed: unexpectedexception:',
   // expo/fetch on Android, #272. ExpoFetchModule rejects an OkHttp
   // IOException through UnexpectedException(throwable.toString()), so the
-  // message starts with the Java class name, which is never localized. Only
+  // message starts with the Java class name, which is never localized. No
+  // trailing colon: toString() omits it when the exception has no message, and
+  // no listed class name is a prefix of another class. Only
   // classes that mean the transport failed are listed, each directly after
   // FetchError's prefix so a class named elsewhere in a message does not
   // match (a cause chain, a backend error body). Not matched, so
@@ -51,7 +53,7 @@ const OFFLINE_MESSAGE_FRAGMENTS = [
     'java.net.socketexception',
     'java.net.sockettimeoutexception',
     'javax.net.ssl.sslexception',
-  ].map((javaClass) => `fetch failed: ${javaClass}:`),
+  ].map((javaClass) => `fetch failed: ${javaClass}`),
 ];
 
 /**

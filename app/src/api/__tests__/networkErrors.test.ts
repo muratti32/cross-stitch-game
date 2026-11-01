@@ -67,6 +67,7 @@ describe('isOfflineNetworkError', () => {
     ['no route to host', 'java.net.NoRouteToHostException: No route to host'],
     ['socket timeout', 'java.net.SocketTimeoutException: timeout'],
     ['TLS connection reset', 'javax.net.ssl.SSLException: Read error: ssl=0x7b2c: I/O error during system call, Connection reset by peer'],
+    ['exception without a message', 'java.net.SocketException'],
   ])('classifies an expo/fetch Android transport failure (#272): %s', (_, throwableToString) => {
     expect(isOfflineNetworkError(androidExpoFetchTransportError(throwableToString))).toBe(true);
   });
