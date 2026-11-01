@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { coinBalanceQueryKey, fetchAdAttemptState, rewardDayQueryKey } from '../api/economy';
+import { coinBalanceQueryKey, EconomyApiError, fetchAdAttemptState, rewardDayQueryKey } from '../api/economy';
 import { membershipQueryKey } from '../api/membership';
 import { captureAdRewardVerificationError } from '../observability/sentry';
 
@@ -75,6 +75,9 @@ export function useRewardedAdSsvPolling(options: UseRewardedAdSsvPollingOptions 
         }
       } catch (error: unknown) {
         if (!isCurrent()) return;
+        // The current principal cannot see this nonce, e.g. after sign-in replaced the Guest
+        // session; an SSV grant still lands on the attempt's owner, so the reward stays pending.
+        if (error instanceof EconomyApiError && error.status === 404) return finishPending();
         if (!errorReported) {
           errorReported = true;
           captureAdRewardVerificationError(error);
