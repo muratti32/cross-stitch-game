@@ -1,0 +1,27 @@
+{
+  "fetched_on": "2026-10-08",
+  "method": "WebFetch of apps.apple.com US product pages. Model-summarised extraction, not raw HTML. Subtitle is not in the iTunes Search/Lookup API, so these pages are the only source for subtitles and IAP price points.",
+  "extracts": [
+    {"trackId": 6792383323, "source": "https://apps.apple.com/us/app/cross-stitch-needlepoint-game/id6792383323", "title": "Cross Stitch&Needlepoint Game", "subtitle": "Relax: color by number art", "developer": "murat ulug", "rating": "not present (not enough ratings)", "iap_range": "$1.99 to $39.99 (lowest 300 Stitch Coin $1.99; highest Premium Annual $39.99)", "whats_new_date": "Version 1.3 Sep 25"},
+    {"trackId": 1461096984, "source": "https://apps.apple.com/us/app/magic-cross-stitch-pixel-art/id1461096984", "title": "Magic Cross-Stitch: Pixel Art", "subtitle": "Zen Stitching & Coloring Book", "developer": "ZiMAD (seller XIMAD, Inc.)", "rating": "4.9 (page rounding; API 4.85)", "rating_count": "6.4K", "iap_model": "Free, In-App Purchases; subscription with free trial; color-by-number 1 week premium $7.99; $4.99 no-ads purchase"},
+    {"trackId": 1034256780, "source": "https://apps.apple.com/us/app/cross-stitch-world/id1034256780", "title": "Cross-Stitch World", "subtitle": "Relaxing cross-stitch puzzle", "developer": "InertiaSoft", "rating": "4.7", "rating_count": "6.3K", "iap_model": "Free, In-App Purchases; Cross-Stitch Cash packs $5.99 to $45.99"},
+    {"trackId": 1246165006, "source": "https://apps.apple.com/us/app/cross-stitch-color-by-number/id1246165006", "title": "Cross-Stitch: Color by Number", "subtitle": "Cross stitch with your photos!", "developer": "炳甲 梁", "rating": "4.7", "rating_count": "16K", "iap_model": "Free, In-App Purchases; subscriptions $9.99 and $59.99; weekly $3.49; NO ADS $0.99"},
+    {"trackId": 1587318796, "source": "https://apps.apple.com/us/app/cross-stitch-coloring-art/id1587318796", "title": "Cross Stitch Coloring Art", "subtitle": "Relaxing & creative sew game", "developer": "Playcus Limited", "rating": "4.7", "rating_count": "7.9K", "iap_model": "Free, In-App Purchases; VIP Monthly Subscription $19.99; Remove ADS $7.99"},
+    {"trackId": 1499339385, "source": "https://apps.apple.com/us/app/cross-stitch-coloring-book/id1499339385", "title": "Cross-Stitch: Coloring Book", "subtitle": "The amazing puzzle board game", "developer": "Playcus Limited", "rating": "4.6", "rating_count": "12K", "iap_model": "Free, In-App Purchases; subscriptions and boosters"},
+    {"trackId": 1443781025, "source": "https://apps.apple.com/us/app/cross-stitch-club/id1443781025", "title": "Cross Stitch Club", "subtitle": "Coloring by number with a hoop", "developer": "Andrey Baryshnikov", "rating": "4.7", "rating_count": "3.7K", "iap_model": "Free, In-App Purchases; weekly $5.99 after 3-day free trial; monthly $17.99; yearly tier (price in description, not captured)"},
+    {"trackId": 1467867656, "source": "https://apps.apple.com/us/app/stitchly-cross-stitch/id1467867656", "title": "Stitchly: Cross stitch", "subtitle": "Cross-stitch pattern maker", "developer": "Subtlabs Ltd", "rating": "4.8", "rating_count": "2.3K", "iap_model": "Free, In-App Purchases; Full Version $75.00; Special Offer $39.99; no subscription (pay once)"},
+    {"trackId": 6769534330, "source": "https://apps.apple.com/us/app/cross-stitch-antistress/id6769534330", "title": "Cross Stitch: Antistress", "subtitle": "Color by number with a yarn!", "developer": "Crimson Pine Games", "rating": "4.8", "rating_count": "97", "iap_model": "Free, In-App Purchases; monthly plan from $14.99"},
+    {"trackId": 1407852246, "source": "https://apps.apple.com/us/app/happy-color-coloring-games/id1407852246", "title": "Happy Color® – Coloring Games", "subtitle": "Сolor by number art for adults", "developer": "X-Flow", "rating": "4.8", "rating_count": "3.4M", "iap_model": "Free, In-App Purchases; Color by Number Premium Year $49.99"},
+    {"trackId": 1317978215, "source": "https://apps.apple.com/us/app/color-by-number-coloring-games/id1317978215", "title": "Color by Number：Coloring Games", "subtitle": "Pixel art coloring book game", "developer": "Wildlife Studios", "rating": "4.7", "rating_count": "1.8M", "iap_model": "Free, In-App Purchases; weekly subscription with free trial"},
+    {"trackId": 1420415726, "source": "https://apps.apple.com/us/app/cross-stitch-king/id1420415726", "title": "Cross Stitch King", "subtitle": "Easy board game", "developer": "MOBIRIX", "rating": "4.7", "rating_count": "612", "iap_model": "Free, In-App Purchases"}
+  ],
+  "play_store": {
+    "com.avk.stitchwish": "Play HTML returned a JS shell (about 1 MB) with no parseable app title, rating or install count. Listing may not be published or may be unindexed. Unknown.",
+    "com.zimad.mpixel (Magic, package inferred from BlueStacks URL)": "Page parsed, but install buckets are mixed with other apps on the page. Not attributable. Unknown.",
+    "com.maxxt.crossstitch (package unverified)": "Page parsed, but install buckets are mixed with other apps. Not attributable. Unknown. Package identity not confirmed.",
+    "third_party_only": {
+      "Cross-Stitch World (Grand Screen aggregator)": "Google Play 4.7, 3,054,235+ installs. Undated, unverified.",
+      "Magic Cross-Stitch (Spark by MWM mirror)": "Google Play 1M+ downloads, 4.8, about 6K ratings. Publisher listed as XIMAD, Inc. Undated, unverified."
+    }
+  }
+}
