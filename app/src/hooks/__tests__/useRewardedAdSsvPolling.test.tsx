@@ -1,11 +1,25 @@
 import React from 'react';
 import TestRenderer, { act } from 'react-test-renderer';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fetchAdAttemptState } from '../../api/economy';
+import { EconomyApiError, fetchAdAttemptState } from '../../api/economy';
 import { captureAdRewardVerificationError } from '../../observability/sentry';
 import { useRewardedAdSsvPolling, type UseRewardedAdSsvPollingOptions } from '../useRewardedAdSsvPolling';
 
-jest.mock('../../api/economy', () => ({ coinBalanceQueryKey: ['economy', 'balance'], rewardDayQueryKey: ['economy', 'reward-day'], fetchAdAttemptState: jest.fn() }));
+jest.mock('../../api/economy', () => ({
+  coinBalanceQueryKey: ['economy', 'balance'],
+  rewardDayQueryKey: ['economy', 'reward-day'],
+  fetchAdAttemptState: jest.fn(),
+  EconomyApiError: class EconomyApiError extends Error {
+    status: number;
+    reason: string | null;
+    constructor(status: number, message: string, reason: string | null) {
+      super(message);
+      this.name = 'EconomyApiError';
+      this.status = status;
+      this.reason = reason;
+    }
+  },
+}));
 jest.mock('../../api/membership', () => ({ membershipQueryKey: ['commerce', 'membership'] }));
 jest.mock('../../observability/sentry', () => ({ captureAdRewardVerificationError: jest.fn() }));
 const fetchState = fetchAdAttemptState as jest.MockedFunction<typeof fetchAdAttemptState>;
@@ -51,6 +65,50 @@ describe('useRewardedAdSsvPolling', () => {
     const current = await mount({ onPending });
     act(() => current().startPolling('nonce', '2026-09-14T12:00:03Z'));
     await act(async () => { await jest.advanceTimersByTimeAsync(5000); });
+    expect(fetchState.mock.calls.length).toBeGreaterThan(1);
+    expect(captureAdRewardVerificationError).toHaveBeenCalledTimes(1);
+    expect(onPending).toHaveBeenCalledTimes(1);
+  });
+
+  test('keeps polling a pending attempt and ends pending at the deadline', async () => {
+    const onPending = jest.fn();
+    const onExpired = jest.fn();
+    fetchState.mockResolvedValue({ state: 'pending', expiresAt: '2026-09-14T12:00:10Z' });
+    const current = await mount({ onPending, onExpired });
+    act(() => current().startPolling('nonce', '2026-09-14T12:00:10Z'));
+    await act(async () => { await jest.advanceTimersByTimeAsync(1500); });
+    expect(current().isVerifying).toBe(true);
+    await act(async () => { await jest.advanceTimersByTimeAsync(20_000); });
+    expect(fetchState.mock.calls.length).toBeGreaterThan(1);
+    expect(onPending).toHaveBeenCalledTimes(1);
+    expect(onExpired).not.toHaveBeenCalled();
+    expect(captureAdRewardVerificationError).not.toHaveBeenCalled();
+    expect(current().isVerifying).toBe(false);
+  });
+
+  test('stops at the first 404 and ends pending without reporting to Sentry', async () => {
+    const onPending = jest.fn();
+    const onExpired = jest.fn();
+    fetchState.mockResolvedValueOnce({ state: 'pending', expiresAt: '2026-09-14T12:05:00Z' });
+    fetchState.mockRejectedValue(new EconomyApiError(404, 'Ad attempt was not found', null));
+    const current = await mount({ onPending, onExpired });
+    act(() => current().startPolling('nonce', '2026-09-14T12:05:00Z'));
+    await act(async () => { await jest.advanceTimersByTimeAsync(1500); });
+    expect(onPending).not.toHaveBeenCalled();
+    await act(async () => { await jest.advanceTimersByTimeAsync(5 * 60_000); });
+    expect(fetchState).toHaveBeenCalledTimes(2);
+    expect(onPending).toHaveBeenCalledTimes(1);
+    expect(onExpired).not.toHaveBeenCalled();
+    expect(captureAdRewardVerificationError).not.toHaveBeenCalled();
+    expect(current().isVerifying).toBe(false);
+  });
+
+  test('keeps retrying a non-404 backend error as transient', async () => {
+    const onPending = jest.fn();
+    fetchState.mockRejectedValue(new EconomyApiError(500, 'Internal server error', null));
+    const current = await mount({ onPending });
+    act(() => current().startPolling('nonce', '2026-09-14T12:00:10Z'));
+    await act(async () => { await jest.advanceTimersByTimeAsync(20_000); });
     expect(fetchState.mock.calls.length).toBeGreaterThan(1);
     expect(captureAdRewardVerificationError).toHaveBeenCalledTimes(1);
     expect(onPending).toHaveBeenCalledTimes(1);

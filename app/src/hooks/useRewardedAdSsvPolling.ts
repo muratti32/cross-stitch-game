@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { coinBalanceQueryKey, fetchAdAttemptState, rewardDayQueryKey } from '../api/economy';
+import { coinBalanceQueryKey, EconomyApiError, fetchAdAttemptState, rewardDayQueryKey } from '../api/economy';
 import { membershipQueryKey } from '../api/membership';
 import { captureAdRewardVerificationError } from '../observability/sentry';
 
@@ -75,6 +75,9 @@ export function useRewardedAdSsvPolling(options: UseRewardedAdSsvPollingOptions 
         }
       } catch (error: unknown) {
         if (!isCurrent()) return;
+        // 404 is permanent for this nonce: the current principal does not own it, e.g. after
+        // sign-in replaced the Guest session. Retrying cannot succeed.
+        if (error instanceof EconomyApiError && error.status === 404) return finishPending();
         if (!errorReported) {
           errorReported = true;
           captureAdRewardVerificationError(error);
