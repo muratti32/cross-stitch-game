@@ -75,8 +75,8 @@ export function useRewardedAdSsvPolling(options: UseRewardedAdSsvPollingOptions 
         }
       } catch (error: unknown) {
         if (!isCurrent()) return;
-        // The current principal cannot see this nonce, e.g. after sign-in replaced the Guest
-        // session; an SSV grant still lands on the attempt's owner, so the reward stays pending.
+        // 404 is permanent for this nonce: the current principal does not own it, e.g. after
+        // sign-in replaced the Guest session. Retrying cannot succeed.
         if (error instanceof EconomyApiError && error.status === 404) return finishPending();
         if (!errorReported) {
           errorReported = true;
