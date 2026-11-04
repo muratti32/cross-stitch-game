@@ -69,6 +69,13 @@ export type PromotionHandoff =
 
 export type PromotionPhase = PromotionHandoff['phase'];
 
+/** A handoff whose commit went through and that now only tracks acknowledgements. */
+export type SyncHandoff = Extract<PromotionHandoff, { phase: 'syncing' | 'needsAttention' }>;
+
+export function isSyncHandoff(handoff: PromotionHandoff): handoff is SyncHandoff {
+  return handoff.phase === 'syncing' || handoff.phase === 'needsAttention';
+}
+
 export type PromotionEvent =
   | { type: 'previewStarted' }
   | { type: 'previewLoaded'; preview: PromotionPreviewResponse }
@@ -108,17 +115,17 @@ export function isPreviewEmpty(preview: PromotionPreviewResponse, manifest: Prom
   );
 }
 
-export function pendingLikes(handoff: PromotionHandoff & { acked: AckedItems }): string[] {
+export function pendingLikes(handoff: SyncHandoff): string[] {
   const done = new Set(handoff.acked.likes);
   return handoff.drain.likes.filter((patternId) => !done.has(patternId));
 }
 
-export function pendingSessions(handoff: PromotionHandoff & { acked: AckedItems }): DrainSessionTarget[] {
+export function pendingSessions(handoff: SyncHandoff): DrainSessionTarget[] {
   const done = new Set(handoff.acked.sessions);
   return handoff.drain.sessions.filter((target) => !done.has(target.guestSessionId));
 }
 
-function hasNothingToDrain(handoff: PromotionHandoff & { acked: AckedItems }): boolean {
+function hasNothingToDrain(handoff: SyncHandoff): boolean {
   return pendingLikes(handoff).length === 0 && pendingSessions(handoff).length === 0;
 }
 
@@ -137,17 +144,12 @@ export function canCancel(handoff: PromotionHandoff): boolean {
   }
 }
 
-/** True from the moment the commit request may have left the device. */
-export function isPostCommit(handoff: PromotionHandoff): boolean {
-  return handoff.phase === 'syncing' || handoff.phase === 'needsAttention';
-}
-
 function blankAcked(): AckedItems {
   return { likes: [], sessions: [] };
 }
 
 function startSyncing(handoff: PromotionHandoff, promotionMode: PromotionMode): PromotionHandoff | null {
-  const next = { ...base(handoff), phase: 'syncing' as const, promotionMode, acked: blankAcked() };
+  const next: SyncHandoff = { ...base(handoff), phase: 'syncing', promotionMode, acked: blankAcked() };
   return hasNothingToDrain(next) ? null : next;
 }
 
@@ -207,16 +209,16 @@ export function reducePromotion(handoff: PromotionHandoff, event: PromotionEvent
         : handoff;
 
     case 'likeAcked': {
-      if (handoff.phase !== 'syncing' && handoff.phase !== 'needsAttention') return handoff;
+      if (!isSyncHandoff(handoff)) return handoff;
       if (handoff.acked.likes.includes(event.patternId)) return handoff;
-      const next = { ...handoff, acked: { ...handoff.acked, likes: [...handoff.acked.likes, event.patternId] } };
+      const next: SyncHandoff = { ...handoff, acked: { ...handoff.acked, likes: [...handoff.acked.likes, event.patternId] } };
       return hasNothingToDrain(next) ? null : next;
     }
 
     case 'sessionAcked': {
-      if (handoff.phase !== 'syncing' && handoff.phase !== 'needsAttention') return handoff;
+      if (!isSyncHandoff(handoff)) return handoff;
       if (handoff.acked.sessions.includes(event.guestSessionId)) return handoff;
-      const next = {
+      const next: SyncHandoff = {
         ...handoff,
         acked: { ...handoff.acked, sessions: [...handoff.acked.sessions, event.guestSessionId] },
       };

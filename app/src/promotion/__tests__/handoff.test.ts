@@ -1,7 +1,7 @@
 import {
   canCancel,
   eventForFailureCode,
-  isPostCommit,
+  isSyncHandoff,
   isPreviewEmpty,
   pendingLikes,
   pendingSessions,
@@ -222,7 +222,7 @@ describe('Promotion Handoff transitions', () => {
       const attention = reducePromotion(partial, { type: 'syncExhausted' }) as PromotionHandoff;
 
       expect(attention).toMatchObject({ phase: 'needsAttention', acked: { likes: [PATTERN_B], sessions: [] } });
-      expect(isPostCommit(attention)).toBe(true);
+      expect(isSyncHandoff(attention)).toBe(true);
 
       const retried = reducePromotion(attention, { type: 'syncRetried' });
       expect(retried).toMatchObject({ phase: 'syncing', acked: { likes: [PATTERN_B], sessions: [] } });

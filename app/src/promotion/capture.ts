@@ -1,4 +1,4 @@
-import { isPostCommit } from './handoff';
+import { isSyncHandoff } from './handoff';
 import { handoffStore, type HandoffStore } from './handoffStore';
 import { captureGuestRecords, type GuestCapture } from './manifest';
 
@@ -18,7 +18,7 @@ export async function captureGuestPromotion(
   read: (guestId: string) => Promise<GuestCapture> = captureGuestRecords,
 ): Promise<void> {
   const existing = await store.load();
-  if (existing !== null && isPostCommit(existing)) return;
+  if (existing !== null && isSyncHandoff(existing)) return;
   const capture = await read(guestId);
   await store.save({ phase: 'captured', guestId, accountId, ...capture });
 }
