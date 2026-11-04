@@ -1,5 +1,19 @@
-import { IsString, IsUUID, IsNotEmpty, IsObject, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsIn,
+  IsInt,
+  IsISO8601,
+  IsNotEmpty,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsUUID,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
+
+import { PROMOTION_MODES, PromotionMode } from '../entities';
 
 export class GuestPromotionManifestDto {
   @IsObject()
@@ -37,4 +51,59 @@ export class PromotionPreviewRequestDto {
   @IsString()
   @IsNotEmpty()
   manifestChecksum!: string;
+}
+
+/**
+ * The preview the client echoes back to /lock and /commit. Only the signed
+ * fields are trusted (verifySignature); the rest are declared so the
+ * whitelisting ValidationPipe accepts the full preview the client received.
+ */
+export class PromotionPreviewDataDto {
+  @IsUUID()
+  guestId!: string;
+
+  @IsUUID()
+  accountId!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  manifestChecksum!: string;
+
+  @IsIn(PROMOTION_MODES)
+  promotionMode!: PromotionMode;
+
+  @IsNumber()
+  guestLedgerBalance!: number;
+
+  @IsISO8601()
+  expiry!: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  validatedPendingRewards?: string[];
+
+  @IsOptional()
+  @IsInt()
+  guestUnlockCount?: number;
+
+  @IsOptional()
+  @IsInt()
+  pendingAdAttemptCount?: number;
+
+  @IsOptional()
+  @IsObject()
+  rejectedPendingRewards?: Record<string, string>;
+
+  @IsOptional()
+  @IsObject()
+  dispositions?: Record<string, string>;
+
+  @IsOptional()
+  @IsString()
+  signature?: string;
+
+  @IsOptional()
+  @IsIn(['transfer', 'none'])
+  paidCommerce?: 'transfer' | 'none';
 }
