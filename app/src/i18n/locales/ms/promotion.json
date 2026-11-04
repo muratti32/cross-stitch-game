@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Alihkan data saya",
+    "cancel": "Batal",
+    "retry": "Cuba lagi",
+    "support": "Hubungi sokongan"
+  },
+  "loading": {
+    "preview": "Menyemak data Tetamu anda…",
+    "committing": "Mengalihkan data Tetamu anda ke akaun anda. Sila biarkan aplikasi terbuka."
+  },
+  "disclosure": {
+    "economyTitle": "Bawa data Tetamu anda bersama",
+    "economyIntro": "Ini akan ditambah ke akaun anda:",
+    "dataOnlyTitle": "Alihkan kemajuan Tetamu anda",
+    "dataOnlyIntro": "Akaun ini sudah menerima Syiling Tetamu sekali, jadi hanya kemajuan, sejarah penyiapan dan Suka anda akan dialihkan. Syiling, Corak yang dibuka dan ganjaran tertunggak yang disenaraikan di bawah akan dibuang.",
+    "progress": "Kemajuan sulaman, sejarah penyiapan dan Suka anda akan dialihkan ke akaun anda.",
+    "discardedHeading": "Akan dibuang:",
+    "staleNotice": "Sesuatu berubah semasa anda menyemak. Sila semak butirannya sekali lagi sebelum meneruskan.",
+    "cancelNote": "Membatalkan akan mengeluarkan anda daripada akaun ini dan mengembalikan anda ke sesi Tetamu yang tidak berubah.",
+    "lines": {
+      "coins": "Baki Stitch Coin: {{amount}}",
+      "unlocks": "Corak yang dibuka: {{amount}}",
+      "pendingRewards": "Ganjaran tertunggak: {{amount}}",
+      "adRewards": "Ganjaran iklan yang masih disahkan: {{amount}}. Ia akan sampai ke akaun anda.",
+      "adRewardsDiscarded": "Ganjaran iklan yang masih disahkan: {{amount}}. Ia tidak akan sampai.",
+      "rejectedRewards": "Ganjaran yang tidak dapat disahkan: {{amount}}. Ia tidak akan dipindahkan."
+    }
+  },
+  "error": {
+    "network": "Tidak dapat menghubungi pelayan. Semak sambungan anda dan cuba lagi.",
+    "credentialRejected": "Identiti Tetamu peranti ini tidak dapat disahkan, jadi data Tetamu anda tidak boleh dialihkan buat masa ini.",
+    "guestNotFound": "Identiti Tetamu anda tidak ditemui di pelayan, jadi tiada apa yang perlu dialihkan.",
+    "accountClosing": "Akaun ini sedang dipadam, jadi data Tetamu tidak boleh dialihkan kepadanya."
+  },
+  "syncing": {
+    "indicator": "Menyegerakkan data Tetamu anda…"
+  },
+  "needsAttention": {
+    "title": "Sesetengah data Tetamu memerlukan perhatian",
+    "body": "Akaun anda sedia digunakan. Beberapa item belum selesai dialihkan dan disimpan dengan selamat sehingga selesai."
+  }
+}

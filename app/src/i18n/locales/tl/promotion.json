@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Ilipat ang aking data",
+    "cancel": "Kanselahin",
+    "retry": "Subukan muli",
+    "support": "Makipag-ugnayan sa suporta"
+  },
+  "loading": {
+    "preview": "Sinusuri ang iyong data ng Bisita…",
+    "committing": "Inililipat ang iyong data ng Bisita sa iyong account. Pakibuksan lang ang app."
+  },
+  "disclosure": {
+    "economyTitle": "Dalhin ang iyong data ng Bisita",
+    "economyIntro": "Idaragdag ang mga ito sa iyong account:",
+    "dataOnlyTitle": "Ilipat ang iyong progreso bilang Bisita",
+    "dataOnlyIntro": "Nakatanggap na ng Guest Coin ang account na ito nang isang beses, kaya ang progreso, kasaysayan ng pagkumpleto, at mga Like mo lang ang ililipat. Itatapon ang mga Coin, na-unlock na Pattern, at nakabinbing gantimpala na nakalista sa ibaba.",
+    "progress": "Ililipat sa iyong account ang progreso mo sa pagbuburda, kasaysayan ng pagkumpleto, at mga Like.",
+    "discardedHeading": "Itatapon:",
+    "staleNotice": "May nagbago habang nirerepaso mo. Pakisuri muli ang mga detalye bago magpatuloy.",
+    "cancelNote": "Kapag nag-cancel, magsa-sign out ka sa account na ito at babalik sa hindi nabagong sesyon mo bilang Bisita.",
+    "lines": {
+      "coins": "Balanse ng Stitch Coin: {{amount}}",
+      "unlocks": "Mga na-unlock na pattern: {{amount}}",
+      "pendingRewards": "Mga nakabinbing gantimpala: {{amount}}",
+      "adRewards": "Mga gantimpala sa ad na bine-verify pa: {{amount}}. Darating ang mga ito sa iyong account.",
+      "adRewardsDiscarded": "Mga gantimpala sa ad na bine-verify pa: {{amount}}. Hindi darating ang mga ito.",
+      "rejectedRewards": "Mga gantimpalang hindi na-verify: {{amount}}. Hindi ililipat ang mga ito."
+    }
+  },
+  "error": {
+    "network": "Hindi maabot ang server. Suriin ang iyong koneksyon at subukan muli.",
+    "credentialRejected": "Hindi ma-verify ang pagkakakilanlan bilang Bisita ng device na ito, kaya hindi pa maililipat ang iyong data ng Bisita ngayon.",
+    "guestNotFound": "Hindi nakita sa server ang iyong pagkakakilanlan bilang Bisita, kaya walang maililipat.",
+    "accountClosing": "Binubura ang account na ito, kaya hindi maililipat dito ang data ng Bisita."
+  },
+  "syncing": {
+    "indicator": "Sini-sync ang iyong data ng Bisita…"
+  },
+  "needsAttention": {
+    "title": "May ilang data ng Bisita na kailangang tingnan",
+    "body": "Handa nang gamitin ang iyong account. May ilang item na hindi pa tapos ilipat at ligtas na iniingatan hanggang matapos."
+  }
+}

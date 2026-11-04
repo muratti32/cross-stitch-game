@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "迁移我的数据",
+    "cancel": "取消",
+    "retry": "重试",
+    "support": "联系客服"
+  },
+  "loading": {
+    "preview": "正在检查你的游客数据…",
+    "committing": "正在把你的游客数据迁移到账号。请保持应用打开。"
+  },
+  "disclosure": {
+    "economyTitle": "带上你的游客数据",
+    "economyIntro": "以下内容将添加到你的账号：",
+    "dataOnlyTitle": "迁移你的游客进度",
+    "dataOnlyIntro": "此账号已经领取过一次游客金币，因此只会迁移你的进度、完成记录和点赞。下方列出的金币、已解锁图案和待领奖励将被丢弃。",
+    "progress": "你的刺绣进度、完成记录和点赞将迁移到你的账号。",
+    "discardedHeading": "将被丢弃：",
+    "staleNotice": "你检查期间内容发生了变化。继续之前请再次确认详情。",
+    "cancelNote": "取消会退出此账号，并回到未改动的游客会话。",
+    "lines": {
+      "coins": "Stitch Coin 余额：{{amount}}",
+      "unlocks": "已解锁图案：{{amount}}",
+      "pendingRewards": "待领奖励：{{amount}}",
+      "adRewards": "仍在验证的广告奖励：{{amount}}。它们将发放到你的账号。",
+      "adRewardsDiscarded": "仍在验证的广告奖励：{{amount}}。它们不会发放。",
+      "rejectedRewards": "无法验证的奖励：{{amount}}。它们不会被迁移。"
+    }
+  },
+  "error": {
+    "network": "无法连接到服务器。请检查网络后重试。",
+    "credentialRejected": "无法验证此设备的游客身份，因此暂时无法迁移你的游客数据。",
+    "guestNotFound": "服务器上找不到你的游客身份，因此没有可迁移的内容。",
+    "accountClosing": "此账号正在删除中，因此无法向其迁移游客数据。"
+  },
+  "syncing": {
+    "indicator": "正在同步你的游客数据…"
+  },
+  "needsAttention": {
+    "title": "部分游客数据需要处理",
+    "body": "你的账号已可使用。少数项目尚未迁移完成，完成之前会被安全保存。"
+  }
+}

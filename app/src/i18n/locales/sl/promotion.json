@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Premakni moje podatke",
+    "cancel": "Prekliči",
+    "retry": "Poskusi znova",
+    "support": "Obrni se na podporo"
+  },
+  "loading": {
+    "preview": "Preverjanje vaših podatkov gosta …",
+    "committing": "Podatke gosta premikamo v vaš račun. Aplikacijo pustite odprto."
+  },
+  "disclosure": {
+    "economyTitle": "Vzemite podatke gosta s seboj",
+    "economyIntro": "To bo dodano vašemu računu:",
+    "dataOnlyTitle": "Premaknite svoj napredek gosta",
+    "dataOnlyIntro": "Ta račun je že enkrat prejel kovance gosta, zato se bodo premaknili le vaš napredek, zgodovina dokončanih del in všečki. Spodaj navedeni kovanci, odklenjeni vzorci in nagrade na čakanju bodo zavrženi.",
+    "progress": "Vaš napredek pri vezenju, zgodovina dokončanih del in všečki se bodo premaknili v vaš račun.",
+    "discardedHeading": "Zavrženo bo:",
+    "staleNotice": "Med pregledovanjem se je nekaj spremenilo. Pred nadaljevanjem znova preverite podrobnosti.",
+    "cancelNote": "S preklicem se odjavite iz tega računa in vrnete v nespremenjeno sejo gosta.",
+    "lines": {
+      "coins": "Stanje Stitch Coin: {{amount}}",
+      "unlocks": "Odklenjeni vzorci: {{amount}}",
+      "pendingRewards": "Nagrade na čakanju: {{amount}}",
+      "adRewards": "Nagrade za oglase, ki se še preverjajo: {{amount}}. Prispele bodo v vaš račun.",
+      "adRewardsDiscarded": "Nagrade za oglase, ki se še preverjajo: {{amount}}. Ne bodo prispele.",
+      "rejectedRewards": "Nagrade, ki jih ni bilo mogoče preveriti: {{amount}}. Ne bodo prenesene."
+    }
+  },
+  "error": {
+    "network": "Strežnika ni mogoče doseči. Preverite povezavo in poskusite znova.",
+    "credentialRejected": "Identitete gosta te naprave ni bilo mogoče preveriti, zato podatkov gosta trenutno ni mogoče premakniti.",
+    "guestNotFound": "Vaše identitete gosta na strežniku ni bilo mogoče najti, zato ni ničesar za premakniti.",
+    "accountClosing": "Ta račun se briše, zato podatkov gosta ni mogoče premakniti vanj."
+  },
+  "syncing": {
+    "indicator": "Sinhronizacija vaših podatkov gosta …"
+  },
+  "needsAttention": {
+    "title": "Nekateri podatki gosta zahtevajo pozornost",
+    "body": "Vaš račun je pripravljen za uporabo. Nekaj elementov se še ni dokončalo premikati in so varno shranjeni, dokler se ne."
+  }
+}

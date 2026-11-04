@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Premjesti moje podatke",
+    "cancel": "Odustani",
+    "retry": "Pokušaj ponovo",
+    "support": "Kontaktiraj podršku"
+  },
+  "loading": {
+    "preview": "Provjera podataka gosta…",
+    "committing": "Premještamo podatke gosta na vaš račun. Ostavite aplikaciju otvorenom."
+  },
+  "disclosure": {
+    "economyTitle": "Ponesite podatke gosta sa sobom",
+    "economyIntro": "Ovo će biti dodano vašem računu:",
+    "dataOnlyTitle": "Premjestite napredak gosta",
+    "dataOnlyIntro": "Ovaj račun već je jednom primio novčiće gosta, pa će se premjestiti samo vaš napredak, povijest dovršetaka i lajkovi. Novčići, otključani uzorci i nagrade na čekanju navedeni u nastavku bit će odbačeni.",
+    "progress": "Vaš napredak u vezenju, povijest dovršetaka i lajkovi premjestit će se na vaš račun.",
+    "discardedHeading": "Bit će odbačeno:",
+    "staleNotice": "Nešto se promijenilo dok ste pregledavali. Prije nastavka ponovno provjerite pojedinosti.",
+    "cancelNote": "Odustajanjem se odjavljujete s ovog računa i vraćate u nepromijenjenu sesiju gosta.",
+    "lines": {
+      "coins": "Stanje Stitch Coina: {{amount}}",
+      "unlocks": "Otključani uzorci: {{amount}}",
+      "pendingRewards": "Nagrade na čekanju: {{amount}}",
+      "adRewards": "Nagrade za oglase koje se još provjeravaju: {{amount}}. Stići će na vaš račun.",
+      "adRewardsDiscarded": "Nagrade za oglase koje se još provjeravaju: {{amount}}. Neće stići.",
+      "rejectedRewards": "Nagrade koje nije bilo moguće provjeriti: {{amount}}. Neće se prenijeti."
+    }
+  },
+  "error": {
+    "network": "Nije moguće doći do poslužitelja. Provjerite vezu i pokušajte ponovo.",
+    "credentialRejected": "Identitet gosta ovog uređaja nije bilo moguće provjeriti pa se podaci gosta trenutačno ne mogu premjestiti.",
+    "guestNotFound": "Vaš identitet gosta nije pronađen na poslužitelju pa nema što premjestiti.",
+    "accountClosing": "Ovaj se račun briše pa se podaci gosta ne mogu premjestiti na njega."
+  },
+  "syncing": {
+    "indicator": "Sinkronizacija podataka gosta…"
+  },
+  "needsAttention": {
+    "title": "Neki podaci gosta zahtijevaju pažnju",
+    "body": "Vaš je račun spreman za korištenje. Nekoliko stavki još nije dovršilo premještanje i sigurno su pohranjene dok se ne dovrši."
+  }
+}

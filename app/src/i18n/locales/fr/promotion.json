@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Transférer mes données",
+    "cancel": "Annuler",
+    "retry": "Réessayer",
+    "support": "Contacter l'assistance"
+  },
+  "loading": {
+    "preview": "Vérification de vos données d'invité…",
+    "committing": "Transfert de vos données d'invité vers votre compte. Gardez l'application ouverte."
+  },
+  "disclosure": {
+    "economyTitle": "Emportez vos données d'invité",
+    "economyIntro": "Ces éléments seront ajoutés à votre compte :",
+    "dataOnlyTitle": "Transférez votre progression d'invité",
+    "dataOnlyIntro": "Ce compte a déjà reçu des Coins d'invité une fois : seuls votre progression, votre historique de réalisations et vos J'aime seront donc transférés. Les Coins, les modèles débloqués et les récompenses en attente listés ci-dessous seront abandonnés.",
+    "progress": "Votre progression de broderie, votre historique de réalisations et vos J'aime seront transférés vers votre compte.",
+    "discardedHeading": "Sera abandonné :",
+    "staleNotice": "Des éléments ont changé pendant votre vérification. Revérifiez les détails avant de continuer.",
+    "cancelNote": "Annuler vous déconnecte de ce compte et vous ramène à votre session d'invité, inchangée.",
+    "lines": {
+      "coins": "Solde de Stitch Coins : {{amount}}",
+      "unlocks": "Modèles débloqués : {{amount}}",
+      "pendingRewards": "Récompenses en attente : {{amount}}",
+      "adRewards": "Récompenses publicitaires en cours de vérification : {{amount}}. Elles arriveront sur votre compte.",
+      "adRewardsDiscarded": "Récompenses publicitaires en cours de vérification : {{amount}}. Elles n'arriveront pas.",
+      "rejectedRewards": "Récompenses impossibles à vérifier : {{amount}}. Elles ne seront pas transférées."
+    }
+  },
+  "error": {
+    "network": "Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.",
+    "credentialRejected": "L'identité d'invité de cet appareil n'a pas pu être vérifiée ; vos données d'invité ne peuvent donc pas être transférées pour l'instant.",
+    "guestNotFound": "Votre identité d'invité est introuvable sur le serveur ; il n'y a donc rien à transférer.",
+    "accountClosing": "Ce compte est en cours de suppression ; les données d'invité ne peuvent donc pas y être transférées."
+  },
+  "syncing": {
+    "indicator": "Synchronisation de vos données d'invité…"
+  },
+  "needsAttention": {
+    "title": "Certaines données d'invité demandent votre attention",
+    "body": "Votre compte est prêt à l'emploi. Quelques éléments n'ont pas fini d'être transférés et restent en sécurité jusque-là."
+  }
+}

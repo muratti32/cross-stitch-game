@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Siirrä tietoni",
+    "cancel": "Peruuta",
+    "retry": "Yritä uudelleen",
+    "support": "Ota yhteyttä tukeen"
+  },
+  "loading": {
+    "preview": "Tarkistetaan vierastietojasi…",
+    "committing": "Siirretään vierastietojasi tilillesi. Pidä sovellus auki."
+  },
+  "disclosure": {
+    "economyTitle": "Ota vierastietosi mukaasi",
+    "economyIntro": "Nämä lisätään tilillesi:",
+    "dataOnlyTitle": "Siirrä vieraana tekemäsi edistyminen",
+    "dataOnlyIntro": "Tämä tili on jo saanut vierasrahat kerran, joten vain edistymisesi, valmistumishistoriasi ja tykkäyksesi siirretään. Alla luetellut kolikot, avatut mallit ja odottavat palkinnot hylätään.",
+    "progress": "Ompeluedistymisesi, valmistumishistoriasi ja tykkäyksesi siirretään tilillesi.",
+    "discardedHeading": "Hylätään:",
+    "staleNotice": "Jotain muuttui tarkistuksesi aikana. Tarkista tiedot uudelleen ennen kuin jatkat.",
+    "cancelNote": "Peruuttaminen kirjaa sinut ulos tältä tililtä ja palauttaa muuttumattoman vierasistuntosi.",
+    "lines": {
+      "coins": "Stitch-kolikoiden saldo: {{amount}}",
+      "unlocks": "Avatut mallit: {{amount}}",
+      "pendingRewards": "Odottavat palkinnot: {{amount}}",
+      "adRewards": "Mainospalkinnot, joita vahvistetaan vielä: {{amount}}. Ne saapuvat tilillesi.",
+      "adRewardsDiscarded": "Mainospalkinnot, joita vahvistetaan vielä: {{amount}}. Ne eivät saavu.",
+      "rejectedRewards": "Palkinnot, joita ei voitu vahvistaa: {{amount}}. Niitä ei siirretä."
+    }
+  },
+  "error": {
+    "network": "Palvelimeen ei saada yhteyttä. Tarkista yhteytesi ja yritä uudelleen.",
+    "credentialRejected": "Tämän laitteen vierasidentiteettiä ei voitu vahvistaa, joten vierastietojasi ei voi siirtää juuri nyt.",
+    "guestNotFound": "Vierasidentiteettiäsi ei löytynyt palvelimelta, joten siirrettävää ei ole.",
+    "accountClosing": "Tämä tili poistetaan, joten vierastietoja ei voi siirtää sinne."
+  },
+  "syncing": {
+    "indicator": "Synkronoidaan vierastietojasi…"
+  },
+  "needsAttention": {
+    "title": "Osa vierastiedoista vaatii huomiota",
+    "body": "Tilisi on käyttövalmis. Muutama kohde ei ole vielä siirtynyt loppuun, ja ne säilytetään turvassa siihen asti."
+  }
+}

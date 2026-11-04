@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Mijn gegevens verplaatsen",
+    "cancel": "Annuleren",
+    "retry": "Opnieuw proberen",
+    "support": "Contact opnemen met support"
+  },
+  "loading": {
+    "preview": "Je gastgegevens worden gecontroleerd…",
+    "committing": "Je gastgegevens worden naar je account verplaatst. Houd de app geopend."
+  },
+  "disclosure": {
+    "economyTitle": "Neem je gastgegevens mee",
+    "economyIntro": "Dit wordt aan je account toegevoegd:",
+    "dataOnlyTitle": "Verplaats je voortgang als gast",
+    "dataOnlyIntro": "Dit account heeft al eens gastmunten ontvangen, dus alleen je voortgang, voltooiingsgeschiedenis en likes worden verplaatst. De munten, ontgrendelde patronen en openstaande beloningen hieronder worden verwijderd.",
+    "progress": "Je borduurvoortgang, voltooiingsgeschiedenis en likes worden naar je account verplaatst.",
+    "discardedHeading": "Wordt verwijderd:",
+    "staleNotice": "Er is iets veranderd terwijl je aan het nakijken was. Controleer de details nog een keer voordat je verdergaat.",
+    "cancelNote": "Als je annuleert, word je uit dit account uitgelogd en keer je terug naar je ongewijzigde gastsessie.",
+    "lines": {
+      "coins": "Stitch Coins-saldo: {{amount}}",
+      "unlocks": "Ontgrendelde patronen: {{amount}}",
+      "pendingRewards": "Openstaande beloningen: {{amount}}",
+      "adRewards": "Advertentiebeloningen die nog worden gecontroleerd: {{amount}}. Ze komen op je account terecht.",
+      "adRewardsDiscarded": "Advertentiebeloningen die nog worden gecontroleerd: {{amount}}. Ze komen niet aan.",
+      "rejectedRewards": "Beloningen die niet konden worden geverifieerd: {{amount}}. Ze worden niet overgezet."
+    }
+  },
+  "error": {
+    "network": "De server is niet bereikbaar. Controleer je verbinding en probeer het opnieuw.",
+    "credentialRejected": "De gastidentiteit van dit apparaat kon niet worden geverifieerd, dus je gastgegevens kunnen nu niet worden verplaatst.",
+    "guestNotFound": "Je gastidentiteit is niet gevonden op de server, dus er valt niets te verplaatsen.",
+    "accountClosing": "Dit account wordt verwijderd, dus er kunnen geen gastgegevens naartoe worden verplaatst."
+  },
+  "syncing": {
+    "indicator": "Je gastgegevens worden gesynchroniseerd…"
+  },
+  "needsAttention": {
+    "title": "Sommige gastgegevens hebben aandacht nodig",
+    "body": "Je account is klaar voor gebruik. Een paar onderdelen zijn nog niet klaar met verplaatsen en blijven veilig bewaard tot dat zover is."
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Mută datele mele",
+    "cancel": "Anulează",
+    "retry": "Încearcă din nou",
+    "support": "Contactează asistența"
+  },
+  "loading": {
+    "preview": "Se verifică datele tale de invitat…",
+    "committing": "Se mută datele de invitat în contul tău. Te rugăm să ții aplicația deschisă."
+  },
+  "disclosure": {
+    "economyTitle": "Ia datele de invitat cu tine",
+    "economyIntro": "Acestea vor fi adăugate în contul tău:",
+    "dataOnlyTitle": "Mută progresul tău de invitat",
+    "dataOnlyIntro": "Acest cont a primit deja o dată monede de invitat, așa că vor fi mutate doar progresul, istoricul finalizărilor și aprecierile. Monedele, modelele deblocate și recompensele în așteptare de mai jos vor fi eliminate.",
+    "progress": "Progresul la broderie, istoricul finalizărilor și aprecierile tale vor fi mutate în contul tău.",
+    "discardedHeading": "Vor fi eliminate:",
+    "staleNotice": "Ceva s-a schimbat cât timp verificai. Te rugăm să verifici din nou detaliile înainte de a continua.",
+    "cancelNote": "Anularea te deconectează din acest cont și te readuce în sesiunea de invitat nemodificată.",
+    "lines": {
+      "coins": "Sold Stitch Coin: {{amount}}",
+      "unlocks": "Modele deblocate: {{amount}}",
+      "pendingRewards": "Recompense în așteptare: {{amount}}",
+      "adRewards": "Recompense pentru reclame încă în curs de verificare: {{amount}}. Vor ajunge în contul tău.",
+      "adRewardsDiscarded": "Recompense pentru reclame încă în curs de verificare: {{amount}}. Nu vor ajunge.",
+      "rejectedRewards": "Recompense care nu au putut fi verificate: {{amount}}. Nu vor fi transferate."
+    }
+  },
+  "error": {
+    "network": "Nu se poate contacta serverul. Verifică conexiunea și încearcă din nou.",
+    "credentialRejected": "Identitatea de invitat a acestui dispozitiv nu a putut fi verificată, așa că datele de invitat nu pot fi mutate acum.",
+    "guestNotFound": "Identitatea ta de invitat nu a fost găsită pe server, deci nu există nimic de mutat.",
+    "accountClosing": "Acest cont este în curs de ștergere, așa că datele de invitat nu pot fi mutate în el."
+  },
+  "syncing": {
+    "indicator": "Se sincronizează datele tale de invitat…"
+  },
+  "needsAttention": {
+    "title": "Unele date de invitat necesită atenție",
+    "body": "Contul tău este gata de utilizare. Câteva elemente nu au terminat de mutat și sunt păstrate în siguranță până la finalizare."
+  }
+}

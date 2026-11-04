@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Mover os meus dados",
+    "cancel": "Cancelar",
+    "retry": "Tentar novamente",
+    "support": "Contactar o suporte"
+  },
+  "loading": {
+    "preview": "A verificar os seus dados de convidado…",
+    "committing": "A mover os seus dados de convidado para a sua conta. Mantenha a aplicação aberta."
+  },
+  "disclosure": {
+    "economyTitle": "Leve consigo os seus dados de convidado",
+    "economyIntro": "Isto será adicionado à sua conta:",
+    "dataOnlyTitle": "Mova o seu progresso de convidado",
+    "dataOnlyIntro": "Esta conta já recebeu Coins de convidado uma vez, por isso só serão movidos o seu progresso, o seu histórico de conclusões e os seus gostos. Os Coins, os padrões desbloqueados e as recompensas pendentes listados abaixo serão descartados.",
+    "progress": "O seu progresso de bordado, o seu histórico de conclusões e os seus gostos serão movidos para a sua conta.",
+    "discardedHeading": "Será descartado:",
+    "staleNotice": "Algo mudou enquanto revia. Verifique os detalhes novamente antes de continuar.",
+    "cancelNote": "Cancelar termina a sessão desta conta e devolve-o à sua sessão de convidado, sem alterações.",
+    "lines": {
+      "coins": "Saldo de Stitch Coins: {{amount}}",
+      "unlocks": "Padrões desbloqueados: {{amount}}",
+      "pendingRewards": "Recompensas pendentes: {{amount}}",
+      "adRewards": "Recompensas de anúncios ainda em verificação: {{amount}}. Vão chegar à sua conta.",
+      "adRewardsDiscarded": "Recompensas de anúncios ainda em verificação: {{amount}}. Não vão chegar.",
+      "rejectedRewards": "Recompensas que não foi possível verificar: {{amount}}. Não serão transferidas."
+    }
+  },
+  "error": {
+    "network": "Não foi possível contactar o servidor. Verifique a ligação e tente novamente.",
+    "credentialRejected": "Não foi possível verificar a identidade de convidado deste dispositivo, por isso os seus dados de convidado não podem ser movidos agora.",
+    "guestNotFound": "A sua identidade de convidado não foi encontrada no servidor, por isso não há nada para mover.",
+    "accountClosing": "Esta conta está a ser eliminada, por isso não lhe podem ser movidos dados de convidado."
+  },
+  "syncing": {
+    "indicator": "A sincronizar os seus dados de convidado…"
+  },
+  "needsAttention": {
+    "title": "Alguns dados de convidado ainda precisam de atenção",
+    "body": "A sua conta está pronta a usar. Alguns itens ainda não acabaram de ser movidos e ficam seguros até acabarem."
+  }
+}

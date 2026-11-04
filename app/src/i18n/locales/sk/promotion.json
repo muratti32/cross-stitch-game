@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Presunúť moje údaje",
+    "cancel": "Zrušiť",
+    "retry": "Skúsiť znova",
+    "support": "Kontaktovať podporu"
+  },
+  "loading": {
+    "preview": "Kontrolujú sa vaše údaje hosťa…",
+    "committing": "Údaje hosťa sa presúvajú do vášho účtu. Nechajte aplikáciu otvorenú."
+  },
+  "disclosure": {
+    "economyTitle": "Vezmite si údaje hosťa so sebou",
+    "economyIntro": "Do vášho účtu sa pridá:",
+    "dataOnlyTitle": "Presuňte svoj postup hosťa",
+    "dataOnlyIntro": "Tento účet už raz získal mince hosťa, preto sa presunie iba váš postup, história dokončení a lajky. Nižšie uvedené mince, odomknuté vzory a čakajúce odmeny sa zahodia.",
+    "progress": "Váš postup vo vyšívaní, história dokončení a lajky sa presunú do vášho účtu.",
+    "discardedHeading": "Zahodí sa:",
+    "staleNotice": "Počas kontroly sa niečo zmenilo. Pred pokračovaním si znova skontrolujte podrobnosti.",
+    "cancelNote": "Zrušením sa odhlásite z tohto účtu a vrátite sa do nezmenenej relácie hosťa.",
+    "lines": {
+      "coins": "Zostatok Stitch Coin: {{amount}}",
+      "unlocks": "Odomknuté vzory: {{amount}}",
+      "pendingRewards": "Čakajúce odmeny: {{amount}}",
+      "adRewards": "Odmeny za reklamy, ktoré sa ešte overujú: {{amount}}. Doručia sa na váš účet.",
+      "adRewardsDiscarded": "Odmeny za reklamy, ktoré sa ešte overujú: {{amount}}. Nedoručia sa.",
+      "rejectedRewards": "Odmeny, ktoré sa nepodarilo overiť: {{amount}}. Nepresunú sa."
+    }
+  },
+  "error": {
+    "network": "Server je nedostupný. Skontrolujte pripojenie a skúste to znova.",
+    "credentialRejected": "Identitu hosťa tohto zariadenia sa nepodarilo overiť, preto sa údaje hosťa momentálne nedajú presunúť.",
+    "guestNotFound": "Vaša identita hosťa sa na serveri nenašla, takže nie je čo presúvať.",
+    "accountClosing": "Tento účet sa maže, preto sa do neho nedajú presunúť údaje hosťa."
+  },
+  "syncing": {
+    "indicator": "Synchronizujú sa vaše údaje hosťa…"
+  },
+  "needsAttention": {
+    "title": "Niektoré údaje hosťa vyžadujú pozornosť",
+    "body": "Váš účet je pripravený na používanie. Niekoľko položiek sa ešte nedokončilo presúvať a do dokončenia zostávajú v bezpečí."
+  }
+}

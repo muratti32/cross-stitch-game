@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Chuyển dữ liệu của tôi",
+    "cancel": "Hủy",
+    "retry": "Thử lại",
+    "support": "Liên hệ hỗ trợ"
+  },
+  "loading": {
+    "preview": "Đang kiểm tra dữ liệu Khách của bạn…",
+    "committing": "Đang chuyển dữ liệu Khách sang tài khoản của bạn. Vui lòng giữ ứng dụng mở."
+  },
+  "disclosure": {
+    "economyTitle": "Mang dữ liệu Khách theo bạn",
+    "economyIntro": "Những mục này sẽ được thêm vào tài khoản của bạn:",
+    "dataOnlyTitle": "Chuyển tiến trình Khách của bạn",
+    "dataOnlyIntro": "Tài khoản này đã nhận Xu Khách một lần, nên chỉ tiến trình, lịch sử hoàn thành và lượt Thích của bạn được chuyển. Xu, mẫu đã mở khóa và phần thưởng đang chờ liệt kê bên dưới sẽ bị loại bỏ.",
+    "progress": "Tiến trình thêu, lịch sử hoàn thành và lượt Thích của bạn sẽ được chuyển sang tài khoản của bạn.",
+    "discardedHeading": "Sẽ bị loại bỏ:",
+    "staleNotice": "Có thay đổi trong lúc bạn xem lại. Vui lòng kiểm tra lại chi tiết trước khi tiếp tục.",
+    "cancelNote": "Hủy sẽ đăng xuất bạn khỏi tài khoản này và đưa bạn về phiên Khách không thay đổi.",
+    "lines": {
+      "coins": "Số dư Stitch Coin: {{amount}}",
+      "unlocks": "Mẫu đã mở khóa: {{amount}}",
+      "pendingRewards": "Phần thưởng đang chờ: {{amount}}",
+      "adRewards": "Phần thưởng quảng cáo vẫn đang xác minh: {{amount}}. Chúng sẽ được chuyển vào tài khoản của bạn.",
+      "adRewardsDiscarded": "Phần thưởng quảng cáo vẫn đang xác minh: {{amount}}. Chúng sẽ không được chuyển.",
+      "rejectedRewards": "Phần thưởng không thể xác minh: {{amount}}. Chúng sẽ không được chuyển."
+    }
+  },
+  "error": {
+    "network": "Không thể kết nối với máy chủ. Hãy kiểm tra kết nối và thử lại.",
+    "credentialRejected": "Không thể xác minh danh tính Khách của thiết bị này, nên hiện chưa thể chuyển dữ liệu Khách của bạn.",
+    "guestNotFound": "Không tìm thấy danh tính Khách của bạn trên máy chủ, nên không có gì để chuyển.",
+    "accountClosing": "Tài khoản này đang bị xóa, nên không thể chuyển dữ liệu Khách vào."
+  },
+  "syncing": {
+    "indicator": "Đang đồng bộ dữ liệu Khách của bạn…"
+  },
+  "needsAttention": {
+    "title": "Một số dữ liệu Khách cần được chú ý",
+    "body": "Tài khoản của bạn đã sẵn sàng sử dụng. Một vài mục chưa chuyển xong và được lưu giữ an toàn cho đến khi hoàn tất."
+  }
+}

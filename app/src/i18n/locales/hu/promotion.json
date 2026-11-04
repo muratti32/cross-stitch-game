@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Adataim áthelyezése",
+    "cancel": "Mégse",
+    "retry": "Próbáld újra",
+    "support": "Kapcsolat a támogatással"
+  },
+  "loading": {
+    "preview": "Vendégadataid ellenőrzése…",
+    "committing": "Vendégadataid áthelyezése a fiókodba. Kérjük, tartsd nyitva az alkalmazást."
+  },
+  "disclosure": {
+    "economyTitle": "Vidd magaddal a vendégadataidat",
+    "economyIntro": "Ezek hozzáadódnak a fiókodhoz:",
+    "dataOnlyTitle": "Vendégként elért haladásod áthelyezése",
+    "dataOnlyIntro": "Ez a fiók már egyszer kapott vendégérméket, ezért csak a haladásod, a befejezési előzményeid és a kedvelések kerülnek át. Az alább felsorolt érmék, feloldott minták és függőben lévő jutalmak elvesznek.",
+    "progress": "A hímzési haladásod, a befejezési előzményeid és a kedvelések átkerülnek a fiókodba.",
+    "discardedHeading": "El fog veszni:",
+    "staleNotice": "Az átnézés közben valami megváltozott. Folytatás előtt ellenőrizd újra a részleteket.",
+    "cancelNote": "A mégse kijelentkeztet ebből a fiókból, és visszavisz a változatlan vendég-munkamenetedbe.",
+    "lines": {
+      "coins": "Stitch Coin egyenleg: {{amount}}",
+      "unlocks": "Feloldott minták: {{amount}}",
+      "pendingRewards": "Függőben lévő jutalmak: {{amount}}",
+      "adRewards": "Még ellenőrzés alatt álló hirdetési jutalmak: {{amount}}. Megérkeznek a fiókodba.",
+      "adRewardsDiscarded": "Még ellenőrzés alatt álló hirdetési jutalmak: {{amount}}. Nem fognak megérkezni.",
+      "rejectedRewards": "Nem ellenőrizhető jutalmak: {{amount}}. Nem kerülnek át."
+    }
+  },
+  "error": {
+    "network": "A szerver nem érhető el. Ellenőrizd a kapcsolatot, és próbáld újra.",
+    "credentialRejected": "Az eszköz vendégazonosítóját nem sikerült ellenőrizni, ezért a vendégadataid most nem helyezhetők át.",
+    "guestNotFound": "A vendégazonosítód nem található a szerveren, így nincs mit áthelyezni.",
+    "accountClosing": "Ez a fiók törlés alatt áll, ezért vendégadatok nem helyezhetők át bele."
+  },
+  "syncing": {
+    "indicator": "Vendégadataid szinkronizálása…"
+  },
+  "needsAttention": {
+    "title": "Néhány vendégadat figyelmet igényel",
+    "body": "A fiókod használatra kész. Néhány elem áthelyezése még nem fejeződött be, és biztonságban marad, amíg be nem fejeződik."
+  }
+}

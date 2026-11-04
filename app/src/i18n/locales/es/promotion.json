@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Mover mis datos",
+    "cancel": "Cancelar",
+    "retry": "Intentar de nuevo",
+    "support": "Contactar con soporte"
+  },
+  "loading": {
+    "preview": "Comprobando tus datos de invitado…",
+    "committing": "Moviendo tus datos de invitado a tu cuenta. Mantén la app abierta."
+  },
+  "disclosure": {
+    "economyTitle": "Lleva contigo tus datos de invitado",
+    "economyIntro": "Esto se añadirá a tu cuenta:",
+    "dataOnlyTitle": "Mueve tu progreso de invitado",
+    "dataOnlyIntro": "Esta cuenta ya recibió Coins de invitado una vez, así que solo se moverán tu progreso, tu historial de completados y tus Me gusta. Los Coins, los patrones desbloqueados y las recompensas pendientes que aparecen abajo se descartarán.",
+    "progress": "Tu progreso de bordado, tu historial de completados y tus Me gusta se moverán a tu cuenta.",
+    "discardedHeading": "Se descartará:",
+    "staleNotice": "Algo cambió mientras revisabas. Comprueba los detalles de nuevo antes de continuar.",
+    "cancelNote": "Al cancelar, se cierra la sesión de esta cuenta y vuelves a tu sesión de invitado sin cambios.",
+    "lines": {
+      "coins": "Saldo de Stitch Coins: {{amount}}",
+      "unlocks": "Patrones desbloqueados: {{amount}}",
+      "pendingRewards": "Recompensas pendientes: {{amount}}",
+      "adRewards": "Recompensas de anuncios aún en verificación: {{amount}}. Llegarán a tu cuenta.",
+      "adRewardsDiscarded": "Recompensas de anuncios aún en verificación: {{amount}}. No llegarán.",
+      "rejectedRewards": "Recompensas que no se pudieron verificar: {{amount}}. No se transferirán."
+    }
+  },
+  "error": {
+    "network": "No se puede conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
+    "credentialRejected": "No se pudo verificar la identidad de invitado de este dispositivo, así que tus datos de invitado no se pueden mover ahora.",
+    "guestNotFound": "No se encontró tu identidad de invitado en el servidor, así que no hay nada que mover.",
+    "accountClosing": "Esta cuenta se está eliminando, así que no se le pueden mover datos de invitado."
+  },
+  "syncing": {
+    "indicator": "Sincronizando tus datos de invitado…"
+  },
+  "needsAttention": {
+    "title": "Algunos datos de invitado necesitan atención",
+    "body": "Tu cuenta está lista para usarse. Algunos elementos no han terminado de moverse y se mantienen a salvo hasta que lo hagan."
+  }
+}
