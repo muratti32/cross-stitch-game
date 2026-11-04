@@ -19,6 +19,7 @@ import { applyAnalyticsMirrorConsent, mirrorScreenView } from '../src/analytics/
 import { syncAnalyticsMirrorIdentity } from '../src/analytics/analyticsMirrorSync';
 import { initSentry, setSentryScreen, syncSentryPlayerReferenceWithIdentity } from '../src/observability/sentry';
 import { initI18n, applyResolvedLanguage } from '../src/i18n';
+import { PromotionHandoffGate } from '../src/promotion/PromotionHandoffGate';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { syncPendingPersonalPatterns } from '../src/pattern-editor/sync';
 import { flushAnalyticsGameplayEvents } from '../src/sync/analyticsGameplayEventEngine';
@@ -282,6 +283,7 @@ function RootLayout() {
       <SafeAreaProvider>
         <QueryProvider>
           <Slot />
+          <PromotionHandoffGate />
         </QueryProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

@@ -33,12 +33,13 @@ describe('describeDisclosure', () => {
     expect(result.movesProgress).toBe(true);
   });
 
-  test('economy names the rewards it could not verify', () => {
+  test('economy lists the rewards it could not verify as not transferring', () => {
     const result = describeDisclosure(
       disclosing({ guestLedgerBalance: 0, guestUnlockCount: 0, pendingAdAttemptCount: 0, rejectedPendingRewards: { k: 'implausible_evidence' } }),
     );
 
-    expect(result.receives).toEqual([{ key: 'rejectedRewards', amount: 1 }]);
+    expect(result.receives).toEqual([]);
+    expect(result.discards).toEqual([{ key: 'rejectedRewards', amount: 1 }]);
   });
 
   test('data-only receives nothing and lists every economic item as discarded', () => {

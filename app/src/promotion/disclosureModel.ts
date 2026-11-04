@@ -18,7 +18,7 @@ export interface Disclosure {
   mode: PromotionMode;
   /** Economic value that arrives on the account. Always empty for data-only. */
   receives: DisclosureLine[];
-  /** Economic value that is given up. Always empty for economy. */
+  /** Economic value that does not arrive: everything in data-only, and unverifiable rewards in economy. */
   discards: DisclosureLine[];
   /** True when sessions, completion history or Likes move too. */
   movesProgress: boolean;
@@ -50,9 +50,8 @@ export function describeDisclosure(handoff: Disclosing): Disclosure {
         { key: 'unlocks', amount: preview.guestUnlockCount },
         { key: 'pendingRewards', amount: preview.validatedPendingRewards.length },
         { key: 'adRewards', amount: preview.pendingAdAttemptCount },
-        { key: 'rejectedRewards', amount: Object.keys(preview.rejectedPendingRewards).length },
       ]),
-      discards: [],
+      discards: nonZero([{ key: 'rejectedRewards', amount: Object.keys(preview.rejectedPendingRewards).length }]),
       movesProgress,
     };
   }
