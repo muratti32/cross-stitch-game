@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useLikeToggle, SocialApiError } from '../social';
-import { preparePromotionManifest, drainLike } from '../promotion';
-import { setLocalPatternLike, getLocalPatternLikes } from '../../local-db';
+import { drainLike } from '../promotion';
+import { setLocalPatternLike } from '../../local-db';
 import { useIdentityStore } from '../../identity/guestIdentity';
 
 // Mock apiFetch
@@ -13,7 +13,6 @@ const { apiFetch } = require('../apiFetch');
 // Mock local-db exports
 jest.mock('../../local-db', () => ({
   setLocalPatternLike: jest.fn(),
-  getLocalPatternLikes: jest.fn(),
 }));
 
 // Mock react-query hooks
@@ -174,22 +173,11 @@ describe('Social API Client', () => {
     );
   });
 
-  test('getLocalPatternLikes() feeds the promotion manifest, and a successful drainLike clears that local row', async () => {
-    // 1. Arrange getLocalPatternLikes
-    (getLocalPatternLikes as jest.Mock).mockResolvedValue({ p1: true });
-
-    // 2. Act preparePromotionManifest
-    const manifest = await preparePromotionManifest();
-    expect(manifest.likes).toEqual({ p1: true });
-
-    // 3. Arrange drainLike success
+  test('drainLike posts the Guest Like to the backend and leaves the open namespace untouched', async () => {
     apiFetch.mockResolvedValue(jsonResponse(200, { success: true }));
-    (setLocalPatternLike as jest.Mock).mockResolvedValue(undefined);
 
-    // 4. Act drainLike
     await drainLike('guest_123', 'p1');
 
-    // 5. Assert
     expect(apiFetch).toHaveBeenCalledWith(
       '/v1/promotion/drain/like',
       expect.objectContaining({
@@ -197,6 +185,6 @@ describe('Social API Client', () => {
         body: JSON.stringify({ guestId: 'guest_123', patternId: 'p1' }),
       })
     );
-    expect(setLocalPatternLike).toHaveBeenCalledWith('p1', false);
+    expect(setLocalPatternLike).not.toHaveBeenCalled();
   });
 });
