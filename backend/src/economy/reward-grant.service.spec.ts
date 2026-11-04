@@ -5,11 +5,12 @@ import type {
   AdMobSsvReward,
   AdMobSsvVerifierService,
 } from './admob-ssv-verifier.service';
-import type {
+import {
   AdRewardGrantResult,
   CoinLedgerRepository,
   LedgerPrincipal,
 } from './coin-ledger.repository';
+import { createAdRewardLedgerFake } from '../../test/fakes/ad-reward-ledger.fake';
 import { RewardGrantService } from './reward-grant.service';
 import { utcRewardDay } from './reward-day';
 import { AdAttemptRepository } from './ad-attempt.repository';
@@ -235,5 +236,32 @@ describe('RewardGrantService', () => {
       BadRequestException,
     );
     expect(grant).not.toHaveBeenCalled();
+  });
+  it('pays the account for a Guest-owned attempt verified after an economy promotion', async () => {
+    const accountId = '22222222-2222-4222-8222-222222222222';
+    const fake = createAdRewardLedgerFake();
+    fake.openAttempt('nonce-1', { type: 'guest', id: GUEST_ID });
+    fake.commitPromotion(GUEST_ID, accountId, 'economy');
+    const verifier = {
+      verify: jest.fn().mockResolvedValue(rewardFixture({ customData: 'nonce-1' })),
+    } as unknown as AdMobSsvVerifierService;
+    const config = { admobSsvAllowedAdUnits: [] } as unknown as AppConfigService;
+    const service = new RewardGrantService(
+      verifier,
+      new CoinLedgerRepository(fake.dataSource),
+      config,
+      new AdAttemptRepository(fake.dataSource),
+    );
+
+    await expect(service.processAdCallback('raw=query')).resolves.toMatchObject({
+      granted: true,
+      amount: 10,
+      balance: 10,
+      replayed: false,
+      transactionId: 'txn-1',
+    });
+    await expect(service.processAdCallback('raw=query')).resolves.toMatchObject({ replayed: true, balance: 10 });
+    expect(fake.balanceOf({ type: 'account', id: accountId })).toBe(10);
+    expect(fake.balanceOf({ type: 'guest', id: GUEST_ID })).toBe(0);
   });
 });
