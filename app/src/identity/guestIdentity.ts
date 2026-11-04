@@ -22,6 +22,7 @@ import {
   isCurrentGeneration,
 } from './sessionLifecycle';
 import { installationMarkerStore, shouldDiscardInheritedSession } from './installationScope';
+import { captureGuestPromotion } from '../promotion/capture';
 
 const SECURE_KEYS = {
   INSTALLATION_KEY: 'stitch_wish.installation_key',
@@ -686,6 +687,10 @@ export async function adoptEmailAccountSession(
  * Adopts a verified Registered Account session from any accepted provider.
  * Firebase/provider tokens are not persisted; only the Game Backend session
  * and private display metadata live on the device.
+ *
+ * When the previous session was a Guest, the Promotion Handoff for that Guest
+ * is recorded first (ADR-0028); the promotion flow resumes from it once the
+ * account is the active principal.
  */
 export async function adoptAccountSession(
   session: AccountSession,
@@ -695,6 +700,15 @@ export async function adoptAccountSession(
   clearRefreshSchedule();
   resetRetryDelay();
   inheritedAccountSessionUnproven = false;
+
+  // A Guest signing in must not lose its Guest Coin, Pattern Unlocks and
+  // pending rewards. The Promotion Handoff is written while the Guest's
+  // namespace and envelope are still in place; if it cannot be written the
+  // sign-in fails here and the Guest session stays untouched.
+  const previous = await readEnvelope();
+  if (previous.kind === 'guest' && previous.guestId) {
+    await captureGuestPromotion(previous.guestId, session.accountId);
+  }
 
   await writeEnvelope({
     ...emptySessionEnvelope(),

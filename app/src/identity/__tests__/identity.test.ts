@@ -4,6 +4,7 @@ import { adoptAccountSession, bootstrap, continueAsGuest, hydrateStoredIdentity,
 import { requestEmailOtp, verifyEmailOtp } from '../emailAuth';
 import { exchangeFirebaseIdToken } from '../federatedAuth';
 import { apiFetch } from '../../api/apiFetch';
+import { openNamespace } from '../../local-db';
 
 const DECODABLE_JWT = 'h.eyJpZCI6ImcxIiwiaWF0IjoxMDAwLCJleHAiOjE5MDB9.sig';
 const SESSION_ENVELOPE = 'stitch_wish.session_envelope_v1';
@@ -55,6 +56,13 @@ jest.mock('../../local-db', () => {
     deleteNamespaceFiles: jest.fn(async () => {}),
   };
 });
+
+// The Promotion Handoff writer is covered by its own suite; here only its
+// position relative to the identity switch matters.
+const mockCaptureGuestPromotion = jest.fn(async (_guestId: string, _accountId: string): Promise<void> => {});
+jest.mock('../../promotion/capture', () => ({
+  captureGuestPromotion: (guestId: string, accountId: string) => mockCaptureGuestPromotion(guestId, accountId),
+}));
 
 // Mock global fetch
 let mockFetchResponses: Array<{ status: number; body: any }> = [];
@@ -472,6 +480,74 @@ describe('Guest Identity Client State Machine', () => {
       isAccount: true,
       accountId: 'acc_immediate',
       accountEmail: 'immediate@example.com',
+    });
+  });
+
+  describe('Guest Promotion Handoff capture', () => {
+    const accountSession = {
+      accountId: 'acc_promoted',
+      email: 'promoted@example.com',
+      provider: 'email' as const,
+      accessToken: `access.${DECODABLE_JWT}`,
+      refreshToken: 'refresh_promoted',
+    };
+
+    beforeEach(() => {
+      mockCaptureGuestPromotion.mockReset();
+      mockCaptureGuestPromotion.mockResolvedValue(undefined);
+      (openNamespace as jest.Mock).mockClear();
+      delete mockSecureStore[SESSION_ENVELOPE];
+    });
+
+    test('a Guest signing in is captured before the envelope or the namespace switch', async () => {
+      mockSecureStore[SESSION_ENVELOPE] = JSON.stringify({
+        version: 1, kind: 'guest', guestId: 'guest_leaving', guestCreatedAt: '2026-01-01T00:00:00.000Z',
+        accountId: null, accountEmail: null, accountProvider: null, refreshToken: 'guest_refresh', requiresSignIn: false,
+      });
+      let envelopeAtCapture: { kind: string } | null = null;
+      let namespaceOpensAtCapture = -1;
+      mockCaptureGuestPromotion.mockImplementation(async () => {
+        envelopeAtCapture = JSON.parse(mockSecureStore[SESSION_ENVELOPE]) as { kind: string };
+        namespaceOpensAtCapture = (openNamespace as jest.Mock).mock.calls.length;
+      });
+
+      await adoptAccountSession(accountSession);
+
+      expect(mockCaptureGuestPromotion).toHaveBeenCalledTimes(1);
+      expect(mockCaptureGuestPromotion).toHaveBeenCalledWith('guest_leaving', 'acc_promoted');
+      expect(envelopeAtCapture).toMatchObject({ kind: 'guest' });
+      expect(namespaceOpensAtCapture).toBe(0);
+      expect(JSON.parse(mockSecureStore[SESSION_ENVELOPE])).toMatchObject({ kind: 'account', accountId: 'acc_promoted' });
+    });
+
+    test('a failed capture leaves the Guest session in place and rejects the sign-in', async () => {
+      mockSecureStore[SESSION_ENVELOPE] = JSON.stringify({
+        version: 1, kind: 'guest', guestId: 'guest_staying', guestCreatedAt: '2026-01-01T00:00:00.000Z',
+        accountId: null, accountEmail: null, accountProvider: null, refreshToken: 'guest_refresh', requiresSignIn: false,
+      });
+      mockCaptureGuestPromotion.mockRejectedValue(new Error('disk full'));
+
+      await expect(adoptAccountSession(accountSession)).rejects.toThrow('disk full');
+
+      expect(JSON.parse(mockSecureStore[SESSION_ENVELOPE])).toMatchObject({ kind: 'guest', guestId: 'guest_staying' });
+      expect(openNamespace).not.toHaveBeenCalled();
+    });
+
+    test('an account switching to another account is not captured', async () => {
+      mockSecureStore[SESSION_ENVELOPE] = JSON.stringify({
+        version: 1, kind: 'account', guestId: null, guestCreatedAt: null,
+        accountId: 'acc_before', accountEmail: 'before@example.com', accountProvider: 'email', refreshToken: 'r', requiresSignIn: false,
+      });
+
+      await adoptAccountSession(accountSession);
+
+      expect(mockCaptureGuestPromotion).not.toHaveBeenCalled();
+    });
+
+    test('a device with no identity yet is not captured', async () => {
+      await adoptAccountSession(accountSession);
+
+      expect(mockCaptureGuestPromotion).not.toHaveBeenCalled();
     });
   });
 
