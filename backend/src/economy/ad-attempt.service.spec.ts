@@ -1,11 +1,13 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
+
+import { createAdRewardLedgerFake } from '../../test/fakes/ad-reward-ledger.fake';
 
 import type { AuthPrincipal } from '../auth/auth.types';
 import { PrincipalType } from '../auth/entities';
 import type { AppConfigService } from '../config/app-config.service';
 import { AdAttemptService } from './ad-attempt.service';
-import type { AdAttemptRepository } from './ad-attempt.repository';
-import type { CoinLedgerRepository } from './coin-ledger.repository';
+import { AdAttemptRepository } from './ad-attempt.repository';
+import { CoinLedgerRepository } from './coin-ledger.repository';
 
 describe('AdAttemptService', () => {
   const principal: AuthPrincipal = {
@@ -206,5 +208,74 @@ describe('AdAttemptService', () => {
       expect.any(String),
       'ad_client:nonce-123',
     );
+  });
+  describe('client claim after a Guest Economy Promotion', () => {
+    const GUEST_ID = '11111111-1111-4111-8111-111111111111';
+    const ACCOUNT_ID = '22222222-2222-4222-8222-222222222222';
+    const guest = { type: 'guest', id: GUEST_ID } as const;
+    const account = { type: 'account', id: ACCOUNT_ID } as const;
+    const asPrincipal = (type: PrincipalType, id: string): AuthPrincipal => ({ type, id, tokenVersion: 1 });
+
+    function promotedGuestWithPendingAd(mode: 'economy' | 'data-only' = 'economy') {
+      const fake = createAdRewardLedgerFake();
+      fake.openAttempt('nonce-1', guest);
+      fake.commitPromotion(GUEST_ID, ACCOUNT_ID, mode);
+      const config = { enableAdmobSsv: false } as unknown as AppConfigService;
+      const service = new AdAttemptService(
+        new AdAttemptRepository(fake.dataSource),
+        new CoinLedgerRepository(fake.dataSource),
+        config,
+      );
+      return { fake, service };
+    }
+
+    it('lets the target account claim the Guest nonce and pays the account', async () => {
+      const { fake, service } = promotedGuestWithPendingAd();
+
+      await expect(service.claimClientReward(asPrincipal(PrincipalType.Account, ACCOUNT_ID), 'nonce-1')).resolves.toMatchObject({
+        granted: true,
+        amount: 10,
+        balance: 10,
+        replayed: false,
+      });
+      expect(fake.balanceOf(account)).toBe(10);
+      expect(fake.balanceOf(guest)).toBe(0);
+      expect(fake.entryFor('ad_client:nonce-1')).toMatchObject({ principal_type: 'account', principal_id: ACCOUNT_ID });
+    });
+
+    it('pays the account when the Guest token claims after promotion', async () => {
+      const { fake, service } = promotedGuestWithPendingAd();
+      await service.claimClientReward(asPrincipal(PrincipalType.Guest, GUEST_ID), 'nonce-1');
+      expect(fake.balanceOf(account)).toBe(10);
+      expect(fake.balanceOf(guest)).toBe(0);
+    });
+
+    it('replays a second claim of the same nonce against the account', async () => {
+      const { fake, service } = promotedGuestWithPendingAd();
+      await service.claimClientReward(asPrincipal(PrincipalType.Account, ACCOUNT_ID), 'nonce-1');
+
+      await expect(service.claimClientReward(asPrincipal(PrincipalType.Account, ACCOUNT_ID), 'nonce-1')).resolves.toMatchObject({
+        granted: true,
+        balance: 10,
+        replayed: true,
+      });
+      expect(fake.balanceOf(account)).toBe(10);
+    });
+
+    it('rejects an unrelated account', async () => {
+      const { fake, service } = promotedGuestWithPendingAd();
+      await expect(
+        service.claimClientReward(asPrincipal(PrincipalType.Account, '33333333-3333-4333-8333-333333333333'), 'nonce-1'),
+      ).rejects.toThrow(BadRequestException);
+      expect(fake.balanceOf(account)).toBe(0);
+      expect(fake.entryFor('ad_client:nonce-1')).toBeUndefined();
+    });
+
+    it('rejects the target account after a data-only promotion', async () => {
+      const { service } = promotedGuestWithPendingAd('data-only');
+      await expect(service.claimClientReward(asPrincipal(PrincipalType.Account, ACCOUNT_ID), 'nonce-1')).rejects.toThrow(
+        BadRequestException,
+      );
+    });
   });
 });
