@@ -46,7 +46,8 @@ describe('PromotionCommitRequestDto', () => {
   });
 
   it('rejects a preview missing a signed field', async () => {
-    const { guestLedgerBalance: _omitted, ...withoutBalance } = previewResponse();
+    const withoutBalance: Record<string, unknown> = previewResponse();
+    delete withoutBalance.guestLedgerBalance;
     const errors = await errorsFor(withoutBalance);
     expect(errors).toHaveLength(1);
   });

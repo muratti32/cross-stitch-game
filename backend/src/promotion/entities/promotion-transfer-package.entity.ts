@@ -20,7 +20,7 @@ export class PromotionTransferPackageEntity {
   manifestChecksum!: string;
 
   @Column('jsonb', { name: 'package_data' })
-  packageData!: Record<string, unknown>;
+  packageData!: object;
 
   @Column({ length: 64 })
   checksum!: string;
