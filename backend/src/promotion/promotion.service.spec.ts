@@ -527,6 +527,32 @@ describe('PromotionService', () => {
     });
   });
 
+  describe('first completion pending reward', () => {
+    const guestId = '11111111-1111-4111-8111-111111111111';
+    const patternId = '22222222-2222-4222-8222-222222222222';
+    const sourceKey = `first_completion:guest:${guestId}:${patternId}`;
+
+    function validate(stitchableCellCount: number | null) {
+      managerQuery
+        .mockResolvedValueOnce([{ width: 100, height: 100, stitchableCellCount, visibility: 'catalog' }])
+        .mockResolvedValueOnce([{ exists: true }]);
+      managerFindOne.mockResolvedValue(null);
+      return (service as any).validatePendingReward(
+        (service as any).dataSource.manager,
+        guestId,
+        sourceKey,
+      );
+    }
+
+    it('prices a sparse Pattern by its stitchable cells', async () => {
+      await expect(validate(114)).resolves.toMatchObject({ valid: true, amount: 25 });
+    });
+
+    it('prices a row with no stitchable count by width × height', async () => {
+      await expect(validate(null)).resolves.toMatchObject({ valid: true, amount: 60 });
+    });
+  });
+
   describe('assertNotLocked', () => {
     it('passes for account principal', async () => {
       await expect(service.assertNotLocked('id', 'account')).resolves.toBeUndefined();
@@ -569,6 +595,7 @@ describe('PromotionService', () => {
     let accountSessions: SessionRow[];
     let accountSessionById: Record<string, SessionRow>;
     let completedCellCount: number;
+    let stitchableCellCount: number | null;
     let locked: boolean;
 
     function packagedSession(overrides: Record<string, unknown> = {}) {
@@ -602,10 +629,11 @@ describe('PromotionService', () => {
       accountSessions = [];
       accountSessionById = {};
       completedCellCount = 0;
+      stitchableCellCount = null;
       locked = false;
       const routes: SqlRoute[] = [
         [/principal_type = 'guest' AND principal_id = \$2 AND pattern_id = \$3/, () => guestSessions],
-        [/FROM catalog\.patterns WHERE id = \$1 FOR SHARE/, () => [{ width: 2, height: 2 }]],
+        [/FROM catalog\.patterns WHERE id = \$1 FOR SHARE/, () => [{ width: 2, height: 2, stitchableCellCount }]],
         [/AND pattern_id = \$2\s+ORDER BY/, () => accountSessions],
         [/\(id = \$2 OR pattern_id = \$3\)/, (params) => {
           const byId = accountSessionById[params[1] as string];
@@ -717,6 +745,17 @@ describe('PromotionService', () => {
       expect(statements(/SET status = 'completed'/)[0][1]).toEqual([GUEST_SESSION, '2026-11-01T12:00:00.000Z']);
       expect(statements(/SET terminal_completed_at/)).toHaveLength(1);
       expect(statements(/coin_ledger|coin_balances/)).toHaveLength(0);
+    });
+
+    it('completes a sparse packaged session at its stitchable count', async () => {
+      consumedPackage('committed', [packagedSession({ status: 'completed', completedAt: '2026-11-01T12:00:00.000Z' })]);
+      guestSessions = [{ id: GUEST_SESSION, status: 'active' }];
+      stitchableCellCount = 3;
+      completedCellCount = 3;
+
+      await drain();
+
+      expect(statements(/SET status = 'completed'/)).toHaveLength(1);
     });
 
     it('leaves a partly stitched packaged completion active', async () => {

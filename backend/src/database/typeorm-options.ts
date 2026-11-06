@@ -215,6 +215,7 @@ import { AddPatternUnlockSource1792886400000 } from './migrations/1792886400000-
 import { AddPatternUnlockGameplayEvents1792972800000 } from './migrations/1792972800000-AddPatternUnlockGameplayEvents';
 import { AddLocatorCoinShortfallGameplayEvents1793059200000 } from './migrations/1793059200000-AddLocatorCoinShortfallGameplayEvents';
 import { AddPromotionModeToTransferPackages1793145600000 } from './migrations/1793145600000-AddPromotionModeToTransferPackages';
+import { AddStitchableCellCountToPatterns1793232000000 } from './migrations/1793232000000-AddStitchableCellCountToPatterns';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -415,6 +416,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddPatternUnlockGameplayEvents1792972800000,
       AddLocatorCoinShortfallGameplayEvents1793059200000,
       AddPromotionModeToTransferPackages1793145600000,
+      AddStitchableCellCountToPatterns1793232000000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

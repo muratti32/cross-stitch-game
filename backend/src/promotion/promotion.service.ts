@@ -23,6 +23,7 @@ import { PatternLikeService } from '../social/pattern-like.service';
 import { PatternEntity } from '../catalog/entities/pattern.entity';
 import { applyPackagedProgress, readSurvivingSession } from './drained-session';
 import { parsePackagedSessions } from './packaged-session';
+import { stitchableCells, type PatternCellCounts } from '../catalog/stitchable-cells';
 import {
   DAILY_TASK_CELLS_TARGET,
   DAILY_TASK_COLOR_ACTIONS_MIN,
@@ -624,8 +625,9 @@ export class PromotionService {
           return this.acknowledgeDrainedSession(manager, accountId, patternId, guestSessionId);
         }
 
-        const patterns = await manager.query<readonly { width: number; height: number }[]>(
-          `SELECT width, height FROM catalog.patterns WHERE id = $1 FOR SHARE`,
+        const patterns = await manager.query<readonly PatternCellCounts[]>(
+          `SELECT width, height, stitchable_cell_count AS "stitchableCellCount"
+           FROM catalog.patterns WHERE id = $1 FOR SHARE`,
           [patternId]
         );
 
@@ -645,9 +647,10 @@ export class PromotionService {
         if (packaged) {
           await applyPackagedProgress(manager, {
             sessionId: merge.sessionId,
-            guestId,
+            deviceId: guestId,
             packaged,
-            totalCells: patterns[0].width * patterns[0].height,
+            gridCells: patterns[0].width * patterns[0].height,
+            stitchableCells: stitchableCells(patterns[0]),
           });
         }
 
@@ -961,8 +964,9 @@ export class PromotionService {
       // Query pattern to confirm eligibility. Personal Patterns never mint
       // First Completion (ADR-0011) — only catalog Patterns qualify, matching
       // the online grant path's `visibility === 'catalog'` check.
-      const patterns = await manager.query<{ width: number; height: number; visibility: string }[]>(
-        `SELECT width, height, visibility FROM catalog.patterns WHERE id = $1`,
+      const patterns = await manager.query<(PatternCellCounts & { visibility: string })[]>(
+        `SELECT width, height, stitchable_cell_count AS "stitchableCellCount", visibility
+         FROM catalog.patterns WHERE id = $1`,
         [patternId]
       );
       if (patterns.length === 0 || patterns[0].visibility !== 'catalog') {
@@ -984,8 +988,7 @@ export class PromotionService {
         return { valid: false, reason: 'implausible_evidence' };
       }
 
-      const cells = patterns[0].width * patterns[0].height;
-      const amount = firstCompletionReward(cells);
+      const amount = firstCompletionReward(stitchableCells(patterns[0]));
 
       return {
         valid: true,

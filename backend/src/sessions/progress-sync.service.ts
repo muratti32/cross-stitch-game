@@ -22,6 +22,7 @@ import { ProgressCheckpointService } from './progress-checkpoint.service';
 import { CoinLedgerRepository } from '../economy/coin-ledger.repository';
 import { MIN_MS_PER_STITCH } from '../economy/economy.constants';
 import { PromotionService } from '../promotion/promotion.service';
+import { stitchableCells, type PatternCellCounts } from '../catalog/stitchable-cells';
 
 interface SessionRecord {
   id: string;
@@ -64,17 +65,13 @@ interface PulledOperationRecord {
   effective: boolean;
 }
 
-interface PatternProgressRecord {
-  width: number;
-  height: number;
+interface PatternProgressRecord extends PatternCellCounts {
   visibility: string;
   patternId: string;
   completedCount: string;
 }
 
-interface GuestCompletionPatternRecord {
-  width: number;
-  height: number;
+interface GuestCompletionPatternRecord extends PatternCellCounts {
   visibility: string;
   patternId: string;
   elapsedMs: string;
@@ -300,6 +297,7 @@ export class ProgressSyncService {
       const progressRows = await manager.query<readonly PatternProgressRecord[]>(
         `SELECT p.width,
                 p.height,
+                p.stitchable_cell_count AS "stitchableCellCount",
                 p.visibility,
                 p.id AS "patternId",
                 COUNT(c.cell_index) FILTER (WHERE c.state = 'completed') AS "completedCount"
@@ -307,11 +305,11 @@ export class ProgressSyncService {
          INNER JOIN catalog.patterns p ON p.id = s.pattern_id
          LEFT JOIN sessions.session_cell_state c ON c.session_id = s.id
          WHERE s.id = $1
-         GROUP BY p.width, p.height, p.visibility, p.id`,
+         GROUP BY p.width, p.height, p.stitchable_cell_count, p.visibility, p.id`,
         [sessionId],
       );
       const progress = progressRows[0];
-      if (!progress || Number(progress.completedCount) !== progress.width * progress.height) {
+      if (!progress || Number(progress.completedCount) !== stitchableCells(progress)) {
         throw new ConflictException('Session is not fully stitched');
       }
 
@@ -339,7 +337,7 @@ export class ProgressSyncService {
           manager,
           { type: 'account', id: principal.id },
           progress.patternId,
-          progress.width * progress.height,
+          stitchableCells(progress),
         );
         if (grant.granted) {
           firstCompletionReward = {
@@ -390,6 +388,7 @@ export class ProgressSyncService {
     const patterns = await manager.query<readonly GuestCompletionPatternRecord[]>(
       `SELECT p.width,
               p.height,
+              p.stitchable_cell_count AS "stitchableCellCount",
               p.visibility,
               p.id AS "patternId",
               FLOOR(EXTRACT(EPOCH FROM (now() - s.created_at)) * 1000)::bigint AS "elapsedMs"
@@ -407,7 +406,7 @@ export class ProgressSyncService {
       return { revision: 0, terminalCompleted: true };
     }
 
-    const cellCount = pattern.width * pattern.height;
+    const cellCount = stitchableCells(pattern);
     if (completedCells !== cellCount) {
       this.throwImplausibleCompletion('completed_cells');
     }
