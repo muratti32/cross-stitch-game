@@ -462,8 +462,17 @@ export async function adoptPreIdentityDatabase(guestId: string): Promise<void> {
   });
 }
 
-import { packCompletedBitmap, unpackCompletedBitmap, generateUUID } from './helpers';
+import {
+  base64ToUint8Array,
+  foldPackedProgress,
+  generateUUID,
+  packCompletedBitmap,
+  unionPackedBitmaps,
+  unpackCompletedBitmap,
+  type PackedSessionProgress,
+} from './helpers';
 export { packCompletedBitmap, unpackCompletedBitmap, generateUUID };
+export type { PackedSessionProgress };
 
 /**
  * Initializes the database tables and runs migrations for a specific database.
@@ -1815,6 +1824,18 @@ export async function getSessionCompletedCount(
       }
     }
     return count;
+  });
+}
+
+/**
+ * A session's complete cell record, folded from its latest checkpoint and the
+ * ops newer than it. Ops alone are incomplete because checkpoints compact them.
+ */
+export async function readSessionPackedProgress(sessionId: string): Promise<PackedSessionProgress> {
+  return withDatabase(async (db) => {
+    const checkpoint = await getLatestCheckpointWithDb(db, sessionId);
+    const ops = await getProgressOpsWithDb(db, sessionId, checkpoint?.revision ?? 0);
+    return foldPackedProgress(checkpoint?.packedBitmap ?? new Uint8Array(0), ops);
   });
 }
 

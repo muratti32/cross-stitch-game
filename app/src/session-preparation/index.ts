@@ -16,6 +16,7 @@ import {
   PatternSource,
   PendingPersonalPattern,
 } from '../local-db';
+import { base64ToUint8Array, uint8ArrayToBase64 } from '../local-db/helpers';
 import { apiFetch } from '../api/apiFetch';
 import { Config } from '../config';
 
@@ -48,6 +49,8 @@ export const useDownloadProgressStore = create<DownloadProgressState>((set) => (
 
 const activeDownloads = new Map<string, FileSystem.DownloadResumable>();
 
+export { base64ToUint8Array, uint8ArrayToBase64 };
+
 export function getOfflinePatternPath(patternId: string, identity: string | null): string {
   const baseDir = FileSystem.documentDirectory ?? '';
   const namespace = identity ? `namespace_guest_${identity}` : 'pre_identity';
@@ -64,62 +67,6 @@ export async function deleteOfflinePatternFile(patternId: string): Promise<void>
   const path = getOfflinePatternPath(patternId, identity);
   await FileSystem.deleteAsync(path, { idempotent: true });
 }
-
-export function base64ToUint8Array(base64: string): Uint8Array {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-  const lookup = new Uint8Array(256);
-  for (let i = 0; i < chars.length; i++) {
-    lookup[chars.charCodeAt(i)] = i;
-  }
-  const clean = base64.replace(/[^A-Za-z0-9+/]/g, '');
-  const len = clean.length;
-  let bufferLength = Math.floor(len * 0.75);
-  if (clean[len - 1] === '=') bufferLength--;
-  if (clean[len - 2] === '=') bufferLength--;
-
-  const bytes = new Uint8Array(bufferLength);
-  let p = 0;
-  for (let i = 0; i < len; i += 4) {
-    const encoded1 = lookup[clean.charCodeAt(i)] ?? 0;
-    const encoded2 = lookup[clean.charCodeAt(i + 1)] ?? 0;
-    const encoded3 = lookup[clean.charCodeAt(i + 2)] ?? 0;
-    const encoded4 = lookup[clean.charCodeAt(i + 3)] ?? 0;
-
-    bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
-    if (p < bufferLength) {
-      bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
-    }
-    if (p < bufferLength) {
-      bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
-    }
-  }
-  return bytes;
-}
-
-export function uint8ArrayToBase64(bytes: Uint8Array): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-  let result = '';
-  let i = 0;
-  for (; i + 2 < bytes.length; i += 3) {
-    result += chars[bytes[i] >> 2];
-    result += chars[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
-    result += chars[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
-    result += chars[bytes[i + 2] & 63];
-  }
-  const remaining = bytes.length - i;
-  if (remaining === 1) {
-    result += chars[bytes[i] >> 2];
-    result += chars[(bytes[i] & 3) << 4];
-    result += '==';
-  } else if (remaining === 2) {
-    result += chars[bytes[i] >> 2];
-    result += chars[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
-    result += chars[(bytes[i + 1] & 15) << 2];
-    result += '=';
-  }
-  return result;
-}
-
 
 export interface PrepareResponse {
   sessionId: string;
