@@ -1139,6 +1139,49 @@
         "specs": "{{width}}×{{height}} · {{count}} ألوان · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "انقل بياناتي",
+        "cancel": "إلغاء",
+        "retry": "حاول مرة أخرى",
+        "support": "تواصل مع الدعم"
+      },
+      "loading": {
+        "preview": "جارٍ فحص بيانات الضيف الخاصة بك…",
+        "committing": "جارٍ نقل بيانات الضيف إلى حسابك. يرجى إبقاء التطبيق مفتوحًا."
+      },
+      "disclosure": {
+        "economyTitle": "احتفظ ببيانات الضيف معك",
+        "economyIntro": "ستُضاف هذه العناصر إلى حسابك:",
+        "dataOnlyTitle": "انقل تقدمك كضيف",
+        "dataOnlyIntro": "حصل هذا الحساب بالفعل على عملات الضيف مرة واحدة، لذا سيُنقل تقدمك وسجل الإكمال والإعجابات فقط. ستُهمل العملات والأنماط المفتوحة والمكافآت المعلقة المدرجة أدناه.",
+        "progress": "سيُنقل تقدمك في التطريز وسجل الإكمال والإعجابات إلى حسابك.",
+        "discardedHeading": "سيتم التخلص مما يلي:",
+        "staleNotice": "تغيّر شيء أثناء مراجعتك. يرجى التحقق من التفاصيل مرة أخرى قبل المتابعة.",
+        "cancelNote": "يؤدي الإلغاء إلى تسجيل خروجك من هذا الحساب وإعادتك إلى جلسة الضيف دون تغيير.",
+        "lines": {
+          "coins": "رصيد Stitch Coin: {{amount}}",
+          "unlocks": "الأنماط المفتوحة: {{amount}}",
+          "pendingRewards": "المكافآت المعلقة: {{amount}}",
+          "adRewards": "مكافآت الإعلانات قيد التحقق: {{amount}}. ستصل إلى حسابك.",
+          "adRewardsDiscarded": "مكافآت الإعلانات قيد التحقق: {{amount}}. لن تصل.",
+          "rejectedRewards": "مكافآت تعذّر التحقق منها: {{amount}}. لن تُنقل."
+        }
+      },
+      "error": {
+        "network": "تعذّر الوصول إلى الخادم. تحقق من اتصالك وحاول مرة أخرى.",
+        "credentialRejected": "تعذّر التحقق من هوية الضيف لهذا الجهاز، لذا لا يمكن نقل بيانات الضيف الآن.",
+        "guestNotFound": "لم يتم العثور على هوية الضيف الخاصة بك على الخادم، لذلك لا يوجد ما يمكن نقله.",
+        "accountClosing": "يجري حذف هذا الحساب، لذا لا يمكن نقل بيانات الضيف إليه."
+      },
+      "syncing": {
+        "indicator": "جارٍ مزامنة بيانات الضيف الخاصة بك…"
+      },
+      "needsAttention": {
+        "title": "بعض بيانات الضيف تحتاج إلى انتباه",
+        "body": "حسابك جاهز للاستخدام. لم تنتهِ بعض العناصر من الانتقال بعد، وستبقى آمنة حتى تنتهي."
+      }
+    },
     "settings": {
       "header": {
         "title": "الإعدادات",
@@ -2581,6 +2624,49 @@
         "emptyAction": "Descobreix Patrons",
         "byCreator": "per {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}} colors · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "Mou les meves dades",
+        "cancel": "Cancel·la",
+        "retry": "Torna-ho a provar",
+        "support": "Contacta amb el suport"
+      },
+      "loading": {
+        "preview": "Comprovant les teves dades de convidat…",
+        "committing": "Movent les teves dades de convidat al teu compte. Mantén l'aplicació oberta."
+      },
+      "disclosure": {
+        "economyTitle": "Porta les teves dades de convidat amb tu",
+        "economyIntro": "Això s'afegirà al teu compte:",
+        "dataOnlyTitle": "Mou el teu progrés de convidat",
+        "dataOnlyIntro": "Aquest compte ja ha rebut Coins de convidat una vegada, així que només es mouran el teu progrés, l'historial de completats i els M'agrada. Els Coins, els patrons desbloquejats i les recompenses pendents que surten a sota es descartaran.",
+        "progress": "El teu progrés de brodat, l'historial de completats i els M'agrada es mouran al teu compte.",
+        "discardedHeading": "Es descartarà:",
+        "staleNotice": "Alguna cosa ha canviat mentre ho revisaves. Torna a comprovar els detalls abans de continuar.",
+        "cancelNote": "Si cancel·les, es tanca la sessió d'aquest compte i tornes a la teva sessió de convidat sense canvis.",
+        "lines": {
+          "coins": "Saldo de Stitch Coins: {{amount}}",
+          "unlocks": "Patrons desbloquejats: {{amount}}",
+          "pendingRewards": "Recompenses pendents: {{amount}}",
+          "adRewards": "Recompenses d'anuncis encara en verificació: {{amount}}. Arribaran al teu compte.",
+          "adRewardsDiscarded": "Recompenses d'anuncis encara en verificació: {{amount}}. No arribaran.",
+          "rejectedRewards": "Recompenses que no s'han pogut verificar: {{amount}}. No es transferiran."
+        }
+      },
+      "error": {
+        "network": "No es pot connectar amb el servidor. Comprova la connexió i torna-ho a provar.",
+        "credentialRejected": "No s'ha pogut verificar la identitat de convidat d'aquest dispositiu, així que les teves dades de convidat no es poden moure ara.",
+        "guestNotFound": "No s'ha trobat la teva identitat de convidat al servidor, així que no hi ha res a moure.",
+        "accountClosing": "Aquest compte s'està eliminant, així que no s'hi poden moure dades de convidat."
+      },
+      "syncing": {
+        "indicator": "Sincronitzant les teves dades de convidat…"
+      },
+      "needsAttention": {
+        "title": "Algunes dades de convidat necessiten atenció",
+        "body": "El teu compte està a punt per usar-se. Alguns elements encara no han acabat de moure's i es mantenen segurs fins que ho facin."
       }
     },
     "settings": {
@@ -4027,6 +4113,49 @@
         "specs": "{{width}}×{{height}} · {{count}} barev · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "Přenést moje data",
+        "cancel": "Zrušit",
+        "retry": "Zkusit znovu",
+        "support": "Kontaktovat podporu"
+      },
+      "loading": {
+        "preview": "Kontrola vašich dat hosta…",
+        "committing": "Přenášíme vaše data hosta do účtu. Nechte aplikaci otevřenou."
+      },
+      "disclosure": {
+        "economyTitle": "Vezměte si data hosta s sebou",
+        "economyIntro": "Do vašeho účtu se přidá:",
+        "dataOnlyTitle": "Přeneste svůj postup hosta",
+        "dataOnlyIntro": "Tento účet už jednou získal mince hosta, proto se přenese jen váš postup, historie dokončení a lajky. Níže uvedené mince, odemčené vzory a čekající odměny budou zahozeny.",
+        "progress": "Váš postup ve vyšívání, historie dokončení a lajky se přenesou do vašeho účtu.",
+        "discardedHeading": "Bude zahozeno:",
+        "staleNotice": "Během kontroly se něco změnilo. Před pokračováním si znovu zkontrolujte podrobnosti.",
+        "cancelNote": "Zrušením se odhlásíte z tohoto účtu a vrátíte se do nezměněné relace hosta.",
+        "lines": {
+          "coins": "Zůstatek Stitch Coin: {{amount}}",
+          "unlocks": "Odemčené vzory: {{amount}}",
+          "pendingRewards": "Čekající odměny: {{amount}}",
+          "adRewards": "Odměny za reklamy, které se stále ověřují: {{amount}}. Dorazí na váš účet.",
+          "adRewardsDiscarded": "Odměny za reklamy, které se stále ověřují: {{amount}}. Nedorazí.",
+          "rejectedRewards": "Odměny, které se nepodařilo ověřit: {{amount}}. Nepřenesou se."
+        }
+      },
+      "error": {
+        "network": "Server není dostupný. Zkontrolujte připojení a zkuste to znovu.",
+        "credentialRejected": "Identitu hosta tohoto zařízení se nepodařilo ověřit, proto teď nelze data hosta přenést.",
+        "guestNotFound": "Vaše identita hosta nebyla na serveru nalezena, takže není co přenášet.",
+        "accountClosing": "Tento účet se maže, proto na něj nelze přenést data hosta."
+      },
+      "syncing": {
+        "indicator": "Synchronizace vašich dat hosta…"
+      },
+      "needsAttention": {
+        "title": "Některá data hosta vyžadují pozornost",
+        "body": "Váš účet je připraven k použití. Několik položek se ještě nedokončilo přenášet a do té doby zůstávají v bezpečí."
+      }
+    },
     "settings": {
       "header": {
         "title": "Nastavení",
@@ -5469,6 +5598,49 @@
         "emptyAction": "Opdag mønstre",
         "byCreator": "af {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}} farver · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "Flyt mine data",
+        "cancel": "Annuller",
+        "retry": "Prøv igen",
+        "support": "Kontakt support"
+      },
+      "loading": {
+        "preview": "Tjekker dine gæstedata…",
+        "committing": "Flytter dine gæstedata til din konto. Hold appen åben."
+      },
+      "disclosure": {
+        "economyTitle": "Tag dine gæstedata med dig",
+        "economyIntro": "Disse tilføjes til din konto:",
+        "dataOnlyTitle": "Flyt dine fremskridt som gæst",
+        "dataOnlyIntro": "Denne konto har allerede modtaget gæstemønter én gang, så kun dine fremskridt, din fuldførelseshistorik og dine likes bliver flyttet. Mønterne, de oplåste mønstre og de afventende belønninger nedenfor bliver kasseret.",
+        "progress": "Dine broderifremskridt, din fuldførelseshistorik og dine likes flyttes til din konto.",
+        "discardedHeading": "Bliver kasseret:",
+        "staleNotice": "Noget ændrede sig, mens du gennemgik det. Tjek detaljerne igen, før du fortsætter.",
+        "cancelNote": "Hvis du annullerer, bliver du logget ud af denne konto og vender tilbage til din uændrede gæstesession.",
+        "lines": {
+          "coins": "Stitch Coin-saldo: {{amount}}",
+          "unlocks": "Oplåste mønstre: {{amount}}",
+          "pendingRewards": "Afventende belønninger: {{amount}}",
+          "adRewards": "Reklamebelønninger, der stadig bekræftes: {{amount}}. De ankommer på din konto.",
+          "adRewardsDiscarded": "Reklamebelønninger, der stadig bekræftes: {{amount}}. De ankommer ikke.",
+          "rejectedRewards": "Belønninger, der ikke kunne bekræftes: {{amount}}. De bliver ikke flyttet."
+        }
+      },
+      "error": {
+        "network": "Kan ikke nå serveren. Tjek din forbindelse, og prøv igen.",
+        "credentialRejected": "Denne enheds gæsteidentitet kunne ikke bekræftes, så dine gæstedata kan ikke flyttes lige nu.",
+        "guestNotFound": "Din gæsteidentitet blev ikke fundet på serveren, så der er intet at flytte.",
+        "accountClosing": "Denne konto bliver slettet, så gæstedata kan ikke flyttes til den."
+      },
+      "syncing": {
+        "indicator": "Synkroniserer dine gæstedata…"
+      },
+      "needsAttention": {
+        "title": "Nogle gæstedata kræver opmærksomhed",
+        "body": "Din konto er klar til brug. Nogle få elementer er ikke færdige med at flytte og opbevares sikkert, indtil de er det."
       }
     },
     "settings": {
@@ -6915,6 +7087,49 @@
         "specs": "{{width}}×{{height}} · {{count}} Farben · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "Meine Daten übertragen",
+        "cancel": "Abbrechen",
+        "retry": "Erneut versuchen",
+        "support": "Support kontaktieren"
+      },
+      "loading": {
+        "preview": "Deine Gastdaten werden geprüft…",
+        "committing": "Deine Gastdaten werden in dein Konto übertragen. Bitte lass die App geöffnet."
+      },
+      "disclosure": {
+        "economyTitle": "Nimm deine Gastdaten mit",
+        "economyIntro": "Diese Inhalte werden deinem Konto hinzugefügt:",
+        "dataOnlyTitle": "Übertrage deinen Gastfortschritt",
+        "dataOnlyIntro": "Dieses Konto hat bereits einmal Gast-Coins erhalten. Deshalb werden nur dein Fortschritt, dein Abschlussverlauf und deine Likes übertragen. Die unten aufgeführten Coins, freigeschalteten Muster und ausstehenden Belohnungen werden verworfen.",
+        "progress": "Dein Stickfortschritt, dein Abschlussverlauf und deine Likes werden in dein Konto übertragen.",
+        "discardedHeading": "Wird verworfen:",
+        "staleNotice": "Während deiner Prüfung hat sich etwas geändert. Bitte prüfe die Details noch einmal, bevor du fortfährst.",
+        "cancelNote": "Wenn du abbrichst, wirst du von diesem Konto abgemeldet und kehrst zu deiner unveränderten Gastsitzung zurück.",
+        "lines": {
+          "coins": "Stitch-Coin-Guthaben: {{amount}}",
+          "unlocks": "Freigeschaltete Muster: {{amount}}",
+          "pendingRewards": "Ausstehende Belohnungen: {{amount}}",
+          "adRewards": "Werbebelohnungen in Prüfung: {{amount}}. Sie werden deinem Konto gutgeschrieben.",
+          "adRewardsDiscarded": "Werbebelohnungen in Prüfung: {{amount}}. Sie werden nicht gutgeschrieben.",
+          "rejectedRewards": "Belohnungen, die nicht bestätigt werden konnten: {{amount}}. Sie werden nicht übertragen."
+        }
+      },
+      "error": {
+        "network": "Der Server ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.",
+        "credentialRejected": "Die Gastidentität dieses Geräts konnte nicht bestätigt werden. Deine Gastdaten können deshalb gerade nicht übertragen werden.",
+        "guestNotFound": "Deine Gastidentität wurde auf dem Server nicht gefunden. Es gibt also nichts zu übertragen.",
+        "accountClosing": "Dieses Konto wird gerade gelöscht. Gastdaten können daher nicht darauf übertragen werden."
+      },
+      "syncing": {
+        "indicator": "Deine Gastdaten werden synchronisiert…"
+      },
+      "needsAttention": {
+        "title": "Einige Gastdaten brauchen noch Aufmerksamkeit",
+        "body": "Dein Konto ist einsatzbereit. Ein paar Elemente sind noch nicht fertig übertragen und bleiben bis dahin sicher gespeichert."
+      }
+    },
     "settings": {
       "header": {
         "title": "Einstellungen",
@@ -8357,6 +8572,49 @@
         "emptyAction": "Ανακαλύψτε Μοτίβα",
         "byCreator": "από {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}} χρώματα · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "Μεταφορά των δεδομένων μου",
+        "cancel": "Ακύρωση",
+        "retry": "Δοκιμάστε ξανά",
+        "support": "Επικοινωνία με την υποστήριξη"
+      },
+      "loading": {
+        "preview": "Έλεγχος των δεδομένων επισκέπτη σας…",
+        "committing": "Μεταφορά των δεδομένων επισκέπτη στον λογαριασμό σας. Κρατήστε την εφαρμογή ανοιχτή."
+      },
+      "disclosure": {
+        "economyTitle": "Πάρτε μαζί σας τα δεδομένα επισκέπτη",
+        "economyIntro": "Τα παρακάτω θα προστεθούν στον λογαριασμό σας:",
+        "dataOnlyTitle": "Μεταφέρετε την πρόοδό σας ως επισκέπτης",
+        "dataOnlyIntro": "Αυτός ο λογαριασμός έχει ήδη λάβει νομίσματα επισκέπτη μία φορά, οπότε θα μεταφερθούν μόνο η πρόοδός σας, το ιστορικό ολοκληρώσεων και τα «Μου αρέσει». Τα νομίσματα, τα ξεκλειδωμένα σχέδια και οι εκκρεμείς ανταμοιβές που αναφέρονται παρακάτω θα απορριφθούν.",
+        "progress": "Η πρόοδός σας στο κέντημα, το ιστορικό ολοκληρώσεων και τα «Μου αρέσει» θα μεταφερθούν στον λογαριασμό σας.",
+        "discardedHeading": "Θα απορριφθούν:",
+        "staleNotice": "Κάτι άλλαξε ενώ το εξετάζατε. Ελέγξτε ξανά τις λεπτομέρειες πριν συνεχίσετε.",
+        "cancelNote": "Με την ακύρωση αποσυνδέεστε από αυτόν τον λογαριασμό και επιστρέφετε στην αμετάβλητη συνεδρία επισκέπτη.",
+        "lines": {
+          "coins": "Υπόλοιπο Stitch Coin: {{amount}}",
+          "unlocks": "Ξεκλειδωμένα σχέδια: {{amount}}",
+          "pendingRewards": "Εκκρεμείς ανταμοιβές: {{amount}}",
+          "adRewards": "Ανταμοιβές διαφημίσεων που επαληθεύονται ακόμη: {{amount}}. Θα φτάσουν στον λογαριασμό σας.",
+          "adRewardsDiscarded": "Ανταμοιβές διαφημίσεων που επαληθεύονται ακόμη: {{amount}}. Δεν θα φτάσουν.",
+          "rejectedRewards": "Ανταμοιβές που δεν ήταν δυνατό να επαληθευτούν: {{amount}}. Δεν θα μεταφερθούν."
+        }
+      },
+      "error": {
+        "network": "Δεν είναι δυνατή η σύνδεση με τον διακομιστή. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.",
+        "credentialRejected": "Η ταυτότητα επισκέπτη αυτής της συσκευής δεν επαληθεύτηκε, οπότε τα δεδομένα επισκέπτη δεν μπορούν να μεταφερθούν τώρα.",
+        "guestNotFound": "Η ταυτότητα επισκέπτη δεν βρέθηκε στον διακομιστή, οπότε δεν υπάρχει κάτι να μεταφερθεί.",
+        "accountClosing": "Αυτός ο λογαριασμός διαγράφεται, οπότε δεν μπορούν να μεταφερθούν δεδομένα επισκέπτη σε αυτόν."
+      },
+      "syncing": {
+        "indicator": "Συγχρονισμός των δεδομένων επισκέπτη σας…"
+      },
+      "needsAttention": {
+        "title": "Ορισμένα δεδομένα επισκέπτη χρειάζονται προσοχή",
+        "body": "Ο λογαριασμός σας είναι έτοιμος για χρήση. Μερικά στοιχεία δεν έχουν ολοκληρώσει τη μεταφορά και φυλάσσονται με ασφάλεια μέχρι να ολοκληρωθεί."
       }
     },
     "settings": {
@@ -9803,6 +10061,49 @@
         "specs": "{{width}}×{{height}} · {{count}} colors · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "Move my data",
+        "cancel": "Cancel",
+        "retry": "Try again",
+        "support": "Contact support"
+      },
+      "loading": {
+        "preview": "Checking your Guest data…",
+        "committing": "Moving your Guest data to your account. Please keep the app open."
+      },
+      "disclosure": {
+        "economyTitle": "Bring your Guest data with you",
+        "economyIntro": "These will be added to your account:",
+        "dataOnlyTitle": "Move your Guest progress",
+        "dataOnlyIntro": "This account already received Guest Coins once, so only your progress, completion history and Likes will move. The Coins, Pattern Unlocks and pending rewards listed below will be discarded.",
+        "progress": "Your stitching progress, completion history and Likes will move to your account.",
+        "discardedHeading": "Will be discarded:",
+        "staleNotice": "Things changed while you were reviewing. Please check the details again before you continue.",
+        "cancelNote": "Cancelling signs you out of this account and returns you to your unchanged Guest session.",
+        "lines": {
+          "coins": "Stitch Coin balance: {{amount}}",
+          "unlocks": "Unlocked patterns: {{amount}}",
+          "pendingRewards": "Pending rewards: {{amount}}",
+          "adRewards": "Ad rewards still verifying: {{amount}}. They will arrive on your account.",
+          "adRewardsDiscarded": "Ad rewards still verifying: {{amount}}. They will not arrive.",
+          "rejectedRewards": "Rewards that could not be verified: {{amount}}. They will not transfer."
+        }
+      },
+      "error": {
+        "network": "Can't reach the server. Check your connection and try again.",
+        "credentialRejected": "This device's Guest identity could not be verified, so your Guest data can't be moved right now.",
+        "guestNotFound": "Your Guest identity could not be found on the server, so there is nothing to move.",
+        "accountClosing": "This account is being deleted, so Guest data can't be moved to it."
+      },
+      "syncing": {
+        "indicator": "Syncing your Guest data…"
+      },
+      "needsAttention": {
+        "title": "Some Guest data still needs attention",
+        "body": "Your account is ready to use. A few items haven't finished moving, and they are kept safe until they do."
+      }
+    },
     "settings": {
       "header": {
         "title": "Settings",
@@ -11245,6 +11546,49 @@
         "emptyAction": "Descubrir patrones",
         "byCreator": "por {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}} colores · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "Mover mis datos",
+        "cancel": "Cancelar",
+        "retry": "Intentar de nuevo",
+        "support": "Contactar con soporte"
+      },
+      "loading": {
+        "preview": "Comprobando tus datos de invitado…",
+        "committing": "Moviendo tus datos de invitado a tu cuenta. Mantén la app abierta."
+      },
+      "disclosure": {
+        "economyTitle": "Lleva contigo tus datos de invitado",
+        "economyIntro": "Esto se añadirá a tu cuenta:",
+        "dataOnlyTitle": "Mueve tu progreso de invitado",
+        "dataOnlyIntro": "Esta cuenta ya recibió Coins de invitado una vez, así que solo se moverán tu progreso, tu historial de completados y tus Me gusta. Los Coins, los patrones desbloqueados y las recompensas pendientes que aparecen abajo se descartarán.",
+        "progress": "Tu progreso de bordado, tu historial de completados y tus Me gusta se moverán a tu cuenta.",
+        "discardedHeading": "Se descartará:",
+        "staleNotice": "Algo cambió mientras revisabas. Comprueba los detalles de nuevo antes de continuar.",
+        "cancelNote": "Al cancelar, se cierra la sesión de esta cuenta y vuelves a tu sesión de invitado sin cambios.",
+        "lines": {
+          "coins": "Saldo de Stitch Coins: {{amount}}",
+          "unlocks": "Patrones desbloqueados: {{amount}}",
+          "pendingRewards": "Recompensas pendientes: {{amount}}",
+          "adRewards": "Recompensas de anuncios aún en verificación: {{amount}}. Llegarán a tu cuenta.",
+          "adRewardsDiscarded": "Recompensas de anuncios aún en verificación: {{amount}}. No llegarán.",
+          "rejectedRewards": "Recompensas que no se pudieron verificar: {{amount}}. No se transferirán."
+        }
+      },
+      "error": {
+        "network": "No se puede conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
+        "credentialRejected": "No se pudo verificar la identidad de invitado de este dispositivo, así que tus datos de invitado no se pueden mover ahora.",
+        "guestNotFound": "No se encontró tu identidad de invitado en el servidor, así que no hay nada que mover.",
+        "accountClosing": "Esta cuenta se está eliminando, así que no se le pueden mover datos de invitado."
+      },
+      "syncing": {
+        "indicator": "Sincronizando tus datos de invitado…"
+      },
+      "needsAttention": {
+        "title": "Algunos datos de invitado necesitan atención",
+        "body": "Tu cuenta está lista para usarse. Algunos elementos no han terminado de moverse y se mantienen a salvo hasta que lo hagan."
       }
     },
     "settings": {
@@ -12691,6 +13035,49 @@
         "specs": "{{width}}×{{height}} · {{count}} väriä · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "Siirrä tietoni",
+        "cancel": "Peruuta",
+        "retry": "Yritä uudelleen",
+        "support": "Ota yhteyttä tukeen"
+      },
+      "loading": {
+        "preview": "Tarkistetaan vierastietojasi…",
+        "committing": "Siirretään vierastietojasi tilillesi. Pidä sovellus auki."
+      },
+      "disclosure": {
+        "economyTitle": "Ota vierastietosi mukaasi",
+        "economyIntro": "Nämä lisätään tilillesi:",
+        "dataOnlyTitle": "Siirrä vieraana tekemäsi edistyminen",
+        "dataOnlyIntro": "Tämä tili on jo saanut vierasrahat kerran, joten vain edistymisesi, valmistumishistoriasi ja tykkäyksesi siirretään. Alla luetellut kolikot, avatut mallit ja odottavat palkinnot hylätään.",
+        "progress": "Ompeluedistymisesi, valmistumishistoriasi ja tykkäyksesi siirretään tilillesi.",
+        "discardedHeading": "Hylätään:",
+        "staleNotice": "Jotain muuttui tarkistuksesi aikana. Tarkista tiedot uudelleen ennen kuin jatkat.",
+        "cancelNote": "Peruuttaminen kirjaa sinut ulos tältä tililtä ja palauttaa muuttumattoman vierasistuntosi.",
+        "lines": {
+          "coins": "Stitch-kolikoiden saldo: {{amount}}",
+          "unlocks": "Avatut mallit: {{amount}}",
+          "pendingRewards": "Odottavat palkinnot: {{amount}}",
+          "adRewards": "Mainospalkinnot, joita vahvistetaan vielä: {{amount}}. Ne saapuvat tilillesi.",
+          "adRewardsDiscarded": "Mainospalkinnot, joita vahvistetaan vielä: {{amount}}. Ne eivät saavu.",
+          "rejectedRewards": "Palkinnot, joita ei voitu vahvistaa: {{amount}}. Niitä ei siirretä."
+        }
+      },
+      "error": {
+        "network": "Palvelimeen ei saada yhteyttä. Tarkista yhteytesi ja yritä uudelleen.",
+        "credentialRejected": "Tämän laitteen vierasidentiteettiä ei voitu vahvistaa, joten vierastietojasi ei voi siirtää juuri nyt.",
+        "guestNotFound": "Vierasidentiteettiäsi ei löytynyt palvelimelta, joten siirrettävää ei ole.",
+        "accountClosing": "Tämä tili poistetaan, joten vierastietoja ei voi siirtää sinne."
+      },
+      "syncing": {
+        "indicator": "Synkronoidaan vierastietojasi…"
+      },
+      "needsAttention": {
+        "title": "Osa vierastiedoista vaatii huomiota",
+        "body": "Tilisi on käyttövalmis. Muutama kohde ei ole vielä siirtynyt loppuun, ja ne säilytetään turvassa siihen asti."
+      }
+    },
     "settings": {
       "header": {
         "title": "Asetukset",
@@ -14133,6 +14520,49 @@
         "emptyAction": "Découvrir des motifs",
         "byCreator": "par {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}} couleurs · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "Transférer mes données",
+        "cancel": "Annuler",
+        "retry": "Réessayer",
+        "support": "Contacter l'assistance"
+      },
+      "loading": {
+        "preview": "Vérification de vos données d'invité…",
+        "committing": "Transfert de vos données d'invité vers votre compte. Gardez l'application ouverte."
+      },
+      "disclosure": {
+        "economyTitle": "Emportez vos données d'invité",
+        "economyIntro": "Ces éléments seront ajoutés à votre compte :",
+        "dataOnlyTitle": "Transférez votre progression d'invité",
+        "dataOnlyIntro": "Ce compte a déjà reçu des Coins d'invité une fois : seuls votre progression, votre historique de réalisations et vos J'aime seront donc transférés. Les Coins, les modèles débloqués et les récompenses en attente listés ci-dessous seront abandonnés.",
+        "progress": "Votre progression de broderie, votre historique de réalisations et vos J'aime seront transférés vers votre compte.",
+        "discardedHeading": "Sera abandonné :",
+        "staleNotice": "Des éléments ont changé pendant votre vérification. Revérifiez les détails avant de continuer.",
+        "cancelNote": "Annuler vous déconnecte de ce compte et vous ramène à votre session d'invité, inchangée.",
+        "lines": {
+          "coins": "Solde de Stitch Coins : {{amount}}",
+          "unlocks": "Modèles débloqués : {{amount}}",
+          "pendingRewards": "Récompenses en attente : {{amount}}",
+          "adRewards": "Récompenses publicitaires en cours de vérification : {{amount}}. Elles arriveront sur votre compte.",
+          "adRewardsDiscarded": "Récompenses publicitaires en cours de vérification : {{amount}}. Elles n'arriveront pas.",
+          "rejectedRewards": "Récompenses impossibles à vérifier : {{amount}}. Elles ne seront pas transférées."
+        }
+      },
+      "error": {
+        "network": "Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.",
+        "credentialRejected": "L'identité d'invité de cet appareil n'a pas pu être vérifiée ; vos données d'invité ne peuvent donc pas être transférées pour l'instant.",
+        "guestNotFound": "Votre identité d'invité est introuvable sur le serveur ; il n'y a donc rien à transférer.",
+        "accountClosing": "Ce compte est en cours de suppression ; les données d'invité ne peuvent donc pas y être transférées."
+      },
+      "syncing": {
+        "indicator": "Synchronisation de vos données d'invité…"
+      },
+      "needsAttention": {
+        "title": "Certaines données d'invité demandent votre attention",
+        "body": "Votre compte est prêt à l'emploi. Quelques éléments n'ont pas fini d'être transférés et restent en sécurité jusque-là."
       }
     },
     "settings": {
@@ -15579,6 +16009,49 @@
         "specs": "{{width}}×{{height}} · {{count}} रंग · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "मेरा डेटा ले जाएं",
+        "cancel": "रद्द करें",
+        "retry": "फिर से कोशिश करें",
+        "support": "सपोर्ट से संपर्क करें"
+      },
+      "loading": {
+        "preview": "आपका गेस्ट डेटा जांचा जा रहा है…",
+        "committing": "आपका गेस्ट डेटा आपके खाते में ले जाया जा रहा है। कृपया ऐप खुला रखें।"
+      },
+      "disclosure": {
+        "economyTitle": "अपना गेस्ट डेटा साथ ले जाएं",
+        "economyIntro": "ये आपके खाते में जोड़े जाएंगे:",
+        "dataOnlyTitle": "अपनी गेस्ट प्रगति ले जाएं",
+        "dataOnlyIntro": "इस खाते को गेस्ट कॉइन पहले ही एक बार मिल चुके हैं, इसलिए केवल आपकी प्रगति, पूरा करने का इतिहास और लाइक ले जाए जाएंगे। नीचे सूचीबद्ध कॉइन, अनलॉक किए गए पैटर्न और लंबित पुरस्कार हटा दिए जाएंगे।",
+        "progress": "आपकी कढ़ाई की प्रगति, पूरा करने का इतिहास और लाइक आपके खाते में ले जाए जाएंगे।",
+        "discardedHeading": "इन्हें हटा दिया जाएगा:",
+        "staleNotice": "आपकी समीक्षा के दौरान कुछ बदल गया। आगे बढ़ने से पहले विवरण फिर से जांच लें।",
+        "cancelNote": "रद्द करने पर आप इस खाते से साइन आउट हो जाएंगे और अपने अपरिवर्तित गेस्ट सेशन में लौट आएंगे।",
+        "lines": {
+          "coins": "स्टिच कॉइन बैलेंस: {{amount}}",
+          "unlocks": "अनलॉक किए गए पैटर्न: {{amount}}",
+          "pendingRewards": "लंबित पुरस्कार: {{amount}}",
+          "adRewards": "विज्ञापन पुरस्कार जिनकी पुष्टि अभी हो रही है: {{amount}}। वे आपके खाते में पहुंचेंगे।",
+          "adRewardsDiscarded": "विज्ञापन पुरस्कार जिनकी पुष्टि अभी हो रही है: {{amount}}। वे नहीं पहुंचेंगे।",
+          "rejectedRewards": "वे पुरस्कार जिनकी पुष्टि नहीं हो सकी: {{amount}}। वे स्थानांतरित नहीं होंगे।"
+        }
+      },
+      "error": {
+        "network": "सर्वर तक नहीं पहुंचा जा सका। अपना कनेक्शन जांचें और फिर कोशिश करें।",
+        "credentialRejected": "इस डिवाइस की गेस्ट पहचान की पुष्टि नहीं हो सकी, इसलिए आपका गेस्ट डेटा अभी नहीं ले जाया जा सकता।",
+        "guestNotFound": "सर्वर पर आपकी गेस्ट पहचान नहीं मिली, इसलिए ले जाने के लिए कुछ नहीं है।",
+        "accountClosing": "यह खाता हटाया जा रहा है, इसलिए इसमें गेस्ट डेटा नहीं ले जाया जा सकता।"
+      },
+      "syncing": {
+        "indicator": "आपका गेस्ट डेटा सिंक हो रहा है…"
+      },
+      "needsAttention": {
+        "title": "कुछ गेस्ट डेटा पर ध्यान देने की ज़रूरत है",
+        "body": "आपका खाता उपयोग के लिए तैयार है। कुछ आइटम अभी पूरी तरह नहीं पहुंचे हैं और पूरा होने तक सुरक्षित रखे गए हैं।"
+      }
+    },
     "settings": {
       "header": {
         "title": "सेटिंग्स",
@@ -17021,6 +17494,49 @@
         "emptyAction": "Otkrij uzorke",
         "byCreator": "autor {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}} boja · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "Premjesti moje podatke",
+        "cancel": "Odustani",
+        "retry": "Pokušaj ponovo",
+        "support": "Kontaktiraj podršku"
+      },
+      "loading": {
+        "preview": "Provjera podataka gosta…",
+        "committing": "Premještamo podatke gosta na vaš račun. Ostavite aplikaciju otvorenom."
+      },
+      "disclosure": {
+        "economyTitle": "Ponesite podatke gosta sa sobom",
+        "economyIntro": "Ovo će biti dodano vašem računu:",
+        "dataOnlyTitle": "Premjestite napredak gosta",
+        "dataOnlyIntro": "Ovaj račun već je jednom primio novčiće gosta, pa će se premjestiti samo vaš napredak, povijest dovršetaka i lajkovi. Novčići, otključani uzorci i nagrade na čekanju navedeni u nastavku bit će odbačeni.",
+        "progress": "Vaš napredak u vezenju, povijest dovršetaka i lajkovi premjestit će se na vaš račun.",
+        "discardedHeading": "Bit će odbačeno:",
+        "staleNotice": "Nešto se promijenilo dok ste pregledavali. Prije nastavka ponovno provjerite pojedinosti.",
+        "cancelNote": "Odustajanjem se odjavljujete s ovog računa i vraćate u nepromijenjenu sesiju gosta.",
+        "lines": {
+          "coins": "Stanje Stitch Coina: {{amount}}",
+          "unlocks": "Otključani uzorci: {{amount}}",
+          "pendingRewards": "Nagrade na čekanju: {{amount}}",
+          "adRewards": "Nagrade za oglase koje se još provjeravaju: {{amount}}. Stići će na vaš račun.",
+          "adRewardsDiscarded": "Nagrade za oglase koje se još provjeravaju: {{amount}}. Neće stići.",
+          "rejectedRewards": "Nagrade koje nije bilo moguće provjeriti: {{amount}}. Neće se prenijeti."
+        }
+      },
+      "error": {
+        "network": "Nije moguće doći do poslužitelja. Provjerite vezu i pokušajte ponovo.",
+        "credentialRejected": "Identitet gosta ovog uređaja nije bilo moguće provjeriti pa se podaci gosta trenutačno ne mogu premjestiti.",
+        "guestNotFound": "Vaš identitet gosta nije pronađen na poslužitelju pa nema što premjestiti.",
+        "accountClosing": "Ovaj se račun briše pa se podaci gosta ne mogu premjestiti na njega."
+      },
+      "syncing": {
+        "indicator": "Sinkronizacija podataka gosta…"
+      },
+      "needsAttention": {
+        "title": "Neki podaci gosta zahtijevaju pažnju",
+        "body": "Vaš je račun spreman za korištenje. Nekoliko stavki još nije dovršilo premještanje i sigurno su pohranjene dok se ne dovrši."
       }
     },
     "settings": {
@@ -18467,6 +18983,49 @@
         "specs": "{{width}}×{{height}} · {{count}} szín · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "Adataim áthelyezése",
+        "cancel": "Mégse",
+        "retry": "Próbáld újra",
+        "support": "Kapcsolat a támogatással"
+      },
+      "loading": {
+        "preview": "Vendégadataid ellenőrzése…",
+        "committing": "Vendégadataid áthelyezése a fiókodba. Kérjük, tartsd nyitva az alkalmazást."
+      },
+      "disclosure": {
+        "economyTitle": "Vidd magaddal a vendégadataidat",
+        "economyIntro": "Ezek hozzáadódnak a fiókodhoz:",
+        "dataOnlyTitle": "Vendégként elért haladásod áthelyezése",
+        "dataOnlyIntro": "Ez a fiók már egyszer kapott vendégérméket, ezért csak a haladásod, a befejezési előzményeid és a kedvelések kerülnek át. Az alább felsorolt érmék, feloldott minták és függőben lévő jutalmak elvesznek.",
+        "progress": "A hímzési haladásod, a befejezési előzményeid és a kedvelések átkerülnek a fiókodba.",
+        "discardedHeading": "El fog veszni:",
+        "staleNotice": "Az átnézés közben valami megváltozott. Folytatás előtt ellenőrizd újra a részleteket.",
+        "cancelNote": "A mégse kijelentkeztet ebből a fiókból, és visszavisz a változatlan vendég-munkamenetedbe.",
+        "lines": {
+          "coins": "Stitch Coin egyenleg: {{amount}}",
+          "unlocks": "Feloldott minták: {{amount}}",
+          "pendingRewards": "Függőben lévő jutalmak: {{amount}}",
+          "adRewards": "Még ellenőrzés alatt álló hirdetési jutalmak: {{amount}}. Megérkeznek a fiókodba.",
+          "adRewardsDiscarded": "Még ellenőrzés alatt álló hirdetési jutalmak: {{amount}}. Nem fognak megérkezni.",
+          "rejectedRewards": "Nem ellenőrizhető jutalmak: {{amount}}. Nem kerülnek át."
+        }
+      },
+      "error": {
+        "network": "A szerver nem érhető el. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "credentialRejected": "Az eszköz vendégazonosítóját nem sikerült ellenőrizni, ezért a vendégadataid most nem helyezhetők át.",
+        "guestNotFound": "A vendégazonosítód nem található a szerveren, így nincs mit áthelyezni.",
+        "accountClosing": "Ez a fiók törlés alatt áll, ezért vendégadatok nem helyezhetők át bele."
+      },
+      "syncing": {
+        "indicator": "Vendégadataid szinkronizálása…"
+      },
+      "needsAttention": {
+        "title": "Néhány vendégadat figyelmet igényel",
+        "body": "A fiókod használatra kész. Néhány elem áthelyezése még nem fejeződött be, és biztonságban marad, amíg be nem fejeződik."
+      }
+    },
     "settings": {
       "header": {
         "title": "Beállítások",
@@ -19909,6 +20468,49 @@
         "emptyAction": "Jelajahi pola",
         "byCreator": "oleh {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}} warna · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "Pindahkan data saya",
+        "cancel": "Batal",
+        "retry": "Coba lagi",
+        "support": "Hubungi dukungan"
+      },
+      "loading": {
+        "preview": "Memeriksa data Tamu Anda…",
+        "committing": "Memindahkan data Tamu ke akun Anda. Biarkan aplikasi tetap terbuka."
+      },
+      "disclosure": {
+        "economyTitle": "Bawa data Tamu Anda bersama Anda",
+        "economyIntro": "Ini akan ditambahkan ke akun Anda:",
+        "dataOnlyTitle": "Pindahkan progres Tamu Anda",
+        "dataOnlyIntro": "Akun ini sudah pernah menerima Koin Tamu satu kali, jadi hanya progres, riwayat penyelesaian, dan Suka Anda yang akan dipindahkan. Koin, Pola yang dibuka, dan hadiah tertunda yang tercantum di bawah akan dibuang.",
+        "progress": "Progres menyulam, riwayat penyelesaian, dan Suka Anda akan dipindahkan ke akun Anda.",
+        "discardedHeading": "Akan dibuang:",
+        "staleNotice": "Ada yang berubah saat Anda meninjau. Periksa kembali detailnya sebelum melanjutkan.",
+        "cancelNote": "Membatalkan akan mengeluarkan Anda dari akun ini dan mengembalikan Anda ke sesi Tamu yang tidak berubah.",
+        "lines": {
+          "coins": "Saldo Stitch Coin: {{amount}}",
+          "unlocks": "Pola yang dibuka: {{amount}}",
+          "pendingRewards": "Hadiah tertunda: {{amount}}",
+          "adRewards": "Hadiah iklan yang masih diverifikasi: {{amount}}. Hadiah ini akan masuk ke akun Anda.",
+          "adRewardsDiscarded": "Hadiah iklan yang masih diverifikasi: {{amount}}. Hadiah ini tidak akan masuk.",
+          "rejectedRewards": "Hadiah yang tidak dapat diverifikasi: {{amount}}. Hadiah ini tidak akan dipindahkan."
+        }
+      },
+      "error": {
+        "network": "Tidak dapat menjangkau server. Periksa koneksi Anda dan coba lagi.",
+        "credentialRejected": "Identitas Tamu perangkat ini tidak dapat diverifikasi, sehingga data Tamu Anda tidak dapat dipindahkan saat ini.",
+        "guestNotFound": "Identitas Tamu Anda tidak ditemukan di server, jadi tidak ada yang bisa dipindahkan.",
+        "accountClosing": "Akun ini sedang dihapus, jadi data Tamu tidak dapat dipindahkan ke akun ini."
+      },
+      "syncing": {
+        "indicator": "Menyinkronkan data Tamu Anda…"
+      },
+      "needsAttention": {
+        "title": "Beberapa data Tamu perlu diperhatikan",
+        "body": "Akun Anda siap digunakan. Beberapa item belum selesai dipindahkan dan disimpan dengan aman sampai selesai."
       }
     },
     "settings": {
@@ -21355,6 +21957,49 @@
         "specs": "{{width}}×{{height}} · {{count}} colori · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "Sposta i miei dati",
+        "cancel": "Annulla",
+        "retry": "Riprova",
+        "support": "Contatta l'assistenza"
+      },
+      "loading": {
+        "preview": "Controllo dei tuoi dati ospite…",
+        "committing": "Spostamento dei tuoi dati ospite sul tuo account. Tieni aperta l'app."
+      },
+      "disclosure": {
+        "economyTitle": "Porta con te i tuoi dati ospite",
+        "economyIntro": "Questi elementi verranno aggiunti al tuo account:",
+        "dataOnlyTitle": "Sposta i tuoi progressi da ospite",
+        "dataOnlyIntro": "Questo account ha già ricevuto i Coin da ospite una volta, quindi verranno spostati solo i tuoi progressi, la cronologia dei completamenti e i Mi piace. I Coin, gli schemi sbloccati e le ricompense in sospeso elencati qui sotto verranno scartati.",
+        "progress": "I tuoi progressi di ricamo, la cronologia dei completamenti e i Mi piace verranno spostati sul tuo account.",
+        "discardedHeading": "Verrà scartato:",
+        "staleNotice": "Qualcosa è cambiato mentre controllavi. Ricontrolla i dettagli prima di continuare.",
+        "cancelNote": "Annullando, esci da questo account e torni alla tua sessione ospite invariata.",
+        "lines": {
+          "coins": "Saldo Stitch Coin: {{amount}}",
+          "unlocks": "Schemi sbloccati: {{amount}}",
+          "pendingRewards": "Ricompense in sospeso: {{amount}}",
+          "adRewards": "Ricompense pubblicitarie ancora in verifica: {{amount}}. Arriveranno sul tuo account.",
+          "adRewardsDiscarded": "Ricompense pubblicitarie ancora in verifica: {{amount}}. Non arriveranno.",
+          "rejectedRewards": "Ricompense che non è stato possibile verificare: {{amount}}. Non verranno trasferite."
+        }
+      },
+      "error": {
+        "network": "Impossibile raggiungere il server. Controlla la connessione e riprova.",
+        "credentialRejected": "Non è stato possibile verificare l'identità ospite di questo dispositivo, quindi i tuoi dati ospite non possono essere spostati ora.",
+        "guestNotFound": "La tua identità ospite non è stata trovata sul server, quindi non c'è nulla da spostare.",
+        "accountClosing": "Questo account è in fase di eliminazione, quindi non è possibile spostarvi dati ospite."
+      },
+      "syncing": {
+        "indicator": "Sincronizzazione dei tuoi dati ospite…"
+      },
+      "needsAttention": {
+        "title": "Alcuni dati ospite richiedono attenzione",
+        "body": "Il tuo account è pronto all'uso. Alcuni elementi non hanno ancora finito di spostarsi e restano al sicuro finché non lo fanno."
+      }
+    },
     "settings": {
       "header": {
         "title": "Impostazioni",
@@ -22797,6 +23442,49 @@
         "emptyAction": "パターンを見つける",
         "byCreator": "作成者: {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}}色 · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "データを移行する",
+        "cancel": "キャンセル",
+        "retry": "もう一度試す",
+        "support": "サポートに連絡"
+      },
+      "loading": {
+        "preview": "ゲストデータを確認しています…",
+        "committing": "ゲストデータをアカウントに移行しています。アプリを開いたままにしてください。"
+      },
+      "disclosure": {
+        "economyTitle": "ゲストデータを引き継ぐ",
+        "economyIntro": "次の内容がアカウントに追加されます:",
+        "dataOnlyTitle": "ゲストの進行状況を移行する",
+        "dataOnlyIntro": "このアカウントは以前に一度ゲストコインを受け取っているため、進行状況、完成履歴、いいねのみが移行されます。以下に表示されているコイン、解放済みパターン、保留中の報酬は破棄されます。",
+        "progress": "刺しゅうの進行状況、完成履歴、いいねがアカウントに移行されます。",
+        "discardedHeading": "破棄される内容:",
+        "staleNotice": "確認中に内容が変更されました。続行する前にもう一度詳細をご確認ください。",
+        "cancelNote": "キャンセルすると、このアカウントからサインアウトし、変更のないゲストセッションに戻ります。",
+        "lines": {
+          "coins": "Stitch Coin残高: {{amount}}",
+          "unlocks": "解放済みパターン: {{amount}}",
+          "pendingRewards": "保留中の報酬: {{amount}}",
+          "adRewards": "確認中の広告報酬: {{amount}}。アカウントに届きます。",
+          "adRewardsDiscarded": "確認中の広告報酬: {{amount}}。届きません。",
+          "rejectedRewards": "確認できなかった報酬: {{amount}}。移行されません。"
+        }
+      },
+      "error": {
+        "network": "サーバーに接続できません。接続を確認してもう一度お試しください。",
+        "credentialRejected": "このデバイスのゲストIDを確認できなかったため、現在ゲストデータを移行できません。",
+        "guestNotFound": "サーバー上でゲストIDが見つからなかったため、移行するものがありません。",
+        "accountClosing": "このアカウントは削除処理中のため、ゲストデータを移行できません。"
+      },
+      "syncing": {
+        "indicator": "ゲストデータを同期しています…"
+      },
+      "needsAttention": {
+        "title": "一部のゲストデータの確認が必要です",
+        "body": "アカウントはすでにご利用いただけます。一部の項目はまだ移行中で、完了するまで安全に保管されます。"
       }
     },
     "settings": {
@@ -24243,6 +24931,49 @@
         "specs": "{{width}}×{{height}} · {{count}}색 · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "내 데이터 옮기기",
+        "cancel": "취소",
+        "retry": "다시 시도",
+        "support": "지원팀에 문의"
+      },
+      "loading": {
+        "preview": "게스트 데이터를 확인하는 중…",
+        "committing": "게스트 데이터를 계정으로 옮기는 중입니다. 앱을 열어 두세요."
+      },
+      "disclosure": {
+        "economyTitle": "게스트 데이터를 함께 가져가기",
+        "economyIntro": "다음 항목이 계정에 추가됩니다:",
+        "dataOnlyTitle": "게스트 진행 상황 옮기기",
+        "dataOnlyIntro": "이 계정은 이미 한 번 게스트 코인을 받았기 때문에 진행 상황, 완성 기록, 좋아요만 옮겨집니다. 아래에 표시된 코인, 잠금 해제한 도안, 대기 중인 보상은 삭제됩니다.",
+        "progress": "자수 진행 상황, 완성 기록, 좋아요가 계정으로 옮겨집니다.",
+        "discardedHeading": "삭제될 항목:",
+        "staleNotice": "확인하는 동안 내용이 변경되었습니다. 계속하기 전에 세부 정보를 다시 확인해 주세요.",
+        "cancelNote": "취소하면 이 계정에서 로그아웃되고 변경되지 않은 게스트 세션으로 돌아갑니다.",
+        "lines": {
+          "coins": "Stitch Coin 잔액: {{amount}}",
+          "unlocks": "잠금 해제한 도안: {{amount}}",
+          "pendingRewards": "대기 중인 보상: {{amount}}",
+          "adRewards": "아직 확인 중인 광고 보상: {{amount}}. 계정으로 지급됩니다.",
+          "adRewardsDiscarded": "아직 확인 중인 광고 보상: {{amount}}. 지급되지 않습니다.",
+          "rejectedRewards": "확인할 수 없었던 보상: {{amount}}. 옮겨지지 않습니다."
+        }
+      },
+      "error": {
+        "network": "서버에 연결할 수 없습니다. 연결 상태를 확인하고 다시 시도해 주세요.",
+        "credentialRejected": "이 기기의 게스트 ID를 확인할 수 없어 지금은 게스트 데이터를 옮길 수 없습니다.",
+        "guestNotFound": "서버에서 게스트 ID를 찾을 수 없어 옮길 데이터가 없습니다.",
+        "accountClosing": "이 계정은 삭제 중이어서 게스트 데이터를 옮길 수 없습니다."
+      },
+      "syncing": {
+        "indicator": "게스트 데이터를 동기화하는 중…"
+      },
+      "needsAttention": {
+        "title": "일부 게스트 데이터에 확인이 필요합니다",
+        "body": "계정을 바로 사용할 수 있습니다. 일부 항목은 아직 옮겨지는 중이며, 완료될 때까지 안전하게 보관됩니다."
+      }
+    },
     "settings": {
       "header": {
         "title": "설정",
@@ -25685,6 +26416,49 @@
         "emptyAction": "Terokai pola",
         "byCreator": "oleh {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}} warna · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "Alihkan data saya",
+        "cancel": "Batal",
+        "retry": "Cuba lagi",
+        "support": "Hubungi sokongan"
+      },
+      "loading": {
+        "preview": "Menyemak data Tetamu anda…",
+        "committing": "Mengalihkan data Tetamu anda ke akaun anda. Sila biarkan aplikasi terbuka."
+      },
+      "disclosure": {
+        "economyTitle": "Bawa data Tetamu anda bersama",
+        "economyIntro": "Ini akan ditambah ke akaun anda:",
+        "dataOnlyTitle": "Alihkan kemajuan Tetamu anda",
+        "dataOnlyIntro": "Akaun ini sudah menerima Syiling Tetamu sekali, jadi hanya kemajuan, sejarah penyiapan dan Suka anda akan dialihkan. Syiling, Corak yang dibuka dan ganjaran tertunggak yang disenaraikan di bawah akan dibuang.",
+        "progress": "Kemajuan sulaman, sejarah penyiapan dan Suka anda akan dialihkan ke akaun anda.",
+        "discardedHeading": "Akan dibuang:",
+        "staleNotice": "Sesuatu berubah semasa anda menyemak. Sila semak butirannya sekali lagi sebelum meneruskan.",
+        "cancelNote": "Membatalkan akan mengeluarkan anda daripada akaun ini dan mengembalikan anda ke sesi Tetamu yang tidak berubah.",
+        "lines": {
+          "coins": "Baki Stitch Coin: {{amount}}",
+          "unlocks": "Corak yang dibuka: {{amount}}",
+          "pendingRewards": "Ganjaran tertunggak: {{amount}}",
+          "adRewards": "Ganjaran iklan yang masih disahkan: {{amount}}. Ia akan sampai ke akaun anda.",
+          "adRewardsDiscarded": "Ganjaran iklan yang masih disahkan: {{amount}}. Ia tidak akan sampai.",
+          "rejectedRewards": "Ganjaran yang tidak dapat disahkan: {{amount}}. Ia tidak akan dipindahkan."
+        }
+      },
+      "error": {
+        "network": "Tidak dapat menghubungi pelayan. Semak sambungan anda dan cuba lagi.",
+        "credentialRejected": "Identiti Tetamu peranti ini tidak dapat disahkan, jadi data Tetamu anda tidak boleh dialihkan buat masa ini.",
+        "guestNotFound": "Identiti Tetamu anda tidak ditemui di pelayan, jadi tiada apa yang perlu dialihkan.",
+        "accountClosing": "Akaun ini sedang dipadam, jadi data Tetamu tidak boleh dialihkan kepadanya."
+      },
+      "syncing": {
+        "indicator": "Menyegerakkan data Tetamu anda…"
+      },
+      "needsAttention": {
+        "title": "Sesetengah data Tetamu memerlukan perhatian",
+        "body": "Akaun anda sedia digunakan. Beberapa item belum selesai dialihkan dan disimpan dengan selamat sehingga selesai."
       }
     },
     "settings": {
@@ -27131,6 +27905,49 @@
         "specs": "{{width}}×{{height}} · {{count}} farger · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "Flytt dataene mine",
+        "cancel": "Avbryt",
+        "retry": "Prøv igjen",
+        "support": "Kontakt kundestøtte"
+      },
+      "loading": {
+        "preview": "Sjekker gjestedataene dine…",
+        "committing": "Flytter gjestedataene dine til kontoen din. Hold appen åpen."
+      },
+      "disclosure": {
+        "economyTitle": "Ta med deg gjestedataene dine",
+        "economyIntro": "Dette legges til kontoen din:",
+        "dataOnlyTitle": "Flytt gjestefremgangen din",
+        "dataOnlyIntro": "Denne kontoen har allerede fått gjestemynter én gang, så bare fremgangen, fullføringshistorikken og likene dine flyttes. Myntene, de opplåste mønstrene og de ventende belønningene nedenfor blir forkastet.",
+        "progress": "Broderifremgangen, fullføringshistorikken og likene dine flyttes til kontoen din.",
+        "discardedHeading": "Blir forkastet:",
+        "staleNotice": "Noe endret seg mens du gikk gjennom dette. Sjekk detaljene på nytt før du fortsetter.",
+        "cancelNote": "Hvis du avbryter, blir du logget ut av denne kontoen og tilbake i den uendrede gjesteøkten din.",
+        "lines": {
+          "coins": "Stitch Coin-saldo: {{amount}}",
+          "unlocks": "Opplåste mønstre: {{amount}}",
+          "pendingRewards": "Ventende belønninger: {{amount}}",
+          "adRewards": "Annonsebelønninger som fortsatt bekreftes: {{amount}}. De kommer til kontoen din.",
+          "adRewardsDiscarded": "Annonsebelønninger som fortsatt bekreftes: {{amount}}. De kommer ikke.",
+          "rejectedRewards": "Belønninger som ikke kunne bekreftes: {{amount}}. De blir ikke flyttet."
+        }
+      },
+      "error": {
+        "network": "Får ikke kontakt med serveren. Sjekk tilkoblingen og prøv igjen.",
+        "credentialRejected": "Gjesteidentiteten til denne enheten kunne ikke bekreftes, så gjestedataene dine kan ikke flyttes akkurat nå.",
+        "guestNotFound": "Gjesteidentiteten din ble ikke funnet på serveren, så det er ingenting å flytte.",
+        "accountClosing": "Denne kontoen slettes, så gjestedata kan ikke flyttes til den."
+      },
+      "syncing": {
+        "indicator": "Synkroniserer gjestedataene dine…"
+      },
+      "needsAttention": {
+        "title": "Noen gjestedata trenger oppmerksomhet",
+        "body": "Kontoen din er klar til bruk. Noen få elementer er ikke ferdig flyttet og oppbevares trygt til de er det."
+      }
+    },
     "settings": {
       "header": {
         "title": "Innstillinger",
@@ -28573,6 +29390,49 @@
         "emptyAction": "Patronen vinden",
         "byCreator": "Door {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}} kleuren · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "Mijn gegevens verplaatsen",
+        "cancel": "Annuleren",
+        "retry": "Opnieuw proberen",
+        "support": "Contact opnemen met support"
+      },
+      "loading": {
+        "preview": "Je gastgegevens worden gecontroleerd…",
+        "committing": "Je gastgegevens worden naar je account verplaatst. Houd de app geopend."
+      },
+      "disclosure": {
+        "economyTitle": "Neem je gastgegevens mee",
+        "economyIntro": "Dit wordt aan je account toegevoegd:",
+        "dataOnlyTitle": "Verplaats je voortgang als gast",
+        "dataOnlyIntro": "Dit account heeft al eens gastmunten ontvangen, dus alleen je voortgang, voltooiingsgeschiedenis en likes worden verplaatst. De munten, ontgrendelde patronen en openstaande beloningen hieronder worden verwijderd.",
+        "progress": "Je borduurvoortgang, voltooiingsgeschiedenis en likes worden naar je account verplaatst.",
+        "discardedHeading": "Wordt verwijderd:",
+        "staleNotice": "Er is iets veranderd terwijl je aan het nakijken was. Controleer de details nog een keer voordat je verdergaat.",
+        "cancelNote": "Als je annuleert, word je uit dit account uitgelogd en keer je terug naar je ongewijzigde gastsessie.",
+        "lines": {
+          "coins": "Stitch Coins-saldo: {{amount}}",
+          "unlocks": "Ontgrendelde patronen: {{amount}}",
+          "pendingRewards": "Openstaande beloningen: {{amount}}",
+          "adRewards": "Advertentiebeloningen die nog worden gecontroleerd: {{amount}}. Ze komen op je account terecht.",
+          "adRewardsDiscarded": "Advertentiebeloningen die nog worden gecontroleerd: {{amount}}. Ze komen niet aan.",
+          "rejectedRewards": "Beloningen die niet konden worden geverifieerd: {{amount}}. Ze worden niet overgezet."
+        }
+      },
+      "error": {
+        "network": "De server is niet bereikbaar. Controleer je verbinding en probeer het opnieuw.",
+        "credentialRejected": "De gastidentiteit van dit apparaat kon niet worden geverifieerd, dus je gastgegevens kunnen nu niet worden verplaatst.",
+        "guestNotFound": "Je gastidentiteit is niet gevonden op de server, dus er valt niets te verplaatsen.",
+        "accountClosing": "Dit account wordt verwijderd, dus er kunnen geen gastgegevens naartoe worden verplaatst."
+      },
+      "syncing": {
+        "indicator": "Je gastgegevens worden gesynchroniseerd…"
+      },
+      "needsAttention": {
+        "title": "Sommige gastgegevens hebben aandacht nodig",
+        "body": "Je account is klaar voor gebruik. Een paar onderdelen zijn nog niet klaar met verplaatsen en blijven veilig bewaard tot dat zover is."
       }
     },
     "settings": {
@@ -30019,6 +30879,49 @@
         "specs": "{{width}}×{{height}} · {{count}} kolorów · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "Przenieś moje dane",
+        "cancel": "Anuluj",
+        "retry": "Spróbuj ponownie",
+        "support": "Skontaktuj się z pomocą"
+      },
+      "loading": {
+        "preview": "Sprawdzanie danych gościa…",
+        "committing": "Przenoszenie danych gościa na Twoje konto. Nie zamykaj aplikacji."
+      },
+      "disclosure": {
+        "economyTitle": "Zabierz ze sobą dane gościa",
+        "economyIntro": "To zostanie dodane do Twojego konta:",
+        "dataOnlyTitle": "Przenieś postępy gościa",
+        "dataOnlyIntro": "To konto otrzymało już raz monety gościa, więc przeniesione zostaną tylko Twoje postępy, historia ukończeń i polubienia. Monety, odblokowane wzory i oczekujące nagrody wymienione poniżej zostaną odrzucone.",
+        "progress": "Twoje postępy w haftowaniu, historia ukończeń i polubienia zostaną przeniesione na Twoje konto.",
+        "discardedHeading": "Zostanie odrzucone:",
+        "staleNotice": "Podczas sprawdzania coś się zmieniło. Przed kontynuowaniem sprawdź szczegóły jeszcze raz.",
+        "cancelNote": "Anulowanie wyloguje Cię z tego konta i przywróci niezmienioną sesję gościa.",
+        "lines": {
+          "coins": "Saldo Stitch Coin: {{amount}}",
+          "unlocks": "Odblokowane wzory: {{amount}}",
+          "pendingRewards": "Oczekujące nagrody: {{amount}}",
+          "adRewards": "Nagrody za reklamy w trakcie weryfikacji: {{amount}}. Trafią na Twoje konto.",
+          "adRewardsDiscarded": "Nagrody za reklamy w trakcie weryfikacji: {{amount}}. Nie zostaną przyznane.",
+          "rejectedRewards": "Nagrody, których nie udało się zweryfikować: {{amount}}. Nie zostaną przeniesione."
+        }
+      },
+      "error": {
+        "network": "Nie można połączyć się z serwerem. Sprawdź połączenie i spróbuj ponownie.",
+        "credentialRejected": "Nie udało się zweryfikować tożsamości gościa na tym urządzeniu, więc danych gościa nie można teraz przenieść.",
+        "guestNotFound": "Nie znaleziono Twojej tożsamości gościa na serwerze, więc nie ma czego przenosić.",
+        "accountClosing": "To konto jest usuwane, więc nie można na nie przenieść danych gościa."
+      },
+      "syncing": {
+        "indicator": "Synchronizowanie danych gościa…"
+      },
+      "needsAttention": {
+        "title": "Niektóre dane gościa wymagają uwagi",
+        "body": "Twoje konto jest gotowe do użycia. Kilka elementów nie zostało jeszcze przeniesionych i pozostają bezpieczne, dopóki to się nie stanie."
+      }
+    },
     "settings": {
       "header": {
         "title": "Ustawienia",
@@ -31461,6 +32364,49 @@
         "emptyAction": "Descobrir Padrões",
         "byCreator": "por {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}} cores · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "Mover os meus dados",
+        "cancel": "Cancelar",
+        "retry": "Tentar novamente",
+        "support": "Contactar o suporte"
+      },
+      "loading": {
+        "preview": "A verificar os seus dados de convidado…",
+        "committing": "A mover os seus dados de convidado para a sua conta. Mantenha a aplicação aberta."
+      },
+      "disclosure": {
+        "economyTitle": "Leve consigo os seus dados de convidado",
+        "economyIntro": "Isto será adicionado à sua conta:",
+        "dataOnlyTitle": "Mova o seu progresso de convidado",
+        "dataOnlyIntro": "Esta conta já recebeu Coins de convidado uma vez, por isso só serão movidos o seu progresso, o seu histórico de conclusões e os seus gostos. Os Coins, os padrões desbloqueados e as recompensas pendentes listados abaixo serão descartados.",
+        "progress": "O seu progresso de bordado, o seu histórico de conclusões e os seus gostos serão movidos para a sua conta.",
+        "discardedHeading": "Será descartado:",
+        "staleNotice": "Algo mudou enquanto revia. Verifique os detalhes novamente antes de continuar.",
+        "cancelNote": "Cancelar termina a sessão desta conta e devolve-o à sua sessão de convidado, sem alterações.",
+        "lines": {
+          "coins": "Saldo de Stitch Coins: {{amount}}",
+          "unlocks": "Padrões desbloqueados: {{amount}}",
+          "pendingRewards": "Recompensas pendentes: {{amount}}",
+          "adRewards": "Recompensas de anúncios ainda em verificação: {{amount}}. Vão chegar à sua conta.",
+          "adRewardsDiscarded": "Recompensas de anúncios ainda em verificação: {{amount}}. Não vão chegar.",
+          "rejectedRewards": "Recompensas que não foi possível verificar: {{amount}}. Não serão transferidas."
+        }
+      },
+      "error": {
+        "network": "Não foi possível contactar o servidor. Verifique a ligação e tente novamente.",
+        "credentialRejected": "Não foi possível verificar a identidade de convidado deste dispositivo, por isso os seus dados de convidado não podem ser movidos agora.",
+        "guestNotFound": "A sua identidade de convidado não foi encontrada no servidor, por isso não há nada para mover.",
+        "accountClosing": "Esta conta está a ser eliminada, por isso não lhe podem ser movidos dados de convidado."
+      },
+      "syncing": {
+        "indicator": "A sincronizar os seus dados de convidado…"
+      },
+      "needsAttention": {
+        "title": "Alguns dados de convidado ainda precisam de atenção",
+        "body": "A sua conta está pronta a usar. Alguns itens ainda não acabaram de ser movidos e ficam seguros até acabarem."
       }
     },
     "settings": {
@@ -32907,6 +33853,49 @@
         "specs": "{{width}}×{{height}} · {{count}} cores · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "Mover meus dados",
+        "cancel": "Cancelar",
+        "retry": "Tentar novamente",
+        "support": "Falar com o suporte"
+      },
+      "loading": {
+        "preview": "Verificando seus dados de Convidado…",
+        "committing": "Movendo seus dados de Convidado para sua conta. Mantenha o aplicativo aberto."
+      },
+      "disclosure": {
+        "economyTitle": "Leve seus dados de Convidado com você",
+        "economyIntro": "Isto será adicionado à sua conta:",
+        "dataOnlyTitle": "Mova seu progresso de Convidado",
+        "dataOnlyIntro": "Esta conta já recebeu Coins de Convidado uma vez, então apenas seu progresso, seu histórico de conclusões e suas curtidas serão movidos. Os Coins, os padrões desbloqueados e as recompensas pendentes listados abaixo serão descartados.",
+        "progress": "Seu progresso de bordado, seu histórico de conclusões e suas curtidas serão movidos para sua conta.",
+        "discardedHeading": "Será descartado:",
+        "staleNotice": "Algo mudou enquanto você revisava. Confira os detalhes novamente antes de continuar.",
+        "cancelNote": "Cancelar encerra a sessão desta conta e leva você de volta à sua sessão de Convidado, sem alterações.",
+        "lines": {
+          "coins": "Saldo de Stitch Coins: {{amount}}",
+          "unlocks": "Padrões desbloqueados: {{amount}}",
+          "pendingRewards": "Recompensas pendentes: {{amount}}",
+          "adRewards": "Recompensas de anúncios ainda em verificação: {{amount}}. Elas chegarão à sua conta.",
+          "adRewardsDiscarded": "Recompensas de anúncios ainda em verificação: {{amount}}. Elas não chegarão.",
+          "rejectedRewards": "Recompensas que não puderam ser verificadas: {{amount}}. Elas não serão transferidas."
+        }
+      },
+      "error": {
+        "network": "Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.",
+        "credentialRejected": "Não foi possível verificar a identidade de Convidado deste dispositivo, então seus dados de Convidado não podem ser movidos agora.",
+        "guestNotFound": "Sua identidade de Convidado não foi encontrada no servidor, então não há nada para mover.",
+        "accountClosing": "Esta conta está sendo excluída, então os dados de Convidado não podem ser movidos para ela."
+      },
+      "syncing": {
+        "indicator": "Sincronizando seus dados de Convidado…"
+      },
+      "needsAttention": {
+        "title": "Alguns dados de Convidado ainda precisam de atenção",
+        "body": "Sua conta está pronta para uso. Alguns itens ainda não terminaram de ser movidos e ficam seguros até que terminem."
+      }
+    },
     "settings": {
       "header": {
         "title": "Configurações",
@@ -34349,6 +35338,49 @@
         "emptyAction": "Descoperă modele",
         "byCreator": "de {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}} culori · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "Mută datele mele",
+        "cancel": "Anulează",
+        "retry": "Încearcă din nou",
+        "support": "Contactează asistența"
+      },
+      "loading": {
+        "preview": "Se verifică datele tale de invitat…",
+        "committing": "Se mută datele de invitat în contul tău. Te rugăm să ții aplicația deschisă."
+      },
+      "disclosure": {
+        "economyTitle": "Ia datele de invitat cu tine",
+        "economyIntro": "Acestea vor fi adăugate în contul tău:",
+        "dataOnlyTitle": "Mută progresul tău de invitat",
+        "dataOnlyIntro": "Acest cont a primit deja o dată monede de invitat, așa că vor fi mutate doar progresul, istoricul finalizărilor și aprecierile. Monedele, modelele deblocate și recompensele în așteptare de mai jos vor fi eliminate.",
+        "progress": "Progresul la broderie, istoricul finalizărilor și aprecierile tale vor fi mutate în contul tău.",
+        "discardedHeading": "Vor fi eliminate:",
+        "staleNotice": "Ceva s-a schimbat cât timp verificai. Te rugăm să verifici din nou detaliile înainte de a continua.",
+        "cancelNote": "Anularea te deconectează din acest cont și te readuce în sesiunea de invitat nemodificată.",
+        "lines": {
+          "coins": "Sold Stitch Coin: {{amount}}",
+          "unlocks": "Modele deblocate: {{amount}}",
+          "pendingRewards": "Recompense în așteptare: {{amount}}",
+          "adRewards": "Recompense pentru reclame încă în curs de verificare: {{amount}}. Vor ajunge în contul tău.",
+          "adRewardsDiscarded": "Recompense pentru reclame încă în curs de verificare: {{amount}}. Nu vor ajunge.",
+          "rejectedRewards": "Recompense care nu au putut fi verificate: {{amount}}. Nu vor fi transferate."
+        }
+      },
+      "error": {
+        "network": "Nu se poate contacta serverul. Verifică conexiunea și încearcă din nou.",
+        "credentialRejected": "Identitatea de invitat a acestui dispozitiv nu a putut fi verificată, așa că datele de invitat nu pot fi mutate acum.",
+        "guestNotFound": "Identitatea ta de invitat nu a fost găsită pe server, deci nu există nimic de mutat.",
+        "accountClosing": "Acest cont este în curs de ștergere, așa că datele de invitat nu pot fi mutate în el."
+      },
+      "syncing": {
+        "indicator": "Se sincronizează datele tale de invitat…"
+      },
+      "needsAttention": {
+        "title": "Unele date de invitat necesită atenție",
+        "body": "Contul tău este gata de utilizare. Câteva elemente nu au terminat de mutat și sunt păstrate în siguranță până la finalizare."
       }
     },
     "settings": {
@@ -35795,6 +36827,49 @@
         "specs": "{{width}}×{{height}} · {{count}} цветов · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "Перенести мои данные",
+        "cancel": "Отмена",
+        "retry": "Повторить",
+        "support": "Связаться с поддержкой"
+      },
+      "loading": {
+        "preview": "Проверяем ваши гостевые данные…",
+        "committing": "Переносим гостевые данные в ваш аккаунт. Не закрывайте приложение."
+      },
+      "disclosure": {
+        "economyTitle": "Возьмите гостевые данные с собой",
+        "economyIntro": "В ваш аккаунт будет добавлено:",
+        "dataOnlyTitle": "Перенесите гостевой прогресс",
+        "dataOnlyIntro": "Этот аккаунт уже один раз получал гостевые монеты, поэтому будут перенесены только прогресс, история завершённых работ и лайки. Перечисленные ниже монеты, открытые схемы и ожидающие награды будут отброшены.",
+        "progress": "Ваш прогресс вышивки, история завершённых работ и лайки будут перенесены в аккаунт.",
+        "discardedHeading": "Будет отброшено:",
+        "staleNotice": "Пока вы проверяли, данные изменились. Перед тем как продолжить, проверьте детали ещё раз.",
+        "cancelNote": "При отмене вы выйдете из этого аккаунта и вернётесь в неизменённый гостевой режим.",
+        "lines": {
+          "coins": "Баланс Stitch Coin: {{amount}}",
+          "unlocks": "Открытые схемы: {{amount}}",
+          "pendingRewards": "Ожидающие награды: {{amount}}",
+          "adRewards": "Награды за рекламу, которые ещё проверяются: {{amount}}. Они поступят в ваш аккаунт.",
+          "adRewardsDiscarded": "Награды за рекламу, которые ещё проверяются: {{amount}}. Они не поступят.",
+          "rejectedRewards": "Награды, которые не удалось проверить: {{amount}}. Они не будут перенесены."
+        }
+      },
+      "error": {
+        "network": "Не удаётся связаться с сервером. Проверьте подключение и повторите попытку.",
+        "credentialRejected": "Не удалось подтвердить гостевую личность этого устройства, поэтому сейчас гостевые данные нельзя перенести.",
+        "guestNotFound": "Ваша гостевая личность не найдена на сервере, поэтому переносить нечего.",
+        "accountClosing": "Этот аккаунт удаляется, поэтому гостевые данные нельзя в него перенести."
+      },
+      "syncing": {
+        "indicator": "Синхронизируем гостевые данные…"
+      },
+      "needsAttention": {
+        "title": "Некоторым гостевым данным нужно внимание",
+        "body": "Ваш аккаунт готов к использованию. Несколько элементов ещё не перенесены и хранятся в безопасности, пока перенос не завершится."
+      }
+    },
     "settings": {
       "header": {
         "title": "Настройки",
@@ -37237,6 +38312,49 @@
         "emptyAction": "Objaviť vzory",
         "byCreator": "od {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}} farieb · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "Presunúť moje údaje",
+        "cancel": "Zrušiť",
+        "retry": "Skúsiť znova",
+        "support": "Kontaktovať podporu"
+      },
+      "loading": {
+        "preview": "Kontrolujú sa vaše údaje hosťa…",
+        "committing": "Údaje hosťa sa presúvajú do vášho účtu. Nechajte aplikáciu otvorenú."
+      },
+      "disclosure": {
+        "economyTitle": "Vezmite si údaje hosťa so sebou",
+        "economyIntro": "Do vášho účtu sa pridá:",
+        "dataOnlyTitle": "Presuňte svoj postup hosťa",
+        "dataOnlyIntro": "Tento účet už raz získal mince hosťa, preto sa presunie iba váš postup, história dokončení a lajky. Nižšie uvedené mince, odomknuté vzory a čakajúce odmeny sa zahodia.",
+        "progress": "Váš postup vo vyšívaní, história dokončení a lajky sa presunú do vášho účtu.",
+        "discardedHeading": "Zahodí sa:",
+        "staleNotice": "Počas kontroly sa niečo zmenilo. Pred pokračovaním si znova skontrolujte podrobnosti.",
+        "cancelNote": "Zrušením sa odhlásite z tohto účtu a vrátite sa do nezmenenej relácie hosťa.",
+        "lines": {
+          "coins": "Zostatok Stitch Coin: {{amount}}",
+          "unlocks": "Odomknuté vzory: {{amount}}",
+          "pendingRewards": "Čakajúce odmeny: {{amount}}",
+          "adRewards": "Odmeny za reklamy, ktoré sa ešte overujú: {{amount}}. Doručia sa na váš účet.",
+          "adRewardsDiscarded": "Odmeny za reklamy, ktoré sa ešte overujú: {{amount}}. Nedoručia sa.",
+          "rejectedRewards": "Odmeny, ktoré sa nepodarilo overiť: {{amount}}. Nepresunú sa."
+        }
+      },
+      "error": {
+        "network": "Server je nedostupný. Skontrolujte pripojenie a skúste to znova.",
+        "credentialRejected": "Identitu hosťa tohto zariadenia sa nepodarilo overiť, preto sa údaje hosťa momentálne nedajú presunúť.",
+        "guestNotFound": "Vaša identita hosťa sa na serveri nenašla, takže nie je čo presúvať.",
+        "accountClosing": "Tento účet sa maže, preto sa do neho nedajú presunúť údaje hosťa."
+      },
+      "syncing": {
+        "indicator": "Synchronizujú sa vaše údaje hosťa…"
+      },
+      "needsAttention": {
+        "title": "Niektoré údaje hosťa vyžadujú pozornosť",
+        "body": "Váš účet je pripravený na používanie. Niekoľko položiek sa ešte nedokončilo presúvať a do dokončenia zostávajú v bezpečí."
       }
     },
     "settings": {
@@ -38683,6 +39801,49 @@
         "specs": "{{width}}×{{height}} · {{count}} barv · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "Premakni moje podatke",
+        "cancel": "Prekliči",
+        "retry": "Poskusi znova",
+        "support": "Obrni se na podporo"
+      },
+      "loading": {
+        "preview": "Preverjanje vaših podatkov gosta …",
+        "committing": "Podatke gosta premikamo v vaš račun. Aplikacijo pustite odprto."
+      },
+      "disclosure": {
+        "economyTitle": "Vzemite podatke gosta s seboj",
+        "economyIntro": "To bo dodano vašemu računu:",
+        "dataOnlyTitle": "Premaknite svoj napredek gosta",
+        "dataOnlyIntro": "Ta račun je že enkrat prejel kovance gosta, zato se bodo premaknili le vaš napredek, zgodovina dokončanih del in všečki. Spodaj navedeni kovanci, odklenjeni vzorci in nagrade na čakanju bodo zavrženi.",
+        "progress": "Vaš napredek pri vezenju, zgodovina dokončanih del in všečki se bodo premaknili v vaš račun.",
+        "discardedHeading": "Zavrženo bo:",
+        "staleNotice": "Med pregledovanjem se je nekaj spremenilo. Pred nadaljevanjem znova preverite podrobnosti.",
+        "cancelNote": "S preklicem se odjavite iz tega računa in vrnete v nespremenjeno sejo gosta.",
+        "lines": {
+          "coins": "Stanje Stitch Coin: {{amount}}",
+          "unlocks": "Odklenjeni vzorci: {{amount}}",
+          "pendingRewards": "Nagrade na čakanju: {{amount}}",
+          "adRewards": "Nagrade za oglase, ki se še preverjajo: {{amount}}. Prispele bodo v vaš račun.",
+          "adRewardsDiscarded": "Nagrade za oglase, ki se še preverjajo: {{amount}}. Ne bodo prispele.",
+          "rejectedRewards": "Nagrade, ki jih ni bilo mogoče preveriti: {{amount}}. Ne bodo prenesene."
+        }
+      },
+      "error": {
+        "network": "Strežnika ni mogoče doseči. Preverite povezavo in poskusite znova.",
+        "credentialRejected": "Identitete gosta te naprave ni bilo mogoče preveriti, zato podatkov gosta trenutno ni mogoče premakniti.",
+        "guestNotFound": "Vaše identitete gosta na strežniku ni bilo mogoče najti, zato ni ničesar za premakniti.",
+        "accountClosing": "Ta račun se briše, zato podatkov gosta ni mogoče premakniti vanj."
+      },
+      "syncing": {
+        "indicator": "Sinhronizacija vaših podatkov gosta …"
+      },
+      "needsAttention": {
+        "title": "Nekateri podatki gosta zahtevajo pozornost",
+        "body": "Vaš račun je pripravljen za uporabo. Nekaj elementov se še ni dokončalo premikati in so varno shranjeni, dokler se ne."
+      }
+    },
     "settings": {
       "header": {
         "title": "Nastavitve",
@@ -40125,6 +41286,49 @@
         "emptyAction": "Upptäck mönster",
         "byCreator": "av {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}} färger · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "Flytta mina data",
+        "cancel": "Avbryt",
+        "retry": "Försök igen",
+        "support": "Kontakta support"
+      },
+      "loading": {
+        "preview": "Kontrollerar dina gästdata…",
+        "committing": "Flyttar dina gästdata till ditt konto. Låt appen vara öppen."
+      },
+      "disclosure": {
+        "economyTitle": "Ta med dig dina gästdata",
+        "economyIntro": "Det här läggs till på ditt konto:",
+        "dataOnlyTitle": "Flytta dina framsteg som gäst",
+        "dataOnlyIntro": "Det här kontot har redan fått gästmynt en gång, så bara dina framsteg, din slutförandehistorik och dina gillanden flyttas. Mynten, de upplåsta mönstren och de väntande belöningarna nedan kasseras.",
+        "progress": "Dina broderiframsteg, din slutförandehistorik och dina gillanden flyttas till ditt konto.",
+        "discardedHeading": "Kasseras:",
+        "staleNotice": "Något ändrades medan du granskade. Kontrollera uppgifterna igen innan du fortsätter.",
+        "cancelNote": "Om du avbryter loggas du ut från det här kontot och återgår till din oförändrade gästsession.",
+        "lines": {
+          "coins": "Stitch Coin-saldo: {{amount}}",
+          "unlocks": "Upplåsta mönster: {{amount}}",
+          "pendingRewards": "Väntande belöningar: {{amount}}",
+          "adRewards": "Annonsbelöningar som fortfarande verifieras: {{amount}}. De kommer till ditt konto.",
+          "adRewardsDiscarded": "Annonsbelöningar som fortfarande verifieras: {{amount}}. De kommer inte fram.",
+          "rejectedRewards": "Belöningar som inte kunde verifieras: {{amount}}. De flyttas inte."
+        }
+      },
+      "error": {
+        "network": "Det går inte att nå servern. Kontrollera anslutningen och försök igen.",
+        "credentialRejected": "Den här enhetens gästidentitet kunde inte verifieras, så dina gästdata kan inte flyttas just nu.",
+        "guestNotFound": "Din gästidentitet hittades inte på servern, så det finns inget att flytta.",
+        "accountClosing": "Det här kontot håller på att raderas, så gästdata kan inte flyttas till det."
+      },
+      "syncing": {
+        "indicator": "Synkroniserar dina gästdata…"
+      },
+      "needsAttention": {
+        "title": "Vissa gästdata behöver uppmärksamhet",
+        "body": "Ditt konto är redo att användas. Några objekt har inte flyttats klart och förvaras säkert tills de har gjort det."
       }
     },
     "settings": {
@@ -41571,6 +42775,49 @@
         "specs": "{{width}}×{{height}} · {{count}} kulay · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "Ilipat ang aking data",
+        "cancel": "Kanselahin",
+        "retry": "Subukan muli",
+        "support": "Makipag-ugnayan sa suporta"
+      },
+      "loading": {
+        "preview": "Sinusuri ang iyong data ng Bisita…",
+        "committing": "Inililipat ang iyong data ng Bisita sa iyong account. Pakibuksan lang ang app."
+      },
+      "disclosure": {
+        "economyTitle": "Dalhin ang iyong data ng Bisita",
+        "economyIntro": "Idaragdag ang mga ito sa iyong account:",
+        "dataOnlyTitle": "Ilipat ang iyong progreso bilang Bisita",
+        "dataOnlyIntro": "Nakatanggap na ng Guest Coin ang account na ito nang isang beses, kaya ang progreso, kasaysayan ng pagkumpleto, at mga Like mo lang ang ililipat. Itatapon ang mga Coin, na-unlock na Pattern, at nakabinbing gantimpala na nakalista sa ibaba.",
+        "progress": "Ililipat sa iyong account ang progreso mo sa pagbuburda, kasaysayan ng pagkumpleto, at mga Like.",
+        "discardedHeading": "Itatapon:",
+        "staleNotice": "May nagbago habang nirerepaso mo. Pakisuri muli ang mga detalye bago magpatuloy.",
+        "cancelNote": "Kapag nag-cancel, magsa-sign out ka sa account na ito at babalik sa hindi nabagong sesyon mo bilang Bisita.",
+        "lines": {
+          "coins": "Balanse ng Stitch Coin: {{amount}}",
+          "unlocks": "Mga na-unlock na pattern: {{amount}}",
+          "pendingRewards": "Mga nakabinbing gantimpala: {{amount}}",
+          "adRewards": "Mga gantimpala sa ad na bine-verify pa: {{amount}}. Darating ang mga ito sa iyong account.",
+          "adRewardsDiscarded": "Mga gantimpala sa ad na bine-verify pa: {{amount}}. Hindi darating ang mga ito.",
+          "rejectedRewards": "Mga gantimpalang hindi na-verify: {{amount}}. Hindi ililipat ang mga ito."
+        }
+      },
+      "error": {
+        "network": "Hindi maabot ang server. Suriin ang iyong koneksyon at subukan muli.",
+        "credentialRejected": "Hindi ma-verify ang pagkakakilanlan bilang Bisita ng device na ito, kaya hindi pa maililipat ang iyong data ng Bisita ngayon.",
+        "guestNotFound": "Hindi nakita sa server ang iyong pagkakakilanlan bilang Bisita, kaya walang maililipat.",
+        "accountClosing": "Binubura ang account na ito, kaya hindi maililipat dito ang data ng Bisita."
+      },
+      "syncing": {
+        "indicator": "Sini-sync ang iyong data ng Bisita…"
+      },
+      "needsAttention": {
+        "title": "May ilang data ng Bisita na kailangang tingnan",
+        "body": "Handa nang gamitin ang iyong account. May ilang item na hindi pa tapos ilipat at ligtas na iniingatan hanggang matapos."
+      }
+    },
     "settings": {
       "header": {
         "title": "Mga Setting",
@@ -43013,6 +44260,49 @@
         "emptyAction": "Desenleri Keşfet",
         "byCreator": "{{creatorName}} tarafından",
         "specs": "{{width}}×{{height}} · {{count}} renk · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "Verilerimi taşı",
+        "cancel": "Vazgeç",
+        "retry": "Tekrar dene",
+        "support": "Destekle iletişime geç"
+      },
+      "loading": {
+        "preview": "Misafir verilerin kontrol ediliyor…",
+        "committing": "Misafir verilerin hesabına taşınıyor. Lütfen uygulamayı açık tut."
+      },
+      "disclosure": {
+        "economyTitle": "Misafir verilerini yanında getir",
+        "economyIntro": "Bunlar hesabına eklenecek:",
+        "dataOnlyTitle": "Misafir ilerlemeni taşı",
+        "dataOnlyIntro": "Bu hesap Misafir Coin'lerini daha önce bir kez aldı; bu yüzden yalnızca ilerlemen, tamamlama geçmişin ve beğenilerin taşınacak. Aşağıda listelenen Coin'ler, açılmış desenler ve bekleyen ödüller silinecek.",
+        "progress": "Dikiş ilerlemen, tamamlama geçmişin ve beğenilerin hesabına taşınacak.",
+        "discardedHeading": "Silinecekler:",
+        "staleNotice": "İncelerken bazı şeyler değişti. Devam etmeden önce ayrıntıları tekrar kontrol et.",
+        "cancelNote": "Vazgeçersen bu hesaptan çıkış yapılır ve değişmemiş Misafir oturumuna dönersin.",
+        "lines": {
+          "coins": "Stitch Coin bakiyesi: {{amount}}",
+          "unlocks": "Açılmış desenler: {{amount}}",
+          "pendingRewards": "Bekleyen ödüller: {{amount}}",
+          "adRewards": "Hâlâ doğrulanan reklam ödülleri: {{amount}}. Hesabına ulaşacak.",
+          "adRewardsDiscarded": "Hâlâ doğrulanan reklam ödülleri: {{amount}}. Ulaşmayacak.",
+          "rejectedRewards": "Doğrulanamayan ödüller: {{amount}}. Taşınmayacak."
+        }
+      },
+      "error": {
+        "network": "Sunucuya ulaşılamıyor. Bağlantını kontrol edip tekrar dene.",
+        "credentialRejected": "Bu cihazın Misafir kimliği doğrulanamadı; bu yüzden Misafir verilerin şu anda taşınamıyor.",
+        "guestNotFound": "Misafir kimliğin sunucuda bulunamadı; taşınacak bir şey yok.",
+        "accountClosing": "Bu hesap siliniyor; bu yüzden Misafir verileri ona taşınamaz."
+      },
+      "syncing": {
+        "indicator": "Misafir verilerin eşitleniyor…"
+      },
+      "needsAttention": {
+        "title": "Bazı Misafir verileri hâlâ ilgi bekliyor",
+        "body": "Hesabın kullanıma hazır. Birkaç öğenin taşınması bitmedi; bitene kadar güvende tutuluyorlar."
       }
     },
     "settings": {
@@ -44459,6 +45749,49 @@
         "specs": "{{width}}×{{height}} · {{count}} кольорів · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "Перенести мої дані",
+        "cancel": "Скасувати",
+        "retry": "Спробувати знову",
+        "support": "Звернутися до підтримки"
+      },
+      "loading": {
+        "preview": "Перевіряємо ваші гостьові дані…",
+        "committing": "Переносимо гостьові дані до вашого облікового запису. Не закривайте застосунок."
+      },
+      "disclosure": {
+        "economyTitle": "Заберіть гостьові дані із собою",
+        "economyIntro": "До вашого облікового запису буде додано:",
+        "dataOnlyTitle": "Перенесіть свій гостьовий прогрес",
+        "dataOnlyIntro": "Цей обліковий запис уже один раз отримав гостьові монети, тож буде перенесено лише ваш прогрес, історію завершених робіт і вподобання. Наведені нижче монети, відкриті схеми та очікувані нагороди буде відхилено.",
+        "progress": "Ваш прогрес вишивання, історію завершених робіт і вподобання буде перенесено до облікового запису.",
+        "discardedHeading": "Буде відхилено:",
+        "staleNotice": "Поки ви переглядали, щось змінилося. Перш ніж продовжити, ще раз перевірте деталі.",
+        "cancelNote": "Скасування виводить вас із цього облікового запису та повертає до незміненого гостьового сеансу.",
+        "lines": {
+          "coins": "Баланс Stitch Coin: {{amount}}",
+          "unlocks": "Відкриті схеми: {{amount}}",
+          "pendingRewards": "Очікувані нагороди: {{amount}}",
+          "adRewards": "Нагороди за рекламу, що ще перевіряються: {{amount}}. Вони надійдуть на ваш обліковий запис.",
+          "adRewardsDiscarded": "Нагороди за рекламу, що ще перевіряються: {{amount}}. Вони не надійдуть.",
+          "rejectedRewards": "Нагороди, які не вдалося перевірити: {{amount}}. Їх не буде перенесено."
+        }
+      },
+      "error": {
+        "network": "Не вдається зв’язатися із сервером. Перевірте з’єднання та спробуйте ще раз.",
+        "credentialRejected": "Не вдалося підтвердити гостьову особу цього пристрою, тому гостьові дані зараз не можна перенести.",
+        "guestNotFound": "Вашу гостьову особу не знайдено на сервері, тож переносити нічого.",
+        "accountClosing": "Цей обліковий запис видаляється, тому гостьові дані не можна перенести до нього."
+      },
+      "syncing": {
+        "indicator": "Синхронізуємо ваші гостьові дані…"
+      },
+      "needsAttention": {
+        "title": "Деякі гостьові дані потребують уваги",
+        "body": "Ваш обліковий запис готовий до використання. Кілька елементів ще не завершили перенесення й надійно зберігаються, доки воно не завершиться."
+      }
+    },
     "settings": {
       "header": {
         "title": "Налаштування",
@@ -45901,6 +47234,49 @@
         "emptyAction": "Khám phá mẫu thêu",
         "byCreator": "bởi {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}} màu · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "Chuyển dữ liệu của tôi",
+        "cancel": "Hủy",
+        "retry": "Thử lại",
+        "support": "Liên hệ hỗ trợ"
+      },
+      "loading": {
+        "preview": "Đang kiểm tra dữ liệu Khách của bạn…",
+        "committing": "Đang chuyển dữ liệu Khách sang tài khoản của bạn. Vui lòng giữ ứng dụng mở."
+      },
+      "disclosure": {
+        "economyTitle": "Mang dữ liệu Khách theo bạn",
+        "economyIntro": "Những mục này sẽ được thêm vào tài khoản của bạn:",
+        "dataOnlyTitle": "Chuyển tiến trình Khách của bạn",
+        "dataOnlyIntro": "Tài khoản này đã nhận Xu Khách một lần, nên chỉ tiến trình, lịch sử hoàn thành và lượt Thích của bạn được chuyển. Xu, mẫu đã mở khóa và phần thưởng đang chờ liệt kê bên dưới sẽ bị loại bỏ.",
+        "progress": "Tiến trình thêu, lịch sử hoàn thành và lượt Thích của bạn sẽ được chuyển sang tài khoản của bạn.",
+        "discardedHeading": "Sẽ bị loại bỏ:",
+        "staleNotice": "Có thay đổi trong lúc bạn xem lại. Vui lòng kiểm tra lại chi tiết trước khi tiếp tục.",
+        "cancelNote": "Hủy sẽ đăng xuất bạn khỏi tài khoản này và đưa bạn về phiên Khách không thay đổi.",
+        "lines": {
+          "coins": "Số dư Stitch Coin: {{amount}}",
+          "unlocks": "Mẫu đã mở khóa: {{amount}}",
+          "pendingRewards": "Phần thưởng đang chờ: {{amount}}",
+          "adRewards": "Phần thưởng quảng cáo vẫn đang xác minh: {{amount}}. Chúng sẽ được chuyển vào tài khoản của bạn.",
+          "adRewardsDiscarded": "Phần thưởng quảng cáo vẫn đang xác minh: {{amount}}. Chúng sẽ không được chuyển.",
+          "rejectedRewards": "Phần thưởng không thể xác minh: {{amount}}. Chúng sẽ không được chuyển."
+        }
+      },
+      "error": {
+        "network": "Không thể kết nối với máy chủ. Hãy kiểm tra kết nối và thử lại.",
+        "credentialRejected": "Không thể xác minh danh tính Khách của thiết bị này, nên hiện chưa thể chuyển dữ liệu Khách của bạn.",
+        "guestNotFound": "Không tìm thấy danh tính Khách của bạn trên máy chủ, nên không có gì để chuyển.",
+        "accountClosing": "Tài khoản này đang bị xóa, nên không thể chuyển dữ liệu Khách vào."
+      },
+      "syncing": {
+        "indicator": "Đang đồng bộ dữ liệu Khách của bạn…"
+      },
+      "needsAttention": {
+        "title": "Một số dữ liệu Khách cần được chú ý",
+        "body": "Tài khoản của bạn đã sẵn sàng sử dụng. Một vài mục chưa chuyển xong và được lưu giữ an toàn cho đến khi hoàn tất."
       }
     },
     "settings": {
@@ -47347,6 +48723,49 @@
         "specs": "{{width}}×{{height}} · {{count}} 色 · {{category}}"
       }
     },
+    "promotion": {
+      "actions": {
+        "confirm": "迁移我的数据",
+        "cancel": "取消",
+        "retry": "重试",
+        "support": "联系客服"
+      },
+      "loading": {
+        "preview": "正在检查你的游客数据…",
+        "committing": "正在把你的游客数据迁移到账号。请保持应用打开。"
+      },
+      "disclosure": {
+        "economyTitle": "带上你的游客数据",
+        "economyIntro": "以下内容将添加到你的账号：",
+        "dataOnlyTitle": "迁移你的游客进度",
+        "dataOnlyIntro": "此账号已经领取过一次游客金币，因此只会迁移你的进度、完成记录和点赞。下方列出的金币、已解锁图案和待领奖励将被丢弃。",
+        "progress": "你的刺绣进度、完成记录和点赞将迁移到你的账号。",
+        "discardedHeading": "将被丢弃：",
+        "staleNotice": "你检查期间内容发生了变化。继续之前请再次确认详情。",
+        "cancelNote": "取消会退出此账号，并回到未改动的游客会话。",
+        "lines": {
+          "coins": "Stitch Coin 余额：{{amount}}",
+          "unlocks": "已解锁图案：{{amount}}",
+          "pendingRewards": "待领奖励：{{amount}}",
+          "adRewards": "仍在验证的广告奖励：{{amount}}。它们将发放到你的账号。",
+          "adRewardsDiscarded": "仍在验证的广告奖励：{{amount}}。它们不会发放。",
+          "rejectedRewards": "无法验证的奖励：{{amount}}。它们不会被迁移。"
+        }
+      },
+      "error": {
+        "network": "无法连接到服务器。请检查网络后重试。",
+        "credentialRejected": "无法验证此设备的游客身份，因此暂时无法迁移你的游客数据。",
+        "guestNotFound": "服务器上找不到你的游客身份，因此没有可迁移的内容。",
+        "accountClosing": "此账号正在删除中，因此无法向其迁移游客数据。"
+      },
+      "syncing": {
+        "indicator": "正在同步你的游客数据…"
+      },
+      "needsAttention": {
+        "title": "部分游客数据需要处理",
+        "body": "你的账号已可使用。少数项目尚未迁移完成，完成之前会被安全保存。"
+      }
+    },
     "settings": {
       "header": {
         "title": "设置",
@@ -48789,6 +50208,49 @@
         "emptyAction": "探索圖案",
         "byCreator": "來自 {{creatorName}}",
         "specs": "{{width}}×{{height}} · {{count}} 種顏色 · {{category}}"
+      }
+    },
+    "promotion": {
+      "actions": {
+        "confirm": "遷移我的資料",
+        "cancel": "取消",
+        "retry": "重試",
+        "support": "聯絡客服"
+      },
+      "loading": {
+        "preview": "正在檢查你的訪客資料…",
+        "committing": "正在把你的訪客資料遷移到帳號。請保持應用程式開啟。"
+      },
+      "disclosure": {
+        "economyTitle": "帶著你的訪客資料一起走",
+        "economyIntro": "以下內容將新增到你的帳號：",
+        "dataOnlyTitle": "遷移你的訪客進度",
+        "dataOnlyIntro": "此帳號已經領取過一次訪客金幣，因此只會遷移你的進度、完成紀錄和按讚。下方列出的金幣、已解鎖圖案和待領獎勵將被捨棄。",
+        "progress": "你的刺繡進度、完成紀錄和按讚將遷移到你的帳號。",
+        "discardedHeading": "將被捨棄：",
+        "staleNotice": "你檢查期間內容有所變動。繼續之前請再次確認詳細資料。",
+        "cancelNote": "取消會登出此帳號，並回到未更動的訪客工作階段。",
+        "lines": {
+          "coins": "Stitch Coin 餘額：{{amount}}",
+          "unlocks": "已解鎖圖案：{{amount}}",
+          "pendingRewards": "待領獎勵：{{amount}}",
+          "adRewards": "仍在驗證的廣告獎勵：{{amount}}。它們將發放到你的帳號。",
+          "adRewardsDiscarded": "仍在驗證的廣告獎勵：{{amount}}。它們不會發放。",
+          "rejectedRewards": "無法驗證的獎勵：{{amount}}。它們不會被遷移。"
+        }
+      },
+      "error": {
+        "network": "無法連線到伺服器。請檢查網路後重試。",
+        "credentialRejected": "無法驗證此裝置的訪客身分，因此目前無法遷移你的訪客資料。",
+        "guestNotFound": "伺服器上找不到你的訪客身分，因此沒有可遷移的內容。",
+        "accountClosing": "此帳號正在刪除中，因此無法向其遷移訪客資料。"
+      },
+      "syncing": {
+        "indicator": "正在同步你的訪客資料…"
+      },
+      "needsAttention": {
+        "title": "部分訪客資料需要處理",
+        "body": "你的帳號已可使用。少數項目尚未遷移完成，完成之前會被安全保存。"
       }
     },
     "settings": {

@@ -14,7 +14,7 @@ export class PromotionPackageRequestDto {
   manifestChecksum!: string;
 
   @IsObject()
-  packageData!: any;
+  packageData!: Record<string, unknown>;
 
   @IsString()
   @IsNotEmpty()

@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Pindahkan data saya",
+    "cancel": "Batal",
+    "retry": "Coba lagi",
+    "support": "Hubungi dukungan"
+  },
+  "loading": {
+    "preview": "Memeriksa data Tamu Anda…",
+    "committing": "Memindahkan data Tamu ke akun Anda. Biarkan aplikasi tetap terbuka."
+  },
+  "disclosure": {
+    "economyTitle": "Bawa data Tamu Anda bersama Anda",
+    "economyIntro": "Ini akan ditambahkan ke akun Anda:",
+    "dataOnlyTitle": "Pindahkan progres Tamu Anda",
+    "dataOnlyIntro": "Akun ini sudah pernah menerima Koin Tamu satu kali, jadi hanya progres, riwayat penyelesaian, dan Suka Anda yang akan dipindahkan. Koin, Pola yang dibuka, dan hadiah tertunda yang tercantum di bawah akan dibuang.",
+    "progress": "Progres menyulam, riwayat penyelesaian, dan Suka Anda akan dipindahkan ke akun Anda.",
+    "discardedHeading": "Akan dibuang:",
+    "staleNotice": "Ada yang berubah saat Anda meninjau. Periksa kembali detailnya sebelum melanjutkan.",
+    "cancelNote": "Membatalkan akan mengeluarkan Anda dari akun ini dan mengembalikan Anda ke sesi Tamu yang tidak berubah.",
+    "lines": {
+      "coins": "Saldo Stitch Coin: {{amount}}",
+      "unlocks": "Pola yang dibuka: {{amount}}",
+      "pendingRewards": "Hadiah tertunda: {{amount}}",
+      "adRewards": "Hadiah iklan yang masih diverifikasi: {{amount}}. Hadiah ini akan masuk ke akun Anda.",
+      "adRewardsDiscarded": "Hadiah iklan yang masih diverifikasi: {{amount}}. Hadiah ini tidak akan masuk.",
+      "rejectedRewards": "Hadiah yang tidak dapat diverifikasi: {{amount}}. Hadiah ini tidak akan dipindahkan."
+    }
+  },
+  "error": {
+    "network": "Tidak dapat menjangkau server. Periksa koneksi Anda dan coba lagi.",
+    "credentialRejected": "Identitas Tamu perangkat ini tidak dapat diverifikasi, sehingga data Tamu Anda tidak dapat dipindahkan saat ini.",
+    "guestNotFound": "Identitas Tamu Anda tidak ditemukan di server, jadi tidak ada yang bisa dipindahkan.",
+    "accountClosing": "Akun ini sedang dihapus, jadi data Tamu tidak dapat dipindahkan ke akun ini."
+  },
+  "syncing": {
+    "indicator": "Menyinkronkan data Tamu Anda…"
+  },
+  "needsAttention": {
+    "title": "Beberapa data Tamu perlu diperhatikan",
+    "body": "Akun Anda siap digunakan. Beberapa item belum selesai dipindahkan dan disimpan dengan aman sampai selesai."
+  }
+}

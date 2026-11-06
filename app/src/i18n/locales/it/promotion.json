@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Sposta i miei dati",
+    "cancel": "Annulla",
+    "retry": "Riprova",
+    "support": "Contatta l'assistenza"
+  },
+  "loading": {
+    "preview": "Controllo dei tuoi dati ospite…",
+    "committing": "Spostamento dei tuoi dati ospite sul tuo account. Tieni aperta l'app."
+  },
+  "disclosure": {
+    "economyTitle": "Porta con te i tuoi dati ospite",
+    "economyIntro": "Questi elementi verranno aggiunti al tuo account:",
+    "dataOnlyTitle": "Sposta i tuoi progressi da ospite",
+    "dataOnlyIntro": "Questo account ha già ricevuto i Coin da ospite una volta, quindi verranno spostati solo i tuoi progressi, la cronologia dei completamenti e i Mi piace. I Coin, gli schemi sbloccati e le ricompense in sospeso elencati qui sotto verranno scartati.",
+    "progress": "I tuoi progressi di ricamo, la cronologia dei completamenti e i Mi piace verranno spostati sul tuo account.",
+    "discardedHeading": "Verrà scartato:",
+    "staleNotice": "Qualcosa è cambiato mentre controllavi. Ricontrolla i dettagli prima di continuare.",
+    "cancelNote": "Annullando, esci da questo account e torni alla tua sessione ospite invariata.",
+    "lines": {
+      "coins": "Saldo Stitch Coin: {{amount}}",
+      "unlocks": "Schemi sbloccati: {{amount}}",
+      "pendingRewards": "Ricompense in sospeso: {{amount}}",
+      "adRewards": "Ricompense pubblicitarie ancora in verifica: {{amount}}. Arriveranno sul tuo account.",
+      "adRewardsDiscarded": "Ricompense pubblicitarie ancora in verifica: {{amount}}. Non arriveranno.",
+      "rejectedRewards": "Ricompense che non è stato possibile verificare: {{amount}}. Non verranno trasferite."
+    }
+  },
+  "error": {
+    "network": "Impossibile raggiungere il server. Controlla la connessione e riprova.",
+    "credentialRejected": "Non è stato possibile verificare l'identità ospite di questo dispositivo, quindi i tuoi dati ospite non possono essere spostati ora.",
+    "guestNotFound": "La tua identità ospite non è stata trovata sul server, quindi non c'è nulla da spostare.",
+    "accountClosing": "Questo account è in fase di eliminazione, quindi non è possibile spostarvi dati ospite."
+  },
+  "syncing": {
+    "indicator": "Sincronizzazione dei tuoi dati ospite…"
+  },
+  "needsAttention": {
+    "title": "Alcuni dati ospite richiedono attenzione",
+    "body": "Il tuo account è pronto all'uso. Alcuni elementi non hanno ancora finito di spostarsi e restano al sicuro finché non lo fanno."
+  }
+}

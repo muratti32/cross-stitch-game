@@ -14,6 +14,11 @@ import {
   DailyTaskKey,
 } from './economy.constants';
 import { CoinLedgerReason } from './entities';
+import {
+  CONSUMED_PACKAGE_STATUSES,
+  PromotionMode,
+  PromotionPackageStatus,
+} from '../promotion/entities';
 
 export interface LedgerPrincipal {
   type: 'guest' | 'account';
@@ -81,9 +86,10 @@ interface PoolRow {
   premium_claimed: boolean;
 }
 
-interface LedgerOutcomeRow {
-  amount: string;
-  granted: boolean;
+interface PromotionPackageRow {
+  account_id: string;
+  promotion_mode: PromotionMode | null;
+  status: PromotionPackageStatus;
 }
 
 interface ExistingAdGrantRow {
@@ -111,15 +117,19 @@ export class CoinLedgerRepository {
    * (`ad:<transaction_id>`). A duplicate or replayed AdMob callback collapses to
    * the already-recorded outcome. A callback received after the Reward Day pool
    * (30 coin) or ad limit (3) is exhausted is recorded for idempotency but
-   * grants nothing and consumes nothing (ADR-0033).
+   * grants nothing and consumes nothing (ADR-0033). An attempt owned by a
+   * Guest that has been economy-promoted lands on the target account
+   * (ADR-0027), under that account's Reward Day pool.
    */
   async grantAdReward(
-    principal: LedgerPrincipal,
+    attemptOwner: LedgerPrincipal,
     rewardDay: string,
     sourceKey: string,
     amount: number = AD_REWARD_COIN,
   ): Promise<AdRewardGrantResult> {
     return this.dataSource.transaction(async (manager) => {
+      const principal = await this.resolveAdRewardOwner(manager, attemptOwner);
+
       // 1. Claim the idempotency latch. The UNIQUE(source_key) constraint makes
       //    the first inserter the sole owner of this grant; a concurrent
       //    duplicate blocks until commit, then sees the conflict and replays.
@@ -135,7 +145,7 @@ export class CoinLedgerRepository {
       );
 
       if (claim.length === 0) {
-        return this.replayExisting(manager, principal, rewardDay, sourceKey);
+        return this.replayExisting(manager, rewardDay, sourceKey);
       }
 
       const ledgerId = claim[0].id;
@@ -489,6 +499,37 @@ export class CoinLedgerRepository {
     return rows[0]?.unlocked ?? false;
   }
 
+  /** The ledger a rewarded ad opened by `attemptOwner` pays into today. */
+  async findAdRewardOwner(attemptOwner: LedgerPrincipal): Promise<LedgerPrincipal> {
+    return this.resolveAdRewardOwner(this.dataSource.manager, attemptOwner);
+  }
+
+  private async resolveAdRewardOwner(
+    manager: EntityManager,
+    attemptOwner: LedgerPrincipal,
+  ): Promise<LedgerPrincipal> {
+    if (attemptOwner.type !== 'guest') {
+      return attemptOwner;
+    }
+    // FOR SHARE serializes this grant against the promotion commit, which
+    // locks the same row FOR UPDATE NOWAIT as its first statement. A grant
+    // that read the row first finishes on the Guest Ledger while the commit
+    // backs off and retries, so the commit transfers that coin. A grant that
+    // arrives during the commit waits here and then reads the committed mode.
+    const rows = await manager.query<readonly PromotionPackageRow[]>(
+      `SELECT account_id, promotion_mode, status
+       FROM promotion.transfer_packages
+       WHERE guest_id = $1
+       FOR SHARE`,
+      [attemptOwner.id],
+    );
+    const pkg = rows[0];
+    if (pkg && pkg.promotion_mode === 'economy' && CONSUMED_PACKAGE_STATUSES.includes(pkg.status)) {
+      return { type: 'account', id: pkg.account_id };
+    }
+    return attemptOwner;
+  }
+
   async getBalance(principal: LedgerPrincipal): Promise<number> {
     return this.readBalance(this.dataSource.manager, principal);
   }
@@ -537,19 +578,20 @@ export class CoinLedgerRepository {
     };
   }
 
+  /** Reports the recorded outcome against the ledger it landed on, which a redirect may have moved. */
   private async replayExisting(
     manager: EntityManager,
-    principal: LedgerPrincipal,
     rewardDay: string,
     sourceKey: string,
   ): Promise<AdRewardGrantResult> {
-    const rows = await manager.query<readonly LedgerOutcomeRow[]>(
-      `SELECT amount, granted
+    const rows = await manager.query<readonly ExistingAdGrantRow[]>(
+      `SELECT principal_type, principal_id, granted, amount
        FROM economy.coin_ledger_entries
        WHERE source_key = $1`,
       [sourceKey],
     );
-    const outcome = rows[0] ?? { amount: '0', granted: false };
+    const outcome = rows[0];
+    const principal: LedgerPrincipal = { type: outcome.principal_type, id: outcome.principal_id };
     const balance = await this.readBalance(manager, principal);
     const status = await this.readPoolStatus(manager, principal, rewardDay);
     return {

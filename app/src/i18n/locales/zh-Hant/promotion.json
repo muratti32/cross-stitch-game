@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "遷移我的資料",
+    "cancel": "取消",
+    "retry": "重試",
+    "support": "聯絡客服"
+  },
+  "loading": {
+    "preview": "正在檢查你的訪客資料…",
+    "committing": "正在把你的訪客資料遷移到帳號。請保持應用程式開啟。"
+  },
+  "disclosure": {
+    "economyTitle": "帶著你的訪客資料一起走",
+    "economyIntro": "以下內容將新增到你的帳號：",
+    "dataOnlyTitle": "遷移你的訪客進度",
+    "dataOnlyIntro": "此帳號已經領取過一次訪客金幣，因此只會遷移你的進度、完成紀錄和按讚。下方列出的金幣、已解鎖圖案和待領獎勵將被捨棄。",
+    "progress": "你的刺繡進度、完成紀錄和按讚將遷移到你的帳號。",
+    "discardedHeading": "將被捨棄：",
+    "staleNotice": "你檢查期間內容有所變動。繼續之前請再次確認詳細資料。",
+    "cancelNote": "取消會登出此帳號，並回到未更動的訪客工作階段。",
+    "lines": {
+      "coins": "Stitch Coin 餘額：{{amount}}",
+      "unlocks": "已解鎖圖案：{{amount}}",
+      "pendingRewards": "待領獎勵：{{amount}}",
+      "adRewards": "仍在驗證的廣告獎勵：{{amount}}。它們將發放到你的帳號。",
+      "adRewardsDiscarded": "仍在驗證的廣告獎勵：{{amount}}。它們不會發放。",
+      "rejectedRewards": "無法驗證的獎勵：{{amount}}。它們不會被遷移。"
+    }
+  },
+  "error": {
+    "network": "無法連線到伺服器。請檢查網路後重試。",
+    "credentialRejected": "無法驗證此裝置的訪客身分，因此目前無法遷移你的訪客資料。",
+    "guestNotFound": "伺服器上找不到你的訪客身分，因此沒有可遷移的內容。",
+    "accountClosing": "此帳號正在刪除中，因此無法向其遷移訪客資料。"
+  },
+  "syncing": {
+    "indicator": "正在同步你的訪客資料…"
+  },
+  "needsAttention": {
+    "title": "部分訪客資料需要處理",
+    "body": "你的帳號已可使用。少數項目尚未遷移完成，完成之前會被安全保存。"
+  }
+}

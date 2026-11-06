@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Move my data",
+    "cancel": "Cancel",
+    "retry": "Try again",
+    "support": "Contact support"
+  },
+  "loading": {
+    "preview": "Checking your Guest data…",
+    "committing": "Moving your Guest data to your account. Please keep the app open."
+  },
+  "disclosure": {
+    "economyTitle": "Bring your Guest data with you",
+    "economyIntro": "These will be added to your account:",
+    "dataOnlyTitle": "Move your Guest progress",
+    "dataOnlyIntro": "This account already received Guest Coins once, so only your progress, completion history and Likes will move. The Coins, Pattern Unlocks and pending rewards listed below will be discarded.",
+    "progress": "Your stitching progress, completion history and Likes will move to your account.",
+    "discardedHeading": "Will be discarded:",
+    "staleNotice": "Things changed while you were reviewing. Please check the details again before you continue.",
+    "cancelNote": "Cancelling signs you out of this account and returns you to your unchanged Guest session.",
+    "lines": {
+      "coins": "Stitch Coin balance: {{amount}}",
+      "unlocks": "Unlocked patterns: {{amount}}",
+      "pendingRewards": "Pending rewards: {{amount}}",
+      "adRewards": "Ad rewards still verifying: {{amount}}. They will arrive on your account.",
+      "adRewardsDiscarded": "Ad rewards still verifying: {{amount}}. They will not arrive.",
+      "rejectedRewards": "Rewards that could not be verified: {{amount}}. They will not transfer."
+    }
+  },
+  "error": {
+    "network": "Can't reach the server. Check your connection and try again.",
+    "credentialRejected": "This device's Guest identity could not be verified, so your Guest data can't be moved right now.",
+    "guestNotFound": "Your Guest identity could not be found on the server, so there is nothing to move.",
+    "accountClosing": "This account is being deleted, so Guest data can't be moved to it."
+  },
+  "syncing": {
+    "indicator": "Syncing your Guest data…"
+  },
+  "needsAttention": {
+    "title": "Some Guest data still needs attention",
+    "body": "Your account is ready to use. A few items haven't finished moving, and they are kept safe until they do."
+  }
+}

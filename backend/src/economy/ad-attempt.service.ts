@@ -136,16 +136,22 @@ export class AdAttemptService {
       );
     }
 
+    // A Guest that opened the ad and then signed in claims as the account it
+    // was economy-promoted into; grantAdReward pays that account either way.
     if (
-      consumedPrincipal.type !== ledgerPrincipal.type ||
-      consumedPrincipal.id !== ledgerPrincipal.id
+      !samePrincipal(consumedPrincipal, ledgerPrincipal) &&
+      !samePrincipal(await this.ledger.findAdRewardOwner(consumedPrincipal), ledgerPrincipal)
     ) {
       throw new BadRequestException('Ad attempt nonce belongs to a different user');
     }
 
     const rewardDay = utcRewardDay();
-    return this.ledger.grantAdReward(ledgerPrincipal, rewardDay, sourceKey);
+    return this.ledger.grantAdReward(consumedPrincipal, rewardDay, sourceKey);
   }
+}
+
+function samePrincipal(a: LedgerPrincipal, b: LedgerPrincipal): boolean {
+  return a.type === b.type && a.id === b.id;
 }
 
 function toLedgerPrincipal(principal: AuthPrincipal): LedgerPrincipal {

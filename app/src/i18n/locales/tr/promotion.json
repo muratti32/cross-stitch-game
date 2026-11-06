@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Verilerimi taşı",
+    "cancel": "Vazgeç",
+    "retry": "Tekrar dene",
+    "support": "Destekle iletişime geç"
+  },
+  "loading": {
+    "preview": "Misafir verilerin kontrol ediliyor…",
+    "committing": "Misafir verilerin hesabına taşınıyor. Lütfen uygulamayı açık tut."
+  },
+  "disclosure": {
+    "economyTitle": "Misafir verilerini yanında getir",
+    "economyIntro": "Bunlar hesabına eklenecek:",
+    "dataOnlyTitle": "Misafir ilerlemeni taşı",
+    "dataOnlyIntro": "Bu hesap Misafir Coin'lerini daha önce bir kez aldı; bu yüzden yalnızca ilerlemen, tamamlama geçmişin ve beğenilerin taşınacak. Aşağıda listelenen Coin'ler, açılmış desenler ve bekleyen ödüller silinecek.",
+    "progress": "Dikiş ilerlemen, tamamlama geçmişin ve beğenilerin hesabına taşınacak.",
+    "discardedHeading": "Silinecekler:",
+    "staleNotice": "İncelerken bazı şeyler değişti. Devam etmeden önce ayrıntıları tekrar kontrol et.",
+    "cancelNote": "Vazgeçersen bu hesaptan çıkış yapılır ve değişmemiş Misafir oturumuna dönersin.",
+    "lines": {
+      "coins": "Stitch Coin bakiyesi: {{amount}}",
+      "unlocks": "Açılmış desenler: {{amount}}",
+      "pendingRewards": "Bekleyen ödüller: {{amount}}",
+      "adRewards": "Hâlâ doğrulanan reklam ödülleri: {{amount}}. Hesabına ulaşacak.",
+      "adRewardsDiscarded": "Hâlâ doğrulanan reklam ödülleri: {{amount}}. Ulaşmayacak.",
+      "rejectedRewards": "Doğrulanamayan ödüller: {{amount}}. Taşınmayacak."
+    }
+  },
+  "error": {
+    "network": "Sunucuya ulaşılamıyor. Bağlantını kontrol edip tekrar dene.",
+    "credentialRejected": "Bu cihazın Misafir kimliği doğrulanamadı; bu yüzden Misafir verilerin şu anda taşınamıyor.",
+    "guestNotFound": "Misafir kimliğin sunucuda bulunamadı; taşınacak bir şey yok.",
+    "accountClosing": "Bu hesap siliniyor; bu yüzden Misafir verileri ona taşınamaz."
+  },
+  "syncing": {
+    "indicator": "Misafir verilerin eşitleniyor…"
+  },
+  "needsAttention": {
+    "title": "Bazı Misafir verileri hâlâ ilgi bekliyor",
+    "body": "Hesabın kullanıma hazır. Birkaç öğenin taşınması bitmedi; bitene kadar güvende tutuluyorlar."
+  }
+}

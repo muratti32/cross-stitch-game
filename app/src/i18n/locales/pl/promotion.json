@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Przenieś moje dane",
+    "cancel": "Anuluj",
+    "retry": "Spróbuj ponownie",
+    "support": "Skontaktuj się z pomocą"
+  },
+  "loading": {
+    "preview": "Sprawdzanie danych gościa…",
+    "committing": "Przenoszenie danych gościa na Twoje konto. Nie zamykaj aplikacji."
+  },
+  "disclosure": {
+    "economyTitle": "Zabierz ze sobą dane gościa",
+    "economyIntro": "To zostanie dodane do Twojego konta:",
+    "dataOnlyTitle": "Przenieś postępy gościa",
+    "dataOnlyIntro": "To konto otrzymało już raz monety gościa, więc przeniesione zostaną tylko Twoje postępy, historia ukończeń i polubienia. Monety, odblokowane wzory i oczekujące nagrody wymienione poniżej zostaną odrzucone.",
+    "progress": "Twoje postępy w haftowaniu, historia ukończeń i polubienia zostaną przeniesione na Twoje konto.",
+    "discardedHeading": "Zostanie odrzucone:",
+    "staleNotice": "Podczas sprawdzania coś się zmieniło. Przed kontynuowaniem sprawdź szczegóły jeszcze raz.",
+    "cancelNote": "Anulowanie wyloguje Cię z tego konta i przywróci niezmienioną sesję gościa.",
+    "lines": {
+      "coins": "Saldo Stitch Coin: {{amount}}",
+      "unlocks": "Odblokowane wzory: {{amount}}",
+      "pendingRewards": "Oczekujące nagrody: {{amount}}",
+      "adRewards": "Nagrody za reklamy w trakcie weryfikacji: {{amount}}. Trafią na Twoje konto.",
+      "adRewardsDiscarded": "Nagrody za reklamy w trakcie weryfikacji: {{amount}}. Nie zostaną przyznane.",
+      "rejectedRewards": "Nagrody, których nie udało się zweryfikować: {{amount}}. Nie zostaną przeniesione."
+    }
+  },
+  "error": {
+    "network": "Nie można połączyć się z serwerem. Sprawdź połączenie i spróbuj ponownie.",
+    "credentialRejected": "Nie udało się zweryfikować tożsamości gościa na tym urządzeniu, więc danych gościa nie można teraz przenieść.",
+    "guestNotFound": "Nie znaleziono Twojej tożsamości gościa na serwerze, więc nie ma czego przenosić.",
+    "accountClosing": "To konto jest usuwane, więc nie można na nie przenieść danych gościa."
+  },
+  "syncing": {
+    "indicator": "Synchronizowanie danych gościa…"
+  },
+  "needsAttention": {
+    "title": "Niektóre dane gościa wymagają uwagi",
+    "body": "Twoje konto jest gotowe do użycia. Kilka elementów nie zostało jeszcze przeniesionych i pozostają bezpieczne, dopóki to się nie stanie."
+  }
+}

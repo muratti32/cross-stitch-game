@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Flyt mine data",
+    "cancel": "Annuller",
+    "retry": "Prøv igen",
+    "support": "Kontakt support"
+  },
+  "loading": {
+    "preview": "Tjekker dine gæstedata…",
+    "committing": "Flytter dine gæstedata til din konto. Hold appen åben."
+  },
+  "disclosure": {
+    "economyTitle": "Tag dine gæstedata med dig",
+    "economyIntro": "Disse tilføjes til din konto:",
+    "dataOnlyTitle": "Flyt dine fremskridt som gæst",
+    "dataOnlyIntro": "Denne konto har allerede modtaget gæstemønter én gang, så kun dine fremskridt, din fuldførelseshistorik og dine likes bliver flyttet. Mønterne, de oplåste mønstre og de afventende belønninger nedenfor bliver kasseret.",
+    "progress": "Dine broderifremskridt, din fuldførelseshistorik og dine likes flyttes til din konto.",
+    "discardedHeading": "Bliver kasseret:",
+    "staleNotice": "Noget ændrede sig, mens du gennemgik det. Tjek detaljerne igen, før du fortsætter.",
+    "cancelNote": "Hvis du annullerer, bliver du logget ud af denne konto og vender tilbage til din uændrede gæstesession.",
+    "lines": {
+      "coins": "Stitch Coin-saldo: {{amount}}",
+      "unlocks": "Oplåste mønstre: {{amount}}",
+      "pendingRewards": "Afventende belønninger: {{amount}}",
+      "adRewards": "Reklamebelønninger, der stadig bekræftes: {{amount}}. De ankommer på din konto.",
+      "adRewardsDiscarded": "Reklamebelønninger, der stadig bekræftes: {{amount}}. De ankommer ikke.",
+      "rejectedRewards": "Belønninger, der ikke kunne bekræftes: {{amount}}. De bliver ikke flyttet."
+    }
+  },
+  "error": {
+    "network": "Kan ikke nå serveren. Tjek din forbindelse, og prøv igen.",
+    "credentialRejected": "Denne enheds gæsteidentitet kunne ikke bekræftes, så dine gæstedata kan ikke flyttes lige nu.",
+    "guestNotFound": "Din gæsteidentitet blev ikke fundet på serveren, så der er intet at flytte.",
+    "accountClosing": "Denne konto bliver slettet, så gæstedata kan ikke flyttes til den."
+  },
+  "syncing": {
+    "indicator": "Synkroniserer dine gæstedata…"
+  },
+  "needsAttention": {
+    "title": "Nogle gæstedata kræver opmærksomhed",
+    "body": "Din konto er klar til brug. Nogle få elementer er ikke færdige med at flytte og opbevares sikkert, indtil de er det."
+  }
+}

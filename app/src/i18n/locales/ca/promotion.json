@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Mou les meves dades",
+    "cancel": "Cancel·la",
+    "retry": "Torna-ho a provar",
+    "support": "Contacta amb el suport"
+  },
+  "loading": {
+    "preview": "Comprovant les teves dades de convidat…",
+    "committing": "Movent les teves dades de convidat al teu compte. Mantén l'aplicació oberta."
+  },
+  "disclosure": {
+    "economyTitle": "Porta les teves dades de convidat amb tu",
+    "economyIntro": "Això s'afegirà al teu compte:",
+    "dataOnlyTitle": "Mou el teu progrés de convidat",
+    "dataOnlyIntro": "Aquest compte ja ha rebut Coins de convidat una vegada, així que només es mouran el teu progrés, l'historial de completats i els M'agrada. Els Coins, els patrons desbloquejats i les recompenses pendents que surten a sota es descartaran.",
+    "progress": "El teu progrés de brodat, l'historial de completats i els M'agrada es mouran al teu compte.",
+    "discardedHeading": "Es descartarà:",
+    "staleNotice": "Alguna cosa ha canviat mentre ho revisaves. Torna a comprovar els detalls abans de continuar.",
+    "cancelNote": "Si cancel·les, es tanca la sessió d'aquest compte i tornes a la teva sessió de convidat sense canvis.",
+    "lines": {
+      "coins": "Saldo de Stitch Coins: {{amount}}",
+      "unlocks": "Patrons desbloquejats: {{amount}}",
+      "pendingRewards": "Recompenses pendents: {{amount}}",
+      "adRewards": "Recompenses d'anuncis encara en verificació: {{amount}}. Arribaran al teu compte.",
+      "adRewardsDiscarded": "Recompenses d'anuncis encara en verificació: {{amount}}. No arribaran.",
+      "rejectedRewards": "Recompenses que no s'han pogut verificar: {{amount}}. No es transferiran."
+    }
+  },
+  "error": {
+    "network": "No es pot connectar amb el servidor. Comprova la connexió i torna-ho a provar.",
+    "credentialRejected": "No s'ha pogut verificar la identitat de convidat d'aquest dispositiu, així que les teves dades de convidat no es poden moure ara.",
+    "guestNotFound": "No s'ha trobat la teva identitat de convidat al servidor, així que no hi ha res a moure.",
+    "accountClosing": "Aquest compte s'està eliminant, així que no s'hi poden moure dades de convidat."
+  },
+  "syncing": {
+    "indicator": "Sincronitzant les teves dades de convidat…"
+  },
+  "needsAttention": {
+    "title": "Algunes dades de convidat necessiten atenció",
+    "body": "El teu compte està a punt per usar-se. Alguns elements encara no han acabat de moure's i es mantenen segurs fins que ho facin."
+  }
+}

@@ -1,9 +1,13 @@
-import { IsString, IsNotEmpty, IsObject } from 'class-validator';
+import { IsString, IsNotEmpty, IsObject, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+import { PromotionPreviewDataDto } from './promotion-preview.dto';
 
 export class PromotionLockRequestDto {
   @IsObject()
-  @IsNotEmpty()
-  previewData!: any;
+  @ValidateNested()
+  @Type(() => PromotionPreviewDataDto)
+  previewData!: PromotionPreviewDataDto;
 
   @IsString()
   @IsNotEmpty()

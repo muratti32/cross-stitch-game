@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Flytta mina data",
+    "cancel": "Avbryt",
+    "retry": "Försök igen",
+    "support": "Kontakta support"
+  },
+  "loading": {
+    "preview": "Kontrollerar dina gästdata…",
+    "committing": "Flyttar dina gästdata till ditt konto. Låt appen vara öppen."
+  },
+  "disclosure": {
+    "economyTitle": "Ta med dig dina gästdata",
+    "economyIntro": "Det här läggs till på ditt konto:",
+    "dataOnlyTitle": "Flytta dina framsteg som gäst",
+    "dataOnlyIntro": "Det här kontot har redan fått gästmynt en gång, så bara dina framsteg, din slutförandehistorik och dina gillanden flyttas. Mynten, de upplåsta mönstren och de väntande belöningarna nedan kasseras.",
+    "progress": "Dina broderiframsteg, din slutförandehistorik och dina gillanden flyttas till ditt konto.",
+    "discardedHeading": "Kasseras:",
+    "staleNotice": "Något ändrades medan du granskade. Kontrollera uppgifterna igen innan du fortsätter.",
+    "cancelNote": "Om du avbryter loggas du ut från det här kontot och återgår till din oförändrade gästsession.",
+    "lines": {
+      "coins": "Stitch Coin-saldo: {{amount}}",
+      "unlocks": "Upplåsta mönster: {{amount}}",
+      "pendingRewards": "Väntande belöningar: {{amount}}",
+      "adRewards": "Annonsbelöningar som fortfarande verifieras: {{amount}}. De kommer till ditt konto.",
+      "adRewardsDiscarded": "Annonsbelöningar som fortfarande verifieras: {{amount}}. De kommer inte fram.",
+      "rejectedRewards": "Belöningar som inte kunde verifieras: {{amount}}. De flyttas inte."
+    }
+  },
+  "error": {
+    "network": "Det går inte att nå servern. Kontrollera anslutningen och försök igen.",
+    "credentialRejected": "Den här enhetens gästidentitet kunde inte verifieras, så dina gästdata kan inte flyttas just nu.",
+    "guestNotFound": "Din gästidentitet hittades inte på servern, så det finns inget att flytta.",
+    "accountClosing": "Det här kontot håller på att raderas, så gästdata kan inte flyttas till det."
+  },
+  "syncing": {
+    "indicator": "Synkroniserar dina gästdata…"
+  },
+  "needsAttention": {
+    "title": "Vissa gästdata behöver uppmärksamhet",
+    "body": "Ditt konto är redo att användas. Några objekt har inte flyttats klart och förvaras säkert tills de har gjort det."
+  }
+}

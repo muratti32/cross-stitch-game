@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Meine Daten übertragen",
+    "cancel": "Abbrechen",
+    "retry": "Erneut versuchen",
+    "support": "Support kontaktieren"
+  },
+  "loading": {
+    "preview": "Deine Gastdaten werden geprüft…",
+    "committing": "Deine Gastdaten werden in dein Konto übertragen. Bitte lass die App geöffnet."
+  },
+  "disclosure": {
+    "economyTitle": "Nimm deine Gastdaten mit",
+    "economyIntro": "Diese Inhalte werden deinem Konto hinzugefügt:",
+    "dataOnlyTitle": "Übertrage deinen Gastfortschritt",
+    "dataOnlyIntro": "Dieses Konto hat bereits einmal Gast-Coins erhalten. Deshalb werden nur dein Fortschritt, dein Abschlussverlauf und deine Likes übertragen. Die unten aufgeführten Coins, freigeschalteten Muster und ausstehenden Belohnungen werden verworfen.",
+    "progress": "Dein Stickfortschritt, dein Abschlussverlauf und deine Likes werden in dein Konto übertragen.",
+    "discardedHeading": "Wird verworfen:",
+    "staleNotice": "Während deiner Prüfung hat sich etwas geändert. Bitte prüfe die Details noch einmal, bevor du fortfährst.",
+    "cancelNote": "Wenn du abbrichst, wirst du von diesem Konto abgemeldet und kehrst zu deiner unveränderten Gastsitzung zurück.",
+    "lines": {
+      "coins": "Stitch-Coin-Guthaben: {{amount}}",
+      "unlocks": "Freigeschaltete Muster: {{amount}}",
+      "pendingRewards": "Ausstehende Belohnungen: {{amount}}",
+      "adRewards": "Werbebelohnungen in Prüfung: {{amount}}. Sie werden deinem Konto gutgeschrieben.",
+      "adRewardsDiscarded": "Werbebelohnungen in Prüfung: {{amount}}. Sie werden nicht gutgeschrieben.",
+      "rejectedRewards": "Belohnungen, die nicht bestätigt werden konnten: {{amount}}. Sie werden nicht übertragen."
+    }
+  },
+  "error": {
+    "network": "Der Server ist nicht erreichbar. Prüfe deine Verbindung und versuche es erneut.",
+    "credentialRejected": "Die Gastidentität dieses Geräts konnte nicht bestätigt werden. Deine Gastdaten können deshalb gerade nicht übertragen werden.",
+    "guestNotFound": "Deine Gastidentität wurde auf dem Server nicht gefunden. Es gibt also nichts zu übertragen.",
+    "accountClosing": "Dieses Konto wird gerade gelöscht. Gastdaten können daher nicht darauf übertragen werden."
+  },
+  "syncing": {
+    "indicator": "Deine Gastdaten werden synchronisiert…"
+  },
+  "needsAttention": {
+    "title": "Einige Gastdaten brauchen noch Aufmerksamkeit",
+    "body": "Dein Konto ist einsatzbereit. Ein paar Elemente sind noch nicht fertig übertragen und bleiben bis dahin sicher gespeichert."
+  }
+}

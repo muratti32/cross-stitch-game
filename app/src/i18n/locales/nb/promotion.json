@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Flytt dataene mine",
+    "cancel": "Avbryt",
+    "retry": "Prøv igjen",
+    "support": "Kontakt kundestøtte"
+  },
+  "loading": {
+    "preview": "Sjekker gjestedataene dine…",
+    "committing": "Flytter gjestedataene dine til kontoen din. Hold appen åpen."
+  },
+  "disclosure": {
+    "economyTitle": "Ta med deg gjestedataene dine",
+    "economyIntro": "Dette legges til kontoen din:",
+    "dataOnlyTitle": "Flytt gjestefremgangen din",
+    "dataOnlyIntro": "Denne kontoen har allerede fått gjestemynter én gang, så bare fremgangen, fullføringshistorikken og likene dine flyttes. Myntene, de opplåste mønstrene og de ventende belønningene nedenfor blir forkastet.",
+    "progress": "Broderifremgangen, fullføringshistorikken og likene dine flyttes til kontoen din.",
+    "discardedHeading": "Blir forkastet:",
+    "staleNotice": "Noe endret seg mens du gikk gjennom dette. Sjekk detaljene på nytt før du fortsetter.",
+    "cancelNote": "Hvis du avbryter, blir du logget ut av denne kontoen og tilbake i den uendrede gjesteøkten din.",
+    "lines": {
+      "coins": "Stitch Coin-saldo: {{amount}}",
+      "unlocks": "Opplåste mønstre: {{amount}}",
+      "pendingRewards": "Ventende belønninger: {{amount}}",
+      "adRewards": "Annonsebelønninger som fortsatt bekreftes: {{amount}}. De kommer til kontoen din.",
+      "adRewardsDiscarded": "Annonsebelønninger som fortsatt bekreftes: {{amount}}. De kommer ikke.",
+      "rejectedRewards": "Belønninger som ikke kunne bekreftes: {{amount}}. De blir ikke flyttet."
+    }
+  },
+  "error": {
+    "network": "Får ikke kontakt med serveren. Sjekk tilkoblingen og prøv igjen.",
+    "credentialRejected": "Gjesteidentiteten til denne enheten kunne ikke bekreftes, så gjestedataene dine kan ikke flyttes akkurat nå.",
+    "guestNotFound": "Gjesteidentiteten din ble ikke funnet på serveren, så det er ingenting å flytte.",
+    "accountClosing": "Denne kontoen slettes, så gjestedata kan ikke flyttes til den."
+  },
+  "syncing": {
+    "indicator": "Synkroniserer gjestedataene dine…"
+  },
+  "needsAttention": {
+    "title": "Noen gjestedata trenger oppmerksomhet",
+    "body": "Kontoen din er klar til bruk. Noen få elementer er ikke ferdig flyttet og oppbevares trygt til de er det."
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "actions": {
+    "confirm": "Přenést moje data",
+    "cancel": "Zrušit",
+    "retry": "Zkusit znovu",
+    "support": "Kontaktovat podporu"
+  },
+  "loading": {
+    "preview": "Kontrola vašich dat hosta…",
+    "committing": "Přenášíme vaše data hosta do účtu. Nechte aplikaci otevřenou."
+  },
+  "disclosure": {
+    "economyTitle": "Vezměte si data hosta s sebou",
+    "economyIntro": "Do vašeho účtu se přidá:",
+    "dataOnlyTitle": "Přeneste svůj postup hosta",
+    "dataOnlyIntro": "Tento účet už jednou získal mince hosta, proto se přenese jen váš postup, historie dokončení a lajky. Níže uvedené mince, odemčené vzory a čekající odměny budou zahozeny.",
+    "progress": "Váš postup ve vyšívání, historie dokončení a lajky se přenesou do vašeho účtu.",
+    "discardedHeading": "Bude zahozeno:",
+    "staleNotice": "Během kontroly se něco změnilo. Před pokračováním si znovu zkontrolujte podrobnosti.",
+    "cancelNote": "Zrušením se odhlásíte z tohoto účtu a vrátíte se do nezměněné relace hosta.",
+    "lines": {
+      "coins": "Zůstatek Stitch Coin: {{amount}}",
+      "unlocks": "Odemčené vzory: {{amount}}",
+      "pendingRewards": "Čekající odměny: {{amount}}",
+      "adRewards": "Odměny za reklamy, které se stále ověřují: {{amount}}. Dorazí na váš účet.",
+      "adRewardsDiscarded": "Odměny za reklamy, které se stále ověřují: {{amount}}. Nedorazí.",
+      "rejectedRewards": "Odměny, které se nepodařilo ověřit: {{amount}}. Nepřenesou se."
+    }
+  },
+  "error": {
+    "network": "Server není dostupný. Zkontrolujte připojení a zkuste to znovu.",
+    "credentialRejected": "Identitu hosta tohoto zařízení se nepodařilo ověřit, proto teď nelze data hosta přenést.",
+    "guestNotFound": "Vaše identita hosta nebyla na serveru nalezena, takže není co přenášet.",
+    "accountClosing": "Tento účet se maže, proto na něj nelze přenést data hosta."
+  },
+  "syncing": {
+    "indicator": "Synchronizace vašich dat hosta…"
+  },
+  "needsAttention": {
+    "title": "Některá data hosta vyžadují pozornost",
+    "body": "Váš účet je připraven k použití. Několik položek se ještě nedokončilo přenášet a do té doby zůstávají v bezpečí."
+  }
+}
