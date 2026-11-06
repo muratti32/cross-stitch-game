@@ -5,7 +5,7 @@ import { AuthHashingService } from '../auth/auth-hashing.service';
 import { FindOperator, IsNull, Repository } from 'typeorm';
 import { PromotionLockEntity, PromotionTransferPackageEntity } from './entities';
 import { AdAttemptEntity, CoinBalanceEntity, CoinLedgerEntryEntity, PatternUnlockEntity } from '../economy/entities';
-import { ConflictException, ForbiddenException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Logger } from '@nestjs/common';
 import { PromotionPreviewDataDto } from './dto/promotion-preview.dto';
 import { PatternLikeService } from '../social/pattern-like.service';
 import { AccountStateService } from '../deletion/account-state.service';
@@ -96,6 +96,7 @@ describe('PromotionService', () => {
     lockRepo = { save: jest.fn(), delete: jest.fn(), findOne: jest.fn() } as any;
     transferPackageRepo = {
       save: jest.fn(),
+      update: jest.fn(),
       delete: jest.fn((where: Record<string, unknown>) => packages.delete(where)),
       count: jest.fn((options: { where: Record<string, unknown> }) => packages.count(options)),
       findOne: jest.fn((options: { where: Record<string, unknown> }) => packages.findOne(options)),
@@ -483,6 +484,26 @@ describe('PromotionService', () => {
       expect(packages.rows).toEqual([{ guestId: GUEST_ID, accountId: ACCOUNT_ID, status: 'committed', promotionMode: 'economy' }]);
     });
 
+    it('rejects malformed packaged sessions with package_invalid and keeps the earlier attempt', async () => {
+      packages.rows.push({ guestId: GUEST_ID, accountId: ACCOUNT_ID, status: 'staged', promotionMode: null });
+      const malformed = { ...stageRequest, packageData: { manifest: {}, sessions: [{ key: 'session-1' }] } };
+
+      await expectPromotionError(service.stagePackage(ACCOUNT_ID, malformed), 400, 'package_invalid');
+      expect(packages.rows).toEqual([{ guestId: GUEST_ID, accountId: ACCOUNT_ID, status: 'staged', promotionMode: null }]);
+    });
+
+    it('stages a package carrying sessions and keeps its data verbatim', async () => {
+      const session = { key: 'session-1', status: 'active', completedAt: null, packedBitmapBase64: 'BQ==', title: 'Cat' };
+      const packageData = { manifest: {}, sessions: [session] };
+
+      await expect(service.stagePackage(ACCOUNT_ID, { ...stageRequest, packageData })).resolves.toMatchObject({ status: 'staged' });
+      expect(packages.rows[0]).toMatchObject({ packageData });
+    });
+
+    it('stages a package without sessions as before', async () => {
+      await expect(service.stagePackage(ACCOUNT_ID, stageRequest)).resolves.toMatchObject({ status: 'staged' });
+    });
+
     it('replaces an earlier staged attempt', async () => {
       packages.rows.push({ guestId: GUEST_ID, accountId: OTHER_ACCOUNT_ID, status: 'staged', promotionMode: null });
       await expect(service.stagePackage(ACCOUNT_ID, stageRequest)).resolves.toMatchObject({ status: 'staged' });
@@ -537,50 +558,286 @@ describe('PromotionService', () => {
   });
 
   describe('drainSession', () => {
-    it('locks the Pattern and preserves a guest unlock when reassigning the session', async () => {
-      jest.spyOn(transferPackageRepo, 'findOne').mockResolvedValue({
-        status: 'committed',
-      } as PromotionTransferPackageEntity);
-      managerQuery
-        .mockResolvedValueOnce([
-          { id: 'guest-session', status: 'active', completed_at: null },
-        ])
-        .mockResolvedValueOnce([{ unlock_price_tier: 'medium' }])
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([])
-        .mockResolvedValueOnce([{ '?column?': 1 }]);
+    const GUEST_SESSION = '44444444-4444-4444-8444-444444444444';
+    const ACCOUNT_SESSION = '55555555-5555-4555-8555-555555555555';
+    const PATTERN = '66666666-6666-4666-8666-666666666666';
 
-      await expect(
-        service.drainSession(
-          'account-uuid',
-          'guest-uuid',
-          'pattern-uuid',
-          'guest-session',
-        ),
-      ).resolves.toEqual({ status: 'transferred', isLocked: false });
+    type SessionRow = { id: string; status: 'active' | 'completed' };
+    type SqlRoute = [RegExp, (params: unknown[]) => unknown[]];
 
-      expect(managerQuery).toHaveBeenNthCalledWith(
-        2,
-        expect.stringContaining(
-          'SELECT unlock_price_tier FROM catalog.patterns WHERE id = $1 FOR SHARE',
-        ),
-        ['pattern-uuid'],
+    let guestSessions: SessionRow[];
+    let accountSessions: SessionRow[];
+    let accountSessionById: Record<string, SessionRow>;
+    let completedCellCount: number;
+    let locked: boolean;
+
+    function packagedSession(overrides: Record<string, unknown> = {}) {
+      return {
+        key: GUEST_SESSION,
+        status: 'active',
+        completedAt: null,
+        packedBitmapBase64: Buffer.from([0b0000_0101]).toString('base64'),
+        ...overrides,
+      };
+    }
+
+    function consumedPackage(status: 'committed' | 'needs_attention', sessions?: unknown[]) {
+      const row = { guestId: GUEST_ID, accountId: ACCOUNT_ID, status, promotionMode: 'economy', packageData: { manifest: {}, sessions } };
+      packages.rows.push(row as PackageRow);
+      return row;
+    }
+
+    function drain() {
+      return service.drainSession(ACCOUNT_ID, GUEST_ID, PATTERN, GUEST_SESSION);
+    }
+
+    function statements(pattern: RegExp) {
+      return managerQuery.mock.calls.filter(([sql]: [string]) => pattern.test(sql));
+    }
+
+    const WRITES = /^\s*(INSERT|UPDATE|DELETE|WITH)/;
+
+    beforeEach(() => {
+      guestSessions = [];
+      accountSessions = [];
+      accountSessionById = {};
+      completedCellCount = 0;
+      locked = false;
+      const routes: SqlRoute[] = [
+        [/principal_type = 'guest' AND principal_id = \$2 AND pattern_id = \$3/, () => guestSessions],
+        [/FROM catalog\.patterns WHERE id = \$1 FOR SHARE/, () => [{ width: 2, height: 2 }]],
+        [/AND pattern_id = \$2\s+ORDER BY/, () => accountSessions],
+        [/\(id = \$2 OR pattern_id = \$3\)/, (params) => {
+          const byId = accountSessionById[params[1] as string];
+          return byId ? [byId] : accountSessions.slice(0, 1);
+        }],
+        [/AS locked/, () => [{ locked }]],
+        [/AS completed\b/, () => [{ completed: String(completedCellCount) }]],
+        [/AS total_cells/, () => [{ revision: '7', terminal: false, total_cells: 4, completed_cells: [0, 2] }]],
+        [/AS max_rev/, () => [{ max_rev: '0' }]],
+      ];
+      managerQuery.mockImplementation(async (sql: string, params: unknown[]) => {
+        const route = routes.find(([pattern]) => pattern.test(sql));
+        return route ? route[1](params) : [];
+      });
+    });
+
+    const survivingProgress = {
+      revision: 7,
+      packedBitmapBase64: Buffer.from([0b0000_0101]).toString('base64'),
+      terminalCompleted: false,
+      isLocked: false,
+    };
+
+    it('moves the Guest session to an account with no session and applies its bitmap', async () => {
+      consumedPackage('committed', [packagedSession()]);
+      guestSessions = [{ id: GUEST_SESSION, status: 'active' }];
+
+      await expect(drain()).resolves.toEqual({
+        status: 'transferred',
+        accountSessionId: GUEST_SESSION,
+        ...survivingProgress,
+      });
+
+      expect(statements(/SET principal_type = 'account'/)[0][1]).toEqual([ACCOUNT_ID, GUEST_SESSION]);
+      expect(statements(/unnest\(\$3::int\[\]\)/)[0][1]).toEqual([GUEST_SESSION, GUEST_ID, [0, 2]]);
+      expect(statements(/session_progress_flags/)[0][1]).toEqual([GUEST_SESSION]);
+    });
+
+    it('takes the session lock before writing cells', async () => {
+      consumedPackage('committed', [packagedSession()]);
+      guestSessions = [{ id: GUEST_SESSION, status: 'active' }];
+
+      await drain();
+
+      const order = managerQuery.mock.calls.map(([sql]: [string]) => sql);
+      const lock = order.findIndex((sql: string) => sql.includes('pg_advisory_xact_lock'));
+      const write = order.findIndex((sql: string) => sql.includes('unnest($3::int[])'));
+      expect(lock).toBeGreaterThanOrEqual(0);
+      expect(lock).toBeLessThan(write);
+    });
+
+    it('copies the Guest unlock to the account before reporting Promotion-Locked', async () => {
+      consumedPackage('committed', [packagedSession()]);
+      guestSessions = [{ id: GUEST_SESSION, status: 'active' }];
+      locked = true;
+
+      await expect(drain()).resolves.toMatchObject({ isLocked: true });
+
+      const order = managerQuery.mock.calls.map(([sql]: [string]) => sql);
+      expect(order.findIndex((sql: string) => sql.includes('PK_pattern_unlocks'))).toBeLessThan(
+        order.findIndex((sql: string) => sql.includes('AS locked')),
       );
-      expect(managerQuery).toHaveBeenNthCalledWith(
-        3,
-        expect.stringContaining(
-          "SELECT 'account', $1, pattern_id, source",
-        ),
-        ['account-uuid', 'guest-uuid', 'pattern-uuid'],
-      );
-      expect(managerQuery.mock.calls[2][0]).toContain(
-        'ON CONFLICT ON CONSTRAINT "PK_pattern_unlocks" DO NOTHING',
-      );
+    });
+
+    it('continues an active Guest session as a Replay Session next to completed history', async () => {
+      consumedPackage('committed', [packagedSession()]);
+      guestSessions = [{ id: GUEST_SESSION, status: 'active' }];
+      accountSessions = [{ id: ACCOUNT_SESSION, status: 'completed' }];
+
+      await expect(drain()).resolves.toEqual({
+        status: 'transferred',
+        role: 'replay',
+        accountSessionId: GUEST_SESSION,
+        ...survivingProgress,
+      });
+      expect(statements(/unnest\(\$3::int\[\]\)/)[0][1][0]).toBe(GUEST_SESSION);
+    });
+
+    it('merges two active sessions into the account session and deletes the Guest row', async () => {
+      consumedPackage('committed', [packagedSession()]);
+      guestSessions = [{ id: GUEST_SESSION, status: 'active' }];
+      accountSessions = [{ id: ACCOUNT_SESSION, status: 'active' }];
+
+      await expect(drain()).resolves.toEqual({
+        status: 'merged',
+        accountSessionId: ACCOUNT_SESSION,
+        ...survivingProgress,
+      });
+      expect(statements(/DELETE FROM sessions\.stitching_sessions/)[0][1]).toEqual([GUEST_SESSION]);
+      expect(statements(/unnest\(\$3::int\[\]\)/)[0][1][0]).toBe(ACCOUNT_SESSION);
+    });
+
+    it('keeps both attempts when both are completed', async () => {
+      consumedPackage('committed', [packagedSession({ status: 'completed', completedAt: '2026-11-01T12:00:00.000Z' })]);
+      guestSessions = [{ id: GUEST_SESSION, status: 'completed' }];
+      accountSessions = [{ id: ACCOUNT_SESSION, status: 'completed' }];
+
+      await expect(drain()).resolves.toMatchObject({ status: 'transferred', accountSessionId: GUEST_SESSION });
+      expect(statements(/DELETE FROM sessions\.stitching_sessions/)).toHaveLength(0);
+    });
+
+    it('completes a fully stitched packaged session with its own completion time and no reward', async () => {
+      consumedPackage('committed', [packagedSession({ status: 'completed', completedAt: '2026-11-01T12:00:00.000Z' })]);
+      guestSessions = [{ id: GUEST_SESSION, status: 'active' }];
+      completedCellCount = 4;
+
+      await drain();
+
+      expect(statements(/SET status = 'completed'/)[0][1]).toEqual([GUEST_SESSION, '2026-11-01T12:00:00.000Z']);
+      expect(statements(/SET terminal_completed_at/)).toHaveLength(1);
+      expect(statements(/coin_ledger|coin_balances/)).toHaveLength(0);
+    });
+
+    it('leaves a partly stitched packaged completion active', async () => {
+      consumedPackage('committed', [packagedSession({ status: 'completed', completedAt: '2026-11-01T12:00:00.000Z' })]);
+      guestSessions = [{ id: GUEST_SESSION, status: 'active' }];
+      completedCellCount = 3;
+
+      await drain();
+
+      expect(statements(/SET status = 'completed'/)).toHaveLength(0);
+    });
+
+    it('does not mark progress for an empty bitmap', async () => {
+      consumedPackage('committed', [packagedSession({ packedBitmapBase64: '' })]);
+      guestSessions = [{ id: GUEST_SESSION, status: 'active' }];
+
+      await drain();
+
+      expect(statements(/unnest\(\$3::int\[\]\)/)).toHaveLength(0);
+      expect(statements(/session_progress_flags/)).toHaveLength(0);
+    });
+
+    it('moves the session without writing cells when the package predates sessions', async () => {
+      consumedPackage('committed');
+      guestSessions = [{ id: GUEST_SESSION, status: 'active' }];
+
+      await expect(drain()).resolves.toMatchObject({ status: 'transferred', accountSessionId: GUEST_SESSION });
+
+      expect(statements(/SET principal_type = 'account'/)).toHaveLength(1);
+      expect(statements(/pg_advisory_xact_lock|unnest/)).toHaveLength(0);
+    });
+
+    it('scopes the Guest session lookup to the Guest and the Pattern', async () => {
+      consumedPackage('committed', [packagedSession()]);
+
+      await drain();
+
+      expect(statements(/principal_type = 'guest' AND principal_id = \$2/)[0][1]).toEqual([GUEST_SESSION, GUEST_ID, PATTERN]);
+    });
+
+    it('acknowledges a retry of a transferred session by id, writing nothing', async () => {
+      consumedPackage('committed', [packagedSession()]);
+      accountSessionById[GUEST_SESSION] = { id: GUEST_SESSION, status: 'active' };
+
+      await expect(drain()).resolves.toEqual({
+        status: 'acknowledged',
+        accountSessionId: GUEST_SESSION,
+        ...survivingProgress,
+      });
+      expect(managerQuery.mock.calls.filter(([sql]: [string]) => WRITES.test(sql))).toHaveLength(0);
+    });
+
+    it('acknowledges a retry of a merged session with the account session, writing nothing', async () => {
+      consumedPackage('committed', [packagedSession()]);
+      accountSessions = [{ id: ACCOUNT_SESSION, status: 'active' }];
+
+      await expect(drain()).resolves.toEqual({
+        status: 'acknowledged',
+        accountSessionId: ACCOUNT_SESSION,
+        ...survivingProgress,
+      });
+      expect(managerQuery.mock.calls.filter(([sql]: [string]) => WRITES.test(sql))).toHaveLength(0);
+    });
+
+    it('reports session_not_found when no reachable session exists', async () => {
+      consumedPackage('committed', [packagedSession()]);
+
+      await expect(drain()).resolves.toEqual({
+        status: 'acknowledged',
+        detail: 'session_not_found',
+        accountSessionId: null,
+        revision: 0,
+        packedBitmapBase64: null,
+        terminalCompleted: false,
+        isLocked: false,
+      });
+      expect(managerQuery.mock.calls.filter(([sql]: [string]) => WRITES.test(sql))).toHaveLength(0);
+    });
+
+    it('still drains after the package entered needs_attention', async () => {
+      consumedPackage('needs_attention', [packagedSession()]);
+      guestSessions = [{ id: GUEST_SESSION, status: 'active' }];
+
+      await expect(drain()).resolves.toMatchObject({ status: 'transferred', accountSessionId: GUEST_SESSION });
+    });
+
+    it.each(['staged', 'cancelled'] as const)('refuses a %s package', async (status) => {
+      packages.rows.push({ guestId: GUEST_ID, accountId: ACCOUNT_ID, status, promotionMode: null });
+
+      await expect(drain()).rejects.toThrow(ForbiddenException);
+    });
+
+    it("refuses another account's package", async () => {
+      packages.rows.push({ guestId: GUEST_ID, accountId: OTHER_ACCOUNT_ID, status: 'committed', promotionMode: 'economy' });
+
+      await expect(drain()).rejects.toThrow(ForbiddenException);
+    });
+
+    it('parks only the package status when the merge fails', async () => {
+      const row = consumedPackage('committed', [packagedSession()]);
+      jest.spyOn(Logger.prototype, 'error').mockImplementation();
+      transaction.mockRejectedValueOnce(new Error('merge failed'));
+
+      await expect(drain()).rejects.toMatchObject({
+        response: { code: 'promotion_needs_attention' },
+      });
+
+      expect(transferPackageRepo.update).toHaveBeenCalledWith({ guestId: GUEST_ID }, { status: 'needs_attention' });
+      expect(transferPackageRepo.save).not.toHaveBeenCalled();
+      expect(row.status).toBe('committed');
     });
   });
 
   describe('drainLike', () => {
+    it('still drains after the package entered needs_attention', async () => {
+      packages.rows.push({ guestId: GUEST_ID, accountId: ACCOUNT_ID, status: 'needs_attention', promotionMode: 'economy' });
+      managerFindOne.mockResolvedValueOnce(null);
+
+      await expect(service.drainLike(ACCOUNT_ID, GUEST_ID, 'pattern-uuid')).resolves.toEqual({ status: 'discarded' });
+    });
+
     it('throws ForbiddenException if package is not found or not committed', async () => {
       jest.spyOn(transferPackageRepo, 'findOne').mockResolvedValue(null);
       await expect(service.drainLike('account-uuid', 'guest-uuid', 'pattern-uuid'))
