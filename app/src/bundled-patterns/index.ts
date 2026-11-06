@@ -5,6 +5,7 @@ import manifestJson from '../../assets/bundled-patterns/manifest.json';
 
 export interface BundledPattern {
   id: string;
+  assetKey: string;
   title: string;
   description: string;
   width: number;
@@ -46,6 +47,7 @@ const thumbnailAssets: Record<string, number> = {
 
 interface ManifestJsonEntry {
   id: string;
+  assetKey: string;
   title: string;
   description: string;
   width: number;
@@ -62,16 +64,16 @@ interface ManifestJsonEntry {
 }
 
 export const BUNDLED_PATTERNS: BundledPattern[] = (manifestJson as ManifestJsonEntry[]).map((entry) => {
-  const id = entry.id;
-  if (!binaryAssets[id] || !previewAssets[id] || !thumbnailAssets[id]) {
-    throw new Error(`Assets missing for bundled pattern ID: ${id}`);
+  const { assetKey } = entry;
+  if (!binaryAssets[assetKey] || !previewAssets[assetKey] || !thumbnailAssets[assetKey]) {
+    throw new Error(`Assets missing for bundled pattern: ${assetKey}`);
   }
   return {
     ...entry,
     difficulty: entry.difficulty as 'easy' | 'medium' | 'hard',
-    previewAsset: previewAssets[id],
-    thumbnailAsset: thumbnailAssets[id],
-    binaryAsset: binaryAssets[id],
+    previewAsset: previewAssets[assetKey],
+    thumbnailAsset: thumbnailAssets[assetKey],
+    binaryAsset: binaryAssets[assetKey],
   };
 });
 

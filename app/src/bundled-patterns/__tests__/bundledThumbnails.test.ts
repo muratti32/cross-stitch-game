@@ -5,7 +5,7 @@ import { PNG } from 'pngjs';
 import { PATTERN_THUMBNAIL_VARIANT_SIZE_PX } from '../../../../backend/src/conversion/pattern-thumbnail-renderer';
 
 interface ManifestEntry {
-  id: string;
+  assetKey: string;
 }
 
 const bundledPatternsDirectory = path.resolve(__dirname, '../../../assets/bundled-patterns');
@@ -17,7 +17,7 @@ describe('bundled browsing thumbnails', () => {
     const expectedSize = PATTERN_THUMBNAIL_VARIANT_SIZE_PX.browsing;
 
     for (const entry of manifest) {
-      const thumbnailPath = path.join(bundledPatternsDirectory, `${entry.id}_thumbnail.png`);
+      const thumbnailPath = path.join(bundledPatternsDirectory, `${entry.assetKey}_thumbnail.png`);
 
       expect(fs.existsSync(thumbnailPath)).toBe(true);
 

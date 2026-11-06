@@ -1,3 +1,4 @@
+import bundledManifest from '../../assets/bundled-patterns/manifest.json';
 import {
   deleteSession,
   getDeviceConfigValue,
@@ -43,7 +44,9 @@ const KEYS = {
   completedAt: 'onboarding.v1.completed_at',
   shownHints: 'tutorial.v1.shown_hints',
 } as const;
-export const ONBOARDING_STARTER_PATTERN_ID = 'starter_heart';
+const onboardingStarter = bundledManifest.find((entry) => entry.assetKey === 'starter_heart');
+if (!onboardingStarter) throw new Error('Canonical starter_heart bundled pattern is missing');
+export const ONBOARDING_STARTER_PATTERN_ID = onboardingStarter.id;
 
 let startupState: OnboardingState | null = null;
 

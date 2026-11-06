@@ -1,6 +1,7 @@
 [
   {
-    "id": "starter_heart",
+    "id": "dc47c329-35fd-4173-9ad9-5098369beb44",
+    "assetKey": "starter_heart",
     "title": "Cozy Heart",
     "description": "A sweet, simple heart pattern stitched in classic red tones.",
     "width": 20,
@@ -16,7 +17,8 @@
     "createdAt": "2026-07-26T10:49:04.380Z"
   },
   {
-    "id": "starter_flower",
+    "id": "a6a221ab-83dd-4bc0-b945-ba619e65fa92",
+    "assetKey": "starter_flower",
     "title": "Cozy Flower",
     "description": "A cheerful blooming flower to brighten up your stitching table.",
     "width": 20,
@@ -32,7 +34,8 @@
     "createdAt": "2026-07-26T10:49:04.386Z"
   },
   {
-    "id": "starter_star",
+    "id": "c2206f08-ef17-45d9-9cbb-ecd818a8dc06",
+    "assetKey": "starter_star",
     "title": "Cute Star",
     "description": "A bright, shining star in retro golden shades.",
     "width": 20,
@@ -48,7 +51,8 @@
     "createdAt": "2026-07-26T10:49:04.391Z"
   },
   {
-    "id": "starter_mushroom",
+    "id": "cb6dc139-74da-4668-aa23-8d692243db7a",
+    "assetKey": "starter_mushroom",
     "title": "Tiny Mushroom",
     "description": "A cute little woodland mushroom inspired by classic pixel games.",
     "width": 20,

@@ -4,6 +4,7 @@ import { PNG } from 'pngjs';
 import { sha256 } from 'js-sha256';
 import { encodePatternArtifact, PatternData, PaletteEntry } from '../src/pattern-artifact';
 import { renderPatternThumbnailPng } from '../../backend/src/conversion/pattern-thumbnail-renderer';
+import type { BundledStarter } from '../../backend/src/catalog/bundled-starters.generated';
 
 // Helper to convert grid string templates to Uint8Array
 function createGrid(template: string, width: number, height: number): Uint8Array {
@@ -146,9 +147,13 @@ const mushroomTemplate = `
 ....................
 `;
 
+// A starter's id and createdAt are its server catalog row's too. The bytes under
+// an id never change: new art gets a new UUID.
 const patterns = [
   {
-    id: 'starter_heart',
+    id: 'dc47c329-35fd-4173-9ad9-5098369beb44',
+    assetKey: 'starter_heart',
+    createdAt: '2026-07-26T10:49:04.380Z',
     title: 'Cozy Heart',
     description: 'A sweet, simple heart pattern stitched in classic red tones.',
     width: 20,
@@ -158,7 +163,9 @@ const patterns = [
     difficulty: 'easy' as const,
   },
   {
-    id: 'starter_flower',
+    id: 'a6a221ab-83dd-4bc0-b945-ba619e65fa92',
+    assetKey: 'starter_flower',
+    createdAt: '2026-07-26T10:49:04.386Z',
     title: 'Cozy Flower',
     description: 'A cheerful blooming flower to brighten up your stitching table.',
     width: 20,
@@ -168,7 +175,9 @@ const patterns = [
     difficulty: 'easy' as const,
   },
   {
-    id: 'starter_star',
+    id: 'c2206f08-ef17-45d9-9cbb-ecd818a8dc06',
+    assetKey: 'starter_star',
+    createdAt: '2026-07-26T10:49:04.391Z',
     title: 'Cute Star',
     description: 'A bright, shining star in retro golden shades.',
     width: 20,
@@ -178,7 +187,9 @@ const patterns = [
     difficulty: 'easy' as const,
   },
   {
-    id: 'starter_mushroom',
+    id: 'cb6dc139-74da-4668-aa23-8d692243db7a',
+    assetKey: 'starter_mushroom',
+    createdAt: '2026-07-26T10:49:04.396Z',
     title: 'Tiny Mushroom',
     description: 'A cute little woodland mushroom inspired by classic pixel games.',
     width: 20,
@@ -190,10 +201,14 @@ const patterns = [
 ];
 
 const targetDir = path.resolve(__dirname, '../assets/bundled-patterns');
+const backendModulePath = path.resolve(__dirname, '../../backend/src/catalog/bundled-starters.generated.ts');
+const STARTER_CATEGORY_CODE = 'other';
+const STARTER_CREATOR_NAME = 'Stitch Wish Team';
 fs.mkdirSync(targetDir, { recursive: true });
 
 interface ManifestEntry {
   id: string;
+  assetKey: string;
   title: string;
   description: string;
   width: number;
@@ -210,19 +225,8 @@ interface ManifestEntry {
 }
 
 const manifest: ManifestEntry[] = [];
+const backendStarters: BundledStarter[] = [];
 let totalThumbnailBytes = 0;
-
-// A Bundled Starter Pattern's createdAt must match the same Pattern in the server
-// catalog, so regenerating assets reuses the timestamp already in the manifest
-// instead of stamping a fresh one on every run.
-const existingCreatedAt = new Map<string, string>();
-const existingManifestPath = path.join(targetDir, 'manifest.json');
-if (fs.existsSync(existingManifestPath)) {
-  const existing = JSON.parse(fs.readFileSync(existingManifestPath, 'utf8')) as ManifestEntry[];
-  for (const entry of existing) {
-    existingCreatedAt.set(entry.id, entry.createdAt);
-  }
-}
 
 // Helper to parse Hex color to RGB
 function parseHex(hex: string) {
@@ -249,7 +253,7 @@ for (const p of patterns) {
   const byteLength = encoded.length;
 
   // Write binary artifact
-  const binPath = path.join(targetDir, `${p.id}.bin`);
+  const binPath = path.join(targetDir, `${p.assetKey}.bin`);
   fs.writeFileSync(binPath, encoded);
 
   // Generate PNG Preview (upscale by 16)
@@ -287,7 +291,7 @@ for (const p of patterns) {
     }
   }
 
-  const pngPath = path.join(targetDir, `${p.id}.png`);
+  const pngPath = path.join(targetDir, `${p.assetKey}.png`);
   const pngBuffer = PNG.sync.write(png);
   fs.writeFileSync(pngPath, pngBuffer);
 
@@ -298,7 +302,7 @@ for (const p of patterns) {
     grid,
     variant: 'browsing',
   });
-  const thumbnailPath = path.join(targetDir, `${p.id}_thumbnail.png`);
+  const thumbnailPath = path.join(targetDir, `${p.assetKey}_thumbnail.png`);
   fs.writeFileSync(thumbnailPath, thumbnailBuffer);
   totalThumbnailBytes += thumbnailBuffer.length;
 
@@ -308,6 +312,7 @@ for (const p of patterns) {
   // Add to manifest
   manifest.push({
     id: p.id,
+    assetKey: p.assetKey,
     title: p.title,
     description: p.description,
     width: p.width,
@@ -320,14 +325,57 @@ for (const p of patterns) {
     isPremium: false,
     colorsCount: p.palette.length,
     cellsCount: filledCells, // Number of filled cells/stitches
-    createdAt: existingCreatedAt.get(p.id) ?? new Date().toISOString(),
+    createdAt: p.createdAt,
   });
 
-  console.log(`Generated ${p.title} (${p.id}): Binary size = ${byteLength} bytes, Checksum = ${checksum}`);
-  console.log(`Generated thumbnail ${p.id}_thumbnail.png: ${thumbnailBuffer.length} bytes`);
+  backendStarters.push({
+    id: p.id,
+    title: p.title,
+    description: p.description,
+    creatorName: STARTER_CREATOR_NAME,
+    categoryCode: STARTER_CATEGORY_CODE,
+    width: p.width,
+    height: p.height,
+    paletteSize: p.palette.length,
+    stitchableCellCount: filledCells,
+    publishedAt: p.createdAt,
+    artifact: {
+      base64: Buffer.from(encoded).toString('base64'),
+      checksum,
+      byteLength,
+      schemaVersion: 1,
+    },
+    previewBase64: pngBuffer.toString('base64'),
+  });
+
+  console.log(`Generated ${p.title} (${p.assetKey}): Binary size = ${byteLength} bytes, Checksum = ${checksum}`);
+  console.log(`Generated thumbnail ${p.assetKey}_thumbnail.png: ${thumbnailBuffer.length} bytes`);
 }
 
 // Write manifest.json
 fs.writeFileSync(path.join(targetDir, 'manifest.json'), JSON.stringify(manifest, null, 2));
+
+fs.writeFileSync(
+  backendModulePath,
+  `// Generated by app/scripts/generate-bundled-patterns.ts (npm run bundled:generate). Do not edit.
+
+export interface BundledStarter {
+  id: string;
+  title: string;
+  description: string;
+  creatorName: string;
+  categoryCode: string;
+  width: number;
+  height: number;
+  paletteSize: number;
+  stitchableCellCount: number;
+  publishedAt: string;
+  artifact: { base64: string; checksum: string; byteLength: number; schemaVersion: number };
+  previewBase64: string;
+}
+
+export const BUNDLED_STARTERS: readonly BundledStarter[] = ${JSON.stringify(backendStarters, null, 2)};
+`,
+);
 console.log('Successfully generated all bundled patterns and manifest.');
 console.log(`Total bundled thumbnail bytes: ${totalThumbnailBytes}`);
