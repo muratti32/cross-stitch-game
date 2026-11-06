@@ -26,6 +26,33 @@ export interface PromotionManifest {
   likes: Record<string, boolean>;
 }
 
+/**
+ * One Guest local session as the Promotion Package carries it. The bitmap is the
+ * session's whole folded progress: ops alone are incomplete once a checkpoint
+ * compacted them. Local-only sessions never reach the backend's session tables,
+ * so `patternId` may be a bundled or pending personal id.
+ */
+export interface PackagedSession {
+  /** remoteSessionId ?? localSessionId; also the key in `manifest.progress`. */
+  key: string;
+  localSessionId: string;
+  remoteSessionId: string | null;
+  patternId: string;
+  source: 'bundled' | 'catalog' | 'personal';
+  artifactChecksum: string;
+  status: 'preparing' | 'ready' | 'active' | 'completed';
+  createdAt: string;
+  updatedAt: string;
+  completedAt: string | null;
+  replayOf: string | null;
+  title: string | null;
+  previewUrl: string | null;
+  thumbnailUrl: string | null;
+  patternWidth: number | null;
+  patternHeight: number | null;
+  packedBitmapBase64: string;
+}
+
 export interface PromotionPreviewRequest {
   guestId: string;
   guestCredential: string;
@@ -64,7 +91,7 @@ export interface PromotionPackageRequest {
   guestId: string;
   lockToken: string;
   manifestChecksum: string;
-  packageData: { manifest: PromotionManifest };
+  packageData: { manifest: PromotionManifest; sessions: PackagedSession[] };
   checksum: string;
 }
 
@@ -77,6 +104,21 @@ export interface PromotionCommitResponse {
   status: 'committed';
   promotionMode: PromotionMode;
   replayed: boolean;
+}
+
+export interface DrainSessionResult {
+  status: 'transferred' | 'merged' | 'acknowledged';
+  /** The surviving server session, null when none exists. */
+  accountSessionId: string | null;
+  /** Server revision after the drain applied. */
+  revision: number;
+  /** Authoritative folded cells of the surviving session. */
+  packedBitmapBase64: string | null;
+  terminalCompleted: boolean;
+  /** Promotion-Locked: the client must not seed a local row. */
+  isLocked: boolean;
+  detail?: string;
+  role?: 'replay';
 }
 
 export interface CommercePromotionStatus {
@@ -238,6 +280,26 @@ export function parsePromotionCommit(body: unknown, status = 200): PromotionComm
     status: 'committed',
     promotionMode: oneOf(body, 'promotionMode', PROMOTION_MODES, status),
     replayed: booleanField(body, 'replayed', status),
+  };
+}
+
+function nullableStringField(record: JsonRecord, key: string, status: number): string | null {
+  const value = field(record, key, status);
+  if (value !== null && typeof value !== 'string') throw invalidPromotionResponse(status, `${key} is not text`);
+  return value;
+}
+
+export function parseDrainSessionResult(body: unknown, status = 200): DrainSessionResult {
+  if (!isPromotionJsonRecord(body)) throw invalidPromotionResponse(status, 'drain result is not an object');
+  return {
+    status: oneOf(body, 'status', ['transferred', 'merged', 'acknowledged'], status),
+    accountSessionId: nullableStringField(body, 'accountSessionId', status),
+    revision: countField(body, 'revision', status),
+    packedBitmapBase64: nullableStringField(body, 'packedBitmapBase64', status),
+    terminalCompleted: booleanField(body, 'terminalCompleted', status),
+    isLocked: booleanField(body, 'isLocked', status),
+    ...(typeof body.detail === 'string' ? { detail: body.detail } : {}),
+    ...(body.role === 'replay' ? { role: 'replay' as const } : {}),
   };
 }
 

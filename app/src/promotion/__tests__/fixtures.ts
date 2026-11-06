@@ -1,4 +1,4 @@
-import type { PromotionManifest, PromotionPreviewResponse } from '../../api/promotionContract';
+import type { PackagedSession, PromotionManifest, PromotionPreviewResponse } from '../../api/promotionContract';
 import type { HandoffBase, PromotionHandoff } from '../handoff';
 
 export const GUEST_ID = '11111111-1111-4111-8111-111111111111';
@@ -17,13 +17,37 @@ export function manifest(overrides: Partial<PromotionManifest> = {}): PromotionM
   };
 }
 
+export function packaged(overrides: Partial<PackagedSession> = {}): PackagedSession {
+  return {
+    key: SESSION_A,
+    localSessionId: 'session_local_1',
+    remoteSessionId: SESSION_A,
+    patternId: PATTERN_A,
+    source: 'catalog',
+    artifactChecksum: 'artifact',
+    status: 'active',
+    createdAt: '2026-02-01T09:00:00.000Z',
+    updatedAt: '2026-02-01T10:00:00.000Z',
+    completedAt: null,
+    replayOf: null,
+    title: 'Rose',
+    previewUrl: null,
+    thumbnailUrl: null,
+    patternWidth: 4,
+    patternHeight: 4,
+    packedBitmapBase64: 'Bw==',
+    ...overrides,
+  };
+}
+
 export function base(overrides: Partial<HandoffBase> = {}): HandoffBase {
   return {
     guestId: GUEST_ID,
     accountId: ACCOUNT_ID,
     manifest: manifest(),
     manifestChecksum: 'checksum-1',
-    drain: { likes: [PATTERN_B], sessions: [{ guestSessionId: SESSION_A, patternId: PATTERN_A }] },
+    drain: { likes: [PATTERN_B], sessions: [{ guestSessionId: SESSION_A, patternId: PATTERN_A, serverKnown: true }] },
+    sessions: [packaged()],
     ...overrides,
   };
 }

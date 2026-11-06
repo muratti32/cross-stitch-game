@@ -119,7 +119,7 @@ export function createPromotionRunner(deps: PromotionRunnerDeps): PromotionRunne
           guestId: handoff.guestId,
           lockToken: step.lockToken,
           manifestChecksum: handoff.manifestChecksum,
-          packageData: { manifest: handoff.manifest },
+          packageData: { manifest: handoff.manifest, sessions: handoff.sessions },
           checksum: handoff.manifestChecksum,
         });
         await transition({ type: 'staged' });

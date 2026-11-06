@@ -149,7 +149,7 @@ describe('promotion API client', () => {
           guestId: 'g',
           lockToken: 'l',
           manifestChecksum: 'c',
-          packageData: { manifest: MANIFEST },
+          packageData: { manifest: MANIFEST, sessions: [] },
           checksum: 'c',
         }),
       commit: () => commitPromotion(issued, 'sig'),

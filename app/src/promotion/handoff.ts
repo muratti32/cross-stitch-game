@@ -1,4 +1,5 @@
 import type {
+  PackagedSession,
   PromotionManifest,
   PromotionMode,
   PromotionPreviewResponse,
@@ -14,10 +15,16 @@ import type {
  * calls for and feeds the outcome back in as an event.
  */
 
-/** A Guest Session the backend knows and that must be drained under the account. */
+/**
+ * A Guest Session that must reach the account. `serverKnown` targets are drained
+ * through the backend first; the others only exist on this device, so adoption
+ * into the account namespace is their whole transfer.
+ */
 export interface DrainSessionTarget {
+  /** The session's `PackagedSession.key`. */
   guestSessionId: string;
   patternId: string;
+  serverKnown: boolean;
 }
 
 /** Local items the handoff must see acknowledged before it can be removed. */
@@ -37,6 +44,7 @@ export interface HandoffBase {
   manifest: PromotionManifest;
   manifestChecksum: string;
   drain: DrainTargets;
+  sessions: PackagedSession[];
 }
 
 /** Why the player is looking at a fresh preview they must confirm again. */
@@ -160,6 +168,7 @@ function base(handoff: PromotionHandoff): HandoffBase {
     manifest: handoff.manifest,
     manifestChecksum: handoff.manifestChecksum,
     drain: handoff.drain,
+    sessions: handoff.sessions,
   };
 }
 

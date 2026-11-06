@@ -17,6 +17,7 @@ import {
   PATTERN_B,
   preview,
   SESSION_A,
+  packaged,
 } from './fixtures';
 
 function run(start: PromotionHandoff | null, events: PromotionEvent[]): PromotionHandoff | null {
@@ -199,6 +200,16 @@ describe('Promotion Handoff transitions', () => {
     });
   });
 
+  test('every transition keeps the packaged sessions', () => {
+    const sessions = [packaged({ packedBitmapBase64: 'AQ==' })];
+    const previewing = reducePromotion(captured({ sessions }), { type: 'previewStarted' });
+    const disclosing = reducePromotion(previewing as PromotionHandoff, { type: 'previewLoaded', preview: preview() });
+    const committing = reducePromotion(disclosing as PromotionHandoff, { type: 'confirmed' });
+    const syncing = reducePromotion(committing as PromotionHandoff, { type: 'committed', promotionMode: 'economy' });
+
+    expect(syncing).toMatchObject({ phase: 'syncing', sessions });
+  });
+
   describe('sync', () => {
     const syncing = (): PromotionHandoff =>
       run(captured(), [
@@ -214,7 +225,7 @@ describe('Promotion Handoff transitions', () => {
 
       expect(twice).toEqual(once);
       expect(pendingLikes(once as never)).toEqual([]);
-      expect(pendingSessions(once as never)).toEqual([{ guestSessionId: SESSION_A, patternId: PATTERN_A }]);
+      expect(pendingSessions(once as never)).toEqual([{ guestSessionId: SESSION_A, patternId: PATTERN_A, serverKnown: true }]);
     });
 
     test('exhausted retries enter needsAttention and keep what was acknowledged', () => {

@@ -26,8 +26,8 @@ function memoryStore(initial: PromotionHandoff | null = null): MemoryStore {
 }
 
 const capture = (): GuestCapture => {
-  const { manifest, manifestChecksum, drain } = base();
-  return { manifest, manifestChecksum, drain };
+  const { manifest, manifestChecksum, drain, sessions } = base();
+  return { manifest, manifestChecksum, drain, sessions };
 };
 
 describe('captureGuestPromotion', () => {

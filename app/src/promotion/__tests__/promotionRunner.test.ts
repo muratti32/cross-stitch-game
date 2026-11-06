@@ -102,7 +102,7 @@ describe('promotion runner', () => {
       guestId: GUEST_ID,
       lockToken: 'lock-1',
       manifestChecksum: 'checksum-1',
-      packageData: { manifest: base().manifest },
+      packageData: { manifest: base().manifest, sessions: base().sessions },
       checksum: 'checksum-1',
     });
     expect(h.api.commitPromotion).toHaveBeenCalledTimes(1);
