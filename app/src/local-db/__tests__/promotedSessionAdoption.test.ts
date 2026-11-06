@@ -35,6 +35,13 @@ const server = (overrides: Partial<PromotedSessionServerState> = {}): PromotedSe
 const noRows = { alreadyAdopted: false, activeSessionId: null };
 
 describe('planPromotedSessionAdoption', () => {
+  test('a session still preparing lands ready, since no download runs under the account', () => {
+    expect(planPromotedSessionAdoption(packaged({ status: 'preparing' }), server(), noRows)).toMatchObject({
+      kind: 'insert',
+      status: 'ready',
+    });
+  });
+
   test('a row that already holds the session wins, whatever the server says', () => {
     expect(planPromotedSessionAdoption(packaged(), server(), { alreadyAdopted: true, activeSessionId: 'a' })).toEqual({
       kind: 'keepAccountRow',

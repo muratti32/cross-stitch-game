@@ -133,6 +133,7 @@ export interface CommercePromotionStatus {
 export const PROMOTION_ERROR_CODES = [
   'guest_consumed',
   'preview_expired',
+  'package_invalid',
   'preview_invalid',
   'promotion_lock_expired',
   'promotion_stale',

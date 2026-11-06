@@ -58,7 +58,7 @@ export function planPromotedSessionAdoption(
   return {
     kind: 'insert',
     remoteSessionId,
-    status: terminal ? 'completed' : session.status,
+    status: terminal ? 'completed' : session.status === 'preparing' ? 'ready' : session.status,
     completedAt: terminal ? (session.completedAt ?? session.updatedAt) : session.completedAt,
     packedBitmapBase64: serverBitmap !== '' ? serverBitmap : session.packedBitmapBase64,
     syncSnapshot:
