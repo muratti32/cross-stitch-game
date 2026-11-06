@@ -19,6 +19,7 @@ import {
 import { base64ToUint8Array, uint8ArrayToBase64 } from '../local-db/helpers';
 import { apiFetch } from '../api/apiFetch';
 import { Config } from '../config';
+import { registerBundledSessions } from '../sync/bundledSessionRegistrar';
 
 export class UnlockRequiredError extends Error {
   constructor(readonly patternId: string, readonly price: number) {
@@ -132,8 +133,7 @@ export async function preparePersonalSession(
 // can be encoded into the same artifact format used for synced patterns and
 // played immediately, with zero network round-trip. Once the backend sync
 // succeeds later, this local session is unaffected; it simply has no
-// remoteSessionId, so progress stays local-only for it (the same degraded
-// mode 'bundled' sessions always run in).
+// remoteSessionId, so progress stays local-only for it.
 export async function preparePendingPersonalSession(
   pending: PendingPersonalPattern,
 ): Promise<StitchingSession> {
@@ -173,7 +173,8 @@ const bundledPreparationInFlight = new Map<string, Promise<StitchingSession>>();
 
 // Bundled patterns skip online Session Preparation (ADR 0037) but still
 // follow the one-active-session-per-pattern rule, so repeated taps resume
-// the same local session instead of inserting duplicates.
+// the same local session instead of inserting duplicates. An older app reached
+// a seeded starter through the catalog, and that row counts as the active one.
 export async function prepareBundledSession(
   patternId: string,
   checksum: string,
@@ -182,10 +183,14 @@ export async function prepareBundledSession(
   if (current) return current;
 
   const preparation = (async () => {
-    const existing = await findActiveSessionForPattern(patternId, 'bundled');
+    const existing =
+      (await findActiveSessionForPattern(patternId, 'bundled')) ??
+      (await findActiveSessionForPattern(patternId, 'catalog'));
     if (existing) return existing;
 
-    return createSession(patternId, checksum);
+    const created = await createSession(patternId, checksum);
+    void registerBundledSessions();
+    return created;
   })();
   bundledPreparationInFlight.set(patternId, preparation);
 
