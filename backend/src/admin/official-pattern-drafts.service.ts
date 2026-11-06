@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { createHash, randomUUID } from 'node:crypto';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
+import { registerCatalogObject } from '../catalog/catalog-object-registry';
 import { CatalogService } from '../catalog/catalog.service';
 import { CategoryEntity, PatternEntity, TagEntity } from '../catalog/entities';
 import {
@@ -397,13 +398,13 @@ export class OfficialPatternDraftsService {
 
       await this.storage.put(catalogArtifactKey, artifactBytes, 'application/octet-stream');
       await this.storage.put(catalogPreviewKey, previewBytes, 'image/png');
-      await this.registerCatalogObject(
+      await registerCatalogObject(
         manager,
         catalogArtifactKey,
         draft.artifactChecksum,
         draft.artifactByteLength,
       );
-      await this.registerCatalogObject(
+      await registerCatalogObject(
         manager,
         catalogPreviewKey,
         sha256(previewBytes),
@@ -425,13 +426,13 @@ export class OfficialPatternDraftsService {
               this.storage.put(catalogThumbnailKeys.thumbnailDetail, detailBytes, 'image/png'),
             ]);
             await Promise.all([
-              this.registerCatalogObject(
+              registerCatalogObject(
                 manager,
                 catalogThumbnailKeys.thumbnailBrowsing,
                 sha256(browsingBytes),
                 browsingBytes.length,
               ),
-              this.registerCatalogObject(
+              registerCatalogObject(
                 manager,
                 catalogThumbnailKeys.thumbnailDetail,
                 sha256(detailBytes),
@@ -580,20 +581,6 @@ export class OfficialPatternDraftsService {
       await this.cleanupStagedObjects(staged);
     }
     return { draftId, status: 'discarded' };
-  }
-
-  private async registerCatalogObject(
-    manager: EntityManager,
-    objectKey: string,
-    checksum: string,
-    byteLength: number,
-  ): Promise<void> {
-    await manager.query(
-      `INSERT INTO "storage"."object_registry" ("object_key", "checksum", "byte_length", "state", "missing")
-       VALUES ($1, $2, $3, 'available', false)
-       ON CONFLICT ("object_key") DO UPDATE SET "checksum" = EXCLUDED."checksum", "byte_length" = EXCLUDED."byte_length", "state" = 'available', "missing" = false`,
-      [objectKey, checksum, byteLength],
-    );
   }
 
   private async cleanupStagedObjects(staged: {

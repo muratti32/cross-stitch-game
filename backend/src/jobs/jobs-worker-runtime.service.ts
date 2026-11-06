@@ -21,6 +21,7 @@ import { WebhookDeliveryArchiveService } from '../webhooks';
 import { EventsPartitionService } from '../events';
 import { ReconciliationService } from '../reconciliation';
 import { OperationalAlertsService } from '../observability';
+import { BundledStarterSeeder } from '../catalog/bundled-starter-seeder.service';
 
 @Injectable()
 export class JobsWorkerRuntimeService implements OnApplicationShutdown {
@@ -50,6 +51,7 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     @Inject(forwardRef(() => ReconciliationService))
     private readonly reconciliation: ReconciliationService,
     private readonly operationalAlerts: OperationalAlertsService,
+    private readonly bundledStarterSeeder: BundledStarterSeeder,
   ) {}
 
   async start(): Promise<void> {
@@ -66,8 +68,10 @@ export class JobsWorkerRuntimeService implements OnApplicationShutdown {
     // objects and the service itself refuses to run overlapping passes.
     this.reconcileTimer = setInterval(() => {
       void this.reconcileStorage();
+      void this.bundledStarterSeeder.ensure();
     }, this.config.storageReconcilerIntervalSeconds * 1000);
     void this.reconcileStorage();
+    void this.bundledStarterSeeder.ensure();
 
     this.accountDeletionFinalizerTimer = setInterval(() => {
       this.accountDeletionFinalizer.finalizeDueRequests().catch((error: unknown) => {

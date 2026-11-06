@@ -21,6 +21,7 @@ import {
   ModerationNoticeEntity,
   SafetyRemovalAppealEntity,
 } from './entities';
+import { BundledStarterSeeder } from './bundled-starter-seeder.service';
 import { CatalogService } from './catalog.service';
 import { CatalogController } from './catalog.controller';
 import { LocalObjectStorage } from './storage/local-object-storage';
@@ -91,6 +92,7 @@ import { ConversionModule } from '../conversion/conversion.module';
     SafetyRemovalAppealController,
   ],
   providers: [
+    BundledStarterSeeder,
     CatalogService,
     CatalogSubmissionService,
     CatalogMetadataRevisionService,
@@ -114,6 +116,7 @@ import { ConversionModule } from '../conversion/conversion.module';
     },
   ],
   exports: [
+    BundledStarterSeeder,
     CatalogService,
     CatalogSubmissionService,
     CatalogMetadataRevisionService,
