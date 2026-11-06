@@ -13,6 +13,7 @@ import { setLocalPatternLike } from '../local-db';
 import { queryClient } from '../providers';
 import { handoffStore } from './handoffStore';
 import { createPromotionRunner } from './promotionRunner';
+import { adoptPackagedSession } from './sessionAdoption';
 
 const CREDENTIAL_SECRET_KEY = 'stitch_wish.credential_secret';
 
@@ -27,6 +28,7 @@ export const promotionRunner = createPromotionRunner({
   // The Like now belongs to the signed-in account, so it is recorded in the
   // namespace that is open, not cleared from it.
   markLikeInAccountNamespace: (patternId) => setLocalPatternLike(patternId, true),
+  adoptSession: adoptPackagedSession,
   returnToGuest: continueAsGuest,
   onEconomyChanged: () => {
     void queryClient.invalidateQueries({ queryKey: ['economy'] });

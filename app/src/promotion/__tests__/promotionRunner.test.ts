@@ -1,5 +1,5 @@
-import { PromotionApiError, type PromotionPreviewResponse } from '../../api/promotionContract';
-import type { PromotionHandoff } from '../handoff';
+import { PromotionApiError, type DrainSessionResult, type PromotionPreviewResponse } from '../../api/promotionContract';
+import type { HandoffBase, PromotionHandoff } from '../handoff';
 import type { HandoffStore } from '../handoffStore';
 import { createPromotionRunner, type PromotionApi, type PromotionRunner } from '../promotionRunner';
 import {
@@ -9,6 +9,7 @@ import {
   emptyManifest,
   emptyPreview,
   GUEST_ID,
+  packaged,
   PATTERN_A,
   PATTERN_B,
   preview,
@@ -46,6 +47,7 @@ interface Harness {
   api: { [K in keyof PromotionApi]: jest.Mock };
   returnToGuest: jest.Mock;
   markLike: jest.Mock;
+  adoptSession: jest.Mock;
   onEconomyChanged: jest.Mock;
   wait: jest.Mock;
 }
@@ -59,11 +61,12 @@ function harness(initial: PromotionHandoff | null, overrides: Partial<Harness['a
     commitPromotion: jest.fn(async () => ({ status: 'committed' as const, promotionMode: 'economy' as const, replayed: false })),
     cancelPromotion: jest.fn(async () => undefined),
     drainLike: jest.fn(async () => undefined),
-    drainSession: jest.fn(async () => undefined),
+    drainSession: jest.fn(async () => drained()),
     ...overrides,
   };
   const returnToGuest = jest.fn(async () => undefined);
   const markLike = jest.fn(async () => undefined);
+  const adoptSession = jest.fn(async () => undefined);
   const onEconomyChanged = jest.fn();
   const wait = jest.fn(async () => undefined);
   const runner = createPromotionRunner({
@@ -71,13 +74,24 @@ function harness(initial: PromotionHandoff | null, overrides: Partial<Harness['a
     api,
     readCredentialSecret: async () => 'secret',
     markLikeInAccountNamespace: markLike,
+    adoptSession,
     returnToGuest,
     onEconomyChanged,
     wait,
     syncBackoffMs: backoff,
   });
-  return { runner, store, api, returnToGuest, markLike, onEconomyChanged, wait };
+  return { runner, store, api, returnToGuest, markLike, adoptSession, onEconomyChanged, wait };
 }
+
+const drained = (overrides: Partial<DrainSessionResult> = {}): DrainSessionResult => ({
+  status: 'transferred',
+  accountSessionId: SESSION_A,
+  revision: 12,
+  packedBitmapBase64: 'Bw==',
+  terminalCompleted: false,
+  isLocked: false,
+  ...overrides,
+});
 
 const phase = (h: Harness): string | null => h.runner.getSnapshot().handoff?.phase ?? null;
 
@@ -465,6 +479,7 @@ describe('promotion runner', () => {
         api: { ...harness(null).api, fetchPromotionPreview },
         readCredentialSecret: async () => null,
         markLikeInAccountNamespace: async () => undefined,
+        adoptSession: async () => undefined,
         returnToGuest: async () => undefined,
         onEconomyChanged: () => undefined,
         wait: async () => undefined,
@@ -492,7 +507,7 @@ describe('promotion runner', () => {
           .fn()
           .mockRejectedValueOnce(apiError(503, null))
           .mockRejectedValueOnce(apiError(503, null))
-          .mockResolvedValue(undefined),
+          .mockResolvedValue(drained()),
       });
 
       await h.runner.resume(ACCOUNT_ID);
@@ -529,6 +544,116 @@ describe('promotion runner', () => {
       expect(h.api.drainSession).toHaveBeenCalledTimes(1);
       expect(phase(h)).toBeNull();
       expect(h.onEconomyChanged).toHaveBeenCalled();
+    });
+  });
+
+  describe('session transfer', () => {
+    const LOCAL = 'session_local_1';
+    const bundled = packaged({ key: LOCAL, remoteSessionId: null, patternId: 'starter_heart', source: 'bundled' });
+    const localOnly = (): Partial<HandoffBase> => ({
+      manifest: emptyManifest(),
+      drain: { likes: [], sessions: [{ guestSessionId: LOCAL, patternId: 'starter_heart', serverKnown: false }] },
+      sessions: [bundled],
+    });
+    const owners = { guestId: GUEST_ID, accountId: ACCOUNT_ID };
+    const syncing = (overrides: Partial<HandoffBase> = {}): PromotionHandoff => ({
+      ...base({ drain: { likes: [], sessions: base().drain.sessions }, ...overrides }),
+      phase: 'syncing',
+      promotionMode: 'economy',
+      acked: { likes: [], sessions: [] },
+    });
+
+    test('a Guest with only a bundled session sees the disclosure and keeps the session with no network call for it', async () => {
+      const h = harness(
+        captured({
+          ...localOnly(),
+          manifest: emptyManifest({ progress: { [LOCAL]: { deviceSeq: 3, checksum: 'sum' } } }),
+        }),
+        { fetchPromotionPreview: jest.fn(async () => emptyPreview()) },
+      );
+
+      await h.runner.resume(ACCOUNT_ID);
+      expect(phase(h)).toBe('disclosing');
+
+      await h.runner.confirm();
+
+      expect(h.api.stagePromotionPackage).toHaveBeenCalledWith(
+        expect.objectContaining({ packageData: expect.objectContaining({ sessions: [bundled] }) }),
+      );
+      expect(h.api.drainSession).not.toHaveBeenCalled();
+      expect(h.adoptSession).toHaveBeenCalledWith(owners, bundled, null);
+      expect(phase(h)).toBeNull();
+    });
+
+    test('a catalog session is adopted with the drain result before its ack is written', async () => {
+      const result = drained({ status: 'merged', revision: 77 });
+      const h = harness(syncing(), { drainSession: jest.fn(async () => result) });
+      let storedAtAdoption: PromotionHandoff | null = null;
+      h.adoptSession.mockImplementation(async () => {
+        storedAtAdoption = h.store.current;
+      });
+
+      await h.runner.resume(ACCOUNT_ID);
+
+      expect(h.adoptSession).toHaveBeenCalledWith(owners, base().sessions[0], result);
+      expect(storedAtAdoption).toMatchObject({ acked: { sessions: [] } });
+      expect(phase(h)).toBeNull();
+    });
+
+    test('a Promotion-Locked session is acknowledged without a local row', async () => {
+      const h = harness(syncing(), { drainSession: jest.fn(async () => drained({ isLocked: true })) });
+
+      await h.runner.resume(ACCOUNT_ID);
+
+      expect(h.adoptSession).not.toHaveBeenCalled();
+      expect(phase(h)).toBeNull();
+    });
+
+    test('a failed adoption is not acknowledged and repeats the idempotent drain', async () => {
+      const h = harness(syncing());
+      h.adoptSession.mockRejectedValueOnce(new Error('disk full'));
+
+      await h.runner.resume(ACCOUNT_ID);
+
+      expect(h.api.drainSession).toHaveBeenCalledTimes(2);
+      expect(h.adoptSession).toHaveBeenCalledTimes(2);
+      expect(phase(h)).toBeNull();
+    });
+
+    test('adoption that keeps failing ends in needsAttention with the session unacknowledged', async () => {
+      const h = harness(syncing());
+      h.adoptSession.mockRejectedValue(new Error('disk full'));
+
+      await h.runner.resume(ACCOUNT_ID);
+
+      expect(h.store.current).toMatchObject({ phase: 'needsAttention', acked: { sessions: [] } });
+    });
+
+    test('a kill between the drain and the ack converges on restart', async () => {
+      const first = harness(syncing());
+      let fileAtKill: PromotionHandoff | null = null;
+      first.adoptSession.mockImplementation(async () => {
+        fileAtKill = first.store.current;
+      });
+      await first.runner.resume(ACCOUNT_ID);
+
+      const retried = drained({ status: 'acknowledged' });
+      const restarted = harness(fileAtKill, { drainSession: jest.fn(async () => retried) });
+      await restarted.runner.resume(ACCOUNT_ID);
+
+      expect(restarted.api.drainSession).toHaveBeenCalledTimes(1);
+      expect(restarted.adoptSession).toHaveBeenCalledWith(owners, base().sessions[0], retried);
+      expect(restarted.store.current).toBeNull();
+    });
+
+    test('a #281 handoff finishes by draining, with nothing to adopt', async () => {
+      const h = harness(syncing({ sessions: [] }));
+
+      await h.runner.resume(ACCOUNT_ID);
+
+      expect(h.api.drainSession).toHaveBeenCalledTimes(1);
+      expect(h.adoptSession).not.toHaveBeenCalled();
+      expect(phase(h)).toBeNull();
     });
   });
 });

@@ -200,8 +200,59 @@ describe('promotion API client', () => {
     apiFetch.mockResolvedValue(unreadableResponse(200));
 
     await expect(drainLike('guest-1', 'p1')).resolves.toBeUndefined();
-    await expect(drainSession('guest-1', 'p1', 's1')).resolves.toBeUndefined();
     await expect(cancelPromotion('guest-1')).resolves.toBeUndefined();
+  });
+
+  test('a session drain returns the surviving session', async () => {
+    const body = {
+      status: 'merged',
+      accountSessionId: 'a1',
+      revision: 9,
+      packedBitmapBase64: 'Bw==',
+      terminalCompleted: false,
+      isLocked: false,
+      role: 'replay',
+    };
+    apiFetch.mockResolvedValue(jsonResponse(200, body));
+
+    await expect(drainSession('guest-1', 'p1', 's1')).resolves.toEqual(body);
+  });
+
+  test('a drain for a session the server no longer has carries nulls', async () => {
+    apiFetch.mockResolvedValue(
+      jsonResponse(200, {
+        status: 'acknowledged',
+        accountSessionId: null,
+        revision: 0,
+        packedBitmapBase64: null,
+        terminalCompleted: false,
+        isLocked: false,
+        detail: 'session_not_found',
+      }),
+    );
+
+    await expect(drainSession('g', 'p', 's')).resolves.toMatchObject({ accountSessionId: null, detail: 'session_not_found' });
+  });
+
+  test.each([
+    ['an unknown status', { status: 'done' }],
+    ['a missing revision', { revision: undefined }],
+    ['a missing lock flag', { isLocked: undefined }],
+    ['a non-text bitmap', { packedBitmapBase64: 7 }],
+  ])('a session drain rejects %s', async (_label, overrides) => {
+    apiFetch.mockResolvedValue(
+      jsonResponse(200, {
+        status: 'transferred',
+        accountSessionId: 'a1',
+        revision: 1,
+        packedBitmapBase64: '',
+        terminalCompleted: false,
+        isLocked: false,
+        ...overrides,
+      }),
+    );
+
+    expect((await failureOf(drainSession('g', 'p', 's'))).code).toBe('invalid_response');
   });
 
   test('a failed drain throws the typed error', async () => {

@@ -3,12 +3,14 @@ import {
   invalidPromotionResponse,
   isPromotionJsonRecord,
   parseCommerceStatus,
+  parseDrainSessionResult,
   parsePromotionCommit,
   parsePromotionLock,
   parsePromotionPreview,
   parsePromotionStage,
   PromotionApiError,
   type CommercePromotionStatus,
+  type DrainSessionResult,
   type PromotionCommitResponse,
   type PromotionLockResponse,
   type PromotionPackageRequest,
@@ -108,9 +110,13 @@ export function commitPromotion(
   return requestPromotion('/v1/promotion/commit', { method: 'POST', body: { previewData, signature } }, parsePromotionCommit);
 }
 
-/** Idempotent. Resolves once the backend acknowledged the Guest session's transfer. */
-export async function drainSession(guestId: string, patternId: string, guestSessionId: string): Promise<void> {
-  await send('/v1/promotion/drain/session', { method: 'POST', body: { guestId, patternId, guestSessionId } });
+/** Idempotent. Resolves with the surviving session once the backend acknowledged the transfer. */
+export function drainSession(guestId: string, patternId: string, guestSessionId: string): Promise<DrainSessionResult> {
+  return requestPromotion(
+    '/v1/promotion/drain/session',
+    { method: 'POST', body: { guestId, patternId, guestSessionId } },
+    parseDrainSessionResult,
+  );
 }
 
 /** Idempotent. Resolves once the backend acknowledged the Guest's Like transfer. */

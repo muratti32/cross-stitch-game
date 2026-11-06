@@ -80,7 +80,13 @@ export function preview(overrides: Partial<PromotionPreviewResponse> = {}): Prom
 export const emptyPreview = (): PromotionPreviewResponse =>
   preview({ guestLedgerBalance: 0, guestUnlockCount: 0, pendingAdAttemptCount: 0, validatedPendingRewards: [] });
 
-export const emptyManifest = (): PromotionManifest => ({ progress: {}, completions: {}, pendingRewards: {}, likes: {} });
+export const emptyManifest = (overrides: Partial<PromotionManifest> = {}): PromotionManifest => ({
+  progress: {},
+  completions: {},
+  pendingRewards: {},
+  likes: {},
+  ...overrides,
+});
 
 export function captured(overrides: Partial<HandoffBase> = {}): PromotionHandoff {
   return { ...base(overrides), phase: 'captured' };
