@@ -1,4 +1,5 @@
 import type { DrainSessionResult, PackagedSession } from '../api/promotionContract';
+import { bundledPatternIdFromLegacy } from '../bundled-patterns/identity';
 import { adoptPromotedSession, getActiveIdentity } from '../local-db';
 import { copyOfflinePatternToNamespace } from '../session-preparation';
 
@@ -7,7 +8,9 @@ import { copyOfflinePatternToNamespace } from '../session-preparation';
  * so a row never exists without it: with no server session there is no grant to
  * re-download it from. The namespace check stops a sign-out during the sync from
  * writing account rows into whichever namespace opened next; the failure leaves
- * the session unacknowledged for its account to finish.
+ * the session unacknowledged for its account to finish. A handoff persisted
+ * before the local ids became catalog UUIDs still names a bundled session by its
+ * legacy id.
  */
 export async function adoptPackagedSession(
   owners: { guestId: string; accountId: string },
@@ -20,5 +23,5 @@ export async function adoptPackagedSession(
   if (session.source !== 'bundled' && (server?.accountSessionId ?? null) === null) {
     await copyOfflinePatternToNamespace(session.patternId, owners.guestId, owners.accountId);
   }
-  await adoptPromotedSession(session, server);
+  await adoptPromotedSession({ ...session, patternId: bundledPatternIdFromLegacy(session.patternId) }, server);
 }

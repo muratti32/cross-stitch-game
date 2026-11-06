@@ -5,6 +5,7 @@ import type { AnalyticsGameplayEvent, AnalyticsGameplayEventPayload } from '../a
 import { markCriticalPathActivity } from '../perf/criticalPathSentinel';
 import type { PackagedSession } from '../api/promotionContract';
 import { planPromotedSessionAdoption, type PromotedSessionServerState } from './promotedSessionAdoption';
+import { LEGACY_BUNDLED_PATTERN_IDS } from '../bundled-patterns/identity';
 
 export type PatternSource = 'bundled' | 'catalog' | 'personal';
 
@@ -745,6 +746,37 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
         );
       `);
       await db.execAsync('PRAGMA user_version = 11;');
+    });
+  }
+
+  if (currentVersion < 12) {
+    await runInTransaction(db, async () => {
+      // A bundled pattern is named by its catalog UUID everywhere (ADR-0037).
+      for (const { legacyId, id } of LEGACY_BUNDLED_PATTERN_IDS) {
+        await db.runAsync(
+          "UPDATE sessions SET pattern_id = ? WHERE pattern_id = ? AND source = 'bundled'",
+          id,
+          legacyId,
+        );
+        // OR REPLACE: an old app can already like or draft the seeded catalog
+        // tile under the UUID, and both tables key on the pattern id.
+        await db.runAsync(
+          'UPDATE OR REPLACE pattern_likes SET pattern_id = ? WHERE pattern_id = ?',
+          id,
+          legacyId,
+        );
+        await db.runAsync(
+          'UPDATE OR REPLACE editor_drafts SET source_pattern_id = ? WHERE source_pattern_id = ?',
+          id,
+          legacyId,
+        );
+        await db.runAsync(
+          'UPDATE pending_personal_patterns SET source_pattern_id = ? WHERE source_pattern_id = ?',
+          id,
+          legacyId,
+        );
+      }
+      await db.execAsync('PRAGMA user_version = 12;');
     });
   }
 }

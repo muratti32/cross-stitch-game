@@ -58,6 +58,15 @@ describe('adoptPackagedSession', () => {
     expect(copyOfflinePatternToNamespace).not.toHaveBeenCalled();
   });
 
+  test('a handoff persisted before the local id change lands under the catalog UUID', async () => {
+    await adoptPackagedSession(owners, packaged({ source: 'bundled', patternId: 'starter_heart' }), null);
+
+    expect(adoptPromotedSession).toHaveBeenCalledWith(
+      expect.objectContaining({ patternId: 'dc47c329-35fd-4173-9ad9-5098369beb44' }),
+      null,
+    );
+  });
+
   test('never writes into a namespace that is not the account', async () => {
     jest.mocked(getActiveIdentity).mockReturnValue(GUEST_ID);
 

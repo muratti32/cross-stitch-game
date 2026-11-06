@@ -1,59 +1,14 @@
 /**
  * Runs the real schema, capture and adoption SQL against an in-memory SQLite.
- * `node:sqlite` needs Node 22.5+, so on older runtimes (CI is on Node 20) these
- * skip and `promotedSessionAdoption.test.ts` still covers every decision.
+ * On runtimes without `node:sqlite` these skip and
+ * `promotedSessionAdoption.test.ts` still covers every decision.
  */
 import type { DrainSessionResult, PackagedSession } from '../../api/promotionContract';
+import { createNodeSqliteFiles, nodeSqliteAvailable } from './nodeSqliteDatabase';
 
-type SqlParam = string | number | null | Uint8Array;
-interface NodeSqliteStatement {
-  all(...params: SqlParam[]): unknown[];
-  get(...params: SqlParam[]): unknown;
-  run(...params: SqlParam[]): unknown;
-}
-interface NodeSqliteDatabase {
-  exec(sql: string): void;
-  prepare(sql: string): NodeSqliteStatement;
-}
-interface NodeSqliteModule {
-  DatabaseSync: new (path: string) => NodeSqliteDatabase;
-}
+const mockDatabases = createNodeSqliteFiles();
 
-function mockLoadSqlite(): NodeSqliteModule | null {
-  try {
-    return require('node:sqlite') as NodeSqliteModule;
-  } catch {
-    return null;
-  }
-}
-
-const mockFiles = new Map<string, NodeSqliteDatabase>();
-
-function mockOpen(filename: string): object {
-  const sqlite = mockLoadSqlite();
-  if (sqlite === null) throw new Error('node:sqlite is not available');
-  const database = mockFiles.get(filename) ?? new sqlite.DatabaseSync(':memory:');
-  mockFiles.set(filename, database);
-  return {
-    execAsync: async (sql: string) => database.exec(sql),
-    getFirstAsync: async (sql: string, ...params: SqlParam[]) => database.prepare(sql).get(...params) ?? null,
-    getAllAsync: async (sql: string, ...params: SqlParam[]) => database.prepare(sql).all(...params),
-    runAsync: async (sql: string, ...params: SqlParam[]) => database.prepare(sql).run(...params),
-    withTransactionAsync: async (action: () => Promise<void>) => {
-      database.exec('BEGIN');
-      try {
-        await action();
-        database.exec('COMMIT');
-      } catch (error) {
-        database.exec('ROLLBACK');
-        throw error;
-      }
-    },
-    closeAsync: async () => undefined,
-  };
-}
-
-jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn(async (filename: string) => mockOpen(filename)) }));
+jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn(async (filename: string) => mockDatabases.open(filename)) }));
 jest.mock('expo-file-system/legacy', () => ({ documentDirectory: null }));
 jest.mock('expo-crypto', () => ({
   CryptoDigestAlgorithm: { SHA256: 'SHA-256' },
@@ -122,11 +77,9 @@ async function guestPackage(prepare: () => Promise<void>): Promise<PackagedSessi
   return (await captureGuestRecords(GUEST)).sessions;
 }
 
-const available = mockLoadSqlite() !== null;
-
-(available ? describe : describe.skip)('adoptPromotedSession against real SQL', () => {
+(nodeSqliteAvailable ? describe : describe.skip)('adoptPromotedSession against real SQL', () => {
   beforeEach(async () => {
-    mockFiles.clear();
+    mockDatabases.clear();
     await openNamespace(null);
   });
 
