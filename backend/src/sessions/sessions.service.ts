@@ -16,6 +16,7 @@ import type { AuthPrincipal } from '../auth/auth.types';
 import { PrincipalType } from '../auth/entities';
 import { CoinLedgerRepository } from '../economy/coin-ledger.repository';
 import { unlockPrice } from '../economy/economy.constants';
+import { upsertActiveSession } from './active-session';
 
 @Injectable()
 export class SessionsService {
@@ -83,22 +84,7 @@ export class SessionsService {
       }
 
       await this.assertPatternUnlocked(manager, principal, pattern);
-      const result = (await manager.query(
-        `INSERT INTO "sessions"."stitching_sessions" ("principal_type", "principal_id", "pattern_id", "status")
-         VALUES ($1, $2, $3, 'active')
-         ON CONFLICT ("principal_type", "principal_id", "pattern_id") WHERE "status" = 'active'
-         DO UPDATE SET "status" = 'active'
-         RETURNING "id"`,
-        [principal.type as string, principal.id, patternId],
-      )) as unknown as { id: string }[];
-      const sessionId = result[0].id;
-
-      await manager.query(
-        `INSERT INTO "sessions"."session_progress_flags" ("session_id", "has_any_progress")
-         VALUES ($1, false)
-         ON CONFLICT ("session_id") DO NOTHING`,
-        [sessionId],
-      );
+      const sessionId = await upsertActiveSession(manager, principal, patternId);
       return this.preparationResponse(sessionId, pattern);
     });
   }
