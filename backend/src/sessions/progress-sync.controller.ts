@@ -16,7 +16,11 @@ import { CurrentPrincipal, JwtAuthGuard } from '../auth';
 import type { AuthPrincipal } from '../auth/auth.types';
 import { ProgressCheckpointService } from './progress-checkpoint.service';
 import { ProgressSyncService } from './progress-sync.service';
-import { CompleteProgressDto, ProgressSyncDto } from './progress-sync.dto';
+import {
+  CompleteProgressDto,
+  ProgressSyncDto,
+  RegisterBundledSessionDto,
+} from './progress-sync.dto';
 
 @Controller('sessions')
 @UseGuards(JwtAuthGuard)
@@ -25,6 +29,15 @@ export class ProgressSyncController {
     private readonly progressSyncService: ProgressSyncService,
     private readonly checkpointService: ProgressCheckpointService,
   ) {}
+
+  @Post('bundled')
+  @HttpCode(HttpStatus.OK)
+  async registerBundled(
+    @CurrentPrincipal() principal: AuthPrincipal,
+    @Body() body: RegisterBundledSessionDto,
+  ) {
+    return this.progressSyncService.registerBundledSession(principal, body);
+  }
 
   @Post(':id/progress/sync')
   @HttpCode(HttpStatus.OK)

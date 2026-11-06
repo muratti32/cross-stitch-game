@@ -17,12 +17,16 @@ import type {
   CompleteProgressDto,
   IncomingProgressOperationDto,
   ProgressSyncDto,
+  RegisterBundledSessionDto,
 } from './progress-sync.dto';
 import { ProgressCheckpointService } from './progress-checkpoint.service';
 import { CoinLedgerRepository } from '../economy/coin-ledger.repository';
 import { MIN_MS_PER_STITCH } from '../economy/economy.constants';
 import { PromotionService } from '../promotion/promotion.service';
+import { applyPackagedProgress } from '../promotion/drained-session';
+import { BUNDLED_STARTERS } from '../catalog/bundled-starters.generated';
 import { stitchableCells, type PatternCellCounts } from '../catalog/stitchable-cells';
+import { upsertActiveSession } from './active-session';
 
 interface SessionRecord {
   id: string;
@@ -115,6 +119,11 @@ export interface ProgressCompleteResult {
    * Absent on replays, already-completed sessions, and Personal Patterns.
    */
   firstCompletionReward?: FirstCompletionRewardSummary;
+}
+
+export interface RegisterBundledSessionResult {
+  sessionId: string;
+  terminalCompleted: boolean;
 }
 
 @Injectable()
@@ -353,6 +362,88 @@ export class ProgressSyncService {
         firstCompletionReward,
       };
     });
+  }
+
+  /**
+   * Gives a locally started Bundled Starter Pattern session its backend identity.
+   * ADR-0037 makes this the one door that skips the Pattern Unlock and availability
+   * checks, so only starter ids pass. A session completed here is terminal and
+   * mints nothing, because `complete` stops at a terminal session.
+   */
+  async registerBundledSession(
+    principal: AuthPrincipal,
+    dto: RegisterBundledSessionDto,
+  ): Promise<RegisterBundledSessionResult> {
+    await this.promotionService.assertNotLocked(principal.id, principal.type);
+    const { patternId, packedBitmapBase64, localState } = dto;
+    if (!BUNDLED_STARTERS.some((starter) => starter.id === patternId)) {
+      throw new NotFoundException({ code: 'not_a_bundled_starter' });
+    }
+
+    return this.dataSource.transaction(async (manager) => {
+      const patterns = await manager.query<readonly PatternCellCounts[]>(
+        `SELECT width, height, stitchable_cell_count AS "stitchableCellCount"
+         FROM catalog.patterns WHERE id = $1 FOR SHARE`,
+        [patternId],
+      );
+      const pattern = patterns[0];
+      if (!pattern) {
+        throw new NotFoundException({ code: 'starter_not_seeded' });
+      }
+
+      // Promotion accepts any completed Guest session as evidence for a pending
+      // First Completion Reward, so a Guest writes identity only: cells it sent
+      // here could complete a row and let a forged reward mint Coin.
+      if (principal.type === PrincipalType.Guest) {
+        return {
+          sessionId: await upsertActiveSession(manager, principal, patternId),
+          terminalCompleted: false,
+        };
+      }
+
+      if (!packedBitmapBase64) {
+        throw new BadRequestException({ code: 'packed_bitmap_required' });
+      }
+
+      if (localState === 'completed') {
+        const session = await this.findLatestSession(manager, principal, patternId);
+        if (session?.status === 'completed') {
+          return { sessionId: session.id, terminalCompleted: true };
+        }
+      }
+
+      const sessionId = await upsertActiveSession(manager, principal, patternId);
+      await applyPackagedProgress(manager, {
+        sessionId,
+        deviceId: sessionId,
+        packaged: {
+          status: localState === 'completed' ? 'completed' : 'active',
+          completedAt: dto.completedAt ?? null,
+          packedBitmapBase64,
+        },
+        gridCells: pattern.width * pattern.height,
+        stitchableCells: stitchableCells(pattern),
+      });
+      const syncState = await this.getSyncState(manager, sessionId);
+      return { sessionId, terminalCompleted: syncState.terminalCompletedAt !== null };
+    });
+  }
+
+  /** The active session, else the most recently completed one. */
+  private async findLatestSession(
+    manager: EntityManager,
+    principal: AuthPrincipal,
+    patternId: string,
+  ): Promise<{ id: string; status: 'active' | 'completed' } | null> {
+    const sessions = await manager.query<readonly { id: string; status: 'active' | 'completed' }[]>(
+      `SELECT id, status
+       FROM sessions.stitching_sessions
+       WHERE principal_type = $1 AND principal_id = $2 AND pattern_id = $3
+       ORDER BY status = 'active' DESC, completed_at DESC NULLS LAST
+       LIMIT 1`,
+      [principal.type, principal.id, patternId],
+    );
+    return sessions[0] ?? null;
   }
 
   private async completeGuestSession(
