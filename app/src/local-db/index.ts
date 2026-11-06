@@ -1635,6 +1635,17 @@ export async function markAnalyticsGameplayEventsAcked(eventIds: string[]): Prom
   });
 }
 
+/** The id a session's earlier analytics records used, if it has reported without a remote id. */
+export async function findAnalyticsSessionId(sessionId: string): Promise<string | null> {
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{ analytics_session_id: string }>(
+      'SELECT analytics_session_id FROM analytics_session_ids WHERE session_id = ?',
+      sessionId,
+    );
+    return row?.analytics_session_id ?? null;
+  });
+}
+
 /**
  * Bundled/offline sessions use local ids that are not UUIDs. Persist a separate
  * opaque UUID once so their start and completion analytics records remain
@@ -1994,8 +2005,8 @@ export async function linkBundledSession(
  * idempotent, so a kill before the handoff records the ack converges on restart.
  *
  * The seeded checkpoint stays at revision 0. A reopened account session counts
- * its local revisions from 0 again, so a checkpoint at the server revision would
- * outrank every checkpoint the game saves and freeze the Play tab percentage.
+ * its local revisions up from its latest checkpoint, so a checkpoint at the server
+ * revision would outrank every one the game saves and freeze the Play tab percentage.
  */
 export async function adoptPromotedSession(
   session: PackagedSession,

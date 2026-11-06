@@ -22,6 +22,7 @@ import {
   setGameplaySeqHigh,
   insertGameplayEventsBatch,
 } from '../local-db';
+import { subscribeBundledSessionLinked } from '../sync/bundledSessionRegistrar';
 import { flushGameplayEventsAndCompletionClaims } from '../sync/gameplayEventEngine';
 import { queueGuestCompletionClaim } from '../sync/guestCompletionClaimEngine';
 import * as FileSystem from 'expo-file-system/legacy';
@@ -223,7 +224,9 @@ export function useStitchingSession(sessionId: string | undefined) {
       // Persist buffered ops first so the engine uploads a consistent set.
       await flushPendingOps();
 
-      const completed = rState.getCompletedArray();
+      // The engine folds server cells into what it is given. A copy leaves the
+      // renderer to see those cells change, which is what dirties their tiles.
+      const completed = new Uint8Array(rState.getCompletedArray());
       const outcome = await syncSession(
         sess.id,
         remoteSessionId,
@@ -286,11 +289,24 @@ export function useStitchingSession(sessionId: string | undefined) {
     await saveCheckpoint(sess.id, currentRevision, completedArray);
   }, [flushPendingOps]);
 
+  useEffect(() => {
+    if (!sessionId) return;
+
+    return subscribeBundledSessionLinked(({ localSessionId, remoteSessionId }) => {
+      if (localSessionId !== sessionId) return;
+      remoteSessionIdRef.current = remoteSessionId;
+      isAccountSessionRef.current = useIdentityStore.getState().isAccount;
+      setSession((prev) => (prev ? { ...prev, remoteSessionId } : prev));
+      void runSync();
+    });
+  }, [sessionId, runSync]);
+
   // Load session data
   useEffect(() => {
     if (!sessionId) return;
 
     let active = true;
+    remoteSessionIdRef.current = null;
 
     async function load() {
       try {
@@ -366,10 +382,12 @@ export function useStitchingSession(sessionId: string | undefined) {
 
         // 6. Determine whether this session syncs (Registered Account + linked
         //    remote session) and pick the reload base accordingly.
+        //    The registrar may have linked the row since it was read above.
         const identity = useIdentityStore.getState();
-        const isAccountSession = identity.isAccount && !!sess.remoteSessionId;
+        const remoteSessionId = sess.remoteSessionId ?? remoteSessionIdRef.current;
+        const isAccountSession = identity.isAccount && !!remoteSessionId;
         isAccountSessionRef.current = isAccountSession;
-        remoteSessionIdRef.current = sess.remoteSessionId ?? null;
+        remoteSessionIdRef.current = remoteSessionId;
 
         const cellsLength = pat.width * pat.height;
         let completed: Uint8Array;
@@ -380,7 +398,9 @@ export function useStitchingSession(sessionId: string | undefined) {
           // device's not-yet-acknowledged ops replayed on top.
           completed = unpackCompletedBitmap(snapshot.packedBitmap, cellsLength);
           serverRevisionRef.current = snapshot.serverRevision;
-          sessionRevisionRef.current = 0;
+          // Below the local checkpoint, new checkpoints would never become the
+          // latest one and the Play tab percentage would freeze.
+          sessionRevisionRef.current = (await getLatestCheckpoint(sess.id))?.revision ?? 0;
           const unacked = await getUnackedProgressOps(sess.id);
           for (const op of unacked) {
             if (op.cellIndex >= 0 && op.cellIndex < cellsLength) {
@@ -434,7 +454,7 @@ export function useStitchingSession(sessionId: string | undefined) {
         );
 
         if (active) {
-          setSession(sess);
+          setSession({ ...sess, remoteSessionId: remoteSessionIdRef.current });
           setPatternData(pat);
           setRendererState(rState);
 
