@@ -58,6 +58,29 @@ export function getOfflinePatternPath(patternId: string, identity: string | null
 }
 
 /**
+ * Copies Offline Pattern Data between Local Identity Namespaces for a session
+ * that has no server session to re-download it from. Idempotent, and the file
+ * only appears under its final name once complete, so a kill mid-copy cannot
+ * leave a truncated artifact that later reads as present. A missing source is
+ * not an error: the session was already unopenable before the copy.
+ */
+export async function copyOfflinePatternToNamespace(
+  patternId: string,
+  fromIdentity: string,
+  toIdentity: string,
+): Promise<void> {
+  const from = getOfflinePatternPath(patternId, fromIdentity);
+  const to = getOfflinePatternPath(patternId, toIdentity);
+  if ((await FileSystem.getInfoAsync(to)).exists) return;
+  if (!(await FileSystem.getInfoAsync(from)).exists) return;
+  await FileSystem.makeDirectoryAsync(to.substring(0, to.lastIndexOf('/')), { intermediates: true });
+  const partial = `${to}.partial`;
+  await FileSystem.deleteAsync(partial, { idempotent: true });
+  await FileSystem.copyAsync({ from, to: partial });
+  await FileSystem.moveAsync({ from: partial, to });
+}
+
+/**
  * Deletes this device's cached Offline Pattern Data for a Pattern, e.g. when
  * the backend delivers a Safety Removal deletion instruction. Idempotent: a
  * missing file is not an error.
