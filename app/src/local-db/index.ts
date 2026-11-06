@@ -5,7 +5,7 @@ import type { AnalyticsGameplayEvent, AnalyticsGameplayEventPayload } from '../a
 import { markCriticalPathActivity } from '../perf/criticalPathSentinel';
 import type { PackagedSession } from '../api/promotionContract';
 import { planPromotedSessionAdoption, type PromotedSessionServerState } from './promotedSessionAdoption';
-import { LEGACY_BUNDLED_PATTERN_IDS } from '../bundled-patterns/identity';
+import { isBundledPatternId, LEGACY_BUNDLED_PATTERN_IDS } from '../bundled-patterns/identity';
 
 export type PatternSource = 'bundled' | 'catalog' | 'personal';
 
@@ -1862,14 +1862,130 @@ export async function getSessionCompletedCount(
 }
 
 /**
- * A session's complete cell record, folded from its latest checkpoint and the
- * ops newer than it. Ops alone are incomplete because checkpoints compact them.
+ * Folds a session's cell record from its latest checkpoint and the ops newer
+ * than it. Ops alone are incomplete because checkpoints compact them. Ops are
+ * read first: a checkpoint saved between the two reads then covers every op read
+ * here, while the reverse order would lose the ops it compacted.
  */
+async function foldSessionProgressWithDb(
+  db: SQLite.SQLiteDatabase,
+  sessionId: string,
+): Promise<PackedSessionProgress & { foldedThroughSeq: number }> {
+  const ops = await getProgressOpsWithDb(db, sessionId);
+  const checkpoint = await getLatestCheckpointWithDb(db, sessionId);
+  const revision = checkpoint?.revision ?? 0;
+  return {
+    ...foldPackedProgress(
+      checkpoint?.packedBitmap ?? new Uint8Array(0),
+      ops.filter((op) => op.baseRevision >= revision),
+    ),
+    foldedThroughSeq: ops.reduce((high, op) => Math.max(high, op.deviceSeq), 0),
+  };
+}
+
+/** A session's complete cell record. */
 export async function readSessionPackedProgress(sessionId: string): Promise<PackedSessionProgress> {
   return withDatabase(async (db) => {
-    const checkpoint = await getLatestCheckpointWithDb(db, sessionId);
-    const ops = await getProgressOpsWithDb(db, sessionId, checkpoint?.revision ?? 0);
-    return foldPackedProgress(checkpoint?.packedBitmap ?? new Uint8Array(0), ops);
+    const { packedBitmapBase64, completedCount } = await foldSessionProgressWithDb(db, sessionId);
+    return { packedBitmapBase64, completedCount };
+  });
+}
+
+/** What one Bundled Session Registration sends, read as one consistent fold. */
+export interface BundledRegistrationSnapshot {
+  localSessionId: string;
+  patternId: string;
+  localState: 'in_progress' | 'completed';
+  completedAt: string | null;
+  packedBitmapBase64: string;
+  /** The highest device_seq the bitmap covers. */
+  foldedThroughSeq: number;
+}
+
+/**
+ * The bundled sessions still without a backend identity, completed ones first so
+ * an unfinished row opens a new server session rather than being closed by its
+ * older sibling. Per pattern only the newest completed row and the newest
+ * unfinished row count, linked ones included: older rows stay device history.
+ * Replays never reach the backend.
+ */
+export async function listBundledRegistrationCandidates(): Promise<string[]> {
+  return withDatabase(async (db) => {
+    const rows = await db.getAllAsync<{ id: string; pattern_id: string }>(
+      `SELECT candidate.id, candidate.pattern_id
+       FROM sessions AS candidate
+       WHERE candidate.source = 'bundled'
+         AND candidate.replay_of IS NULL
+         AND candidate.remote_session_id IS NULL
+         AND NOT EXISTS (
+           SELECT 1
+           FROM sessions AS newer
+           WHERE newer.source = 'bundled'
+             AND newer.replay_of IS NULL
+             AND newer.pattern_id = candidate.pattern_id
+             AND (newer.status = 'completed') = (candidate.status = 'completed')
+             AND (COALESCE(newer.completed_at, newer.created_at), newer.id)
+               > (COALESCE(candidate.completed_at, candidate.created_at), candidate.id)
+         )
+       ORDER BY candidate.status = 'completed' DESC, candidate.created_at ASC`,
+    );
+    return rows.filter((row) => isBundledPatternId(row.pattern_id)).map((row) => row.id);
+  });
+}
+
+export async function readBundledRegistrationSnapshot(
+  localSessionId: string,
+): Promise<BundledRegistrationSnapshot | null> {
+  return withDatabase(async (db) => {
+    const session = await getSessionWithDb(db, localSessionId);
+    if (session === null) return null;
+    const { packedBitmapBase64, foldedThroughSeq } = await foldSessionProgressWithDb(db, localSessionId);
+    return {
+      localSessionId,
+      patternId: session.patternId,
+      localState: session.status === 'completed' ? 'completed' : 'in_progress',
+      completedAt: session.completedAt ?? null,
+      packedBitmapBase64,
+      foldedThroughSeq,
+    };
+  });
+}
+
+export interface BundledSessionLink {
+  localSessionId: string;
+  remoteSessionId: string;
+}
+
+/**
+ * Writes a bundled session's backend identity and marks the ops its registered
+ * bitmap folded, so sync skips them; they stay in the log for replay and Undo.
+ * Holding the lease keeps the namespace open between the identity check and the
+ * write. Returns whether the row was linked: a changed identity, a deleted row
+ * or an existing link leaves everything as it was.
+ */
+export async function linkBundledSession(
+  identity: string,
+  link: BundledSessionLink,
+  foldedThroughSeq: number,
+): Promise<boolean> {
+  return withDatabase(async (db) => {
+    if (activeIdentity !== identity) return false;
+    let linked = false;
+    await runInTransaction(db, async () => {
+      const result = await db.runAsync(
+        'UPDATE sessions SET remote_session_id = ? WHERE id = ? AND remote_session_id IS NULL',
+        link.remoteSessionId,
+        link.localSessionId,
+      );
+      linked = result.changes > 0;
+      if (!linked) return;
+      await db.runAsync(
+        'UPDATE progress_ops SET acked = 1 WHERE session_id = ? AND device_seq <= ?',
+        link.localSessionId,
+        foldedThroughSeq,
+      );
+    });
+    return linked;
   });
 }
 
