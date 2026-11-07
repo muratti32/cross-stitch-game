@@ -239,6 +239,17 @@ describe('the link', () => {
   });
 });
 
+describe('the server\'s verdict on the session', () => {
+  test.each([[true], [false]])('reaches the link when it is terminalCompleted %s', async (terminalCompleted) => {
+    rows(snapshot({ localState: 'completed', completedAt: '2026-02-01T10:00:00.000Z' }));
+    mockApiFetch.mockResolvedValue(registered(terminalCompleted));
+
+    await registrar.registerBundledSessions();
+
+    expect(mockLink).toHaveBeenCalledWith(ACCOUNT, expect.anything(), expect.objectContaining({ terminalCompleted }));
+  });
+});
+
 describe('a row that finishes while the request is out', () => {
   const finished = snapshot({
     localState: 'completed',

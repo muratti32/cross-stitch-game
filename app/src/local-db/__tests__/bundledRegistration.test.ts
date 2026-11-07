@@ -1,9 +1,15 @@
 import { createNodeSqliteFiles, nodeSqliteAvailable } from './nodeSqliteDatabase';
 
 const mockDatabases = createNodeSqliteFiles();
+const mockApiFetch = jest.fn();
+const mockIdentity = { guestId: null, accountId: '22222222-2222-4222-8222-222222222222', isAccount: true, isAuthenticated: true };
 
 jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn(async (filename: string) => mockDatabases.open(filename)) }));
 jest.mock('expo-file-system/legacy', () => ({ documentDirectory: null }));
+jest.mock('../../api/apiFetch', () => ({ apiFetch: (...args: unknown[]) => mockApiFetch(...args) }));
+jest.mock('../../identity/guestIdentity', () => ({ useIdentityStore: { getState: () => mockIdentity } }));
+jest.mock('../../promotion/handoffStore', () => ({ handoffStore: { load: async () => null } }));
+jest.mock('../../observability/sentry', () => ({ captureBundledRegistrationError: jest.fn() }));
 
 import {
   createReplaySession,
@@ -24,6 +30,7 @@ import {
 } from '../index';
 import { getDatabaseFilename } from '../namespaceLogic';
 import { base64ToUint8Array, unpackCompletedBitmap } from '../helpers';
+import { registerBundledSessions, subscribeBundledSessionLinked } from '../../sync/bundledSessionRegistrar';
 
 const GUEST = '11111111-1111-4111-8111-111111111111';
 const ACCOUNT = '22222222-2222-4222-8222-222222222222';
@@ -143,6 +150,43 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
     });
   });
 
+  describe('registerBundledSessions', () => {
+    const respond = (terminalCompleted: boolean) => ({
+      status: 200,
+      json: async () => ({ sessionId: REMOTE, terminalCompleted }),
+    });
+    const sentCells = (call: number): number[] =>
+      completedCellsOf(JSON.parse(mockApiFetch.mock.calls[call][1].body as string).packedBitmapBase64);
+
+    beforeEach(async () => {
+      mockApiFetch.mockReset();
+      await openNamespace(ACCOUNT);
+    });
+
+    test('a completed row the server leaves unfinished stays unlinked, and the next pass sends a fresher bitmap', async () => {
+      const { id } = await completedRow(HEART, '2026-02-01T10:00:00.000Z');
+      await insertProgressOpsBatch([op(id, 0, 1)]);
+      const linked = jest.fn();
+      const unsubscribe = subscribeBundledSessionLinked(linked);
+      mockApiFetch.mockResolvedValueOnce(respond(false));
+
+      await registerBundledSessions();
+
+      expect((await getSession(id))?.remoteSessionId).toBeNull();
+      expect(linked).not.toHaveBeenCalled();
+
+      await insertProgressOpsBatch([op(id, 1, 2)]);
+      mockApiFetch.mockResolvedValueOnce(respond(true));
+      await registerBundledSessions();
+      unsubscribe();
+
+      expect(sentCells(0)).toEqual([0]);
+      expect(sentCells(1)).toEqual([0, 1]);
+      expect((await getSession(id))?.remoteSessionId).toBe(REMOTE);
+      expect(linked).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('saveCheckpoint', () => {
     const cells = (...indexes: number[]) => {
       const completed = new Uint8Array(16);
@@ -233,6 +277,24 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       db.exec('DROP TRIGGER refuse_ack;');
       expect((await getSession(id))?.remoteSessionId).toBeNull();
       await expect(linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, 1)).resolves.toBe(true);
+    });
+
+    test('a completed row refuses a session the server did not finish', async () => {
+      const { id } = await completedRow(HEART, '2026-02-01T10:00:00.000Z');
+      await insertProgressOpsBatch([op(id, 0, 1)]);
+
+      await linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, { foldedThroughSeq: 1, terminalCompleted: false });
+
+      expect((await getSession(id))?.remoteSessionId).toBeNull();
+      expect(await getUnackedProgressOps(id)).toHaveLength(1);
+    });
+
+    test('a completed row links to a session the server finished', async () => {
+      const { id } = await completedRow(HEART, '2026-02-01T10:00:00.000Z');
+
+      await linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, { foldedThroughSeq: 0, terminalCompleted: true });
+
+      expect((await getSession(id))?.remoteSessionId).toBe(REMOTE);
     });
 
     test('a deleted row is not linked', async () => {
