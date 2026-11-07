@@ -58,7 +58,9 @@ async function rowWithTwoOps(remoteSessionId: string | null): Promise<string> {
     const { id } = await createSession(HEART, 'bundled', 'bundled', 'active', REMOTE, META);
     await insertProgressOpsBatch([op(id, 0), op(id, 1)]);
     const calls = (jest.requireMock('expo-sqlite').openDatabaseAsync as jest.Mock).mock.calls;
-    const raw = await mockDatabases.open(calls[calls.length - 1][0] as string);
+    const raw = (await mockDatabases.open(calls[calls.length - 1][0] as string)) as {
+      execAsync: (sql: string) => Promise<void>;
+    };
     await raw.execAsync("UPDATE device_config SET value = '0' WHERE key = 'device_seq'");
 
     await insertProgressOpsBatch([op(id, 2)]);
