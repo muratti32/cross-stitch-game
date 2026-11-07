@@ -1,6 +1,5 @@
 import type { EntityManager } from 'typeorm';
 
-/** Records a stored object, so the storage reconciler does not report it as an orphan. */
 export async function registerCatalogObject(
   manager: EntityManager,
   objectKey: string,

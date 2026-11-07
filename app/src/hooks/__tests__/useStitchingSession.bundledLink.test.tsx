@@ -79,7 +79,6 @@ jest.mock('../../api/progressSync', () => ({ ProgressSyncError: class extends Er
 
 const REMOTE = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
 const LOCAL = 'session_local';
-// Three stitchable cells and one blank.
 const PATTERN = {
   width: 2,
   height: 2,

@@ -160,7 +160,6 @@ function RootLayout() {
     });
   }, []);
 
-  // Sessions a promotion adopted arrive unlinked once the handoff has cleared.
   usePromotionSessionsRefresh(() => void registerBundledSessions());
 
   useEffect(() => {

@@ -47,7 +47,6 @@ export async function captureSessionGameplayEvent(
 ): Promise<void> {
   try {
     await captureGameplayEvent(kind, {
-      // A row linked mid-session keeps the id its session_started went out under.
       session_id:
         (await findAnalyticsSessionId(localSessionId)) ??
         remoteSessionId ??

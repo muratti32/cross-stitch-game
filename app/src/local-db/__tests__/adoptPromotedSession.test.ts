@@ -1,7 +1,5 @@
 /**
  * Runs the real schema, capture and adoption SQL against an in-memory SQLite.
- * On runtimes without `node:sqlite` these skip and
- * `promotedSessionAdoption.test.ts` still covers every decision.
  */
 import type { DrainSessionResult, PackagedSession } from '../../api/promotionContract';
 import { createNodeSqliteFiles, nodeSqliteAvailable } from './nodeSqliteDatabase';

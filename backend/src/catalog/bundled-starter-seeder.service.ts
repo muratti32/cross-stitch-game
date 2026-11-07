@@ -8,11 +8,6 @@ import { registerCatalogObject } from './catalog-object-registry';
 import { catalogPatternObjectKeys } from './pattern-object-keys';
 import { OBJECT_STORAGE, type ObjectStorage } from './storage/object-storage.interface';
 
-/**
- * Puts each starter in the catalog: objects first, row last, so a row always
- * has its bytes and a partial run just repeats. An existing row is left alone,
- * which keeps operator edits and never restores a removed starter's objects.
- */
 @Injectable()
 export class BundledStarterSeeder {
   private readonly logger = new Logger(BundledStarterSeeder.name);
@@ -23,7 +18,6 @@ export class BundledStarterSeeder {
     @Inject(OBJECT_STORAGE) private readonly storage: ObjectStorage,
   ) {}
 
-  /** Never rejects: the worker calls it on a timer until one run succeeds. */
   async ensure(): Promise<void> {
     if (this.seeded) return;
     try {

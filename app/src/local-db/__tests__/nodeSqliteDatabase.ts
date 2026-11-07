@@ -1,8 +1,3 @@
-/**
- * An expo-sqlite handle over `node:sqlite`, so a suite runs the real schema and
- * SQL. `node:sqlite` needs Node 22.5+, so on older runtimes (CI is on Node 20)
- * `nodeSqliteAvailable` is false and those suites skip.
- */
 type SqlParam = string | number | null | Uint8Array;
 interface NodeSqliteStatement {
   all(...params: SqlParam[]): unknown[];
@@ -27,7 +22,6 @@ function loadSqlite(): NodeSqliteModule | null {
 
 export const nodeSqliteAvailable = loadSqlite() !== null;
 
-/** Each filename keeps its database across reopen, like a file on the device. */
 export function createNodeSqliteFiles() {
   const files = new Map<string, NodeSqliteDatabase>();
 

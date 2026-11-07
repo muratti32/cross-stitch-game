@@ -2,7 +2,6 @@ import type { EntityManager } from 'typeorm';
 
 import type { AuthPrincipal } from '../auth/auth.types';
 
-/** Finds or creates the principal's one active session on a Pattern. */
 export async function upsertActiveSession(
   manager: EntityManager,
   principal: Pick<AuthPrincipal, 'id' | 'type'>,

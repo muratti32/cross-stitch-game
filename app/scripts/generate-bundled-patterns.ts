@@ -147,8 +147,6 @@ const mushroomTemplate = `
 ....................
 `;
 
-// A starter's id and createdAt are its server catalog row's too. The bytes under
-// an id never change: new art gets a new UUID.
 const patterns = [
   {
     id: 'dc47c329-35fd-4173-9ad9-5098369beb44',

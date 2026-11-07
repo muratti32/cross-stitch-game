@@ -364,12 +364,6 @@ export class ProgressSyncService {
     });
   }
 
-  /**
-   * Gives a locally started Bundled Starter Pattern session its backend identity.
-   * ADR-0037 makes this the one door that skips the Pattern Unlock and availability
-   * checks, so only starter ids pass. A session completed here is terminal and
-   * mints nothing, because `complete` stops at a terminal session.
-   */
   async registerBundledSession(
     principal: AuthPrincipal,
     dto: RegisterBundledSessionDto,
@@ -391,9 +385,6 @@ export class ProgressSyncService {
         throw new NotFoundException({ code: 'starter_not_seeded' });
       }
 
-      // Promotion accepts any completed Guest session as evidence for a pending
-      // First Completion Reward, so a Guest writes identity only: cells it sent
-      // here could complete a row and let a forged reward mint Coin.
       if (principal.type === PrincipalType.Guest) {
         return {
           sessionId: await upsertActiveSession(manager, principal, patternId),
@@ -429,7 +420,6 @@ export class ProgressSyncService {
     });
   }
 
-  /** The active session, else the most recently completed one. */
   private async findLatestSession(
     manager: EntityManager,
     principal: AuthPrincipal,

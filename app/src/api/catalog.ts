@@ -172,8 +172,6 @@ async function fetchWithCatalogCache<T>(surfaceKey: string): Promise<CachedResul
   }
 }
 
-// A seeded Bundled Starter Pattern is a real published row an older app may still
-// show. This app ships it in the bundle, so its catalog surfaces leave it out.
 function withoutBundledPatterns(items: CatalogPatternItem[]): CatalogPatternItem[] {
   return items.filter((item) => !isBundledPatternId(item.id));
 }

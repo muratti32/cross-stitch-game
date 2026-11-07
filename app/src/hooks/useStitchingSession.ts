@@ -224,8 +224,6 @@ export function useStitchingSession(sessionId: string | undefined) {
       // Persist buffered ops first so the engine uploads a consistent set.
       await flushPendingOps();
 
-      // The engine folds server cells into what it is given. A copy leaves the
-      // renderer to see those cells change, which is what dirties their tiles.
       const completed = new Uint8Array(rState.getCompletedArray());
       const outcome = await syncSession(
         sess.id,
@@ -382,7 +380,6 @@ export function useStitchingSession(sessionId: string | undefined) {
 
         // 6. Determine whether this session syncs (Registered Account + linked
         //    remote session) and pick the reload base accordingly.
-        //    The registrar may have linked the row since it was read above.
         const identity = useIdentityStore.getState();
         const remoteSessionId = sess.remoteSessionId ?? remoteSessionIdRef.current;
         const isAccountSession = identity.isAccount && !!remoteSessionId;
@@ -398,8 +395,6 @@ export function useStitchingSession(sessionId: string | undefined) {
           // device's not-yet-acknowledged ops replayed on top.
           completed = unpackCompletedBitmap(snapshot.packedBitmap, cellsLength);
           serverRevisionRef.current = snapshot.serverRevision;
-          // Below the local checkpoint, new checkpoints would never become the
-          // latest one and the Play tab percentage would freeze.
           sessionRevisionRef.current = (await getLatestCheckpoint(sess.id))?.revision ?? 0;
           const unacked = await getUnackedProgressOps(sess.id);
           for (const op of unacked) {

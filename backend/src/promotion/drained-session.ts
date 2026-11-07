@@ -19,8 +19,7 @@ interface ApplyPackagedProgressInput {
 /**
  * Folds a packed bitmap into a session. Only cells not yet completed are
  * written, so each gets one revision and one operation. Runs under the
- * session's sync lock to keep revisions contiguous with account sync. `gridCells`
- * sizes the bitmap; `stitchableCells` decides whether the session finished.
+ * session's sync lock to keep revisions contiguous with account sync.
  */
 export async function applyPackagedProgress(
   manager: EntityManager,

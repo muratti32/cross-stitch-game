@@ -56,7 +56,6 @@ export class PatternEntity {
   @Column({ name: 'palette_size', type: 'integer' })
   paletteSize!: number;
 
-  // null means every cell in the grid is stitchable.
   @Column({ name: 'stitchable_cell_count', nullable: true, type: 'integer' })
   stitchableCellCount!: number | null;
 

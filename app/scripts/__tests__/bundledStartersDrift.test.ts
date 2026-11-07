@@ -6,7 +6,6 @@ import manifest from '../../assets/bundled-patterns/manifest.json';
 
 const assetsDir = path.resolve(__dirname, '../../assets/bundled-patterns');
 
-// Local sessions and catalog rows hold these ids, so an id's bytes never change.
 const RELEASED_STARTERS = [
   ['starter_heart', 'dc47c329-35fd-4173-9ad9-5098369beb44', '6db72edbed080c273cf7e6a33ba4362e15691ef52314aeb45a770cc88336c84d'],
   ['starter_flower', 'a6a221ab-83dd-4bc0-b945-ba619e65fa92', '81eb64ea93098e40aeb415356ede6d3956e5c86161b5bf11fef8cbf3bf4192d5'],

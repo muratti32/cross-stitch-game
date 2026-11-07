@@ -8,9 +8,7 @@ import { copyOfflinePatternToNamespace } from '../session-preparation';
  * so a row never exists without it: with no server session there is no grant to
  * re-download it from. The namespace check stops a sign-out during the sync from
  * writing account rows into whichever namespace opened next; the failure leaves
- * the session unacknowledged for its account to finish. A handoff persisted
- * before the local ids became catalog UUIDs still names a bundled session by its
- * legacy id.
+ * the session unacknowledged for its account to finish.
  */
 export async function adoptPackagedSession(
   owners: { guestId: string; accountId: string },

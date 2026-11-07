@@ -173,8 +173,7 @@ const bundledPreparationInFlight = new Map<string, Promise<StitchingSession>>();
 
 // Bundled patterns skip online Session Preparation (ADR 0037) but still
 // follow the one-active-session-per-pattern rule, so repeated taps resume
-// the same local session instead of inserting duplicates. An older app reached
-// a seeded starter through the catalog, and that row counts as the active one.
+// the same local session instead of inserting duplicates.
 export async function prepareBundledSession(
   patternId: string,
   checksum: string,
