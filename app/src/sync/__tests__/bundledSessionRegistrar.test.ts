@@ -249,6 +249,31 @@ describe('the server\'s verdict on the session', () => {
 
     expect(mockLink).toHaveBeenCalledWith(ACCOUNT, expect.anything(), expect.objectContaining({ terminalCompleted }));
   });
+
+  describe('on a completed row the server will not finish', () => {
+    const completed = snapshot({ localState: 'completed', completedAt: '2026-02-01T10:00:00.000Z' });
+
+    beforeEach(() => {
+      rows(completed);
+      mockApiFetch.mockResolvedValue(registered(false));
+      mockLink.mockResolvedValue('sessionNotFinished');
+    });
+
+    test('the same bitmap is not sent again this process', async () => {
+      await registrar.registerBundledSessions();
+      await registrar.registerBundledSessions();
+
+      expect(mockApiFetch).toHaveBeenCalledTimes(1);
+    });
+
+    test('a fresher bitmap goes out, because the final ops can land after the row completes', async () => {
+      await registrar.registerBundledSessions();
+      rows({ ...completed, packedBitmapBase64: FULLER_BITMAP });
+      await registrar.registerBundledSessions();
+
+      expect(sentBodies().map((body) => body.packedBitmapBase64)).toEqual([BITMAP, FULLER_BITMAP]);
+    });
+  });
 });
 
 describe('a row that finishes while the request is out', () => {
@@ -271,6 +296,18 @@ describe('a row that finishes while the request is out', () => {
       ['completed', FULLER_BITMAP],
     ]);
     expect(mockLink).toHaveBeenCalledWith(ACCOUNT, expect.anything(), expect.objectContaining({ foldedThroughSeq: 9 }));
+  });
+
+  test('a row that finished after the last read still goes out as completed', async () => {
+    rows(snapshot());
+    mockRead.mockResolvedValueOnce(snapshot()).mockResolvedValueOnce(snapshot()).mockResolvedValue(finished);
+    mockLink.mockResolvedValueOnce('sessionNotFinished');
+    mockApiFetch.mockResolvedValueOnce(registered(false)).mockResolvedValueOnce(registered(true));
+
+    await registrar.registerBundledSessions();
+    await registrar.registerBundledSessions();
+
+    expect(sentBodies().map((body) => body.localState)).toEqual(['in_progress', 'completed']);
   });
 
   test('a Guest leaves it local', async () => {
