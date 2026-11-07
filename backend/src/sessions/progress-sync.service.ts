@@ -652,9 +652,11 @@ export class ProgressSyncService {
       [sessionId],
     );
     const pattern = rows[0];
-    if (pattern && pattern.status === 'removed') {
-      throw new GoneException({ code: 'pattern_removed', patternId: pattern.patternId });
-    }
+    if (!pattern || pattern.status !== 'removed') return;
+    // ADR-0037: Safety Removal does not apply to operator-authored bundled
+    // content; a removed starter row never invalidates existing sessions.
+    if (BUNDLED_STARTERS.some((starter) => starter.id === pattern.patternId)) return;
+    throw new GoneException({ code: 'pattern_removed', patternId: pattern.patternId });
   }
 
   /**
