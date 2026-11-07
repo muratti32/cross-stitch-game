@@ -959,26 +959,6 @@ export async function markPaidPatternsBannerSeen(): Promise<void> {
 
 
 /**
- * Gets and increments the global monotonic sequence counter for this device.
- */
-export async function getNextDeviceSeq(): Promise<number> {
-  return withDatabase(async (db) => {
-    const row = await db.getFirstAsync<{ value: string }>(
-      "SELECT value FROM device_config WHERE key = 'device_seq'"
-    );
-    let nextSeq = 1;
-    if (row) {
-      nextSeq = parseInt(row.value, 10) + 1;
-    }
-    await db.runAsync(
-      "INSERT OR REPLACE INTO device_config (key, value) VALUES ('device_seq', ?)",
-      nextSeq.toString()
-    );
-    return nextSeq;
-  });
-}
-
-/**
  * Reads the device's persistent monotonic sequence high-water mark. Unlike
  * MAX(device_seq) over progress_ops, this never regresses when acknowledged ops
  * are compacted away after a sync, so the server never mistakes a fresh op for a
