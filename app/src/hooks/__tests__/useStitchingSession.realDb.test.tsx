@@ -37,8 +37,17 @@ jest.mock('../../analytics/gameplayEvents', () => ({
 }));
 
 import { useStitchingSession } from '../useStitchingSession';
-import { createSession, openNamespace, saveSyncSnapshot } from '../../local-db';
+import {
+  adoptPromotedSession,
+  createSession,
+  getSessionCompletedCount,
+  openNamespace,
+  saveCheckpoint,
+  saveSyncSnapshot,
+} from '../../local-db';
+import { packCompletedBitmap, uint8ArrayToBase64 } from '../../local-db/helpers';
 import type { OutgoingProgressOperation } from '../../api/progressSync';
+import type { PackagedSession } from '../../api/promotionContract';
 
 const ACCOUNT = '22222222-2222-4222-8222-222222222222';
 const REMOTE = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
@@ -87,11 +96,26 @@ async function stitch(x: number, y: number): Promise<void> {
   });
 }
 
-async function linkedRow(): Promise<string> {
+function cells(...indexes: number[]): Uint8Array {
+  const completed = new Uint8Array(4);
+  for (const index of indexes) completed[index] = 1;
+  return completed;
+}
+
+async function linkedRow(...serverHeld: number[]): Promise<string> {
   const { id } = await createSession(HEART, 'bundled', 'bundled', 'active', REMOTE, META);
-  await saveSyncSnapshot(id, 5, new Uint8Array(4), false);
+  await saveSyncSnapshot(id, 5, cells(...serverHeld), false);
   return id;
 }
+
+const guestSession = (...guestCells: number[]) =>
+  ({
+    localSessionId: 'guest_row',
+    patternId: HEART,
+    source: 'bundled',
+    status: 'active',
+    packedBitmapBase64: uint8ArrayToBase64(packCompletedBitmap(cells(...guestCells))),
+  }) as PackagedSession;
 
 (nodeSqliteAvailable ? describe : describe.skip)('a linked session against real SQL', () => {
   beforeEach(async () => {
@@ -149,5 +173,27 @@ async function linkedRow(): Promise<string> {
 
     expect(hook.rendererState?.isCompleted(0, 0)).toBe(true);
     expect(serverCells).toEqual(new Set([0]));
+  });
+
+  test('Guest cells merged into a linked row open, survive an offline exit and reach the server', async () => {
+    const id = await linkedRow(0);
+    await saveCheckpoint(id, 4, cells(0));
+    await adoptPromotedSession(guestSession(1, 2), null);
+
+    const online = mockSyncProgress.getMockImplementation();
+    mockSyncProgress.mockRejectedValue(new Error('Network request failed'));
+    await open(id);
+
+    expect(hook.completedCellsCount).toBe(3);
+
+    await exit();
+
+    expect(await getSessionCompletedCount(id, 2, 2)).toBe(3);
+
+    mockSyncProgress.mockImplementation(online);
+    await open(id);
+
+    expect(serverCells).toEqual(new Set([1, 2]));
+    expect(hook.completedCellsCount).toBe(3);
   });
 });

@@ -21,12 +21,17 @@ import {
   getLatestCheckpoint,
   getSessionCompletedCount,
   getSessions,
+  getDeviceId,
+  getDeviceSeqHigh,
   getSyncSnapshot,
   getUnackedProgressOps,
   insertProgressOpsBatch,
+  markProgressOpsAcked,
   openNamespace,
   readSessionPackedProgress,
   saveCheckpoint,
+  saveSyncSnapshot,
+  setDeviceSeqHigh,
   unpackCompletedBitmap,
   type ProgressOperation,
 } from '../index';
@@ -186,6 +191,92 @@ async function guestPackage(prepare: () => Promise<void>): Promise<PackagedSessi
 
     expect((await getSessions()).map((row) => row.id)).toEqual([accountRow.id]);
     expect(await getSessionCompletedCount(accountRow.id, 4, 4)).toBe(3);
+  });
+
+  describe('Guest cells merged into a linked account row', () => {
+    const cellsOf = (...cells: number[]) => {
+      const completed = new Uint8Array(16);
+      for (const cell of cells) completed[cell] = 1;
+      return completed;
+    };
+
+    async function guestStarter(...cells: number[]): Promise<PackagedSession> {
+      const [session] = await guestPackage(async () => {
+        const created = await createSession('starter_heart', 'bundled', 'bundled', 'active', null, META);
+        await insertProgressOpsBatch(cells.map((cell, index) => op(created.id, cell, index)));
+      });
+      await openNamespace(ACCOUNT);
+      return session;
+    }
+
+    const linkedAccountRow = () => createSession('starter_heart', 'bundled', 'bundled', 'active', REMOTE, META);
+
+    test('arrive as unacked ops the ordinary sync uploads', async () => {
+      const session = await guestStarter(0, 1, 2);
+      const row = await linkedAccountRow();
+      await setDeviceSeqHigh(40);
+      await saveCheckpoint(row.id, 7, cellsOf(0));
+      await saveSyncSnapshot(row.id, 90, cellsOf(0), false);
+
+      await adoptPromotedSession(session, null);
+
+      expect(await getUnackedProgressOps(row.id)).toEqual([
+        expect.objectContaining({ cellIndex: 1, desiredState: 'completed', deviceId: await getDeviceId(), deviceSeq: 41, baseRevision: 7, serverBaseRevision: 90 }),
+        expect.objectContaining({ cellIndex: 2, desiredState: 'completed', deviceId: await getDeviceId(), deviceSeq: 42, baseRevision: 7, serverBaseRevision: 90 }),
+      ]);
+      expect(await getDeviceSeqHigh()).toBe(42);
+      expect(await getSessionCompletedCount(row.id, 4, 4)).toBe(3);
+    });
+
+    test('each op carries a UUID, which the sync endpoint requires', async () => {
+      const session = await guestStarter(1);
+      const row = await linkedAccountRow();
+
+      await adoptPromotedSession(session, null);
+
+      const [pending] = await getUnackedProgressOps(row.id);
+      expect(pending.opId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+    });
+
+    test('a row that never synced counts its checkpoint and ops as held', async () => {
+      const session = await guestStarter(0, 1, 2);
+      const row = await linkedAccountRow();
+      await saveCheckpoint(row.id, 3, cellsOf(0));
+      await insertProgressOpsBatch([op(row.id, 1, 3)]);
+
+      await adoptPromotedSession(session, null);
+
+      expect((await getUnackedProgressOps(row.id)).map((pending) => pending.cellIndex)).toEqual([1, 2]);
+      expect(await getSessionCompletedCount(row.id, 4, 4)).toBe(3);
+    });
+
+    test('a rerun after a kill adds no op, before or after the sync took them', async () => {
+      const session = await guestStarter(1, 2);
+      const row = await linkedAccountRow();
+      await saveSyncSnapshot(row.id, 90, cellsOf(0), false);
+
+      await adoptPromotedSession(session, null);
+      await adoptPromotedSession(session, null);
+
+      const pending = await getUnackedProgressOps(row.id);
+      expect(pending.map((queued) => queued.cellIndex)).toEqual([1, 2]);
+
+      await markProgressOpsAcked(pending.map((queued) => queued.opId));
+      await saveSyncSnapshot(row.id, 92, cellsOf(0, 1, 2), false);
+      await adoptPromotedSession(session, null);
+
+      expect(await getUnackedProgressOps(row.id)).toEqual([]);
+    });
+
+    test('Guest cells the row holds already make no op', async () => {
+      const session = await guestStarter(0);
+      const row = await linkedAccountRow();
+      await saveSyncSnapshot(row.id, 90, cellsOf(0), false);
+
+      await adoptPromotedSession(session, null);
+
+      expect(await getUnackedProgressOps(row.id)).toEqual([]);
+    });
   });
 
   test('a server-known session with no cells still lands as a playable row', async () => {
