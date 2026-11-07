@@ -129,7 +129,7 @@ function accountHarness({
   stitchableCellCount: number | null;
   completedCount: number;
 }) {
-  const query = jest.fn(async (sql: string): Promise<readonly object[]> => {
+  const query = jest.fn(async (sql: string, _params?: readonly unknown[]): Promise<readonly object[]> => {
     await Promise.resolve();
     if (sql.includes("principal_type = 'account'") && sql.includes('FOR UPDATE')) {
       return [{ id: sessionId, principalType: 'account', principalId: accountId }];
@@ -137,7 +137,7 @@ function accountHarness({
     if (sql.includes('pg_advisory_xact_lock')) return [{ locked: null }];
     if (sql.includes('SELECT p.status')) return [{ status: 'available', patternId }];
     if (sql.includes('INSERT INTO sessions.session_sync_state')) return [];
-    if (sql.includes('SELECT revision, terminal_completed_at')) {
+    if (sql.includes('FROM sessions.session_sync_state state')) {
       return [{ revision: '17', terminalCompletedAt: null }];
     }
     if (sql.includes('COUNT(c.cell_index)')) {
@@ -353,6 +353,10 @@ describe('ProgressSyncService.complete', () => {
       patternId,
       400,
     );
+    const flagWrite = fixture.manager.query.mock.calls.find(([sql]) =>
+      sql.includes('INSERT INTO sessions.session_progress_flags'),
+    );
+    expect(flagWrite?.[1]).toEqual([sessionId]);
   });
 
   it('completes a sparse Pattern for an account at its stitchable count', async () => {
@@ -454,7 +458,11 @@ describe('ProgressSyncService.complete', () => {
 });
 
 describe('ProgressSyncService.sync progress flag', () => {
-  function syncHarness(existingOp: boolean, pullRows: readonly object[] = []) {
+  function syncHarness(
+    existingOp: boolean,
+    pullRows: readonly object[] = [],
+    groupRows: readonly object[] = [],
+  ) {
     const query = jest.fn(async (sql: string): Promise<readonly object[]> => {
       await Promise.resolve();
       if (sql.includes("principal_type = 'account'") && sql.includes('FOR UPDATE')) {
@@ -463,7 +471,7 @@ describe('ProgressSyncService.sync progress flag', () => {
       if (sql.includes('pg_advisory_xact_lock')) return [{ locked: null }];
       if (sql.includes('SELECT p.status')) return [{ status: 'available', patternId }];
       if (sql.includes('INSERT INTO sessions.session_sync_state')) return [];
-      if (sql.includes('SELECT revision, terminal_completed_at')) {
+      if (sql.includes('FROM sessions.session_sync_state state')) {
         return [{ revision: '3', terminalCompletedAt: null }];
       }
       if (sql.includes('FROM sessions.session_device_watermarks')) return [];
@@ -476,6 +484,7 @@ describe('ProgressSyncService.sync progress flag', () => {
       if (sql.includes('INSERT INTO sessions.session_progress_flags')) return [];
       if (sql.includes('UPDATE sessions.session_sync_state')) return [];
       if (sql.includes('server_revision > $2')) return pullRows;
+      if (sql.includes('server_revision = $2')) return groupRows;
       throw new Error(`Unexpected query: ${sql}`);
     });
     const manager = { query };
@@ -571,6 +580,55 @@ describe('ProgressSyncService.sync progress flag', () => {
       expect(result.hasMore).toBe(false);
       const sessionHeadRevision = 3; // syncHarness stored session revision
       expect(result.revision).toBe(sessionHeadRevision);
+    });
+
+    it('ends a truncated page on a whole revision when a tie straddles the boundary', async () => {
+      const tied = [
+        ...rows(998),
+        { ...pulledRow(999), opId: 'tie-a' },
+        { ...pulledRow(999), opId: 'tie-b' },
+        { ...pulledRow(999), opId: 'tie-c' },
+      ];
+      const { service } = syncHarness(false, tied);
+      const result = await service.sync(account, sessionId, {
+        deviceId,
+        sinceRevision: 0,
+        operations: [],
+      });
+      expect(result.operations).toHaveLength(998);
+      expect(result.hasMore).toBe(true);
+      expect(result.revision).toBe(998);
+    });
+
+    it('returns the whole revision group when one revision fills the page', async () => {
+      const group = Array.from({ length: 1200 }, (_, index) => ({
+        ...pulledRow(5),
+        opId: `group-${index}`,
+      }));
+      const { service } = syncHarness(false, group.slice(0, 1001), group);
+      const result = await service.sync(account, sessionId, {
+        deviceId,
+        sinceRevision: 4,
+        operations: [],
+      });
+      expect(result.operations).toHaveLength(1200);
+      expect(result.hasMore).toBe(true);
+      expect(result.revision).toBe(5);
+    });
+
+    it('starts the sync revision above migrated Guest operations', async () => {
+      const { query, service } = syncHarness(false);
+      await service.sync(account, sessionId, {
+        deviceId,
+        sinceRevision: 0,
+        operations: [],
+      });
+      const stateRead = query.mock.calls.find(([sql]) =>
+        sql.includes('FROM sessions.session_sync_state state'),
+      );
+      expect(stateRead?.[0]).toMatch(
+        /GREATEST\([\s\S]*MAX\(server_revision\)[\s\S]*progress_operations/,
+      );
     });
   });
 });

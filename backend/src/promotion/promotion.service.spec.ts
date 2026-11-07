@@ -726,6 +726,30 @@ describe('PromotionService', () => {
       expect(statements(/unnest\(\$3::int\[\]\)/)[0][1][0]).toBe(ACCOUNT_SESSION);
     });
 
+    it('flags the account session as having progress when merged Guest cells move over', async () => {
+      consumedPackage('committed', [packagedSession()]);
+      guestSessions = [{ id: GUEST_SESSION, status: 'active' }];
+      accountSessions = [{ id: ACCOUNT_SESSION, status: 'active' }];
+      const routed = managerQuery.getMockImplementation();
+      managerQuery.mockImplementation(async (sql: string, params: unknown[]) => {
+        if (/SELECT cell_index, state, revision FROM sessions\.session_cell_state/.test(sql)) {
+          return [{ cell_index: 1, state: 'completed', revision: '2' }];
+        }
+        return routed ? routed(sql, params) : [];
+      });
+
+      await drain();
+
+      const order = managerQuery.mock.calls.map(([sql]: [string]) => sql);
+      const remove = order.findIndex((sql: string) => sql.includes('DELETE FROM sessions.stitching_sessions'));
+      const flagBeforeDelete = managerQuery.mock.calls.findIndex(
+        ([sql, params]: [string, unknown[]]) =>
+          sql.includes('session_progress_flags') && (params as string[])[0] === ACCOUNT_SESSION,
+      );
+      expect(flagBeforeDelete).toBeGreaterThanOrEqual(0);
+      expect(flagBeforeDelete).toBeLessThan(remove);
+    });
+
     it('keeps both attempts when both are completed', async () => {
       consumedPackage('committed', [packagedSession({ status: 'completed', completedAt: '2026-11-01T12:00:00.000Z' })]);
       guestSessions = [{ id: GUEST_SESSION, status: 'completed' }];

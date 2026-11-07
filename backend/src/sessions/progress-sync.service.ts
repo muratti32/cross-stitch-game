@@ -100,6 +100,17 @@ export interface PulledProgressOperation {
 
 const PULL_PAGE_SIZE = 1000;
 
+const PULL_SELECT = `SELECT op_id AS "opId",
+                device_id AS "deviceId",
+                device_seq AS "deviceSeq",
+                cell_index AS "cellIndex",
+                desired_state AS "desiredState",
+                resolved_state AS "resolvedState",
+                base_revision AS "baseRevision",
+                server_revision AS "serverRevision",
+                effective
+         FROM sessions.progress_operations`;
+
 export interface ProgressSyncResult {
   revision: number;
   terminalCompleted: boolean;
@@ -240,16 +251,7 @@ export class ProgressSyncService {
       // a genuinely-concurrent conflict differently (completed-wins). Superseded
       // late operations never changed cell state, so they are excluded.
       const pulled = await manager.query<readonly PulledOperationRecord[]>(
-        `SELECT op_id AS "opId",
-                device_id AS "deviceId",
-                device_seq AS "deviceSeq",
-                cell_index AS "cellIndex",
-                desired_state AS "desiredState",
-                resolved_state AS "resolvedState",
-                base_revision AS "baseRevision",
-                server_revision AS "serverRevision",
-                effective
-         FROM sessions.progress_operations
+        `${PULL_SELECT}
          WHERE session_id = $1
            AND superseded = false
            AND server_revision > $2
@@ -258,11 +260,14 @@ export class ProgressSyncService {
         [sessionId, dto.sinceRevision, PULL_PAGE_SIZE + 1],
       );
 
-      // One extra row proves the page was truncated. A truncated page reports a
-      // watermark no higher than its last operation so the client resumes from
-      // there instead of skipping the rest; the stored head stays untouched.
+      // One extra row proves the page was truncated. A truncated page ends on a
+      // complete server_revision group and reports a watermark no higher than
+      // its last operation so the client resumes from there instead of skipping
+      // the rest; the stored head stays untouched.
       const hasMore = pulled.length > PULL_PAGE_SIZE;
-      const page = hasMore ? pulled.slice(0, PULL_PAGE_SIZE) : pulled;
+      const page = hasMore
+        ? await this.completeTruncatedPage(manager, sessionId, pulled)
+        : pulled;
       const pageRevision = hasMore
         ? Number(page[page.length - 1].serverRevision)
         : revision;
@@ -644,6 +649,37 @@ export class ProgressSyncService {
     }
   }
 
+  /**
+   * Cuts a truncated pull page (PULL_PAGE_SIZE + 1 rows) down to whole
+   * server_revision groups: a watermark at revision R is only safe when every
+   * operation at R was delivered. When one group fills the page it is fetched
+   * in full so the pull always advances.
+   */
+  private async completeTruncatedPage(
+    manager: EntityManager,
+    sessionId: string,
+    pulled: readonly PulledOperationRecord[],
+  ): Promise<readonly PulledOperationRecord[]> {
+    const lastRevision = Number(pulled[PULL_PAGE_SIZE - 1].serverRevision);
+    const extraRevision = Number(pulled[PULL_PAGE_SIZE].serverRevision);
+    const page = pulled.slice(0, PULL_PAGE_SIZE);
+    if (extraRevision !== lastRevision) return page;
+
+    const complete = page.filter(
+      (operation) => Number(operation.serverRevision) < lastRevision,
+    );
+    if (complete.length > 0) return complete;
+
+    return manager.query<readonly PulledOperationRecord[]>(
+      `${PULL_SELECT}
+       WHERE session_id = $1
+         AND superseded = false
+         AND server_revision = $2
+       ORDER BY device_id ASC, device_seq ASC`,
+      [sessionId, lastRevision],
+    );
+  }
+
   private async ensureSyncState(manager: EntityManager, sessionId: string): Promise<void> {
     await manager.query<readonly SyncStateRecord[]>(
       `INSERT INTO sessions.session_sync_state (session_id)
@@ -658,9 +694,13 @@ export class ProgressSyncService {
     sessionId: string,
   ): Promise<SyncStateRecord> {
     const states = await manager.query<readonly SyncStateRecord[]>(
-      `SELECT revision, terminal_completed_at AS "terminalCompletedAt"
-       FROM sessions.session_sync_state
-       WHERE session_id = $1`,
+      `SELECT GREATEST(
+                state.revision,
+                COALESCE((SELECT MAX(server_revision) FROM sessions.progress_operations WHERE session_id = $1), 0)
+              ) AS revision,
+              state.terminal_completed_at AS "terminalCompletedAt"
+       FROM sessions.session_sync_state state
+       WHERE state.session_id = $1`,
       [sessionId],
     );
     const state = states[0];

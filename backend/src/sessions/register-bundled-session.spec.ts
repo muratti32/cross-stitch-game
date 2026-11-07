@@ -110,7 +110,7 @@ function harness({ seeded = true, patternRow = {} as object } = {}) {
       session.terminalAt ??= new Date();
       return [];
     }
-    if (sql.includes('SELECT revision, terminal_completed_at')) {
+    if (sql.includes('FROM sessions.session_sync_state state')) {
       return [{ revision: '0', terminalCompletedAt: row(params[0]).terminalAt }];
     }
     if (sql.includes("principal_type = 'account'") && sql.includes('FOR UPDATE')) {

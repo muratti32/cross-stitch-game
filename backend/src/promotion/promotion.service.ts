@@ -22,6 +22,7 @@ import { PromotionCommitRequestDto } from './dto/promotion-commit.dto';
 import { PatternLikeService } from '../social/pattern-like.service';
 import { PatternEntity } from '../catalog/entities/pattern.entity';
 import { applyPackagedProgress, readSurvivingSession } from './drained-session';
+import { markSessionHasProgress } from '../sessions/active-session';
 import { parsePackagedSessions } from './packaged-session';
 import { stitchableCells, type PatternCellCounts } from '../catalog/stitchable-cells';
 import {
@@ -795,6 +796,10 @@ export class PromotionService {
           [accountSessionId, gCell.cell_index, gCell.state, gCell.revision]
         );
       }
+    }
+
+    if (guestCells.length > 0) {
+      await markSessionHasProgress(manager, accountSessionId);
     }
 
     // Delete the guest session (cascades deletes remaining children)
