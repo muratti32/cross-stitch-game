@@ -759,15 +759,17 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
           legacyId,
         );
         await db.runAsync(
-          'UPDATE OR REPLACE pattern_likes SET pattern_id = ? WHERE pattern_id = ?',
+          'UPDATE OR IGNORE pattern_likes SET pattern_id = ? WHERE pattern_id = ?',
           id,
           legacyId,
         );
+        await db.runAsync('DELETE FROM pattern_likes WHERE pattern_id = ?', legacyId);
         await db.runAsync(
-          'UPDATE OR REPLACE editor_drafts SET source_pattern_id = ? WHERE source_pattern_id = ?',
+          'UPDATE OR IGNORE editor_drafts SET source_pattern_id = ? WHERE source_pattern_id = ?',
           id,
           legacyId,
         );
+        await db.runAsync('DELETE FROM editor_drafts WHERE source_pattern_id = ?', legacyId);
         await db.runAsync(
           'UPDATE pending_personal_patterns SET source_pattern_id = ? WHERE source_pattern_id = ?',
           id,
