@@ -66,6 +66,7 @@ let hook: Hook;
 let renderer: TestRenderer.ReactTestRenderer | undefined;
 let serverCells: Set<number>;
 let serverRevision: number;
+let serverSeqs: Set<number>;
 
 function Harness({ sessionId }: { sessionId: string }) {
   hook = useStitchingSession(sessionId);
@@ -87,6 +88,12 @@ async function exit(): Promise<void> {
     await jest.advanceTimersByTimeAsync(0);
   });
   renderer = undefined;
+}
+
+async function flushBuffer(): Promise<void> {
+  await act(async () => {
+    await jest.advanceTimersByTimeAsync(500);
+  });
 }
 
 async function stitch(x: number, y: number): Promise<void> {
@@ -124,21 +131,20 @@ const guestSession = (...guestCells: number[]) =>
     mockDatabases.clear();
     await openNamespace(ACCOUNT);
     serverCells = new Set();
+    serverSeqs = new Set();
     serverRevision = 5;
     mockLoadBundledPattern.mockResolvedValue(PATTERN);
     mockSyncProgress.mockImplementation(
       async (_remote: string, _device: string, _since: number, operations: OutgoingProgressOperation[]) => {
-        for (const operation of operations) {
+        const acknowledgements = operations.map(({ opId, deviceSeq, desiredState, cellIndex }) => {
+          if (serverSeqs.has(deviceSeq)) return { opId, status: 'duplicate' };
+          serverSeqs.add(deviceSeq);
           serverRevision += 1;
-          if (operation.desiredState === 'completed') serverCells.add(operation.cellIndex);
-          else serverCells.delete(operation.cellIndex);
-        }
-        return {
-          revision: serverRevision,
-          terminalCompleted: false,
-          acknowledgements: operations.map(({ opId }) => ({ opId, status: 'applied' })),
-          operations: [],
-        };
+          if (desiredState === 'completed') serverCells.add(cellIndex);
+          else serverCells.delete(cellIndex);
+          return { opId, status: 'applied' };
+        });
+        return { revision: serverRevision, terminalCompleted: false, acknowledgements, operations: [] };
       },
     );
     mockCompleteProgress.mockImplementation(async () => {
@@ -195,5 +201,43 @@ const guestSession = (...guestCells: number[]) =>
 
     expect(serverCells).toEqual(new Set([1, 2]));
     expect(hook.completedCellsCount).toBe(3);
+  });
+
+  describe('a merge that lands while the session is open', () => {
+    let online: ReturnType<typeof mockSyncProgress.getMockImplementation>;
+
+    beforeEach(async () => {
+      online = mockSyncProgress.getMockImplementation();
+      mockSyncProgress.mockRejectedValue(new Error('Network request failed'));
+      await open(await linkedRow());
+    });
+
+    async function finishOnline(): Promise<void> {
+      await stitch(0, 1);
+      mockSyncProgress.mockImplementation(online);
+      await stitch(1, 0);
+    }
+
+    test('stitches after it take seqs above the merged ops, so the server can finish', async () => {
+      await stitch(0, 0);
+      await flushBuffer();
+      await adoptPromotedSession(guestSession(1), null);
+
+      await finishOnline();
+
+      expect(serverCells).toEqual(new Set([0, 1, 2]));
+      await expect(mockCompleteProgress.mock.results[0].value).resolves.toMatchObject({ terminalCompleted: true });
+    });
+
+    test('a stitch still in the flush buffer takes a seq above them too', async () => {
+      await stitch(0, 0);
+      await adoptPromotedSession(guestSession(1), null);
+      await flushBuffer();
+
+      await finishOnline();
+
+      expect(serverCells).toEqual(new Set([0, 1, 2]));
+      await expect(mockCompleteProgress.mock.results[0].value).resolves.toMatchObject({ terminalCompleted: true });
+    });
   });
 });
