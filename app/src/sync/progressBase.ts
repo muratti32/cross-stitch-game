@@ -10,6 +10,8 @@ export interface ProgressBase {
   completed: Uint8Array;
   /** Server revision of the folded snapshot; null when the base is local-only. */
   serverRevision: number | null;
+  /** Byte length of the folded snapshot bitmap; null when there is none. */
+  snapshotBytes: number | null;
   /** Local op revision the base reaches. */
   sessionRevision: number;
 }
@@ -34,7 +36,12 @@ export async function rebuildProgressBase(
         completed[op.cellIndex] = op.desiredState === 'completed' ? 1 : 0;
       }
     }
-    return { completed, serverRevision: snapshot.serverRevision, sessionRevision };
+    return {
+      completed,
+      serverRevision: snapshot.serverRevision,
+      snapshotBytes: snapshot.packedBitmap.length,
+      sessionRevision,
+    };
   }
 
   const checkpoint = await getLatestCheckpoint(sessionId);
@@ -52,5 +59,5 @@ export async function rebuildProgressBase(
       sessionRevision++;
     }
   }
-  return { completed, serverRevision: null, sessionRevision };
+  return { completed, serverRevision: null, snapshotBytes: null, sessionRevision };
 }

@@ -9,40 +9,52 @@ import {
   updateSessionError,
   type StitchingSession,
 } from '../local-db';
-import { captureProgressSyncError } from '../observability/sentry';
+import { addProgressSyncBreadcrumb, captureProgressSyncError } from '../observability/sentry';
 import { handoffStore } from '../promotion/handoffStore';
 import { deleteOfflinePatternFile } from '../session-preparation';
 import { rebuildProgressBase } from './progressBase';
 import { syncSession } from './progressSyncEngine';
 
 type SessionResult = 'nextSession' | 'stopPass';
+interface PassOwner {
+  accountId: string;
+}
 
 const PATTERN_REMOVED_NOTE = 'This Community Pattern was removed by moderation.';
 
-const openSessionIds = new Set<string>();
+const openSessionCounts = new Map<string, number>();
 // 404: not an account-owned session server-side. Skipped until the process restarts.
 const refusedSessionIds = new Set<string>();
-let syncing: { sessionId: string; work: Promise<SessionResult> } | null = null;
-let runningPasses: Promise<void> | null = null;
+let activeUpload: { sessionId: string; work: Promise<SessionResult> } | null = null;
+let activePass: Promise<void> | null = null;
 let passRequested = false;
 
 /** The session screen owns a session's live renderer while it is open. */
 export function markSessionOpen(sessionId: string): void {
-  openSessionIds.add(sessionId);
+  openSessionCounts.set(sessionId, (openSessionCounts.get(sessionId) ?? 0) + 1);
 }
 
 export function markSessionClosed(sessionId: string): void {
-  openSessionIds.delete(sessionId);
+  const count = (openSessionCounts.get(sessionId) ?? 0) - 1;
+  if (count > 0) openSessionCounts.set(sessionId, count);
+  else openSessionCounts.delete(sessionId);
 }
 
 /** Lets a session screen load the post-sync snapshot instead of racing the upload. */
 export async function waitForBackgroundSync(sessionId: string): Promise<void> {
-  if (syncing?.sessionId === sessionId) await syncing.work;
+  if (activeUpload?.sessionId === sessionId) await activeUpload.work.catch(() => undefined);
 }
 
-function isActiveAccount(): boolean {
+function currentOwner(): PassOwner | null {
   const { accountId, isAccount, isAuthenticated } = useIdentityStore.getState();
-  return isAccount && isAuthenticated && accountId !== null && accountId === getActiveIdentity();
+  if (!isAccount || !isAuthenticated || accountId === null || accountId !== getActiveIdentity()) return null;
+  return { accountId };
+}
+
+// The pass belongs to the account it started for; a switch or a promotion
+// handoff ends it before anything is read from or written to another namespace.
+async function stillOwns(owner: PassOwner): Promise<boolean> {
+  return currentOwner()?.accountId === owner.accountId && (await handoffStore.load()) === null;
 }
 
 async function cellsLengthOf(session: StitchingSession): Promise<number | null> {
@@ -56,20 +68,35 @@ async function cellsLengthOf(session: StitchingSession): Promise<number | null> 
   }
 }
 
-async function uploadSession(session: StitchingSession, remoteSessionId: string): Promise<SessionResult> {
+async function uploadSession(
+  owner: PassOwner,
+  session: StitchingSession,
+  remoteSessionId: string,
+): Promise<SessionResult> {
   try {
     const cellsLength = await cellsLengthOf(session);
-    // The session screen still sizes this row from its pattern file.
-    if (cellsLength === null) return 'nextSession';
-    const { completed } = await rebuildProgressBase(session.id, cellsLength, true);
-    await syncSession(session.id, remoteSessionId, await getDeviceId(), completed);
+    if (cellsLength === null) {
+      // The session screen still sizes this row from its pattern file.
+      addProgressSyncBreadcrumb('Background upload skipped a session of unknown size', { sessionId: session.id });
+      return 'nextSession';
+    }
+    const base = await rebuildProgressBase(session.id, cellsLength, true);
+    if (base.snapshotBytes !== null && base.snapshotBytes > Math.ceil(cellsLength / 8)) {
+      addProgressSyncBreadcrumb('Background upload skipped a session whose snapshot is larger than its pattern', {
+        sessionId: session.id,
+      });
+      return 'nextSession';
+    }
+    if (!(await stillOwns(owner))) return 'stopPass';
+    // One pull page keeps a screen waiting on this upload short; its own sync pulls the rest.
+    await syncSession(session.id, remoteSessionId, await getDeviceId(), base.completed, { maxPullPages: 1 });
   } catch (error) {
+    if (!(await stillOwns(owner))) return 'stopPass';
     if (error instanceof ProgressSyncError && error.status === 404) {
       refusedSessionIds.add(session.id);
     } else if (error instanceof ProgressSyncError && error.code === 'pattern_removed') {
       refusedSessionIds.add(session.id);
-      await updateSessionError(session.id, PATTERN_REMOVED_NOTE);
-      await deleteOfflinePatternFile(session.patternId).catch(() => undefined);
+      await removePatternLocally(session);
     } else if (isOfflineNetworkError(error)) {
       return 'stopPass';
     } else {
@@ -79,18 +106,31 @@ async function uploadSession(session: StitchingSession, remoteSessionId: string)
   return 'nextSession';
 }
 
+async function removePatternLocally(session: StitchingSession): Promise<void> {
+  try {
+    await updateSessionError(session.id, PATTERN_REMOVED_NOTE);
+    await deleteOfflinePatternFile(session.patternId);
+  } catch (error) {
+    captureProgressSyncError('background-upload', error);
+  }
+}
+
 async function runPass(): Promise<void> {
-  if (!isActiveAccount() || (await handoffStore.load()) !== null) return;
+  const owner = currentOwner();
+  if (owner === null || !(await stillOwns(owner))) return;
 
   for (const session of await listSessionsWithUnackedProgressOps()) {
     const { remoteSessionId } = session;
-    if (!remoteSessionId || openSessionIds.has(session.id) || refusedSessionIds.has(session.id)) continue;
-    const work = uploadSession(session, remoteSessionId);
-    syncing = { sessionId: session.id, work };
+    if (!remoteSessionId || openSessionCounts.has(session.id) || refusedSessionIds.has(session.id)) continue;
+    if (!(await stillOwns(owner))) return;
+    // A screen opened during the check above still sees this as in flight.
+    if (openSessionCounts.has(session.id)) continue;
+    const work = uploadSession(owner, session, remoteSessionId);
+    activeUpload = { sessionId: session.id, work };
     try {
       if ((await work) === 'stopPass') return;
     } finally {
-      syncing = null;
+      activeUpload = null;
     }
   }
 }
@@ -109,16 +149,16 @@ async function runPassReportingFailure(): Promise<void> {
  * rerun covers requests made while it ran.
  */
 export function uploadPendingProgress(): Promise<void> {
-  if (runningPasses !== null) {
+  if (activePass !== null) {
     passRequested = true;
-    return runningPasses;
+    return activePass;
   }
-  runningPasses = (async () => {
+  activePass = (async () => {
     do {
       passRequested = false;
       await runPassReportingFailure();
     } while (passRequested);
-    runningPasses = null;
+    activePass = null;
   })();
-  return runningPasses;
+  return activePass;
 }

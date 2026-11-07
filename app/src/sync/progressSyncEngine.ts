@@ -54,6 +54,7 @@ export async function syncSession(
   remoteSessionId: string,
   deviceId: string,
   completed: Uint8Array,
+  { maxPullPages = MAX_PULL_PAGES }: { maxPullPages?: number } = {},
 ): Promise<SyncOutcome> {
   markCriticalPathActivity('progress-sync', 'syncSession');
   const snapshot = await getSyncSnapshot(sessionId);
@@ -77,7 +78,7 @@ export async function syncSession(
   // The server returns one bounded page of operations per call. Keep pulling
   // (pushing nothing after the first page) until it says the pull is complete,
   // saving the snapshot per page so a watermark never passes applied ops.
-  for (let page = 0; page < MAX_PULL_PAGES; page += 1) {
+  for (let page = 0; page < maxPullPages; page += 1) {
     let response: ProgressSyncResponse;
     try {
       response = await syncProgress(remoteSessionId, deviceId, sinceRevision, outgoing);

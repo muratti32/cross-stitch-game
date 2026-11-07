@@ -197,6 +197,36 @@ describe('syncSession', () => {
     expect(outcome.changedCells).toEqual([0, 1, 2, 3]);
   });
 
+  it('pulls at most the requested number of pages and reports the rest as incomplete', async () => {
+    mockedDb.getSyncSnapshot.mockResolvedValue(null);
+    mockedDb.getUnackedProgressOps.mockResolvedValue([]);
+    mockedApi.syncProgress.mockResolvedValue({
+      revision: 2,
+      hasMore: true,
+      terminalCompleted: false,
+      acknowledgements: [],
+      operations: [
+        {
+          opId: 'o2',
+          deviceId: 'devB',
+          deviceSeq: 2,
+          cellIndex: 1,
+          desiredState: 'completed',
+          resolvedState: 'completed',
+          baseRevision: 0,
+          serverRevision: 2,
+          effective: true,
+        },
+      ],
+    });
+
+    const outcome = await syncSession('s', 'remote-1', 'devA', new Uint8Array(4), { maxPullPages: 1 });
+
+    expect(mockedApi.syncProgress).toHaveBeenCalledTimes(1);
+    expect(outcome.pullIncomplete).toBe(true);
+    expect(outcome.serverRevision).toBe(2);
+  });
+
   it('stops paging when a page makes no progress', async () => {
     mockedDb.getSyncSnapshot.mockResolvedValue(null);
     mockedDb.getUnackedProgressOps.mockResolvedValue([]);

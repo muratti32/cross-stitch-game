@@ -9,6 +9,7 @@ const mockLoadBundledPattern = jest.fn();
 const mockDeleteOfflinePatternFile = jest.fn();
 const mockHandoffLoad = jest.fn();
 const mockCapture = jest.fn();
+const mockBreadcrumb = jest.fn();
 let mockActiveIdentity: string | null;
 let mockIdentity: { accountId: string | null; isAccount: boolean; isAuthenticated: boolean };
 
@@ -24,7 +25,7 @@ jest.mock('../progressBase', () => ({ rebuildProgressBase: mockRebuild }));
 jest.mock('../../bundled-patterns', () => ({ loadBundledPattern: mockLoadBundledPattern }));
 jest.mock('../../session-preparation', () => ({ deleteOfflinePatternFile: mockDeleteOfflinePatternFile }));
 jest.mock('../../promotion/handoffStore', () => ({ handoffStore: { load: mockHandoffLoad } }));
-jest.mock('../../observability/sentry', () => ({ captureProgressSyncError: mockCapture }));
+jest.mock('../../observability/sentry', () => ({ captureProgressSyncError: mockCapture, addProgressSyncBreadcrumb: mockBreadcrumb }));
 
 const ACCOUNT = '22222222-2222-4222-8222-222222222222';
 
@@ -75,6 +76,7 @@ beforeEach(() => {
     completed: new Uint8Array(cells),
     serverRevision: 3,
     sessionRevision: 1,
+    snapshotBytes: null,
   }));
   mockSyncSession.mockResolvedValue({
     serverRevision: 4,
@@ -110,8 +112,8 @@ describe('uploadPendingProgress', () => {
 
     expect(mockRebuild).toHaveBeenCalledWith('a', 8, true);
     expect(mockRebuild).toHaveBeenCalledWith('b', 9, true);
-    expect(mockSyncSession).toHaveBeenNthCalledWith(1, 'a', 'remote_a', 'device-1', new Uint8Array(8));
-    expect(mockSyncSession).toHaveBeenNthCalledWith(2, 'b', 'remote_b', 'device-1', new Uint8Array(9));
+    expect(mockSyncSession).toHaveBeenNthCalledWith(1, 'a', 'remote_a', 'device-1', new Uint8Array(8), { maxPullPages: 1 });
+    expect(mockSyncSession).toHaveBeenNthCalledWith(2, 'b', 'remote_b', 'device-1', new Uint8Array(9), { maxPullPages: 1 });
   });
 
   test('takes the size of a bundled row without stored dimensions from its pattern', async () => {
@@ -120,7 +122,7 @@ describe('uploadPendingProgress', () => {
 
     await uploader.uploadPendingProgress();
 
-    expect(mockSyncSession).toHaveBeenCalledWith('a', 'remote_a', 'device-1', new Uint8Array(25));
+    expect(mockSyncSession).toHaveBeenCalledWith('a', 'remote_a', 'device-1', new Uint8Array(25), { maxPullPages: 1 });
   });
 
   test('leaves a row whose size cannot be known to the session screen', async () => {
@@ -216,6 +218,98 @@ describe('uploadPendingProgress', () => {
 
     expect(second).toBe(first);
     expect(mockSyncSession).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('uploadPendingProgress safety', () => {
+  const switchAway = (): void => {
+    mockActiveIdentity = 'someone-else';
+  };
+
+  test('an identity switch during a sync stops the pass and refuses nothing', async () => {
+    mockList.mockResolvedValue([session('a'), session('b')]);
+    mockSyncSession.mockImplementationOnce(async () => {
+      switchAway();
+      throw statusError(404);
+    });
+
+    await uploader.uploadPendingProgress();
+    mockActiveIdentity = ACCOUNT;
+    await uploader.uploadPendingProgress();
+
+    expect(mockSyncSession.mock.calls.map((call) => call[0])).toEqual(['a', 'a', 'b']);
+  });
+
+  test('a switch between the rebuild and the sync keeps the bitmap from being uploaded', async () => {
+    mockList.mockResolvedValue([session('a')]);
+    mockRebuild.mockImplementationOnce(async (_id: string, cells: number) => {
+      switchAway();
+      return { completed: new Uint8Array(cells), serverRevision: 3, sessionRevision: 1, snapshotBytes: null };
+    });
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockSyncSession).not.toHaveBeenCalled();
+  });
+
+  test('a handoff that appears mid-pass stops it', async () => {
+    mockList.mockResolvedValue([session('a'), session('b')]);
+    mockSyncSession.mockImplementationOnce(async () => {
+      mockHandoffLoad.mockResolvedValue({ pending: true });
+    });
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockSyncSession.mock.calls.map((call) => call[0])).toEqual(['a']);
+  });
+
+  test('a failing removed-pattern cleanup is reported and the pass goes on', async () => {
+    mockList.mockResolvedValue([session('a'), session('b')]);
+    mockSyncSession.mockRejectedValueOnce(statusError(410, 'pattern_removed'));
+    const failure = new Error('disk full');
+    mockUpdateSessionError.mockRejectedValue(failure);
+
+    await expect(uploader.uploadPendingProgress()).resolves.toBeUndefined();
+
+    expect(mockCapture).toHaveBeenCalledWith('background-upload', failure);
+    expect(mockSyncSession.mock.calls.map((call) => call[0])).toEqual(['a', 'b']);
+  });
+
+  test('a snapshot larger than the computed size is skipped and reported', async () => {
+    mockList.mockResolvedValue([session('a'), session('b')]);
+    mockRebuild.mockImplementationOnce(async (_id: string, cells: number) => ({
+      completed: new Uint8Array(cells),
+      serverRevision: 3,
+      sessionRevision: 1,
+      snapshotBytes: 3,
+    }));
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockSyncSession.mock.calls.map((call) => call[0])).toEqual(['b']);
+    expect(mockBreadcrumb).toHaveBeenCalledWith(expect.stringContaining('larger'), { sessionId: 'a' });
+  });
+
+  test('a row of unknown size leaves a breadcrumb', async () => {
+    mockList.mockResolvedValue([session('a', { patternWidth: null, patternHeight: null })]);
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockBreadcrumb).toHaveBeenCalledWith(expect.stringContaining('size'), { sessionId: 'a' });
+  });
+
+  test('a session opened twice stays claimed until both screens close', async () => {
+    mockList.mockResolvedValue([session('a')]);
+    uploader.markSessionOpen('a');
+    uploader.markSessionOpen('a');
+    uploader.markSessionClosed('a');
+
+    await uploader.uploadPendingProgress();
+    expect(mockSyncSession).not.toHaveBeenCalled();
+
+    uploader.markSessionClosed('a');
+    await uploader.uploadPendingProgress();
+    expect(mockSyncSession).toHaveBeenCalledTimes(1);
   });
 });
 

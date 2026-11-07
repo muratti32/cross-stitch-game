@@ -362,4 +362,28 @@ describe('a background upload of the same session', () => {
 
     expect(mockDb.getSession).toHaveBeenCalledWith(LOCAL);
   });
+
+  test('keeps its claim on unmount until the sync in flight settles', async () => {
+    let finishSync!: () => void;
+    mockSyncSession.mockImplementation(
+      () => new Promise((done) => { finishSync = () => done(noChanges()); }),
+    );
+    await open();
+    await link();
+    expect(mockSyncSession).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      renderer?.unmount();
+      await jest.advanceTimersByTimeAsync(0);
+    });
+    renderer = undefined;
+    expect(mockMarkClosed).not.toHaveBeenCalled();
+
+    await act(async () => {
+      finishSync();
+      await jest.advanceTimersByTimeAsync(0);
+    });
+
+    expect(mockMarkClosed).toHaveBeenCalledWith(LOCAL);
+  });
 });

@@ -321,6 +321,11 @@ export function captureProgressSyncError(operation: string, error: unknown): voi
   });
 }
 
+export function addProgressSyncBreadcrumb(message: string, data: Record<string, string | number>): void {
+  if (!isSentryConfigured()) return;
+  Sentry.addBreadcrumb({ category: 'progressSync', message, level: 'warning', data });
+}
+
 export function captureBundledRegistrationError(error: unknown): void {
   if (!isSentryConfigured()) return;
   Sentry.captureException(error instanceof Error ? error : new Error(String(error)), {

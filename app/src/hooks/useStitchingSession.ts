@@ -81,6 +81,7 @@ export function useStitchingSession(sessionId: string | undefined) {
   const isAccountSessionRef = useRef<boolean>(false);
   const remoteSessionIdRef = useRef<string | null>(null);
   const syncInFlightRef = useRef<Promise<void> | null>(null);
+  const unmountFlushRef = useRef<Promise<void> | null>(null);
   const gameplaySyncInFlightRef = useRef<boolean>(false);
   const pendingOpsRef = useRef<UnsequencedProgressOperation[]>([]);
   const undoStackRef = useRef<number[]>([]);
@@ -457,7 +458,13 @@ export function useStitchingSession(sessionId: string | undefined) {
 
     return () => {
       active = false;
-      markSessionClosed(sessionId);
+      // Release the claim only after this screen's own sync and its unmount
+      // checkpoint settle, so the uploader never overlaps either.
+      void (async () => {
+        await Promise.resolve();
+        await Promise.allSettled([syncInFlightRef.current, unmountFlushRef.current]);
+        markSessionClosed(sessionId);
+      })();
     };
   }, [sessionId, updateCountsAndCompletion]);
 
@@ -506,7 +513,7 @@ export function useStitchingSession(sessionId: string | undefined) {
   // Flush and save checkpoint on unmount
   useEffect(() => {
     return () => {
-      saveSessionCheckpoint();
+      unmountFlushRef.current = saveSessionCheckpoint();
     };
   }, [saveSessionCheckpoint]);
 
