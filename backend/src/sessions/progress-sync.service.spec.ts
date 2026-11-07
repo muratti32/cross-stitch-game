@@ -569,7 +569,8 @@ describe('ProgressSyncService.sync progress flag', () => {
       });
       expect(result.operations).toHaveLength(1000);
       expect(result.hasMore).toBe(false);
-      expect(result.revision).toBe(3);
+      const sessionHeadRevision = 3; // syncHarness stored session revision
+      expect(result.revision).toBe(sessionHeadRevision);
     });
   });
 });

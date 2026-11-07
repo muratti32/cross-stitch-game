@@ -254,8 +254,8 @@ export class ProgressSyncService {
            AND superseded = false
            AND server_revision > $2
          ORDER BY server_revision ASC
-         LIMIT ${PULL_PAGE_SIZE + 1}`,
-        [sessionId, dto.sinceRevision],
+         LIMIT $3`,
+        [sessionId, dto.sinceRevision, PULL_PAGE_SIZE + 1],
       );
 
       // One extra row proves the page was truncated. A truncated page reports a

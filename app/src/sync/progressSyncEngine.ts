@@ -8,6 +8,7 @@ import {
   syncProgress,
   completeProgress,
   OutgoingProgressOperation,
+  ProgressSyncResponse,
 } from '../api/progressSync';
 import { applyResolvedOperations } from './syncApply';
 import { markCriticalPathActivity } from '../perf/criticalPathSentinel';
@@ -16,7 +17,8 @@ import { coinBalanceQueryKey } from '../api/economy';
 
 // Express refuses a JSON body over 100kb, about 780 operations.
 const MAX_OPS_PER_SYNC = 500;
-// Server pages pulls at 1000 operations; this bounds one sync to ~100k.
+// The backend returns at most PULL_PAGE_SIZE (1000) operations per sync call;
+// this bounds one syncSession to about 100k pulled operations.
 const MAX_PULL_PAGES = 100;
 
 export interface SyncOutcome {
@@ -31,6 +33,8 @@ export interface SyncOutcome {
    * (genuinely-concurrent completed-wins). Drives the single conflict notice.
    */
   conflictedCells: number[];
+  /** True when the pull stopped before the server ran out of operations; the next sync resumes. */
+  pullIncomplete: boolean;
 }
 
 /**
@@ -62,17 +66,22 @@ export async function syncSession(
   const conflictedCells = new Set<number>();
   let serverRevision = sinceRevision;
   let terminalCompleted = false;
+  let pullIncomplete = false;
 
   // The server returns one bounded page of operations per call. Keep pulling
   // (pushing nothing after the first page) until it says the pull is complete,
   // saving the snapshot per page so a watermark never passes applied ops.
   for (let page = 0; page < MAX_PULL_PAGES; page += 1) {
-    const response = await syncProgress(
-      remoteSessionId,
-      deviceId,
-      sinceRevision,
-      outgoing,
-    );
+    let response: ProgressSyncResponse;
+    try {
+      response = await syncProgress(remoteSessionId, deviceId, sinceRevision, outgoing);
+    } catch (error) {
+      // Earlier pages are already applied, saved and acked. Rethrowing would
+      // hide them from the caller, so report what was applied and retry later.
+      if (page === 0) throw error;
+      pullIncomplete = true;
+      break;
+    }
     outgoing = [];
 
     // Every acknowledged op (applied, duplicate, or superseded) is now owned by
@@ -107,6 +116,7 @@ export async function syncSession(
       }
     }
 
+    pullIncomplete = hasMore;
     if (!hasMore || serverRevision <= sinceRevision) break;
     sinceRevision = serverRevision;
   }
@@ -114,6 +124,7 @@ export async function syncSession(
   return {
     serverRevision,
     terminalCompleted,
+    pullIncomplete,
     changedCells: [...changedCells],
     conflictedCells: [...conflictedCells],
   };

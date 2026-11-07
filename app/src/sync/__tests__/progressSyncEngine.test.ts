@@ -207,6 +207,114 @@ describe('syncSession', () => {
     expect(mockedApi.syncProgress).toHaveBeenCalledTimes(1);
   });
 
+  describe('multi-page pull edge cases', () => {
+    const op = (cellIndex: number, serverRevision: number) => ({
+      opId: `o${serverRevision}`,
+      deviceId: 'devB',
+      deviceSeq: serverRevision,
+      cellIndex,
+      desiredState: 'completed' as const,
+      resolvedState: 'completed' as const,
+      baseRevision: 0,
+      serverRevision,
+      effective: true,
+    });
+    beforeEach(() => {
+      mockedDb.getSyncSnapshot.mockResolvedValue(null);
+      mockedDb.getUnackedProgressOps.mockResolvedValue([]);
+    });
+
+    it('returns earlier pages when a later page fails', async () => {
+      mockedApi.syncProgress
+        .mockResolvedValueOnce({
+          revision: 2,
+          hasMore: true,
+          terminalCompleted: false,
+          acknowledgements: [],
+          operations: [op(0, 1), op(1, 2)],
+        })
+        .mockRejectedValueOnce(new Error('network'));
+
+      const completed = new Uint8Array(4);
+      const outcome = await syncSession('s', 'remote-1', 'devA', completed);
+
+      expect(outcome.serverRevision).toBe(2);
+      expect(outcome.changedCells).toEqual([0, 1]);
+      expect(outcome.pullIncomplete).toBe(true);
+      expect(mockedDb.saveSyncSnapshot).toHaveBeenCalledTimes(1);
+    });
+
+    it('still throws when the first page fails', async () => {
+      mockedApi.syncProgress.mockRejectedValueOnce(new Error('network'));
+      await expect(
+        syncSession('s', 'remote-1', 'devA', new Uint8Array(1)),
+      ).rejects.toThrow('network');
+    });
+
+    it('bounds the number of pages and reports the pull as incomplete', async () => {
+      let revision = 0;
+      mockedApi.syncProgress.mockImplementation(async () => {
+        revision += 1;
+        return {
+          revision,
+          hasMore: true,
+          terminalCompleted: false,
+          acknowledgements: [],
+          operations: [op(0, revision)],
+        };
+      });
+
+      const outcome = await syncSession('s', 'remote-1', 'devA', new Uint8Array(1));
+
+      expect(mockedApi.syncProgress).toHaveBeenCalledTimes(100);
+      expect(outcome.pullIncomplete).toBe(true);
+      expect(outcome.serverRevision).toBe(100);
+    });
+
+    it('treats a missing hasMore as a single complete page', async () => {
+      mockedApi.syncProgress.mockResolvedValue({
+        revision: 7,
+        terminalCompleted: false,
+        acknowledgements: [],
+        operations: [op(0, 1)],
+      });
+
+      const outcome = await syncSession('s', 'remote-1', 'devA', new Uint8Array(1));
+
+      expect(mockedApi.syncProgress).toHaveBeenCalledTimes(1);
+      expect(outcome.serverRevision).toBe(7);
+      expect(outcome.pullIncomplete).toBe(false);
+    });
+
+    it('takes terminalCompleted from the last page', async () => {
+      mockedApi.syncProgress
+        .mockResolvedValueOnce({
+          revision: 1,
+          hasMore: true,
+          terminalCompleted: false,
+          acknowledgements: [],
+          operations: [op(0, 1)],
+        })
+        .mockResolvedValueOnce({
+          revision: 2,
+          hasMore: false,
+          terminalCompleted: true,
+          acknowledgements: [],
+          operations: [op(1, 2)],
+        });
+
+      const outcome = await syncSession('s', 'remote-1', 'devA', new Uint8Array(2));
+
+      expect(outcome.terminalCompleted).toBe(true);
+      expect(mockedDb.saveSyncSnapshot).toHaveBeenLastCalledWith(
+        's',
+        2,
+        expect.any(Uint8Array),
+        true,
+      );
+    });
+  });
+
   it('uploads a large backlog in requests the API body limit accepts, oldest first', async () => {
     const backlog = Array.from({ length: 2000 }, (_, index) => ({
       opId: `36f8a2b4-1234-4abc-8def-${String(index).padStart(12, '0')}`,
