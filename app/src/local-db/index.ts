@@ -792,6 +792,15 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
       await db.execAsync('PRAGMA user_version = 12;');
     });
   }
+
+  if (currentVersion < 13) {
+    await runInTransaction(db, async () => {
+      await db.execAsync(`
+        CREATE INDEX IF NOT EXISTS idx_progress_ops_session ON progress_ops (session_id);
+      `);
+      await db.execAsync('PRAGMA user_version = 13;');
+    });
+  }
 }
 
 /**
