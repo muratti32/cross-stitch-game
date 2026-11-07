@@ -2,6 +2,7 @@ import { completeSession, syncSession } from '../progressSyncEngine';
 import * as localDb from '../../local-db';
 import * as api from '../../api/progressSync';
 import { queryClient } from '../../providers';
+import { captureProgressSyncError } from '../../observability/sentry';
 
 jest.mock('../../local-db', () => ({
   getUnackedProgressOps: jest.fn(),
@@ -11,8 +12,13 @@ jest.mock('../../local-db', () => ({
 }));
 
 jest.mock('../../api/progressSync', () => ({
+  ...jest.requireActual('../../api/progressSync'),
   syncProgress: jest.fn(),
   completeProgress: jest.fn(),
+}));
+
+jest.mock('../../observability/sentry', () => ({
+  captureProgressSyncError: jest.fn(),
 }));
 
 const mockedDb = jest.mocked(localDb);
@@ -205,6 +211,10 @@ describe('syncSession', () => {
     await syncSession('s', 'remote-1', 'devA', new Uint8Array(1));
 
     expect(mockedApi.syncProgress).toHaveBeenCalledTimes(1);
+    expect(captureProgressSyncError).toHaveBeenCalledWith(
+      'pull-no-progress',
+      expect.any(Error),
+    );
   });
 
   describe('multi-page pull edge cases', () => {
@@ -242,7 +252,44 @@ describe('syncSession', () => {
       expect(outcome.changedCells).toEqual([0, 1]);
       expect(outcome.pullIncomplete).toBe(true);
       expect(mockedDb.saveSyncSnapshot).toHaveBeenCalledTimes(1);
+      expect(captureProgressSyncError).toHaveBeenCalledWith('pull-page', expect.any(Error));
     });
+
+    it('returns earlier pages when a later page fails with a 5xx', async () => {
+      mockedApi.syncProgress
+        .mockResolvedValueOnce({
+          revision: 1,
+          hasMore: true,
+          terminalCompleted: false,
+          acknowledgements: [],
+          operations: [op(0, 1)],
+        })
+        .mockRejectedValueOnce(new api.ProgressSyncError('down', 503));
+
+      const outcome = await syncSession('s', 'remote-1', 'devA', new Uint8Array(4));
+
+      expect(outcome.pullIncomplete).toBe(true);
+    });
+
+    it.each([404, 410, 409])(
+      'rethrows a definitive %i from a later page',
+      async (status) => {
+        mockedApi.syncProgress
+          .mockResolvedValueOnce({
+            revision: 1,
+            hasMore: true,
+            terminalCompleted: false,
+            acknowledgements: [],
+            operations: [op(0, 1)],
+          })
+          .mockRejectedValueOnce(new api.ProgressSyncError('gone', status, 'pattern_removed'));
+
+        await expect(
+          syncSession('s', 'remote-1', 'devA', new Uint8Array(4)),
+        ).rejects.toMatchObject({ status });
+        expect(mockedDb.saveSyncSnapshot).toHaveBeenCalledTimes(1);
+      },
+    );
 
     it('still throws when the first page fails', async () => {
       mockedApi.syncProgress.mockRejectedValueOnce(new Error('network'));

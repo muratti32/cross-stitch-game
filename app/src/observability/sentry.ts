@@ -313,6 +313,14 @@ export function captureLocalPersistenceError(operation: string, error: unknown):
   });
 }
 
+export function captureProgressSyncError(operation: string, error: unknown): void {
+  const normalizedError = error instanceof Error ? error : new Error(String(error));
+  if (!isSentryConfigured() || isOfflineNetworkError(normalizedError)) return;
+  Sentry.captureException(normalizedError, {
+    contexts: { progressSync: { operation } },
+  });
+}
+
 export function captureBundledRegistrationError(error: unknown): void {
   if (!isSentryConfigured()) return;
   Sentry.captureException(error instanceof Error ? error : new Error(String(error)), {

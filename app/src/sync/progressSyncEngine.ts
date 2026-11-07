@@ -7,6 +7,7 @@ import {
 import {
   syncProgress,
   completeProgress,
+  ProgressSyncError,
   OutgoingProgressOperation,
   ProgressSyncResponse,
 } from '../api/progressSync';
@@ -14,12 +15,17 @@ import { applyResolvedOperations } from './syncApply';
 import { markCriticalPathActivity } from '../perf/criticalPathSentinel';
 import { queryClient } from '../providers';
 import { coinBalanceQueryKey } from '../api/economy';
+import { captureProgressSyncError } from '../observability/sentry';
 
 // Express refuses a JSON body over 100kb, about 780 operations.
 const MAX_OPS_PER_SYNC = 500;
 // The backend returns at most PULL_PAGE_SIZE (1000) operations per sync call;
 // this bounds one syncSession to about 100k pulled operations.
 const MAX_PULL_PAGES = 100;
+
+function isDefinitiveRejection(error: unknown): boolean {
+  return error instanceof ProgressSyncError && error.status < 500;
+}
 
 export interface SyncOutcome {
   /** Authoritative server revision after this sync. */
@@ -76,9 +82,12 @@ export async function syncSession(
     try {
       response = await syncProgress(remoteSessionId, deviceId, sinceRevision, outgoing);
     } catch (error) {
-      // Earlier pages are already applied, saved and acked. Rethrowing would
-      // hide them from the caller, so report what was applied and retry later.
-      if (page === 0) throw error;
+      // Earlier pages are already applied, saved and acked. A network or 5xx
+      // failure is transient: report what was applied and retry later. A
+      // definitive rejection (404, pattern removed, other 4xx) must reach the
+      // caller, which handles it the same as on the first page.
+      if (page === 0 || isDefinitiveRejection(error)) throw error;
+      captureProgressSyncError('pull-page', error);
       pullIncomplete = true;
       break;
     }
@@ -117,7 +126,14 @@ export async function syncSession(
     }
 
     pullIncomplete = hasMore;
-    if (!hasMore || serverRevision <= sinceRevision) break;
+    if (!hasMore) break;
+    if (serverRevision <= sinceRevision) {
+      captureProgressSyncError(
+        'pull-no-progress',
+        new Error(`Progress sync page made no progress at revision ${sinceRevision}`),
+      );
+      break;
+    }
     sinceRevision = serverRevision;
   }
 
