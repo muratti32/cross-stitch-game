@@ -1985,6 +1985,24 @@ export async function listBundledRegistrationCandidates(): Promise<string[]> {
   });
 }
 
+/** Linked sessions that still hold progress ops the server has not acknowledged. */
+export async function listSessionsWithUnackedProgressOps(): Promise<StitchingSession[]> {
+  return withDatabase(async (db) => {
+    const rows = await db.getAllAsync<{ id: string }>(
+      `SELECT id FROM sessions
+       WHERE remote_session_id IS NOT NULL
+         AND EXISTS (SELECT 1 FROM progress_ops WHERE progress_ops.session_id = sessions.id AND progress_ops.acked = 0)
+       ORDER BY updated_at DESC`,
+    );
+    const sessions: StitchingSession[] = [];
+    for (const { id } of rows) {
+      const session = await getSessionWithDb(db, id);
+      if (session !== null) sessions.push(session);
+    }
+    return sessions;
+  });
+}
+
 export async function readBundledRegistrationSnapshot(
   localSessionId: string,
 ): Promise<BundledRegistrationSnapshot | null> {

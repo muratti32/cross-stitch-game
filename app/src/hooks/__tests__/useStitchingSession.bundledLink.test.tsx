@@ -22,6 +22,9 @@ const mockSyncSession = jest.fn();
 const mockCompleteSession = jest.fn();
 const mockQueueClaim = jest.fn();
 const mockLoadBundledPattern = jest.fn();
+const mockMarkOpen = jest.fn();
+const mockMarkClosed = jest.fn();
+const mockWaitForBackgroundSync = jest.fn();
 const mockLinkListeners = new Set<(link: BundledSessionLink) => void>();
 
 jest.mock('../../local-db', () => ({
@@ -47,6 +50,11 @@ jest.mock('../../sync/bundledSessionRegistrar', () => ({
     mockLinkListeners.add(listener);
     return () => mockLinkListeners.delete(listener);
   },
+}));
+jest.mock('../../sync/backgroundProgressUpload', () => ({
+  markSessionOpen: (...args: unknown[]) => mockMarkOpen(...args),
+  markSessionClosed: (...args: unknown[]) => mockMarkClosed(...args),
+  waitForBackgroundSync: (...args: unknown[]) => mockWaitForBackgroundSync(...args),
 }));
 jest.mock('../../sync/progressSyncEngine', () => ({
   syncSession: (...args: unknown[]) => mockSyncSession(...args),
@@ -147,6 +155,7 @@ beforeEach(() => {
   jest.useFakeTimers();
   jest.clearAllMocks();
   mockLinkListeners.clear();
+  mockWaitForBackgroundSync.mockResolvedValue(undefined);
   mockIdentity.isAccount = true;
   mockDb.getSession.mockImplementation(async () => row());
   mockDb.getProgressOps.mockResolvedValue([]);
@@ -312,5 +321,45 @@ describe('reopening a linked row', () => {
 
     expect(flushedOps()[0].baseRevision).toBe(40);
     expect(mockDb.saveCheckpoint).toHaveBeenLastCalledWith(LOCAL, 41, expect.any(Uint8Array));
+  });
+});
+
+describe('a background upload of the same session', () => {
+  test('claims the session while open and releases it on unmount', async () => {
+    await open();
+
+    expect(mockMarkOpen).toHaveBeenCalledWith(LOCAL);
+    expect(mockMarkClosed).not.toHaveBeenCalled();
+
+    await act(async () => {
+      renderer?.unmount();
+    });
+    renderer = undefined;
+
+    expect(mockMarkClosed).toHaveBeenCalledWith(LOCAL);
+  });
+
+  test('finishes before the session loads, so the load sees the post-sync snapshot', async () => {
+    let finishUpload!: () => void;
+    mockWaitForBackgroundSync.mockImplementation(
+      () => new Promise<void>((done) => { finishUpload = done; }),
+    );
+
+    await act(async () => {
+      renderer = TestRenderer.create(<Harness sessionId={LOCAL} />);
+    });
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(0);
+    });
+    expect(mockWaitForBackgroundSync).toHaveBeenCalledWith(LOCAL);
+    expect(mockDb.getSyncSnapshot).not.toHaveBeenCalled();
+    expect(mockDb.getSession).not.toHaveBeenCalled();
+
+    await act(async () => {
+      finishUpload();
+      await jest.advanceTimersByTimeAsync(0);
+    });
+
+    expect(mockDb.getSession).toHaveBeenCalledWith(LOCAL);
   });
 });

@@ -24,6 +24,7 @@ import { usePromotionSessionsRefresh } from '../src/promotion/usePromotionSessio
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { syncPendingPersonalPatterns } from '../src/pattern-editor/sync';
 import { flushAnalyticsGameplayEvents } from '../src/sync/analyticsGameplayEventEngine';
+import { uploadPendingProgress } from '../src/sync/backgroundProgressUpload';
 import { registerBundledSessions } from '../src/sync/bundledSessionRegistrar';
 import { flushPendingGuestCompletionClaims } from '../src/sync/guestCompletionClaimEngine';
 import {
@@ -52,6 +53,12 @@ initI18n();
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
+
+// Fire-and-forget (ADR-0031): link new rows first so they upload in the same
+// round. Neither call rejects.
+function syncLinkedProgressInBackground(): void {
+  void registerBundledSessions().then(uploadPendingProgress);
+}
 
 function RootLayout() {
   const [dbReady, setDbReady] = useState(false);
@@ -155,12 +162,12 @@ function RootLayout() {
   useEffect(() => {
     return useIdentityStore.subscribe((state, previousState) => {
       if (state.isAuthenticated && !previousState.isAuthenticated) {
-        void registerBundledSessions();
+        syncLinkedProgressInBackground();
       }
     });
   }, []);
 
-  usePromotionSessionsRefresh(() => void registerBundledSessions());
+  usePromotionSessionsRefresh(syncLinkedProgressInBackground);
 
   useEffect(() => {
     async function prepare() {
@@ -253,7 +260,7 @@ function RootLayout() {
       // pending completion claim is also delivered on every foreground.
       flushPendingGuestCompletionClaims().catch(() => undefined);
       void flushAnalytics();
-      void registerBundledSessions();
+      syncLinkedProgressInBackground();
     };
     const handleAppStateChange = (nextStatus: AppStateStatus) => {
       if (nextStatus === 'active') handleActive();
@@ -283,7 +290,7 @@ function RootLayout() {
   useEffect(() => {
     const timer = setInterval(() => {
       void flushAnalytics();
-      void registerBundledSessions();
+      syncLinkedProgressInBackground();
     }, BACKLOG_FLUSH_INTERVAL_MS);
     return () => clearInterval(timer);
   }, [flushAnalytics]);

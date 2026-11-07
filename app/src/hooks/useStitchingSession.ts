@@ -5,14 +5,11 @@ import {
   getSession,
   getProgressOps,
   getUnackedProgressOps,
-  getLatestCheckpoint,
-  getSyncSnapshot,
   getDeviceId,
   insertProgressOpsBatch,
   saveCheckpoint,
   updateSessionStatus,
   updateSessionError,
-  unpackCompletedBitmap,
   UnsequencedProgressOperation,
   StitchingSession,
   GameplayEvent,
@@ -20,6 +17,8 @@ import {
   setGameplaySeqHigh,
   insertGameplayEventsBatch,
 } from '../local-db';
+import { markSessionClosed, markSessionOpen, waitForBackgroundSync } from '../sync/backgroundProgressUpload';
+import { rebuildProgressBase } from '../sync/progressBase';
 import { subscribeBundledSessionLinked } from '../sync/bundledSessionRegistrar';
 import { flushGameplayEventsAndCompletionClaims } from '../sync/gameplayEventEngine';
 import { queueGuestCompletionClaim } from '../sync/guestCompletionClaimEngine';
@@ -315,6 +314,9 @@ export function useStitchingSession(sessionId: string | undefined) {
 
     let active = true;
     remoteSessionIdRef.current = null;
+    // From here the screen owns this session's live state; the background
+    // uploader stands down and any upload already running finishes first.
+    markSessionOpen(sessionId);
 
     async function load() {
       try {
@@ -332,6 +334,7 @@ export function useStitchingSession(sessionId: string | undefined) {
           if (active) setError('Session ID is missing.');
           return;
         }
+        await waitForBackgroundSync(sessionId);
 
         // 3. Load Session
         const sess = await getSession(sessionId);
@@ -392,42 +395,14 @@ export function useStitchingSession(sessionId: string | undefined) {
         isAccountSessionRef.current = isAccountSession;
         remoteSessionIdRef.current = remoteSessionId;
 
-        const cellsLength = pat.width * pat.height;
-        let completed: Uint8Array;
-
-        const snapshot = isAccountSession ? await getSyncSnapshot(sess.id) : null;
-        if (snapshot) {
-          // Account base: server-authoritative folded snapshot, then this
-          // device's not-yet-acknowledged ops replayed on top.
-          completed = unpackCompletedBitmap(snapshot.packedBitmap, cellsLength);
-          serverRevisionRef.current = snapshot.serverRevision;
-          sessionRevisionRef.current = (await getLatestCheckpoint(sess.id))?.revision ?? 0;
-          const unacked = await getUnackedProgressOps(sess.id);
-          for (const op of unacked) {
-            if (op.cellIndex >= 0 && op.cellIndex < cellsLength) {
-              completed[op.cellIndex] = op.desiredState === 'completed' ? 1 : 0;
-            }
-          }
-        } else {
-          // Local base: latest local checkpoint + newer local ops (guest sessions
-          // and account sessions that have never synced yet).
-          const checkpoint = await getLatestCheckpoint(sess.id);
-          let revision = 0;
-          if (checkpoint) {
-            completed = unpackCompletedBitmap(checkpoint.packedBitmap, cellsLength);
-            revision = checkpoint.revision;
-          } else {
-            completed = new Uint8Array(cellsLength);
-          }
-          sessionRevisionRef.current = revision;
-          const ops = await getProgressOps(sess.id, revision);
-          for (const op of ops) {
-            if (op.cellIndex >= 0 && op.cellIndex < cellsLength) {
-              completed[op.cellIndex] = op.desiredState === 'completed' ? 1 : 0;
-              sessionRevisionRef.current++;
-            }
-          }
-        }
+        const base = await rebuildProgressBase(
+          sess.id,
+          pat.width * pat.height,
+          isAccountSession,
+        );
+        const completed = base.completed;
+        if (base.serverRevision !== null) serverRevisionRef.current = base.serverRevision;
+        sessionRevisionRef.current = base.sessionRevision;
 
         // 8. Rebuild device undo stack. Guest cells merged into this linked row
         //    are history the player did not stitch here; undoing them would
@@ -482,6 +457,7 @@ export function useStitchingSession(sessionId: string | undefined) {
 
     return () => {
       active = false;
+      markSessionClosed(sessionId);
     };
   }, [sessionId, updateCountsAndCompletion]);
 
