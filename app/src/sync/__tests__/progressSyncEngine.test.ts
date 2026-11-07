@@ -135,6 +135,37 @@ describe('syncSession', () => {
     expect(outcome.conflictedCells).toEqual([2]);
   });
 
+  it('uploads a large backlog in requests the API body limit accepts, oldest first', async () => {
+    const backlog = Array.from({ length: 2000 }, (_, index) => ({
+      opId: `36f8a2b4-1234-4abc-8def-${String(index).padStart(12, '0')}`,
+      sessionId: 's',
+      deviceId: 'devA',
+      deviceSeq: 100000 + index,
+      cellIndex: 100000 + index,
+      desiredState: 'completed' as const,
+      baseRevision: 100000 + index,
+      serverBaseRevision: 100000,
+      createdAt: 't',
+    }));
+    mockedDb.getSyncSnapshot.mockResolvedValue(null);
+    mockedDb.getUnackedProgressOps.mockResolvedValue(backlog);
+    mockedApi.syncProgress.mockImplementation(async (_remote, _device, _since, operations) => ({
+      revision: 1,
+      terminalCompleted: false,
+      acknowledgements: operations.map(({ opId }) => ({ opId, status: 'applied' as const })),
+      operations: [],
+    }));
+
+    await syncSession('s', 'r', 'devA', new Uint8Array(4));
+
+    const sent = mockedApi.syncProgress.mock.calls[0][3];
+    const body = JSON.stringify({ deviceId: 'devA', sinceRevision: 0, operations: sent });
+    expect(body.length).toBeLessThan(100 * 1024);
+    expect(sent[0].deviceSeq).toBe(100000);
+    expect(sent.length).toBeGreaterThan(0);
+    expect(mockedDb.markProgressOpsAcked).toHaveBeenCalledWith(sent.map((operation) => operation.opId));
+  });
+
   it('keeps the Account completion request body unchanged', async () => {
     const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
     mockedApi.completeProgress.mockResolvedValue({
