@@ -277,6 +277,9 @@ describe('failures', () => {
   test.each([
     ['an unseeded starter', 404, { code: 'starter_not_seeded' }],
     ['a promotion lock', 409, { message: 'locked' }],
+    ['a bare 404 from a gateway', 404, { statusCode: 404, message: 'Cannot POST /v1/sessions/bundled' }],
+    ['a 404 whose body is not JSON', 404, null],
+    ['a 405', 405, {}],
   ])('%s stops the pass quietly and the next trigger retries', async (_label, status, body) => {
     rows(snapshot(), snapshot({ localSessionId: 'row_star', patternId: STAR }));
     mockApiFetch.mockResolvedValueOnce(respond(status, body));
@@ -302,34 +305,6 @@ describe('failures', () => {
     expect(sentBodies().map((body) => body.patternId)).toEqual([HEART, STAR, STAR]);
     expect(mockLink).toHaveBeenCalledTimes(2);
     expect(mockCapture).not.toHaveBeenCalled();
-  });
-
-  test.each([
-    ['a bare 404', 404, { statusCode: 404, message: 'Cannot POST /v1/sessions/bundled' }],
-    ['a body that is not JSON', 404, null],
-    ['a 405', 405, {}],
-  ])('%s stops the registrar for the process', async (_label, status, body) => {
-    rows(snapshot(), snapshot({ localSessionId: 'row_star', patternId: STAR }));
-    mockApiFetch.mockResolvedValue(respond(status, body));
-
-    await registrar.registerBundledSessions();
-    await registrar.registerBundledSessions();
-
-    expect(mockApiFetch).toHaveBeenCalledTimes(1);
-    expect(mockCapture).not.toHaveBeenCalled();
-  });
-
-  test('a new process tries the backend again', async () => {
-    rows(snapshot());
-    mockApiFetch.mockResolvedValueOnce(respond(404, {}));
-    await registrar.registerBundledSessions();
-
-    jest.resetModules();
-    const nextProcess = require('../bundledSessionRegistrar') as Registrar;
-    await nextProcess.registerBundledSessions();
-
-    expect(mockApiFetch).toHaveBeenCalledTimes(2);
-    expect(mockLink).toHaveBeenCalledTimes(1);
   });
 
   test('any other refusal goes to Sentry and retries later', async () => {

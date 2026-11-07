@@ -35,8 +35,8 @@ describe('registerBundledSessionRemote', () => {
     [404, { code: 'starter_not_seeded' }, 'deferred'],
     [409, {}, 'deferred'],
     [404, { code: 'not_a_bundled_starter' }, 'notABundledStarter'],
-    [404, { statusCode: 404, message: 'Cannot POST' }, 'unsupported'],
-    [405, null, 'unsupported'],
+    [404, { statusCode: 404, message: 'Cannot POST' }, 'deferred'],
+    [405, null, 'deferred'],
   ])('reads a %i with body %j as %s', async (status, body, kind) => {
     mockApiFetch.mockResolvedValue(respond(status, body));
 
