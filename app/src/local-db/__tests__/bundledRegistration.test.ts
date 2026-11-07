@@ -143,6 +143,47 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
     });
   });
 
+  describe('saveCheckpoint', () => {
+    const cells = (...indexes: number[]) => {
+      const completed = new Uint8Array(16);
+      for (const index of indexes) completed[index] = 1;
+      return completed;
+    };
+
+    test('a row with no remote id compacts as before', async () => {
+      const { id } = await startRow();
+      await insertProgressOpsBatch([op(id, 0, 1), op(id, 1, 2)]);
+
+      await saveCheckpoint(id, 2, cells(0, 1));
+
+      expect(await getProgressOps(id)).toEqual([]);
+    });
+
+    test('a linked row keeps its unacked ops and drops the acked ones', async () => {
+      const { id } = await startRow();
+      await insertProgressOpsBatch([op(id, 0, 1), op(id, 1, 2)]);
+      await linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, 1);
+
+      await saveCheckpoint(id, 2, cells(0, 1));
+
+      expect((await getProgressOps(id)).map((kept) => kept.deviceSeq)).toEqual([2]);
+      expect((await getUnackedProgressOps(id)).map((kept) => kept.deviceSeq)).toEqual([2]);
+    });
+
+    test('ops kept below the checkpoint never override it in a fold', async () => {
+      const { id } = await startRow();
+      await linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, 0);
+      await insertProgressOpsBatch([op(id, 0, 1), op(id, 1, 2), op(id, 2, 3)]);
+
+      await saveCheckpoint(id, 3, cells(0));
+      await insertProgressOpsBatch([op(id, 3, 4)]);
+
+      expect(await getProgressOps(id)).toHaveLength(4);
+      expect(await getSessionCompletedCount(id, 4, 4)).toBe(2);
+      expect(completedCellsOf((await readBundledRegistrationSnapshot(id))?.packedBitmapBase64 ?? '')).toEqual([0, 3]);
+    });
+  });
+
   describe('linkBundledSession', () => {
     test('sets the identity and acks folded ops only, and local replay stays whole', async () => {
       const { id } = await startRow();

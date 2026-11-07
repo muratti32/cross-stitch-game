@@ -1756,7 +1756,9 @@ function normalizePackedBitmap(
 }
 
 /**
- * Saves a checkpoint for a session and deletes older progress operations.
+ * Saves a checkpoint for a session and deletes the older progress operations it
+ * covers. A session with a remote id keeps its unacked ops: the checkpoint covers
+ * them locally, but they are the server's only way to receive those cells.
  */
 export async function saveCheckpoint(
   sessionId: string,
@@ -1776,11 +1778,14 @@ export async function saveCheckpoint(
       createdAt
     );
 
-    // Compact: delete progress operations older than this checkpoint
     await db.runAsync(
-      `DELETE FROM progress_ops WHERE session_id = ? AND base_revision < ?`,
+      `DELETE FROM progress_ops
+       WHERE session_id = ?
+         AND base_revision < ?
+         AND (acked = 1 OR (SELECT remote_session_id FROM sessions WHERE id = ?) IS NULL)`,
       sessionId,
-      revision
+      revision,
+      sessionId
     );
   });
 }
