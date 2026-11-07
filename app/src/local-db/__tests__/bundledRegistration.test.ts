@@ -54,6 +54,12 @@ function op(sessionId: string, cellIndex: number, deviceSeq: number, desiredStat
 const receipt = (foldedThroughSeq: number) => ({ foldedThroughSeq, terminalCompleted: false });
 const finishedReceipt = { foldedThroughSeq: 0, terminalCompleted: true };
 
+const cells = (...indexes: number[]) => {
+  const completed = new Uint8Array(16);
+  for (const index of indexes) completed[index] = 1;
+  return completed;
+};
+
 const startRow = (patternId: string = HEART) => createSession(patternId, 'checksum');
 
 async function completedRow(patternId: string, completedAt: string) {
@@ -188,15 +194,29 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       expect((await getSession(id))?.remoteSessionId).toBe(REMOTE);
       expect(linked).toHaveBeenCalledTimes(1);
     });
+
+    test('a checkpoint that compacts ops during the request holds the link, and the next pass sends them', async () => {
+      const { id } = await startRow();
+      await insertProgressOpsBatch([op(id, 0, 1)]);
+      mockApiFetch.mockImplementationOnce(async () => {
+        await insertProgressOpsBatch([op(id, 1, 2)]);
+        await saveCheckpoint(id, 2, cells(0, 1));
+        return respond(false);
+      });
+
+      await registerBundledSessions();
+
+      expect((await getSession(id))?.remoteSessionId).toBeNull();
+
+      mockApiFetch.mockResolvedValueOnce(respond(false));
+      await registerBundledSessions();
+
+      expect(sentCells(1)).toEqual([0, 1]);
+      expect((await getSession(id))?.remoteSessionId).toBe(REMOTE);
+    });
   });
 
   describe('saveCheckpoint', () => {
-    const cells = (...indexes: number[]) => {
-      const completed = new Uint8Array(16);
-      for (const index of indexes) completed[index] = 1;
-      return completed;
-    };
-
     test('a row with no remote id compacts as before', async () => {
       const { id } = await startRow();
       await insertProgressOpsBatch([op(id, 0, 1), op(id, 1, 2)]);
