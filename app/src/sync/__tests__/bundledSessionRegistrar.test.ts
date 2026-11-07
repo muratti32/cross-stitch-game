@@ -38,6 +38,7 @@ const snapshot = (overrides: Partial<BundledRegistrationSnapshot> = {}): Bundled
   completedAt: null,
   packedBitmapBase64: BITMAP,
   foldedThroughSeq: 7,
+  checkpointRevision: 3,
   ...overrides,
 });
 
@@ -93,7 +94,7 @@ describe('who registers what', () => {
     expect(sentBodies()).toEqual([
       { patternId: HEART, localState: 'in_progress', completedAt: null, packedBitmapBase64: BITMAP },
     ]);
-    expect(mockLink).toHaveBeenCalledWith(ACCOUNT, { localSessionId: 'row_heart', remoteSessionId: REMOTE }, { foldedThroughSeq: 7, terminalCompleted: false });
+    expect(mockLink).toHaveBeenCalledWith(ACCOUNT, { localSessionId: 'row_heart', remoteSessionId: REMOTE }, { foldedThroughSeq: 7, checkpointRevision: 3, terminalCompleted: false });
   });
 
   test('an account sends a completed row with its bitmap and completion time', async () => {
@@ -124,7 +125,7 @@ describe('who registers what', () => {
     await registrar.registerBundledSessions();
 
     expect(sentBodies()).toEqual([{ patternId: HEART, localState: 'in_progress', completedAt: null, packedBitmapBase64: null }]);
-    expect(mockLink).toHaveBeenCalledWith(GUEST, { localSessionId: 'row_heart', remoteSessionId: REMOTE }, { foldedThroughSeq: 0, terminalCompleted: false });
+    expect(mockLink).toHaveBeenCalledWith(GUEST, { localSessionId: 'row_heart', remoteSessionId: REMOTE }, { foldedThroughSeq: 0, checkpointRevision: 3, terminalCompleted: false });
   });
 
   test('a Guest leaves a completed row local and still registers the next one', async () => {

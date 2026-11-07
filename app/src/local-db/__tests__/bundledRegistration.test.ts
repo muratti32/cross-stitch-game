@@ -51,8 +51,8 @@ function op(sessionId: string, cellIndex: number, deviceSeq: number, desiredStat
   };
 }
 
-const receipt = (foldedThroughSeq: number) => ({ foldedThroughSeq, terminalCompleted: false });
-const finishedReceipt = { foldedThroughSeq: 0, terminalCompleted: true };
+const receipt = (foldedThroughSeq: number) => ({ foldedThroughSeq, checkpointRevision: 0, terminalCompleted: false });
+const finishedReceipt = { ...receipt(0), terminalCompleted: true };
 
 const cells = (...indexes: number[]) => {
   const completed = new Uint8Array(16);

@@ -78,6 +78,7 @@ async function registerRow(owner: PassOwner, localSessionId: string): Promise<Ro
       const link = { localSessionId, remoteSessionId: outcome.sessionId };
       const receipt = {
         foldedThroughSeq: owner.isAccount ? sent.foldedThroughSeq : 0,
+        checkpointRevision: sent.checkpointRevision,
         terminalCompleted: outcome.terminalCompleted,
       };
       if (await linkBundledSession(owner.identity, link, receipt)) {

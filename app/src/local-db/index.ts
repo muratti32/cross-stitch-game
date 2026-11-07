@@ -1897,7 +1897,7 @@ export async function getSessionCompletedCount(
 async function foldSessionProgressWithDb(
   db: SQLite.SQLiteDatabase,
   sessionId: string,
-): Promise<PackedSessionProgress & { foldedThroughSeq: number }> {
+): Promise<PackedSessionProgress & { foldedThroughSeq: number; checkpointRevision: number }> {
   const ops = await getProgressOpsWithDb(db, sessionId);
   const checkpoint = await getLatestCheckpointWithDb(db, sessionId);
   const revision = checkpoint?.revision ?? 0;
@@ -1907,6 +1907,7 @@ async function foldSessionProgressWithDb(
       ops.filter((op) => op.baseRevision >= revision),
     ),
     foldedThroughSeq: ops.reduce((high, op) => Math.max(high, op.deviceSeq), 0),
+    checkpointRevision: revision,
   };
 }
 
@@ -1924,6 +1925,7 @@ export interface BundledRegistrationSnapshot {
   completedAt: string | null;
   packedBitmapBase64: string;
   foldedThroughSeq: number;
+  checkpointRevision: number;
 }
 
 export async function listBundledRegistrationCandidates(): Promise<string[]> {
@@ -1956,7 +1958,7 @@ export async function readBundledRegistrationSnapshot(
   return withDatabase(async (db) => {
     const session = await getSessionWithDb(db, localSessionId);
     if (session === null) return null;
-    const { packedBitmapBase64, foldedThroughSeq } = await foldSessionProgressWithDb(db, localSessionId);
+    const { packedBitmapBase64, foldedThroughSeq, checkpointRevision } = await foldSessionProgressWithDb(db, localSessionId);
     return {
       localSessionId,
       patternId: session.patternId,
@@ -1964,6 +1966,7 @@ export async function readBundledRegistrationSnapshot(
       completedAt: session.completedAt ?? null,
       packedBitmapBase64,
       foldedThroughSeq,
+      checkpointRevision,
     };
   });
 }
@@ -1975,13 +1978,14 @@ export interface BundledSessionLink {
 
 export interface BundledRegistrationReceipt {
   foldedThroughSeq: number;
+  checkpointRevision: number;
   terminalCompleted: boolean;
 }
 
 export async function linkBundledSession(
   identity: string,
   link: BundledSessionLink,
-  { foldedThroughSeq, terminalCompleted }: BundledRegistrationReceipt,
+  { foldedThroughSeq, checkpointRevision, terminalCompleted }: BundledRegistrationReceipt,
 ): Promise<boolean> {
   return withDatabase(async (db) => {
     if (activeIdentity !== identity) return false;
@@ -1989,10 +1993,15 @@ export async function linkBundledSession(
     await runInTransaction(db, async () => {
       const result = await db.runAsync(
         `UPDATE sessions SET remote_session_id = ?
-         WHERE id = ? AND remote_session_id IS NULL AND (status <> 'completed' OR ? = 1)`,
+         WHERE id = ?
+           AND remote_session_id IS NULL
+           AND (status <> 'completed' OR ? = 1)
+           AND COALESCE((SELECT MAX(revision) FROM checkpoints WHERE session_id = ?), 0) = ?`,
         link.remoteSessionId,
         link.localSessionId,
         terminalCompleted ? 1 : 0,
+        link.localSessionId,
+        checkpointRevision,
       );
       linked = result.changes > 0;
       if (!linked) return;
