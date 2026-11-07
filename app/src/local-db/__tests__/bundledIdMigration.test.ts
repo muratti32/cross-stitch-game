@@ -9,6 +9,7 @@ import {
   getEditorDraft,
   getLocalPatternLikes,
   getPendingPersonalPatterns,
+  getProgressOps,
   getSessions,
   openNamespace,
 } from '../index';
@@ -78,7 +79,7 @@ function seedV11Rows(identity: string): void {
 
     expect(await getSessions()).toEqual(firstRun);
     expect(await getLocalPatternLikes()).toEqual({ [STAR]: true });
-    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 13 });
+    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 14 });
   });
 
   test('a like or draft an old app made on the seeded catalog tile survives the rewrite', async () => {
@@ -97,7 +98,7 @@ function seedV11Rows(identity: string): void {
     expect(await getEditorDraft('starter_heart')).toBeNull();
     expect(await getEditorDraft(HEART)).toMatchObject({ width: 8 });
     expect(raw(GUEST).prepare('SELECT liked_at FROM pattern_likes').all()).toEqual([{ liked_at: '2026-01-02T00:00:00.000Z' }]);
-    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 13 });
+    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 14 });
   });
 
   test('each namespace is rewritten on its own open', async () => {
@@ -137,6 +138,39 @@ function seedV11Rows(identity: string): void {
     await reopen(GUEST);
 
     expect(compactionPlan().map(({ detail }) => detail).join()).toContain('USING INDEX');
-    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 13 });
+    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 14 });
+  });
+});
+
+(nodeSqliteAvailable ? describe : describe.skip)('v14 Guest merge progress column against real SQL', () => {
+  beforeEach(async () => {
+    mockDatabases.clear();
+    await openNamespace(OTHER);
+    await openNamespace(GUEST);
+  });
+
+  test('a database at v13 gains guest_merge defaulting to legacily undoable ops', async () => {
+    const db = raw(GUEST);
+    db.exec(
+      `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status)
+       VALUES ('row', '${HEART}', 'bundled', 'checksum', '2026-01-01T00:00:00.000Z', '2026-01-01T00:00:00.000Z', 'active')`,
+    );
+    db.prepare(
+      `INSERT INTO progress_ops (op_id, session_id, device_id, device_seq, cell_index, desired_state, base_revision, created_at)
+       VALUES ('old', 'row', 'device', 1, 2, 'completed', 0, '2026-01-01T00:00:00.000Z')`,
+    ).run();
+    // Rebuild the shape a real v13 database has: no guest_merge column yet.
+    db.exec('ALTER TABLE progress_ops DROP COLUMN guest_merge; PRAGMA user_version = 13;');
+
+    await reopen(GUEST);
+
+    expect(raw(GUEST).prepare('SELECT guest_merge FROM progress_ops WHERE op_id = ?').get('old')).toEqual({
+      guest_merge: 0,
+    });
+    // A pre-v14 op is a real stitch, so it must stay on the undo stack.
+    expect((await getProgressOps('row')).map(({ opId, guestMerge }) => ({ opId, guestMerge }))).toEqual([
+      { opId: 'old', guestMerge: undefined },
+    ]);
+    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 14 });
   });
 });

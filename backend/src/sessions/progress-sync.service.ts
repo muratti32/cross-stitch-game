@@ -55,6 +55,8 @@ interface WatermarkRecord {
 interface CellStateRecord {
   state: CellStateValue;
   revision: string;
+  writerDeviceId: string | null;
+  writerDeviceSeq: string | null;
 }
 
 interface PulledOperationRecord {
@@ -207,6 +209,8 @@ export class ProgressSyncService {
         const decision = mergeCellOperation({
           desiredState: operation.desiredState,
           baseRevision: operation.baseRevision,
+          deviceId: dto.deviceId,
+          deviceSeq: operation.deviceSeq,
           current,
         });
 
@@ -748,18 +752,40 @@ export class ProgressSyncService {
     manager: EntityManager,
     sessionId: string,
     cellIndex: number,
-  ): Promise<{ state: CellStateValue; revision: number }> {
+  ): Promise<{
+    state: CellStateValue;
+    revision: number;
+    writerDeviceId: string | null;
+    writerDeviceSeq: number | null;
+  }> {
+    // The cell's revision identifies the effective op that last wrote it. That
+    // op's device and sequence let the merge tell a causally later op from a
+    // genuinely concurrent one. Promotion-written cells have no matching op.
     const rows = await manager.query<readonly CellStateRecord[]>(
-      `SELECT state, revision
-       FROM sessions.session_cell_state
-       WHERE session_id = $1 AND cell_index = $2`,
+      `SELECT cell.state,
+              cell.revision,
+              writer.device_id AS "writerDeviceId",
+              writer.device_seq AS "writerDeviceSeq"
+       FROM sessions.session_cell_state cell
+       LEFT JOIN sessions.progress_operations writer
+         ON writer.session_id = cell.session_id
+        AND writer.cell_index = cell.cell_index
+        AND writer.server_revision = cell.revision
+        AND writer.effective = true
+       WHERE cell.session_id = $1 AND cell.cell_index = $2
+       LIMIT 1`,
       [sessionId, cellIndex],
     );
     const cell = rows[0];
     if (!cell) {
-      return { state: 'incomplete', revision: 0 };
+      return { state: 'incomplete', revision: 0, writerDeviceId: null, writerDeviceSeq: null };
     }
-    return { state: cell.state, revision: Number(cell.revision) };
+    return {
+      state: cell.state,
+      revision: Number(cell.revision),
+      writerDeviceId: cell.writerDeviceId,
+      writerDeviceSeq: cell.writerDeviceSeq === null ? null : Number(cell.writerDeviceSeq),
+    };
   }
 
   private async insertOperation(

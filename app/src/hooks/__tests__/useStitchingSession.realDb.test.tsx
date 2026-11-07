@@ -204,6 +204,31 @@ async function serverSync(_remote: string, _device: string, _since: number, oper
     expect(hook.completedCellsCount).toBe(3);
   });
 
+  test('Guest cells merged into a linked row never enter the undo stack', async () => {
+    const id = await linkedRow();
+    await saveCheckpoint(id, 4, cells());
+    await adoptPromotedSession(guestSession(1), null);
+
+    await open(id);
+
+    expect(hook.completedCellsCount).toBe(1);
+    expect(hook.canUndo).toBe(false);
+
+    await stitch(0, 0);
+    await act(async () => {
+      expect(hook.undo()).toEqual({ x: 0, y: 0 });
+    });
+
+    expect(hook.rendererState?.isCompleted(0, 0)).toBe(false);
+    expect(hook.rendererState?.isCompleted(1, 0)).toBe(true);
+    expect(hook.canUndo).toBe(false);
+
+    await act(async () => {
+      expect(hook.undo()).toBeNull();
+    });
+    expect(hook.rendererState?.isCompleted(1, 0)).toBe(true);
+  });
+
   describe('a merge that lands while the session is open', () => {
     beforeEach(async () => {
       mockSyncProgress.mockRejectedValue(new Error('Network request failed'));

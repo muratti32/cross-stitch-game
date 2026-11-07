@@ -220,10 +220,23 @@ async function guestPackage(prepare: () => Promise<void>): Promise<PackagedSessi
       await adoptPromotedSession(session, null);
 
       expect(await getUnackedProgressOps(row.id)).toEqual([
-        expect.objectContaining({ cellIndex: 1, desiredState: 'completed', deviceId: await getDeviceId(), deviceSeq: 2, baseRevision: 7, serverBaseRevision: 90 }),
-        expect.objectContaining({ cellIndex: 2, desiredState: 'completed', deviceId: await getDeviceId(), deviceSeq: 3, baseRevision: 7, serverBaseRevision: 90 }),
+        expect.objectContaining({ cellIndex: 1, desiredState: 'completed', deviceId: await getDeviceId(), deviceSeq: 2, baseRevision: 7, serverBaseRevision: 90, guestMerge: true }),
+        expect.objectContaining({ cellIndex: 2, desiredState: 'completed', deviceId: await getDeviceId(), deviceSeq: 3, baseRevision: 7, serverBaseRevision: 90, guestMerge: true }),
       ]);
       expect(await getSessionCompletedCount(row.id, 4, 4)).toBe(3);
+    });
+
+    test('a stitch the player makes afterwards is not marked as a Guest merge', async () => {
+      const session = await guestStarter(1);
+      const row = await linkedAccountRow();
+      await adoptPromotedSession(session, null);
+
+      await insertProgressOpsBatch([op(row.id, 2, 0)]);
+
+      const [guestMergeOp, ownOp] = await getUnackedProgressOps(row.id);
+      expect(guestMergeOp).toMatchObject({ cellIndex: 1, guestMerge: true });
+      expect(ownOp.cellIndex).toBe(2);
+      expect(ownOp.guestMerge).not.toBe(true);
     });
 
     test('a stitch flushed afterwards numbers above them', async () => {

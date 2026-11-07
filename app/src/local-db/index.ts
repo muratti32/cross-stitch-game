@@ -41,6 +41,9 @@ export interface ProgressOperation {
   // push sends as baseRevision so the server can judge causality in its own
   // revision space. Defaults to 0 for offline ops created before any sync.
   serverBaseRevision?: number;
+  // True for a Guest cell merged into a linked row: history the player did not
+  // stitch here, so rebuilding the undo stack must skip it.
+  guestMerge?: boolean;
   createdAt: string;
 }
 
@@ -803,6 +806,24 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
       await db.execAsync('PRAGMA user_version = 13;');
     });
   }
+
+  if (currentVersion < 14) {
+    await runInTransaction(db, async () => {
+      // Guest cells merged into a linked row arrive as ops the sync uploads, but
+      // they are not stitches this device made, so undo must not replay them.
+      // SQLite has no ADD COLUMN IF NOT EXISTS, so a re-run (an older app that
+      // rewinds user_version) checks first.
+      const column = await db.getFirstAsync<{ count: number }>(
+        "SELECT COUNT(*) AS count FROM pragma_table_info('progress_ops') WHERE name = 'guest_merge'",
+      );
+      if ((column?.count ?? 0) === 0) {
+        await db.execAsync(`
+          ALTER TABLE progress_ops ADD COLUMN guest_merge INTEGER NOT NULL DEFAULT 0;
+        `);
+      }
+      await db.execAsync('PRAGMA user_version = 14;');
+    });
+  }
 }
 
 /**
@@ -1320,8 +1341,8 @@ export async function insertProgressOpsBatch(ops: UnsequencedProgressOperation[]
 
 async function insertProgressOpWithDb(db: SQLite.SQLiteDatabase, op: ProgressOperation): Promise<void> {
   await db.runAsync(
-    `INSERT OR IGNORE INTO progress_ops (op_id, session_id, device_id, device_seq, cell_index, desired_state, base_revision, server_base_revision, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT OR IGNORE INTO progress_ops (op_id, session_id, device_id, device_seq, cell_index, desired_state, base_revision, server_base_revision, guest_merge, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     op.opId,
     op.sessionId,
     op.deviceId,
@@ -1330,6 +1351,7 @@ async function insertProgressOpWithDb(db: SQLite.SQLiteDatabase, op: ProgressOpe
     op.desiredState,
     op.baseRevision,
     op.serverBaseRevision ?? 0,
+    op.guestMerge ? 1 : 0,
     op.createdAt
   );
 }
@@ -1367,6 +1389,7 @@ interface ProgressOpRow {
   desired_state: string;
   base_revision: number;
   server_base_revision: number | null;
+  guest_merge: number | null;
   created_at: string;
 }
 
@@ -1380,6 +1403,7 @@ function mapProgressOpRow(row: ProgressOpRow): ProgressOperation {
     desiredState: row.desired_state as 'completed' | 'incomplete',
     baseRevision: row.base_revision,
     serverBaseRevision: row.server_base_revision ?? 0,
+    guestMerge: row.guest_merge === 1 ? true : undefined,
     createdAt: row.created_at,
   };
 }
@@ -2072,6 +2096,7 @@ async function queueGuestCellsWithDb(
       desiredState: 'completed',
       baseRevision: revision,
       serverBaseRevision: snapshot?.serverRevision ?? 0,
+      guestMerge: true,
       createdAt,
     });
   }

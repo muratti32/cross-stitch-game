@@ -632,3 +632,168 @@ describe('ProgressSyncService.sync progress flag', () => {
     });
   });
 });
+
+describe('ProgressSyncService.sync causal merge', () => {
+  const otherDeviceId = '00000000-0000-4000-8000-000000000006';
+  const cellIndex = 4;
+
+  interface CellRow {
+    state: 'completed' | 'incomplete';
+    revision: number;
+    writerDeviceId: string | null;
+    writerDeviceSeq: number | null;
+  }
+
+  function mergeHarness(cell?: CellRow) {
+    let cellRow: CellRow | null = cell ?? null;
+    const inserted: {
+      cellIndex: number;
+      desiredState: string;
+      serverRevision: number;
+      effective: boolean;
+      resolvedState: string | null;
+    }[] = [];
+    let revision = 10;
+
+    const query = jest.fn(async (sql: string, params?: readonly unknown[]): Promise<readonly object[]> => {
+      await Promise.resolve();
+      if (sql.includes("principal_type = 'account'") && sql.includes('FOR UPDATE')) {
+        return [{ id: sessionId, principalType: 'account', principalId: accountId }];
+      }
+      if (sql.includes('pg_advisory_xact_lock')) return [{ locked: null }];
+      if (sql.includes('SELECT p.status')) return [{ status: 'available', patternId }];
+      if (sql.includes('INSERT INTO sessions.session_sync_state')) return [];
+      if (sql.includes('FROM sessions.session_sync_state state')) {
+        return [{ revision: String(revision), terminalCompletedAt: null }];
+      }
+      if (sql.includes('FROM sessions.session_device_watermarks')) return [];
+      if (/SELECT op_id AS "opId"\s+FROM sessions\.progress_operations/.test(sql)) {
+        return [];
+      }
+      if (sql.includes('FROM sessions.session_cell_state')) {
+        if (cellRow === null) return [];
+        return [{
+          state: cellRow.state,
+          revision: String(cellRow.revision),
+          writerDeviceId: cellRow.writerDeviceId,
+          writerDeviceSeq: cellRow.writerDeviceSeq === null ? null : String(cellRow.writerDeviceSeq),
+        }];
+      }
+      if (sql.includes('INSERT INTO sessions.session_cell_state')) {
+        cellRow = {
+          state: params?.[2] as 'completed' | 'incomplete',
+          revision: params?.[3] as number,
+          writerDeviceId: cellRow?.writerDeviceId ?? null,
+          writerDeviceSeq: cellRow?.writerDeviceSeq ?? null,
+        };
+        return [];
+      }
+      if (sql.includes('INSERT INTO sessions.progress_operations')) {
+        const effective = params?.[8] as boolean;
+        if (effective) {
+          cellRow = { ...(cellRow as CellRow), writerDeviceId: deviceId, writerDeviceSeq: params?.[3] as number };
+        }
+        inserted.push({
+          cellIndex: params?.[4] as number,
+          desiredState: params?.[5] as string,
+          serverRevision: params?.[7] as number,
+          effective,
+          resolvedState: params?.[10] as string | null,
+        });
+        return [];
+      }
+      if (sql.includes('INSERT INTO sessions.session_progress_flags')) return [];
+      if (sql.includes('UPDATE sessions.session_sync_state')) {
+        revision = params?.[1] as number;
+        return [];
+      }
+      if (sql.includes('server_revision > $2')) return [];
+      if (sql.includes('server_revision = $2')) return [];
+      throw new Error(`Unexpected query: ${sql}`);
+    });
+    const manager = { query };
+    const dataSource = {
+      transaction: jest.fn(
+        (callback: (value: typeof manager) => Promise<unknown>) => callback(manager),
+      ),
+    };
+    const promotionService = { assertNotLocked: jest.fn().mockResolvedValue(undefined) };
+    const service = new ProgressSyncService(
+      dataSource as never,
+      {} as never,
+      {} as never,
+      promotionService as never,
+    );
+    return { inserted, service, cell: () => cellRow };
+  }
+
+  const offlineStitch = {
+    opId: '00000000-0000-4000-8000-0000000000b1',
+    deviceSeq: 20,
+    cellIndex,
+    desiredState: 'completed' as const,
+    baseRevision: 7,
+  };
+  const offlineUndo = {
+    opId: '00000000-0000-4000-8000-0000000000b2',
+    deviceSeq: 21,
+    cellIndex,
+    desiredState: 'incomplete' as const,
+    baseRevision: 7,
+  };
+
+  it('applies an offline undo written by the same device later in the batch', async () => {
+    const { inserted, service, cell } = mergeHarness();
+
+    const result = await service.sync(account, sessionId, {
+      deviceId,
+      sinceRevision: 0,
+      operations: [offlineStitch, offlineUndo],
+    });
+
+    expect(cell()).toMatchObject({ state: 'incomplete', writerDeviceId: deviceId, writerDeviceSeq: 21 });
+    expect(inserted.map(({ resolvedState }) => resolvedState)).toEqual(['completed', 'incomplete']);
+    expect(result.acknowledgements).toEqual([
+      { opId: offlineStitch.opId, status: 'applied' },
+      { opId: offlineUndo.opId, status: 'applied' },
+    ]);
+  });
+
+  it('keeps completed when another device wrote the cell concurrently', async () => {
+    const { inserted, service, cell } = mergeHarness({
+      state: 'completed',
+      revision: 11,
+      writerDeviceId: otherDeviceId,
+      writerDeviceSeq: 20,
+    });
+
+    await service.sync(account, sessionId, {
+      deviceId,
+      sinceRevision: 0,
+      operations: [offlineUndo],
+    });
+
+    expect(cell()).toMatchObject({ state: 'completed', revision: 11 });
+    expect(inserted.map(({ effective, resolvedState }) => ({ effective, resolvedState }))).toEqual([
+      { effective: false, resolvedState: 'completed' },
+    ]);
+  });
+
+  it('keeps the old concurrent rule when the cell writer is unknown', async () => {
+    const { inserted, service, cell } = mergeHarness({
+      state: 'completed',
+      revision: 11,
+      writerDeviceId: null,
+      writerDeviceSeq: null,
+    });
+
+    await service.sync(account, sessionId, {
+      deviceId,
+      sinceRevision: 0,
+      operations: [offlineUndo],
+    });
+
+    expect(cell()).toMatchObject({ state: 'completed', revision: 11 });
+    expect(inserted.map(({ effective }) => effective)).toEqual([false]);
+  });
+});

@@ -429,11 +429,13 @@ export function useStitchingSession(sessionId: string | undefined) {
           }
         }
 
-        // 8. Rebuild device undo stack
+        // 8. Rebuild device undo stack. Guest cells merged into this linked row
+        //    are history the player did not stitch here; undoing them would
+        //    erase progress they never made.
         const allOps = await getProgressOps(sess.id, 0);
         const undoStack: number[] = [];
         for (const op of allOps) {
-          if (op.deviceId === deviceIdRef.current) {
+          if (op.deviceId === deviceIdRef.current && !op.guestMerge) {
             if (op.desiredState === 'completed') {
               undoStack.push(op.cellIndex);
             } else {
