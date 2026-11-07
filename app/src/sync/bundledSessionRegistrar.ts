@@ -86,6 +86,7 @@ async function registerRow(owner: PassOwner, localSessionId: string): Promise<Ro
       if (result === 'linked') linkListeners.forEach((listener) => listener(link));
       // A row is marked completed before its final ops flush, so only the same
       // bitmap earns the same answer. A row sent in progress never said it finished.
+      if (result === 'remoteSessionTaken') refusedSessionIds.add(localSessionId);
       if (result === 'sessionNotFinished' && sent.localState === 'completed') {
         unfinishedBitmaps.set(localSessionId, sent.packedBitmapBase64);
       }

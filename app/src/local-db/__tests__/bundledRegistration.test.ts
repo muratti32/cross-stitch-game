@@ -86,7 +86,7 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       const linked = await startRow(STAR);
       await linkBundledSession(GUEST, { localSessionId: linked.id, remoteSessionId: REMOTE }, receipt(0));
       const parent = await completedRow(STAR, '2026-02-01T10:00:00.000Z');
-      await linkBundledSession(GUEST, { localSessionId: parent.id, remoteSessionId: REMOTE }, finishedReceipt);
+      await linkBundledSession(GUEST, { localSessionId: parent.id, remoteSessionId: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd' }, finishedReceipt);
       await createReplaySession(parent.id);
       await createSession(HEART, 'checksum', 'catalog', 'ready', null);
 
@@ -210,6 +210,22 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       expect(sentCells(1)).toEqual([0, 1]);
       expect((await getSession(id))?.remoteSessionId).toBe(REMOTE);
       expect(linked).toHaveBeenCalledTimes(1);
+    });
+
+    test('a replay the server answers with a session another row holds stays unlinked and is not re-sent', async () => {
+      const first = await startRow();
+      await linkBundledSession(ACCOUNT, { localSessionId: first.id, remoteSessionId: REMOTE }, receipt(0));
+      await updateSessionStatus(first.id, 'completed', '2026-02-01T10:00:00.000Z');
+      const replay = await startRow();
+      await insertProgressOpsBatch([op(replay.id, 0, 1)]);
+      mockApiFetch.mockResolvedValue(respond(false));
+
+      await registerBundledSessions();
+      await registerBundledSessions();
+
+      expect((await getSession(replay.id))?.remoteSessionId).toBeNull();
+      expect((await getSession(first.id))?.remoteSessionId).toBe(REMOTE);
+      expect(mockApiFetch).toHaveBeenCalledTimes(1);
     });
 
     test('a checkpoint that compacts ops during the request holds the link, and the next pass sends them', async () => {
@@ -344,6 +360,20 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       await expect(linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, receipt(0))).resolves.toBe('foldOvertaken');
 
       expect((await getSession(id))?.remoteSessionId).toBeNull();
+    });
+
+    test('a session another row already holds is not linked a second time', async () => {
+      const first = await startRow();
+      await linkBundledSession(GUEST, { localSessionId: first.id, remoteSessionId: REMOTE }, receipt(0));
+      await updateSessionStatus(first.id, 'completed', '2026-02-01T10:00:00.000Z');
+      const replay = await startRow();
+      await insertProgressOpsBatch([op(replay.id, 0, 1)]);
+
+      await expect(linkBundledSession(GUEST, { localSessionId: replay.id, remoteSessionId: REMOTE }, receipt(1))).resolves.toBe('remoteSessionTaken');
+
+      expect((await getSession(replay.id))?.remoteSessionId).toBeNull();
+      expect((await getSession(first.id))?.remoteSessionId).toBe(REMOTE);
+      expect(await getUnackedProgressOps(replay.id)).toHaveLength(1);
     });
 
     test('a deleted row is not linked', async () => {

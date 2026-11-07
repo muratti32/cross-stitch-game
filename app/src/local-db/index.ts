@@ -2039,7 +2039,8 @@ export type BundledLinkResult =
   | 'rowDeleted'
   | 'alreadyLinked'
   | 'sessionNotFinished'
-  | 'foldOvertaken';
+  | 'foldOvertaken'
+  | 'remoteSessionTaken';
 
 export async function linkBundledSession(
   identity: string,
@@ -2054,10 +2055,13 @@ export async function linkBundledSession(
          WHERE id = ?
            AND remote_session_id IS NULL
            AND (status <> 'completed' OR ? = 1)
+           AND NOT EXISTS (SELECT 1 FROM sessions AS holder WHERE holder.remote_session_id = ? AND holder.id <> ?)
            AND COALESCE((SELECT MAX(revision) FROM checkpoints WHERE session_id = ?), 0) = ?`,
         link.remoteSessionId,
         link.localSessionId,
         terminalCompleted ? 1 : 0,
+        link.remoteSessionId,
+        link.localSessionId,
         link.localSessionId,
         checkpointRevision,
       );
@@ -2068,7 +2072,15 @@ export async function linkBundledSession(
         );
         if (row === null) return 'rowDeleted';
         if (row.remote_session_id !== null) return 'alreadyLinked';
-        return row.status === 'completed' && !terminalCompleted ? 'sessionNotFinished' : 'foldOvertaken';
+        if (row.status === 'completed' && !terminalCompleted) return 'sessionNotFinished';
+        // The server answers a second row with the active session another row already
+        // owns; one remote id keys one manifest entry, so the second row stays local.
+        const holder = await db.getFirstAsync<{ id: string }>(
+          'SELECT id FROM sessions WHERE remote_session_id = ? AND id <> ?',
+          link.remoteSessionId,
+          link.localSessionId,
+        );
+        return holder === null ? 'foldOvertaken' : 'remoteSessionTaken';
       }
       await db.runAsync(
         'UPDATE progress_ops SET acked = 1 WHERE session_id = ? AND device_seq <= ?',
