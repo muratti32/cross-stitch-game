@@ -78,7 +78,7 @@ function seedV11Rows(identity: string): void {
 
     expect(await getSessions()).toEqual(firstRun);
     expect(await getLocalPatternLikes()).toEqual({ [STAR]: true });
-    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 12 });
+    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 13 });
   });
 
   test('a like or draft an old app made on the seeded catalog tile survives the rewrite', async () => {
@@ -97,7 +97,7 @@ function seedV11Rows(identity: string): void {
     expect(await getEditorDraft('starter_heart')).toBeNull();
     expect(await getEditorDraft(HEART)).toMatchObject({ width: 8 });
     expect(raw(GUEST).prepare('SELECT liked_at FROM pattern_likes').all()).toEqual([{ liked_at: '2026-01-02T00:00:00.000Z' }]);
-    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 12 });
+    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 13 });
   });
 
   test('each namespace is rewritten on its own open', async () => {
@@ -112,5 +112,31 @@ function seedV11Rows(identity: string): void {
 
     await openNamespace(OTHER);
     expect((await getSessions()).find((session) => session.id === 'bundled_session')?.patternId).toBe(HEART);
+  });
+});
+
+(nodeSqliteAvailable ? describe : describe.skip)('v13 progress op index against real SQL', () => {
+  beforeEach(async () => {
+    mockDatabases.clear();
+    await openNamespace(OTHER);
+    await openNamespace(GUEST);
+  });
+
+  const compactionPlan = () =>
+    raw(GUEST)
+      .prepare('EXPLAIN QUERY PLAN DELETE FROM progress_ops WHERE session_id = ? AND base_revision < ?')
+      .all('session', 1) as Array<{ detail: string }>;
+
+  test('a checkpoint finds a session\'s ops without scanning the table', () => {
+    expect(compactionPlan().map(({ detail }) => detail).join()).toContain('USING INDEX');
+  });
+
+  test('a database already at v12 gains the index on its next open', async () => {
+    raw(GUEST).exec('DROP INDEX idx_progress_ops_session; PRAGMA user_version = 12;');
+
+    await reopen(GUEST);
+
+    expect(compactionPlan().map(({ detail }) => detail).join()).toContain('USING INDEX');
+    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 13 });
   });
 });
