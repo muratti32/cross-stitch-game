@@ -17,3 +17,6 @@ credentials.json
 # asc run artifacts (local, regenerated per run)
 .asc/reports/
 .asc/metadata/
+
+# Local agent session trails
+.audit/
