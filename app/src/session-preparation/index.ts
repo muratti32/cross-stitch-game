@@ -10,6 +10,7 @@ import {
   getActiveIdentity,
   createSession,
   linkPreparedSession,
+  listSessionsAwaitingServerSession,
   findActiveSessionForPattern,
   getSession,
   deleteSession,
@@ -218,24 +219,40 @@ export async function prepareBundledSession(
   }
 }
 
-// Rows the server answered with a session another row holds: they play unlinked
-// and take the server session the next prepare hands out once the holder closed.
-const rowsAwaitingServerSession = new Set<string>();
+// A catalog or personal row with no server session is waiting for one: the server
+// handed its id to an earlier row, or promotion carried the row in without it. The
+// state is the row itself, so it survives a restart. Prepare hands out the pattern's
+// active session once the holder closed; the row takes it and uploads from there.
+async function prepareAndLink(session: Pick<StitchingSession, 'id' | 'patternId'>): Promise<PrepareResponse> {
+  const response = await apiFetch('/v1/sessions/prepare', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ patternId: session.patternId }),
+  });
+  if (!response.ok) {
+    await throwIfUnlockRequired(response, session.patternId);
+    throw new Error(`Failed to prepare session: ${response.status}`);
+  }
+  const data = (await response.json()) as PrepareResponse;
+  await linkPreparedSession(session.id, data.sessionId);
+  return data;
+}
 
-async function linkAwaitingRow(localSessionId: string, patternId: string): Promise<void> {
+async function linkAwaitingRow(session: StitchingSession): Promise<void> {
   try {
-    const response = await apiFetch('/v1/sessions/prepare', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ patternId }),
-    });
-    if (!response.ok) return;
-    const data = (await response.json()) as PrepareResponse;
-    if (await linkPreparedSession(localSessionId, data.sessionId)) {
-      rowsAwaitingServerSession.delete(localSessionId);
+    const data = await prepareAndLink(session);
+    if (session.status === 'preparing') {
+      void downloadAndRegister(session.id, session.patternId, data.grant.url, data.artifact.checksum);
     }
   } catch {
-    // Offline or refused: the row keeps playing locally and retries on the next start.
+    // Offline, locked or refused: the row keeps playing locally and tries again on the next pass.
+  }
+}
+
+/** Gives every row waiting for a server session another chance; never throws. */
+export async function linkAwaitingSessions(): Promise<void> {
+  for (const session of await listSessionsAwaitingServerSession()) {
+    await linkAwaitingRow(session);
   }
 }
 
@@ -254,8 +271,8 @@ async function prepareRemoteSession(
         if (err instanceof UnlockRequiredError) throw err;
       });
     }
-    if (existing.remoteSessionId == null && rowsAwaitingServerSession.has(existing.id)) {
-      await linkAwaitingRow(existing.id, patternId);
+    if (existing.remoteSessionId == null && existing.status !== 'preparing') {
+      await linkAwaitingRow(existing);
     }
     return existing;
   }
@@ -284,8 +301,6 @@ async function prepareRemoteSession(
     data.sessionId,
     patternInfo,
   );
-
-  if (session.remoteSessionId == null) rowsAwaitingServerSession.add(session.id);
 
   void downloadAndRegister(session.id, patternId, data.grant.url, data.artifact.checksum);
 
@@ -320,23 +335,28 @@ export async function waitUntilSessionReady(
 
 export async function retryDownload(localSessionId: string): Promise<void> {
   const session = await getSession(localSessionId);
-  if (!session || !session.remoteSessionId) {
+  if (!session) {
     throw new Error('Local session not found or invalid');
   }
 
   await updateSessionStatus(localSessionId, 'preparing');
 
   try {
-    const response = await apiFetch(`/v1/sessions/${session.remoteSessionId}/refresh-grant`, {
-      method: 'POST',
-    });
+    let data: PrepareResponse;
+    if (session.remoteSessionId) {
+      const response = await apiFetch(`/v1/sessions/${session.remoteSessionId}/refresh-grant`, {
+        method: 'POST',
+      });
 
-    if (!response.ok) {
-      await throwIfUnlockRequired(response, session.patternId);
-      throw new Error(`Failed to refresh grant: ${response.status}`);
+      if (!response.ok) {
+        await throwIfUnlockRequired(response, session.patternId);
+        throw new Error(`Failed to refresh grant: ${response.status}`);
+      }
+
+      data = (await response.json()) as PrepareResponse;
+    } else {
+      data = await prepareAndLink(session);
     }
-
-    const data = (await response.json()) as PrepareResponse;
 
     void downloadAndRegister(localSessionId, session.patternId, data.grant.url, session.artifactChecksum);
   } catch (err) {

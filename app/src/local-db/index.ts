@@ -1029,7 +1029,34 @@ async function remoteSessionHeldByOtherRow(
   return holder != null;
 }
 
-/** Links an unlinked row to a server session no other row holds; false when it could not. */
+/**
+ * Catalog and personal rows the server has not given a session of their own: the
+ * server handed the id to an earlier row, or promotion carried the row in without
+ * one. An offline-created Personal Pattern has no server session to wait for.
+ */
+export async function listSessionsAwaitingServerSession(): Promise<StitchingSession[]> {
+  return withDatabase(async (db) => {
+    const rows = await db.getAllAsync<{ id: string }>(
+      `SELECT id FROM sessions
+       WHERE remote_session_id IS NULL
+         AND source IN ('catalog', 'personal')
+         AND NOT EXISTS (SELECT 1 FROM pending_personal_patterns WHERE pattern_id = sessions.pattern_id)
+       ORDER BY created_at ASC`,
+    );
+    const sessions: StitchingSession[] = [];
+    for (const { id } of rows) {
+      const session = await getSessionWithDb(db, id);
+      if (session !== null) sessions.push(session);
+    }
+    return sessions;
+  });
+}
+
+/**
+ * Links an unlinked row to a server session no other row holds; false when it could
+ * not. The row may have compacted cells into a checkpoint while it had no server
+ * session, so the cells it holds that no waiting op carries are queued as ops.
+ */
 export async function linkPreparedSession(localSessionId: string, remoteSessionId: string): Promise<boolean> {
   return withDatabase(async (db) =>
     runInTransaction(db, async () => {
@@ -1039,9 +1066,40 @@ export async function linkPreparedSession(localSessionId: string, remoteSessionI
         remoteSessionId,
         localSessionId,
       );
-      return update.changes > 0;
+      if (update.changes === 0) return false;
+      await queueCompactedCellsWithDb(db, localSessionId);
+      return true;
     }),
   );
+}
+
+async function queueCompactedCellsWithDb(db: SQLite.SQLiteDatabase, sessionId: string): Promise<void> {
+  const checkpoint = await getLatestCheckpointWithDb(db, sessionId);
+  if (checkpoint === null) return;
+  const waiting = await getUnackedProgressOpsWithDb(db, sessionId);
+  const touched = new Set(waiting.map((pending) => pending.cellIndex));
+  const compacted = cellsMissingFrom(new Uint8Array(0), checkpoint.packedBitmap).filter((cell) => !touched.has(cell));
+  if (compacted.length === 0) return;
+
+  const createdAt = new Date().toISOString();
+  const deviceId = await getDeviceIdWithDb(db);
+  let deviceSeq = await getDeviceSeqHighWithDb(db);
+  for (const cellIndex of compacted) {
+    deviceSeq += 1;
+    await insertProgressOpWithDb(db, {
+      opId: generateUUID(),
+      sessionId,
+      deviceId,
+      deviceSeq,
+      cellIndex,
+      desiredState: 'completed',
+      baseRevision: checkpoint.revision,
+      serverBaseRevision: 0,
+      guestMerge: true,
+      createdAt,
+    });
+  }
+  await setDeviceSeqHighWithDb(db, deviceSeq);
 }
 
 export async function createSession(
@@ -1055,27 +1113,28 @@ export async function createSession(
   return withDatabase(async (db) => {
     const id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const createdAt = new Date().toISOString();
-    if (remoteSessionId !== null && (await remoteSessionHeldByOtherRow(db, remoteSessionId, id))) {
-      remoteSessionId = null;
-    }
-
-    await db.runAsync(
-      `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, remote_session_id, title, preview_url, thumbnail_url, pattern_width, pattern_height)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      id,
-      patternId,
-      source,
-      checksum,
-      createdAt,
-      createdAt,
-      status,
-      remoteSessionId,
-      patternMeta?.title ?? null,
-      patternMeta?.previewUrl ?? null,
-      patternMeta?.thumbnailUrl ?? null,
-      patternMeta?.width ?? null,
-      patternMeta?.height ?? null
-    );
+    const stored = await runInTransaction(db, async () => {
+      const linkedTo =
+        remoteSessionId !== null && (await remoteSessionHeldByOtherRow(db, remoteSessionId, id)) ? null : remoteSessionId;
+      await db.runAsync(
+        `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, remote_session_id, title, preview_url, thumbnail_url, pattern_width, pattern_height)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        id,
+        patternId,
+        source,
+        checksum,
+        createdAt,
+        createdAt,
+        status,
+        linkedTo,
+        patternMeta?.title ?? null,
+        patternMeta?.previewUrl ?? null,
+        patternMeta?.thumbnailUrl ?? null,
+        patternMeta?.width ?? null,
+        patternMeta?.height ?? null,
+      );
+      return linkedTo;
+    });
 
     return {
       id,
@@ -1085,7 +1144,7 @@ export async function createSession(
       createdAt,
       updatedAt: createdAt,
       status,
-      remoteSessionId,
+      remoteSessionId: stored,
       title: patternMeta?.title ?? null,
       previewUrl: patternMeta?.previewUrl ?? null,
       thumbnailUrl: patternMeta?.thumbnailUrl ?? null,

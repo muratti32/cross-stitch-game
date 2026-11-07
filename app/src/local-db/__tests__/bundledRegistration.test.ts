@@ -22,6 +22,7 @@ import {
   insertProgressOpsBatch,
   linkBundledSession,
   linkPreparedSession,
+  listSessionsAwaitingServerSession,
   listBundledRegistrationCandidates,
   openNamespace,
   readBundledRegistrationSnapshot,
@@ -287,6 +288,54 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       expect(await getProgressOps(id)).toHaveLength(4);
       expect(await getSessionCompletedCount(id, 4, 4)).toBe(2);
       expect(completedCellsOf((await readBundledRegistrationSnapshot(id))?.packedBitmapBase64 ?? '')).toEqual([0, 3]);
+    });
+  });
+
+  describe('rows awaiting a server session', () => {
+    test('lists unlinked catalog and personal rows, completed or still preparing, and nothing else', async () => {
+      const catalog = await createSession(HEART, 'checksum', 'catalog', 'ready', null);
+      const preparing = await createSession(STAR, 'checksum', 'catalog', 'preparing', null);
+      const completed = await createSession(HEART, 'checksum', 'catalog', 'completed', null);
+      await createSession(HEART, 'checksum', 'catalog', 'ready', REMOTE);
+      await createSession(HEART, 'checksum', 'bundled', 'ready', null);
+
+      const ids = (await listSessionsAwaitingServerSession()).map((row) => row.id).sort();
+
+      expect(ids).toEqual([catalog.id, preparing.id, completed.id].sort());
+    });
+
+    test('a row created for a pending offline personal pattern is not waiting for a server', async () => {
+      const db = mockDatabases.raw(getDatabaseFilename(GUEST));
+      db.exec(`INSERT INTO pending_personal_patterns (pattern_id, source_pattern_id, title, width, height, palette_json, grid_base64, created_at)
+               VALUES ('${HEART}', '${HEART}', 'T', 4, 4, '[]', '', '2026-02-01T10:00:00.000Z')`);
+      await createSession(HEART, 'checksum', 'personal', 'ready', null);
+
+      expect(await listSessionsAwaitingServerSession()).toEqual([]);
+    });
+
+    test('linking queues the cells a checkpoint compacted away, beside the ops still waiting', async () => {
+      const { id } = await createSession(HEART, 'checksum', 'catalog', 'ready', null);
+      await insertProgressOpsBatch([op(id, 0, 1), op(id, 1, 2)]);
+      await saveCheckpoint(id, 3, cells(0, 1));
+      await insertProgressOpsBatch([{ ...op(id, 2, 3), baseRevision: 3 }]);
+
+      await expect(linkPreparedSession(id, REMOTE)).resolves.toBe(true);
+
+      const unacked = await getUnackedProgressOps(id);
+      expect(unacked.map((pending) => pending.cellIndex).sort()).toEqual([0, 1, 2]);
+      expect(unacked.every((pending) => pending.desiredState === 'completed')).toBe(true);
+    });
+
+    test('linking queues nothing for a cell the waiting ops already carry', async () => {
+      const { id } = await createSession(HEART, 'checksum', 'catalog', 'ready', null);
+      await saveCheckpoint(id, 3, cells(0));
+      await insertProgressOpsBatch([{ ...op(id, 1, 1, 'incomplete'), cellIndex: 0, baseRevision: 3 }]);
+
+      await linkPreparedSession(id, REMOTE);
+
+      const unacked = await getUnackedProgressOps(id);
+      expect(unacked).toHaveLength(1);
+      expect(unacked[0].desiredState).toBe('incomplete');
     });
   });
 
