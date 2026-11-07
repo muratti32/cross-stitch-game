@@ -145,6 +145,23 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       expect(completedCellsOf((await readBundledRegistrationSnapshot(id))?.packedBitmapBase64 ?? '')).toEqual([2, 3]);
     });
 
+    test('a checkpoint landing between the fold\'s reads loses no cell', async () => {
+      const { id } = await startRow();
+      await insertProgressOpsBatch([op(id, 0, 1), op(id, 1, 2)]);
+      const landed: Promise<void>[] = [];
+      mockDatabases.onRowRead(async (sql) => {
+        if (!sql.includes('FROM checkpoints') || landed.length > 0) return;
+        landed.push(saveCheckpoint(id, 2, cells(0, 1)));
+        await new Promise((resolve) => setImmediate(resolve));
+      });
+
+      const snapshot = await readBundledRegistrationSnapshot(id);
+      await Promise.all(landed);
+      mockDatabases.onRowRead(async () => undefined);
+
+      expect(completedCellsOf(snapshot?.packedBitmapBase64 ?? '')).toEqual([0, 1]);
+    });
+
     test('a completed row reports its state and completion time', async () => {
       const { id } = await completedRow(HEART, '2026-02-01T10:00:00.000Z');
 

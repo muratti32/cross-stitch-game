@@ -373,12 +373,16 @@ export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
 
 let transactionQueue = Promise.resolve();
 
-async function runInTransaction(
+async function runInTransaction<T>(
   db: SQLite.SQLiteDatabase,
-  action: () => Promise<void>
-): Promise<void> {
+  action: () => Promise<T>
+): Promise<T> {
   const next = transactionQueue.then(async () => {
-    return db.withTransactionAsync(action);
+    let result!: T;
+    await db.withTransactionAsync(async () => {
+      result = await action();
+    });
+    return result;
   });
   transactionQueue = next.then(
     () => {},
@@ -1792,24 +1796,26 @@ export async function saveCheckpoint(
     const packed = packCompletedBitmap(completed);
     const createdAt = new Date().toISOString();
 
-    await db.runAsync(
-      `INSERT OR REPLACE INTO checkpoints (session_id, revision, packed_bitmap, created_at)
-       VALUES (?, ?, ?, ?)`,
-      sessionId,
-      revision,
-      packed,
-      createdAt
-    );
+    await runInTransaction(db, async () => {
+      await db.runAsync(
+        `INSERT OR REPLACE INTO checkpoints (session_id, revision, packed_bitmap, created_at)
+         VALUES (?, ?, ?, ?)`,
+        sessionId,
+        revision,
+        packed,
+        createdAt
+      );
 
-    await db.runAsync(
-      `DELETE FROM progress_ops
-       WHERE session_id = ?
-         AND base_revision < ?
-         AND (acked = 1 OR (SELECT remote_session_id FROM sessions WHERE id = ?) IS NULL)`,
-      sessionId,
-      revision,
-      sessionId
-    );
+      await db.runAsync(
+        `DELETE FROM progress_ops
+         WHERE session_id = ?
+           AND base_revision < ?
+           AND (acked = 1 OR (SELECT remote_session_id FROM sessions WHERE id = ?) IS NULL)`,
+        sessionId,
+        revision,
+        sessionId
+      );
+    });
   });
 }
 
@@ -1900,17 +1906,19 @@ async function foldSessionProgressWithDb(
   db: SQLite.SQLiteDatabase,
   sessionId: string,
 ): Promise<PackedSessionProgress & { foldedThroughSeq: number; checkpointRevision: number }> {
-  const ops = await getProgressOpsWithDb(db, sessionId);
-  const checkpoint = await getLatestCheckpointWithDb(db, sessionId);
-  const revision = checkpoint?.revision ?? 0;
-  return {
-    ...foldPackedProgress(
-      checkpoint?.packedBitmap ?? new Uint8Array(0),
-      ops.filter((op) => op.baseRevision >= revision),
-    ),
-    foldedThroughSeq: ops.reduce((high, op) => Math.max(high, op.deviceSeq), 0),
-    checkpointRevision: revision,
-  };
+  return runInTransaction(db, async () => {
+    const checkpoint = await getLatestCheckpointWithDb(db, sessionId);
+    const ops = await getProgressOpsWithDb(db, sessionId);
+    const revision = checkpoint?.revision ?? 0;
+    return {
+      ...foldPackedProgress(
+        checkpoint?.packedBitmap ?? new Uint8Array(0),
+        ops.filter((op) => op.baseRevision >= revision),
+      ),
+      foldedThroughSeq: ops.reduce((high, op) => Math.max(high, op.deviceSeq), 0),
+      checkpointRevision: revision,
+    };
+  });
 }
 
 export async function readSessionPackedProgress(sessionId: string): Promise<PackedSessionProgress> {

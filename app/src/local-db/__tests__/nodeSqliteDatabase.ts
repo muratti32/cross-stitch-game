@@ -24,9 +24,13 @@ export const nodeSqliteAvailable = loadSqlite() !== null;
 
 export function createNodeSqliteFiles() {
   const files = new Map<string, NodeSqliteDatabase>();
+  let afterRow: (sql: string) => Promise<void> = async () => undefined;
 
   return {
     clear: () => files.clear(),
+    onRowRead: (hook: (sql: string) => Promise<void>) => {
+      afterRow = hook;
+    },
     raw: (filename: string): NodeSqliteDatabase => {
       const database = files.get(filename);
       if (database === undefined) throw new Error(`${filename} is not open`);
@@ -39,7 +43,11 @@ export function createNodeSqliteFiles() {
       files.set(filename, database);
       return {
         execAsync: async (sql: string) => database.exec(sql),
-        getFirstAsync: async (sql: string, ...params: SqlParam[]) => database.prepare(sql).get(...params) ?? null,
+        getFirstAsync: async (sql: string, ...params: SqlParam[]) => {
+          const row = database.prepare(sql).get(...params) ?? null;
+          await afterRow(sql);
+          return row;
+        },
         getAllAsync: async (sql: string, ...params: SqlParam[]) => database.prepare(sql).all(...params),
         runAsync: async (sql: string, ...params: SqlParam[]) => database.prepare(sql).run(...params),
         withTransactionAsync: async (action: () => Promise<void>) => {
