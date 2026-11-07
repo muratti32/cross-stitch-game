@@ -24,6 +24,7 @@ const NO_CELLS_BITMAP = 'AA==';
 
 const linkListeners = new Set<LinkListener>();
 const refusedSessionIds = new Set<string>();
+const unfinishedBitmaps = new Map<string, string>();
 let runningPasses: Promise<void> | null = null;
 let passRequested = false;
 
@@ -52,7 +53,7 @@ function requestFor(owner: PassOwner, snapshot: BundledRegistrationSnapshot): Bu
 
 async function registerRow(owner: PassOwner, localSessionId: string): Promise<RowResult> {
   let sent = await readBundledRegistrationSnapshot(localSessionId);
-  if (sent === null) return 'nextRow';
+  if (sent === null || unfinishedBitmaps.get(localSessionId) === sent.packedBitmapBase64) return 'nextRow';
   const request = requestFor(owner, sent);
   if (request === null) return 'nextRow';
 
@@ -81,8 +82,12 @@ async function registerRow(owner: PassOwner, localSessionId: string): Promise<Ro
         checkpointRevision: sent.checkpointRevision,
         terminalCompleted: outcome.terminalCompleted,
       };
-      if ((await linkBundledSession(owner.identity, link, receipt)) === 'linked') {
-        linkListeners.forEach((listener) => listener(link));
+      const result = await linkBundledSession(owner.identity, link, receipt);
+      if (result === 'linked') linkListeners.forEach((listener) => listener(link));
+      // A row is marked completed before its final ops flush, so only the same
+      // bitmap earns the same answer. A row sent in progress never said it finished.
+      if (result === 'sessionNotFinished' && sent.localState === 'completed') {
+        unfinishedBitmaps.set(localSessionId, sent.packedBitmapBase64);
       }
       return 'nextRow';
     }
