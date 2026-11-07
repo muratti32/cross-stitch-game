@@ -290,6 +290,12 @@ export async function retryDownload(localSessionId: string): Promise<void> {
     });
 
     if (!response.ok) {
+      if (response.status === 403) {
+        const body = await response.json().catch(() => null);
+        if (body?.code === 'unlock_required') {
+          throw new UnlockRequiredError(body.patternId ?? session.patternId, body.price ?? 0);
+        }
+      }
       throw new Error(`Failed to refresh grant: ${response.status}`);
     }
 
