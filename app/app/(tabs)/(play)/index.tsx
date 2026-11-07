@@ -15,7 +15,8 @@ import {
   useDownloadProgressStore,
 } from '@/session-preparation';
 import { Ionicons } from '@expo/vector-icons';
-import { catalogDetailRoute, isUnlockRequiredNote } from '@/session-preparation/unlockRequiredRoute';
+import { catalogDetailRoute } from '@/navigation/catalogDetailRoute';
+import { isUnlockRequiredNote } from '@/session-preparation/unlockRequiredNote';
 
 const { width: screenWidth } = Dimensions.get('window');
 // Padding horizontal is Theme.spacing.lg (16) * 2 = 32
@@ -388,13 +389,19 @@ function PreparingSessionCard({
               })();
             }}
             disabled={busy}
+            accessibilityRole="button"
+            accessibilityLabel={unlockRequired ? t('home.empty.action') : undefined}
             style={({ pressed }) => [
               styles.imageActionBtn,
               styles.imageActionBtnActive,
               pressed && styles.imageActionBtnPressed,
             ]}
           >
-            <Ionicons name="refresh" size={14} color="#FFFFFF" />
+            <Ionicons
+              name={unlockRequired ? 'lock-open-outline' : 'refresh'}
+              size={14}
+              color="#FFFFFF"
+            />
           </Pressable>
         )}
       </View>
@@ -433,7 +440,7 @@ function PreparingSessionCard({
 
         {failed ? (
           <Text style={styles.preparingErrorText} numberOfLines={1}>
-            {unlockRequired ? t('home.empty.action') : session.errorNote}
+            {unlockRequired ? t('error.fallbackMessage') : session.errorNote}
           </Text>
         ) : (
           <View style={styles.progressContainer}>

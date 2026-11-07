@@ -51,8 +51,8 @@ jest.mock('../../bundled-patterns', () => ({ loadBundledPattern: jest.fn() }));
 jest.mock('../../session-preparation', () => {
   class UnlockRequiredError extends Error {
     patternId: string;
-    price: number;
-    constructor(patternId: string, price: number) {
+    price: number | null;
+    constructor(patternId: string, price: number | null) {
       super('unlock_required');
       this.patternId = patternId;
       this.price = price;
@@ -85,8 +85,8 @@ jest.mock('../../api/progressSync', () => ({ ProgressSyncError: class extends Er
 type Hook = ReturnType<typeof useStitchingSession>;
 let hook: Hook;
 
-function Harness() {
-  hook = useStitchingSession('session_local');
+function Harness({ id = 'session_local' }: { id?: string }) {
+  hook = useStitchingSession(id);
   return null;
 }
 
@@ -102,6 +102,31 @@ test('an unlock_required refresh while reopening a purged pattern exposes the un
 
   expect(hook.unlockRequired).toMatchObject({ patternId: 'pattern-1', price: 75 });
   expect(hook.loading).toBe(false);
+  await act(async () => {
+    renderer?.unmount();
+  });
+});
+
+test('loading another session clears the previous unlock-required state while it loads', async () => {
+  jest
+    .mocked(retryDownload)
+    .mockRejectedValueOnce(new UnlockRequiredError('pattern-1', 75))
+    .mockReturnValueOnce(new Promise<void>(() => undefined));
+  jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+  jest.spyOn(console, 'error').mockImplementation(() => undefined);
+
+  let renderer: TestRenderer.ReactTestRenderer | undefined;
+  await act(async () => {
+    renderer = TestRenderer.create(<Harness id="session_a" />);
+  });
+  expect(hook.unlockRequired).not.toBeNull();
+
+  await act(async () => {
+    renderer?.update(<Harness id="session_b" />);
+  });
+
+  expect(hook.loading).toBe(true);
+  expect(hook.unlockRequired).toBeNull();
   await act(async () => {
     renderer?.unmount();
   });

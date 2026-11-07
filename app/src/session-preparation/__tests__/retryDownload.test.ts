@@ -94,4 +94,26 @@ describe('waitUntilSessionReady', () => {
       UnlockRequiredError,
     );
   });
+
+  test('carries no invented price when the note has none', async () => {
+    mockedDb.getSession.mockResolvedValue({
+      id: 'local-1',
+      patternId: 'pattern-1',
+      status: 'preparing',
+      errorNote: 'unlock_required',
+    } as never);
+
+    await expect(waitUntilSessionReady('local-1', 1_000)).rejects.toMatchObject({
+      patternId: 'pattern-1',
+      price: null,
+    });
+  });
+});
+
+describe('unlock_required response without a price', () => {
+  test('maps a missing price to null, not 0', async () => {
+    mockedFetch.mockResolvedValue(jsonResponse(403, { code: 'unlock_required', patternId: 'pattern-1' }));
+
+    await expect(retryDownload('local-1')).rejects.toMatchObject({ price: null });
+  });
 });

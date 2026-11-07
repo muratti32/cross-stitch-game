@@ -19,12 +19,12 @@ import {
 import { base64ToUint8Array, uint8ArrayToBase64 } from '../local-db/helpers';
 import { apiFetch } from '../api/apiFetch';
 import { Config } from '../config';
-import { isUnlockRequiredNote } from './unlockRequiredRoute';
+import { isUnlockRequiredNote, UNLOCK_REQUIRED_NOTE } from './unlockRequiredNote';
 import { registerBundledSessions } from '../sync/bundledSessionRegistrar';
 
 export class UnlockRequiredError extends Error {
-  constructor(readonly patternId: string, readonly price: number) {
-    super('unlock_required');
+  constructor(readonly patternId: string, readonly price: number | null) {
+    super(UNLOCK_REQUIRED_NOTE);
     this.name = 'UnlockRequiredError';
   }
 }
@@ -38,8 +38,8 @@ interface UnlockRequiredBody {
 async function throwIfUnlockRequired(response: Response, patternId: string): Promise<void> {
   if (response.status !== 403) return;
   const body = (await response.json().catch(() => null)) as UnlockRequiredBody | null;
-  if (body?.code === 'unlock_required') {
-    throw new UnlockRequiredError(body.patternId ?? patternId, body.price ?? 0);
+  if (body?.code === UNLOCK_REQUIRED_NOTE) {
+    throw new UnlockRequiredError(body.patternId ?? patternId, body.price ?? null);
   }
 }
 
@@ -279,7 +279,7 @@ export async function waitUntilSessionReady(
       return session;
     }
     if (isUnlockRequiredNote(session.errorNote)) {
-      throw new UnlockRequiredError(session.patternId, 0);
+      throw new UnlockRequiredError(session.patternId, null);
     }
     if (session.errorNote) {
       throw new Error(session.errorNote);

@@ -7,7 +7,7 @@ import { Screen, Button, LocatorCoinShortfallSheet } from '@/components';
 import type { LocatorShortfallPrimaryAction } from '@/components';
 import { Theme } from '@/theme/theme';
 import { formatNumber } from '@/i18n';
-import { catalogDetailRoute } from '@/session-preparation/unlockRequiredRoute';
+import { catalogDetailRoute } from '@/navigation/catalogDetailRoute';
 import { createReplaySession, generateUUID } from '@/local-db';
 import { StitchRenderer, type StitchRendererRef, nextRemainingCell } from '@/renderer';
 import { useGameplayStore } from '@/store/gameplayStore';
@@ -555,7 +555,7 @@ export default function SessionReadyScreen() {
           {unlockRequired !== null && (
             <Button
               title={
-                unlockRequired.price > 0
+                unlockRequired.price !== null
                   ? t('catalog:detail.unlockButton', {
                       price: formatNumber(unlockRequired.price, locale),
                     })

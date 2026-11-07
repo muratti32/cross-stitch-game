@@ -320,6 +320,7 @@ export function useStitchingSession(sessionId: string | undefined) {
       try {
         setLoading(true);
         setError(null);
+        setUnlockRequired(null);
 
         // 1. Init Database
         await initDatabase();
