@@ -95,6 +95,7 @@ export default function SessionReadyScreen() {
     dismissSyncConflict,
     syncTick,
     patternRemoved,
+    unlockRequired,
   } = useStitchingSession(sessionId);
 
   // The exposure observer is active only while this route has a real session
@@ -547,7 +548,13 @@ export default function SessionReadyScreen() {
           {t('error.title')}
         </Text>
         <Text style={styles.errorText} allowFontScaling={true}>
-          {error || t('error.fallbackMessage')}
+          {unlockRequired !== null
+            ? unlockRequired.price > 0
+              ? t('catalog:detail.unlockButton', {
+                  price: formatNumber(unlockRequired.price, locale),
+                })
+              : t('error.fallbackMessage')
+            : error || t('error.fallbackMessage')}
         </Text>
         <View style={styles.errorActions}>
           <Button

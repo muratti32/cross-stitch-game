@@ -31,6 +31,7 @@ import {
   deleteOfflinePatternFile,
   getOfflinePatternPath,
   retryDownload,
+  UnlockRequiredError,
   waitUntilSessionReady,
 } from '../session-preparation';
 import { decodePatternArtifact } from '../pattern-artifact';
@@ -50,6 +51,7 @@ import {
 export function useStitchingSession(sessionId: string | undefined) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [unlockRequired, setUnlockRequired] = useState<UnlockRequiredError | null>(null);
   const [session, setSession] = useState<StitchingSession | null>(null);
   const [patternData, setPatternData] = useState<PatternData | null>(null);
   const [rendererState, setRendererState] = useState<RendererState | null>(null);
@@ -466,6 +468,7 @@ export function useStitchingSession(sessionId: string | undefined) {
       } catch (err) {
         console.error('Failed to load stitching session:', err);
         if (active) {
+          setUnlockRequired(err instanceof UnlockRequiredError ? err : null);
           setError(err instanceof Error ? err.message : 'Unknown error during session setup.');
           setLoading(false);
         }
@@ -742,6 +745,7 @@ export function useStitchingSession(sessionId: string | undefined) {
   return {
     loading,
     error,
+    unlockRequired,
     session,
     patternData,
     rendererState,

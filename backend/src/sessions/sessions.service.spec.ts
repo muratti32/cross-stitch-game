@@ -104,23 +104,30 @@ describe('SessionsService.cancelSession', () => {
   });
 });
 
-describe('SessionsService.refreshGrant', () => {
+describe('SessionsService grants for Promotion-Locked sessions', () => {
   const sessionId = '0d9f7c9a-1111-4222-8333-444455556666';
-  const principal = { id: 'owner-1', type: 'account', tokenVersion: 0 } as never;
+  const accountPrincipal = { id: 'owner-1', type: 'account', tokenVersion: 0 } as never;
+  const guestPrincipal = { id: 'guest-1', type: 'guest', tokenVersion: 0 } as never;
 
-  function refreshHarness(unlockPriceTier: number | null, owned: boolean) {
+  function harness(options: {
+    unlockPriceTier: 'small' | null;
+    owned: boolean;
+    patternStatus?: string;
+    principalType?: 'account' | 'guest';
+  }) {
+    const principalType = options.principalType ?? 'account';
     const session = {
       id: sessionId,
       patternId: 'pattern-1',
-      principalId: 'owner-1',
-      principalType: 'account',
+      principalId: principalType === 'account' ? 'owner-1' : 'guest-1',
+      principalType,
       status: 'active',
     };
     const pattern = {
       id: 'pattern-1',
-      status: 'available',
+      status: options.patternStatus ?? 'available',
       visibility: 'catalog',
-      unlockPriceTier,
+      unlockPriceTier: options.unlockPriceTier,
       artifactByteLength: 10,
       artifactChecksum: 'abc',
       artifactSchemaVersion: 1,
@@ -131,12 +138,16 @@ describe('SessionsService.refreshGrant', () => {
           await Promise.resolve();
           return entity.name === 'StitchingSessionEntity' ? session : pattern;
         }),
+        findOneBy: jest.fn(async () => {
+          await Promise.resolve();
+          return session;
+        }),
       }),
     };
     const dataSource = {
       transaction: (callback: (value: typeof manager) => Promise<unknown>) => callback(manager),
     };
-    const coinLedger = { isPatternUnlocked: jest.fn().mockResolvedValue(owned) };
+    const coinLedger = { isPatternUnlocked: jest.fn().mockResolvedValue(options.owned) };
     const service = new SessionsService(
       null as unknown as Repository<StitchingSessionEntity>,
       null as unknown as Repository<SessionProgressFlagEntity>,
@@ -151,23 +162,48 @@ describe('SessionsService.refreshGrant', () => {
     return { coinLedger, service };
   }
 
-  it('rejects a locked paid pattern with unlock_required', async () => {
-    const { service } = refreshHarness(1, false);
-    await expect(service.refreshGrant(principal, sessionId)).rejects.toMatchObject({
-      response: { code: 'unlock_required', patternId: 'pattern-1' },
+  it('refresh-grant rejects a locked paid pattern with unlock_required and its price', async () => {
+    const { service } = harness({ unlockPriceTier: 'small', owned: false });
+    await expect(service.refreshGrant(accountPrincipal, sessionId)).rejects.toMatchObject({
+      response: { code: 'unlock_required', patternId: 'pattern-1', price: 75 },
     });
   });
 
-  it('returns a grant for a free pattern without consulting the ledger', async () => {
-    const { coinLedger, service } = refreshHarness(null, false);
-    const result = await service.refreshGrant(principal, sessionId);
+  it('refresh-grant checks the ledger as a guest for a guest principal', async () => {
+    const { coinLedger, service } = harness({
+      unlockPriceTier: 'small',
+      owned: true,
+      principalType: 'guest',
+    });
+    await service.refreshGrant(guestPrincipal, sessionId);
+    expect(coinLedger.isPatternUnlocked).toHaveBeenCalledWith(
+      expect.anything(),
+      { id: 'guest-1', type: 'guest' },
+      'pattern-1',
+    );
+  });
+
+  it('refresh-grant returns a grant for a free pattern without consulting the ledger', async () => {
+    const { coinLedger, service } = harness({ unlockPriceTier: null, owned: false });
+    const result = await service.refreshGrant(accountPrincipal, sessionId);
     expect(result.grant.url).toContain('/v1/artifacts/pattern-1');
     expect(coinLedger.isPatternUnlocked).not.toHaveBeenCalled();
   });
 
-  it('returns a grant for an unlocked paid pattern', async () => {
-    const { service } = refreshHarness(1, true);
-    const result = await service.refreshGrant(principal, sessionId);
+  it('refresh-grant returns a grant for an unlocked paid pattern', async () => {
+    const { service } = harness({ unlockPriceTier: 'small', owned: true });
+    const result = await service.refreshGrant(accountPrincipal, sessionId);
     expect(result.sessionId).toBe(sessionId);
+  });
+
+  it('prepare rejects a withdrawn locked pattern with an existing session instead of granting', async () => {
+    const { service } = harness({
+      unlockPriceTier: 'small',
+      owned: false,
+      patternStatus: 'withdrawn',
+    });
+    await expect(service.prepareSession(accountPrincipal, 'pattern-1')).rejects.toMatchObject({
+      response: { code: 'unlock_required' },
+    });
   });
 });

@@ -80,6 +80,7 @@ export class SessionsService {
         ) {
           throw new ConflictException('Pattern is not available');
         }
+        await this.assertPatternUnlocked(manager, principal, pattern);
         return this.preparationResponse(existing.id, pattern);
       }
 

@@ -28,6 +28,20 @@ export class UnlockRequiredError extends Error {
   }
 }
 
+interface UnlockRequiredBody {
+  code?: string;
+  patternId?: string;
+  price?: number;
+}
+
+async function throwIfUnlockRequired(response: Response, patternId: string): Promise<void> {
+  if (response.status !== 403) return;
+  const body = (await response.json().catch(() => null)) as UnlockRequiredBody | null;
+  if (body?.code === 'unlock_required') {
+    throw new UnlockRequiredError(body.patternId ?? patternId, body.price ?? 0);
+  }
+}
+
 interface DownloadProgressState {
   progress: Record<string, number>;
   setProgress: (sessionId: string, value: number) => void;
@@ -213,7 +227,9 @@ async function prepareRemoteSession(
   const existing = await findActiveSessionForPattern(patternId, source);
   if (existing) {
     if (existing.status === 'preparing') {
-      await retryDownload(existing.id).catch(() => undefined);
+      await retryDownload(existing.id).catch((err: unknown) => {
+        if (err instanceof UnlockRequiredError) throw err;
+      });
     }
     return existing;
   }
@@ -225,12 +241,7 @@ async function prepareRemoteSession(
   });
 
   if (!response.ok) {
-    if (response.status === 403) {
-      const body = await response.json().catch(() => null);
-      if (body?.code === 'unlock_required') {
-        throw new UnlockRequiredError(body.patternId ?? patternId, body.price ?? 0);
-      }
-    }
+    await throwIfUnlockRequired(response, patternId);
     if (response.status === 409) {
       throw new Error('Pattern is not available');
     }
@@ -266,6 +277,9 @@ export async function waitUntilSessionReady(
     if (session.status !== 'preparing') {
       return session;
     }
+    if (session.errorNote === 'unlock_required') {
+      throw new UnlockRequiredError(session.patternId, 0);
+    }
     if (session.errorNote) {
       throw new Error(session.errorNote);
     }
@@ -290,12 +304,7 @@ export async function retryDownload(localSessionId: string): Promise<void> {
     });
 
     if (!response.ok) {
-      if (response.status === 403) {
-        const body = await response.json().catch(() => null);
-        if (body?.code === 'unlock_required') {
-          throw new UnlockRequiredError(body.patternId ?? session.patternId, body.price ?? 0);
-        }
-      }
+      await throwIfUnlockRequired(response, session.patternId);
       throw new Error(`Failed to refresh grant: ${response.status}`);
     }
 
