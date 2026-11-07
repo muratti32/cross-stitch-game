@@ -965,10 +965,11 @@ export async function markPaidPatternsBannerSeen(): Promise<void> {
  * replay of an already-applied sequence.
  */
 async function getDeviceSeqHighWithDb(db: SQLite.SQLiteDatabase): Promise<number> {
-  const row = await db.getFirstAsync<{ value: string }>(
-    "SELECT value FROM device_config WHERE key = 'device_seq'"
+  const row = await db.getFirstAsync<{ value: string | null; stored: number | null }>(
+    `SELECT (SELECT value FROM device_config WHERE key = 'device_seq') AS value,
+            (SELECT MAX(device_seq) FROM progress_ops) AS stored`
   );
-  return row ? parseInt(row.value, 10) : 0;
+  return Math.max(parseInt(row?.value ?? '0', 10), row?.stored ?? 0);
 }
 
 async function setDeviceSeqHighWithDb(db: SQLite.SQLiteDatabase, value: number): Promise<void> {
