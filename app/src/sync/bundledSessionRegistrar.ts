@@ -76,7 +76,11 @@ async function registerRow(owner: PassOwner, localSessionId: string): Promise<Ro
       return 'nextRow';
     case 'registered': {
       const link = { localSessionId, remoteSessionId: outcome.sessionId };
-      if (await linkBundledSession(owner.identity, link, owner.isAccount ? sent.foldedThroughSeq : 0)) {
+      const receipt = {
+        foldedThroughSeq: owner.isAccount ? sent.foldedThroughSeq : 0,
+        terminalCompleted: outcome.terminalCompleted,
+      };
+      if (await linkBundledSession(owner.identity, link, receipt)) {
         linkListeners.forEach((listener) => listener(link));
       }
       return 'nextRow';

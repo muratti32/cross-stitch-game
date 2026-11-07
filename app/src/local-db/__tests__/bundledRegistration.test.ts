@@ -51,6 +51,9 @@ function op(sessionId: string, cellIndex: number, deviceSeq: number, desiredStat
   };
 }
 
+const receipt = (foldedThroughSeq: number) => ({ foldedThroughSeq, terminalCompleted: false });
+const finishedReceipt = { foldedThroughSeq: 0, terminalCompleted: true };
+
 const startRow = (patternId: string = HEART) => createSession(patternId, 'checksum');
 
 async function completedRow(patternId: string, completedAt: string) {
@@ -75,9 +78,9 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
     test('offers an unlinked row and leaves linked rows, replays and other sources out', async () => {
       const unlinked = await startRow(HEART);
       const linked = await startRow(STAR);
-      await linkBundledSession(GUEST, { localSessionId: linked.id, remoteSessionId: REMOTE }, 0);
+      await linkBundledSession(GUEST, { localSessionId: linked.id, remoteSessionId: REMOTE }, receipt(0));
       const parent = await completedRow(STAR, '2026-02-01T10:00:00.000Z');
-      await linkBundledSession(GUEST, { localSessionId: parent.id, remoteSessionId: REMOTE }, 0);
+      await linkBundledSession(GUEST, { localSessionId: parent.id, remoteSessionId: REMOTE }, finishedReceipt);
       await createReplaySession(parent.id);
       await createSession(HEART, 'checksum', 'catalog', 'ready', null);
 
@@ -97,7 +100,7 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
 
       expect(await listBundledRegistrationCandidates()).toEqual([newest.id]);
 
-      await linkBundledSession(GUEST, { localSessionId: newest.id, remoteSessionId: REMOTE }, 0);
+      await linkBundledSession(GUEST, { localSessionId: newest.id, remoteSessionId: REMOTE }, finishedReceipt);
 
       expect(await listBundledRegistrationCandidates()).toEqual([]);
     });
@@ -206,7 +209,7 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
     test('a linked row keeps its unacked ops and drops the acked ones', async () => {
       const { id } = await startRow();
       await insertProgressOpsBatch([op(id, 0, 1), op(id, 1, 2)]);
-      await linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, 1);
+      await linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, receipt(1));
 
       await saveCheckpoint(id, 2, cells(0, 1));
 
@@ -216,7 +219,7 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
 
     test('ops kept below the checkpoint never override it in a fold', async () => {
       const { id } = await startRow();
-      await linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, 0);
+      await linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, receipt(0));
       await insertProgressOpsBatch([op(id, 0, 1), op(id, 1, 2), op(id, 2, 3)]);
 
       await saveCheckpoint(id, 3, cells(0));
@@ -233,7 +236,7 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       const { id } = await startRow();
       await insertProgressOpsBatch([op(id, 0, 1), op(id, 1, 2), op(id, 2, 3)]);
 
-      await expect(linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, 2)).resolves.toBe(true);
+      await expect(linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, receipt(2))).resolves.toBe(true);
 
       expect((await getSession(id))?.remoteSessionId).toBe(REMOTE);
       expect((await getUnackedProgressOps(id)).map((pending) => pending.deviceSeq)).toEqual([3]);
@@ -246,7 +249,7 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       await insertProgressOpsBatch([op(id, 0, 1)]);
       await openNamespace(ACCOUNT);
 
-      await expect(linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, 1)).resolves.toBe(false);
+      await expect(linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, receipt(1))).resolves.toBe(false);
 
       await openNamespace(GUEST);
       expect((await getSession(id))?.remoteSessionId).toBeNull();
@@ -256,10 +259,10 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
     test('a row linked already keeps its identity and acks nothing more', async () => {
       const { id } = await startRow();
       await insertProgressOpsBatch([op(id, 0, 1)]);
-      await linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, 0);
+      await linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, receipt(0));
 
       await expect(
-        linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd' }, 1),
+        linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd' }, receipt(1)),
       ).resolves.toBe(false);
 
       expect((await getSession(id))?.remoteSessionId).toBe(REMOTE);
@@ -272,18 +275,18 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       const db = mockDatabases.raw(getDatabaseFilename(GUEST));
       db.exec(`CREATE TRIGGER refuse_ack BEFORE UPDATE OF acked ON progress_ops BEGIN SELECT RAISE(ABORT, 'disk full'); END;`);
 
-      await expect(linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, 1)).rejects.toThrow('disk full');
+      await expect(linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, receipt(1))).rejects.toThrow('disk full');
 
       db.exec('DROP TRIGGER refuse_ack;');
       expect((await getSession(id))?.remoteSessionId).toBeNull();
-      await expect(linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, 1)).resolves.toBe(true);
+      await expect(linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, receipt(1))).resolves.toBe(true);
     });
 
     test('a completed row refuses a session the server did not finish', async () => {
       const { id } = await completedRow(HEART, '2026-02-01T10:00:00.000Z');
       await insertProgressOpsBatch([op(id, 0, 1)]);
 
-      await linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, { foldedThroughSeq: 1, terminalCompleted: false });
+      await linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, receipt(1));
 
       expect((await getSession(id))?.remoteSessionId).toBeNull();
       expect(await getUnackedProgressOps(id)).toHaveLength(1);
@@ -292,7 +295,7 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
     test('a completed row links to a session the server finished', async () => {
       const { id } = await completedRow(HEART, '2026-02-01T10:00:00.000Z');
 
-      await linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, { foldedThroughSeq: 0, terminalCompleted: true });
+      await linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, finishedReceipt);
 
       expect((await getSession(id))?.remoteSessionId).toBe(REMOTE);
     });
@@ -301,7 +304,7 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       const { id } = await startRow();
       await deleteSession(id);
 
-      await expect(linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, 0)).resolves.toBe(false);
+      await expect(linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, receipt(0))).resolves.toBe(false);
     });
   });
 });

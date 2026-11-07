@@ -1973,19 +1973,26 @@ export interface BundledSessionLink {
   remoteSessionId: string;
 }
 
+export interface BundledRegistrationReceipt {
+  foldedThroughSeq: number;
+  terminalCompleted: boolean;
+}
+
 export async function linkBundledSession(
   identity: string,
   link: BundledSessionLink,
-  foldedThroughSeq: number,
+  { foldedThroughSeq, terminalCompleted }: BundledRegistrationReceipt,
 ): Promise<boolean> {
   return withDatabase(async (db) => {
     if (activeIdentity !== identity) return false;
     let linked = false;
     await runInTransaction(db, async () => {
       const result = await db.runAsync(
-        'UPDATE sessions SET remote_session_id = ? WHERE id = ? AND remote_session_id IS NULL',
+        `UPDATE sessions SET remote_session_id = ?
+         WHERE id = ? AND remote_session_id IS NULL AND (status <> 'completed' OR ? = 1)`,
         link.remoteSessionId,
         link.localSessionId,
+        terminalCompleted ? 1 : 0,
       );
       linked = result.changes > 0;
       if (!linked) return;

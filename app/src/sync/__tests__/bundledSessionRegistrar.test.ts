@@ -93,7 +93,7 @@ describe('who registers what', () => {
     expect(sentBodies()).toEqual([
       { patternId: HEART, localState: 'in_progress', completedAt: null, packedBitmapBase64: BITMAP },
     ]);
-    expect(mockLink).toHaveBeenCalledWith(ACCOUNT, { localSessionId: 'row_heart', remoteSessionId: REMOTE }, 7);
+    expect(mockLink).toHaveBeenCalledWith(ACCOUNT, { localSessionId: 'row_heart', remoteSessionId: REMOTE }, { foldedThroughSeq: 7, terminalCompleted: false });
   });
 
   test('an account sends a completed row with its bitmap and completion time', async () => {
@@ -124,7 +124,7 @@ describe('who registers what', () => {
     await registrar.registerBundledSessions();
 
     expect(sentBodies()).toEqual([{ patternId: HEART, localState: 'in_progress', completedAt: null, packedBitmapBase64: null }]);
-    expect(mockLink).toHaveBeenCalledWith(GUEST, { localSessionId: 'row_heart', remoteSessionId: REMOTE }, 0);
+    expect(mockLink).toHaveBeenCalledWith(GUEST, { localSessionId: 'row_heart', remoteSessionId: REMOTE }, { foldedThroughSeq: 0, terminalCompleted: false });
   });
 
   test('a Guest leaves a completed row local and still registers the next one', async () => {
@@ -208,7 +208,7 @@ describe('the link', () => {
     response.resolve(registered());
     await pass;
 
-    expect(mockLink).toHaveBeenCalledWith(ACCOUNT, expect.anything(), 7);
+    expect(mockLink).toHaveBeenCalledWith(ACCOUNT, expect.anything(), expect.objectContaining({ foldedThroughSeq: 7 }));
     await expect(mockLink.mock.results[0].value).resolves.toBe(false);
     expect(listener).not.toHaveBeenCalled();
   });
@@ -269,7 +269,7 @@ describe('a row that finishes while the request is out', () => {
       ['in_progress', BITMAP],
       ['completed', FULLER_BITMAP],
     ]);
-    expect(mockLink).toHaveBeenCalledWith(ACCOUNT, expect.anything(), 9);
+    expect(mockLink).toHaveBeenCalledWith(ACCOUNT, expect.anything(), expect.objectContaining({ foldedThroughSeq: 9 }));
   });
 
   test('a Guest leaves it local', async () => {
