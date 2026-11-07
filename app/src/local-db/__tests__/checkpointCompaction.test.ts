@@ -50,6 +50,24 @@ async function rowWithTwoOps(remoteSessionId: string | null): Promise<string> {
   return id;
 }
 
+(nodeSqliteAvailable ? describe : describe.skip)('device_seq after an install lost its counter write', () => {
+  test('a new op numbers past every stored op', async () => {
+    mockDatabases.clear();
+    useIdentityStore.setState({ guestId: null, accountId: null, isAccount: false });
+    await openNamespace(ACCOUNT);
+    const { id } = await createSession(HEART, 'bundled', 'bundled', 'active', REMOTE, META);
+    await insertProgressOpsBatch([op(id, 0), op(id, 1)]);
+    const calls = (jest.requireMock('expo-sqlite').openDatabaseAsync as jest.Mock).mock.calls;
+    const raw = await mockDatabases.open(calls[calls.length - 1][0] as string);
+    await raw.execAsync("UPDATE device_config SET value = '0' WHERE key = 'device_seq'");
+
+    await insertProgressOpsBatch([op(id, 2)]);
+
+    const seqs = (await getProgressOps(id)).map((stored) => stored.deviceSeq);
+    expect(new Set(seqs).size).toBe(3);
+  });
+});
+
 (nodeSqliteAvailable ? describe : describe.skip)('what a checkpoint compacts', () => {
   beforeEach(async () => {
     mockDatabases.clear();
