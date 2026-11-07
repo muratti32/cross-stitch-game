@@ -451,3 +451,86 @@ describe('ProgressSyncService.complete', () => {
     ).rejects.toBeInstanceOf(NotFoundException);
   });
 });
+
+describe('ProgressSyncService.sync progress flag', () => {
+  function syncHarness(existingOp: boolean) {
+    const query = jest.fn(async (sql: string): Promise<readonly object[]> => {
+      await Promise.resolve();
+      if (sql.includes("principal_type = 'account'") && sql.includes('FOR UPDATE')) {
+        return [{ id: sessionId, principalType: 'account', principalId: accountId }];
+      }
+      if (sql.includes('pg_advisory_xact_lock')) return [{ locked: null }];
+      if (sql.includes('SELECT p.status')) return [{ status: 'available', patternId }];
+      if (sql.includes('INSERT INTO sessions.session_sync_state')) return [];
+      if (sql.includes('SELECT revision, terminal_completed_at')) {
+        return [{ revision: '3', terminalCompletedAt: null }];
+      }
+      if (sql.includes('FROM sessions.session_device_watermarks')) return [];
+      if (sql.includes('SELECT op_id AS "opId"\n       FROM sessions.progress_operations')) {
+        return existingOp ? [{ opId: 'x' }] : [];
+      }
+      if (sql.includes('FROM sessions.session_cell_state')) return [];
+      if (sql.includes('INSERT INTO sessions.session_cell_state')) return [];
+      if (sql.includes('INSERT INTO sessions.progress_operations')) return [];
+      if (sql.includes('INSERT INTO sessions.session_progress_flags')) return [];
+      if (sql.includes('UPDATE sessions.session_sync_state')) return [];
+      if (sql.includes('server_revision > $2')) return [];
+      throw new Error(`Unexpected query: ${sql}`);
+    });
+    const manager = { query };
+    const dataSource = {
+      transaction: jest.fn(
+        (callback: (value: typeof manager) => Promise<unknown>) => callback(manager),
+      ),
+    };
+    const promotionService = { assertNotLocked: jest.fn().mockResolvedValue(undefined) };
+    const service = new ProgressSyncService(
+      dataSource as never,
+      {} as never,
+      {} as never,
+      promotionService as never,
+    );
+    return { query, service };
+  }
+
+  const operation = {
+    opId: '00000000-0000-4000-8000-0000000000a1',
+    deviceSeq: 0,
+    cellIndex: 4,
+    desiredState: 'completed' as const,
+    baseRevision: 0,
+  };
+  const flagWrites = (query: jest.Mock) =>
+    query.mock.calls.filter(([sql]) =>
+      String(sql).includes('INSERT INTO sessions.session_progress_flags'),
+    );
+
+  it('sets has_any_progress when an accepted operation writes a cell', async () => {
+    const { query, service } = syncHarness(false);
+    await service.sync(account, sessionId, {
+      deviceId,
+      sinceRevision: 0,
+      operations: [operation],
+    });
+    expect(flagWrites(query)).toHaveLength(1);
+    expect(flagWrites(query)[0][1]).toEqual([sessionId]);
+  });
+
+  it('leaves has_any_progress alone for an empty or duplicate-only sync', async () => {
+    const empty = syncHarness(false);
+    await empty.service.sync(account, sessionId, {
+      deviceId,
+      sinceRevision: 0,
+      operations: [],
+    });
+    expect(flagWrites(empty.query)).toHaveLength(0);
+
+    const duplicate = syncHarness(true);
+    await duplicate.service.sync(account, sessionId, {
+      deviceId,
+      sinceRevision: 0,
+      operations: [operation],
+    });
+    expect(flagWrites(duplicate.query)).toHaveLength(0);
+  });
+});

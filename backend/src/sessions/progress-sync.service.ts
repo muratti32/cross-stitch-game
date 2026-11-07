@@ -26,7 +26,7 @@ import { PromotionService } from '../promotion/promotion.service';
 import { applyPackagedProgress } from '../promotion/drained-session';
 import { BUNDLED_STARTERS } from '../catalog/bundled-starters.generated';
 import { stitchableCells, type PatternCellCounts } from '../catalog/stitchable-cells';
-import { upsertActiveSession } from './active-session';
+import { markSessionHasProgress, upsertActiveSession } from './active-session';
 
 interface SessionRecord {
   id: string;
@@ -151,6 +151,7 @@ export class ProgressSyncService {
       let revision = Number(syncState.revision);
       const terminalCompletedAt = syncState.terminalCompletedAt;
       const acknowledgements: ProgressAcknowledgement[] = [];
+      let wroteProgress = false;
       const watermark = await this.getWatermark(manager, sessionId, dto.deviceId);
       const operations = [...dto.operations].sort(
         (left, right) => left.deviceSeq - right.deviceSeq,
@@ -204,6 +205,7 @@ export class ProgressSyncService {
                  revision = EXCLUDED.revision`,
             [sessionId, operation.cellIndex, decision.nextState, revision],
           );
+          wroteProgress = true;
         }
 
         await this.insertOperation(manager, {
@@ -217,6 +219,8 @@ export class ProgressSyncService {
         });
         acknowledgements.push({ opId: operation.opId, status: 'applied' });
       }
+
+      if (wroteProgress) await markSessionHasProgress(manager, sessionId);
 
       await manager.query<readonly SyncStateRecord[]>(
         `UPDATE sessions.session_sync_state

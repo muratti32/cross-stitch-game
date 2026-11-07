@@ -25,3 +25,16 @@ export async function upsertActiveSession(
   );
   return sessionId;
 }
+
+/** cancelSession deletes a session whose flag is false, so every progress write sets it. */
+export async function markSessionHasProgress(
+  manager: EntityManager,
+  sessionId: string,
+): Promise<void> {
+  await manager.query(
+    `INSERT INTO sessions.session_progress_flags (session_id, has_any_progress)
+     VALUES ($1, true)
+     ON CONFLICT (session_id) DO UPDATE SET has_any_progress = true`,
+    [sessionId],
+  );
+}

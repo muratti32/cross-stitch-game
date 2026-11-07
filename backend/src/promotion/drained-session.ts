@@ -1,5 +1,7 @@
 import type { EntityManager } from 'typeorm';
 
+import { markSessionHasProgress } from '../sessions/active-session';
+
 import { packCompletedCells, PackagedSession, unpackCompletedCells } from './packaged-session';
 
 interface SurvivingSessionProgress {
@@ -97,13 +99,7 @@ async function writeCompletedCells(
      WHERE sync.session_id = $1::uuid`,
     [sessionId, deviceId, cells],
   );
-  // cancelSession deletes a session whose flag is false.
-  await manager.query(
-    `INSERT INTO sessions.session_progress_flags (session_id, has_any_progress)
-     VALUES ($1, true)
-     ON CONFLICT (session_id) DO UPDATE SET has_any_progress = true`,
-    [sessionId],
-  );
+  await markSessionHasProgress(manager, sessionId);
 }
 
 /** Never mints a First Completion Reward: the commit already resolved the economy. */
