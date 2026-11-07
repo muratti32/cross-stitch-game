@@ -289,7 +289,7 @@ async function prepareRemoteSession(
         if (err instanceof UnlockRequiredError) throw err;
       });
     }
-    if (existing.remoteSessionId == null && existing.replayOf == null && existing.source === 'catalog' && existing.status !== 'preparing') {
+    if (existing.remoteSessionId == null && existing.replayOf == null && existing.status !== 'preparing') {
       const identity = await linkingIdentity();
       if (identity !== null) await linkAwaitingRow(identity, existing);
     }

@@ -1030,9 +1030,10 @@ async function remoteSessionHeldByOtherRow(
 }
 
 /**
- * Catalog rows the server has not given a session of their own: the server handed
- * the id to an earlier row, or promotion carried the row in without one. Replays
- * and Personal Patterns stay unlinked by design, as the bundled registrar leaves them.
+ * Catalog and personal rows the server has not given a session of their own: the
+ * server handed the id to an earlier row, or promotion carried the row in without
+ * one. A replay stays unlinked by design, and a Personal Pattern still waiting to
+ * sync has no server session to take until its pattern exists there.
  */
 export async function listSessionsAwaitingServerSession(): Promise<StitchingSession[]> {
   return withDatabase(async (db) => {
@@ -1040,7 +1041,8 @@ export async function listSessionsAwaitingServerSession(): Promise<StitchingSess
       `SELECT id FROM sessions
        WHERE remote_session_id IS NULL
          AND replay_of IS NULL
-         AND source = 'catalog'
+         AND source IN ('catalog', 'personal')
+         AND NOT EXISTS (SELECT 1 FROM pending_personal_patterns WHERE pattern_id = sessions.pattern_id)
        ORDER BY created_at ASC`,
     );
     const sessions: StitchingSession[] = [];

@@ -304,12 +304,24 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       expect(ids).toEqual([catalog.id, preparing.id, completed.id].sort());
     });
 
-    test('replays and personal rows stay unlinked by design', async () => {
+    test('replays stay unlinked by design', async () => {
       const parent = await createSession(HEART, 'checksum', 'catalog', 'completed', REMOTE);
       await createReplaySession(parent.id);
-      await createSession(STAR, 'checksum', 'personal', 'ready', null);
 
       expect(await listSessionsAwaitingServerSession()).toEqual([]);
+    });
+
+    test('a personal row waits once its pattern has synced, not while the pattern is still pending', async () => {
+      const personal = await createSession(STAR, 'checksum', 'personal', 'ready', null);
+      const db = mockDatabases.raw(getDatabaseFilename(GUEST));
+      db.exec(`INSERT INTO pending_personal_patterns (pattern_id, source_pattern_id, title, width, height, palette_json, grid_base64, created_at)
+               VALUES ('${STAR}', '${STAR}', 'T', 4, 4, '[]', '', '2026-02-01T10:00:00.000Z')`);
+
+      expect(await listSessionsAwaitingServerSession()).toEqual([]);
+
+      db.exec(`DELETE FROM pending_personal_patterns WHERE pattern_id = '${STAR}'`);
+
+      expect((await listSessionsAwaitingServerSession()).map((row) => row.id)).toEqual([personal.id]);
     });
 
     test('a link under another identity is refused and writes nothing', async () => {

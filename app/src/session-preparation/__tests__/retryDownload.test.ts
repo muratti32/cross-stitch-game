@@ -1,6 +1,7 @@
 import {
   linkAwaitingSessions,
   prepareCatalogSession,
+  preparePersonalSession,
   retryDownload,
   UnlockRequiredError,
   waitUntilSessionReady,
@@ -147,6 +148,17 @@ describe('a row the server never gave a session of its own', () => {
 
     expect(mockedFetch).not.toHaveBeenCalled();
     expect(mockedDb.linkPreparedSession).not.toHaveBeenCalled();
+  });
+
+  test('a refused personal row links on the next personal start', async () => {
+    const unlinked = { id: 'local-3', source: 'personal', status: 'ready', remoteSessionId: null };
+    mockedDb.findActiveSessionForPattern.mockResolvedValue(unlinked as never);
+    mockedFetch.mockResolvedValue(jsonResponse(200, prepared));
+    mockedDb.linkPreparedSession.mockResolvedValue(true);
+
+    await expect(preparePersonalSession('pattern-1', info)).resolves.toBe(unlinked);
+
+    expect(mockedDb.linkPreparedSession).toHaveBeenCalledWith('identity-1', 'local-3', 'remote-2');
   });
 
   test('a replay row is left unlinked on start', async () => {
