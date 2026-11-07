@@ -283,6 +283,18 @@ _Avoid_: Local day, device midnight, rolling 24 hours
 One of three play activities offered during each Reward Day, each worth 10 Stitch Coin for a daily maximum of 30. The first-release set is: complete 100 successful cell-level Stitch Actions; complete at least 10 Stitch Actions in each of three different DMC Thread Colors; and achieve one Thread Color Completion. A Stitch Sweep contributes one Stitch Action for every newly filled eligible cell rather than one per gesture. A Gameplay Event dated before its Stitching Session began, beyond a small clock-skew tolerance, counts toward no Daily Task. All three tasks may progress together in catalog, Personal, or Replay Sessions; none requires advertising, purchasing, AI generation, or sharing. Completion grants its reward automatically, while incomplete tasks expire without a streak loss or missed-day penalty.
 _Avoid_: Streak, mandatory quest, Premium task
 
+**Seasonal Event**:
+An operator-scheduled, server-authoritative period of three to four weeks, never overlapping another, that features event-tagged Official Patterns under the normal free and Pattern Unlock rules and opens an Event Showcase Shop. Its title and short description are operator-managed localized labels, and it cannot become active until every released App Display Language has them. A Seasonal Event may recur in later years.
+_Avoid_: Limited-time offer, battle pass, streak event, temporary catalog access
+
+**Event Progress**:
+A player's count of successful Stitch Actions on a Seasonal Event's Patterns during that event. Reaching 3,000 grants one free item of that event's Showcase Decor. It never grants Stitch Coin, never requires consecutive days, and resets without carry-over when the event ends.
+_Avoid_: Streak, pass level, event points
+
+**Event Showcase Shop**:
+The Seasonal Event's set of event-themed Showcase Decor sold for Stitch Coin while the event runs. It uses no event-specific currency, and its items may be sold again when the event recurs.
+_Avoid_: Event token, event currency, gacha
+
 **Pending Coin Reward**:
 A durable local record that a Daily Task or eligible first Pattern completion occurred while its Stitch Coin reward could not reach the backend. It carries an idempotent source key, Session and Pattern references, the device's monotonic gameplay-event sequence, and enough state-transition evidence for server validation. The backend owns Reward Day and per-Pattern uniqueness, reward caps, and impossible-transition and completion-plausibility checks; a client record alone never authorizes Coin. Valid evidence survives any Reward Day boundary and is granted exactly once to the applicable Guest Ledger or Registered Account when connectivity returns; invalid evidence is rejected. It is evidence awaiting reconciliation, not spendable Stitch Coin.
 _Avoid_: Unclaimed reward, expired reward, manual claim
@@ -534,6 +546,14 @@ _Avoid_: Free unlock, legacy access, refund
 **Pattern Unlock Price Tier**:
 The fixed Stitch Coin price of an Official Pattern, derived from the same stitchable-cell ranges as its Completion Reward Tier: Small costs 75, Medium costs 150, and Large costs 300. Popularity and demand do not change the price.
 _Avoid_: Dynamic pricing, popularity price, real-money Pattern price
+
+**Pattern Chart Image**:
+The printable image of one Official Pattern: its colored cell grid with bold lines every ten cells, a strip pairing each DMC Thread Color code with its swatch, and Stitch Wish branding with a QR code to the Pattern's Catalog Share Link. It carries no skein counts, pagination, or fabric sizing. Official Pattern artwork is AI-generated, so players may redistribute the image freely.
+_Avoid_: PDF export, chart export, printable pattern, Pattern Artifact
+
+**Pattern Chart Entitlement**:
+The permanent right of a Registered Account or Guest Installation Identity to generate the Pattern Chart Image of one Official Pattern at any time on any device. Any Session Completion of that Pattern grants it at no cost; before completion it can be acquired through a one-time online Stitch Coin spend of 20 for Small, 40 for Medium, or 60 for Large, only for a Pattern the player may already start. Completing the Pattern after buying refunds nothing. Community Patterns and Personal Patterns have no Pattern Chart Entitlement.
+_Avoid_: Download purchase, file purchase, chart rental
 
 **Community Pattern**:
 The immutable player-created Pattern copy whose Catalog Submission passed Catalog Review and is visible for free in the Pattern Catalog with its owner's Public Creator Profile. Its Pattern Artifact and Pattern Preview never change, while its current public metadata may advance only through an accepted Catalog Metadata Revision whose earlier snapshots remain auditable. An edited Personal Pattern submitted again becomes a new Community Pattern rather than a revision of an existing one; publishing the new Community Pattern does not replace or remove any earlier one. Community Patterns do not require Pattern Unlocks in the first release.
