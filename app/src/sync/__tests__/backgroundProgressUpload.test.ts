@@ -3,6 +3,7 @@ import type { StitchingSession } from '../../local-db';
 const mockList = jest.fn();
 const mockGetDeviceId = jest.fn();
 const mockUpdateSessionError = jest.fn();
+const mockGetUnacked = jest.fn();
 const mockSyncSession = jest.fn();
 const mockRebuild = jest.fn();
 const mockLoadBundledPattern = jest.fn();
@@ -17,6 +18,7 @@ jest.mock('../../identity/guestIdentity', () => ({ useIdentityStore: { getState:
 jest.mock('../../local-db', () => ({
   getActiveIdentity: () => mockActiveIdentity,
   getDeviceId: mockGetDeviceId,
+  getUnackedProgressOps: mockGetUnacked,
   listSessionsWithUnackedProgressOps: mockList,
   updateSessionError: mockUpdateSessionError,
 }));
@@ -70,6 +72,7 @@ beforeEach(() => {
   mockHandoffLoad.mockResolvedValue(null);
   mockGetDeviceId.mockResolvedValue('device-1');
   mockList.mockResolvedValue([]);
+  mockGetUnacked.mockResolvedValue([]);
   mockUpdateSessionError.mockResolvedValue(undefined);
   mockDeleteOfflinePatternFile.mockResolvedValue(undefined);
   mockRebuild.mockImplementation(async (_id: string, cells: number) => ({
@@ -136,6 +139,7 @@ describe('uploadPendingProgress', () => {
     await uploader.uploadPendingProgress();
 
     expect(mockSyncSession.mock.calls.map((call) => call[0])).toEqual(['c']);
+    expect(mockCapture).toHaveBeenCalledWith('background-upload-size', expect.any(Error));
   });
 
   test('skips a session the open session screen owns', async () => {
@@ -309,6 +313,72 @@ describe('uploadPendingProgress safety', () => {
 
     uploader.markSessionClosed('a');
     await uploader.uploadPendingProgress();
+    expect(mockSyncSession).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('uploadPendingProgress backlog', () => {
+  const unacked = (count: number): unknown[] => Array.from({ length: count }, (_, index) => ({ opId: `op${index}` }));
+
+  test('keeps syncing a session while its backlog shrinks, then moves on', async () => {
+    mockList.mockResolvedValue([session('a'), session('b')]);
+    mockGetUnacked
+      .mockResolvedValueOnce(unacked(600))
+      .mockResolvedValueOnce(unacked(100))
+      .mockResolvedValueOnce(unacked(0))
+      .mockResolvedValue(unacked(0));
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockSyncSession.mock.calls.map((call) => call[0])).toEqual(['a', 'a', 'a', 'b']);
+  });
+
+  test('gives up on a session whose backlog does not shrink', async () => {
+    mockList.mockResolvedValue([session('a'), session('b')]);
+    mockGetUnacked.mockResolvedValueOnce(unacked(500)).mockResolvedValueOnce(unacked(500));
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockSyncSession.mock.calls.map((call) => call[0])).toEqual(['a', 'a', 'b']);
+  });
+
+  test('stops draining once a session screen claims the session', async () => {
+    mockList.mockResolvedValue([session('a')]);
+    mockGetUnacked.mockImplementationOnce(async () => {
+      uploader.markSessionOpen('a');
+      return unacked(100);
+    });
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockSyncSession).toHaveBeenCalledTimes(1);
+  });
+
+  test('stops draining when the account changed between rounds', async () => {
+    mockList.mockResolvedValue([session('a')]);
+    mockGetUnacked.mockImplementationOnce(async () => {
+      mockActiveIdentity = 'someone-else';
+      return unacked(100);
+    });
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockSyncSession).toHaveBeenCalledTimes(1);
+  });
+
+  test('a handoff check that throws ends the pass quietly instead of aborting it', async () => {
+    mockList.mockResolvedValue([session('a'), session('b')]);
+    const failure = new Error('storage unreadable');
+    mockSyncSession.mockRejectedValueOnce(statusError(500));
+    mockHandoffLoad
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(null)
+      .mockRejectedValue(failure);
+
+    await expect(uploader.uploadPendingProgress()).resolves.toBeUndefined();
+
+    expect(mockCapture).toHaveBeenCalledWith('background-upload', failure);
     expect(mockSyncSession).toHaveBeenCalledTimes(1);
   });
 });

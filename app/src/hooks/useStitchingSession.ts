@@ -9,7 +9,6 @@ import {
   insertProgressOpsBatch,
   saveCheckpoint,
   updateSessionStatus,
-  updateSessionError,
   UnsequencedProgressOperation,
   StitchingSession,
   GameplayEvent,
@@ -18,6 +17,7 @@ import {
   insertGameplayEventsBatch,
 } from '../local-db';
 import { markSessionClosed, markSessionOpen, waitForBackgroundSync } from '../sync/backgroundProgressUpload';
+import { applyPatternRemoval } from '../sync/patternRemoval';
 import { rebuildProgressBase } from '../sync/progressBase';
 import { subscribeBundledSessionLinked } from '../sync/bundledSessionRegistrar';
 import { flushGameplayEventsAndCompletionClaims } from '../sync/gameplayEventEngine';
@@ -27,7 +27,6 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { loadBundledPattern } from '../bundled-patterns';
 import {
   base64ToUint8Array,
-  deleteOfflinePatternFile,
   getOfflinePatternPath,
   retryDownload,
   UnlockRequiredError,
@@ -244,13 +243,7 @@ export function useStitchingSession(sessionId: string | undefined) {
         // Offline Pattern Data, and keep the session unavailable.
         isAccountSessionRef.current = false;
         setPatternRemoved(true);
-        if (sess) {
-          await updateSessionError(
-            sess.id,
-            'This Community Pattern was removed by moderation.',
-          );
-          await deleteOfflinePatternFile(sess.patternId).catch(() => undefined);
-        }
+        if (sess) await applyPatternRemoval(sess);
       }
       // Otherwise stay silent: local play is unaffected and the next trigger retries.
     }
@@ -461,6 +454,8 @@ export function useStitchingSession(sessionId: string | undefined) {
       // Release the claim only after this screen's own sync and its unmount
       // checkpoint settle, so the uploader never overlaps either.
       void (async () => {
+        // Cleanups run in declaration order; this tick lets the unmount-checkpoint
+        // cleanup below record its promise before it is read.
         await Promise.resolve();
         await Promise.allSettled([syncInFlightRef.current, unmountFlushRef.current]);
         markSessionClosed(sessionId);

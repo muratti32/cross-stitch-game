@@ -55,9 +55,12 @@ initI18n();
 SplashScreen.preventAutoHideAsync();
 
 // Fire-and-forget (ADR-0031): link new rows first so they upload in the same
-// round. Neither call rejects.
+// round. The registrar reports its own failures; the upload runs either way
+// and never rejects.
 function syncLinkedProgressInBackground(): void {
-  void registerBundledSessions().then(uploadPendingProgress);
+  void registerBundledSessions()
+    .catch(() => undefined)
+    .then(uploadPendingProgress);
 }
 
 function RootLayout() {
