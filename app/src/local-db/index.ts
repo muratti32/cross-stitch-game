@@ -44,6 +44,8 @@ export interface ProgressOperation {
   createdAt: string;
 }
 
+export type UnsequencedProgressOperation = Omit<ProgressOperation, 'deviceSeq'>;
+
 export type GameplayEventKind = 'stitch_action' | 'color_completion';
 
 export interface GameplayEvent {
@@ -982,22 +984,11 @@ export async function getNextDeviceSeq(): Promise<number> {
  * are compacted away after a sync, so the server never mistakes a fresh op for a
  * replay of an already-applied sequence.
  */
-export async function getDeviceSeqHigh(): Promise<number> {
-  return withDatabase(getDeviceSeqHighWithDb);
-}
-
 async function getDeviceSeqHighWithDb(db: SQLite.SQLiteDatabase): Promise<number> {
   const row = await db.getFirstAsync<{ value: string }>(
     "SELECT value FROM device_config WHERE key = 'device_seq'"
   );
   return row ? parseInt(row.value, 10) : 0;
-}
-
-/**
- * Persists the device's monotonic sequence high-water mark.
- */
-export async function setDeviceSeqHigh(value: number): Promise<void> {
-  await withDatabase((db) => setDeviceSeqHighWithDb(db, value));
 }
 
 async function setDeviceSeqHighWithDb(db: SQLite.SQLiteDatabase, value: number): Promise<void> {
@@ -1315,15 +1306,20 @@ export async function deleteSession(id: string): Promise<void> {
 }
 
 /**
- * Inserts a batch of progress operations in a single SQLite transaction.
+ * Inserts a batch of progress operations in a single SQLite transaction and
+ * numbers them there. A Guest merge draws from the same device_seq counter while
+ * a session stays open, and the server drops a repeated seq as a duplicate, so
+ * reading the counter and using it must not be interleaved.
  */
-export async function insertProgressOpsBatch(ops: ProgressOperation[]): Promise<void> {
+export async function insertProgressOpsBatch(ops: UnsequencedProgressOperation[]): Promise<void> {
   if (ops.length === 0) return;
   await withDatabase(async (db) => {
     const latestBySession = new Map<string, string>();
     await runInTransaction(db, async () => {
+      let deviceSeq = await getDeviceSeqHighWithDb(db);
       for (const op of ops) {
-        await insertProgressOpWithDb(db, op);
+        deviceSeq += 1;
+        await insertProgressOpWithDb(db, { ...op, deviceSeq });
         const latest = latestBySession.get(op.sessionId);
         if (!latest || op.createdAt > latest) {
           latestBySession.set(op.sessionId, op.createdAt);
@@ -1336,6 +1332,7 @@ export async function insertProgressOpsBatch(ops: ProgressOperation[]): Promise<
           sessionId
         );
       }
+      await setDeviceSeqHighWithDb(db, deviceSeq);
     });
   });
 }

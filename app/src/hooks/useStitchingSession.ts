@@ -8,14 +8,12 @@ import {
   getLatestCheckpoint,
   getSyncSnapshot,
   getDeviceId,
-  getDeviceSeqHigh,
-  setDeviceSeqHigh,
   insertProgressOpsBatch,
   saveCheckpoint,
   updateSessionStatus,
   updateSessionError,
   unpackCompletedBitmap,
-  ProgressOperation,
+  UnsequencedProgressOperation,
   StitchingSession,
   GameplayEvent,
   getGameplaySeqHigh,
@@ -75,7 +73,6 @@ export function useStitchingSession(sessionId: string | undefined) {
 
   // Keep references to avoid stale closures in flusher and timer loops
   const deviceIdRef = useRef<string>('');
-  const deviceSeqRef = useRef<number>(0);
   const sessionRevisionRef = useRef<number>(0);
   // Last-known server revision (account sessions). Stamped onto each op so the
   // server can judge causality; advanced after every successful sync.
@@ -84,7 +81,7 @@ export function useStitchingSession(sessionId: string | undefined) {
   const remoteSessionIdRef = useRef<string | null>(null);
   const syncInFlightRef = useRef<boolean>(false);
   const gameplaySyncInFlightRef = useRef<boolean>(false);
-  const pendingOpsRef = useRef<ProgressOperation[]>([]);
+  const pendingOpsRef = useRef<UnsequencedProgressOperation[]>([]);
   const undoStackRef = useRef<number[]>([]);
   const gameplayClientSeqRef = useRef<number>(0);
   const pendingGameplayEventsRef = useRef<GameplayEvent[]>([]);
@@ -160,9 +157,6 @@ export function useStitchingSession(sessionId: string | undefined) {
 
     try {
       await insertProgressOpsBatch(opsToFlush);
-      // Persist the monotonic sequence high-water mark alongside the ops so it
-      // never regresses after sync compaction deletes acknowledged ops.
-      await setDeviceSeqHigh(deviceSeqRef.current);
     } catch (err) {
       console.error('Failed to flush progress operations:', err);
       // Prepend them back if insert failed
@@ -316,11 +310,6 @@ export function useStitchingSession(sessionId: string | undefined) {
 
         // 2. Get Device Config
         deviceIdRef.current = await getDeviceId();
-
-        // Continue from the persistent monotonic sequence high-water mark. This
-        // survives sync compaction (acked ops are deleted) so device_seq never
-        // regresses and collides with a server-side watermark.
-        deviceSeqRef.current = await getDeviceSeqHigh();
 
         if (!sessionId) {
           if (active) setError('Session ID is missing.');
@@ -545,17 +534,15 @@ export function useStitchingSession(sessionId: string | undefined) {
       // Update renderer state immediately (same frame)
       rState.setCompleted(x, y, true);
 
-      // Increment sequence & revision
-      deviceSeqRef.current++;
+      // Increment revision
       const baseRev = sessionRevisionRef.current;
       sessionRevisionRef.current++;
 
-      // Create ProgressOperation
-      const op: ProgressOperation = {
+      // Create the Progress Operation
+      const op: UnsequencedProgressOperation = {
         opId: generateUUID(),
         sessionId: sess.id,
         deviceId: deviceIdRef.current,
-        deviceSeq: deviceSeqRef.current,
         cellIndex,
         desiredState: 'completed',
         baseRevision: baseRev,
@@ -703,17 +690,15 @@ export function useStitchingSession(sessionId: string | undefined) {
     // Update in-memory state
     rState.setCompleted(x, y, false);
 
-    // Increment seq & revision
-    deviceSeqRef.current++;
+    // Increment revision
     const baseRev = sessionRevisionRef.current;
     sessionRevisionRef.current++;
 
     // Record an incomplete Progress Operation
-    const op: ProgressOperation = {
+    const op: UnsequencedProgressOperation = {
       opId: generateUUID(),
       sessionId: sess.id,
       deviceId: deviceIdRef.current,
-      deviceSeq: deviceSeqRef.current,
       cellIndex,
       desiredState: 'incomplete',
       baseRevision: baseRev,

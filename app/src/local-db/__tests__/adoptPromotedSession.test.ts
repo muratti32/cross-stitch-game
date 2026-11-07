@@ -22,7 +22,6 @@ import {
   getSessionCompletedCount,
   getSessions,
   getDeviceId,
-  getDeviceSeqHigh,
   getSyncSnapshot,
   getUnackedProgressOps,
   insertProgressOpsBatch,
@@ -31,7 +30,6 @@ import {
   readSessionPackedProgress,
   saveCheckpoint,
   saveSyncSnapshot,
-  setDeviceSeqHigh,
   unpackCompletedBitmap,
   type ProgressOperation,
 } from '../index';
@@ -214,18 +212,28 @@ async function guestPackage(prepare: () => Promise<void>): Promise<PackagedSessi
     test('arrive as unacked ops the ordinary sync uploads', async () => {
       const session = await guestStarter(0, 1, 2);
       const row = await linkedAccountRow();
-      await setDeviceSeqHigh(40);
+      await insertProgressOpsBatch([op(row.id, 0, 0)]);
+      await markProgressOpsAcked([`${row.id}-0-0`]);
       await saveCheckpoint(row.id, 7, cellsOf(0));
       await saveSyncSnapshot(row.id, 90, cellsOf(0), false);
 
       await adoptPromotedSession(session, null);
 
       expect(await getUnackedProgressOps(row.id)).toEqual([
-        expect.objectContaining({ cellIndex: 1, desiredState: 'completed', deviceId: await getDeviceId(), deviceSeq: 41, baseRevision: 7, serverBaseRevision: 90 }),
-        expect.objectContaining({ cellIndex: 2, desiredState: 'completed', deviceId: await getDeviceId(), deviceSeq: 42, baseRevision: 7, serverBaseRevision: 90 }),
+        expect.objectContaining({ cellIndex: 1, desiredState: 'completed', deviceId: await getDeviceId(), deviceSeq: 2, baseRevision: 7, serverBaseRevision: 90 }),
+        expect.objectContaining({ cellIndex: 2, desiredState: 'completed', deviceId: await getDeviceId(), deviceSeq: 3, baseRevision: 7, serverBaseRevision: 90 }),
       ]);
-      expect(await getDeviceSeqHigh()).toBe(42);
       expect(await getSessionCompletedCount(row.id, 4, 4)).toBe(3);
+    });
+
+    test('a stitch flushed afterwards numbers above them', async () => {
+      const session = await guestStarter(1, 2);
+      const row = await linkedAccountRow();
+      await adoptPromotedSession(session, null);
+
+      await insertProgressOpsBatch([op(row.id, 3, 0)]);
+
+      expect((await getUnackedProgressOps(row.id)).map(({ deviceSeq }) => deviceSeq)).toEqual([1, 2, 3]);
     });
 
     test('each op carries a UUID, which the sync endpoint requires', async () => {
@@ -243,7 +251,6 @@ async function guestPackage(prepare: () => Promise<void>): Promise<PackagedSessi
       const row = await linkedAccountRow();
       await saveCheckpoint(row.id, 3, cellsOf(0));
       await insertProgressOpsBatch([op(row.id, 1, 3)]);
-      await setDeviceSeqHigh(4);
 
       await adoptPromotedSession(session, null);
 

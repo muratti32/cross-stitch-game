@@ -3,7 +3,7 @@ import TestRenderer, { act } from 'react-test-renderer';
 
 import { RendererState } from '../../renderer/RendererState';
 import { useStitchingSession } from '../useStitchingSession';
-import type { BundledSessionLink, GameplayEvent, ProgressOperation, StitchingSession } from '../../local-db';
+import type { BundledSessionLink, GameplayEvent, StitchingSession, UnsequencedProgressOperation } from '../../local-db';
 import type { SyncOutcome } from '../../sync/progressSyncEngine';
 
 const mockIdentity = { isAccount: true };
@@ -27,8 +27,6 @@ const mockLinkListeners = new Set<(link: BundledSessionLink) => void>();
 jest.mock('../../local-db', () => ({
   initDatabase: async () => undefined,
   getDeviceId: async () => 'device-1',
-  getDeviceSeqHigh: async () => 0,
-  setDeviceSeqHigh: async () => undefined,
   getGameplaySeqHigh: async () => 0,
   setGameplaySeqHigh: async () => undefined,
   updateSessionError: async () => undefined,
@@ -142,7 +140,7 @@ async function tick(ms: number): Promise<void> {
 }
 
 const flushedEvents = (): GameplayEvent[] => mockDb.insertGameplayEventsBatch.mock.calls.flatMap(([events]) => events);
-const flushedOps = (): ProgressOperation[] => mockDb.insertProgressOpsBatch.mock.calls.flatMap(([ops]) => ops);
+const flushedOps = (): UnsequencedProgressOperation[] => mockDb.insertProgressOpsBatch.mock.calls.flatMap(([ops]) => ops);
 
 beforeEach(() => {
   jest.useFakeTimers();
