@@ -243,6 +243,7 @@ async function guestPackage(prepare: () => Promise<void>): Promise<PackagedSessi
       const row = await linkedAccountRow();
       await saveCheckpoint(row.id, 3, cellsOf(0));
       await insertProgressOpsBatch([op(row.id, 1, 3)]);
+      await setDeviceSeqHigh(4);
 
       await adoptPromotedSession(session, null);
 
