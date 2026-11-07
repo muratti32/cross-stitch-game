@@ -151,6 +151,7 @@ function accountHarness({
       }];
     }
     if (sql.includes('UPDATE sessions.session_sync_state')) return [];
+    if (sql.includes('INSERT INTO sessions.session_progress_flags')) return [];
     if (sql.includes('UPDATE sessions.stitching_sessions')) return [];
     throw new Error(`Unexpected query: ${sql}`);
   });
@@ -466,7 +467,7 @@ describe('ProgressSyncService.sync progress flag', () => {
         return [{ revision: '3', terminalCompletedAt: null }];
       }
       if (sql.includes('FROM sessions.session_device_watermarks')) return [];
-      if (sql.includes('SELECT op_id AS "opId"\n       FROM sessions.progress_operations')) {
+      if (/SELECT op_id AS "opId"\s+FROM sessions\.progress_operations/.test(sql)) {
         return existingOp ? [{ opId: 'x' }] : [];
       }
       if (sql.includes('FROM sessions.session_cell_state')) return [];
@@ -500,10 +501,8 @@ describe('ProgressSyncService.sync progress flag', () => {
     desiredState: 'completed' as const,
     baseRevision: 0,
   };
-  const flagWrites = (query: jest.Mock) =>
-    query.mock.calls.filter(([sql]) =>
-      String(sql).includes('INSERT INTO sessions.session_progress_flags'),
-    );
+  const flagWrites = (query: jest.Mock<Promise<readonly object[]>, [string, unknown[]?]>) =>
+    query.mock.calls.filter(([sql]) => sql.includes('session_progress_flags'));
 
   it('sets has_any_progress when an accepted operation writes a cell', async () => {
     const { query, service } = syncHarness(false);

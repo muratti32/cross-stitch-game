@@ -55,3 +55,51 @@ describe('Artifact Access Grant signing', () => {
     expect(service.verifyGrant(patternId, exp, 'not-hex-at-all')).toBe(false);
   });
 });
+
+describe('SessionsService.cancelSession', () => {
+  const sessionId = '0d9f7c9a-1111-4222-8333-444455556666';
+  const principal = { id: 'owner-1', type: 'account', tokenVersion: 0 } as never;
+
+  function cancelHarness(flag: { hasAnyProgress: boolean } | null) {
+    const manager = {
+      findOne: jest.fn(async (entity: { name: string }) => {
+        await Promise.resolve();
+        if (entity.name === 'StitchingSessionEntity') {
+          return { id: sessionId, principalId: 'owner-1', principalType: 'account' };
+        }
+        return flag;
+      }),
+      delete: jest.fn().mockResolvedValue(undefined),
+    };
+    const dataSource = {
+      transaction: (callback: (value: typeof manager) => Promise<unknown>) => callback(manager),
+    };
+    const service = new SessionsService(
+      null as unknown as Repository<StitchingSessionEntity>,
+      null as unknown as Repository<SessionProgressFlagEntity>,
+      null as unknown as Repository<PatternEntity>,
+      {} as AppConfigService,
+      dataSource as unknown as DataSource,
+      null as unknown as CoinLedgerRepository,
+    );
+    return { manager, service };
+  }
+
+  it('keeps a session whose progress flag is set', async () => {
+    const { manager, service } = cancelHarness({ hasAnyProgress: true });
+    await service.cancelSession(principal, sessionId);
+    expect(manager.delete).not.toHaveBeenCalled();
+  });
+
+  it('deletes a session whose progress flag is false', async () => {
+    const { manager, service } = cancelHarness({ hasAnyProgress: false });
+    await service.cancelSession(principal, sessionId);
+    expect(manager.delete).toHaveBeenCalledTimes(1);
+  });
+
+  it('deletes a session with no progress flag row', async () => {
+    const { manager, service } = cancelHarness(null);
+    await service.cancelSession(principal, sessionId);
+    expect(manager.delete).toHaveBeenCalledTimes(1);
+  });
+});

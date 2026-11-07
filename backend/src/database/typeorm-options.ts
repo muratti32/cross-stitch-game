@@ -216,6 +216,7 @@ import { AddPatternUnlockGameplayEvents1792972800000 } from './migrations/179297
 import { AddLocatorCoinShortfallGameplayEvents1793059200000 } from './migrations/1793059200000-AddLocatorCoinShortfallGameplayEvents';
 import { AddPromotionModeToTransferPackages1793145600000 } from './migrations/1793145600000-AddPromotionModeToTransferPackages';
 import { AddStitchableCellCountToPatterns1793232000000 } from './migrations/1793232000000-AddStitchableCellCountToPatterns';
+import { BackfillSessionProgressFlags1793318400000 } from './migrations/1793318400000-BackfillSessionProgressFlags';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -417,6 +418,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddLocatorCoinShortfallGameplayEvents1793059200000,
       AddPromotionModeToTransferPackages1793145600000,
       AddStitchableCellCountToPatterns1793232000000,
+      BackfillSessionProgressFlags1793318400000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

@@ -338,6 +338,7 @@ export class ProgressSyncService {
          WHERE id = $1 AND status <> 'completed'`,
         [sessionId],
       );
+      await markSessionHasProgress(manager, sessionId);
       await this.checkpointService.writeCheckpoint(manager, sessionId, true);
 
       // First Completion Reward (ADR-0011): only eligible catalog Patterns mint
