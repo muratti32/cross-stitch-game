@@ -98,6 +98,7 @@ const noChanges = (): SyncOutcome => ({
   terminalCompleted: false,
   changedCells: [],
   conflictedCells: [],
+  pullIncomplete: false,
 });
 
 type Hook = ReturnType<typeof useStitchingSession>;
