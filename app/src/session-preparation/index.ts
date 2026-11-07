@@ -19,6 +19,7 @@ import {
 import { base64ToUint8Array, uint8ArrayToBase64 } from '../local-db/helpers';
 import { apiFetch } from '../api/apiFetch';
 import { Config } from '../config';
+import { isUnlockRequiredNote } from './unlockRequiredRoute';
 import { registerBundledSessions } from '../sync/bundledSessionRegistrar';
 
 export class UnlockRequiredError extends Error {
@@ -277,7 +278,7 @@ export async function waitUntilSessionReady(
     if (session.status !== 'preparing') {
       return session;
     }
-    if (session.errorNote === 'unlock_required') {
+    if (isUnlockRequiredNote(session.errorNote)) {
       throw new UnlockRequiredError(session.patternId, 0);
     }
     if (session.errorNote) {

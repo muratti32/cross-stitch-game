@@ -169,6 +169,22 @@ describe('SessionsService grants for Promotion-Locked sessions', () => {
     });
   });
 
+  it('refresh-grant rejects a guest without the Pattern Unlock', async () => {
+    const { coinLedger, service } = harness({
+      unlockPriceTier: 'small',
+      owned: false,
+      principalType: 'guest',
+    });
+    await expect(service.refreshGrant(guestPrincipal, sessionId)).rejects.toMatchObject({
+      response: { code: 'unlock_required', patternId: 'pattern-1', price: 75 },
+    });
+    expect(coinLedger.isPatternUnlocked).toHaveBeenCalledWith(
+      expect.anything(),
+      { id: 'guest-1', type: 'guest' },
+      'pattern-1',
+    );
+  });
+
   it('refresh-grant checks the ledger as a guest for a guest principal', async () => {
     const { coinLedger, service } = harness({
       unlockPriceTier: 'small',

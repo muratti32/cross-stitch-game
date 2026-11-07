@@ -7,6 +7,7 @@ import { Screen, Button, LocatorCoinShortfallSheet } from '@/components';
 import type { LocatorShortfallPrimaryAction } from '@/components';
 import { Theme } from '@/theme/theme';
 import { formatNumber } from '@/i18n';
+import { catalogDetailRoute } from '@/session-preparation/unlockRequiredRoute';
 import { createReplaySession, generateUUID } from '@/local-db';
 import { StitchRenderer, type StitchRendererRef, nextRemainingCell } from '@/renderer';
 import { useGameplayStore } from '@/store/gameplayStore';
@@ -548,15 +549,22 @@ export default function SessionReadyScreen() {
           {t('error.title')}
         </Text>
         <Text style={styles.errorText} allowFontScaling={true}>
-          {unlockRequired !== null
-            ? unlockRequired.price > 0
-              ? t('catalog:detail.unlockButton', {
-                  price: formatNumber(unlockRequired.price, locale),
-                })
-              : t('error.fallbackMessage')
-            : error || t('error.fallbackMessage')}
+          {unlockRequired !== null ? t('error.fallbackMessage') : error || t('error.fallbackMessage')}
         </Text>
         <View style={styles.errorActions}>
+          {unlockRequired !== null && (
+            <Button
+              title={
+                unlockRequired.price > 0
+                  ? t('catalog:detail.unlockButton', {
+                      price: formatNumber(unlockRequired.price, locale),
+                    })
+                  : t('home.empty.action')
+              }
+              onPress={() => router.navigate(catalogDetailRoute(unlockRequired.patternId))}
+              style={styles.errorBtn}
+            />
+          )}
           <Button
             title={returnTo ? t('error.backButton') : t('error.tableButton')}
             onPress={handleBack}

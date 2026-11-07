@@ -15,6 +15,7 @@ import {
   useDownloadProgressStore,
 } from '@/session-preparation';
 import { Ionicons } from '@expo/vector-icons';
+import { catalogDetailRoute, isUnlockRequiredNote } from '@/session-preparation/unlockRequiredRoute';
 
 const { width: screenWidth } = Dimensions.get('window');
 // Padding horizontal is Theme.spacing.lg (16) * 2 = 32
@@ -297,11 +298,13 @@ function PreparingSessionCard({
   onChanged: () => void;
 }) {
   const { t } = useTranslation('play');
+  const router = useRouter();
   const progress = useDownloadProgressStore(
     (state) => state.progress[session.id] ?? 0,
   );
   const [busy, setBusy] = useState(false);
   const failed = !!session.errorNote;
+  const unlockRequired = isUnlockRequiredNote(session.errorNote);
 
   const handleCancelOrDelete = () => {
     Alert.alert(
@@ -368,6 +371,10 @@ function PreparingSessionCard({
         {failed && (
           <Pressable
             onPress={() => {
+              if (unlockRequired) {
+                router.navigate(catalogDetailRoute(session.patternId));
+                return;
+              }
               void (async () => {
                 setBusy(true);
                 try {
@@ -426,7 +433,7 @@ function PreparingSessionCard({
 
         {failed ? (
           <Text style={styles.preparingErrorText} numberOfLines={1}>
-            {session.errorNote}
+            {unlockRequired ? t('home.empty.action') : session.errorNote}
           </Text>
         ) : (
           <View style={styles.progressContainer}>
