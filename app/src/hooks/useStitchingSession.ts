@@ -79,7 +79,7 @@ export function useStitchingSession(sessionId: string | undefined) {
   const serverRevisionRef = useRef<number>(0);
   const isAccountSessionRef = useRef<boolean>(false);
   const remoteSessionIdRef = useRef<string | null>(null);
-  const syncInFlightRef = useRef<boolean>(false);
+  const syncInFlightRef = useRef<Promise<void> | null>(null);
   const gameplaySyncInFlightRef = useRef<boolean>(false);
   const pendingOpsRef = useRef<UnsequencedProgressOperation[]>([]);
   const undoStackRef = useRef<number[]>([]);
@@ -198,21 +198,11 @@ export function useStitchingSession(sessionId: string | undefined) {
   // Push local ops + pull authoritative state for account sessions. Never
   // blocks local play; failures (offline, transient) are swallowed and retried
   // on the next trigger.
-  const runSync = useCallback(async () => {
-    const sess = sessionRef.current;
-    const rState = rendererStateRef.current;
-    const remoteSessionId = remoteSessionIdRef.current;
-    if (
-      !isAccountSessionRef.current ||
-      !sess ||
-      !rState ||
-      !remoteSessionId ||
-      syncInFlightRef.current
-    ) {
-      return;
-    }
-
-    syncInFlightRef.current = true;
+  const syncOnce = useCallback(async (
+    sess: StitchingSession,
+    rState: RendererState,
+    remoteSessionId: string,
+  ) => {
     try {
       await flushGameplayEventsToServer();
       // Persist buffered ops first so the engine uploads a consistent set.
@@ -261,10 +251,34 @@ export function useStitchingSession(sessionId: string | undefined) {
         }
       }
       // Otherwise stay silent: local play is unaffected and the next trigger retries.
-    } finally {
-      syncInFlightRef.current = false;
     }
   }, [flushPendingOps, updateCountsAndCompletion, flushGameplayEventsToServer]);
+
+  const runSync = useCallback((): Promise<void> => {
+    const sess = sessionRef.current;
+    const rState = rendererStateRef.current;
+    const remoteSessionId = remoteSessionIdRef.current;
+    if (!isAccountSessionRef.current || !sess || !rState || !remoteSessionId) {
+      return Promise.resolve();
+    }
+
+    syncInFlightRef.current ??= syncOnce(sess, rState, remoteSessionId).finally(() => {
+      syncInFlightRef.current = null;
+    });
+    return syncInFlightRef.current;
+  }, [syncOnce]);
+
+  // One sync carries a bounded number of ops, and the server finishes a session
+  // only once it holds them all. A sync that leaves the backlog no smaller failed.
+  const drainUnackedOps = useCallback(async (sessionId: string) => {
+    let remaining = Number.POSITIVE_INFINITY;
+    for (;;) {
+      await runSync();
+      const { length } = await getUnackedProgressOps(sessionId);
+      if (length === 0 || length >= remaining) return;
+      remaining = length;
+    }
+  }, [runSync]);
 
   // Save checkpoint helper
   const saveSessionCheckpoint = useCallback(async () => {
@@ -632,7 +646,7 @@ export function useStitchingSession(sessionId: string | undefined) {
           );
           await saveSessionCheckpoint();
           if (isAccountSession && remoteSessionId) {
-            await runSync();
+            await drainUnackedOps(sess.id);
             try {
               await completeSession(
                 remoteSessionId,
@@ -668,7 +682,7 @@ export function useStitchingSession(sessionId: string | undefined) {
     }
 
     return false; // Mismatched cell
-  }, [flushPendingOps, saveSessionCheckpoint, runSync]);
+  }, [flushPendingOps, saveSessionCheckpoint, drainUnackedOps]);
 
   // Undo action
   const undo = useCallback((): { x: number; y: number } | null => {
