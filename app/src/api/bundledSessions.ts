@@ -11,14 +11,13 @@ export interface BundledRegistrationRequest {
 export type BundledRegistrationOutcome =
   | { kind: 'registered'; sessionId: string; terminalCompleted: boolean }
   | { kind: 'deferred' }
-  | { kind: 'notABundledStarter' }
-  | { kind: 'unsupported' };
+  | { kind: 'notABundledStarter' };
 
 function refusalOutcome(status: number, code: string | null): BundledRegistrationOutcome | null {
   if (status === 409) return { kind: 'deferred' };
   if (status === 404 && code === 'starter_not_seeded') return { kind: 'deferred' };
   if (status === 404 && code === 'not_a_bundled_starter') return { kind: 'notABundledStarter' };
-  if ((status === 404 || status === 405) && code === null) return { kind: 'unsupported' };
+  if ((status === 404 || status === 405) && code === null) return { kind: 'deferred' };
   return null;
 }
 

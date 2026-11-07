@@ -24,7 +24,6 @@ const NO_CELLS_BITMAP = 'AA==';
 
 const linkListeners = new Set<LinkListener>();
 const refusedSessionIds = new Set<string>();
-let backendLacksEndpoint = false;
 let runningPasses: Promise<void> | null = null;
 let passRequested = false;
 
@@ -75,9 +74,6 @@ async function registerRow(owner: PassOwner, localSessionId: string): Promise<Ro
     case 'notABundledStarter':
       refusedSessionIds.add(localSessionId);
       return 'nextRow';
-    case 'unsupported':
-      backendLacksEndpoint = true;
-      return 'stopPass';
     case 'registered': {
       const link = { localSessionId, remoteSessionId: outcome.sessionId };
       if (await linkBundledSession(owner.identity, link, owner.isAccount ? sent.foldedThroughSeq : 0)) {
@@ -89,7 +85,6 @@ async function registerRow(owner: PassOwner, localSessionId: string): Promise<Ro
 }
 
 async function runPass(): Promise<void> {
-  if (backendLacksEndpoint) return;
   const owner = currentOwner();
   if (owner === null) return;
   if ((await handoffStore.load()) !== null) return;
