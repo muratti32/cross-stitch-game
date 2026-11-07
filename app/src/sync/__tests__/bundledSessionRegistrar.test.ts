@@ -78,7 +78,7 @@ beforeEach(() => {
   jest.resetAllMocks();
   jest.resetModules();
   mockHandoffLoad.mockResolvedValue(null);
-  mockLink.mockImplementation(async (identity: string) => identity === mockActiveIdentity);
+  mockLink.mockImplementation(async (identity: string) => (identity === mockActiveIdentity ? 'linked' : 'identityChanged'));
   mockApiFetch.mockResolvedValue(registered());
   signInAccount();
   registrar = require('../bundledSessionRegistrar') as Registrar;
@@ -210,7 +210,7 @@ describe('the link', () => {
     await pass;
 
     expect(mockLink).toHaveBeenCalledWith(ACCOUNT, expect.anything(), expect.objectContaining({ foldedThroughSeq: 7 }));
-    await expect(mockLink.mock.results[0].value).resolves.toBe(false);
+    await expect(mockLink.mock.results[0].value).resolves.toBe('identityChanged');
     expect(listener).not.toHaveBeenCalled();
   });
 

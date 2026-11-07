@@ -1992,16 +1992,23 @@ export interface BundledRegistrationReceipt {
   terminalCompleted: boolean;
 }
 
+export type BundledLinkResult =
+  | 'linked'
+  | 'identityChanged'
+  | 'rowDeleted'
+  | 'alreadyLinked'
+  | 'sessionNotFinished'
+  | 'foldOvertaken';
+
 export async function linkBundledSession(
   identity: string,
   link: BundledSessionLink,
   { foldedThroughSeq, checkpointRevision, terminalCompleted }: BundledRegistrationReceipt,
-): Promise<boolean> {
+): Promise<BundledLinkResult> {
   return withDatabase(async (db) => {
-    if (activeIdentity !== identity) return false;
-    let linked = false;
-    await runInTransaction(db, async () => {
-      const result = await db.runAsync(
+    if (activeIdentity !== identity) return 'identityChanged';
+    return runInTransaction(db, async (): Promise<BundledLinkResult> => {
+      const update = await db.runAsync(
         `UPDATE sessions SET remote_session_id = ?
          WHERE id = ?
            AND remote_session_id IS NULL
@@ -2013,15 +2020,22 @@ export async function linkBundledSession(
         link.localSessionId,
         checkpointRevision,
       );
-      linked = result.changes > 0;
-      if (!linked) return;
+      if (update.changes === 0) {
+        const row = await db.getFirstAsync<{ remote_session_id: string | null; status: string }>(
+          'SELECT remote_session_id, status FROM sessions WHERE id = ?',
+          link.localSessionId,
+        );
+        if (row === null) return 'rowDeleted';
+        if (row.remote_session_id !== null) return 'alreadyLinked';
+        return row.status === 'completed' && !terminalCompleted ? 'sessionNotFinished' : 'foldOvertaken';
+      }
       await db.runAsync(
         'UPDATE progress_ops SET acked = 1 WHERE session_id = ? AND device_seq <= ?',
         link.localSessionId,
         foldedThroughSeq,
       );
+      return 'linked';
     });
-    return linked;
   });
 }
 

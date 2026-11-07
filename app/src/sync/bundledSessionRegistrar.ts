@@ -81,7 +81,7 @@ async function registerRow(owner: PassOwner, localSessionId: string): Promise<Ro
         checkpointRevision: sent.checkpointRevision,
         terminalCompleted: outcome.terminalCompleted,
       };
-      if (await linkBundledSession(owner.identity, link, receipt)) {
+      if ((await linkBundledSession(owner.identity, link, receipt)) === 'linked') {
         linkListeners.forEach((listener) => listener(link));
       }
       return 'nextRow';
