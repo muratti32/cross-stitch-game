@@ -81,7 +81,7 @@ function seedV11Rows(identity: string): void {
     expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 12 });
   });
 
-  test('a like or draft an old app made on the seeded catalog tile does not stop the rewrite', async () => {
+  test('a like or draft an old app made on the seeded catalog tile survives the rewrite', async () => {
     seedV11Rows(GUEST);
     raw(GUEST).prepare("INSERT INTO pattern_likes (pattern_id, liked_at) VALUES (?, '2026-01-02T00:00:00.000Z')").run(STAR);
     raw(GUEST)
@@ -95,7 +95,8 @@ function seedV11Rows(identity: string): void {
 
     expect(await getLocalPatternLikes()).toEqual({ [STAR]: true });
     expect(await getEditorDraft('starter_heart')).toBeNull();
-    expect(await getEditorDraft(HEART)).not.toBeNull();
+    expect(await getEditorDraft(HEART)).toMatchObject({ width: 8 });
+    expect(raw(GUEST).prepare('SELECT liked_at FROM pattern_likes').all()).toEqual([{ liked_at: '2026-01-02T00:00:00.000Z' }]);
     expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 12 });
   });
 
