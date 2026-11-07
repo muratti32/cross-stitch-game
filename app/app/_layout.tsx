@@ -20,9 +20,11 @@ import { syncAnalyticsMirrorIdentity } from '../src/analytics/analyticsMirrorSyn
 import { initSentry, setSentryScreen, syncSentryPlayerReferenceWithIdentity } from '../src/observability/sentry';
 import { initI18n, applyResolvedLanguage } from '../src/i18n';
 import { PromotionHandoffGate } from '../src/promotion/PromotionHandoffGate';
+import { usePromotionSessionsRefresh } from '../src/promotion/usePromotionSessionsRefresh';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { syncPendingPersonalPatterns } from '../src/pattern-editor/sync';
 import { flushAnalyticsGameplayEvents } from '../src/sync/analyticsGameplayEventEngine';
+import { registerBundledSessions } from '../src/sync/bundledSessionRegistrar';
 import { flushPendingGuestCompletionClaims } from '../src/sync/guestCompletionClaimEngine';
 import {
   handleForegroundLifecycle,
@@ -38,7 +40,7 @@ const ANALYTICS_RETRY_MAX_MS = 60_000;
 // exists so a backlog that built up offline drains while the player keeps
 // playing. It is deliberately slow - a fast tick would query SQLite on the
 // main thread forever for a queue that is almost always empty.
-const ANALYTICS_FLUSH_INTERVAL_MS = 60_000;
+const BACKLOG_FLUSH_INTERVAL_MS = 60_000;
 
 // Must run before anything else that could throw.
 initSentry();
@@ -151,6 +153,16 @@ function RootLayout() {
   }, []);
 
   useEffect(() => {
+    return useIdentityStore.subscribe((state, previousState) => {
+      if (state.isAuthenticated && !previousState.isAuthenticated) {
+        void registerBundledSessions();
+      }
+    });
+  }, []);
+
+  usePromotionSessionsRefresh(() => void registerBundledSessions());
+
+  useEffect(() => {
     async function prepare() {
       try {
         const { handedness: savedHandedness, onboarding } = await prepareOnboardingStartup();
@@ -241,6 +253,7 @@ function RootLayout() {
       // pending completion claim is also delivered on every foreground.
       flushPendingGuestCompletionClaims().catch(() => undefined);
       void flushAnalytics();
+      void registerBundledSessions();
     };
     const handleAppStateChange = (nextStatus: AppStateStatus) => {
       if (nextStatus === 'active') handleActive();
@@ -270,7 +283,8 @@ function RootLayout() {
   useEffect(() => {
     const timer = setInterval(() => {
       void flushAnalytics();
-    }, ANALYTICS_FLUSH_INTERVAL_MS);
+      void registerBundledSessions();
+    }, BACKLOG_FLUSH_INTERVAL_MS);
     return () => clearInterval(timer);
   }, [flushAnalytics]);
 

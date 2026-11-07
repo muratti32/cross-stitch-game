@@ -5,6 +5,7 @@ import type { AnalyticsGameplayEvent, AnalyticsGameplayEventPayload } from '../a
 import { markCriticalPathActivity } from '../perf/criticalPathSentinel';
 import type { PackagedSession } from '../api/promotionContract';
 import { planPromotedSessionAdoption, type PromotedSessionServerState } from './promotedSessionAdoption';
+import { isBundledPatternId, LEGACY_BUNDLED_PATTERN_IDS } from '../bundled-patterns/identity';
 
 export type PatternSource = 'bundled' | 'catalog' | 'personal';
 
@@ -42,6 +43,8 @@ export interface ProgressOperation {
   serverBaseRevision?: number;
   createdAt: string;
 }
+
+export type UnsequencedProgressOperation = Omit<ProgressOperation, 'deviceSeq'>;
 
 export type GameplayEventKind = 'stitch_action' | 'color_completion';
 
@@ -116,6 +119,7 @@ export interface PendingPersonalPattern {
 }
 
 let activeIdentity: string | null = null;
+let guestNamespace: string | null = null;
 let dbInstance: SQLite.SQLiteDatabase | null = null;
 
 /**
@@ -123,6 +127,14 @@ let dbInstance: SQLite.SQLiteDatabase | null = null;
  */
 export function getActiveIdentity(): string | null {
   return activeIdentity;
+}
+
+/**
+ * Names the Guest's namespace. Only an account's sessions sync, and a Guest's
+ * rows can hold remote ids, so the namespace is what tells the two apart.
+ */
+export function setGuestNamespace(identity: string | null): void {
+  guestNamespace = identity;
 }
 
 /**
@@ -372,12 +384,16 @@ export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
 
 let transactionQueue = Promise.resolve();
 
-async function runInTransaction(
+async function runInTransaction<T>(
   db: SQLite.SQLiteDatabase,
-  action: () => Promise<void>
-): Promise<void> {
+  action: () => Promise<T>
+): Promise<T> {
   const next = transactionQueue.then(async () => {
-    return db.withTransactionAsync(action);
+    let result!: T;
+    await db.withTransactionAsync(async () => {
+      result = await action();
+    });
+    return result;
   });
   transactionQueue = next.then(
     () => {},
@@ -466,6 +482,7 @@ export async function adoptPreIdentityDatabase(guestId: string): Promise<void> {
 
 import {
   base64ToUint8Array,
+  cellsMissingFrom,
   foldPackedProgress,
   generateUUID,
   packCompletedBitmap,
@@ -747,6 +764,45 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
       await db.execAsync('PRAGMA user_version = 11;');
     });
   }
+
+  if (currentVersion < 12) {
+    await runInTransaction(db, async () => {
+      for (const { legacyId, id } of LEGACY_BUNDLED_PATTERN_IDS) {
+        await db.runAsync(
+          "UPDATE sessions SET pattern_id = ? WHERE pattern_id = ? AND source = 'bundled'",
+          id,
+          legacyId,
+        );
+        await db.runAsync(
+          'UPDATE OR IGNORE pattern_likes SET pattern_id = ? WHERE pattern_id = ?',
+          id,
+          legacyId,
+        );
+        await db.runAsync('DELETE FROM pattern_likes WHERE pattern_id = ?', legacyId);
+        await db.runAsync(
+          'UPDATE OR IGNORE editor_drafts SET source_pattern_id = ? WHERE source_pattern_id = ?',
+          id,
+          legacyId,
+        );
+        await db.runAsync('DELETE FROM editor_drafts WHERE source_pattern_id = ?', legacyId);
+        await db.runAsync(
+          'UPDATE pending_personal_patterns SET source_pattern_id = ? WHERE source_pattern_id = ?',
+          id,
+          legacyId,
+        );
+      }
+      await db.execAsync('PRAGMA user_version = 12;');
+    });
+  }
+
+  if (currentVersion < 13) {
+    await runInTransaction(db, async () => {
+      await db.execAsync(`
+        CREATE INDEX IF NOT EXISTS idx_progress_ops_session ON progress_ops (session_id);
+      `);
+      await db.execAsync('PRAGMA user_version = 13;');
+    });
+  }
 }
 
 /**
@@ -760,20 +816,22 @@ export async function initDatabase(): Promise<void> {
  * Retrieves the device ID, generating it once if it doesn't exist yet.
  */
 export async function getDeviceId(): Promise<string> {
-  return withDatabase(async (db) => {
-    const row = await db.getFirstAsync<{ value: string }>(
-      "SELECT value FROM device_config WHERE key = 'device_id'"
-    );
-    if (row) {
-      return row.value;
-    }
-    const newId = generateUUID();
-    await db.runAsync(
-      "INSERT OR REPLACE INTO device_config (key, value) VALUES ('device_id', ?)",
-      newId
-    );
-    return newId;
-  });
+  return withDatabase(getDeviceIdWithDb);
+}
+
+async function getDeviceIdWithDb(db: SQLite.SQLiteDatabase): Promise<string> {
+  const row = await db.getFirstAsync<{ value: string }>(
+    "SELECT value FROM device_config WHERE key = 'device_id'"
+  );
+  if (row) {
+    return row.value;
+  }
+  const newId = generateUUID();
+  await db.runAsync(
+    "INSERT OR REPLACE INTO device_config (key, value) VALUES ('device_id', ?)",
+    newId
+  );
+  return newId;
 }
 
 /**
@@ -901,50 +959,24 @@ export async function markPaidPatternsBannerSeen(): Promise<void> {
 
 
 /**
- * Gets and increments the global monotonic sequence counter for this device.
- */
-export async function getNextDeviceSeq(): Promise<number> {
-  return withDatabase(async (db) => {
-    const row = await db.getFirstAsync<{ value: string }>(
-      "SELECT value FROM device_config WHERE key = 'device_seq'"
-    );
-    let nextSeq = 1;
-    if (row) {
-      nextSeq = parseInt(row.value, 10) + 1;
-    }
-    await db.runAsync(
-      "INSERT OR REPLACE INTO device_config (key, value) VALUES ('device_seq', ?)",
-      nextSeq.toString()
-    );
-    return nextSeq;
-  });
-}
-
-/**
  * Reads the device's persistent monotonic sequence high-water mark. Unlike
  * MAX(device_seq) over progress_ops, this never regresses when acknowledged ops
  * are compacted away after a sync, so the server never mistakes a fresh op for a
  * replay of an already-applied sequence.
  */
-export async function getDeviceSeqHigh(): Promise<number> {
-  return withDatabase(async (db) => {
-    const row = await db.getFirstAsync<{ value: string }>(
-      "SELECT value FROM device_config WHERE key = 'device_seq'"
-    );
-    return row ? parseInt(row.value, 10) : 0;
-  });
+async function getDeviceSeqHighWithDb(db: SQLite.SQLiteDatabase): Promise<number> {
+  const row = await db.getFirstAsync<{ value: string | null; stored: number | null }>(
+    `SELECT (SELECT value FROM device_config WHERE key = 'device_seq') AS value,
+            (SELECT MAX(device_seq) FROM progress_ops) AS stored`
+  );
+  return Math.max(parseInt(row?.value ?? '0', 10), row?.stored ?? 0);
 }
 
-/**
- * Persists the device's monotonic sequence high-water mark.
- */
-export async function setDeviceSeqHigh(value: number): Promise<void> {
-  await withDatabase(async (db) => {
-    await db.runAsync(
-      "INSERT OR REPLACE INTO device_config (key, value) VALUES ('device_seq', ?)",
-      value.toString()
-    );
-  });
+async function setDeviceSeqHighWithDb(db: SQLite.SQLiteDatabase, value: number): Promise<void> {
+  await db.runAsync(
+    "INSERT OR REPLACE INTO device_config (key, value) VALUES ('device_seq', ?)",
+    value.toString()
+  );
 }
 
 /**
@@ -1255,27 +1287,20 @@ export async function deleteSession(id: string): Promise<void> {
 }
 
 /**
- * Inserts a batch of progress operations in a single SQLite transaction.
+ * Inserts a batch of progress operations in a single SQLite transaction and
+ * numbers them there. A Guest merge draws from the same device_seq counter while
+ * a session stays open, and the server drops a repeated seq as a duplicate, so
+ * reading the counter and using it must not be interleaved.
  */
-export async function insertProgressOpsBatch(ops: ProgressOperation[]): Promise<void> {
+export async function insertProgressOpsBatch(ops: UnsequencedProgressOperation[]): Promise<void> {
   if (ops.length === 0) return;
   await withDatabase(async (db) => {
     const latestBySession = new Map<string, string>();
     await runInTransaction(db, async () => {
+      let deviceSeq = await getDeviceSeqHighWithDb(db);
       for (const op of ops) {
-        await db.runAsync(
-          `INSERT OR IGNORE INTO progress_ops (op_id, session_id, device_id, device_seq, cell_index, desired_state, base_revision, server_base_revision, created_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          op.opId,
-          op.sessionId,
-          op.deviceId,
-          op.deviceSeq,
-          op.cellIndex,
-          op.desiredState,
-          op.baseRevision,
-          op.serverBaseRevision ?? 0,
-          op.createdAt
-        );
+        deviceSeq += 1;
+        await insertProgressOpWithDb(db, { ...op, deviceSeq });
         const latest = latestBySession.get(op.sessionId);
         if (!latest || op.createdAt > latest) {
           latestBySession.set(op.sessionId, op.createdAt);
@@ -1288,8 +1313,25 @@ export async function insertProgressOpsBatch(ops: ProgressOperation[]): Promise<
           sessionId
         );
       }
+      await setDeviceSeqHighWithDb(db, deviceSeq);
     });
   });
+}
+
+async function insertProgressOpWithDb(db: SQLite.SQLiteDatabase, op: ProgressOperation): Promise<void> {
+  await db.runAsync(
+    `INSERT OR IGNORE INTO progress_ops (op_id, session_id, device_id, device_seq, cell_index, desired_state, base_revision, server_base_revision, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    op.opId,
+    op.sessionId,
+    op.deviceId,
+    op.deviceSeq,
+    op.cellIndex,
+    op.desiredState,
+    op.baseRevision,
+    op.serverBaseRevision ?? 0,
+    op.createdAt
+  );
 }
 
 /**
@@ -1350,13 +1392,18 @@ function mapProgressOpRow(row: ProgressOpRow): ProgressOperation {
 export async function getUnackedProgressOps(
   sessionId: string
 ): Promise<ProgressOperation[]> {
-  return withDatabase(async (db) => {
-    const rows = await db.getAllAsync<ProgressOpRow>(
-      'SELECT * FROM progress_ops WHERE session_id = ? AND acked = 0 ORDER BY device_seq ASC',
-      sessionId
-    );
-    return rows.map(mapProgressOpRow);
-  });
+  return withDatabase((db) => getUnackedProgressOpsWithDb(db, sessionId));
+}
+
+async function getUnackedProgressOpsWithDb(
+  db: SQLite.SQLiteDatabase,
+  sessionId: string
+): Promise<ProgressOperation[]> {
+  const rows = await db.getAllAsync<ProgressOpRow>(
+    'SELECT * FROM progress_ops WHERE session_id = ? AND acked = 0 ORDER BY device_seq ASC',
+    sessionId
+  );
+  return rows.map(mapProgressOpRow);
 }
 
 /**
@@ -1603,6 +1650,16 @@ export async function markAnalyticsGameplayEventsAcked(eventIds: string[]): Prom
   });
 }
 
+export async function findAnalyticsSessionId(sessionId: string): Promise<string | null> {
+  return withDatabase(async (db) => {
+    const row = await db.getFirstAsync<{ analytics_session_id: string }>(
+      'SELECT analytics_session_id FROM analytics_session_ids WHERE session_id = ?',
+      sessionId,
+    );
+    return row?.analytics_session_id ?? null;
+  });
+}
+
 /**
  * Bundled/offline sessions use local ids that are not UUIDs. Persist a separate
  * opaque UUID once so their start and completion analytics records remain
@@ -1665,23 +1722,28 @@ export async function getSyncSnapshot(
   sessionId: string
 ): Promise<SyncSnapshot | null> {
   markCriticalPathActivity('db-reconciliation', 'getSyncSnapshot');
-  return withDatabase(async (db) => {
-    const row = await db.getFirstAsync<{
-      session_id: string;
-      server_revision: number;
-      packed_bitmap: Uint8Array | ArrayBuffer | number[];
-      terminal: number;
-      updated_at: string;
-    }>('SELECT * FROM sync_snapshots WHERE session_id = ?', sessionId);
-    if (!row) return null;
-    return {
-      sessionId: row.session_id,
-      serverRevision: row.server_revision,
-      packedBitmap: normalizePackedBitmap(row.packed_bitmap),
-      terminal: row.terminal === 1,
-      updatedAt: row.updated_at,
-    };
-  });
+  return withDatabase((db) => getSyncSnapshotWithDb(db, sessionId));
+}
+
+async function getSyncSnapshotWithDb(
+  db: SQLite.SQLiteDatabase,
+  sessionId: string
+): Promise<SyncSnapshot | null> {
+  const row = await db.getFirstAsync<{
+    session_id: string;
+    server_revision: number;
+    packed_bitmap: Uint8Array | ArrayBuffer | number[];
+    terminal: number;
+    updated_at: string;
+  }>('SELECT * FROM sync_snapshots WHERE session_id = ?', sessionId);
+  if (!row) return null;
+  return {
+    sessionId: row.session_id,
+    serverRevision: row.server_revision,
+    packedBitmap: normalizePackedBitmap(row.packed_bitmap),
+    terminal: row.terminal === 1,
+    updatedAt: row.updated_at,
+  };
 }
 
 /**
@@ -1717,7 +1779,11 @@ function normalizePackedBitmap(
 }
 
 /**
- * Saves a checkpoint for a session and deletes older progress operations.
+ * Saves a checkpoint for a session and deletes the older progress operations it
+ * covers. A linked session outside the Guest's namespace keeps its unacked ops:
+ * the checkpoint covers them locally, but they are the server's only way to
+ * receive those cells. A namespace not yet known to be the Guest's keeps them too,
+ * because a wrong keep costs rows and a wrong delete loses the cells.
  */
 export async function saveCheckpoint(
   sessionId: string,
@@ -1728,21 +1794,27 @@ export async function saveCheckpoint(
     const packed = packCompletedBitmap(completed);
     const createdAt = new Date().toISOString();
 
-    await db.runAsync(
-      `INSERT OR REPLACE INTO checkpoints (session_id, revision, packed_bitmap, created_at)
-       VALUES (?, ?, ?, ?)`,
-      sessionId,
-      revision,
-      packed,
-      createdAt
-    );
+    await runInTransaction(db, async () => {
+      await db.runAsync(
+        `INSERT OR REPLACE INTO checkpoints (session_id, revision, packed_bitmap, created_at)
+         VALUES (?, ?, ?, ?)`,
+        sessionId,
+        revision,
+        packed,
+        createdAt
+      );
 
-    // Compact: delete progress operations older than this checkpoint
-    await db.runAsync(
-      `DELETE FROM progress_ops WHERE session_id = ? AND base_revision < ?`,
-      sessionId,
-      revision
-    );
+      await db.runAsync(
+        `DELETE FROM progress_ops
+         WHERE session_id = ?
+           AND base_revision < ?
+           AND (acked = 1 OR ? = 1 OR (SELECT remote_session_id FROM sessions WHERE id = ?) IS NULL)`,
+        sessionId,
+        revision,
+        activeIdentity === guestNamespace ? 1 : 0,
+        sessionId
+      );
+    });
   });
 }
 
@@ -1829,16 +1901,181 @@ export async function getSessionCompletedCount(
   });
 }
 
-/**
- * A session's complete cell record, folded from its latest checkpoint and the
- * ops newer than it. Ops alone are incomplete because checkpoints compact them.
- */
+async function foldSessionProgressWithDb(
+  db: SQLite.SQLiteDatabase,
+  sessionId: string,
+): Promise<PackedSessionProgress & { foldedThroughSeq: number; checkpointRevision: number }> {
+  return runInTransaction(db, async () => {
+    const checkpoint = await getLatestCheckpointWithDb(db, sessionId);
+    const ops = await getProgressOpsWithDb(db, sessionId);
+    const revision = checkpoint?.revision ?? 0;
+    return {
+      ...foldPackedProgress(
+        checkpoint?.packedBitmap ?? new Uint8Array(0),
+        ops.filter((op) => op.baseRevision >= revision),
+      ),
+      foldedThroughSeq: ops.reduce((high, op) => Math.max(high, op.deviceSeq), 0),
+      checkpointRevision: revision,
+    };
+  });
+}
+
 export async function readSessionPackedProgress(sessionId: string): Promise<PackedSessionProgress> {
   return withDatabase(async (db) => {
-    const checkpoint = await getLatestCheckpointWithDb(db, sessionId);
-    const ops = await getProgressOpsWithDb(db, sessionId, checkpoint?.revision ?? 0);
-    return foldPackedProgress(checkpoint?.packedBitmap ?? new Uint8Array(0), ops);
+    const { packedBitmapBase64, completedCount } = await foldSessionProgressWithDb(db, sessionId);
+    return { packedBitmapBase64, completedCount };
   });
+}
+
+export interface BundledRegistrationSnapshot {
+  localSessionId: string;
+  patternId: string;
+  localState: 'in_progress' | 'completed';
+  completedAt: string | null;
+  packedBitmapBase64: string;
+  foldedThroughSeq: number;
+  checkpointRevision: number;
+}
+
+export async function listBundledRegistrationCandidates(): Promise<string[]> {
+  return withDatabase(async (db) => {
+    const rows = await db.getAllAsync<{ id: string; pattern_id: string }>(
+      `SELECT candidate.id, candidate.pattern_id
+       FROM sessions AS candidate
+       WHERE candidate.source = 'bundled'
+         AND candidate.replay_of IS NULL
+         AND candidate.remote_session_id IS NULL
+         AND NOT EXISTS (
+           SELECT 1
+           FROM sessions AS newer
+           WHERE newer.source = 'bundled'
+             AND newer.replay_of IS NULL
+             AND newer.pattern_id = candidate.pattern_id
+             AND (newer.status = 'completed') = (candidate.status = 'completed')
+             AND (COALESCE(newer.completed_at, newer.created_at), newer.id)
+               > (COALESCE(candidate.completed_at, candidate.created_at), candidate.id)
+         )
+       ORDER BY candidate.status = 'completed' DESC, candidate.created_at ASC`,
+    );
+    return rows.filter((row) => isBundledPatternId(row.pattern_id)).map((row) => row.id);
+  });
+}
+
+export async function readBundledRegistrationSnapshot(
+  localSessionId: string,
+): Promise<BundledRegistrationSnapshot | null> {
+  return withDatabase(async (db) => {
+    const session = await getSessionWithDb(db, localSessionId);
+    if (session === null) return null;
+    const { packedBitmapBase64, foldedThroughSeq, checkpointRevision } = await foldSessionProgressWithDb(db, localSessionId);
+    return {
+      localSessionId,
+      patternId: session.patternId,
+      localState: session.status === 'completed' ? 'completed' : 'in_progress',
+      completedAt: session.completedAt ?? null,
+      packedBitmapBase64,
+      foldedThroughSeq,
+      checkpointRevision,
+    };
+  });
+}
+
+export interface BundledSessionLink {
+  localSessionId: string;
+  remoteSessionId: string;
+}
+
+export interface BundledRegistrationReceipt {
+  foldedThroughSeq: number;
+  checkpointRevision: number;
+  terminalCompleted: boolean;
+}
+
+export type BundledLinkResult =
+  | 'linked'
+  | 'identityChanged'
+  | 'rowDeleted'
+  | 'alreadyLinked'
+  | 'sessionNotFinished'
+  | 'foldOvertaken';
+
+export async function linkBundledSession(
+  identity: string,
+  link: BundledSessionLink,
+  { foldedThroughSeq, checkpointRevision, terminalCompleted }: BundledRegistrationReceipt,
+): Promise<BundledLinkResult> {
+  return withDatabase(async (db) => {
+    if (activeIdentity !== identity) return 'identityChanged';
+    return runInTransaction(db, async (): Promise<BundledLinkResult> => {
+      const update = await db.runAsync(
+        `UPDATE sessions SET remote_session_id = ?
+         WHERE id = ?
+           AND remote_session_id IS NULL
+           AND (status <> 'completed' OR ? = 1)
+           AND COALESCE((SELECT MAX(revision) FROM checkpoints WHERE session_id = ?), 0) = ?`,
+        link.remoteSessionId,
+        link.localSessionId,
+        terminalCompleted ? 1 : 0,
+        link.localSessionId,
+        checkpointRevision,
+      );
+      if (update.changes === 0) {
+        const row = await db.getFirstAsync<{ remote_session_id: string | null; status: string }>(
+          'SELECT remote_session_id, status FROM sessions WHERE id = ?',
+          link.localSessionId,
+        );
+        if (row === null) return 'rowDeleted';
+        if (row.remote_session_id !== null) return 'alreadyLinked';
+        return row.status === 'completed' && !terminalCompleted ? 'sessionNotFinished' : 'foldOvertaken';
+      }
+      await db.runAsync(
+        'UPDATE progress_ops SET acked = 1 WHERE session_id = ? AND device_seq <= ?',
+        link.localSessionId,
+        foldedThroughSeq,
+      );
+      return 'linked';
+    });
+  });
+}
+
+/**
+ * Queues the Guest cells a linked row lacks as ordinary unacked ops, so they open
+ * and upload like stitches made here. What the row holds is folded the way a
+ * session opens, and a rerun finds these ops in that fold and adds none.
+ */
+async function queueGuestCellsWithDb(
+  db: SQLite.SQLiteDatabase,
+  sessionId: string,
+  guestBitmap: Uint8Array,
+  createdAt: string,
+): Promise<void> {
+  const snapshot = await getSyncSnapshotWithDb(db, sessionId);
+  const checkpoint = await getLatestCheckpointWithDb(db, sessionId);
+  const revision = checkpoint?.revision ?? 0;
+  const held = foldPackedProgress(
+    snapshot?.packedBitmap ?? checkpoint?.packedBitmap ?? new Uint8Array(0),
+    snapshot ? await getUnackedProgressOpsWithDb(db, sessionId) : await getProgressOpsWithDb(db, sessionId, revision),
+  );
+  const guestOnlyCells = cellsMissingFrom(base64ToUint8Array(held.packedBitmapBase64), guestBitmap);
+  if (guestOnlyCells.length === 0) return;
+
+  const deviceId = await getDeviceIdWithDb(db);
+  let deviceSeq = await getDeviceSeqHighWithDb(db);
+  for (const cellIndex of guestOnlyCells) {
+    deviceSeq += 1;
+    await insertProgressOpWithDb(db, {
+      opId: generateUUID(),
+      sessionId,
+      deviceId,
+      deviceSeq,
+      cellIndex,
+      desiredState: 'completed',
+      baseRevision: revision,
+      serverBaseRevision: snapshot?.serverRevision ?? 0,
+      createdAt,
+    });
+  }
+  await setDeviceSeqHighWithDb(db, deviceSeq);
 }
 
 /**
@@ -1846,8 +2083,8 @@ export async function readSessionPackedProgress(sessionId: string): Promise<Pack
  * idempotent, so a kill before the handoff records the ack converges on restart.
  *
  * The seeded checkpoint stays at revision 0. A reopened account session counts
- * its local revisions from 0 again, so a checkpoint at the server revision would
- * outrank every checkpoint the game saves and freeze the Play tab percentage.
+ * its local revisions up from its latest checkpoint, so a checkpoint at the server
+ * revision would outrank every one the game saves and freeze the Play tab percentage.
  */
 export async function adoptPromotedSession(
   session: PackagedSession,
@@ -1876,6 +2113,14 @@ export async function adoptPromotedSession(
           return;
 
         case 'mergeIntoActive': {
+          const target = await db.getFirstAsync<{ remote_session_id: string | null }>(
+            'SELECT remote_session_id FROM sessions WHERE id = ?',
+            plan.sessionId,
+          );
+          if (target?.remote_session_id) {
+            await queueGuestCellsWithDb(db, plan.sessionId, base64ToUint8Array(plan.packedBitmapBase64), now);
+            return;
+          }
           // Written at the latest checkpoint's own revision so the account's
           // newer ops keep replaying on top and stay available for undo.
           const checkpoint = await getLatestCheckpointWithDb(db, plan.sessionId);

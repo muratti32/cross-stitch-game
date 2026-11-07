@@ -1,4 +1,5 @@
 import type { DrainSessionResult, PackagedSession } from '../api/promotionContract';
+import { bundledPatternIdFromLegacy } from '../bundled-patterns/identity';
 import { adoptPromotedSession, getActiveIdentity } from '../local-db';
 import { copyOfflinePatternToNamespace } from '../session-preparation';
 
@@ -20,5 +21,5 @@ export async function adoptPackagedSession(
   if (session.source !== 'bundled' && (server?.accountSessionId ?? null) === null) {
     await copyOfflinePatternToNamespace(session.patternId, owners.guestId, owners.accountId);
   }
-  await adoptPromotedSession(session, server);
+  await adoptPromotedSession({ ...session, patternId: bundledPatternIdFromLegacy(session.patternId) }, server);
 }

@@ -17,11 +17,16 @@ import type {
   CompleteProgressDto,
   IncomingProgressOperationDto,
   ProgressSyncDto,
+  RegisterBundledSessionDto,
 } from './progress-sync.dto';
 import { ProgressCheckpointService } from './progress-checkpoint.service';
 import { CoinLedgerRepository } from '../economy/coin-ledger.repository';
 import { MIN_MS_PER_STITCH } from '../economy/economy.constants';
 import { PromotionService } from '../promotion/promotion.service';
+import { applyPackagedProgress } from '../promotion/drained-session';
+import { BUNDLED_STARTERS } from '../catalog/bundled-starters.generated';
+import { stitchableCells, type PatternCellCounts } from '../catalog/stitchable-cells';
+import { upsertActiveSession } from './active-session';
 
 interface SessionRecord {
   id: string;
@@ -64,17 +69,13 @@ interface PulledOperationRecord {
   effective: boolean;
 }
 
-interface PatternProgressRecord {
-  width: number;
-  height: number;
+interface PatternProgressRecord extends PatternCellCounts {
   visibility: string;
   patternId: string;
   completedCount: string;
 }
 
-interface GuestCompletionPatternRecord {
-  width: number;
-  height: number;
+interface GuestCompletionPatternRecord extends PatternCellCounts {
   visibility: string;
   patternId: string;
   elapsedMs: string;
@@ -118,6 +119,11 @@ export interface ProgressCompleteResult {
    * Absent on replays, already-completed sessions, and Personal Patterns.
    */
   firstCompletionReward?: FirstCompletionRewardSummary;
+}
+
+export interface RegisterBundledSessionResult {
+  sessionId: string;
+  terminalCompleted: boolean;
 }
 
 @Injectable()
@@ -300,6 +306,7 @@ export class ProgressSyncService {
       const progressRows = await manager.query<readonly PatternProgressRecord[]>(
         `SELECT p.width,
                 p.height,
+                p.stitchable_cell_count AS "stitchableCellCount",
                 p.visibility,
                 p.id AS "patternId",
                 COUNT(c.cell_index) FILTER (WHERE c.state = 'completed') AS "completedCount"
@@ -307,11 +314,11 @@ export class ProgressSyncService {
          INNER JOIN catalog.patterns p ON p.id = s.pattern_id
          LEFT JOIN sessions.session_cell_state c ON c.session_id = s.id
          WHERE s.id = $1
-         GROUP BY p.width, p.height, p.visibility, p.id`,
+         GROUP BY p.width, p.height, p.stitchable_cell_count, p.visibility, p.id`,
         [sessionId],
       );
       const progress = progressRows[0];
-      if (!progress || Number(progress.completedCount) !== progress.width * progress.height) {
+      if (!progress || Number(progress.completedCount) !== stitchableCells(progress)) {
         throw new ConflictException('Session is not fully stitched');
       }
 
@@ -339,7 +346,7 @@ export class ProgressSyncService {
           manager,
           { type: 'account', id: principal.id },
           progress.patternId,
-          progress.width * progress.height,
+          stitchableCells(progress),
         );
         if (grant.granted) {
           firstCompletionReward = {
@@ -355,6 +362,86 @@ export class ProgressSyncService {
         firstCompletionReward,
       };
     });
+  }
+
+  async registerBundledSession(
+    principal: AuthPrincipal,
+    dto: RegisterBundledSessionDto,
+  ): Promise<RegisterBundledSessionResult> {
+    await this.promotionService.assertNotLocked(principal.id, principal.type);
+    const { patternId, packedBitmapBase64, localState } = dto;
+    if (!BUNDLED_STARTERS.some((starter) => starter.id === patternId)) {
+      throw new NotFoundException({ code: 'not_a_bundled_starter' });
+    }
+
+    return this.dataSource.transaction(async (manager) => {
+      const patterns = await manager.query<readonly PatternCellCounts[]>(
+        `SELECT width, height, stitchable_cell_count AS "stitchableCellCount"
+         FROM catalog.patterns WHERE id = $1 FOR SHARE`,
+        [patternId],
+      );
+      const pattern = patterns[0];
+      if (!pattern) {
+        throw new NotFoundException({ code: 'starter_not_seeded' });
+      }
+
+      if (principal.type === PrincipalType.Guest) {
+        return this.registerGuestIdentityOnly(manager, principal, patternId);
+      }
+
+      if (!packedBitmapBase64) {
+        throw new BadRequestException({ code: 'packed_bitmap_required' });
+      }
+
+      if (localState === 'completed') {
+        const session = await this.findLatestSession(manager, principal, patternId);
+        if (session?.status === 'completed') {
+          return { sessionId: session.id, terminalCompleted: true };
+        }
+      }
+
+      const sessionId = await upsertActiveSession(manager, principal, patternId);
+      await applyPackagedProgress(manager, {
+        sessionId,
+        deviceId: sessionId,
+        packaged: {
+          status: localState === 'completed' ? 'completed' : 'active',
+          completedAt: dto.completedAt ?? null,
+          packedBitmapBase64,
+        },
+        gridCells: pattern.width * pattern.height,
+        stitchableCells: stitchableCells(pattern),
+      });
+      const syncState = await this.getSyncState(manager, sessionId);
+      return { sessionId, terminalCompleted: syncState.terminalCompletedAt !== null };
+    });
+  }
+
+  private async registerGuestIdentityOnly(
+    manager: EntityManager,
+    principal: AuthPrincipal,
+    patternId: string,
+  ): Promise<RegisterBundledSessionResult> {
+    return {
+      sessionId: await upsertActiveSession(manager, principal, patternId),
+      terminalCompleted: false,
+    };
+  }
+
+  private async findLatestSession(
+    manager: EntityManager,
+    principal: AuthPrincipal,
+    patternId: string,
+  ): Promise<{ id: string; status: 'active' | 'completed' } | null> {
+    const sessions = await manager.query<readonly { id: string; status: 'active' | 'completed' }[]>(
+      `SELECT id, status
+       FROM sessions.stitching_sessions
+       WHERE principal_type = $1 AND principal_id = $2 AND pattern_id = $3
+       ORDER BY status = 'active' DESC, completed_at DESC NULLS LAST
+       LIMIT 1`,
+      [principal.type, principal.id, patternId],
+    );
+    return sessions[0] ?? null;
   }
 
   private async completeGuestSession(
@@ -390,6 +477,7 @@ export class ProgressSyncService {
     const patterns = await manager.query<readonly GuestCompletionPatternRecord[]>(
       `SELECT p.width,
               p.height,
+              p.stitchable_cell_count AS "stitchableCellCount",
               p.visibility,
               p.id AS "patternId",
               FLOOR(EXTRACT(EPOCH FROM (now() - s.created_at)) * 1000)::bigint AS "elapsedMs"
@@ -407,7 +495,7 @@ export class ProgressSyncService {
       return { revision: 0, terminalCompleted: true };
     }
 
-    const cellCount = pattern.width * pattern.height;
+    const cellCount = stitchableCells(pattern);
     if (completedCells !== cellCount) {
       this.throwImplausibleCompletion('completed_cells');
     }

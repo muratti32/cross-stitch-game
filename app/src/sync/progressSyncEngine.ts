@@ -14,6 +14,9 @@ import { markCriticalPathActivity } from '../perf/criticalPathSentinel';
 import { queryClient } from '../providers';
 import { coinBalanceQueryKey } from '../api/economy';
 
+// Express refuses a JSON body over 100kb, about 780 operations.
+const MAX_OPS_PER_SYNC = 500;
+
 export interface SyncOutcome {
   /** Authoritative server revision after this sync. */
   serverRevision: number;
@@ -45,7 +48,7 @@ export async function syncSession(
   const sinceRevision = snapshot?.serverRevision ?? 0;
 
   const unacked = await getUnackedProgressOps(sessionId);
-  const outgoing: OutgoingProgressOperation[] = unacked.map((op) => ({
+  const outgoing: OutgoingProgressOperation[] = unacked.slice(0, MAX_OPS_PER_SYNC).map((op) => ({
     opId: op.opId,
     deviceSeq: op.deviceSeq,
     cellIndex: op.cellIndex,

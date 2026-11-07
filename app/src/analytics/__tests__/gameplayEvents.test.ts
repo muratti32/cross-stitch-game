@@ -1,12 +1,52 @@
-import { captureGameplayEvent, captureOnboardingEvent } from '../gameplayEvents';
+import { captureGameplayEvent, captureOnboardingEvent, captureSessionGameplayEvent } from '../gameplayEvents';
 import * as localDb from '../../local-db';
 
 jest.mock('../../local-db', () => ({
   enqueueAnalyticsGameplayEvent: jest.fn(),
+  findAnalyticsSessionId: jest.fn(),
   generateUUID: jest.fn(() => '72bb19f7-e78e-4b72-bc75-d761122a25df'),
+  getAnalyticsSessionId: jest.fn(),
 }));
 
 const mockedDb = localDb as jest.Mocked<typeof localDb>;
+
+describe('captureSessionGameplayEvent', () => {
+  const ANALYTICS_ID = '0b5fe1ce-5f79-4c80-aa32-5ca9e67b8dd5';
+  const REMOTE_ID = '5a0a0e6e-7b43-4b8e-9a6e-2f4f3b1d9a11';
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockedDb.enqueueAnalyticsGameplayEvent.mockResolvedValue(undefined);
+  });
+
+  const reportedPayload = () => mockedDb.enqueueAnalyticsGameplayEvent.mock.calls[0][0].payload;
+
+  it('keeps the analytics id a session started under after it gains a remote id', async () => {
+    mockedDb.findAnalyticsSessionId.mockResolvedValue(ANALYTICS_ID);
+
+    await captureSessionGameplayEvent('session_completed', 'local', REMOTE_ID);
+
+    expect(reportedPayload()).toEqual({ session_id: ANALYTICS_ID });
+  });
+
+  it('uses the remote id for a session that always had one', async () => {
+    mockedDb.findAnalyticsSessionId.mockResolvedValue(null);
+
+    await captureSessionGameplayEvent('session_started', 'local', REMOTE_ID);
+
+    expect(reportedPayload()).toEqual({ session_id: REMOTE_ID });
+    expect(mockedDb.getAnalyticsSessionId).not.toHaveBeenCalled();
+  });
+
+  it('mints an analytics id for a session with neither', async () => {
+    mockedDb.findAnalyticsSessionId.mockResolvedValue(null);
+    mockedDb.getAnalyticsSessionId.mockResolvedValue(ANALYTICS_ID);
+
+    await captureSessionGameplayEvent('session_started', 'local', null);
+
+    expect(reportedPayload()).toEqual({ session_id: ANALYTICS_ID });
+  });
+});
 
 describe('captureGameplayEvent', () => {
   beforeEach(() => jest.clearAllMocks());

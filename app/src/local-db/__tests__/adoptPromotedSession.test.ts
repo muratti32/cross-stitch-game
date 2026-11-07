@@ -1,59 +1,12 @@
 /**
  * Runs the real schema, capture and adoption SQL against an in-memory SQLite.
- * `node:sqlite` needs Node 22.5+, so on older runtimes (CI is on Node 20) these
- * skip and `promotedSessionAdoption.test.ts` still covers every decision.
  */
 import type { DrainSessionResult, PackagedSession } from '../../api/promotionContract';
+import { createNodeSqliteFiles, nodeSqliteAvailable } from './nodeSqliteDatabase';
 
-type SqlParam = string | number | null | Uint8Array;
-interface NodeSqliteStatement {
-  all(...params: SqlParam[]): unknown[];
-  get(...params: SqlParam[]): unknown;
-  run(...params: SqlParam[]): unknown;
-}
-interface NodeSqliteDatabase {
-  exec(sql: string): void;
-  prepare(sql: string): NodeSqliteStatement;
-}
-interface NodeSqliteModule {
-  DatabaseSync: new (path: string) => NodeSqliteDatabase;
-}
+const mockDatabases = createNodeSqliteFiles();
 
-function mockLoadSqlite(): NodeSqliteModule | null {
-  try {
-    return require('node:sqlite') as NodeSqliteModule;
-  } catch {
-    return null;
-  }
-}
-
-const mockFiles = new Map<string, NodeSqliteDatabase>();
-
-function mockOpen(filename: string): object {
-  const sqlite = mockLoadSqlite();
-  if (sqlite === null) throw new Error('node:sqlite is not available');
-  const database = mockFiles.get(filename) ?? new sqlite.DatabaseSync(':memory:');
-  mockFiles.set(filename, database);
-  return {
-    execAsync: async (sql: string) => database.exec(sql),
-    getFirstAsync: async (sql: string, ...params: SqlParam[]) => database.prepare(sql).get(...params) ?? null,
-    getAllAsync: async (sql: string, ...params: SqlParam[]) => database.prepare(sql).all(...params),
-    runAsync: async (sql: string, ...params: SqlParam[]) => database.prepare(sql).run(...params),
-    withTransactionAsync: async (action: () => Promise<void>) => {
-      database.exec('BEGIN');
-      try {
-        await action();
-        database.exec('COMMIT');
-      } catch (error) {
-        database.exec('ROLLBACK');
-        throw error;
-      }
-    },
-    closeAsync: async () => undefined,
-  };
-}
-
-jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn(async (filename: string) => mockOpen(filename)) }));
+jest.mock('expo-sqlite', () => ({ openDatabaseAsync: jest.fn(async (filename: string) => mockDatabases.open(filename)) }));
 jest.mock('expo-file-system/legacy', () => ({ documentDirectory: null }));
 jest.mock('expo-crypto', () => ({
   CryptoDigestAlgorithm: { SHA256: 'SHA-256' },
@@ -68,12 +21,15 @@ import {
   getLatestCheckpoint,
   getSessionCompletedCount,
   getSessions,
+  getDeviceId,
   getSyncSnapshot,
   getUnackedProgressOps,
   insertProgressOpsBatch,
+  markProgressOpsAcked,
   openNamespace,
   readSessionPackedProgress,
   saveCheckpoint,
+  saveSyncSnapshot,
   unpackCompletedBitmap,
   type ProgressOperation,
 } from '../index';
@@ -122,11 +78,9 @@ async function guestPackage(prepare: () => Promise<void>): Promise<PackagedSessi
   return (await captureGuestRecords(GUEST)).sessions;
 }
 
-const available = mockLoadSqlite() !== null;
-
-(available ? describe : describe.skip)('adoptPromotedSession against real SQL', () => {
+(nodeSqliteAvailable ? describe : describe.skip)('adoptPromotedSession against real SQL', () => {
   beforeEach(async () => {
-    mockFiles.clear();
+    mockDatabases.clear();
     await openNamespace(null);
   });
 
@@ -235,6 +189,102 @@ const available = mockLoadSqlite() !== null;
 
     expect((await getSessions()).map((row) => row.id)).toEqual([accountRow.id]);
     expect(await getSessionCompletedCount(accountRow.id, 4, 4)).toBe(3);
+  });
+
+  describe('Guest cells merged into a linked account row', () => {
+    const cellsOf = (...cells: number[]) => {
+      const completed = new Uint8Array(16);
+      for (const cell of cells) completed[cell] = 1;
+      return completed;
+    };
+
+    async function guestStarter(...cells: number[]): Promise<PackagedSession> {
+      const [session] = await guestPackage(async () => {
+        const created = await createSession('starter_heart', 'bundled', 'bundled', 'active', null, META);
+        await insertProgressOpsBatch(cells.map((cell, index) => op(created.id, cell, index)));
+      });
+      await openNamespace(ACCOUNT);
+      return session;
+    }
+
+    const linkedAccountRow = () => createSession('starter_heart', 'bundled', 'bundled', 'active', REMOTE, META);
+
+    test('arrive as unacked ops the ordinary sync uploads', async () => {
+      const session = await guestStarter(0, 1, 2);
+      const row = await linkedAccountRow();
+      await insertProgressOpsBatch([op(row.id, 0, 0)]);
+      await markProgressOpsAcked([`${row.id}-0-0`]);
+      await saveCheckpoint(row.id, 7, cellsOf(0));
+      await saveSyncSnapshot(row.id, 90, cellsOf(0), false);
+
+      await adoptPromotedSession(session, null);
+
+      expect(await getUnackedProgressOps(row.id)).toEqual([
+        expect.objectContaining({ cellIndex: 1, desiredState: 'completed', deviceId: await getDeviceId(), deviceSeq: 2, baseRevision: 7, serverBaseRevision: 90 }),
+        expect.objectContaining({ cellIndex: 2, desiredState: 'completed', deviceId: await getDeviceId(), deviceSeq: 3, baseRevision: 7, serverBaseRevision: 90 }),
+      ]);
+      expect(await getSessionCompletedCount(row.id, 4, 4)).toBe(3);
+    });
+
+    test('a stitch flushed afterwards numbers above them', async () => {
+      const session = await guestStarter(1, 2);
+      const row = await linkedAccountRow();
+      await adoptPromotedSession(session, null);
+
+      await insertProgressOpsBatch([op(row.id, 3, 0)]);
+
+      expect((await getUnackedProgressOps(row.id)).map(({ deviceSeq }) => deviceSeq)).toEqual([1, 2, 3]);
+    });
+
+    test('each op carries a UUID, which the sync endpoint requires', async () => {
+      const session = await guestStarter(1);
+      const row = await linkedAccountRow();
+
+      await adoptPromotedSession(session, null);
+
+      const [pending] = await getUnackedProgressOps(row.id);
+      expect(pending.opId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+    });
+
+    test('a row that never synced counts its checkpoint and ops as held', async () => {
+      const session = await guestStarter(0, 1, 2);
+      const row = await linkedAccountRow();
+      await saveCheckpoint(row.id, 3, cellsOf(0));
+      await insertProgressOpsBatch([op(row.id, 1, 3)]);
+
+      await adoptPromotedSession(session, null);
+
+      expect((await getUnackedProgressOps(row.id)).map((pending) => pending.cellIndex)).toEqual([1, 2]);
+      expect(await getSessionCompletedCount(row.id, 4, 4)).toBe(3);
+    });
+
+    test('a rerun after a kill adds no op, before or after the sync took them', async () => {
+      const session = await guestStarter(1, 2);
+      const row = await linkedAccountRow();
+      await saveSyncSnapshot(row.id, 90, cellsOf(0), false);
+
+      await adoptPromotedSession(session, null);
+      await adoptPromotedSession(session, null);
+
+      const pending = await getUnackedProgressOps(row.id);
+      expect(pending.map((queued) => queued.cellIndex)).toEqual([1, 2]);
+
+      await markProgressOpsAcked(pending.map((queued) => queued.opId));
+      await saveSyncSnapshot(row.id, 92, cellsOf(0, 1, 2), false);
+      await adoptPromotedSession(session, null);
+
+      expect(await getUnackedProgressOps(row.id)).toEqual([]);
+    });
+
+    test('Guest cells the row holds already make no op', async () => {
+      const session = await guestStarter(0);
+      const row = await linkedAccountRow();
+      await saveSyncSnapshot(row.id, 90, cellsOf(0), false);
+
+      await adoptPromotedSession(session, null);
+
+      expect(await getUnackedProgressOps(row.id)).toEqual([]);
+    });
   });
 
   test('a server-known session with no cells still lands as a playable row', async () => {

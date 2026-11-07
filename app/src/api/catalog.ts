@@ -1,5 +1,6 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, type InfiniteData } from '@tanstack/react-query';
 import { apiFetch } from './apiFetch';
+import { isBundledPatternId } from '../bundled-patterns/identity';
 import { Config } from '../config';
 import { getCatalogCache, setCatalogCache } from '../local-db';
 import { getSurfaceKey, getCacheKey, localeCacheLookupOrder } from '../catalog-cache-logic';
@@ -171,6 +172,28 @@ async function fetchWithCatalogCache<T>(surfaceKey: string): Promise<CachedResul
   }
 }
 
+function withoutBundledPatterns(items: CatalogPatternItem[]): CatalogPatternItem[] {
+  return items.filter((item) => !isBundledPatternId(item.id));
+}
+
+function selectVisiblePicks(
+  result: CachedResult<CatalogPatternItem[]>,
+): CachedResult<CatalogPatternItem[]> {
+  return { ...result, data: withoutBundledPatterns(result.data) };
+}
+
+function selectVisiblePages(
+  result: InfiniteData<CachedResult<CatalogPage>>,
+): InfiniteData<CachedResult<CatalogPage>> {
+  return {
+    ...result,
+    pages: result.pages.map((page) => ({
+      ...page,
+      data: { ...page.data, items: withoutBundledPatterns(page.data.items) },
+    })),
+  };
+}
+
 // Every catalog queryKey below includes the active locale. The locale
 // itself is never added to a request or a surface key by these call sites
 // (see apiFetch/performAuthenticatedRequest for the request's `locale`
@@ -187,6 +210,7 @@ export function useStaffPicks() {
       fetchWithCatalogCache<CatalogPatternItem[]>(
         getSurfaceKey('/v1/catalog/staff-picks', {}),
       ),
+    select: selectVisiblePicks,
   });
 }
 
@@ -236,6 +260,7 @@ export function useNewPatterns() {
     },
     getNextPageParam: (lastPage) =>
       lastPage.fromCache ? undefined : (lastPage.data.nextCursor ?? undefined),
+    select: selectVisiblePages,
   });
 }
 
@@ -269,6 +294,7 @@ export function usePatternsBrowse(options: { category?: string; tag?: string }) 
     },
     getNextPageParam: (lastPage) =>
       lastPage.fromCache ? undefined : (lastPage.data.nextCursor ?? undefined),
+    select: selectVisiblePages,
   });
 }
 
@@ -293,5 +319,6 @@ export function useCatalogSearch(q: string) {
       fetchCatalogJson<CatalogPatternItem[]>(
         getSurfaceKey('/v1/catalog/search', { q: trimmed, limit: 25 }),
       ),
+    select: withoutBundledPatterns,
   });
 }

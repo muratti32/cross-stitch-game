@@ -1,10 +1,13 @@
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsBase64,
   IsIn,
   IsInt,
+  IsISO8601,
   IsOptional,
   IsUUID,
+  MaxLength,
   Min,
   ValidateNested,
 } from 'class-validator';
@@ -53,4 +56,21 @@ export class CompleteProgressDto {
   @IsInt()
   @Min(1)
   completedCells?: number;
+}
+
+export class RegisterBundledSessionDto {
+  @IsUUID()
+  patternId!: string;
+
+  @IsIn(['in_progress', 'completed'])
+  localState!: 'in_progress' | 'completed';
+
+  @IsOptional()
+  @IsISO8601({ strict: true })
+  completedAt?: string | null;
+
+  @IsOptional()
+  @IsBase64()
+  @MaxLength(256)
+  packedBitmapBase64?: string | null;
 }

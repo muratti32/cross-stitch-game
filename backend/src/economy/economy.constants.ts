@@ -15,7 +15,7 @@ export const DAILY_POOL_COIN = 30;
 export const DAILY_AD_LIMIT = 3;
 
 /**
- * First Completion Reward tiers by total stitchable cells (width × height),
+ * First Completion Reward tiers by total stitchable cells (non-blank cells),
  * fixed by ADR-0011. DMC thread color count is never a multiplier. Granted
  * exactly once per eligible catalog Pattern; Personal Patterns and Replay
  * Sessions never mint it.

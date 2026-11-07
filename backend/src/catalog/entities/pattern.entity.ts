@@ -56,6 +56,9 @@ export class PatternEntity {
   @Column({ name: 'palette_size', type: 'integer' })
   paletteSize!: number;
 
+  @Column({ name: 'stitchable_cell_count', nullable: true, type: 'integer' })
+  stitchableCellCount!: number | null;
+
   @Column({ name: 'artifact_object_key', type: 'varchar', length: 512 })
   artifactObjectKey!: string;
 

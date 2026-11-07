@@ -1,5 +1,6 @@
 import {
   enqueueAnalyticsGameplayEvent,
+  findAnalyticsSessionId,
   generateUUID,
   getAnalyticsSessionId,
 } from '../local-db';
@@ -46,7 +47,10 @@ export async function captureSessionGameplayEvent(
 ): Promise<void> {
   try {
     await captureGameplayEvent(kind, {
-      session_id: remoteSessionId ?? await getAnalyticsSessionId(localSessionId),
+      session_id:
+        (await findAnalyticsSessionId(localSessionId)) ??
+        remoteSessionId ??
+        (await getAnalyticsSessionId(localSessionId)),
     });
   } catch {
     // Session analytics cannot interfere with entering or completing a session.

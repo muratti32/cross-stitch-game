@@ -119,6 +119,16 @@ export function unionPackedBitmaps(a: Uint8Array, b: Uint8Array): Uint8Array {
   return union;
 }
 
+export function cellsMissingFrom(held: Uint8Array, wanted: Uint8Array): number[] {
+  const missing: number[] = [];
+  for (let cell = 0; cell < wanted.length * 8; cell++) {
+    const byte = Math.floor(cell / 8);
+    const bit = 1 << (cell % 8);
+    if ((wanted[byte] & bit) !== 0 && ((held[byte] ?? 0) & bit) === 0) missing.push(cell);
+  }
+  return missing;
+}
+
 /**
  * Generates a standard UUID v4.
  */

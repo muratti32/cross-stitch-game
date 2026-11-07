@@ -313,6 +313,13 @@ export function captureLocalPersistenceError(operation: string, error: unknown):
   });
 }
 
+export function captureBundledRegistrationError(error: unknown): void {
+  if (!isSentryConfigured()) return;
+  Sentry.captureException(error instanceof Error ? error : new Error(String(error)), {
+    contexts: { bundledRegistration: { operation: 'register' } },
+  });
+}
+
 /**
  * Keeps the Sentry player reference in sync with the identity store, so
  * crashes/perf events can be correlated with a Support Reference without

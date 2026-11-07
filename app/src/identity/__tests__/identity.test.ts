@@ -54,6 +54,7 @@ jest.mock('../../local-db', () => {
     openNamespace: jest.fn(async () => {}),
     adoptPreIdentityDatabase: jest.fn(async () => {}),
     deleteNamespaceFiles: jest.fn(async () => {}),
+    setGuestNamespace: jest.fn(),
   };
 });
 

@@ -34,6 +34,7 @@ interface GuestScenario {
   visibility: 'catalog' | 'personal';
   width: number;
   height: number;
+  stitchableCellCount: number | null;
   elapsedMs: number;
   hasStitchAction: boolean;
   grantGranted: boolean;
@@ -47,6 +48,7 @@ function guestHarness(overrides: Partial<GuestScenario> = {}) {
     visibility: 'catalog',
     width: 100,
     height: 40,
+    stitchableCellCount: null,
     elapsedMs: 200_000,
     hasStitchAction: true,
     grantGranted: true,
@@ -73,6 +75,7 @@ function guestHarness(overrides: Partial<GuestScenario> = {}) {
       return [{
         width: scenario.width,
         height: scenario.height,
+        stitchableCellCount: scenario.stitchableCellCount,
         visibility: scenario.visibility,
         patternId,
         elapsedMs: String(scenario.elapsedMs),
@@ -117,6 +120,64 @@ function guestHarness(overrides: Partial<GuestScenario> = {}) {
   );
 
   return { checkpointService, coinLedger, dataSource, query, service };
+}
+
+function accountHarness({
+  stitchableCellCount,
+  completedCount,
+}: {
+  stitchableCellCount: number | null;
+  completedCount: number;
+}) {
+  const query = jest.fn(async (sql: string): Promise<readonly object[]> => {
+    await Promise.resolve();
+    if (sql.includes("principal_type = 'account'") && sql.includes('FOR UPDATE')) {
+      return [{ id: sessionId, principalType: 'account', principalId: accountId }];
+    }
+    if (sql.includes('pg_advisory_xact_lock')) return [{ locked: null }];
+    if (sql.includes('SELECT p.status')) return [{ status: 'available', patternId }];
+    if (sql.includes('INSERT INTO sessions.session_sync_state')) return [];
+    if (sql.includes('SELECT revision, terminal_completed_at')) {
+      return [{ revision: '17', terminalCompletedAt: null }];
+    }
+    if (sql.includes('COUNT(c.cell_index)')) {
+      return [{
+        width: 20,
+        height: 20,
+        stitchableCellCount,
+        visibility: 'catalog',
+        patternId,
+        completedCount: String(completedCount),
+      }];
+    }
+    if (sql.includes('UPDATE sessions.session_sync_state')) return [];
+    if (sql.includes('UPDATE sessions.stitching_sessions')) return [];
+    throw new Error(`Unexpected query: ${sql}`);
+  });
+  const manager = { query };
+  const dataSource = {
+    transaction: jest.fn(
+      (callback: (value: typeof manager) => Promise<unknown>) => callback(manager),
+    ),
+  };
+  const checkpointService = { writeCheckpoint: jest.fn().mockResolvedValue(undefined) };
+  const coinLedger = {
+    grantFirstCompletion: jest.fn().mockResolvedValue({
+      granted: true,
+      amount: 25,
+      balance: 25,
+      replayed: false,
+    }),
+  };
+  const promotionService = { assertNotLocked: jest.fn().mockResolvedValue(undefined) };
+  const service = new ProgressSyncService(
+    dataSource as never,
+    checkpointService as never,
+    coinLedger as never,
+    promotionService as never,
+  );
+
+  return { checkpointService, coinLedger, manager, service };
 }
 
 async function caught(promise: Promise<unknown>): Promise<unknown> {
@@ -271,71 +332,111 @@ describe('ProgressSyncService.complete', () => {
   });
 
   it('keeps the account completion path unchanged', async () => {
-    const query = jest.fn(async (sql: string): Promise<readonly object[]> => {
-      await Promise.resolve();
-      if (sql.includes("principal_type = 'account'") && sql.includes('FOR UPDATE')) {
-        return [{ id: sessionId, principalType: 'account', principalId: accountId }];
-      }
-      if (sql.includes('pg_advisory_xact_lock')) return [{ locked: null }];
-      if (sql.includes('SELECT p.status')) return [{ status: 'available', patternId }];
-      if (sql.includes('INSERT INTO sessions.session_sync_state')) return [];
-      if (sql.includes('SELECT revision, terminal_completed_at')) {
-        return [{ revision: '17', terminalCompletedAt: null }];
-      }
-      if (sql.includes('COUNT(c.cell_index)')) {
-        return [{
-          width: 20,
-          height: 20,
-          visibility: 'catalog',
-          patternId,
-          completedCount: '400',
-        }];
-      }
-      if (sql.includes('UPDATE sessions.session_sync_state')) return [];
-      if (sql.includes('UPDATE sessions.stitching_sessions')) return [];
-      throw new Error(`Unexpected query: ${sql}`);
-    });
-    const manager = { query };
-    const dataSource = {
-      transaction: jest.fn(
-        (callback: (value: typeof manager) => Promise<unknown>) => callback(manager),
-      ),
-    };
-    const checkpointService = { writeCheckpoint: jest.fn().mockResolvedValue(undefined) };
-    const coinLedger = {
-      grantFirstCompletion: jest.fn().mockResolvedValue({
-        granted: true,
-        amount: 25,
-        balance: 25,
-        replayed: false,
-      }),
-    };
-    const promotionService = { assertNotLocked: jest.fn().mockResolvedValue(undefined) };
-    const service = new ProgressSyncService(
-      dataSource as never,
-      checkpointService as never,
-      coinLedger as never,
-      promotionService as never,
-    );
+    const fixture = accountHarness({ stitchableCellCount: null, completedCount: 400 });
 
     await expect(
-      service.complete(account, sessionId, { deviceId }),
+      fixture.service.complete(account, sessionId, { deviceId }),
     ).resolves.toEqual({
       revision: 17,
       terminalCompleted: true,
       firstCompletionReward: { amount: 25, balance: 25 },
     });
-    expect(checkpointService.writeCheckpoint).toHaveBeenCalledWith(
-      manager,
+    expect(fixture.checkpointService.writeCheckpoint).toHaveBeenCalledWith(
+      fixture.manager,
       sessionId,
       true,
     );
-    expect(coinLedger.grantFirstCompletion).toHaveBeenCalledWith(
-      manager,
+    expect(fixture.coinLedger.grantFirstCompletion).toHaveBeenCalledWith(
+      fixture.manager,
       { type: 'account', id: accountId },
       patternId,
       400,
     );
+  });
+
+  it('completes a sparse Pattern for an account at its stitchable count', async () => {
+    const fixture = accountHarness({ stitchableCellCount: 114, completedCount: 114 });
+
+    await expect(
+      fixture.service.complete(account, sessionId, { deviceId }),
+    ).resolves.toMatchObject({ terminalCompleted: true });
+    expect(fixture.coinLedger.grantFirstCompletion).toHaveBeenCalledWith(
+      fixture.manager,
+      { type: 'account', id: accountId },
+      patternId,
+      114,
+    );
+  });
+
+  it('holds a sparse Pattern open for an account until every stitchable cell is done', async () => {
+    const fixture = accountHarness({ stitchableCellCount: 114, completedCount: 113 });
+
+    await expect(
+      fixture.service.complete(account, sessionId, { deviceId }),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(fixture.coinLedger.grantFirstCompletion).not.toHaveBeenCalled();
+  });
+
+  it('keeps width × height for an account row with no stitchable count', async () => {
+    const fixture = accountHarness({ stitchableCellCount: null, completedCount: 114 });
+
+    await expect(
+      fixture.service.complete(account, sessionId, { deviceId }),
+    ).rejects.toBeInstanceOf(ConflictException);
+  });
+
+  it('completes a sparse Pattern for a Guest at its stitchable count', async () => {
+    const fixture = guestHarness({
+      width: 20,
+      height: 20,
+      stitchableCellCount: 114,
+      elapsedMs: 5_700,
+    });
+
+    await expect(
+      fixture.service.complete(guest, sessionId, { deviceId, completedCells: 114 }),
+    ).resolves.toMatchObject({ terminalCompleted: true });
+    expect(fixture.coinLedger.grantFirstCompletion).toHaveBeenCalledWith(
+      expect.anything(),
+      { type: 'guest', id: guestId },
+      patternId,
+      114,
+    );
+  });
+
+  it('applies the elapsed check to the stitchable count of a sparse Pattern', async () => {
+    const fixture = guestHarness({
+      width: 20,
+      height: 20,
+      stitchableCellCount: 114,
+      elapsedMs: 5_699,
+    });
+
+    const error = await caught(
+      fixture.service.complete(guest, sessionId, { deviceId, completedCells: 114 }),
+    );
+    expect(error).toBeInstanceOf(ConflictException);
+    if (error instanceof ConflictException) {
+      expect(error.getResponse()).toEqual({
+        code: 'implausible_completion',
+        check: 'elapsed_time',
+      });
+    }
+  });
+
+  it('keeps width × height for a Guest row with no stitchable count', async () => {
+    const fixture = guestHarness({ width: 20, height: 20 });
+
+    const error = await caught(
+      fixture.service.complete(guest, sessionId, { deviceId, completedCells: 114 }),
+    );
+    expect(error).toBeInstanceOf(ConflictException);
+    if (error instanceof ConflictException) {
+      expect(error.getResponse()).toEqual({
+        code: 'implausible_completion',
+        check: 'completed_cells',
+      });
+    }
   });
 
   it('keeps Guest progress sync account-only', async () => {

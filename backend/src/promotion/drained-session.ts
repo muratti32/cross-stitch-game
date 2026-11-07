@@ -10,19 +10,20 @@ interface SurvivingSessionProgress {
 
 interface ApplyPackagedProgressInput {
   sessionId: string;
-  guestId: string;
-  packaged: PackagedSession;
-  totalCells: number;
+  deviceId: string;
+  packaged: Pick<PackagedSession, 'status' | 'completedAt' | 'packedBitmapBase64'>;
+  gridCells: number;
+  stitchableCells: number;
 }
 
 /**
- * Folds a packaged Guest bitmap into the surviving session. Only cells not yet
- * completed are written, so each gets one revision and one operation. Runs
- * under the session's sync lock to keep revisions contiguous with account sync.
+ * Folds a packed bitmap into a session. Only cells not yet completed are
+ * written, so each gets one revision and one operation. Runs under the
+ * session's sync lock to keep revisions contiguous with account sync.
  */
 export async function applyPackagedProgress(
   manager: EntityManager,
-  { sessionId, guestId, packaged, totalCells }: ApplyPackagedProgressInput,
+  { sessionId, deviceId, packaged, gridCells, stitchableCells }: ApplyPackagedProgressInput,
 ): Promise<void> {
   await manager.query(`SELECT pg_advisory_xact_lock(hashtextextended($1::text, 0))`, [sessionId]);
   await manager.query(
@@ -32,22 +33,22 @@ export async function applyPackagedProgress(
     [sessionId],
   );
 
-  const cells = unpackCompletedCells(Buffer.from(packaged.packedBitmapBase64, 'base64'), totalCells);
+  const cells = unpackCompletedCells(Buffer.from(packaged.packedBitmapBase64, 'base64'), gridCells);
   if (cells.length > 0) {
-    await writeCompletedCells(manager, sessionId, guestId, cells);
+    await writeCompletedCells(manager, sessionId, deviceId, cells);
   }
   if (packaged.status === 'completed') {
-    await completeWhenFullyStitched(manager, sessionId, packaged.completedAt, totalCells);
+    await completeWhenFullyStitched(manager, sessionId, packaged.completedAt, gridCells, stitchableCells);
   }
 }
 
 async function writeCompletedCells(
   manager: EntityManager,
   sessionId: string,
-  guestId: string,
+  deviceId: string,
   cells: readonly number[],
 ): Promise<void> {
-  // device_seq continues the guest device's own sequence on this session, so
+  // device_seq continues the writer's own sequence on this session, so
   // the (session, device, seq) constraint cannot reject a row and leave a
   // revision gap. Moved Guest operations can sit above the sync revision.
   await manager.query(
@@ -94,7 +95,7 @@ async function writeCompletedCells(
      SET revision = base.revision + (SELECT COUNT(*) FROM missing), updated_at = now()
      FROM base
      WHERE sync.session_id = $1::uuid`,
-    [sessionId, guestId, cells],
+    [sessionId, deviceId, cells],
   );
   // cancelSession deletes a session whose flag is false.
   await manager.query(
@@ -110,15 +111,16 @@ async function completeWhenFullyStitched(
   manager: EntityManager,
   sessionId: string,
   completedAt: string | null,
-  totalCells: number,
+  gridCells: number,
+  stitchableCells: number,
 ): Promise<void> {
   const rows = await manager.query<readonly { completed: string }[]>(
     `SELECT COUNT(*) AS completed
      FROM sessions.session_cell_state
      WHERE session_id = $1 AND state = 'completed' AND cell_index < $2`,
-    [sessionId, totalCells],
+    [sessionId, gridCells],
   );
-  if (Number(rows[0].completed) !== totalCells) return;
+  if (Number(rows[0].completed) !== stitchableCells) return;
 
   await manager.query(
     `UPDATE sessions.stitching_sessions

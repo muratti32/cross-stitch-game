@@ -520,7 +520,7 @@ A Pattern published in the Pattern Catalog by the game operator rather than thro
 _Avoid_: Community Pattern, Personal Pattern, sponsored Pattern
 
 **Bundled Starter Pattern**:
-A free Official Pattern whose Pattern Artifact and Pattern Preview ship inside the app package so a player can start stitching immediately, including on a first launch without connectivity. Starting one is the sole exception to online Session Preparation for catalog content: the session becomes Ready from the bundled bytes, its backend session identity and the installation's Guest Installation Identity are created idempotently at first connectivity, and its progress, completion, and rewards then follow the ordinary local-first rules. It never requires a Pattern Unlock and behaves as a normal free Official Pattern in every other way.
+A free Official Pattern whose Pattern Artifact and Pattern Preview ship inside the app package so a player can start stitching immediately, including on a first launch without connectivity. Starting one is the sole exception to online Session Preparation for catalog content: the session becomes Ready from the bundled bytes, its backend session identity and the installation's Guest Installation Identity are created idempotently at first connectivity, and its progress and completion then follow the ordinary local-first rules. Its id is its fixed catalog UUID everywhere. A session completed before registration earns no First Completion Reward; one completed after registration follows the ordinary rules. It never requires a Pattern Unlock and behaves as a normal free Official Pattern in every other way.
 _Avoid_: Offline Catalog Cache, demo Pattern, tutorial-only Pattern
 
 **Pattern Unlock**:
