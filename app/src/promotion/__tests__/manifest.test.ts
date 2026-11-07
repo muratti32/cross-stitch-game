@@ -234,3 +234,35 @@ describe('buildGuestCapture', () => {
     expect(capture.manifest.completions[PATTERN_A]).toBe('2026-03-01T10:00:00.000Z');
   });
 });
+
+describe('a linked completed row and an unlinked replay on one pattern', () => {
+  test('both are packaged, keyed by the remote id and the local id, with their own bitmaps', async () => {
+    const replay = session({
+      id: 'session_local_2',
+      status: 'ready',
+      completedAt: null,
+      remoteSessionId: null,
+      createdAt: '2026-02-02T09:00:00.000Z',
+      updatedAt: '2026-02-02T10:00:00.000Z',
+    });
+    const capture = await buildGuestCapture(
+      GUEST_ID,
+      snapshot({
+        sessions: [session(), replay],
+        progressVersions: {
+          session_local_1: { deviceSeq: 7, opCount: 3, checkpointRevision: 2 },
+          session_local_2: { deviceSeq: 9, opCount: 1, checkpointRevision: 0 },
+        },
+        packedProgress: {
+          session_local_1: { packedBitmapBase64: 'Bw==', completedCount: 3 },
+          session_local_2: { packedBitmapBase64: 'AQ==', completedCount: 1 },
+        },
+      }),
+    );
+
+    expect(Object.keys(capture.manifest.progress).sort()).toEqual([SESSION_A, 'session_local_2'].sort());
+    const byKey = Object.fromEntries(capture.sessions.map((entry) => [entry.key, entry]));
+    expect(byKey[SESSION_A].packedBitmapBase64).toBe('Bw==');
+    expect(byKey['session_local_2']).toMatchObject({ remoteSessionId: null, localSessionId: 'session_local_2', packedBitmapBase64: 'AQ==' });
+  });
+});

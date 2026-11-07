@@ -1011,6 +1011,39 @@ export interface SessionPatternMeta {
   height: number;
 }
 
+/**
+ * One remote session belongs to one local row: the manifest and the drain key by
+ * remote id. The server hands a new row the pattern's active session, which an
+ * earlier completed row may still hold, so a held id is never written twice.
+ */
+async function remoteSessionHeldByOtherRow(
+  db: SQLite.SQLiteDatabase,
+  remoteSessionId: string,
+  exceptLocalSessionId: string,
+): Promise<boolean> {
+  const holder = await db.getFirstAsync<{ id: string }>(
+    'SELECT id FROM sessions WHERE remote_session_id = ? AND id <> ?',
+    remoteSessionId,
+    exceptLocalSessionId,
+  );
+  return holder != null;
+}
+
+/** Links an unlinked row to a server session no other row holds; false when it could not. */
+export async function linkPreparedSession(localSessionId: string, remoteSessionId: string): Promise<boolean> {
+  return withDatabase(async (db) =>
+    runInTransaction(db, async () => {
+      if (await remoteSessionHeldByOtherRow(db, remoteSessionId, localSessionId)) return false;
+      const update = await db.runAsync(
+        'UPDATE sessions SET remote_session_id = ? WHERE id = ? AND remote_session_id IS NULL',
+        remoteSessionId,
+        localSessionId,
+      );
+      return update.changes > 0;
+    }),
+  );
+}
+
 export async function createSession(
   patternId: string,
   checksum: string,
@@ -1022,6 +1055,9 @@ export async function createSession(
   return withDatabase(async (db) => {
     const id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const createdAt = new Date().toISOString();
+    if (remoteSessionId !== null && (await remoteSessionHeldByOtherRow(db, remoteSessionId, id))) {
+      remoteSessionId = null;
+    }
 
     await db.runAsync(
       `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, remote_session_id, title, preview_url, thumbnail_url, pattern_width, pattern_height)
@@ -2075,12 +2111,9 @@ export async function linkBundledSession(
         if (row.status === 'completed' && !terminalCompleted) return 'sessionNotFinished';
         // The server answers a second row with the active session another row already
         // owns; one remote id keys one manifest entry, so the second row stays local.
-        const holder = await db.getFirstAsync<{ id: string }>(
-          'SELECT id FROM sessions WHERE remote_session_id = ? AND id <> ?',
-          link.remoteSessionId,
-          link.localSessionId,
-        );
-        return holder === null ? 'foldOvertaken' : 'remoteSessionTaken';
+        return (await remoteSessionHeldByOtherRow(db, link.remoteSessionId, link.localSessionId))
+          ? 'remoteSessionTaken'
+          : 'foldOvertaken';
       }
       await db.runAsync(
         'UPDATE progress_ops SET acked = 1 WHERE session_id = ? AND device_seq <= ?',

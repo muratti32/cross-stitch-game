@@ -9,6 +9,9 @@ import { apiFetch } from '../../api/apiFetch';
 
 jest.mock('../../local-db', () => ({
   findActiveSessionForPattern: jest.fn(),
+  createSession: jest.fn(),
+  getActiveIdentity: jest.fn(() => 'identity-1'),
+  linkPreparedSession: jest.fn(),
   getSession: jest.fn(),
   updateSessionStatus: jest.fn(),
   updateSessionError: jest.fn(),
@@ -78,6 +81,40 @@ describe('prepareCatalogSession resuming a preparing session', () => {
     mockedFetch.mockResolvedValue(jsonResponse(500, {}));
 
     await expect(prepareCatalogSession('pattern-1', info)).resolves.toBe(existing);
+  });
+});
+
+describe('prepareCatalogSession when another row already holds the server session', () => {
+  const info = { title: 'T', previewUrl: null, thumbnailUrl: null, width: 1, height: 1 };
+  const prepared = {
+    sessionId: 'remote-1',
+    artifact: { checksum: 'chk' },
+    grant: { url: 'https://example.invalid/a' },
+  };
+
+  test('plays an unlinked row, and links it on the next start once the server hands out its own session', async () => {
+    const unlinked = { id: 'local-2', status: 'ready', remoteSessionId: null };
+    mockedDb.findActiveSessionForPattern.mockResolvedValueOnce(null);
+    mockedFetch.mockResolvedValueOnce(jsonResponse(200, prepared));
+    mockedDb.createSession.mockResolvedValue(unlinked as never);
+    await prepareCatalogSession('pattern-1', info);
+
+    mockedDb.findActiveSessionForPattern.mockResolvedValueOnce(unlinked as never);
+    mockedFetch.mockResolvedValueOnce(jsonResponse(200, { ...prepared, sessionId: 'remote-2' }));
+    mockedDb.linkPreparedSession.mockResolvedValue(true);
+
+    await expect(prepareCatalogSession('pattern-1', info)).resolves.toBe(unlinked);
+
+    expect(mockedDb.linkPreparedSession).toHaveBeenCalledWith('local-2', 'remote-2');
+  });
+
+  test('a row that was never refused a link does not re-prepare', async () => {
+    const plain = { id: 'local-9', status: 'ready', remoteSessionId: null };
+    mockedDb.findActiveSessionForPattern.mockResolvedValueOnce(plain as never);
+
+    await prepareCatalogSession('pattern-1', info);
+
+    expect(mockedFetch).not.toHaveBeenCalled();
   });
 });
 

@@ -21,6 +21,7 @@ import {
   getUnackedProgressOps,
   insertProgressOpsBatch,
   linkBundledSession,
+  linkPreparedSession,
   listBundledRegistrationCandidates,
   openNamespace,
   readBundledRegistrationSnapshot,
@@ -212,20 +213,25 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       expect(linked).toHaveBeenCalledTimes(1);
     });
 
-    test('a replay the server answers with a session another row holds stays unlinked and is not re-sent', async () => {
+    test('a replay the server answers with a session another row holds stays unlinked, then links once the server answers with its own', async () => {
       const first = await startRow();
       await linkBundledSession(ACCOUNT, { localSessionId: first.id, remoteSessionId: REMOTE }, receipt(0));
       await updateSessionStatus(first.id, 'completed', '2026-02-01T10:00:00.000Z');
       const replay = await startRow();
       await insertProgressOpsBatch([op(replay.id, 0, 1)]);
-      mockApiFetch.mockResolvedValue(respond(false));
+      mockApiFetch.mockResolvedValueOnce(respond(false));
 
-      await registerBundledSessions();
       await registerBundledSessions();
 
       expect((await getSession(replay.id))?.remoteSessionId).toBeNull();
       expect((await getSession(first.id))?.remoteSessionId).toBe(REMOTE);
-      expect(mockApiFetch).toHaveBeenCalledTimes(1);
+
+      const next = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
+      mockApiFetch.mockResolvedValueOnce({ status: 200, json: async () => ({ sessionId: next, terminalCompleted: false }) });
+      await registerBundledSessions();
+
+      expect(mockApiFetch).toHaveBeenCalledTimes(2);
+      expect((await getSession(replay.id))?.remoteSessionId).toBe(next);
     });
 
     test('a checkpoint that compacts ops during the request holds the link, and the next pass sends them', async () => {
@@ -281,6 +287,30 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       expect(await getProgressOps(id)).toHaveLength(4);
       expect(await getSessionCompletedCount(id, 4, 4)).toBe(2);
       expect(completedCellsOf((await readBundledRegistrationSnapshot(id))?.packedBitmapBase64 ?? '')).toEqual([0, 3]);
+    });
+  });
+
+  describe('one local row per remote session', () => {
+    test('createSession leaves a row unlinked when another row holds the remote id', async () => {
+      const holder = await createSession(HEART, 'checksum', 'catalog', 'ready', REMOTE);
+      const second = await createSession(HEART, 'checksum', 'catalog', 'preparing', REMOTE);
+
+      expect(holder.remoteSessionId).toBe(REMOTE);
+      expect(second.remoteSessionId).toBeNull();
+      expect((await getSession(second.id))?.remoteSessionId).toBeNull();
+    });
+
+    test('linkPreparedSession links a free remote id once and refuses a held or second one', async () => {
+      const holder = await createSession(HEART, 'checksum', 'catalog', 'ready', REMOTE);
+      const row = await createSession(HEART, 'checksum', 'catalog', 'ready', REMOTE);
+      const free = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
+
+      await expect(linkPreparedSession(row.id, REMOTE)).resolves.toBe(false);
+      await expect(linkPreparedSession(row.id, free)).resolves.toBe(true);
+      await expect(linkPreparedSession(row.id, 'ffffffff-ffff-4fff-8fff-ffffffffffff')).resolves.toBe(false);
+
+      expect((await getSession(row.id))?.remoteSessionId).toBe(free);
+      expect((await getSession(holder.id))?.remoteSessionId).toBe(REMOTE);
     });
   });
 

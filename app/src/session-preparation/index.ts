@@ -9,6 +9,7 @@ import {
   removePendingCancel,
   getActiveIdentity,
   createSession,
+  linkPreparedSession,
   findActiveSessionForPattern,
   getSession,
   deleteSession,
@@ -217,6 +218,27 @@ export async function prepareBundledSession(
   }
 }
 
+// Rows the server answered with a session another row holds: they play unlinked
+// and take the server session the next prepare hands out once the holder closed.
+const rowsAwaitingServerSession = new Set<string>();
+
+async function linkAwaitingRow(localSessionId: string, patternId: string): Promise<void> {
+  try {
+    const response = await apiFetch('/v1/sessions/prepare', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ patternId }),
+    });
+    if (!response.ok) return;
+    const data = (await response.json()) as PrepareResponse;
+    if (await linkPreparedSession(localSessionId, data.sessionId)) {
+      rowsAwaitingServerSession.delete(localSessionId);
+    }
+  } catch {
+    // Offline or refused: the row keeps playing locally and retries on the next start.
+  }
+}
+
 async function prepareRemoteSession(
   patternId: string,
   patternInfo: PreparePatternInfo,
@@ -231,6 +253,9 @@ async function prepareRemoteSession(
       await retryDownload(existing.id).catch((err: unknown) => {
         if (err instanceof UnlockRequiredError) throw err;
       });
+    }
+    if (existing.remoteSessionId == null && rowsAwaitingServerSession.has(existing.id)) {
+      await linkAwaitingRow(existing.id, patternId);
     }
     return existing;
   }
@@ -259,6 +284,8 @@ async function prepareRemoteSession(
     data.sessionId,
     patternInfo,
   );
+
+  if (session.remoteSessionId == null) rowsAwaitingServerSession.add(session.id);
 
   void downloadAndRegister(session.id, patternId, data.grant.url, data.artifact.checksum);
 
