@@ -3,6 +3,8 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { getDatabaseFilename, getDatabasePath, shouldAdopt } from './namespaceLogic';
 import type { AnalyticsGameplayEvent, AnalyticsGameplayEventPayload } from '../analytics/schema';
 import { markCriticalPathActivity } from '../perf/criticalPathSentinel';
+import type { PackagedSession } from '../api/promotionContract';
+import { planPromotedSessionAdoption, type PromotedSessionServerState } from './promotedSessionAdoption';
 
 export type PatternSource = 'bundled' | 'catalog' | 'personal';
 
@@ -462,8 +464,17 @@ export async function adoptPreIdentityDatabase(guestId: string): Promise<void> {
   });
 }
 
-import { packCompletedBitmap, unpackCompletedBitmap, generateUUID } from './helpers';
+import {
+  base64ToUint8Array,
+  foldPackedProgress,
+  generateUUID,
+  packCompletedBitmap,
+  unionPackedBitmaps,
+  unpackCompletedBitmap,
+  type PackedSessionProgress,
+} from './helpers';
 export { packCompletedBitmap, unpackCompletedBitmap, generateUUID };
+export type { PackedSessionProgress };
 
 /**
  * Initializes the database tables and runs migrations for a specific database.
@@ -1815,6 +1826,120 @@ export async function getSessionCompletedCount(
       }
     }
     return count;
+  });
+}
+
+/**
+ * A session's complete cell record, folded from its latest checkpoint and the
+ * ops newer than it. Ops alone are incomplete because checkpoints compact them.
+ */
+export async function readSessionPackedProgress(sessionId: string): Promise<PackedSessionProgress> {
+  return withDatabase(async (db) => {
+    const checkpoint = await getLatestCheckpointWithDb(db, sessionId);
+    const ops = await getProgressOpsWithDb(db, sessionId, checkpoint?.revision ?? 0);
+    return foldPackedProgress(checkpoint?.packedBitmap ?? new Uint8Array(0), ops);
+  });
+}
+
+/**
+ * Brings a promoted Guest session into the open (account) namespace. Atomic and
+ * idempotent, so a kill before the handoff records the ack converges on restart.
+ *
+ * The seeded checkpoint stays at revision 0. A reopened account session counts
+ * its local revisions from 0 again, so a checkpoint at the server revision would
+ * outrank every checkpoint the game saves and freeze the Play tab percentage.
+ */
+export async function adoptPromotedSession(
+  session: PackagedSession,
+  server: PromotedSessionServerState | null,
+): Promise<void> {
+  await withDatabase(async (db) => {
+    await runInTransaction(db, async () => {
+      const adopted = await db.getFirstAsync<{ id: string }>(
+        'SELECT id FROM sessions WHERE id = ? OR remote_session_id = ?',
+        session.localSessionId,
+        server?.accountSessionId ?? null,
+      );
+      const active = await db.getFirstAsync<{ id: string }>(
+        "SELECT id FROM sessions WHERE pattern_id = ? AND source = ? AND status <> 'completed' ORDER BY created_at DESC",
+        session.patternId,
+        session.source,
+      );
+      const plan = planPromotedSessionAdoption(session, server, {
+        alreadyAdopted: adopted !== null,
+        activeSessionId: active?.id ?? null,
+      });
+      const now = new Date().toISOString();
+
+      switch (plan.kind) {
+        case 'keepAccountRow':
+          return;
+
+        case 'mergeIntoActive': {
+          // Written at the latest checkpoint's own revision so the account's
+          // newer ops keep replaying on top and stay available for undo.
+          const checkpoint = await getLatestCheckpointWithDb(db, plan.sessionId);
+          const union = unionPackedBitmaps(
+            checkpoint?.packedBitmap ?? new Uint8Array(0),
+            base64ToUint8Array(plan.packedBitmapBase64),
+          );
+          if (union.length === 0) return;
+          await db.runAsync(
+            `INSERT OR REPLACE INTO checkpoints (session_id, revision, packed_bitmap, created_at)
+             VALUES (?, ?, ?, ?)`,
+            plan.sessionId,
+            checkpoint?.revision ?? 0,
+            union,
+            now,
+          );
+          return;
+        }
+
+        case 'insert': {
+          await db.runAsync(
+            `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, completed_at, replay_of, remote_session_id, title, preview_url, thumbnail_url, pattern_width, pattern_height)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            session.localSessionId,
+            session.patternId,
+            session.source,
+            session.artifactChecksum,
+            session.createdAt,
+            session.updatedAt,
+            plan.status,
+            plan.completedAt,
+            session.replayOf,
+            plan.remoteSessionId,
+            session.title,
+            session.previewUrl,
+            session.thumbnailUrl,
+            session.patternWidth,
+            session.patternHeight,
+          );
+          const bitmap = base64ToUint8Array(plan.packedBitmapBase64);
+          // An empty blob can bind as NULL, which these NOT NULL columns refuse.
+          if (bitmap.length === 0) return;
+          await db.runAsync(
+            `INSERT OR REPLACE INTO checkpoints (session_id, revision, packed_bitmap, created_at)
+             VALUES (?, 0, ?, ?)`,
+            session.localSessionId,
+            bitmap,
+            now,
+          );
+          if (plan.syncSnapshot !== null) {
+            await db.runAsync(
+              `INSERT OR REPLACE INTO sync_snapshots (session_id, server_revision, packed_bitmap, terminal, updated_at)
+               VALUES (?, ?, ?, ?, ?)`,
+              session.localSessionId,
+              plan.syncSnapshot.serverRevision,
+              bitmap,
+              plan.syncSnapshot.terminal ? 1 : 0,
+              now,
+            );
+          }
+          return;
+        }
+      }
+    });
   });
 }
 

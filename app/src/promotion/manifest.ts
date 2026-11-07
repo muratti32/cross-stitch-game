@@ -1,5 +1,5 @@
 import * as Crypto from 'expo-crypto';
-import type { PendingRewardEvidence, PromotionManifest } from '../api/promotionContract';
+import type { PackagedSession, PendingRewardEvidence, PromotionManifest } from '../api/promotionContract';
 import {
   getLatestCheckpoint,
   getLocalPatternLikes,
@@ -7,10 +7,12 @@ import {
   getProgressOps,
   getSessions,
   openNamespace,
+  readSessionPackedProgress,
+  type PackedSessionProgress,
   type PendingGuestCompletionClaim,
   type StitchingSession,
 } from '../local-db';
-import type { DrainTargets } from './handoff';
+import type { DrainSessionTarget, DrainTargets } from './handoff';
 
 /** One session's local progress version, as the manifest records it. */
 export interface SessionProgressVersion {
@@ -25,12 +27,14 @@ export interface GuestLocalSnapshot {
   claims: PendingGuestCompletionClaim[];
   likes: Record<string, boolean>;
   progressVersions: Record<string, SessionProgressVersion>;
+  packedProgress: Record<string, PackedSessionProgress>;
 }
 
 export interface GuestCapture {
   manifest: PromotionManifest;
   manifestChecksum: string;
   drain: DrainTargets;
+  sessions: PackagedSession[];
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -74,34 +78,67 @@ function isServerSession(
   );
 }
 
+const NO_PROGRESS: PackedSessionProgress = { packedBitmapBase64: '', completedCount: 0 };
+
+function packageSession(session: StitchingSession, packedBitmapBase64: string): PackagedSession {
+  return {
+    key: session.remoteSessionId ?? session.id,
+    localSessionId: session.id,
+    remoteSessionId: session.remoteSessionId ?? null,
+    patternId: session.patternId,
+    source: session.source,
+    artifactChecksum: session.artifactChecksum,
+    status: session.status,
+    createdAt: session.createdAt,
+    updatedAt: session.updatedAt,
+    completedAt: session.completedAt ?? null,
+    replayOf: session.replayOf ?? null,
+    title: session.title ?? null,
+    previewUrl: session.previewUrl ?? null,
+    thumbnailUrl: session.thumbnailUrl ?? null,
+    patternWidth: session.patternWidth ?? null,
+    patternHeight: session.patternHeight ?? null,
+    packedBitmapBase64,
+  };
+}
+
 /**
- * Builds the Guest Promotion Manifest and the drain list from the Guest's
- * local records. Only sessions the backend already knows (a remote id) can be
- * promoted, so those are the sessions the manifest and drain list cover.
- * Checksums are computed by the caller-supplied hasher so this stays pure.
+ * Builds the Guest Promotion Manifest, the Promotion Package's sessions and the
+ * drain list from the Guest's local records. A session the backend does not know
+ * has nothing to transfer until the player touched it, so it is only carried
+ * once it has progress or is completed. Checksums are computed by the
+ * caller-supplied hasher so this stays pure.
  */
 export async function buildGuestCapture(
   guestId: string,
   snapshot: GuestLocalSnapshot,
   hash: (text: string) => Promise<string> = sha256Hex,
 ): Promise<GuestCapture> {
-  const sessions = snapshot.sessions.filter(isServerSession).sort((a, b) => a.remoteSessionId.localeCompare(b.remoteSessionId));
+  const progressOf = (session: StitchingSession): PackedSessionProgress =>
+    snapshot.packedProgress[session.id] ?? NO_PROGRESS;
+  const sessions = snapshot.sessions
+    .filter(
+      (session) => isServerSession(session) || session.status === 'completed' || progressOf(session).completedCount > 0,
+    )
+    .map((session) => ({ session, packaged: packageSession(session, progressOf(session).packedBitmapBase64) }))
+    .sort((a, b) => a.packaged.key.localeCompare(b.packaged.key));
 
   const progress: PromotionManifest['progress'] = {};
   const completions: PromotionManifest['completions'] = {};
-  const drainSessions = new Map<string, { guestSessionId: string; patternId: string }>();
+  const drainSessions = new Map<string, DrainSessionTarget>();
 
-  for (const session of sessions) {
+  for (const { session, packaged } of sessions) {
     const version = snapshot.progressVersions[session.id] ?? { deviceSeq: 0, opCount: 0, checkpointRevision: 0 };
-    progress[session.remoteSessionId] = {
+    progress[packaged.key] = {
       deviceSeq: version.deviceSeq,
       checksum: await hash(
         canonicalJson({
-          remoteSessionId: session.remoteSessionId,
+          key: packaged.key,
           patternId: session.patternId,
           status: session.status,
           completedAt: session.completedAt ?? null,
           updatedAt: session.updatedAt,
+          packedBitmapBase64: packaged.packedBitmapBase64,
           ...version,
         }),
       ),
@@ -112,16 +149,17 @@ export async function buildGuestCapture(
         completions[session.patternId] = session.completedAt;
       }
     }
-    drainSessions.set(session.remoteSessionId, {
-      guestSessionId: session.remoteSessionId,
+    drainSessions.set(packaged.key, {
+      guestSessionId: packaged.key,
       patternId: session.patternId,
+      serverKnown: isServerSession(session),
     });
   }
 
   const pendingRewards: Record<string, PendingRewardEvidence> = {};
   for (const claim of snapshot.claims) {
-    const session = sessions.find((candidate) => candidate.id === claim.localSessionId);
-    if (!session) continue;
+    const session = snapshot.sessions.find((candidate) => candidate.id === claim.localSessionId);
+    if (!session || !isServerSession(session)) continue;
     pendingRewards[firstCompletionSourceKey(guestId, session.patternId)] = {
       localSessionId: claim.localSessionId,
       remoteSessionId: claim.remoteSessionId,
@@ -144,6 +182,7 @@ export async function buildGuestCapture(
       likes: Object.keys(likes).filter((patternId) => UUID.test(patternId)).sort(),
       sessions: [...drainSessions.values()],
     },
+    sessions: sessions.map(({ packaged }) => packaged),
   };
 }
 
@@ -158,13 +197,19 @@ export async function captureGuestRecords(guestId: string): Promise<GuestCapture
     getLocalPatternLikes(),
   ]);
   const progressVersions: Record<string, SessionProgressVersion> = {};
-  for (const session of sessions.filter(isServerSession)) {
-    const [ops, checkpoint] = await Promise.all([getProgressOps(session.id), getLatestCheckpoint(session.id)]);
+  const packedProgress: Record<string, PackedSessionProgress> = {};
+  for (const session of sessions) {
+    const [ops, checkpoint, packed] = await Promise.all([
+      getProgressOps(session.id),
+      getLatestCheckpoint(session.id),
+      readSessionPackedProgress(session.id),
+    ]);
+    packedProgress[session.id] = packed;
     progressVersions[session.id] = {
       deviceSeq: ops.reduce((high, op) => Math.max(high, op.deviceSeq), 0),
       opCount: ops.length,
       checkpointRevision: checkpoint?.revision ?? 0,
     };
   }
-  return buildGuestCapture(guestId, { sessions, claims, likes, progressVersions });
+  return buildGuestCapture(guestId, { sessions, claims, likes, progressVersions, packedProgress });
 }

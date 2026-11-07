@@ -1,5 +1,7 @@
 import {
   PromotionApiError,
+  type DrainSessionResult,
+  type PackagedSession,
   type PromotionCommitResponse,
   type PromotionLockResponse,
   type PromotionPackageRequest,
@@ -18,6 +20,8 @@ import {
   type PromotionEvent,
   type PromotionHandoff,
   type PromotionRequestStage,
+  type SyncHandoff,
+  type DrainSessionTarget,
 } from './handoff';
 import type { HandoffStore } from './handoffStore';
 
@@ -29,7 +33,7 @@ export interface PromotionApi {
   commitPromotion(previewData: PromotionPreviewResponse, signature: string): Promise<PromotionCommitResponse>;
   cancelPromotion(guestId: string): Promise<void>;
   drainLike(guestId: string, patternId: string): Promise<void>;
-  drainSession(guestId: string, patternId: string, guestSessionId: string): Promise<void>;
+  drainSession(guestId: string, patternId: string, guestSessionId: string): Promise<DrainSessionResult>;
 }
 
 export interface PromotionRunnerDeps {
@@ -38,6 +42,12 @@ export interface PromotionRunnerDeps {
   readCredentialSecret(): Promise<string | null>;
   /** Marks a drained Like on in the open (account) namespace. */
   markLikeInAccountNamespace(patternId: string): Promise<void>;
+  /** Brings a session into the account namespace. `server` is null for a local-only session. */
+  adoptSession(
+    owners: { guestId: string; accountId: string },
+    session: PackagedSession,
+    server: DrainSessionResult | null,
+  ): Promise<void>;
   /** Signs the target account out and restores the unchanged Guest session. */
   returnToGuest(): Promise<void>;
   /** The account's Coin, Unlocks or rewards may have changed on the backend. */
@@ -119,7 +129,7 @@ export function createPromotionRunner(deps: PromotionRunnerDeps): PromotionRunne
           guestId: handoff.guestId,
           lockToken: step.lockToken,
           manifestChecksum: handoff.manifestChecksum,
-          packageData: { manifest: handoff.manifest },
+          packageData: { manifest: handoff.manifest, sessions: handoff.sessions },
           checksum: handoff.manifestChecksum,
         });
         await transition({ type: 'staged' });
@@ -134,6 +144,20 @@ export function createPromotionRunner(deps: PromotionRunnerDeps): PromotionRunne
         return;
       }
     }
+  }
+
+  /**
+   * Moves one session to the account. Both steps are idempotent, so a kill or a
+   * failed adoption simply repeats them before the ack is recorded. A handoff
+   * from a #281 build has no packaged record, so it only drains.
+   */
+  async function transferSession(handoff: SyncHandoff, target: DrainSessionTarget): Promise<void> {
+    const packaged = handoff.sessions.find((session) => session.key === target.guestSessionId);
+    const server = target.serverKnown
+      ? await deps.api.drainSession(handoff.guestId, target.patternId, target.guestSessionId)
+      : null;
+    if (packaged === undefined || server?.isLocked === true) return;
+    await deps.adoptSession({ guestId: handoff.guestId, accountId: handoff.accountId }, packaged, server);
   }
 
   /** Drains every unacknowledged item once; returns how many failed. */
@@ -154,7 +178,7 @@ export function createPromotionRunner(deps: PromotionRunnerDeps): PromotionRunne
     if (afterLikes === null || !isSyncHandoff(afterLikes)) return failures;
     for (const target of pendingSessions(afterLikes)) {
       try {
-        await deps.api.drainSession(start.guestId, target.patternId, target.guestSessionId);
+        await transferSession(afterLikes, target);
         await transition({ type: 'sessionAcked', guestSessionId: target.guestSessionId });
       } catch {
         failures += 1;

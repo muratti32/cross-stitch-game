@@ -1,6 +1,6 @@
 import { createFileHandoffStore, HANDOFF_FILENAME, parseHandoff } from '../handoffStore';
 import type { PromotionHandoff } from '../handoff';
-import { base, captured, preview } from './fixtures';
+import { base, captured, GUEST_ID, packaged, PATTERN_A, preview, SESSION_A } from './fixtures';
 
 const mockFiles = new Map<string, string>();
 const mockDirectory = { value: 'file:///docs/' as string | null };
@@ -121,7 +121,39 @@ describe('parseHandoff', () => {
     ['a syncing handoff without acknowledgements', { version: 1, handoff: { ...base(), phase: 'syncing', promotionMode: 'economy' } }],
     ['a handoff without a manifest', { version: 1, handoff: { ...captured(), manifest: null } }],
     ['a non-object', 'x'],
+    ['a packaged session list that is not a list', { version: 1, handoff: { ...captured(), sessions: 'x' } }],
+    ['a packaged session without its bitmap', { version: 1, handoff: { ...captured(), sessions: [{ ...packaged(), packedBitmapBase64: 1 }] } }],
+    ['a packaged session with an unknown status', { version: 1, handoff: { ...captured(), sessions: [{ ...packaged(), status: 'gone' }] } }],
   ])('rejects %s', (_label, raw) => {
     expect(parseHandoff(raw)).toBeNull();
+  });
+
+  test('a handoff file written by the #281 build parses with no packaged sessions and server-known targets', () => {
+    const { sessions: _sessions, drain, ...rest } = base();
+    const written = {
+      version: 1,
+      handoff: {
+        ...rest,
+        drain: { likes: drain.likes, sessions: [{ guestSessionId: SESSION_A, patternId: PATTERN_A }] },
+        phase: 'syncing',
+        promotionMode: 'economy',
+        acked: { likes: [], sessions: [] },
+      },
+    };
+
+    expect(parseHandoff(JSON.parse(JSON.stringify(written)))).toMatchObject({
+      guestId: GUEST_ID,
+      phase: 'syncing',
+      sessions: [],
+      drain: { sessions: [{ guestSessionId: SESSION_A, patternId: PATTERN_A, serverKnown: true }] },
+    });
+  });
+
+  test('a local-only target stays local-only across a save', () => {
+    const handoff = captured({
+      drain: { likes: [], sessions: [{ guestSessionId: 'session_local_1', patternId: 'starter_heart', serverKnown: false }] },
+    });
+
+    expect(parseHandoff({ version: 1, handoff })).toEqual(handoff);
   });
 });

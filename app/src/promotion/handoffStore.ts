@@ -1,5 +1,5 @@
 import * as FileSystem from 'expo-file-system/legacy';
-import type { PromotionPreviewResponse } from '../api/promotionContract';
+import type { PackagedSession, PromotionPreviewResponse } from '../api/promotionContract';
 import { parsePromotionPreview } from '../api/promotionContract';
 import type { DrainTargets, PromotionHandoff } from './handoff';
 
@@ -33,15 +33,46 @@ function isStringList(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item): item is string => typeof item === 'string');
 }
 
-function isDrainTargets(value: unknown): value is DrainTargets {
+/** Handoffs from #281 builds have no `serverKnown`: every target they hold came from the backend. */
+function readDrainTargets(value: unknown): DrainTargets | null {
+  if (!isRecord(value) || !isStringList(value.likes) || !Array.isArray(value.sessions)) return null;
+  const sessions: DrainTargets['sessions'] = [];
+  for (const item of value.sessions) {
+    if (!isRecord(item) || typeof item.guestSessionId !== 'string' || typeof item.patternId !== 'string') return null;
+    sessions.push({
+      guestSessionId: item.guestSessionId,
+      patternId: item.patternId,
+      serverKnown: item.serverKnown !== false,
+    });
+  }
+  return { likes: value.likes, sessions };
+}
+
+const PACKAGED_TEXT_FIELDS = [
+  'key',
+  'localSessionId',
+  'patternId',
+  'artifactChecksum',
+  'createdAt',
+  'updatedAt',
+  'packedBitmapBase64',
+] as const;
+const PACKAGED_SOURCES: readonly unknown[] = ['bundled', 'catalog', 'personal'];
+const PACKAGED_STATUSES: readonly unknown[] = ['preparing', 'ready', 'active', 'completed'];
+
+function isPackagedSession(value: unknown): value is PackagedSession {
   return (
     isRecord(value) &&
-    isStringList(value.likes) &&
-    Array.isArray(value.sessions) &&
-    value.sessions.every(
-      (item) => isRecord(item) && typeof item.guestSessionId === 'string' && typeof item.patternId === 'string',
-    )
+    PACKAGED_TEXT_FIELDS.every((name) => typeof value[name] === 'string') &&
+    PACKAGED_SOURCES.includes(value.source) &&
+    PACKAGED_STATUSES.includes(value.status)
   );
+}
+
+/** Handoffs from #281 builds carry no packaged sessions; that is a valid empty list, a bad entry is not. */
+function readPackagedSessions(value: unknown): PackagedSession[] | null {
+  if (value === undefined) return [];
+  return Array.isArray(value) && value.every(isPackagedSession) ? value : null;
 }
 
 function isAcked(value: unknown): boolean {
@@ -84,12 +115,15 @@ function isStep(value: unknown): boolean {
 export function parseHandoff(raw: unknown): PromotionHandoff | null {
   if (!isRecord(raw) || raw.version !== FORMAT_VERSION || !isRecord(raw.handoff)) return null;
   const h = raw.handoff;
+  const drain = readDrainTargets(h.drain);
+  const sessions = readPackagedSessions(h.sessions);
   if (
     typeof h.guestId !== 'string' ||
     typeof h.accountId !== 'string' ||
     typeof h.manifestChecksum !== 'string' ||
     !isManifest(h.manifest) ||
-    !isDrainTargets(h.drain)
+    drain === null ||
+    sessions === null
   ) {
     return null;
   }
@@ -98,7 +132,8 @@ export function parseHandoff(raw: unknown): PromotionHandoff | null {
     accountId: h.accountId,
     manifestChecksum: h.manifestChecksum,
     manifest: h.manifest as unknown as PromotionHandoff['manifest'],
-    drain: h.drain,
+    drain,
+    sessions,
   };
   const notice = h.notice === 'stale' ? ('stale' as const) : null;
 

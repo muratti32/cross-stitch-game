@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException, ConflictException, ForbiddenException, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, UnauthorizedException, ConflictException, ForbiddenException, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource, EntityManager, FindOptionsWhere, In, IsNull, MoreThan } from 'typeorm';
 import { createHmac, randomUUID } from 'crypto';
@@ -21,6 +21,8 @@ import { PromotionPackageRequestDto } from './dto/promotion-package.dto';
 import { PromotionCommitRequestDto } from './dto/promotion-commit.dto';
 import { PatternLikeService } from '../social/pattern-like.service';
 import { PatternEntity } from '../catalog/entities/pattern.entity';
+import { applyPackagedProgress, readSurvivingSession } from './drained-session';
+import { parsePackagedSessions } from './packaged-session';
 import {
   DAILY_TASK_CELLS_TARGET,
   DAILY_TASK_COLOR_ACTIONS_MIN,
@@ -59,6 +61,34 @@ export interface PromotionCommitResult {
   replayed: boolean;
 }
 
+export interface DrainSessionResult {
+  status: 'transferred' | 'merged' | 'acknowledged';
+  accountSessionId: string | null;
+  revision: number;
+  packedBitmapBase64: string | null;
+  terminalCompleted: boolean;
+  isLocked: boolean;
+  detail?: string;
+  role?: 'replay';
+}
+
+interface DrainedGuestSession {
+  id: string;
+  status: 'active' | 'completed';
+}
+
+interface CellStateRow {
+  cell_index: number;
+  state: 'completed' | 'incomplete';
+  revision: string;
+}
+
+interface PromotionSessionMergeOutcome {
+  status: 'transferred' | 'merged';
+  sessionId: string;
+  role?: 'replay';
+}
+
 type SignedPreviewFields = Pick<
   PromotionPreviewDataDto,
   'guestId' | 'accountId' | 'manifestChecksum' | 'promotionMode' | 'guestLedgerBalance' | 'expiry'
@@ -70,6 +100,7 @@ const PROMOTION_ERRORS = {
   promotion_lock_expired: { status: HttpStatus.CONFLICT, message: 'Active promotion commit lock not found or expired' },
   preview_expired: { status: HttpStatus.BAD_REQUEST, message: 'Preview has expired' },
   preview_invalid: { status: HttpStatus.BAD_REQUEST, message: 'Invalid preview signature or preview has been modified' },
+  package_invalid: { status: HttpStatus.BAD_REQUEST, message: 'Promotion Transfer Package has malformed sessions' },
 } as const;
 
 export type PromotionErrorCode = keyof typeof PROMOTION_ERRORS;
@@ -101,6 +132,8 @@ function isRetryableCommitError(err: unknown): boolean {
 
 @Injectable()
 export class PromotionService {
+  private readonly logger = new Logger(PromotionService.name);
+
   constructor(
     private readonly patternLikeService: PatternLikeService,
     private readonly dataSource: DataSource,
@@ -260,6 +293,10 @@ export class PromotionService {
       throw new ForbiddenException('Account is closing');
     }
     const { guestId, lockToken, manifestChecksum, packageData, checksum } = dto;
+
+    if (parsePackagedSessions(packageData) === null) {
+      throw promotionError('package_invalid');
+    }
 
     // 1. A committed package is the durable post-commit record; never replace it.
     const existing = await this.transferPackageRepo.findOne({ where: { guestId } });
@@ -565,30 +602,30 @@ export class PromotionService {
     return rows[0]?.safe === true;
   }
 
-  async drainSession(accountId: string, guestId: string, patternId: string, guestSessionId: string) {
-    // Verify package ownership
-    const pkg = await this.transferPackageRepo.findOne({
-      where: { guestId, accountId, status: 'committed' }
-    });
-    if (!pkg) {
-      throw new ForbiddenException('Staged package not found or not committed');
-    }
+  async drainSession(
+    accountId: string,
+    guestId: string,
+    patternId: string,
+    guestSessionId: string,
+  ): Promise<DrainSessionResult> {
+    const pkg = await this.requireConsumedPackage(accountId, guestId);
+    const packaged = parsePackagedSessions(pkg.packageData)?.find((session) => session.key === guestSessionId);
 
     try {
       return await this.dataSource.transaction(async (manager) => {
-        // Find guest session
-        const guestSession = await manager.query<any[]>(
-          `SELECT id, status, completed_at FROM sessions.stitching_sessions WHERE id = $1`,
-          [guestSessionId]
+        const guestSessions = await manager.query<readonly DrainedGuestSession[]>(
+          `SELECT id, status FROM sessions.stitching_sessions
+           WHERE id = $1 AND principal_type = 'guest' AND principal_id = $2 AND pattern_id = $3
+           FOR UPDATE`,
+          [guestSessionId, guestId, patternId]
         );
-        if (guestSession.length === 0) {
-          return { status: 'acknowledged', detail: 'session_not_found' };
+        const guestSession = guestSessions[0];
+        if (!guestSession) {
+          return this.acknowledgeDrainedSession(manager, accountId, patternId, guestSessionId);
         }
 
-        const gSession = guestSession[0];
-
-        const pattern = await manager.query<any[]>(
-          `SELECT unlock_price_tier FROM catalog.patterns WHERE id = $1 FOR SHARE`,
+        const patterns = await manager.query<readonly { width: number; height: number }[]>(
+          `SELECT width, height FROM catalog.patterns WHERE id = $1 FOR SHARE`,
           [patternId]
         );
 
@@ -604,116 +641,27 @@ export class PromotionService {
           [accountId, guestId, patternId]
         );
 
-        // Find target account session
-        const accountSessions = await manager.query<any[]>(
-          `SELECT id, status, completed_at FROM sessions.stitching_sessions 
-           WHERE principal_type = 'account' AND principal_id = $1 AND pattern_id = $2`,
-          [accountId, patternId]
-        );
-
-        if (accountSessions.length === 0) {
-          // No target session: Reassign guest session
-          await manager.query(
-            `UPDATE sessions.stitching_sessions 
-             SET principal_type = 'account', principal_id = $1 
-             WHERE id = $2`,
-            [accountId, guestSessionId]
-          );
-
-          // Check if pattern is Official and locked by the account
-          let isLocked = false;
-          if (pattern.length > 0 && pattern[0].unlock_price_tier !== null) {
-            const unlock = await manager.query<any[]>(
-              `SELECT 1 FROM economy.pattern_unlocks WHERE principal_type = 'account' AND principal_id = $1 AND pattern_id = $2`,
-              [accountId, patternId]
-            );
-            isLocked = unlock.length === 0;
-          }
-
-          return { status: 'transferred', isLocked };
+        const merge = await this.mergeGuestSession(manager, accountId, patternId, guestSession);
+        if (packaged) {
+          await applyPackagedProgress(manager, {
+            sessionId: merge.sessionId,
+            guestId,
+            packaged,
+            totalCells: patterns[0].width * patterns[0].height,
+          });
         }
 
-        const aSession = accountSessions[0];
-
-        if (aSession.status === 'completed' && gSession.status === 'active') {
-          // completed+active -> Replay Session
-          await manager.query(
-            `UPDATE sessions.stitching_sessions 
-             SET principal_type = 'account', principal_id = $1 
-             WHERE id = $2`,
-            [accountId, guestSessionId]
-          );
-          return { status: 'transferred', role: 'replay' };
-        } else if (aSession.status === 'active' && gSession.status === 'active') {
-          // active+active -> Merge progress
-          const maxRevRow = await manager.query<any[]>(
-            `SELECT COALESCE(MAX(server_revision), 0) AS max_rev FROM sessions.progress_operations WHERE session_id = $1`,
-            [aSession.id]
-          );
-          const maxRev = Number(maxRevRow[0].max_rev);
-
-          // Update guest operations to account session and adjust server revision
-          await manager.query(
-            `UPDATE sessions.progress_operations 
-             SET session_id = $1, server_revision = server_revision + $2 
-             WHERE session_id = $3`,
-            [aSession.id, maxRev, guestSessionId]
-          );
-
-          // Merge cell states
-          const guestCells = await manager.query<any[]>(
-            `SELECT cell_index, state, revision FROM sessions.session_cell_state WHERE session_id = $1`,
-            [guestSessionId]
-          );
-
-          for (const gCell of guestCells) {
-            const aCellRow = await manager.query<any[]>(
-              `SELECT state, revision FROM sessions.session_cell_state WHERE session_id = $1 AND cell_index = $2`,
-              [aSession.id, gCell.cell_index]
-            );
-
-            if (aCellRow.length > 0) {
-              const aCell = aCellRow[0];
-              const nextState = (gCell.state === 'completed' || aCell.state === 'completed') ? 'completed' : 'incomplete';
-              const nextRev = Math.max(Number(gCell.revision), Number(aCell.revision));
-
-              await manager.query(
-                `UPDATE sessions.session_cell_state 
-                 SET state = $1, revision = $2 
-                 WHERE session_id = $3 AND cell_index = $4`,
-                [nextState, nextRev, aSession.id, gCell.cell_index]
-              );
-            } else {
-              await manager.query(
-                `INSERT INTO sessions.session_cell_state (session_id, cell_index, state, revision) 
-                 VALUES ($1, $2, $3, $4)`,
-                [aSession.id, gCell.cell_index, gCell.state, gCell.revision]
-              );
-            }
-          }
-
-          // Delete the guest session (cascades deletes remaining children)
-          await manager.query(
-            `DELETE FROM sessions.stitching_sessions WHERE id = $1`,
-            [guestSessionId]
-          );
-
-          return { status: 'merged' };
-        } else {
-          // completed+completed or active+completed -> Reassign and keep both in history
-          await manager.query(
-            `UPDATE sessions.stitching_sessions 
-             SET principal_type = 'account', principal_id = $1 
-             WHERE id = $2`,
-            [accountId, guestSessionId]
-          );
-          return { status: 'transferred' };
-        }
+        return {
+          status: merge.status,
+          role: merge.role,
+          accountSessionId: merge.sessionId,
+          isLocked: await this.isPromotionLocked(manager, accountId, patternId),
+          ...(await readSurvivingSession(manager, merge.sessionId)),
+        };
       });
-    } catch (err) {
-      // Mark package as needing attention on unresolvable error
-      pkg.status = 'needs_attention';
-      await this.transferPackageRepo.save(pkg);
+    } catch (err: unknown) {
+      this.logger.error(`Session drain failed for Guest ${guestId}`, err instanceof Error ? err.stack : String(err));
+      await this.transferPackageRepo.update({ guestId }, { status: 'needs_attention' });
       throw new ConflictException({
         code: 'promotion_needs_attention',
         message: 'Collision resolution failed. Flagged for manual support review.',
@@ -721,17 +669,169 @@ export class PromotionService {
     }
   }
 
+  /**
+   * A retry after a lost response finds no Guest row: the session already moved
+   * to the account, or merged into its active session and was deleted. Reports
+   * that state without writing, so progress the player changed since stays.
+   */
+  private async acknowledgeDrainedSession(
+    manager: EntityManager,
+    accountId: string,
+    patternId: string,
+    guestSessionId: string,
+  ): Promise<DrainSessionResult> {
+    const survivors = await manager.query<readonly { id: string }[]>(
+      `SELECT id FROM sessions.stitching_sessions
+       WHERE principal_type = 'account' AND principal_id = $1 AND (id = $2 OR pattern_id = $3)
+       ORDER BY id = $2 DESC, status = 'active' DESC, created_at DESC
+       LIMIT 1`,
+      [accountId, guestSessionId, patternId]
+    );
+    const survivor = survivors[0];
+    if (!survivor) {
+      return {
+        status: 'acknowledged',
+        detail: 'session_not_found',
+        accountSessionId: null,
+        revision: 0,
+        packedBitmapBase64: null,
+        terminalCompleted: false,
+        isLocked: false,
+      };
+    }
+    return {
+      status: 'acknowledged',
+      accountSessionId: survivor.id,
+      isLocked: await this.isPromotionLocked(manager, accountId, patternId),
+      ...(await readSurvivingSession(manager, survivor.id)),
+    };
+  }
+
+  /** Promotion Session Merge by Pattern (ADR-0026); returns the session that survives. */
+  private async mergeGuestSession(
+    manager: EntityManager,
+    accountId: string,
+    patternId: string,
+    guestSession: DrainedGuestSession,
+  ): Promise<PromotionSessionMergeOutcome> {
+    const guestSessionId = guestSession.id;
+    // Active first: reassigning an active Guest session next to an active
+    // account session would break the one-active-per-Pattern index.
+    const accountSessions = await manager.query<readonly DrainedGuestSession[]>(
+      `SELECT id, status FROM sessions.stitching_sessions
+       WHERE principal_type = 'account' AND principal_id = $1 AND pattern_id = $2
+       ORDER BY status = 'active' DESC, created_at DESC
+       FOR UPDATE`,
+      [accountId, patternId]
+    );
+    const accountSession = accountSessions[0];
+
+    if (accountSession?.status === 'active' && guestSession.status === 'active') {
+      await this.mergeActiveSessions(manager, accountSession.id, guestSessionId);
+      return { status: 'merged', sessionId: accountSession.id };
+    }
+
+    await manager.query(
+      `UPDATE sessions.stitching_sessions
+       SET principal_type = 'account', principal_id = $1
+       WHERE id = $2`,
+      [accountId, guestSessionId]
+    );
+    if (accountSession?.status === 'completed' && guestSession.status === 'active') {
+      return { status: 'transferred', sessionId: guestSessionId, role: 'replay' };
+    }
+    return { status: 'transferred', sessionId: guestSessionId };
+  }
+
+  private async mergeActiveSessions(
+    manager: EntityManager,
+    accountSessionId: string,
+    guestSessionId: string,
+  ): Promise<void> {
+    const maxRevRow = await manager.query<readonly { max_rev: string }[]>(
+      `SELECT COALESCE(MAX(server_revision), 0) AS max_rev FROM sessions.progress_operations WHERE session_id = $1`,
+      [accountSessionId]
+    );
+    const maxRev = Number(maxRevRow[0].max_rev);
+
+    // Update guest operations to account session and adjust server revision
+    await manager.query(
+      `UPDATE sessions.progress_operations
+       SET session_id = $1, server_revision = server_revision + $2
+       WHERE session_id = $3`,
+      [accountSessionId, maxRev, guestSessionId]
+    );
+
+    // Merge cell states
+    const guestCells = await manager.query<readonly CellStateRow[]>(
+      `SELECT cell_index, state, revision FROM sessions.session_cell_state WHERE session_id = $1`,
+      [guestSessionId]
+    );
+
+    for (const gCell of guestCells) {
+      const aCellRow = await manager.query<readonly Omit<CellStateRow, 'cell_index'>[]>(
+        `SELECT state, revision FROM sessions.session_cell_state WHERE session_id = $1 AND cell_index = $2`,
+        [accountSessionId, gCell.cell_index]
+      );
+
+      if (aCellRow.length > 0) {
+        const aCell = aCellRow[0];
+        const nextState = (gCell.state === 'completed' || aCell.state === 'completed') ? 'completed' : 'incomplete';
+        const nextRev = Math.max(Number(gCell.revision), Number(aCell.revision));
+
+        await manager.query(
+          `UPDATE sessions.session_cell_state
+           SET state = $1, revision = $2
+           WHERE session_id = $3 AND cell_index = $4`,
+          [nextState, nextRev, accountSessionId, gCell.cell_index]
+        );
+      } else {
+        await manager.query(
+          `INSERT INTO sessions.session_cell_state (session_id, cell_index, state, revision)
+           VALUES ($1, $2, $3, $4)`,
+          [accountSessionId, gCell.cell_index, gCell.state, gCell.revision]
+        );
+      }
+    }
+
+    // Delete the guest session (cascades deletes remaining children)
+    await manager.query(
+      `DELETE FROM sessions.stitching_sessions WHERE id = $1`,
+      [guestSessionId]
+    );
+  }
+
+  /** A paid Official Pattern the account never unlocked: its progress stays, its artifact does not. */
+  private async isPromotionLocked(manager: EntityManager, accountId: string, patternId: string): Promise<boolean> {
+    const rows = await manager.query<readonly { locked: boolean }[]>(
+      `SELECT pattern.unlock_price_tier IS NOT NULL AND NOT EXISTS (
+         SELECT 1 FROM economy.pattern_unlocks unlock
+         WHERE unlock.principal_type = 'account' AND unlock.principal_id = $1 AND unlock.pattern_id = pattern.id
+       ) AS locked
+       FROM catalog.patterns pattern
+       WHERE pattern.id = $2`,
+      [accountId, patternId]
+    );
+    return rows[0]?.locked === true;
+  }
+
+  /** Drain keeps working after a failure parked the package in needs_attention. */
+  private async requireConsumedPackage(accountId: string, guestId: string): Promise<PromotionTransferPackageEntity> {
+    const pkg = await this.transferPackageRepo.findOne({
+      where: { ...economySlotWhere(accountId), guestId },
+    });
+    if (!pkg) {
+      throw new ForbiddenException('Staged package not found or not committed');
+    }
+    return pkg;
+  }
+
   async drainLike(
     accountId: string,
     guestId: string,
     patternId: string,
   ): Promise<{ status: 'applied' | 'already_present' | 'discarded' }> {
-    const pkg = await this.transferPackageRepo.findOne({
-      where: { guestId, accountId, status: 'committed' }
-    });
-    if (!pkg) {
-      throw new ForbiddenException('Staged package not found or not committed');
-    }
+    await this.requireConsumedPackage(accountId, guestId);
 
     return await this.dataSource.transaction(async (manager) => {
       const pattern = await manager.findOne(PatternEntity, {

@@ -6,6 +6,7 @@ import { Theme } from '@/theme/theme';
 import { useTabBarSpace } from '@/theme/tabBar';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { getSessions, deleteSession, getSessionCompletedCount, StitchingSession } from '@/local-db';
+import { usePromotionSessionsRefresh } from '@/promotion/usePromotionSessionsRefresh';
 import { BUNDLED_PATTERNS } from '@/bundled-patterns';
 import { refreshPersonalSessionAssetUrlsBeforeRender } from '@/conversion';
 import {
@@ -63,6 +64,8 @@ export default function PlayScreen() {
       setLoading(false);
     }
   };
+
+  usePromotionSessionsRefresh(() => void loadSessionsList());
 
   // Reload sessions whenever the tab comes into focus
   useFocusEffect(
