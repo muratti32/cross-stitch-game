@@ -135,6 +135,78 @@ describe('syncSession', () => {
     expect(outcome.conflictedCells).toEqual([2]);
   });
 
+  it('keeps pulling while the server reports more and never stores a watermark past applied ops', async () => {
+    mockedDb.getSyncSnapshot.mockResolvedValue(null);
+    mockedDb.getUnackedProgressOps.mockResolvedValue([
+      {
+        opId: 'a',
+        sessionId: 's',
+        deviceId: 'devA',
+        deviceSeq: 1,
+        cellIndex: 0,
+        desiredState: 'completed',
+        baseRevision: 0,
+        serverBaseRevision: 0,
+        createdAt: 't',
+      },
+    ]);
+    const op = (cellIndex: number, serverRevision: number) => ({
+      opId: `o${serverRevision}`,
+      deviceId: 'devB',
+      deviceSeq: serverRevision,
+      cellIndex,
+      desiredState: 'completed' as const,
+      resolvedState: 'completed' as const,
+      baseRevision: 0,
+      serverRevision,
+      effective: true,
+    });
+    mockedApi.syncProgress
+      .mockResolvedValueOnce({
+        revision: 2,
+        hasMore: true,
+        terminalCompleted: false,
+        acknowledgements: [{ opId: 'a', status: 'applied' }],
+        operations: [op(0, 1), op(1, 2)],
+      })
+      .mockResolvedValueOnce({
+        revision: 4,
+        hasMore: false,
+        terminalCompleted: false,
+        acknowledgements: [],
+        operations: [op(2, 3), op(3, 4)],
+      });
+
+    const completed = new Uint8Array(4);
+    const outcome = await syncSession('s', 'remote-1', 'devA', completed);
+
+    expect(mockedApi.syncProgress).toHaveBeenCalledTimes(2);
+    expect(mockedApi.syncProgress.mock.calls[0][2]).toBe(0);
+    expect(mockedApi.syncProgress.mock.calls[0][3]).toHaveLength(1);
+    expect(mockedApi.syncProgress.mock.calls[1][2]).toBe(2);
+    expect(mockedApi.syncProgress.mock.calls[1][3]).toEqual([]);
+    expect(mockedDb.saveSyncSnapshot.mock.calls.map((call) => call[1])).toEqual([2, 4]);
+    expect(Array.from(completed)).toEqual([1, 1, 1, 1]);
+    expect(outcome.serverRevision).toBe(4);
+    expect(outcome.changedCells).toEqual([0, 1, 2, 3]);
+  });
+
+  it('stops paging when a page makes no progress', async () => {
+    mockedDb.getSyncSnapshot.mockResolvedValue(null);
+    mockedDb.getUnackedProgressOps.mockResolvedValue([]);
+    mockedApi.syncProgress.mockResolvedValue({
+      revision: 0,
+      hasMore: true,
+      terminalCompleted: false,
+      acknowledgements: [],
+      operations: [],
+    });
+
+    await syncSession('s', 'remote-1', 'devA', new Uint8Array(1));
+
+    expect(mockedApi.syncProgress).toHaveBeenCalledTimes(1);
+  });
+
   it('uploads a large backlog in requests the API body limit accepts, oldest first', async () => {
     const backlog = Array.from({ length: 2000 }, (_, index) => ({
       opId: `36f8a2b4-1234-4abc-8def-${String(index).padStart(12, '0')}`,

@@ -16,6 +16,8 @@ import { coinBalanceQueryKey } from '../api/economy';
 
 // Express refuses a JSON body over 100kb, about 780 operations.
 const MAX_OPS_PER_SYNC = 500;
+// Server pages pulls at 1000 operations; this bounds one sync to ~100k.
+const MAX_PULL_PAGES = 100;
 
 export interface SyncOutcome {
   /** Authoritative server revision after this sync. */
@@ -45,10 +47,10 @@ export async function syncSession(
 ): Promise<SyncOutcome> {
   markCriticalPathActivity('progress-sync', 'syncSession');
   const snapshot = await getSyncSnapshot(sessionId);
-  const sinceRevision = snapshot?.serverRevision ?? 0;
+  let sinceRevision = snapshot?.serverRevision ?? 0;
 
   const unacked = await getUnackedProgressOps(sessionId);
-  const outgoing: OutgoingProgressOperation[] = unacked.slice(0, MAX_OPS_PER_SYNC).map((op) => ({
+  let outgoing: OutgoingProgressOperation[] = unacked.slice(0, MAX_OPS_PER_SYNC).map((op) => ({
     opId: op.opId,
     deviceSeq: op.deviceSeq,
     cellIndex: op.cellIndex,
@@ -56,49 +58,64 @@ export async function syncSession(
     baseRevision: op.serverBaseRevision ?? 0,
   }));
 
-  const response = await syncProgress(
-    remoteSessionId,
-    deviceId,
-    sinceRevision,
-    outgoing,
-  );
+  const changedCells = new Set<number>();
+  const conflictedCells = new Set<number>();
+  let serverRevision = sinceRevision;
+  let terminalCompleted = false;
 
-  // Every acknowledged op (applied, duplicate, or superseded) is now owned by
-  // the server and folded into the snapshot below, so it is safe to drop locally.
-  const ackedIds = response.acknowledgements.map((ack) => ack.opId);
-  await markProgressOpsAcked(ackedIds);
+  // The server returns one bounded page of operations per call. Keep pulling
+  // (pushing nothing after the first page) until it says the pull is complete,
+  // saving the snapshot per page so a watermark never passes applied ops.
+  for (let page = 0; page < MAX_PULL_PAGES; page += 1) {
+    const response = await syncProgress(
+      remoteSessionId,
+      deviceId,
+      sinceRevision,
+      outgoing,
+    );
+    outgoing = [];
 
-  const applied = applyResolvedOperations(
-    completed,
-    response.operations.map((operation) => ({
-      cellIndex: operation.cellIndex,
-      resolvedState: operation.resolvedState,
-      serverRevision: operation.serverRevision,
-    })),
-    sinceRevision,
-  );
+    // Every acknowledged op (applied, duplicate, or superseded) is now owned by
+    // the server and folded into the snapshot below, so it is safe to drop locally.
+    const ackedIds = response.acknowledgements.map((ack) => ack.opId);
+    await markProgressOpsAcked(ackedIds);
 
-  const serverRevision = Math.max(response.revision, applied.serverRevision);
-  await saveSyncSnapshot(
-    sessionId,
-    serverRevision,
-    completed,
-    response.terminalCompleted,
-  );
+    const applied = applyResolvedOperations(
+      completed,
+      response.operations.map((operation) => ({
+        cellIndex: operation.cellIndex,
+        resolvedState: operation.resolvedState,
+        serverRevision: operation.serverRevision,
+      })),
+      sinceRevision,
+    );
 
-  const conflictedCells = response.operations
-    .filter(
-      (operation) =>
+    const hasMore = response.hasMore === true;
+    serverRevision = hasMore
+      ? applied.serverRevision
+      : Math.max(response.revision, applied.serverRevision);
+    terminalCompleted = response.terminalCompleted;
+    await saveSyncSnapshot(sessionId, serverRevision, completed, terminalCompleted);
+
+    applied.changedCells.forEach((cell) => changedCells.add(cell));
+    for (const operation of response.operations) {
+      if (
         operation.deviceId === deviceId &&
-        operation.resolvedState !== operation.desiredState,
-    )
-    .map((operation) => operation.cellIndex);
+        operation.resolvedState !== operation.desiredState
+      ) {
+        conflictedCells.add(operation.cellIndex);
+      }
+    }
+
+    if (!hasMore || serverRevision <= sinceRevision) break;
+    sinceRevision = serverRevision;
+  }
 
   return {
     serverRevision,
-    terminalCompleted: response.terminalCompleted,
-    changedCells: applied.changedCells,
-    conflictedCells,
+    terminalCompleted,
+    changedCells: [...changedCells],
+    conflictedCells: [...conflictedCells],
   };
 }
 

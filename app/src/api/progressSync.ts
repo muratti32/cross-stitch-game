@@ -31,6 +31,8 @@ export interface ProgressSyncResponse {
   terminalCompleted: boolean;
   acknowledgements: ProgressAck[];
   operations: ServerProgressOperation[];
+  /** More operations remain past this page. Absent on older servers (treated as false). */
+  hasMore?: boolean;
 }
 
 export interface ProgressCompleteResponse {

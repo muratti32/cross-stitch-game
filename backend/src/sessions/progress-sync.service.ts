@@ -98,11 +98,15 @@ export interface PulledProgressOperation {
   effective: boolean;
 }
 
+const PULL_PAGE_SIZE = 1000;
+
 export interface ProgressSyncResult {
   revision: number;
   terminalCompleted: boolean;
   acknowledgements: ProgressAcknowledgement[];
   operations: PulledProgressOperation[];
+  /** True when more operations remain past this page; pull again from `revision`. */
+  hasMore: boolean;
 }
 
 export interface FirstCompletionRewardSummary {
@@ -250,15 +254,25 @@ export class ProgressSyncService {
            AND superseded = false
            AND server_revision > $2
          ORDER BY server_revision ASC
-         LIMIT 1000`,
+         LIMIT ${PULL_PAGE_SIZE + 1}`,
         [sessionId, dto.sinceRevision],
       );
 
+      // One extra row proves the page was truncated. A truncated page reports a
+      // watermark no higher than its last operation so the client resumes from
+      // there instead of skipping the rest; the stored head stays untouched.
+      const hasMore = pulled.length > PULL_PAGE_SIZE;
+      const page = hasMore ? pulled.slice(0, PULL_PAGE_SIZE) : pulled;
+      const pageRevision = hasMore
+        ? Number(page[page.length - 1].serverRevision)
+        : revision;
+
       return {
-        revision,
+        revision: pageRevision,
+        hasMore,
         terminalCompleted: terminalCompletedAt !== null,
         acknowledgements,
-        operations: pulled.map((operation) => ({
+        operations: page.map((operation) => ({
           opId: operation.opId,
           deviceId: operation.deviceId,
           deviceSeq: Number(operation.deviceSeq),

@@ -454,7 +454,7 @@ describe('ProgressSyncService.complete', () => {
 });
 
 describe('ProgressSyncService.sync progress flag', () => {
-  function syncHarness(existingOp: boolean) {
+  function syncHarness(existingOp: boolean, pullRows: readonly object[] = []) {
     const query = jest.fn(async (sql: string): Promise<readonly object[]> => {
       await Promise.resolve();
       if (sql.includes("principal_type = 'account'") && sql.includes('FOR UPDATE')) {
@@ -475,7 +475,7 @@ describe('ProgressSyncService.sync progress flag', () => {
       if (sql.includes('INSERT INTO sessions.progress_operations')) return [];
       if (sql.includes('INSERT INTO sessions.session_progress_flags')) return [];
       if (sql.includes('UPDATE sessions.session_sync_state')) return [];
-      if (sql.includes('server_revision > $2')) return [];
+      if (sql.includes('server_revision > $2')) return pullRows;
       throw new Error(`Unexpected query: ${sql}`);
     });
     const manager = { query };
@@ -531,5 +531,45 @@ describe('ProgressSyncService.sync progress flag', () => {
       operations: [operation],
     });
     expect(flagWrites(duplicate.query)).toHaveLength(0);
+  });
+
+  describe('pull paging', () => {
+    const pulledRow = (serverRevision: number) => ({
+      opId: `op-${serverRevision}`,
+      deviceId,
+      deviceSeq: String(serverRevision),
+      cellIndex: serverRevision,
+      desiredState: 'completed',
+      resolvedState: 'completed',
+      baseRevision: String(serverRevision - 1),
+      serverRevision: String(serverRevision),
+      effective: true,
+    });
+    const rows = (count: number) =>
+      Array.from({ length: count }, (_, index) => pulledRow(index + 1));
+
+    it('caps the returned revision at the last returned operation when the page is full', async () => {
+      const { service } = syncHarness(false, rows(1001));
+      const result = await service.sync(account, sessionId, {
+        deviceId,
+        sinceRevision: 0,
+        operations: [],
+      });
+      expect(result.operations).toHaveLength(1000);
+      expect(result.hasMore).toBe(true);
+      expect(result.revision).toBe(1000);
+    });
+
+    it('returns the session head and hasMore false when the pull is complete', async () => {
+      const { service } = syncHarness(false, rows(1000));
+      const result = await service.sync(account, sessionId, {
+        deviceId,
+        sinceRevision: 0,
+        operations: [],
+      });
+      expect(result.operations).toHaveLength(1000);
+      expect(result.hasMore).toBe(false);
+      expect(result.revision).toBe(3);
+    });
   });
 });
