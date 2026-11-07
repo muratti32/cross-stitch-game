@@ -386,10 +386,7 @@ export class ProgressSyncService {
       }
 
       if (principal.type === PrincipalType.Guest) {
-        return {
-          sessionId: await upsertActiveSession(manager, principal, patternId),
-          terminalCompleted: false,
-        };
+        return this.registerGuestIdentityOnly(manager, principal, patternId);
       }
 
       if (!packedBitmapBase64) {
@@ -418,6 +415,17 @@ export class ProgressSyncService {
       const syncState = await this.getSyncState(manager, sessionId);
       return { sessionId, terminalCompleted: syncState.terminalCompletedAt !== null };
     });
+  }
+
+  private async registerGuestIdentityOnly(
+    manager: EntityManager,
+    principal: AuthPrincipal,
+    patternId: string,
+  ): Promise<RegisterBundledSessionResult> {
+    return {
+      sessionId: await upsertActiveSession(manager, principal, patternId),
+      terminalCompleted: false,
+    };
   }
 
   private async findLatestSession(
