@@ -1030,17 +1030,17 @@ async function remoteSessionHeldByOtherRow(
 }
 
 /**
- * Catalog and personal rows the server has not given a session of their own: the
- * server handed the id to an earlier row, or promotion carried the row in without
- * one. An offline-created Personal Pattern has no server session to wait for.
+ * Catalog rows the server has not given a session of their own: the server handed
+ * the id to an earlier row, or promotion carried the row in without one. Replays
+ * and Personal Patterns stay unlinked by design, as the bundled registrar leaves them.
  */
 export async function listSessionsAwaitingServerSession(): Promise<StitchingSession[]> {
   return withDatabase(async (db) => {
     const rows = await db.getAllAsync<{ id: string }>(
       `SELECT id FROM sessions
        WHERE remote_session_id IS NULL
-         AND source IN ('catalog', 'personal')
-         AND NOT EXISTS (SELECT 1 FROM pending_personal_patterns WHERE pattern_id = sessions.pattern_id)
+         AND replay_of IS NULL
+         AND source = 'catalog'
        ORDER BY created_at ASC`,
     );
     const sessions: StitchingSession[] = [];
@@ -1053,13 +1053,18 @@ export async function listSessionsAwaitingServerSession(): Promise<StitchingSess
 }
 
 /**
- * Links an unlinked row to a server session no other row holds; false when it could
- * not. The row may have compacted cells into a checkpoint while it had no server
+ * Links an unlinked row to a server session no other row holds, only while `identity`
+ * is still the open namespace; false when it could not. The row may have compacted cells into a checkpoint while it had no server
  * session, so the cells it holds that no waiting op carries are queued as ops.
  */
-export async function linkPreparedSession(localSessionId: string, remoteSessionId: string): Promise<boolean> {
+export async function linkPreparedSession(
+  identity: string,
+  localSessionId: string,
+  remoteSessionId: string,
+): Promise<boolean> {
   return withDatabase(async (db) =>
     runInTransaction(db, async () => {
+      if (activeIdentity !== identity) return false;
       if (await remoteSessionHeldByOtherRow(db, remoteSessionId, localSessionId)) return false;
       const update = await db.runAsync(
         'UPDATE sessions SET remote_session_id = ? WHERE id = ? AND remote_session_id IS NULL',

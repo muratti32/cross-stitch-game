@@ -19,6 +19,14 @@ jest.mock('../../local-db', () => ({
   updateSessionError: jest.fn(),
 }));
 
+const mockOwner = jest.fn();
+const mockHandoffLoad = jest.fn();
+jest.mock('../../sync/bundledSessionRegistrar', () => ({
+  registerBundledSessions: jest.fn(),
+  activeOwnerIdentity: () => mockOwner(),
+}));
+jest.mock('../../promotion/handoffStore', () => ({ handoffStore: { load: () => mockHandoffLoad() } }));
+
 jest.mock('../../api/apiFetch', () => ({
   apiFetch: jest.fn(),
 }));
@@ -36,6 +44,8 @@ const unlockBody = { code: 'unlock_required', patternId: 'pattern-1', price: 75 
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockOwner.mockReturnValue('identity-1');
+  mockHandoffLoad.mockResolvedValue(null);
   mockedDb.getSession.mockResolvedValue({
     id: 'local-1',
     patternId: 'pattern-1',
@@ -95,7 +105,7 @@ describe('a row the server never gave a session of its own', () => {
   };
 
   test('starting the pattern links the unlinked row from a fresh prepare, with nothing remembered in memory', async () => {
-    const unlinked = { id: 'local-2', status: 'ready', remoteSessionId: null };
+    const unlinked = { id: 'local-2', source: 'catalog', status: 'ready', remoteSessionId: null };
     mockedDb.findActiveSessionForPattern.mockResolvedValue(unlinked as never);
     mockedFetch.mockResolvedValue(jsonResponse(200, prepared));
     mockedDb.linkPreparedSession.mockResolvedValue(true);
@@ -103,7 +113,7 @@ describe('a row the server never gave a session of its own', () => {
     await expect(prepareCatalogSession('pattern-1', info)).resolves.toBe(unlinked);
 
     expect(mockedFetch).toHaveBeenCalledWith('/v1/sessions/prepare', expect.objectContaining({ method: 'POST' }));
-    expect(mockedDb.linkPreparedSession).toHaveBeenCalledWith('local-2', 'remote-2');
+    expect(mockedDb.linkPreparedSession).toHaveBeenCalledWith('identity-1', 'local-2', 'remote-2');
   });
 
   test('starting a linked row does not prepare again', async () => {
@@ -115,11 +125,36 @@ describe('a row the server never gave a session of its own', () => {
   });
 
   test('a failed link on start still plays the row', async () => {
-    const unlinked = { id: 'local-2', status: 'ready', remoteSessionId: null };
+    const unlinked = { id: 'local-2', source: 'catalog', status: 'ready', remoteSessionId: null };
     mockedDb.findActiveSessionForPattern.mockResolvedValue(unlinked as never);
     mockedFetch.mockRejectedValue(new Error('Network request failed'));
 
     await expect(prepareCatalogSession('pattern-1', info)).resolves.toBe(unlinked);
+  });
+
+  test('nothing is prepared or linked while no owner is signed in or a promotion handoff is open', async () => {
+    const unlinked = { id: 'local-2', source: 'catalog', status: 'ready', remoteSessionId: null };
+    mockedDb.findActiveSessionForPattern.mockResolvedValue(unlinked as never);
+    mockedDb.listSessionsAwaitingServerSession.mockResolvedValue([unlinked] as never);
+
+    mockOwner.mockReturnValue(null);
+    await prepareCatalogSession('pattern-1', info);
+    await linkAwaitingSessions();
+    mockOwner.mockReturnValue('identity-1');
+    mockHandoffLoad.mockResolvedValue({ handoff: true });
+    await prepareCatalogSession('pattern-1', info);
+    await linkAwaitingSessions();
+
+    expect(mockedFetch).not.toHaveBeenCalled();
+    expect(mockedDb.linkPreparedSession).not.toHaveBeenCalled();
+  });
+
+  test('a replay row is left unlinked on start', async () => {
+    mockedDb.findActiveSessionForPattern.mockResolvedValue({ id: 'r', status: 'ready', remoteSessionId: null, replayOf: 'parent' } as never);
+
+    await prepareCatalogSession('pattern-1', info);
+
+    expect(mockedFetch).not.toHaveBeenCalled();
   });
 
   test('retryDownload prepares and links when the row has no server session', async () => {
@@ -130,7 +165,7 @@ describe('a row the server never gave a session of its own', () => {
     await retryDownload('local-2');
 
     expect(mockedFetch).toHaveBeenCalledWith('/v1/sessions/prepare', expect.objectContaining({ method: 'POST' }));
-    expect(mockedDb.linkPreparedSession).toHaveBeenCalledWith('local-2', 'remote-2');
+    expect(mockedDb.linkPreparedSession).toHaveBeenCalledWith('identity-1', 'local-2', 'remote-2');
   });
 
   test('the background pass links every awaiting row and survives one failing', async () => {
@@ -144,7 +179,7 @@ describe('a row the server never gave a session of its own', () => {
     await expect(linkAwaitingSessions()).resolves.toBeUndefined();
 
     expect(mockedDb.linkPreparedSession).toHaveBeenCalledTimes(1);
-    expect(mockedDb.linkPreparedSession).toHaveBeenCalledWith('b', 'remote-2');
+    expect(mockedDb.linkPreparedSession).toHaveBeenCalledWith('identity-1', 'b', 'remote-2');
   });
 });
 
