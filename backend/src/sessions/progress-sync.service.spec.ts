@@ -640,20 +640,31 @@ describe('ProgressSyncService.sync causal merge', () => {
   interface CellRow {
     state: 'completed' | 'incomplete';
     revision: number;
+    cellIndex?: number;
     writerDeviceId: string | null;
     writerDeviceSeq: number | null;
   }
 
-  function mergeHarness(cell?: CellRow) {
-    let cellRow: CellRow | null = cell ?? null;
-    const inserted: {
-      cellIndex: number;
-      desiredState: string;
-      serverRevision: number;
-      effective: boolean;
-      resolvedState: string | null;
-    }[] = [];
-    let revision = 10;
+  interface InsertedOperation {
+    deviceId: string;
+    deviceSeq: number;
+    cellIndex: number;
+    desiredState: string;
+    serverRevision: number;
+    effective: boolean;
+    superseded: boolean;
+    resolvedState: string | null;
+  }
+
+  interface CellQueryRow extends CellRow {
+    foreignOpSinceBase: boolean;
+  }
+
+  function mergeHarness(options: { revision?: number; cell?: CellRow; seeded?: InsertedOperation[] } = {}) {
+    let cellRow: CellRow | null = options.cell ?? null;
+    const operations: InsertedOperation[] = [...(options.seeded ?? [])];
+    const cellQueries: { params: readonly unknown[]; foreignOpSinceBase: boolean }[] = [];
+    let revision = options.revision ?? 7;
 
     const query = jest.fn(async (sql: string, params?: readonly unknown[]): Promise<readonly object[]> => {
       await Promise.resolve();
@@ -671,18 +682,45 @@ describe('ProgressSyncService.sync causal merge', () => {
         return [];
       }
       if (sql.includes('FROM sessions.session_cell_state')) {
+        const baseRevision = params?.[2] as number;
+        const requestingDeviceId = params?.[3] as string;
+        const foreignOpSinceBase = operations.some(
+          (operation) =>
+            operation.serverRevision > baseRevision
+            && !operation.superseded
+            && operation.deviceId !== requestingDeviceId,
+        );
+        cellQueries.push({ params: params ?? [], foreignOpSinceBase });
         if (cellRow === null) return [];
+        const currentCell: CellRow = cellRow;
+        // Mirror the real writer lookup: exactly one effective op at the cell's
+        // revision whose resolved state matches the cell, else the writer is unknown.
+        const writers = operations.filter(
+          (operation) =>
+            operation.cellIndex === (currentCell.cellIndex ?? cellIndex)
+            && operation.serverRevision === currentCell.revision
+            && operation.effective
+            && operation.resolvedState === currentCell.state,
+        );
+        const writer = writers.length === 1 ? writers[0] : null;
+        const row: CellQueryRow = {
+          state: currentCell.state,
+          revision: currentCell.revision,
+          writerDeviceId: writer?.deviceId ?? null,
+          writerDeviceSeq: writer?.deviceSeq ?? null,
+          foreignOpSinceBase,
+        };
         return [{
-          state: cellRow.state,
-          revision: String(cellRow.revision),
-          writerDeviceId: cellRow.writerDeviceId,
-          writerDeviceSeq: cellRow.writerDeviceSeq === null ? null : String(cellRow.writerDeviceSeq),
+          ...row,
+          revision: String(row.revision),
+          writerDeviceSeq: row.writerDeviceSeq === null ? null : String(row.writerDeviceSeq),
         }];
       }
       if (sql.includes('INSERT INTO sessions.session_cell_state')) {
         cellRow = {
           state: params?.[2] as 'completed' | 'incomplete',
           revision: params?.[3] as number,
+          cellIndex: params?.[1] as number,
           writerDeviceId: cellRow?.writerDeviceId ?? null,
           writerDeviceSeq: cellRow?.writerDeviceSeq ?? null,
         };
@@ -690,14 +728,18 @@ describe('ProgressSyncService.sync causal merge', () => {
       }
       if (sql.includes('INSERT INTO sessions.progress_operations')) {
         const effective = params?.[8] as boolean;
+        const deviceSeq = params?.[3] as number;
         if (effective) {
-          cellRow = { ...(cellRow as CellRow), writerDeviceId: deviceId, writerDeviceSeq: params?.[3] as number };
+          cellRow = { ...(cellRow as CellRow), writerDeviceId: params?.[2] as string, writerDeviceSeq: deviceSeq };
         }
-        inserted.push({
+        operations.push({
+          deviceId: params?.[2] as string,
+          deviceSeq,
           cellIndex: params?.[4] as number,
           desiredState: params?.[5] as string,
           serverRevision: params?.[7] as number,
           effective,
+          superseded: params?.[9] as boolean,
           resolvedState: params?.[10] as string | null,
         });
         return [];
@@ -724,76 +766,127 @@ describe('ProgressSyncService.sync causal merge', () => {
       {} as never,
       promotionService as never,
     );
-    return { inserted, service, cell: () => cellRow };
+    return { cellQueries, operations, service, cell: () => cellRow };
   }
 
-  const offlineStitch = {
-    opId: '00000000-0000-4000-8000-0000000000b1',
-    deviceSeq: 20,
+  const operation = (opId: string, deviceSeq: number, desiredState: 'completed' | 'incomplete') => ({
+    opId,
+    deviceSeq,
     cellIndex,
-    desiredState: 'completed' as const,
+    desiredState,
     baseRevision: 7,
-  };
-  const offlineUndo = {
-    opId: '00000000-0000-4000-8000-0000000000b2',
-    deviceSeq: 21,
-    cellIndex,
-    desiredState: 'incomplete' as const,
-    baseRevision: 7,
-  };
+  });
+  const stitchFromA = operation('00000000-0000-4000-8000-0000000000b1', 20, 'completed');
+  const undoFromA = operation('00000000-0000-4000-8000-0000000000b2', 21, 'incomplete');
+  const stitchFromB = operation('00000000-0000-4000-8000-0000000000b3', 7, 'completed');
 
   it('applies an offline undo written by the same device later in the batch', async () => {
-    const { inserted, service, cell } = mergeHarness();
+    const { cellQueries, operations, service, cell } = mergeHarness();
 
     const result = await service.sync(account, sessionId, {
       deviceId,
       sinceRevision: 0,
-      operations: [offlineStitch, offlineUndo],
+      operations: [stitchFromA, undoFromA],
     });
 
     expect(cell()).toMatchObject({ state: 'incomplete', writerDeviceId: deviceId, writerDeviceSeq: 21 });
-    expect(inserted.map(({ resolvedState }) => resolvedState)).toEqual(['completed', 'incomplete']);
+    expect(operations.map(({ resolvedState }) => resolvedState)).toEqual(['completed', 'incomplete']);
     expect(result.acknowledgements).toEqual([
-      { opId: offlineStitch.opId, status: 'applied' },
-      { opId: offlineUndo.opId, status: 'applied' },
+      { opId: stitchFromA.opId, status: 'applied' },
+      { opId: undoFromA.opId, status: 'applied' },
     ]);
+    // $3 carries the op's base revision and $4 the requesting device id.
+    expect(cellQueries.map(({ params }) => params.slice(2))).toEqual([
+      [7, deviceId],
+      [7, deviceId],
+    ]);
+    expect(cellQueries.map(({ foreignOpSinceBase }) => foreignOpSinceBase)).toEqual([false, false]);
   });
 
   it('keeps completed when another device wrote the cell concurrently', async () => {
-    const { inserted, service, cell } = mergeHarness({
-      state: 'completed',
-      revision: 11,
-      writerDeviceId: otherDeviceId,
-      writerDeviceSeq: 20,
+    const { operations, service, cell } = mergeHarness();
+    // Device A's offline stitch already landed at revision 8.
+    await service.sync(account, sessionId, {
+      deviceId,
+      sinceRevision: 0,
+      operations: [stitchFromA],
+    });
+
+    const result = await service.sync(account, sessionId, {
+      deviceId: otherDeviceId,
+      sinceRevision: 0,
+      operations: [stitchFromB],
+    });
+
+    expect(cell()).toMatchObject({ state: 'completed', writerDeviceId: deviceId, writerDeviceSeq: 20 });
+    expect(result.acknowledgements).toEqual([{ opId: stitchFromB.opId, status: 'applied' }]);
+    expect(operations.at(-1)).toMatchObject({ deviceId: otherDeviceId, effective: false, resolvedState: 'completed' });
+  });
+
+  it('keeps a foreign concurrent stitch when the same device undoes on a later request', async () => {
+    const { cellQueries, operations, service, cell } = mergeHarness();
+    await service.sync(account, sessionId, {
+      deviceId,
+      sinceRevision: 0,
+      operations: [stitchFromA],
+    });
+    // Device B's concurrent stitch is resolved to completed but is not effective,
+    // so the cell writer is still device A.
+    await service.sync(account, sessionId, {
+      deviceId: otherDeviceId,
+      sinceRevision: 0,
+      operations: [stitchFromB],
+    });
+
+    const result = await service.sync(account, sessionId, {
+      deviceId,
+      sinceRevision: 0,
+      operations: [undoFromA],
+    });
+
+    expect(cell()).toMatchObject({ state: 'completed', writerDeviceId: deviceId, writerDeviceSeq: 20 });
+    // The undo's cell lookup sees device B's op above its base.
+    expect(cellQueries.at(-1)).toMatchObject({ params: [sessionId, cellIndex, 7, deviceId], foreignOpSinceBase: true });
+    expect(result.acknowledgements).toEqual([{ opId: undoFromA.opId, status: 'applied' }]);
+    expect(operations.at(-1)).toMatchObject({ effective: false, resolvedState: 'completed' });
+  });
+
+  it('treats an ambiguous cell writer as unknown', async () => {
+    // Promotion can shift Guest operations onto one session and leave two
+    // effective ops at the cell's revision; neither may claim writer identity.
+    const { operations, service, cell } = mergeHarness({
+      revision: 8,
+      cell: { state: 'completed', revision: 8, cellIndex, writerDeviceId: null, writerDeviceSeq: null },
+      seeded: [
+        { deviceId, deviceSeq: 20, cellIndex, desiredState: 'completed', serverRevision: 8, effective: true, superseded: false, resolvedState: 'completed' },
+        { deviceId, deviceSeq: 19, cellIndex, desiredState: 'completed', serverRevision: 8, effective: true, superseded: false, resolvedState: 'completed' },
+      ],
     });
 
     await service.sync(account, sessionId, {
       deviceId,
-      sinceRevision: 0,
-      operations: [offlineUndo],
+      sinceRevision: 8,
+      operations: [undoFromA],
     });
 
-    expect(cell()).toMatchObject({ state: 'completed', revision: 11 });
-    expect(inserted.map(({ effective, resolvedState }) => ({ effective, resolvedState }))).toEqual([
-      { effective: false, resolvedState: 'completed' },
-    ]);
+    expect(cell()).toMatchObject({ state: 'completed', revision: 8 });
+    expect(operations.at(-1)).toMatchObject({ effective: false, resolvedState: 'completed' });
   });
 
   it('keeps the old concurrent rule when the cell writer is unknown', async () => {
-    const { inserted, service, cell } = mergeHarness({
-      state: 'completed',
-      revision: 11,
-      writerDeviceId: null,
-      writerDeviceSeq: null,
+    // A promotion-written cell has no matching op, so its writer is unknown.
+    const { operations, service, cell } = mergeHarness({
+      revision: 8,
+      cell: { state: 'completed', revision: 8, writerDeviceId: null, writerDeviceSeq: null },
     });
 
     await service.sync(account, sessionId, {
       deviceId,
       sinceRevision: 0,
-      operations: [offlineUndo],
+      operations: [undoFromA],
     });
 
-    expect(cell()).toMatchObject({ state: 'completed', revision: 11 });
-    expect(inserted.map(({ effective }) => effective)).toEqual([false]);
+    expect(cell()).toMatchObject({ state: 'completed', revision: 8 });
+    expect(operations.map(({ effective }) => effective)).toEqual([false]);
   });
 });

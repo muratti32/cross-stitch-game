@@ -149,7 +149,7 @@ function seedV11Rows(identity: string): void {
     await openNamespace(GUEST);
   });
 
-  test('a database at v13 gains guest_merge defaulting to legacily undoable ops', async () => {
+  test('a database at v13 gains guest_merge defaulting to legacy undoable ops', async () => {
     const db = raw(GUEST);
     db.exec(
       `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status)
@@ -169,7 +169,7 @@ function seedV11Rows(identity: string): void {
     });
     // A pre-v14 op is a real stitch, so it must stay on the undo stack.
     expect((await getProgressOps('row')).map(({ opId, guestMerge }) => ({ opId, guestMerge }))).toEqual([
-      { opId: 'old', guestMerge: undefined },
+      { opId: 'old', guestMerge: false },
     ]);
     expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 14 });
   });

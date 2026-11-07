@@ -1403,7 +1403,7 @@ function mapProgressOpRow(row: ProgressOpRow): ProgressOperation {
     desiredState: row.desired_state as 'completed' | 'incomplete',
     baseRevision: row.base_revision,
     serverBaseRevision: row.server_base_revision ?? 0,
-    guestMerge: row.guest_merge === 1 ? true : undefined,
+    guestMerge: row.guest_merge === 1,
     createdAt: row.created_at,
   };
 }

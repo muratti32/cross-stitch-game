@@ -14,6 +14,8 @@ describe('mergeCellOperation', () => {
     ['keeps completed when a later same-device op already wrote the cell', { desiredState: 'incomplete', baseRevision: 6, deviceId: 'device-a', deviceSeq: 10, current: { state: 'completed', revision: 7, writerDeviceId: 'device-a', writerDeviceSeq: 11 } }, 'completed', false],
     ['keeps completed when the cell writer is unknown', { desiredState: 'incomplete', baseRevision: 6, deviceId: 'device-a', deviceSeq: 11, current: { state: 'completed', revision: 7, writerDeviceId: null, writerDeviceSeq: null } }, 'completed', false],
     ['keeps completed when another device wrote the cell', { desiredState: 'incomplete', baseRevision: 6, deviceId: 'device-a', deviceSeq: 11, current: { state: 'completed', revision: 7, writerDeviceId: 'device-b', writerDeviceSeq: 10 } }, 'completed', false],
+    ['keeps completed when another device op landed above the same base', { desiredState: 'incomplete', baseRevision: 6, deviceId: 'device-a', deviceSeq: 11, current: { state: 'completed', revision: 7, writerDeviceId: 'device-a', writerDeviceSeq: 10, foreignOpSinceBase: true } }, 'completed', false],
+    ['applies the same-device undo when no foreign op landed above the base', { desiredState: 'incomplete', baseRevision: 6, deviceId: 'device-a', deviceSeq: 11, current: { state: 'completed', revision: 7, writerDeviceId: 'device-a', writerDeviceSeq: 10, foreignOpSinceBase: false } }, 'incomplete', true],
   ])('%s', (_name, input, nextState, effective) => {
     expect(mergeCellOperation(input)).toEqual({ nextState, effective });
   });

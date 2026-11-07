@@ -11,6 +11,7 @@ import { PrincipalType } from '../auth/entities';
 import type { AuthPrincipal } from '../auth/auth.types';
 import {
   mergeCellOperation,
+  type CellSnapshot,
   type CellStateValue,
 } from './progress-merge';
 import type {
@@ -57,6 +58,7 @@ interface CellStateRecord {
   revision: string;
   writerDeviceId: string | null;
   writerDeviceSeq: string | null;
+  foreignOpSinceBase: boolean;
 }
 
 interface PulledOperationRecord {
@@ -205,6 +207,8 @@ export class ProgressSyncService {
           manager,
           sessionId,
           operation.cellIndex,
+          operation.baseRevision,
+          dto.deviceId,
         );
         const decision = mergeCellOperation({
           desiredState: operation.desiredState,
@@ -752,39 +756,60 @@ export class ProgressSyncService {
     manager: EntityManager,
     sessionId: string,
     cellIndex: number,
-  ): Promise<{
-    state: CellStateValue;
-    revision: number;
-    writerDeviceId: string | null;
-    writerDeviceSeq: number | null;
-  }> {
-    // The cell's revision identifies the effective op that last wrote it. That
-    // op's device and sequence let the merge tell a causally later op from a
-    // genuinely concurrent one. Promotion-written cells have no matching op.
+    baseRevision: number,
+    deviceId: string,
+  ): Promise<CellSnapshot> {
+    // The cell row carries the revision of the effective op that last wrote it.
+    // Promotion can shift operations onto one session and leave several ops at
+    // the same revision, so the writer is only trusted when exactly one
+    // effective op matches the cell's revision AND state. A foreign op above the
+    // incoming base means this op did not observe another device's write, so the
+    // same-device shortcut must not apply (see mergeCellOperation).
     const rows = await manager.query<readonly CellStateRecord[]>(
       `SELECT cell.state,
               cell.revision,
-              writer.device_id AS "writerDeviceId",
-              writer.device_seq AS "writerDeviceSeq"
+              CASE WHEN writer.matches = 1 THEN writer.device_id END AS "writerDeviceId",
+              CASE WHEN writer.matches = 1 THEN writer.device_seq END AS "writerDeviceSeq",
+              EXISTS (
+                SELECT 1
+                FROM sessions.progress_operations other_op
+                WHERE other_op.session_id = $1
+                  AND other_op.cell_index = $2
+                  AND other_op.server_revision > $3
+                  AND other_op.superseded = false
+                  AND other_op.device_id <> $4
+              ) AS "foreignOpSinceBase"
        FROM sessions.session_cell_state cell
-       LEFT JOIN sessions.progress_operations writer
-         ON writer.session_id = cell.session_id
-        AND writer.cell_index = cell.cell_index
-        AND writer.server_revision = cell.revision
-        AND writer.effective = true
-       WHERE cell.session_id = $1 AND cell.cell_index = $2
-       LIMIT 1`,
-      [sessionId, cellIndex],
+       LEFT JOIN LATERAL (
+         SELECT COUNT(*) AS matches,
+                MIN(op.device_id::text) AS device_id,
+                MIN(op.device_seq) AS device_seq
+         FROM sessions.progress_operations op
+         WHERE op.session_id = $1
+           AND op.cell_index = cell.cell_index
+           AND op.server_revision = cell.revision
+           AND op.effective = true
+           AND op.resolved_state = cell.state
+       ) writer ON true
+       WHERE cell.session_id = $1 AND cell.cell_index = $2`,
+      [sessionId, cellIndex, baseRevision, deviceId],
     );
     const cell = rows[0];
     if (!cell) {
-      return { state: 'incomplete', revision: 0, writerDeviceId: null, writerDeviceSeq: null };
+      return {
+        state: 'incomplete',
+        revision: 0,
+        writerDeviceId: null,
+        writerDeviceSeq: null,
+        foreignOpSinceBase: false,
+      };
     }
     return {
       state: cell.state,
       revision: Number(cell.revision),
       writerDeviceId: cell.writerDeviceId,
       writerDeviceSeq: cell.writerDeviceSeq === null ? null : Number(cell.writerDeviceSeq),
+      foreignOpSinceBase: cell.foreignOpSinceBase,
     };
   }
 
