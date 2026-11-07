@@ -117,6 +117,7 @@ export interface PendingPersonalPattern {
 }
 
 let activeIdentity: string | null = null;
+let guestNamespace: string | null = null;
 let dbInstance: SQLite.SQLiteDatabase | null = null;
 
 /**
@@ -124,6 +125,14 @@ let dbInstance: SQLite.SQLiteDatabase | null = null;
  */
 export function getActiveIdentity(): string | null {
   return activeIdentity;
+}
+
+/**
+ * Names the Guest's namespace. Only an account's sessions sync, and a Guest's
+ * rows can hold remote ids, so the namespace is what tells the two apart.
+ */
+export function setGuestNamespace(identity: string | null): void {
+  guestNamespace = identity;
 }
 
 /**
@@ -1784,8 +1793,10 @@ function normalizePackedBitmap(
 
 /**
  * Saves a checkpoint for a session and deletes the older progress operations it
- * covers. A session with a remote id keeps its unacked ops: the checkpoint covers
- * them locally, but they are the server's only way to receive those cells.
+ * covers. A linked session outside the Guest's namespace keeps its unacked ops:
+ * the checkpoint covers them locally, but they are the server's only way to
+ * receive those cells. A namespace not yet known to be the Guest's keeps them too,
+ * because a wrong keep costs rows and a wrong delete loses the cells.
  */
 export async function saveCheckpoint(
   sessionId: string,
@@ -1810,9 +1821,10 @@ export async function saveCheckpoint(
         `DELETE FROM progress_ops
          WHERE session_id = ?
            AND base_revision < ?
-           AND (acked = 1 OR (SELECT remote_session_id FROM sessions WHERE id = ?) IS NULL)`,
+           AND (acked = 1 OR ? = 1 OR (SELECT remote_session_id FROM sessions WHERE id = ?) IS NULL)`,
         sessionId,
         revision,
+        activeIdentity === guestNamespace ? 1 : 0,
         sessionId
       );
     });

@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import * as Crypto from 'expo-crypto';
 import { Config } from '../config';
 import { decodeJwt, calculateRefreshDelay, bufferToBase64Url } from './identityLogic';
-import { adoptPreIdentityDatabase, openNamespace, deleteNamespaceFiles } from '../local-db';
+import { adoptPreIdentityDatabase, openNamespace, deleteNamespaceFiles, setGuestNamespace } from '../local-db';
 import { performAuthenticatedRequest, resetAccountDeletionTrigger } from '../api/authenticatedRequest';
 import { useGameplayStore } from '../store';
 import { queryClient } from '../providers';
@@ -206,6 +206,8 @@ export const useIdentityStore = create<IdentityState>((set) => ({
     await logout();
   },
 }));
+
+useIdentityStore.subscribe(({ guestId }) => setGuestNamespace(guestId));
 
 function updateStoreState(updates: Partial<Omit<IdentityState, 'bootstrap' | 'logout'>>) {
   useIdentityStore.setState(updates);
