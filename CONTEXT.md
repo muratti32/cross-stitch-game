@@ -524,7 +524,7 @@ One of at most five operator-managed search descriptors attached to an Official 
 _Avoid_: Category, keyword stuffing, private label
 
 **Catalog Share Link**:
-A stable Universal Link targeting an approved Community Pattern or a Public Creator Profile by opaque public identifier. The URL never contains a Pattern Artifact, Artifact Access Grant, private account identifier, or other credential. It opens the corresponding in-app page when the game is installed; otherwise it opens a web page containing only public profile or catalog metadata and the Pattern Preview plus store links. A target under Review Hold, Account Closure Hold, Catalog Withdrawal, or Safety Removal resolves to an unavailable state instead of exposing its former public content.
+A stable Universal Link targeting an approved Community Pattern, a published Official Pattern, or a Public Creator Profile by opaque public identifier. The URL never contains a Pattern Artifact, Artifact Access Grant, private account identifier, or other credential. It opens the corresponding in-app page when the game is installed; otherwise it opens a web page containing only public profile or catalog metadata and the Pattern Preview plus store links. A target under Review Hold, Account Closure Hold, Catalog Withdrawal, or Safety Removal resolves to an unavailable state instead of exposing its former public content.
 _Avoid_: Artifact URL, signed download link, private share, exported Pattern
 
 **Official Pattern**:
@@ -552,7 +552,7 @@ The printable image of one Official Pattern: its colored cell grid with bold lin
 _Avoid_: PDF export, chart export, printable pattern, Pattern Artifact
 
 **Pattern Chart Entitlement**:
-The permanent right of a Registered Account or Guest Installation Identity to generate the Pattern Chart Image of one Official Pattern at any time on any device. Any Session Completion of that Pattern grants it at no cost; before completion it can be acquired through a one-time online Stitch Coin spend of 20 for Small, 40 for Medium, or 60 for Large, only for a Pattern the player may already start. Completing the Pattern after buying refunds nothing. Community Patterns and Personal Patterns have no Pattern Chart Entitlement.
+The permanent right of a Registered Account or Guest Installation Identity to generate the Pattern Chart Image of one Official Pattern at any time on any device. Any Session Completion of that Pattern grants it at no cost, including one that Guest Data Promotion moves into the account; it is a record of having finished the Pattern, not a First Completion Reward. Before completion it can be acquired through a one-time online Stitch Coin spend of 20 for Small, 40 for Medium, or 60 for Large, only for a Pattern the player may already start. Completing the Pattern after buying refunds nothing. Holding it lets the player fetch the Pattern Artifact to draw the image without starting a Stitching Session; that fetch is not Offline Pattern Data. A local Session Completion lets that device draw the image at once, before the backend accepts the completion; the entitlement itself exists only once the backend accepts it. Under Catalog Withdrawal the entitlement stays and the image can still be drawn from Pattern data already on the device, but no new fetch or purchase is possible; under Safety Removal the entitlement record stays and no image can be drawn. Community Patterns and Personal Patterns have no Pattern Chart Entitlement.
 _Avoid_: Download purchase, file purchase, chart rental
 
 **Community Pattern**:
