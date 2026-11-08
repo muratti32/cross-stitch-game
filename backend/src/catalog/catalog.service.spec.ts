@@ -238,6 +238,51 @@ describe('CatalogService - Creator Block Filtering', () => {
     });
   });
 
+  describe('Catalog Share Link resolution for Official Patterns', () => {
+    const officialPattern = {
+      id: 'official-1',
+      title: 'Official 1',
+      creatorName: 'StitchWish',
+      categoryCode: 'cat-1',
+      width: 10,
+      height: 10,
+      paletteSize: 5,
+      previewObjectKey: 'preview-1',
+      unlockPriceTier: null,
+      publishedAt: new Date('2026-07-20T00:00:00Z'),
+      likeCount: 0,
+      status: 'available',
+      visibility: 'catalog',
+      creatorProfileId: null,
+      creatorProfile: null,
+      tags: [],
+    } as unknown as PatternEntity;
+
+    it('resolves a published Official Pattern that has no creator profile', async () => {
+      const findOne = jest.spyOn(patternRepository, 'findOne').mockResolvedValue(officialPattern);
+
+      const result = await service.getPatternById('official-1');
+
+      expect(result.id).toBe('official-1');
+      expect(result.creatorName).toBe('StitchWish');
+      expect(findOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'official-1', status: 'available', visibility: 'catalog' },
+        }),
+      );
+    });
+
+    it.each(['withdrawn', 'removed', 'review_hold'])(
+      'returns NotFound for an Official Pattern that is %s',
+      async () => {
+        // The lookup only matches status "available", so a non-available row yields no match.
+        jest.spyOn(patternRepository, 'findOne').mockResolvedValue(null);
+
+        await expect(service.getPatternById('official-1')).rejects.toThrow(NotFoundException);
+      },
+    );
+  });
+
   describe('closure hold filtering', () => {
     it('throws NotFoundException in getPatternById if the creator profile has closureHoldAt set', async () => {
       jest.spyOn(patternRepository, 'findOne').mockResolvedValue({

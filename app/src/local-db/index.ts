@@ -2439,6 +2439,12 @@ export async function setCatalogCache(surfaceKey: string, payloadJson: string): 
   });
 }
 
+export async function deleteCatalogCache(surfaceKey: string): Promise<void> {
+  await withDatabase(async (db) => {
+    await db.runAsync('DELETE FROM catalog_cache WHERE surface_key = ?', surfaceKey);
+  });
+}
+
 export async function addPendingCancel(remoteSessionId: string): Promise<void> {
   await withDatabase(async (db) => {
     await db.runAsync(

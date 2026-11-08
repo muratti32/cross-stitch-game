@@ -509,8 +509,45 @@ describe('Pattern Share Page - onRequestGet', () => {
         expect(html).toContain('<title>Content Unavailable - Stitch Wish</title>');
         expect(html).toContain('<h1>Content Unavailable</h1>');
         expect(html).toContain('This pattern is no longer available.');
+        expect(html).not.toContain('creator');
       }
     );
+
+    it('renders an Official Pattern share page from public catalog metadata only', async () => {
+      const official: CatalogPattern = {
+        ...mockPattern,
+        title: 'Official Heart',
+        creatorName: 'Stitch Wish',
+      };
+      const fetchSpy = stubCatalogResponse(official);
+
+      const response = await onRequestGet(createMockContext({ id: validUuid }));
+
+      expect(response.status).toBe(200);
+      const html = await response.text();
+      const metadata = extractPatternMetadata(html);
+      expect(metadata.ogTitle).toBe('Stitch Wish - Official Heart');
+      expect(metadata.ogDescription).toContain('by Stitch Wish');
+      expect(html).toContain(
+        '<meta property="og:image" content="https://cdn.example.com/thumb-detail.png">'
+      );
+      expectRedirectScript(html, [
+        `stitchwish://catalog/pattern/${validUuid}`,
+        `/pattern/${validUuid}?fallback=true`,
+      ]);
+      // The only upstream request is the public catalog read keyed by the opaque id.
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(html).not.toMatch(/artifact|grant/i);
+    });
+
+    it('does not attribute an unavailable Official Pattern to a creator', async () => {
+      stubCatalogResponse({}, { status: 404 });
+
+      const response = await onRequestGet(createMockContext({ id: validUuid }));
+
+      expect(response.status).toBe(404);
+      expect(await response.text()).not.toMatch(/creator|withdrawn/i);
+    });
 
     it('delegates to SPA via context.next() when fallback=true is present for a valid id', async () => {
       const fetchSpy = stubCatalogResponse({});

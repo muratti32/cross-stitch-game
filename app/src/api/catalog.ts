@@ -2,7 +2,7 @@ import { useInfiniteQuery, useQuery, type InfiniteData } from '@tanstack/react-q
 import { apiFetch } from './apiFetch';
 import { isBundledPatternId } from '../bundled-patterns/identity';
 import { Config } from '../config';
-import { getCatalogCache, setCatalogCache } from '../local-db';
+import { deleteCatalogCache, getCatalogCache, setCatalogCache } from '../local-db';
 import { getSurfaceKey, getCacheKey, localeCacheLookupOrder } from '../catalog-cache-logic';
 import { getActiveLocale } from '../i18n/activeLocale';
 import { SUPPORTED_LOCALES } from '../i18n/supportedLocales';
@@ -158,6 +158,14 @@ async function fetchWithCatalogCache<T>(surfaceKey: string): Promise<CachedResul
     await setCatalogCache(cacheKey, JSON.stringify(data));
     return { data, fromCache: false, fetchedAt: null };
   } catch (err) {
+    // A 404 means the surface no longer exists (withdrawn, removed, held):
+    // never render a stale copy, and drop it so it cannot resurface offline.
+    if (err instanceof CatalogApiError && err.status === 404) {
+      for (const locale of SUPPORTED_LOCALES) {
+        await deleteCatalogCache(getCacheKey(surfaceKey, locale));
+      }
+      throw err;
+    }
     for (const locale of localeCacheLookupOrder(activeLocale, SUPPORTED_LOCALES)) {
       const cached = await getCatalogCache(getCacheKey(surfaceKey, locale));
       if (cached) {
