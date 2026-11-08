@@ -34,7 +34,8 @@ const hidden = (removed = false): ChartSectionState => ({ kind: 'hidden', remove
 export function decideChartSection(input: ChartSectionInput): ChartSectionState {
   if (input.isOfficial === false || !input.isAuthenticated) return hidden();
   if (!input.isAccount) {
-    return input.variant === 'detail' && input.isOfficial === true ? { kind: 'signIn', removed: false } : hidden();
+    // Guests never draw, but any surface that knows the Pattern is Official invites them to sign in.
+    return input.isOfficial === true ? { kind: 'signIn', removed: false } : hidden();
   }
   const data = input.access.data;
   if (data?.status === 'removed') return hidden(true);

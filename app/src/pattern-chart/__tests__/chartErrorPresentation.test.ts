@@ -17,7 +17,7 @@ describe('presentChartError', () => {
   });
 
   it('carries the new server price on a price change', () => {
-    expect(presentChartError(mapPatternChartError(409, { code: 'pattern_chart_price_changed', price: 60 }))).toEqual({ type: 'key', key: 'chart.priceChanged', values: { price: 60 } });
+    expect(presentChartError(mapPatternChartError(409, { code: 'pattern_chart_price_changed', price: 60 }))).toEqual({ type: 'priceChanged', price: 60 });
   });
 
   it('reports insufficient balance with price and balance', () => {

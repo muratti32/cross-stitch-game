@@ -1,6 +1,7 @@
 import { apiFetch } from '../apiFetch';
 import {
   fetchPatternChartAccess,
+  isRemovedChartError,
   mapPatternChartError,
   PatternChartError,
   purchasePatternChart,
@@ -77,11 +78,35 @@ describe('pattern chart requests', () => {
   });
 
   it('posts the expected price and returns the purchase', async () => {
-    respond(201, { patternId: 'p', alreadyEntitled: false, price: 40, balance: 60 });
-    await expect(purchasePatternChart('p', 40)).resolves.toEqual({ patternId: 'p', alreadyEntitled: false, price: 40, balance: 60 });
+    respond(201, { patternId: 'p', alreadyEntitled: false, price: 40, tier: 'medium', balance: 60 });
+    await expect(purchasePatternChart('p', 40)).resolves.toEqual({ patternId: 'p', alreadyEntitled: false, price: 40, tier: 'medium', balance: 60 });
     const [path, init] = mockedFetch.mock.calls[0];
     expect(path).toBe('/v1/economy/pattern-charts');
     expect(JSON.parse(String(init?.body))).toEqual({ patternId: 'p', expectedPrice: 40 });
+  });
+
+  it.each([
+    ['no tier', { patternId: 'p', alreadyEntitled: false, price: 40, balance: 60 }],
+    ['an unknown tier', { patternId: 'p', alreadyEntitled: false, price: 40, tier: 'huge', balance: 60 }],
+    ['a fractional balance', { patternId: 'p', alreadyEntitled: false, price: 40, tier: 'medium', balance: 1.5 }],
+  ])('rejects a purchase response with %s', async (_name, body) => {
+    respond(201, body);
+    await expect(purchasePatternChart('p', 40)).rejects.toMatchObject({ reason: 'invalid_pattern_chart_response' });
+  });
+
+  it.each([
+    ['no patternId', { artifact: { byteLength: 3, checksum: 'abc', schemaVersion: 1 }, grant: { url: '/u', expiresAt: 'z' } }],
+    ['no schemaVersion', { patternId: 'p', artifact: { byteLength: 3, checksum: 'abc' }, grant: { url: '/u', expiresAt: 'z' } }],
+    ['no expiresAt', { patternId: 'p', artifact: { byteLength: 3, checksum: 'abc', schemaVersion: 1 }, grant: { url: '/u' } }],
+  ])('rejects an artifact grant with %s', async (_name, body) => {
+    respond(201, body);
+    await expect(requestPatternChartArtifactGrant('p')).rejects.toBeInstanceOf(PatternChartError);
+  });
+
+  it('classifies a removed chart error', () => {
+    expect(isRemovedChartError(mapPatternChartError(410, { code: 'pattern_removed' }))).toBe(true);
+    expect(isRemovedChartError(mapPatternChartError(410, { code: 'pattern_unavailable' }))).toBe(false);
+    expect(isRemovedChartError(new Error('x'))).toBe(false);
   });
 
   it('surfaces price change and insufficient balance from a purchase', async () => {

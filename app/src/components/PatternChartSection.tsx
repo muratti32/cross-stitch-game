@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -8,11 +8,11 @@ import { Theme } from '../theme/theme';
 import { formatNumber } from '../i18n';
 import { useIdentityStore } from '../identity/guestIdentity';
 import { isServerApiError, localizeServerError } from '../api/localizeServerError';
-import { PatternChartError, usePatternChartAccess, usePurchasePatternChart } from '../api/patternCharts';
+import { isRemovedChartError, usePatternChartAccess, usePurchasePatternChart } from '../api/patternCharts';
 import { usePatternChartGeneration } from '../hooks/usePatternChartGeneration';
+import { usePatternChartRemoval } from '../hooks/usePatternChartRemoval';
 import { useLocalArtifactChecksum } from '../hooks/useLocalArtifactChecksum';
 import { decideChartSection } from '../pattern-chart/chartSectionState';
-import { deleteOfflinePatternFile } from '../session-preparation';
 import { presentChartError } from '../pattern-chart/chartErrorPresentation';
 import type { PatternData } from '../pattern-artifact';
 
@@ -55,7 +55,7 @@ export function PatternChartSection({
   const resolvedChecksum = useLocalArtifactChecksum(patternId, isAccount && !pattern && localChecksum === undefined);
   const checksum = localChecksum ?? resolvedChecksum ?? null;
 
-  const state = decideChartSection({
+  const section = decideChartSection({
     isAuthenticated,
     isAccount,
     variant,
@@ -66,17 +66,12 @@ export function PatternChartSection({
     access: { isLoading: access.isLoading, isError: access.isError, data: access.data },
   });
 
-  // Safety Removal: no image may be drawn, and the on-device copy goes now rather than at the next sync.
-  const removedByGeneration = generation.state.phase === 'error'
-    && generation.state.error instanceof PatternChartError
-    && generation.state.error.kind === 'removed';
-  const removed = state.removed || removedByGeneration;
-  useEffect(() => {
-    if (removed) void deleteOfflinePatternFile(patternId).catch(() => undefined);
-  }, [removed, patternId]);
+  // Safety Removal: no image may be drawn.
+  const removed = section.removed || (generation.state.phase === 'error' && isRemovedChartError(generation.state.error));
+  usePatternChartRemoval(patternId, removed);
   if (removed) return null;
 
-  const wrap = (children: React.ReactNode) =>
+  const renderInContainer = (children: React.ReactNode) =>
     variant === 'detail' ? <Card style={styles.card}>{children}</Card> : <View style={styles.compact}>{children}</View>;
 
   const renderError = (error: unknown): React.ReactNode => {
@@ -96,17 +91,26 @@ export function PatternChartSection({
         </View>
       );
     }
-    const message = presentation.type === 'server'
-      ? (isServerApiError(presentation.error) ? localizeServerError(presentation.error) : t('chart.generateFailed'))
-      : t(presentation.key, presentation.values ? { price: formatNumber(presentation.values.price, locale) } : undefined);
+    let message: string;
+    switch (presentation.type) {
+      case 'server':
+        message = isServerApiError(presentation.error) ? localizeServerError(presentation.error) : t('chart.generateFailed');
+        break;
+      case 'priceChanged':
+        message = t('chart.priceChanged', { price: formatNumber(presentation.price, locale) });
+        break;
+      case 'key':
+        message = t(presentation.key);
+        break;
+    }
     return <Text style={styles.error} accessibilityRole="alert">{message}</Text>;
   };
 
-  switch (state.kind) {
+  switch (section.kind) {
     case 'hidden':
       return null;
     case 'signIn':
-      return wrap(
+      return renderInContainer(
         <>
           <Text style={styles.title}>{t('chart.title')}</Text>
           <Text style={styles.body}>{t('chart.signIn.body')}</Text>
@@ -119,14 +123,14 @@ export function PatternChartSection({
         </>,
       );
     case 'loading':
-      return wrap(
+      return renderInContainer(
         <View style={styles.statusRow}>
           <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
           <Text style={styles.body}>{t('chart.checking')}</Text>
         </View>,
       );
     case 'error':
-      return wrap(
+      return renderInContainer(
         <>
           <Text style={styles.error} accessibilityRole="alert">{t('chart.loadFailed')}</Text>
           <Button title={t('chart.retry')} onPress={() => void access.refetch()} variant="secondary" style={styles.button} />
@@ -136,19 +140,19 @@ export function PatternChartSection({
       const buy = async () => {
         setPurchaseError(null);
         try {
-          await purchase.mutateAsync({ patternId, expectedPrice: state.price });
+          await purchase.mutateAsync({ patternId, expectedPrice: section.price });
         } catch (error) {
           setPurchaseError(error);
         }
       };
-      return wrap(
+      return renderInContainer(
         <>
           <Text style={styles.title}>{t('chart.title')}</Text>
           <Text style={styles.body}>{t('chart.description')}</Text>
           <Text style={styles.hint}>{t('chart.freeIfCompleted')}</Text>
           {purchaseError !== null && renderError(purchaseError)}
           <Button
-            title={purchase.isPending ? t('chart.buying') : t('chart.buy', { price: formatNumber(state.price, locale) })}
+            title={purchase.isPending ? t('chart.buying') : t('chart.buy', { price: formatNumber(section.price, locale) })}
             onPress={() => void buy()}
             variant="primary"
             loading={purchase.isPending}
@@ -161,7 +165,7 @@ export function PatternChartSection({
     case 'generate': {
       const generating = generation.state.phase === 'generating';
       const dialogTitle = t('chart.dialogTitle');
-      return wrap(
+      return renderInContainer(
         <>
           {variant === 'detail' && (
             <>
@@ -176,7 +180,7 @@ export function PatternChartSection({
               patternId,
               pattern,
               localChecksum: checksum,
-              allowRemoteFetch: state.allowRemoteFetch,
+              allowRemoteFetch: section.allowRemoteFetch,
               dialogTitle,
             })}
             variant={variant === 'detail' ? 'primary' : 'secondary'}

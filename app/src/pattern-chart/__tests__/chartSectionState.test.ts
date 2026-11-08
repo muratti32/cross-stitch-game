@@ -25,10 +25,11 @@ describe('decideChartSection', () => {
     expect(decideChartSection(input({ isAuthenticated: false, isAccount: false })).kind).toBe('hidden');
   });
 
-  it('asks Guests to sign in only on detail, and never lets them draw locally', () => {
+  it('asks Guests to sign in on every surface of an Official Pattern, and never lets them draw locally', () => {
     expect(decideChartSection(input({ isAccount: false })).kind).toBe('signIn');
+    expect(decideChartSection(input({ isAccount: false, variant: 'compact' })).kind).toBe('signIn');
+    expect(decideChartSection(input({ isAccount: false, variant: 'compact', locallyCompleted: true, hasLocalData: true })).kind).toBe('signIn');
     expect(decideChartSection(input({ isAccount: false, variant: 'compact', isOfficial: undefined })).kind).toBe('hidden');
-    expect(decideChartSection(input({ isAccount: false, variant: 'compact', locallyCompleted: true, hasLocalData: true })).kind).toBe('hidden');
   });
 
   it('covers loading, error and ineligible', () => {

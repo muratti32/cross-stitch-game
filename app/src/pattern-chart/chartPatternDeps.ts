@@ -1,7 +1,7 @@
 import * as FileSystem from 'expo-file-system/legacy';
 import { requestPatternChartArtifactGrant } from '../api/patternCharts';
 import { Config } from '../config';
-import { getActiveIdentity, getSessions } from '../local-db';
+import { getActiveIdentity } from '../local-db';
 import { base64ToUint8Array } from '../local-db/helpers';
 import { decodePatternArtifact } from '../pattern-artifact';
 import { getOfflinePatternPath } from '../session-preparation';
@@ -35,12 +35,3 @@ export const chartSourceDeps: ChartSourceDeps = {
   },
   decode: decodePatternArtifact,
 };
-
-/** Checksum of the newest Pattern Artifact this device holds for a pattern, from its Stitching Sessions. */
-export async function findLocalArtifactChecksum(patternId: string): Promise<string | null> {
-  const sessions = await getSessions();
-  const match = sessions
-    .filter((session) => session.patternId === patternId && session.status !== 'preparing')
-    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))[0];
-  return match?.artifactChecksum ?? null;
-}

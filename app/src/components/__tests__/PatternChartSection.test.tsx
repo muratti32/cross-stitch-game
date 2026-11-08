@@ -82,6 +82,13 @@ describe('PatternChartSection', () => {
     expect(mockPush).toHaveBeenCalledWith('/(tabs)/(settings)/sign-in');
   });
 
+  it('shows the Guest sign-in prompt on the compact celebration and history surfaces for an Official Pattern', async () => {
+    setIdentity(true, false);
+    const renderer = await render({ variant: 'compact', locallyCompleted: true });
+    expect(texts(renderer)).toContain('Sign in to get a printable chart of this pattern.');
+    expect(generate).not.toHaveBeenCalled();
+  });
+
   it('hides the guest prompt on compact surfaces where Official status is unknown', async () => {
     setIdentity(true, false);
     expect((await render({ variant: 'compact', isOfficial: undefined })).toJSON()).toBeNull();
@@ -198,7 +205,7 @@ describe('PatternChartSection', () => {
     expect(generate).toHaveBeenCalledWith(expect.objectContaining({ allowRemoteFetch: false, localChecksum: 'local-checksum' }));
   });
 
-  it('a local completion generates offline for a known Official pattern, never for unknown, and never for a Guest', async () => {
+  it('a local completion generates offline for a known Official pattern, never for unknown, and a Guest only gets the sign-in prompt', async () => {
     const pattern = { schemaVersion: 1, width: 1, height: 1, palette: [], grid: new Uint8Array(1) };
     const props = { variant: 'compact' as const, pattern, locallyCompleted: true };
     access.mockReturnValue({ isLoading: false, isError: true, data: undefined, refetch: jest.fn() });
@@ -217,6 +224,10 @@ describe('PatternChartSection', () => {
     expect(texts(await render({ ...props, isOfficial: true }))).toContain('Checking chart access…');
 
     setIdentity(true, false);
-    expect((await render({ ...props, isOfficial: true })).toJSON()).toBeNull();
+    generate.mockClear();
+    const guest = texts(await render({ ...props, isOfficial: true }));
+    expect(guest).toContain('Sign in to get a printable chart of this pattern.');
+    expect(guest).not.toContain('Generate chart');
+    expect(generate).not.toHaveBeenCalled();
   });
 });

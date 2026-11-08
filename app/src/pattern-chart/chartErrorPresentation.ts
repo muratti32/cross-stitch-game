@@ -3,7 +3,8 @@ import { ChartSharingUnavailableError } from './chartErrors';
 import { ChartDataUnavailableError } from './loadChartPattern';
 
 export type ChartErrorPresentation =
-  | { type: 'key'; key: string; values?: Record<string, number> }
+  | { type: 'key'; key: string }
+  | { type: 'priceChanged'; price: number }
   | { type: 'insufficient'; price: number; balance: number }
   | { type: 'server'; error: Error };
 
@@ -23,7 +24,7 @@ export function presentChartError(error: unknown): ChartErrorPresentation {
       case 'price_changed':
         return error.price === null
           ? { type: 'key', key: 'chart.generateFailed' }
-          : { type: 'key', key: 'chart.priceChanged', values: { price: error.price } };
+          : { type: 'priceChanged', price: error.price };
       case 'insufficient_balance':
         return error.price === null || error.balance === null
           ? { type: 'key', key: 'chart.generateFailed' }

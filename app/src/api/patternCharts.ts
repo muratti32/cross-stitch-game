@@ -3,8 +3,10 @@ import { apiFetch } from './apiFetch';
 import { coinBalanceQueryKey, EconomyApiError } from './economy';
 import { useIdentityStore } from '../identity/guestIdentity';
 import { recordChartPurchaseResult } from '../analytics/patternChart';
+import type { PatternUnlockTier } from '../analytics/schema';
 
 /** Pattern Chart Entitlement queries (ADR-0068): server is authoritative for price and ownership. */
+/** Prefix of every chart query; invalidating it refreshes each per-pattern access query. */
 export const patternChartsQueryKey = ['economy', 'pattern-charts'] as const;
 export const patternChartQueryKey = (patternId: string) => ['economy', 'pattern-charts', patternId] as const;
 
@@ -43,6 +45,17 @@ function intOrNull(value: unknown): number | null {
   return typeof value === 'number' && Number.isSafeInteger(value) ? value : null;
 }
 
+/** Safety Removal: the Pattern may no longer be drawn. */
+export function isRemovedChartError(error: unknown): boolean {
+  return error instanceof PatternChartError && error.kind === 'removed';
+}
+
+/** The cached access answer is stale: the price changed or the Pattern left the catalog. */
+function isStaleAccessError(error: unknown): boolean {
+  return error instanceof PatternChartError
+    && (error.kind === 'price_changed' || error.kind === 'removed' || error.kind === 'unavailable');
+}
+
 /** Pure mapping of the backend contract's status + code to a typed error. */
 export function mapPatternChartError(status: number, body: ErrorBody | null): PatternChartError {
   const codeValue = body?.code ?? body?.reason;
@@ -60,7 +73,7 @@ export function mapPatternChartError(status: number, body: ErrorBody | null): Pa
   return new PatternChartError(status, 'other', code);
 }
 
-async function failure(res: Response): Promise<PatternChartError> {
+async function toChartError(res: Response): Promise<PatternChartError> {
   const body = (await res.json().catch(() => null)) as ErrorBody | null;
   return mapPatternChartError(res.status, body);
 }
@@ -80,7 +93,7 @@ export async function fetchPatternChartAccess(patternId: string): Promise<Patter
   const res = await apiFetch(`/v1/economy/pattern-charts/${encodeURIComponent(patternId)}`);
   if (res.status === 404) return { status: 'ineligible' };
   if (!res.ok) {
-    const error = await failure(res);
+    const error = await toChartError(res);
     if (error.kind === 'removed') return { status: 'removed' };
     throw error;
   }
@@ -98,7 +111,24 @@ export interface PatternChartPurchase {
   patternId: string;
   alreadyEntitled: boolean;
   price: number;
+  /** Server-owned price tier, used as-is for analytics. */
+  tier: PatternUnlockTier;
   balance: number;
+}
+
+const TIERS: readonly PatternUnlockTier[] = ['small', 'medium', 'large'];
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+export function isPatternChartPurchase(value: unknown): value is PatternChartPurchase {
+  return isRecord(value)
+    && typeof value.patternId === 'string'
+    && typeof value.alreadyEntitled === 'boolean'
+    && intOrNull(value.price) !== null
+    && intOrNull(value.balance) !== null
+    && TIERS.some((tier) => tier === value.tier);
 }
 
 export async function purchasePatternChart(patternId: string, expectedPrice: number): Promise<PatternChartPurchase> {
@@ -107,17 +137,12 @@ export async function purchasePatternChart(patternId: string, expectedPrice: num
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ patternId, expectedPrice }),
   });
-  if (!res.ok) throw await failure(res);
-  const data = (await res.json().catch(() => null)) as Partial<PatternChartPurchase> | null;
-  if (
-    typeof data?.alreadyEntitled !== 'boolean'
-    || intOrNull(data.price) === null
-    || intOrNull(data.balance) === null
-    || typeof data.patternId !== 'string'
-  ) {
+  if (!res.ok) throw await toChartError(res);
+  const data: unknown = await res.json().catch(() => null);
+  if (!isPatternChartPurchase(data)) {
     throw new PatternChartError(res.status, 'other', 'invalid_pattern_chart_response');
   }
-  return data as PatternChartPurchase;
+  return data;
 }
 
 export interface PatternChartArtifactGrant {
@@ -126,21 +151,29 @@ export interface PatternChartArtifactGrant {
   grant: { url: string; expiresAt: string };
 }
 
+export function isPatternChartArtifactGrant(value: unknown): value is PatternChartArtifactGrant {
+  if (!isRecord(value) || typeof value.patternId !== 'string') return false;
+  const { artifact, grant } = value;
+  return isRecord(artifact)
+    && typeof artifact.checksum === 'string'
+    && intOrNull(artifact.byteLength) !== null
+    && intOrNull(artifact.schemaVersion) !== null
+    && isRecord(grant)
+    && typeof grant.url === 'string'
+    && typeof grant.expiresAt === 'string';
+}
+
 /** Fetch permission for a Pattern Artifact without a Stitching Session. */
 export async function requestPatternChartArtifactGrant(patternId: string): Promise<PatternChartArtifactGrant> {
   const res = await apiFetch(`/v1/economy/pattern-charts/${encodeURIComponent(patternId)}/artifact-grant`, {
     method: 'POST',
   });
-  if (!res.ok) throw await failure(res);
-  const data = (await res.json().catch(() => null)) as Partial<PatternChartArtifactGrant> | null;
-  if (
-    typeof data?.grant?.url !== 'string'
-    || typeof data.artifact?.checksum !== 'string'
-    || typeof data.artifact.byteLength !== 'number'
-  ) {
+  if (!res.ok) throw await toChartError(res);
+  const data: unknown = await res.json().catch(() => null);
+  if (!isPatternChartArtifactGrant(data)) {
     throw new PatternChartError(res.status, 'other', 'invalid_pattern_chart_response');
   }
-  return data as PatternChartArtifactGrant;
+  return data;
 }
 
 /** Account-only: a Guest never reaches the server for this (the endpoint answers 403). */
@@ -166,7 +199,7 @@ export function usePurchasePatternChart() {
     },
     onError: (error, { patternId }) => {
       // A stale price or a pattern that left the catalog: refresh what the card shows.
-      if (error instanceof PatternChartError && (error.kind === 'price_changed' || error.kind === 'removed' || error.kind === 'unavailable')) {
+      if (isStaleAccessError(error)) {
         void queryClient.invalidateQueries({ queryKey: patternChartQueryKey(patternId) });
       }
     },
