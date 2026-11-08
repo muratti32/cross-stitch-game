@@ -180,5 +180,29 @@
         "needsContent": "De toelichting moet letters of cijfers bevatten."
       }
     }
+  },
+  "chart": {
+    "title": "Patroonschema",
+    "description": "Een afdrukbare afbeelding van dit patroon met kleurenraster, garenlegenda en een QR-link naar Stitch Wish.",
+    "freeIfCompleted": "Gratis als je dit patroon voltooit.",
+    "buy": "Schema halen voor {{price}} coins",
+    "buying": "Schema ophalen…",
+    "generate": "Schema maken",
+    "regenerate": "Schema opnieuw maken",
+    "generating": "Schema maken…",
+    "checking": "Toegang tot schema controleren…",
+    "loadFailed": "Kon de toegang tot het schema niet controleren. Controleer je verbinding en probeer het opnieuw.",
+    "retry": "Opnieuw proberen",
+    "signIn": {
+      "body": "Log in om een afdrukbaar schema van dit patroon te krijgen.",
+      "button": "Inloggen"
+    },
+    "insufficient": "Je hebt nog {{shortfall}} coins nodig voor dit schema.",
+    "priceChanged": "De prijs van het schema is gewijzigd naar {{price}} coins. Bekijk het en probeer het opnieuw.",
+    "unavailable": "Dit schema is niet meer beschikbaar.",
+    "accessRequired": "Je hebt nog geen toegang tot dit schema.",
+    "sharingUnavailable": "Delen is niet beschikbaar op dit apparaat.",
+    "generateFailed": "Kon het schema niet maken. Probeer het opnieuw.",
+    "dialogTitle": "Schema delen"
   }
 }

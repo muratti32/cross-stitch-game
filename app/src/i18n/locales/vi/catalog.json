@@ -180,5 +180,29 @@
         "needsContent": "Phần giải thích phải chứa chữ cái hoặc số."
       }
     }
+  },
+  "chart": {
+    "title": "Biểu đồ mẫu",
+    "description": "Hình ảnh có thể in của mẫu này, gồm lưới màu, chú giải chỉ và liên kết QR về Stitch Wish.",
+    "freeIfCompleted": "Miễn phí khi bạn hoàn thành mẫu này.",
+    "buy": "Nhận biểu đồ với {{price}} Coin",
+    "buying": "Đang nhận biểu đồ…",
+    "generate": "Tạo biểu đồ",
+    "regenerate": "Tạo lại biểu đồ",
+    "generating": "Đang tạo biểu đồ…",
+    "checking": "Đang kiểm tra quyền truy cập biểu đồ…",
+    "loadFailed": "Không thể kiểm tra quyền truy cập biểu đồ. Hãy kiểm tra kết nối và thử lại.",
+    "retry": "Thử lại",
+    "signIn": {
+      "body": "Đăng nhập để nhận biểu đồ có thể in của mẫu này.",
+      "button": "Đăng nhập"
+    },
+    "insufficient": "Bạn cần thêm {{shortfall}} Coin cho biểu đồ này.",
+    "priceChanged": "Giá biểu đồ đã đổi thành {{price}} Coin. Hãy xem lại và thử lại.",
+    "unavailable": "Biểu đồ này không còn khả dụng.",
+    "accessRequired": "Bạn chưa có quyền truy cập biểu đồ này.",
+    "sharingUnavailable": "Thiết bị này không hỗ trợ chia sẻ.",
+    "generateFailed": "Không thể tạo biểu đồ. Vui lòng thử lại.",
+    "dialogTitle": "Chia sẻ biểu đồ"
   }
 }

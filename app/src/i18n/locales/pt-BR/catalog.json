@@ -180,5 +180,29 @@
         "needsContent": "A explicação deve conter letras ou números."
       }
     }
+  },
+  "chart": {
+    "title": "Gráfico do padrão",
+    "description": "Uma imagem imprimível deste padrão com grade colorida, legenda de linhas e um link QR para o Stitch Wish.",
+    "freeIfCompleted": "Grátis ao concluir este padrão.",
+    "buy": "Obter gráfico por {{price}} Stitch Coin",
+    "buying": "Obtendo gráfico…",
+    "generate": "Gerar gráfico",
+    "regenerate": "Gerar gráfico novamente",
+    "generating": "Gerando gráfico…",
+    "checking": "Verificando acesso ao gráfico…",
+    "loadFailed": "Não foi possível verificar o acesso ao gráfico. Verifique sua conexão e tente novamente.",
+    "retry": "Tentar novamente",
+    "signIn": {
+      "body": "Entre para obter um gráfico imprimível deste padrão.",
+      "button": "Entrar"
+    },
+    "insufficient": "Faltam {{shortfall}} Stitch Coin para este gráfico.",
+    "priceChanged": "O preço do gráfico mudou para {{price}} Stitch Coin. Confira e tente novamente.",
+    "unavailable": "Este gráfico não está mais disponível.",
+    "accessRequired": "Você ainda não tem acesso a este gráfico.",
+    "sharingUnavailable": "O compartilhamento não está disponível neste dispositivo.",
+    "generateFailed": "Não foi possível gerar o gráfico. Tente novamente.",
+    "dialogTitle": "Compartilhar gráfico"
   }
 }

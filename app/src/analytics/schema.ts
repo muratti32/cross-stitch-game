@@ -37,6 +37,7 @@ export type AnalyticsGameplayEventKind =
   | 'account_soft_prompt_action'
   | 'unlock_prompt_shown'
   | 'pattern_unlocked'
+  | 'pattern_chart_purchased'
   | 'unlock_insufficient_coins'
   | 'unlock_get_coins_tapped'
   | 'locator_coin_shortfall_shown'
@@ -164,6 +165,7 @@ export type AnalyticsGameplayEventPayload =
   | { kind: 'account_soft_prompt_action'; payload: OnboardingPayloadBase & { context: AccountSoftPromptContext; action: AccountSoftPromptAction } }
   | { kind: 'unlock_prompt_shown'; payload: { tier: PatternUnlockTier; price: number } }
   | { kind: 'pattern_unlocked'; payload: { tier: PatternUnlockTier; price: number } }
+  | { kind: 'pattern_chart_purchased'; payload: { tier: PatternUnlockTier; price: number } }
   | { kind: 'unlock_insufficient_coins'; payload: { tier: PatternUnlockTier; shortfall: number } }
   | { kind: 'unlock_get_coins_tapped'; payload: { tier: PatternUnlockTier; shortfall: number } }
   | { kind: 'locator_coin_shortfall_shown'; payload: LocatorCoinShortfallPayload }

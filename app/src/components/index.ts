@@ -24,3 +24,4 @@ export { LocatorCoinShortfallSheet } from './LocatorCoinShortfallSheet';
 export type { LocatorShortfallPrimaryAction } from './LocatorCoinShortfallSheet';
 export { PatternLockBadge, patternLockState } from './PatternLockBadge';
 export type { PatternLockState } from './PatternLockBadge';
+export { PatternChartSection } from './PatternChartSection';

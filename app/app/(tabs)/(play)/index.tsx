@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { StyleSheet, View, Text, FlatList, ActivityIndicator, Alert, Pressable, Dimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Screen, EmptyState, Card, PatternImage } from '@/components';
+import { Screen, EmptyState, Card, PatternImage, PatternChartSection } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useTabBarSpace } from '@/theme/tabBar';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -237,6 +237,14 @@ export default function PlayScreen() {
             </View>
             <Text style={styles.progressText}>{item.progress}%</Text>
           </View>
+          {item.status === 'completed' && item.source === 'catalog' && (
+            <PatternChartSection
+              patternId={item.patternId}
+              variant="compact"
+              localChecksum={item.artifactChecksum}
+              regenerate
+            />
+          )}
         </View>
       </Card>
     );

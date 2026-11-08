@@ -180,5 +180,29 @@
         "needsContent": "Objašnjenje mora sadržavati slova ili brojeve."
       }
     }
+  },
+  "chart": {
+    "title": "Shema uzorka",
+    "description": "Slika ovog uzorka za ispis s obojenom mrežom, legendom niti i QR poveznicom na Stitch Wish.",
+    "freeIfCompleted": "Besplatno kad dovršiš ovaj uzorak.",
+    "buy": "Nabavi shemu za {{price}} Coin",
+    "buying": "Nabavljanje sheme…",
+    "generate": "Izradi shemu",
+    "regenerate": "Ponovno izradi shemu",
+    "generating": "Izrada sheme…",
+    "checking": "Provjera pristupa shemi…",
+    "loadFailed": "Nije moguće provjeriti pristup shemi. Provjeri vezu i pokušaj ponovno.",
+    "retry": "Pokušaj ponovno",
+    "signIn": {
+      "body": "Prijavi se za ispisivu shemu ovog uzorka.",
+      "button": "Prijava"
+    },
+    "insufficient": "Za ovu shemu trebaš još {{shortfall}} Coin.",
+    "priceChanged": "Cijena sheme promijenila se na {{price}} Coin. Provjeri je i pokušaj ponovno.",
+    "unavailable": "Ova shema više nije dostupna.",
+    "accessRequired": "Još nemaš pristup ovoj shemi.",
+    "sharingUnavailable": "Dijeljenje nije dostupno na ovom uređaju.",
+    "generateFailed": "Shema se nije mogla izraditi. Pokušaj ponovno.",
+    "dialogTitle": "Podijeli shemu"
   }
 }

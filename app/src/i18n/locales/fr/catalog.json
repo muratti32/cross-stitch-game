@@ -180,5 +180,29 @@
         "needsContent": "L'explication doit contenir des lettres ou des chiffres."
       }
     }
+  },
+  "chart": {
+    "title": "Grille du modèle",
+    "description": "Une image imprimable de ce modèle avec grille de couleurs, légende des fils et un lien QR vers Stitch Wish.",
+    "freeIfCompleted": "Gratuit quand tu termines ce modèle.",
+    "buy": "Obtenir la grille pour {{price}} Stitch Coin",
+    "buying": "Obtention de la grille…",
+    "generate": "Générer la grille",
+    "regenerate": "Régénérer la grille",
+    "generating": "Génération de la grille…",
+    "checking": "Vérification de l'accès à la grille…",
+    "loadFailed": "Impossible de vérifier l'accès à la grille. Vérifie ta connexion et réessaie.",
+    "retry": "Réessayer",
+    "signIn": {
+      "body": "Connecte-toi pour obtenir une grille imprimable de ce modèle.",
+      "button": "Se connecter"
+    },
+    "insufficient": "Il te manque {{shortfall}} Stitch Coin pour cette grille.",
+    "priceChanged": "Le prix de la grille est passé à {{price}} Stitch Coin. Vérifie-le et réessaie.",
+    "unavailable": "Cette grille n'est plus disponible.",
+    "accessRequired": "Tu n'as pas encore accès à cette grille.",
+    "sharingUnavailable": "Le partage n'est pas disponible sur cet appareil.",
+    "generateFailed": "Impossible de générer la grille. Réessaie.",
+    "dialogTitle": "Partager la grille"
   }
 }

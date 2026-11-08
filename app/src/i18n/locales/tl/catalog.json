@@ -180,5 +180,29 @@
         "needsContent": "Ang paliwanag ay dapat may titik o numero."
       }
     }
+  },
+  "chart": {
+    "title": "Tsart ng pattern",
+    "description": "Isang napi-print na larawan ng pattern na ito na may may-kulay na grid, legend ng sinulid, at QR link papunta sa Stitch Wish.",
+    "freeIfCompleted": "Libre kapag natapos mo ang pattern na ito.",
+    "buy": "Kunin ang tsart sa halagang {{price}} barya",
+    "buying": "Kinukuha ang tsart…",
+    "generate": "Gumawa ng tsart",
+    "regenerate": "Gumawa ulit ng tsart",
+    "generating": "Gumagawa ng tsart…",
+    "checking": "Sinusuri ang access sa tsart…",
+    "loadFailed": "Hindi masuri ang access sa tsart. Tingnan ang iyong koneksyon at subukan ulit.",
+    "retry": "Subukan ulit",
+    "signIn": {
+      "body": "Mag-sign in para makakuha ng napi-print na tsart ng pattern na ito.",
+      "button": "Mag-sign in"
+    },
+    "insufficient": "Kailangan mo pa ng {{shortfall}} barya para sa tsart na ito.",
+    "priceChanged": "Nagbago ang presyo ng tsart at naging {{price}} barya na. Suriin ito at subukan ulit.",
+    "unavailable": "Hindi na available ang tsart na ito.",
+    "accessRequired": "Wala ka pang access sa tsart na ito.",
+    "sharingUnavailable": "Hindi available ang pagbabahagi sa device na ito.",
+    "generateFailed": "Hindi magawa ang tsart. Pakisubukan ulit.",
+    "dialogTitle": "Ibahagi ang tsart"
   }
 }

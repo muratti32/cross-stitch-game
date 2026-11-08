@@ -180,5 +180,29 @@
         "needsContent": "L'explicació ha d'incloure lletres o números."
       }
     }
+  },
+  "chart": {
+    "title": "Esquema del patró",
+    "description": "Una imatge imprimible d'aquest patró amb quadrícula de colors, llegenda de fils i un enllaç QR a Stitch Wish.",
+    "freeIfCompleted": "Gratis en completar aquest patró.",
+    "buy": "Aconsegueix l'esquema per {{price}} monedes",
+    "buying": "Obtenint l'esquema…",
+    "generate": "Genera l'esquema",
+    "regenerate": "Torna a generar l'esquema",
+    "generating": "Generant l'esquema…",
+    "checking": "Comprovant l'accés a l'esquema…",
+    "loadFailed": "No s'ha pogut comprovar l'accés a l'esquema. Revisa la connexió i torna-ho a provar.",
+    "retry": "Torna-ho a provar",
+    "signIn": {
+      "body": "Inicia la sessió per obtenir un esquema imprimible d'aquest patró.",
+      "button": "Inicia la sessió"
+    },
+    "insufficient": "Et falten {{shortfall}} monedes per a aquest esquema.",
+    "priceChanged": "El preu de l'esquema ha canviat a {{price}} monedes. Revisa'l i torna-ho a provar.",
+    "unavailable": "Aquest esquema ja no està disponible.",
+    "accessRequired": "Encara no tens accés a aquest esquema.",
+    "sharingUnavailable": "Compartir no està disponible en aquest dispositiu.",
+    "generateFailed": "No s'ha pogut generar l'esquema. Torna-ho a provar.",
+    "dialogTitle": "Comparteix l'esquema"
   }
 }

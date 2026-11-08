@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Screen, Button, BackButton, Card, PatternImage, CommunityReportAction, EmptyState, GuestDataRiskNotice, PatternLockBadge } from '@/components';
+import { Screen, Button, BackButton, Card, PatternImage, CommunityReportAction, EmptyState, GuestDataRiskNotice, PatternLockBadge, PatternChartSection } from '@/components';
 import { Theme } from '@/theme/theme';
 import { BUNDLED_PATTERNS, loadBundledPattern } from '@/bundled-patterns';
 import { PatternData } from '@/pattern-artifact';
@@ -591,6 +591,13 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
           </Text>
         </Card>
       )}
+
+      <PatternChartSection
+        patternId={item.id}
+        variant="detail"
+        isOfficial={!item.creatorProfileId}
+        canStart={owned && !unlocksLoading}
+      />
 
       <GuestDataRiskNotice
         visible={noticeVisible}

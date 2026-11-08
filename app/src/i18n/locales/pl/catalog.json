@@ -180,5 +180,29 @@
         "needsContent": "Wyjaśnienie musi zawierać litery lub cyfry."
       }
     }
+  },
+  "chart": {
+    "title": "Wykres wzoru",
+    "description": "Obraz tego wzoru do wydruku z kolorową siatką, legendą nici i linkiem QR do Stitch Wish.",
+    "freeIfCompleted": "Bezpłatnie po ukończeniu tego wzoru.",
+    "buy": "Zdobądź wykres za {{price}} Coin",
+    "buying": "Pobieranie wykresu…",
+    "generate": "Utwórz wykres",
+    "regenerate": "Utwórz wykres ponownie",
+    "generating": "Tworzenie wykresu…",
+    "checking": "Sprawdzanie dostępu do wykresu…",
+    "loadFailed": "Nie udało się sprawdzić dostępu do wykresu. Sprawdź połączenie i spróbuj ponownie.",
+    "retry": "Spróbuj ponownie",
+    "signIn": {
+      "body": "Zaloguj się, aby zdobyć wykres tego wzoru do wydruku.",
+      "button": "Zaloguj się"
+    },
+    "insufficient": "Do tego wykresu brakuje Ci jeszcze {{shortfall}} Coin.",
+    "priceChanged": "Cena wykresu zmieniła się na {{price}} Coin. Sprawdź ją i spróbuj ponownie.",
+    "unavailable": "Ten wykres nie jest już dostępny.",
+    "accessRequired": "Nie masz jeszcze dostępu do tego wykresu.",
+    "sharingUnavailable": "Udostępnianie nie jest dostępne na tym urządzeniu.",
+    "generateFailed": "Nie udało się utworzyć wykresu. Spróbuj ponownie.",
+    "dialogTitle": "Udostępnij wykres"
   }
 }

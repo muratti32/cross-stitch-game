@@ -180,5 +180,29 @@
         "needsContent": "A magyarázatnak betűket vagy számokat kell tartalmaznia."
       }
     }
+  },
+  "chart": {
+    "title": "Mintadiagram",
+    "description": "A minta nyomtatható képe színes rácsal, fonallegendával és a Stitch Wishre mutató QR-hivatkozással.",
+    "freeIfCompleted": "Ingyenes, ha befejezed ezt a mintát.",
+    "buy": "Diagram megszerzése {{price}} Coinért",
+    "buying": "Diagram megszerzése…",
+    "generate": "Diagram készítése",
+    "regenerate": "Diagram újrakészítése",
+    "generating": "Diagram készítése…",
+    "checking": "Diagram-hozzáférés ellenőrzése…",
+    "loadFailed": "Nem sikerült ellenőrizni a diagram-hozzáférést. Ellenőrizd a kapcsolatot, és próbáld újra.",
+    "retry": "Próbáld újra",
+    "signIn": {
+      "body": "Jelentkezz be, hogy nyomtatható diagramot kapj ehhez a mintához.",
+      "button": "Bejelentkezés"
+    },
+    "insufficient": "Még {{shortfall}} Coin kell ehhez a diagramhoz.",
+    "priceChanged": "A diagram ára {{price}} Coinra változott. Nézd át, és próbáld újra.",
+    "unavailable": "Ez a diagram már nem érhető el.",
+    "accessRequired": "Még nincs hozzáférésed ehhez a diagramhoz.",
+    "sharingUnavailable": "A megosztás nem érhető el ezen az eszközön.",
+    "generateFailed": "Nem sikerült elkészíteni a diagramot. Próbáld újra.",
+    "dialogTitle": "Diagram megosztása"
   }
 }

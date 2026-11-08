@@ -180,5 +180,29 @@
         "needsContent": "说明中必须包含字母或数字。"
       }
     }
+  },
+  "chart": {
+    "title": "图案图表",
+    "description": "这个图案的可打印图片，包含彩色网格、线色图例以及指向 Stitch Wish 的二维码链接。",
+    "freeIfCompleted": "完成这个图案后即可免费获得。",
+    "buy": "用 {{price}} 个 Coin 获取图表",
+    "buying": "正在获取图表…",
+    "generate": "生成图表",
+    "regenerate": "重新生成图表",
+    "generating": "正在生成图表…",
+    "checking": "正在检查图表访问权限…",
+    "loadFailed": "无法检查图表访问权限。请检查网络连接后重试。",
+    "retry": "重试",
+    "signIn": {
+      "body": "登录后即可获取此图案的可打印图表。",
+      "button": "登录"
+    },
+    "insufficient": "获取此图表还差 {{shortfall}} 个 Coin。",
+    "priceChanged": "图表价格已变为 {{price}} 个 Coin。请确认后重试。",
+    "unavailable": "此图表已不可用。",
+    "accessRequired": "你暂时还不能访问此图表。",
+    "sharingUnavailable": "此设备不支持分享。",
+    "generateFailed": "无法生成图表，请重试。",
+    "dialogTitle": "分享图表"
   }
 }

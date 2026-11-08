@@ -180,5 +180,29 @@
         "needsContent": "La spiegazione deve includere lettere o numeri."
       }
     }
+  },
+  "chart": {
+    "title": "Schema del modello",
+    "description": "Un'immagine stampabile di questo modello con griglia a colori, legenda dei fili e un link QR a Stitch Wish.",
+    "freeIfCompleted": "Gratis quando completi questo modello.",
+    "buy": "Ottieni lo schema per {{price}} Coin",
+    "buying": "Recupero dello schema…",
+    "generate": "Genera schema",
+    "regenerate": "Rigenera schema",
+    "generating": "Generazione dello schema…",
+    "checking": "Verifica dell'accesso allo schema…",
+    "loadFailed": "Impossibile verificare l'accesso allo schema. Controlla la connessione e riprova.",
+    "retry": "Riprova",
+    "signIn": {
+      "body": "Accedi per ottenere uno schema stampabile di questo modello.",
+      "button": "Accedi"
+    },
+    "insufficient": "Ti servono altri {{shortfall}} Coin per questo schema.",
+    "priceChanged": "Il prezzo dello schema è cambiato in {{price}} Coin. Controllalo e riprova.",
+    "unavailable": "Questo schema non è più disponibile.",
+    "accessRequired": "Non hai ancora accesso a questo schema.",
+    "sharingUnavailable": "La condivisione non è disponibile su questo dispositivo.",
+    "generateFailed": "Impossibile generare lo schema. Riprova.",
+    "dialogTitle": "Condividi schema"
   }
 }

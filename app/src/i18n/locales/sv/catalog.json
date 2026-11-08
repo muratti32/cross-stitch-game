@@ -180,5 +180,29 @@
         "needsContent": "Förklaringen måste innehålla bokstäver eller siffror."
       }
     }
+  },
+  "chart": {
+    "title": "Mönsterdiagram",
+    "description": "En utskrivbar bild av det här mönstret med färgrutnät, garnförklaring och en QR-länk till Stitch Wish.",
+    "freeIfCompleted": "Gratis när du slutför det här mönstret.",
+    "buy": "Skaffa diagram för {{price}} mynt",
+    "buying": "Hämtar diagram…",
+    "generate": "Skapa diagram",
+    "regenerate": "Skapa diagram igen",
+    "generating": "Skapar diagram…",
+    "checking": "Kontrollerar åtkomst till diagram…",
+    "loadFailed": "Det gick inte att kontrollera åtkomsten till diagrammet. Kontrollera anslutningen och försök igen.",
+    "retry": "Försök igen",
+    "signIn": {
+      "body": "Logga in för att få ett utskrivbart diagram över det här mönstret.",
+      "button": "Logga in"
+    },
+    "insufficient": "Du behöver {{shortfall}} mynt till för det här diagrammet.",
+    "priceChanged": "Diagrammets pris har ändrats till {{price}} mynt. Granska det och försök igen.",
+    "unavailable": "Det här diagrammet är inte längre tillgängligt.",
+    "accessRequired": "Du har inte åtkomst till det här diagrammet än.",
+    "sharingUnavailable": "Delning är inte tillgänglig på den här enheten.",
+    "generateFailed": "Det gick inte att skapa diagrammet. Försök igen.",
+    "dialogTitle": "Dela diagram"
   }
 }

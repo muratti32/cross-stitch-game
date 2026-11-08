@@ -180,5 +180,29 @@
         "needsContent": "Selityksessä on oltava kirjaimia tai numeroita."
       }
     }
+  },
+  "chart": {
+    "title": "Kuviokaavio",
+    "description": "Tulostettava kuva tästä kuviosta värillisellä ruudukolla, lankaselitteellä ja QR-linkillä Stitch Wishiin.",
+    "freeIfCompleted": "Ilmainen, kun viimeistelet tämän kuvion.",
+    "buy": "Hanki kaavio hintaan {{price}} kolikkoa",
+    "buying": "Haetaan kaaviota…",
+    "generate": "Luo kaavio",
+    "regenerate": "Luo kaavio uudelleen",
+    "generating": "Luodaan kaaviota…",
+    "checking": "Tarkistetaan kaavion käyttöoikeutta…",
+    "loadFailed": "Kaavion käyttöoikeutta ei voitu tarkistaa. Tarkista yhteytesi ja yritä uudelleen.",
+    "retry": "Yritä uudelleen",
+    "signIn": {
+      "body": "Kirjaudu sisään saadaksesi tästä kuviosta tulostettavan kaavion.",
+      "button": "Kirjaudu sisään"
+    },
+    "insufficient": "Tähän kaavioon tarvitaan vielä {{shortfall}} kolikkoa.",
+    "priceChanged": "Kaavion hinta muuttui: {{price}} kolikkoa. Tarkista se ja yritä uudelleen.",
+    "unavailable": "Tämä kaavio ei ole enää saatavilla.",
+    "accessRequired": "Sinulla ei vielä ole pääsyä tähän kaavioon.",
+    "sharingUnavailable": "Jakaminen ei ole käytettävissä tällä laitteella.",
+    "generateFailed": "Kaaviota ei voitu luoda. Yritä uudelleen.",
+    "dialogTitle": "Jaa kaavio"
   }
 }

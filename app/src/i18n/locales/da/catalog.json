@@ -180,5 +180,29 @@
         "needsContent": "Forklaringen skal indeholde bogstaver eller tal."
       }
     }
+  },
+  "chart": {
+    "title": "Mønsterdiagram",
+    "description": "Et printbart billede af dette mønster med farvet gitter, garnforklaring og et QR-link til Stitch Wish.",
+    "freeIfCompleted": "Gratis, når du gennemfører dette mønster.",
+    "buy": "Få diagram for {{price}} mønt",
+    "buying": "Henter diagram…",
+    "generate": "Opret diagram",
+    "regenerate": "Opret diagram igen",
+    "generating": "Opretter diagram…",
+    "checking": "Tjekker adgang til diagram…",
+    "loadFailed": "Kunne ikke tjekke adgangen til diagrammet. Tjek din forbindelse, og prøv igen.",
+    "retry": "Prøv igen",
+    "signIn": {
+      "body": "Log ind for at få et printbart diagram af dette mønster.",
+      "button": "Log ind"
+    },
+    "insufficient": "Du mangler {{shortfall}} mønter til dette diagram.",
+    "priceChanged": "Diagrammets pris er ændret til {{price}} mønt. Gennemgå den, og prøv igen.",
+    "unavailable": "Dette diagram er ikke længere tilgængeligt.",
+    "accessRequired": "Du har endnu ikke adgang til dette diagram.",
+    "sharingUnavailable": "Deling er ikke tilgængelig på denne enhed.",
+    "generateFailed": "Kunne ikke oprette diagrammet. Prøv igen.",
+    "dialogTitle": "Del diagram"
   }
 }

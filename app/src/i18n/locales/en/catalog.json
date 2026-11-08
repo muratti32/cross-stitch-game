@@ -180,5 +180,29 @@
         "needsContent": "The explanation must include letters or numbers."
       }
     }
+  },
+  "chart": {
+    "title": "Pattern chart",
+    "description": "A printable image of this pattern with a color grid, thread legend and a QR link back to Stitch Wish.",
+    "freeIfCompleted": "Free when you complete this pattern.",
+    "buy": "Get chart for {{price}} Coin",
+    "buying": "Getting chart…",
+    "generate": "Generate chart",
+    "regenerate": "Regenerate chart",
+    "generating": "Generating chart…",
+    "checking": "Checking chart access…",
+    "loadFailed": "Could not check chart access. Check your connection and try again.",
+    "retry": "Try again",
+    "signIn": {
+      "body": "Sign in to get a printable chart of this pattern.",
+      "button": "Sign in"
+    },
+    "insufficient": "You need {{shortfall}} more Coin for this chart.",
+    "priceChanged": "The chart price changed to {{price}} Coin. Review it and try again.",
+    "unavailable": "This chart is no longer available.",
+    "accessRequired": "You do not have access to this chart yet.",
+    "sharingUnavailable": "Sharing is not available on this device.",
+    "generateFailed": "Could not generate the chart. Please try again.",
+    "dialogTitle": "Share chart"
   }
 }

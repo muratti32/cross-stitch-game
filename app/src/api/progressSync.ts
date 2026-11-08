@@ -42,6 +42,8 @@ export interface ProgressCompleteResponse {
     amount: number;
     balance: number;
   };
+  /** Present and true when the account now holds the Pattern Chart Entitlement (ADR-0068). */
+  patternChartEntitled?: boolean;
 }
 
 export interface ProgressCheckpoint {

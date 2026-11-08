@@ -180,5 +180,29 @@
         "needsContent": "Penjelasan harus berisi huruf atau angka."
       }
     }
+  },
+  "chart": {
+    "title": "Bagan pola",
+    "description": "Gambar pola ini yang dapat dicetak dengan kisi berwarna, legenda benang, dan tautan QR ke Stitch Wish.",
+    "freeIfCompleted": "Gratis saat kamu menyelesaikan pola ini.",
+    "buy": "Dapatkan bagan dengan {{price}} koin",
+    "buying": "Mendapatkan bagan…",
+    "generate": "Buat bagan",
+    "regenerate": "Buat ulang bagan",
+    "generating": "Membuat bagan…",
+    "checking": "Memeriksa akses bagan…",
+    "loadFailed": "Tidak dapat memeriksa akses bagan. Periksa koneksimu dan coba lagi.",
+    "retry": "Coba lagi",
+    "signIn": {
+      "body": "Masuk untuk mendapatkan bagan pola ini yang dapat dicetak.",
+      "button": "Masuk"
+    },
+    "insufficient": "Kamu butuh {{shortfall}} koin lagi untuk bagan ini.",
+    "priceChanged": "Harga bagan berubah menjadi {{price}} koin. Periksa lalu coba lagi.",
+    "unavailable": "Bagan ini tidak lagi tersedia.",
+    "accessRequired": "Kamu belum memiliki akses ke bagan ini.",
+    "sharingUnavailable": "Berbagi tidak tersedia di perangkat ini.",
+    "generateFailed": "Tidak dapat membuat bagan. Silakan coba lagi.",
+    "dialogTitle": "Bagikan bagan"
   }
 }

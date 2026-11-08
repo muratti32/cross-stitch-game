@@ -51,6 +51,7 @@ const MIRRORED_EVENT_NAMES = {
   account_soft_prompt_action: `${MIRROR_EVENT_PREFIX}account_soft_prompt_action`,
   unlock_prompt_shown: `${MIRROR_EVENT_PREFIX}unlock_prompt_shown`,
   pattern_unlocked: `${MIRROR_EVENT_PREFIX}pattern_unlocked`,
+  pattern_chart_purchased: `${MIRROR_EVENT_PREFIX}pattern_chart_purchased`,
   unlock_insufficient_coins: `${MIRROR_EVENT_PREFIX}unlock_insufficient_coins`,
   unlock_get_coins_tapped: `${MIRROR_EVENT_PREFIX}unlock_get_coins_tapped`,
   locator_coin_shortfall_shown: `${MIRROR_EVENT_PREFIX}locator_coin_shortfall_shown`,

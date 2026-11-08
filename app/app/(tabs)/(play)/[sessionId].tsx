@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, ActivityIndicator, Pressable, ScrollView, Alert
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter, useNavigation, useFocusEffect, useIsFocused } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Screen, Button, LocatorCoinShortfallSheet } from '@/components';
+import { Screen, Button, LocatorCoinShortfallSheet, PatternChartSection } from '@/components';
 import type { LocatorShortfallPrimaryAction } from '@/components';
 import { Theme } from '@/theme/theme';
 import { formatNumber } from '@/i18n';
@@ -831,6 +831,14 @@ export default function SessionReadyScreen() {
               </View>
             </View>
             <View style={styles.celebrationActions}>
+              {session && (
+                <PatternChartSection
+                  patternId={session.patternId}
+                  variant="compact"
+                  isOfficial={session.source === 'catalog' ? undefined : false}
+                  pattern={patternData}
+                />
+              )}
               <Button
                 title={t('celebration.replayButton')}
                 onPress={handleReplay}
