@@ -597,6 +597,7 @@ describe('PromotionService', () => {
     let completedCellCount: number;
     let stitchableCellCount: number | null;
     let locked: boolean;
+    let accountCompleted: boolean;
 
     function packagedSession(overrides: Record<string, unknown> = {}) {
       return {
@@ -631,6 +632,7 @@ describe('PromotionService', () => {
       completedCellCount = 0;
       stitchableCellCount = null;
       locked = false;
+      accountCompleted = false;
       const routes: SqlRoute[] = [
         [/principal_type = 'guest' AND principal_id = \$2 AND pattern_id = \$3/, () => guestSessions],
         [/FROM catalog\.patterns WHERE id = \$1 FOR SHARE/, () => [{ width: 2, height: 2, stitchableCellCount }]],
@@ -640,6 +642,7 @@ describe('PromotionService', () => {
           return byId ? [byId] : accountSessions.slice(0, 1);
         }],
         [/AS locked/, () => [{ locked }]],
+        [/status = 'completed'\s+LIMIT 1/, () => accountCompleted ? [{ '?column?': 1 }] : []],
         [/AS completed\b/, () => [{ completed: String(completedCellCount) }]],
         [/AS total_cells/, () => [{ revision: '7', terminal: false, total_cells: 4, completed_cells: [0, 2] }]],
         [/AS max_rev/, () => [{ max_rev: '0' }]],
@@ -683,6 +686,50 @@ describe('PromotionService', () => {
       const write = order.findIndex((sql: string) => sql.includes('unnest($3::int[])'));
       expect(lock).toBeGreaterThanOrEqual(0);
       expect(lock).toBeLessThan(write);
+    });
+
+    it('grants the Pattern Chart Entitlement with source promotion when a completed session moves to the account', async () => {
+      consumedPackage('committed', [packagedSession({ status: 'completed' })]);
+      guestSessions = [{ id: GUEST_SESSION, status: 'completed' }];
+      accountCompleted = true;
+
+      await drain();
+
+      const grants = statements(/pattern_chart_entitlements/) as [string, unknown[]][];
+      expect(grants).toHaveLength(1);
+      expect(grants[0][1]).toEqual([ACCOUNT_ID, PATTERN, 'promotion']);
+    });
+
+    it('grants regardless of promotion mode or Promotion-Locked state', async () => {
+      const row = consumedPackage('committed', [packagedSession({ status: 'completed' })]);
+      row.promotionMode = 'data-only';
+      guestSessions = [{ id: GUEST_SESSION, status: 'completed' }];
+      accountCompleted = true;
+      locked = true;
+
+      await expect(drain()).resolves.toMatchObject({ isLocked: true });
+
+      expect(statements(/pattern_chart_entitlements/)).toHaveLength(1);
+    });
+
+    it('does not grant while the moved session is still active', async () => {
+      consumedPackage('committed', [packagedSession()]);
+      guestSessions = [{ id: GUEST_SESSION, status: 'active' }];
+
+      await drain();
+
+      expect(statements(/pattern_chart_entitlements/)).toHaveLength(0);
+    });
+
+    it('grants on the acknowledged retry path after the session already moved', async () => {
+      consumedPackage('committed', [packagedSession({ status: 'completed' })]);
+      accountSessions = [{ id: GUEST_SESSION, status: 'completed' }];
+      accountSessionById = { [GUEST_SESSION]: { id: GUEST_SESSION, status: 'completed' } };
+      accountCompleted = true;
+
+      await expect(drain()).resolves.toMatchObject({ status: 'acknowledged' });
+
+      expect(statements(/pattern_chart_entitlements/)).toHaveLength(1);
     });
 
     it('copies the Guest unlock to the account before reporting Promotion-Locked', async () => {

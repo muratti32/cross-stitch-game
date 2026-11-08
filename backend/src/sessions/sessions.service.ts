@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource, EntityManager } from 'typeorm';
-import { createHmac, timingSafeEqual } from 'node:crypto';
+import { timingSafeEqual } from 'node:crypto';
 
 import { StitchingSessionEntity, SessionProgressFlagEntity } from './entities';
 import { PatternEntity } from '../catalog/entities';
@@ -17,6 +17,7 @@ import { PrincipalType } from '../auth/entities';
 import { CoinLedgerRepository } from '../economy/coin-ledger.repository';
 import { unlockPrice } from '../economy/economy.constants';
 import { upsertActiveSession } from './active-session';
+import { buildArtifactGrant, signArtifactGrant } from './artifact-grant';
 
 @Injectable()
 export class SessionsService {
@@ -157,19 +158,12 @@ export class SessionsService {
   }
 
   private preparationResponse(sessionId: string, pattern: PatternEntity) {
-    const exp = Math.floor(Date.now() / 1000) + this.configService.grantTtlSeconds;
-    const sig = this.signGrant(pattern.id, exp);
     return {
-      artifact: {
-        byteLength: pattern.artifactByteLength,
-        checksum: pattern.artifactChecksum.trim(),
-        schemaVersion: pattern.artifactSchemaVersion,
-      },
-      grant: {
-        expiresAt: new Date(exp * 1000).toISOString(),
-        url: `/v1/artifacts/${pattern.id}?exp=${exp}&sig=${sig}`,
-      },
-      patternId: pattern.id,
+      ...buildArtifactGrant(
+        this.configService.grantSigningSecret,
+        this.configService.grantTtlSeconds,
+        pattern,
+      ),
       sessionId,
     };
   }
@@ -221,10 +215,7 @@ export class SessionsService {
   }
 
   signGrant(patternId: string, exp: number): string {
-    const secret = this.configService.grantSigningSecret;
-    const hmac = createHmac('sha256', secret);
-    hmac.update(`${patternId}:${exp}`);
-    return hmac.digest('hex');
+    return signArtifactGrant(this.configService.grantSigningSecret, patternId, exp);
   }
 
   verifyGrant(patternId: string, exp: number, sig: string): boolean {

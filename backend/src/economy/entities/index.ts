@@ -12,3 +12,4 @@ export { CommerceTransactionBindingEntity } from './commerce-transaction-binding
 export { AdAttemptEntity } from './ad-attempt.entity';
 export { LocatorAttemptEntity } from './locator-attempt.entity';
 export { LocatorPriceSettingEntity } from './locator-price-setting.entity';
+export { PatternChartEntitlementEntity, type PatternChartEntitlementSource } from './pattern-chart-entitlement.entity';
