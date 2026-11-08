@@ -24,11 +24,11 @@ describe('inboundPatternPath', () => {
     expect(inboundPatternPath(url)).toBe(`/(tabs)/(catalog)/${ID}`);
   });
 
-  it('still routes a non-UUID id to the detail screen (unavailable state)', () => {
+  it('routes a non-UUID id to the unavailable segment without carrying the raw id', () => {
     expect(inboundPatternPath('https://stitchwish.avkdesign.net/pattern/not-an-id')).toBe(
-      '/(tabs)/(catalog)/not-an-id',
+      '/(tabs)/(catalog)/unavailable',
     );
-    expect(inboundPatternPath('/pattern/..%2Fx')).toBe('/(tabs)/(catalog)/..%252Fx');
+    expect(inboundPatternPath('/pattern/..%2Fx')).toBe('/(tabs)/(catalog)/unavailable');
   });
 
   it('leaves other URLs and profile links alone', () => {

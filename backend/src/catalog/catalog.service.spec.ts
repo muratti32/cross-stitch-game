@@ -272,15 +272,16 @@ describe('CatalogService - Creator Block Filtering', () => {
       );
     });
 
-    it.each(['withdrawn', 'removed', 'review_hold'])(
-      'returns NotFound for an Official Pattern that is %s',
-      async () => {
-        // The lookup only matches status "available", so a non-available row yields no match.
-        jest.spyOn(patternRepository, 'findOne').mockResolvedValue(null);
+    it('looks up only available catalog patterns, so withdrawn, removed and review_hold rows are NotFound', async () => {
+      const findOne = jest.spyOn(patternRepository, 'findOne').mockResolvedValue(null);
 
-        await expect(service.getPatternById('official-1')).rejects.toThrow(NotFoundException);
-      },
-    );
+      await expect(service.getPatternById('official-1')).rejects.toThrow(NotFoundException);
+      expect(findOne).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'official-1', status: 'available', visibility: 'catalog' },
+        }),
+      );
+    });
   });
 
   describe('closure hold filtering', () => {

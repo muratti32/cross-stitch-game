@@ -1,6 +1,7 @@
 import { useInfiniteQuery, useQuery, type InfiniteData } from '@tanstack/react-query';
 import { apiFetch } from './apiFetch';
 import { isBundledPatternId } from '../bundled-patterns/identity';
+import { isCatalogPatternId } from '../navigation/catalogPatternId';
 import { Config } from '../config';
 import { deleteCatalogCache, getCatalogCache, setCatalogCache } from '../local-db';
 import { getSurfaceKey, getCacheKey, localeCacheLookupOrder } from '../catalog-cache-logic';
@@ -338,9 +339,12 @@ export function useCatalogPattern(id: string | undefined, enabled: boolean) {
   const locale = getActiveLocale();
   return useQuery<CachedResult<CatalogPatternItem>>({
     queryKey: ['catalog', 'pattern', id, locale],
-    enabled: enabled && !!id,
+    // A non-UUID id names no server pattern: never fetch it.
+    enabled: enabled && !!id && isCatalogPatternId(id),
     queryFn: () =>
-      fetchWithCatalogCache<CatalogPatternItem>(`/v1/catalog/patterns/${id}`),
+      fetchWithCatalogCache<CatalogPatternItem>(
+        `/v1/catalog/patterns/${encodeURIComponent(id as string)}`,
+      ),
   });
 }
 

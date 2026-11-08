@@ -20,11 +20,11 @@ import { useCatalogPattern } from '../catalog';
 const ID = '7f2a4f0e-9f27-4a57-9d1b-3a6f2e0f5c11';
 const cached = { surfaceKey: 'k', payloadJson: JSON.stringify({ id: ID, title: 'Old' }), fetchedAt: 'x' };
 
-async function run() {
+async function run(id: string = ID) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   let latest!: ReturnType<typeof useCatalogPattern>;
   function Harness() {
-    latest = useCatalogPattern(ID, true);
+    latest = useCatalogPattern(id, true);
     return null;
   }
   let r!: TestRenderer.ReactTestRenderer;
@@ -69,5 +69,18 @@ describe('useCatalogPattern availability', () => {
     const result = await run();
     expect(result.data?.fromCache).toBe(true);
     expect(mockDelete).not.toHaveBeenCalled();
+  });
+
+  it('requests the UUID id path', async () => {
+    mockApiFetch.mockResolvedValue({ ok: true, status: 200, json: async () => ({ id: ID }) });
+    await run();
+    expect(mockApiFetch.mock.calls[0][0]).toContain(`/v1/catalog/patterns/${ID}`);
+  });
+
+  it('never fetches a non-UUID id', async () => {
+    const result = await run('../x/not-an-id');
+    expect(mockApiFetch).not.toHaveBeenCalled();
+    expect(result.data).toBeUndefined();
+    expect(result.isError).toBe(false);
   });
 });
