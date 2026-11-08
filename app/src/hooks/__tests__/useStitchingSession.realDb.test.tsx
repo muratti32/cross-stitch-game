@@ -52,7 +52,6 @@ import type { OutgoingProgressOperation } from '../../api/progressSync';
 import type { PackagedSession } from '../../api/promotionContract';
 
 const ACCOUNT = '22222222-2222-4222-8222-222222222222';
-const REMOTE = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
 const HEART = 'dc47c329-35fd-4173-9ad9-5098369beb44';
 const META = { title: 'Heart', previewUrl: null, thumbnailUrl: null, width: 2, height: 2 };
 const PATTERN = {
@@ -111,8 +110,13 @@ function cells(...indexes: number[]): Uint8Array {
   return completed;
 }
 
+let linkedRows = 0;
+
 async function linkedRow(...serverHeld: number[]): Promise<string> {
-  const { id } = await createSession(HEART, 'bundled', 'bundled', 'active', REMOTE, META);
+  // The database outlives a test, and one remote session belongs to one row.
+  linkedRows += 1;
+  const remote = `cccccccc-cccc-4ccc-8ccc-${String(linkedRows).padStart(12, '0')}`;
+  const { id } = await createSession(HEART, 'bundled', 'bundled', 'active', remote, META);
   await saveSyncSnapshot(id, 5, cells(...serverHeld), false);
   return id;
 }

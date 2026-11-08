@@ -25,6 +25,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { syncPendingPersonalPatterns } from '../src/pattern-editor/sync';
 import { flushAnalyticsGameplayEvents } from '../src/sync/analyticsGameplayEventEngine';
 import { uploadPendingProgress } from '../src/sync/backgroundProgressUpload';
+import { linkAwaitingSessions } from '../src/session-preparation';
 import { registerBundledSessions } from '../src/sync/bundledSessionRegistrar';
 import { flushPendingGuestCompletionClaims } from '../src/sync/guestCompletionClaimEngine';
 import {
@@ -55,10 +56,12 @@ initI18n();
 SplashScreen.preventAutoHideAsync();
 
 // Fire-and-forget (ADR-0031): link new rows first so they upload in the same
-// round. The registrar reports its own failures; the upload runs either way
-// and never rejects.
+// round. Rows still waiting for a server session take one before the upload.
+// Each step reports its own failures and the upload runs either way.
 function syncLinkedProgressInBackground(): void {
   void registerBundledSessions()
+    .catch(() => undefined)
+    .then(linkAwaitingSessions)
     .catch(() => undefined)
     .then(uploadPendingProgress);
 }

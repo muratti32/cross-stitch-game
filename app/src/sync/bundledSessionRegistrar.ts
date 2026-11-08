@@ -35,6 +35,11 @@ export function subscribeBundledSessionLinked(listener: LinkListener): () => voi
   };
 }
 
+/** The identity whose namespace is open, once it is signed in; null while a switch is in flight. */
+export function activeOwnerIdentity(): string | null {
+  return currentOwner()?.identity ?? null;
+}
+
 function currentOwner(): PassOwner | null {
   const { accountId, guestId, isAccount, isAuthenticated } = useIdentityStore.getState();
   const identity = isAccount ? accountId : guestId;

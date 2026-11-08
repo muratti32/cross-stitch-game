@@ -1011,6 +1011,114 @@ export interface SessionPatternMeta {
   height: number;
 }
 
+/**
+ * One remote session belongs to one local row: the manifest and the drain key by
+ * remote id. The server hands a new row the pattern's active session, which an
+ * earlier completed row may still hold, so a held id is never written twice.
+ */
+const REMOTE_SESSION_HELD_BY_OTHER_ROW_SQL =
+  'EXISTS (SELECT 1 FROM sessions AS holder WHERE holder.remote_session_id = ? AND holder.id <> ?)';
+
+async function remoteSessionHeldByOtherRow(
+  db: SQLite.SQLiteDatabase,
+  remoteSessionId: string,
+  exceptLocalSessionId: string,
+): Promise<boolean> {
+  const held = await db.getFirstAsync<{ held: number }>(
+    `SELECT ${REMOTE_SESSION_HELD_BY_OTHER_ROW_SQL} AS held`,
+    remoteSessionId,
+    exceptLocalSessionId,
+  );
+  return held?.held === 1;
+}
+
+/** Loads the sessions for `ids` in order, skipping rows deleted in between. */
+async function hydrateSessions(db: SQLite.SQLiteDatabase, ids: { id: string }[]): Promise<StitchingSession[]> {
+  const sessions: StitchingSession[] = [];
+  for (const { id } of ids) {
+    const session = await getSessionWithDb(db, id);
+    if (session !== null) sessions.push(session);
+  }
+  return sessions;
+}
+
+/**
+ * Catalog and personal rows the server has not given a session of their own: the
+ * server handed the id to an earlier row, or promotion carried the row in without
+ * one. A replay stays unlinked by design, and a Personal Pattern still waiting to
+ * sync has no server session to take until its pattern exists there.
+ */
+export async function listSessionsAwaitingServerSession(): Promise<StitchingSession[]> {
+  return withDatabase(async (db) => {
+    const rows = await db.getAllAsync<{ id: string }>(
+      `SELECT id FROM sessions
+       WHERE remote_session_id IS NULL
+         AND replay_of IS NULL
+         AND source IN ('catalog', 'personal')
+         AND NOT EXISTS (SELECT 1 FROM pending_personal_patterns WHERE pattern_id = sessions.pattern_id)
+       ORDER BY created_at ASC`,
+    );
+    return hydrateSessions(db, rows);
+  });
+}
+
+/**
+ * Links an unlinked row to a server session no other row holds, only while
+ * `identity` is still the open namespace; false when it could not.
+ *
+ * The row may have compacted cells into a checkpoint while it had no server
+ * session, so the cells it holds that no waiting op carries are queued as ops.
+ */
+export async function linkPreparedSession(
+  identity: string,
+  localSessionId: string,
+  remoteSessionId: string,
+): Promise<boolean> {
+  return withDatabase(async (db) =>
+    runInTransaction(db, async () => {
+      if (activeIdentity !== identity) return false;
+      if (await remoteSessionHeldByOtherRow(db, remoteSessionId, localSessionId)) return false;
+      const update = await db.runAsync(
+        'UPDATE sessions SET remote_session_id = ? WHERE id = ? AND remote_session_id IS NULL',
+        remoteSessionId,
+        localSessionId,
+      );
+      if (update.changes === 0) return false;
+      await queueCompactedCellsWithDb(db, localSessionId);
+      return true;
+    }),
+  );
+}
+
+async function queueCompactedCellsWithDb(db: SQLite.SQLiteDatabase, sessionId: string): Promise<void> {
+  const checkpoint = await getLatestCheckpointWithDb(db, sessionId);
+  if (checkpoint === null) return;
+  const waiting = await getUnackedProgressOpsWithDb(db, sessionId);
+  const touched = new Set(waiting.map((pending) => pending.cellIndex));
+  const compacted = cellsMissingFrom(new Uint8Array(0), checkpoint.packedBitmap).filter((cell) => !touched.has(cell));
+  if (compacted.length === 0) return;
+
+  const createdAt = new Date().toISOString();
+  const deviceId = await getDeviceIdWithDb(db);
+  let deviceSeq = await getDeviceSeqHighWithDb(db);
+  for (const cellIndex of compacted) {
+    deviceSeq += 1;
+    await insertProgressOpWithDb(db, {
+      opId: generateUUID(),
+      sessionId,
+      deviceId,
+      deviceSeq,
+      cellIndex,
+      desiredState: 'completed',
+      baseRevision: checkpoint.revision,
+      serverBaseRevision: 0,
+      guestMerge: true,
+      createdAt,
+    });
+  }
+  await setDeviceSeqHighWithDb(db, deviceSeq);
+}
+
 export async function createSession(
   patternId: string,
   checksum: string,
@@ -1022,24 +1130,28 @@ export async function createSession(
   return withDatabase(async (db) => {
     const id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const createdAt = new Date().toISOString();
-
-    await db.runAsync(
-      `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, remote_session_id, title, preview_url, thumbnail_url, pattern_width, pattern_height)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      id,
-      patternId,
-      source,
-      checksum,
-      createdAt,
-      createdAt,
-      status,
-      remoteSessionId,
-      patternMeta?.title ?? null,
-      patternMeta?.previewUrl ?? null,
-      patternMeta?.thumbnailUrl ?? null,
-      patternMeta?.width ?? null,
-      patternMeta?.height ?? null
-    );
+    const stored = await runInTransaction(db, async () => {
+      const linkedTo =
+        remoteSessionId !== null && (await remoteSessionHeldByOtherRow(db, remoteSessionId, id)) ? null : remoteSessionId;
+      await db.runAsync(
+        `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, remote_session_id, title, preview_url, thumbnail_url, pattern_width, pattern_height)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        id,
+        patternId,
+        source,
+        checksum,
+        createdAt,
+        createdAt,
+        status,
+        linkedTo,
+        patternMeta?.title ?? null,
+        patternMeta?.previewUrl ?? null,
+        patternMeta?.thumbnailUrl ?? null,
+        patternMeta?.width ?? null,
+        patternMeta?.height ?? null,
+      );
+      return linkedTo;
+    });
 
     return {
       id,
@@ -1049,7 +1161,7 @@ export async function createSession(
       createdAt,
       updatedAt: createdAt,
       status,
-      remoteSessionId,
+      remoteSessionId: stored,
       title: patternMeta?.title ?? null,
       previewUrl: patternMeta?.previewUrl ?? null,
       thumbnailUrl: patternMeta?.thumbnailUrl ?? null,
@@ -1994,12 +2106,25 @@ export async function listSessionsWithUnackedProgressOps(): Promise<StitchingSes
          AND EXISTS (SELECT 1 FROM progress_ops WHERE progress_ops.session_id = sessions.id AND progress_ops.acked = 0)
        ORDER BY updated_at DESC`,
     );
-    const sessions: StitchingSession[] = [];
-    for (const { id } of rows) {
-      const session = await getSessionWithDb(db, id);
-      if (session !== null) sessions.push(session);
-    }
-    return sessions;
+    return hydrateSessions(db, rows);
+  });
+}
+
+/**
+ * Linked sessions the player finished locally whose server session has not
+ * reported terminal completion yet (no sync snapshot, or one with terminal=0).
+ * Their completeSession call failed or never ran, so it must be retried.
+ */
+export async function listCompletedSessionsAwaitingTerminal(): Promise<StitchingSession[]> {
+  return withDatabase(async (db) => {
+    const rows = await db.getAllAsync<{ id: string }>(
+      `SELECT id FROM sessions
+       WHERE remote_session_id IS NOT NULL
+         AND status = 'completed'
+         AND NOT EXISTS (SELECT 1 FROM sync_snapshots WHERE sync_snapshots.session_id = sessions.id AND sync_snapshots.terminal = 1)
+       ORDER BY updated_at DESC`,
+    );
+    return hydrateSessions(db, rows);
   });
 }
 
@@ -2039,7 +2164,8 @@ export type BundledLinkResult =
   | 'rowDeleted'
   | 'alreadyLinked'
   | 'sessionNotFinished'
-  | 'foldOvertaken';
+  | 'foldOvertaken'
+  | 'remoteSessionTaken';
 
 export async function linkBundledSession(
   identity: string,
@@ -2054,10 +2180,13 @@ export async function linkBundledSession(
          WHERE id = ?
            AND remote_session_id IS NULL
            AND (status <> 'completed' OR ? = 1)
+           AND NOT ${REMOTE_SESSION_HELD_BY_OTHER_ROW_SQL}
            AND COALESCE((SELECT MAX(revision) FROM checkpoints WHERE session_id = ?), 0) = ?`,
         link.remoteSessionId,
         link.localSessionId,
         terminalCompleted ? 1 : 0,
+        link.remoteSessionId,
+        link.localSessionId,
         link.localSessionId,
         checkpointRevision,
       );
@@ -2068,7 +2197,12 @@ export async function linkBundledSession(
         );
         if (row === null) return 'rowDeleted';
         if (row.remote_session_id !== null) return 'alreadyLinked';
-        return row.status === 'completed' && !terminalCompleted ? 'sessionNotFinished' : 'foldOvertaken';
+        if (row.status === 'completed' && !terminalCompleted) return 'sessionNotFinished';
+        // The server answers a second row with the active session another row already
+        // owns; one remote id keys one manifest entry, so the second row stays local.
+        return (await remoteSessionHeldByOtherRow(db, link.remoteSessionId, link.localSessionId))
+          ? 'remoteSessionTaken'
+          : 'foldOvertaken';
       }
       await db.runAsync(
         'UPDATE progress_ops SET acked = 1 WHERE session_id = ? AND device_seq <= ?',

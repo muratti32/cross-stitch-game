@@ -7,6 +7,7 @@ import {
 
 import { PrincipalType } from '../auth/entities';
 import type { AuthPrincipal } from '../auth/auth.types';
+import { BUNDLED_STARTERS } from '../catalog/bundled-starters.generated';
 import { ProgressSyncService } from './progress-sync.service';
 
 const guestId = '00000000-0000-4000-8000-000000000001';
@@ -31,6 +32,7 @@ interface GuestScenario {
   sessionExists: boolean;
   sessionStatus: 'active' | 'completed';
   patternStatus: 'available' | 'removed';
+  patternId: string;
   visibility: 'catalog' | 'personal';
   width: number;
   height: number;
@@ -45,6 +47,7 @@ function guestHarness(overrides: Partial<GuestScenario> = {}) {
     sessionExists: true,
     sessionStatus: 'active',
     patternStatus: 'available',
+    patternId,
     visibility: 'catalog',
     width: 100,
     height: 40,
@@ -69,7 +72,7 @@ function guestHarness(overrides: Partial<GuestScenario> = {}) {
         : [];
     }
     if (sql.includes('SELECT p.status')) {
-      return [{ status: scenario.patternStatus, patternId }];
+      return [{ status: scenario.patternStatus, patternId: scenario.patternId }];
     }
     if (sql.includes('FLOOR(EXTRACT(EPOCH')) {
       return [{
@@ -77,7 +80,7 @@ function guestHarness(overrides: Partial<GuestScenario> = {}) {
         height: scenario.height,
         stitchableCellCount: scenario.stitchableCellCount,
         visibility: scenario.visibility,
-        patternId,
+        patternId: scenario.patternId,
         elapsedMs: String(scenario.elapsedMs),
       }];
     }
@@ -259,6 +262,24 @@ describe('ProgressSyncService.complete', () => {
     if (error instanceof GoneException) {
       expect(error.getResponse()).toEqual({ code: 'pattern_removed', patternId });
     }
+  });
+
+  it('does not apply Safety Removal to a Bundled Starter Pattern session', async () => {
+    const starter = BUNDLED_STARTERS[0];
+    const fixture = guestHarness({
+      patternStatus: 'removed',
+      patternId: starter.id,
+      width: starter.width,
+      height: starter.height,
+      stitchableCellCount: starter.stitchableCellCount,
+    });
+
+    const result = await fixture.service.complete(guest, sessionId, {
+      deviceId,
+      completedCells: starter.stitchableCellCount,
+    });
+
+    expect(result).toBeDefined();
   });
 
   it('rejects the wrong completed cell count as implausible', async () => {

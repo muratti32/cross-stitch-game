@@ -21,6 +21,8 @@ import {
   getUnackedProgressOps,
   insertProgressOpsBatch,
   linkBundledSession,
+  linkPreparedSession,
+  listSessionsAwaitingServerSession,
   listBundledRegistrationCandidates,
   openNamespace,
   readBundledRegistrationSnapshot,
@@ -86,7 +88,7 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       const linked = await startRow(STAR);
       await linkBundledSession(GUEST, { localSessionId: linked.id, remoteSessionId: REMOTE }, receipt(0));
       const parent = await completedRow(STAR, '2026-02-01T10:00:00.000Z');
-      await linkBundledSession(GUEST, { localSessionId: parent.id, remoteSessionId: REMOTE }, finishedReceipt);
+      await linkBundledSession(GUEST, { localSessionId: parent.id, remoteSessionId: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd' }, finishedReceipt);
       await createReplaySession(parent.id);
       await createSession(HEART, 'checksum', 'catalog', 'ready', null);
 
@@ -212,6 +214,27 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       expect(linked).toHaveBeenCalledTimes(1);
     });
 
+    test('a replay the server answers with a session another row holds stays unlinked, then links once the server answers with its own', async () => {
+      const first = await startRow();
+      await linkBundledSession(ACCOUNT, { localSessionId: first.id, remoteSessionId: REMOTE }, receipt(0));
+      await updateSessionStatus(first.id, 'completed', '2026-02-01T10:00:00.000Z');
+      const replay = await startRow();
+      await insertProgressOpsBatch([op(replay.id, 0, 1)]);
+      mockApiFetch.mockResolvedValueOnce(respond(false));
+
+      await registerBundledSessions();
+
+      expect((await getSession(replay.id))?.remoteSessionId).toBeNull();
+      expect((await getSession(first.id))?.remoteSessionId).toBe(REMOTE);
+
+      const next = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
+      mockApiFetch.mockResolvedValueOnce({ status: 200, json: async () => ({ sessionId: next, terminalCompleted: false }) });
+      await registerBundledSessions();
+
+      expect(mockApiFetch).toHaveBeenCalledTimes(2);
+      expect((await getSession(replay.id))?.remoteSessionId).toBe(next);
+    });
+
     test('a checkpoint that compacts ops during the request holds the link, and the next pass sends them', async () => {
       const { id } = await startRow();
       await insertProgressOpsBatch([op(id, 0, 1)]);
@@ -265,6 +288,99 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       expect(await getProgressOps(id)).toHaveLength(4);
       expect(await getSessionCompletedCount(id, 4, 4)).toBe(2);
       expect(completedCellsOf((await readBundledRegistrationSnapshot(id))?.packedBitmapBase64 ?? '')).toEqual([0, 3]);
+    });
+  });
+
+  describe('rows awaiting a server session', () => {
+    test('lists unlinked catalog and personal rows, completed or still preparing, and nothing else', async () => {
+      const catalog = await createSession(HEART, 'checksum', 'catalog', 'ready', null);
+      const preparing = await createSession(STAR, 'checksum', 'catalog', 'preparing', null);
+      const completed = await createSession(HEART, 'checksum', 'catalog', 'completed', null);
+      await createSession(HEART, 'checksum', 'catalog', 'ready', REMOTE);
+      await createSession(HEART, 'checksum', 'bundled', 'ready', null);
+
+      const ids = (await listSessionsAwaitingServerSession()).map((row) => row.id).sort();
+
+      expect(ids).toEqual([catalog.id, preparing.id, completed.id].sort());
+    });
+
+    test('replays stay unlinked by design', async () => {
+      const parent = await createSession(HEART, 'checksum', 'catalog', 'completed', REMOTE);
+      await createReplaySession(parent.id);
+
+      expect(await listSessionsAwaitingServerSession()).toEqual([]);
+    });
+
+    test('a personal row waits once its pattern has synced, not while the pattern is still pending', async () => {
+      const personal = await createSession(STAR, 'checksum', 'personal', 'ready', null);
+      const db = mockDatabases.raw(getDatabaseFilename(GUEST));
+      db.exec(`INSERT INTO pending_personal_patterns (pattern_id, source_pattern_id, title, width, height, palette_json, grid_base64, created_at)
+               VALUES ('${STAR}', '${STAR}', 'T', 4, 4, '[]', '', '2026-02-01T10:00:00.000Z')`);
+
+      expect(await listSessionsAwaitingServerSession()).toEqual([]);
+
+      db.exec(`DELETE FROM pending_personal_patterns WHERE pattern_id = '${STAR}'`);
+
+      expect((await listSessionsAwaitingServerSession()).map((row) => row.id)).toEqual([personal.id]);
+    });
+
+    test('a link under another identity is refused and writes nothing', async () => {
+      const { id } = await createSession(HEART, 'checksum', 'catalog', 'ready', null);
+      await saveCheckpoint(id, 3, cells(0));
+
+      await expect(linkPreparedSession(ACCOUNT, id, REMOTE)).resolves.toBe(false);
+
+      expect((await getSession(id))?.remoteSessionId).toBeNull();
+      expect(await getUnackedProgressOps(id)).toHaveLength(0);
+    });
+
+    test('linking queues the cells a checkpoint compacted away, beside the ops still waiting', async () => {
+      const { id } = await createSession(HEART, 'checksum', 'catalog', 'ready', null);
+      await insertProgressOpsBatch([op(id, 0, 1), op(id, 1, 2)]);
+      await saveCheckpoint(id, 3, cells(0, 1));
+      await insertProgressOpsBatch([{ ...op(id, 2, 3), baseRevision: 3 }]);
+
+      await expect(linkPreparedSession(GUEST, id, REMOTE)).resolves.toBe(true);
+
+      const unacked = await getUnackedProgressOps(id);
+      expect(unacked.map((pending) => pending.cellIndex).sort()).toEqual([0, 1, 2]);
+      expect(unacked.every((pending) => pending.desiredState === 'completed')).toBe(true);
+    });
+
+    test('linking queues nothing for a cell the waiting ops already carry', async () => {
+      const { id } = await createSession(HEART, 'checksum', 'catalog', 'ready', null);
+      await saveCheckpoint(id, 3, cells(0));
+      await insertProgressOpsBatch([{ ...op(id, 1, 1, 'incomplete'), cellIndex: 0, baseRevision: 3 }]);
+
+      await linkPreparedSession(GUEST, id, REMOTE);
+
+      const unacked = await getUnackedProgressOps(id);
+      expect(unacked).toHaveLength(1);
+      expect(unacked[0].desiredState).toBe('incomplete');
+    });
+  });
+
+  describe('one local row per remote session', () => {
+    test('createSession leaves a row unlinked when another row holds the remote id', async () => {
+      const holder = await createSession(HEART, 'checksum', 'catalog', 'ready', REMOTE);
+      const second = await createSession(HEART, 'checksum', 'catalog', 'preparing', REMOTE);
+
+      expect(holder.remoteSessionId).toBe(REMOTE);
+      expect(second.remoteSessionId).toBeNull();
+      expect((await getSession(second.id))?.remoteSessionId).toBeNull();
+    });
+
+    test('linkPreparedSession links a free remote id once and refuses a held or second one', async () => {
+      const holder = await createSession(HEART, 'checksum', 'catalog', 'ready', REMOTE);
+      const row = await createSession(HEART, 'checksum', 'catalog', 'ready', REMOTE);
+      const free = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
+
+      await expect(linkPreparedSession(GUEST, row.id, REMOTE)).resolves.toBe(false);
+      await expect(linkPreparedSession(GUEST, row.id, free)).resolves.toBe(true);
+      await expect(linkPreparedSession(GUEST, row.id, 'ffffffff-ffff-4fff-8fff-ffffffffffff')).resolves.toBe(false);
+
+      expect((await getSession(row.id))?.remoteSessionId).toBe(free);
+      expect((await getSession(holder.id))?.remoteSessionId).toBe(REMOTE);
     });
   });
 
@@ -344,6 +460,20 @@ const completedCellsOf = (packedBitmapBase64: string): number[] =>
       await expect(linkBundledSession(GUEST, { localSessionId: id, remoteSessionId: REMOTE }, receipt(0))).resolves.toBe('foldOvertaken');
 
       expect((await getSession(id))?.remoteSessionId).toBeNull();
+    });
+
+    test('a session another row already holds is not linked a second time', async () => {
+      const first = await startRow();
+      await linkBundledSession(GUEST, { localSessionId: first.id, remoteSessionId: REMOTE }, receipt(0));
+      await updateSessionStatus(first.id, 'completed', '2026-02-01T10:00:00.000Z');
+      const replay = await startRow();
+      await insertProgressOpsBatch([op(replay.id, 0, 1)]);
+
+      await expect(linkBundledSession(GUEST, { localSessionId: replay.id, remoteSessionId: REMOTE }, receipt(1))).resolves.toBe('remoteSessionTaken');
+
+      expect((await getSession(replay.id))?.remoteSessionId).toBeNull();
+      expect((await getSession(first.id))?.remoteSessionId).toBe(REMOTE);
+      expect(await getUnackedProgressOps(replay.id)).toHaveLength(1);
     });
 
     test('a deleted row is not linked', async () => {
