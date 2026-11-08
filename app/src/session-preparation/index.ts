@@ -220,12 +220,8 @@ export async function prepareBundledSession(
   }
 }
 
-// A catalog or personal row with no server session is waiting for one: the server
-// handed its id to an earlier row, or promotion carried the row in without it. The
-// state is the row itself, so it survives a restart. Prepare hands out the pattern's
-// active session once the holder closed; the row takes it and uploads from there.
 /** The signed-in identity that may link rows now; none while a promotion handoff is open. */
-async function linkingIdentity(): Promise<string | null> {
+async function identityAllowedToLink(): Promise<string | null> {
   const identity = activeOwnerIdentity();
   if (identity === null || (await handoffStore.load()) !== null) return null;
   return identity;
@@ -260,10 +256,14 @@ async function linkAwaitingRow(identity: string, session: StitchingSession): Pro
   }
 }
 
+// A catalog or personal row with no server session is waiting for one: the server
+// handed its id to an earlier row, or promotion carried the row in without it. The
+// state is the row itself, so it survives a restart. Prepare hands out the pattern's
+// active session once the holder closed; the row takes it and uploads from there.
 /** Gives every row waiting for a server session another chance; never throws. */
 export async function linkAwaitingSessions(): Promise<void> {
   try {
-    const identity = await linkingIdentity();
+    const identity = await identityAllowedToLink();
     if (identity === null) return;
     for (const session of await listSessionsAwaitingServerSession()) {
       if (activeOwnerIdentity() !== identity) return;
@@ -290,7 +290,7 @@ async function prepareRemoteSession(
       });
     }
     if (existing.remoteSessionId == null && existing.replayOf == null && existing.status !== 'preparing') {
-      const identity = await linkingIdentity();
+      const identity = await identityAllowedToLink();
       if (identity !== null) await linkAwaitingRow(identity, existing);
     }
     return existing;
@@ -374,7 +374,7 @@ export async function retryDownload(localSessionId: string): Promise<void> {
 
       data = (await response.json()) as PrepareResponse;
     } else {
-      const identity = await linkingIdentity();
+      const identity = await identityAllowedToLink();
       if (identity === null) throw new Error('Sign-in is not settled yet; try again shortly.');
       data = await prepareAndLink(identity, session);
     }

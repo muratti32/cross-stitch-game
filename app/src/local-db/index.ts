@@ -1016,17 +1016,30 @@ export interface SessionPatternMeta {
  * remote id. The server hands a new row the pattern's active session, which an
  * earlier completed row may still hold, so a held id is never written twice.
  */
+const REMOTE_SESSION_HELD_BY_OTHER_ROW_SQL =
+  'EXISTS (SELECT 1 FROM sessions AS holder WHERE holder.remote_session_id = ? AND holder.id <> ?)';
+
 async function remoteSessionHeldByOtherRow(
   db: SQLite.SQLiteDatabase,
   remoteSessionId: string,
   exceptLocalSessionId: string,
 ): Promise<boolean> {
-  const holder = await db.getFirstAsync<{ id: string }>(
-    'SELECT id FROM sessions WHERE remote_session_id = ? AND id <> ?',
+  const held = await db.getFirstAsync<{ held: number }>(
+    `SELECT ${REMOTE_SESSION_HELD_BY_OTHER_ROW_SQL} AS held`,
     remoteSessionId,
     exceptLocalSessionId,
   );
-  return holder != null;
+  return held?.held === 1;
+}
+
+/** Loads the sessions for `ids` in order, skipping rows deleted in between. */
+async function hydrateSessions(db: SQLite.SQLiteDatabase, ids: { id: string }[]): Promise<StitchingSession[]> {
+  const sessions: StitchingSession[] = [];
+  for (const { id } of ids) {
+    const session = await getSessionWithDb(db, id);
+    if (session !== null) sessions.push(session);
+  }
+  return sessions;
 }
 
 /**
@@ -1045,18 +1058,15 @@ export async function listSessionsAwaitingServerSession(): Promise<StitchingSess
          AND NOT EXISTS (SELECT 1 FROM pending_personal_patterns WHERE pattern_id = sessions.pattern_id)
        ORDER BY created_at ASC`,
     );
-    const sessions: StitchingSession[] = [];
-    for (const { id } of rows) {
-      const session = await getSessionWithDb(db, id);
-      if (session !== null) sessions.push(session);
-    }
-    return sessions;
+    return hydrateSessions(db, rows);
   });
 }
 
 /**
- * Links an unlinked row to a server session no other row holds, only while `identity`
- * is still the open namespace; false when it could not. The row may have compacted cells into a checkpoint while it had no server
+ * Links an unlinked row to a server session no other row holds, only while
+ * `identity` is still the open namespace; false when it could not.
+ *
+ * The row may have compacted cells into a checkpoint while it had no server
  * session, so the cells it holds that no waiting op carries are queued as ops.
  */
 export async function linkPreparedSession(
@@ -2096,12 +2106,7 @@ export async function listSessionsWithUnackedProgressOps(): Promise<StitchingSes
          AND EXISTS (SELECT 1 FROM progress_ops WHERE progress_ops.session_id = sessions.id AND progress_ops.acked = 0)
        ORDER BY updated_at DESC`,
     );
-    const sessions: StitchingSession[] = [];
-    for (const { id } of rows) {
-      const session = await getSessionWithDb(db, id);
-      if (session !== null) sessions.push(session);
-    }
-    return sessions;
+    return hydrateSessions(db, rows);
   });
 }
 
@@ -2119,12 +2124,7 @@ export async function listCompletedSessionsAwaitingTerminal(): Promise<Stitching
          AND NOT EXISTS (SELECT 1 FROM sync_snapshots WHERE sync_snapshots.session_id = sessions.id AND sync_snapshots.terminal = 1)
        ORDER BY updated_at DESC`,
     );
-    const sessions: StitchingSession[] = [];
-    for (const { id } of rows) {
-      const session = await getSessionWithDb(db, id);
-      if (session !== null) sessions.push(session);
-    }
-    return sessions;
+    return hydrateSessions(db, rows);
   });
 }
 
@@ -2180,7 +2180,7 @@ export async function linkBundledSession(
          WHERE id = ?
            AND remote_session_id IS NULL
            AND (status <> 'completed' OR ? = 1)
-           AND NOT EXISTS (SELECT 1 FROM sessions AS holder WHERE holder.remote_session_id = ? AND holder.id <> ?)
+           AND NOT ${REMOTE_SESSION_HELD_BY_OTHER_ROW_SQL}
            AND COALESCE((SELECT MAX(revision) FROM checkpoints WHERE session_id = ?), 0) = ?`,
         link.remoteSessionId,
         link.localSessionId,

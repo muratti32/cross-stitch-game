@@ -113,10 +113,10 @@ async function uploadSession(
   }
 }
 
-// Pulls the server state (draining any unacked ops, recording the terminal flag),
-// then finalizes a locally completed session the server still holds as active.
-// The server dedupes the First Completion Reward per account and pattern, and
-// completion is idempotent, so a repeated call is safe.
+// Pulls the server state (draining any unacked ops, recording the terminal
+// flag), then finalizes a locally completed session the server still holds as
+// active. The server dedupes the First Completion Reward per account and
+// pattern, and completion is idempotent, so a repeated call is safe.
 async function retryServerCompletion(
   owner: PassOwner,
   session: StitchingSession,
@@ -145,16 +145,26 @@ async function retryServerCompletion(
     deferredCompletions.delete(session.id);
     return 'nextSession';
   } catch (error) {
-    return handleSessionFailure(owner, session, error, 'background-complete');
+    return handleSessionFailure(owner, session, error, 'background-complete', deferCompletion);
   }
 }
 
+// The server is still catching up on the final ops: retry on a later pass, a few times.
+function deferCompletion(session: StitchingSession): void {
+  const attempts = (deferredCompletions.get(session.id) ?? 0) + 1;
+  deferredCompletions.set(session.id, attempts);
+  addProgressSyncBreadcrumb('Completion retry deferred', { sessionId: session.id, attempts });
+  if (attempts >= MAX_DEFERRED_COMPLETIONS) refusedSessionIds.add(session.id);
+}
+
 // One classifier for both passes, so upload and completion treat a failure alike.
+// `tag` only labels Sentry; `onConflict` is the caller's own handling of a 409.
 async function handleSessionFailure(
   owner: PassOwner,
   session: StitchingSession,
   error: unknown,
   tag: 'background-upload' | 'background-complete',
+  onConflict?: (session: StitchingSession) => void,
 ): Promise<SessionResult> {
   if (!(await passStillAllowed(owner))) return 'stopPass';
   if (error instanceof ProgressSyncError && error.status === 404) {
@@ -162,12 +172,8 @@ async function handleSessionFailure(
   } else if (error instanceof ProgressSyncError && error.code === 'pattern_removed') {
     refusedSessionIds.add(session.id);
     await removePatternLocally(session);
-  } else if (tag === 'background-complete' && error instanceof ProgressSyncError && error.status === 409) {
-    // The server is still catching up on the final ops: retry on a later pass, a few times.
-    const attempts = (deferredCompletions.get(session.id) ?? 0) + 1;
-    deferredCompletions.set(session.id, attempts);
-    addProgressSyncBreadcrumb('Completion retry deferred', { sessionId: session.id, attempts });
-    if (attempts >= MAX_DEFERRED_COMPLETIONS) refusedSessionIds.add(session.id);
+  } else if (onConflict !== undefined && error instanceof ProgressSyncError && error.status === 409) {
+    onConflict(session);
   } else if (isOfflineNetworkError(error)) {
     return 'stopPass';
   } else {
