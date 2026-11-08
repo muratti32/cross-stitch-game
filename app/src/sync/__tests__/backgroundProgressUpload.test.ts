@@ -5,6 +5,8 @@ const mockGetDeviceId = jest.fn();
 const mockUpdateSessionError = jest.fn();
 const mockGetUnacked = jest.fn();
 const mockSyncSession = jest.fn();
+const mockCompleteSession = jest.fn();
+const mockListAwaiting = jest.fn();
 const mockRebuild = jest.fn();
 const mockLoadBundledPattern = jest.fn();
 const mockDeleteOfflinePatternFile = jest.fn();
@@ -20,9 +22,10 @@ jest.mock('../../local-db', () => ({
   getDeviceId: mockGetDeviceId,
   getUnackedProgressOps: mockGetUnacked,
   listSessionsWithUnackedProgressOps: mockList,
+  listCompletedSessionsAwaitingTerminal: mockListAwaiting,
   updateSessionError: mockUpdateSessionError,
 }));
-jest.mock('../progressSyncEngine', () => ({ syncSession: mockSyncSession }));
+jest.mock('../progressSyncEngine', () => ({ syncSession: mockSyncSession, completeSession: mockCompleteSession }));
 jest.mock('../progressBase', () => ({ rebuildProgressBase: mockRebuild }));
 jest.mock('../../bundled-patterns', () => ({ loadBundledPattern: mockLoadBundledPattern }));
 jest.mock('../../session-preparation', () => ({ deleteOfflinePatternFile: mockDeleteOfflinePatternFile }));
@@ -72,6 +75,8 @@ beforeEach(() => {
   mockHandoffLoad.mockResolvedValue(null);
   mockGetDeviceId.mockResolvedValue('device-1');
   mockList.mockResolvedValue([]);
+  mockListAwaiting.mockResolvedValue([]);
+  mockCompleteSession.mockResolvedValue(true);
   mockGetUnacked.mockResolvedValue([]);
   mockUpdateSessionError.mockResolvedValue(undefined);
   mockDeleteOfflinePatternFile.mockResolvedValue(undefined);
@@ -405,5 +410,141 @@ describe('waitForBackgroundSync', () => {
     await pass;
 
     expect(waited).toBe(true);
+  });
+});
+
+describe('uploadPendingProgress completion retry', () => {
+  const done = (id: string, overrides: Partial<StitchingSession> = {}): StitchingSession =>
+    session(id, { status: 'completed', ...overrides });
+
+  const syncReturning = (...terminal: boolean[]): void => {
+    terminal.forEach((terminalCompleted) =>
+      mockSyncSession.mockResolvedValueOnce({
+        serverRevision: 4,
+        terminalCompleted,
+        changedCells: [],
+        conflictedCells: [],
+        pullIncomplete: false,
+      }),
+    );
+  };
+
+  test('completes a drained completed session, then records the terminal state with a sync', async () => {
+    mockListAwaiting.mockResolvedValue([done('a')]);
+    syncReturning(false, true);
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockCompleteSession).toHaveBeenCalledTimes(1);
+    expect(mockCompleteSession).toHaveBeenCalledWith('remote_a', 'device-1');
+    expect(mockSyncSession).toHaveBeenCalledTimes(2);
+    expect(mockSyncSession.mock.invocationCallOrder[1]).toBeGreaterThan(mockCompleteSession.mock.invocationCallOrder[0]);
+  });
+
+  test('does not complete a session the server already finalized', async () => {
+    mockListAwaiting.mockResolvedValue([done('a')]);
+    syncReturning(true);
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockCompleteSession).not.toHaveBeenCalled();
+  });
+
+  test('waits while unacked ops remain', async () => {
+    mockListAwaiting.mockResolvedValue([done('a')]);
+    mockGetUnacked.mockResolvedValue([{ opId: 'x' }]);
+    syncReturning(false);
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockCompleteSession).not.toHaveBeenCalled();
+  });
+
+  test('a 409 is retried on the next pass without a report', async () => {
+    mockListAwaiting.mockResolvedValue([done('a'), done('b')]);
+    syncReturning(false, false);
+    mockCompleteSession.mockRejectedValueOnce(statusError(409, 'not_finished'));
+
+    await uploader.uploadPendingProgress();
+    expect(mockCompleteSession.mock.calls.map((call) => call[0])).toEqual(['remote_a', 'remote_b']);
+    expect(mockCapture).not.toHaveBeenCalled();
+
+    await uploader.uploadPendingProgress();
+    expect(mockCompleteSession.mock.calls.map((call) => call[0])).toEqual(['remote_a', 'remote_b', 'remote_a', 'remote_b']);
+  });
+
+  test('an offline failure stops the pass quietly', async () => {
+    mockListAwaiting.mockResolvedValue([done('a'), done('b')]);
+    syncReturning(false);
+    mockCompleteSession.mockRejectedValueOnce(new TypeError('Network request failed'));
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockCompleteSession).toHaveBeenCalledTimes(1);
+    expect(mockCapture).not.toHaveBeenCalled();
+  });
+
+  test('a 404 refuses the session for the rest of the process', async () => {
+    mockListAwaiting.mockResolvedValue([done('a')]);
+    syncReturning(false);
+    mockCompleteSession.mockRejectedValueOnce(statusError(404));
+
+    await uploader.uploadPendingProgress();
+    await uploader.uploadPendingProgress();
+
+    expect(mockCompleteSession).toHaveBeenCalledTimes(1);
+  });
+
+  test('another failure is reported and the next session still completes', async () => {
+    mockListAwaiting.mockResolvedValue([done('a'), done('b')]);
+    syncReturning(false, false, true);
+    mockCompleteSession.mockRejectedValueOnce(statusError(500));
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockCapture).toHaveBeenCalledWith('background-upload', expect.any(Error));
+    expect(mockCompleteSession).toHaveBeenCalledWith('remote_b', 'device-1');
+  });
+
+  test('leaves a session the open screen owns', async () => {
+    mockListAwaiting.mockResolvedValue([done('a')]);
+    uploader.markSessionOpen('a');
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockCompleteSession).not.toHaveBeenCalled();
+    expect(mockSyncSession).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    ['a guest', () => { mockIdentity = { accountId: null, isAccount: false, isAuthenticated: true }; }],
+    ['another identity', () => { mockActiveIdentity = 'someone-else'; }],
+    ['a pending promotion handoff', () => { mockHandoffLoad.mockResolvedValue({ pending: true }); }],
+  ])('never completes for %s', async (_label, arrange) => {
+    arrange();
+    mockListAwaiting.mockResolvedValue([done('a')]);
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockCompleteSession).not.toHaveBeenCalled();
+  });
+
+  test('an identity switch right before completion cancels it', async () => {
+    mockListAwaiting.mockResolvedValue([done('a')]);
+    mockSyncSession.mockImplementationOnce(async () => {
+      mockActiveIdentity = 'someone-else';
+      return { serverRevision: 4, terminalCompleted: false, changedCells: [], conflictedCells: [], pullIncomplete: false };
+    });
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockCompleteSession).not.toHaveBeenCalled();
+  });
+
+  test('a failing listing never throws out of the pass', async () => {
+    mockListAwaiting.mockRejectedValue(new Error('db'));
+
+    await expect(uploader.uploadPendingProgress()).resolves.toBeUndefined();
+    expect(mockCapture).toHaveBeenCalledWith('background-upload', expect.any(Error));
   });
 });

@@ -5,6 +5,7 @@ import { useIdentityStore } from '../identity/guestIdentity';
 import {
   getActiveIdentity,
   getDeviceId,
+  listCompletedSessionsAwaitingTerminal,
   listSessionsWithUnackedProgressOps,
   getUnackedProgressOps,
   type StitchingSession,
@@ -13,7 +14,7 @@ import { addProgressSyncBreadcrumb, captureProgressSyncError } from '../observab
 import { handoffStore } from '../promotion/handoffStore';
 import { applyPatternRemoval } from './patternRemoval';
 import { rebuildProgressBase } from './progressBase';
-import { syncSession } from './progressSyncEngine';
+import { completeSession, syncSession } from './progressSyncEngine';
 
 type SessionResult = 'nextSession' | 'stopPass';
 interface PassOwner {
@@ -120,6 +121,48 @@ async function uploadSession(
   return 'nextSession';
 }
 
+// Pulls the server state (draining any unacked ops, recording the terminal flag),
+// then finalizes a locally completed session the server still holds as active.
+// The server dedupes the First Completion Reward per account and pattern, and
+// completion is idempotent, so a repeated call is safe.
+async function completeLocally(
+  owner: PassOwner,
+  session: StitchingSession,
+  remoteSessionId: string,
+): Promise<SessionResult> {
+  try {
+    const cellsLength = await cellsLengthOf(session);
+    if (cellsLength === null) return 'nextSession';
+    const sync = async (): Promise<boolean> => {
+      const base = await rebuildProgressBase(session.id, cellsLength, true);
+      const deviceId = await getDeviceId();
+      if (!(await passStillAllowed(owner)) || openSessionCounts.has(session.id)) return false;
+      const outcome = await syncSession(session.id, remoteSessionId, deviceId, base.completed, { maxPullPages: 1 });
+      return outcome.terminalCompleted;
+    };
+    if (await sync()) return 'nextSession';
+    const deviceId = await getDeviceId();
+    // Complete only once the server holds every op; otherwise it answers 409.
+    if ((await getUnackedProgressOps(session.id)).length > 0) return 'nextSession';
+    if (!(await passStillAllowed(owner))) return 'stopPass';
+    if (openSessionCounts.has(session.id)) return 'nextSession';
+    if (await completeSession(remoteSessionId, deviceId)) await sync();
+  } catch (error) {
+    if (!(await passStillAllowed(owner))) return 'stopPass';
+    if (error instanceof ProgressSyncError && error.status === 404) {
+      refusedSessionIds.add(session.id);
+    } else if (error instanceof ProgressSyncError && error.status === 409) {
+      // The server is still catching up on the final ops: retry on the next pass.
+      addProgressSyncBreadcrumb('Completion retry deferred', { sessionId: session.id });
+    } else if (isOfflineNetworkError(error)) {
+      return 'stopPass';
+    } else {
+      captureProgressSyncError('background-upload', error);
+    }
+  }
+  return 'nextSession';
+}
+
 async function removePatternLocally(session: StitchingSession): Promise<void> {
   try {
     await applyPatternRemoval(session);
@@ -146,6 +189,21 @@ async function runPass(): Promise<void> {
       activeUpload = null;
     }
   }
+
+  // Ops are uploaded first so completion runs against a drained session.
+  for (const session of await listCompletedSessionsAwaitingTerminal()) {
+    const { remoteSessionId } = session;
+    if (!remoteSessionId || openSessionCounts.has(session.id) || refusedSessionIds.has(session.id)) continue;
+    if (!(await passStillAllowed(owner))) return;
+    if (openSessionCounts.has(session.id)) continue;
+    const work = completeLocally(owner, session, remoteSessionId);
+    activeUpload = { sessionId: session.id, work };
+    try {
+      if ((await work) === 'stopPass') return;
+    } finally {
+      activeUpload = null;
+    }
+  }
 }
 
 async function runPassReportingFailure(): Promise<void> {
@@ -158,7 +216,8 @@ async function runPassReportingFailure(): Promise<void> {
 
 /**
  * Uploads the unacknowledged progress of linked account sessions without a
- * session screen open. Never throws; overlapping calls share one pass and one
+ * session screen open, then retries completeSession for locally completed
+ * sessions the server has not finalized. Never throws; overlapping calls share one pass and one
  * rerun covers requests made while it ran.
  */
 export function uploadPendingProgress(): Promise<void> {

@@ -2105,6 +2105,29 @@ export async function listSessionsWithUnackedProgressOps(): Promise<StitchingSes
   });
 }
 
+/**
+ * Linked sessions the player finished locally whose server session has not
+ * reported terminal completion yet (no sync snapshot, or one with terminal=0).
+ * Their completeSession call failed or never ran, so it must be retried.
+ */
+export async function listCompletedSessionsAwaitingTerminal(): Promise<StitchingSession[]> {
+  return withDatabase(async (db) => {
+    const rows = await db.getAllAsync<{ id: string }>(
+      `SELECT id FROM sessions
+       WHERE remote_session_id IS NOT NULL
+         AND status = 'completed'
+         AND NOT EXISTS (SELECT 1 FROM sync_snapshots WHERE sync_snapshots.session_id = sessions.id AND sync_snapshots.terminal = 1)
+       ORDER BY updated_at DESC`,
+    );
+    const sessions: StitchingSession[] = [];
+    for (const { id } of rows) {
+      const session = await getSessionWithDb(db, id);
+      if (session !== null) sessions.push(session);
+    }
+    return sessions;
+  });
+}
+
 export async function readBundledRegistrationSnapshot(
   localSessionId: string,
 ): Promise<BundledRegistrationSnapshot | null> {

@@ -637,8 +637,9 @@ export function useStitchingSession(sessionId: string | undefined) {
                 deviceIdRef.current,
               );
             } catch {
-              // Server may still be catching up on the final ops; the next sync
-              // retries completion. Local completion already stands.
+              // Server may still be catching up on the final ops. Local completion
+              // already stands; the background upload pass retries completion for
+              // completed sessions the server has not reported terminal.
             }
           } else if (remoteSessionId) {
             await flushGameplayEventsToServer();

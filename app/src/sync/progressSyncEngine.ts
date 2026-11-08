@@ -150,7 +150,8 @@ export async function syncSession(
 /**
  * Asks the server to validate and finalize Session Completion. Returns the
  * terminal state; callers treat a thrown ProgressSyncError(409) as "not yet
- * fully stitched server-side" and simply retry on the next sync.
+ * fully stitched server-side" and simply retry on a later background upload pass
+ * (backgroundProgressUpload retries it for completed, non-terminal sessions).
  */
 export async function completeSession(
   remoteSessionId: string,
