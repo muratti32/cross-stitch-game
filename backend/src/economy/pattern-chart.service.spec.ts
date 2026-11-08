@@ -30,7 +30,6 @@ function pattern(overrides: Record<string, unknown> = {}) {
 function harness(found: Record<string, unknown> | null = pattern()) {
   const repository = {
     isEntitled: jest.fn().mockResolvedValue(false),
-    listPatternIds: jest.fn().mockResolvedValue([patternId]),
     isPatternUnlocked: jest.fn().mockResolvedValue(false),
     spend: jest.fn().mockResolvedValue({ alreadyEntitled: false, price: 20, balance: 30 }),
   };
@@ -58,7 +57,6 @@ async function codeOf(promise: Promise<unknown>): Promise<{ type: unknown; respo
 describe('PatternChartService', () => {
   describe('guests', () => {
     it.each([
-      ['listEntitlements', (s: PatternChartService) => s.listEntitlements(guest)],
       ['view', (s: PatternChartService) => s.view(guest, patternId)],
       ['purchase', (s: PatternChartService) => s.purchase(guest, patternId, 20)],
       ['artifactGrant', (s: PatternChartService) => s.artifactGrant(guest, patternId)],
@@ -81,6 +79,7 @@ describe('PatternChartService', () => {
         patternId,
         alreadyEntitled: false,
         price: 20,
+        tier: 'small',
         balance: 30,
       });
       expect(promotionService.assertNotLocked).toHaveBeenCalledWith(accountId, PrincipalType.Account);
@@ -178,6 +177,7 @@ describe('PatternChartService', () => {
         patternId,
         alreadyEntitled: true,
         price: 20,
+        tier: 'small',
         balance: 5,
       });
     });
@@ -208,19 +208,12 @@ describe('PatternChartService', () => {
     });
   });
 
-  describe('listEntitlements and view', () => {
-    it('lists the account entitlement pattern ids', async () => {
-      const { service, repository } = harness();
-
-      await expect(service.listEntitlements(account)).resolves.toEqual({ patternIds: [patternId] });
-      expect(repository.listPatternIds).toHaveBeenCalledWith(accountId);
-    });
-
+  describe('view', () => {
     it('reports the server price and entitlement state', async () => {
       const { service, repository } = harness(pattern({ stitchableCellCount: 4_000 }));
       repository.isEntitled.mockResolvedValue(true);
 
-      await expect(service.view(account, patternId)).resolves.toEqual({ patternId, entitled: true, price: 40, status: 'available' });
+      await expect(service.view(account, patternId)).resolves.toEqual({ patternId, entitled: true, price: 40, tier: 'medium', status: 'available' });
     });
 
     it.each(['withdrawn', 'removed', 'review_hold'] as const)('exposes %s status so the app can stop drawing or selling', async (status) => {

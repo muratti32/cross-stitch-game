@@ -88,13 +88,11 @@ describe('PatternChartRepository reads', () => {
   it('reports entitlement and unlock existence', async () => {
     const query = jest.fn()
       .mockResolvedValueOnce([{ entitled: true }])
-      .mockResolvedValueOnce([{ unlocked: false }])
-      .mockResolvedValueOnce([{ pattern_id: 'a' }, { pattern_id: 'b' }]);
+      .mockResolvedValueOnce([{ unlocked: false }]);
     const repo = harness(query);
 
     await expect(repo.isEntitled(accountId, patternId)).resolves.toBe(true);
     await expect(repo.isPatternUnlocked(accountId, patternId)).resolves.toBe(false);
-    await expect(repo.listPatternIds(accountId)).resolves.toEqual(['a', 'b']);
   });
 });
 

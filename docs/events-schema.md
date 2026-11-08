@@ -50,6 +50,7 @@ Every event has `event_id` (client UUID), `occurred_at` (ISO-8601 timestamp), an
 | `account_soft_prompt_action` | `onboarding_version`: `1`; `context`; `action` |
 | `unlock_prompt_shown` | `tier`: `small` \| `medium` \| `large`; `price` (positive integer) |
 | `pattern_unlocked` | `tier`: `small` \| `medium` \| `large`; `price` (positive integer) |
+| `pattern_chart_purchased` | `tier`: `small` \| `medium` \| `large`; `price` (positive integer) |
 | `unlock_insufficient_coins` | `tier`: `small` \| `medium` \| `large`; `shortfall` (positive integer) |
 | `unlock_get_coins_tapped` | `tier`: `small` \| `medium` \| `large`; `shortfall` (positive integer) |
 | `locator_coin_shortfall_shown` | `price` (positive integer); `balance` (integer, may be negative after a Commerce Reversal) |

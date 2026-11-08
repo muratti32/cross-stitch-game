@@ -700,6 +700,25 @@ describe('PromotionService', () => {
       expect(grants[0][1]).toEqual([ACCOUNT_ID, PATTERN, 'promotion']);
     });
 
+    it('still grants when a completed Guest session moves next to an active account session', async () => {
+      // mergeGuestSession only merges active-into-active; a completed Guest session is
+      // transferred as its own row, so the account always ends up holding a completed one.
+      consumedPackage('committed', [packagedSession({ status: 'completed' })]);
+      guestSessions = [{ id: GUEST_SESSION, status: 'completed' }];
+      accountSessions = [{ id: 'account-active-session', status: 'active' }];
+      accountCompleted = true;
+
+      await expect(drain()).resolves.toMatchObject({ status: 'transferred', accountSessionId: GUEST_SESSION });
+
+      expect(managerQuery).toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE sessions.stitching_sessions'),
+        [ACCOUNT_ID, GUEST_SESSION],
+      );
+      const grants = statements(/pattern_chart_entitlements/) as [string, unknown[]][];
+      expect(grants).toHaveLength(1);
+      expect(grants[0][1]).toEqual([ACCOUNT_ID, PATTERN, 'promotion']);
+    });
+
     it('grants regardless of promotion mode or Promotion-Locked state', async () => {
       const row = consumedPackage('committed', [packagedSession({ status: 'completed' })]);
       row.promotionMode = 'data-only';

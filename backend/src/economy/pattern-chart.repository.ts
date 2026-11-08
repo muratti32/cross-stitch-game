@@ -34,15 +34,6 @@ export class PatternChartRepository {
     return rows[0]?.entitled === true;
   }
 
-  async listPatternIds(accountId: string): Promise<string[]> {
-    const rows = await this.dataSource.query<readonly { pattern_id: string }[]>(
-      `SELECT pattern_id FROM economy.pattern_chart_entitlements
-       WHERE account_id = $1 ORDER BY created_at`,
-      [accountId],
-    );
-    return rows.map((row) => row.pattern_id);
-  }
-
   async isPatternUnlocked(accountId: string, patternId: string): Promise<boolean> {
     const rows = await this.dataSource.query<readonly { unlocked: boolean }[]>(
       `SELECT EXISTS (

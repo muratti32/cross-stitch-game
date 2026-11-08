@@ -16,13 +16,15 @@ import { AppConfigService } from '../config/app-config.service';
 import { PromotionService } from '../promotion/promotion.service';
 import { buildArtifactGrant } from '../sessions/artifact-grant';
 import { InsufficientCoinError } from './coin-ledger.repository';
-import { patternChartPrice, patternChartTier, unlockPrice } from './economy.constants';
+import { patternChartPrice, patternChartTier, unlockPrice, type PatternChartTier } from './economy.constants';
 import { PatternChartRepository } from './pattern-chart.repository';
 
 export interface PatternChartPurchaseResult {
   patternId: string;
   alreadyEntitled: boolean;
   price: number;
+  /** Server-owned price tier, so the app never infers it back from the price. */
+  tier: PatternChartTier;
   balance: number;
 }
 
@@ -30,6 +32,7 @@ export interface PatternChartView {
   patternId: string;
   entitled: boolean;
   price: number;
+  tier: PatternChartTier;
   /** Lets the app hide Buy under Catalog Withdrawal and never draw under Safety Removal. */
   status: PatternEntity['status'];
 }
@@ -48,18 +51,15 @@ export class PatternChartService {
     private readonly configService: AppConfigService,
   ) {}
 
-  async listEntitlements(principal: AuthPrincipal): Promise<{ patternIds: string[] }> {
-    this.assertAccount(principal);
-    return { patternIds: await this.repository.listPatternIds(principal.id) };
-  }
-
   async view(principal: AuthPrincipal, patternId: string): Promise<PatternChartView> {
     this.assertAccount(principal);
     const pattern = await this.loadOfficialPattern(patternId);
+    const cells = stitchableCells(pattern);
     return {
       patternId,
       entitled: await this.repository.isEntitled(principal.id, patternId),
-      price: patternChartPrice(stitchableCells(pattern)),
+      price: patternChartPrice(cells),
+      tier: patternChartTier(cells),
       status: pattern.status,
     };
   }
@@ -88,7 +88,7 @@ export class PatternChartService {
 
     try {
       const result = await this.repository.spend(principal.id, patternId, price, tier);
-      return { patternId, ...result };
+      return { patternId, ...result, tier };
     } catch (error) {
       if (error instanceof InsufficientCoinError) {
         throw new ConflictException({

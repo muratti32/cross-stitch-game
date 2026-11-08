@@ -202,11 +202,6 @@ export class EconomyController {
     return this.patternUnlock.listUnlocks(p);
   }
 
-  @Get('pattern-charts')
-  async patternCharts(@CurrentPrincipal() p: AuthPrincipal) {
-    return this.patternChart.listEntitlements(p);
-  }
-
   @Post('pattern-charts')
   async purchasePatternChart(
     @CurrentPrincipal() p: AuthPrincipal,
