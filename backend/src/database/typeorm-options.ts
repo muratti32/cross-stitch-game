@@ -54,6 +54,7 @@ import {
   CoinLedgerEntryEntity,
   RewardDayPoolEntity,
   PatternUnlockEntity,
+  PatternChartEntitlementEntity,
   GameplayEventEntity,
   DailyColorActionCountEntity,
   AiCreditBalanceEntity,
@@ -217,6 +218,9 @@ import { AddLocatorCoinShortfallGameplayEvents1793059200000 } from './migrations
 import { AddPromotionModeToTransferPackages1793145600000 } from './migrations/1793145600000-AddPromotionModeToTransferPackages';
 import { AddStitchableCellCountToPatterns1793232000000 } from './migrations/1793232000000-AddStitchableCellCountToPatterns';
 import { BackfillSessionProgressFlags1793318400000 } from './migrations/1793318400000-BackfillSessionProgressFlags';
+import { CreatePatternChartEntitlements1793404800000 } from './migrations/1793404800000-CreatePatternChartEntitlements';
+import { BackfillPatternChartEntitlements1793491200000 } from './migrations/1793491200000-BackfillPatternChartEntitlements';
+import { AddPatternChartPurchasedGameplayEvent1793577600000 } from './migrations/1793577600000-AddPatternChartPurchasedGameplayEvent';
 
 export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
   return {
@@ -258,6 +262,7 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       CoinLedgerEntryEntity,
       RewardDayPoolEntity,
       PatternUnlockEntity,
+      PatternChartEntitlementEntity,
       GameplayEventEntity,
       DailyColorActionCountEntity,
       PromotionLockEntity,
@@ -419,6 +424,9 @@ export function createTypeOrmOptions(databaseUrl: string): DataSourceOptions {
       AddPromotionModeToTransferPackages1793145600000,
       AddStitchableCellCountToPatterns1793232000000,
       BackfillSessionProgressFlags1793318400000,
+      CreatePatternChartEntitlements1793404800000,
+      BackfillPatternChartEntitlements1793491200000,
+      AddPatternChartPurchasedGameplayEvent1793577600000,
     ],
     migrationsRun: false,
     migrationsTableName: 'typeorm_migrations',

@@ -249,7 +249,7 @@ function getUnavailableHtml(): string {
 <body>
   <div class="card">
     <h1>Content Unavailable</h1>
-    <p>This pattern is no longer available. It may have been withdrawn by its creator or removed by moderation.</p>
+    <p>This pattern is no longer available.</p>
     <p><a href="/">Go to Home Page</a></p>
   </div>
 </body>

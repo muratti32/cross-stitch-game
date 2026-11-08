@@ -178,6 +178,19 @@ describe('AccountDeletionFinalizerService', () => {
     }
   });
 
+  it('Pattern Chart Entitlements are counted and erased with the account', async () => {
+    await service.finalizeOne('req-1');
+
+    expect(managerQueryMock).toHaveBeenCalledWith(
+      expect.stringContaining('SELECT count(*)::text AS count FROM economy.pattern_chart_entitlements WHERE account_id = $1'),
+      ['acc-1'],
+    );
+    expect(managerQueryMock).toHaveBeenCalledWith(
+      expect.stringContaining('DELETE FROM economy.pattern_chart_entitlements WHERE account_id = $1'),
+      ['acc-1'],
+    );
+  });
+
   it('an unresolved provider job produces a tombstone before the artwork is erased', async () => {
     await service.finalizeOne('req-1');
 

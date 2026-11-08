@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Screen, Button, BackButton, Card, PatternImage, CommunityReportAction, EmptyState, GuestDataRiskNotice, PatternLockBadge } from '@/components';
+import { Screen, Button, BackButton, Card, PatternImage, CommunityReportAction, EmptyState, GuestDataRiskNotice, PatternLockBadge, PatternChartSection } from '@/components';
 import { Theme } from '@/theme/theme';
 import { BUNDLED_PATTERNS, loadBundledPattern } from '@/bundled-patterns';
 import { PatternData } from '@/pattern-artifact';
-import { absolutePreviewUrl, absoluteThumbnailUrls, useCatalogPattern } from '@/api/catalog';
+import { absolutePreviewUrl, absoluteThumbnailUrls, isOfficialCatalogItem, useCatalogPattern } from '@/api/catalog';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { prepareCatalogSession, prepareBundledSession, UnlockRequiredError } from '@/session-preparation';
 import { useCoinBalance, useUnlockedPatternIds, useUnlockPattern, InsufficientCoinError, unlockPriceForTier } from '@/api/economy';
@@ -329,6 +329,7 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
         thumbnailUrl: absoluteThumbnailUrls(item.thumbnailUrls)?.browsing ?? null,
         width: item.width,
         height: item.height,
+        official: isOfficialCatalogItem(item) ?? undefined,
       });
       router.navigate({
         pathname: '/(tabs)/(play)/[sessionId]',
@@ -362,6 +363,7 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
         thumbnailUrl: absoluteThumbnailUrls(item.thumbnailUrls)?.browsing ?? null,
         width: item.width,
         height: item.height,
+        official: isOfficialCatalogItem(item) ?? undefined,
       });
       router.navigate({
         pathname: '/(tabs)/(play)/[sessionId]',
@@ -591,6 +593,13 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
           </Text>
         </Card>
       )}
+
+      <PatternChartSection
+        patternId={item.id}
+        variant="detail"
+        isOfficial={!item.creatorProfileId}
+        canStart={owned && !unlocksLoading}
+      />
 
       <GuestDataRiskNotice
         visible={noticeVisible}

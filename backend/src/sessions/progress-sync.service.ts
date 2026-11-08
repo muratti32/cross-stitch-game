@@ -23,6 +23,7 @@ import type {
 import { ProgressCheckpointService } from './progress-checkpoint.service';
 import { CoinLedgerRepository } from '../economy/coin-ledger.repository';
 import { MIN_MS_PER_STITCH } from '../economy/economy.constants';
+import { grantPatternChartEntitlement } from '../economy/pattern-chart-entitlement';
 import { PromotionService } from '../promotion/promotion.service';
 import { applyPackagedProgress } from '../promotion/drained-session';
 import { BUNDLED_STARTERS } from '../catalog/bundled-starters.generated';
@@ -138,6 +139,12 @@ export interface ProgressCompleteResult {
    * Absent on replays, already-completed sessions, and Personal Patterns.
    */
   firstCompletionReward?: FirstCompletionRewardSummary;
+  /**
+   * True when the account holds the Pattern Chart Entitlement after this call:
+   * an Official Pattern completed by a Registered Account (ADR-0068). Absent for
+   * Community and Personal Patterns.
+   */
+  patternChartEntitled?: true;
 }
 
 export interface RegisterBundledSessionResult {
@@ -331,7 +338,12 @@ export class ProgressSyncService {
 
       const syncState = await this.getSyncState(manager, sessionId);
       if (syncState.terminalCompletedAt !== null) {
-        return { revision: Number(syncState.revision), terminalCompleted: true };
+        const retryEntitled = await this.grantChartEntitlement(manager, principal.id, sessionId);
+        return {
+          revision: Number(syncState.revision),
+          terminalCompleted: true,
+          ...(retryEntitled ? { patternChartEntitled: true } : {}),
+        };
       }
 
       const progressRows = await manager.query<readonly PatternProgressRecord[]>(
@@ -388,12 +400,37 @@ export class ProgressSyncService {
         }
       }
 
+      // Pattern Chart Entitlement (ADR-0068): every accepted account completion
+      // of an Official Pattern, Replay included, in the same transaction.
+      const patternChartEntitled = await grantPatternChartEntitlement(
+        manager,
+        principal.id,
+        progress.patternId,
+        'completion',
+      );
+
       return {
         revision: Number(syncState.revision),
         terminalCompleted: true,
         firstCompletionReward,
+        ...(patternChartEntitled ? { patternChartEntitled: true } : {}),
       };
     });
+  }
+
+  /** Idempotent retry path: the session finished earlier (or via promotion), so re-assert the entitlement. */
+  private async grantChartEntitlement(
+    manager: EntityManager,
+    accountId: string,
+    sessionId: string,
+  ): Promise<boolean> {
+    const rows = await manager.query<readonly { patternId: string }[]>(
+      `SELECT pattern_id AS "patternId" FROM sessions.stitching_sessions WHERE id = $1`,
+      [sessionId],
+    );
+    const patternId = rows[0]?.patternId;
+    if (!patternId) return false;
+    return grantPatternChartEntitlement(manager, accountId, patternId, 'completion');
   }
 
   async registerBundledSession(

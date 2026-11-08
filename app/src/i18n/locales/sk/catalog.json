@@ -180,5 +180,29 @@
         "needsContent": "Vysvetlenie musí obsahovať písmená alebo číslice."
       }
     }
+  },
+  "chart": {
+    "title": "Schéma vzoru",
+    "description": "Tlačiteľný obrázok tohto vzoru s farebnou mriežkou, legendou nití a QR odkazom na Stitch Wish.",
+    "freeIfCompleted": "Zadarmo, keď tento vzor dokončíte.",
+    "buy": "Získať schému za {{price}} Coin",
+    "buying": "Získavam schému…",
+    "generate": "Vytvoriť schému",
+    "regenerate": "Vytvoriť schému znova",
+    "generating": "Vytváram schému…",
+    "checking": "Overujem prístup k schéme…",
+    "loadFailed": "Prístup k schéme sa nepodarilo overiť. Skontrolujte pripojenie a skúste to znova.",
+    "retry": "Skúsiť znova",
+    "signIn": {
+      "body": "Prihláste sa a získajte tlačiteľnú schému tohto vzoru.",
+      "button": "Prihlásiť sa"
+    },
+    "insufficient": "Na túto schému vám chýba ešte {{shortfall}} Coin.",
+    "priceChanged": "Cena schémy sa zmenila na {{price}} Coin. Skontrolujte ju a skúste to znova.",
+    "unavailable": "Táto schéma už nie je k dispozícii.",
+    "accessRequired": "K tejto schéme zatiaľ nemáte prístup.",
+    "sharingUnavailable": "Zdieľanie nie je na tomto zariadení k dispozícii.",
+    "generateFailed": "Schému sa nepodarilo vytvoriť. Skúste to znova.",
+    "dialogTitle": "Zdieľať schému"
   }
 }

@@ -182,6 +182,30 @@
             "needsContent": "يجب أن يحتوي الشرح على أحرف أو أرقام."
           }
         }
+      },
+      "chart": {
+        "title": "مخطط النمط",
+        "description": "صورة قابلة للطباعة لهذا النمط مع شبكة ألوان ودليل للخيوط ورابط QR يعود إلى Stitch Wish.",
+        "freeIfCompleted": "مجاني عند إكمال هذا النمط.",
+        "buy": "احصل على المخطط مقابل {{price}} عملة",
+        "buying": "جارٍ الحصول على المخطط…",
+        "generate": "إنشاء المخطط",
+        "regenerate": "إعادة إنشاء المخطط",
+        "generating": "جارٍ إنشاء المخطط…",
+        "checking": "جارٍ التحقق من الوصول إلى المخطط…",
+        "loadFailed": "تعذّر التحقق من الوصول إلى المخطط. تحقق من اتصالك وأعد المحاولة.",
+        "retry": "أعد المحاولة",
+        "signIn": {
+          "body": "سجّل الدخول للحصول على مخطط قابل للطباعة لهذا النمط.",
+          "button": "تسجيل الدخول"
+        },
+        "insufficient": "تحتاج إلى {{shortfall}} عملة إضافية لهذا المخطط.",
+        "priceChanged": "تغيّر سعر المخطط إلى {{price}} عملة. راجعه وأعد المحاولة.",
+        "unavailable": "هذا المخطط لم يعد متاحًا.",
+        "accessRequired": "ليس لديك حق الوصول إلى هذا المخطط بعد.",
+        "sharingUnavailable": "المشاركة غير متاحة على هذا الجهاز.",
+        "generateFailed": "تعذّر إنشاء المخطط. يرجى المحاولة مرة أخرى.",
+        "dialogTitle": "مشاركة المخطط"
       }
     },
     "commerce": {
@@ -1669,6 +1693,30 @@
             "needsContent": "L'explicació ha d'incloure lletres o números."
           }
         }
+      },
+      "chart": {
+        "title": "Esquema del patró",
+        "description": "Una imatge imprimible d'aquest patró amb quadrícula de colors, llegenda de fils i un enllaç QR a Stitch Wish.",
+        "freeIfCompleted": "Gratis en completar aquest patró.",
+        "buy": "Aconsegueix l'esquema per {{price}} monedes",
+        "buying": "Obtenint l'esquema…",
+        "generate": "Genera l'esquema",
+        "regenerate": "Torna a generar l'esquema",
+        "generating": "Generant l'esquema…",
+        "checking": "Comprovant l'accés a l'esquema…",
+        "loadFailed": "No s'ha pogut comprovar l'accés a l'esquema. Revisa la connexió i torna-ho a provar.",
+        "retry": "Torna-ho a provar",
+        "signIn": {
+          "body": "Inicia la sessió per obtenir un esquema imprimible d'aquest patró.",
+          "button": "Inicia la sessió"
+        },
+        "insufficient": "Et falten {{shortfall}} monedes per a aquest esquema.",
+        "priceChanged": "El preu de l'esquema ha canviat a {{price}} monedes. Revisa'l i torna-ho a provar.",
+        "unavailable": "Aquest esquema ja no està disponible.",
+        "accessRequired": "Encara no tens accés a aquest esquema.",
+        "sharingUnavailable": "Compartir no està disponible en aquest dispositiu.",
+        "generateFailed": "No s'ha pogut generar l'esquema. Torna-ho a provar.",
+        "dialogTitle": "Comparteix l'esquema"
       }
     },
     "commerce": {
@@ -3156,6 +3204,30 @@
             "needsContent": "Vysvětlení musí obsahovat písmena nebo číslice."
           }
         }
+      },
+      "chart": {
+        "title": "Schéma vzoru",
+        "description": "Tisknutelný obrázek tohoto vzoru s barevnou mřížkou, legendou nití a QR odkazem na Stitch Wish.",
+        "freeIfCompleted": "Zdarma, když tento vzor dokončíte.",
+        "buy": "Získat schéma za {{price}} Coin",
+        "buying": "Získávám schéma…",
+        "generate": "Vytvořit schéma",
+        "regenerate": "Vytvořit schéma znovu",
+        "generating": "Vytvářím schéma…",
+        "checking": "Ověřuji přístup ke schématu…",
+        "loadFailed": "Přístup ke schématu se nepodařilo ověřit. Zkontrolujte připojení a zkuste to znovu.",
+        "retry": "Zkusit znovu",
+        "signIn": {
+          "body": "Přihlaste se a získejte tisknutelné schéma tohoto vzoru.",
+          "button": "Přihlásit se"
+        },
+        "insufficient": "Na toto schéma vám chybí ještě {{shortfall}} Coin.",
+        "priceChanged": "Cena schématu se změnila na {{price}} Coin. Zkontrolujte ji a zkuste to znovu.",
+        "unavailable": "Toto schéma už není k dispozici.",
+        "accessRequired": "K tomuto schématu zatím nemáte přístup.",
+        "sharingUnavailable": "Sdílení není na tomto zařízení k dispozici.",
+        "generateFailed": "Schéma se nepodařilo vytvořit. Zkuste to znovu.",
+        "dialogTitle": "Sdílet schéma"
       }
     },
     "commerce": {
@@ -4643,6 +4715,30 @@
             "needsContent": "Forklaringen skal indeholde bogstaver eller tal."
           }
         }
+      },
+      "chart": {
+        "title": "Mønsterdiagram",
+        "description": "Et printbart billede af dette mønster med farvet gitter, garnforklaring og et QR-link til Stitch Wish.",
+        "freeIfCompleted": "Gratis, når du gennemfører dette mønster.",
+        "buy": "Få diagram for {{price}} mønt",
+        "buying": "Henter diagram…",
+        "generate": "Opret diagram",
+        "regenerate": "Opret diagram igen",
+        "generating": "Opretter diagram…",
+        "checking": "Tjekker adgang til diagram…",
+        "loadFailed": "Kunne ikke tjekke adgangen til diagrammet. Tjek din forbindelse, og prøv igen.",
+        "retry": "Prøv igen",
+        "signIn": {
+          "body": "Log ind for at få et printbart diagram af dette mønster.",
+          "button": "Log ind"
+        },
+        "insufficient": "Du mangler {{shortfall}} mønter til dette diagram.",
+        "priceChanged": "Diagrammets pris er ændret til {{price}} mønt. Gennemgå den, og prøv igen.",
+        "unavailable": "Dette diagram er ikke længere tilgængeligt.",
+        "accessRequired": "Du har endnu ikke adgang til dette diagram.",
+        "sharingUnavailable": "Deling er ikke tilgængelig på denne enhed.",
+        "generateFailed": "Kunne ikke oprette diagrammet. Prøv igen.",
+        "dialogTitle": "Del diagram"
       }
     },
     "commerce": {
@@ -6130,6 +6226,30 @@
             "needsContent": "Die Erklärung muss Buchstaben oder Zahlen enthalten."
           }
         }
+      },
+      "chart": {
+        "title": "Musterplan",
+        "description": "Ein druckbares Bild dieses Musters mit Farbraster, Garnlegende und einem QR-Link zu Stitch Wish.",
+        "freeIfCompleted": "Kostenlos, wenn du dieses Muster abschließt.",
+        "buy": "Plan für {{price}} Coins holen",
+        "buying": "Plan wird geholt…",
+        "generate": "Plan erstellen",
+        "regenerate": "Plan neu erstellen",
+        "generating": "Plan wird erstellt…",
+        "checking": "Zugriff auf den Plan wird geprüft…",
+        "loadFailed": "Der Zugriff auf den Plan konnte nicht geprüft werden. Prüfe deine Verbindung und versuche es erneut.",
+        "retry": "Erneut versuchen",
+        "signIn": {
+          "body": "Melde dich an, um einen druckbaren Plan dieses Musters zu erhalten.",
+          "button": "Anmelden"
+        },
+        "insufficient": "Für diesen Plan fehlen dir noch {{shortfall}} Coins.",
+        "priceChanged": "Der Planpreis hat sich auf {{price}} Coins geändert. Prüfe ihn und versuche es erneut.",
+        "unavailable": "Dieser Plan ist nicht mehr verfügbar.",
+        "accessRequired": "Du hast noch keinen Zugriff auf diesen Plan.",
+        "sharingUnavailable": "Teilen ist auf diesem Gerät nicht verfügbar.",
+        "generateFailed": "Der Plan konnte nicht erstellt werden. Bitte versuche es erneut.",
+        "dialogTitle": "Plan teilen"
       }
     },
     "commerce": {
@@ -7617,6 +7737,30 @@
             "needsContent": "Η εξήγηση πρέπει να περιλαμβάνει γράμματα ή αριθμούς."
           }
         }
+      },
+      "chart": {
+        "title": "Διάγραμμα σχεδίου",
+        "description": "Μια εκτυπώσιμη εικόνα αυτού του σχεδίου με έγχρωμο πλέγμα, υπόμνημα κλωστών και σύνδεσμο QR προς το Stitch Wish.",
+        "freeIfCompleted": "Δωρεάν όταν ολοκληρώσεις αυτό το σχέδιο.",
+        "buy": "Απόκτηση διαγράμματος για {{price}} Coin",
+        "buying": "Απόκτηση διαγράμματος…",
+        "generate": "Δημιουργία διαγράμματος",
+        "regenerate": "Νέα δημιουργία διαγράμματος",
+        "generating": "Δημιουργία διαγράμματος…",
+        "checking": "Έλεγχος πρόσβασης στο διάγραμμα…",
+        "loadFailed": "Δεν ήταν δυνατός ο έλεγχος πρόσβασης στο διάγραμμα. Έλεγξε τη σύνδεσή σου και δοκίμασε ξανά.",
+        "retry": "Δοκίμασε ξανά",
+        "signIn": {
+          "body": "Συνδέσου για να αποκτήσεις ένα εκτυπώσιμο διάγραμμα αυτού του σχεδίου.",
+          "button": "Σύνδεση"
+        },
+        "insufficient": "Χρειάζεσαι ακόμη {{shortfall}} Coin για αυτό το διάγραμμα.",
+        "priceChanged": "Η τιμή του διαγράμματος άλλαξε σε {{price}} Coin. Έλεγξέ την και δοκίμασε ξανά.",
+        "unavailable": "Αυτό το διάγραμμα δεν είναι πια διαθέσιμο.",
+        "accessRequired": "Δεν έχεις ακόμη πρόσβαση σε αυτό το διάγραμμα.",
+        "sharingUnavailable": "Η κοινοποίηση δεν είναι διαθέσιμη σε αυτή τη συσκευή.",
+        "generateFailed": "Δεν ήταν δυνατή η δημιουργία του διαγράμματος. Δοκίμασε ξανά.",
+        "dialogTitle": "Κοινοποίηση διαγράμματος"
       }
     },
     "commerce": {
@@ -9104,6 +9248,30 @@
             "needsContent": "The explanation must include letters or numbers."
           }
         }
+      },
+      "chart": {
+        "title": "Pattern chart",
+        "description": "A printable image of this pattern with a color grid, thread legend and a QR link back to Stitch Wish.",
+        "freeIfCompleted": "Free when you complete this pattern.",
+        "buy": "Get chart for {{price}} Coin",
+        "buying": "Getting chart…",
+        "generate": "Generate chart",
+        "regenerate": "Regenerate chart",
+        "generating": "Generating chart…",
+        "checking": "Checking chart access…",
+        "loadFailed": "Could not check chart access. Check your connection and try again.",
+        "retry": "Try again",
+        "signIn": {
+          "body": "Sign in to get a printable chart of this pattern.",
+          "button": "Sign in"
+        },
+        "insufficient": "You need {{shortfall}} more Coin for this chart.",
+        "priceChanged": "The chart price changed to {{price}} Coin. Review it and try again.",
+        "unavailable": "This chart is no longer available.",
+        "accessRequired": "You do not have access to this chart yet.",
+        "sharingUnavailable": "Sharing is not available on this device.",
+        "generateFailed": "Could not generate the chart. Please try again.",
+        "dialogTitle": "Share chart"
       }
     },
     "commerce": {
@@ -10591,6 +10759,30 @@
             "needsContent": "La explicación debe incluir letras o números."
           }
         }
+      },
+      "chart": {
+        "title": "Esquema del patrón",
+        "description": "Una imagen imprimible de este patrón con cuadrícula de colores, leyenda de hilos y un enlace QR a Stitch Wish.",
+        "freeIfCompleted": "Gratis al completar este patrón.",
+        "buy": "Obtener esquema por {{price}} monedas",
+        "buying": "Obteniendo esquema…",
+        "generate": "Generar esquema",
+        "regenerate": "Volver a generar esquema",
+        "generating": "Generando esquema…",
+        "checking": "Comprobando el acceso al esquema…",
+        "loadFailed": "No se pudo comprobar el acceso al esquema. Revisa tu conexión e inténtalo de nuevo.",
+        "retry": "Reintentar",
+        "signIn": {
+          "body": "Inicia sesión para obtener un esquema imprimible de este patrón.",
+          "button": "Iniciar sesión"
+        },
+        "insufficient": "Necesitas {{shortfall}} monedas más para este esquema.",
+        "priceChanged": "El precio del esquema cambió a {{price}} monedas. Revísalo e inténtalo de nuevo.",
+        "unavailable": "Este esquema ya no está disponible.",
+        "accessRequired": "Aún no tienes acceso a este esquema.",
+        "sharingUnavailable": "Compartir no está disponible en este dispositivo.",
+        "generateFailed": "No se pudo generar el esquema. Inténtalo de nuevo.",
+        "dialogTitle": "Compartir esquema"
       }
     },
     "commerce": {
@@ -12078,6 +12270,30 @@
             "needsContent": "Selityksessä on oltava kirjaimia tai numeroita."
           }
         }
+      },
+      "chart": {
+        "title": "Kuviokaavio",
+        "description": "Tulostettava kuva tästä kuviosta värillisellä ruudukolla, lankaselitteellä ja QR-linkillä Stitch Wishiin.",
+        "freeIfCompleted": "Ilmainen, kun viimeistelet tämän kuvion.",
+        "buy": "Hanki kaavio hintaan {{price}} kolikkoa",
+        "buying": "Haetaan kaaviota…",
+        "generate": "Luo kaavio",
+        "regenerate": "Luo kaavio uudelleen",
+        "generating": "Luodaan kaaviota…",
+        "checking": "Tarkistetaan kaavion käyttöoikeutta…",
+        "loadFailed": "Kaavion käyttöoikeutta ei voitu tarkistaa. Tarkista yhteytesi ja yritä uudelleen.",
+        "retry": "Yritä uudelleen",
+        "signIn": {
+          "body": "Kirjaudu sisään saadaksesi tästä kuviosta tulostettavan kaavion.",
+          "button": "Kirjaudu sisään"
+        },
+        "insufficient": "Tähän kaavioon tarvitaan vielä {{shortfall}} kolikkoa.",
+        "priceChanged": "Kaavion hinta muuttui: {{price}} kolikkoa. Tarkista se ja yritä uudelleen.",
+        "unavailable": "Tämä kaavio ei ole enää saatavilla.",
+        "accessRequired": "Sinulla ei vielä ole pääsyä tähän kaavioon.",
+        "sharingUnavailable": "Jakaminen ei ole käytettävissä tällä laitteella.",
+        "generateFailed": "Kaaviota ei voitu luoda. Yritä uudelleen.",
+        "dialogTitle": "Jaa kaavio"
       }
     },
     "commerce": {
@@ -13565,6 +13781,30 @@
             "needsContent": "L'explication doit contenir des lettres ou des chiffres."
           }
         }
+      },
+      "chart": {
+        "title": "Grille du modèle",
+        "description": "Une image imprimable de ce modèle avec grille de couleurs, légende des fils et un lien QR vers Stitch Wish.",
+        "freeIfCompleted": "Gratuit quand tu termines ce modèle.",
+        "buy": "Obtenir la grille pour {{price}} Stitch Coin",
+        "buying": "Obtention de la grille…",
+        "generate": "Générer la grille",
+        "regenerate": "Régénérer la grille",
+        "generating": "Génération de la grille…",
+        "checking": "Vérification de l'accès à la grille…",
+        "loadFailed": "Impossible de vérifier l'accès à la grille. Vérifie ta connexion et réessaie.",
+        "retry": "Réessayer",
+        "signIn": {
+          "body": "Connecte-toi pour obtenir une grille imprimable de ce modèle.",
+          "button": "Se connecter"
+        },
+        "insufficient": "Il te manque {{shortfall}} Stitch Coin pour cette grille.",
+        "priceChanged": "Le prix de la grille est passé à {{price}} Stitch Coin. Vérifie-le et réessaie.",
+        "unavailable": "Cette grille n'est plus disponible.",
+        "accessRequired": "Tu n'as pas encore accès à cette grille.",
+        "sharingUnavailable": "Le partage n'est pas disponible sur cet appareil.",
+        "generateFailed": "Impossible de générer la grille. Réessaie.",
+        "dialogTitle": "Partager la grille"
       }
     },
     "commerce": {
@@ -15052,6 +15292,30 @@
             "needsContent": "स्पष्टीकरण में अक्षर या संख्याएँ होनी चाहिए।"
           }
         }
+      },
+      "chart": {
+        "title": "पैटर्न चार्ट",
+        "description": "इस पैटर्न की प्रिंट करने योग्य इमेज, जिसमें रंगीन ग्रिड, धागों की सूची और Stitch Wish का QR लिंक है।",
+        "freeIfCompleted": "यह पैटर्न पूरा करने पर मुफ़्त।",
+        "buy": "{{price}} कॉइन में चार्ट पाएँ",
+        "buying": "चार्ट प्राप्त किया जा रहा है…",
+        "generate": "चार्ट बनाएँ",
+        "regenerate": "चार्ट फिर से बनाएँ",
+        "generating": "चार्ट बनाया जा रहा है…",
+        "checking": "चार्ट एक्सेस जाँचा जा रहा है…",
+        "loadFailed": "चार्ट एक्सेस नहीं जाँचा जा सका। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+        "retry": "फिर कोशिश करें",
+        "signIn": {
+          "body": "इस पैटर्न का प्रिंट करने योग्य चार्ट पाने के लिए साइन इन करें।",
+          "button": "साइन इन करें"
+        },
+        "insufficient": "इस चार्ट के लिए आपको {{shortfall}} कॉइन और चाहिए।",
+        "priceChanged": "चार्ट की कीमत बदलकर {{price}} कॉइन हो गई है। इसे देखें और फिर कोशिश करें।",
+        "unavailable": "यह चार्ट अब उपलब्ध नहीं है।",
+        "accessRequired": "आपके पास अभी इस चार्ट का एक्सेस नहीं है।",
+        "sharingUnavailable": "इस डिवाइस पर शेयरिंग उपलब्ध नहीं है।",
+        "generateFailed": "चार्ट नहीं बनाया जा सका। कृपया फिर कोशिश करें।",
+        "dialogTitle": "चार्ट शेयर करें"
       }
     },
     "commerce": {
@@ -16539,6 +16803,30 @@
             "needsContent": "Objašnjenje mora sadržavati slova ili brojeve."
           }
         }
+      },
+      "chart": {
+        "title": "Shema uzorka",
+        "description": "Slika ovog uzorka za ispis s obojenom mrežom, legendom niti i QR poveznicom na Stitch Wish.",
+        "freeIfCompleted": "Besplatno kad dovršiš ovaj uzorak.",
+        "buy": "Nabavi shemu za {{price}} Coin",
+        "buying": "Nabavljanje sheme…",
+        "generate": "Izradi shemu",
+        "regenerate": "Ponovno izradi shemu",
+        "generating": "Izrada sheme…",
+        "checking": "Provjera pristupa shemi…",
+        "loadFailed": "Nije moguće provjeriti pristup shemi. Provjeri vezu i pokušaj ponovno.",
+        "retry": "Pokušaj ponovno",
+        "signIn": {
+          "body": "Prijavi se za ispisivu shemu ovog uzorka.",
+          "button": "Prijava"
+        },
+        "insufficient": "Za ovu shemu trebaš još {{shortfall}} Coin.",
+        "priceChanged": "Cijena sheme promijenila se na {{price}} Coin. Provjeri je i pokušaj ponovno.",
+        "unavailable": "Ova shema više nije dostupna.",
+        "accessRequired": "Još nemaš pristup ovoj shemi.",
+        "sharingUnavailable": "Dijeljenje nije dostupno na ovom uređaju.",
+        "generateFailed": "Shema se nije mogla izraditi. Pokušaj ponovno.",
+        "dialogTitle": "Podijeli shemu"
       }
     },
     "commerce": {
@@ -18026,6 +18314,30 @@
             "needsContent": "A magyarázatnak betűket vagy számokat kell tartalmaznia."
           }
         }
+      },
+      "chart": {
+        "title": "Mintadiagram",
+        "description": "A minta nyomtatható képe színes rácsal, fonallegendával és a Stitch Wishre mutató QR-hivatkozással.",
+        "freeIfCompleted": "Ingyenes, ha befejezed ezt a mintát.",
+        "buy": "Diagram megszerzése {{price}} Coinért",
+        "buying": "Diagram megszerzése…",
+        "generate": "Diagram készítése",
+        "regenerate": "Diagram újrakészítése",
+        "generating": "Diagram készítése…",
+        "checking": "Diagram-hozzáférés ellenőrzése…",
+        "loadFailed": "Nem sikerült ellenőrizni a diagram-hozzáférést. Ellenőrizd a kapcsolatot, és próbáld újra.",
+        "retry": "Próbáld újra",
+        "signIn": {
+          "body": "Jelentkezz be, hogy nyomtatható diagramot kapj ehhez a mintához.",
+          "button": "Bejelentkezés"
+        },
+        "insufficient": "Még {{shortfall}} Coin kell ehhez a diagramhoz.",
+        "priceChanged": "A diagram ára {{price}} Coinra változott. Nézd át, és próbáld újra.",
+        "unavailable": "Ez a diagram már nem érhető el.",
+        "accessRequired": "Még nincs hozzáférésed ehhez a diagramhoz.",
+        "sharingUnavailable": "A megosztás nem érhető el ezen az eszközön.",
+        "generateFailed": "Nem sikerült elkészíteni a diagramot. Próbáld újra.",
+        "dialogTitle": "Diagram megosztása"
       }
     },
     "commerce": {
@@ -19513,6 +19825,30 @@
             "needsContent": "Penjelasan harus berisi huruf atau angka."
           }
         }
+      },
+      "chart": {
+        "title": "Bagan pola",
+        "description": "Gambar pola ini yang dapat dicetak dengan kisi berwarna, legenda benang, dan tautan QR ke Stitch Wish.",
+        "freeIfCompleted": "Gratis saat kamu menyelesaikan pola ini.",
+        "buy": "Dapatkan bagan dengan {{price}} koin",
+        "buying": "Mendapatkan bagan…",
+        "generate": "Buat bagan",
+        "regenerate": "Buat ulang bagan",
+        "generating": "Membuat bagan…",
+        "checking": "Memeriksa akses bagan…",
+        "loadFailed": "Tidak dapat memeriksa akses bagan. Periksa koneksimu dan coba lagi.",
+        "retry": "Coba lagi",
+        "signIn": {
+          "body": "Masuk untuk mendapatkan bagan pola ini yang dapat dicetak.",
+          "button": "Masuk"
+        },
+        "insufficient": "Kamu butuh {{shortfall}} koin lagi untuk bagan ini.",
+        "priceChanged": "Harga bagan berubah menjadi {{price}} koin. Periksa lalu coba lagi.",
+        "unavailable": "Bagan ini tidak lagi tersedia.",
+        "accessRequired": "Kamu belum memiliki akses ke bagan ini.",
+        "sharingUnavailable": "Berbagi tidak tersedia di perangkat ini.",
+        "generateFailed": "Tidak dapat membuat bagan. Silakan coba lagi.",
+        "dialogTitle": "Bagikan bagan"
       }
     },
     "commerce": {
@@ -21000,6 +21336,30 @@
             "needsContent": "La spiegazione deve includere lettere o numeri."
           }
         }
+      },
+      "chart": {
+        "title": "Schema del modello",
+        "description": "Un'immagine stampabile di questo modello con griglia a colori, legenda dei fili e un link QR a Stitch Wish.",
+        "freeIfCompleted": "Gratis quando completi questo modello.",
+        "buy": "Ottieni lo schema per {{price}} Coin",
+        "buying": "Recupero dello schema…",
+        "generate": "Genera schema",
+        "regenerate": "Rigenera schema",
+        "generating": "Generazione dello schema…",
+        "checking": "Verifica dell'accesso allo schema…",
+        "loadFailed": "Impossibile verificare l'accesso allo schema. Controlla la connessione e riprova.",
+        "retry": "Riprova",
+        "signIn": {
+          "body": "Accedi per ottenere uno schema stampabile di questo modello.",
+          "button": "Accedi"
+        },
+        "insufficient": "Ti servono altri {{shortfall}} Coin per questo schema.",
+        "priceChanged": "Il prezzo dello schema è cambiato in {{price}} Coin. Controllalo e riprova.",
+        "unavailable": "Questo schema non è più disponibile.",
+        "accessRequired": "Non hai ancora accesso a questo schema.",
+        "sharingUnavailable": "La condivisione non è disponibile su questo dispositivo.",
+        "generateFailed": "Impossibile generare lo schema. Riprova.",
+        "dialogTitle": "Condividi schema"
       }
     },
     "commerce": {
@@ -22487,6 +22847,30 @@
             "needsContent": "説明には文字または数字を含める必要があります。"
           }
         }
+      },
+      "chart": {
+        "title": "パターンチャート",
+        "description": "色分けされたグリッド、糸の凡例、Stitch WishへのQRリンクが入った、このパターンの印刷用画像です。",
+        "freeIfCompleted": "このパターンを完成させると無料になります。",
+        "buy": "{{price}} Coinでチャートを入手",
+        "buying": "チャートを入手中…",
+        "generate": "チャートを作成",
+        "regenerate": "チャートを再作成",
+        "generating": "チャートを作成中…",
+        "checking": "チャートの利用可否を確認中…",
+        "loadFailed": "チャートの利用可否を確認できませんでした。接続を確認して、もう一度お試しください。",
+        "retry": "再試行",
+        "signIn": {
+          "body": "このパターンの印刷用チャートを入手するにはログインしてください。",
+          "button": "ログイン"
+        },
+        "insufficient": "このチャートにはあと {{shortfall}} Coin必要です。",
+        "priceChanged": "チャートの価格が {{price}} Coinに変更されました。確認してもう一度お試しください。",
+        "unavailable": "このチャートは利用できなくなりました。",
+        "accessRequired": "このチャートはまだ利用できません。",
+        "sharingUnavailable": "このデバイスでは共有を利用できません。",
+        "generateFailed": "チャートを作成できませんでした。もう一度お試しください。",
+        "dialogTitle": "チャートを共有"
       }
     },
     "commerce": {
@@ -23974,6 +24358,30 @@
             "needsContent": "설명에 문자나 숫자가 포함되어야 합니다."
           }
         }
+      },
+      "chart": {
+        "title": "패턴 차트",
+        "description": "색상 격자, 실 범례, Stitch Wish로 연결되는 QR 링크가 담긴 이 패턴의 인쇄용 이미지입니다.",
+        "freeIfCompleted": "이 패턴을 완성하면 무료입니다.",
+        "buy": "{{price}} Coin으로 차트 받기",
+        "buying": "차트를 받는 중…",
+        "generate": "차트 만들기",
+        "regenerate": "차트 다시 만들기",
+        "generating": "차트를 만드는 중…",
+        "checking": "차트 이용 권한을 확인하는 중…",
+        "loadFailed": "차트 이용 권한을 확인하지 못했습니다. 연결을 확인하고 다시 시도하세요.",
+        "retry": "다시 시도",
+        "signIn": {
+          "body": "이 패턴의 인쇄용 차트를 받으려면 로그인하세요.",
+          "button": "로그인"
+        },
+        "insufficient": "이 차트에는 {{shortfall}} Coin이 더 필요합니다.",
+        "priceChanged": "차트 가격이 {{price}} Coin으로 바뀌었습니다. 확인하고 다시 시도하세요.",
+        "unavailable": "이 차트는 더 이상 이용할 수 없습니다.",
+        "accessRequired": "아직 이 차트를 이용할 수 없습니다.",
+        "sharingUnavailable": "이 기기에서는 공유를 사용할 수 없습니다.",
+        "generateFailed": "차트를 만들지 못했습니다. 다시 시도하세요.",
+        "dialogTitle": "차트 공유"
       }
     },
     "commerce": {
@@ -25461,6 +25869,30 @@
             "needsContent": "Penjelasan mesti mengandungi huruf atau nombor."
           }
         }
+      },
+      "chart": {
+        "title": "Carta corak",
+        "description": "Imej corak ini yang boleh dicetak dengan grid berwarna, legenda benang dan pautan QR ke Stitch Wish.",
+        "freeIfCompleted": "Percuma apabila anda menyelesaikan corak ini.",
+        "buy": "Dapatkan carta dengan {{price}} koin",
+        "buying": "Mendapatkan carta…",
+        "generate": "Jana carta",
+        "regenerate": "Jana semula carta",
+        "generating": "Menjana carta…",
+        "checking": "Menyemak akses carta…",
+        "loadFailed": "Tidak dapat menyemak akses carta. Semak sambungan anda dan cuba lagi.",
+        "retry": "Cuba lagi",
+        "signIn": {
+          "body": "Log masuk untuk mendapatkan carta corak ini yang boleh dicetak.",
+          "button": "Log masuk"
+        },
+        "insufficient": "Anda perlukan {{shortfall}} koin lagi untuk carta ini.",
+        "priceChanged": "Harga carta berubah kepada {{price}} koin. Semak dan cuba lagi.",
+        "unavailable": "Carta ini tidak lagi tersedia.",
+        "accessRequired": "Anda belum mempunyai akses kepada carta ini.",
+        "sharingUnavailable": "Perkongsian tidak tersedia pada peranti ini.",
+        "generateFailed": "Tidak dapat menjana carta. Sila cuba lagi.",
+        "dialogTitle": "Kongsi carta"
       }
     },
     "commerce": {
@@ -26948,6 +27380,30 @@
             "needsContent": "Forklaringen må inneholde bokstaver eller tall."
           }
         }
+      },
+      "chart": {
+        "title": "Mønsterdiagram",
+        "description": "Et utskriftsvennlig bilde av dette mønsteret med fargerutenett, garnforklaring og en QR-lenke til Stitch Wish.",
+        "freeIfCompleted": "Gratis når du fullfører dette mønsteret.",
+        "buy": "Få diagram for {{price}} mynt",
+        "buying": "Henter diagram…",
+        "generate": "Lag diagram",
+        "regenerate": "Lag diagram på nytt",
+        "generating": "Lager diagram…",
+        "checking": "Sjekker tilgang til diagram…",
+        "loadFailed": "Kunne ikke sjekke tilgangen til diagrammet. Sjekk tilkoblingen og prøv igjen.",
+        "retry": "Prøv igjen",
+        "signIn": {
+          "body": "Logg inn for å få et utskriftsvennlig diagram av dette mønsteret.",
+          "button": "Logg inn"
+        },
+        "insufficient": "Du mangler {{shortfall}} mynter til dette diagrammet.",
+        "priceChanged": "Diagrammets pris er endret til {{price}} mynt. Se over den og prøv igjen.",
+        "unavailable": "Dette diagrammet er ikke lenger tilgjengelig.",
+        "accessRequired": "Du har ikke tilgang til dette diagrammet ennå.",
+        "sharingUnavailable": "Deling er ikke tilgjengelig på denne enheten.",
+        "generateFailed": "Kunne ikke lage diagrammet. Prøv igjen.",
+        "dialogTitle": "Del diagram"
       }
     },
     "commerce": {
@@ -28435,6 +28891,30 @@
             "needsContent": "De toelichting moet letters of cijfers bevatten."
           }
         }
+      },
+      "chart": {
+        "title": "Patroonschema",
+        "description": "Een afdrukbare afbeelding van dit patroon met kleurenraster, garenlegenda en een QR-link naar Stitch Wish.",
+        "freeIfCompleted": "Gratis als je dit patroon voltooit.",
+        "buy": "Schema halen voor {{price}} coins",
+        "buying": "Schema ophalen…",
+        "generate": "Schema maken",
+        "regenerate": "Schema opnieuw maken",
+        "generating": "Schema maken…",
+        "checking": "Toegang tot schema controleren…",
+        "loadFailed": "Kon de toegang tot het schema niet controleren. Controleer je verbinding en probeer het opnieuw.",
+        "retry": "Opnieuw proberen",
+        "signIn": {
+          "body": "Log in om een afdrukbaar schema van dit patroon te krijgen.",
+          "button": "Inloggen"
+        },
+        "insufficient": "Je hebt nog {{shortfall}} coins nodig voor dit schema.",
+        "priceChanged": "De prijs van het schema is gewijzigd naar {{price}} coins. Bekijk het en probeer het opnieuw.",
+        "unavailable": "Dit schema is niet meer beschikbaar.",
+        "accessRequired": "Je hebt nog geen toegang tot dit schema.",
+        "sharingUnavailable": "Delen is niet beschikbaar op dit apparaat.",
+        "generateFailed": "Kon het schema niet maken. Probeer het opnieuw.",
+        "dialogTitle": "Schema delen"
       }
     },
     "commerce": {
@@ -29922,6 +30402,30 @@
             "needsContent": "Wyjaśnienie musi zawierać litery lub cyfry."
           }
         }
+      },
+      "chart": {
+        "title": "Wykres wzoru",
+        "description": "Obraz tego wzoru do wydruku z kolorową siatką, legendą nici i linkiem QR do Stitch Wish.",
+        "freeIfCompleted": "Bezpłatnie po ukończeniu tego wzoru.",
+        "buy": "Zdobądź wykres za {{price}} Coin",
+        "buying": "Pobieranie wykresu…",
+        "generate": "Utwórz wykres",
+        "regenerate": "Utwórz wykres ponownie",
+        "generating": "Tworzenie wykresu…",
+        "checking": "Sprawdzanie dostępu do wykresu…",
+        "loadFailed": "Nie udało się sprawdzić dostępu do wykresu. Sprawdź połączenie i spróbuj ponownie.",
+        "retry": "Spróbuj ponownie",
+        "signIn": {
+          "body": "Zaloguj się, aby zdobyć wykres tego wzoru do wydruku.",
+          "button": "Zaloguj się"
+        },
+        "insufficient": "Do tego wykresu brakuje Ci jeszcze {{shortfall}} Coin.",
+        "priceChanged": "Cena wykresu zmieniła się na {{price}} Coin. Sprawdź ją i spróbuj ponownie.",
+        "unavailable": "Ten wykres nie jest już dostępny.",
+        "accessRequired": "Nie masz jeszcze dostępu do tego wykresu.",
+        "sharingUnavailable": "Udostępnianie nie jest dostępne na tym urządzeniu.",
+        "generateFailed": "Nie udało się utworzyć wykresu. Spróbuj ponownie.",
+        "dialogTitle": "Udostępnij wykres"
       }
     },
     "commerce": {
@@ -31409,6 +31913,30 @@
             "needsContent": "A explicação deve incluir letras ou números."
           }
         }
+      },
+      "chart": {
+        "title": "Gráfico do padrão",
+        "description": "Uma imagem imprimível deste padrão com grelha de cores, legenda de fios e uma ligação QR para o Stitch Wish.",
+        "freeIfCompleted": "Grátis ao concluir este padrão.",
+        "buy": "Obter gráfico por {{price}} Coin",
+        "buying": "A obter gráfico…",
+        "generate": "Gerar gráfico",
+        "regenerate": "Gerar gráfico novamente",
+        "generating": "A gerar gráfico…",
+        "checking": "A verificar o acesso ao gráfico…",
+        "loadFailed": "Não foi possível verificar o acesso ao gráfico. Verifique a ligação e tente novamente.",
+        "retry": "Tentar novamente",
+        "signIn": {
+          "body": "Inicie sessão para obter um gráfico imprimível deste padrão.",
+          "button": "Iniciar sessão"
+        },
+        "insufficient": "Faltam {{shortfall}} Coin para este gráfico.",
+        "priceChanged": "O preço do gráfico mudou para {{price}} Coin. Confirme e tente novamente.",
+        "unavailable": "Este gráfico já não está disponível.",
+        "accessRequired": "Ainda não tem acesso a este gráfico.",
+        "sharingUnavailable": "A partilha não está disponível neste dispositivo.",
+        "generateFailed": "Não foi possível gerar o gráfico. Tente novamente.",
+        "dialogTitle": "Partilhar gráfico"
       }
     },
     "commerce": {
@@ -32896,6 +33424,30 @@
             "needsContent": "A explicação deve conter letras ou números."
           }
         }
+      },
+      "chart": {
+        "title": "Gráfico do padrão",
+        "description": "Uma imagem imprimível deste padrão com grade colorida, legenda de linhas e um link QR para o Stitch Wish.",
+        "freeIfCompleted": "Grátis ao concluir este padrão.",
+        "buy": "Obter gráfico por {{price}} Stitch Coin",
+        "buying": "Obtendo gráfico…",
+        "generate": "Gerar gráfico",
+        "regenerate": "Gerar gráfico novamente",
+        "generating": "Gerando gráfico…",
+        "checking": "Verificando acesso ao gráfico…",
+        "loadFailed": "Não foi possível verificar o acesso ao gráfico. Verifique sua conexão e tente novamente.",
+        "retry": "Tentar novamente",
+        "signIn": {
+          "body": "Entre para obter um gráfico imprimível deste padrão.",
+          "button": "Entrar"
+        },
+        "insufficient": "Faltam {{shortfall}} Stitch Coin para este gráfico.",
+        "priceChanged": "O preço do gráfico mudou para {{price}} Stitch Coin. Confira e tente novamente.",
+        "unavailable": "Este gráfico não está mais disponível.",
+        "accessRequired": "Você ainda não tem acesso a este gráfico.",
+        "sharingUnavailable": "O compartilhamento não está disponível neste dispositivo.",
+        "generateFailed": "Não foi possível gerar o gráfico. Tente novamente.",
+        "dialogTitle": "Compartilhar gráfico"
       }
     },
     "commerce": {
@@ -34383,6 +34935,30 @@
             "needsContent": "Explicația trebuie să conțină litere sau cifre."
           }
         }
+      },
+      "chart": {
+        "title": "Schema modelului",
+        "description": "O imagine imprimabilă a acestui model, cu grilă colorată, legenda firelor și un link QR către Stitch Wish.",
+        "freeIfCompleted": "Gratuit când finalizezi acest model.",
+        "buy": "Obține schema pentru {{price}} monede",
+        "buying": "Se obține schema…",
+        "generate": "Generează schema",
+        "regenerate": "Generează din nou schema",
+        "generating": "Se generează schema…",
+        "checking": "Se verifică accesul la schemă…",
+        "loadFailed": "Nu s-a putut verifica accesul la schemă. Verifică conexiunea și încearcă din nou.",
+        "retry": "Încearcă din nou",
+        "signIn": {
+          "body": "Autentifică-te pentru a obține o schemă imprimabilă a acestui model.",
+          "button": "Autentifică-te"
+        },
+        "insufficient": "Mai ai nevoie de {{shortfall}} monede pentru această schemă.",
+        "priceChanged": "Prețul schemei s-a schimbat la {{price}} monede. Verifică-l și încearcă din nou.",
+        "unavailable": "Această schemă nu mai este disponibilă.",
+        "accessRequired": "Nu ai încă acces la această schemă.",
+        "sharingUnavailable": "Partajarea nu este disponibilă pe acest dispozitiv.",
+        "generateFailed": "Nu s-a putut genera schema. Încearcă din nou.",
+        "dialogTitle": "Partajează schema"
       }
     },
     "commerce": {
@@ -35870,6 +36446,30 @@
             "needsContent": "Объяснение должно содержать буквы или цифры."
           }
         }
+      },
+      "chart": {
+        "title": "Схема узора",
+        "description": "Изображение этого узора для печати с цветной сеткой, легендой ниток и QR-ссылкой на Stitch Wish.",
+        "freeIfCompleted": "Бесплатно, когда вы завершите этот узор.",
+        "buy": "Получить схему за {{price}} Coin",
+        "buying": "Получение схемы…",
+        "generate": "Создать схему",
+        "regenerate": "Создать схему заново",
+        "generating": "Создание схемы…",
+        "checking": "Проверка доступа к схеме…",
+        "loadFailed": "Не удалось проверить доступ к схеме. Проверьте подключение и повторите попытку.",
+        "retry": "Повторить",
+        "signIn": {
+          "body": "Войдите, чтобы получить схему этого узора для печати.",
+          "button": "Войти"
+        },
+        "insufficient": "Для этой схемы не хватает {{shortfall}} Coin.",
+        "priceChanged": "Цена схемы изменилась на {{price}} Coin. Проверьте её и повторите попытку.",
+        "unavailable": "Эта схема больше недоступна.",
+        "accessRequired": "У вас пока нет доступа к этой схеме.",
+        "sharingUnavailable": "На этом устройстве функция «Поделиться» недоступна.",
+        "generateFailed": "Не удалось создать схему. Повторите попытку.",
+        "dialogTitle": "Поделиться схемой"
       }
     },
     "commerce": {
@@ -37357,6 +37957,30 @@
             "needsContent": "Vysvetlenie musí obsahovať písmená alebo číslice."
           }
         }
+      },
+      "chart": {
+        "title": "Schéma vzoru",
+        "description": "Tlačiteľný obrázok tohto vzoru s farebnou mriežkou, legendou nití a QR odkazom na Stitch Wish.",
+        "freeIfCompleted": "Zadarmo, keď tento vzor dokončíte.",
+        "buy": "Získať schému za {{price}} Coin",
+        "buying": "Získavam schému…",
+        "generate": "Vytvoriť schému",
+        "regenerate": "Vytvoriť schému znova",
+        "generating": "Vytváram schému…",
+        "checking": "Overujem prístup k schéme…",
+        "loadFailed": "Prístup k schéme sa nepodarilo overiť. Skontrolujte pripojenie a skúste to znova.",
+        "retry": "Skúsiť znova",
+        "signIn": {
+          "body": "Prihláste sa a získajte tlačiteľnú schému tohto vzoru.",
+          "button": "Prihlásiť sa"
+        },
+        "insufficient": "Na túto schému vám chýba ešte {{shortfall}} Coin.",
+        "priceChanged": "Cena schémy sa zmenila na {{price}} Coin. Skontrolujte ju a skúste to znova.",
+        "unavailable": "Táto schéma už nie je k dispozícii.",
+        "accessRequired": "K tejto schéme zatiaľ nemáte prístup.",
+        "sharingUnavailable": "Zdieľanie nie je na tomto zariadení k dispozícii.",
+        "generateFailed": "Schému sa nepodarilo vytvoriť. Skúste to znova.",
+        "dialogTitle": "Zdieľať schému"
       }
     },
     "commerce": {
@@ -38844,6 +39468,30 @@
             "needsContent": "Pojasnilo mora vsebovati črke ali številke."
           }
         }
+      },
+      "chart": {
+        "title": "Shema vzorca",
+        "description": "Slika tega vzorca za tiskanje z barvno mrežo, legendo niti in QR povezavo na Stitch Wish.",
+        "freeIfCompleted": "Brezplačno, ko dokončaš ta vzorec.",
+        "buy": "Pridobi shemo za {{price}} Coin",
+        "buying": "Pridobivanje sheme…",
+        "generate": "Ustvari shemo",
+        "regenerate": "Znova ustvari shemo",
+        "generating": "Ustvarjanje sheme…",
+        "checking": "Preverjanje dostopa do sheme…",
+        "loadFailed": "Dostopa do sheme ni bilo mogoče preveriti. Preveri povezavo in poskusi znova.",
+        "retry": "Poskusi znova",
+        "signIn": {
+          "body": "Prijavi se, da dobiš shemo tega vzorca za tiskanje.",
+          "button": "Prijava"
+        },
+        "insufficient": "Za to shemo potrebuješ še {{shortfall}} Coin.",
+        "priceChanged": "Cena sheme se je spremenila na {{price}} Coin. Preveri jo in poskusi znova.",
+        "unavailable": "Ta shema ni več na voljo.",
+        "accessRequired": "Do te sheme še nimaš dostopa.",
+        "sharingUnavailable": "Deljenje na tej napravi ni na voljo.",
+        "generateFailed": "Sheme ni bilo mogoče ustvariti. Poskusi znova.",
+        "dialogTitle": "Deli shemo"
       }
     },
     "commerce": {
@@ -40331,6 +40979,30 @@
             "needsContent": "Förklaringen måste innehålla bokstäver eller siffror."
           }
         }
+      },
+      "chart": {
+        "title": "Mönsterdiagram",
+        "description": "En utskrivbar bild av det här mönstret med färgrutnät, garnförklaring och en QR-länk till Stitch Wish.",
+        "freeIfCompleted": "Gratis när du slutför det här mönstret.",
+        "buy": "Skaffa diagram för {{price}} mynt",
+        "buying": "Hämtar diagram…",
+        "generate": "Skapa diagram",
+        "regenerate": "Skapa diagram igen",
+        "generating": "Skapar diagram…",
+        "checking": "Kontrollerar åtkomst till diagram…",
+        "loadFailed": "Det gick inte att kontrollera åtkomsten till diagrammet. Kontrollera anslutningen och försök igen.",
+        "retry": "Försök igen",
+        "signIn": {
+          "body": "Logga in för att få ett utskrivbart diagram över det här mönstret.",
+          "button": "Logga in"
+        },
+        "insufficient": "Du behöver {{shortfall}} mynt till för det här diagrammet.",
+        "priceChanged": "Diagrammets pris har ändrats till {{price}} mynt. Granska det och försök igen.",
+        "unavailable": "Det här diagrammet är inte längre tillgängligt.",
+        "accessRequired": "Du har inte åtkomst till det här diagrammet än.",
+        "sharingUnavailable": "Delning är inte tillgänglig på den här enheten.",
+        "generateFailed": "Det gick inte att skapa diagrammet. Försök igen.",
+        "dialogTitle": "Dela diagram"
       }
     },
     "commerce": {
@@ -41818,6 +42490,30 @@
             "needsContent": "Ang paliwanag ay dapat may titik o numero."
           }
         }
+      },
+      "chart": {
+        "title": "Tsart ng pattern",
+        "description": "Isang napi-print na larawan ng pattern na ito na may may-kulay na grid, legend ng sinulid, at QR link papunta sa Stitch Wish.",
+        "freeIfCompleted": "Libre kapag natapos mo ang pattern na ito.",
+        "buy": "Kunin ang tsart sa halagang {{price}} barya",
+        "buying": "Kinukuha ang tsart…",
+        "generate": "Gumawa ng tsart",
+        "regenerate": "Gumawa ulit ng tsart",
+        "generating": "Gumagawa ng tsart…",
+        "checking": "Sinusuri ang access sa tsart…",
+        "loadFailed": "Hindi masuri ang access sa tsart. Tingnan ang iyong koneksyon at subukan ulit.",
+        "retry": "Subukan ulit",
+        "signIn": {
+          "body": "Mag-sign in para makakuha ng napi-print na tsart ng pattern na ito.",
+          "button": "Mag-sign in"
+        },
+        "insufficient": "Kailangan mo pa ng {{shortfall}} barya para sa tsart na ito.",
+        "priceChanged": "Nagbago ang presyo ng tsart at naging {{price}} barya na. Suriin ito at subukan ulit.",
+        "unavailable": "Hindi na available ang tsart na ito.",
+        "accessRequired": "Wala ka pang access sa tsart na ito.",
+        "sharingUnavailable": "Hindi available ang pagbabahagi sa device na ito.",
+        "generateFailed": "Hindi magawa ang tsart. Pakisubukan ulit.",
+        "dialogTitle": "Ibahagi ang tsart"
       }
     },
     "commerce": {
@@ -43305,6 +44001,30 @@
             "needsContent": "Açıklama harf veya rakam içermeli."
           }
         }
+      },
+      "chart": {
+        "title": "Desen şeması",
+        "description": "Bu desenin renkli ızgara, iplik listesi ve Stitch Wish'e giden QR bağlantısı içeren yazdırılabilir görseli.",
+        "freeIfCompleted": "Bu deseni tamamladığında ücretsiz.",
+        "buy": "Şemayı {{price}} Coin ile al",
+        "buying": "Şema alınıyor…",
+        "generate": "Şema oluştur",
+        "regenerate": "Şemayı yeniden oluştur",
+        "generating": "Şema oluşturuluyor…",
+        "checking": "Şema erişimi kontrol ediliyor…",
+        "loadFailed": "Şema erişimi kontrol edilemedi. Bağlantını kontrol edip tekrar dene.",
+        "retry": "Tekrar dene",
+        "signIn": {
+          "body": "Bu desenin yazdırılabilir şemasını almak için giriş yap.",
+          "button": "Giriş yap"
+        },
+        "insufficient": "Bu şema için {{shortfall}} Coin daha gerekiyor.",
+        "priceChanged": "Şema fiyatı {{price}} Coin olarak değişti. İncele ve tekrar dene.",
+        "unavailable": "Bu şema artık mevcut değil.",
+        "accessRequired": "Bu şemaya henüz erişimin yok.",
+        "sharingUnavailable": "Bu cihazda paylaşım kullanılamıyor.",
+        "generateFailed": "Şema oluşturulamadı. Lütfen tekrar dene.",
+        "dialogTitle": "Şemayı paylaş"
       }
     },
     "commerce": {
@@ -44792,6 +45512,30 @@
             "needsContent": "Пояснення має містити літери або цифри."
           }
         }
+      },
+      "chart": {
+        "title": "Схема візерунка",
+        "description": "Зображення цього візерунка для друку з кольоровою сіткою, легендою ниток і QR-посиланням на Stitch Wish.",
+        "freeIfCompleted": "Безкоштовно, коли ви завершите цей візерунок.",
+        "buy": "Отримати схему за {{price}} Coin",
+        "buying": "Отримання схеми…",
+        "generate": "Створити схему",
+        "regenerate": "Створити схему знову",
+        "generating": "Створення схеми…",
+        "checking": "Перевірка доступу до схеми…",
+        "loadFailed": "Не вдалося перевірити доступ до схеми. Перевірте з'єднання й спробуйте ще раз.",
+        "retry": "Спробувати ще раз",
+        "signIn": {
+          "body": "Увійдіть, щоб отримати схему цього візерунка для друку.",
+          "button": "Увійти"
+        },
+        "insufficient": "Для цієї схеми бракує ще {{shortfall}} Coin.",
+        "priceChanged": "Ціна схеми змінилася на {{price}} Coin. Перевірте її й спробуйте ще раз.",
+        "unavailable": "Ця схема більше недоступна.",
+        "accessRequired": "У вас поки немає доступу до цієї схеми.",
+        "sharingUnavailable": "На цьому пристрої «Поділитися» недоступне.",
+        "generateFailed": "Не вдалося створити схему. Спробуйте ще раз.",
+        "dialogTitle": "Поділитися схемою"
       }
     },
     "commerce": {
@@ -46279,6 +47023,30 @@
             "needsContent": "Phần giải thích phải chứa chữ cái hoặc số."
           }
         }
+      },
+      "chart": {
+        "title": "Biểu đồ mẫu",
+        "description": "Hình ảnh có thể in của mẫu này, gồm lưới màu, chú giải chỉ và liên kết QR về Stitch Wish.",
+        "freeIfCompleted": "Miễn phí khi bạn hoàn thành mẫu này.",
+        "buy": "Nhận biểu đồ với {{price}} Coin",
+        "buying": "Đang nhận biểu đồ…",
+        "generate": "Tạo biểu đồ",
+        "regenerate": "Tạo lại biểu đồ",
+        "generating": "Đang tạo biểu đồ…",
+        "checking": "Đang kiểm tra quyền truy cập biểu đồ…",
+        "loadFailed": "Không thể kiểm tra quyền truy cập biểu đồ. Hãy kiểm tra kết nối và thử lại.",
+        "retry": "Thử lại",
+        "signIn": {
+          "body": "Đăng nhập để nhận biểu đồ có thể in của mẫu này.",
+          "button": "Đăng nhập"
+        },
+        "insufficient": "Bạn cần thêm {{shortfall}} Coin cho biểu đồ này.",
+        "priceChanged": "Giá biểu đồ đã đổi thành {{price}} Coin. Hãy xem lại và thử lại.",
+        "unavailable": "Biểu đồ này không còn khả dụng.",
+        "accessRequired": "Bạn chưa có quyền truy cập biểu đồ này.",
+        "sharingUnavailable": "Thiết bị này không hỗ trợ chia sẻ.",
+        "generateFailed": "Không thể tạo biểu đồ. Vui lòng thử lại.",
+        "dialogTitle": "Chia sẻ biểu đồ"
       }
     },
     "commerce": {
@@ -47766,6 +48534,30 @@
             "needsContent": "说明中必须包含字母或数字。"
           }
         }
+      },
+      "chart": {
+        "title": "图案图表",
+        "description": "这个图案的可打印图片，包含彩色网格、线色图例以及指向 Stitch Wish 的二维码链接。",
+        "freeIfCompleted": "完成这个图案后即可免费获得。",
+        "buy": "用 {{price}} 个 Coin 获取图表",
+        "buying": "正在获取图表…",
+        "generate": "生成图表",
+        "regenerate": "重新生成图表",
+        "generating": "正在生成图表…",
+        "checking": "正在检查图表访问权限…",
+        "loadFailed": "无法检查图表访问权限。请检查网络连接后重试。",
+        "retry": "重试",
+        "signIn": {
+          "body": "登录后即可获取此图案的可打印图表。",
+          "button": "登录"
+        },
+        "insufficient": "获取此图表还差 {{shortfall}} 个 Coin。",
+        "priceChanged": "图表价格已变为 {{price}} 个 Coin。请确认后重试。",
+        "unavailable": "此图表已不可用。",
+        "accessRequired": "你暂时还不能访问此图表。",
+        "sharingUnavailable": "此设备不支持分享。",
+        "generateFailed": "无法生成图表，请重试。",
+        "dialogTitle": "分享图表"
       }
     },
     "commerce": {
@@ -49253,6 +50045,30 @@
             "needsContent": "說明文字必須包含字母或數字。"
           }
         }
+      },
+      "chart": {
+        "title": "圖案圖表",
+        "description": "這個圖案的可列印圖片，包含彩色網格、線色圖例，以及連到 Stitch Wish 的 QR 連結。",
+        "freeIfCompleted": "完成這個圖案後即可免費取得。",
+        "buy": "用 {{price}} 枚 Coin 取得圖表",
+        "buying": "正在取得圖表…",
+        "generate": "產生圖表",
+        "regenerate": "重新產生圖表",
+        "generating": "正在產生圖表…",
+        "checking": "正在檢查圖表存取權限…",
+        "loadFailed": "無法檢查圖表存取權限。請檢查網路連線後再試一次。",
+        "retry": "再試一次",
+        "signIn": {
+          "body": "登入後即可取得此圖案的可列印圖表。",
+          "button": "登入"
+        },
+        "insufficient": "取得此圖表還差 {{shortfall}} 枚 Coin。",
+        "priceChanged": "圖表價格已變更為 {{price}} 枚 Coin。請確認後再試一次。",
+        "unavailable": "此圖表已無法使用。",
+        "accessRequired": "你目前還無法存取此圖表。",
+        "sharingUnavailable": "此裝置不支援分享。",
+        "generateFailed": "無法產生圖表，請再試一次。",
+        "dialogTitle": "分享圖表"
       }
     },
     "commerce": {

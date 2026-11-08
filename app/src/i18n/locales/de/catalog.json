@@ -180,5 +180,29 @@
         "needsContent": "Die Erklärung muss Buchstaben oder Zahlen enthalten."
       }
     }
+  },
+  "chart": {
+    "title": "Musterplan",
+    "description": "Ein druckbares Bild dieses Musters mit Farbraster, Garnlegende und einem QR-Link zu Stitch Wish.",
+    "freeIfCompleted": "Kostenlos, wenn du dieses Muster abschließt.",
+    "buy": "Plan für {{price}} Coins holen",
+    "buying": "Plan wird geholt…",
+    "generate": "Plan erstellen",
+    "regenerate": "Plan neu erstellen",
+    "generating": "Plan wird erstellt…",
+    "checking": "Zugriff auf den Plan wird geprüft…",
+    "loadFailed": "Der Zugriff auf den Plan konnte nicht geprüft werden. Prüfe deine Verbindung und versuche es erneut.",
+    "retry": "Erneut versuchen",
+    "signIn": {
+      "body": "Melde dich an, um einen druckbaren Plan dieses Musters zu erhalten.",
+      "button": "Anmelden"
+    },
+    "insufficient": "Für diesen Plan fehlen dir noch {{shortfall}} Coins.",
+    "priceChanged": "Der Planpreis hat sich auf {{price}} Coins geändert. Prüfe ihn und versuche es erneut.",
+    "unavailable": "Dieser Plan ist nicht mehr verfügbar.",
+    "accessRequired": "Du hast noch keinen Zugriff auf diesen Plan.",
+    "sharingUnavailable": "Teilen ist auf diesem Gerät nicht verfügbar.",
+    "generateFailed": "Der Plan konnte nicht erstellt werden. Bitte versuche es erneut.",
+    "dialogTitle": "Plan teilen"
   }
 }

@@ -117,6 +117,8 @@ function harness({ seeded = true, patternRow = {} as object } = {}) {
       const session = row(params[0]);
       return [{ id: session.id, principalType: 'account', principalId: session.principalId }];
     }
+    if (sql.includes('pattern_chart_entitlements')) return [{ eligible: true }];
+    if (sql.includes('SELECT pattern_id AS "patternId"')) return [{ patternId }];
     if (sql.includes('SELECT p.status')) return [{ status: 'available', patternId }];
     if (
       sql.includes('pg_advisory_xact_lock')
@@ -338,6 +340,7 @@ describe('ProgressSyncService.registerBundledSession', () => {
       await expect(service.complete(account, sessionId, { deviceId })).resolves.toEqual({
         revision: 0,
         terminalCompleted: true,
+        patternChartEntitled: true,
       });
       expect(coinLedger.grantFirstCompletion).not.toHaveBeenCalled();
     });

@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe, Query, UseGuards } from '@nestjs/common';
 import { CatalogService } from './catalog.service';
 import { OptionalJwtAuthGuard, OptionalPrincipal } from '../auth';
 import type { AuthPrincipal } from '../auth/auth.types';
@@ -62,7 +62,7 @@ export class CatalogController {
   @Get('patterns/:id')
   @UseGuards(OptionalJwtAuthGuard)
   async getPatternById(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Query('locale') locale?: string,
     @OptionalPrincipal() principal?: AuthPrincipal,
   ) {

@@ -1,6 +1,8 @@
 import {
   FIRST_COMPLETION_TIER_COIN,
   firstCompletionReward,
+  patternChartPrice,
+  patternChartTier,
 } from './economy.constants';
 
 describe('firstCompletionReward', () => {
@@ -28,5 +30,16 @@ describe('firstCompletionReward', () => {
       FIRST_COMPLETION_TIER_COIN.large,
     );
     expect(FIRST_COMPLETION_TIER_COIN.large).toBe(120);
+  });
+});
+
+describe('patternChartPrice', () => {
+  it('prices Small 20, Medium 40, Large 60 on the Completion Reward Tier boundaries', () => {
+    expect(patternChartPrice(1)).toBe(20);
+    expect(patternChartPrice(3_999)).toBe(20);
+    expect(patternChartPrice(4_000)).toBe(40);
+    expect(patternChartPrice(14_999)).toBe(40);
+    expect(patternChartPrice(15_000)).toBe(60);
+    expect(patternChartTier(15_000)).toBe('large');
   });
 });

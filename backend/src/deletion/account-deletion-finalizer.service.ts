@@ -191,6 +191,10 @@ export class AccountDeletionFinalizerService {
          WHERE principal_type = 'account' AND principal_id = $1`,
         [accountId],
       );
+      const countChartEntitlements = await manager.query<readonly { count: string }[]>(
+        `SELECT count(*)::text AS count FROM economy.pattern_chart_entitlements WHERE account_id = $1`,
+        [accountId],
+      );
       const countCoins = await manager.query<readonly { count: string }[]>(
         `SELECT count(*)::text AS count FROM economy.coin_balances
          WHERE principal_type = 'account' AND principal_id = $1`,
@@ -263,6 +267,7 @@ export class AccountDeletionFinalizerService {
           'social.pattern_likes': Number(countLikes[0]?.count ?? 0),
           'social.creator_blocks': Number(countBlocks[0]?.count ?? 0),
           'economy.pattern_unlocks': Number(countUnlocks[0]?.count ?? 0),
+          'economy.pattern_chart_entitlements': Number(countChartEntitlements[0]?.count ?? 0),
           'economy.coin_balances': Number(countCoins[0]?.count ?? 0),
           'economy.ai_credit_balances': Number(countAiCredits[0]?.count ?? 0),
           'economy.daily_color_action_counts': Number(countColorCounts[0]?.count ?? 0),
@@ -422,6 +427,10 @@ export class AccountDeletionFinalizerService {
       // Erase economy data
       await manager.query(
         `DELETE FROM economy.pattern_unlocks WHERE principal_type = 'account' AND principal_id = $1`,
+        [accountId],
+      );
+      await manager.query(
+        `DELETE FROM economy.pattern_chart_entitlements WHERE account_id = $1`,
         [accountId],
       );
       await manager.query(

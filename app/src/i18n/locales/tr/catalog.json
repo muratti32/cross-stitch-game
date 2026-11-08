@@ -180,5 +180,29 @@
         "needsContent": "Açıklama harf veya rakam içermeli."
       }
     }
+  },
+  "chart": {
+    "title": "Desen şeması",
+    "description": "Bu desenin renkli ızgara, iplik listesi ve Stitch Wish'e giden QR bağlantısı içeren yazdırılabilir görseli.",
+    "freeIfCompleted": "Bu deseni tamamladığında ücretsiz.",
+    "buy": "Şemayı {{price}} Coin ile al",
+    "buying": "Şema alınıyor…",
+    "generate": "Şema oluştur",
+    "regenerate": "Şemayı yeniden oluştur",
+    "generating": "Şema oluşturuluyor…",
+    "checking": "Şema erişimi kontrol ediliyor…",
+    "loadFailed": "Şema erişimi kontrol edilemedi. Bağlantını kontrol edip tekrar dene.",
+    "retry": "Tekrar dene",
+    "signIn": {
+      "body": "Bu desenin yazdırılabilir şemasını almak için giriş yap.",
+      "button": "Giriş yap"
+    },
+    "insufficient": "Bu şema için {{shortfall}} Coin daha gerekiyor.",
+    "priceChanged": "Şema fiyatı {{price}} Coin olarak değişti. İncele ve tekrar dene.",
+    "unavailable": "Bu şema artık mevcut değil.",
+    "accessRequired": "Bu şemaya henüz erişimin yok.",
+    "sharingUnavailable": "Bu cihazda paylaşım kullanılamıyor.",
+    "generateFailed": "Şema oluşturulamadı. Lütfen tekrar dene.",
+    "dialogTitle": "Şemayı paylaş"
   }
 }

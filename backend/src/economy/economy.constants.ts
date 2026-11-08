@@ -52,6 +52,24 @@ export const UNLOCK_PRICE_TIER_COIN = { small: 75, medium: 150, large: 300 } as 
 export type UnlockPriceTier = keyof typeof UNLOCK_PRICE_TIER_COIN; // 'small'|'medium'|'large'
 export function unlockPrice(tier: UnlockPriceTier): number { return UNLOCK_PRICE_TIER_COIN[tier]; }
 
+/**
+ * Pattern Chart Image price tiers (ADR-0068). Tiered by stitchable cells with
+ * the same boundaries as the Completion Reward Tier, never by the operator-set
+ * `unlockPriceTier`.
+ */
+export const PATTERN_CHART_TIER_COIN = { small: 20, medium: 40, large: 60 } as const;
+export type PatternChartTier = keyof typeof PATTERN_CHART_TIER_COIN;
+
+export function patternChartTier(cells: number): PatternChartTier {
+  if (cells >= FIRST_COMPLETION_LARGE_MIN_CELLS) return 'large';
+  if (cells >= FIRST_COMPLETION_MEDIUM_MIN_CELLS) return 'medium';
+  return 'small';
+}
+
+export function patternChartPrice(cells: number): number {
+  return PATTERN_CHART_TIER_COIN[patternChartTier(cells)];
+}
+
 /** Coin auto-granted for completing one Daily Task (ADR-0011). */
 export const DAILY_TASK_COIN = 10;
 /** Task cells_100: total successful Stitch Actions required in a Reward Day. */

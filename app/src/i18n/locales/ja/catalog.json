@@ -180,5 +180,29 @@
         "needsContent": "説明には文字または数字を含める必要があります。"
       }
     }
+  },
+  "chart": {
+    "title": "パターンチャート",
+    "description": "色分けされたグリッド、糸の凡例、Stitch WishへのQRリンクが入った、このパターンの印刷用画像です。",
+    "freeIfCompleted": "このパターンを完成させると無料になります。",
+    "buy": "{{price}} Coinでチャートを入手",
+    "buying": "チャートを入手中…",
+    "generate": "チャートを作成",
+    "regenerate": "チャートを再作成",
+    "generating": "チャートを作成中…",
+    "checking": "チャートの利用可否を確認中…",
+    "loadFailed": "チャートの利用可否を確認できませんでした。接続を確認して、もう一度お試しください。",
+    "retry": "再試行",
+    "signIn": {
+      "body": "このパターンの印刷用チャートを入手するにはログインしてください。",
+      "button": "ログイン"
+    },
+    "insufficient": "このチャートにはあと {{shortfall}} Coin必要です。",
+    "priceChanged": "チャートの価格が {{price}} Coinに変更されました。確認してもう一度お試しください。",
+    "unavailable": "このチャートは利用できなくなりました。",
+    "accessRequired": "このチャートはまだ利用できません。",
+    "sharingUnavailable": "このデバイスでは共有を利用できません。",
+    "generateFailed": "チャートを作成できませんでした。もう一度お試しください。",
+    "dialogTitle": "チャートを共有"
   }
 }

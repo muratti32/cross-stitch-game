@@ -14,7 +14,9 @@ import { EconomyController } from './economy.controller';
 import { EconomyReadService } from './economy-read.service';
 import { RewardGrantService } from './reward-grant.service';
 import { PatternUnlockService } from './pattern-unlock.service';
-import { LocatorAttemptEntity, PatternUnlockEntity } from './entities';
+import { LocatorAttemptEntity, PatternChartEntitlementEntity, PatternUnlockEntity } from './entities';
+import { PatternChartRepository } from './pattern-chart.repository';
+import { PatternChartService } from './pattern-chart.service';
 import { DailyTaskController } from './daily-task.controller';
 import { DailyTaskService } from './daily-task.service';
 import { RevenueCatWebhookController } from './revenuecat-webhook.controller';
@@ -40,7 +42,7 @@ import { LocatorAttemptService } from './locator-attempt.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PatternEntity, PatternUnlockEntity, RegisteredAccountEntity, LocatorAttemptEntity]),
+    TypeOrmModule.forFeature([PatternEntity, PatternUnlockEntity, PatternChartEntitlementEntity, RegisteredAccountEntity, LocatorAttemptEntity]),
     AuthModule,
     AppConfigModule,
     forwardRef(() => PromotionModule),
@@ -66,6 +68,8 @@ import { LocatorAttemptService } from './locator-attempt.service';
     RewardGrantService,
     EconomyReadService,
     PatternUnlockService,
+    PatternChartRepository,
+    PatternChartService,
     DailyTaskService,
     RevenueCatWebhookVerifierService,
     RevenueCatWebhookService,

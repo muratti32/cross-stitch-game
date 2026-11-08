@@ -180,5 +180,29 @@
         "needsContent": "La explicación debe incluir letras o números."
       }
     }
+  },
+  "chart": {
+    "title": "Esquema del patrón",
+    "description": "Una imagen imprimible de este patrón con cuadrícula de colores, leyenda de hilos y un enlace QR a Stitch Wish.",
+    "freeIfCompleted": "Gratis al completar este patrón.",
+    "buy": "Obtener esquema por {{price}} monedas",
+    "buying": "Obteniendo esquema…",
+    "generate": "Generar esquema",
+    "regenerate": "Volver a generar esquema",
+    "generating": "Generando esquema…",
+    "checking": "Comprobando el acceso al esquema…",
+    "loadFailed": "No se pudo comprobar el acceso al esquema. Revisa tu conexión e inténtalo de nuevo.",
+    "retry": "Reintentar",
+    "signIn": {
+      "body": "Inicia sesión para obtener un esquema imprimible de este patrón.",
+      "button": "Iniciar sesión"
+    },
+    "insufficient": "Necesitas {{shortfall}} monedas más para este esquema.",
+    "priceChanged": "El precio del esquema cambió a {{price}} monedas. Revísalo e inténtalo de nuevo.",
+    "unavailable": "Este esquema ya no está disponible.",
+    "accessRequired": "Aún no tienes acceso a este esquema.",
+    "sharingUnavailable": "Compartir no está disponible en este dispositivo.",
+    "generateFailed": "No se pudo generar el esquema. Inténtalo de nuevo.",
+    "dialogTitle": "Compartir esquema"
   }
 }

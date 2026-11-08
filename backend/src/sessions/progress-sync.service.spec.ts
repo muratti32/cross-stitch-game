@@ -128,9 +128,13 @@ function guestHarness(overrides: Partial<GuestScenario> = {}) {
 function accountHarness({
   stitchableCellCount,
   completedCount,
+  official = true,
+  terminalCompletedAt = null,
 }: {
   stitchableCellCount: number | null;
   completedCount: number;
+  official?: boolean;
+  terminalCompletedAt?: string | null;
 }) {
   const query = jest.fn(async (sql: string, _params?: readonly unknown[]): Promise<readonly object[]> => {
     await Promise.resolve();
@@ -138,10 +142,12 @@ function accountHarness({
       return [{ id: sessionId, principalType: 'account', principalId: accountId }];
     }
     if (sql.includes('pg_advisory_xact_lock')) return [{ locked: null }];
+    if (sql.includes('pattern_chart_entitlements')) return [{ eligible: official }];
+    if (sql.includes('SELECT pattern_id AS "patternId"')) return [{ patternId }];
     if (sql.includes('SELECT p.status')) return [{ status: 'available', patternId }];
     if (sql.includes('INSERT INTO sessions.session_sync_state')) return [];
     if (sql.includes('FROM sessions.session_sync_state state')) {
-      return [{ revision: '17', terminalCompletedAt: null }];
+      return [{ revision: '17', terminalCompletedAt }];
     }
     if (sql.includes('COUNT(c.cell_index)')) {
       return [{
@@ -362,6 +368,7 @@ describe('ProgressSyncService.complete', () => {
       revision: 17,
       terminalCompleted: true,
       firstCompletionReward: { amount: 25, balance: 25 },
+      patternChartEntitled: true,
     });
     expect(fixture.checkpointService.writeCheckpoint).toHaveBeenCalledWith(
       fixture.manager,
@@ -378,6 +385,46 @@ describe('ProgressSyncService.complete', () => {
       sql.includes('INSERT INTO sessions.session_progress_flags'),
     );
     expect(flagWrite?.[1]).toEqual([sessionId]);
+  });
+
+  it('grants the Pattern Chart Entitlement with source completion inside the completion transaction', async () => {
+    const fixture = accountHarness({ stitchableCellCount: null, completedCount: 400 });
+
+    await fixture.service.complete(account, sessionId, { deviceId });
+
+    const grant = fixture.manager.query.mock.calls.find(([sql]) => sql.includes('pattern_chart_entitlements'));
+    expect(grant?.[1]).toEqual([accountId, patternId, 'completion']);
+    expect(grant?.[0]).toContain("creator_profile_id IS NULL");
+  });
+
+  it('omits patternChartEntitled for a Community or Personal Pattern', async () => {
+    const fixture = accountHarness({ stitchableCellCount: null, completedCount: 400, official: false });
+
+    const result = await fixture.service.complete(account, sessionId, { deviceId });
+
+    expect(result).not.toHaveProperty('patternChartEntitled');
+  });
+
+  it('does not grant when the session is not fully stitched', async () => {
+    const fixture = accountHarness({ stitchableCellCount: null, completedCount: 399 });
+
+    await expect(fixture.service.complete(account, sessionId, { deviceId })).rejects.toBeInstanceOf(ConflictException);
+    expect(fixture.manager.query.mock.calls.some(([sql]) => sql.includes('pattern_chart_entitlements'))).toBe(false);
+  });
+
+  it('re-asserts the entitlement when a completed session retries completion', async () => {
+    const fixture = accountHarness({
+      stitchableCellCount: null,
+      completedCount: 400,
+      terminalCompletedAt: '2026-11-08T10:00:00Z',
+    });
+
+    await expect(fixture.service.complete(account, sessionId, { deviceId })).resolves.toEqual({
+      revision: 17,
+      terminalCompleted: true,
+      patternChartEntitled: true,
+    });
+    expect(fixture.coinLedger.grantFirstCompletion).not.toHaveBeenCalled();
   });
 
   it('completes a sparse Pattern for an account at its stitchable count', async () => {

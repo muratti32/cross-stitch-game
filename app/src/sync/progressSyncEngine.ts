@@ -15,6 +15,7 @@ import { applyResolvedOperations } from './syncApply';
 import { markCriticalPathActivity } from '../perf/criticalPathSentinel';
 import { queryClient } from '../providers';
 import { coinBalanceQueryKey } from '../api/economy';
+import { patternChartsQueryKey } from '../api/patternCharts';
 import { captureProgressSyncError } from '../observability/sentry';
 
 // Express refuses a JSON body over 100kb, about 780 operations.
@@ -161,6 +162,9 @@ export async function completeSession(
   const result = await completeProgress(remoteSessionId, deviceId);
   if (result.firstCompletionReward) {
     queryClient.invalidateQueries({ queryKey: coinBalanceQueryKey });
+  }
+  if (result.patternChartEntitled) {
+    queryClient.invalidateQueries({ queryKey: patternChartsQueryKey });
   }
   return result.terminalCompleted;
 }

@@ -79,7 +79,7 @@ function seedV11Rows(identity: string): void {
 
     expect(await getSessions()).toEqual(firstRun);
     expect(await getLocalPatternLikes()).toEqual({ [STAR]: true });
-    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 14 });
+    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 15 });
   });
 
   test('a like or draft an old app made on the seeded catalog tile survives the rewrite', async () => {
@@ -98,7 +98,7 @@ function seedV11Rows(identity: string): void {
     expect(await getEditorDraft('starter_heart')).toBeNull();
     expect(await getEditorDraft(HEART)).toMatchObject({ width: 8 });
     expect(raw(GUEST).prepare('SELECT liked_at FROM pattern_likes').all()).toEqual([{ liked_at: '2026-01-02T00:00:00.000Z' }]);
-    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 14 });
+    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 15 });
   });
 
   test('each namespace is rewritten on its own open', async () => {
@@ -138,7 +138,7 @@ function seedV11Rows(identity: string): void {
     await reopen(GUEST);
 
     expect(compactionPlan().map(({ detail }) => detail).join()).toContain('USING INDEX');
-    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 14 });
+    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 15 });
   });
 });
 
@@ -171,6 +171,6 @@ function seedV11Rows(identity: string): void {
     expect((await getProgressOps('row')).map(({ opId, guestMerge }) => ({ opId, guestMerge }))).toEqual([
       { opId: 'old', guestMerge: false },
     ]);
-    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 14 });
+    expect(raw(GUEST).prepare('PRAGMA user_version;').get()).toEqual({ user_version: 15 });
   });
 });

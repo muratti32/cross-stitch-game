@@ -180,5 +180,29 @@
         "needsContent": "Explicația trebuie să conțină litere sau cifre."
       }
     }
+  },
+  "chart": {
+    "title": "Schema modelului",
+    "description": "O imagine imprimabilă a acestui model, cu grilă colorată, legenda firelor și un link QR către Stitch Wish.",
+    "freeIfCompleted": "Gratuit când finalizezi acest model.",
+    "buy": "Obține schema pentru {{price}} monede",
+    "buying": "Se obține schema…",
+    "generate": "Generează schema",
+    "regenerate": "Generează din nou schema",
+    "generating": "Se generează schema…",
+    "checking": "Se verifică accesul la schemă…",
+    "loadFailed": "Nu s-a putut verifica accesul la schemă. Verifică conexiunea și încearcă din nou.",
+    "retry": "Încearcă din nou",
+    "signIn": {
+      "body": "Autentifică-te pentru a obține o schemă imprimabilă a acestui model.",
+      "button": "Autentifică-te"
+    },
+    "insufficient": "Mai ai nevoie de {{shortfall}} monede pentru această schemă.",
+    "priceChanged": "Prețul schemei s-a schimbat la {{price}} monede. Verifică-l și încearcă din nou.",
+    "unavailable": "Această schemă nu mai este disponibilă.",
+    "accessRequired": "Nu ai încă acces la această schemă.",
+    "sharingUnavailable": "Partajarea nu este disponibilă pe acest dispozitiv.",
+    "generateFailed": "Nu s-a putut genera schema. Încearcă din nou.",
+    "dialogTitle": "Partajează schema"
   }
 }

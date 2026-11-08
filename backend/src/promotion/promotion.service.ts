@@ -25,6 +25,7 @@ import { applyPackagedProgress, readSurvivingSession } from './drained-session';
 import { markSessionHasProgress } from '../sessions/active-session';
 import { parsePackagedSessions } from './packaged-session';
 import { stitchableCells, type PatternCellCounts } from '../catalog/stitchable-cells';
+import { grantPatternChartEntitlement } from '../economy/pattern-chart-entitlement';
 import {
   DAILY_TASK_CELLS_TARGET,
   DAILY_TASK_COLOR_ACTIONS_MIN,
@@ -655,6 +656,8 @@ export class PromotionService {
           });
         }
 
+        await this.grantPromotedChartEntitlement(manager, accountId, patternId);
+
         return {
           status: merge.status,
           role: merge.role,
@@ -703,12 +706,33 @@ export class PromotionService {
         isLocked: false,
       };
     }
+    await this.grantPromotedChartEntitlement(manager, accountId, patternId);
     return {
       status: 'acknowledged',
       accountSessionId: survivor.id,
       isLocked: await this.isPromotionLocked(manager, accountId, patternId),
       ...(await readSurvivingSession(manager, survivor.id)),
     };
+  }
+
+  /**
+   * A finished Official Pattern moved to the account earns the Pattern Chart
+   * Entitlement in either promotion mode, whatever the Pattern's paid or unlock
+   * state (ADR-0068). It records a finished Pattern, not a First Completion Reward.
+   */
+  private async grantPromotedChartEntitlement(
+    manager: EntityManager,
+    accountId: string,
+    patternId: string,
+  ): Promise<void> {
+    const completed = await manager.query<readonly unknown[]>(
+      `SELECT 1 FROM sessions.stitching_sessions
+       WHERE principal_type = 'account' AND principal_id = $1 AND pattern_id = $2 AND status = 'completed'
+       LIMIT 1`,
+      [accountId, patternId],
+    );
+    if (completed.length === 0) return;
+    await grantPatternChartEntitlement(manager, accountId, patternId, 'promotion');
   }
 
   /** Promotion Session Merge by Pattern (ADR-0026); returns the session that survives. */

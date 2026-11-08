@@ -180,5 +180,29 @@
         "needsContent": "Pojasnilo mora vsebovati črke ali številke."
       }
     }
+  },
+  "chart": {
+    "title": "Shema vzorca",
+    "description": "Slika tega vzorca za tiskanje z barvno mrežo, legendo niti in QR povezavo na Stitch Wish.",
+    "freeIfCompleted": "Brezplačno, ko dokončaš ta vzorec.",
+    "buy": "Pridobi shemo za {{price}} Coin",
+    "buying": "Pridobivanje sheme…",
+    "generate": "Ustvari shemo",
+    "regenerate": "Znova ustvari shemo",
+    "generating": "Ustvarjanje sheme…",
+    "checking": "Preverjanje dostopa do sheme…",
+    "loadFailed": "Dostopa do sheme ni bilo mogoče preveriti. Preveri povezavo in poskusi znova.",
+    "retry": "Poskusi znova",
+    "signIn": {
+      "body": "Prijavi se, da dobiš shemo tega vzorca za tiskanje.",
+      "button": "Prijava"
+    },
+    "insufficient": "Za to shemo potrebuješ še {{shortfall}} Coin.",
+    "priceChanged": "Cena sheme se je spremenila na {{price}} Coin. Preveri jo in poskusi znova.",
+    "unavailable": "Ta shema ni več na voljo.",
+    "accessRequired": "Do te sheme še nimaš dostopa.",
+    "sharingUnavailable": "Deljenje na tej napravi ni na voljo.",
+    "generateFailed": "Sheme ni bilo mogoče ustvariti. Poskusi znova.",
+    "dialogTitle": "Deli shemo"
   }
 }

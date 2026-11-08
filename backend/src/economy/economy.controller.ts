@@ -9,6 +9,7 @@ import {
   RewardDayView,
 } from './economy-read.service';
 import { PatternUnlockService } from './pattern-unlock.service';
+import { PatternChartService } from './pattern-chart.service';
 import { AdAttemptService } from './ad-attempt.service';
 import type { AdAttemptStateView, OpenAdAttemptView } from './ad-attempt.types';
 import {
@@ -27,6 +28,15 @@ class ClaimClientRewardDto {
 class UnlockRequestDto {
   @IsUUID()
   patternId!: string;
+}
+
+class PurchasePatternChartDto {
+  @IsUUID()
+  patternId!: string;
+
+  @IsInt()
+  @Min(1)
+  expectedPrice!: number;
 }
 
 class PrepareLocatorAttemptDto implements PrepareLocatorAttemptInput {
@@ -98,6 +108,7 @@ export class EconomyController {
     private readonly patternUnlock: PatternUnlockService,
     private readonly adAttemptService: AdAttemptService,
     private readonly locatorAttemptService: LocatorAttemptService,
+    private readonly patternChart: PatternChartService,
   ) {}
 
   @Post('ad-attempts')
@@ -189,5 +200,29 @@ export class EconomyController {
   @Get('unlocks')
   async unlocks(@CurrentPrincipal() p: AuthPrincipal) {
     return this.patternUnlock.listUnlocks(p);
+  }
+
+  @Post('pattern-charts')
+  async purchasePatternChart(
+    @CurrentPrincipal() p: AuthPrincipal,
+    @Body() dto: PurchasePatternChartDto,
+  ) {
+    return this.patternChart.purchase(p, dto.patternId, dto.expectedPrice);
+  }
+
+  @Get('pattern-charts/:patternId')
+  async patternChartView(
+    @CurrentPrincipal() p: AuthPrincipal,
+    @Param('patternId', new ParseUUIDPipe()) patternId: string,
+  ) {
+    return this.patternChart.view(p, patternId);
+  }
+
+  @Post('pattern-charts/:patternId/artifact-grant')
+  async patternChartArtifactGrant(
+    @CurrentPrincipal() p: AuthPrincipal,
+    @Param('patternId', new ParseUUIDPipe()) patternId: string,
+  ) {
+    return this.patternChart.artifactGrant(p, patternId);
   }
 }

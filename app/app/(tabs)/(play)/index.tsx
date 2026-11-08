@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { StyleSheet, View, Text, FlatList, ActivityIndicator, Alert, Pressable, Dimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Screen, EmptyState, Card, PatternImage } from '@/components';
+import { Screen, EmptyState, Card, PatternImage, PatternChartSection } from '@/components';
 import { Theme } from '@/theme/theme';
 import { useTabBarSpace } from '@/theme/tabBar';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -15,6 +15,7 @@ import {
   useDownloadProgressStore,
 } from '@/session-preparation';
 import { Ionicons } from '@expo/vector-icons';
+import { useSessionOfficial } from '@/hooks/useSessionOfficial';
 import { catalogDetailRoute } from '@/navigation/catalogDetailRoute';
 import { isUnlockRequiredNote } from '@/session-preparation/unlockRequiredNote';
 
@@ -237,6 +238,9 @@ export default function PlayScreen() {
             </View>
             <Text style={styles.progressText}>{item.progress}%</Text>
           </View>
+          {item.status === 'completed' && item.source === 'catalog' && (
+            <CompletedSessionChart session={item} />
+          )}
         </View>
       </Card>
     );
@@ -286,6 +290,20 @@ export default function PlayScreen() {
         />
       )}
     </Screen>
+  );
+}
+
+function CompletedSessionChart({ session }: { session: StitchingSession }) {
+  const official = useSessionOfficial(session);
+  return (
+    <PatternChartSection
+      patternId={session.patternId}
+      variant="compact"
+      isOfficial={official}
+      localChecksum={session.artifactChecksum}
+      regenerate
+      locallyCompleted
+    />
   );
 }
 

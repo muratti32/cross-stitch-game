@@ -16,11 +16,16 @@ interface PatternMetadata {
   publishedAt: string
 }
 
+class UnavailableError extends Error {}
+class TemporaryError extends Error {}
+
 export function SharePatternPage() {
   const { id } = useParams<{ id: string }>()
   const [pattern, setPattern] = useState<PatternMetadata | null>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  // ADR-0022: only a definitive non-5xx response means unavailable; a network
+  // failure or 5xx is temporary and must not claim the pattern is gone.
+  const [error, setError] = useState<'unavailable' | 'temporary' | null>(null)
 
   useEffect(() => {
     if (!id) return
@@ -30,9 +35,8 @@ export function SharePatternPage() {
 
     fetch(`${apiUrl}/v1/catalog/patterns/${id}`)
       .then((res) => {
-        if (!res.ok) {
-          throw new Error('Pattern not found or unavailable')
-        }
+        if (res.status >= 500) throw new TemporaryError()
+        if (!res.ok) throw new UnavailableError()
         return res.json()
       })
       .then((data) => {
@@ -43,7 +47,7 @@ export function SharePatternPage() {
       })
       .catch((err) => {
         if (active) {
-          setError(err instanceof Error ? err.message : String(err))
+          setError(err instanceof UnavailableError ? 'unavailable' : 'temporary')
           setLoading(false)
         }
       })
@@ -69,9 +73,13 @@ export function SharePatternPage() {
       <main id="main-content" className="share-page">
         <div className="page-hero">
           <div className="container">
-            <h1 className="page-hero__title">Pattern Unavailable</h1>
+            <h1 className="page-hero__title">
+              {error === 'temporary' ? 'Pattern Temporarily Unavailable' : 'Pattern Unavailable'}
+            </h1>
             <p className="page-hero__subtitle">
-              This pattern is no longer available. It may have been withdrawn or removed by moderation.
+              {error === 'temporary'
+                ? 'We could not load this pattern right now. Please check your connection and try again in a moment.'
+                : 'This pattern is no longer available.'}
             </p>
           </div>
         </div>

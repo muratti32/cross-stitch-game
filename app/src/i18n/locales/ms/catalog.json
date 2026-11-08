@@ -180,5 +180,29 @@
         "needsContent": "Penjelasan mesti mengandungi huruf atau nombor."
       }
     }
+  },
+  "chart": {
+    "title": "Carta corak",
+    "description": "Imej corak ini yang boleh dicetak dengan grid berwarna, legenda benang dan pautan QR ke Stitch Wish.",
+    "freeIfCompleted": "Percuma apabila anda menyelesaikan corak ini.",
+    "buy": "Dapatkan carta dengan {{price}} koin",
+    "buying": "Mendapatkan carta…",
+    "generate": "Jana carta",
+    "regenerate": "Jana semula carta",
+    "generating": "Menjana carta…",
+    "checking": "Menyemak akses carta…",
+    "loadFailed": "Tidak dapat menyemak akses carta. Semak sambungan anda dan cuba lagi.",
+    "retry": "Cuba lagi",
+    "signIn": {
+      "body": "Log masuk untuk mendapatkan carta corak ini yang boleh dicetak.",
+      "button": "Log masuk"
+    },
+    "insufficient": "Anda perlukan {{shortfall}} koin lagi untuk carta ini.",
+    "priceChanged": "Harga carta berubah kepada {{price}} koin. Semak dan cuba lagi.",
+    "unavailable": "Carta ini tidak lagi tersedia.",
+    "accessRequired": "Anda belum mempunyai akses kepada carta ini.",
+    "sharingUnavailable": "Perkongsian tidak tersedia pada peranti ini.",
+    "generateFailed": "Tidak dapat menjana carta. Sila cuba lagi.",
+    "dialogTitle": "Kongsi carta"
   }
 }

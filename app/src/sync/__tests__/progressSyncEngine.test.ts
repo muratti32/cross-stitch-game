@@ -438,4 +438,18 @@ describe('syncSession', () => {
     });
     invalidateSpy.mockRestore();
   });
+
+  it('refreshes Pattern Chart Entitlements when completion reports one', async () => {
+    const invalidateSpy = jest.spyOn(queryClient, 'invalidateQueries');
+    mockedApi.completeProgress.mockResolvedValue({ revision: 5, terminalCompleted: true, patternChartEntitled: true });
+
+    await completeSession('remote-1', 'devA');
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['economy', 'pattern-charts'] });
+    invalidateSpy.mockClear();
+
+    mockedApi.completeProgress.mockResolvedValue({ revision: 6, terminalCompleted: true });
+    await completeSession('remote-1', 'devA');
+    expect(invalidateSpy).not.toHaveBeenCalled();
+    invalidateSpy.mockRestore();
+  });
 });

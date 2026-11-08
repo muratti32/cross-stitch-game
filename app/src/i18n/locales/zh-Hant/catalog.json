@@ -180,5 +180,29 @@
         "needsContent": "說明文字必須包含字母或數字。"
       }
     }
+  },
+  "chart": {
+    "title": "圖案圖表",
+    "description": "這個圖案的可列印圖片，包含彩色網格、線色圖例，以及連到 Stitch Wish 的 QR 連結。",
+    "freeIfCompleted": "完成這個圖案後即可免費取得。",
+    "buy": "用 {{price}} 枚 Coin 取得圖表",
+    "buying": "正在取得圖表…",
+    "generate": "產生圖表",
+    "regenerate": "重新產生圖表",
+    "generating": "正在產生圖表…",
+    "checking": "正在檢查圖表存取權限…",
+    "loadFailed": "無法檢查圖表存取權限。請檢查網路連線後再試一次。",
+    "retry": "再試一次",
+    "signIn": {
+      "body": "登入後即可取得此圖案的可列印圖表。",
+      "button": "登入"
+    },
+    "insufficient": "取得此圖表還差 {{shortfall}} 枚 Coin。",
+    "priceChanged": "圖表價格已變更為 {{price}} 枚 Coin。請確認後再試一次。",
+    "unavailable": "此圖表已無法使用。",
+    "accessRequired": "你目前還無法存取此圖表。",
+    "sharingUnavailable": "此裝置不支援分享。",
+    "generateFailed": "無法產生圖表，請再試一次。",
+    "dialogTitle": "分享圖表"
   }
 }

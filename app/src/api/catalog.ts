@@ -1,8 +1,9 @@
 import { useInfiniteQuery, useQuery, type InfiniteData } from '@tanstack/react-query';
 import { apiFetch } from './apiFetch';
 import { isBundledPatternId } from '../bundled-patterns/identity';
+import { isCatalogPatternId } from '../navigation/catalogPatternId';
 import { Config } from '../config';
-import { getCatalogCache, setCatalogCache } from '../local-db';
+import { deleteCatalogCache, getCatalogCache, setCatalogCache } from '../local-db';
 import { getSurfaceKey, getCacheKey, localeCacheLookupOrder } from '../catalog-cache-logic';
 import { getActiveLocale } from '../i18n/activeLocale';
 import { SUPPORTED_LOCALES } from '../i18n/supportedLocales';
@@ -158,6 +159,14 @@ async function fetchWithCatalogCache<T>(surfaceKey: string): Promise<CachedResul
     await setCatalogCache(cacheKey, JSON.stringify(data));
     return { data, fromCache: false, fetchedAt: null };
   } catch (err) {
+    // A 404 means the surface no longer exists (withdrawn, removed, held):
+    // never render a stale copy, and drop it so it cannot resurface offline.
+    if (err instanceof CatalogApiError && err.status === 404) {
+      for (const locale of SUPPORTED_LOCALES) {
+        await deleteCatalogCache(getCacheKey(surfaceKey, locale));
+      }
+      throw err;
+    }
     for (const locale of localeCacheLookupOrder(activeLocale, SUPPORTED_LOCALES)) {
       const cached = await getCatalogCache(getCacheKey(surfaceKey, locale));
       if (cached) {
@@ -170,6 +179,34 @@ async function fetchWithCatalogCache<T>(surfaceKey: string): Promise<CachedResul
     }
     throw err;
   }
+}
+
+/** An Official Pattern has no creator profile (ADR-0068); unknown when the field is absent from the payload. */
+export function isOfficialCatalogItem(item: Pick<CatalogPatternItem, 'creatorProfileId'>): boolean | null {
+  if (item.creatorProfileId === undefined) return null;
+  return item.creatorProfileId === null;
+}
+
+/** Official flag from the cached pattern detail under any supported locale; null when never cached. */
+export async function readCachedOfficialStatus(patternId: string): Promise<boolean | null> {
+  const surfaceKey = `/v1/catalog/patterns/${patternId}`;
+  for (const locale of localeCacheLookupOrder(getActiveLocale(), SUPPORTED_LOCALES)) {
+    try {
+      const cached = await getCatalogCache(getCacheKey(surfaceKey, locale));
+      if (cached) {
+        return isOfficialCatalogItem(JSON.parse(cached.payloadJson) as CatalogPatternItem);
+      }
+    } catch {
+      // An unreadable cache entry is the same as unknown.
+    }
+  }
+  return null;
+}
+
+/** Session flag first, then the catalog cache; unknown stays null so callers wait for the server. */
+export async function resolveSessionOfficial(session: { patternId: string; official?: boolean | null }): Promise<boolean | null> {
+  if (session.official === true || session.official === false) return session.official;
+  return readCachedOfficialStatus(session.patternId);
 }
 
 function withoutBundledPatterns(items: CatalogPatternItem[]): CatalogPatternItem[] {
@@ -302,9 +339,12 @@ export function useCatalogPattern(id: string | undefined, enabled: boolean) {
   const locale = getActiveLocale();
   return useQuery<CachedResult<CatalogPatternItem>>({
     queryKey: ['catalog', 'pattern', id, locale],
-    enabled: enabled && !!id,
+    // A non-UUID id names no server pattern: never fetch it.
+    enabled: enabled && !!id && isCatalogPatternId(id),
     queryFn: () =>
-      fetchWithCatalogCache<CatalogPatternItem>(`/v1/catalog/patterns/${id}`),
+      fetchWithCatalogCache<CatalogPatternItem>(
+        `/v1/catalog/patterns/${encodeURIComponent(id as string)}`,
+      ),
   });
 }
 
