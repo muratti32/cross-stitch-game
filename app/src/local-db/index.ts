@@ -25,6 +25,8 @@ export interface StitchingSession {
   previewUrl?: string | null;
   thumbnailUrl?: string | null;
   patternWidth?: number | null;
+  /** Official Pattern flag recorded at preparation; null/absent = unknown. */
+  official?: boolean | null;
   patternHeight?: number | null;
 }
 
@@ -824,6 +826,20 @@ export async function initDatabaseForDb(db: SQLite.SQLiteDatabase): Promise<void
       await db.execAsync('PRAGMA user_version = 14;');
     });
   }
+
+  if (currentVersion < 15) {
+    await runInTransaction(db, async () => {
+      // Official Pattern flag recorded when a catalog session is prepared (ADR-0068).
+      // NULL means unknown: existing rows stay unknown and fall back to the catalog cache.
+      const column = await db.getFirstAsync<{ count: number }>(
+        "SELECT COUNT(*) AS count FROM pragma_table_info('sessions') WHERE name = 'official'",
+      );
+      if ((column?.count ?? 0) === 0) {
+        await db.execAsync('ALTER TABLE sessions ADD COLUMN official INTEGER;');
+      }
+      await db.execAsync('PRAGMA user_version = 15;');
+    });
+  }
 }
 
 /**
@@ -1009,6 +1025,8 @@ export interface SessionPatternMeta {
   thumbnailUrl: string | null;
   width: number;
   height: number;
+  /** Official Pattern flag (no creator profile), when the caller knows it. */
+  official?: boolean | null;
 }
 
 /**
@@ -1119,6 +1137,14 @@ async function queueCompactedCellsWithDb(db: SQLite.SQLiteDatabase, sessionId: s
   await setDeviceSeqHighWithDb(db, deviceSeq);
 }
 
+function officialToColumn(value: boolean | null | undefined): number | null {
+  return value === undefined || value === null ? null : value ? 1 : 0;
+}
+
+function columnToOfficial(value: number | null | undefined): boolean | null {
+  return value === undefined || value === null ? null : value === 1;
+}
+
 export async function createSession(
   patternId: string,
   checksum: string,
@@ -1134,8 +1160,8 @@ export async function createSession(
       const linkedTo =
         remoteSessionId !== null && (await remoteSessionHeldByOtherRow(db, remoteSessionId, id)) ? null : remoteSessionId;
       await db.runAsync(
-        `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, remote_session_id, title, preview_url, thumbnail_url, pattern_width, pattern_height)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, remote_session_id, title, preview_url, thumbnail_url, pattern_width, pattern_height, official)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         id,
         patternId,
         source,
@@ -1149,6 +1175,7 @@ export async function createSession(
         patternMeta?.thumbnailUrl ?? null,
         patternMeta?.width ?? null,
         patternMeta?.height ?? null,
+        officialToColumn(patternMeta?.official),
       );
       return linkedTo;
     });
@@ -1167,6 +1194,7 @@ export async function createSession(
       thumbnailUrl: patternMeta?.thumbnailUrl ?? null,
       patternWidth: patternMeta?.width ?? null,
       patternHeight: patternMeta?.height ?? null,
+      official: patternMeta?.official ?? null,
     };
   });
 }
@@ -1191,8 +1219,8 @@ export async function createReplaySession(
     const patternId = parent.patternId;
 
     await db.runAsync(
-      `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, replay_of, title, preview_url, thumbnail_url, pattern_width, pattern_height)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO sessions (id, pattern_id, source, artifact_checksum, created_at, updated_at, status, replay_of, title, preview_url, thumbnail_url, pattern_width, pattern_height, official)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       id,
       patternId,
       source,
@@ -1206,6 +1234,7 @@ export async function createReplaySession(
       parent.thumbnailUrl ?? null,
       parent.patternWidth ?? null,
       parent.patternHeight ?? null,
+      officialToColumn(parent.official),
     );
 
     return {
@@ -1222,6 +1251,7 @@ export async function createReplaySession(
       thumbnailUrl: parent.thumbnailUrl ?? null,
       patternWidth: parent.patternWidth ?? null,
       patternHeight: parent.patternHeight ?? null,
+      official: parent.official ?? null,
     };
   });
 }
@@ -1260,6 +1290,7 @@ export async function getSessions(): Promise<StitchingSession[]> {
       thumbnail_url?: string | null;
       pattern_width?: number | null;
       pattern_height?: number | null;
+      official?: number | null;
     }>('SELECT * FROM sessions ORDER BY updated_at DESC');
 
     return rows.map((row) => ({
@@ -1279,6 +1310,7 @@ export async function getSessions(): Promise<StitchingSession[]> {
       thumbnailUrl: row.thumbnail_url ?? null,
       patternWidth: row.pattern_width ?? null,
       patternHeight: row.pattern_height ?? null,
+      official: columnToOfficial(row.official),
     }));
   });
 }
@@ -1304,6 +1336,7 @@ async function getSessionWithDb(
     thumbnail_url?: string | null;
     pattern_width?: number | null;
     pattern_height?: number | null;
+    official?: number | null;
   }>('SELECT * FROM sessions WHERE id = ?', id);
 
   if (!row) {
@@ -1327,6 +1360,7 @@ async function getSessionWithDb(
     thumbnailUrl: row.thumbnail_url ?? null,
     patternWidth: row.pattern_width ?? null,
     patternHeight: row.pattern_height ?? null,
+    official: columnToOfficial(row.official),
   };
 }
 

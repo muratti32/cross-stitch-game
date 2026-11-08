@@ -15,6 +15,7 @@ import {
   useDownloadProgressStore,
 } from '@/session-preparation';
 import { Ionicons } from '@expo/vector-icons';
+import { useSessionOfficial } from '@/hooks/useSessionOfficial';
 import { catalogDetailRoute } from '@/navigation/catalogDetailRoute';
 import { isUnlockRequiredNote } from '@/session-preparation/unlockRequiredNote';
 
@@ -238,13 +239,7 @@ export default function PlayScreen() {
             <Text style={styles.progressText}>{item.progress}%</Text>
           </View>
           {item.status === 'completed' && item.source === 'catalog' && (
-            <PatternChartSection
-              patternId={item.patternId}
-              variant="compact"
-              localChecksum={item.artifactChecksum}
-              regenerate
-              locallyCompleted
-            />
+            <CompletedSessionChart session={item} />
           )}
         </View>
       </Card>
@@ -295,6 +290,20 @@ export default function PlayScreen() {
         />
       )}
     </Screen>
+  );
+}
+
+function CompletedSessionChart({ session }: { session: StitchingSession }) {
+  const official = useSessionOfficial(session);
+  return (
+    <PatternChartSection
+      patternId={session.patternId}
+      variant="compact"
+      isOfficial={official}
+      localChecksum={session.artifactChecksum}
+      regenerate
+      locallyCompleted
+    />
   );
 }
 

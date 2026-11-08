@@ -198,19 +198,25 @@ describe('PatternChartSection', () => {
     expect(generate).toHaveBeenCalledWith(expect.objectContaining({ allowRemoteFetch: false, localChecksum: 'local-checksum' }));
   });
 
-  it('a local completion shows Generate at once while loading or offline, and still hides for a Guest', async () => {
+  it('a local completion generates offline for a known Official pattern, never for unknown, and never for a Guest', async () => {
     const pattern = { schemaVersion: 1, width: 1, height: 1, palette: [], grid: new Uint8Array(1) };
-    const props = { variant: 'compact' as const, isOfficial: undefined, pattern, locallyCompleted: true };
-    for (const state of [{ isLoading: true, isError: false, data: undefined }, { isLoading: false, isError: true, data: undefined }]) {
-      access.mockReturnValue({ ...state, refetch: jest.fn() });
-      const renderer = await render(props);
-      expect(texts(renderer)).toContain('Generate chart');
-      await act(async () => {
-        buttons(renderer)[0].props.onPress();
-      });
-      expect(generate).toHaveBeenLastCalledWith(expect.objectContaining({ pattern, allowRemoteFetch: false }));
-    }
+    const props = { variant: 'compact' as const, pattern, locallyCompleted: true };
+    access.mockReturnValue({ isLoading: false, isError: true, data: undefined, refetch: jest.fn() });
+
+    const renderer = await render({ ...props, isOfficial: true });
+    expect(texts(renderer)).toContain('Generate chart');
+    await act(async () => {
+      buttons(renderer)[0].props.onPress();
+    });
+    expect(generate).toHaveBeenLastCalledWith(expect.objectContaining({ pattern, allowRemoteFetch: false }));
+
+    expect(texts(await render({ ...props, isOfficial: undefined }))).not.toContain('Generate chart');
+    expect((await render({ ...props, isOfficial: false })).toJSON()).toBeNull();
+
+    access.mockReturnValue({ isLoading: true, isError: false, data: undefined, refetch: jest.fn() });
+    expect(texts(await render({ ...props, isOfficial: true }))).toContain('Checking chart access…');
+
     setIdentity(true, false);
-    expect((await render(props)).toJSON()).toBeNull();
+    expect((await render({ ...props, isOfficial: true })).toJSON()).toBeNull();
   });
 });

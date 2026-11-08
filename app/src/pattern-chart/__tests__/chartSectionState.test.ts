@@ -60,19 +60,32 @@ describe('decideChartSection', () => {
     expect(decideChartSection(input({ access: removed, hasLocalData: true, locallyCompleted: true, variant: 'compact' }))).toEqual({ kind: 'hidden', removed: true });
   });
 
-  it('a local completion generates at once: while loading, offline, or before the server accepts it', () => {
-    const base = { variant: 'compact' as const, locallyCompleted: true, hasLocalData: true, isOfficial: undefined };
-    expect(decideChartSection(input({ ...base, access: access(undefined, { isLoading: true }) }))).toEqual({ kind: 'generate', allowRemoteFetch: false, removed: false });
-    expect(decideChartSection(input({ ...base, access: access(undefined, { isError: true }) })).kind).toBe('generate');
-    expect(decideChartSection(input({ ...base, access: access(purchasable()) }))).toEqual({ kind: 'generate', allowRemoteFetch: false, removed: false });
-    expect(decideChartSection(input({ ...base, access: access(entitled()) }))).toEqual({ kind: 'generate', allowRemoteFetch: true, removed: false });
-  });
+  describe('local completion fast path', () => {
+    const base = { variant: 'compact' as const, locallyCompleted: true, hasLocalData: true, isOfficial: true as boolean | undefined };
 
-  it('a local completion without local data still waits for the server', () => {
-    expect(decideChartSection(input({ locallyCompleted: true, hasLocalData: false, variant: 'compact', access: access(undefined, { isLoading: true }) })).kind).toBe('loading');
+    it('generates offline (request errored) only for a known Official pattern, from local data', () => {
+      expect(decideChartSection(input({ ...base, access: access(undefined, { isError: true }) }))).toEqual({ kind: 'generate', allowRemoteFetch: false, removed: false });
+    });
+
+    it('generates when the server already answers entitled', () => {
+      expect(decideChartSection(input({ ...base, access: access(entitled()) }))).toEqual({ kind: 'generate', allowRemoteFetch: true, removed: false });
+    });
+
+    it('shows loading, not the fast path, while online and the request is pending', () => {
+      expect(decideChartSection(input({ ...base, access: access(undefined, { isLoading: true }) })).kind).toBe('loading');
+    });
+
+    it('does not generate from a not-yet-accepted completion while online (purchasable)', () => {
+      expect(decideChartSection(input({ ...base, access: access(purchasable()) })).kind).toBe('hidden');
+    });
+
+    it.each([undefined, false])('never generates offline when isOfficial is %s', (isOfficial) => {
+      const state = decideChartSection(input({ ...base, isOfficial, access: access(undefined, { isError: true }) }));
+      expect(state.kind).not.toBe('generate');
+    });
   });
 
   it('a local completion of a pattern the server calls ineligible stays hidden', () => {
-    expect(decideChartSection(input({ locallyCompleted: true, hasLocalData: true, access: access({ status: 'ineligible' }) })).kind).toBe('hidden');
+    expect(decideChartSection(input({ locallyCompleted: true, hasLocalData: true, isOfficial: true, access: access({ status: 'ineligible' }) })).kind).toBe('hidden');
   });
 });

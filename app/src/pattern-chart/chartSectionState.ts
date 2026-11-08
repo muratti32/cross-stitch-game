@@ -43,7 +43,11 @@ export function decideChartSection(input: ChartSectionInput): ChartSectionState 
   const available = data !== undefined && data.availability === 'available';
   const entitled = data?.status === 'entitled';
 
-  if (input.locallyCompleted && input.hasLocalData) {
+  // Local fast path (offline, or the server already says entitled) only for a pattern known to be Official:
+  // an unknown flag waits for the server so a Community Pattern is never drawn. While the request is still
+  // loading online we show loading instead.
+  const fastPathOpen = input.access.isError || entitled;
+  if (input.locallyCompleted && input.hasLocalData && input.isOfficial === true && fastPathOpen) {
     return { kind: 'generate', allowRemoteFetch: entitled && available, removed: false };
   }
   if (input.access.isLoading) return { kind: 'loading', removed: false };

@@ -329,6 +329,7 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
         thumbnailUrl: absoluteThumbnailUrls(item.thumbnailUrls)?.browsing ?? null,
         width: item.width,
         height: item.height,
+        official: !item.creatorProfileId,
       });
       router.navigate({
         pathname: '/(tabs)/(play)/[sessionId]',
@@ -362,6 +363,7 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
         thumbnailUrl: absoluteThumbnailUrls(item.thumbnailUrls)?.browsing ?? null,
         width: item.width,
         height: item.height,
+        official: !item.creatorProfileId,
       });
       router.navigate({
         pathname: '/(tabs)/(play)/[sessionId]',

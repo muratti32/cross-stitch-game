@@ -180,6 +180,34 @@ async function fetchWithCatalogCache<T>(surfaceKey: string): Promise<CachedResul
   }
 }
 
+/** An Official Pattern has no creator profile (ADR-0068); unknown when the field is absent from the payload. */
+export function isOfficialCatalogItem(item: Pick<CatalogPatternItem, 'creatorProfileId'>): boolean | null {
+  if (item.creatorProfileId === undefined) return null;
+  return item.creatorProfileId === null;
+}
+
+/** Official flag from the cached pattern detail under any supported locale; null when never cached. */
+export async function readCachedOfficialStatus(patternId: string): Promise<boolean | null> {
+  const surfaceKey = `/v1/catalog/patterns/${patternId}`;
+  for (const locale of localeCacheLookupOrder(getActiveLocale(), SUPPORTED_LOCALES)) {
+    try {
+      const cached = await getCatalogCache(getCacheKey(surfaceKey, locale));
+      if (cached) {
+        return isOfficialCatalogItem(JSON.parse(cached.payloadJson) as CatalogPatternItem);
+      }
+    } catch {
+      // An unreadable cache entry is the same as unknown.
+    }
+  }
+  return null;
+}
+
+/** Session flag first, then the catalog cache; unknown stays null so callers wait for the server. */
+export async function resolveSessionOfficial(session: { patternId: string; official?: boolean | null }): Promise<boolean | null> {
+  if (session.official === true || session.official === false) return session.official;
+  return readCachedOfficialStatus(session.patternId);
+}
+
 function withoutBundledPatterns(items: CatalogPatternItem[]): CatalogPatternItem[] {
   return items.filter((item) => !isBundledPatternId(item.id));
 }

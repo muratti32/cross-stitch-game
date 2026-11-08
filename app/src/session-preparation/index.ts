@@ -130,6 +130,8 @@ export interface PreparePatternInfo {
   thumbnailUrl: string | null;
   width: number;
   height: number;
+  /** Official Pattern flag (no creator profile) when the caller knows it. */
+  official?: boolean;
 }
 
 export async function prepareCatalogSession(

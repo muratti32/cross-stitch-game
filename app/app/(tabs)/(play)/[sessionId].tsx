@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, ActivityIndicator, Pressable, ScrollView, Alert
 import { useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useRouter, useNavigation, useFocusEffect, useIsFocused } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useSessionOfficial } from '@/hooks/useSessionOfficial';
 import { Screen, Button, LocatorCoinShortfallSheet, PatternChartSection } from '@/components';
 import type { LocatorShortfallPrimaryAction } from '@/components';
 import { Theme } from '@/theme/theme';
@@ -133,6 +134,7 @@ export default function SessionReadyScreen() {
   const [locatorBusy, setLocatorBusy] = useState(false);
   const { data: locatorPrice } = useLocatorPrice();
   const isAccount = useIdentityStore((state) => state.isAccount);
+  const sessionOfficial = useSessionOfficial(session);
   // An Android Guest Player has no supported Stitch Coin Pack purchase path, so the
   // sheet promises registration or sign-in instead and continues the same
   // shortfall intent into Commerce afterwards (#267).
@@ -835,7 +837,7 @@ export default function SessionReadyScreen() {
                 <PatternChartSection
                   patternId={session.patternId}
                   variant="compact"
-                  isOfficial={session.source === 'catalog' ? undefined : false}
+                  isOfficial={session.source === 'catalog' ? sessionOfficial : false}
                   pattern={patternData}
                   locallyCompleted
                 />
