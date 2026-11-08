@@ -473,6 +473,44 @@ describe('uploadPendingProgress completion retry', () => {
     expect(mockCompleteSession.mock.calls.map((call) => call[0])).toEqual(['remote_a', 'remote_b', 'remote_a', 'remote_b']);
   });
 
+  test('gives up on a 409 that never clears after five attempts in this process', async () => {
+    mockListAwaiting.mockResolvedValue([done('a')]);
+    mockSyncSession.mockResolvedValue({ serverRevision: 4, terminalCompleted: false, changedCells: [], conflictedCells: [], pullIncomplete: false });
+    mockCompleteSession.mockRejectedValue(statusError(409, 'not_finished'));
+
+    for (let pass = 0; pass < 7; pass += 1) await uploader.uploadPendingProgress();
+
+    expect(mockCompleteSession).toHaveBeenCalledTimes(5);
+    expect(mockCapture).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    ['syncSession', () => mockSyncSession.mockRejectedValueOnce(statusError(410, 'pattern_removed'))],
+    ['completeSession', () => {
+      syncReturning(false);
+      mockCompleteSession.mockRejectedValueOnce(statusError(410, 'pattern_removed'));
+    }],
+  ])('a removed pattern from %s wipes the offline file and is not retried or reported', async (_label, arrange) => {
+    mockListAwaiting.mockResolvedValue([done('a')]);
+    arrange();
+
+    await uploader.uploadPendingProgress();
+    await uploader.uploadPendingProgress();
+
+    expect(mockCapture).not.toHaveBeenCalled();
+    expect(mockDeleteOfflinePatternFile).toHaveBeenCalled();
+    expect(mockSyncSession.mock.calls.length).toBeLessThanOrEqual(1);
+  });
+
+  test('a row of unknown size leaves a breadcrumb', async () => {
+    mockListAwaiting.mockResolvedValue([done('a', { patternWidth: null, patternHeight: null })]);
+
+    await uploader.uploadPendingProgress();
+
+    expect(mockBreadcrumb).toHaveBeenCalledWith(expect.any(String), { sessionId: 'a' });
+    expect(mockSyncSession).not.toHaveBeenCalled();
+  });
+
   test('an offline failure stops the pass quietly', async () => {
     mockListAwaiting.mockResolvedValue([done('a'), done('b')]);
     syncReturning(false);
@@ -502,7 +540,7 @@ describe('uploadPendingProgress completion retry', () => {
 
     await uploader.uploadPendingProgress();
 
-    expect(mockCapture).toHaveBeenCalledWith('background-upload', expect.any(Error));
+    expect(mockCapture).toHaveBeenCalledWith('background-complete', expect.any(Error));
     expect(mockCompleteSession).toHaveBeenCalledWith('remote_b', 'device-1');
   });
 

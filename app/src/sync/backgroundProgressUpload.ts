@@ -24,6 +24,9 @@ interface PassOwner {
 const openSessionCounts = new Map<string, number>();
 // 404: not an account-owned session server-side. Skipped until the process restarts.
 const refusedSessionIds = new Set<string>();
+// 409 means the server is still catching up. Bounded so a stuck one stops retrying.
+const MAX_DEFERRED_COMPLETIONS = 5;
+const deferredCompletions = new Map<string, number>();
 let activeUpload: { sessionId: string; work: Promise<SessionResult> } | null = null;
 let activePass: Promise<void> | null = null;
 let passRequested = false;
@@ -106,33 +109,25 @@ async function uploadSession(
       remaining = length;
     }
   } catch (error) {
-    if (!(await passStillAllowed(owner))) return 'stopPass';
-    if (error instanceof ProgressSyncError && error.status === 404) {
-      refusedSessionIds.add(session.id);
-    } else if (error instanceof ProgressSyncError && error.code === 'pattern_removed') {
-      refusedSessionIds.add(session.id);
-      await removePatternLocally(session);
-    } else if (isOfflineNetworkError(error)) {
-      return 'stopPass';
-    } else {
-      captureProgressSyncError('background-upload', error);
-    }
+    return handleSessionFailure(owner, session, error, 'background-upload');
   }
-  return 'nextSession';
 }
 
 // Pulls the server state (draining any unacked ops, recording the terminal flag),
 // then finalizes a locally completed session the server still holds as active.
 // The server dedupes the First Completion Reward per account and pattern, and
 // completion is idempotent, so a repeated call is safe.
-async function completeLocally(
+async function retryServerCompletion(
   owner: PassOwner,
   session: StitchingSession,
   remoteSessionId: string,
 ): Promise<SessionResult> {
   try {
     const cellsLength = await cellsLengthOf(session);
-    if (cellsLength === null) return 'nextSession';
+    if (cellsLength === null) {
+      addProgressSyncBreadcrumb('Completion retry skipped a session of unknown size', { sessionId: session.id });
+      return 'nextSession';
+    }
     const sync = async (): Promise<boolean> => {
       const base = await rebuildProgressBase(session.id, cellsLength, true);
       const deviceId = await getDeviceId();
@@ -147,18 +142,36 @@ async function completeLocally(
     if (!(await passStillAllowed(owner))) return 'stopPass';
     if (openSessionCounts.has(session.id)) return 'nextSession';
     if (await completeSession(remoteSessionId, deviceId)) await sync();
+    deferredCompletions.delete(session.id);
+    return 'nextSession';
   } catch (error) {
-    if (!(await passStillAllowed(owner))) return 'stopPass';
-    if (error instanceof ProgressSyncError && error.status === 404) {
-      refusedSessionIds.add(session.id);
-    } else if (error instanceof ProgressSyncError && error.status === 409) {
-      // The server is still catching up on the final ops: retry on the next pass.
-      addProgressSyncBreadcrumb('Completion retry deferred', { sessionId: session.id });
-    } else if (isOfflineNetworkError(error)) {
-      return 'stopPass';
-    } else {
-      captureProgressSyncError('background-upload', error);
-    }
+    return handleSessionFailure(owner, session, error, 'background-complete');
+  }
+}
+
+// One classifier for both passes, so upload and completion treat a failure alike.
+async function handleSessionFailure(
+  owner: PassOwner,
+  session: StitchingSession,
+  error: unknown,
+  tag: 'background-upload' | 'background-complete',
+): Promise<SessionResult> {
+  if (!(await passStillAllowed(owner))) return 'stopPass';
+  if (error instanceof ProgressSyncError && error.status === 404) {
+    refusedSessionIds.add(session.id);
+  } else if (error instanceof ProgressSyncError && error.code === 'pattern_removed') {
+    refusedSessionIds.add(session.id);
+    await removePatternLocally(session);
+  } else if (tag === 'background-complete' && error instanceof ProgressSyncError && error.status === 409) {
+    // The server is still catching up on the final ops: retry on a later pass, a few times.
+    const attempts = (deferredCompletions.get(session.id) ?? 0) + 1;
+    deferredCompletions.set(session.id, attempts);
+    addProgressSyncBreadcrumb('Completion retry deferred', { sessionId: session.id, attempts });
+    if (attempts >= MAX_DEFERRED_COMPLETIONS) refusedSessionIds.add(session.id);
+  } else if (isOfflineNetworkError(error)) {
+    return 'stopPass';
+  } else {
+    captureProgressSyncError(tag, error);
   }
   return 'nextSession';
 }
@@ -196,7 +209,7 @@ async function runPass(): Promise<void> {
     if (!remoteSessionId || openSessionCounts.has(session.id) || refusedSessionIds.has(session.id)) continue;
     if (!(await passStillAllowed(owner))) return;
     if (openSessionCounts.has(session.id)) continue;
-    const work = completeLocally(owner, session, remoteSessionId);
+    const work = retryServerCompletion(owner, session, remoteSessionId);
     activeUpload = { sessionId: session.id, work };
     try {
       if ((await work) === 'stopPass') return;
