@@ -5,7 +5,7 @@ import { Screen, Button, BackButton, Card, PatternImage, CommunityReportAction, 
 import { Theme } from '@/theme/theme';
 import { BUNDLED_PATTERNS, loadBundledPattern } from '@/bundled-patterns';
 import { PatternData } from '@/pattern-artifact';
-import { absolutePreviewUrl, absoluteThumbnailUrls, useCatalogPattern } from '@/api/catalog';
+import { absolutePreviewUrl, absoluteThumbnailUrls, isOfficialCatalogItem, useCatalogPattern } from '@/api/catalog';
 import { useIdentityStore } from '@/identity/guestIdentity';
 import { prepareCatalogSession, prepareBundledSession, UnlockRequiredError } from '@/session-preparation';
 import { useCoinBalance, useUnlockedPatternIds, useUnlockPattern, InsufficientCoinError, unlockPriceForTier } from '@/api/economy';
@@ -329,7 +329,7 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
         thumbnailUrl: absoluteThumbnailUrls(item.thumbnailUrls)?.browsing ?? null,
         width: item.width,
         height: item.height,
-        official: !item.creatorProfileId,
+        official: isOfficialCatalogItem(item) ?? undefined,
       });
       router.navigate({
         pathname: '/(tabs)/(play)/[sessionId]',
@@ -363,7 +363,7 @@ function ServerPatternDetail({ id, returnTo }: { id: string | undefined; returnT
         thumbnailUrl: absoluteThumbnailUrls(item.thumbnailUrls)?.browsing ?? null,
         width: item.width,
         height: item.height,
-        official: !item.creatorProfileId,
+        official: isOfficialCatalogItem(item) ?? undefined,
       });
       router.navigate({
         pathname: '/(tabs)/(play)/[sessionId]',

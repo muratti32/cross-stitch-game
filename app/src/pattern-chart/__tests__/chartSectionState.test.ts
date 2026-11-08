@@ -75,8 +75,8 @@ describe('decideChartSection', () => {
       expect(decideChartSection(input({ ...base, access: access(undefined, { isLoading: true }) })).kind).toBe('loading');
     });
 
-    it('does not generate from a not-yet-accepted completion while online (purchasable)', () => {
-      expect(decideChartSection(input({ ...base, access: access(purchasable()) })).kind).toBe('hidden');
+    it('generates from local data when the server has not accepted the completion yet (purchasable)', () => {
+      expect(decideChartSection(input({ ...base, access: access(purchasable()) }))).toEqual({ kind: 'generate', allowRemoteFetch: false, removed: false });
     });
 
     it.each([undefined, false])('never generates offline when isOfficial is %s', (isOfficial) => {
