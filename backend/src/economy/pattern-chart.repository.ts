@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource } from 'typeorm';
 
 import { returningRows } from '../database/query-results';
 import { InsufficientCoinError } from './coin-ledger.repository';
@@ -66,6 +66,15 @@ export class PatternChartRepository {
     tier: PatternChartTier,
   ): Promise<PatternChartSpendResult> {
     return this.dataSource.transaction(async (manager) => {
+      // Lock order matches Session Completion (balance row, then entitlement) so
+      // buying and completing the same pattern cannot deadlock.
+      const rows = await manager.query<readonly BalanceRow[]>(
+        `SELECT balance FROM economy.coin_balances
+         WHERE principal_type = 'account' AND principal_id = $1
+         FOR UPDATE`,
+        [accountId],
+      );
+      const balance = rows.length === 0 ? 0 : Number(rows[0].balance);
       const claim = returningRows<{ pattern_id: string }>(
         await manager.query(
           `INSERT INTO economy.pattern_chart_entitlements (account_id, pattern_id, source)
@@ -76,16 +85,8 @@ export class PatternChartRepository {
         ),
       );
       if (claim.length === 0) {
-        return { alreadyEntitled: true, price, balance: await this.readBalance(manager, accountId) };
+        return { alreadyEntitled: true, price, balance };
       }
-
-      const rows = await manager.query<readonly BalanceRow[]>(
-        `SELECT balance FROM economy.coin_balances
-         WHERE principal_type = 'account' AND principal_id = $1
-         FOR UPDATE`,
-        [accountId],
-      );
-      const balance = rows.length === 0 ? 0 : Number(rows[0].balance);
       if (balance < price) {
         throw new InsufficientCoinError(price, balance);
       }
@@ -117,14 +118,5 @@ export class PatternChartRepository {
       );
       return { alreadyEntitled: false, price, balance: Number(updated[0].balance) };
     });
-  }
-
-  private async readBalance(manager: EntityManager, accountId: string): Promise<number> {
-    const rows = await manager.query<readonly BalanceRow[]>(
-      `SELECT balance FROM economy.coin_balances
-       WHERE principal_type = 'account' AND principal_id = $1`,
-      [accountId],
-    );
-    return rows.length === 0 ? 0 : Number(rows[0].balance);
   }
 }

@@ -12,8 +12,8 @@ export const MIN_CANVAS_WIDTH_PX = 480;
 export const LEGEND_ENTRY_WIDTH_PX = 168;
 export const LEGEND_ROW_HEIGHT_PX = 36;
 export const LEGEND_SWATCH_PX = 24;
-export const FOOTER_HEIGHT_PX = 128;
-export const QR_TARGET_PX = 96;
+export const FOOTER_HEIGHT_PX = 192;
+export const QR_TARGET_PX = 160;
 export const QR_QUIET_MODULES = 4;
 
 export interface ChartLayoutInput {

@@ -65,21 +65,33 @@ async function failure(res: Response): Promise<PatternChartError> {
   return mapPatternChartError(res.status, body);
 }
 
+/** Server pattern status: `withdrawn`/`review_hold` stop sales and fetches, `removed` stops drawing. */
+export type PatternChartAvailability = 'available' | 'withdrawn' | 'review_hold' | 'removed';
+
 export type PatternChartAccess =
   | { status: 'ineligible' }
-  | { status: 'entitled'; price: number }
-  | { status: 'purchasable'; price: number };
+  | { status: 'removed' }
+  | { status: 'entitled'; price: number; availability: PatternChartAvailability }
+  | { status: 'purchasable'; price: number; availability: PatternChartAvailability };
+
+const AVAILABILITIES: readonly PatternChartAvailability[] = ['available', 'withdrawn', 'review_hold', 'removed'];
 
 export async function fetchPatternChartAccess(patternId: string): Promise<PatternChartAccess> {
   const res = await apiFetch(`/v1/economy/pattern-charts/${encodeURIComponent(patternId)}`);
   if (res.status === 404) return { status: 'ineligible' };
-  if (!res.ok) throw await failure(res);
-  const data = (await res.json().catch(() => null)) as { entitled?: unknown; price?: unknown } | null;
+  if (!res.ok) {
+    const error = await failure(res);
+    if (error.kind === 'removed') return { status: 'removed' };
+    throw error;
+  }
+  const data = (await res.json().catch(() => null)) as { entitled?: unknown; price?: unknown; status?: unknown } | null;
   const price = intOrNull(data?.price);
-  if (typeof data?.entitled !== 'boolean' || price === null) {
+  const availability = AVAILABILITIES.find((value) => value === data?.status);
+  if (typeof data?.entitled !== 'boolean' || price === null || availability === undefined) {
     throw new PatternChartError(res.status, 'other', 'invalid_pattern_chart_response');
   }
-  return data.entitled ? { status: 'entitled', price } : { status: 'purchasable', price };
+  if (availability === 'removed') return { status: 'removed' };
+  return { status: data.entitled ? 'entitled' : 'purchasable', price, availability };
 }
 
 export interface PatternChartPurchase {

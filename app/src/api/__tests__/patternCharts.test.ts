@@ -49,12 +49,24 @@ describe('pattern chart requests', () => {
   beforeEach(() => mockedFetch.mockReset());
 
   it('reads access: entitled, purchasable, and ineligible on 404', async () => {
-    respond(200, { patternId: 'p', entitled: true, price: 20 });
-    await expect(fetchPatternChartAccess('p')).resolves.toEqual({ status: 'entitled', price: 20 });
-    respond(200, { patternId: 'p', entitled: false, price: 40 });
-    await expect(fetchPatternChartAccess('p')).resolves.toEqual({ status: 'purchasable', price: 40 });
+    respond(200, { patternId: 'p', entitled: true, price: 20, status: 'available' });
+    await expect(fetchPatternChartAccess('p')).resolves.toEqual({ status: 'entitled', price: 20, availability: 'available' });
+    respond(200, { patternId: 'p', entitled: false, price: 40, status: 'withdrawn' });
+    await expect(fetchPatternChartAccess('p')).resolves.toEqual({ status: 'purchasable', price: 40, availability: 'withdrawn' });
     respond(404, { code: 'not_found' });
     await expect(fetchPatternChartAccess('p')).resolves.toEqual({ status: 'ineligible' });
+  });
+
+  it('reports a Safety Removal as removed, from either the status field or a 410', async () => {
+    respond(200, { patternId: 'p', entitled: true, price: 20, status: 'removed' });
+    await expect(fetchPatternChartAccess('p')).resolves.toEqual({ status: 'removed' });
+    respond(410, { code: 'pattern_removed' });
+    await expect(fetchPatternChartAccess('p')).resolves.toEqual({ status: 'removed' });
+  });
+
+  it('rejects a response without a known pattern status', async () => {
+    respond(200, { patternId: 'p', entitled: true, price: 20 });
+    await expect(fetchPatternChartAccess('p')).rejects.toBeInstanceOf(PatternChartError);
   });
 
   it('throws a typed error on a guest 403 and on a malformed 200', async () => {

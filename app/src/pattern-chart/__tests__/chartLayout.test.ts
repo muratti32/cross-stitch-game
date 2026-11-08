@@ -60,9 +60,15 @@ describe('computeQrLayout', () => {
   it('fits whole-pixel modules plus a 4-module quiet zone inside the target', () => {
     const layout = computeQrLayout(29);
     expect(layout.quietModules).toBe(4);
-    expect(layout.moduleSize).toBe(Math.floor(96 / 37));
+    expect(layout.moduleSize).toBe(Math.floor(160 / 37));
     expect(layout.totalSize).toBe(layout.moduleSize * 37);
-    expect(layout.totalSize).toBeLessThanOrEqual(96);
+    expect(layout.totalSize).toBeLessThanOrEqual(160);
+  });
+
+  it('keeps modules at least 3 px for a typical share link and fits the footer', () => {
+    const layout = computeQrLayout(33);
+    expect(layout.moduleSize).toBeGreaterThanOrEqual(3);
+    expect(layout.totalSize).toBeLessThanOrEqual(FOOTER_HEIGHT_PX);
   });
 
   it('never returns a zero module size', () => {

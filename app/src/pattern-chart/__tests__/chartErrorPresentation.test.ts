@@ -1,5 +1,6 @@
 import { mapPatternChartError } from '../../api/patternCharts';
 import { ChartSharingUnavailableError } from '../chartErrors';
+import { ChartDataUnavailableError } from '../loadChartPattern';
 import { presentChartError } from '../chartErrorPresentation';
 
 jest.mock('../../api/apiFetch', () => ({ apiFetch: jest.fn() }));
@@ -26,6 +27,10 @@ describe('presentChartError', () => {
   it('defers unknown server failures to the shared server error presenter', () => {
     const error = mapPatternChartError(500, null);
     expect(presentChartError(error)).toEqual({ type: 'server', error });
+  });
+
+  it('maps missing local data under withdrawal to unavailable', () => {
+    expect(presentChartError(new ChartDataUnavailableError())).toEqual({ type: 'key', key: 'chart.unavailable' });
   });
 
   it('handles sharing unavailability and non-server failures', () => {

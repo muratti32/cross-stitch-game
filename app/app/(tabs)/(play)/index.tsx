@@ -243,6 +243,7 @@ export default function PlayScreen() {
               variant="compact"
               localChecksum={item.artifactChecksum}
               regenerate
+              locallyCompleted
             />
           )}
         </View>

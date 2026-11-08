@@ -30,6 +30,8 @@ export interface PatternChartView {
   patternId: string;
   entitled: boolean;
   price: number;
+  /** Lets the app hide Buy under Catalog Withdrawal and never draw under Safety Removal. */
+  status: PatternEntity['status'];
 }
 
 /**
@@ -58,6 +60,7 @@ export class PatternChartService {
       patternId,
       entitled: await this.repository.isEntitled(principal.id, patternId),
       price: patternChartPrice(stitchableCells(pattern)),
+      status: pattern.status,
     };
   }
 
@@ -69,13 +72,14 @@ export class PatternChartService {
     this.assertAccount(principal);
     await this.promotionService.assertNotLocked(principal.id, principal.type);
     const pattern = await this.loadOfficialPattern(patternId);
-    this.assertAvailable(pattern);
 
     const cells = stitchableCells(pattern);
     const price = patternChartPrice(cells);
     const tier = patternChartTier(cells);
 
+    // An existing entitlement answers `alreadyEntitled` even after withdrawal; only a new sale needs `available`.
     if (!(await this.repository.isEntitled(principal.id, patternId))) {
+      this.assertAvailable(pattern);
       await this.assertCanStart(principal.id, pattern);
       if (expectedPrice !== price) {
         throw new ConflictException({ code: 'pattern_chart_price_changed', price });

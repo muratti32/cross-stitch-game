@@ -161,6 +161,14 @@ describe('PatternChartService', () => {
       expect(repository.spend).not.toHaveBeenCalled();
     });
 
+    it.each(['withdrawn', 'removed'])('returns alreadyEntitled for an entitled player even when the Pattern is %s', async (status) => {
+      const { service, repository } = harness(pattern({ status }));
+      repository.isEntitled.mockResolvedValue(true);
+      repository.spend.mockResolvedValue({ alreadyEntitled: true, price: 20, balance: 5 });
+
+      await expect(service.purchase(account, patternId, 20)).resolves.toMatchObject({ alreadyEntitled: true });
+    });
+
     it('returns alreadyEntitled without a price check or charge', async () => {
       const { service, repository } = harness();
       repository.isEntitled.mockResolvedValue(true);
@@ -212,7 +220,13 @@ describe('PatternChartService', () => {
       const { service, repository } = harness(pattern({ stitchableCellCount: 4_000 }));
       repository.isEntitled.mockResolvedValue(true);
 
-      await expect(service.view(account, patternId)).resolves.toEqual({ patternId, entitled: true, price: 40 });
+      await expect(service.view(account, patternId)).resolves.toEqual({ patternId, entitled: true, price: 40, status: 'available' });
+    });
+
+    it.each(['withdrawn', 'removed', 'review_hold'] as const)('exposes %s status so the app can stop drawing or selling', async (status) => {
+      const { service } = harness(pattern({ status }));
+
+      await expect(service.view(account, patternId)).resolves.toMatchObject({ status });
     });
   });
 

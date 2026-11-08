@@ -9,7 +9,17 @@ export class ChartRenderError extends Error {
   }
 }
 
-/** Draws a plan on a CPU raster Skia surface and returns PNG bytes. Runs outside the stitching loop (ADR-0031). */
+/**
+ * Draws a plan on a CPU raster Skia surface and returns PNG bytes. Runs outside the stitching loop (ADR-0031).
+ *
+ * Skia API evidence, @shopify/react-native-skia@2.6.2 (node_modules/@shopify/react-native-skia/src):
+ * - Skia.Surface.Make(width, height): CPU surface or null          skia/types/Surface/SurfaceFactory.ts:22
+ * - Skia.XYWHRect, drawRect(rect, paint), drawLine(x0,y0,x1,y1,paint)  skia/types/Skia.ts:48, skia/types/Canvas.ts:197, :180
+ * - drawText(text, x, y, paint, font)                              skia/types/Canvas.ts:338
+ * - matchFont(style, fontMgr = Skia.FontMgr.System())              skia/core/Font.ts:81
+ * - surface.makeImageSnapshot()                                    skia/types/Surface/Surface.ts:38
+ * - image.encodeToBytes(ImageFormat.PNG, quality)                  skia/types/Image/Image.ts:122
+ */
 export function renderChartPng(plan: ChartDrawPlan): Uint8Array {
   const { canvasWidth, canvasHeight } = plan.layout;
   const surface = Skia.Surface.Make(canvasWidth, canvasHeight);

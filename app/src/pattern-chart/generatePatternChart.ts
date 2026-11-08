@@ -16,6 +16,8 @@ export interface GeneratePatternChartInput {
   pattern?: PatternData;
   /** Checksum of a Pattern Artifact this device holds, if the caller knows it. */
   localChecksum?: string | null;
+  /** False draws only from data on the device (Catalog Withdrawal, or not entitled). */
+  allowRemoteFetch?: boolean;
   dialogTitle: string;
 }
 
@@ -30,6 +32,7 @@ export async function generatePatternChart(input: GeneratePatternChartInput): Pr
   const pattern = input.pattern ?? await loadChartPattern(chartSourceDeps, {
     patternId: input.patternId,
     localChecksum: input.localChecksum ?? await findLocalArtifactChecksum(input.patternId),
+    allowRemoteFetch: input.allowRemoteFetch,
   });
   const plan = buildChartDrawPlan(pattern, buildQrMatrix(catalogShareLink(input.patternId)));
   const png = renderChartPng(plan);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -8,8 +8,11 @@ import { Theme } from '../theme/theme';
 import { formatNumber } from '../i18n';
 import { useIdentityStore } from '../identity/guestIdentity';
 import { isServerApiError, localizeServerError } from '../api/localizeServerError';
-import { usePatternChartAccess, usePurchasePatternChart } from '../api/patternCharts';
+import { PatternChartError, usePatternChartAccess, usePurchasePatternChart } from '../api/patternCharts';
 import { usePatternChartGeneration } from '../hooks/usePatternChartGeneration';
+import { useLocalArtifactChecksum } from '../hooks/useLocalArtifactChecksum';
+import { decideChartSection } from '../pattern-chart/chartSectionState';
+import { deleteOfflinePatternFile } from '../session-preparation';
 import { presentChartError } from '../pattern-chart/chartErrorPresentation';
 import type { PatternData } from '../pattern-artifact';
 
@@ -26,6 +29,8 @@ interface PatternChartSectionProps {
   localChecksum?: string | null;
   /** History reopens a finished pattern, so the action reads Regenerate. */
   regenerate?: boolean;
+  /** This device holds a completed session of the pattern: draw at once, even offline. */
+  locallyCompleted?: boolean;
 }
 
 export function PatternChartSection({
@@ -36,6 +41,7 @@ export function PatternChartSection({
   pattern,
   localChecksum,
   regenerate = false,
+  locallyCompleted = false,
 }: PatternChartSectionProps) {
   const { t, i18n } = useTranslation('catalog');
   const locale = i18n.language;
@@ -46,37 +52,32 @@ export function PatternChartSection({
   const purchase = usePurchasePatternChart();
   const generation = usePatternChartGeneration();
   const [purchaseError, setPurchaseError] = useState<unknown>(null);
+  const resolvedChecksum = useLocalArtifactChecksum(patternId, isAccount && !pattern && localChecksum === undefined);
+  const checksum = localChecksum ?? resolvedChecksum ?? null;
 
-  if (isOfficial === false || !isAuthenticated) return null;
+  const state = decideChartSection({
+    isAuthenticated,
+    isAccount,
+    variant,
+    isOfficial,
+    canStart,
+    hasLocalData: pattern !== undefined || checksum !== null,
+    locallyCompleted,
+    access: { isLoading: access.isLoading, isError: access.isError, data: access.data },
+  });
+
+  // Safety Removal: no image may be drawn, and the on-device copy goes now rather than at the next sync.
+  const removedByGeneration = generation.state.phase === 'error'
+    && generation.state.error instanceof PatternChartError
+    && generation.state.error.kind === 'removed';
+  const removed = state.removed || removedByGeneration;
+  useEffect(() => {
+    if (removed) void deleteOfflinePatternFile(patternId).catch(() => undefined);
+  }, [removed, patternId]);
+  if (removed) return null;
 
   const wrap = (children: React.ReactNode) =>
     variant === 'detail' ? <Card style={styles.card}>{children}</Card> : <View style={styles.compact}>{children}</View>;
-
-  if (!isAccount) {
-    // Guests never reach the entitlement endpoints; only the detail screen knows the pattern is Official.
-    if (variant !== 'detail' || isOfficial !== true) return null;
-    return wrap(
-      <>
-        <Text style={styles.title}>{t('chart.title')}</Text>
-        <Text style={styles.body}>{t('chart.signIn.body')}</Text>
-        <Button
-          title={t('chart.signIn.button')}
-          onPress={() => router.push('/(tabs)/(settings)/sign-in')}
-          variant="secondary"
-          style={styles.button}
-        />
-      </>,
-    );
-  }
-
-  if (access.isLoading) {
-    return wrap(
-      <View style={styles.statusRow}>
-        <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
-        <Text style={styles.body}>{t('chart.checking')}</Text>
-      </View>,
-    );
-  }
 
   const renderError = (error: unknown): React.ReactNode => {
     const presentation = presentChartError(error);
@@ -101,67 +102,92 @@ export function PatternChartSection({
     return <Text style={styles.error} accessibilityRole="alert">{message}</Text>;
   };
 
-  if (access.isError) {
-    return wrap(
-      <>
-        <Text style={styles.error} accessibilityRole="alert">{t('chart.loadFailed')}</Text>
-        <Button title={t('chart.retry')} onPress={() => void access.refetch()} variant="secondary" style={styles.button} />
-      </>,
-    );
-  }
-
-  const status = access.data;
-  if (!status || status.status === 'ineligible') return null;
-
-  if (status.status === 'purchasable') {
-    if (variant !== 'detail' || !canStart) return null;
-    const buy = async () => {
-      setPurchaseError(null);
-      try {
-        await purchase.mutateAsync({ patternId, expectedPrice: status.price });
-      } catch (error) {
-        setPurchaseError(error);
-      }
-    };
-    return wrap(
-      <>
-        <Text style={styles.title}>{t('chart.title')}</Text>
-        <Text style={styles.body}>{t('chart.description')}</Text>
-        <Text style={styles.hint}>{t('chart.freeIfCompleted')}</Text>
-        {purchaseError !== null && renderError(purchaseError)}
-        <Button
-          title={purchase.isPending ? t('chart.buying') : t('chart.buy', { price: formatNumber(status.price, locale) })}
-          onPress={() => void buy()}
-          variant="primary"
-          loading={purchase.isPending}
-          disabled={purchase.isPending}
-          style={styles.button}
-        />
-      </>,
-    );
-  }
-
-  const generating = generation.state.phase === 'generating';
-  const dialogTitle = t('chart.dialogTitle');
-  return wrap(
-    <>
-      {variant === 'detail' && (
+  switch (state.kind) {
+    case 'hidden':
+      return null;
+    case 'signIn':
+      return wrap(
+        <>
+          <Text style={styles.title}>{t('chart.title')}</Text>
+          <Text style={styles.body}>{t('chart.signIn.body')}</Text>
+          <Button
+            title={t('chart.signIn.button')}
+            onPress={() => router.push('/(tabs)/(settings)/sign-in')}
+            variant="secondary"
+            style={styles.button}
+          />
+        </>,
+      );
+    case 'loading':
+      return wrap(
+        <View style={styles.statusRow}>
+          <ActivityIndicator size="small" color={Theme.colors.accentTeal} />
+          <Text style={styles.body}>{t('chart.checking')}</Text>
+        </View>,
+      );
+    case 'error':
+      return wrap(
+        <>
+          <Text style={styles.error} accessibilityRole="alert">{t('chart.loadFailed')}</Text>
+          <Button title={t('chart.retry')} onPress={() => void access.refetch()} variant="secondary" style={styles.button} />
+        </>,
+      );
+    case 'buy': {
+      const buy = async () => {
+        setPurchaseError(null);
+        try {
+          await purchase.mutateAsync({ patternId, expectedPrice: state.price });
+        } catch (error) {
+          setPurchaseError(error);
+        }
+      };
+      return wrap(
         <>
           <Text style={styles.title}>{t('chart.title')}</Text>
           <Text style={styles.body}>{t('chart.description')}</Text>
-        </>
-      )}
-      {generation.state.phase === 'error' && renderError(generation.state.error)}
-      <Button
-        title={generating ? t('chart.generating') : regenerate ? t('chart.regenerate') : t('chart.generate')}
-        onPress={() => void generation.generate({ patternId, pattern, localChecksum, dialogTitle })}
-        variant={variant === 'detail' ? 'primary' : 'secondary'}
-        loading={generating}
-        disabled={generating}
-        style={styles.button}
-      />
-    </>,
-  );
+          <Text style={styles.hint}>{t('chart.freeIfCompleted')}</Text>
+          {purchaseError !== null && renderError(purchaseError)}
+          <Button
+            title={purchase.isPending ? t('chart.buying') : t('chart.buy', { price: formatNumber(state.price, locale) })}
+            onPress={() => void buy()}
+            variant="primary"
+            loading={purchase.isPending}
+            disabled={purchase.isPending}
+            style={styles.button}
+          />
+        </>,
+      );
+    }
+    case 'generate': {
+      const generating = generation.state.phase === 'generating';
+      const dialogTitle = t('chart.dialogTitle');
+      return wrap(
+        <>
+          {variant === 'detail' && (
+            <>
+              <Text style={styles.title}>{t('chart.title')}</Text>
+              <Text style={styles.body}>{t('chart.description')}</Text>
+            </>
+          )}
+          {generation.state.phase === 'error' && renderError(generation.state.error)}
+          <Button
+            title={generating ? t('chart.generating') : regenerate ? t('chart.regenerate') : t('chart.generate')}
+            onPress={() => void generation.generate({
+              patternId,
+              pattern,
+              localChecksum: checksum,
+              allowRemoteFetch: state.allowRemoteFetch,
+              dialogTitle,
+            })}
+            variant={variant === 'detail' ? 'primary' : 'secondary'}
+            loading={generating}
+            disabled={generating}
+            style={styles.button}
+          />
+        </>,
+      );
+    }
+  }
 }
 
 const styles = StyleSheet.create({

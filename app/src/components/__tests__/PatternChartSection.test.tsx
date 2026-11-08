@@ -8,6 +8,7 @@ import { usePatternChartAccess, usePurchasePatternChart } from '../../api/patter
 import { useIdentityStore } from '../../identity/guestIdentity';
 import { usePatternChartGeneration } from '../../hooks/usePatternChartGeneration';
 import { mapPatternChartError } from '../../api/patternCharts';
+import { useLocalArtifactChecksum } from '../../hooks/useLocalArtifactChecksum';
 
 const mockPush = jest.fn();
 jest.mock('expo-router', () => ({ useRouter: () => ({ push: mockPush }) }));
@@ -18,6 +19,9 @@ jest.mock('../../api/patternCharts', () => ({
 }));
 jest.mock('../../hooks/usePatternChartGeneration', () => ({ usePatternChartGeneration: jest.fn() }));
 jest.mock('../../identity/guestIdentity', () => ({ useIdentityStore: jest.fn() }));
+const mockDeleteOffline = jest.fn().mockResolvedValue(undefined);
+jest.mock('../../session-preparation', () => ({ deleteOfflinePatternFile: (id: string) => mockDeleteOffline(id) }));
+jest.mock('../../hooks/useLocalArtifactChecksum', () => ({ useLocalArtifactChecksum: jest.fn() }));
 jest.mock('../../api/apiFetch', () => ({ apiFetch: jest.fn() }));
 
 const access = usePatternChartAccess as jest.Mock;
@@ -52,7 +56,8 @@ describe('PatternChartSection', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     setIdentity(true, true);
-    access.mockReturnValue({ isLoading: false, isError: false, data: { status: 'purchasable', price: 40 }, refetch: jest.fn() });
+    (useLocalArtifactChecksum as jest.Mock).mockReturnValue(null);
+    access.mockReturnValue({ isLoading: false, isError: false, data: { status: 'purchasable', price: 40, availability: 'available' }, refetch: jest.fn() });
     purchase.mockReturnValue({ isPending: false, mutateAsync });
     generation.mockReturnValue({ state: { phase: 'idle' }, generate });
   });
@@ -137,7 +142,7 @@ describe('PatternChartSection', () => {
   });
 
   it('generates from in-memory pattern data when entitled', async () => {
-    access.mockReturnValue({ isLoading: false, isError: false, data: { status: 'entitled', price: 40 }, refetch: jest.fn() });
+    access.mockReturnValue({ isLoading: false, isError: false, data: { status: 'entitled', price: 40, availability: 'available' }, refetch: jest.fn() });
     const pattern = { schemaVersion: 1, width: 1, height: 1, palette: [], grid: new Uint8Array(1) };
     const renderer = await render({ variant: 'compact', pattern, isOfficial: undefined });
     expect(texts(renderer)).toContain('Generate chart');
@@ -148,16 +153,64 @@ describe('PatternChartSection', () => {
   });
 
   it('reads Regenerate in history and surfaces a generation failure', async () => {
-    access.mockReturnValue({ isLoading: false, isError: false, data: { status: 'entitled', price: 40 }, refetch: jest.fn() });
-    generation.mockReturnValue({ state: { phase: 'error', error: mapPatternChartError(410, { code: 'pattern_removed' }) }, generate });
+    access.mockReturnValue({ isLoading: false, isError: false, data: { status: 'entitled', price: 40, availability: 'available' }, refetch: jest.fn() });
+    generation.mockReturnValue({ state: { phase: 'error', error: mapPatternChartError(410, { code: 'pattern_unavailable' }) }, generate });
     const renderer = await render({ variant: 'compact', regenerate: true });
     expect(texts(renderer)).toEqual(expect.arrayContaining(['Regenerate chart', 'This chart is no longer available.']));
   });
 
   it('shows progress while generating', async () => {
-    access.mockReturnValue({ isLoading: false, isError: false, data: { status: 'entitled', price: 40 }, refetch: jest.fn() });
+    access.mockReturnValue({ isLoading: false, isError: false, data: { status: 'entitled', price: 40, availability: 'available' }, refetch: jest.fn() });
     generation.mockReturnValue({ state: { phase: 'generating' }, generate });
     const renderer = await render({ variant: 'compact' });
     expect(buttons(renderer)[0].props).toMatchObject({ loading: true, disabled: true, title: 'Generating chart…' });
+  });
+
+  it('Safety Removal hides Generate on every surface and deletes the on-device copy', async () => {
+    access.mockReturnValue({ isLoading: false, isError: false, data: { status: 'removed' }, refetch: jest.fn() });
+    const pattern = { schemaVersion: 1, width: 1, height: 1, palette: [], grid: new Uint8Array(1) };
+    for (const props of [{}, { variant: 'compact' as const, pattern, locallyCompleted: true }, { variant: 'compact' as const, localChecksum: 'c', regenerate: true, locallyCompleted: true }]) {
+      mockDeleteOffline.mockClear();
+      expect((await render(props)).toJSON()).toBeNull();
+      expect(mockDeleteOffline).toHaveBeenCalledWith('p');
+    }
+  });
+
+  it('hides Generate when the generation itself learns the pattern was removed', async () => {
+    access.mockReturnValue({ isLoading: false, isError: false, data: { status: 'entitled', price: 40, availability: 'available' }, refetch: jest.fn() });
+    generation.mockReturnValue({ state: { phase: 'error', error: mapPatternChartError(410, { code: 'pattern_removed' }) }, generate });
+    expect((await render({ variant: 'compact' })).toJSON()).toBeNull();
+    expect(mockDeleteOffline).toHaveBeenCalledWith('p');
+  });
+
+  it('Catalog Withdrawal hides Buy, and offers Generate only from local data without fetching', async () => {
+    access.mockReturnValue({ isLoading: false, isError: false, data: { status: 'purchasable', price: 40, availability: 'withdrawn' }, refetch: jest.fn() });
+    expect((await render()).toJSON()).toBeNull();
+
+    access.mockReturnValue({ isLoading: false, isError: false, data: { status: 'entitled', price: 40, availability: 'withdrawn' }, refetch: jest.fn() });
+    expect((await render()).toJSON()).toBeNull();
+
+    (useLocalArtifactChecksum as jest.Mock).mockReturnValue('local-checksum');
+    const renderer = await render();
+    await act(async () => {
+      buttons(renderer)[0].props.onPress();
+    });
+    expect(generate).toHaveBeenCalledWith(expect.objectContaining({ allowRemoteFetch: false, localChecksum: 'local-checksum' }));
+  });
+
+  it('a local completion shows Generate at once while loading or offline, and still hides for a Guest', async () => {
+    const pattern = { schemaVersion: 1, width: 1, height: 1, palette: [], grid: new Uint8Array(1) };
+    const props = { variant: 'compact' as const, isOfficial: undefined, pattern, locallyCompleted: true };
+    for (const state of [{ isLoading: true, isError: false, data: undefined }, { isLoading: false, isError: true, data: undefined }]) {
+      access.mockReturnValue({ ...state, refetch: jest.fn() });
+      const renderer = await render(props);
+      expect(texts(renderer)).toContain('Generate chart');
+      await act(async () => {
+        buttons(renderer)[0].props.onPress();
+      });
+      expect(generate).toHaveBeenLastCalledWith(expect.objectContaining({ pattern, allowRemoteFetch: false }));
+    }
+    setIdentity(true, false);
+    expect((await render(props)).toJSON()).toBeNull();
   });
 });

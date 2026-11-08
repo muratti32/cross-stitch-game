@@ -837,6 +837,7 @@ export default function SessionReadyScreen() {
                   variant="compact"
                   isOfficial={session.source === 'catalog' ? undefined : false}
                   pattern={patternData}
+                  locallyCompleted
                 />
               )}
               <Button

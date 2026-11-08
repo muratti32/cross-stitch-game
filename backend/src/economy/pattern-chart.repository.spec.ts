@@ -17,8 +17,8 @@ function harness(query: jest.Mock) {
 describe('PatternChartRepository.spend', () => {
   it('claims the latch, debits once under the pattern_chart source key and returns the new balance', async () => {
     const query = jest.fn()
+      .mockResolvedValueOnce([{ balance: '50' }]) // lock balance first (same order as completion)
       .mockResolvedValueOnce([{ pattern_id: patternId }]) // latch
-      .mockResolvedValueOnce([{ balance: '50' }]) // lock balance
       .mockResolvedValueOnce([]) // ledger
       .mockResolvedValueOnce([{ balance: '30' }]); // balance update
     const repo = harness(query);
@@ -29,6 +29,8 @@ describe('PatternChartRepository.spend', () => {
       balance: 30,
     });
     const calls = query.mock.calls as [string, unknown[]][];
+    expect(calls[0][0]).toContain('FOR UPDATE');
+    expect(calls[1][0]).toContain('pattern_chart_entitlements');
     const ledger = calls[2];
     expect(ledger[0]).toContain('coin_ledger_entries');
     expect(ledger[1]).toEqual([
@@ -43,8 +45,8 @@ describe('PatternChartRepository.spend', () => {
 
   it('does not charge when the latch already exists', async () => {
     const query = jest.fn()
-      .mockResolvedValueOnce([]) // latch conflict
-      .mockResolvedValueOnce([{ balance: '50' }]); // read balance
+      .mockResolvedValueOnce([{ balance: '50' }]) // lock balance
+      .mockResolvedValueOnce([]); // latch conflict
     const repo = harness(query);
 
     await expect(repo.spend(accountId, patternId, 20, 'small')).resolves.toEqual({
@@ -57,8 +59,8 @@ describe('PatternChartRepository.spend', () => {
 
   it.each([['5'], ['-10']])('throws InsufficientCoinError for balance %s before any debit', async (balance) => {
     const query = jest.fn()
-      .mockResolvedValueOnce([{ pattern_id: patternId }])
-      .mockResolvedValueOnce([{ balance }]);
+      .mockResolvedValueOnce([{ balance }])
+      .mockResolvedValueOnce([{ pattern_id: patternId }]);
     const repo = harness(query);
 
     await expect(repo.spend(accountId, patternId, 20, 'small')).rejects.toEqual(
@@ -67,10 +69,15 @@ describe('PatternChartRepository.spend', () => {
     expect(query).toHaveBeenCalledTimes(2);
   });
 
+  it('does not throw for an already-entitled replay even with a low balance', async () => {
+    const query = jest.fn().mockResolvedValueOnce([{ balance: '1' }]).mockResolvedValueOnce([]);
+    await expect(harness(query).spend(accountId, patternId, 20, 'small')).resolves.toMatchObject({ alreadyEntitled: true, balance: 1 });
+  });
+
   it('treats a missing balance row as zero', async () => {
     const query = jest.fn()
-      .mockResolvedValueOnce([{ pattern_id: patternId }])
-      .mockResolvedValueOnce([]);
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ pattern_id: patternId }]);
     const repo = harness(query);
 
     await expect(repo.spend(accountId, patternId, 20, 'small')).rejects.toBeInstanceOf(InsufficientCoinError);

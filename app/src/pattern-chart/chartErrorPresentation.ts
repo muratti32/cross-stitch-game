@@ -1,5 +1,6 @@
 import { PatternChartError } from '../api/patternCharts';
 import { ChartSharingUnavailableError } from './chartErrors';
+import { ChartDataUnavailableError } from './loadChartPattern';
 
 export type ChartErrorPresentation =
   | { type: 'key'; key: string; values?: Record<string, number> }
@@ -9,6 +10,7 @@ export type ChartErrorPresentation =
 /** Pure mapping of any chart failure to what the player sees; unknown failures use the generic text. */
 export function presentChartError(error: unknown): ChartErrorPresentation {
   if (error instanceof ChartSharingUnavailableError) return { type: 'key', key: 'chart.sharingUnavailable' };
+  if (error instanceof ChartDataUnavailableError) return { type: 'key', key: 'chart.unavailable' };
   if (error instanceof PatternChartError) {
     switch (error.kind) {
       case 'removed':

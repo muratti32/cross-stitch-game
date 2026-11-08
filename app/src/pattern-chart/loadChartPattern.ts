@@ -19,6 +19,15 @@ export interface ChartSourceRequest {
   patternId: string;
   /** Checksum of a Pattern Artifact this device already holds for the pattern, if any. */
   localChecksum?: string | null;
+  /** False under Catalog Withdrawal or when not entitled: draw from local data or fail, never fetch. */
+  allowRemoteFetch?: boolean;
+}
+
+export class ChartDataUnavailableError extends Error {
+  constructor() {
+    super('chart_data_unavailable');
+    this.name = 'ChartDataUnavailableError';
+  }
 }
 
 export async function loadChartPattern(deps: ChartSourceDeps, request: ChartSourceRequest): Promise<PatternData> {
@@ -30,6 +39,7 @@ export async function loadChartPattern(deps: ChartSourceDeps, request: ChartSour
       // A missing or corrupt local copy falls through to the entitlement fetch.
     }
   }
+  if (request.allowRemoteFetch === false) throw new ChartDataUnavailableError();
   const grant = await deps.requestGrant(request.patternId);
   const bytes = await deps.download(grant.url);
   return deps.decode(bytes, grant.checksum);
