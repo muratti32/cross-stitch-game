@@ -1,0 +1,23 @@
+# EAS reads .easignore only from the git root, and it REPLACES every .gitignore
+# for the upload. Only app/ is needed to build, so ignore everything else.
+/*
+!/app
+
+# app/.gitignore rules, repeated because .gitignore is not consulted
+app/node_modules
+app/.expo
+app/dist
+app/web-build
+/app/ios
+/app/android
+app/.env
+app/.env.local
+*.log
+.DS_Store
+*.ipa
+*.aab
+*.apk
+credentials.json
+
+# Tracked in git but not bundled into the app (148 MB)
+app/assets/generated/catalog-category-samples
